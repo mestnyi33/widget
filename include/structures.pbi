@@ -147,6 +147,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     STATE
       Structure _s_STATE
+         font.i
+         fontID.i
+         
          visible.b
          
          StructureUnion
@@ -214,9 +217,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_TEXT Extends _s_edit
          change.b
          ;
-         font.i
-         fontID.i
-         ;
          pass$
          pass.b
          
@@ -240,14 +240,34 @@ CompilerIf Not Defined(Structures, #PB_Module)
          align._s_align
       EndStructure
       
+      ;--     FONTS
+      Structure _s_FONTS
+         font.i
+         key$
+         id$
+         name.s
+         size.a
+         style.q
+      EndStructure
+      
       ;--     IMAGE
-      Structure _s_image Extends _s_COORDINATE
+      Structure _s_IMAGE Extends _s_COORDINATE
          change.b ; TEMP
          
-         *imageID
-         *image
+         Image.i
+         imageID.i
          rotate.d
          align._s_align
+      EndStructure
+      
+      ;--     IMAGES
+      Structure _s_IMAGES
+         ; img._s_IMAGE
+         Image.i
+         key$
+         id$
+         file$
+         *data
       EndStructure
       
       ;
@@ -344,8 +364,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;*columnaddress
          columnindex.c
          
-         Text._s_text
-         img._s_image
+         txt._s_text
+         img._s_IMAGE
          color._s_color
          
          OffsetMove.i
@@ -501,8 +521,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          visible.b
          
-         Text._s_text
-         img._s_image
+         txt._s_text
+         img._s_IMAGE
          color._s_color
       EndStructure
       
@@ -519,8 +539,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_COLUMN Extends _s_COORDINATE
          ;index.i
          
-         Text._s_TEXT
-         img._s_image
+         txt._s_TEXT
+         img._s_IMAGE
          
          
          ;--TEMP---
@@ -693,13 +713,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; \cursor[3]     ; change cursor 2
          ;
          imgsize.w        ; icon small/large
-         img._s_image[4]
+         img._s_IMAGE[4]
          ; \image[0] - draw image
          ; \image[1] - released image
          ; \image[2] - pressed image
          ; \image[3] - background image
          ;
-         Text._s_TEXT
+         txt._s_TEXT
          Scroll._s_SCROLL            ; vertical & horizontal scrollbars
          color._s_color[4]
          
@@ -750,21 +770,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          List *queues._s_EVENTDATA( )  ; __events( )
       EndStructure
       
-      Structure _s_FONT
-         id$
-         font.i
-         name.s
-         size.a
-         style.q
-      EndStructure
-      
-      Structure _s_Img
-         id$
-         name$
-         Image.i
-         file$
-      EndStructure
-      
       ;--     GUI
       Structure _s_GUI
          fontID.i                       ; current drawing fontID
@@ -792,8 +797,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 746
-; FirstLine = 739
+; CursorPosition = 264
+; FirstLine = 253
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

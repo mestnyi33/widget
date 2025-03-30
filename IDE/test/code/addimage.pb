@@ -41,7 +41,7 @@ Global my_font_2 = LoadFont(#PB_Any, "Consolas", 13, #PB_Font_Bold|#PB_Font_Unde
 If Open( 0, 0, 0, 592, 532, "Редактор изображения", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
    
    WINDOW_1 = Window( 10, 10, 392, 232, "Редактор изображения", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
-   IMAGE_VIEW = Image(7, 7, 253, 218, (0), #__flag_border_flat|#__image_center )
+   IMAGE_VIEW = Image(7, 7, 253, 218, ( 0 ), #__flag_border_flat|#__image_center )
    BUTTON_OPEN = Button(266, 7, 119, 22, "Открыть", #__image_left )
    BUTTON_SAVE = Button(266, 35, 119, 22, "Сохранить", #__image_left )
    BUTTON_COPY = Button(266, 77, 119, 22, "Копировать", #__image_left )
@@ -52,7 +52,7 @@ If Open( 0, 0, 0, 592, 532, "Редактор изображения", #PB_Windo
    
    ;
    SetImage(BUTTON_OPEN, (0))
-   SetImage(BUTTON_SAVE, (1))
+   SetImage(BUTTON_SAVE, ( 1 ))
    SetImage(BUTTON_COPY, (2))
    SetImage(BUTTON_CUT, (3))
    SetImage(BUTTON_PASTE, (img))
@@ -66,9 +66,9 @@ EndIf
 CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 30
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 54
+; FirstLine = 32
 ; Folding = --
 ; EnableXP
 ; DPIAware

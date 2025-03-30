@@ -4286,7 +4286,7 @@ Module _PBEdit_
 						Else
 							token(i - 1) = " "
 						EndIf
-					ElseIf (*last\type <> #TE_Token_Operator Or *last\text\c <> '-')
+					ElseIf (*last\type <> #TE_Token_Operator Or *last\txt\c <> '-')
 						style = Style_FromCharNr(*textline, *last\charNr)
 						If style <> #TE_Style_Function And style <> #TE_Style_Structure
 							token(i - 1) + " "
@@ -4317,10 +4317,10 @@ Module _PBEdit_
 				ElseIf *current\type = #TE_Token_Whitespace And (*last\type = #TE_Token_Address Or *last\type = #TE_Token_BracketOpen Or *last\type = #TE_Token_Point Or *last\type = #TE_Token_Backslash)
 					token(i) = ""
 				ElseIf *current\type = #TE_Token_Whitespace And *last\type = #TE_Token_Operator
-					If *last\text\c = '~'
+					If *last\txt\c = '~'
 						token(i) = ""
 					EndIf
-				ElseIf (*current\type = #TE_Token_Operator And *current\text\c <> '~') And *last\type <> #TE_Token_Whitespace
+				ElseIf (*current\type = #TE_Token_Operator And *current\txt\c <> '~') And *last\type <> #TE_Token_Whitespace
 					token(i - 1) + " "
 				ElseIf (*current\type = #TE_Token_Equal Or *current\type = #TE_Token_Compare) And *last\type <> #TE_Token_Whitespace
 					If *last\type <> #TE_Token_Compare And *last\type <> #TE_Token_Equal
@@ -4335,7 +4335,7 @@ Module _PBEdit_
 						token(i - 1) + " "
 					EndIf
 				ElseIf *current\type <> #TE_Token_Whitespace And *last\type = #TE_Token_Operator
-					If *last\text\c <> '~' And *last\text\c <> '-'
+					If *last\txt\c <> '~' And *last\txt\c <> '-'
 						token(i - 1) + " "
 					EndIf
 				EndIf

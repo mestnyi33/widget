@@ -31,15 +31,15 @@ CompilerIf #PB_Compiler_IsMainFile
          line = "  ";+ widgets( )\class +" "
          
          If widgets( )\BeforeWidget( )
-            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\txt\string
          Else
             line + "-------- <<  " 
          EndIf
          
-         line + widgets( )\class ; widgets( )\text\string
+         line + widgets( )\class ; widgets( )\txt\string
          
          If widgets( )\AfterWidget( )
-            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\txt\string
          Else
             line + "  >> --------" 
          EndIf

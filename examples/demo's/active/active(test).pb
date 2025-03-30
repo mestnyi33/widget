@@ -88,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open(1, 100, 300, 270, 140, "Root_0_Window", #PB_Window_SystemMenu )
       OpenMenu( root())
       Window( 30, 30, 200, 200, "Form", #PB_Window_SystemMenu )
-      ;Root( )\text\align\right = 0
+      ;Root( )\txt\align\right = 0
       SetClass(root( ), "Root_0")
       SetText(root( ), "Root_0")
       SetWindowTitle( 1, "Root_0_canvas_"+Str(GetCanvasGadget(root())))

@@ -487,7 +487,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 ;   ForEach *g\row\_s()
 ;     If *g\row\_s()\parent ;And *g\row\_s()\parent\last = *g\row\_s()
-;       Debug *g\row\_s()\text\string +" p "+ *g\row\_s()\parent\text\string +" l "+ *g\row\_s()\parent\last\text\string
+;       Debug *g\row\_s()\txt\string +" p "+ *g\row\_s()\parent\txt\string +" l "+ *g\row\_s()\parent\last\txt\string
 ;     EndIf
 ;   Next
 ;   Debug ""

@@ -236,11 +236,33 @@ GetAttribute
 GetColor
 GetData
 
+AddFont
+GetFontKey
+GetFontFromKey
+ChangeFont
+ChangeFontSize
+ChangeFontStyle
 GetFont
 GetFontName
 GetFontColor
 GetFontSize
 GetFontStyle
+SetFont
+SetFontName
+SetFontColor
+SetFontSize
+SetFontStyle
+
+AddImage
+ChangeImage
+GetImageFile
+GetImageKey
+GetImageFromKey
+GetImage
+SetImage
+RemoveImage
+SetItemImage
+GetItemImage
 
 GetItemAttribute
 GetItemColor
@@ -271,21 +293,9 @@ SetAttribute
 SetColor
 SetData
 
-SetFont
-SetFontName
-SetFontColor
-SetFontSize
-SetFontStyle
-AddLoadFont
-
 SetItemAttribute
 SetItemColor
 SetItemData
-GetImage
-SetImage
-RemoveImage
-SetItemImage
-GetItemImage
 SetItemState
 SetItemText
 SetState
@@ -299,7 +309,5 @@ Track
 Tree
 Web
 Tab
-
-
 
 

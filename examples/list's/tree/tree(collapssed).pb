@@ -191,9 +191,9 @@ CompilerIf #PB_Compiler_IsMainFile
         *this\__rows( )\color\frame = 0
         
         If Text
-          *this\__rows( )\text\change = 1
-          *this\__rows( )\text\string = StringField( Text.s, 1, #LF$ )
-          *this\__rows( )\text\edit\string = StringField( Text.s, 2, #LF$ )
+          *this\__rows( )\txt\change = 1
+          *this\__rows( )\txt\string = StringField( Text.s, 1, #LF$ )
+          *this\__rows( )\txt\edit\string = StringField( Text.s, 2, #LF$ )
         EndIf
         
         *this\countitems + 1
@@ -464,7 +464,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 ;   ForEach *g\row\_s()
 ;     If *g\row\_s()\parent ;And *g\row\_s()\parent\_last = *g\row\_s()
-;       Debug *g\row\_s()\text\string +" p "+ *g\row\_s()\parent\text\string +" l "+ *g\row\_s()\parent\_last\text\string
+;       Debug *g\row\_s()\txt\string +" p "+ *g\row\_s()\parent\txt\string +" l "+ *g\row\_s()\parent\_last\txt\string
 ;     EndIf
 ;   Next
 ;   Debug ""

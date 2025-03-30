@@ -1,21 +1,21 @@
 ﻿;       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 ;         ;                     Protected TextGadget = TextGadget(#PB_Any, 0,0,0,0,"")
-;         ;                     Root()\text\fontID = PB_(GetGadgetFont)(TextGadget) 
+;         ;                     Root()\txt\fontID = PB_(GetGadgetFont)(TextGadget) 
 ;         ;                     FreeGadget(TextGadget)
 ;         ;Protected FontSize.CGFloat = 12.0 ; boldSystemFontOfSize  fontWithSize
-;         ;\text\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
+;         ;\txt\fontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @FontSize) 
 ;         ; CocoaMessage(@FontSize,0,"NSFont systemFontSize")
 ;         
-;         ;Root()\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica Neue", 12))
-;         ;Root()\text\fontID = FontID(LoadFont(#PB_Any, "Tahoma", 12))
-;         ;Root()\text\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
+;         ;Root()\txt\fontID = FontID(LoadFont(#PB_Any, "Helvetica Neue", 12))
+;         ;Root()\txt\fontID = FontID(LoadFont(#PB_Any, "Tahoma", 12))
+;         ;Root()\txt\fontID = FontID(LoadFont(#PB_Any, "Helvetica", 12))
 ;         ;
-;         ;           Root()\text\fontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @FontSize)
-;         ;           CocoaMessage(@FontSize, Root()\text\fontID, "pointSize")
+;         ;           Root()\txt\fontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @FontSize)
+;         ;           CocoaMessage(@FontSize, Root()\txt\fontID, "pointSize")
 ;         ;           
 ;         ;           ;FontManager = CocoaMessage(0, 0, "NSFontManager sharedFontManager")
 ;         
-;         ;  Debug PeekS(CocoaMessage(0,  CocoaMessage(0, Root()\text\fontID, "displayName"), "UTF8String"), -1, #PB_UTF8)
+;         ;  Debug PeekS(CocoaMessage(0,  CocoaMessage(0, Root()\txt\fontID, "displayName"), "UTF8String"), -1, #PB_UTF8)
 ;       CompilerEndIf
 
 XIncludeFile "../../../widgets.pbi" : UseWidgets( )
@@ -109,7 +109,7 @@ Procedure events_wbuttons()
 			EndSelect
 	EndSelect
 	
-	Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\Width[#__c_required] +" "+ *b\Height[#__c_required] ; mac = 121 29 ; win 70 16
+	Debug ""+*b\txt\width +" "+ *b\txt\height +" "+ *b\Width[#__c_required] +" "+ *b\Height[#__c_required] ; mac = 121 29 ; win 70 16
 	
 EndProcedure
 
@@ -226,9 +226,9 @@ If Open(0, 322+50, 0, 322+50, 220)
 	SetFont(*b, 5)
 	;SetState(ID(0), 2)
 	
-	;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
+	;   ; bug set font - FIXED SetFont() ; *this\root\txt\fontID[1] =- 1 
 	; set auto font size
-	Define iw = 2 + (*b\bs+*b\text\x)*4 
+	Define iw = 2 + (*b\bs+*b\txt\x)*4 
 	
 	Macro Repaint( )
 		Drawing( root( ) )
@@ -237,7 +237,7 @@ If Open(0, 322+50, 0, 322+50, 220)
 	ReDraw(root( ))
 	;Debug Width(*b, #__c_required)
 	
-	Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\Width[#__c_required] +" "+ *b\Height[#__c_required] ; mac = 121 29 ; win 70 16
+	Debug ""+*b\txt\width +" "+ *b\txt\height +" "+ *b\Width[#__c_required] +" "+ *b\Height[#__c_required] ; mac = 121 29 ; win 70 16
 	Resize(*b, #PB_Ignore, #PB_Ignore, Width(*b, #__c_required), Height(*b, #__c_required))
 
 	CloseList()
@@ -254,7 +254,7 @@ If Open(0, 322+50, 0, 322+50, 220)
 	
 	Debug ""+CountItems(ID(1)) +" - count widget items"
 	
-	;   ; bug set font - FIXED Repaint() ; Root(()\text\fontID[1] =- 1 >> *this\root\text\fontID[1] =- 1 
+	;   ; bug set font - FIXED Repaint() ; Root(()\txt\fontID[1] =- 1 >> *this\root\txt\fontID[1] =- 1 
 	;   Open(OpenWindow(-1, 0, 0, 300, 346, "demo set  new parent", #PB_Window_SystemMenu))
 	;   Global *panel._S_widget = Panel(10,150,200,160) 
 	;   AddItem(*panel,-1,"Panel") 

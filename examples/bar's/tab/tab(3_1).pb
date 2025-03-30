@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
   SetState(*s_4, 1);10)
   
 ;   Debug "-"
-;   Debug ""+*s_1\FocusedTab( )+" "+*s_1\FocusedTab( )\index+" "+*s_1\FocusedTab( )\text\string
+;   Debug ""+*s_1\FocusedTab( )+" "+*s_1\FocusedTab( )\index+" "+*s_1\FocusedTab( )\txt\string
 ;   Debug ""+*s_2\FocusedTab( )+" "+*s_2\FocusedTab( )\index
 ;   Debug ""+*s_3\FocusedTab( )+" "+*s_3\FocusedTab( )\index
 ;   Debug ""+*s_4\FocusedTab( )+" "+*s_4\FocusedTab( )\index

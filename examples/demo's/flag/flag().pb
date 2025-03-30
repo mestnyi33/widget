@@ -68,15 +68,15 @@ Procedure Flag_Text( *this._s_WIDGET, flag.q )
   
   If *this\type = #__type_Text
     If constants::BinaryFlag( Flag, #__flag_text_Invert )
-      *this\text\invert = #True
+      *this\txt\invert = #True
     EndIf
     
     If constants::BinaryFlag( Flag, #__flag_text_Vertical )
-      *this\text\vertical = #True
+      *this\txt\vertical = #True
     EndIf
     
     If constants::BinaryFlag( Flag, #__flag_text_wordwrap )
-      *this\text\multiline = - 1
+      *this\txt\multiline = - 1
     EndIf
     
     If constants::BinaryFlag( Flag, #__flag_text_multiline )
@@ -84,26 +84,26 @@ Procedure Flag_Text( *this._s_WIDGET, flag.q )
     EndIf
     
     If constants::BinaryFlag( flag, #__flag_text_Center )
-      *this\text\align\left = #False
-      *this\text\align\top = #False
-      *this\text\align\right = #False
-      *this\text\align\bottom = #False
+      *this\txt\align\left = #False
+      *this\txt\align\top = #False
+      *this\txt\align\right = #False
+      *this\txt\align\bottom = #False
     EndIf
     
     If constants::BinaryFlag( flag, #__flag_text_left )
-      *this\text\align\left = #True
+      *this\txt\align\left = #True
     EndIf
     
     If constants::BinaryFlag( flag, #__flag_text_Top )
-      *this\text\align\top = #True
+      *this\txt\align\top = #True
     EndIf
     
     If constants::BinaryFlag( flag, #__flag_text_Right )
-      *this\text\align\right = #True
+      *this\txt\align\right = #True
     EndIf
     
     If constants::BinaryFlag( flag, #__flag_text_Bottom )
-      *this\text\align\bottom = #True
+      *this\txt\align\bottom = #True
     EndIf
   EndIf
 EndProcedure
@@ -137,20 +137,20 @@ Procedure Flag_Button( *this._s_WIDGET, flag.q )
     
     If constants::BinaryFlag( flag, #PB_Button_Left )
       flag &~ #PB_Button_Left
-      *this\text\align\left = #True
+      *this\txt\align\left = #True
     EndIf
     
     If constants::BinaryFlag( flag, #PB_Button_Right )
       flag &~ #PB_Button_Right
-      *this\text\align\right = #True
+      *this\txt\align\right = #True
     EndIf
     
     If constants::BinaryFlag( flag, #__flag_text_Top )
-      *this\text\align\top = #True
+      *this\txt\align\top = #True
     EndIf
     
     If constants::BinaryFlag( flag, #__flag_text_Bottom )
-      *this\text\align\bottom = #True
+      *this\txt\align\bottom = #True
     EndIf
   EndIf
 EndProcedure

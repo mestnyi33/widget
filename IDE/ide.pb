@@ -133,16 +133,14 @@ Global font_properties = LoadFont( #PB_Any, "", 12 )
 Global NewMap EventsString.s( )
 Global NewMap GetObject.s( )
 ;
-;Global NewMap imageName.s( )
-Global NewMap fontName.s( )
-      
+
 Structure _s_LINE
    type$
    pos.i
    len.i
    String.s
    
-   id$
+   ; id$
    func$
    arg$
 EndStructure
@@ -158,8 +156,8 @@ Declare   widget_events( )
 Declare   Properties_SetItemText( *splitter, item, Text.s )
 Declare.s Properties_GetItemText( *splitter, item )
 Declare   Properties_Updates( *object, type$ )
-Declare   widget_Create( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
-Declare   widget_add( *parent, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
+Declare   widget_Create( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
+Declare   widget_add( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
 Declare   ide_addline( *new )
 Declare   MakeID( class$, *rootParent )
 ;
@@ -174,18 +172,22 @@ Declare$  FindFunctions( string$, len, *start.Integer = 0, *stop.Integer = 0 )
 Declare   NumericString( string$ )
 Declare   MakeLine( parent, string$, findtext$ )
 ;
-Declare   InitLoadFont( id$, name$, size, style )
-Declare.s GetFontName( FontID.i )
-Declare.a GetFontSize( FontID.i )
-Declare.q GetFontStyle( FontID.i )
-Declare   SetFontName( FontID.i, name.s )
-Declare   SetFontSize( FontID.i, size.a )
-Declare   SetFontStyle( FontID.i, style.q )
-
-Declare   GetLoadImage( id$ )
-Declare   InitLoadImage( id$, file$, flags = 0 )
+Declare   AddFont( key$, name$, size, style )
+Declare.s GetFontName( font.i )
+Declare.a GetFontSize( font.i )
+Declare.q GetFontStyle( font.i )
+Declare   SetFontName( font.i, name.s )
+Declare   SetFontSize( font.i, size.a )
+Declare   SetFontStyle( font.i, style.q )
+Declare   ChangeFont( font, name.s, size.a, style.q )
+Declare   ChangeFontSize( *this, size )
+Declare   ChangeFontStyle( *this, style.q )
+;
 Declare   AddImages( Image )
-
+Declare   AddImage( key$, file$, flags = 0 )
+Declare   ChangeImage( img )
+Declare$  GetImageKey( img )
+Declare$  GetImageFile( img )
 ;
 ;- INCLUDEs
 XIncludeFile #ide_path + "widgets.pbi"
@@ -196,7 +198,7 @@ XIncludeFile #ide_path + "widgets.pbi"
 ; Procedure   SetFontColor( *this.structures::_s_WIDGET, color.i )
 ;    ProcedureReturn widget::SetColor( *this, constants::#__Color_Front, color )
 ; EndProcedure
-      
+
 
 XIncludeFile #ide_path + "include/newcreate/anchorbox.pbi"
 XIncludeFile #ide_path + "IDE/include/helper/imageeditor.pbi"
@@ -435,9 +437,9 @@ Procedure   Properties_ButtonChange( *inspector._s_WIDGET )
       
       If *this
          Select Type( *this )
-            Case #__type_Spin     : SetState(*this, Val(*second\RowFocused( )\text\string) )
-            Case #__type_String   : SetText(*this, *second\RowFocused( )\text\string )
-            Case #__type_ComboBox : SetState(*this, StrToBool(*second\RowFocused( )\text\string) )
+            Case #__type_Spin     : SetState(*this, Val(*second\RowFocused( )\txt\string) )
+            Case #__type_String   : SetText(*this, *second\RowFocused( )\txt\string )
+            Case #__type_ComboBox : SetState(*this, StrToBool(*second\RowFocused( )\txt\string) )
          EndSelect
       EndIf
    EndIf
@@ -509,17 +511,17 @@ Procedure   Properties_ButtonDisplay( *second._s_WIDGET )
             Select Type( *this )
                Case #__type_String
                   If GetData( *this ) = #_pi_class
-                     *this\text\upper = 1
+                     *this\txt\upper = 1
                   Else
-                     *this\text\upper = 0
+                     *this\txt\upper = 0
                   EndIf
-                  SetText( *this, *row\text\string )
+                  SetText( *this, *row\txt\string )
                   
                Case #__type_Spin
-                  SetState( *this, Val(*row\text\string) )
+                  SetState( *this, Val(*row\txt\string) )
                   
                Case #__type_ComboBox
-                  Select LCase(*row\text\string)
+                  Select LCase(*row\txt\string)
                      Case "false" : SetState( *this, 0)
                      Case "true"  : SetState( *this, 1)
                   EndSelect
@@ -557,31 +559,25 @@ Procedure   Properties_ButtonEvents( )
                Define img = open_EditorImages( *g\root )
                
                If IsImage( img )
-                Debug "a_focused( ) "+img
-                 SetImage( a_focused( ), img )
+                  SetImage( a_focused( ), img )
+                  Debug "a_focused( ) "+ img +""+ GetImageKey( img )
                EndIf
                
-;                File$ = OpenFileRequester("Пожалуйста выберите файл для загрузки", StandardFile$, Pattern$, 0)
-;                
-;                If File$
-;                   Debug File$ 
-;                   SetImage( a_focused( ), InitLoadImage( Str(ListSize(loadimages( ))), File$ ))
-;                   
-;                EndIf
-               
+               ;                File$ = OpenFileRequester("Пожалуйста выберите файл для загрузки", StandardFile$, Pattern$, 0)
+               ;                
+               ;                If File$
+               ;                   Debug File$ 
+               ;                   SetImage( a_focused( ), AddImage( Str(ListSize(images( ))), File$ ))
+               ;                   
+               ;                EndIf
+                  Properties_Updates( a_focused( ), "Image" )
+                  
             Case #_pi_FONT
                Define font = GetFont( a_focused( ) )
                Define FontName$ = GetFontName( font ) ; установить начальный шрифт (также может быть пустым)
                Define FontSize  = GetFontSize( font ) ; установить начальный размер (также может быть 0)
                Define FontStyle = GetFontStyle( font )
                Define FontColor = GetFontColor( a_focused( ) ) & $FFFFFF ;| a_focused( )\color\_alpha << 24
-               If Not FontSize
-                  FontSize = 8
-               EndIf
-               If FontName$ = ""
-                  FontName$ = "Courier"
-               EndIf
-               
                Define Result = FontRequester( FontName$, FontSize, #PB_FontRequester_Effects, FontColor, FontStyle )
                If Result
                   Define Message$ = "Вы выбрали следующий шрифт:"  + #LF$
@@ -599,7 +595,7 @@ Procedure   Properties_ButtonEvents( )
                   EndIf
                   
                   If a_focused( )
-                     font = InitLoadFont( Str(MapSize( loadfonts( ))), 
+                     font = AddFont( Str( MapSize(fonts( ))), 
                                      SelectedFontName( ),
                                      SelectedFontSize( ),
                                      SelectedFontStyle( ))
@@ -621,7 +617,7 @@ Procedure   Properties_ButtonEvents( )
                If a_focused( )
                   Define Color.q = ColorRequester( GetColor( a_focused( ), #PB_Gadget_BackColor )) & $FFFFFF | a_focused( )\color\_alpha << 24
                   
-                  If Color > - 1
+                  If Color >= 0
                      Message$ = "Вы выбрали следующее значение цвета:"   + #LF$
                      Message$ + "32 Bit value: " + Str(Color)            + #LF$
                      Message$ + "Red значение:    " + Str(Red(Color))    + #LF$
@@ -656,6 +652,12 @@ Procedure   Properties_ButtonEvents( )
                
             Case #__type_Spin
                Select GetData(*g) 
+                  Case #_pi_fontsize
+                     If a_focused( )
+                        ChangeFontSize( a_focused( ), GetState( *g))
+                        Properties_Updates( a_focused( ), "Font" )
+                     EndIf
+                     
                   Case #_pi_x      : Resize( a_focused( ), GetState(*g), #PB_Ignore, #PB_Ignore, #PB_Ignore ) 
                   Case #_pi_y      : Resize( a_focused( ), #PB_Ignore, GetState(*g), #PB_Ignore, #PB_Ignore )
                   Case #_pi_width  : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, GetState(*g), #PB_Ignore )
@@ -691,6 +693,13 @@ Procedure   Properties_ButtonEvents( )
                
             Case #__type_ComboBox
                Select GetData(*g) 
+                  Case #_pi_fontstyle
+                     If a_focused( )
+                        ; Debug "#PB_Font_"+GetItemText( *g, GetState(*g)) ; GetText( *g)
+                        ChangeFontStyle( a_focused( ), MakeConstants( "#PB_Font_"+GetItemText( *g, GetState(*g))))
+                        Properties_Updates( a_focused( ), "Font" )
+                     EndIf
+                     
                   Case #_pi_colortype
                      ;Debug GetItemText( *g, GetState( *g))
                      Properties_SetItemText( ide_inspector_properties, #_pi_colortype, GetItemText( *g, GetState( *g)))
@@ -740,6 +749,8 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
    Select Type
       Case #__type_Spin
          Select item
+            Case #_pi_fontsize
+               *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag|#__spin_Plus, 1, 50, 0, #__bar_button_size, 0, 1 )
             Case #_pi_coloralpha, #_pi_colorblue, #_pi_colorgreen, #_pi_colorred
                *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag|#__spin_Plus, 0, 255, 0, #__bar_button_size, 0, 1 )
             Default
@@ -889,21 +900,21 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
       Define color_properties.q = $FFBF9CC3;$BE80817D
       Define fcolor_properties.q = $CA2E2E2E
       
-;       ;       If Type > 0
-;       ;          SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
-;       ;          SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
-;       ;       Else
-;       ;          ;SetItemFont( *first, item, font_properties)
-;       ;          ;SetItemFont( *second, item, font_properties)
-;       
-;       SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
-;       SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
-;       ; SetItemColor( *first, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
-;       ;       SetItemColor( *second, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
-;       
-;       SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-;       SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-;       ;       EndIf
+      ;       ;       If Type > 0
+      ;       ;          SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
+      ;       ;          SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
+      ;       ;       Else
+      ;       ;          ;SetItemFont( *first, item, font_properties)
+      ;       ;          ;SetItemFont( *second, item, font_properties)
+      ;       
+      ;       SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
+      ;       SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
+      ;       ; SetItemColor( *first, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
+      ;       ;       SetItemColor( *second, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
+      ;       
+      ;       SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+      ;       SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+      ;       ;       EndIf
    Else
       SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
       SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
@@ -1074,11 +1085,12 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
          Properties_SetItemText( ide_inspector_properties, #_pi_colorgreen, Str(Green(color)) )
          Properties_SetItemText( ide_inspector_properties, #_pi_colorred, Str(Red(color)) )
       EndIf
+      If type$ = "Focus" Or type$ = "Image"
+         Properties_SetItemText( ide_inspector_properties, #_pi_IMAGE, GetImageFile( GetImage( *object )))
+      EndIf
       If type$ = "Focus" Or type$ = "Font"
          Define font = GetFont( *object )
-         If IsFont( font )
-            font = FontID(font)
-         EndIf
+         ; Debug ""+font +" "+ GetClass(*object)
          Properties_SetItemText( ide_inspector_properties, #_pi_FONT, GetFontName( font ) )
          ; Properties_SetItemText( ide_inspector_properties, #_pi_fontcolor, Str( GetFontColor( font ) ))
          If GetFontName( font )
@@ -1159,13 +1171,13 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
                   If count
                      If  keyboard( )\key
                         If keyboard( )\key = #PB_Shortcut_Back
-                           If *this\text\edit[2]\len
-                              SetCaret( *this, caret2 - count - (*this\text\edit[2]\len*(count))+2 )
+                           If *this\txt\edit[2]\len
+                              SetCaret( *this, caret2 - count - (*this\txt\edit[2]\len*(count))+2 )
                            Else
                               SetCaret( *this, caret2 - count )
                            EndIf
                         Else
-                           SetCaret( *this, caret2 + count - (*this\text\edit[2]\len*count) )
+                           SetCaret( *this, caret2 + count - (*this\txt\edit[2]\len*count) )
                         EndIf
                      EndIf
                   EndIf
@@ -1256,11 +1268,11 @@ EndProcedure
 #File = 0
 Procedure   ide_NewFile( )
    ; удаляем всех детей MDI
-;    ForEach widgets( )
-;       If GetParent( widgets( ) ) = ide_design_panel_MDI ; IsChild( widgets( ), ide_design_panel_MDI )
-;          Free( widgets( ) )
-;       EndIf
-;    Next
+   ;    ForEach widgets( )
+   ;       If GetParent( widgets( ) ) = ide_design_panel_MDI ; IsChild( widgets( ), ide_design_panel_MDI )
+   ;          Free( widgets( ) )
+   ;       EndIf
+   ;    Next
    Delete( ide_design_panel_MDI )
    ; Очишаем текст
    ClearItems( ide_design_DEBUG ) 
@@ -1463,17 +1475,17 @@ Procedure widget_delete( *this._s_WIDGET  )
    EndIf
 EndProcedure
 
-Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
+Procedure widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
    Protected *new._s_widget
    ; flag.i | #__flag_NoFocus
    
    If *parent 
       ; OpenList( *parent, CountItems( *parent ) - 1 )
-      *new = widget_Create( *parent, Class.s, X,Y, Width, Height, "", 0,100,0, flag )
+      *new = widget_Create( *parent, type$, X,Y, Width, Height, "", 0,100,0, flag )
       
       If *new
-         If LCase(Class.s) = "panel"
-            AddItem( *new, -1, Class.s+"_item_0" )
+         If LCase(type$) = "panel"
+            AddItem( *new, -1, type$+"_item_0" )
          EndIf
          
          ide_addline( *new )
@@ -1606,14 +1618,14 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
                   ResizeImage(*imagelogo, DPIScaled(ImageWidth(*imagelogo)), DPIScaled(ImageHeight(*imagelogo)), #PB_Image_Raw)
                CompilerEndIf
                
-               If AddImages( *imagelogo )
-                  ;loadimages( )\file$ = ReplaceString( #PB_Compiler_Home, "\", "/" ) + "ide/include/images/group/group_bottom.png"
-                  loadimages( )\file$ = "ide/include/images/group/group_bottom.png"
-                  loadimages( )\name$ = "*imagelogo"
-               EndIf
-            
+;                If AddImages( *imagelogo )
+;                   ;images( )\file$ = ReplaceString( #PB_Compiler_Home, "\", "/" ) + "ide/include/images/group/group_bottom.png"
+;                   images( )\file$ = "ide/include/images/group/group_bottom.png"
+;                   images( )\id$ = "*imagelogo"
+;                EndIf
+               
                SetImage( *new, *imagelogo )
-                 
+               
                If Not flag & #__flag_NoFocus 
                   a_set(*new, #__a_full, (14))
                EndIf
@@ -2221,16 +2233,16 @@ Procedure ide_events( )
       If __event = #__event_Down
          If __data
             *line._s_ROWS  = __data
-            text$ = *line\text\string
-            len = *line\text\len
-            caret = *g\text\caret\pos[1] - *line\text\pos
+            text$ = *line\txt\string
+            len = *line\txt\len
+            caret = *g\txt\caret\pos[1] - *line\txt\pos
             
             ;
             If text$
-               *g\text\numeric = 0 
-               *g\text\editable = 0 
+               *g\txt\numeric = 0 
+               *g\txt\editable = 0 
                
-               name$ = *g\text\caret\word ; GetWord( text$, len, caret ) 
+               name$ = *g\txt\caret\word ; GetWord( text$, len, caret ) 
                
                If name$
                   object = MakeID( name$, ide_design_panel_MDI )
@@ -2251,7 +2263,7 @@ Procedure ide_events( )
                   
                   ;argument =  CountString( Left( text$, caret ), "," ) + 1 
                   argument = GetArgIndex( text$, len, caret ) 
-                  name$ = *g\text\caret\word
+                  name$ = *g\txt\caret\word
                   If name$ <> GetClass( object )
                      If CountString( text$, "(" )
                         name$ = Trim( StringField( text$, 1, "(" ))
@@ -2271,20 +2283,20 @@ Procedure ide_events( )
                   
                   If argument > 1
                      If argument < 6 ; coordinate
-                        *g\text\numeric = 1 
+                        *g\txt\numeric = 1 
                      EndIf
-                     *g\text\editable = 1 
+                     *g\txt\editable = 1 
                   EndIf
                   
-                  If GetClass( object ) = *g\text\caret\word ; GetWord( text$, len, caret )
-                     *g\text\editable = 1
-                     *g\text\upper = 1 
+                  If GetClass( object ) = *g\txt\caret\word ; GetWord( text$, len, caret )
+                     *g\txt\editable = 1
+                     *g\txt\upper = 1 
                   Else
-                     *g\text\upper = 0 
+                     *g\txt\upper = 0 
                   EndIf
                EndIf
                
-               If *g\text\editable
+               If *g\txt\editable
                   *line\color\back[1] = *g\color\back[1]
                Else
                   *line\color\back[1] = $CD9CC3EE
@@ -2296,8 +2308,8 @@ Procedure ide_events( )
       ;
       If __event = #__event_Change
          If object
-            ReplaceArg( object, argument, *g\text\caret\word ) 
-            ; ReplaceArg( object, argument, GetWord( *line\text\string, *line\text\len, *g\text\caret\pos[1] - *line\text\pos )  )
+            ReplaceArg( object, argument, *g\txt\caret\word ) 
+            ; ReplaceArg( object, argument, GetWord( *line\txt\string, *line\txt\len, *g\txt\caret\pos[1] - *line\txt\pos )  )
          EndIf
       EndIf
    EndIf
@@ -2605,6 +2617,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Define event
    ide_open( )
    
+   AddFont( Str(GetFont( root( ) )), "Courier", 9, 0 )
+   
+   
    SetState( ide_inspector_panel, 1 )
    
    ;   ;OpenList(ide_design_panel_MDI)
@@ -2742,28 +2757,21 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    Define._S_WIDGET *this, *parent
    ;    Debug "--- enumerate all gadgets ---"
    ;    If StartEnum( root( ) )
-   ;       Debug "     gadget - "+ widget( )\index +" "+ GetClass(widget( )) +"               ("+ GetClass(widget( )\parent) +") " ;+" - ("+ widget( )\text\string +")"
+   ;       Debug "     gadget - "+ widget( )\index +" "+ GetClass(widget( )) +"               ("+ GetClass(widget( )\parent) +") " ;+" - ("+ widget( )\txt\string +")"
    ;       StopEnum( )
    ;    EndIf
    ;    
    ;    Debug ""
    ;    *parent = *container
    ;    *this = GetPositionLast( *parent )
-   ;    Debug ""+GetClass(*this) +"           ("+ GetClass(*parent) +")" ;  +" - ("+ *this\text\string +")"
+   ;    Debug ""+GetClass(*this) +"           ("+ GetClass(*parent) +")" ;  +" - ("+ *this\txt\string +")"
    ;    
    ;    
    ;    If StartEnum( *parent )
-   ;       Debug "   *parent  gadget - "+ widget( )\index +" "+ GetClass(widget( )) +"               ("+ GetClass(widget( )\parent) +") " ;+" - ("+ widget( )\text\string +")"
+   ;       Debug "   *parent  gadget - "+ widget( )\index +" "+ GetClass(widget( )) +"               ("+ GetClass(widget( )\parent) +") " ;+" - ("+ widget( )\txt\string +")"
    ;       StopEnum( )
    ;    EndIf
    ;    
-   
-   
-   Define font = GetFont( root( ) )
-   loadfonts( Str(font) )\font = font
-   SetFontName( font, "Courier")
-   SetFontSize( font, 9)
-   ;SetFontStyle( font, SelectedFontStyle( ))
    
    
    a_set( ide_design_form )
@@ -2808,9 +2816,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 868
-; FirstLine = 855
-; Folding = ---------------4----------------------------------
+; CursorPosition = 1624
+; FirstLine = 1602
+; Folding = --------------------------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

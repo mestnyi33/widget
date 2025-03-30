@@ -3475,8 +3475,8 @@ Module _PBEdit_
 						*keyWord = FindMapElement(*te\keyWord(), key)
 						If *keyWord
 							If TokenType = #TE_Token_String Or TokenType = #TE_Token_Quote Or TokenType = #TE_Token_Comment
-							ElseIf *lastToken And *lastToken\type = #TE_Token_Operator And *lastToken\text\c = '*'
-							ElseIf *lastToken And *lastToken\type = #TE_Token_Unknown And *lastToken\text\c = '#'
+							ElseIf *lastToken And *lastToken\type = #TE_Token_Operator And *lastToken\txt\c = '*'
+							ElseIf *lastToken And *lastToken\type = #TE_Token_Unknown And *lastToken\txt\c = '#'
 							ElseIf *keyWord\indentationBefore Or *keyWord\indentationAfter
 								indentationCount + 1
 								If indentationCount = 1
@@ -3509,15 +3509,15 @@ Module _PBEdit_
 								ElseIf *lastToken And *lastToken\type = #TE_Token_Point
 									*textLine\style(charNr) = #TE_Style_Structure
 									*token\type = #TE_Token_Unknown
-								ElseIf *lastToken And *lastToken\type = #TE_Token_Operator And *lastToken\text\c = '*'
+								ElseIf *lastToken And *lastToken\type = #TE_Token_Operator And *lastToken\txt\c = '*'
 									*textLine\style(charNr) = #TE_Style_Pointer
 									*textLine\style(*lastToken\charNr) = #TE_Style_Pointer
 									*token\type = #TE_Token_Unknown
-								ElseIf *lastToken And *lastToken\type = #TE_Token_Unknown And *lastToken\text\c = '#'
+								ElseIf *lastToken And *lastToken\type = #TE_Token_Unknown And *lastToken\txt\c = '#'
 									*textLine\style(charNr) = #TE_Style_Constant
 									*textLine\style(*lastToken\charNr) = #TE_Style_Constant
 									*token\type = #TE_Token_Unknown
-								ElseIf *lastNonWhitespaceToken And *lastNonWhitespaceToken\type = #TE_Token_Unknown And *lastNonWhitespaceToken\text\c = '@'
+								ElseIf *lastNonWhitespaceToken And *lastNonWhitespaceToken\type = #TE_Token_Unknown And *lastNonWhitespaceToken\txt\c = '@'
 									*textLine\style(charNr) = #TE_Style_Address
 									*textLine\style(*lastNonWhitespaceToken\charNr) = #TE_Style_Address
 								ElseIf *lastNonWhitespaceToken And *lastNonWhitespaceToken\type = #TE_Token_Backslash
@@ -3591,7 +3591,7 @@ Module _PBEdit_
 					EndSelect
 					
 					If TokenType = #TE_Token_Unknown
-						If (*token\text\c = '$') And *lastToken And *lastToken\type = #TE_Token_Text
+						If (*token\txt\c = '$') And *lastToken And *lastToken\type = #TE_Token_Text
 							*textLine\style(charNr) = #TE_Style_Text
 						EndIf
 					ElseIf TokenType = #TE_Token_Colon
@@ -4455,10 +4455,10 @@ Module _PBEdit_
 			flags = 0
 			;a=-2
 			If *token1 And *token2 And *token3
-				If (*lastNonWhite And (*lastNonWhite\type = #TE_Token_Number Or *lastNonWhite\type = #TE_Token_Text Or *lastNonWhite\type = #TE_Token_Unknown Or *lastNonWhite\type = #TE_Token_Operator) And *lastNonWhite\text\c <> '-')  Or token(i - 1) <> "-"
+				If (*lastNonWhite And (*lastNonWhite\type = #TE_Token_Number Or *lastNonWhite\type = #TE_Token_Text Or *lastNonWhite\type = #TE_Token_Unknown Or *lastNonWhite\type = #TE_Token_Operator) And *lastNonWhite\txt\c <> '-')  Or token(i - 1) <> "-"
 					flags | TestTokenPair(*token1, *token2, #TE_Token_Operator, -#TE_Token_Whitespace, #AddSpace1, #True)
 				EndIf
-				If (*lastNonWhite And (*lastNonWhite\type = #TE_Token_Number Or *lastNonWhite\type = #TE_Token_Text Or *lastNonWhite\type = #TE_Token_Unknown Or *lastNonWhite\type = #TE_Token_Operator)  And *lastNonWhite\text\c <> '-') Or token(i - 1) <> "-"
+				If (*lastNonWhite And (*lastNonWhite\type = #TE_Token_Number Or *lastNonWhite\type = #TE_Token_Text Or *lastNonWhite\type = #TE_Token_Unknown Or *lastNonWhite\type = #TE_Token_Operator)  And *lastNonWhite\txt\c <> '-') Or token(i - 1) <> "-"
 					flags | TestTokenPair(*token1, *token2, -#TE_Token_Whitespace, #TE_Token_Operator, #AddSpace2, #True)
 				EndIf
 				If TestTokenPair(*token1, *token2, #TE_Token_Equal, #TE_Token_Compare, 1, #True) = 0
@@ -6824,10 +6824,10 @@ Module _PBEdit_
 				; 				If *prevToken\type = #TE_Token_Backslash
 				; 					addKeywords = #False
 				; 					lText = "\"
-				If *prevToken\type = #TE_Token_Unknown And *prevToken\text\c = '#'
+				If *prevToken\type = #TE_Token_Unknown And *prevToken\txt\c = '#'
 					addKeywords = #False
 					*te\autoComplete\text = "#"
-				ElseIf *prevToken\type = #TE_Token_Operator And *prevToken\text\c = '*'
+				ElseIf *prevToken\type = #TE_Token_Operator And *prevToken\txt\c = '*'
 					addKeywords = #False
 					*te\autoComplete\text = "*"
 				EndIf
@@ -6970,9 +6970,9 @@ Module _PBEdit_
 		If *token
 			*prevToken = Parser_NextToken(*te, -1)
 			If *prevToken; And Style_FromCharNr(*te\currentCursor\position\textline, *prevToken\charNr) <> #TE_Style_Comment
-				If *prevToken\type = #TE_Token_Unknown And *prevToken\text\c = '#'
+				If *prevToken\type = #TE_Token_Unknown And *prevToken\txt\c = '#'
 					textAtCursor = "#"
-				ElseIf *prevToken\type = #TE_Token_Operator And *prevToken\text\c = '*'
+				ElseIf *prevToken\type = #TE_Token_Operator And *prevToken\txt\c = '*'
 					textAtCursor = "*"
 				EndIf
 			EndIf

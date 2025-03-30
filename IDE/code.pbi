@@ -22,115 +22,160 @@ Global codeindent = 3
 ;- PUBLICs
 ;
 ;-
-Procedure   AddFonts( font )
-;    Protected result = IsFont( font )
-;    If result
-;       If AddElement( loadfonts( ) )
-;          loadfonts( )\font = font 
-;       EndIf
-;    EndIf
-;    ProcedureReturn result
-EndProcedure
-
-Procedure.s  GetFontName( FontID.i )
-   ; Debug " get "+FontID
-   ; FontID = FontID(FontID)
-   If FindMapElement( loadfonts( ), Str(FontID) )
-      ProcedureReturn loadfonts( )\name
-   EndIf
-   
-EndProcedure
-
-Procedure.a GetFontSize( FontID.i )
-   
-   If FindMapElement( loadfonts( ), Str(FontID) )
-      ProcedureReturn loadfonts( )\size
-   EndIf
-   
-EndProcedure
-
-Procedure.q GetFontStyle( FontID.i )
-   
-   If FindMapElement( loadfonts( ), Str(FontID) )
-      ProcedureReturn loadfonts( )\style
-   EndIf
-   
-EndProcedure
-
-Procedure   SetFontName( FontID.i, name.s )
-   
-   loadfonts( Str(FontID) )\name = name
-   
-EndProcedure
-
-Procedure   SetFontSize( FontID.i, size.a )
-   
-   loadfonts( Str(FontID) )\size = size
-   
-EndProcedure
-
-Procedure   SetFontStyle( FontID.i, style.q )
-   
-   loadfonts( Str(FontID) )\style = style
-   
-EndProcedure
-
-Procedure InitLoadFont( id$, name$, size, style )
-   Protected font = LoadFont( #PB_Any, name$, size, style )
+Procedure   AddFont( key$, name$, size, style )
+   Protected font$, id$
+   Debug "key ["+key$+"]"
    ;
-   If IsFont( font )
-      id$ = Trim( id$ )
-      ;
-      If enum_font
-         id$ = "#" + id$
-      EndIf
-      ;
-      If AddMapElement( loadfonts( ), Str(FontID(font)) )
-         loadfonts( )\id$ = id$ 
-         loadfonts( )\font = font 
-         loadfonts( )\name = name$
-         loadfonts( )\size = size
-         loadfonts( )\style = style
-      EndIf
+   If key$ = "-1" 
+      font$ = "-1"
+      key$ = "-1"
+   Else
+      Protected font = LoadFont( #PB_Any, name$, size, style )
       
-      fontName( Str(FontID(font)) ) = id$
+      If IsFont( font )
+         key$ = Trim( key$ )
+         
+         Define style$ = MakeConstantsString( "Font", style )
+         style$ = RemoveString( style$, "#PB_Font_" )
+         style$ = ReplaceString( style$, " | ", "_" )
+         If style$
+            id$ = UCase("Font_"+ReplaceString(name$, " ", "_" )+"_"+size+"_"+style$)
+         Else
+            id$ = UCase("Font_"+ReplaceString(name$, " ", "_" )+"_"+size)
+         EndIf
+         If enum_font
+            id$ = "#" + id$
+         EndIf
+      EndIf
+      font$ = Str(font)
+   EndIf
+   ;
+   If AddMapElement( fonts( ), font$ )
+      fonts( )\key$ = key$ 
+      fonts( )\font = font 
+      fonts( )\id$ = id$
+      fonts( )\name = name$
+      fonts( )\size = size
+      fonts( )\style = style
    EndIf
    ;
    ProcedureReturn font
 EndProcedure
 
-Procedure   GetLoadFont( id$ )
-   id$ = Trim( id$ )
-   id$ = Trim( id$, "(" )
-   id$ = Trim( id$, ")" )
+Procedure.s GetFontKey( font )
+   If IsFont( font )
+      If FindMapElement( fonts( ), Str(font) )
+         If fonts( )\key$
+            ProcedureReturn fonts( )\id$
+         EndIf
+      EndIf
+   EndIf
+EndProcedure
+
+Procedure   GetFontFromKey( key$ )
+   key$ = Trim( key$ )
+   key$ = Trim( key$, "(" )
+   key$ = Trim( key$, ")" )
    
-   ForEach loadfonts( )
-      If Trim(UCase(loadfonts( )\id$), "#") = Trim(UCase(id$), "#")
-         ProcedureReturn loadfonts( )\font
+   ForEach fonts( )
+      If LCase(fonts( )\key$) = LCase(key$)
+         ProcedureReturn fonts( )\font
       EndIf
    Next
+EndProcedure
+
+Procedure   SetFontName( font.i, name.s )
+   fonts( Str(font) )\name = name
+EndProcedure
+
+Procedure   SetFontSize( font.i, size.a )
+   fonts( Str(font) )\size = size
+EndProcedure
+
+Procedure   SetFontStyle( font.i, style.q )
+   fonts( Str(font) )\style = style
+EndProcedure
+
+Procedure.s GetFontName( font.i )
+   If FindMapElement( fonts( ), Str(font) )
+      ProcedureReturn fonts( )\name
+   EndIf
+EndProcedure
+
+Procedure.a GetFontSize( font.i )
+   If FindMapElement( fonts( ), Str(font) )
+      ProcedureReturn fonts( )\size
+   EndIf
+EndProcedure
+
+Procedure.q GetFontStyle( font.i )
+   If FindMapElement( fonts( ), Str(font) )
+      ProcedureReturn fonts( )\style
+   EndIf
+EndProcedure
+
+Procedure   ChangeFont( font, name.s, size.a, style.q )
+   Protected key$
+   If IsFont( font )
+      If FindMapElement( fonts( ), Str(font))
+         StopDraw( )
+         FreeFont( font )
+         key$ = fonts( )\key$
+         DeleteMapElement( fonts( ), Str(font))
+         StartDraw( root( ))
+      EndIf
+   EndIf
+   ProcedureReturn AddFont( key$, name, size, style )
+EndProcedure  
+
+Procedure   ChangeFontSize( *this._s_WIDGET, size )
+   Protected font = GetFont( *this )
+   If IsFont( font )
+      SetFont( *this, ChangeFont( font, GetFontName( font ), size, GetFontStyle( font ) ) )
+   EndIf
+EndProcedure
+
+Procedure   ChangeFontStyle( *this._s_WIDGET, style.q )
+   Protected font = GetFont( *this )
+   If IsFont( font )
+      SetFont( *this, ChangeFont( font, GetFontName( font ), GetFontSize( font ), style ) )
+   EndIf
 EndProcedure
 
 ;-
 Procedure   AddImages( Image )
    Protected result = IsImage( Image )
    If result
-      If AddElement( loadimages( ) )
-         loadimages( )\image = Image 
+      If AddElement( images( ) )
+         images( )\image = Image 
       EndIf
    EndIf
    ProcedureReturn result
 EndProcedure
 
-Procedure   InitLoadImage( id$, file$, flags=0 )
+Procedure   AddImage( key$, file$, flags=0 )
+   Protected Image
    If CountString(file$, "+" )
+      Protected load$ = file$
       file$ = RemoveString( file$, " " )
       file$ = RemoveString( file$, Chr('"') )
-      file$ = MakeStringConstants(StringField( file$, 1, "+" )) + StringField( file$, 2, "+" )
-      ;     file$ = MakeStringConstants(StringField( file$, 1, "+" )) + Trim( Trim(StringField( file$, 2, "+" )), Chr('"') )
+      file$ = MakeStringConstants( StringField( file$, 1, "+" )) + StringField( file$, 2, "+" )
+      ;     file$ = MakeStringConstants( StringField( file$, 1, "+" )) + Trim( Trim( StringField( file$, 2, "+" )), Chr('"') )
+      Image = LoadImage( #PB_Any, file$ )
+      file$ = load$ + Chr('"')
+   Else
+      Image = LoadImage( #PB_Any, file$ )
+      file$ = Chr('"') + file$ + Chr('"')
    EndIf
-   Protected Image = LoadImage( #PB_Any, file$ );, flags )
    
+;    If FindString( file$, "#PB_Compiler_Home" )
+;       file$ = Trim( Trim( StringField( file$, 2, "+" )), Chr('"') )
+;       Image = LoadImage( #PB_Any, #PB_Compiler_Home + file$ )
+;       file$ = "#PB_Compiler_Home + " + Chr('"') + file$ + Chr('"')
+;    Else
+;       Image = LoadImage( #PB_Any, file$ )
+;       file$ = Chr('"') + file$ + Chr('"')
+;    EndIf
    ;
    If IsImage( Image )
       CompilerIf #PB_Compiler_DPIAware
@@ -139,43 +184,80 @@ Procedure   InitLoadImage( id$, file$, flags=0 )
          EndIf
       CompilerEndIf
       
-      id$ = Trim( id$ )
-     
-      Define name$ = UCase( GetFilePart( file$, #PB_FileSystem_NoExtension ))+"_IMAGE"
+      key$ = Trim( key$ )
+      key$ = Trim( key$, "(" )
+      key$ = Trim( key$, ")" )
+      key$ = Trim( key$ )
+      ; Debug "AddImageKey "+ key$
+      
+      ;Define id$ = UCase( GetFilePart( file$, #PB_FileSystem_NoExtension ))+"_IMAGE"
+      Define id$ = "IMAGE_"+UCase( GetFilePart( file$, #PB_FileSystem_NoExtension )+"_"+GetExtensionPart( file$ ))
+      If key$ = ""
+         key$ = id$ ; Str(Image) ; 
+         Debug key$
+      EndIf
       If enum_image
-         name$ = "#" + name$
+         id$ = "#" + id$
       EndIf
       ;
       If AddImages( Image )
-         loadimages( )\id$ = id$ 
-         loadimages( )\name$ = name$ 
-         loadimages( )\file$ = file$
+         images( )\id$ = id$ 
+         images( )\key$ = key$ 
+         images( )\file$ = file$
       EndIf
    EndIf
    ;
    ProcedureReturn Image
 EndProcedure
 
-Procedure   GetLoadImage( id$ )
-   id$ = Trim( id$ )
-   id$ = Trim( id$, "(" )
-   id$ = Trim( id$, ")" )
-   
-   ForEach loadimages( )
-      ; Debug  ""+loadimages( )\id$ +" "+ id$ 
-      
-      If Trim(UCase(loadimages( )\id$), "#") = Trim(UCase(id$), "#")
-         ProcedureReturn loadimages( )\image
-      EndIf
-   Next
+Procedure   ChangeImage( img )
+   If IsImage( img )
+      ForEach images( )
+         If images( )\key$
+            If images( )\image = img
+               img = CopyImage( img, #PB_Any )
+               images( )\image = img
+               Break
+            EndIf
+         EndIf
+      Next
+      ProcedureReturn img
+   EndIf
 EndProcedure
 
-Procedure$ GetLoadImageName( Image )
-   ForEach loadimages( )
-      If loadimages( )\id$
-         If loadimages( )\image = Image
-            ProcedureReturn loadimages( )\name$
+Procedure$  GetImageKey( img )
+   If IsImage( img )
+      ForEach images( )
+         If images( )\key$
+            If images( )\image = img
+               ProcedureReturn images( )\id$
+            EndIf
          EndIf
+      Next
+   EndIf
+EndProcedure
+
+Procedure$  GetImageFile( img )
+   If IsImage( img )
+      ForEach images( )
+         If images( )\key$
+            If images( )\image = img
+               ProcedureReturn images( )\file$
+            EndIf
+         EndIf
+      Next
+   EndIf
+EndProcedure
+
+Procedure   GetImageFromKey( key$ )
+   key$ = Trim( key$ )
+   key$ = Trim( key$, "(" )
+   key$ = Trim( key$, ")" )
+   key$ = Trim( key$ )
+   ; Debug "GetImageKey "+ key$
+   ForEach images( )
+      If LCase(images( )\key$) = LCase(key$)
+         ProcedureReturn images( )\image
       EndIf
    Next
 EndProcedure
@@ -563,40 +645,40 @@ Procedure$  MakeFuncString( string$, len, *start.Integer = 0, *stop.Integer = 0 
    Protected i, result$, str$, start, stop
    Protected space, pos = FindString( string$, "=" )
    
-;    If pos
-;       If pos > FindString( string$, "(" )
-;          pos = 0
-;       Else
-;          string$ = Mid( string$, pos + 1, len - pos )
-;       EndIf
-;    Else
-;       pos = FindString( string$, ":" )
-;       If pos
-;          string$ = StringField( string$, 2, ":" )
-;       EndIf
-;    EndIf
-; 
-;    For i = 1 To len
-;       If Mid( string$, i, 1 ) = "(" 
-;          stop = i - 1
-;          str$ = Mid( string$, start, stop )
-;          result$ = Trim( str$ )
-;          space = FindString( str$, result$ )
-;          If space 
-;             start + space
-;             stop - space
-;          EndIf
-;          If *start
-;             *start\i = pos + start
-;          EndIf
-;          If *stop
-;             *stop\i = stop + 1
-;          EndIf
-;          Break
-;       EndIf
-;    Next i
+   ;    If pos
+   ;       If pos > FindString( string$, "(" )
+   ;          pos = 0
+   ;       Else
+   ;          string$ = Mid( string$, pos + 1, len - pos )
+   ;       EndIf
+   ;    Else
+   ;       pos = FindString( string$, ":" )
+   ;       If pos
+   ;          string$ = StringField( string$, 2, ":" )
+   ;       EndIf
+   ;    EndIf
+   ; 
+   ;    For i = 1 To len
+   ;       If Mid( string$, i, 1 ) = "(" 
+   ;          stop = i - 1
+   ;          str$ = Mid( string$, start, stop )
+   ;          result$ = Trim( str$ )
+   ;          space = FindString( str$, result$ )
+   ;          If space 
+   ;             start + space
+   ;             stop - space
+   ;          EndIf
+   ;          If *start
+   ;             *start\i = pos + start
+   ;          EndIf
+   ;          If *stop
+   ;             *stop\i = stop + 1
+   ;          EndIf
+   ;          Break
+   ;       EndIf
+   ;    Next i
    
-      
+   
    len = FindString( string$, "(" ) - pos - 1
    pos + 1
    
@@ -609,9 +691,9 @@ Procedure$  MakeFuncString( string$, len, *start.Integer = 0, *stop.Integer = 0 
    Next i
    result$ = Trim(String$)
    
-
+   
    ; Debug result$
-  
+   
    ProcedureReturn result$
 EndProcedure
 
@@ -708,7 +790,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
    Protected result
    Protected text$, flag$, type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$
    Protected param1, param2, param3, flags.q
-   Protected *id._s_WIDGET
+   Protected *g._s_WIDGET
    
    
    Define string_len = Len( String$ )
@@ -768,17 +850,14 @@ Procedure   MakeLine( parent, string$, findtext$ )
                \type$ = "If"
             EndIf
             
-            Static Open$
-            ;
+            ;\\
             If FindString( \func$, "Gadget" )
                \func$ = ReplaceString( \func$, "Gadget", "")
             ElseIf FindString( \func$, "OpenWindow" )
                \func$ = ReplaceString( \func$, "OpenWindow", "Window")
-               id$ = "Main"
             ElseIf \func$ = "Open"
-               ; \func$ = ReplaceString( \func$, "Open", "Window")
-               ;id$ = "Main"
-               Open$ = "OpenWindow(" + arg$ +")"
+               \func$ = ReplaceString( \func$, "Open", "Window")
+               id$ = "WINDOW_MAIN"
             Else
                Select \func$
                   Case "Window",
@@ -790,47 +869,15 @@ Procedure   MakeLine( parent, string$, findtext$ )
                        "Date","Editor","ExplorerList","ExplorerTree",
                        "ExplorerCombo","Spin","Tree","Panel",
                        "Splitter","MDI","Scintilla","Shortcut","Canvas"
-                     
-                     If \func$ = "Window"
-                        Open$ = ""
-                     EndIf
-                     If Open$
-                        MakeLine( parent, Open$, findtext$ ) : Open$ = ""
-                        ProcedureReturn MakeLine( parent, String$, findtext$ )
-                     EndIf
-                     
+                     ;
                      arg$ = ", " + arg$ 
-                     If FindString( str$, "=" )
-                        id$ = Trim( StringField( str$, 1, "=" ))
-                        If CountString( id$, " " )
-                           id$ = Trim( StringField( str$, 2, " " ))
-                        EndIf
-                     EndIf
-                  Default
-                     If FindString( str$, "=" )
-                        id$ = Trim( StringField( str$, 1, "=" ))
-                        If CountString( id$, " " )
-                           id$ = Trim( StringField( str$, 2, " " ))
-                        EndIf
-                     Else
-                        id$ = Trim( StringField( arg$, 1, "," ))
-                     EndIf
                EndSelect
             EndIf
             
-            id$ = Trim( id$, "#" )
-            If enum_object
-               id$ = "#" + id$
-               pb_object$ = "PB"
-            EndIf
-            id$ = UCase( id$ )
+            ;             Debug "func[" + \func$ +"]" 
+            ;             Debug " arg["+ arg$ +"]"
             
-            \id$ = id$ 
-            ;Debug id$
-            
-;             Debug "func[" + \func$ +"]" 
-;             Debug " arg["+ arg$ +"]"
-            ;
+            ;\\
             Select \func$
                Case "Window",
                     "Button","String","Text","CheckBox",
@@ -842,30 +889,44 @@ Procedure   MakeLine( parent, string$, findtext$ )
                     "ExplorerCombo","Spin","Tree","Panel",
                     "Splitter","MDI","Scintilla","Shortcut","Canvas"
                   
+                  ; identifiers
+                  If FindString( str$, "=" )
+                     id$ = Trim( StringField( str$, 1, "=" ))
+                     If CountString( id$, " " )
+                        id$ = Trim( StringField( str$, 2, " " ))
+                     EndIf
+                  EndIf
                   ;
+                  id$ = Trim( id$, "#" )
+                  If enum_object
+                     id$ = "#" + id$
+                     pb_object$ = "PB"
+                  EndIf
+                  id$ = UCase( id$ )
+                  
+                  ; coordinate
                   x$      = Trim(StringField( arg$, 2, ","))
+                  If Not NumericString( x$ )  
+                     x$ = StringField( StringField( Mid( findtext$, FindString( findtext$, x$ ) ), 1, "," ), 2, "=" )
+                  EndIf
                   y$      = Trim(StringField( arg$, 3, ","))
+                  If Not NumericString( y$ )  
+                     y$ = StringField( StringField( Mid( findtext$, FindString( findtext$, y$ ) ), 1, "," ), 2, "=" )
+                  EndIf
                   width$  = Trim(StringField( arg$, 4, ","))
+                  If Not NumericString( width$ )  
+                     width$ = StringField( StringField( Mid( findtext$, FindString( findtext$, width$ ) ), 1, "," ), 2, "=" )
+                  EndIf
                   height$ = Trim(StringField( arg$, 5, ","))
+                  If Not NumericString( height$ )  
+                     height$ = StringField( StringField( Mid( findtext$, FindString( findtext$, height$ ) ), 1, "," ), 2, "=" )
+                  EndIf
+                  
                   ;
                   param1$ = Trim(StringField( arg$, 6, ","))
                   param2$ = Trim(StringField( arg$, 7, ","))
                   param3$ = Trim(StringField( arg$, 8, ",")) 
                   param4$ = Trim(StringField( arg$, 9, ","))
-                  
-                  ;
-                  If Not NumericString( x$ )  
-                     x$ = StringField( StringField( Mid( findtext$, FindString( findtext$, x$ ) ), 1, "," ), 2, "=" )
-                  EndIf
-                  If Not NumericString( y$ )  
-                     y$ = StringField( StringField( Mid( findtext$, FindString( findtext$, y$ ) ), 1, "," ), 2, "=" )
-                  EndIf
-                  If Not NumericString( width$ )  
-                     width$ = StringField( StringField( Mid( findtext$, FindString( findtext$, width$ ) ), 1, "," ), 2, "=" )
-                  EndIf
-                  If Not NumericString( height$ )  
-                     height$ = StringField( StringField( Mid( findtext$, FindString( findtext$, height$ ) ), 1, "," ), 2, "=" )
-                  EndIf
                   
                   ; text
                   Select \func$
@@ -901,8 +962,8 @@ Procedure   MakeLine( parent, string$, findtext$ )
                         param1 = Val( param2$ ) ; *this\columns( )\width
                         
                      Case "Image"
-                        param1 = GetLoadImage( param1$ )
-                    
+                        param1 = GetImageFromKey( param1$ )
+                        
                   EndSelect
                   
                   ; param2
@@ -949,6 +1010,11 @@ Procedure   MakeLine( parent, string$, findtext$ )
                   
                   ; window parent ID
                   If \func$ = "Window"
+                     If *parent 
+                        Resize( *parent, Val(x$), Val(y$), Val(width$), Val(height$) )
+                        ProcedureReturn 0
+                     EndIf
+                     
                      If param3$
                         *Parent = MakeID( param3$, parent )
                         If Not *Parent
@@ -964,94 +1030,101 @@ Procedure   MakeLine( parent, string$, findtext$ )
                   EndIf
                   
                   ;Debug "[Make]"+\func$ +" "+ Bool(\func$ = "Window") +" "+ *parent ;arg$
-                  *id = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), text$, param1, param2, param3, flags )
+                  *g = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), text$, param1, param2, param3, flags )
                   
-                  If *id
-                     ;             If flag$
-                     ;                SetFlagsString( *id, flag$ )
-                     ;             EndIf
-                     
-                     If \id$
-                       ; SetClass( *id, UCase(\id$) )
-                        SetClass( *id, (\id$) )
+                  If *g
+                     If id$
+                        SetClass( *g, id$ )
                      EndIf
                      
-                     SetText( *id, text$ )
+                     SetText( *g, text$ )
                      
                      ;
-                     If IsContainer( *id ) > 0
-                        *Parent = *id
+                     If IsContainer( *g ) > 0
+                        *Parent = *g
                      EndIf
                      ; 
-                     ide_addline( *id )
+                     ide_addline( *g )
                      result = 1
                   EndIf
                   
-               Case "CloseList"
-                  If Not *parent
-                     Debug "ERROR "+\func$
-                     ProcedureReturn 
-                  EndIf
-                  *Parent = GetParent( *Parent )
-                  
-               Case "LoadFont"
-                  param1$ = Trim( Trim( StringField( arg$, 2, "," )), Chr('"'))
-                  param2 = Val( StringField( arg$, 3, "," ))
-                  param3 = MakeConstants( StringField( arg$, 4, "," ))
-                  
-                  InitLoadFont( id$, param1$, param2, param3 )
-                  
-               Case "SetFont"
-                  *id = MakeID( \id$, parent ) 
-                  If *id
-                     SetFont( *id, GetLoadFont( StringField( arg$, 2, "," )))
-                  EndIf
-                  
-               Case "LoadImage"
-                  param1$ = Trim( Trim( StringField( arg$, 2, "," )), Chr('"'))
-                  param2 = Val( StringField( arg$, 3, "," ))
-                  
-                  InitLoadImage( \id$, param1$, param2 )
-                  
-               Case "SetImage"
-                  *id = MakeID( \id$, parent ) 
-                  If *id
-                     ; Debug \id$ +" "+ StringField( arg$, 2, "," ) +" "+ GetLoadImage( StringField( arg$, 2, "," ))
-                     SetImage( *id, GetLoadImage( StringField( arg$, 2, "," )))
-                  EndIf
-                  
-               Case "SetColor"
-                  *id = MakeID( \id$, parent ) 
-                  If *id
-                     *id\ChangeColor = 1
-                     param1$ = Trim( StringField( arg$, 2, "," ))
-                     SetColor( *id, MakeConstants( param1$ ), MakeFunc( arg$, 3 ))
-                  EndIf
-                  
-               Case "AddItem"
-                  *id = MakeID( \id$, parent ) 
-                  If *id
-                     param1$ = Trim( StringField( arg$, 2, "," ))
-                     param2$ = Trim( StringField( arg$, 3, "," ))
-                     param3$ = Trim( StringField( arg$, 4, "," ))
-                     flag$ = Trim( StringField( arg$, 5, "," ))
-                     ;
-                     If FindString( param1$, "-" )
-                        param1 = #PB_Default
-                     Else
-                        param1 = Val(param1$)
+               Default
+                  ; identifiers
+                  If FindString( str$, "=" )
+                     id$ = Trim( StringField( str$, 1, "=" ))
+                     If CountString( id$, " " )
+                        id$ = Trim( StringField( str$, 2, " " ))
                      EndIf
-                     text$ = Trim( param2$, Chr('"'))
-                     param3 = Val(param3$)
-                     Flags = MakeConstants( flag$ )
-                     
-                     AddItem( *id, param1, text$, param3, Flags )
-                     
-                     If IsContainer( *id ) > 0
-                        *parent = *id 
-                     EndIf
+                  Else
+                     id$ = Trim( StringField( arg$, 1, "," ))
                   EndIf
                   
+                  ;
+                  param1$ = Trim( StringField( arg$, 2, "," ))
+                  param2$ = Trim( StringField( arg$, 3, "," ))
+                  param3$ = Trim( StringField( arg$, 4, "," ))
+                  param4$ = Trim( StringField( arg$, 5, "," ))
+                  
+                  ;\\
+                  Select \func$
+                     Case "CloseList"
+                        If *parent
+                           *Parent = GetParent( *Parent )
+                        EndIf
+                        
+                     Case "LoadFont"
+                        text$ = Trim( param1$, Chr('"'))
+                        param2 = Val( param2$ )
+                        param3 = MakeConstants( param3$ )
+                        
+                        AddFont( id$, text$, param2, param3 )
+                        
+                     Case "SetFont"
+                        *g = MakeID( id$, parent ) 
+                        If *g
+                           SetFont( *g, GetFontFromKey( param1$ ))
+                        EndIf
+                        
+                     Case "LoadImage"
+                        text$ = Trim( param1$, Chr('"'))
+                        param2 = Val( param2$ )
+                        
+                        AddImage( id$, text$, param2 )
+                        
+                     Case "SetImage"
+                        *g = MakeID( id$, parent ) 
+                        If *g
+                           SetImage( *g, GetImageFromKey( param1$ ))
+                        EndIf
+                        
+                     Case "SetColor"
+                        *g = MakeID( id$, parent ) 
+                        If *g
+                           *g\ChangeColor = 1
+                           SetColor( *g, MakeConstants( param1$ ), MakeFunc( arg$, 3 ))
+                        EndIf
+                        
+                     Case "AddItem"
+                        *g = MakeID( id$, parent ) 
+                        If *g
+                           If FindString( param1$, "-" )
+                              param1 = #PB_Default
+                           ElseIf NumericString( param1$ )
+                              param1 = Val( param1$ )
+                           Else
+                              Debug "ERORR AddItem( position = " + param1$ + ")"
+                           EndIf
+                           text$ = Trim( param2$, Chr('"'))
+                           param3 = Val( param3$ )
+                           flags = MakeConstants( param4$ )
+                           ;
+                           AddItem( *g, param1, text$, param3, flags )
+                           If IsContainer( *g ) > 0
+                              *parent = *g 
+                           EndIf
+                        EndIf
+                        
+                  EndSelect
             EndSelect
          EndWith
       EndIf
@@ -1106,20 +1179,21 @@ Procedure$ Generate_CodeStates( *g._s_WIDGET, Space$ )
       EndIf
    EndIf            
    ;
-   If FindMapElement( fontName( ), Str( *g\text\fontID ))
-      result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", "+ fontName( ) +" )" + #LF$
+   name$ = GetFontKey( GetFont( *g ) )
+   If name$
       line_break1 = 1
-   EndIf            
+      result$ + Space$ + "Set" + pb_object$ + "Font( " + GetClass( *g ) + ", "+ name$ +" )" + #LF$
+   EndIf
    ;
    If *g\type = #__type_image
    Else
-      name$ = GetLoadImageName( *g\img\image )
+      name$ = GetImageKey( GetImage( *g ) )
       If name$
          line_break1 = 1
          result$ + Space$ + "Set" + pb_object$ + "Image( " + GetClass( *g ) + ", "+ name$ +" )" + #LF$
       EndIf
    EndIf
-
+   
    ;
    If GetState(*g) > 0
       line_break1 = 1
@@ -1234,15 +1308,17 @@ Procedure$  Generate_CodeObject( *g._s_WIDGET, space$ )
       Case "ScrollArea" : param1$ = Str( GetAttribute( *g, #PB_ScrollArea_InnerWidth ))
       Case "Splitter" 
          Define first = GetAttribute( *g, #PB_Splitter_FirstGadget )
-         If first 
+         If first
             param1$ = GetClass( first )
+         Else
+            param1$ = "- 1"
          EndIf
       Case "Image", "ButtonImage"
-         If IsImage( *g\Img\Image )
+         If IsImage( GetImage( *g ) )
             If pb_object$
-               param1$ = "ImageID( " + *g\Img\Image + " )"
+               param1$ = "ImageID( " + GetImage( *g ) + " )"
             Else
-               param1$ = GetLoadImageName( *g\Img\Image )
+               param1$ = GetImageKey( GetImage( *g ) ) 
             EndIf
          Else
             If pb_object$
@@ -1268,6 +1344,8 @@ Procedure$  Generate_CodeObject( *g._s_WIDGET, space$ )
          Define second = GetAttribute( *g, #PB_Splitter_SecondGadget )
          If second
             param2$ = GetClass( second )
+         Else
+            param2$ = "- 1"
          EndIf
    EndSelect
    
@@ -1279,7 +1357,7 @@ Procedure$  Generate_CodeObject( *g._s_WIDGET, space$ )
    EndSelect
    
    ; Flags
-     Select type$
+   Select type$
       Case "Panel", "Web", "IPAddress", "Option", "Scintilla", "Shortcut"
       Default
          Flag$ = MakeConstantsString( type$, *g\flag )
@@ -1474,13 +1552,14 @@ EndProcedure
 
 Procedure.s Generate_Code( *mdi._s_WIDGET ) ; 
    Protected Type, Count, Image, Parent
+   Protected imageScale$
    Protected Space$, id$, Class$, result$, Gadgets$, Windows$, Events$, Functions$
+   Protected JPEGPlugin$, JPEG2000Plugin$, PNGPlugin$, TGAPlugin$, TIFFPlugin$
    Protected GlobalWindow$, EnumWindow$,
              GlobalGadget$, EnumGadget$,
              GloballoadFont$, EnumFont$, Enumloadfont$,
              GloballoadImage$, EnumImage$, EnumloadImage$
    
-   Static JPEGPlugin$, JPEG2000Plugin$, PNGPlugin$, TGAPlugin$, TIFFPlugin$
    Protected *g._s_WIDGET
    Protected *w._s_WIDGET
    Protected *mainWindow._s_WIDGET
@@ -1577,47 +1656,49 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
       result$ + #LF$
       
       ; load images
-      If ListSize(loadimages( ))
-         ForEach loadimages( )
-            id$ = loadimages( )\name$
+      If ListSize(images( ))
+         ForEach images( )
+            id$ = images( )\id$
             If id$ 
-               If loadimages( )\id$
+               If images( )\key$
                   If Trim( id$, "#") = id$
-                     Globalloadimage$ + "Global " + id$ + " = " + "Loadimage( " + "#PB_Any" + ", " + Chr('"') + loadimages( )\file$ + Chr('"') + " )" + #LF$
+                     Globalloadimage$ + "Global " + id$ + " = " + "Loadimage( " + "#PB_Any" + ", " + images( )\file$ + " )" + #LF$
                   Else
                      Enumimage$ + Space$ + id$ + #LF$
                      ;
-                     Enumloadimage$ + "Loadimage( " + id$ + ", " + Chr('"') + loadimages( )\file$ + Chr('"') + " )" + #LF$
+                     Enumloadimage$ + "Loadimage( " + id$ + ", " + images( )\file$ + " )" + #LF$
                   EndIf
                Else
-                 ; Globalloadimage$ + "Global " + id$ + " = " + "CatchImage( " + "#PB_Any" + ", ?" + ReplaceString(loadimages( )\name$, "*", "" ) + " )" + #LF$
-               EndIf
+                  ; Globalloadimage$ + "Global " + id$ + " = " + "CatchImage( " + "#PB_Any" + ", ?" + ReplaceString(images( )\id$, "*", "" ) + " )" + #LF$
+               EndIf 
+               
+               CompilerIf #PB_Compiler_DPIAware
+                  imageScale$ + Space$ + "ResizeImage( "+id$+", DesktopScaledX( ImageWidth( "+id$+" )), DesktopScaledY( ImageHeight( "+id$+" )), #PB_Image_Raw )"+ #LF$
+               CompilerEndIf
             EndIf
          Next
-         If Globalloadimage$
-          ;  result$ + #LF$
-         EndIf
       EndIf
       
       ; load fonts
-      If MapSize(loadfonts( ))
-         ForEach loadfonts( )
-            id$ = loadfonts( )\id$ ; MapKey(loadfonts( )) ; 
+      If MapSize(fonts( ))
+         ForEach fonts( )
+            ;id$ = fonts( )\key$
+            id$ = fonts( )\id$
             
             If id$ ; Not NumericString( id$ )
                If Trim( id$, "#") = id$
-                  If loadfonts( )\style
-                     GloballoadFont$ + "Global " + id$ + " = " + "LoadFont( " + "#PB_Any" + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + ", " + MakeConstantsString( "Font", loadfonts( )\style) + " )" + #LF$
+                  If fonts( )\style
+                     GloballoadFont$ + "Global " + id$ + " = " + "LoadFont( " + "#PB_Any" + ", " + Chr('"') + fonts( )\name + Chr('"') + ", " + fonts( )\size + ", " + MakeConstantsString( "Font", fonts( )\style) + " )" + #LF$
                   Else
-                     GloballoadFont$ + "Global " + id$ + " = " + "LoadFont( " + "#PB_Any" + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + " )" + #LF$
+                     GloballoadFont$ + "Global " + id$ + " = " + "LoadFont( " + "#PB_Any" + ", " + Chr('"') + fonts( )\name + Chr('"') + ", " + fonts( )\size + " )" + #LF$
                   EndIf
                Else
                   EnumFont$ + Space$ + id$ + #LF$
                   ;
-                  If loadfonts( )\style
-                     Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + ", " + MakeConstantsString( "Font", loadfonts( )\style) + " )" + #LF$
+                  If fonts( )\style
+                     Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + fonts( )\name + Chr('"') + ", " + fonts( )\size + ", " + MakeConstantsString( "Font", fonts( )\style) + " )" + #LF$
                   Else
-                     Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + loadfonts( )\name + Chr('"') + ", " + loadfonts( )\size + " )" + #LF$
+                     Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + fonts( )\name + Chr('"') + ", " + fonts( )\size + " )" + #LF$
                   EndIf
                EndIf
             EndIf
@@ -1684,6 +1765,13 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
       
       If EnumloadImage$
          result$ + EnumloadImage$
+         result$ + #LF$
+      EndIf
+      
+      If imageScale$
+         result$ + "CompilerIf #PB_Compiler_DPIAware" + #LF$
+         result$ + imageScale$
+         result$ + "CompilerEndIf" + #LF$
          result$ + #LF$
       EndIf
       
@@ -1791,20 +1879,20 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
       result$ + Space$ + "End" + #LF$
       result$ + "CompilerEndIf"
       
-;       If ListSize(loadimages( ))
-;          ForEach loadimages( )
-;             id$ = loadimages( )\name$
-;             If id$ 
-;                If loadimages( )\id$ = ""
-;                   result$ + #LF$
-;                   result$ + #LF$
-;                   result$ + "DataSection" + #LF$
-;                   result$ + Space$ + loadimages( )\name$ +~": : IncludeBinary " + Chr('"') + loadimages( )\file$ + Chr('"') + #LF$
-;                   result$ + "EndDataSection" + #LF$
-;                EndIf
-;             EndIf
-;          Next
-;       EndIf
+      ;       If ListSize(images( ))
+      ;          ForEach images( )
+      ;             id$ = images( )\id$
+      ;             If id$ 
+      ;                If images( )\id$ = ""
+      ;                   result$ + #LF$
+      ;                   result$ + #LF$
+      ;                   result$ + "DataSection" + #LF$
+      ;                   result$ + Space$ + images( )\id$ +~": : IncludeBinary " + Chr('"') + images( )\file$ + Chr('"') + #LF$
+      ;                   result$ + "EndDataSection" + #LF$
+      ;                EndIf
+      ;             EndIf
+      ;          Next
+      ;       EndIf
       
    EndIf
    
@@ -1815,7 +1903,7 @@ EndProcedure
 CompilerIf #PB_Compiler_IsMainFile
    DisableExplicit
    
-   ; XIncludeFile "test\code\addfont.pb"
+   ; XIncludeFile "test\code\AddFont.pb"
    ; XIncludeFile "test\code\addimage.pb"
    ;    XIncludeFile "test\code\additem1.pb"
    ;    XIncludeFile "test\code\additem2.pb"
@@ -1828,10 +1916,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open(0, 0, 0, 400, 400, "read", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       
-      ;Path$ = "test\code\addfont.pb"
-      ;Path$ = "test\code\addimage.pb"
+      ;Path$ = "test\code\AddFont.pb"
+      ;Path$ = "test\code\AddFont2.pb"
+      Path$ = "test\code\addimage.pb"
       ;Path$ = "test\open\image.pb"
-      Path$ = "test\save_example.pb"
+      ;Path$ = "test\save_example.pb"
       
       If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
          Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
@@ -1839,7 +1928,7 @@ CompilerIf #PB_Compiler_IsMainFile
          
          While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
             String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
-            String$ = RemoveString( String$, "﻿" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
+            String$ = RemoveString( String$, "?" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
             
             MakeLine( root( ), String$, Text$ )
          Wend
@@ -1877,8 +1966,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1597
-; FirstLine = 1435
-; Folding = ---8-------------f0---b5--------------+--------
+; CursorPosition = 1647
+; FirstLine = 1598
+; Folding = ------v-+--------------f--------------------------
 ; EnableXP
 ; DPIAware

@@ -206,8 +206,8 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;If Text
             *row\TextChange( ) = 1
-            *row\text\string   = Text ; StringField( Text.s, ListIndex( *this\columns( )) + 1, #LF$);Chr(9) )
-                                      ;*row\text\edit\string = StringField( Text.s, 2, #LF$ )
+            *row\txt\string   = Text ; StringField( Text.s, ListIndex( *this\columns( )) + 1, #LF$);Chr(9) )
+                                      ;*row\txt\edit\string = StringField( Text.s, 2, #LF$ )
                                       ;EndIf
             
             ;\\
@@ -342,7 +342,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       ;       Next
       ;       
       ForEach *g2\__rows( )
-         Debug ""+*g2\__rows( )\parent +" "+*g2\__rows( )\index +" "+*g2\__rows( )\sublevel +" "+*g2\__rows( )\text\string
+         Debug ""+*g2\__rows( )\parent +" "+*g2\__rows( )\index +" "+*g2\__rows( )\sublevel +" "+*g2\__rows( )\txt\string
       Next
       
       

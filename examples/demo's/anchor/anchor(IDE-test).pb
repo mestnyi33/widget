@@ -214,7 +214,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
      
     ButtonImage(2+((X(widget())+Width(widget())) * Bool(MacroExpandedCount - 1)), 2,barbuttonsize,barbuttonsize,_image_, _mode_)
     ;widget()\color = widget()\parent\color
-    ;widget()\text\padding\x = 0
+    ;widget()\txt\padding\x = 0
     widget()\class = "Tool"
     widget()\data = _button_
     ;SetData(widget(), _button_)
@@ -299,7 +299,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   DataSection   
     IncludePath #IDE_path + "ide/include/images"
     
-    widget_delete:    : IncludeBinary "delete1.png"
+    widget_delete:    : IncludeBinary "delete.png"
     widget_paste:     : IncludeBinary "paste.png"
     widget_copy:      : IncludeBinary "copy.png"
     widget_cut:       : IncludeBinary "cut.png"
@@ -321,9 +321,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndDataSection
   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 112
-; FirstLine = 109
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 301
+; FirstLine = 288
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -591,7 +591,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ; properties
         If *this\flag & #__tree_property
-          If *parent_row And Not *parent_row\sublevel And Not *parent_row\text\fontID
+          If *parent_row And Not *parent_row\sublevel And Not *parent_row\txt\fontID
             *parent_row\color\back = $FFF9F9F9
             *parent_row\color\back[1] = *parent_row\color\back
             *parent_row\color\back[2] = *parent_row\color\back
@@ -600,7 +600,7 @@ CompilerIf #PB_Compiler_IsMainFile
             *parent_row\color\frame[2] = *parent_row\color\back
             *parent_row\color\front[1] = *parent_row\color\front
             *parent_row\color\front[2] = *parent_row\color\front
-            *parent_row\text\fontID = FontID( LoadFont( #PB_Any, "Helvetica", 14, #PB_Font_Bold | #PB_Font_Italic ))
+            *parent_row\txt\fontID = FontID( LoadFont( #PB_Any, "Helvetica", 14, #PB_Font_Bold | #PB_Font_Italic ))
           EndIf
         EndIf
         
@@ -616,9 +616,9 @@ CompilerIf #PB_Compiler_IsMainFile
         *rows\color\fore[3] = 0
         
 ;         If Text
-;           *rows\text\change = 1
-;           *rows\text\string = StringField( Text.s, 1, #LF$ )
-;           *rows\text\edit\string = StringField( Text.s, 2, #LF$ )
+;           *rows\txt\change = 1
+;           *rows\txt\string = StringField( Text.s, 1, #LF$ )
+;           *rows\txt\edit\string = StringField( Text.s, 2, #LF$ )
 ;         EndIf
         
 ;         set_image_( *this, *rows\Image, Image )

@@ -898,9 +898,9 @@ Procedure   Properties_ButtonChange( *inspector._s_WIDGET )
       
       If *this
          Select Type( *this )
-            Case #__type_Spin     : SetState(*this, Val(*second\RowFocused( )\text\string) )
-            Case #__type_String   : SetText(*this, *second\RowFocused( )\text\string )
-            Case #__type_ComboBox : SetState(*this, StrToBool(*second\RowFocused( )\text\string) )
+            Case #__type_Spin     : SetState(*this, Val(*second\RowFocused( )\txt\string) )
+            Case #__type_String   : SetText(*this, *second\RowFocused( )\txt\string )
+            Case #__type_ComboBox : SetState(*this, StrToBool(*second\RowFocused( )\txt\string) )
          EndSelect
       EndIf
    EndIf
@@ -968,17 +968,17 @@ Procedure   Properties_ButtonDisplay( *second._s_WIDGET )
                Select Type( *this )
                   Case #__type_String
                      If GetData( *this ) = #_pi_class
-                        *this\text\upper = 1
+                        *this\txt\upper = 1
                      Else
-                        *this\text\upper = 0
+                        *this\txt\upper = 0
                      EndIf
-                     SetText( *this, *row\text\string )
+                     SetText( *this, *row\txt\string )
                      
                   Case #__type_Spin
-                     SetState( *this, Val(*row\text\string) )
+                     SetState( *this, Val(*row\txt\string) )
                      
                   Case #__type_ComboBox
-                     Select LCase(*row\text\string)
+                     Select LCase(*row\txt\string)
                         Case "false" : SetState( *this, 0)
                         Case "true"  : SetState( *this, 1)
                      EndSelect
@@ -2411,18 +2411,18 @@ Procedure ide_events( )
       If __event = #__event_Down
          If __data
             *line._s_ROWS  = __data
-            text$ = *line\text\string
-            len = *line\text\len
-            caret = *g\text\caret\pos[1] - *line\text\pos
+            text$ = *line\txt\string
+            len = *line\txt\len
+            caret = *g\txt\caret\pos[1] - *line\txt\pos
             
             ;
             If text$
-               *g\text\numeric = 0 
-               *g\text\editable = 0 
+               *g\txt\numeric = 0 
+               *g\txt\editable = 0 
                
-               name$ = *g\text\caret\word ; GetWord( text$, len, caret ) 
+               name$ = *g\txt\caret\word ; GetWord( text$, len, caret ) 
                copy_edit_word$ = name$
-               copy_edit_text$ = *g\text\string
+               copy_edit_text$ = *g\txt\string
                
                If name$
                   object = ObjectFromClass( ide_design_panel_MDI, name$ )
@@ -2443,7 +2443,7 @@ Procedure ide_events( )
                   
                   ;argument =  CountString( Left( text$, caret ), "," ) + 1 
                   argument = GetArgIndex( text$, len, caret ) 
-                  name$ = *g\text\caret\word
+                  name$ = *g\txt\caret\word
                   If name$ <> GetClass( object )
                      If CountString( text$, "(" )
                         name$ = Trim( StringField( text$, 1, "(" ))
@@ -2463,20 +2463,20 @@ Procedure ide_events( )
                   
                   If argument > 1
                      If argument < 6 ; coordinate
-                        *g\text\numeric = 1 
+                        *g\txt\numeric = 1 
                      EndIf
-                     *g\text\editable = 1 
+                     *g\txt\editable = 1 
                   EndIf
                   
-                  If GetClass( object ) = *g\text\caret\word ; GetWord( text$, len, caret )
-                     *g\text\editable = 1
-                     *g\text\upper = 1 
+                  If GetClass( object ) = *g\txt\caret\word ; GetWord( text$, len, caret )
+                     *g\txt\editable = 1
+                     *g\txt\upper = 1 
                   Else
-                     *g\text\upper = 0 
+                     *g\txt\upper = 0 
                   EndIf
                EndIf
                
-               If *g\text\editable
+               If *g\txt\editable
                   *line\color\back[1] = *g\color\back[1]
                Else
                   *line\color\back[1] = $CD9CC3EE
@@ -2488,8 +2488,8 @@ Procedure ide_events( )
       ;
       If __event = #__event_Change
          If object
-            ReplaceArg( object, argument, *g\text\caret\word ) 
-            ; ReplaceArg( object, argument, GetWord( *line\text\string, *line\text\len, *g\text\caret\pos[1] - *line\text\pos )  )
+            ReplaceArg( object, argument, *g\txt\caret\word ) 
+            ; ReplaceArg( object, argument, GetWord( *line\txt\string, *line\txt\len, *g\txt\caret\pos[1] - *line\txt\pos )  )
          EndIf
       EndIf
    EndIf
@@ -2915,18 +2915,18 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    Define._S_WIDGET *this, *parent
    ;    Debug "--- enumerate all gadgets ---"
    ;    If StartEnum( root( ) )
-   ;       Debug "     gadget - "+ widget( )\index +" "+ GetClass(widget( )) +"               ("+ GetClass(widget( )\parent) +") " ;+" - ("+ widget( )\text\string +")"
+   ;       Debug "     gadget - "+ widget( )\index +" "+ GetClass(widget( )) +"               ("+ GetClass(widget( )\parent) +") " ;+" - ("+ widget( )\txt\string +")"
    ;       StopEnum( )
    ;    EndIf
    ;    
    ;    Debug ""
    ;    *parent = *container
    ;    *this = GetPositionLast( *parent )
-   ;    Debug ""+GetClass(*this) +"           ("+ GetClass(*parent) +")" ;  +" - ("+ *this\text\string +")"
+   ;    Debug ""+GetClass(*this) +"           ("+ GetClass(*parent) +")" ;  +" - ("+ *this\txt\string +")"
    ;    
    ;    
    ;    If StartEnum( *parent )
-   ;       Debug "   *parent  gadget - "+ widget( )\index +" "+ GetClass(widget( )) +"               ("+ GetClass(widget( )\parent) +") " ;+" - ("+ widget( )\text\string +")"
+   ;       Debug "   *parent  gadget - "+ widget( )\index +" "+ GetClass(widget( )) +"               ("+ GetClass(widget( )\parent) +") " ;+" - ("+ widget( )\txt\string +")"
    ;       StopEnum( )
    ;    EndIf
    ;    

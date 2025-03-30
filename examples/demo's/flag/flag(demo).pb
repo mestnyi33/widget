@@ -79,13 +79,15 @@ CompilerIf #PB_Compiler_IsMainFile
                Case w_type 
                   flag = Flag(*this)
                   Type = Type(*this)
+                  
                   Add( MakeFlagsString( GetState(w_type)))
+                  
                   flag$ = MakeConstantsString( ClassFromType(Type), flag)
-                  ;Debug Flag$
+                  Debug "flag["+Flag$+"]"
                   SetCheckedText(w_flag, flag$ )
                   
                Case w_flag
-                  ;  Debug GetCheckedText(w_flag)
+                  Debug "checked["+GetCheckedText(w_flag)+"]"
             EndSelect
             
          Case #__event_LeftClick
@@ -110,19 +112,21 @@ CompilerIf #PB_Compiler_IsMainFile
       For i=0 To 33
          AddItem(w_type, -1, ClassFromType(i))
       Next
+      SetState(w_type, 1)
       
-      w_flag = widget::Tree(Width+45, 220, 150, 200, #__tree_nobuttons|#__tree_nolines|#__flag_checkboxes);|#__flag_optionboxes) 
+      w_flag = widget::Tree(Width+45, 220, 150, 200, #__tree_nobuttons|#__tree_nolines|#__flag_checkboxes|#__flag_optionboxes) 
+      
       
       Bind(#PB_All, @events_widgets())
       
       
-      
+      ; WaitClose( )
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 82
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 89
+; FirstLine = 75
 ; Folding = ---
 ; EnableXP
 ; DPIAware

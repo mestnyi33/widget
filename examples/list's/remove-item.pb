@@ -80,7 +80,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                ;                   Next
 ;                
 ;                ForEach *g1\__rows( )
-;                   Debug ""+*g1\__rows( )\index +" "+*g1\__rows( )\sublevel +" "+*g1\__rows( )\text\string
+;                   Debug ""+*g1\__rows( )\index +" "+*g1\__rows( )\sublevel +" "+*g1\__rows( )\txt\string
 ;                Next
             EndIf
       EndSelect

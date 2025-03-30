@@ -3200,13 +3200,13 @@ Module _PBEdit_
 									*textLine\style(charNr) = #TE_Style_None
 								ElseIf *lastToken And *lastToken\type = #TE_Token_Point
 									*textLine\style(charNr) = #TE_Style_Structure
-								ElseIf *lastToken And *lastToken\type = #TE_Token_Operator And *lastToken\text\c = '*'
+								ElseIf *lastToken And *lastToken\type = #TE_Token_Operator And *lastToken\txt\c = '*'
 									*textLine\style(charNr) = #TE_Style_Pointer
 									*textLine\style(*lastToken\charNr) = #TE_Style_Pointer
-								ElseIf *lastToken And *lastToken\type = #TE_Token_Unknown And *lastToken\text\c = '#'
+								ElseIf *lastToken And *lastToken\type = #TE_Token_Unknown And *lastToken\txt\c = '#'
 									*textLine\style(charNr) = #TE_Style_Constant
 									*textLine\style(*lastToken\charNr) = #TE_Style_Constant
-								ElseIf *lastNonWhitespaceToken And *lastNonWhitespaceToken\type = #TE_Token_Unknown And *lastNonWhitespaceToken\text\c = '@'
+								ElseIf *lastNonWhitespaceToken And *lastNonWhitespaceToken\type = #TE_Token_Unknown And *lastNonWhitespaceToken\txt\c = '@'
 									*textLine\style(charNr) = #TE_Style_Address
 									*textLine\style(*lastNonWhitespaceToken\charNr) = #TE_Style_Address
 								EndIf
@@ -3290,7 +3290,7 @@ Module _PBEdit_
 					EndSelect
 					
 					If TokenType = #TE_Token_Unknown
-						If (*token\text\c = '$') And *lastToken And *lastToken\type = #TE_Token_Text
+						If (*token\txt\c = '$') And *lastToken And *lastToken\type = #TE_Token_Text
 							*textLine\style(charNr) = #TE_Style_Text
 						EndIf
 					ElseIf TokenType = #TE_Token_Colon
@@ -4144,7 +4144,7 @@ Module _PBEdit_
 						Else
 							token(i - 1) = " "
 						EndIf
-					ElseIf (*last\type <> #TE_Token_BracketOpen) And (*last\type <> #TE_Token_Operator Or *last\text\c <> '-')
+					ElseIf (*last\type <> #TE_Token_BracketOpen) And (*last\type <> #TE_Token_Operator Or *last\txt\c <> '-')
 						style = Style_FromCharNr(*textline, *last\charNr)
 						If style <> #TE_Style_Function And style <> #TE_Style_Structure
 							token(i - 1) + " "
@@ -4175,12 +4175,12 @@ Module _PBEdit_
 				ElseIf *current\type = #TE_Token_Whitespace And (*last\type = #TE_Token_BracketOpen Or *last\type = #TE_Token_Point Or *last\type = #TE_Token_Backslash)
 					;	token(i) = ""
 				ElseIf *current\type = #TE_Token_Whitespace And *last\type = #TE_Token_Operator
-					If *last\text\c = '~'
+					If *last\txt\c = '~'
 						token(i) = ""
 					EndIf
-				ElseIf (*current\type = #TE_Token_Operator And *current\text\c <> '~' And *current\text\c <> '*') And *last\type <> #TE_Token_Whitespace
+				ElseIf (*current\type = #TE_Token_Operator And *current\txt\c <> '~' And *current\txt\c <> '*') And *last\type <> #TE_Token_Whitespace
 					token(i - 1) + " "
-				ElseIf (*current\type = #TE_Token_Unknown And *current\text\c <> '@' And *current\text\c <> '#' And *current\text\c <> '$') And *last\type <> #TE_Token_Whitespace
+				ElseIf (*current\type = #TE_Token_Unknown And *current\txt\c <> '@' And *current\txt\c <> '#' And *current\txt\c <> '$') And *last\type <> #TE_Token_Whitespace
 					token(i - 1) + " "
 				ElseIf (*current\type = #TE_Token_Equal Or *current\type = #TE_Token_Compare) And *last\type <> #TE_Token_Whitespace
 					If *last\type <> #TE_Token_Compare And *last\type <> #TE_Token_Equal
@@ -4195,11 +4195,11 @@ Module _PBEdit_
 						token(i - 1) + " "
 					EndIf
 				ElseIf *current\type <> #TE_Token_Whitespace And *last\type = #TE_Token_Operator
-					If *last\text\c <> '~' And *last\text\c <> '-' And *last\text\c <> '*'
+					If *last\txt\c <> '~' And *last\txt\c <> '-' And *last\txt\c <> '*'
 						token(i - 1) + " "
 					EndIf
 				ElseIf *current\type <> #TE_Token_Whitespace And *last\type = #TE_Token_Unknown
-					If *last\text\c <> '@' And *last\text\c <> '#' And *last\text\c <> '$'
+					If *last\txt\c <> '@' And *last\txt\c <> '#' And *last\txt\c <> '$'
 						token(i - 1) + " "
 					EndIf
 				EndIf

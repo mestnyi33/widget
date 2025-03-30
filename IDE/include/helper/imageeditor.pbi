@@ -1,5 +1,11 @@
-﻿CompilerIf #PB_Compiler_IsMainFile
-  XIncludeFile "../../../widgets.pbi"
+﻿; CompilerIf #PB_Compiler_IsMainFile
+;   XIncludeFile "../../../widgets.pbi"
+; CompilerEndIf
+
+Declare  Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
+CompilerIf #PB_Compiler_IsMainFile
+   XIncludeFile "../../ide.pb"
+   XIncludeFile "../../code.pbi"
 CompilerEndIf
 
 EnableExplicit
@@ -52,6 +58,9 @@ EndProcedure
 Procedure Events_EDITORIMAGES( )
    
    Select WidgetEvent( )
+      Case #__event_free
+         Debug "free "+ EventWidget( )\class +" "+ GetImage( EventWidget( ))
+         
       Case #__event_leftClick
          Select EventWidget( )
             Case BUTTON_COPY,
@@ -95,10 +104,11 @@ Procedure Events_EDITORIMAGES( )
                   If IsImage( LOADIMAGE )
                      FreeImage( LOADIMAGE )
                   EndIf
-                  LOADIMAGE = LoadImage( #PB_Any, file$ )
+                  ;LOADIMAGE = LoadImage( #PB_Any, file$ )
+                  LOADIMAGE = AddImage( "", file$ )
                   SetImage( IMAGE_VIEW, LOADIMAGE )
                   SetText( IMAGE_VIEW, "" )
-                  ;
+                  Debug GetImageKey( IMAGE_VIEW );
                   Disable( BUTTON_SAVE, #False )
                   Disable( BUTTON_COPY, #False )
                   Disable( BUTTON_CUT, #False )
@@ -108,7 +118,6 @@ Procedure Events_EDITORIMAGES( )
                EndIf
                
             Case BUTTON_OK
-               LOADIMAGE = CopyImage( LOADIMAGE, #PB_Any )
                PostQuit( )
                           
             Case BUTTON_CANCEL
@@ -122,6 +131,7 @@ Procedure Events_EDITORIMAGES( )
 EndProcedure
 
 Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
+   Protected result
    Load_IMAGES( )
    
    EDITORIMAGES = Open( #PB_Any, 20, 20, 392, 232, "Редактор изображения", flag | #PB_Window_WindowCentered | #PB_Window_Invisible, WindowID( GetCanvasWindow( root )) )
@@ -132,8 +142,8 @@ Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
    SetBackgroundColor( IMAGE_VIEW, $54EDDE )
    
    SetText( IMAGE_VIEW, "Загрузите изображения" )
-   widget( )\text\x = - 145
-   widget( )\text\y = - 18
+   widget( )\txt\x = - 145
+   widget( )\txt\y = - 18
    
    BUTTON_OPEN = Button( 266, 7, 119, 22, "Загрузить", #__image_Left )
    SetImage( BUTTON_OPEN, OPEN_IMAGE )
@@ -160,13 +170,21 @@ Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
    BUTTON_CANCEL = Button( 266, 203, 119, 22, "Отмена", #__image_Left )
    
    Bind( #PB_All, @Events_EDITORIMAGES( ))
+   ReDraw(EDITORIMAGES)
    HideWindow( GetCanvasWindow( EDITORIMAGES), #False )
    WaitQuit( EDITORIMAGES )
+   Free_Images( )
    
-   ; ChangeCurrentCanvas( GadgetID( GetCanvasGadget( root )))
+   ChangeCurrentCanvas( GadgetID( GetCanvasGadget( root )))
    ; Debug ""+GetCanvasWindow(EDITORIMAGES) +" "+ IsWindow(GetCanvasWindow(EDITORIMAGES))
    
-   ProcedureReturn LOADIMAGE
+   If IsImage( LOADIMAGE )
+      result = ChangeImage( LOADIMAGE )
+      FreeImage( LOADIMAGE )
+      LOADIMAGE = - 1
+   EndIf
+               
+   ProcedureReturn result
 EndProcedure
 
 ;-
@@ -174,11 +192,12 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure button_left_click_event( )
       Define widget = EventWidget( )
       Define root = EventWidget( )\root
+      Define img = Open_EDITORIMAGES( root )
+      ; Define img = Open_EDITORIMAGES( root, -1, #PB_Window_BorderLess )
       
-      If IsImage( Open_EDITORIMAGES( root ))
-         ; If IsImage( Open_EDITORIMAGES( root, -1, #PB_Window_BorderLess ))
-         Debug "Это изображение " + LOADIMAGE
-         SetImage( root, LOADIMAGE )
+      If IsImage( img)
+         Debug "Это изображение " + img
+         SetImage( root, img )
       EndIf
       
       Disable( widget, #False )
@@ -193,12 +212,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Post( widget( ), #__event_LeftClick )
    
    WaitClose( )
-   Free_Images( )
    End
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 166
-; FirstLine = 146
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 110
+; FirstLine = 87
 ; Folding = ----
 ; EnableXP
 ; DPIAware
