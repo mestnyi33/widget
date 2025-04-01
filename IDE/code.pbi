@@ -178,11 +178,11 @@ Procedure   AddImage( key$, file$, flags=0 )
 ;    EndIf
    ;
    If IsImage( Image )
-      CompilerIf #PB_Compiler_DPIAware
-         If ImageWidth(Image) = 16
-            ResizeImage(Image, DesktopScaledX(ImageWidth(Image)), DesktopScaledY(ImageHeight(Image)), #PB_Image_Raw )
-         EndIf
-      CompilerEndIf
+;       CompilerIf #PB_Compiler_DPIAware
+;          If ImageWidth(Image) = 16
+;             ResizeImage(Image, DesktopScaledX(ImageWidth(Image)), DesktopScaledY(ImageHeight(Image)), #PB_Image_Raw )
+;          EndIf
+;       CompilerEndIf
       
       key$ = Trim( key$ )
       key$ = Trim( key$, "(" )
@@ -217,11 +217,10 @@ Procedure   ChangeImage( img )
             If images( )\image = img
                img = CopyImage( img, #PB_Any )
                images( )\image = img
-               Break
+               ProcedureReturn img
             EndIf
          EndIf
       Next
-      ProcedureReturn img
    EndIf
 EndProcedure
 
@@ -1966,8 +1965,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1647
-; FirstLine = 1598
-; Folding = ------v-+--------------f--------------------------
+; CursorPosition = 219
+; FirstLine = 212
+; Folding = -------v---------------4--------------------------
 ; EnableXP
 ; DPIAware

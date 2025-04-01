@@ -68,20 +68,22 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_LeftClick
             If *g2 = EventWidget( )
-               item = GetState(EventWidget( ))
-               
-               RemoveItem_(*g1, item)
-               RemoveItem_(*g2, item)
-               
-               Debug GetState( *g1 )
-               
-;                ;                   For a = 0 To CountItems(*g1)-1
-;                ;                      Debug ""+a+" "+GetItemText(*g1,a)
-;                ;                   Next
-;                
-;                ForEach *g1\__rows( )
-;                   Debug ""+*g1\__rows( )\index +" "+*g1\__rows( )\sublevel +" "+*g1\__rows( )\txt\string
-;                Next
+               If Not EnteredButton( )
+                  item = GetState(EventWidget( ))
+                  
+                  RemoveItem_(*g1, item)
+                  RemoveItem_(*g2, item)
+                  
+                  Debug GetState( *g1 )
+                  
+                  ;                ;                   For a = 0 To CountItems(*g1)-1
+                  ;                ;                      Debug ""+a+" "+GetItemText(*g1,a)
+                  ;                ;                   Next
+                  ;                
+                  ;                ForEach *g1\__rows( )
+                  ;                   Debug ""+*g1\__rows( )\index +" "+*g1\__rows( )\sublevel +" "+*g1\__rows( )\txt\string
+                  ;                Next
+               EndIf
             EndIf
       EndSelect
             
@@ -184,9 +186,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 140
-; FirstLine = 115
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 70
+; FirstLine = 52
 ; Folding = ----
 ; EnableXP
 ; DPIAware

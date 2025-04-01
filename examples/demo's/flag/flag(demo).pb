@@ -9,7 +9,6 @@ CompilerIf #PB_Compiler_IsMainFile
    Define vert=100, horiz=100, Width=400, Height=400
    Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
    
-  
    Procedure Add(Text.s)
       ClearItems(w_flag)
       If Text
@@ -114,7 +113,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       SetState(w_type, 1)
       
-      w_flag = widget::Tree(Width+45, 220, 150, 200, #__tree_nobuttons|#__tree_nolines|#__flag_checkboxes|#__flag_optionboxes) 
+      w_flag = widget::Tree(Width+45, 220, 150, 200, #__tree_CheckBoxes|#__flag_optionboxes|#__tree_nobuttons|#__tree_nolines) 
       
       
       Bind(#PB_All, @events_widgets())
@@ -125,8 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 75
+; CursorPosition = 10
 ; Folding = ---
 ; EnableXP
 ; DPIAware

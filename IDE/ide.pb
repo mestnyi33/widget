@@ -779,14 +779,17 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
          Select item
             Case #_pi_fontstyle
                AddItem(*this, -1, "None")         
+               If *this\popupbar
+                  *this\popupbar\mode\Checkboxes = 1
+                  *this\popupbar\mode\optionboxes = 1
+               ;    Flag( *this\popupbar, #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
+               EndIf
                AddItem(*this, -1, "Bold")        ; Шрифт будет выделен жирным
                AddItem(*this, -1, "Italic")      ; Шрифт будет набран курсивом
                AddItem(*this, -1, "Underline")   ; Шрифт будет подчеркнут (только для Windows)
                AddItem(*this, -1, "StrikeOut")   ; Шрифт будет зачеркнут (только для Windows)
                AddItem(*this, -1, "HighQuality") ; Шрифт будет в высококачественном режиме (медленнее) (только для Windows)
-               If *this\popupbar
-                  *this\popupbar\flag | #__flag_CheckBoxes
-               EndIf
+               
                
             Case #_pi_colortype
                AddItem(*this, -1, "BackColor")
@@ -1943,6 +1946,7 @@ Procedure.i ide_AddImages_list( *id, Directory$ )
                               SetItemData( *id, CountItems( *id )-1, Image )
                               
                            ElseIf FindString( PackEntryName, "progress" ) Or
+                                  FindString( PackEntryName, "track" ) Or
                                   FindString( PackEntryName, "spin" )
                               
                               Image = CatchImage( #PB_Any, *memory, ImageSize )
@@ -2816,8 +2820,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1624
-; FirstLine = 1602
+; CursorPosition = 784
+; FirstLine = 768
 ; Folding = --------------------------------------------------
 ; Optimizer
 ; EnableAsm

@@ -274,7 +274,7 @@ CompilerIf #PB_Compiler_IsMainFile
             *new = AddItem( *parent, #PB_Any, "", - 1, flag )
             Resize( *new, #PB_Ignore, #PB_Ignore, Width,Height )
           Else
-            flag | #PB_Window_systemmenu | #PB_Window_maximizegadget | #PB_Window_minimizegadget
+            flag | #PB_Window_SystemMenu | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
             a_init(*parent)
             ;;a_set(*parent)
             *new = Window( X,Y,Width,Height, "", flag, *parent )
@@ -284,7 +284,7 @@ CompilerIf #PB_Compiler_IsMainFile
           Bind( *new, @widget_events( ) )
           
         Case "container"   : *new = Container( X,Y,Width,Height, flag )                             : CloseList( )
-          SetColor( *new, #pb_gadget_backcolor, $FFF1F1F1 )
+          SetColor( *new, #PB_Gadget_BackColor, $FFF1F1F1 )
           
         Case "button"      : *new = Button( X,Y,Width,Height, "", flag ) 
           
@@ -589,21 +589,21 @@ CompilerIf #PB_Compiler_IsMainFile
           *rows\hide = 1
         EndIf
         
-        ; properties
-        If *this\flag & #__tree_property
-          If *parent_row And Not *parent_row\sublevel And Not *parent_row\txt\fontID
-            *parent_row\color\back = $FFF9F9F9
-            *parent_row\color\back[1] = *parent_row\color\back
-            *parent_row\color\back[2] = *parent_row\color\back
-            *parent_row\color\frame = *parent_row\color\back
-            *parent_row\color\frame[1] = *parent_row\color\back
-            *parent_row\color\frame[2] = *parent_row\color\back
-            *parent_row\color\front[1] = *parent_row\color\front
-            *parent_row\color\front[2] = *parent_row\color\front
-            *parent_row\txt\fontID = FontID( LoadFont( #PB_Any, "Helvetica", 14, #PB_Font_Bold | #PB_Font_Italic ))
-          EndIf
-        EndIf
-        
+;         ; properties
+;         If *this\flag & #__tree_property
+;           If *parent_row And Not *parent_row\sublevel And Not *parent_row\txt\fontID
+;             *parent_row\color\back = $FFF9F9F9
+;             *parent_row\color\back[1] = *parent_row\color\back
+;             *parent_row\color\back[2] = *parent_row\color\back
+;             *parent_row\color\frame = *parent_row\color\back
+;             *parent_row\color\frame[1] = *parent_row\color\back
+;             *parent_row\color\frame[2] = *parent_row\color\back
+;             *parent_row\color\front[1] = *parent_row\color\front
+;             *parent_row\color\front[2] = *parent_row\color\front
+;             *parent_row\txt\fontID = FontID( LoadFont( #PB_Any, "Helvetica", 14, #PB_Font_Bold | #PB_Font_Italic ))
+;           EndIf
+;         EndIf
+;         
         ; add lines
         *rows\color = _get_colors_( )
         *rows\color\state = 0
@@ -907,9 +907,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 286
-; FirstLine = 278
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 605
+; FirstLine = 583
 ; Folding = -------------
 ; EnableXP
 ; DPIAware

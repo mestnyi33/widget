@@ -1508,7 +1508,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i Spin( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 0, increment.d = 1.0 )
       Declare.i Tab( X.l, Y.l, Width.l, Height.l, flag.q = 0, round.l = 0 )
       Declare.i Scroll( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
-      Declare.i Track( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = #__buttonround )
+      Declare.i Track( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, scrollstep.d = 1.0  )
       Declare.i Progress( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 0 )
       Declare.i Splitter( X.l, Y.l, Width.l, Height.l, First.i, Second.i, flag.q = 0 )
       
@@ -12090,6 +12090,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;}
                
+               If sublevel < 0
+                  sublevel = 0
+               EndIf
                ;
                If sublevel > position
                   sublevel = position
@@ -12155,8 +12158,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;
-               If *rowParent
-                  *rowParent\childrens + 1
+               If *rowParent 
+                  ;If Not *this\mode\optionboxes
+                     *rowParent\childrens + 1
+                  ;EndIf
                   *row\RowParent( ) = *rowParent
                   
                   If *rowParent\sublevel < sublevel
@@ -12190,7 +12195,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *row\rindex        = position 
                *row\columnindex   = ListIndex( *this\columns( ))
                
-               If *this\mode\check
+               If (*this\mode\CheckBoxes Or *this\mode\OptionBoxes)
                   *row\checkbox.allocate( BOX )
                EndIf
                If *this\mode\lines
@@ -12228,7 +12233,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;If Text
                ; *row\txt\TextChange( ) = 1
                *row\txt\string   = Text 
-               
                
                ;\\
                If *row\columnindex = 0
@@ -12325,7 +12329,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If *this\type = #__type_combobox
             If Not *this\popupbar
-               *this\popupbar = Create( *this, "ComboListView", #__type_ListView, 0,0,0,0,"",
+               *this\popupbar = Create( *this, "ComboListView", #__type_tree, 0,0,0,0,"",
                                         #__flag_child | #__flag_nobuttons | #__flag_nolines ) 
                
                *this\popupbar\fs = 2
@@ -14779,10 +14783,9 @@ chr$ = ","
                   *this\flag & ~ flag
                EndIf
                
-               *this\WidgetChange( ) = 1
-               
                ;\\ text align
                If string_bar
+                  *this\WidgetChange( ) = 1
                   *this\TextChange( ) = 1
                   ; 
                   If constants::BinaryFlag( Flag, #__flag_text_Invert )
@@ -14895,6 +14898,7 @@ chr$ = ","
                   If constants::BinaryFlag( Flag, #__tree_nolines )
                      *this\mode\Lines = state
                   EndIf
+                  
                   If constants::BinaryFlag( Flag, #__tree_nobuttons )
                      *this\mode\Buttons = state
                      
@@ -14912,36 +14916,22 @@ chr$ = ","
                      EndIf
                   EndIf
                   
-                  If constants::BinaryFlag( Flag, #__tree_threestate ) 
-                     *this\mode\threestate = constants::BinaryFlag( *this\flag, #__tree_checkboxes )
-                  EndIf
-                  
-                  If constants::BinaryFlag( Flag, #__tree_checkboxes ) 
-                     *this\mode\check = state 
-                     *this\mode\checkboxes = state
-                     *this\mode\optionboxes = constants::BinaryFlag( *this\flag, #__flag_optionboxes )
-                  EndIf
-                  
+                   ;\\
                   If constants::BinaryFlag( Flag, #__flag_optionboxes )
-                     *this\mode\check = state 
                      *this\mode\optionboxes = state
-                     *this\mode\checkboxes = constants::BinaryFlag( *this\flag, #__tree_checkboxes )
-                     
-                     ;                      ; set option group
-                     ;                      If *this\countitems
-                     ;                         PushListPosition( *this\__rows( ))
-                     ;                         ForEach *this\__rows( )
-                     ;                            If *this\__rows( )\RowParent( )
-                     ;                               *this\__rows( )\checkbox\checked = #PB_Checkbox_Unchecked
-                     ;                               If state
-                     ;                                  *this\__rows( )\_groupbar = get_item_( *this, 0 )
-                     ;                               EndIf
-                     ;                            EndIf
-                     ;                         Next
-                     ;                         PopListPosition( *this\__rows( ))
-                     ;                      EndIf
+                  EndIf
+                  If constants::BinaryFlag( Flag, #__tree_checkboxes ) 
+                     *this\mode\checkboxes = state
+                  EndIf
+                  If constants::BinaryFlag( Flag, #__tree_threestate ) 
+                     If *this\mode\checkboxes
+                        *this\mode\threestate = state
+                     EndIf
                   EndIf
                   
+                 ; Debug "flag "+*this\mode\checkboxes +" "+ *this\mode\optionboxes +" "+ *this\mode\threestate
+                  
+                  ;\\
                   If constants::BinaryFlag( Flag, #__flag_gridLines ) 
                      If state 
                         *this\mode\gridlines = DPIScaled(1)
@@ -14991,31 +14981,33 @@ chr$ = ","
          Select Type
             Case #__Type_Window        
                ;{- Ok
-               result$ = "#PB_Window_TitleBar|"+
+               result$ = "#PB_Window_NoGadgets|"+
+                         "#PB_Window_NoActivate|"+
+                         "#PB_Window_ScreenCentered|"+
+                         "#PB_Window_WindowCentered|"+
+                         "#PB_Window_SizeGadget|"+
+                         "#PB_Window_Tool|"+
+                         "#PB_Window_TitleBar|"+
                          "#PB_Window_BorderLess|"+
                          "#PB_Window_SystemMenu|"+
                          "#PB_Window_MaximizeGadget|"+
                          "#PB_Window_MinimizeGadget|"+
-                         "#PB_Window_ScreenCentered|"+
-                         "#PB_Window_SizeGadget|"+
-                         "#PB_Window_WindowCentered|"+
-                         "#PB_Window_Tool|"+
                          "#PB_Window_Normal|"+
                          "#PB_Window_Minimize|"+
                          "#PB_Window_Maximize|"+
-                         "#PB_Window_Invisible|"+
-                         "#PB_Window_NoActivate|"+
-                         "#PB_Window_NoGadgets|"
+                         "#PB_Window_Invisible"
+                         
                ;}
                
             Case #__Type_Button         
                ;{- Ok
                result$ = "#PB_Button_Default|"+
                          "#PB_Button_Toggle|"+
+                         "#PB_Button_MultiLine|"+
                          "#PB_Button_Left|"+
                          "#PB_Button_Center|"+
-                         "#PB_Button_Right|"+
-                         "#PB_Button_MultiLine"
+                         "#PB_Button_Right"
+                         
                
                ;}
                
@@ -15032,17 +15024,19 @@ chr$ = ","
                
             Case #__Type_Text           
                ;{- Ok
-               result$ = "#PB_Text_Left|"+
+               result$ = "#PB_Text_Border|"+
+                         "#PB_Text_Left|"+
                          "#PB_Text_Center|"+
-                         "#PB_Text_Right|"+
-                         "#PB_Text_Border"
+                         "#PB_Text_Right"
+               
                ;}
                
             Case #__Type_CheckBox       
                ;{- Ok
-               result$ = "#PB_CheckBox_Right|"+
+               result$ = "#PB_CheckBox_ThreeState|"+
                          "#PB_CheckBox_Center|"+
-                         "#PB_CheckBox_ThreeState"
+                         "#PB_CheckBox_Right"
+                         
                ;}
                
             Case #__Type_Option         
@@ -15488,9 +15482,9 @@ chr$ = ","
                   Case "#PB_Text_Right"                     : Flag = Flag | #PB_Text_Right
                      ; option
                      ; checkbox
+                  Case "#PB_CheckBox_ThreeState"            : Flag = Flag | #PB_CheckBox_ThreeState
                   Case "#PB_CheckBox_Center"                : Flag = Flag | #PB_CheckBox_Center
                   Case "#PB_CheckBox_Right"                 : Flag = Flag | #PB_CheckBox_Right
-                  Case "#PB_CheckBox_ThreeState"            : Flag = Flag | #PB_CheckBox_ThreeState
                      ; listview
                   Case "#PB_ListView_ClickSelect"           : Flag = Flag | #PB_ListView_ClickSelect
                   Case "#PB_ListView_MultiSelect"           : Flag = Flag | #PB_ListView_MultiSelect
@@ -15992,8 +15986,6 @@ chr$ = ","
          ;
          size = DPIScaled( size )
          
-         ;\\ replace pb flag
-         flag = FromPBFlag( Type, flag )
          
          ;
          Protected color, Image                 ;, *this.allocate( Widget )
@@ -16013,16 +16005,49 @@ chr$ = ","
          EndIf
          
          ;\\
-         *this\font     = - 1
+         *this\font   = - 1
          *this\create = #True
          *this\color  = _get_colors_( )
          *this\type   = Type
          *this\class  = Class
          *this\round  = DPIScaled( round )
+         ;
+         ;\\ replace pb flag
+         flag = FromPBFlag( Type, flag )
+         ;
          *this\child  = constants::BinaryFlag( Flag, #__flag_child )
          If constants::BinaryFlag( Flag, #__flag_NoFocus )
             *this\focus = #__state_nofocus
          EndIf
+         ;
+         ;\\ Flags
+         *this\flag = Flag
+         If Type = #__type_Button Or
+            Type = #__type_HyperLink
+            
+            *this\flag | #__flag_text_Center
+            
+         ElseIf Type = #__type_ComboBox Or
+                Type = #__type_Spin Or
+                Type = #__type_String Or
+                Type = #__type_Option Or
+                Type = #__type_CheckBox
+            
+            If constants::BinaryFlag( Flag, #__flag_text_Center, #False )
+               *this\flag | #__flag_text_Center | #__flag_text_Left
+            EndIf
+            
+            If constants::BinaryFlag( Flag, #__flag_text_Right )
+               *this\flag & ~ #__flag_text_Left
+               *this\flag | #__flag_text_Right
+            EndIf
+            
+         ElseIf Type = #__type_Text
+            If constants::BinaryFlag( Flag, #__flag_text_InLine, #False )
+               *this\flag | #__flag_text_wordwrap
+            EndIf
+         EndIf
+         
          ;\\
          *this\frame_x( )      = #PB_Ignore
          *this\frame_y( )      = #PB_Ignore
@@ -16058,33 +16083,6 @@ chr$ = ","
             *this\padding\x = *this\togglebox\width + DPIScaled(8)
          EndIf
          
-         ;\\ Flags
-         *this\flag = Flag
-         If *this\type = #__type_Button Or
-            *this\type = #__type_HyperLink
-            
-            *this\flag | #__flag_text_Center
-            
-         ElseIf *this\type = #__type_ComboBox Or
-                *this\type = #__type_Spin Or
-                *this\type = #__type_String Or
-                *this\type = #__type_Option Or
-                *this\type = #__type_CheckBox
-            
-            If constants::BinaryFlag( Flag, #__flag_text_Center, #False )
-               *this\flag | #__flag_text_Center | #__flag_text_Left
-            EndIf
-            
-            If constants::BinaryFlag( Flag, #__flag_text_Right )
-               *this\flag & ~ #__flag_text_Left
-               *this\flag | #__flag_text_Right
-            EndIf
-            
-         ElseIf *this\type = #__type_Text
-            If constants::BinaryFlag( Flag, #__flag_text_InLine, #False )
-               *this\flag | #__flag_text_wordwrap
-            EndIf
-         EndIf
          
          
          ;\\ Border & Frame size
@@ -16809,8 +16807,8 @@ chr$ = ","
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Scroll, X, Y, Width, Height, #Null$, flag, min, max, pagelength, #__bar_button_size, round, 1 )
       EndProcedure
       
-      Procedure.i Track( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = #__buttonround )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Track, X, Y, Width, Height, #Null$, flag, min, max, 0, #__bar_button_size, round, 1 )
+      Procedure.i Track( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, scrollstep.d = 1.0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Track, X, Y, Width, Height, #Null$, flag, min, max, 0, #__bar_button_size, #__ButtonRound, scrollstep )
       EndProcedure
       
       Procedure.i Progress( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 0 )
@@ -17276,12 +17274,12 @@ chr$ = ","
                   EndIf
                   
                   ; reset item z - order
-                  If *this\mode\Buttons
+                  If *this\mode\Buttons Or (*this\mode\CheckBoxes Or *this\mode\OptionBoxes)
                      Protected buttonpos = DPIScaled(6)
                      Protected buttonsize = DPIScaled(9)
                   EndIf
                   Protected boxpos = DPIScaled(4)
-                  Protected boxsize = buttonsize + dpi_scale_two
+                  Protected boxsize = DPIScaled(13)
                   Protected bs = Bool( *this\fs )
                   Protected scroll_width
                   
@@ -17319,48 +17317,39 @@ chr$ = ","
                      *rows( )\y = *this\scroll_height( )
                      
                      If *rows( )\columnindex = 0
-                        ;\\ check box size
-                        If *this\mode\check And *rows( )\checkbox
-                           *rows( )\checkbox\width  = boxsize
-                           *rows( )\checkbox\height = boxsize
-                        EndIf
-                        
                         ;\\ sublevel position
-                        *this\row\sublevelpos = *rows( )\sublevel * *this\row\sublevelsize 
+                        *this\row\sublevelpos = *rows( )\sublevel * *this\row\sublevelsize ;+ 8
                         
                         ;\\ expanded & collapsed box coordinate
-                        If *rows( )\buttonbox
-                           *this\row\sublevelpos + (buttonpos+buttonsize) 
-                           ;
-                           *rows( )\buttonbox\width  = buttonsize
-                           *rows( )\buttonbox\height = buttonsize
-                           *rows( )\buttonbox\x = *this\row\sublevelpos - *rows( )\buttonbox\width - dpi_scale_two   
-                           *rows( )\buttonbox\y = ( *rows( )\height ) - ( *rows( )\height + *rows( )\buttonbox\height ) / 2
+                        If *this\mode\Buttons
+                           If *rows( )\buttonbox 
+                              *this\row\sublevelpos + (buttonpos+buttonsize) 
+                              *rows( )\buttonbox\width  = buttonsize
+                              *rows( )\buttonbox\height = buttonsize
+                              *rows( )\buttonbox\x = *this\row\sublevelpos - *rows( )\buttonbox\width - 5
+                              *rows( )\buttonbox\y = *rows( )\height - ( *rows( )\height + *rows( )\buttonbox\height ) / 2
+                           EndIf
                         EndIf
                         
-                        ;\\ check & option box position
-                        If *rows( )\checkbox
-                           *this\row\sublevelpos + (boxpos+boxsize)
-                           ;
-                           *rows( )\checkbox\x = *this\row\sublevelpos - *rows( )\checkbox\width
-                           *rows( )\checkbox\y = *rows( )\height - ( *rows( )\height + *rows( )\checkbox\height ) / 2
+                        ;\\ check & option box position & size
+                        If *this\mode\CheckBoxes Or *this\mode\OptionBoxes
+                           If *rows( )\checkbox
+                              *this\row\sublevelpos + (boxpos+boxsize)
+                              *rows( )\checkbox\width  = boxsize
+                              *rows( )\checkbox\height = boxsize
+                              *rows( )\checkbox\x = *this\row\sublevelpos - *rows( )\checkbox\width - 2
+                              *rows( )\checkbox\y = *rows( )\height - ( *rows( )\height + *rows( )\checkbox\height ) / 2
+                           EndIf
                         EndIf
+                        
+                        ; Debug ""+*this\row\sublevelpos +" "+ *rows( )\sublevel +" "+ *this\row\sublevelsize 
                         
                         ;\\ image position
                         If *rows( )\img\imageID
-                           If *this\mode\check
-                              ; If Not *rows( )\buttonbox
-                              *this\row\sublevelpos + dpi_scale_two
-                              ; EndIf
-                           EndIf
-                           
-                           *rows( )\img\x = *this\row\sublevelpos + *this\padding\x;+ dpi_scale_two ; 
+                           *rows( )\img\x = *this\row\sublevelpos + *this\padding\x
                            *rows( )\img\y = ( *rows( )\height - *rows( )\img\height ) / 2
                         EndIf
-                        
-                     EndIf
-                     
-                     If *rows( )\columnindex = 0
+                        ;
                         *rows( )\x = *this\columns( )\x           
                      Else
                         *rows( )\x = *this\columns( )\x + *this\row\sublevelpos + *this\MarginLine( )\width
@@ -17380,12 +17369,6 @@ chr$ = ","
                         *rows( )\txt\y = ( *rows( )\height - *rows( )\txt\height ) / 2
                      EndIf
                      
-                     ;                      ;
-                     ;                      *rows( )\x + *this\row\sublevelsize
-                     ;                      *rows( )\txt\x - *this\row\sublevelsize
-                     ;                      If *rows( )\buttonbox
-                     ;                         *rows( )\buttonbox\x - *this\row\sublevelsize
-                     ;                      EndIf
                      
                      ;\\ vertical scroll max value
                      *this\scroll_height( ) + *rows( )\height + Bool( *this\__rows( )\rindex <> *this\countitems - 1 ) * *this\mode\GridLines
@@ -17769,7 +17752,9 @@ chr$ = ","
                      ;                            Debug "panel_0 "+iheight
                      ;                         EndIf
                      
-                     Line((xs + *buttonBox\x + *buttonBox\width / 2), iy, 1, iheight, *this\LineColor )
+                     If *buttonBox
+                        Line((xs + *buttonBox\x + *buttonBox\width / 2), iy, 1, iheight, *this\LineColor )
+                     EndIf
                   EndIf
                   
                   ;  for the tree horizontal line
@@ -17793,24 +17778,23 @@ chr$ = ","
             EndIf
             
             ;\\ Draw buttons
-            If *this\mode\Buttons Or
-               *this\mode\check
+            If *this\mode\Buttons Or (*this\mode\CheckBoxes Or *this\mode\OptionBoxes)
                
                ;\\ Draw boxs ( check&option )
                ForEach *rows( )
                   If *rows( )\columnindex <> ListIndex( *this\columns( ))
                      Continue
                   EndIf
-                  If *rows( )\visible And *this\mode\check And *rows( )\checkbox
+                  If *rows( )\visible And *rows( )\checkbox And (*this\mode\CheckBoxes Or *this\mode\OptionBoxes)
                      X = row_x_( *this, *rows( ) ) - _scroll_x_
                      Y = row_y_( *this, *rows( ) ) - _scroll_y_
                      
                      If *rows( )\RowParent( ) And *this\mode\optionboxes
                         ; option box
-                        draw_button_( 1, X + *rows( )\checkbox\x, Y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\checkbox\checked , 4 )
+                        draw_button_( 1, X + *rows( )\checkbox\x, Y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\checkbox\checked , *rows( )\checkbox\width )
                      Else
                         ; check box
-                        draw_button_( 3, X + *rows( )\checkbox\x, Y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\checkbox\checked , 2 )
+                        draw_button_( 3, X + *rows( )\checkbox\x, Y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\checkbox\checked , DPIScaled(2) )
                      EndIf
                   EndIf
                Next
@@ -25687,9 +25671,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 24475
-; FirstLine = 24032
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------------------------------------------------------------------------------------------------------------8---b----------------------------------------------------------------------------------------------------
+; CursorPosition = 14997
+; FirstLine = 14668
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------------------------------------f-----4l----------------------------------------------------------------Dst6-4-+----4------------------bYv---+v+--v40--------------9-----------8--------------------------------------------------------------------------------------------------------v---v0---------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -31,8 +31,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
-  Global *this._s_widget, gadget, Button_type, Button_0, Button_1, Button_2, Button_3, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
-  Global Button_4, Button_5, Button_6, Button_7, Button_8, Button_9
+  Global *this._s_widget, gadget, Button_type, nolines, nobuttons, checkboxes, optionboxes, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+  Global threestate, Button_5, Button_6, gridlines, Button_8, Button_9
   Define vert=100, horiz=100, Width=450, Height=400
   
   Procedure events_widgets()
@@ -42,24 +42,29 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_Change
         Debug  "change"
         
-      Case #__event_LeftClick
         Select EventWidget
           Case Button_type 
             
-          Case Button_0 : flag = #__tree_nolines
-          Case Button_1 : flag = #__tree_nobuttons
-          Case Button_2 : flag = #__tree_checkboxes
-          Case Button_3 : flag = #__flag_optionboxes
-          Case Button_4 : flag = #__tree_threestate
+          Case nolines : flag = #__tree_nolines
+          Case nobuttons : flag = #__tree_nobuttons
+          Case checkboxes : flag = #__tree_checkboxes
+          Case optionboxes : flag = #__flag_optionboxes
+          Case threestate : flag = #__tree_threestate
           ;Case Button_5 : flag = #__flag_collapsedd
           ;Case Button_6 : flag = #__tree_expanded
-          Case Button_7 : flag = #__flag_gridlines
+          Case gridlines : flag = #__flag_gridlines
         EndSelect
         
         If flag
-          Flag(*this, flag, GetState(EventWidget))
+           Flag(*this, flag, GetState(EventWidget)!Bool(EventWidget=nobuttons Or EventWidget=nolines ))
         EndIf
         
+;         If EventWidget = optionboxes
+;            If GetState( EventWidget )
+;               SetState( checkboxes, 1 ) 
+;            EndIf
+;         EndIf
+               
   EndSelect
     
   EndProcedure
@@ -70,64 +75,63 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Define img = 0
     widget::Container(10,10,Width, Height)
-    *this = widget::Tree(100, 100, 250, 200, #__flag_optionBoxes | #PB_Tree_NoLines | #PB_Tree_NoButtons )  ; |#__flag_GridLines
+    *this = widget::Tree(100, 100, 250, 200, #PB_Tree_NoLines | #PB_Tree_NoButtons|#__flag_checkBoxes|#__flag_optionBoxes | #__flag_GridLines)
     CloseList()
-    
+    ;Debug *this\mode\check
+    ;*this\mode\checkBoxes = 1
     ;\\
     ; optionbox
-    widget::AddItem (*this, -1, "SistemMenu",     -1,-1)                                    
     ;   checkbox and child
-    widget::AddItem (*this, -1, "MaximizeGadget", -1, 1)                                    
-    widget::AddItem (*this, -1, "MinimizeGadget", -1, 1)                                    
-    widget::AddItem (*this, -1, "CloseGadget",    -1, 1)                                    
-    
-    ; optionbox
-    widget::AddItem (*this, -1, "TitleBar",       -1,-1)                                    
-    widget::AddItem (*this, -1, "BorderLess",     -1,-1)                                    
-    
-    ; checkbox
     widget::AddItem (*this, -1, "SizeGadget",     -1, 0)                                    
-    widget::AddItem (*this, -1, "Invizible",      -1, 0)                                    
-    widget::AddItem (*this, -1, "Tool",           -1, 0)                                    
+    
+    widget::AddItem (*this, -1, "Tool",           -1, 1)                                    
+    widget::AddItem (*this, -1, "TitleBar",       -1, 1)                                    
+    widget::AddItem (*this, -1, "BorderLess",     -1, 1)                                    
+    widget::AddItem (*this, -1, "SistemMenu",     -1, 1)                                    
+    
+    widget::AddItem (*this, -1, "MaximizeGadget", -1, 0)                                    
+    widget::AddItem (*this, -1, "MinimizeGadget", -1, 0)                                    
+    widget::AddItem (*this, -1, "CloseGadget",    -1, 0)                                    
     
     ; optionbox
-    widget::AddItem (*this, -1, "Normal",         -1,-1)                                    
-    widget::AddItem (*this, -1, "Maximize",       -1,-1)                                    
-    widget::AddItem (*this, -1, "Minimize",       -1,-1)                                    
+    widget::AddItem (*this, -1, "Normal",         -1,1)                                    
+    widget::AddItem (*this, -1, "Maximize",       -1,1)                                    
+    widget::AddItem (*this, -1, "Minimize",       -1,1)                                    
+    widget::AddItem (*this, -1, "Invizible",      -1,1)                                    
     
     ; checkbox
-    widget::AddItem (*this, -1, "NoGadget",       -1, 0)                                    
+    widget::AddItem (*this, -1, "NoGadgets",       -1, 0)                                    
     widget::AddItem (*this, -1, "NoActive",       -1, 0)                                    
     
     ; optionbox
-    widget::AddItem (*this, -1, "WindowCenter",   -1,-1)                                    
-    widget::AddItem (*this, -1, "ScreenCenter",   -1,-1)                                    
+    widget::AddItem (*this, -1, "WindowCenter",   -1,1)                                    
+    widget::AddItem (*this, -1, "ScreenCenter",   -1,1)                                    
+   ; *this\mode\checkboxes = 0
     
     ;\\
     Define Y = 10
     
     ;\\ flag
     Button_type = widget::Button(Width+45,   Y, 100, 26, "gadget", #PB_Button_Toggle) 
-    Button_0 = widget::Button(Width+45, Y+30*1, 100, 26, "nolines", #PB_Button_Toggle) 
-    Button_1 = widget::Button(Width+45, Y+30*2, 100, 26, "nobuttons", #PB_Button_Toggle) 
-    Button_2 = widget::Button(Width+45, Y+30*3, 100, 26, "checkboxes", #PB_Button_Toggle) 
-    Button_3 = widget::Button(Width+45, Y+30*4, 100, 26, "optionboxes", #PB_Button_Toggle) 
-    Button_4 = widget::Button(Width+45, Y+30*5, 100, 26, "threestate", #PB_Button_Toggle) 
+    nolines = widget::Button(Width+45, Y+30*1, 100, 26, "nolines", #PB_Button_Toggle) 
+    nobuttons = widget::Button(Width+45, Y+30*2, 100, 26, "nobuttons", #PB_Button_Toggle) 
+    checkboxes = widget::Button(Width+45, Y+30*3, 100, 26, "checkboxes", #PB_Button_Toggle) 
+    optionboxes = widget::Button(Width+45, Y+30*4, 100, 26, "optionboxes", #PB_Button_Toggle) 
+    threestate = widget::Button(Width+45, Y+30*5, 100, 26, "threestate", #PB_Button_Toggle) 
     ;Button_5 = widget::Button(width+45, y+30*6, 100, 26, "collapsed", #PB_Button_Toggle) 
     ;Button_6 = widget::Button(width+45, y+30*7, 100, 26, "expanded", #PB_Button_Toggle) 
-    Button_7 = widget::Button(Width+45, Y+30*8, 100, 26, "gridlines", #PB_Button_Toggle) 
+    gridlines = widget::Button(Width+45, Y+30*8, 100, 26, "gridlines", #PB_Button_Toggle) 
     
     ;\\ set button toggled state
-    widget::SetState(Button_0, Flag(*this, #__tree_nolines))
-    widget::SetState(Button_1, Flag(*this, #__tree_nobuttons))
-    widget::SetState(Button_2, Flag(*this, #__tree_checkboxes))
-    widget::SetState(Button_3, Flag(*this, #__flag_optionboxes))
-    widget::SetState(Button_4, Flag(*this, #__tree_threestate))
+    widget::SetState(nolines, Flag(*this, #__tree_nolines))
+    widget::SetState(nobuttons, Flag(*this, #__tree_nobuttons))
+    widget::SetState(checkboxes, Flag(*this, #__tree_checkboxes))
+    widget::SetState(optionboxes, Flag(*this, #__flag_optionboxes))
+    widget::SetState(threestate, Flag(*this, #__tree_threestate))
     ;widget::SetState(Button_5, Flag(*this, #__flag_collapsedd))
     ;widget::SetState(Button_6, Flag(*this, #__tree_expanded))
-    ;widget::SetState(Button_7, Flag(*this, #__tree_gridlines))
-    ;     widget::SetState(Button_8, Flag(*this, #__tree_nolines))
-    ;     widget::SetState(Button_9, Flag(*this, #__tree_nobuttons))
+    widget::SetState(gridlines, Flag(*this, #__flag_GridLines))
+    
     If Button_type
        widget::Hide(Button_type, 1)
     EndIf
@@ -155,9 +159,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 150
-; FirstLine = 128
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 134
+; FirstLine = 122
 ; Folding = --
 ; EnableXP
 ; DPIAware

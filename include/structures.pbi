@@ -69,9 +69,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          optionboxes.b
          checkboxes.b
          
-         StructureUnion
-            check.b
-         EndStructureUnion
+;          StructureUnion
+;             check.b
+;          EndStructureUnion
          AlwaysSelection.b
          
          
@@ -797,8 +797,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 264
-; FirstLine = 253
+; CursorPosition = 73
+; FirstLine = 52
 ; Folding = ----------
 ; Optimizer
 ; EnableXP
