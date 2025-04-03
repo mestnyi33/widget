@@ -10594,7 +10594,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-            ;
+         ;
             ;\\ get the last widget to add it after it
             If *parent\LastWidget( )
                *after = GetPosition( *parent, #PB_List_Last, tabindex )
@@ -10724,17 +10724,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
             Else
                ;
+               PushListPosition( widgets( ) )
                If *last
                   ChangeCurrentElement( widgets( ) , *last\address )
                Else
                   LastElement( widgets( ) )
                EndIf
-               ;
-               AddElement( widgets( ) )
-               widgets( )    = *this
+               AddElement( widgets( ) ) : widgets( ) = *this
                *this\layer   = ListIndex( widgets( ) )
                *this\index   = ListIndex( widgets( ) )
                *this\address = @widgets( )
+               PopListPosition( widgets( ) )
             EndIf
             ;
             ;\\
@@ -12685,6 +12685,29 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\TextChange( )     = - 1
                
                ProcedureReturn 1
+            EndIf
+         EndIf
+         
+         ; - widget::tree_clear_items( )
+         If *this\type = #__type_ComboBox
+            
+            If *this\popupbar
+               If *this\stringbar
+                  SetText( *this\stringbar, "" )
+               EndIf
+               If *this\popupbar\countitems <> 0
+                  *this\popupbar\WidgetChange( ) = 1
+                  *this\popupbar\countitems     = 0
+                  
+                  If *this\popupbar\RowFocused( )
+                     *this\popupbar\RowFocused( )\ColorState( ) = 0
+                     ClearStructure(*this\popupbar\RowFocused( ), _s_ROWS)
+                     *this\popupbar\RowFocused( ) = 0
+                  EndIf
+                  
+                  ClearList( *this\popupbar\__rows( ))
+                  PostRepaint( *this\popupbar\root )
+               EndIf
             EndIf
          EndIf
          
@@ -16136,7 +16159,7 @@ chr$ = ","
          ;          EndIf   
          *this\bs = *this\fs
          
-         ;\\
+        ;\\
          If *parent
             ;\\
             If constants::BinaryFlag( Flag, #__flag_autosize )
@@ -16165,7 +16188,7 @@ chr$ = ","
          ;\\ add count types
          CountType( *this, 1 )
          
-         ;\\ - Create Texts
+             ;\\ - Create Texts
          If *this\type = #__type_Text Or
             *this\type = #__type_Editor Or
             *this\type = #__type_String Or
@@ -25671,9 +25694,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 14997
-; FirstLine = 14668
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f-----------------------------------------------------------------------------------------------------------------------------------------------f-----4l----------------------------------------------------------------Dst6-4-+----4------------------bYv---+v+--v40--------------9-----------8--------------------------------------------------------------------------------------------------------v---v0---------------------------------------------------------------------------------------------------
+; CursorPosition = 10732
+; FirstLine = 10608
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f-----------------------------------------------------------------------------------------------z-----------------------------------------------f-----4l-----------------------------------------------------------------B339-8f-----8------------------N94--f-4---48+-------------f+-----------0--------------------------------------------------------------------------------------------------------4---4+---------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -25,6 +25,8 @@ Enumeration
    #_pi_group_VIEW 
    #_pi_hide
    #_pi_disable
+   ;
+   #_pi_flag
    #_pi_cursor
    #_pi_IMAGE
    ;
@@ -38,8 +40,6 @@ Enumeration
    #_pi_colorblue
    #_pi_colorgreen
    #_pi_colorred
-   ;
-   #_pi_flag
 EndEnumeration
 
 ; events items
@@ -415,6 +415,47 @@ Procedure   ReplaceArg( *object._s_WIDGET, argument, replace$ )
 EndProcedure
 
 ;-
+Procedure Properties_ButtonAddItems( *inspector._s_WIDGET, item, Text.s )
+   Protected *second._s_WIDGET = GetAttribute(*inspector, #PB_Splitter_SecondGadget)
+   ;
+   If *second 
+      Protected *this._s_WIDGET = GetItemData( *second, item )
+      
+      If *this
+         Select Type( *this )
+            Case #__type_ComboBox 
+               Static lasttext.s
+               
+               If lasttext <> Text
+                  lasttext = Text
+                  Debug "Properties_ButtonAddItems " +Text
+                  ClearItems(*this)
+                  
+                  If Text
+                     Protected i, sublevel, String.s, count = CountString(Text,"|")
+                     
+                     For I = 0 To count
+                        String = Trim(StringField(Text,(I+1),"|"))
+                        
+                        Select LCase(Trim(StringField(String,(3),"_")))
+                           Case "left" : sublevel = 1
+                           Case "right" : sublevel = 1
+                           Case "center" : sublevel = 1
+                           Default
+                              sublevel = 0
+                        EndSelect
+                        
+                        AddItem(*this, -1, String, -1, sublevel)
+                        
+                     Next
+                  EndIf 
+               EndIf 
+               
+         EndSelect
+      EndIf
+   EndIf
+EndProcedure
+
 Procedure   Properties_ButtonHide( *second._s_WIDGET, state )
    Protected *this._s_WIDGET
    Protected *row._s_ROWS
@@ -467,15 +508,15 @@ Procedure   Properties_ButtonResize( *second._s_WIDGET )
             Select *row\index
                Case #_pi_FONT, #_pi_COLOR, #_pi_IMAGE
                   Resize(*this,
-                         *row\x + *second\scroll_x( ) + (*second\inner_width( )-*this\width), 
-                         *row\y + *second\scroll_y( ), 
+                         *row\x + (*second\inner_width( )-*this\width), ; + *second\scroll_x( )
+                         *row\y, ; + *second\scroll_y( ), 
                          #PB_Ignore, 
                          *row\height, 0 )
                Default
                   Resize(*this,
-                         *row\x + *second\scroll_x( ),; +30, 
-                         *row\y + *second\scroll_y( ), 
-                         *second\inner_width( ),;*row\width,;; -30, 
+                         *row\x,
+                         *row\y,
+                         *second\inner_width( ), ; *row\width,
                          *row\height, 0 )
             EndSelect 
             ;             ;*this\WIdgetChange( ) = 1
@@ -693,6 +734,8 @@ Procedure   Properties_ButtonEvents( )
                
             Case #__type_ComboBox
                Select GetData(*g) 
+                  Case #_pi_flag
+                     
                   Case #_pi_fontstyle
                      If a_focused( )
                         ; Debug "#PB_Font_"+GetItemText( *g, GetState(*g)) ; GetText( *g)
@@ -777,6 +820,8 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
          *this = Create( *parent, "ComboBox", Type, 0, 0, 0, 0, "", flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
          ;
          Select item
+            Case #_pi_flag
+               
             Case #_pi_fontstyle
                AddItem(*this, -1, "None")         
                If *this\popupbar
@@ -1051,6 +1096,12 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
    ; class$ = Properties_GetItemText( ide_inspector_properties, #_pi_class )
    
    If ide_inspector_properties
+      If type$ = "Focus"
+         If a_focused( )
+            Properties_ButtonAddItems( ide_inspector_properties, #_pi_flag, MakeFlagsString( Type( a_focused( ))))
+         EndIf
+      EndIf
+      
       If type$ = "Focus" Or type$ = "Align"
          If a_focused( )\parent = ide_design_panel_MDI
             Properties_HideItem( ide_inspector_properties, #_pi_align, #True ) 
@@ -2452,6 +2503,8 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
       Properties_AddItem( ide_inspector_properties, #_pi_group_VIEW,   "VIEW" )
       Properties_AddItem( ide_inspector_properties, #_pi_hide,           "Hide",     #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_disable,        "Disable",  #__Type_ComboBox, 1 )
+      ;
+      Properties_AddItem( ide_inspector_properties, #_pi_flag,          "Flag",      #__Type_ComboBox, 0 )
       Properties_AddItem( ide_inspector_properties, #_pi_cursor,         "Cursor",   #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_IMAGE,          "Image",    #__Type_Button, 1 )
       ;
@@ -2465,8 +2518,6 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
       Properties_AddItem( ide_inspector_properties, #_pi_colorblue,       "blue",    #__Type_Spin, 2 )
       Properties_AddItem( ide_inspector_properties, #_pi_colorgreen,      "green",   #__Type_Spin, 2 )
       Properties_AddItem( ide_inspector_properties, #_pi_colorred,        "red",     #__Type_Spin, 2 )
-      ;
-      Properties_AddItem( ide_inspector_properties, #_pi_flag,          "Flag",      #__Type_ComboBox, 0 )
    EndIf
    
    ; ide_inspector_panel_item_3 
@@ -2820,9 +2871,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 784
-; FirstLine = 768
-; Folding = --------------------------------------------------
+; CursorPosition = 421
+; FirstLine = 414
+; Folding = ---------------------------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
