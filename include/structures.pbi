@@ -125,16 +125,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     COLOR
       Structure _s_COLOR
-         state.b ; entered; selected; disabled;
-         front.i[4]
-         fore.i[4]
-         back.i[4]
-         Frame.i[4]
+         state.b ; default=0; entered=1; selected=2; disabled=3;
+         front.l[4]
+         fore.l[4]
+         back.l[4]
+         Frame.l[4]
          StructureUnion
             ialpha.a
             _alpha.a
          EndStructureUnion
-         ; *alpha._s_color
       EndStructure
       ;--     ALIGN
       Structure _s_ALIGN Extends _s_COORDINATE
@@ -797,8 +796,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 52
+; CursorPosition = 128
+; FirstLine = 116
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

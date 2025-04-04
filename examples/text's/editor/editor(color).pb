@@ -30,6 +30,8 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     SetItemFont(*w, 3, font1)
     SetItemFont(*w, 7, font2)
     
+    ;SetColor(*w, #__backcolor, $FFFFFF00, 1 )
+    
 ;     ; index-3 item default text-color 
 ;     SetItemColor(*w, 3, #PB_Gadget_FrontColor, $FF00FF00)
     
@@ -60,8 +62,8 @@ If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #
     WaitClose( )
   EndIf
   CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 23
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 32
+; FirstLine = 20
 ; Folding = -
 ; EnableXP

@@ -38,7 +38,7 @@ CompilerEndIf
 
 Global my_font_2 = LoadFont(#PB_Any, "Consolas", 13, #PB_Font_Bold|#PB_Font_Underline )
 
-If Open( 0, 0, 0, 592, 532, "Редактор изображения", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+If Open( 0, 0, 0, 592, 532, "main", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
    
    WINDOW_1 = Window( 10, 10, 392, 232, "Редактор изображения", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
    IMAGE_VIEW = Image(7, 7, 253, 218, ( 0 ), #__flag_border_flat|#__image_center )
@@ -67,8 +67,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 54
-; FirstLine = 32
+; CursorPosition = 40
+; FirstLine = 29
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -330,7 +330,6 @@
       #__type_TabBar        = - 7
       #__type_StatusBar     = - 8
       #__type_Properties    = - 9
-      
       ;     #__type_toggled
       ;     
       ;     #__type_ImageButton
@@ -779,8 +778,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 136
-; FirstLine = 125
+; CursorPosition = 332
+; FirstLine = 322
 ; Folding = ----
 ; Optimizer
 ; EnableXP

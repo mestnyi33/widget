@@ -1,12 +1,10 @@
 ﻿DeclareModule colors
   Structure _s_color
     grey.structures::_s_color
-    grey1.structures::_s_color
-    grey2.structures::_s_color
     green.structures::_s_color
     red.structures::_s_color
     blue.structures::_s_color
-  ;  black.structures::_s_color
+    black.structures::_s_color
   EndStructure
   
   Define *this._s_color = AllocateStructure(_s_color)
@@ -144,6 +142,38 @@
     \back[3] = $FFE2E2E2 
     \frame[3] = $FFCECECE
   EndWith
+  ;-
+  ;- Black - (черные цвета)
+  With *this\black                          
+    \state = 0
+    \_alpha = 255
+    
+    ;\state[1] = constants::#__s_front|constants::#__s_back|constants::#__s_frame
+    
+    ; Цвета по умолчанию
+    \front[0] = $ff000000
+    \fore[0] = $FFF6F6F6
+    \back[0] = $FFE8E8E8
+    \frame[0] = $FFBABABA
+    
+    ; Цвета если курсор на виджете
+    \front[1] = $ff000000
+    \fore[1] = $FFF2F2F2 
+    \back[1] = $FFDCDCDC 
+    \frame[1] = $FFB0B0B0 
+    
+    ; Цвета если нажали на виджет
+    \front[2] = $ff000000
+    \fore[2] = $FFE2E2E2
+    \back[2] = $FFB4B4B4
+    \frame[2] = $FF6F6F6F
+    
+    ; Цвета если отключили виджет
+    \front[3] = $FFBABABA
+    \fore[3] = $FFF6F6F6 
+    \back[3] = $FFE2E2E2 
+    \frame[3] = $FFCECECE
+  EndWith
   
 EndDeclareModule
 
@@ -170,7 +200,8 @@ EndModule
 ;     
 ; CompilerEndSelect
 
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 146
+; FirstLine = 138
 ; Folding = -
 ; EnableXP

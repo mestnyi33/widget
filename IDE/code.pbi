@@ -597,21 +597,68 @@ Procedure$  MakeCloseList( *g._s_WIDGET, *before = 0 )
 EndProcedure
 
 ;-
+Procedure$ MakeCoordinate( str$, findtext$ )
+   Define val, i, count = CountString( str$, "+" )
+   If count
+      For i = 0 To count
+         val + Val( StringField( str$, i+1, "+" ))
+      Next
+      str$ = Str(val)
+   Else
+      count = CountString( str$, "-" )
+      If count
+         For i = 0 To count
+            If val
+               val - Val( StringField( str$, i+1, "-" ))
+            Else
+               val = Val( StringField( str$, i+1, "-" ))
+            EndIf
+         Next
+         str$ = Str(val)
+      Else
+         If Not NumericString( str$ )  
+            str$ = StringField( StringField( Mid( findtext$, FindString( findtext$, str$ ) ), 1, "," ), 2, "=" )
+         EndIf
+      EndIf
+   EndIf
+   ProcedureReturn str$
+EndProcedure
+
 Procedure$  MakeArgString( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
-   Protected i, chr$, start, stop 
+   Protected i, ch, chr$, start, stop 
    Static ii
    
    For i = 0 To len
       chr$ = Mid( string$, i, 1 )
       If chr$ = "(" 
          start = i + 1
+         
          For i = len To start Step - 1
             chr$ = Mid( string$, i, 1 )
+            
+            If ch
+               If chr$ = Chr('"')
+                  ch = 0
+               EndIf
+               Continue
+            ElseIf chr$ = Chr('"')
+               ch = 1
+            EndIf
+            
             If chr$ = ")" 
                stop = i - start
                
                For i = start To len
                   chr$ = Mid( Mid( string$, start, stop ), i, 1 )
+                  
+                  If ch
+                     If chr$ = Chr('"')
+                        ch = 0
+                     EndIf
+                     Continue
+                  ElseIf chr$ = Chr('"')
+                     ch = 1
+                  EndIf
                   
                   If chr$ = ")" 
                      stop = i - Bool(FindString( string$, ":" ))
@@ -633,6 +680,7 @@ Procedure$  MakeArgString( string$, len, *start.Integer = 0, *stop.Integer = 0 )
                EndIf 
                Break
             EndIf
+            
          Next i
          
          Break
@@ -641,57 +689,29 @@ Procedure$  MakeArgString( string$, len, *start.Integer = 0, *stop.Integer = 0 )
 EndProcedure
 
 Procedure$  MakeFuncString( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
-   Protected i, result$, str$, start, stop
-   Protected space, pos = FindString( string$, "=" )
+   Protected i, result$
+   Protected func$ = StringField( string$, 1, "(" )
+   Protected pos = FindString( func$, "=" )
    
-   ;    If pos
-   ;       If pos > FindString( string$, "(" )
-   ;          pos = 0
-   ;       Else
-   ;          string$ = Mid( string$, pos + 1, len - pos )
-   ;       EndIf
-   ;    Else
-   ;       pos = FindString( string$, ":" )
-   ;       If pos
-   ;          string$ = StringField( string$, 2, ":" )
-   ;       EndIf
-   ;    EndIf
-   ; 
-   ;    For i = 1 To len
-   ;       If Mid( string$, i, 1 ) = "(" 
-   ;          stop = i - 1
-   ;          str$ = Mid( string$, start, stop )
-   ;          result$ = Trim( str$ )
-   ;          space = FindString( str$, result$ )
-   ;          If space 
-   ;             start + space
-   ;             stop - space
-   ;          EndIf
-   ;          If *start
-   ;             *start\i = pos + start
-   ;          EndIf
-   ;          If *stop
-   ;             *stop\i = stop + 1
-   ;          EndIf
-   ;          Break
-   ;       EndIf
-   ;    Next i
-   
-   
-   len = FindString( string$, "(" ) - pos - 1
+   len = Len(func$) - pos 
    pos + 1
    
-   string$ = Trim(Mid( string$, pos, len ))
+   ; Debug "---- "+pos+" "+len
+   
+   result$ = Trim( Mid( string$, pos, len ))
    For i = len To 1 Step - 1
-      If Mid( String$, i, 1 ) = " " 
-         String$ = Mid( string$, i, len )
+      If Mid( result$, i, 1 ) = " " 
+         result$ = Mid( result$, i, len )
          Break
       EndIf
    Next i
-   result$ = Trim(String$)
-   
-   
-   ; Debug result$
+   result$ = Trim(result$)
+   If *start
+      *start\i = FindString( string$, result$ ) 
+   EndIf
+   If *stop
+      *stop\i = Len(result$)
+   EndIf
    
    ProcedureReturn result$
 EndProcedure
@@ -784,8 +804,8 @@ Procedure MakeFunc( string$, Index )
 EndProcedure
 
 
-Procedure   MakeLine( parent, string$, findtext$ )
-   Static *parent
+Procedure   MakeLine( *mdi, string$, findtext$ )
+   Static *parent, *parentWindow
    Protected result
    Protected text$, flag$, type$, id$, x$, y$, width$, height$, param1$, param2$, param3$, param4$
    Protected param1, param2, param3, flags.q
@@ -850,17 +870,24 @@ Procedure   MakeLine( parent, string$, findtext$ )
             EndIf
             
             ;\\
-            If FindString( \func$, "Gadget" )
-               \func$ = ReplaceString( \func$, "Gadget", "")
-            ElseIf FindString( \func$, "OpenWindow" )
+            If FindString( \func$, "OpenWindow" )
                \func$ = ReplaceString( \func$, "OpenWindow", "Window")
+               *parent = *mdi
             ElseIf \func$ = "Open"
                \func$ = ReplaceString( \func$, "Open", "Window")
+               *parent = *mdi
                id$ = "WINDOW_MAIN"
+            ElseIf FindString( \func$, "Gadget" )
+               \func$ = ReplaceString( \func$, "Gadget", "")
+;             ElseIf FindString( \func$, "Window" )
+;                \func$ = ReplaceString( \func$, "Window", "")
             Else
                Select \func$
-                  Case "Window",
-                       "Button","String","Text","CheckBox",
+                  Case "Window"
+                     ;\func$ = "Form"
+                     arg$ = ", " + arg$ 
+                     
+                  Case "Button","String","Text","CheckBox",
                        "Option","ListView","Frame","ComboBox",
                        "Image","HyperLink","Container","ListIcon",
                        "IPAddress","ProgressBar","ScrollBar","ScrollArea",
@@ -873,8 +900,8 @@ Procedure   MakeLine( parent, string$, findtext$ )
                EndSelect
             EndIf
             
-            ;             Debug "func[" + \func$ +"]" 
-            ;             Debug " arg["+ arg$ +"]"
+;                         Debug "func[" + \func$ +"]" 
+;                         Debug " arg["+ arg$ +"]"
             
             ;\\
             Select \func$
@@ -904,22 +931,10 @@ Procedure   MakeLine( parent, string$, findtext$ )
                   id$ = UCase( id$ )
                   
                   ; coordinate
-                  x$      = Trim(StringField( arg$, 2, ","))
-                  If Not NumericString( x$ )  
-                     x$ = StringField( StringField( Mid( findtext$, FindString( findtext$, x$ ) ), 1, "," ), 2, "=" )
-                  EndIf
-                  y$      = Trim(StringField( arg$, 3, ","))
-                  If Not NumericString( y$ )  
-                     y$ = StringField( StringField( Mid( findtext$, FindString( findtext$, y$ ) ), 1, "," ), 2, "=" )
-                  EndIf
-                  width$  = Trim(StringField( arg$, 4, ","))
-                  If Not NumericString( width$ )  
-                     width$ = StringField( StringField( Mid( findtext$, FindString( findtext$, width$ ) ), 1, "," ), 2, "=" )
-                  EndIf
-                  height$ = Trim(StringField( arg$, 5, ","))
-                  If Not NumericString( height$ )  
-                     height$ = StringField( StringField( Mid( findtext$, FindString( findtext$, height$ ) ), 1, "," ), 2, "=" )
-                  EndIf
+                  x$      = MakeCoordinate( Trim(StringField( arg$, 2, ",")), findtext$ )
+                  y$      = MakeCoordinate( Trim(StringField( arg$, 3, ",")), findtext$ )
+                  width$  = MakeCoordinate( Trim(StringField( arg$, 4, ",")), findtext$ )
+                  height$ = MakeCoordinate( Trim(StringField( arg$, 5, ",")), findtext$ )
                   
                   ;
                   param1$ = Trim(StringField( arg$, 6, ","))
@@ -934,7 +949,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
                           "Text", "String", "Button", "CheckBox",
                           "Option", "HyperLink", "ListIcon", "Date",
                           "ExplorerList", "ExplorerTree", "ExplorerCombo"
-                        
+                        Debug arg$
                         If FindString( param1$, Chr('"'))
                            text$ = Trim( param1$, Chr('"'))
                         Else
@@ -955,7 +970,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
                         param1 = Val( param1$ )
                         
                      Case "Splitter" 
-                        param1 = MakeID( UCase(Param1$), parent )
+                        param1 = MakeID( UCase(Param1$), *mdi )
                         
                      Case "ListIcon"
                         param1 = Val( param2$ ) ; *this\columns( )\width
@@ -972,7 +987,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
                         param2 = Val( param2$ )
                         
                      Case "Splitter" 
-                        param2 = MakeID( UCase(Param2$), parent )
+                        param2 = MakeID( UCase(Param2$), *mdi )
                         
                   EndSelect
                   
@@ -1008,30 +1023,32 @@ Procedure   MakeLine( parent, string$, findtext$ )
                   EndIf
                   
                   ; window parent ID
-                  If \func$ = "Window"
-                     If *parent 
-                        Resize( *parent, Val(x$), Val(y$), Val(width$), Val(height$) )
-                        ProcedureReturn 0
-                     EndIf
-                     
+                  If \func$ = "Window" 
                      If param3$
-                        *Parent = MakeID( param3$, parent )
-                        If Not *Parent
-                           Debug "window ParentID"
-                           *Parent = parent
-                        EndIf
-                     Else
-                        *Parent = parent
+                        *Parent = MakeID( param3$, *mdi )
                      EndIf
                      
-                     x$ = Str(Val(x$)+10)
-                     y$ = Str(Val(y$)+10)
+                     If *parentWindow
+                        x$ = Str(Val(x$) + X(*parentWindow, #__c_container) + ( X(*parentWindow, #__c_inner) - X(*parentWindow, #__c_frame)))
+                        y$ = Str(Val(y$) + Y(*parentWindow, #__c_container) + ( Y(*parentWindow, #__c_inner) - Y(*parentWindow, #__c_frame)))
+                        *Parent = *parentWindow
+                     Else
+                        If x$ = "0"
+                           x$ = Str(10)
+                        EndIf
+                        If y$ = "0"
+                           y$ = Str(10)
+                        EndIf
+                     EndIf
                   EndIf
                   
                   ;Debug "[Make]"+\func$ +" "+ Bool(\func$ = "Window") +" "+ *parent ;arg$
                   *g = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), text$, param1, param2, param3, flags )
-                  
+                 
                   If *g
+                     If id$ = "WINDOW_MAIN"
+                        *parentWindow = *g
+                     EndIf
                      If id$
                         SetClass( *g, id$ )
                      EndIf
@@ -1079,7 +1096,7 @@ Procedure   MakeLine( parent, string$, findtext$ )
                         AddFont( id$, text$, param2, param3 )
                         
                      Case "SetFont"
-                        *g = MakeID( id$, parent ) 
+                        *g = MakeID( id$, *mdi ) 
                         If *g
                            SetFont( *g, GetFontFromKey( param1$ ))
                         EndIf
@@ -1091,20 +1108,27 @@ Procedure   MakeLine( parent, string$, findtext$ )
                         AddImage( id$, text$, param2 )
                         
                      Case "SetImage"
-                        *g = MakeID( id$, parent ) 
+                        *g = MakeID( id$, *mdi ) 
                         If *g
                            SetImage( *g, GetImageFromKey( param1$ ))
                         EndIf
                         
                      Case "SetColor"
-                        *g = MakeID( id$, parent ) 
+                        *g = MakeID( id$, *mdi ) 
                         If *g
                            *g\ChangeColor = 1
                            SetColor( *g, MakeConstants( param1$ ), MakeFunc( arg$, 3 ))
                         EndIf
                         
+                     Case "SetWindowColor"
+                        *g = MakeID( id$, *mdi ) 
+                        If *g
+                           *g\ChangeColor = 1
+                           SetBackgroundColor( *g, MakeFunc( arg$, 2 ))
+                        EndIf
+                        
                      Case "AddItem"
-                        *g = MakeID( id$, parent ) 
+                        *g = MakeID( id$, *mdi ) 
                         If *g
                            If FindString( param1$, "-" )
                               param1 = #PB_Default
@@ -1169,12 +1193,12 @@ Procedure$ Generate_CodeStates( *g._s_WIDGET, Space$ )
       line_break1 = 1
       If is_window_(*g) 
          If pb_object$
-            result$ + Space$ + "Set" + pb_object$ + "Color( " + GetClass( *g ) + ", $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
+            result$ + Space$ + "Set" + pb_object$ + "Color( " + GetClass( *g ) + ", $"+ Hex( *g\color\back & $ffffff, #PB_Long ) +" )" + #LF$
          Else
-            result$ + Space$ + "SetBackgroundColor( " + GetClass( *g ) + ", $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
+            result$ + Space$ + "SetBackgroundColor( " + GetClass( *g ) + ", $"+ Hex( *g\color\back & $ffffff, #PB_Long ) +" )" + #LF$
          EndIf
       Else
-         result$ + Space$ + "Set" + pb_object$ + "Color( " + GetClass( *g ) + ", #PB_Gadget_BackColor, $"+ Hex( *g\color\back & $ffffff ) +" )" + #LF$
+         result$ + Space$ + "Set" + pb_object$ + "Color( " + GetClass( *g ) + ", #PB_Gadget_BackColor, $"+ Hex( *g\color\back & $ffffff, #PB_Long ) +" )" + #LF$
       EndIf
    EndIf            
    ;
@@ -1259,7 +1283,7 @@ Procedure$ Generate_CodeCloseList( *g._s_WIDGET, Space$ )
    ProcedureReturn result$
 EndProcedure
 
-Procedure$  Generate_CodeObject( *g._s_WIDGET, space$ )
+Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
    Protected result$, function$, x$, y$, width$, height$, text$, param1$, param2$, param3$, flag$, quotetext$
    Protected type$ = ClassFromType( Type(*g) )
    Protected id$ = GetClass(*g)
@@ -1411,11 +1435,11 @@ Procedure$  Generate_CodeObject( *g._s_WIDGET, space$ )
       Define Second = GetAttribute( *g, #PB_Splitter_SecondGadget )
       ; result$ + #LF$
       If first
-         result$ + Generate_CodeObject( first, Space$ )
+         result$ + Generate_CodeObject( *mdi, first, Space$ )
          result$ + Generate_CodeCloseList( first, Space$ )
       EndIf
       If Second
-         result$ + Generate_CodeObject( second, Space$ )
+         result$ + Generate_CodeObject( *mdi, second, Space$ )
          result$ + Generate_CodeCloseList( Second, Space$ )
       EndIf
    EndIf  
@@ -1453,22 +1477,24 @@ Procedure$  Generate_CodeObject( *g._s_WIDGET, space$ )
       function$ + "( " + id$ + ", "
    Else
       If type$ = "Window"
-         function$ = id$+" = Open" + type$
+         If *g\parent = *mdi
+            function$ = id$+" = OpenWindow( #PB_Any, "
+         Else
+            function$ = id$+" = Window( "
+         EndIf
       Else
          Select type$
             Case "Scroll", "Progress", "Track"
-               function$ = id$ + " = " + type$ + "BarGadget"
+               function$ = id$ + " = " + type$ + "BarGadget( #PB_Any, "
             Default
-               function$ = id$ + " = " + type$ + "Gadget"
+               function$ = id$ + " = " + type$ + "Gadget( #PB_Any, "
          EndSelect
       EndIf
-      ;
-      function$ + "( #PB_Any, "
    EndIf
    ;
    If pb_object$ = "" 
       function$ = ReplaceString( function$, "Gadget( #PB_Any, ", "( " )
-      function$ = ReplaceString( function$, "Window( #PB_Any, ", "( #PB_Any, "  )
+      function$ = ReplaceString( function$, "OpenWindow(", "Open("  )
    EndIf
    ;
    ;\\ make object string
@@ -1528,7 +1554,7 @@ Procedure$  Generate_CodeObject( *g._s_WIDGET, space$ )
    ;
    If flag$
       Select type$
-         Case "Window", 
+         Case "Window",
               "ScrollBar", "TrackBar", "ProgressBar", 
               "Scroll", "Track", "Progress", "Spin", "Web", "OpenGL",
               "Text", "String", "Editor", "Button", "CheckBox", "HyperLink", 
@@ -1788,19 +1814,21 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
       
       If StartEnum( *mdi )
          *w = widgets( )
+         If *w\parent = *mdi
+            Continue
+         EndIf
          If is_window_( *w )
-            
             ;\\
             result$ + "Procedure Open_" + Trim( GetClass( *w ), "#" ) + "( )" + #LF$
             
             ;\\ 
-            result$ + Generate_CodeObject( *w, Space(( Level(*w) - parentlevel ) * codeindent ))
+            result$ + Generate_CodeObject( *mdi, *w, Space(( Level(*w) - parentlevel ) * codeindent ))
             
             If StartEnum( *w )
                *g = widgets( )
                If Type(GetParent(*g)) = #__type_Splitter
                Else
-                  result$ + Generate_CodeObject( *g, Space(( Level(*g) - parentlevel ) * codeindent ))
+                  result$ + Generate_CodeObject( *mdi, *g, Space(( Level(*g) - parentlevel ) * codeindent ))
                EndIf
                
                StopEnum( )
@@ -1824,6 +1852,55 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
          StopEnum( )
       EndIf
       
+      Protected win
+      If StartEnum( *mdi )
+         *w = widgets( )
+         If *w\parent <> *mdi
+            Continue
+         EndIf
+         If is_window_( *w )
+            ;\\
+               result$ + "Procedure Open_" + Trim( GetClass( *w ), "#" ) + "( )" + #LF$
+               result$ + Generate_CodeObject( *mdi, *w, Space(( Level(*w) - parentlevel ) * codeindent ))
+               
+               ;
+               If StartEnum( *w )
+                  *g = widgets( )
+                  If is_window_( *g )
+                     win = *g
+                     result$ + Space$ + "Open_" + Trim( GetClass( *g ), "#" ) + "( )" + #LF$
+                  Else
+                     If Not win
+                        If Type(GetParent(*g)) = #__type_Splitter
+                        Else
+                           result$ + Generate_CodeObject( *mdi, *g, Space(( Level(*g) - parentlevel ) * codeindent ))
+                        EndIf
+                     EndIf
+                  EndIf
+                  
+                  StopEnum( )
+               EndIf
+               
+               If Not win
+                  ; CLOSE LIST
+                  If *g
+                     result$ + MakeCloseList( *g ) 
+                  EndIf
+                  
+                  ;
+                  If GetEventsString( *w )
+                     result$ + #LF$
+                     result$ + Generate::CodeBindEvent( ( Level(*w) - parentlevel ) * codeindent, GetEventsString( *w ), GetClass( *w ) )
+                  EndIf
+               EndIf
+            
+               result$ + "EndProcedure" + #LF$
+               result$ + #LF$
+         EndIf
+         StopEnum( )
+      EndIf
+      
+      
       result$ + "CompilerIf #PB_Compiler_IsMainFile" + #LF$
       ; result$ + "  Open_" + Trim( GetClass( *mainWindow ), "#" ) + "( )" + #lf$
       
@@ -1832,7 +1909,9 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
          *w = widgets( )
          If is_window_( *w )
             CountWindow + 1
-            result$ + Space$ + "Open_" + Trim( GetClass( *w ), "#" ) + "( )" + #LF$
+            If *w\parent = *mdi
+               result$ + Space$ + "Open_" + Trim( GetClass( *w ), "#" ) + "( )" + #LF$
+            EndIf
          EndIf
          StopEnum( )
       EndIf
@@ -1914,12 +1993,18 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    XIncludeFile "test\code\windows.pb"
    
    If Open(0, 0, 0, 400, 400, "read", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      
+      SetClass(root(), "read")
       ;Path$ = "test\code\AddFont.pb"
       ;Path$ = "test\code\AddFont2.pb"
-      Path$ = "test\code\addimage.pb"
+      ;Path$ = "test\code\addimage.pb"
       ;Path$ = "test\open\image.pb"
       ;Path$ = "test\save_example.pb"
+      
+     ; Path$ = "test\open\splitter.pb"
+      
+      ; Path$ = "test\code\windows.pb"
+       Path$ = "test\open\windows.pb"
+      ; Path$ = "test\open\variable.pb"
       
       If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
          Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
@@ -1965,8 +2050,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 219
-; FirstLine = 212
-; Folding = -------v---------------4--------------------------
+; CursorPosition = 2004
+; FirstLine = 1629
+; Folding = -------v------------------P9-8-----8F8v----tfvHA9--+--
 ; EnableXP
 ; DPIAware

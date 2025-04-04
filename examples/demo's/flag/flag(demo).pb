@@ -62,10 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case "container"   : *new = Container( X,Y,Width,Height, flag ) : CloseList( )
          Case "panel"       : *new = Panel( X,Y,Width,Height, flag ) : CloseList( )
             
-         Case "button"        
-            ;PushListPosition(widgets())
-            *new = Button(       X, Y, Width, Height, text$, flag ) 
-            ;PopListPosition(widgets())
+         Case "button"      : *new = Button(       X, Y, Width, Height, text$, flag ) 
          Case "string"        : *new = String(       X, Y, Width, Height, text$, flag )
          Case "text"          : *new = Text(         X, Y, Width, Height, text$, flag )
          Case "checkbox"      : *new = CheckBox(     X, Y, Width, Height, text$, flag ) 
@@ -300,7 +297,7 @@ Procedure Add(Text.s)
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 67
+; CursorPosition = 65
 ; FirstLine = 51
 ; Folding = ------
 ; EnableXP

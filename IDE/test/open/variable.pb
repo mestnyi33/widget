@@ -2,8 +2,11 @@
 
 Global WINDOW_IMAGE = - 1
 
-Procedure Open_WINDOW_IMAGE( X = 47, Y = 47, Width = 372, Height = 232, Text = "Редактор изображения")
+Procedure Open_WINDOW_IMAGE( X = 47, Y = 47, Width = 372, Height = 232, Text.s = "test variable and plus")
    WINDOW_IMAGE = OpenWindow( #PB_Any, X, Y, Width, Height, Text )
+   ButtonGadget( #PB_Any,372-100-10,30,100,30,"btn")
+   ButtonGadget( -1,10+30+50,80,100,30,"x=10+30+50")
+   ButtonGadget( -1,10-30-50,140,100,30,"()x=10-30-50")
 EndProcedure
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -35,8 +38,8 @@ CompilerEndIf
 
 
 
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 8
 ; Folding = --
 ; EnableXP
 ; DPIAware

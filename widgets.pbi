@@ -613,6 +613,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          widget::WaitClose( )
       EndMacro
       
+      Macro Free( _widget_ )
+         Destroy( @_widget_ )
+      EndMacro
+   
       ;-
       Global *before_start_enumerate_widget._s_WIDGET
       Macro StartEnum( _parent_, _item_ = #PB_All, _mode_ = 0 )
@@ -1554,8 +1558,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   WaitClose( *window = #Null )
       ;
       Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
-      Declare   Free( *this )
-      Declare   Delete( *this, mode = 0 )
+      Declare   Destroy( *this, mode = 0 )
       ;
       Declare   DoEvents( *this, event.l, *button = #PB_All, *data = #Null )
       Declare   EventHandler( Canvas.i = - 1, event.i = - 1, eventdata = 0 )
@@ -8671,44 +8674,30 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Macro add_color( _result_, _address_, _color_type_, _color_, _alpha_, _column_ = )
-         ;          If Not _address_\alpha And _alpha_
-         ;             _address_\alpha.allocate( COLOR )
-         ;          EndIf
-         
+         _address_\_alpha = alpha
+            
          Select _color_type_
             Case #__BackColor
                If _address_\back#_column_ <> _color_
                   _address_\back#_column_ = _color_
-                  ;                   If _address_\alpha
-                  ;                      _address_\alpha\back#_column_ = _alpha_
-                  ;                   EndIf
                   *this\ChangeColor | 1<<0
                   _result_ = #True
                EndIf
             Case #__FrontColor
                If _address_\front#_column_ <> _color_
                   _address_\front#_column_ = _color_
-                  ;                   If _address_\alpha
-                  ;                      _address_\alpha\front#_column_ = _alpha_
-                  ;                   EndIf
                   *this\ChangeColor | 1<<2
                   _result_ = #True
                EndIf
             Case #__ForeColor
                If _address_\fore#_column_ <> _color_
                   _address_\fore#_column_ = _color_
-                  ;                   If _address_\alpha
-                  ;                      _address_\alpha\fore#_column_ = _alpha_
-                  ;                   EndIf
                   *this\ChangeColor | 1<<3
                   _result_ = #True
                EndIf
             Case #__FrameColor
                If _address_\frame#_column_ <> _color_
                   _address_\frame#_column_ = _color_
-                  ;                   If _address_\alpha
-                  ;                      _address_\alpha\frame#_column_ = _alpha_
-                  ;                   EndIf
                   *this\ChangeColor | 1<<4
                   _result_ = #True
                EndIf
@@ -8745,7 +8734,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                alpha.a = Alpha( Color )
             EndIf
             
-            *this\color\_alpha = alpha
             add_color( result, *this\color, ColorType, Color, alpha, [ColorState] )
             If ColorType = #__LineColor
                If *this\LineColor <> Color
@@ -8797,7 +8785,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.l SetItemColor( *this._s_WIDGET, Item.l, ColorType.l, color.i, Column.l = 0, ColorState.b = 0 )
-         Protected result, alpha.a = Alpha( Color )
+         Protected result, alpha.a 
          
          ;
          If *this\row And *this\countitems
@@ -8816,6 +8804,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                      add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [2] )
                      add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [3] )
                   Else
+                     If Not alpha
+                        Color = Color & $FFFFFF | 255 << 24
+                        alpha.a = Alpha( Color )
+                     EndIf
                      add_color( result, *this\__rows( )\color, ColorType, Color, alpha, [ColorState] )
                   EndIf
                EndIf
@@ -10656,6 +10648,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             DisableState( *this, *parent )
             ;
             ;\\
+            PushListPosition( widgets( ) )
             If *this And
                *this\parent
                ;
@@ -10724,8 +10717,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
             Else
                ;
-               PushListPosition( widgets( ) )
-               If *last
+              If *last
                   ChangeCurrentElement( widgets( ) , *last\address )
                Else
                   LastElement( widgets( ) )
@@ -10734,8 +10726,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\layer   = ListIndex( widgets( ) )
                *this\index   = ListIndex( widgets( ) )
                *this\address = @widgets( )
-               PopListPosition( widgets( ) )
             EndIf
+            PopListPosition( widgets( ) )
             ;
             ;\\
             RePosition( *this, *parent, *after )
@@ -10802,9 +10794,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;\\
-               PostRepaint( *parent\root )
+               PostReDraw( *parent\root )
                If *parent\root <> *lastParent\root
-                  PostRepaint( *lastParent\root )
+                  PostReDraw( *lastParent\root )
                EndIf
             EndIf
          EndIf
@@ -13331,10 +13323,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                DisableWindow( *this\root\canvas\window, #False)
                
                PostReDraw( *this\root )
-               ;                If *display\root\canvas\repaint 
-               ;                   *display\root\canvas\repaint = 0
-               ;                 ; PostRepaint( *display\root )
-               ;                EndIf
                
                If Not ( root( ) And root( )\canvas\gadget = *display\root\canvas\gadget )
                   ChangeCurrentCanvas( GadgetID( *display\root\canvas\gadget ) )
@@ -17659,7 +17647,7 @@ chr$ = ","
             Ys    = Y - _scroll_y_
             
             ;\\ Draw selector back
-            If *rows( )\color\back[state] >= 0
+            If *rows( )\color\back[state] <> - 1
                If ListSize( *this\columns( )) = 1
                   draw_mode_alpha_( #PB_2DDrawing_Default )
                   If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
@@ -22312,6 +22300,7 @@ chr$ = ","
             EndIf
             
             If roots( )\canvas\repaint = 1
+               roots( )\canvas\repaint = 0
                __gui\event\queuesmask = 1
                
                
@@ -22320,7 +22309,6 @@ chr$ = ","
                EndIf
                
                ReDraw( roots( ) )
-               roots( )\canvas\repaint = 0
             EndIf
             ;PopMapPosition(roots())
          EndIf
@@ -23299,10 +23287,6 @@ chr$ = ","
                If Not is_root_( *this )
                   ;\\ 1 call (current-widget) bind event function
                   ForEach __gui\event\binds( )
-                     ;                      If event = #__event_StatusChange
-                     ;                         Debug ""+__gui\event\binds( )\widget +" "+ __gui\event\binds( )\type +" "+ event +" "+ __gui\event\binds( )\item +" "+ *button
-                     ;                         ; Debug " send StatusChange"
-                     ;                      EndIf
                      If __gui\event\binds( )\widget = *this And 
                         __gui\event\binds( )\type = event And Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
                         
@@ -23338,8 +23322,7 @@ chr$ = ","
                      ForEach __gui\event\binds( )
                         If __gui\event\binds( )\widget = *this\root And 
                            __gui\event\binds( )\type = event And Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
-                           ; Debug ClassFromEvent(event)
-                           result = __gui\event\binds( )\function( )
+                           __gui\event\binds( )\function( )
                         EndIf
                      Next
                   EndIf
@@ -24105,231 +24088,240 @@ chr$ = ","
       ;       EndProcedure
       
       ;-
-      Procedure  Delete( *this._s_WIDGET, mode = 0 )
-         If LastElement(widgets( ))
-            Repeat
-               If ( mode And widgets( ) = *this ) Or 
-                  IsChild( widgets( ), *this )
+      Procedure.i Destroy( *widget.integer, mode = 0 )
+         Protected result, *this._s_WIDGET
+         
+         If *widget > 0 And *widget\i > 0
+            *this = *widget\i
+            *widget\i = 0
+            
+            If Address( *this )
+               If Post( *this, #__event_free )
+                  If Opened( ) = *this
+                     OpenList( *this\parent )
+                  EndIf
                   
-                  ; 
-                  ;If mode = 0 
-                  If widgets( ) <> *this
-                     If Not Post( widgets( ), #__event_free )
-                        If PreviousElement( widgets( ))
-                           Continue
-                        Else
-                           Break
-                        EndIf
+                  If *this\parent
+                     If *this\parent\FirstWidget( ) = *this
+                        *this\parent\FirstWidget( ) = *this\AfterWidget( )
+                     EndIf
+                     
+                     If *this\parent\LastWidget( ) = *this
+                        *this\parent\LastWidget( ) = *this\BeforeWidget( )
                      EndIf
                   EndIf
-                  ;EndIf
-                  ;                   If is_widget_( widgets( ))
-                  ;                      window_pos_x = mouse( )\steps - widgets( )\fs
-                  ;                      window_pos_y = mouse( )\steps - widgets( )\fs ;- widgets( )\fs[2]
-                  ;                   EndIf
                   
-                  If widgets( )\root\haschildren > 0
-                     widgets( )\root\haschildren - 1
-                     If widgets( )\parent <> widgets( )\root
-                        widgets( )\parent\haschildren - 1
-                     EndIf
-                     
-                     If widgets( )\tabbar
-                        If widgets( )\tabbar = widgets( )
-                           If test_delete
-                              Debug "   free - tab " + widgets( )\tabbar\class
-                           EndIf
-                           FreeStructure( widgets( )\tabbar )
-                           widgets( )\tabbar = 0
-                        EndIf
-                        widgets( )\tabbar = #Null
-                     EndIf
-                     
-                     If widgets( )\scroll
-                        If widgets( )\scroll\v
-                           If test_delete
-                              Debug "   free - scroll-v " + widgets( )\scroll\v\class
-                           EndIf
-                           FreeStructure( widgets( )\scroll\v )
-                           widgets( )\scroll\v = 0
-                        EndIf
-                        If widgets( )\scroll\h
-                           If test_delete
-                              Debug "   free scroll-h - " + widgets( )\scroll\h\class
-                           EndIf
-                           FreeStructure( widgets( )\scroll\h )
-                           widgets( )\scroll\h = 0
-                        EndIf
-                        ; widgets( )\scroll = #Null
-                     EndIf
-                     
-                     If widgets( )\type = #__type_Splitter
-                        If widgets( )\split_1( ) > 0
-                           If test_delete
-                              Debug "   free - splitter - first " + widgets( )\split_1( )\class
-                           EndIf
-                           FreeStructure( widgets( )\split_1( ) )
-                           widgets( )\split_1( ) = 0
-                        EndIf
-                        If widgets( )\split_2( ) > 0
-                           If test_delete
-                              Debug "   free - splitter - second " + widgets( )\split_2( )\class
-                           EndIf
-                           FreeStructure( widgets( )\split_2( ) )
-                           widgets( )\split_2( ) = 0
-                        EndIf
-                     EndIf
-                     
-                     If widgets( )\bounds\attach
-                        ;Debug " free - attach " +widgets( )\bounds\attach\parent\class
-                        widgets( )\bounds\attach\parent = 0
-                        FreeStructure( widgets( )\bounds\attach )
-                        widgets( )\bounds\attach = #Null
-                     EndIf
-                     
-                     If test_delete
-                        Debug " free - " + widgets( )\class
-                     EndIf
-                     
-                     ;\\
-                     If Pressed( ) = widgets( )
-                        Pressed( ) = #Null
-                     EndIf
-                     If PopupWindow( ) = widgets( )
-                        PopupWindow( ) = #Null
-                     EndIf
-                     If a_focused( ) = widgets( )
-                        a_focused( ) = #Null
-                     EndIf
-                     If a_entered( ) = widgets( )
-                        a_entered( ) = #Null
-                     EndIf
-                     
-                     ;\\
-                     If GetActive( )
-                        If GetActive( ) = widgets( )
-                           GetActive( ) = #Null
-                           
-                           If Not is_root_( *this )
-                              If *this\BeforeWidget( )
-                                 SetActive( *this\BeforeWidget( ) )
-                              Else
-                                 If Not SetActive( *this\parent )
-                                    GetActive( ) = *this\parent
-                                 EndIf
-                              EndIf
-                           EndIf
-                           
-                           If test_focus_set
-                              If keyboard( )\deactive
-                                 Debug "Free active - " + keyboard( )\deactive\class +" "+ *this\class +" "+ widgets( )\class
-                              EndIf
-                           EndIf
+                  ;
+                  ; delete all
+                  Destroy( *this, #True )
+                  
+                  ;\\
+                  If is_root_( *this )
+                     If FindMapElement( roots( ), Str( *this\root\canvas\gadgetID ) )
+                        DeleteMapElement( roots( ) )
+                        ; DeleteMapElement( roots( ), MapKey( roots( ) ) )
+                        ; ResetMap( roots( ) )
+                        If test_delete
+                           Debug " FREE - " + *this\class + " " + *this\address
                         EndIf
                         
-                        If GetActive( ) = *this
-                           Debug "a "+*this\class
-                           GetActive( ) = #Null
+                        If Not MapSize( roots( ) )
+                           __gui\event\quit = 1
+                           PostQuit( )
                         EndIf
                         
-                        If GetActive( ) And
-                           GetActive( )\root = *this
-                           GetActive( ) = #Null
-                        EndIf
+                        ; bug 612
+                        PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, #PB_Default ) 
                      EndIf
-                     
-                     ;\\ remove count types
-                     CountType( widgets( ), - 1 )
-                     
-                     ;\\
-                     If widgets( )\BeforeWidget( )
-                        widgets( )\BeforeWidget( )\AfterWidget( ) = widgets( )\AfterWidget( )
-                     EndIf
-                     If widgets( )\AfterWidget( )
-                        widgets( )\AfterWidget( )\BeforeWidget( ) = widgets( )\BeforeWidget( )
-                     EndIf
-                     If *this\FirstWidget( ) = widgets( )
-                        *this\FirstWidget( ) = *this
-                     EndIf
-                     If *this\LastWidget( ) = widgets( )
-                        *this\LastWidget( ) = *this
-                     EndIf
-                     
-                     If widgets( )\img\imageID
-                     ;   RemoveImage( widgets( ), widgets( )\img\image )
-                     EndIf
-                     ;\\
-                     widgets( )\parent  = #Null
-                     widgets( )\address = #Null
-                     
-                     DeleteElement( widgets( ), 1 )
                   EndIf
                   
-                  If *this\root\haschildren = 0
-                     Break
-                  EndIf
-                  
-                  If ListSize( widgets( ) ) = 0
-                     Debug "bug haschildren "+*this\root\haschildren
-                     Break
-                  EndIf
-               ElseIf PreviousElement( widgets( )) = 0
-                  Break
+                  ProcedureReturn 1
                EndIf
-            ForEver
-         EndIf
-         ;
-         PostReDraw( *this\root )
-      EndProcedure
-      
-      Procedure.i Free( *this._s_WIDGET )
-         If *this > 0 
-            If Post( *this, #__event_free )
-               If Opened( ) = *this
-                  OpenList( *this\parent )
-               EndIf
-               
-               If *this\parent
-                  If *this\parent\FirstWidget( ) = *this
-                     *this\parent\FirstWidget( ) = *this\AfterWidget( )
-                  EndIf
-                  
-                  If *this\parent\LastWidget( ) = *this
-                     *this\parent\LastWidget( ) = *this\BeforeWidget( )
-                  EndIf
-               EndIf
-               
-               ;
-               ; delete all childrens
-               Delete( *this, #True )
-               
-               ;\\
-               If is_root_( *this )
-                  If FindMapElement( roots( ), Str( *this\root\canvas\gadgetID ) )
-                     DeleteMapElement( roots( ) )
-                     ; DeleteMapElement( roots( ), MapKey( roots( ) ) )
-                     ; ResetMap( roots( ) )
-                     If test_delete
-                        Debug " FREE - " + *this\class + " " + *this\address
-                     EndIf
-                     
-                     If Not MapSize( roots( ) )
-                        __gui\event\quit = 1
-                        PostQuit( )
-                     EndIf
-                     
-                     ; bug 612
-                     PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, #PB_Default ) 
-                  EndIf
-               EndIf
-               
-               ProcedureReturn 1
             EndIf
          Else
-            ForEach roots( ) : root( ) = roots( )
-               Free( root( ) )
-            Next
+            If *widget > 0
+               If Address( *widget )
+                  *this = *widget
+               EndIf
+            EndIf
+            
+            If *this
+               If LastElement(widgets( ))
+                  Repeat
+                     If IsChild( widgets( ), *this ) Or 
+                        ( mode And widgets( ) = *this )
+                        
+                        ; 
+                        If widgets( ) <> *this
+                           If Not Post( widgets( ), #__event_free )
+                              If PreviousElement( widgets( ))
+                                 Continue
+                              Else
+                                 Break
+                              EndIf
+                           EndIf
+                        EndIf
+                        
+                        If widgets( )\root\haschildren > 0
+                           widgets( )\root\haschildren - 1
+                           If widgets( )\parent <> widgets( )\root
+                              widgets( )\parent\haschildren - 1
+                           EndIf
+                           
+                           If widgets( )\tabbar
+                              If widgets( )\tabbar = widgets( )
+                                 If test_delete
+                                    Debug "   free - tab " + widgets( )\tabbar\class
+                                 EndIf
+                                 FreeStructure( widgets( )\tabbar )
+                                 widgets( )\tabbar = 0
+                              EndIf
+                              widgets( )\tabbar = #Null
+                           EndIf
+                           
+                           If widgets( )\scroll
+                              If widgets( )\scroll\v
+                                 If test_delete
+                                    Debug "   free - scroll-v " + widgets( )\scroll\v\class
+                                 EndIf
+                                 FreeStructure( widgets( )\scroll\v )
+                                 widgets( )\scroll\v = 0
+                              EndIf
+                              If widgets( )\scroll\h
+                                 If test_delete
+                                    Debug "   free scroll-h - " + widgets( )\scroll\h\class
+                                 EndIf
+                                 FreeStructure( widgets( )\scroll\h )
+                                 widgets( )\scroll\h = 0
+                              EndIf
+                              ; widgets( )\scroll = #Null
+                           EndIf
+                           
+                           If widgets( )\type = #__type_Splitter
+                              If widgets( )\split_1( ) > 0
+                                 If test_delete
+                                    Debug "   free - splitter - first " + widgets( )\split_1( )\class
+                                 EndIf
+                                 FreeStructure( widgets( )\split_1( ) )
+                                 widgets( )\split_1( ) = 0
+                              EndIf
+                              If widgets( )\split_2( ) > 0
+                                 If test_delete
+                                    Debug "   free - splitter - second " + widgets( )\split_2( )\class
+                                 EndIf
+                                 FreeStructure( widgets( )\split_2( ) )
+                                 widgets( )\split_2( ) = 0
+                              EndIf
+                           EndIf
+                           
+                           If widgets( )\bounds\attach
+                              ;Debug " free - attach " +widgets( )\bounds\attach\parent\class
+                              widgets( )\bounds\attach\parent = 0
+                              FreeStructure( widgets( )\bounds\attach )
+                              widgets( )\bounds\attach = #Null
+                           EndIf
+                           
+                           If test_delete
+                              Debug " free - " + widgets( )\class
+                           EndIf
+                           
+                           ;\\
+                           If Pressed( ) = widgets( )
+                              Pressed( ) = #Null
+                           EndIf
+                           If PopupWindow( ) = widgets( )
+                              PopupWindow( ) = #Null
+                           EndIf
+                           If a_focused( ) = widgets( )
+                              a_focused( ) = #Null
+                           EndIf
+                           If a_entered( ) = widgets( )
+                              a_entered( ) = #Null
+                           EndIf
+                           
+                           ;\\
+                           If GetActive( )
+                              If GetActive( ) = widgets( )
+                                 GetActive( ) = #Null
+                                 
+                                 If Not is_root_( *this )
+                                    If *this\BeforeWidget( )
+                                       SetActive( *this\BeforeWidget( ) )
+                                    Else
+                                       If Not SetActive( *this\parent )
+                                          GetActive( ) = *this\parent
+                                       EndIf
+                                    EndIf
+                                 EndIf
+                                 
+                                 If test_focus_set
+                                    If keyboard( )\deactive
+                                       Debug "Free active - " + keyboard( )\deactive\class +" "+ *this\class +" "+ widgets( )\class
+                                    EndIf
+                                 EndIf
+                              EndIf
+                              
+                              If GetActive( ) = *this
+                                 Debug "a "+*this\class
+                                 GetActive( ) = #Null
+                              EndIf
+                              
+                              If GetActive( ) And
+                                 GetActive( )\root = *this
+                                 GetActive( ) = #Null
+                              EndIf
+                           EndIf
+                           
+                           ;\\ remove count types
+                           CountType( widgets( ), - 1 )
+                           
+                           ;\\
+                           If widgets( )\BeforeWidget( )
+                              widgets( )\BeforeWidget( )\AfterWidget( ) = widgets( )\AfterWidget( )
+                           EndIf
+                           If widgets( )\AfterWidget( )
+                              widgets( )\AfterWidget( )\BeforeWidget( ) = widgets( )\BeforeWidget( )
+                           EndIf
+                           If *this\FirstWidget( ) = widgets( )
+                              *this\FirstWidget( ) = *this
+                           EndIf
+                           If *this\LastWidget( ) = widgets( )
+                              *this\LastWidget( ) = *this
+                           EndIf
+                           
+                           If widgets( )\img\imageID
+                              ;   RemoveImage( widgets( ), widgets( )\img\image )
+                           EndIf
+                           ;\\
+                           widgets( )\parent  = #Null
+                           widgets( )\address = #Null
+                           
+                           DeleteElement( widgets( ), 1 )
+                        EndIf
+                        
+                        ;\\
+                        If *this\root\haschildren = 0
+                           Break
+                        EndIf
+                        If ListSize( widgets( ) ) = 0
+                           Debug "bug haschildren "+*this\root\haschildren
+                           Break
+                        EndIf
+                     ElseIf PreviousElement( widgets( )) = 0
+                        Break
+                     EndIf
+                  ForEver
+               EndIf
+               ;
+               ; PostReDraw( *this\root )
+            Else
+               Debug "do free all"
+;                ForEach roots( ) : root( ) = roots( )
+;                   Destroy( root( ) )
+;                Next
+            EndIf
          EndIf
+         ProcedureReturn result 
       EndProcedure
       
       Procedure  WaitClose( *window._s_WIDGET = #Null )
@@ -24462,7 +24454,7 @@ chr$ = ","
             CompilerEndSelect
             
             If *root
-               Free( *root )
+               Destroy( *root )
                
                If is_root_( *root )
                   If IsWindow( *root\canvas\window )
@@ -24797,7 +24789,7 @@ chr$ = ","
          If IsImage(img)
             FreeImage( img )
          EndIf
-         Free( *message )
+         Destroy( *message )
          
          If IsWindow(*message\canvas\window)
             CloseWindow(*message\canvas\window)
@@ -25694,9 +25686,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 10732
-; FirstLine = 10608
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-f-----------------------------------------------------------------------------------------------z-----------------------------------------------f-----4l-----------------------------------------------------------------B339-8f-----8------------------N94--f-4---48+-------------f+-----------0--------------------------------------------------------------------------------------------------------4---4+---------------------------------------------------------------------------------------------------
+; CursorPosition = 8700
+; FirstLine = 8689
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84------------------------------------------------------fX-----------------------------------------------------------------HYbz-v-0----v------------------4wf---0f---fv8--------------6-----------4--------------------------------------------------------------------------------------------------------f---f8------------------------------------------------------v--------------------+-+----------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
