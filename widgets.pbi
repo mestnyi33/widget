@@ -9398,34 +9398,34 @@ CompilerIf Not Defined( widget, #PB_Module )
                   State = *this\countitems - 1
                EndIf
                
-               
                ;\\
                ;                If *this\TabState( ) <> state 
                ;                   ; Debug "SETSTATE "+*this\class +" ["+ *this\ RowFocusedIndex( ) +" "+ state +"]"
                ;                   *this\TabState( ) = state 
-               If *this\RowFocusedIndex( ) <> state ; 
-                                                    ; Debug "SETSTATE "+*this\class +" ["+ *this\ RowFocusedIndex( ) +" "+ state +"]"
-                  *this\RowFocusedIndex( ) = state  ; 
+               
+               If state = - 1
+                  ;\\ reset all selected items
+                  If *this\RowFocused( ) And
+                     *this\RowFocused( )\_focus
+                     *this\RowFocused( )\_focus = 0
+                     *this\RowFocused( )\ColorState( ) = #__s_0
+                     *this\WidgetChange( ) = 1
+                     DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
+                     *this\RowFocused( ) = #Null
+                     ProcedureReturn - 1
+                  EndIf
+               Else
                   
-                  *this\WidgetChange( ) = 1
+                  If Not ( *this\RowFocused( ) And *this\RowFocused( )\rindex = state )
+                     If SelectElement( *this\__rows( ), State )
+                        *row = *this\__rows( )
+                     EndIf
+                  EndIf
                   
-                  If state = - 1
-                     ;\\ reset all selected items
-                     If *this\RowFocused( ) And
-                        *this\RowFocused( )\_focus
-                        *this\RowFocused( )\_focus = 0
-                        *this\RowFocused( )\ColorState( ) = #__s_0
-                        *this\RowFocused( )\ColorState( ) = #__s_0
-                        DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
-                        *this\RowFocused( )               = #Null
-                        ProcedureReturn - 1
-                     EndIf
-                  Else
-                     If Not SelectElement( *this\__rows( ), State )
-                        ProcedureReturn #False
-                     EndIf
-                     
-                     *row = *this\__rows( )
+                  If *row
+                     ; Debug "SETSTATE "+*this\class +" ["+ *this\ RowFocusedIndex( ) +" "+ state +"]"
+                     *this\RowFocusedIndex( ) = state  ; 
+                     *this\WidgetChange( ) = 1
                      
                      ;\\ example file "D&D-items"
                      If *this\drop And mouse( )\drag
@@ -9538,6 +9538,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         ProcedureReturn 1
                      EndIf
                   EndIf
+                  
                EndIf
             EndIf
          EndIf
@@ -9647,7 +9648,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   result | #PB_Tree_Selected
                EndIf
                ;
-               If *this\__rows( )\checkbox\checked
+               If *this\__rows( )\checkbox And 
+                  *this\__rows( )\checkbox\checked
                   If *this\__rows( )\checkbox\checked = #PB_Checkbox_Inbetween
                      result | #PB_Tree_Inbetween
                   Else
@@ -9663,7 +9665,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-            
+             
          Else
             ProcedureReturn *this\bar\page\pos
          EndIf
@@ -9693,7 +9695,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
                If State & #PB_Tree_Selected
                   If *row\_focus
-                     *row\ColorState( ) = #__s_0
+                      *row\ColorState( ) = #__s_0
                   Else
                      If *this\focus
                         *row\ColorState( ) = #__s_2
@@ -12186,6 +12188,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
+                
                ; add lines
                *row\rindex        = position 
                *row\columnindex   = ListIndex( *this\columns( ))
@@ -12228,7 +12231,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;If Text
                ; *row\txt\TextChange( ) = 1
                *row\txt\string   = Text 
-               
+              
+      
                ;\\
                If *row\columnindex = 0
                   *this\countitems + 1
@@ -12621,10 +12625,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      EndIf
                      ;
+                     *this\RowFocusedIndex( ) = *rowFocused\rindex 
                      *this\RowFocused( ) = *rowFocused
                      *rowFocused\_focus = *this\focus
                      *rowFocused\ColorState( ) = *this\focus
-                     *this\RowFocusedIndex( ) = *rowFocused\rindex 
                      ;
                      DoEvents( *this, #__event_StatusChange, *row\rindex, -*row\ColorState( ))
                      DoEvents( *this, #__event_StatusChange, *rowFocused\rindex, -*rowFocused\ColorState( ))
@@ -25689,9 +25693,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 23409
-; FirstLine = 22557
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84------------------------------------------------------fX-----------------------------------------------------------------HYbz-v-0----v------------------4wf---0f---fv8--------------6-----------4--------------------------------------------------------------------------------------------------------f---f8------------------------------------------------------v--------------------+-+----------------------
+; CursorPosition = 9115
+; FirstLine = 9088
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4+-8fr-f+ff----4---------------------------------4v--------------------------------------------------0P8i-u+----------------------------------------------------------------Pw3m-f-8----f------------------vh-+--8-+---e4--------------z-----------v---------------------------------------------------------------------------------------------------------+---3------------------------------------------------------f--------------------0-0----------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
