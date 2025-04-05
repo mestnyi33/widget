@@ -24,7 +24,7 @@ Global codeindent = 3
 ;-
 Procedure   AddFont( key$, name$, size, style )
    Protected font$, id$
-   Debug "key ["+key$+"]"
+   ; Debug "AddFont key ["+key$+"]"
    ;
    If key$ = "-1" 
       font$ = "-1"
@@ -76,7 +76,8 @@ Procedure   GetFontFromKey( key$ )
    key$ = Trim( key$ )
    key$ = Trim( key$, "(" )
    key$ = Trim( key$, ")" )
-   
+   key$ = Trim( key$ )
+      
    ForEach fonts( )
       If LCase(fonts( )\key$) = LCase(key$)
          ProcedureReturn fonts( )\font
@@ -85,15 +86,15 @@ Procedure   GetFontFromKey( key$ )
 EndProcedure
 
 Procedure   SetFontName( font.i, name.s )
-   fonts( Str(font) )\name = name
+   ProcedureReturn ChangeFont( font, name, GetFontSize( font ), GetFontStyle( font ) )
 EndProcedure
 
 Procedure   SetFontSize( font.i, size.a )
-   fonts( Str(font) )\size = size
+   ProcedureReturn ChangeFont( font, GetFontName( font ), size, GetFontStyle( font ) )
 EndProcedure
 
 Procedure   SetFontStyle( font.i, style.q )
-   fonts( Str(font) )\style = style
+   ProcedureReturn ChangeFont( font, GetFontName( font ), GetFontSize( font ), style )
 EndProcedure
 
 Procedure.s GetFontName( font.i )
@@ -125,20 +126,22 @@ Procedure   ChangeFont( font, name.s, size.a, style.q )
          StartDraw( root( ))
       EndIf
    EndIf
-   ProcedureReturn AddFont( key$, name, size, style )
+   If key$
+      ProcedureReturn AddFont( key$, name, size, style )
+   EndIf
 EndProcedure  
 
 Procedure   ChangeFontSize( *this._s_WIDGET, size )
    Protected font = GetFont( *this )
    If IsFont( font )
-      SetFont( *this, ChangeFont( font, GetFontName( font ), size, GetFontStyle( font ) ) )
+      ProcedureReturn SetFont( *this, ChangeFont( font, GetFontName( font ), size, GetFontStyle( font ) ) )
    EndIf
 EndProcedure
 
 Procedure   ChangeFontStyle( *this._s_WIDGET, style.q )
    Protected font = GetFont( *this )
    If IsFont( font )
-      SetFont( *this, ChangeFont( font, GetFontName( font ), GetFontSize( font ), style ) )
+      ProcedureReturn SetFont( *this, ChangeFont( font, GetFontName( font ), GetFontSize( font ), style ) )
    EndIf
 EndProcedure
 
@@ -194,7 +197,7 @@ Procedure   AddImage( key$, file$, flags=0 )
       Define id$ = "IMAGE_"+UCase( GetFilePart( file$, #PB_FileSystem_NoExtension )+"_"+GetExtensionPart( file$ ))
       If key$ = ""
          key$ = id$ ; Str(Image) ; 
-         Debug key$
+         ;Debug key$
       EndIf
       If enum_image
          id$ = "#" + id$
@@ -2050,8 +2053,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2004
-; FirstLine = 1629
-; Folding = -------v------------------P9-8-----8F8v----tfvHA9--+--
+; CursorPosition = 26
+; FirstLine = 20
+; Folding = -f-----f------------------f9-4-----4r3f----b-ePA5--0--
 ; EnableXP
 ; DPIAware

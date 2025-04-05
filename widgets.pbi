@@ -8916,6 +8916,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                bar_area_update( *this )
             EndIf
          EndIf
+         
+         ProcedureReturn *this\img\imageID
       EndProcedure
       
       Procedure   RemoveImage( *this._s_WIDGET, img )
@@ -8990,6 +8992,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure SetBackgroundImage( *this._s_WIDGET, *image )
          add_image( *this\img[#__image_background], *image )
+         ProcedureReturn *this\img[#__image_background]\imageID
       EndProcedure
       
       ;-
@@ -23404,7 +23407,7 @@ chr$ = ","
                EndIf
                
                If Not __gui\event\mask & 1<<event
-                  __gui\event\mask | 1<<event
+                ;  __gui\event\mask | 1<<event
                EndIf
                
 ;                ;\\ send posted events (queue events) 
@@ -25686,8 +25689,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 8700
-; FirstLine = 8689
+; CursorPosition = 23409
+; FirstLine = 22557
 ; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------84------------------------------------------------------fX-----------------------------------------------------------------HYbz-v-0----v------------------4wf---0f---fv8--------------6-----------4--------------------------------------------------------------------------------------------------------f---f8------------------------------------------------------v--------------------+-+----------------------
 ; EnableXP
 ; DPIAware

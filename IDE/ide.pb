@@ -23,12 +23,11 @@ Enumeration
    #_pi_height
    ;
    #_pi_group_VIEW 
+   #_pi_cursor
    #_pi_hide
    #_pi_disable
-   ;
-   #_pi_flag
-   #_pi_cursor
    #_pi_IMAGE
+   #_pi_FLAG
    ;
    #_pi_FONT
    #_pi_fontsize
@@ -113,8 +112,10 @@ Global ide_inspector_view_splitter,
 
 Global group_select
 Global group_drag
+
 Global ColorState
-                  
+Global ColorType 
+                        
 Global enum_object = 0
 Global enum_image = 0
 Global enum_font = 0
@@ -178,9 +179,9 @@ Declare   AddFont( key$, name$, size, style )
 Declare.s GetFontName( font.i )
 Declare.a GetFontSize( font.i )
 Declare.q GetFontStyle( font.i )
-Declare   SetFontName( font.i, name.s )
-Declare   SetFontSize( font.i, size.a )
-Declare   SetFontStyle( font.i, style.q )
+; Declare   SetFontName( font.i, name.s )
+; Declare   SetFontSize( font.i, size.a )
+; Declare   SetFontStyle( font.i, style.q )
 Declare   ChangeFont( font, name.s, size.a, style.q )
 Declare   ChangeFontSize( *this, size )
 Declare   ChangeFontStyle( *this, style.q )
@@ -438,7 +439,7 @@ Procedure Properties_ButtonAddItems( *inspector._s_WIDGET, item, Text.s )
                
                If lasttext <> Text
                   lasttext = Text
-                  Debug "Properties_ButtonAddItems " +Text
+                  ; Debug "Properties_ButtonAddItems " +Text
                   ClearItems(*this)
                   
                   If Text
@@ -665,26 +666,23 @@ Procedure   Properties_ButtonEvents( )
                ;MessageRequester("Инфо", Message$, #PB_MessageRequester_Ok)
                
             Case #_pi_COLOR
-               If a_focused( )
-                  Define ColorType = MakeConstants("#PB_Gadget_"+Properties_getItemText( ide_inspector_properties, #_pi_colortype))
-                  Define Color.l = ColorRequester( GetColor( a_focused( ), ColorType ) & $FFFFFF )
+               Define Color.l = ColorRequester( GetColor( a_focused( ), ColorType, ColorState ) & $FFFFFF )
+               
+               If Color > - 1
+                  Message$ = "Вы выбрали следующее значение цвета:"   + #LF$
+                  Message$ + "32 Bit value: " + Str(Color)            + #LF$
+                  Message$ + "Red значение:    " + Str(Red(Color))    + #LF$
+                  Message$ + "Green значение:  " + Str(Green(Color))  + #LF$
+                  Message$ + "Blue значение:  " + Str(Blue(Color))  + #LF$
+                  Message$ + "Alpha значение:  " + Str(Alpha(Color))
                   
-                  If Color > - 1
-                     Message$ = "Вы выбрали следующее значение цвета:"   + #LF$
-                     Message$ + "32 Bit value: " + Str(Color)            + #LF$
-                     Message$ + "Red значение:    " + Str(Red(Color))    + #LF$
-                     Message$ + "Green значение:  " + Str(Green(Color))  + #LF$
-                     Message$ + "Blue значение:  " + Str(Blue(Color))  + #LF$
-                     Message$ + "Alpha значение:  " + Str(Alpha(Color))
-                     
-                     SetColor( a_focused( ), ColorType, RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color) ), ColorState )
-                     Properties_Updates( a_focused( ), "Color" )
-                  Else
-                     Message$ = "Запрос был отменён."
-                  EndIf
-                  
-                  ; MessageRequester("Инфо", Message$, 0)
+                  SetColor( a_focused( ), ColorType, RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color) ), ColorState )
+                  Properties_Updates( a_focused( ), "Color" )
+               Else
+                  Message$ = "Запрос был отменён."
                EndIf
+               
+               ; MessageRequester("Инфо", Message$, 0)
                
          EndSelect
          
@@ -693,76 +691,86 @@ Procedure   Properties_ButtonEvents( )
             Case #__type_String
                Select GetData(*g) 
                   Case #_pi_class  
-                     SetClass( a_focused( ), UCase( GetText(*g)))
-                     Properties_Updates( a_focused( ), "Class" ) 
+                     If SetClass( a_focused( ), UCase( GetText(*g)))
+                        Properties_Updates( a_focused( ), "Class" ) 
+                     EndIf
                      
                   Case #_pi_text   
-                     SetText( a_focused( ), GetText(*g) )  
-                     Properties_Updates( a_focused( ), "Text" ) 
+                     If SetText( a_focused( ), GetText(*g) )  
+                        Properties_Updates( a_focused( ), "Text" ) 
+                     EndIf
                      
                EndSelect
                
             Case #__type_Spin
                Select GetData(*g) 
-                  Case #_pi_fontsize
-                     If a_focused( )
-                        ChangeFontSize( a_focused( ), GetState( *g))
-                        Properties_Updates( a_focused( ), "Font" )
-                     EndIf
-                     
                   Case #_pi_x      : Resize( a_focused( ), GetState(*g), #PB_Ignore, #PB_Ignore, #PB_Ignore ) 
                   Case #_pi_y      : Resize( a_focused( ), #PB_Ignore, GetState(*g), #PB_Ignore, #PB_Ignore )
                   Case #_pi_width  : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, GetState(*g), #PB_Ignore )
                   Case #_pi_height : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState(*g) )
                      
+                  Case #_pi_fontsize
+                     If ChangeFontSize( a_focused( ), GetState( *g))
+                        Properties_Updates( a_focused( ), "Font" )
+                     EndIf
+                     
                   Case #_pi_coloralpha
-                     SetBackgroundColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
+                     If SetBackgroundColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorgreen))),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorblue))),
                                                              (GetState(*g)) ))
                      Properties_Updates( a_focused( ), "Color" )
-                     
+                  EndIf
+                  
                   Case #_pi_colorblue
-                     SetBackgroundColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
+                     If SetBackgroundColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorgreen))),
                                                              (GetState(*g)),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_coloralpha))) ))
-                     Properties_Updates( a_focused( ), "Color" )
+                        Properties_Updates( a_focused( ), "Color" )
+                     EndIf
+                     
                   Case #_pi_colorgreen
-                     SetBackgroundColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
+                     If SetBackgroundColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
                                                              (GetState(*g)),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorblue))),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_coloralpha))) ))
-                     Properties_Updates( a_focused( ), "Color" )
+                        Properties_Updates( a_focused( ), "Color" )
+                     EndIf
+                     
                   Case #_pi_colorred
-                     SetBackgroundColor( a_focused( ), RGBA( (GetState(*g)),
+                     If SetBackgroundColor( a_focused( ), RGBA( (GetState(*g)),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorgreen))),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorblue))),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_coloralpha))) ))
-                     Properties_Updates( a_focused( ), "Color" )
+                        Properties_Updates( a_focused( ), "Color" )
+                     EndIf
+                     
                EndSelect
-               
                
             Case #__type_ComboBox
                Select GetData(*g) 
-                  Case #_pi_flag
-                     
-                  Case #_pi_fontstyle
-                     If a_focused( )
-                        ; Debug "#PB_Font_"+GetItemText( *g, GetState(*g)) ; GetText( *g)
-                        ChangeFontStyle( a_focused( ), MakeConstants( "#PB_Font_"+GetItemText( *g, GetState(*g))))
-                        Properties_Updates( a_focused( ), "Font" )
-                     EndIf
-                     
+                  Case #_pi_cursor
+                     Properties_SetItemText( ide_inspector_properties, GetData(*g), GetItemText( *g, GetState( *g)))
+               
                   Case #_pi_colorstate
                      ColorState = GetState(*g)
-                     Properties_SetItemText( ide_inspector_properties, #_pi_colorstate, GetItemText( *g, GetState( *g)))
+                     Properties_SetItemText( ide_inspector_properties, GetData(*g), GetItemText( *g, GetState( *g)))
                      Properties_Updates( a_focused( ), "Color" ) 
                      
                   Case #_pi_colortype
-                     ;Debug GetItemText( *g, GetState( *g))
-                     Properties_SetItemText( ide_inspector_properties, #_pi_colortype, GetItemText( *g, GetState( *g)))
+                     ColorType = MakeConstants("#PB_Gadget_" + GetItemText( *g, GetState( *g)))
+                     Properties_SetItemText( ide_inspector_properties, GetData(*g), GetItemText( *g, GetState( *g)))
                      Properties_Updates( a_focused( ), "Color" ) 
+                     
+                  Case #_pi_FLAG
+                     Flag( a_focused( ), MakeConstants( GetItemText( *g, GetState( *g))), #True )
+                     Properties_Updates( a_focused( ), "Flag" ) 
+                     
+                  Case #_pi_fontstyle
+                     If ChangeFontStyle( a_focused( ), MakeConstants( "#PB_Font_"+GetItemText( *g, GetState(*g))))
+                        Properties_Updates( a_focused( ), "Font" )
+                     EndIf
                      
                   Case #_pi_id
                      If GetState(*g) 
@@ -856,16 +864,18 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                AddItem(*this, -1, "Entered")
                AddItem(*this, -1, "Selected")
                AddItem(*this, -1, "Disabled")
-               Properties_SetItemText( ide_inspector_properties, #_pi_colorstate, "Default" )
+;                ColorState = 0
+;                Properties_SetItemText( ide_inspector_properties, item, GetItemText( *this, 0) )
       
             Case #_pi_colortype
                AddItem(*this, -1, "BackColor")
                AddItem(*this, -1, "FrontColor")
-               ;                AddItem(*this, -1, "LineColor")
-               ;                AddItem(*this, -1, "FrameColor")
-               ;                AddItem(*this, -1, "ForeColor")
-               Properties_SetItemText( ide_inspector_properties, #_pi_colortype, "BackColor" )
-      
+               AddItem(*this, -1, "LineColor")
+               AddItem(*this, -1, "FrameColor")
+               AddItem(*this, -1, "ForeColor")
+;                ColorType = MakeConstants("#PB_Gadget_" + GetItemText( *this, 0))
+;                Properties_SetItemText( ide_inspector_properties, item, GetItemText( *this, 0) )
+                     
             Case #_pi_cursor
                AddItem(*this, -1, "Default")
                AddItem(*this, -1, "Arrows")
@@ -879,6 +889,7 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                AddItem(*this, -1, "LeftRight")
                AddItem(*this, -1, "LeftUpRightDown")
                AddItem(*this, -1, "UpDown")
+;                Properties_SetItemText( ide_inspector_properties, item, GetItemText( *this, 0) )
                
             Default
                AddItem(*this, -1, "False")
@@ -1120,13 +1131,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
    
    If ide_inspector_properties
       If type$ = "Focus" Or type$ = "Align"
-         If a_focused( )\parent = ide_design_panel_MDI
-            Properties_HideItem( ide_inspector_properties, #_pi_align, #True ) 
-         Else
-            Properties_HideItem( ide_inspector_properties, #_pi_align, #False ) 
-         EndIf
-         
-         ; Properties_SetItemText( ide_inspector_properties, #_pi_align, )
+         Properties_HideItem( ide_inspector_properties, #_pi_align, Bool( a_focused( )\parent = ide_design_panel_MDI )) 
       EndIf
       If type$ = "Focus" Or type$ = "ID"
          Properties_SetItemText( ide_inspector_properties, #_pi_id, BoolToStr( Bool( GetClass( *object ) <> Trim( GetClass( *object ), "#" ) )))
@@ -1177,9 +1182,10 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
          Properties_ButtonChange( ide_inspector_properties )
       EndIf
       
-      
+      If type$ = "Focus" Or type$ = "Flag"
+         Properties_SetItemText( ide_inspector_properties, #_pi_FLAG, MakeConstantsString( ClassFromType(*object\type), *object\flag ))
+      EndIf
       If type$ = "Focus" Or type$ = "Color" 
-         Define ColorType = MakeConstants("#PB_Gadget_"+Properties_getItemText( ide_inspector_properties, #_pi_colortype))
          Define color.l = GetColor( *object, ColorType, ColorState ) ;& $FFFFFF | *object\color\_alpha << 24
          Properties_SetItemText( ide_inspector_properties, #_pi_COLOR, "$"+Hex(Color, #PB_Long))
          Properties_SetItemText( ide_inspector_properties, #_pi_coloralpha, Str(Alpha(color)) )
@@ -2521,12 +2527,12 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
       Properties_AddItem( ide_inspector_properties, #_pi_height,         "Height",   #__Type_Spin, 1 )
       ;
       Properties_AddItem( ide_inspector_properties, #_pi_group_VIEW,   "VIEW" )
+      Properties_AddItem( ide_inspector_properties, #_pi_cursor,         "Cursor",   #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_hide,           "Hide",     #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_disable,        "Disable",  #__Type_ComboBox, 1 )
-      ;
-      Properties_AddItem( ide_inspector_properties, #_pi_flag,          "Flag",      #__Type_ComboBox, 0 )
-      Properties_AddItem( ide_inspector_properties, #_pi_cursor,         "Cursor",   #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_IMAGE,          "Image",    #__Type_Button, 1 )
+      ;
+      Properties_AddItem( ide_inspector_properties, #_pi_flag,          "Flag",      #__Type_ComboBox, 1 )
       ;
       Properties_AddItem( ide_inspector_properties, #_pi_FONT,           "Font",     #__Type_Button, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_fontsize,       "size",     #__Type_Spin, 2 )
@@ -2892,9 +2898,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1182
-; FirstLine = 1131
-; Folding = --------------------Pwv-----------------------------
+; CursorPosition = 769
+; FirstLine = 688
+; Folding = -----------6PB-v-----B9-----------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

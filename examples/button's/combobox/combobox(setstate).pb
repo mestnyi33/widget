@@ -66,10 +66,15 @@ CompilerIf #PB_Compiler_IsMainFile
    ;*CHILD = Button(30,10,160,70,"Button") 
    *RETURN = Button(30,90,160,25,"Button <<(Return)") 
    
+   
    *COMBO = ComboBox(30,120,160,25) 
+   ; Hide(*COMBO, 1)
    AddItem(*COMBO, -1, "Selected  to move")
    AddItem(*COMBO, -1, "Button")
-   
+   Bind(*RETURN, @Widgets_CallBack())
+  SetState(*COMBO, #PB_GadgetType_Button)
+   ; Bind(*COMBO, @Widgets_CallBack())
+  
    
    
    *DESKTOP = Button(30,150,160,20,"Button >>(Desktop)") 
@@ -77,7 +82,6 @@ CompilerIf #PB_Compiler_IsMainFile
    *_11 = Button(30,90,160,30,"Button >>(Canvas)") 
    CloseList()
    
-   SetState(*COMBO, #PB_GadgetType_Button)
    Bind(GetRoot(*window_20), @Widgets_CallBack())
    
    Define Event
@@ -87,8 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 39
-; FirstLine = 34
+; CursorPosition = 74
+; FirstLine = 53
 ; Folding = --
 ; EnableXP
 ; DPIAware
