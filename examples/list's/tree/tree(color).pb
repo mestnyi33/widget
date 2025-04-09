@@ -47,7 +47,6 @@ CompilerIf #PB_Compiler_IsMainFile
     SetItemColor(*w, 3, #__FrameColor,  $FF0000f0)
     
     ; index-3 item default frame-color
-    Debug $FF00FFFF
     SetItemColor(*w, 3, #PB_Gadget_BackColor,  $FF00FFFF)
     
     ; index-7 item default back-color
@@ -73,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 70
-; FirstLine = 34
+; CursorPosition = 49
+; FirstLine = 32
 ; Folding = -
 ; EnableXP

@@ -5268,7 +5268,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected.l X = *this\inner_x( ) - *this\frame_x( ),
                   Y = *this\inner_y( ) - *this\frame_y( ),
                   Width = *this\container_width( ), 
-                  Height = *this\container_height( )
+                  Height =  *this\container_height( )
          
          Protected resize_v, resize_h, x1 = #PB_Ignore, y1 = #PB_Ignore, iwidth, iheight, w, h
          ;Protected resize_v, resize_h, x1 = *this\container_x( ), y1 = *this\container_y( ), width1 = *this\container_width( ), height1 = *this\container_height( ), iwidth, iheight, w, h
@@ -5404,7 +5404,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If test_resize_area
                   Debug "         v "+\v\frame_x( ) +" "+ x1
                EndIf
-               Resize( \v, x1-*this\inner_x( ) , #PB_Ignore, #PB_Ignore, Height )
+               Resize( \v, x1-*this\inner_x( )-*this\fs , #PB_Ignore, #PB_Ignore, Height )
             EndIf
             If resize_h And (\h\frame_y( ) <> y1 Or
                              \h\frame_x( ) <> *this\inner_x( ) + X Or
@@ -5412,7 +5412,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If test_resize_area
                   Debug "         h "+\h\frame_y( ) +" "+ y1
                EndIf
-               Resize( \h, #PB_Ignore, y1-*this\inner_y( ), Width, #PB_Ignore )
+               Resize( \h, #PB_Ignore, y1-*this\inner_y( )-*this\fs, Width, #PB_Ignore )
             EndIf
             
             ;\\ update scrollbars parent inner coordinate
@@ -8673,6 +8673,53 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
+      Global igOpaque = RGBA(128,128,0,255)
+      Procedure SetLayeredWindow( Window, Color )
+         CompilerSelect #PB_Compiler_OS
+            CompilerCase #PB_OS_Windows
+               SetWindowLongPtr_(WindowID(Window), #GWL_EXSTYLE, #WS_EX_LAYERED) 
+               SetLayeredWindowAttributes_(WindowID(Window), RGBA( Red(Color), Green(Color), Blue(Color), 0), 0, #LWA_COLORKEY)
+               
+            CompilerCase #PB_OS_Linux
+               ;XShapeCombineMask_()
+               Protected *Widget.GtkWidget
+               *Widget = WindowID(Window)
+               *Widget = *Widget\object
+               ;       Protected *screen.GdkScreen = gtk_widget_get_screen_(*Widget)
+               ;       Protected *colormap.GdkColormap = gdk_screen_get_default_colormap_(*screen);gdk_screen_get_rgba_colormap_(gdk_screen_get_default_())
+               
+               ;       gtk_widget_set_colormap_(*Widget, *colormap)
+               ;       gtk_widget_shape_combine_mask_(*Widget, 0,0,0)
+               Protected FixedBox = GtkContainer(GtkWidget(GadgetID(0)));
+               
+               ;Protected FixedBox = g_list_nth_data_(gtk_container_get_children_(gtk_bin_get_child_(WindowID(Window))), 0) ; виджет привязанный к окну
+               Debug FixedBox
+               g_signal_connect(FixedBox, "expose-event", @RedrawWidget(), 0)                                              ; обработчик сигнала
+                                                                                                                           ; time = g_timeout_add_(60, @movie(), #Null)                                                           ; таймер движение окна
+               gtk_widget_set_app_paintable_(FixedBox, #True)                                                              ; разрешаем отрисовку в виджете
+               
+               
+               ; ----- Удалить GdkWindow ресурсы, чтобы иметь возможность изменить цветовую гамму
+               gtk_widget_unrealize_(WindowID(Window))
+               ;gtk_widget_unrealize_(GtkWidget(GadgetID(0)))
+               
+               ; ----- Поддержка альфа канала
+               Protected Screen = gtk_widget_get_screen_(WindowID(Window))
+               Protected Colormap = gdk_screen_get_rgba_colormap(Screen) ; RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color)) ;
+               
+               If Colormap
+                  gtk_widget_set_colormap_(WindowID(Window), Colormap)
+                  ;gtk_widget_set_colormap_(GtkWidget(GadgetID(0)), Colormap)
+               Else
+                  MessageRequester("Error", "Your current system configuration doesn't support transparency!")
+                  End
+               EndIf
+               
+               ;gtk_window_set_opacity(WindowID(Window), 0.3)
+               
+         CompilerEndSelect
+      EndProcedure
+      
       Macro add_color( _result_, _address_, _color_type_, _color_, _alpha_, _column_ = )
          _address_\_alpha = alpha
             
@@ -16110,50 +16157,33 @@ chr$ = ","
             Else
                *this\fs = 0
             EndIf
-         ElseIf *this\type = #__type_Splitter
-            
-            ;                 *this\type = #__type_ScrollArea Or
-            ;                 *this\type = #__type_MDI Or
-            ;                 *this\type = #__type_Editor Or
-            ;                 *this\type = #__type_ListView Or
-            ;                 *this\type = #__type_ListIcon Or
-            ;                 *this\type = #__type_ExplorerList Or
-            ;                 *this\type = #__type_Properties Or
-            ;                 *this\type = #__type_Tree Or
-            ;                 *this\type = #__type_Container Or
-            ;                 *this\type = #__type_Panel Or
-            ;                 *this\type = #__type_String Or
-            ;                 *this\type = #__type_Text Or
-            ;                 *this\type = #__type_ComboBox Or
-            ;                 *this\type = #__type_Spin Or
-            ;                 *this\type = #__type_Button Or
-            ;                 *this\type = #__type_Frame
-            
          Else
             If constants::BinaryFlag( *this\flag, #__flag_border_Double ) Or
                constants::BinaryFlag( *this\flag, #__flag_border_Raised )
                *this\fs = 2
             ElseIf constants::BinaryFlag( *this\Flag, #__flag_border_Less )
                *this\fs = 0
-            Else
+            ElseIf constants::BinaryFlag( *this\Flag, #__flag_border_Flat ) Or
+                   *this\type = #__type_Panel Or
+                   *this\type = #__type_Spin Or
+                   *this\type = #__type_Button Or
+                   *this\type = #__type_ComboBox Or
+                   *this\type = #__type_ExplorerList 
+                   
                *this\fs = 1
+            Else
+               If *this\type = #__type_Editor Or
+                  *this\type = #__type_String Or
+                  *this\type = #__type_ScrollArea Or
+                  *this\type = #__type_ListView Or
+                  *this\type = #__type_ListIcon Or
+                  *this\type = #__type_Tree 
+                  *this\fs = 2
+               EndIf
             EndIf
          EndIf
-         ;          If *this\type = #__type_ScrollArea Or
-         ;             *this\type = #__type_MDI Or
-         ;             *this\type = #__type_Editor Or
-         ;             *this\type = #__type_ListView Or
-         ;             *this\type = #__type_ListIcon Or
-         ;             *this\type = #__type_ExplorerList Or
-         ;             *this\type = #__type_Properties Or
-         ;             *this\type = #__type_Tree 
-         ;             ;
-         ;             If *this\fs
-         ;                *this\fs + 1
-         ;             EndIf
-         ;          EndIf   
          *this\bs = *this\fs
-         
+            
         ;\\
          If *parent
             ;\\
@@ -19243,28 +19273,41 @@ chr$ = ","
          ;          ClearDebugOutput( )
          ;          ;\\
          If *root
-            If *root\drawmode & 1<<1 And Not *root\drawmode & 1<<2
-               VectorSourceColor($FFF0F0F0)
-               FillVectorOutput( )
-            EndIf
-            ;\\
-            If *root\drawmode & 1<<2
-               ; If *root\color\back = - 1 ; test example anchor(b5)
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  ; good transparent canvas
-                  FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
-               CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-                  FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetSysColor_(#COLOR_BTNFACE) )
-               CompilerElse
-                  ;               Protected *style.GtkStyle, *color.GdkColor
-                  ;               *style = gtk_widget_get_style_(WindowID(*root\canvas\window))
-                  ;               *color = *style\bg[0]                       ; 0=#GtkStateNormal
-                  ;               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), RGB(*color\red >> 8, *color\green >> 8, *color\blue >> 8) )
-                  FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
-               CompilerEndIf
-               ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor(*root\canvas\window))
-               ; EndIf
-            EndIf
+; ;             Define pb_color.l = GetWindowColor( *root\canvas\window ) 
+; ;             If Not pb_color = - 1 
+; ;                If *root\color\back <> pb_color
+; ;                   *root\color\back = pb_color
+; ;                EndIf
+; ;             EndIf
+            ;
+            ; Debug *root\color\back&$ffffff
+            ;If *root\color\back & $ffffff = - 1 ; test example anchor(b5)
+               If *root\drawmode & 1<<1 And Not *root\drawmode & 1<<2
+                  VectorSourceColor($FFF0F0F0)
+                  FillVectorOutput( )
+               EndIf
+               ;\\
+               If *root\drawmode & 1<<2
+                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                     ; good transparent canvas
+                     FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
+                  CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+                     If GetWindowColor( *root\canvas\window ) = - 1
+                        FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetSysColor_(#COLOR_BTNFACE) )
+                     Else
+                        ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor( *root\canvas\window ) )
+                        Box( 0,0, OutputWidth( ), OutputHeight( ), GetWindowColor( *root\canvas\window ))
+                     EndIf
+                  CompilerElse
+                     ;               Protected *style.GtkStyle, *color.GdkColor
+                     ;               *style = gtk_widget_get_style_(WindowID(*root\canvas\window))
+                     ;               *color = *style\bg[0]                       ; 0=#GtkStateNormal
+                     ;               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), RGB(*color\red >> 8, *color\green >> 8, *color\blue >> 8) )
+                     FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
+                  CompilerEndIf
+                  ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor(*root\canvas\window))
+               EndIf
+            ;EndIf
             
             ;\\
             Draw( *root )
@@ -23689,7 +23732,7 @@ chr$ = ","
          ;
          If Not FindMapElement( roots( ), Str( g ) ) ; ChangeCurrentCanvas(g)
             result     = AddMapElement( roots( ), Str( g ) )
-            roots( ) = AllocateStructure( _s_root )
+            roots( )   = AllocateStructure( _s_root )
             root( )    = roots( )
             *root      = roots( )
             
@@ -23794,6 +23837,11 @@ chr$ = ","
                ; RedrawWindow_(WindowID(a), 0, 0, #RDW_ERASE | #RDW_FRAME | #RDW_INVALIDATE | #RDW_ALLCHILDREN)
                
                RemoveKeyboardShortcut( Window, #PB_Shortcut_Tab )
+               
+;                ; transparent canvas
+;                SetWindowLongPtr_(g, #GWL_EXSTYLE, #WS_EX_LAYERED) 
+;                SetLayeredWindowAttributes_(g, RGB( Red(#White), Green(#White), Blue(#White)), 0, #LWA_COLORKEY)
+;                ; SetLayeredWindowAttributes_(g, RGB( Red(#Black), Green(#Black), Blue(#Black)), 0, #LWA_COLORKEY)
             CompilerEndIf
             
             ;\\
@@ -24508,53 +24556,6 @@ chr$ = ","
                
                ; ProcedureReturn #PB_Ignore
          EndSelect
-      EndProcedure
-      
-      Global igOpaque = RGBA(128,128,0,255)
-      Procedure SetLayeredWindow( Window, Color )
-         CompilerSelect #PB_Compiler_OS
-            CompilerCase #PB_OS_Windows
-               SetWindowLongPtr_(WindowID(Window), #GWL_EXSTYLE, #WS_EX_LAYERED) 
-               SetLayeredWindowAttributes_(WindowID(Window), RGBA( Red(Color), Green(Color), Blue(Color), 0), 0, #LWA_COLORKEY)
-               
-            CompilerCase #PB_OS_Linux
-               ;XShapeCombineMask_()
-               Protected *Widget.GtkWidget
-               *Widget = WindowID(Window)
-               *Widget = *Widget\object
-               ;       Protected *screen.GdkScreen = gtk_widget_get_screen_(*Widget)
-               ;       Protected *colormap.GdkColormap = gdk_screen_get_default_colormap_(*screen);gdk_screen_get_rgba_colormap_(gdk_screen_get_default_())
-               
-               ;       gtk_widget_set_colormap_(*Widget, *colormap)
-               ;       gtk_widget_shape_combine_mask_(*Widget, 0,0,0)
-               Protected FixedBox = GtkContainer(GtkWidget(GadgetID(0)));
-               
-               ;Protected FixedBox = g_list_nth_data_(gtk_container_get_children_(gtk_bin_get_child_(WindowID(Window))), 0) ; виджет привязанный к окну
-               Debug FixedBox
-               g_signal_connect(FixedBox, "expose-event", @RedrawWidget(), 0)                                              ; обработчик сигнала
-                                                                                                                           ; time = g_timeout_add_(60, @movie(), #Null)                                                           ; таймер движение окна
-               gtk_widget_set_app_paintable_(FixedBox, #True)                                                              ; разрешаем отрисовку в виджете
-               
-               
-               ; ----- Удалить GdkWindow ресурсы, чтобы иметь возможность изменить цветовую гамму
-               gtk_widget_unrealize_(WindowID(Window))
-               ;gtk_widget_unrealize_(GtkWidget(GadgetID(0)))
-               
-               ; ----- Поддержка альфа канала
-               Protected Screen = gtk_widget_get_screen_(WindowID(Window))
-               Protected Colormap = gdk_screen_get_rgba_colormap(Screen) ; RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color)) ;
-               
-               If Colormap
-                  gtk_widget_set_colormap_(WindowID(Window), Colormap)
-                  ;gtk_widget_set_colormap_(GtkWidget(GadgetID(0)), Colormap)
-               Else
-                  MessageRequester("Error", "Your current system configuration doesn't support transparency!")
-                  End
-               EndIf
-               
-               ;gtk_window_set_opacity(WindowID(Window), 0.3)
-               
-         CompilerEndSelect
       EndProcedure
       
       Procedure Message( Title.s, Text.s, flag.q = #Null, ParentID = #Null )
@@ -25693,9 +25694,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 9115
-; FirstLine = 9088
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4+-8fr-f+ff----4---------------------------------4v--------------------------------------------------0P8i-u+----------------------------------------------------------------Pw3m-f-8----f------------------vh-+--8-+---e4--------------z-----------v---------------------------------------------------------------------------------------------------------+---3------------------------------------------------------f--------------------0-0----------------------
+; CursorPosition = 16180
+; FirstLine = 15333
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--------------------+---------f8-v-t+-6-00---f---------------------------------f-+-------------------------------------------------4-sL+87-----------------------------------------------------------------Abb+-0v-----0------------------G-4--f-4---48+-------------f+-----------0--------------------------------------------------------------------------------------------------------v---v0------------------------------------------------------4-------------------f-f----------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

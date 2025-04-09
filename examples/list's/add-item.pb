@@ -175,7 +175,7 @@ CompilerIf #PB_Compiler_IsMainFile
             *row\rindex        = position 
             *row\columnindex   = ListIndex( *this\columns( ))
             
-            If *this\mode\check
+            If *this\mode\checkboxes Or *this\mode\optionboxes
                *row\checkbox.allocate( BOX )
             EndIf
             If *this\mode\lines Or *this\mode\buttons
@@ -350,8 +350,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 207
-; FirstLine = 203
+; CursorPosition = 177
+; FirstLine = 173
 ; Folding = -------
 ; EnableXP
 ; DPIAware

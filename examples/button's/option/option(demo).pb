@@ -27,7 +27,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;
-   If Open(0, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   If OpenWindow(0, 0, 0, 140+140, 200, "OptionGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      ;SetWindowColor(0, $0FDFE9)
+      ;SetWindowColor(0, $0EE98A)
       ;
       OptionGadget(0, 10, 20, 115, 20, "Option 1") 
       OptionGadget(1, 10, 45, 115, 20, "Option 2")
@@ -46,13 +48,17 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       
       ;
-      Option(10+140, 20, 115, 20, "Option 1") : SetClass( widget( ), "Option 1" )
-      Option(10+140, 45, 115, 20, "Option 2") : SetClass( widget( ), "Option 2" )
-      Option(10+140, 70, 115, 20, "Option 3") : SetClass( widget( ), "Option 3" )
+      Open(0, 140, 0, 140, 200,"",#__flag_transparent)
+      ;SetBackgroundColor( root(), $00FFFFF0 );$0FDFE9)
+      ;SetBackgroundColor( root(), $0FDFE9)
+       
+      Option(10, 20, 115, 20, "Option 1") : SetClass( widget( ), "Option 1" )
+      Option(10, 45, 115, 20, "Option 2") : SetClass( widget( ), "Option 2" )
+      Option(10, 70, 115, 20, "Option 3") : SetClass( widget( ), "Option 3" )
       
-      CheckBox(10+140, 95, 115, 20, "CheckBox", #PB_CheckBox_ThreeState ) : SetClass( widget( ), "CheckBox" )
-      Option(10+140, 120, 115, 20, "Option 4") : SetClass( widget( ), "Option 4" )
-      Option(10+140, 145, 115, 20, "Option 5") : SetClass( widget( ), "Option 5" )
+      CheckBox(10, 95, 115, 20, "CheckBox", #PB_CheckBox_ThreeState ) : SetClass( widget( ), "CheckBox" )
+      Option(10, 120, 115, 20, "Option 4") : SetClass( widget( ), "Option 4" )
+      Option(10, 145, 115, 20, "Option 5") : SetClass( widget( ), "Option 5" )
       
       SetState(ID(1), 1)   ; set second option as active one
       SetState(ID(3), #PB_Checkbox_Inbetween)  
@@ -65,8 +71,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 37
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 52
+; FirstLine = 34
 ; Folding = --
 ; EnableXP

@@ -44,18 +44,18 @@ CompilerIf #PB_Compiler_IsMainFile
                Case *grid, *gridType
                   mouse( )\steps = DPIScaled(GetState(*grid))
                   a_anchors( )\grid_type = GetState(*gridType)
-                 ; Debug 66666;                   ; remove background image
-                  ;                   SetBackgroundImage( a_focused( )\parent, - 1 )
-                  ;                   If IsImage( a_anchors( )\grid_image )
-                  ;                      FreeImage( a_anchors( )\grid_image )
-                  ;                      a_anchors( )\grid_image = - 1
-                  ;                   EndIf
-                  RemoveImage( a_focused( )\parent, a_anchors( )\grid_image )
-                  
-                  a_anchors( )\grid_image = a_grid_image( mouse( )\steps - 1, a_anchors( )\grid_type, $FF000000, 0,0);*this\fs, *this\fs )
-                  SetBackgroundImage( a_focused( )\parent, a_anchors( )\grid_image )
-                  Resize( a_focused( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  ReDraw( a_focused( )\root )
+;                  ; Debug 66666;                   ; remove background image
+;                   ;                   SetBackgroundImage( a_focused( )\parent, - 1 )
+;                   ;                   If IsImage( a_anchors( )\grid_image )
+;                   ;                      FreeImage( a_anchors( )\grid_image )
+;                   ;                      a_anchors( )\grid_image = - 1
+;                   ;                   EndIf
+;                   RemoveImage( a_focused( )\parent, a_anchors( )\grid_image )
+;                   
+;                   a_anchors( )\grid_image = a_grid_image( mouse( )\steps - 1, a_anchors( )\grid_type, $FF000000, 0,0);*this\fs, *this\fs )
+;                   SetBackgroundImage( a_focused( )\parent, a_anchors( )\grid_image )
+;                   Resize( a_focused( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+;                   ;ReDraw( a_focused( )\root )
             EndSelect
       EndSelect
    EndProcedure
@@ -122,8 +122,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 85
+; CursorPosition = 57
+; FirstLine = 27
 ; Folding = --
 ; EnableXP
 ; DPIAware

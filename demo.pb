@@ -13,7 +13,7 @@ test_focus_show = 1
    
 Global i, *test._s_widget
 
-Procedure Events( )
+Procedure all_events( )
    Protected event = WidgetEvent( )
    Protected *this._s_widget = EventWidget( )
    
@@ -65,7 +65,8 @@ Procedure scrolled( )
 EndProcedure
 
 If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-   Bind(#PB_All, @events( ))
+   SetBackgroundColor( root(), $99EBFF)
+   Bind(#PB_All, @all_events( ))
    
    ;a_init(root( ), 0)
    ;
@@ -146,9 +147,9 @@ EndIf
 CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 69
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 67
+; FirstLine = 48
 ; Folding = ---
 ; EnableXP
 ; DPIAware

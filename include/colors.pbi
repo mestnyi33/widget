@@ -18,7 +18,7 @@
     \front[0] = $ff000001
     \fore[0] = $ffF8F8F8 
     \back[0] = $ffE2E2E2
-    \frame[0] = $ffC8C8C8
+    \frame[0] = $DE777D7E ; $ffC8C8C8
     
     ; Цвета если мышь на виджете
     \front[1] = $ff000000
@@ -201,7 +201,7 @@ EndModule
 ; CompilerEndSelect
 
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 146
-; FirstLine = 138
+; CursorPosition = 20
+; FirstLine = 9
 ; Folding = -
 ; EnableXP
