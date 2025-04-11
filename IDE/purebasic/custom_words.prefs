@@ -2,6 +2,9 @@ SetTextXY
 GetCaret
 SetCaret
 
+Sticky
+Sticked
+
 TypeFromClass
 ClassFromType
 ClassFromEvent

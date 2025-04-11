@@ -1763,7 +1763,7 @@ Procedure widget_events( )
          If a_focused( ) = *g
             If GetActive( ) <> ide_inspector_view 
                SetActive( ide_inspector_view )
-               Debug "------------- active "+GetClass(GetActive( ))
+              ; Debug "------------- active "+GetClass(GetActive( ))
             EndIf
          EndIf
          
@@ -2898,8 +2898,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 769
-; FirstLine = 688
+; CursorPosition = 1762
+; FirstLine = 1645
 ; Folding = -----------6PB-v-----B9-----------------------------
 ; Optimizer
 ; EnableAsm

@@ -24,8 +24,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   Global Event.i, MyCanvas, *mdi._s_widget, *spl1,*spl2
   Global X=100,Y=100, Width=420, Height=420 , focus
+  test_focus_set = 1
   
-  Procedure Events()
+  Procedure all_events()
      Debug *mdi\scroll\v\bar\page\pos
   EndProcedure
   
@@ -80,16 +81,16 @@ CompilerIf #PB_Compiler_IsMainFile
   Resize(*g3, 300, -150, #PB_Ignore, #PB_Ignore)
   Resize(*g3, 10, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   
-  Bind(#PB_All, @events(), #__event_down)
-  Bind(#PB_All, @events(), #__event_dragstart)
+  Bind(#PB_All, @all_events(), #__event_down)
+  Bind(#PB_All, @all_events(), #__event_dragstart)
   
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 38
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 27
+; FirstLine = 9
 ; Folding = -
 ; EnableXP
 ; DPIAware

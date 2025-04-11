@@ -1057,13 +1057,12 @@ Procedure   MakeLine( *mdi, string$, findtext$ )
                      EndIf
                      
                      SetText( *g, text$ )
-                     
+                     ; 
+                     ide_addline( *g )
                      ;
                      If IsContainer( *g ) > 0
                         *Parent = *g
                      EndIf
-                     ; 
-                     ide_addline( *g )
                      result = 1
                   EndIf
                   
@@ -2053,8 +2052,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 20
+; CursorPosition = 1055
+; FirstLine = 996
 ; Folding = -f-----f------------------f9-4-----4r3f----b-ePA5--0--
 ; EnableXP
 ; DPIAware

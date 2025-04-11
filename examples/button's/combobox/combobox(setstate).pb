@@ -71,8 +71,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ; Hide(*COMBO, 1)
    AddItem(*COMBO, -1, "Selected  to move")
    AddItem(*COMBO, -1, "Button")
-   Bind(*RETURN, @Widgets_CallBack())
-  SetState(*COMBO, #PB_GadgetType_Button)
+   SetState(*COMBO, #PB_GadgetType_Button)
+  Bind(*RETURN, @Widgets_CallBack())
    ; Bind(*COMBO, @Widgets_CallBack())
   
    

@@ -25,7 +25,7 @@ If Open(0, 100, 200, Width, Height, "demo activate windows", #PB_Window_SystemMe
 EndIf
 
 End  
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; IDE Options = PureBasic 6.20 (Windows - x64)
 ; CursorPosition = 11
 ; Folding = -
 ; EnableXP

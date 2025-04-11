@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
                         
                      Case #before
                         If SetPosition(*this, #PB_List_Before)
-                           If *this = GetPosition( *this, #PB_List_First )
+                           If *this = GetPosition( GetParent( *this ), #PB_List_First )
                               DisableGadget(#first,1)
                               DisableGadget(#before,1)
                            Else
@@ -134,7 +134,7 @@ CompilerIf #PB_Compiler_IsMainFile
                         
                      Case #after
                         If SetPosition(*this, #PB_List_After)
-                           If *this = GetPosition( *this, #PB_List_Last )
+                           If *this = GetPosition( GetParent( *this ), #PB_List_Last )
                               DisableGadget(#after,1)
                               DisableGadget(#last,1)
                            Else
@@ -184,9 +184,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 39
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 129
+; FirstLine = 113
 ; Folding = ----
 ; EnableXP
 ; DPIAware

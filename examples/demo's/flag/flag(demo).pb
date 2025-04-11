@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case "progress"      : *new = Progress(     X, Y, Width, Height, Param1, Param2, flag )          ; bar                                                           
          Case "track"         : *new = Track(        X, Y, Width, Height, Param1, Param2, flag )          ; bar                                                                           
          Case "spin"          : *new = Spin(         X, Y, Width, Height, Param1, Param2, flag )                                                                             
-         Case "splitter"      : *new = Splitter(     X, Y, Width, Height, Param1, Param2, flag )                                                                         
+         Case "splitter"      : *new = Splitter(     X, Y, Width, Height, Param1, Param2, flag )                ; :Debug ""+Param1 +" "+ Param2 ;                                                          
          Case "mdi"           : *new = MDI(          X, Y, Width, Height, flag )  ;  , Param1, Param2                                                                          
          Case "image"         : *new = Image(        X, Y, Width, Height, Param1, flag )                                                                                                     
          Case "buttonimage"   : *new = ButtonImage(  X, Y, Width, Height, Param1, flag )                                                                                                 
@@ -241,7 +241,7 @@ Procedure Add(Text.s)
                   If *this
                      Free(*this)
                   EndIf
-                  *this = widget_create(root(), GetItemText( w_type, GetState( w_type)), 100, 100, 250, 200, Text, #PB_Button_Toggle|#__flag_text_multiline) 
+                  *this = widget_create(root(), GetItemText( w_type, GetState( w_type)), 100, 100, 250, 200, Text, 0,0,0, #PB_Button_Toggle|#__flag_text_multiline) 
                   Debug  ""+GetText( w_type)+" "+GetItemText( w_type, GetState( w_type))
                   If *this
                      flag = Flag(*this)
@@ -297,8 +297,8 @@ Procedure Add(Text.s)
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 51
+; CursorPosition = 83
+; FirstLine = 65
 ; Folding = ------
 ; EnableXP
 ; DPIAware
