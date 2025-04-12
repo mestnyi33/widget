@@ -76,6 +76,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure CanvasButtonGadget( gadget, X,Y,Width,Height,Text.s )
       CanvasGadget(gadget, X,Y,Width,Height, #PB_Canvas_DrawFocus )
       
+      StopDrawing( ) ; bug
       If StartDrawing(CanvasOutput(gadget))
          DrawingFont(GetGadgetFont(-1))
          DrawText((DesktopScaledX(Width)-TextWidth(Text))/2, (DesktopScaledY(Height)-TextHeight(Text))/2, Text)
@@ -147,9 +148,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitEvent( );@CallBack( ) )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 107
-; FirstLine = 42
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 78
+; FirstLine = 14
 ; Folding = 0-
 ; EnableXP
 ; DPIAware

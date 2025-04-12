@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug ""+*this\class +" "+ ClassFromEvent(event)
    EndProcedure
       
-   Procedure Events()
+   Procedure all_events()
       Protected event = WidgetEvent()
       If event =  #__Event_MouseEnter
          Select Index(EventWidget())
@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure CanvasButton( gadget, X,Y,Width,Height,Text.s )
       Button( X,Y,Width,Height, Text )
       SetClass(widget(), Text+"["+Str(gadget)+"]")
-      Bind(widget(), @Events())
+      Bind(widget(), @all_events())
    EndProcedure
    
    Procedure CanvasButtonGadget( gadget, X,Y,Width,Height,Text.s )
@@ -77,9 +77,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 47
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 38
+; FirstLine = 23
 ; Folding = ---
 ; EnableXP
 ; DPIAware
