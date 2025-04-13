@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
       *g = Editor(8, 146, 306, 133) 
       ;*g = Editor(0, 0, 0, 0) 
-      SetBackgroundColor(*g, $FFB3FDFF)
+      SetBackColor(*g, $FFB3FDFF)
 ;       SetText(*g, Text.s)
 ;       AddItem(*g, 0, "add line first")
 ;       AddItem(*g, 4, "add line "+Str(4))
@@ -80,9 +80,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 43
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 55
+; FirstLine = 47
 ; Folding = -
 ; EnableXP
 ; DPIAware

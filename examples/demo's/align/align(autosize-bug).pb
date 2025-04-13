@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Image(0, 0, 0, 0, (0), #__flag_autosize)
     ;Debug widget()\parent
     ;String(0, 0, 0, 0, "text", #__flag_autosize)
-    ;SetBackgroundColor(widget(), $FFB3FDFF)
+    ;SetBackColor(widget(), $FFB3FDFF)
     
     ; SetAttribute(widget(), #PB_Button_Image, (#PB_Button_Image))
     SetAttribute(widget(), #PB_Button_PressedImage, (#PB_Button_PressedImage))
@@ -39,8 +39,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; IDE Options = PureBasic 6.20 (Windows - x64)
 ; CursorPosition = 33
-; FirstLine = 11
+; FirstLine = 5
 ; Folding = -
 ; EnableXP

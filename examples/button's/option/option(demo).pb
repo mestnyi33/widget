@@ -49,8 +49,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;
       Open(0, 140, 0, 140, 200,"",#__flag_transparent)
-      ;SetBackgroundColor( root(), $00FFFFF0 );$0FDFE9)
-      ;SetBackgroundColor( root(), $0FDFE9)
+      ;SetBackColor( root(), $00FFFFF0 );$0FDFE9)
+      ;SetBackColor( root(), $0FDFE9)
        
       Option(10, 20, 115, 20, "Option 1") : SetClass( widget( ), "Option 1" )
       Option(10, 45, 115, 20, "Option 2") : SetClass( widget( ), "Option 2" )
@@ -73,6 +73,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
 ; CursorPosition = 52
-; FirstLine = 34
+; FirstLine = 37
 ; Folding = --
 ; EnableXP

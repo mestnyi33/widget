@@ -715,7 +715,7 @@ Procedure   Properties_ButtonEvents( )
                      EndIf
                      
                   Case #_pi_coloralpha
-                     If SetBackgroundColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
+                     If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorgreen))),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorblue))),
                                                              (GetState(*g)) ))
@@ -723,7 +723,7 @@ Procedure   Properties_ButtonEvents( )
                   EndIf
                   
                   Case #_pi_colorblue
-                     If SetBackgroundColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
+                     If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorgreen))),
                                                              (GetState(*g)),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_coloralpha))) ))
@@ -731,7 +731,7 @@ Procedure   Properties_ButtonEvents( )
                      EndIf
                      
                   Case #_pi_colorgreen
-                     If SetBackgroundColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
+                     If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
                                                              (GetState(*g)),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorblue))),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_coloralpha))) ))
@@ -739,7 +739,7 @@ Procedure   Properties_ButtonEvents( )
                      EndIf
                      
                   Case #_pi_colorred
-                     If SetBackgroundColor( a_focused( ), RGBA( (GetState(*g)),
+                     If SetBackColor( a_focused( ), RGBA( (GetState(*g)),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorgreen))),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorblue))),
                                                              (Val(Properties_GetItemText(ide_inspector_properties, #_pi_coloralpha))) ))
@@ -1710,7 +1710,7 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
                If Not flag & #__flag_NoFocus 
                   a_set(*new, #__a_full, (14))
                EndIf
-               SetBackgroundColor( *new, $FFECECEC )
+               SetBackColor( *new, $FFECECEC )
                ;
                Properties_Updates( *new, "Resize" )
                Bind( *new, @widget_events( ) )
@@ -1718,7 +1718,7 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
                If Not flag & #__flag_NoFocus 
                   a_set(*new, #__a_full, (10))
                EndIf
-               SetBackgroundColor( *new, $FFF1F1F1 )
+               SetBackColor( *new, $FFF1F1F1 )
             EndIf 
             
             ; 
@@ -2401,7 +2401,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
    ;     ide_g_code = TreeGadget( -1,1,1,330,230 ) 
    
-   Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
+   Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget | #PB_Window_Invisible
    ide_root = Open( 1, X,Y,Width,Height, "ide", flag ) 
    ide_window = GetCanvasWindow( ide_root )
    ide_g_canvas = GetCanvasGadget( ide_root )
@@ -2477,7 +2477,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    
    AddItem( ide_design_PANEL, -1, "Code" )
    ide_design_panel_CODE = Editor( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel_CODE, "ide_design_panel_CODE" ) ; bug then move anchors window
-   SetBackgroundColor( ide_design_panel_CODE, $FFDCF9F6)
+   SetBackColor( ide_design_panel_CODE, $FFDCF9F6)
    AddItem( ide_design_PANEL, -1, "Hiasm" )
    CloseList( )
    
@@ -2712,7 +2712,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If example = 2
       Define cont1 = widget_add( ide_design_FORM, "container", 10, 10, 320, 180 )
-      SetBackgroundColor( cont1, $FF9CF9F6)
+      SetBackColor( cont1, $FF9CF9F6)
       widget_add( cont1, "button", 10, 20, 100, 30 )
       Define cont2 = widget_add( cont1, "container", 130, 20, 90, 140 )
       widget_add( cont2, "button", 10, 20, 30, 30 )
@@ -2857,17 +2857,17 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    a_set( ide_design_FORM )
-   
+     
+   ;ReDraw(root())
+   Define time = ElapsedMilliseconds( )
    Define code$ = Generate_Code( ide_design_panel_MDI )
    code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
    code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
    SetText( ide_design_DEBUG, code$ )
+   ;Debug ""+Str(ElapsedMilliseconds( )-time) +" generate code time"
    
-   ;Define code$ = Generate_Code( ide_design_panel_MDI )
-   ; SetText( ide_design_panel_CODE, code$ )
-   ;SetText( ide_design_DEBUG, code$ )
-   
-   ;SetState( ide_design_PANEL, 1 )
+   ;ReDraw(root())
+   HideWindow( ide_window, #False )
    
    If SetActive( ide_inspector_view )
       SetActiveGadget( ide_g_canvas )
@@ -2898,9 +2898,9 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1762
-; FirstLine = 1645
-; Folding = -----------6PB-v-----B9-----------------------------
+; CursorPosition = 2868
+; FirstLine = 2748
+; Folding = -----------6P0-v-----B9-----------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

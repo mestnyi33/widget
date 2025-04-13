@@ -153,7 +153,6 @@ UpdateCurrentCursor
 ChangeCurrentCursor
 
 SetBackgroundImage
-SetBackgroundColor
 GetCanvasWindow
 GetCanvasGadget
 GetWindow
@@ -236,7 +235,6 @@ SetActive
 SetForeground
 
 GetAttribute
-GetColor
 GetData
 
 AddFont
@@ -252,9 +250,25 @@ GetFontSize
 GetFontStyle
 SetFont
 SetFontName
-SetFontColor
 SetFontSize
 SetFontStyle
+
+
+GetColor
+GetFontColor
+GetBackColor
+GetFrameColor
+GetLineColor
+GetForeColor
+
+SetColor
+SetFontColor
+SetBackColor
+SetFrameColor
+SetLineColor
+SetForeColor
+SetBackgroundColor
+
 
 AddImage
 ChangeImage
@@ -293,7 +307,6 @@ HBar
 VBar
 
 SetAttribute
-SetColor
 SetData
 
 SetItemAttribute

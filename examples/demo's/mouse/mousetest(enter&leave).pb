@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
          ;\\
          *test = Tree(10, 10, 135, 80)
-         setframe(*test, 0)
+         SetFrame(*test, 0)
          ;a_set( *test, #__a_full, 12 )
          For i = 0 To 6
             AddItem( *test, -1, "item-"+Str(i) )
@@ -58,11 +58,11 @@ CompilerIf #PB_Compiler_IsMainFile
          ;\\
          ; *test = Splitter( 10, 100, 280, 80, Button( 0,0,0,0,"1"),Button( 0,0,0,0,"2") )
          *test = ScrollArea(10, 100, 135, 80, 200,200,1, #__flag_border_flat|#__flag_noGadgets)
-         SetBackgroundColor(*test, $FE9CA784)
-         setframe(*test, 10)
+         SetBackColor(*test, $FE9CA784)
+         SetFrame(*test, 10)
          *test = ScrollArea(10+145, 100, 135, 80, 200,200,1, #__flag_border_less|#__flag_noGadgets)
-         SetBackgroundColor(*test, $FFAC86DB)
-         setframe(*test, 0)
+         SetBackColor(*test, $FFAC86DB)
+         SetFrame(*test, 0)
          
          ;\\
          *test = Button( 10, 190, 135, 80, "")
@@ -76,9 +76,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 55
-; FirstLine = 39
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 63
+; FirstLine = 43
 ; Folding = --
 ; EnableXP
 ; DPIAware

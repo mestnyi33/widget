@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
    Procedure resize_events( )
-       Debug "resize - " + EventWidget( )\class +"( "+ EventWidget( )\x +" "+ EventWidget( )\y +" "+ EventWidget( )\width +" "+ EventWidget( )\height +" ) "; + EventWidget( )\root\canvas\gadget
+      Debug "resize - " + EventWidget( )\class +"( "+ EventWidget( )\x +" "+ EventWidget( )\y +" "+ EventWidget( )\width +" "+ EventWidget( )\height +" ) "; + EventWidget( )\root\canvas\gadget
    EndProcedure
    
    If Open(0, 0, 0, 300, 301, "TreeGadget", #PB_Window_SystemMenu |
@@ -15,15 +15,17 @@ CompilerIf #PB_Compiler_IsMainFile
                                             #PB_Window_MinimizeGadget |
                                             #PB_Window_MaximizeGadget | 
                                             #PB_Window_ScreenCentered )
-      SetBackgroundColor( widget(), $fff000f0)
+      SetBackColor( widget(), $fff000f0)
       
-;        Button(0,0,0,0,"auto-resize-root-size" )
-;        SetAlign( widget( ), #__align_full )
+;       Button(0,0,0,0,"auto-resize-root-size" )
+;       ;ReDraw( root())
+;       Debug "--"
+;       SetAlign( widget( ), #__align_full )
       
       WaitEvent( @resize_events( ), #__event_resize )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 12
+; CursorPosition = 22
 ; Folding = -
 ; EnableXP

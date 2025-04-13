@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MaximizeGadget )
    
    SetClass(root( ), "root_0" )
-   SetBackgroundColor( root( ), $FFB3FDFF )
+   SetBackColor( root( ), $FFB3FDFF )
    ButtonGadget(1, 10,10,200,50, "Button_2_close")
    BindGadgetEvent(1, @buttonEvent( ))
    
@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 23
-; FirstLine = 19
+; CursorPosition = 77
+; FirstLine = 66
 ; Folding = --
 ; EnableXP

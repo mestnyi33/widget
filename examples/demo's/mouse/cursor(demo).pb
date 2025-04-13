@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open(0, 0, 0, 420, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetBackgroundColor(widget(), $FFAC97DB)
+      SetBackColor(widget(), $FFAC97DB)
       
       ;\\
       form1 = Window(200,10,200,110,"form1")
@@ -90,9 +90,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 31
-; FirstLine = 21
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 47
+; FirstLine = 43
 ; Folding = --
 ; EnableXP
 ; DPIAware

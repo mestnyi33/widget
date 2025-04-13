@@ -122,7 +122,7 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
    
   ;Button_ScrollArea_0 = ScrollArea( 5, 5, 291, 191, 291-30, 191-30, #PB_ScrollArea_Flat)           
   image_View = Image(i, i, 271, 225, (0),#__image_Center) 
-  SetBackgroundColor( image_View, $FFB3FDFF )
+  SetBackColor( image_View, $FFB3FDFF )
   ;CloseList( )
   Button_Load = Button(i+271+ii, i, 121, 25, "Загрузить", #__image_left )       : SetImage(Button_Load, (0))
   Button_Save = Button(i+271+ii, i+30, 121, 25, "Сохранить", #__image_left )    : SetImage(Button_Save, (1))
@@ -166,9 +166,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose(Window)
 CompilerEndIf
 
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 122
-; FirstLine = 112
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 124
+; FirstLine = 120
 ; Folding = ----
 ; Optimizer
 ; EnableXP

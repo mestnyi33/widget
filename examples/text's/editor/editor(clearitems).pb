@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; *g = Editor(8, 146, 306, 133) 
       *g = Editor(0, 0, 0, 0) 
-      SetBackgroundColor(*g, $FFB3FDFF)
+      SetBackColor(*g, $FFB3FDFF)
       SetText(*g, Text.s)
       
       Splitter(8, 8, 306, 276, g, *g, #__flag_autosize)
@@ -106,9 +106,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 41
-; FirstLine = 36
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 74
+; FirstLine = 70
 ; Folding = --
 ; EnableXP
 ; DPIAware

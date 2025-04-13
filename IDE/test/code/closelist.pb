@@ -32,7 +32,7 @@ If Open( 0, 0, 0, 350, 280, "enumeration widgets", #PB_Window_SystemMenu | #PB_W
       CloseList( )
       ;
       
-      SetBackgroundColor( _1, $BA54EDDE )
+      SetBackColor( _1, $BA54EDDE )
       
 ;       If StartEnum( root( ) )
 ;          AddParseObject( widget( ))
@@ -44,9 +44,9 @@ If Open( 0, 0, 0, 350, 280, "enumeration widgets", #PB_Window_SystemMenu | #PB_W
 CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 8
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 34
+; FirstLine = 11
 ; Folding = -
 ; EnableXP
 ; DPIAware

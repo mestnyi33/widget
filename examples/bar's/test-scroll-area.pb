@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
       widget()\bs = 0
       widget()\fs = 0
       Container(0,0, w,h, #PB_Container_Double)
-      SetBackgroundColor(widget(), $FFB3FDFF)
+      SetBackColor(widget(), $FFB3FDFF)
       widget()\bs = 20
       widget()\fs = 20
       Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) 
@@ -81,13 +81,13 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
       ; v
       ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__bar_invert)
        v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__bar_invert)
-      SetBackgroundColor(widget(), $FF80BE8E)
+      SetBackColor(widget(), $FF80BE8E)
       SetState(widget(), 120)
       Bind( widget(), @track_v_events( ), #__event_change )
       ; h
       ;h_bar=Splitter( 10,h+10,w,20, -1, -1 , #PB_Splitter_Vertical)
        h_bar=Track( 10,h+10,w,20, 0, w-10 )
-      SetBackgroundColor(widget(), $FF80BE8E)
+      SetBackColor(widget(), $FF80BE8E)
       SetState(widget(), 120)
       Bind( widget(), @track_h_events( ), #__event_change )
       
@@ -101,9 +101,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 45
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 89
+; FirstLine = 52
 ; Folding = --
 ; EnableXP
 ; DPIAware

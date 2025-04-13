@@ -85,7 +85,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Define time = ElapsedMilliseconds()
       ; *g = Editor(8, 146, 306, 133) 
       *g = Editor(0, 0, 0, 0);, #PB_Editor_WordWrap) ; с ним очень плохо работает ; commit 1,622
-      SetBackgroundColor(*g, $FFB3FDFF)
+      SetBackColor(*g, $FFB3FDFF)
       SetText(*g, Text.s)
 ;       Debug ""
        AddItem(*g, 0, "add line first")
@@ -112,9 +112,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS - C Backend (MacOS X - x64)
-; CursorPosition = 58
-; FirstLine = 42
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 87
+; FirstLine = 79
 ; Folding = --
 ; EnableXP
 ; DPIAware

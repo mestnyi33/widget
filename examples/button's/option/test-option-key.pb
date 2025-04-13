@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
    If Open(0, 0, 0, 300, 200, "Option", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetBackgroundColor(root(), $FFFFFF)
+      SetBackColor(root(), $FFFFFF)
       ;SetWindowColor(0, $FFFFFF)
    
       frm_10 = Frame(10, 5, 130, 100, "Grp1", #__flag_transparent)
@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 8
+; CursorPosition = 7
 ; Folding = -
 ; EnableXP
 ; DPIAware

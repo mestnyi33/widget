@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
    If Open( 0, 0, 0, 300, 130, "ComboBox Upper&Lower case test", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      SetBackgroundColor( widget(), - 1 )
+      SetBackColor( widget(), - 1 )
       
       ComboBox( 10, 10, 280, 50, #PB_ComboBox_UpperCase )
       AddItem( widget(), - 1, "comboBOX"+" (UPPER)" )
@@ -19,8 +19,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( ) 
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 8
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure events_widgets( )
       widget( ) = object
-      Debug " - "+classfromevent(WidgetEvent())
+      Debug " - "+ClassFromEvent(WidgetEvent())
       Debug ""+widget( )\bar\page\pos +" - page\pos"
       Debug ""+widget( )\bar\page\len +" - page\len"
       Debug ""+widget( )\bar\page\end +" - page\end"
@@ -82,13 +82,13 @@ CompilerIf #PB_Compiler_IsMainFile
       ;v
       ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__flag_Invert)
       v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__flag_Invert)
-      SetBackgroundColor(widget(), $FF80BE8E)
+      SetBackColor(widget(), $FF80BE8E)
       SetState(widget(), 120)
       Bind( widget(), @track_v_events( ), #__event_change )
       ;h
       ;h_bar=Splitter( 10,h+10,w,20, -1, -1 , #PB_Splitter_Vertical)
       h_bar=Track( 10,h+10,w,20, 0, w-10 )
-      SetBackgroundColor(widget(), $FF80BE8E)
+      SetBackColor(widget(), $FF80BE8E)
       SetState(widget(), 60)
       Bind( widget(), @track_h_events( ), #__event_change )
       
@@ -105,8 +105,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 77
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 90
+; FirstLine = 69
 ; Folding = ---
 ; EnableXP

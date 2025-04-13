@@ -27,24 +27,24 @@ CompilerIf #PB_Compiler_IsMainFile
       
       r1 = Open(5, 0, 0, 160, 60, "", #PB_Canvas_Container )
       g1 = GetCanvasGadget(r1)
-      SetBackgroundColor(root(), $ff00fffff)
+      SetBackColor(root(), $ff00fffff)
       Define root = root( ) 
       SetClass(root, "ROOT") 
       *g = Container( 90,30,50,50 ) 
-       SetBackgroundColor(*g, $ffff00fff)
+       SetBackColor(*g, $ffff00fff)
      
 ;       ;UseGadgetList(GadgetID(GetCanvasGadget(root)))
 ;       ;OpenGadgetList(GetCanvasGadget(root))
 ;       r2=Open(5, 40, 20, 60, 60 )
 ;       g2 = GetCanvasGadget(r2)
 ;       ;ResizeGadget(GetCanvasGadget(root), 0, 0, 60, 60 )
-;       SetBackgroundColor(root(), $ff00fffff)
+;       SetBackColor(root(), $ff00fffff)
       
     ; g2 = ButtonGadget(-1, 0,0,0,0,"")
       ;g2 = GetCanvasGadget(r1)
       g2 = CanvasGadget(-1, 0,50,50,50)
       r2 = Open(5, 20, 20, 20, 20,"",0, 0, g2 )
-      ; SetBackgroundColor(root(), $ff00fffff)
+      ; SetBackColor(root(), $ff00fffff)
       ResizeGadget( g2, X(*g, #__c_inner), Y(*g, #__c_inner), Width(*g, #__c_inner), Height(*g, #__c_inner))
       
 
@@ -55,7 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 19
+; CursorPosition = 40
+; FirstLine = 22
 ; Folding = -
 ; EnableXP

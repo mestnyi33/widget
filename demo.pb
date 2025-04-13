@@ -65,7 +65,7 @@ Procedure scrolled( )
 EndProcedure
 
 If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-   SetBackgroundColor( root(), $99EBFF)
+   SetBackColor( root(), $99EBFF)
    Bind(#PB_All, @all_events( ))
    
    ;a_init(root( ), 0)
@@ -149,7 +149,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
 ; CursorPosition = 67
-; FirstLine = 48
+; FirstLine = 57
 ; Folding = ---
 ; EnableXP
 ; DPIAware

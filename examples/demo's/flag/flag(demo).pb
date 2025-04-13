@@ -140,7 +140,7 @@ CompilerIf #PB_Compiler_IsMainFile
                If Not flag & #__flag_NoFocus 
                   a_set(*new, #__a_full, (14))
                EndIf
-               SetBackgroundColor( *new, $FFECECEC )
+               SetBackColor( *new, $FFECECEC )
                ;
                ;Properties_Updates( *new, "Resize" )
                ;Bind( *new, @widget_events( ) )
@@ -148,7 +148,7 @@ CompilerIf #PB_Compiler_IsMainFile
                If Not flag & #__flag_NoFocus 
                   a_set(*new, #__a_full, (10))
                EndIf
-               SetBackgroundColor( *new, $FFF1F1F1 )
+               SetBackColor( *new, $FFF1F1F1 )
             EndIf 
             
             ; 
@@ -297,8 +297,8 @@ Procedure Add(Text.s)
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 65
+; CursorPosition = 150
+; FirstLine = 138
 ; Folding = ------
 ; EnableXP
 ; DPIAware

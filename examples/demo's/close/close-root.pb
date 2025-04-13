@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                        #PB_Window_MaximizeGadget )
    
    SetClass(root( ), "window_0_root" )
-   SetBackgroundColor( root( ), $FFB3FDFF )
+   SetBackColor( root( ), $FFB3FDFF )
    Button(10,10,200,50,"window_0_close")
    SetClass(widget( ), "window_0_close" )
    
@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MaximizeGadget )
    
    SetClass(root( ), "window_1_root" )
-   SetBackgroundColor( root( ), $FFB3FDFF )
+   SetBackColor( root( ), $FFB3FDFF )
    Button(10,10,200,50,"window_1_close")
    SetClass(widget( ), "window_1_close" )
    
@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MaximizeGadget )
    
    SetClass(root( ), "window_2_root" )
-   SetBackgroundColor( root( ), $FFB3FDFF )
+   SetBackColor( root( ), $FFB3FDFF )
    Button(10,10,200,50,"window_all_close")
    SetClass(widget( ), "window_all_close" )
    
@@ -116,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 72
+; CursorPosition = 46
+; FirstLine = 20
 ; Folding = ---
 ; EnableXP

@@ -456,6 +456,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       ;-
+      Macro SetBackColor( _this_, _color_ )
+         SetBackgroundColor( _this_, _color_ )
+      EndMacro
+      
+      ;-
       ;       Macro  SetState(widget, State)
       ;          SetText(widget,
       ;                  Str(IPAddressField(State,0))+"."+
@@ -19822,6 +19827,27 @@ chr$ = ","
       EndProcedure
       
       Procedure   ReDraw( *this._s_ROOT )
+         ;\\ send posted queue events
+         If ListSize( __gui\event\queues( ) )
+            ForEach __gui\event\queues( )
+                  Define __widget = __gui\event\queues( )\widget
+                  Define __event  = __gui\event\queues( )\type
+                  Define __item   = __gui\event\queues( )\item
+                  Define __data   = __gui\event\queues( )\data
+                  
+               If __gui\event\queuesmask Or 
+                  __gui\event\mask & 1<<__event
+                  
+                  If GetRoot( __widget ) = *this
+                     DeleteElement( __gui\event\queues( ) )
+                     ; Debug ""+GetClass(__widget) +" "+ ClassFromEvent(__event) +" "+ Str(__gui\event\mask & 1<<__event)
+                     Post( __widget, __event, __item, __data )
+                  EndIf
+               EndIf
+            Next
+         EndIf
+         
+         ;\\
          If widget::__gui\DrawingRoot
             ; Debug " ----REDRAW---- "
          Else
@@ -19830,12 +19856,13 @@ chr$ = ","
          widget::Drawing( )
          widget::StopDraw( )
          
-         ; if not is root refresh widget
+         ;\\ if not is root refresh widget
          If Not is_root_( *this )
             Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
          EndIf
       EndProcedure
       
+      ;-
       Procedure.i SetText( *this._s_WIDGET, Text.s )
          Protected result.i, i.i
          
@@ -22582,7 +22609,7 @@ chr$ = ","
       ;-
       Procedure EventResize( )
          Protected Canvas = PB(GetWindowData)( PB(EventWindow)( ))
-          Debug "- resize - os - window - "+Canvas ; PB(WindowWidth)( PB(EventWindow)( ))
+         ; Debug "- resize - os - window - "+Canvas ; PB(WindowWidth)( PB(EventWindow)( ))
          
          PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( Canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( Canvas ) * 2 ) ; bug
       EndProcedure
@@ -22597,7 +22624,7 @@ chr$ = ","
                NextMapElement(roots( ))
             EndIf
             
-            ;PushMapPosition(roots( ))
+            ; PushMapPosition(roots( ))
             If EventData( ) <> roots( )\canvas\gadgetID
                ChangeCurrentCanvas( EventData( ), 0 )
                ; root( ) = roots( )
@@ -22612,23 +22639,10 @@ chr$ = ","
                   Debug "   REPAINT " + roots( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
                EndIf
                
-               ;\\ send posted queue events
-               If ListSize( __gui\event\queues( ) )
-                  ForEach __gui\event\queues( )
-                     Define __widget = __gui\event\queues( )\widget
-                     Define __event  = __gui\event\queues( )\type
-                     Define __item   = __gui\event\queues( )\item
-                     Define __data   = __gui\event\queues( )\data
-                     
-                     DeleteElement( __gui\event\queues( ) )
-                     Post( __widget, __event, __item, __data )
-                  Next
-               EndIf
-               
                ;
                ReDraw( roots( ) )
             EndIf
-            ;PopMapPosition(roots())
+            ; PopMapPosition(roots())
          EndIf
       EndProcedure
       
@@ -23545,6 +23559,12 @@ chr$ = ","
                   Static test
                   Debug ""+*this\class + " - Post( test "+test +" ) "+ ClassFromEvent(event)
                   test + 1
+               EndIf
+               
+               If ListSize(__gui\event\queues( )) 
+                  If __gui\event\queues( )\type = event
+                     ProcedureReturn __gui\event\queues( )
+                  EndIf
                EndIf
                
                If AddElement( __gui\event\queues( ) )
@@ -25046,11 +25066,11 @@ chr$ = ","
          StickyWindow( *Message\root\canvas\window, #True )
          
          ;\\
-         SetLayeredWindow( *message\root\canvas\window, igOpaque )
-         ;          If StartDrawing( CanvasOutput( *message\root\canvas\gadget ))
-         ;             Box( 0, 0, OutputWidth( ), OutputHeight( ), igOpaque )
-         ;             StopDrawing( )
-         ;          EndIf
+         ;SetLayeredWindow( *message\root\canvas\window, igOpaque )
+         ;;          If StartDrawing( CanvasOutput( *message\root\canvas\gadget ))
+         ;;             Box( 0, 0, OutputWidth( ), OutputHeight( ), igOpaque )
+         ;;             StopDrawing( )
+         ;;          EndIf
          SetBackgroundColor( *message\root, igOpaque )
          ;\\
          ; ReDraw( *parent )
@@ -25962,9 +25982,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 22685
-; FirstLine = 21226
-; Folding = -----------------------------------------------------------------------4--0--------------------------------------------------------------------------------------------------------------------------------------4-------------------f----------v0-4-W--9-++---v-------------------------48--------------0------------------------------------------------4-sL+87-----------------------------------------------------------------Abb+-0v-----0------------------G-4--f-4---48+-------------f+-----------0--------------------------------------------------------------------------------------------------------8---b---------------------------v-0-------------------------0-------------------4------------------------
+; CursorPosition = 25072
+; FirstLine = 23565
+; Folding = -----------------------------------------------------------------------v--8--------------------------------------------------------------------------------------------------------------------------------------v--------------------+---------f8-v-t+-6-00---f-------------------------v4--------------8------------------------------------------------v-ZX942-----------------------------------------------------------------B339-8f-----8------------------N+v---+v---v40--------------9-----------8---------------------------------------------------------------------------------------------------------+---3---------------------------0v--------------------------+-------------------8------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

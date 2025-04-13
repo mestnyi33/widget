@@ -205,7 +205,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Gadget(#__type_Tree, #w_tree, 0, 0, 0, 0)
     g = GetGadgetData(#w_tree)
     If Not g : g = root( ) : EndIf
-   ; SetBackgroundColor(g, $FFB3FDFF)
+   ; SetBackColor(g, $FFB3FDFF)
                         
                         
     ;  3_example
@@ -255,8 +255,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 226
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 207
 ; FirstLine = 89
 ; Folding = 8--0--
 ; EnableXP

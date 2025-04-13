@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open(0, 0, 0, 800, 600, "window", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      SetBackgroundColor( widget( ), $FFB3FDFF )
+      SetBackColor( widget( ), $FFB3FDFF )
       
       ;\\
       Window( 30, 30, 300, 200, "window_0", #PB_Window_SystemMenu )
@@ -97,8 +97,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 20
+; CursorPosition = 71
+; FirstLine = 62
 ; Folding = --
 ; EnableXP
 ; DPIAware

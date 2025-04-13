@@ -88,9 +88,9 @@ Bind( cost, @LostFocusEvents( ), #__event_LostFocus )
          
 WaitClose( )
 End
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 56
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 61
+; FirstLine = 48
 ; Folding = --
 ; EnableXP
 ; DPIAware

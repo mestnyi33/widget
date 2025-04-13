@@ -16,19 +16,19 @@ If vertical
    If Open(0, 0, 0, 230, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       *g = Track(45, 50, 20, 250,  0, 30, #PB_TrackBar_Vertical | #__flag_Invert | #PB_TrackBar_Ticks)
-      SetBackgroundColor(*g, $FFB3FDFF)
+      SetBackColor(*g, $FFB3FDFF)
       SetState(*g, 5)
       
       *g = Track(85, 50, 20, 250,  min, 30, #PB_TrackBar_Vertical | #__flag_Invert)
-      SetBackgroundColor(*g, $FFB3FDFF)
+      SetBackColor(*g, $FFB3FDFF)
       SetState(*g, 29)
       
       *g = Track(125, 50, 20, 250,  min, 30, #PB_TrackBar_Vertical)
-      SetBackgroundColor(*g, $FFB3FDFF)
+      SetBackColor(*g, $FFB3FDFF)
       SetState(*g, 29)
       
       *g = Track(165, 50, 20, 250,  0, 30, #PB_TrackBar_Vertical | #PB_TrackBar_Ticks)
-      SetBackgroundColor(*g, $FFB3FDFF)
+      SetBackColor(*g, $FFB3FDFF)
       SetState(*g, 5)
       
       Bind(#PB_All, @change_events_(), #__event_change)
@@ -40,19 +40,19 @@ Else
    If Open(0, 0, 0, 350, 230, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       *g = Track(50, 45, 250, 20,  0, 30, #__flag_Invert | #PB_TrackBar_Ticks)
-      SetBackgroundColor(*g, $FFB3FDFF)
+      SetBackColor(*g, $FFB3FDFF)
       SetState(*g, 5)
       
       *g = Track(50, 85, 250, 20,  min, 30, #__flag_Invert)
-      SetBackgroundColor(*g, $FFB3FDFF)
+      SetBackColor(*g, $FFB3FDFF)
       SetState(*g, 29)
       
       *g = Track(50, 125, 250, 20,  min, 30)
-      SetBackgroundColor(*g, $FFB3FDFF)
+      SetBackColor(*g, $FFB3FDFF)
       SetState(*g, 29)
       
       *g = Track(50, 165, 250, 20,  0, 30, #PB_TrackBar_Ticks)
-      SetBackgroundColor(*g, $FFB3FDFF)
+      SetBackColor(*g, $FFB3FDFF)
       SetState(*g, 5)
       
       Bind(#PB_All, @change_events_(), #__event_change)
@@ -60,9 +60,9 @@ Else
       WaitClose( )
    EndIf
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 16
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 27
+; FirstLine = 5
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Macro gadget(_id_, _x_,_y_,_width_,_height_,_text_,_flag_)
-    Image(_x_,_y_,_width_,_height_,0,_flag_) : SetBackgroundColor( widget( ), $FFB3FDFF )
+    Image(_x_,_y_,_width_,_height_,0,_flag_) : SetBackColor( widget( ), $FFB3FDFF )
          
     ;   ButtonImage(_x_,_y_,_width_,_height_,0,_flag_)
   EndMacro
@@ -92,9 +92,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 64
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 23
+; FirstLine = 19
 ; Folding = -
 ; EnableXP
 ; DPIAware
