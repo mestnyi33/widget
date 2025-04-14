@@ -554,6 +554,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          CloseGadgetList( )
       EndMacro
       
+      Macro Canvas( _window_, _x_,_y_,_width_,height_, _flag_=0 )
+         Open(_window_, _x_,_y_,_width_,height_,"",0, 0, CanvasGadget(#PB_Any, _x_,_y_,_width_,height_, _flag_))
+      EndMacro
       
       
       
@@ -829,9 +832,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro is_menu_( _this_ ) : Bool( _this_\type = constants::#__type_MenuBar Or _this_\type = constants::#__type_PopupBar ) : EndMacro
       Macro is_bar_( _this_ ) : Bool( is_menu_( _this_ ) Or _this_\type = constants::#__type_ToolBar ) : EndMacro
       Macro is_root_(_this_ ) : Bool( _this_ >= 65536 And _this_ = _this_\root ): EndMacro
-      Macro is_widget_( _this_ ) : Bool( _this_ >= 65536 And _this_\address ) : EndMacro
       Macro is_gadget_( _this_ ) : Bool( Not is_root_( _this_ ) And _this_\type > 0 ) : EndMacro
-      Macro is_window_( _this_ ) : Bool( _this_\type = constants::#__type_Window ) : EndMacro ; is_widget_( _this_ ) And 
+      Macro is_window_( _this_ ) : Bool( _this_\type = constants::#__type_Window ) : EndMacro
       
       Macro is_level_( _address_1, _address_2 )
          Bool( _address_1 <> _address_2 And _address_1\parent = _address_2\parent And _address_1\TabIndex( ) = _address_2\TabIndex( ) )
@@ -1384,7 +1386,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.b Hide( *this, State.b = #PB_Default, flags.q = 0 )
       Declare.b DisableItem( *this, item.l, state.b )
       Declare.b Disable( *this, State.b = #PB_Default )
-      Declare.i Address( *this )
       Declare.l Type( *this )
       Declare.i ID( Index )
       Declare.l Index( *this )
@@ -7379,10 +7380,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.i Address( *this._s_WIDGET )
-         ProcedureReturn *this\address
-      EndProcedure
-      
       Procedure.l Type( *this._s_WIDGET ) ; Returns created widget type
          ProcedureReturn *this\type
       EndProcedure
@@ -7411,7 +7408,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.l X( *this._s_WIDGET, mode.l = #PB_Default )
-         If mode = #PB_Default
+         If mode < 0
             If is_window_( *this )
                mode = #__c_frame
             Else
@@ -7422,7 +7419,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.l Y( *this._s_WIDGET, mode.l = #PB_Default )
-         If mode = #PB_Default
+         If mode < 0
             If is_window_( *this )
                mode = #__c_frame
             Else
@@ -7433,7 +7430,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.l Width( *this._s_WIDGET, mode.l = #PB_Default )
-         If mode = #PB_Default
+         If mode < 0
             If is_window_( *this )
                mode = #__c_inner
             Else
@@ -7444,7 +7441,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.l Height( *this._s_WIDGET, mode.l = #PB_Default )
-         If mode = #PB_Default
+         If mode < 0
             If is_window_( *this )
                mode = #__c_inner
             Else
@@ -8508,7 +8505,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure.i GetCanvasGadget( *this._s_WIDGET = #Null ) ; Returns canvas gadget
          Protected.i result = #PB_Default
-         If is_widget_( *this )
+         If *this
             result = *this\root\canvas\gadget
          Else
             If root( )
@@ -8520,7 +8517,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.i GetCanvasWindow( *this._s_WIDGET = #Null ) ; Returns window
          Protected.i result = #PB_Default
-         If is_widget_( *this )
+         If *this
             If is_root_( *this )
                result = *this\root\canvas\window
             Else
@@ -14892,41 +14889,41 @@ chr$ = ","
                ;                EndIf
                If constants::BinaryFlag( Flag, #PB_Container_Flat )
                   flags & ~ #PB_Container_Flat
-                  flags = #__flag_border_Flat
+                  flags | #__flag_border_Flat
                EndIf
                If constants::BinaryFlag( Flag, #PB_Container_Single )
                   flags & ~ #PB_Container_Single
-                  flags = #__flag_border_Single
+                  flags | #__flag_border_Single
                EndIf
                If constants::BinaryFlag( Flag, #PB_Container_Raised ) 
                   flags & ~ #PB_Container_Raised
-                  flags = #__flag_border_Raised
+                  flags | #__flag_border_Raised
                EndIf
                If constants::BinaryFlag( Flag, #PB_Container_Double )
                   flags & ~ #PB_Container_Double
-                  flags = #__flag_border_Double
+                  flags | #__flag_border_Double
                EndIf
                ;
             Case #__type_Frame
                ;                If constants::BinaryFlag( Flag, #PB_Frame_BorderLess ) 
                ;                   flags & ~ #PB_Frame_BorderLess
-               ;                   flags = #__flag_border_Less
+               ;                   flags | #__flag_border_Less
                ;                EndIf
                If constants::BinaryFlag( Flag, #PB_Frame_Flat )
                   flags & ~ #PB_Frame_Flat
-                  flags = #__flag_border_Flat
+                  flags | #__flag_border_Flat
                EndIf
                If constants::BinaryFlag( Flag, #PB_Frame_Single )
                   flags & ~ #PB_Frame_Single
-                  flags = #__flag_border_Single
+                  flags | #__flag_border_Single
                EndIf
                ;                If constants::BinaryFlag( Flag, #PB_Frame_Raised ) 
                ;                   flags & ~ #PB_Frame_Raised
-               ;                   flags = #__flag_border_Raised
+               ;                   flags | #__flag_border_Raised
                ;                EndIf
                If constants::BinaryFlag( Flag, #PB_Frame_Double )
                   flags & ~ #PB_Frame_Double
-                  flags = #__flag_border_Double
+                  flags | #__flag_border_Double
                EndIf
                ;
             Case #__type_MDI
@@ -16420,6 +16417,7 @@ chr$ = ","
             ElseIf constants::BinaryFlag( *this\Flag, #__flag_border_Less )
                *this\fs = 0
             ElseIf constants::BinaryFlag( *this\Flag, #__flag_border_Flat ) Or
+                   constants::BinaryFlag( *this\Flag, #__flag_border_Single ) Or
                    *this\type = #__type_Panel Or
                    *this\type = #__type_Spin Or
                    *this\type = #__type_Button Or
@@ -23618,6 +23616,15 @@ chr$ = ","
                If event = #__event_Close
                   result = #True
                EndIf
+               
+               ; examples bars area
+               If event = #__event_MouseMove
+                  If widget::__gui\DrawingRoot
+                     StopDraw( )
+                     widget::__gui\DrawingRoot = 0
+                  EndIf
+               EndIf    
+                     
                ;
                ;\\
                If Not is_root_( *this )
@@ -24438,7 +24445,7 @@ chr$ = ","
             *this = *widget\i
             *widget\i = 0
             
-            If Address( *this )
+            If *this\address
                If Post( *this, #__event_free )
                   If Opened( ) = *this
                      OpenList( *this\parent )
@@ -24483,8 +24490,9 @@ chr$ = ","
             EndIf
          Else
             If *widget > 0
-               If Address( *widget )
-                  *this = *widget
+               *this = *widget
+               If Not *this\address
+                  *this = 0
                EndIf
             EndIf
             
@@ -24767,7 +24775,6 @@ chr$ = ","
       Procedure WaitQuit( *root._s_root = #Null )
          If __gui\event\loop = #False
             __gui\event\loop = #True
-            Define canvasID = root( )\Beforeroot( )\canvas\gadgetid
             
             PushMapPosition( roots( ))
             ForEach roots( )
@@ -24813,9 +24820,6 @@ chr$ = ","
             EndIf
             
             __gui\event\loop = #False
-;             If canvasID 
-;                ChangeCurrentCanvas( canvasID )
-;             EndIf
             
             Debug " QUIT MAIN LOOP"
          EndIf
@@ -25760,8 +25764,8 @@ CompilerIf #PB_Compiler_IsMainFile
    AddItem( *panel, -1, "(enter&leave)-test" ) : SetItemFont(*panel, 2, 6)
    
    Procedure enter_leave_containers_events( )
-      Protected repaint
-      Protected colorback = colors::*this\blue\fore,
+      Protected.b repaint
+      Protected.l colorback = colors::*this\blue\fore,
                 colorframe = colors::*this\blue\frame,
                 colorback1 = $ff00ff00,
                 colorframe1 = $ff0000ff
@@ -25914,7 +25918,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*tree, i, "text-" + Str(i))
    Next
    SetState(*tree, 5 - 1)
-   Container( 70, 180, 80, 80): CloseList( )
+   Container( 70, 180, 80, 80, #PB_Container_Single ): CloseList( )
    SetItemFont(*tree, 1, 6)
    SetItemFont(*tree, 4, 6)
    
@@ -25982,9 +25986,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 25072
-; FirstLine = 23565
-; Folding = -----------------------------------------------------------------------v--8--------------------------------------------------------------------------------------------------------------------------------------v--------------------+---------f8-v-t+-6-00---f-------------------------v4--------------8------------------------------------------------v-ZX942-----------------------------------------------------------------B339-8f-----8------------------N+v---+v---v40--------------9-----------8---------------------------------------------------------------------------------------------------------+---3---------------------------0v--------------------------+-------------------8------------------------
+; CursorPosition = 556
+; FirstLine = 546
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

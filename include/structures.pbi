@@ -780,7 +780,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          mouse._s_mouse                ; mouse( )\
          keyboard._s_keyboard          ; keyboard( )\
-         sticky._s_STICKY              ; sticky( )\
+         Sticky._s_STICKY              ; sticky( )\
          event._s_EVENT
          
          Map *__roots._s_ROOT( )   
@@ -796,8 +796,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 116
+; CursorPosition = 785
+; FirstLine = 758
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

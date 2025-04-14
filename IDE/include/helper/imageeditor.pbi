@@ -220,8 +220,13 @@ Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
    Bind( #PB_All, @Events_EDITORIMAGES( ))
    ReDraw(EDITORIMAGES)
    HideWindow( GetCanvasWindow( EDITORIMAGES), #False )
+   Define Canvas = GetCanvasGadget( root )
    ;
+;    Debug ""+IsGadget( Canvas )+" "+Canvas
+;    Debug ""+ GetCanvasGadget( root) +" "+ GetCanvasGadget( GetRoot( EDITORIMAGES ))
    WaitQuit( EDITORIMAGES )
+;    Debug ""+IsGadget( Canvas )+" "+Canvas
+   
    ; Debug ""+GetCanvasWindow(EDITORIMAGES) +" "+ IsWindow(GetCanvasWindow(EDITORIMAGES))
    ChangeCurrentCanvas( GadgetID( GetCanvasGadget( root )))
    Free_Images( )
@@ -264,8 +269,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 108
+; CursorPosition = 227
+; FirstLine = 208
 ; Folding = -----
 ; EnableXP
 ; DPIAware

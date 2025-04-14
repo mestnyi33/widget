@@ -16,9 +16,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Global X=200,Y=150, Width=320, Height=320
    
    Global *this.allocate( widget )
-   Global NewList Images.IMAGES( )
+   Global NewList _images_.IMAGES( )
    Declare Canvas_Events( )
-   Declare Canvas_Draw( Canvas.i, List Images.IMAGES( ) )
+   Declare Canvas_Draw( Canvas.i, List _images_.IMAGES( ) )
    
    Macro Area_Draw( _this_ )
       widget::bar_mdi_resize( _this_,
@@ -73,17 +73,17 @@ CompilerIf #PB_Compiler_IsMainFile
             change = WidgetEventData( )
             Debug "changing scroller values - " +change
             
-            PushListPosition(  Images( )  )
+            PushListPosition(  _images_( )  )
             If EventWidget( )\bar\vertical
-               ForEach Images( ) 
-                  Images( )\Y + change 
+               ForEach _images_( ) 
+                  _images_( )\Y + change 
                Next
             Else
-               ForEach Images( ) 
-                  Images( )\X + change 
+               ForEach _images_( ) 
+                  _images_( )\X + change 
                Next
             EndIf
-            PopListPosition( Images( ) )
+            PopListPosition( _images_( ) )
             
       EndSelect
       
@@ -97,24 +97,24 @@ CompilerIf #PB_Compiler_IsMainFile
    ;   EndProcedure
    ;   
    ;-
-   Procedure Canvas_Draw( Canvas.i, List Images.IMAGES( ) )
+   Procedure Canvas_Draw( Canvas.i, List _images_.IMAGES( ) )
       Protected round
       
-      ;\\ Debug Images( )\x
-      *this\scroll_x( ) = Images( )\x 
-      *this\scroll_y( ) = Images( )\Y
-      *this\scroll_width( ) = Images( )\x+Images( )\width - *this\scroll_x( )
-      *this\scroll_height( ) = Images( )\Y+Images( )\height - *this\scroll_y( )
-      PushListPosition( Images( ) )
-      ForEach Images( )
-         If *this\scroll_x( ) > Images( )\x : *this\scroll_x( ) = Images( )\x : EndIf
-         If *this\scroll_y( ) > Images( )\y : *this\scroll_y( ) = Images( )\y : EndIf
+      ;\\ Debug _images_( )\x
+      *this\scroll_x( ) = _images_( )\x 
+      *this\scroll_y( ) = _images_( )\Y
+      *this\scroll_width( ) = _images_( )\x+_images_( )\width - *this\scroll_x( )
+      *this\scroll_height( ) = _images_( )\Y+_images_( )\height - *this\scroll_y( )
+      PushListPosition( _images_( ) )
+      ForEach _images_( )
+         If *this\scroll_x( ) > _images_( )\x : *this\scroll_x( ) = _images_( )\x : EndIf
+         If *this\scroll_y( ) > _images_( )\y : *this\scroll_y( ) = _images_( )\y : EndIf
       Next
-      ForEach Images( )
-         If *this\scroll_width( ) < Images( )\x+Images( )\width - *this\scroll_x( ) : *this\scroll_width( ) = Images( )\x+Images( )\width - *this\scroll_x( ) : EndIf
-         If *this\scroll_height( ) < Images( )\Y+Images( )\height - *this\scroll_y( ) : *this\scroll_height( ) = Images( )\Y+Images( )\height - *this\scroll_y( ) : EndIf
+      ForEach _images_( )
+         If *this\scroll_width( ) < _images_( )\x+_images_( )\width - *this\scroll_x( ) : *this\scroll_width( ) = _images_( )\x+_images_( )\width - *this\scroll_x( ) : EndIf
+         If *this\scroll_height( ) < _images_( )\Y+_images_( )\height - *this\scroll_y( ) : *this\scroll_height( ) = _images_( )\Y+_images_( )\height - *this\scroll_y( ) : EndIf
       Next
-      PopListPosition( Images( ) )
+      PopListPosition( _images_( ) )
       
       
       ;\\
@@ -128,68 +128,68 @@ CompilerIf #PB_Compiler_IsMainFile
       If GetGadgetState(5)
          UnclipOutput()
          DrawingMode( #PB_2DDrawing_Outlined )
-         ForEach Images( )
-            round = Bool(Images( )\alphatest And ImageDepth( Images( )\img ) > 31) * 50
-            RoundBox( Images( )\x, Images( )\y, Images( )\width, Images( )\height,round, round, RGB( 255,255,0 )) ; draw all images with z-order
+         ForEach _images_( )
+            round = Bool(_images_( )\alphatest And ImageDepth( _images_( )\img ) > 31) * 50
+            RoundBox( _images_( )\x, _images_( )\y, _images_( )\width, _images_( )\height,round, round, RGB( 255,255,0 )) ; draw all _images_ with z-order
          Next
          ClipOutput(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len )
       EndIf
       
       ;\\
       DrawingMode( #PB_2DDrawing_AlphaBlend )
-      ForEach Images( )
-         DrawImage( ImageID( Images( )\img ), Images( )\x, Images( )\y ) ; draw all images with z-order
+      ForEach _images_( )
+         DrawImage( ImageID( _images_( )\img ), _images_( )\x, _images_( )\y ) ; draw all images with z-order
       Next
    EndProcedure
    
-   Procedure.i Canvas_HitTest( List Images.IMAGES( ), mouse_x, mouse_y )
+   Procedure.i Canvas_HitTest( List _images_.IMAGES( ), mouse_x, mouse_y )
       Shared currentItemXOffset.i, currentItemYOffset.i
       Protected alpha.i, *current = #False
       Protected scroll_x ; = *this\scroll\h\bar\Page\Pos
       Protected scroll_y ;= *this\scroll\v\bar\Page\Pos
       
-      If LastElement( Images( ) ) And 
+      If LastElement( _images_( ) ) And 
          Not is_atpoint_( *this\scroll\v, mouse_x, mouse_y ) And
          Not is_atpoint_( *this\scroll\h, mouse_x, mouse_y ) ; And AtBox( *this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len,*this\scroll\v\bar\page\len, mouse_x, mouse_y )
                                                              ; search for hit, starting from end ( z-order )
          Repeat
-            If mouse_x >= Images( )\x - scroll_x And mouse_x < Images( )\x+ Images( )\width - scroll_x 
-               If mouse_y >= Images( )\y - scroll_y And mouse_y < Images( )\y + Images( )\height - scroll_y
+            If mouse_x >= _images_( )\x - scroll_x And mouse_x < _images_( )\x+ _images_( )\width - scroll_x 
+               If mouse_y >= _images_( )\y - scroll_y And mouse_y < _images_( )\y + _images_( )\height - scroll_y
                   alpha = 255
                   
-                  If Images( )\alphatest And ImageDepth( Images( )\img ) > 31
-                     If StartDrawing( ImageOutput( Images( )\img ) )
+                  If _images_( )\alphatest And ImageDepth( _images_( )\img ) > 31
+                     If StartDrawing( ImageOutput( _images_( )\img ) )
                         DrawingMode( #PB_2DDrawing_AlphaChannel )
-                        alpha = Alpha( Point( mouse_x - Images( )\x - scroll_x, mouse_y - Images( )\y - scroll_y ) ) ; get alpha
+                        alpha = Alpha( Point( mouse_x - _images_( )\x - scroll_x, mouse_y - _images_( )\y - scroll_y ) ) ; get alpha
                         StopDrawing( )
                      EndIf
                   EndIf
                   
                   If alpha 
                      If MouseButtonPress( )
-                        MoveElement( Images( ), #PB_List_Last )
+                        MoveElement( _images_( ), #PB_List_Last )
                      EndIf
-                     *current = @Images( )
-                     currentItemXOffset = mouse_x - Images( )\x - scroll_x
-                     currentItemYOffset = mouse_y - Images( )\y - scroll_y
+                     *current = @_images_( )
+                     currentItemXOffset = mouse_x - _images_( )\x - scroll_x
+                     currentItemYOffset = mouse_y - _images_( )\y - scroll_y
                      Break
                   EndIf
                EndIf
             EndIf
-         Until PreviousElement( Images( ) ) = 0
+         Until PreviousElement( _images_( ) ) = 0
       EndIf
       
       ProcedureReturn *current
    EndProcedure
    
-   Procedure Canvas_AddImage( List Images.IMAGES( ), X, Y, img, alphatest=0 )
-      If AddElement( Images( ) )
-         Images( )\img       = img
-         Images( )\x         = X
-         Images( )\y         = Y
-         Images( )\width     = ImageWidth( img )
-         Images( )\height    = ImageHeight( img )
-         Images( )\alphatest = alphatest
+   Procedure Canvas_AddImage( List _images_.IMAGES( ), X, Y, img, alphatest=0 )
+      If AddElement( _images_( ) )
+         _images_( )\img       = img
+         _images_( )\x         = X
+         _images_( )\y         = Y
+         _images_( )\width     = ImageWidth( img )
+         _images_( )\height    = ImageHeight( img )
+         _images_( )\alphatest = alphatest
       EndIf
    EndProcedure
    
@@ -206,7 +206,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select Event
          Case #PB_EventType_Repaint
-           Canvas_Draw( MyCanvas, Images( ))
+           Canvas_Draw( MyCanvas, _images_( ))
          
          Case #PB_EventType_LeftButtonUp 
             If Drag
@@ -215,7 +215,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case #PB_EventType_LeftButtonDown
-            Drag = Bool( Canvas_HitTest( Images( ), Mousex, Mousey ) )
+            Drag = Bool( Canvas_HitTest( _images_( ), Mousex, Mousey ) )
             If Drag 
                ChangeCursor( root( ), #PB_Cursor_Arrows )
               ; Repaint = #True 
@@ -223,20 +223,20 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #PB_EventType_MouseMove
             If Drag = #True
-               If LastElement( Images( ) )
-                  If Images( )\x <> Mousex - currentItemXOffset
-                     Images( )\x = Mousex - currentItemXOffset
+               If LastElement( _images_( ) )
+                  If _images_( )\x <> Mousex - currentItemXOffset
+                     _images_( )\x = Mousex - currentItemXOffset
                      ; Repaint = #True
                   EndIf
                   
-                  If Images( )\y <> Mousey - currentItemYOffset
-                     Images( )\y = Mousey - currentItemYOffset
+                  If _images_( )\y <> Mousey - currentItemYOffset
+                     _images_( )\y = Mousey - currentItemYOffset
                      ; Repaint = #True
                   EndIf
                EndIf
             Else 
                If Not MouseButtonPress( )
-                  If Bool( Canvas_HitTest( Images( ), Mousex, Mousey ) )
+                  If Bool( Canvas_HitTest( _images_( ), Mousex, Mousey ) )
                      If ChangeCursor( root( ), #PB_Cursor_Hand )
                         Repaint = 1
                      EndIf
@@ -259,7 +259,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                ReDraw( root( ))
 ;                ; If StartDraw( root( ) )
 ;                ;    Drawing( )
-;                ;    Canvas_Draw( MyCanvas, Images( ) ) 
+;                ;    Canvas_Draw( MyCanvas, _images_( ) ) 
 ;                ;    StopDraw( )
 ;                ; EndIf
             EndIf
@@ -321,10 +321,10 @@ CompilerIf #PB_Compiler_IsMainFile
    Area_Use( 0, @Canvas_Events( ), MyCanvas) 
    
    ; add new images
-   Canvas_AddImage( Images( ), X-80, Y-20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
-   Canvas_AddImage( Images( ), X+100,Y+100, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp" ) )
-   Canvas_AddImage( Images( ), X+210,Y+250, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
-   Canvas_AddImage( Images( ), X+180,Y+180,hole,#True )
+   Canvas_AddImage( _images_( ), X-80, Y-20, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp" ) )
+   Canvas_AddImage( _images_( ), X+100,Y+100, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp" ) )
+   Canvas_AddImage( _images_( ), X+210,Y+250, LoadImage( #PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp" ) )
+   Canvas_AddImage( _images_( ), X+180,Y+180,hole,#True )
    
    Width = GadgetWidth( MyCanvas ) - X*2
    Height = GadgetHeight( MyCanvas ) - Y*2
@@ -344,12 +344,12 @@ CompilerIf #PB_Compiler_IsMainFile
       If event = #PB_Event_Repaint
          ;          Select EventType( )
          ;             Case #PB_EventType_Repaint
-         ;                Canvas_Draw( MyCanvas, Images( ) ) 
+         ;                Canvas_Draw( MyCanvas, _images_( ) ) 
          ;                
          ;          EndSelect
          
          If EventData( )
-            ; Canvas_Draw( MyCanvas, Images( ) ) 
+            ; Canvas_Draw( MyCanvas, _images_( ) ) 
          EndIf
          
          
@@ -395,8 +395,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 45
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 160
+; FirstLine = 152
 ; Folding = ---------
 ; EnableXP
