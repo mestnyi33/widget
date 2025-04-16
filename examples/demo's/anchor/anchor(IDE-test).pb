@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
       
       ForEach a_transform()\group()
         RemoveItem(id_inspector_tree, GetData(a_transform()\group()\widget))
-        Free(a_transform()\group()\widget)
+0        Free(a_transform()\group()\widget)
         DeleteElement(a_transform()\group())
       Next
       
@@ -323,7 +323,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
 ; CursorPosition = 301
-; FirstLine = 288
+; FirstLine = 285
 ; Folding = --
 ; EnableXP
 ; DPIAware

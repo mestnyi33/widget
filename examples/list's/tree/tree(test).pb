@@ -117,8 +117,8 @@ CompilerIf #PB_Compiler_IsMainFile
           EndIf
         EndIf
         If EventGadget = 7 ; <<
-                           ;         FreeGadget(tree)
-                           ;         Free(*tree)
+                           ;         FreeGadget (tree)
+                           ;         Free (*tree)
           
           SetGadgetState(Tree, 0)
           SetState(*tree, 0)
@@ -254,9 +254,9 @@ Define a
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 222
-; FirstLine = 162
-; Folding = --yC--
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 122
+; FirstLine = 71
+; Folding = --yG--
 ; EnableXP
 ; DPIAware

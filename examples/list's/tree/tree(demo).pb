@@ -560,7 +560,7 @@ EndProcedure
     ;LoadFont(5, "Arial", 16)
     SetItemFont(*g, 3, 5)
     SetItemColor(*g, 3, #PB_Gadget_FrontColor, $FFFFFF00)
-    SetItemColor(*g, 3, #pb_gadget_backcolor, $FFFF00FF)
+    SetItemColor(*g, 3, #PB_Gadget_BackColor, $FFFF00FF)
     SetItemText(*g, 3, "16_font backcolor text change")
     ;;SetItemText(*g, 3, "16_font and text change")
     ;LoadFont(6, "Arial", 25)
@@ -574,7 +574,7 @@ EndProcedure
     WaitClose( )
     
     ;Define *g5,*g6
-    ; Free(*g)
+    ; Free (*g)
     ;ClipGadgets( UseGadgetList(0) )
     Repeat
       Select WaitWindowEvent()   
@@ -585,9 +585,9 @@ EndProcedure
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 562
-; FirstLine = 390
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 576
+; FirstLine = 394
 ; Folding = f-b------
 ; EnableXP
 ; DPIAware

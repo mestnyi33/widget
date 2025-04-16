@@ -9,13 +9,13 @@ Declare OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
 Procedure FocusEvents( )
    Select EventWidget( )
       Case group
-         Debug "focus group"
+         Debug "--- focus ABC"
          
       Case cost
-         Debug "focus cost"
+         Debug "--- focus 1000"
          
       Default  
-         Debug "focus "+GetClass(EventWidget())
+         Debug "------- focus "+GetClass(EventWidget())
          
    EndSelect
 EndProcedure
@@ -25,17 +25,20 @@ Procedure LostFocusEvents( )
       Case group
          If ActiveWindow( ) = GetWindow( EventWidget( ))
          ;If ActiveGadget( ) <> EventWidget( )
-            Debug "lostfocus group"
+            Debug "--- lostfocus ABC"
             OpenMessage("Warning", "Group code must be four characters", #PB_MessageRequester_Error)
+         Else
+            Debug "LOST1  "+ActiveGadget( )\class +" "+ EventWidget( )\class
          EndIf
          
       Case cost
-         Debug "LOST  ------ "+ActiveGadget( )\class +" "+ EventWidget( )\class
          
          If ActiveWindow( ) = GetWindow( EventWidget( ))
          ;If ActiveGadget( ) <> EventWidget( )
-            Debug "lostfocus cost"
+            Debug "--- lostfocus 1000"
             OpenMessage("Warning", "Cost must be positive And Not more than 999.99", #PB_MessageRequester_Error )
+         Else
+            Debug "LOST2  "+ActiveGadget( )\class +" "+ EventWidget( )\class
          EndIf
          
       Default
@@ -58,10 +61,17 @@ Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
 ;     SetActive(*g_11)
 ; ;    
    test_focus_show = 0
-   Define Message = Message(title, Text, flags, parentID ) 
-   ;Define Message = MessageRequester(title, Text, flags, parentID );
+   ;Define Message = Message(title, Text, flags, parentID ) 
+   ; Define Message = MessageRequester(title, Text, flags, parentID );
    
-   ;SetActiveGadget(GetWindowData(0))
+   ;SetActive( cost )
+   ; Debug 111111
+   ; ReDraw(GetRoot(cost))
+   ; SetActiveGadget(-1)
+   ; SetActiveGadget(EventGadget())
+   
+   Define Message = Message(title, Text, flags, parentID ) 
+   ; WaitQuit()
    test_focus_show = 1
    ProcedureReturn Message
 EndProcedure
@@ -89,8 +99,8 @@ Bind( cost, @LostFocusEvents( ), #__event_LostFocus )
 WaitClose( )
 End
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 48
+; CursorPosition = 66
+; FirstLine = 46
 ; Folding = --
 ; EnableXP
 ; DPIAware

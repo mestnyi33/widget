@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   UseWidgets( )
   Global *enable, *disable, *CHILD, *item1, *item2, *item3, *LIST
   
-  Procedure events( )
+  Procedure all_Events( )
     Select EventWidget( ) 
       Case *item1
         SetState( *CHILD, 0)
@@ -65,8 +65,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
                 ;Case 24: *CHILD = ExplorerTree(30,20,150,30,"")
                 ;Case 25: *CHILD = ExplorerCombo(30,20,150,30,"")
               Case 26: *CHILD = Spin(30,20,150,30,0,5,#PB_Spin_Numeric)
-              Case 27: *CHILD = Tree(30,20,150,30):  AddItem(*CHILD,-1,"Tree"):  AddItem(*CHILD,-1,"SubLavel",0,1)
-              Case 28: *CHILD = Panel(30,20,150,30): AddItem(*CHILD,-1,"Panel"): CloseList()
+              Case 27: *CHILD = Tree(30,20,150,30):  AddItem(*CHILD,-1,"Tree"):  AddItem(*CHILD,-1,"SubLavel",0,1):  AddItem(*CHILD,-1,"SubLavel2",0,1)
+              Case 28: *CHILD = Panel(30,20,150,30): AddItem(*CHILD,-1,"Panel1"): AddItem(*CHILD,-1,"Panel2"): AddItem(*CHILD,-1,"Panel3"): CloseList()
               Case 29 
                 *CHILD = Splitter(30,20,150,30,Button(0,0,30,30,"1"),Button(0,0,30,30,"2"))
                 
@@ -78,12 +78,21 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
             
             Resize(*CHILD,10,40, 280, 150)
             
-            Disable( *CHILD, 1  )
-            Disable( *disable, 1 )
-            If Disable( *enable )
-              Disable( *enable, 0 )
+            If Disable( *disable )
+               Disable( *CHILD, 1)
             EndIf
-        EndSelect
+            
+            If CountItems( *CHILD ) > 2 ; Type( *CHILD ) = #__type_Panel
+               Hide(*item1,0)
+               Hide(*item2,0)
+               Hide(*item3,0)
+            Else
+               Hide(*item1,1)
+               Hide(*item2,1)
+               Hide(*item3,1)
+            EndIf
+            
+      EndSelect
         
     EndSelect
  EndProcedure
@@ -92,18 +101,22 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     *item1 = Button( 10, 10, 50, 25, "item-1") : SetClass( *item1, "button-item-1" )
     *item2 = Button( 60, 10, 50, 25, "item-2") : SetClass( *item2, "button-item-2" )
     *item3 = Button( 110, 10, 50, 25, "item-3") : SetClass( *item3, "button-item-3" )
-    Bind( *item1, @events( ), #__event_LeftDown )
-    Bind( *item2, @events( ), #__event_LeftDown )
-    Bind( *item3, @events( ), #__event_LeftDown )
+    Hide(*item1,1)
+    Hide(*item2,1)
+    Hide(*item3,1)
+    
+    Bind( *item1, @all_Events( ), #__event_LeftDown )
+    Bind( *item2, @all_Events( ), #__event_LeftDown )
+    Bind( *item3, @all_Events( ), #__event_LeftDown )
     
     *disable = Button( 180, 10, 50, 25, "disable") : SetClass( *disable, "button-disable" )
     *enable = Button( 240, 10, 50, 25, "enable") : SetClass( *enable, "button-enable" )
-    Bind( *enable, @events( ), #__event_LeftDown )
-    Bind( *disable, @events( ), #__event_LeftDown )
+    Bind( *enable, @all_Events( ), #__event_LeftDown )
+    Bind( *disable, @all_Events( ), #__event_LeftDown )
     
     ;*LIST = ComboBox(400-110,40,100,150) 
     *LIST = ListView(300,10,150,180) 
-    Bind( *LIST, @events( ), #__event_Change )
+    Bind( *LIST, @all_Events( ), #__event_Change )
     AddItem(*LIST, -1, "Selected  to move")
     AddItem(*LIST, -1, "Button")
     AddItem(*LIST, -1, "String")
@@ -147,9 +160,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     WaitClose( )
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 143
-; FirstLine = 126
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 67
+; FirstLine = 50
 ; Folding = --
 ; EnableXP
 ; DPIAware

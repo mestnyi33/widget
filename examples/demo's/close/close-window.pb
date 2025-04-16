@@ -62,10 +62,15 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_free
             Debug "free - event " + GetClass( EventWidget( ) ) 
             
-            ;             ;\\ to send not free
-            ;                      ProcedureReturn 1
+            ;\\ to send not free
+            If is_window_(EventWidget( ))
+             Else
+             ;  ProcedureReturn 1
+            EndIf
             
       EndSelect
+      
+      ProcedureReturn #PB_Ignore
    EndProcedure
    
    If Open(0, 0, 0, 800, 600, "window", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
@@ -97,8 +102,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 62
-; Folding = --
+; CursorPosition = 67
+; FirstLine = 42
+; Folding = ---
 ; EnableXP
 ; DPIAware

@@ -37,11 +37,11 @@ CompilerIf #PB_Compiler_IsMainFile
                      Debug "change " + class$
                      ParentID = GetParent(*CHILD)
                      ;*CHILD = #PB_All
-                     ;Destroy( *CHILD )
-                     Free( *CHILD )
-;                      If Free( *CHILD )
-;                         Debug "free " + class$ 
-;                      EndIf
+                     Delete( @*CHILD )
+                     ; Free( *CHILD )
+                     ;                      If Free( *CHILD )
+                     ;                         Debug "free " + class$ 
+                     ;                      EndIf
                      
                      Debug "is "+*CHILD
                   EndIf
@@ -52,17 +52,17 @@ CompilerIf #PB_Compiler_IsMainFile
             EndSelect
       EndSelect
       
-      ; ProcedureReturn #PB_Ignore
+      ProcedureReturn #PB_Ignore
    EndProcedure
    
    Define Flags = #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
    *window_20 = Open(20, 0, 0, 425, 350, "demo set gadget new parent", Flags)
    
-     *CHILD = Container(30,10,160,70)
-     Button(5,5,70,30,"Button1") 
-     Button(15,15,70,30,"Button2") 
-     Button(25,25,70,30,"Button3") 
-     CloseList( )
+   *CHILD = Container(30,10,160,70)
+   Button(5,5,70,30,"Button1") 
+   Button(15,15,70,30,"Button2") 
+   Button(25,25,70,30,"Button3") 
+   CloseList( )
    ;*CHILD = Button(30,10,160,70,"Button") 
    *RETURN = Button(30,90,160,25,"Button <<(Return)") 
    
@@ -72,9 +72,9 @@ CompilerIf #PB_Compiler_IsMainFile
    AddItem(*COMBO, -1, "Selected  to move")
    AddItem(*COMBO, -1, "Button")
    SetState(*COMBO, #PB_GadgetType_Button)
-  Bind(*RETURN, @Widgets_CallBack())
+   Bind(*RETURN, @Widgets_CallBack())
    ; Bind(*COMBO, @Widgets_CallBack())
-  
+   
    
    
    *DESKTOP = Button(30,150,160,20,"Button >>(Desktop)") 
@@ -91,8 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 53
+; CursorPosition = 41
+; FirstLine = 35
 ; Folding = --
 ; EnableXP
 ; DPIAware

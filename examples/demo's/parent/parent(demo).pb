@@ -111,7 +111,9 @@ CompilerIf #PB_Compiler_IsMainFile
             ; Debug *CHILD\hide
           EndIf
       EndSelect 
-  EndProcedure
+      
+      ProcedureReturn #PB_Ignore
+   EndProcedure
   
   Define Flags = #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered 
   OpenWindow(10, 0, 0, 425, 350, "demo set gadget new parent", Flags)
@@ -218,8 +220,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 200
-; FirstLine = 70
+; CursorPosition = 114
+; FirstLine = 57
 ; Folding = -0
 ; EnableXP
 ; DPIAware
