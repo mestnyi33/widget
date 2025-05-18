@@ -1,4 +1,6 @@
-﻿; FIXED
+﻿;
+
+; FIXED
 XIncludeFile "../../widgets.pbi"
 ;   WordWrap ! 1
 ;         SetGadgetAttribute(0, #PB_Editor_WordWrap, WordWrap)
@@ -29,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Resize(Splitter, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate), WindowHeight(EventWindow(), #PB_Window_InnerCoordinate))
       ; PostReDraw( root())
       
-      SetState(widget(), 100 )
+      ;SetState(widget(), 100 )
       
       Debug ""+widget()\bar\page\pos  +" = "+ widget()\bar\thumb\pos
       Debug ""+widget()\bar\page\end  +" = "+ widget()\bar\area\end
@@ -55,6 +57,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ; SetFont(g, FontID(1))
       
       Splitter = Splitter(0, 0, 306, 276, 0,g);, #__flag_autosize)
+      
+      ; Resize(Splitter, #PB_Ignore, #PB_Ignore, 500, #PB_Ignore)
+      ;Resize(Splitter, #PB_Ignore, #PB_Ignore, #PB_Ignore, 500)
       
       ; PostEvent(#PB_Event_SizeWindow, 0, #PB_Ignore) ; Bug
       BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
@@ -105,7 +110,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 46
+; CursorPosition = 33
+; FirstLine = 19
 ; Folding = -
 ; EnableXP

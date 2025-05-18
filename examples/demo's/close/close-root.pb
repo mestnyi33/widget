@@ -70,7 +70,9 @@ CompilerIf #PB_Compiler_IsMainFile
             Select GetText( EventWidget( ))
                Case "window_0_close"
                   If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+                     
                      Free( GetWindow(EventWidget( )) )
+                     
                   EndIf
                   
                Case "window_1_close"
@@ -104,22 +106,24 @@ CompilerIf #PB_Compiler_IsMainFile
                EndIf
                
             ElseIf EventWindow( ) = 1
-               ; CloseWindow( 1 )
-               ProcedureReturn #True
+              ; CloseWindow( 1 )
+               ; ProcedureReturn #True
             EndIf
            
          Case #__event_free
             Debug "free - event " + EventWidget( )\class 
             
-            ;             ;\\ to send not free
-            ;                      ProcedureReturn #False
+            ;\\ to send not free
+            ; ProcedureReturn #False
             
       EndSelect
+      
+      ProcedureReturn #True
    EndProcedure
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 107
-; FirstLine = 82
+; CursorPosition = 108
+; FirstLine = 84
 ; Folding = ---
 ; EnableXP

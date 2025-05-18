@@ -7,10 +7,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure CallBack( )
       Select WidgetEvent( )
-         Case #__event_Close
-            Debug "disable (close - event)"
-            ProcedureReturn #PB_Ignore
-            
          Case #__event_Maximize
             Debug "maximize - event " + EventWidget( )\class
             
@@ -19,7 +15,10 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_Restore
             Debug "restore - event " + EventWidget( )\class 
-            
+             
+         Case #__event_Close
+            Debug "close - event disable"
+            ProcedureReturn #False
             
          Case #__event_LeftClick
             Select GetText( EventWidget( ))
@@ -36,14 +35,16 @@ CompilerIf #PB_Compiler_IsMainFile
                   Else
                      SetState( EventWidget( )\window, #PB_Window_Maximize )
                   EndIf
-               
-         EndSelect
+                  
+            EndSelect
             
       EndSelect
+      
+      ProcedureReturn #True
    EndProcedure
    
    If Open(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu |
-                                                             #PB_Window_ScreenCentered )
+                                                                                                 #PB_Window_ScreenCentered )
       
       a_init( root())
       
@@ -84,8 +85,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 11
-; Folding = 4-
+; CursorPosition = 19
+; Folding = --
 ; EnableXP
 ; DPIAware

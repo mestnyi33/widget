@@ -34,6 +34,8 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case #__event_Change
+            Debug ""+ GetState(*size) +" "+  GetState(*position)
+            
             Select *this 
                Case *size
                   a_set( a_focused( ), #__a_full, GetState(*this), GetState(*position))
@@ -94,7 +96,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *gridType = ComboBox( 120,30+Y,100,30 )
       AddItem(*gridType, -1, "grid [point]" )
       AddItem(*gridType, -1, "grid [line]" )
-      SetState(*gridType, 0)
+      ;SetState(*gridType, 0)
       
       *FrameColor = Button( 120,90+Y,100,30, "FrameColor" )
       *BackColor = Button( 120,150+Y,100,30, "BackColor" )
@@ -122,8 +124,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 27
+; CursorPosition = 59
+; FirstLine = 25
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -261,7 +261,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;Global *event._s_EVENT( )
       Global NewMap fonts._s_FONTS( )
       Global NewList images._s_IMAGES( )
-      
+      Global NewMap gadgets.i()
       
       ;-  ----------------
       ;-   DECLARE_macros
@@ -476,7 +476,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Macro TabChange( ): change: EndMacro         ; tab\widget\change
-      Macro TextChange( ): txt\change: EndMacro   ; temp
+      Macro TextChange( ): txt\change: EndMacro    ; temp
       Macro AreaChange( ): area\change: EndMacro   ; temp
       Macro PageChange( ): page\change: EndMacro   ; temp
       Macro ThumbChange( ): thumb\change: EndMacro ; temp
@@ -538,28 +538,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro RowVisibleList( ): row\visible\_s( ): EndMacro
       Macro RowFirstVisible( ): row\visible\first: EndMacro
       Macro RowLastVisible( ): row\visible\last: EndMacro
-      
-      ;-
-      Macro ChangeCurrentCanvas( _canvasID_, _change_root_ = 1 )
-         FindMapElement( widget::roots( ), Str( _canvasID_ ) )
-         If _change_root_ = 1
-            widget::root( ) = widget::roots( )
-         EndIf
-         ;Debug ""+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::root( )\class
-      EndMacro
-      Macro OpenCanvas( _canvas_ = #PB_Any )
-         Open( ID::Window(UseGadgetList(0)), 0,0,0,0, "", #PB_Canvas_Container, 0, _canvas_ )
-      EndMacro
-      Macro CloseCanvas( )
-         CloseGadgetList( )
-      EndMacro
-      
-      Macro Canvas( _window_, _x_,_y_,_width_,height_, _flag_=0 )
-         Open(_window_, _x_,_y_,_width_,height_,"",0, 0, CanvasGadget(#PB_Any, _x_,_y_,_width_,height_, _flag_))
-      EndMacro
-      
-      
-      
       
       ;-
       Macro mouse( ): widget::__gui\mouse: EndMacro
@@ -943,6 +921,25 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro CanvasMouseY( ): mouse( )\x: EndMacro                        ; Returns mouse x
       Macro CanvasMouseButton( ): mouse( )\buttons: EndMacro             ; Returns mouse x
       
+      ;-
+      Macro IsCanvas(_gadget_)
+         FindMapElement( widget::gadgets( ), Str(_gadget_))
+      EndMacro
+      Macro OpenCanvas( _window_, _canvas_ = #PB_Any, _x_ = #PB_Ignore, _y_ = #PB_Ignore, _width_ = #PB_Ignore, _height_ = #PB_Ignore );, WindowID = #PB_Any )
+         Open( _window_, 0,0,0,0, "", #PB_Canvas_Container, #PB_Default, _canvas_ )
+      EndMacro
+      Macro CloseCanvas( )
+         
+         CloseGadgetList( )
+      EndMacro
+      Macro ChangeCurrentCanvas( _canvasID_, _change_root_ = 1 )
+         FindMapElement( widget::roots( ), Str( _canvasID_ ) )
+         If _change_root_ = 1
+            widget::root( ) = widget::roots( )
+         EndIf
+         ;Debug ""+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::root( )\class
+      EndMacro
+      
       
       ;-
       ;       ;-
@@ -1301,7 +1298,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndMacro
       
-      Macro draw_button_check( _address_, _size_, _color_ )
+      Macro draw_check_button( _address_, _size_, _color_ )
          LineXY(( _address_\x + 0 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 4 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 5 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; Левая линия
          LineXY(( _address_\x + 0 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 5 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; Левая линия
          
@@ -1309,7 +1306,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          LineXY(( _address_\x + 6 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 0 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 3 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; правая линия
       EndMacro
       
-      Macro draw_background_image_( _this_, _x_, _y_, _mode_ = )
+      Macro draw_image_( _this_, _x_, _y_, _mode_ = )
          ; draw_mode_alpha_( #PB_2DDrawing_Transparent )
          DrawAlphaImage( _this_\img#_mode_\imageID, _x_ + _this_\img#_mode_\x + _this_\scroll_x( ), _y_ + _this_\img#_mode_\y + _this_\scroll_y( ), _this_\color\ialpha )
       EndMacro
@@ -1550,6 +1547,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i CloseList( )
       Declare.i OpenList( *this, item.l = 0 )
       ;
+      Declare   ResetEvents( *this._s_WIDGET )
+      Declare   AddEvents( *this._s_root, event.l, *button = #PB_All, *data = #Null )
       Declare.i Post( *this, event.l, *button = #PB_All, *data = #Null )
       Declare.i Bind( *this, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
       Declare.i Unbind( *this, *callback, event.l = #PB_All, item.l = #PB_All )
@@ -1561,9 +1560,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;
       Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
       Declare   Free( *this, mode = 0 )
-      Declare   Remove( *this )
-      Declare   Delete( *this, mode = 0 )
-      Declare   Destroy( *this, mode = 0 )
+      Declare   ClearWidgets( *this, mode = 0 )
       ;
       Declare   DoEvents( *this, event.l, *button = #PB_All, *data = #Null )
       Declare   EventHandler( Canvas.i = - 1, event.i = - 1, eventdata = 0 )
@@ -5109,8 +5106,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro bar_area_create( _parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _scrollbar_size_, _mode_ = #True )
          If Not _parent_\scroll\bars
             _parent_\scroll\bars = 1
-            _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\index + "]", #__type_Scroll, 0, 0, DPIScaled( _scrollbar_size_), _height_, #Null$, #__flag_child | #__flag_Vertical, 0, _area_height_, _height_, ( _scrollbar_size_), _scrollbar_size_/2, _scroll_step_ )
-            _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\index + "]", #__type_Scroll, 0, 0, _width_, DPIScaled( _scrollbar_size_), #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * ( _scrollbar_size_),  _scrollbar_size_/2, _scroll_step_ )
+            _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\createindex + "]", #__type_Scroll, 0, 0, DPIScaled( _scrollbar_size_), _height_, #Null$, #__flag_child | #__flag_Vertical, 0, _area_height_, _height_, ( _scrollbar_size_), _scrollbar_size_/2, _scroll_step_ )
+            _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\createindex + "]", #__type_Scroll, 0, 0, _width_, DPIScaled( _scrollbar_size_), #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * ( _scrollbar_size_),  _scrollbar_size_/2, _scroll_step_ )
          EndIf
       EndMacro
       
@@ -6885,7 +6882,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                Else
                   ; scroll area change
-                  Post( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ) )
+                  ;__gui\event\queuesmask = 0
+                  ;Post( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ))
+                  AddEvents( *this, #__event_Change,  EnteredButton( ), *bar\PageChange( ))
                EndIf  
             EndIf
             
@@ -7384,7 +7383,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.l Index( *this._s_WIDGET )
-         ProcedureReturn *this\index
+         ProcedureReturn *this\createindex
       EndProcedure
       
       Procedure.l Level( *this._s_WIDGET )
@@ -8342,8 +8341,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             
             ;\\ Post Event
-            If *this\bindresize Or
-               Not __gui\event\queuesmask
+            If *this\bindresize ; Or Not __gui\event\queuesmask
                Post( *this, #__event_resize )
             EndIf
          EndIf
@@ -8792,7 +8790,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Macro add_color( _result_, _address_, _color_type_, _color_, _alpha_, _column_ = )
          _address_\_alpha = alpha
-            
+         
          Select _color_type_
             Case #__BackColor
                If _address_\back#_column_ <> _color_
@@ -9402,7 +9400,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_Window
             ; restore state
             If state = #PB_Window_Normal
-               If Not Post( *this, #__event_restore )
+               If Post( *this, #__event_restore )
                   *this\resize\flag | #__resize_restore
                   If *this\resize\flag & #__resize_minimize
                      *this\resize\flag & ~ #__resize_minimize
@@ -9430,7 +9428,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; maximize state
             If state = #PB_Window_Maximize
-               If Not Post( *this, #__event_maximize )
+               If Post( *this, #__event_maximize )
                   *this\resize\flag | #__resize_maximize
                   If *this\resize\flag & #__resize_minimize
                      *this\resize\flag & ~ #__resize_minimize
@@ -9458,7 +9456,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; minimize state
             If state = #PB_Window_Minimize
-               If Not Post( *this, #__event_Minimize )
+               If Post( *this, #__event_Minimize )
                   *this\resize\flag | #__resize_minimize
                   If *this\resize\flag & #__resize_maximize
                      *this\resize\flag & ~ #__resize_maximize
@@ -9782,7 +9780,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-             
+            
          Else
             ProcedureReturn *this\bar\page\pos
          EndIf
@@ -9812,7 +9810,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
                If State & #PB_Tree_Selected
                   If *row\_focus
-                      *row\ColorState( ) = #__s_0
+                     *row\ColorState( ) = #__s_0
                   Else
                      If *this\focus
                         *row\ColorState( ) = #__s_2
@@ -10045,7 +10043,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                result = #True
             EndIf
          EndIf
-      
+         
          ProcedureReturn result
       EndProcedure
       
@@ -10701,7 +10699,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
-         ;
+            ;
             ;\\ get the last widget to add it after it
             If *parent\LastWidget( )
                *after = GetPosition( *parent, #PB_List_Last, tabindex )
@@ -10832,14 +10830,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
             Else
                ;
-              If *last
+               If *last
                   ChangeCurrentElement( widgets( ) , *last\address )
                Else
                   LastElement( widgets( ) )
                EndIf
                AddElement( widgets( ) ) : widgets( ) = *this
                *this\layer   = ListIndex( widgets( ) )
-               *this\index   = ListIndex( widgets( ) )
+               *this\createindex   = ListIndex( widgets( ) )
                *this\address = @widgets( )
             EndIf
             PopListPosition( widgets( ) )
@@ -10991,15 +10989,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; Debug #PB_Compiler_Procedure +" "+ ClassFromEvent(event)
          
          If MouseButtonPress( )
-            If is_window_( *this )
-               SetForeground( *this )
-            EndIf
+            SetForeground( *this )
          EndIf
-;          If Not __gui\event\queuesmask
-;             Post( *this, event, *button, *data )
-;          Else
+         
          ProcedureReturn DoEvents( *this, event, *button, *data )
-                  ;          EndIf
       EndProcedure
       
       Macro DoActivate( _this_ )
@@ -11058,8 +11051,18 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure SetForeground( *window._s_WIDGET )
          Protected last
+         ;
+         If Not is_window_( *window )
+            If is_root_( *window\window )
+               ProcedureReturn 0
+            Else
+               *window = *window\window
+            EndIf
+         EndIf
+         ;
          If *window\parent
             last = GetPosition( *window\parent, #PB_List_Last )
+            ;
             If Sticked( ) = last
                SetPosition( *window, #PB_List_Before, last )
             Else
@@ -11105,9 +11108,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *active = *parent
                         EndIf
                      EndIf
-                     
+                     ;
                      If *active\disable 
-                        ProcedureReturn 0
+                        If *active\window And 
+                           *active\window\disable 
+                           ProcedureReturn 0
+                        Else
+                           ; 
+                           *active = *active\window 
+                        EndIf
                      EndIf 
                   EndIf
                   
@@ -12321,17 +12330,18 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\
             *columns\y     = 0
-            *columns\width = DPIScaled( Width )
-            ;*columns\txt\TextChange( ) = 1
             *columns\txt\string.s = Text.s
-            *columns\x = *this\scroll_width( ) ; (*this\padding\x + *this\scroll_width( ))
+            *columns\width = DPIScaled( Width )
+            
+            *columns\x = *this\scroll_width( )
             *this\scroll_width( ) + *columns\width
             
             ;\\
-            ;*this\fs[2] = 24
             If *this\type = #__type_listicon
                *columns\height = DPIScaled( 24 )
             EndIf
+            
+            ; *this\WidgetChange( ) = 1
             
             ProcedureReturn *columns
          EndIf
@@ -12456,7 +12466,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
                If *rowParent 
                   ;If Not *this\mode\optionboxes
-                     *rowParent\childrens + 1
+                  *rowParent\childrens + 1
                   ;EndIf
                   *row\RowParent( ) = *rowParent
                   
@@ -12487,7 +12497,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
-                
+               
                ; add lines
                *row\rindex        = position 
                *row\columnindex   = ListIndex( *this\columns( ))
@@ -12530,8 +12540,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;If Text
                ; *row\txt\TextChange( ) = 1
                *row\txt\string   = Text 
-              
-      
+               
+               
                ;\\
                If *row\columnindex = 0
                   *this\countitems + 1
@@ -15368,7 +15378,7 @@ chr$ = ","
                      EndIf
                   EndIf
                   
-                   ;\\
+                  ;\\
                   If constants::BinaryFlag( Flag, #__flag_optionboxes )
                      *this\mode\optionboxes = state
                   EndIf
@@ -15381,7 +15391,7 @@ chr$ = ","
                      EndIf
                   EndIf
                   
-                 ; Debug "flag "+*this\mode\checkboxes +" "+ *this\mode\optionboxes +" "+ *this\mode\threestate
+                  ; Debug "flag "+*this\mode\checkboxes +" "+ *this\mode\optionboxes +" "+ *this\mode\threestate
                   
                   ;\\
                   If constants::BinaryFlag( Flag, #__flag_gridLines ) 
@@ -15448,7 +15458,7 @@ chr$ = ","
                          "#PB_Window_Minimize|"+
                          "#PB_Window_Maximize|"+
                          "#PB_Window_Invisible"
-                         
+               
                ;}
                
             Case #__Type_Button         
@@ -15459,7 +15469,7 @@ chr$ = ","
                          "#PB_Button_Left|"+
                          "#PB_Button_Center|"+
                          "#PB_Button_Right"
-                         
+               
                
                ;}
                
@@ -15488,7 +15498,7 @@ chr$ = ","
                result$ = "#PB_CheckBox_ThreeState|"+
                          "#PB_CheckBox_Center|"+
                          "#PB_CheckBox_Right"
-                         
+               
                ;}
                
             Case #__Type_Option         
@@ -16779,8 +16789,7 @@ chr$ = ","
       ;-
       ;- EVENTs
       ;-
-      Procedure   Reset( *this._s_WIDGET )
-         ;\\ send posted queue events
+      Procedure   ResetEvents( *this._s_WIDGET )
          If ListSize( __gui\event\queues( ) )
             ForEach __gui\event\queues( )
                Define __widget = __gui\event\queues( )\widget
@@ -16794,36 +16803,38 @@ chr$ = ","
                      
                      DeleteElement( __gui\event\queues( ) )
                      ; Debug ""+GetClass(__widget) +" "+ ClassFromEvent(__event) +" "+ Str(__gui\event\mask & 1<<__event)
-                     If __event = #__event_Free
-                      ;  Debug __widget
-                     EndIf
                      
-                     If Post( __widget, __event, __item, __data )
-                        If __event = #__event_Free
-                           Remove( __widget )
-                        EndIf
+                     If __event = #__event_Free
+                        Free( @__widget )
+                     Else
+                        Post( __widget, __event, __item, __data )
                      EndIf
                   EndIf
+               Else
+                  If GetClass( __widget ) = GetClass( *this)
+                     DeleteElement( __gui\event\queues( ) )
+                     Break
+                  EndIf
+                  Debug "ERRORS event reset ["+GetClass( __widget ) +" "+ GetClass( *this) +"]"
                EndIf
             Next
          EndIf
       EndProcedure
       
-      Procedure   Add( *this._s_root, event.l, *button = #PB_All, *data = #Null )
+      Procedure   AddEvents( *this._s_root, event.l, *button = #PB_All, *data = #Null )
          If *this > 0
-            ;
             If test_event_send
                Static test
                Debug ""+*this\class + " - Put event queues( test "+test +" ) "+ ClassFromEvent(event)
                test + 1
             EndIf
-            
+            ;
             If ListSize(__gui\event\queues( )) And 
                ListIndex( __gui\event\queues( ) ) >= 0 And
                __gui\event\queues( )\type = event
                ProcedureReturn __gui\event\queues( )
             EndIf
-            
+            ;
             If AddElement( __gui\event\queues( ) )
                __gui\event\queues.allocate( EVENTDATA, ( ) )
                __gui\event\queues( )\widget = *this
@@ -16842,7 +16853,7 @@ chr$ = ","
             If Not __gui\event\queuesmask And 
                Not __gui\event\mask & 1<<event
                
-               ProcedureReturn Add( *this, event, *button, *data )
+               ProcedureReturn AddEvents( *this, event, *button, *data )
             Else
                If is_bar_( *this )
                   If event = #__event_LeftClick Or
@@ -16913,7 +16924,7 @@ chr$ = ","
                      EndIf
                   Next
                   ;
-               
+                  
                   ;\\ 2 call (current-widget-window) bind event function
                   If *this\window 
                      If result <> #PB_Ignore
@@ -16956,12 +16967,10 @@ chr$ = ","
                            CloseWindow( EventWindow( ))
                         EndIf
                         
-                     Case 1
-                        Debug 666666
+                     Case #True
+                        ;Debug 666666
                         Free( *this )
-                        ;Destroy( *this, 1 )
-                        ;Destroy( *this )
-                        Debug 888888
+                        ;Debug 888888
                   EndSelect
                EndIf
                
@@ -17075,8 +17084,7 @@ chr$ = ","
                SetActiveGadget(GetCanvasGadget(*root\parent) )
                ;ChangeCurrentCanvas( GadgetID(GetCanvasGadget(*root\parent)) )
                ;SetActive( *root\parent )
-              ; Reset( *root\parent )
-           EndIf
+            EndIf
             
             Debug " POST QUIT MAIN LOOP"
             
@@ -17092,7 +17100,7 @@ chr$ = ","
                   CocoaMessage( 0, CocoaMessage( 0, 0, "NSApplication sharedApplication" ), "stop:", 0 )
                   
             CompilerEndSelect
-                
+            
             ProcedureReturn #True
          EndIf
       EndProcedure
@@ -17839,7 +17847,7 @@ chr$ = ","
                                           
                                           Debug ""+*this\__lines( )\lindex +" - "+ Str(*this\__lines( )\txt\edit[2]\width-*this\__lines( )\selector) +" "+ *this\__lines( )\txt\width
                                           If Not *this\__lines( )\txt\edit[2]\width ; -*this\__lines( )\selector <> *this\__lines( )\txt\width
-                                                                                     ;Debug *this\__lines( )\lindex
+                                                                                    ;Debug *this\__lines( )\lindex
                                              edit_sel_string_( *this, *this\__lines( ), #__sel_to_set )
                                              ;  *this\root\repaint = 1
                                           EndIf
@@ -19473,7 +19481,7 @@ chr$ = ","
          
          ;\\ post repaint canvas
          If Not (*this\disable And Not *this\anchors)
-           If *this\root\repaint > 0 
+            If *this\root\repaint > 0 
                ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ ClassFromEvent(event)
                If ( MouseButtonPress( ) And
                     ( event = #__event_Focus Or
@@ -19517,9 +19525,7 @@ chr$ = ","
             
             If roots( )\canvas\repaint = 1
                roots( )\canvas\repaint = 0
-               __gui\event\queuesmask = 1
-               
-               
+              
                If test_draw_repaint
                   Debug "   REPAINT " + roots( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
                EndIf
@@ -20437,54 +20443,30 @@ chr$ = ","
       ;-
       ;- DELETEs
       ;-
-      Procedure   Remove( *this._s_WIDGET )
-         If *this\parent
-            If *this\parent\FirstWidget( ) = *this
-               *this\parent\FirstWidget( ) = *this\AfterWidget( )
-            EndIf
-            
-            If *this\parent\LastWidget( ) = *this
-               *this\parent\LastWidget( ) = *this\BeforeWidget( )
-            EndIf
-            
-            If Opened( ) = *this
-               OpenList( *this\parent )
-            EndIf
-         EndIf
-         
-         ;
-         ; delete all
-         Destroy( *this, #True )
-         
-         ;\\
-         If is_root_( *this )
-            If FindMapElement( roots( ), Str( *this\root\canvas\gadgetID ) )
-               DeleteMapElement( roots( ) )
-               ; DeleteMapElement( roots( ), MapKey( roots( ) ) )
-               ; ResetMap( roots( ) )
-               If test_delete
-                  Debug " FREE - " + *this\class + " " + *this\address
-               EndIf
-               
-               If Not MapSize( roots( ) )
-                  __gui\event\quit = 1
-                  PostQuit( )
-               EndIf
-               
-               ; bug 612
-               ; PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, #PB_Default ) 
-            EndIf
-         EndIf
-         
-      EndProcedure
-      
-      Procedure   Destroy( *this._s_WIDGET, mode = 0 )
+      Procedure   ClearWidgets( *this._s_WIDGET, mode = 0 )
          If LastElement(widgets( ))
             Repeat
                If IsChild( widgets( ), *this ) Or ( mode And widgets( ) = *this )
-                  
-                  ; 
-                  If widgets( ) <> *this
+                  If widgets( ) = *this
+                     If widgets( )\haschildren
+                        Break
+                     EndIf
+                     
+                     If *this\parent
+                        If *this\parent\FirstWidget( ) = *this
+                           *this\parent\FirstWidget( ) = *this\AfterWidget( )
+                        EndIf
+                        
+                        If *this\parent\LastWidget( ) = *this
+                           *this\parent\LastWidget( ) = *this\BeforeWidget( )
+                        EndIf
+                        
+                        If Opened( ) = *this
+                           OpenList( *this\parent )
+                        EndIf
+                     EndIf
+                     
+                  Else
                      If Not Post( widgets( ), #__event_free )
                         If PreviousElement( widgets( ))
                            Continue
@@ -20645,43 +20627,86 @@ chr$ = ","
          EndIf
       EndProcedure
       
-      Procedure.i Delete( *widget.integer, mode = 0 )
-         Protected result, *this._s_WIDGET
-         
-         If *widget > 0 
-            If *widget\i > 0
-               *this = *widget\i
-               *widget\i = 0
+      Procedure   Free( *this.integer, mode = 0 ) 
+         Protected *g._s_WIDGET
+         ;
+         If *this > 0
+            If *this\i > 0
+               *g = *this\i
+               *this\i = 0
+                  
+               If Post( *g, #__event_free )
+                  ClearWidgets( *g, #True )
+                  Debug "free-[delete] "+*g\class
                
-               If Post( *this, #__event_free )
-                  Remove( *this )
+                  ;\\
+                  If is_root_( *g )
+                     If FindMapElement( roots( ), Str( *g\root\canvas\gadgetID ) )
+                        DeleteMapElement( roots( ) )
+                        ; DeleteMapElement( roots( ), MapKey( roots( ) ) )
+                        ; ResetMap( roots( ) )
+                        If test_delete
+                           Debug " FREE - " + *g\class + " " + *g\address
+                        EndIf
+                        
+                        If Not MapSize( roots( ) )
+                           __gui\event\quit = 1
+                           PostQuit( )
+                        EndIf
+                        
+                        ; bug 612
+                        ; PostEvent( #PB_Event_CloseWindow, *g\root\canvas\window, #PB_Default ) 
+                     EndIf
+                  Else
+                     PostReDraw( *g\root)
+                  EndIf
                   
                   ProcedureReturn 1
                EndIf
             Else
-               Destroy( *widget, mode )
+              *g = *this
+               Debug "free-[add] "+*g\class
+               If AddEvents( *this, #__event_free  ) 
+                  ProcedureReturn 1
+               EndIf
             EndIf
-        Else
-           Debug "do free all"
-        EndIf
-         ProcedureReturn result 
-      EndProcedure
-      
-      Procedure Free( *this._s_WIDGET, mode = 0 )
-         If *this > 0
-            ; ProcedureReturn Delete( @*this )
             
-            If add( *this, #__event_free  ) 
-               ProcedureReturn 1
-            EndIf
          ElseIf *this < 0
-            Debug "do free all"
+            Debug "free-[all]"
             ForEach roots( ) 
-               Free( roots( ) )
+               *g =  roots( )
+                ClearWidgets( *g )
+               
+;               ; If Post( *g, #__event_free )
+;                   ClearWidgets( *g, #True )
+;                   Debug "free-[delete]"
+;                
+;                   ;\\
+;                   If is_root_( *g )
+;                      If FindMapElement( roots( ), Str( *g\root\canvas\gadgetID ) )
+;                         DeleteMapElement( roots( ) )
+;                         ; DeleteMapElement( roots( ), MapKey( roots( ) ) )
+;                         ; ResetMap( roots( ) )
+;                         If test_delete
+;                            Debug " FREE - " + *g\class + " " + *g\address
+;                         EndIf
+;                         
+;                         If Not MapSize( roots( ) )
+;                            __gui\event\quit = 1
+;                            PostQuit( )
+;                         EndIf
+;                         
+;                         ; bug 612
+;                         ; PostEvent( #PB_Event_CloseWindow, *g\root\canvas\window, #PB_Default ) 
+;                      EndIf
+;                   EndIf
+;                   
+;                 ;  ProcedureReturn 1
+;               ; EndIf
             Next
          EndIf
       EndProcedure
-   
+      
       ;-
       ;-  CREATEs
       ;-
@@ -20812,7 +20837,7 @@ chr$ = ","
                    *this\type = #__type_Button Or
                    *this\type = #__type_ComboBox Or
                    *this\type = #__type_ExplorerList 
-                   
+               
                *this\fs = 1
             Else
                If *this\type = #__type_Editor Or
@@ -20826,8 +20851,8 @@ chr$ = ","
             EndIf
          EndIf
          *this\bs = *this\fs
-            
-        ;\\
+         
+         ;\\
          If *parent
             ;\\
             If constants::BinaryFlag( Flag, #__flag_autosize )
@@ -20843,7 +20868,7 @@ chr$ = ","
             
             ;\\
             If is_integral_( *this )
-               *this\index   =- 1
+               *this\createindex   =- 1
                *this\address = *parent\address
                ReParent( *this, *parent )
             Else
@@ -20856,7 +20881,7 @@ chr$ = ","
          ;\\ add count types
          CountType( *this, 1 )
          
-             ;\\ - Create Texts
+         ;\\ - Create Texts
          If *this\type = #__type_Text Or
             *this\type = #__type_Editor Or
             *this\type = #__type_String Or
@@ -21842,7 +21867,7 @@ chr$ = ","
          If PB(IsGadget)(Canvas)
             g = GadgetID( Canvas )
             
-            UnbindEvent( #PB_Event_SizeWindow, @EventResize( ), window )
+            ; UnbindEvent( #PB_Event_SizeWindow, @EventResize( ), window )
          Else
             If test_focus_show
                canvasflag|#PB_Canvas_DrawFocus
@@ -21850,6 +21875,10 @@ chr$ = ","
             
             g = CanvasGadget( Canvas, X, Y, Width, Height, canvasflag )
             If Canvas = - 1 : Canvas = g : g = PB(GadgetID)(Canvas) : EndIf
+            
+            If constants::BinaryFlag( canvasflag, #PB_Canvas_Container )
+              ; BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
+            EndIf
          EndIf
          ;
          If UseGadgetList And w <> UseGadgetList
@@ -21886,7 +21915,7 @@ chr$ = ","
             SetFont( *root, #PB_Default )
             ; SetImage( *root, #PB_Default )
             *root\img\image = - 1
-         
+            
             ;\\
             PostEvent( #PB_Event_SizeWindow, window, Canvas ) ; Bug PB
             Post( *root, #__event_create )
@@ -21951,9 +21980,9 @@ chr$ = ","
             ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
             ;
             BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
-            If constants::BinaryFlag( canvasflag, #PB_Canvas_Container )
-               BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
-            EndIf
+;             If constants::BinaryFlag( canvasflag, #PB_Canvas_Container )
+;                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
+;             EndIf
             
             ;\\ z - order
             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -21965,10 +21994,10 @@ chr$ = ","
                
                RemoveKeyboardShortcut( Window, #PB_Shortcut_Tab )
                
-;                ; transparent canvas
-;                SetWindowLongPtr_(g, #GWL_EXSTYLE, #WS_EX_LAYERED) 
-;                SetLayeredWindowAttributes_(g, RGB( Red(#White), Green(#White), Blue(#White)), 0, #LWA_COLORKEY)
-;                ; SetLayeredWindowAttributes_(g, RGB( Red(#Black), Green(#Black), Blue(#Black)), 0, #LWA_COLORKEY)
+               ;                ; transparent canvas
+               ;                SetWindowLongPtr_(g, #GWL_EXSTYLE, #WS_EX_LAYERED) 
+               ;                SetLayeredWindowAttributes_(g, RGB( Red(#White), Green(#White), Blue(#White)), 0, #LWA_COLORKEY)
+               ;                ; SetLayeredWindowAttributes_(g, RGB( Red(#Black), Green(#Black), Blue(#Black)), 0, #LWA_COLORKEY)
             CompilerEndIf
             
             ;\\
@@ -22214,23 +22243,22 @@ chr$ = ","
       
       Procedure.i Gadget( Type.w, Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, flag.q = #Null )
          Protected *this, g, Window = ID::Window( UseGadgetList( 0 ) )
-         
          Flag = FromPBFlag( Type, Flag ) | #__flag_autosize
          
-         If MapSize( roots( ) )
-            Protected Canvas = root( )\canvas\gadget
-         EndIf
+;          If MapSize( roots( ) )
+;             Protected Canvas = root( )\canvas\gadget
+;          EndIf
          ;
-         Open( Window, X, Y, Width, Height, "", #PB_Canvas_Container, #Null, Gadget )
+         Open( Window, X, Y, Width, Height, "", #PB_Canvas_Container|#PB_Window_BorderLess, #Null, Gadget )
          ;
          Select Type
-            Case #__type_Tree : *this = Tree( 0, 0, Width, Height, flag )
-            Case #__type_Text : *this = Text( 0, 0, Width, Height, Text, flag )
-            Case #__type_Button : *this = Button( 0, 0, Width, Height, Text, flag )
-            Case #__type_Option : *this = Option( 0, 0, Width, Height, Text, flag )
-            Case #__type_CheckBox : *this = CheckBox( 0, 0, Width, Height, Text, flag )
+            Case #__type_Tree      : *this = Tree( 0, 0, Width, Height, flag )
+            Case #__type_Text      : *this = Text( 0, 0, Width, Height, Text, flag )
+            Case #__type_Button    : *this = Button( 0, 0, Width, Height, Text, flag )
+            Case #__type_Option    : *this = Option( 0, 0, Width, Height, Text, flag )
+            Case #__type_CheckBox  : *this = CheckBox( 0, 0, Width, Height, Text, flag )
             Case #__type_HyperLink : *this = HyperLink( 0, 0, Width, Height, Text, *param1, flag )
-            Case #__type_Splitter : *this = Splitter( 0, 0, Width, Height, *param1, *param2, flag )
+            Case #__type_Splitter  : *this = Splitter( 0, 0, Width, Height, *param1, *param2, flag )
          EndSelect
          ;
          CloseGadgetList( )
@@ -22242,18 +22270,19 @@ chr$ = ","
             g = GadgetID( Gadget )
          EndIf
          
-         Static count
-         SetClass( *this, GetClass(*this)+"_"+count); Index(*this))
-         count + 1
+;          Static count
+;          SetClass( *this, GetClass(*this)+"_"+count); Index(*this))
+;          count + 1
          
-         SetGadgetData( Gadget, *this )
+;          ;SetGadgetData( Gadget, *this )
+         widget::gadgets(Str(Gadget)) = *this
          
-         If IsGadget(Canvas)
-            ; CloseList( )
-            ;Debug ""+Gadget+" "+canvas
-            ChangeCurrentCanvas( GadgetID(Canvas) )
-            ; OpenList( root( ) )
-         EndIf
+;          If IsGadget(Canvas)
+;             ; CloseList( )
+;             ;Debug ""+Gadget+" "+canvas
+;             ChangeCurrentCanvas( GadgetID(Canvas) )
+;             ; OpenList( root( ) )
+;          EndIf
          
          ProcedureReturn g
       EndProcedure
@@ -22576,10 +22605,10 @@ chr$ = ","
                   ; Debug "   " + #PB_Compiler_Procedure + "( )"
                   
                   ;\\ if the item list has changed
-                  *this\scroll_width( ) = 0
                   If ListSize( *this\columns( ) )
                      *this\scroll_height( ) = *this\columns( )\height
                   Else
+                     *this\scroll_width( ) = 0
                      *this\scroll_height( ) = 0
                   EndIf
                   
@@ -22628,7 +22657,7 @@ chr$ = ","
                      
                      If *rows( )\columnindex = 0
                         ;\\ sublevel position
-                        *this\row\sublevelpos = *rows( )\sublevel * *this\row\sublevelsize ;+ 8
+                        *this\row\sublevelpos = *rows( )\sublevel * *this\row\sublevelsize 
                         
                         ;\\ expanded & collapsed box coordinate
                         If *this\mode\Buttons
@@ -22652,36 +22681,35 @@ chr$ = ","
                            EndIf
                         EndIf
                         
-                        ; Debug ""+*this\row\sublevelpos +" "+ *rows( )\sublevel +" "+ *this\row\sublevelsize 
-                        
                         ;\\ image position
                         If *rows( )\img\imageID
                            *rows( )\img\x = *this\row\sublevelpos + *this\padding\x
                            *rows( )\img\y = ( *rows( )\height - *rows( )\img\height ) / 2
                         EndIf
-                        ;
-                        *rows( )\x = *this\columns( )\x           
-                     Else
-                        *rows( )\x = *this\columns( )\x + *this\row\sublevelpos + *this\MarginLine( )\width
                      EndIf
                      
                      ;\\ text position
                      If *rows( )\txt\string
-                        If *rows( )\columnindex > 0
-                           *rows( )\txt\x = *this\padding\x
-                        Else
+                        *rows( )\txt\x = *this\padding\x
+                        *rows( )\txt\y = (*rows( )\height - *rows( )\txt\height) / 2
+                        ;
+                        If *rows( )\columnindex = 0
+                           *rows( )\txt\x + *this\row\sublevelpos
+                           ;
                            If *this\imgsize
-                              *rows( )\txt\x = *this\imgsize + *this\row\sublevelpos + *this\padding\x * 2
-                           Else
-                              *rows( )\txt\x = *this\row\sublevelpos + *this\padding\x
+                              *rows( )\txt\x + *this\imgsize + *this\padding\x 
                            EndIf
                         EndIf
-                        *rows( )\txt\y = ( *rows( )\height - *rows( )\txt\height ) / 2
                      EndIf
                      
+                     If *rows( )\columnindex = 0
+                        *rows( )\x = 0   
+                     Else
+                        *rows( )\x = *this\columns( )\x + (*this\imgsize+*this\row\sublevelpos+*this\MarginLine( )\width)
+                     EndIf
                      
                      ;\\ vertical scroll max value
-                     *this\scroll_height( ) + *rows( )\height + Bool( *this\__rows( )\rindex <> *this\countitems - 1 ) * *this\mode\GridLines
+                     *this\scroll_height( ) + *rows( )\height + Bool(*this\__rows( )\rindex <> *this\countitems - 1) * *this\mode\GridLines
                      
                      ;\\ horizontal scroll max value
                      If *this\type = #__type_ListIcon
@@ -22689,14 +22717,27 @@ chr$ = ","
                         If *rows( )\checkbox
                            *rows( )\checkbox\x - boxsize
                         EndIf
-                        scroll_width = ( *this\row\sublevelpos + *this\padding\x + *this\MarginLine( )\width + *this\columns( )\x + *this\columns( )\width )
+                        scroll_width = ( *this\columns( )\x + *this\columns( )\width + *this\row\sublevelpos + *this\padding\x + *this\MarginLine( )\width )
                      Else
                         scroll_width = ( *rows( )\x + *rows( )\txt\x + *rows( )\txt\width + *this\mode\fullSelection + *this\padding\x * 2 ) ; - *this\inner_x( )
                      EndIf
-                     
                      If *this\scroll_width( ) < scroll_width 
                         *this\scroll_width( ) = scroll_width
                      EndIf
+                     
+                     ;                      If *rows( )\columnindex = 0
+                     ;                         If *this\columns( )\width
+                     ;                            *rows( )\width = *this\columns( )\width + (*this\imgsize+*this\row\sublevelpos+*this\MarginLine( )\width)
+                     ;                         Else
+                     ;                            If *this\scroll_width( ) > *this\inner_width( )
+                     ;                               *rows( )\width = *this\inner_width( )
+                     ;                            Else
+                     ;                               *rows( )\width = *this\scroll_width( )
+                     ;                            EndIf
+                     ;                         EndIf
+                     ;                      Else
+                     ;                         *rows( )\width = *this\columns( )\width
+                     ;                      EndIf
                   Next
                   PopListPosition( *rows( ))
                   
@@ -22734,7 +22775,6 @@ chr$ = ","
             EndIf
          EndIf
          
-         
          ForEach *rows( )
             *rows( )\visible = Bool( Not *rows( )\hide And
                                      (( *rows( )\y - scroll_y ) < visible_y + visible_height ) And
@@ -22760,7 +22800,7 @@ chr$ = ","
                      *this\columns( )\width = *this\inner_width( ) - *this\columns( )\x
                      *rows( )\width  = *this\columns( )\width
                   Else
-                     *rows( )\width = *this\columns( )\width + *this\row\sublevelpos + *this\MarginLine( )\width
+                     *rows( )\width = *this\columns( )\width + (*this\imgsize+*this\row\sublevelpos+*this\MarginLine( )\width)
                   EndIf
                Else
                   ;\\
@@ -22768,6 +22808,28 @@ chr$ = ","
                      *rows( )\width = *this\columns( )\width
                   EndIf
                EndIf
+               
+               ;                If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
+               ;                   If *this\scroll_width( ) > *this\inner_width( )
+               ;                      *rows( )\width = *this\inner_width( )
+               ;                   Else
+               ;                      *rows( )\width = *this\scroll_width( )
+               ;                   EndIf
+               ;                Else
+               ;                   If *rows( )\columnindex = 0
+               ;                      If *this\columns( )\width
+               ;                         *rows( )\width = *this\columns( )\width + (*this\imgsize+*this\row\sublevelpos+*this\MarginLine( )\width)
+               ;                      Else
+               ;                         If *this\scroll_width( ) > *this\inner_width( )
+               ;                            *rows( )\width = *this\inner_width( )
+               ;                         Else
+               ;                            *rows( )\width = *this\scroll_width( )
+               ;                         EndIf
+               ;                      EndIf
+               ;                   Else
+               ;                      *rows( )\width = *this\columns( )\width
+               ;                   EndIf
+               ;                EndIf
                
                ;\\
                If Not *this\RowFirstVisible( )
@@ -22956,18 +23018,19 @@ chr$ = ","
             
             ;\\ Draw selector back
             If *rows( )\color\back[state] <> - 1
-               If ListSize( *this\columns( )) = 1
-                  draw_mode_alpha_( #PB_2DDrawing_Default )
-                  If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
-                     draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
-                  Else
-                     draw_roundbox_( xs, ys, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
-                  EndIf
-               Else
-                  If *rows( ) = *this\RowEntered( )
-                     draw_roundbox_( xs, ys, *this\scroll_width( ), *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
-                  EndIf
-               EndIf
+               ;                If ListSize( *this\columns( )) = 1
+               draw_mode_alpha_( #PB_2DDrawing_Default )
+               ; ;                   If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
+               ; ;                      draw_roundbox_( *this\inner_x( ), ys, *this\inner_width( ), *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
+               ; ;                   Else
+               draw_roundbox_( xs, ys, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
+               ; ;                   EndIf
+               ;                Else
+               ;                   If *rows( ) = *this\RowEntered( )
+               ;                      draw_roundbox_( xs, ys, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
+               ;                   ;   draw_roundbox_( X, Y, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
+               ;                   EndIf
+               ;                EndIf
             EndIf
             
             ;\\ Draw items image
@@ -22989,11 +23052,11 @@ chr$ = ","
             ;\\ Draw selector frame
             If *rows( )\color\frame[state]
                draw_mode_( #PB_2DDrawing_Outlined )
-               If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
-                  draw_roundbox_( *this\inner_x( ), ys, *this\scroll_width( ), *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
-               Else
-                  draw_roundbox_( xs, ys, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
-               EndIf
+               ;                If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
+               ;                   draw_roundbox_( *this\inner_x( ), ys, *this\inner_width( ), *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
+               ;                Else
+               draw_roundbox_( xs, ys, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
+               ;                EndIf
             EndIf
             
             ;\\ Horizontal line
@@ -23709,9 +23772,10 @@ chr$ = ","
                ; Draw image
                If *this\img\imageID
                   draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawAlphaImage( *this\img\imageID,
-                                  *this\frame_x( ) + *this\bs + *this\scroll_x( ) + *this\img\x,
-                                  *this\frame_y( ) + *this\bs + *this\scroll_y( ) + *this\img\y - 2, *this\color\ialpha )
+                  ;                   DrawAlphaImage( *this\img\imageID,
+                  ;                                   *this\frame_x( ) + *this\bs + *this\scroll_x( ) + *this\img\x,
+                  ;                                   *this\frame_y( ) + *this\bs + *this\scroll_y( ) + *this\img\y - 2, *this\color\ialpha )
+                  draw_image_( *this, *this\inner_x( ), *this\inner_y( ) - (*this\img\height+*this\fs[2])/2 )
                EndIf
                
                If *this\TitleText( )\string
@@ -23741,7 +23805,7 @@ chr$ = ","
             
             ; background image draw
             If *this\img[#__image_background]\imageID
-               draw_background_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
+               draw_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
             EndIf
             
             clip_output_( *this, [#__c_draw] )
@@ -23790,14 +23854,16 @@ chr$ = ","
                DrawAlphaImage( *this\img\imageID, *this\img\x, *this\img\y, *this\color\ialpha )
             EndIf
             
+            Protected sublevelwidth = (*this\imgsize+*this\row\sublevelpos+*this\MarginLine( )\width)
             ;\\
             ForEach *this\columns( )
-               X                            = *this\frame_x( ) + *this\fs + *this\columns( )\x + *this\scroll_x( ) + *this\row\sublevelpos + *this\MarginLine( )\width
-               Y                            = *this\frame_y( ) + *this\fs + *this\columns( )\y
+               Y                           = *this\frame_y( ) + *this\fs + *this\columns( )\y
+               X                           = *this\frame_x( ) + *this\fs + *this\columns( )\x + *this\scroll_x( ) 
+               X                           + sublevelwidth
+               ;
                *this\columns( )\txt\height = *this\txt\height
-               *this\columns( )\txt\y      = ( *this\columns( )\height - *this\columns( )\txt\height ) / 2
+               *this\columns( )\txt\y      = (*this\columns( )\height - *this\columns( )\txt\height) / 2
                *this\columns( )\txt\x      = *this\padding\x
-               
                
                ;\\
                Draw_TreeRows( *this, *this\RowVisibleList( ) )
@@ -23806,7 +23872,7 @@ chr$ = ","
                If *this\color\back
                   draw_mode_alpha_( #PB_2DDrawing_Default )
                   If ListIndex( *this\columns( ) ) = 0
-                     draw_roundbox_( *this\frame_x( ) + *this\fs + *this\columns( )\x + *this\scroll_x( ), Y, *this\columns( )\width + *this\row\sublevelpos + *this\MarginLine( )\width, *this\columns( )\height, *this\round, *this\round, *this\color\frame )
+                     draw_roundbox_( X - sublevelwidth, Y, *this\columns( )\width + sublevelwidth, *this\columns( )\height, *this\round, *this\round, *this\color\frame )
                   Else
                      draw_roundbox_( X, Y, *this\columns( )\width, *this\columns( )\height, *this\round, *this\round, *this\color\frame )
                   EndIf
@@ -23824,18 +23890,25 @@ chr$ = ","
                   DrawRotatedText( X + *this\columns( )\txt\x, Y + *this\columns( )\txt\y, *this\columns( )\txt\string.s, *this\txt\rotate, *this\color\front )
                EndIf
                
+               If *this\mode\GridLines
+                  If ListIndex( *this\columns( ) ) = 0
+                     draw_box_( X, *this\inner_y( ), *this\mode\GridLines, *this\scroll_height( ), *this\LIneColor )
+                  EndIf
+                  draw_box_( X + *this\columns( )\width - 1, *this\inner_y( ), *this\mode\GridLines, *this\scroll_height( ), *this\LIneColor )
+               EndIf
             Next
             
-            ;\\ horizontal lines
-            draw_mode_alpha_( #PB_2DDrawing_Default )
-            X = *this\frame_x( ) + *this\fs + *this\scroll_x( ) + *this\row\sublevelpos + *this\MarginLine( )\width
-            ForEach *this\columns( )
-               If ListIndex( *this\columns( )) = 0
-                  ; draw_box_( x + *this\columns( )\x, *this\frame_y( ), *this\mode\GridLines, *this\columns( )\height + *this\fs, *this\LIneColor )
-                  draw_box_( X + *this\columns( )\x, *this\frame_y( ), *this\mode\GridLines, *this\frame_height( ), *this\LIneColor )
-               EndIf
-               draw_box_( X + *this\columns( )\x + *this\columns( )\width - 1, *this\frame_y( ), *this\mode\GridLines, *this\frame_height( ), *this\LIneColor )
-            Next
+            ;             ;\\ horizontal lines
+            ;             draw_mode_alpha_( #PB_2DDrawing_Default )
+            ;             X = *this\frame_x( ) + *this\fs + *this\scroll_x( ) ;+ *this\row\sublevelpos + *this\MarginLine( )\width
+            ;             ForEach *this\columns( )
+            ;                If ListIndex( *this\columns( )) = 0
+            ;                   ;; draw_box_( x + *this\columns( )\x, *this\frame_y( ), *this\mode\GridLines, *this\columns( )\height + *this\fs, *this\LIneColor )
+            ;                  ; draw_box_( X + *this\columns( )\x, *this\frame_y( ), *this\mode\GridLines, *this\frame_height( ), *this\LIneColor )
+            ;                EndIf
+            ;                ;draw_box_( X + *this\columns( )\x + *this\columns( )\width - 1, *this\frame_y( ), *this\mode\GridLines, *this\frame_height( ), *this\LIneColor )
+            ;                draw_box_( X + *this\columns( )\x + *this\columns( )\width - 1, *this\frame_y( ), *this\mode\GridLines, *this\frame_height( ), *this\LIneColor )
+            ;             Next
          EndIf
          
       EndProcedure
@@ -23968,7 +24041,7 @@ chr$ = ","
             
             ;\\ background image draw
             If *this\img[#__image_background]\imageID
-               draw_background_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
+               draw_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
             EndIf
             
             ;\\ scroll image draw
@@ -24099,7 +24172,7 @@ chr$ = ","
             
             ;\\ draw background
             If *this\img[#__image_background]\imageID
-               draw_background_image_( *this, X, Y, [#__image_background] )
+               draw_image_( *this, X, Y, [#__image_background] )
             Else
                If *this\color\back <> - 1
                   If *this\color\fore <> - 1
@@ -24518,40 +24591,40 @@ chr$ = ","
          ;          ClearDebugOutput( )
          ;          ;\\
          If *root
-; ;             Define pb_color.l = GetWindowColor( *root\canvas\window ) 
-; ;             If Not pb_color = - 1 
-; ;                If *root\color\back <> pb_color
-; ;                   *root\color\back = pb_color
-; ;                EndIf
-; ;             EndIf
+            ; ;             Define pb_color.l = GetWindowColor( *root\canvas\window ) 
+            ; ;             If Not pb_color = - 1 
+            ; ;                If *root\color\back <> pb_color
+            ; ;                   *root\color\back = pb_color
+            ; ;                EndIf
+            ; ;             EndIf
             ;
             ; Debug *root\color\back&$ffffff
             ;If *root\color\back & $ffffff = - 1 ; test example anchor(b5)
-               If *root\drawmode & 1<<1 And Not *root\drawmode & 1<<2
-                  VectorSourceColor($FFF0F0F0)
-                  FillVectorOutput( )
-               EndIf
-               ;\\
-               If *root\drawmode & 1<<2
-                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                     ; good transparent canvas
-                     FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
-                  CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-                     If GetWindowColor( *root\canvas\window ) = - 1
-                        FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetSysColor_(#COLOR_BTNFACE) )
-                     Else
-                        ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor( *root\canvas\window ) )
-                        Box( 0,0, OutputWidth( ), OutputHeight( ), GetWindowColor( *root\canvas\window ))
-                     EndIf
-                  CompilerElse
-                     ;               Protected *style.GtkStyle, *color.GdkColor
-                     ;               *style = gtk_widget_get_style_(WindowID(*root\canvas\window))
-                     ;               *color = *style\bg[0]                       ; 0=#GtkStateNormal
-                     ;               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), RGB(*color\red >> 8, *color\green >> 8, *color\blue >> 8) )
-                     FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
-                  CompilerEndIf
-                  ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor(*root\canvas\window))
-               EndIf
+            If *root\drawmode & 1<<1 And Not *root\drawmode & 1<<2
+               VectorSourceColor($FFF0F0F0)
+               FillVectorOutput( )
+            EndIf
+            ;\\
+            If *root\drawmode & 1<<2
+               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  ; good transparent canvas
+                  FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
+               CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+                  If GetWindowColor( *root\canvas\window ) = - 1
+                     FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetSysColor_(#COLOR_BTNFACE) )
+                  Else
+                     ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor( *root\canvas\window ) )
+                     Box( 0,0, OutputWidth( ), OutputHeight( ), GetWindowColor( *root\canvas\window ))
+                  EndIf
+               CompilerElse
+                  ;               Protected *style.GtkStyle, *color.GdkColor
+                  ;               *style = gtk_widget_get_style_(WindowID(*root\canvas\window))
+                  ;               *color = *style\bg[0]                       ; 0=#GtkStateNormal
+                  ;               FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), RGB(*color\red >> 8, *color\green >> 8, *color\blue >> 8) )
+                  FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
+               CompilerEndIf
+               ; FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor(*root\canvas\window))
+            EndIf
             ;EndIf
             
             ;\\
@@ -24813,8 +24886,11 @@ chr$ = ","
       EndProcedure
       
       Procedure   ReDraw( *this._s_ROOT )
-         Reset( *this )
-                 
+         __gui\event\queuesmask = 1
+         
+         ;\\ reset events
+         ResetEvents( *this )
+         
          ;\\
          If widget::__gui\DrawingRoot
             ; Debug " ----REDRAW---- "
@@ -24832,7 +24908,7 @@ chr$ = ","
             Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
          EndIf
       EndProcedure
-     
+      
       ;-
       ;- DIALOGs
       ;-
@@ -25085,19 +25161,19 @@ chr$ = ","
          WaitQuit( *message ) : result = GetData( *message )
          Unbind( *message, @MessageEvents( ), #__event_LeftClick )
          
-;          ;\\
-;          If *root
-;             ChangeCurrentCanvas( *root\canvas\gadgetID )
-;             DisableWindow( *root\canvas\window, #False )
-;             SetActive( *root )
-;          EndIf
-      
+         ;          ;\\
+         ;          If *root
+         ;             ChangeCurrentCanvas( *root\canvas\gadgetID )
+         ;             DisableWindow( *root\canvas\window, #False )
+         ;             SetActive( *root )
+         ;          EndIf
+         Free( @*message )
+         
          
          ;\\ close
          If IsImage(img)
             FreeImage( img )
          EndIf
-         Free( *message )
          
          ;\\
          EventWidget( ) = *widget
@@ -25759,9 +25835,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure enter_leave_containers_events( )
       Protected.b repaint
       Protected.l colorback = colors::*this\blue\fore,
-                colorframe = colors::*this\blue\frame,
-                colorback1 = $ff00ff00,
-                colorframe1 = $ff0000ff
+               colorframe = colors::*this\blue\frame,
+               colorback1 = $ff00ff00,
+               colorframe1 = $ff0000ff
       
       Select WidgetEvent( )
          Case #__event_MouseEnter,
@@ -25979,9 +26055,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 17081
-; FirstLine = 16346
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-------+-------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-W----------
+; CursorPosition = 21770
+; FirstLine = 21561
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f0-0-v---------------0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------t+---------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

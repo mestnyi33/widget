@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure ShowMessage(  )
       Debug "open - Title"
-      Define Result = Message( "Title", "Please make your input:", #__message_YesNoCancel|#__message_Info ) 
+      Define Result = Message( "Title", "Please make your input:", #__message_YesNoCancel ) 
       Debug " close - Title " + Result
       
       Define flag, a$ = "Result of the previously requester was: "
@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Result = Message("Information", a$, flag)
       Debug "close - Information "+Result
       
-      Result = Message("Title", "text without image")
+     ; Result = Message("Title", "text without image")
    EndProcedure
    
    Procedure ButtonEvents( )
@@ -104,7 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 33
-; FirstLine = 12
+; FirstLine = 4
 ; Folding = -+-
 ; EnableXP
 ; DPIAware

@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
       ProcedureReturn Message(title, Text, flags, parentID )
-      ; ProcedureReturn MessageRequester(title, Text, flags, parentID );
+     ;  ProcedureReturn MessageRequester(title, Text, flags, parentID );
    EndProcedure
    
    Procedure CallBack( )
@@ -21,9 +21,11 @@ CompilerIf #PB_Compiler_IsMainFile
                   ; Post( GetWindow( EventWidget( ) ), #__event_Close )
                   
                   If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetTitle( EventWidget( )\window )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-                     
-                     Free( GetWindow( EventWidget( ) ) ) 
-                     
+                     Define window = GetWindow( EventWidget( ) ) 
+                     ;Free( @window) 
+                     Debug 4444
+                     ;Free( GetWindow( EventWidget( ) ) ) 
+                    ; ReDraw(GetWindow( EventWidget( ) ))
                   EndIf
                   
                Case "window_1_close"
@@ -70,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
       EndSelect
       
-      ProcedureReturn #PB_Ignore
+      ProcedureReturn #True
    EndProcedure
    
    If Open(0, 0, 0, 800, 600, "window", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
@@ -102,8 +104,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 42
+; CursorPosition = 26
+; FirstLine = 12
 ; Folding = ---
 ; EnableXP
 ; DPIAware

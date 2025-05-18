@@ -13,9 +13,13 @@ Class
 SetClass
 GetClass
 
+IsCanvas
+OpenCanvas
+CloseCanvas
 CanvasMouseX
 CanvasMouseY
 CanvasMouseButton
+ChangeCurrentCanvas
 
 PressedButton
 EnteredButton
@@ -78,8 +82,7 @@ OpenList
 CloseList
 
 Free
-Destroy
-Delete
+ClearWidgets
 
 Post
 Send

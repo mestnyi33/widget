@@ -109,6 +109,7 @@ EndMacro
 Macro SplitterGadget(_gadget_, X,Y,Width,Height, gadget1, gadget2, Flags=0)
   widget::Gadget(#PB_GadgetType_Splitter, _gadget_, X,Y,Width,Height, "", gadget1,gadget2,0, Flags)
 EndMacro
+  UseWidgets( )
 
 
 
@@ -141,12 +142,15 @@ EndMacro
 ; CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile 
-  UseWidgets( )
+
   EnableExplicit
   #__flag_text_Border = #PB_Text_Border
   
   Macro GetIndex( this )
     MacroExpandedCount
+  EndMacro
+  Macro GetParent( this )
+    MacroExpandedCount*2
   EndMacro
   
   ; Procedure.l GetIndex( *this._S_widget )
@@ -180,21 +184,21 @@ CompilerIf #PB_Compiler_IsMainFile
   Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
   
   ;Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-  Splitter_0 = SplitterGadget(-1, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-  Splitter_1 = SplitterGadget(-1, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+  Splitter_0 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+  Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
   SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
   SetGadgetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-  Splitter_2 = SplitterGadget(-1, 0, 0, 0, 0, Splitter_1, Button_5)
-  Splitter_3 = SplitterGadget(-1, 0, 0, 0, 0, Button_2, Splitter_2)
-  Splitter_4 = SplitterGadget(-1, 0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
-  Splitter_5 = SplitterGadget(-1, 0, 0, 0, 0, s_desi, Splitter_4, #PB_Splitter_Vertical)
+  Splitter_2 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Splitter_1, Button_5)
+  Splitter_3 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2)
+  Splitter_4 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
+  Splitter_5 = SplitterGadget(#PB_Any, 0, 0, 0, 0, s_desi, Splitter_4, #PB_Splitter_Vertical)
   
-  Splitter_design = SplitterGadget(-1, 0,0,0,0, s_tbar,Splitter_5, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
+  Splitter_design = SplitterGadget(#PB_Any, 0,0,0,0, s_tbar,Splitter_5, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
   ;Splitter_inspector = widget::Splitter(0,0,0,0, s_list,s_insp, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
-  Splitter_inspector = SplitterGadget(-1, 0,0,0,0, s_list,s_insp, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
-  splitter_debug = SplitterGadget(-1, 0,0,0,0, Splitter_design,s_view, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
-  splitter_help = SplitterGadget(-1, 0,0,0,0, Splitter_inspector,s_help, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
-  Splitter_ide = SplitterGadget(-1, 0,0,800,600, splitter_debug,splitter_help, #PB_Splitter_Separator|#PB_Splitter_Vertical|(Bool(fixed)*#PB_Splitter_SecondFixed))
+  Splitter_inspector = SplitterGadget(#PB_Any, 0,0,0,0, s_list,s_insp, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
+  splitter_debug = SplitterGadget(#PB_Any, 0,0,0,0, Splitter_design,s_view, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
+  splitter_help = SplitterGadget(#PB_Any, 0,0,0,0, Splitter_inspector,s_help, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
+  Splitter_ide = SplitterGadget(#PB_Any, 0,0,800,600, splitter_debug,splitter_help, #PB_Splitter_Separator|#PB_Splitter_Vertical|(Bool(fixed)*#PB_Splitter_SecondFixed))
   
   If minsize
     ;         ; set splitter default minimum size
@@ -236,16 +240,18 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;widget::Resize(Splitter_ide, 0,0,820,620)
   
-  SetGadgetText(s_tbar, "size: ("+Str(GadgetWidth(s_tbar))+"x"+Str(GadgetHeight(s_tbar))+") - " + Str(GetIndex( widget::GetParent( s_tbar ))) )
-  SetGadgetText(s_desi, "size: ("+Str(GadgetWidth(s_desi))+"x"+Str(GadgetHeight(s_desi))+") - " + Str(GetIndex( widget::GetParent( s_desi ))))
-  SetGadgetText(s_view, "size: ("+Str(GadgetWidth(s_view))+"x"+Str(GadgetHeight(s_view))+") - " + Str(GetIndex( widget::GetParent( s_view ))))
-  SetGadgetText(s_list, "size: ("+Str(GadgetWidth(s_list))+"x"+Str(GadgetHeight(s_list))+") - " + Str(GetIndex( widget::GetParent( s_list ))))
-  SetGadgetText(s_insp, "size: ("+Str(GadgetWidth(s_insp))+"x"+Str(GadgetHeight(s_insp))+") - " + Str(GetIndex( widget::GetParent( s_insp ))))
-  SetGadgetText(s_help, "size: ("+Str(GadgetWidth(s_help))+"x"+Str(GadgetHeight(s_help))+") - " + Str(GetIndex( widget::GetParent( s_help ))))
+  SetGadgetText(s_tbar, "size: ("+Str(GadgetWidth(s_tbar))+"x"+Str(GadgetHeight(s_tbar))+") - " + Str(GetIndex( GetParent( s_tbar ))) )
+  SetGadgetText(s_desi, "size: ("+Str(GadgetWidth(s_desi))+"x"+Str(GadgetHeight(s_desi))+") - " + Str(GetIndex( GetParent( s_desi ))))
+  SetGadgetText(s_view, "size: ("+Str(GadgetWidth(s_view))+"x"+Str(GadgetHeight(s_view))+") - " + Str(GetIndex( GetParent( s_view ))))
+  SetGadgetText(s_list, "size: ("+Str(GadgetWidth(s_list))+"x"+Str(GadgetHeight(s_list))+") - " + Str(GetIndex( GetParent( s_list ))))
+  SetGadgetText(s_insp, "size: ("+Str(GadgetWidth(s_insp))+"x"+Str(GadgetHeight(s_insp))+") - " + Str(GetIndex( GetParent( s_insp ))))
+  SetGadgetText(s_help, "size: ("+Str(GadgetWidth(s_help))+"x"+Str(GadgetHeight(s_help))+") - " + Str(GetIndex( getparent( s_help ))))
   
   Repeat 
     Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 112
+; FirstLine = 72
 ; Folding = ----
 ; EnableXP

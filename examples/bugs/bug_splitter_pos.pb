@@ -20,18 +20,27 @@ CompilerIf #PB_Compiler_IsMainFile
             "Otherwise it will not work."
    
    
-  Procedure ResizeCallBack()
-      Debug "Resize window"
-       Resize(widget(), #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate), WindowHeight(EventWindow(), #PB_Window_InnerCoordinate))
-;       ; PostReDraw( root())
-  
-     SetState(widget(), 100 )
-     
-;      Debug ""+widget()\bar\page\pos  +" = "+ widget()\bar\thumb\pos
-;       Debug ""+widget()\bar\page\end  +" = "+ widget()\bar\area\end
-     
-     ;       Debug ""+widget()\bar\thumb\end +" = "+ widget()\bar\area\len
-
+   Procedure ResizeCallBack()
+      Static w1
+      Protected w2 = WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)
+      
+      If w1<>w2
+         w1=w2
+         Debug "Resize window"
+         
+         Resize(widget(), #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate), WindowHeight(EventWindow(), #PB_Window_InnerCoordinate))
+         ;       ; PostReDraw( root())
+         
+         SetState(widget(), 100 )
+         
+         ;      Debug ""+widget()\bar\page\pos  +" = "+ widget()\bar\thumb\pos
+         ;       Debug ""+widget()\bar\page\end  +" = "+ widget()\bar\area\end
+         
+         ;       Debug ""+widget()\bar\thumb\end +" = "+ widget()\bar\area\len
+      Else
+         Debug 333
+      EndIf
+      
    EndProcedure
    
    LoadFont(1, "Courier", 14)
@@ -60,31 +69,31 @@ CompilerIf #PB_Compiler_IsMainFile
       BindEvent(#PB_Event_SizeWindow, @ResizeCallBack(), 0)
       
       
-;        Debug widget()\bar\min
-;       Debug widget()\bar\max
-;       Debug ""
-;       Debug widget()\bar\page\len
-;       Debug widget()\bar\area\pos
-;       Debug ""+widget()\bar\page\pos  +" = "+ widget()\bar\thumb\pos
-;       Debug ""+widget()\bar\page\end  +" = "+ widget()\bar\area\end
-;       Debug ""+widget()\bar\thumb\end +" = "+ widget()\bar\area\len
-;       
-;       bar_is_first_gadget_ 2033700337952
-;       0
-;       0
-;       240
-;       0
-;       481
-;       240
-;       9
-;       490
-;       0
-;       490
-;       481
-;       Resize window
-;       REPAINT root
-
-
+      ;        Debug widget()\bar\min
+      ;       Debug widget()\bar\max
+      ;       Debug ""
+      ;       Debug widget()\bar\page\len
+      ;       Debug widget()\bar\area\pos
+      ;       Debug ""+widget()\bar\page\pos  +" = "+ widget()\bar\thumb\pos
+      ;       Debug ""+widget()\bar\page\end  +" = "+ widget()\bar\area\end
+      ;       Debug ""+widget()\bar\thumb\end +" = "+ widget()\bar\area\len
+      ;       
+      ;       bar_is_first_gadget_ 2033700337952
+      ;       0
+      ;       0
+      ;       240
+      ;       0
+      ;       481
+      ;       240
+      ;       9
+      ;       490
+      ;       0
+      ;       490
+      ;       481
+      ;       Resize window
+      ;       REPAINT root
+      
+      
       Repeat
          Define Event = WaitWindowEvent()
          
@@ -98,7 +107,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 46
+; CursorPosition = 24
+; FirstLine = 13
 ; Folding = -
 ; EnableXP

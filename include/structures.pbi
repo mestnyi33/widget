@@ -43,8 +43,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     RESIZEINFO
       Structure _s_RESIZEINFO Extends _s_COORDINATE
-         flag.c
-         ; clip.b
+         flag.u
          change.b
       EndStructure
       ;--     MODE
@@ -361,7 +360,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Drawing.b
          
          ;*columnaddress
-         columnindex.c
+         columnindex.u
          
          txt._s_text
          img._s_IMAGE
@@ -441,7 +440,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     TAB
       Structure _s_TAB
          state.i;c
-         Index.c
+         Index.u
          
          ; tab
          *entered._s_ITEMS
@@ -574,41 +573,44 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET Extends _s_STATE
-         ; ide
+         StructureUnion
+            change.b
+            textchange.b
+         EndStructureUnion
+         
+         ; transporent.b
+         ; dragged.b              ;
+         ;
+         *errors
+         notify.l                   ; оповестить об изменении
+         
+         state.l
+         Create.b
+         
+         lineColor.l
          ChangeColor.b
          
-         ;
-         lineColor.i
          padding._s_point
-         
-         ;CountType.l
-         ;indent.a
-         
-         ;;; Map *linelevel._s_COORDINATE( )
          
          deffocus.b ; button default focus
          
+         List *columns._s_column( )
          List __lines._s_rows( )
+         ;
+         Resize._s_RESIZEINFO                 
          
-         ; eventdisable.b
-         ; eventbind.b
          bindresize.b
          binddraw.b ; 
          bindcursor.b ; 
          bindclose.b
          
-         ;
-         Resize._s_RESIZEINFO                 
-         ;          size.SIZEINFO                 
-         ;          move.MOVEINFO                 
-         
-         
-         Index.i         ; index widget
-         layer.i
-         
          ; placing layout
-         ;place\index
-         ;placingindex.i  ; z-oreder position
+         StructureUnion
+            Index.i
+            createindex.i         ; index widget
+         EndStructureUnion
+         layer.i               ; z-oreder position
+         
          *afterroot._s_ROOT
          *beforeroot._s_ROOT
          *lastroot._s_ROOT
@@ -627,34 +629,26 @@ CompilerIf Not Defined(Structures, #PB_Module)
                ; type[0] = createtype
                ; type[1] = grouptype
                ;
-         Level.c
+         Level.u
          Class.s
-         ;
-         Create.b
          
-         StructureUnion
-            change.b
-            textchange.b
-         EndStructureUnion
-         
-         ; transporent.b
-         ; dragged.b              ;
          autosize.b
          Container.b              ; is container
                                   ; container > 0          ; if the has children ( Root( 1 ); Window( 2 ); MDI( 3 ); Panel( 3 ); Container( 3 ); ScrollArea( 3 ) )
                                   ; container =- 1         ; if the not has children ( Splitter( ); Frame( ))
-                                  ;
-                                  ; *integralParent._s_WIDGET
-                                  ; integral.b
+         
+         ;
          child.b                  ; is the widget composite?
          haschildren.l            ; if the has children
          CountItems.l             ; count items
-                                  ;                        ;*Draw.DrawFunc          ; Function to Draw
+         
+         ;                        ;*Draw.DrawFunc          ; Function to Draw
          caption._s_caption
          ;
          bs.a                     ; border size
          fs.a[5]                  ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
-                                  ;                        ;
+         
+         ;                        ;
          tt._s_tt                 ; notification = уведомление
          *drop._s_DROP
          *align._s_ALIGN
@@ -664,19 +658,22 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *bar._s_BAR
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
          Tab._s_TAB               ; 
-                                  ;
+         
+         ;
          *tabbar._s_WIDGET
          *menubar._s_WIDGET
+         
+         displaypopup.b
          *popupbar._s_WIDGET
+         
          *groupbar._s_WIDGET      ; = Option( ) group widget
          *stringbar._s_WIDGET     ; = SpinBar( ) string box widget
          
-         ; StructureUnion
-         *togglebox._s_BOX     ; checkbox; optionbox, ToggleButton
-         *combobutton._s_BUTTONS    ; combobox button
-                                    ; EndStructureUnion
+         ;  
+         *togglebox._s_BOX        ; checkbox; optionbox, ToggleButton
+         *combobutton._s_BUTTONS  ; combobox button
          
-         displaypopup.b
+         
          ;                           
          TitleBarHeight.w
          MenuBarHeight.w
@@ -684,15 +681,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          StatusBarHeight.w
          ;
          
-         *errors
-         notify.l                   ; оповестить об изменении
-         
          mode._s_mode               ; drawing mode
          bounds._s_BOUNDS
-         List *columns._s_column( )
          
          ;
-         state.l
          flag.q
          *root._s_ROOT
          *window._s_WIDGET
@@ -796,8 +788,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 785
-; FirstLine = 758
+; CursorPosition = 608
+; FirstLine = 591
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

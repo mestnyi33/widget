@@ -73,7 +73,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     ; 1_example
     AddGadgetItem(g, -1, Chr(10)+"ListIcon_"+Str(i)) 
-    For i=1 To 15
+    For i=1 To 5
       AddGadgetItem(g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", ImageID(0))                                           
     Next
     ;HideListIcon(g,0)
@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 12
-    *g = ListIcon(180, 230, 165, 210, "Column_1",90, #__flag_RowFullSelect) ;: *g = GetGadgetData(g)                                          
+    *g = ListIcon(180, 230, 165, 210, "Column_1",90);, #__flag_RowFullSelect) ;: *g = GetGadgetData(g)                                          
     For i=1 To 2 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To Count
@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 13
-    *g = ListIcon(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes) ;#__flag_RowFullSelect|: *g = GetGadgetData(g)                                          
+    *g = ListIcon(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect);|: *g = GetGadgetData(g)                                          
     
     ;HideListIcon(g,1)
     For i=1 To 2
@@ -109,7 +109,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     ; 1_example
     AddItem(*g, -1, Chr(10)+"ListIcon_"+Str(i)) 
-    For i=1 To 15
+    For i=1 To 5
       AddItem(*g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", 0)                                         
     Next
     ;HideListIcon(g,0)
@@ -161,9 +161,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 103
-; FirstLine = 64
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 75
+; FirstLine = 54
 ; Folding = --
 ; EnableXP
 ; DPIAware

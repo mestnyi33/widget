@@ -23,17 +23,25 @@ CompilerIf #PB_Compiler_IsMainFile
                      Button(10, 10, 90,30,"button")
                      Button(10, 50, 90,30,"button")
                      ;*window = Button(Random(100,10), 10, 90,30,"button")
-                     ;Bind( *window, @events_() )
+                     Bind( *window, @events_gadgets() )
+                     
+                     HideGadget( *buttonTest, 0 )
+                     HideGadget( *buttonClose, 0 )
                   EndIf
                   
                Case *buttonClose
+                  HideGadget( *buttonTest, 1 )
+                  HideGadget( *buttonClose, 1 )
+                  
                   ;If *window
-                     Free( *window )
-                     ReDraw( root())
-                     ;Debug *window
-                     *window = 0
+                  Free( @*window )
+                  
+                  ;ReDraw( root())
+                  ;Debug *window
+                  *window = 0
+                  
                   ;EndIf
-               
+                  
                Case *buttonTest
                   ForEach widgets( )
                      Debug widgets( )\class
@@ -53,6 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
    *buttonTest = ButtonGadget(#PB_Any, 500-100, 400-120, 90,30,"test")
    *buttonClose = ButtonGadget(#PB_Any, 500-100, 400-80, 90,30,"close")
    *buttonOpen = ButtonGadget(#PB_Any, 500-100, 400-40, 90,30,"open")
+   
    BindGadgetEvent( *buttonTest, @events_gadgets() )
    BindGadgetEvent( *buttonOpen, @events_gadgets() )
    BindGadgetEvent( *buttonClose, @events_gadgets() )
@@ -62,21 +71,23 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure events_buttons()
       Select WidgetEvent( ) 
          Case #__event_Free
-            ProcedureReturn 1
+            Debug "FREE " + EventWidget( )\class
             
          Case #__event_Maximize
-            Debug "disable maximize"
-            ProcedureReturn #PB_Ignore
+            Debug "disable maximize button state"
+            ProcedureReturn #False
             
          Case #__event_Minimize
-            Debug "disable minimize"
-            ProcedureReturn #PB_Ignore
+            Debug "disable minimize button state"
+            ProcedureReturn #False
             
          Case #__event_Close
-            Debug "disable close"
-            ProcedureReturn 0
+            Debug "disable close button state"
+            ProcedureReturn #False
             
       EndSelect
+      
+      ProcedureReturn #True
    EndProcedure
    Bind( *window, @events_buttons( ) )
    
@@ -84,8 +95,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 31
-; FirstLine = 18
+; CursorPosition = 95
+; FirstLine = 54
 ; Folding = --
 ; EnableXP
 ; DPIAware

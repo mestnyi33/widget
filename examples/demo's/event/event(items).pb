@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(w_flag, CountItems(w_flag) - 1)
   EndProcedure
   
-  If Open(OpenWindow(#PB_Any, 0, 0, 200, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered))
+  If Open(0, 0, 0, 200, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     w_flag = widget::Tree( 10, 10, 180, 200, #__tree_nobuttons | #__tree_nolines ) 
     w_this = widget::Tree( 10, 220, 180, 70, #__tree_nobuttons | #__tree_nolines )
@@ -85,8 +85,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 70
-; FirstLine = 45
+; CursorPosition = 53
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -37,8 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      Debug "change " + class$
                      ParentID = GetParent(*CHILD)
                      ;*CHILD = #PB_All
-                     Delete( @*CHILD )
-                     ; Free( *CHILD )
+                     Free( @*CHILD )
                      ;                      If Free( *CHILD )
                      ;                         Debug "free " + class$ 
                      ;                      EndIf
@@ -91,8 +90,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 41
-; FirstLine = 35
+; CursorPosition = 38
+; FirstLine = 26
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -20,8 +20,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;\\
   ; object = Window(100, 100, 250, 250, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
-  ; object = Window(5, 5, 250, 250, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
-   object = Container(100, 100, 250, 250) : CloseList()
+   object = Window(100, 100, 250, 250, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
+  ; object = Container(100, 100, 250, 250) : CloseList()
   ; object = ScrollArea(100, 100, 250, 250, 350,350, 1) : CloseList()
   ; object = ScrollArea(100, 100, 250, 250, 150,150, 1) : CloseList()
   
@@ -77,9 +77,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 24
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 22
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
 ; DPIAware
