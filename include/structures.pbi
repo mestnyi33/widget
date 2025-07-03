@@ -286,6 +286,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     ANCHORS
       Structure _s_ANCHORS
+         show.b
          state.b
          pos.b
          size.a
@@ -788,8 +789,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 608
-; FirstLine = 591
+; CursorPosition = 288
+; FirstLine = 271
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

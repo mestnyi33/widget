@@ -330,11 +330,11 @@
       #__type_TabBar        = - 7
       #__type_StatusBar     = - 8
       #__type_Properties    = - 9
-      ;     #__type_toggled
-      ;     
-      ;     #__type_ImageButton
-      ;     #__type_StringButton
-      ;     #__type_Hiasm
+      ;
+      ; #__type_Toggled       = - 10
+      ; #__type_ImageButton   = - 11
+      ; #__type_StringButton  = - 12
+      ; #__type_Hiasm         = - 13
       
       Enumeration 
          #__type_Unknown       = #PB_GadgetType_Unknown       ; 0
@@ -778,8 +778,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 332
-; FirstLine = 322
+; CursorPosition = 336
+; FirstLine = 313
 ; Folding = ----
 ; Optimizer
 ; EnableXP

@@ -55,9 +55,9 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
   
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; IDE Options = PureBasic 6.20 (Windows - x64)
 ; CursorPosition = 40
-; FirstLine = 34
+; FirstLine = 17
 ; Folding = -
 ; Optimizer
 ; EnableXP

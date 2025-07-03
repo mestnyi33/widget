@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define t=ElapsedMilliseconds()
     Define g = 1
     ListIconGadget(g, 10, 10, 165, 210,"Column_1",90)                                         
-    For i=1 To 2 : AddGadgetColumn(g, i,"Column_"+Str(i+1),90) : Next
+    For i=1 To 1 : AddGadgetColumn(g, i,"Column_"+Str(i+1),90) : Next
     For i=0 To 7
       AddGadgetItem(g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", ImageID(0))                                           
     Next
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ListIconGadget(g, 350, 10, 430, 210,"Column_1",90, #PB_ListIcon_FullRowSelect|#PB_ListIcon_GridLines|#PB_ListIcon_CheckBoxes)                                         
     
     ;HideListIcon(g,1)
-    For i=1 To 2
+    For i=1 To 3
       AddGadgetColumn(g, i,"Column_"+Str(i+1),90)
     Next
     ; 1_example
@@ -86,14 +86,14 @@ CompilerIf #PB_Compiler_IsMainFile
     t=ElapsedMilliseconds()
     g = 11
     *g = ListIcon(10, 230, 165, 210, "Column_1",90) ;: *g = GetGadgetData(g)                                        
-    For i=1 To 2 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
+    For i=1 To 1 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To 7
       AddItem(*g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", 0)                                          
     Next
     
     g = 12
-    *g = ListIcon(180, 230, 165, 210, "Column_1",90);, #__flag_RowFullSelect) ;: *g = GetGadgetData(g)                                          
+    *g = ListIcon(180, 230, 165, 210, "Column_1",90, #__flag_RowFullSelect) ;: *g = GetGadgetData(g)                                          
     For i=1 To 2 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To Count
@@ -104,7 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *g = ListIcon(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect);|: *g = GetGadgetData(g)                                          
     
     ;HideListIcon(g,1)
-    For i=1 To 2
+    For i=1 To 3
       AddColumn(*g, i,"Column_"+Str(i+1),90)
     Next
     ; 1_example
@@ -162,8 +162,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 54
+; CursorPosition = 95
+; FirstLine = 84
 ; Folding = --
 ; EnableXP
 ; DPIAware

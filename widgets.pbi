@@ -958,6 +958,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       ;-
+      Declare  a_show( *this )
       Macro a_anchors( )
          widget::mouse( )\anchors
       EndMacro
@@ -983,6 +984,265 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro a_getpos( _this_ )
          DPIUnScaled(_this_\anchors\pos)
       EndMacro
+      Macro a_size( _address_, _size_, _mode_=0 )
+         If _address_[#__a_left] ; left
+            _address_[#__a_left]\width  = _size_
+            _address_[#__a_left]\height = _size_
+         EndIf
+         If _address_[#__a_top] ; top
+            _address_[#__a_top]\width  = _size_
+            _address_[#__a_top]\height = _size_
+         EndIf
+         If _address_[#__a_right] ; right
+            _address_[#__a_right]\width  = _size_
+            _address_[#__a_right]\height = _size_
+         EndIf
+         If _address_[#__a_bottom] ; bottom
+            _address_[#__a_bottom]\width  = _size_
+            _address_[#__a_bottom]\height = _size_
+         EndIf
+         
+         If _address_ <> mouse( )\selector
+            If _mode_ & #__a_zoom = #__a_zoom
+               If _address_[#__a_left_top] ; left&top
+                  _address_[#__a_left_top]\width  = _size_ * 2
+                  _address_[#__a_left_top]\height = _size_ * 2
+               EndIf
+               If _address_[#__a_right_top] ; right&top
+                  _address_[#__a_right_top]\width  = _size_ * 2
+                  _address_[#__a_right_top]\height = _size_ * 2
+               EndIf
+               If _address_[#__a_right_bottom] ; right&bottom
+                  _address_[#__a_right_bottom]\width  = _size_ * 2
+                  _address_[#__a_right_bottom]\height = _size_ * 2
+               EndIf
+               If _address_[#__a_left_bottom] ; left&bottom
+                  _address_[#__a_left_bottom]\width  = _size_ * 2
+                  _address_[#__a_left_bottom]\height = _size_ * 2
+               EndIf
+            Else
+               If _address_[#__a_left_top] ; left&top
+                  _address_[#__a_left_top]\width  = _size_
+                  _address_[#__a_left_top]\height = _size_
+               EndIf
+               If _address_[#__a_right_top] ; right&top
+                  _address_[#__a_right_top]\width  = _size_
+                  _address_[#__a_right_top]\height = _size_
+               EndIf
+               If _address_[#__a_right_bottom] ; right&bottom
+                  _address_[#__a_right_bottom]\width  = _size_
+                  _address_[#__a_right_bottom]\height = _size_
+               EndIf
+               If _address_[#__a_left_bottom] ; left&bottom
+                  _address_[#__a_left_bottom]\width  = _size_
+                  _address_[#__a_left_bottom]\height = _size_
+               EndIf
+            EndIf
+         EndIf
+      EndMacro
+      
+      Macro a_move( _this_, _address_, _x_, _y_, _width_, _height_ )
+         If _address_ And _this_ ; frame
+            _address_\x      = _x_ + _this_\anchors\pos
+            _address_\y      = _y_ + _this_\anchors\pos
+            _address_\width  = _width_ - _this_\anchors\pos * 2
+            _address_\height = _height_ - _this_\anchors\pos * 2
+         EndIf
+         
+         If _address_ <> mouse( )\selector
+            If _this_
+               If _address_[#__a_moved]         ; moved
+                                                ;                   If _this_\anchors\mode & #__a_zoom ; _this_\type = #__type_window
+                                                ;                      _address_[#__a_moved]\x      = _x_ + _address_[#__a_left]\width
+                                                ;                      _address_[#__a_moved]\y      = _y_ + _address_[#__a_top]\height
+                                                ;                      _address_[#__a_moved]\width  = _width_ - ( _address_[#__a_left]\width + _address_[#__a_right]\width )
+                                                ;                      _address_[#__a_moved]\height = ( _this_\fs + _this_\fs[2] + _this_\fs[4] ) - _address_[#__a_top]\height / 2
+                                                ;                   Else
+                  If _this_\container
+                     _address_[#__a_moved]\x      = _x_
+                     _address_[#__a_moved]\y      = _y_
+                     _address_[#__a_moved]\width  = _this_\anchors\size * 2
+                     _address_[#__a_moved]\height = _this_\anchors\size * 2
+                  EndIf
+                  ;                   EndIf
+               EndIf
+            EndIf
+            
+            If _this_ And _this_\anchors\mode & #__a_zoom = #__a_zoom
+               If _address_[#__a_left] ; left
+                  _address_[#__a_left]\x      = _x_
+                  _address_[#__a_left]\y      = _y_ + _address_[#__a_left_top]\height
+                  _address_[#__a_left]\height = _this_\height - ( _address_[#__a_left_top]\height + _address_[#__a_left_bottom]\height )
+               EndIf
+               If _address_[#__a_top] ; top
+                  _address_[#__a_top]\x     = _x_ + _address_[#__a_left_top]\width
+                  _address_[#__a_top]\y     = _y_
+                  _address_[#__a_top]\width = _this_\width - ( _address_[#__a_left_top]\width + _address_[#__a_right_top]\width )
+               EndIf
+               If _address_[#__a_right] ; right
+                  _address_[#__a_right]\x      = _x_ + _width_ - _address_[#__a_right]\width
+                  _address_[#__a_right]\y      = _y_ + _address_[#__a_right_top]\height
+                  _address_[#__a_right]\height = _this_\height - ( _address_[#__a_right_top]\height + _address_[#__a_right_bottom]\height )
+               EndIf
+               If _address_[#__a_bottom] ; bottom
+                  _address_[#__a_bottom]\x     = _x_ + _address_[#__a_left_bottom]\width
+                  _address_[#__a_bottom]\y     = _y_ + _height_ - _address_[#__a_bottom]\height
+                  _address_[#__a_bottom]\width = _this_\width - ( _address_[#__a_left_bottom]\width + _address_[#__a_right_bottom]\width )
+               EndIf
+            Else
+               If _address_[#__a_left] ; left
+                  _address_[#__a_left]\x = _x_
+                  _address_[#__a_left]\y = _y_ + ( _height_ - _address_[#__a_left]\height ) / 2
+               EndIf
+               If _address_[#__a_top] ; top
+                  _address_[#__a_top]\x = _x_ + ( _width_ - _address_[#__a_top]\width ) / 2
+                  _address_[#__a_top]\y = _y_
+               EndIf
+               If _address_[#__a_right] ; right
+                  _address_[#__a_right]\x = _x_ + _width_ - _address_[#__a_right]\width
+                  _address_[#__a_right]\y = _y_ + ( _height_ - _address_[#__a_right]\height ) / 2
+               EndIf
+               If _address_[#__a_bottom] ; bottom
+                  _address_[#__a_bottom]\x = _x_ + ( _width_ - _address_[#__a_bottom]\width ) / 2
+                  _address_[#__a_bottom]\y = _y_ + _height_ - _address_[#__a_bottom]\height
+               EndIf
+            EndIf
+            
+            If _address_[#__a_left_top] ; left&top
+               _address_[#__a_left_top]\x = _x_
+               _address_[#__a_left_top]\y = _y_
+            EndIf
+            If _address_[#__a_right_top] ; right&top
+               _address_[#__a_right_top]\x = _x_ + _width_ - _address_[#__a_right_top]\width
+               _address_[#__a_right_top]\y = _y_
+            EndIf
+            If _address_[#__a_left_bottom] ; left&bottom
+               _address_[#__a_left_bottom]\x = _x_
+               _address_[#__a_left_bottom]\y = _y_ + _height_ - _address_[#__a_left_bottom]\height
+            EndIf
+            If _address_[#__a_right_bottom] ; right&bottom
+               _address_[#__a_right_bottom]\x = _x_ + _width_ - _address_[#__a_right_bottom]\width
+               _address_[#__a_right_bottom]\y = _y_ + _height_ - _address_[#__a_right_bottom]\height
+            EndIf
+         EndIf
+      EndMacro
+      
+      Macro a_line( _this_ )
+         If a_anchors( ) And _this_\parent And 
+            a_anchors( )\line[#__a_line_left] And
+            a_anchors( )\line[#__a_line_right] And
+            a_anchors( )\line[#__a_line_top] And
+            a_anchors( )\line[#__a_line_bottom]
+            
+            ;\\ line default size&pos
+            a_anchors( )\line[#__a_line_left]\width  = DPIScaled(1)
+            a_anchors( )\line[#__a_line_left]\height = 0 ; _this_\frame_height( )
+            a_anchors( )\line[#__a_line_left]\x      = _this_\frame_x( )
+            a_anchors( )\line[#__a_line_left]\y      = _this_\frame_y( )
+            
+            a_anchors( )\line[#__a_line_top]\height = DPIScaled(1)
+            a_anchors( )\line[#__a_line_top]\width  = 0 ; _this_\frame_width( )
+            a_anchors( )\line[#__a_line_top]\x      = _this_\frame_x( )
+            a_anchors( )\line[#__a_line_top]\y      = _this_\frame_y( )
+            
+            a_anchors( )\line[#__a_line_right]\width  = DPIScaled(1)
+            a_anchors( )\line[#__a_line_right]\height = 0 ; _this_\frame_height( )
+            a_anchors( )\line[#__a_line_right]\x      = ( _this_\frame_x( ) + _this_\frame_width( ) ) - a_anchors( )\line[#__a_line_right]\width
+            a_anchors( )\line[#__a_line_right]\y      = _this_\frame_y( )
+            
+            a_anchors( )\line[#__a_line_bottom]\height = DPIScaled(1)
+            a_anchors( )\line[#__a_line_bottom]\width  = 0 ; _this_\frame_width( )
+            a_anchors( )\line[#__a_line_bottom]\x      = _this_\frame_x( )
+            a_anchors( )\line[#__a_line_bottom]\y      = ( _this_\frame_y( ) + _this_\frame_height( ) ) - a_anchors( )\line[#__a_line_bottom]\height
+            
+            ;\\
+            If StartEnum( _this_\parent )
+               ;
+               If widgets( )\anchors And Not widgets( )\hide And widgets( ) <> _this_ And widgets( )\level = _this_\level
+                  ;\\ left-line
+                  If _this_\frame_x( ) = widgets( )\frame_x( )
+                     If a_anchors( )\line[#__a_line_left]\y > widgets( )\frame_y( )
+                        a_anchors( )\line[#__a_line_left]\y = widgets( )\frame_y( )
+                     EndIf
+                     If _this_\frame_y( ) + _this_\frame_height( ) < widgets( )\frame_y( ) + widgets( )\frame_height( )
+                        If a_anchors( )\line[#__a_line_left]\height < widgets( )\frame_y( ) + widgets( )\frame_height( ) 
+                           a_anchors( )\line[#__a_line_left]\height = widgets( )\frame_y( ) + widgets( )\frame_height( )
+                        EndIf
+                     Else
+                        If a_anchors( )\line[#__a_line_left]\height < _this_\frame_y( ) + _this_\frame_height( ) 
+                           a_anchors( )\line[#__a_line_left]\height = _this_\frame_y( ) + _this_\frame_height( )
+                        EndIf
+                     EndIf
+                  EndIf
+                  ;
+                  ;\\ top-line
+                  If _this_\frame_y( ) = widgets( )\frame_y( )
+                     If a_anchors( )\line[#__a_line_top]\x > widgets( )\frame_x( )
+                        a_anchors( )\line[#__a_line_top]\x = widgets( )\frame_x( )
+                     EndIf
+                     If _this_\frame_x( ) + _this_\frame_width( ) <= widgets( )\frame_x( ) + widgets( )\frame_width( ) 
+                        If a_anchors( )\line[#__a_line_top]\width < widgets( )\frame_x( ) + widgets( )\frame_width( ) 
+                           a_anchors( )\line[#__a_line_top]\width = widgets( )\frame_x( ) + widgets( )\frame_width( )
+                        EndIf
+                     Else
+                        If a_anchors( )\line[#__a_line_top]\width < _this_\frame_x( ) + _this_\frame_width( ) 
+                           a_anchors( )\line[#__a_line_top]\width = _this_\frame_x( ) + _this_\frame_width( )
+                        EndIf
+                     EndIf
+                  EndIf
+                  ;
+                  ;\\ right-line
+                  If _this_\frame_x( ) + _this_\frame_width( ) = widgets( )\frame_x( ) + widgets( )\frame_width( )
+                     If a_anchors( )\line[#__a_line_right]\y > widgets( )\frame_y( )
+                        a_anchors( )\line[#__a_line_right]\y = widgets( )\frame_y( )
+                     EndIf
+                     If _this_\frame_y( ) + _this_\frame_height( ) < widgets( )\frame_y( ) + widgets( )\frame_height( )
+                        If a_anchors( )\line[#__a_line_right]\height < widgets( )\frame_y( ) + widgets( )\frame_height( ) 
+                           a_anchors( )\line[#__a_line_right]\height = widgets( )\frame_y( ) + widgets( )\frame_height( )
+                        EndIf
+                     Else
+                        If a_anchors( )\line[#__a_line_right]\height < _this_\frame_y( ) + _this_\frame_height( ) 
+                           a_anchors( )\line[#__a_line_right]\height = _this_\frame_y( ) + _this_\frame_height( )
+                        EndIf
+                     EndIf
+                  EndIf
+                  ;
+                  ;\\ bottom-line
+                  If _this_\frame_y( ) + _this_\frame_height( ) = widgets( )\frame_y( ) + widgets( )\frame_height( )
+                     If a_anchors( )\line[#__a_line_bottom]\x > widgets( )\frame_x( )
+                        a_anchors( )\line[#__a_line_bottom]\x = widgets( )\frame_x( )
+                     EndIf
+                     If _this_\frame_x( ) + _this_\frame_width( ) < widgets( )\frame_x( ) + widgets( )\frame_width( )
+                        If a_anchors( )\line[#__a_line_bottom]\width < widgets( )\frame_x( ) + widgets( )\frame_width( ) 
+                           a_anchors( )\line[#__a_line_bottom]\width = widgets( )\frame_x( ) + widgets( )\frame_width( )
+                        EndIf
+                     Else
+                        If a_anchors( )\line[#__a_line_bottom]\width < _this_\frame_x( ) + _this_\frame_width( ) 
+                           a_anchors( )\line[#__a_line_bottom]\width = _this_\frame_x( ) + _this_\frame_width( )
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+               ;
+               StopEnum( )
+               ;
+               If a_anchors( )\line[#__a_line_left]\height > a_anchors( )\line[#__a_line_left]\y
+                  a_anchors( )\line[#__a_line_left]\height - a_anchors( )\line[#__a_line_left]\y
+               EndIf
+               If a_anchors( )\line[#__a_line_top]\width > a_anchors( )\line[#__a_line_top]\x
+                  a_anchors( )\line[#__a_line_top]\width - a_anchors( )\line[#__a_line_top]\x
+               EndIf
+               If a_anchors( )\line[#__a_line_right]\height > a_anchors( )\line[#__a_line_right]\y
+                  a_anchors( )\line[#__a_line_right]\height - a_anchors( )\line[#__a_line_right]\y
+               EndIf
+               If a_anchors( )\line[#__a_line_bottom]\width > a_anchors( )\line[#__a_line_bottom]\x
+                  a_anchors( )\line[#__a_line_bottom]\width - a_anchors( )\line[#__a_line_bottom]\x
+               EndIf
+            EndIf
+         EndIf
+         
+      EndMacro
+      
       
       ;-
       Macro GetFontID( _address_ )
@@ -2501,271 +2761,14 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndMacro
       
-      Macro a_size( _address_, _size_, _mode_=0 )
-         If _address_[#__a_left] ; left
-            _address_[#__a_left]\width  = _size_
-            _address_[#__a_left]\height = _size_
-         EndIf
-         If _address_[#__a_top] ; top
-            _address_[#__a_top]\width  = _size_
-            _address_[#__a_top]\height = _size_
-         EndIf
-         If _address_[#__a_right] ; right
-            _address_[#__a_right]\width  = _size_
-            _address_[#__a_right]\height = _size_
-         EndIf
-         If _address_[#__a_bottom] ; bottom
-            _address_[#__a_bottom]\width  = _size_
-            _address_[#__a_bottom]\height = _size_
-         EndIf
-         
-         If _address_ <> mouse( )\selector
-            If _mode_ & #__a_zoom = #__a_zoom
-               If _address_[#__a_left_top] ; left&top
-                  _address_[#__a_left_top]\width  = _size_ * 2
-                  _address_[#__a_left_top]\height = _size_ * 2
-               EndIf
-               If _address_[#__a_right_top] ; right&top
-                  _address_[#__a_right_top]\width  = _size_ * 2
-                  _address_[#__a_right_top]\height = _size_ * 2
-               EndIf
-               If _address_[#__a_right_bottom] ; right&bottom
-                  _address_[#__a_right_bottom]\width  = _size_ * 2
-                  _address_[#__a_right_bottom]\height = _size_ * 2
-               EndIf
-               If _address_[#__a_left_bottom] ; left&bottom
-                  _address_[#__a_left_bottom]\width  = _size_ * 2
-                  _address_[#__a_left_bottom]\height = _size_ * 2
-               EndIf
-            Else
-               If _address_[#__a_left_top] ; left&top
-                  _address_[#__a_left_top]\width  = _size_
-                  _address_[#__a_left_top]\height = _size_
-               EndIf
-               If _address_[#__a_right_top] ; right&top
-                  _address_[#__a_right_top]\width  = _size_
-                  _address_[#__a_right_top]\height = _size_
-               EndIf
-               If _address_[#__a_right_bottom] ; right&bottom
-                  _address_[#__a_right_bottom]\width  = _size_
-                  _address_[#__a_right_bottom]\height = _size_
-               EndIf
-               If _address_[#__a_left_bottom] ; left&bottom
-                  _address_[#__a_left_bottom]\width  = _size_
-                  _address_[#__a_left_bottom]\height = _size_
-               EndIf
-            EndIf
-         EndIf
-      EndMacro
-      
-      Macro a_move( _this_, _address_, _x_, _y_, _width_, _height_ )
-         If _address_ And _this_ ; frame
-            _address_\x      = _x_ + _this_\anchors\pos
-            _address_\y      = _y_ + _this_\anchors\pos
-            _address_\width  = _width_ - _this_\anchors\pos * 2
-            _address_\height = _height_ - _this_\anchors\pos * 2
-         EndIf
-         
-         If _address_ <> mouse( )\selector
-            If _this_
-               If _address_[#__a_moved]         ; moved
-                                                ;                   If _this_\anchors\mode & #__a_zoom ; _this_\type = #__type_window
-                                                ;                      _address_[#__a_moved]\x      = _x_ + _address_[#__a_left]\width
-                                                ;                      _address_[#__a_moved]\y      = _y_ + _address_[#__a_top]\height
-                                                ;                      _address_[#__a_moved]\width  = _width_ - ( _address_[#__a_left]\width + _address_[#__a_right]\width )
-                                                ;                      _address_[#__a_moved]\height = ( _this_\fs + _this_\fs[2] + _this_\fs[4] ) - _address_[#__a_top]\height / 2
-                                                ;                   Else
-                  If _this_\container
-                     _address_[#__a_moved]\x      = _x_
-                     _address_[#__a_moved]\y      = _y_
-                     _address_[#__a_moved]\width  = _this_\anchors\size * 2
-                     _address_[#__a_moved]\height = _this_\anchors\size * 2
-                  EndIf
-                  ;                   EndIf
-               EndIf
-            EndIf
-            
-            If _this_ And _this_\anchors\mode & #__a_zoom = #__a_zoom
-               If _address_[#__a_left] ; left
-                  _address_[#__a_left]\x      = _x_
-                  _address_[#__a_left]\y      = _y_ + _address_[#__a_left_top]\height
-                  _address_[#__a_left]\height = _this_\height - ( _address_[#__a_left_top]\height + _address_[#__a_left_bottom]\height )
-               EndIf
-               If _address_[#__a_top] ; top
-                  _address_[#__a_top]\x     = _x_ + _address_[#__a_left_top]\width
-                  _address_[#__a_top]\y     = _y_
-                  _address_[#__a_top]\width = _this_\width - ( _address_[#__a_left_top]\width + _address_[#__a_right_top]\width )
-               EndIf
-               If _address_[#__a_right] ; right
-                  _address_[#__a_right]\x      = _x_ + _width_ - _address_[#__a_right]\width
-                  _address_[#__a_right]\y      = _y_ + _address_[#__a_right_top]\height
-                  _address_[#__a_right]\height = _this_\height - ( _address_[#__a_right_top]\height + _address_[#__a_right_bottom]\height )
-               EndIf
-               If _address_[#__a_bottom] ; bottom
-                  _address_[#__a_bottom]\x     = _x_ + _address_[#__a_left_bottom]\width
-                  _address_[#__a_bottom]\y     = _y_ + _height_ - _address_[#__a_bottom]\height
-                  _address_[#__a_bottom]\width = _this_\width - ( _address_[#__a_left_bottom]\width + _address_[#__a_right_bottom]\width )
-               EndIf
-            Else
-               If _address_[#__a_left] ; left
-                  _address_[#__a_left]\x = _x_
-                  _address_[#__a_left]\y = _y_ + ( _height_ - _address_[#__a_left]\height ) / 2
-               EndIf
-               If _address_[#__a_top] ; top
-                  _address_[#__a_top]\x = _x_ + ( _width_ - _address_[#__a_top]\width ) / 2
-                  _address_[#__a_top]\y = _y_
-               EndIf
-               If _address_[#__a_right] ; right
-                  _address_[#__a_right]\x = _x_ + _width_ - _address_[#__a_right]\width
-                  _address_[#__a_right]\y = _y_ + ( _height_ - _address_[#__a_right]\height ) / 2
-               EndIf
-               If _address_[#__a_bottom] ; bottom
-                  _address_[#__a_bottom]\x = _x_ + ( _width_ - _address_[#__a_bottom]\width ) / 2
-                  _address_[#__a_bottom]\y = _y_ + _height_ - _address_[#__a_bottom]\height
-               EndIf
-            EndIf
-            
-            If _address_[#__a_left_top] ; left&top
-               _address_[#__a_left_top]\x = _x_
-               _address_[#__a_left_top]\y = _y_
-            EndIf
-            If _address_[#__a_right_top] ; right&top
-               _address_[#__a_right_top]\x = _x_ + _width_ - _address_[#__a_right_top]\width
-               _address_[#__a_right_top]\y = _y_
-            EndIf
-            If _address_[#__a_left_bottom] ; left&bottom
-               _address_[#__a_left_bottom]\x = _x_
-               _address_[#__a_left_bottom]\y = _y_ + _height_ - _address_[#__a_left_bottom]\height
-            EndIf
-            If _address_[#__a_right_bottom] ; right&bottom
-               _address_[#__a_right_bottom]\x = _x_ + _width_ - _address_[#__a_right_bottom]\width
-               _address_[#__a_right_bottom]\y = _y_ + _height_ - _address_[#__a_right_bottom]\height
-            EndIf
-         EndIf
-      EndMacro
-      
-      Macro a_line( _this_ )
-         If a_anchors( ) And _this_\parent And 
-            a_anchors( )\line[#__a_line_left] And
-            a_anchors( )\line[#__a_line_right] And
-            a_anchors( )\line[#__a_line_top] And
-            a_anchors( )\line[#__a_line_bottom]
-            
-            ;\\ line default size&pos
-            a_anchors( )\line[#__a_line_left]\width  = DPIScaled(1)
-            a_anchors( )\line[#__a_line_left]\height = 0 ; _this_\frame_height( )
-            a_anchors( )\line[#__a_line_left]\x      = _this_\frame_x( )
-            a_anchors( )\line[#__a_line_left]\y      = _this_\frame_y( )
-            
-            a_anchors( )\line[#__a_line_top]\height = DPIScaled(1)
-            a_anchors( )\line[#__a_line_top]\width  = 0 ; _this_\frame_width( )
-            a_anchors( )\line[#__a_line_top]\x      = _this_\frame_x( )
-            a_anchors( )\line[#__a_line_top]\y      = _this_\frame_y( )
-            
-            a_anchors( )\line[#__a_line_right]\width  = DPIScaled(1)
-            a_anchors( )\line[#__a_line_right]\height = 0 ; _this_\frame_height( )
-            a_anchors( )\line[#__a_line_right]\x      = ( _this_\frame_x( ) + _this_\frame_width( ) ) - a_anchors( )\line[#__a_line_right]\width
-            a_anchors( )\line[#__a_line_right]\y      = _this_\frame_y( )
-            
-            a_anchors( )\line[#__a_line_bottom]\height = DPIScaled(1)
-            a_anchors( )\line[#__a_line_bottom]\width  = 0 ; _this_\frame_width( )
-            a_anchors( )\line[#__a_line_bottom]\x      = _this_\frame_x( )
-            a_anchors( )\line[#__a_line_bottom]\y      = ( _this_\frame_y( ) + _this_\frame_height( ) ) - a_anchors( )\line[#__a_line_bottom]\height
-            
-            ;\\
-            If StartEnum( _this_\parent )
-               ;
-               If widgets( )\anchors And Not widgets( )\hide And widgets( ) <> _this_ And widgets( )\level = _this_\level
-                  ;\\ left-line
-                  If _this_\frame_x( ) = widgets( )\frame_x( )
-                     If a_anchors( )\line[#__a_line_left]\y > widgets( )\frame_y( )
-                        a_anchors( )\line[#__a_line_left]\y = widgets( )\frame_y( )
-                     EndIf
-                     If _this_\frame_y( ) + _this_\frame_height( ) < widgets( )\frame_y( ) + widgets( )\frame_height( )
-                        If a_anchors( )\line[#__a_line_left]\height < widgets( )\frame_y( ) + widgets( )\frame_height( ) 
-                           a_anchors( )\line[#__a_line_left]\height = widgets( )\frame_y( ) + widgets( )\frame_height( )
-                        EndIf
-                     Else
-                        If a_anchors( )\line[#__a_line_left]\height < _this_\frame_y( ) + _this_\frame_height( ) 
-                           a_anchors( )\line[#__a_line_left]\height = _this_\frame_y( ) + _this_\frame_height( )
-                        EndIf
-                     EndIf
-                  EndIf
-                  ;
-                  ;\\ top-line
-                  If _this_\frame_y( ) = widgets( )\frame_y( )
-                     If a_anchors( )\line[#__a_line_top]\x > widgets( )\frame_x( )
-                        a_anchors( )\line[#__a_line_top]\x = widgets( )\frame_x( )
-                     EndIf
-                     If _this_\frame_x( ) + _this_\frame_width( ) <= widgets( )\frame_x( ) + widgets( )\frame_width( ) 
-                        If a_anchors( )\line[#__a_line_top]\width < widgets( )\frame_x( ) + widgets( )\frame_width( ) 
-                           a_anchors( )\line[#__a_line_top]\width = widgets( )\frame_x( ) + widgets( )\frame_width( )
-                        EndIf
-                     Else
-                        If a_anchors( )\line[#__a_line_top]\width < _this_\frame_x( ) + _this_\frame_width( ) 
-                           a_anchors( )\line[#__a_line_top]\width = _this_\frame_x( ) + _this_\frame_width( )
-                        EndIf
-                     EndIf
-                  EndIf
-                  ;
-                  ;\\ right-line
-                  If _this_\frame_x( ) + _this_\frame_width( ) = widgets( )\frame_x( ) + widgets( )\frame_width( )
-                     If a_anchors( )\line[#__a_line_right]\y > widgets( )\frame_y( )
-                        a_anchors( )\line[#__a_line_right]\y = widgets( )\frame_y( )
-                     EndIf
-                     If _this_\frame_y( ) + _this_\frame_height( ) < widgets( )\frame_y( ) + widgets( )\frame_height( )
-                        If a_anchors( )\line[#__a_line_right]\height < widgets( )\frame_y( ) + widgets( )\frame_height( ) 
-                           a_anchors( )\line[#__a_line_right]\height = widgets( )\frame_y( ) + widgets( )\frame_height( )
-                        EndIf
-                     Else
-                        If a_anchors( )\line[#__a_line_right]\height < _this_\frame_y( ) + _this_\frame_height( ) 
-                           a_anchors( )\line[#__a_line_right]\height = _this_\frame_y( ) + _this_\frame_height( )
-                        EndIf
-                     EndIf
-                  EndIf
-                  ;
-                  ;\\ bottom-line
-                  If _this_\frame_y( ) + _this_\frame_height( ) = widgets( )\frame_y( ) + widgets( )\frame_height( )
-                     If a_anchors( )\line[#__a_line_bottom]\x > widgets( )\frame_x( )
-                        a_anchors( )\line[#__a_line_bottom]\x = widgets( )\frame_x( )
-                     EndIf
-                     If _this_\frame_x( ) + _this_\frame_width( ) < widgets( )\frame_x( ) + widgets( )\frame_width( )
-                        If a_anchors( )\line[#__a_line_bottom]\width < widgets( )\frame_x( ) + widgets( )\frame_width( ) 
-                           a_anchors( )\line[#__a_line_bottom]\width = widgets( )\frame_x( ) + widgets( )\frame_width( )
-                        EndIf
-                     Else
-                        If a_anchors( )\line[#__a_line_bottom]\width < _this_\frame_x( ) + _this_\frame_width( ) 
-                           a_anchors( )\line[#__a_line_bottom]\width = _this_\frame_x( ) + _this_\frame_width( )
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               ;
-               StopEnum( )
-               ;
-               If a_anchors( )\line[#__a_line_left]\height > a_anchors( )\line[#__a_line_left]\y
-                  a_anchors( )\line[#__a_line_left]\height - a_anchors( )\line[#__a_line_left]\y
-               EndIf
-               If a_anchors( )\line[#__a_line_top]\width > a_anchors( )\line[#__a_line_top]\x
-                  a_anchors( )\line[#__a_line_top]\width - a_anchors( )\line[#__a_line_top]\x
-               EndIf
-               If a_anchors( )\line[#__a_line_right]\height > a_anchors( )\line[#__a_line_right]\y
-                  a_anchors( )\line[#__a_line_right]\height - a_anchors( )\line[#__a_line_right]\y
-               EndIf
-               If a_anchors( )\line[#__a_line_bottom]\width > a_anchors( )\line[#__a_line_bottom]\x
-                  a_anchors( )\line[#__a_line_bottom]\width - a_anchors( )\line[#__a_line_bottom]\x
-               EndIf
-            EndIf
-         EndIf
-         
-      EndMacro
-      
       Procedure a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
          If mouse()\steps < 2
             ProcedureReturn 0
          EndIf
          
          ;\\
+         Steps - 1
+         
          ;Steps = DPIScaled(Steps)
          Protected hDC, X, Y
          ExamineDesktops( )
@@ -2819,9 +2822,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          If IsImage( a_anchors( )\grid_image )
             FreeImage( a_anchors( )\grid_image )
          EndIf
+         If mouse( )\steps
+            a_anchors( )\grid_image = a_grid_image( mouse( )\steps, a_anchors( )\grid_type, $FF000000 )
+         EndIf
          ;
-         a_anchors( )\grid_image = a_grid_image( mouse( )\steps - 1, a_anchors( )\grid_type, $FF000000, 0,0);*this\fs, *this\fs )
-                                                                                                            ;
          a_anchors( )\framecolor[#__s_0] = $ff000000
          a_anchors( )\framecolor[#__s_1] = $ffFF0000
          a_anchors( )\framecolor[#__s_2] = $ff0000FF
@@ -7008,7 +7012,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\
             If *this\type = #__type_Splitter
-               Select Attribute
+                  Debug Attribute
+                     Select Attribute
                   Case #PB_Splitter_FirstMinimumSize
                      *bar\min[1] = DPIScaled(*value)
                      result = Bool( *bar\max )
@@ -7018,12 +7023,32 @@ CompilerIf Not Defined( widget, #PB_Module )
                      result = Bool( *bar\max )
                      
                   Case #PB_Splitter_FirstGadget
-                     *this\split_1( )    = *value
-                     result              = - 1
+                     result                   = - 1
+                     *this\split_1( )         = *value
+                     *this\bar\button[1]\hide = Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
+               
+                     If IsGadget( *this\split_1( ) )
+                        Debug "bar_is_first_gadget_ " + IsGadget( *this\split_1( ) )
+                        parent::set( *this\split_1( ), *this\root\canvas\GadgetID )
+                     ElseIf *this\split_1( ) > 65535
+                        SetParent( *this\split_1( ), *this )
+                     Else
+                        *this\split_1( ) = 0
+                     EndIf
                      
                   Case #PB_Splitter_SecondGadget
-                     *this\split_2( )    = *value
-                     result              = - 1
+                     result                   = - 1
+                     *this\split_2( )         = *value
+                     *this\bar\button[2]\hide = Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
+                     
+                     If IsGadget( *this\split_2( ) )
+                        Debug "bar_is_second_gadget_ " + IsGadget( *this\split_2( ) )
+                        parent::set( *this\split_2( ), *this\root\canvas\GadgetID )
+                     ElseIf *this\split_2( ) > 65535
+                        SetParent( *this\split_2( ), *this )
+                     Else
+                        *this\split_2( ) = 0
+                     EndIf
                      
                EndSelect
             EndIf
@@ -12606,32 +12631,22 @@ CompilerIf Not Defined( widget, #PB_Module )
             ProcedureReturn *window
          EndIf
          
-         If *this\type = #__type_ListIcon
-            Protected String.s, count
-            count = CountString(Text, #LF$)
-            ForEach *This\Columns( )
-               String = StringField( Text, ListIndex( *this\columns( )) + 1, #LF$)
-               If String Or count = ListIndex( *this\columns( ))
-                  AddItems( *this, *this\__rows( ), Item, String, Image, flag )
-               EndIf
-            Next
-         EndIf
-         
          If *this\type = #__type_Editor
             ProcedureReturn edit_AddItem( *this, item, @text, Len(Text) )
+         EndIf
+         
+         If *this\type = #__type_ListIcon
+            Protected String.s
+            ForEach *This\Columns( )
+               String = StringField( Text, ListIndex( *this\columns( )) + 1, #LF$)
+               AddItems( *this, *this\__rows( ), Item, String, Image, flag )
+            Next
          EndIf
          
          If *this\type = #__type_Tree Or
             *this\type = #__type_ListView Or
             *this\type = #__type_Properties
-            ;             ;If *this\type = #__type_Combobox
-            ;                   If IsImage( Image )
-            ;                      ;Debug ""+ImageWidth(Image)+""+DPIResolutionX( )
-            ;                      If ImageWidth(Image) <> DPIScaledX(16) And ImageHeight(Image) <> DPIScaledY(16)
-            ;                         ResizeImage(Image, DPIScaledX(16), DPIScaledY(16), #PB_Image_Raw )
-            ;                      EndIf
-            ;                   EndIf
-            ;                ;EndIf
+            
             ProcedureReturn AddItems( *this, *this\__rows( ), Item, Text, Image, flag )
          EndIf
          
@@ -23006,7 +23021,7 @@ chr$ = ","
             draw_font( *rows( ) )
             
             If ListSize( *this\columns( )) = 1
-               Define property = *this\row\sublevelsize
+               Define property; = *this\row\sublevelsize
             EndIf
             
             ;\\
@@ -23052,11 +23067,11 @@ chr$ = ","
             ;\\ Draw selector frame
             If *rows( )\color\frame[state]
                draw_mode_( #PB_2DDrawing_Outlined )
-               ;                If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
-               ;                   draw_roundbox_( *this\inner_x( ), ys, *this\inner_width( ), *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
-               ;                Else
-               draw_roundbox_( xs, ys, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
-               ;                EndIf
+;                If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
+;                ;   draw_roundbox_( *this\inner_x( ), ys, *this\inner_width( ), *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
+;                Else
+                  draw_roundbox_( xs, ys, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
+;                EndIf
             EndIf
             
             ;\\ Horizontal line
@@ -23139,7 +23154,7 @@ chr$ = ","
                      EndIf
                   EndIf
                   
-                  ;  for the tree horizontal line
+                  ; for the tree horizontal line
                   If *this\__rows( )\visible And Not *this\__rows( )\hide And Not ( *this\__rows( )\childrens And Not *this\__rows( )\sublevel)
                      Line((xs + *this\__rows( )\buttonbox\x + *this\__rows( )\buttonbox\width / 2), (ys + *this\__rows( )\height / 2), DPIScaled(7), 1, *this\LineColor )
                   EndIf
@@ -23149,19 +23164,10 @@ chr$ = ","
                If *this\RowFirstLevelFirst( ) And *this\RowFirstLevelLast( ) And *this\RowFirstLevelFirst( )\buttonbox
                   Line((*this\inner_x( ) + *this\padding\x + *this\RowFirstLevelFirst( )\buttonbox\x + *this\RowFirstLevelFirst( )\buttonbox\width / 2) - _scroll_x_, (row_y_( *this, *this\RowFirstLevelFirst( ) ) + *this\RowFirstLevelFirst( )\height / 2) - _scroll_y_, 1, (*this\RowFirstLevelLast( )\y - *this\RowFirstLevelFirst( )\y), *this\LineColor )
                EndIf
-               
-               ;                If MapSize( *this\linelevel( ) )
-               ;                   
-               ;                   ForEach *this\linelevel( )
-               ;                      Debug *this\linelevel( )
-               ;                   Next
-               ;                   
-               ;                EndIf
             EndIf
             
             ;\\ Draw buttons
-            If *this\mode\Buttons Or (*this\mode\CheckBoxes Or *this\mode\OptionBoxes)
-               
+            If *this\mode\Buttons Or *this\mode\CheckBoxes Or *this\mode\OptionBoxes
                ;\\ Draw boxs ( check&option )
                ForEach *rows( )
                   If *rows( )\columnindex <> ListIndex( *this\columns( ))
@@ -23234,7 +23240,6 @@ chr$ = ","
          Protected state.b, X.l, Y.l, scroll_x, scroll_y
          
          If Not *this\hide
-            ;\\
             If *this\WidgetChange( ) Or *this\ResizeChange( )
                Update_DrawRows( *this, *this\__rows( ), *this\WidgetChange( ) )
                
@@ -23271,7 +23276,6 @@ chr$ = ","
                draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
                If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[*this\ColorState( )] ) : EndIf  ; Сглаживание краев ) ))
             EndIf
-            
          EndIf
          
       EndProcedure
@@ -24508,6 +24512,13 @@ chr$ = ","
                         EndIf
                      EndIf
                      
+                     
+                     If *this\anchors
+                        If *this\anchors\show
+                           a_draw( *this )
+                        EndIf
+                     EndIf  
+                        
                      ;\\
                      If *this\enter
                         ;\\ draw entered anchors
@@ -26055,9 +26066,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 21770
-; FirstLine = 21561
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f0-0-v---------------0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------t+---------
+; CursorPosition = 23073
+; FirstLine = 22236
+; Folding = --------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------8--------------------r-v--0--------------v-----------------------------------------------------------4-v----------------------------------------------------------------------fv--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-------------------------------------------+4+-------------------------------------------+fr---------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
