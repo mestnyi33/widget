@@ -177,8 +177,8 @@ Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
    IMAGE_VIEW = Image( 7, 35, 253, 162, (-1), #__image_Center|#__flag_border_Flat )
    SetBackgroundColor( IMAGE_VIEW, $54EDDE )
    SetText( IMAGE_VIEW, "Загрузите изображения" )
-   widget( )\txt\x = - 145
-   widget( )\txt\y = - 18
+   widget( )\text\x = - 145
+   widget( )\text\y = - 18
    
    TEXT_SIZE = Text( 7, 7, 253, 22, "x16" )
    Disable( TEXT_SIZE, #True )
@@ -268,9 +268,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    End
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 227
-; FirstLine = 208
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 180
+; FirstLine = 175
 ; Folding = -----
 ; EnableXP
 ; DPIAware

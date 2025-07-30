@@ -260,7 +260,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;Global NewMap *roots._s_root( )
       ;Global *event._s_EVENT( )
       Global NewMap fonts._s_FONTS( )
-      Global NewList images._s_IMAGES( )
+      Global NewList images._s_images( )
       Global NewMap gadgets.i()
       
       ;-  ----------------
@@ -476,7 +476,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Macro TabChange( ): change: EndMacro         ; tab\widget\change
-      Macro TextChange( ): txt\change: EndMacro    ; temp
+      Macro TextChange( ): Text\change: EndMacro    ; temp
       Macro AreaChange( ): area\change: EndMacro   ; temp
       Macro PageChange( ): page\change: EndMacro   ; temp
       Macro ThumbChange( ): thumb\change: EndMacro ; temp
@@ -747,7 +747,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       ;-
-      Macro TitleText( ): txt: EndMacro
+      Macro TitleText( ): Text: EndMacro
       Macro GetTitle( window ): widget::GetText( window ): EndMacro
       Macro CloseButton( ): caption\button[#__wb_close]: EndMacro
       Macro MaximizeButton( ): caption\button[#__wb_maxi]: EndMacro
@@ -943,17 +943,17 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       ;       ;-
-      ;       Macro ImageIDWidth( _image_id_ )
-      ;          func::GetImageWidth( _image_id_ )
+      ;       Macro imageiDWidth( _img_id_ )
+      ;          func::Getimagewidth( _img_id_ )
       ;       EndMacro
       ;       
-      ;       Macro ImageIDHeight( _image_id_ )
-      ;          func::GetImageHeight( _image_id_ )
+      ;       Macro imageiDHeight( _img_id_ )
+      ;          func::Getimageheight( _img_id_ )
       ;       EndMacro
       ;       
-      ;       Macro ResizeImageID( _image_id_, _width_, _height_ )
-      ;          func::SetImageWidth( _image_id_, _width_ )
-      ;          func::SetImageHeight( _image_id_, _height_ )
+      ;       Macro ResizeimageiD( _img_id_, _width_, _height_ )
+      ;          func::Setimagewidth( _img_id_, _width_ )
+      ;          func::Setimageheight( _img_id_, _height_ )
       ;       EndMacro
       
       
@@ -1273,8 +1273,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             If Not GetFontID( _address_ )
                SetFontID( _address_, _font_id_ )
                
-               _address_\txt\width = 0
-               _address_\txt\height = 0
+               _address_\text\width = 0
+               _address_\text\height = 0
             EndIf
          EndIf
          ;
@@ -1285,19 +1285,19 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             DrawingFont( CurrentFontID( ) )
             
-            _address_\txt\width = 0
-            _address_\txt\height = 0
+            _address_\text\width = 0
+            _address_\text\height = 0
          EndIf
          ;
-         If Not ( _address_\txt\width And _address_\txt\height )
-            If _address_\txt\string
-               _address_\txt\width = TextWidth( _address_\txt\string )
+         If Not ( _address_\text\width And _address_\text\height )
+            If _address_\text\string
+               _address_\text\width = TextWidth( _address_\text\string )
             EndIf
             
-            _address_\txt\height = TextHeight( "A" )
+            _address_\text\height = TextHeight( "A" )
             
             ; set rotate text value
-            _address_\txt\rotate = Bool( _address_\txt\invert ) * 180 + Bool( _address_\txt\vertical ) * 90
+            _address_\text\rotate = Bool( _address_\text\invert ) * 180 + Bool( _address_\text\vertical ) * 90
             
          EndIf
       EndMacro
@@ -1566,9 +1566,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          LineXY(( _address_\x + 6 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 0 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 3 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; правая линия
       EndMacro
       
-      Macro draw_image_( _this_, _x_, _y_, _mode_ = )
+      Macro draw_img_( _this_, _x_, _y_, _mode_ = )
          ; draw_mode_alpha_( #PB_2DDrawing_Transparent )
-         DrawAlphaImage( _this_\img#_mode_\imageID, _x_ + _this_\img#_mode_\x + _this_\scroll_x( ), _y_ + _this_\img#_mode_\y + _this_\scroll_y( ), _this_\color\ialpha )
+         DrawAlphaImage( _this_\picture#_mode_\imageID, _x_ + _this_\picture#_mode_\x + _this_\scroll_x( ), _y_ + _this_\picture#_mode_\y + _this_\scroll_y( ), _this_\color\ialpha )
       EndMacro
       
       
@@ -1585,10 +1585,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i DropType( )
       Declare.i DropAction( )
       Declare.i DropPrivate( )
-      Declare.i DropImage( Image.i = -1, Depth.i = 24 )
+      Declare.i DropImage( img.i = -1, Depth.i = 24 )
       
       Declare.i DragDropText( Text.S, Actions.b = #PB_Drag_Copy )
-      Declare.i DragDropImage( Image.i, Actions.b = #PB_Drag_Copy )
+      Declare.i DragDropImage( img.i, Actions.b = #PB_Drag_Copy )
       Declare.i DragDropPrivate( Type.i, Actions.b = #PB_Drag_Copy )
       Declare.i DragDropFiles( Files.s, Actions.b = #PB_Drag_Copy )
       Declare.i EnableDrop( *this, Format.l, Actions.b, PrivateType.i = 0 )
@@ -1667,8 +1667,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   PopItem( *this )
       Declare.i SelectItem( *this, Item.l )
       Declare   RemoveItem( *this, Item.l )
-      Declare   AddItem( *this, Item.l, Text.s, Image.i = -1, flag.q = 0 )
-      Declare   AddColumn( *this, position.l, Text.s, Width.l, Image.i = - 1 )
+      Declare   AddItem( *this, Item.l, Text.s, img.i = -1, flag.q = 0 )
+      Declare   AddColumn( *this, position.l, Text.s, Width.l, img.i = - 1 )
       
       
       Declare.i GetRoot( *this )
@@ -1754,11 +1754,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   CreateBar( Type.w, *parent, flag.q = #Null )
       Declare.i DisplayPopupBar( *this, *display, X.l = #PB_Ignore, Y.l = #PB_Ignore )
       Declare   BarPosition( *this, position.i, size.i = #PB_Default )
-      Declare   BarTitle( title.s, Image = - 1 )
-      Declare   BarItem( item, Text.s, Image = - 1 )
-      Declare   BarButton( Button.i, Image.i, mode.i = 0, Text.s = #Null$ )
+      Declare   BarTitle( title.s, img = - 1 )
+      Declare   BarItem( item, Text.s, img = - 1 )
+      Declare   BarButton( Button.i, img.i, mode.i = 0, Text.s = #Null$ )
       Declare   BarSeparator( )
-      Declare   OpenSubBar( Text.s, Image.i = - 1 )
+      Declare   OpenSubBar( Text.s, img.i = - 1 )
       Declare   CloseSubBar( )
       
       Declare.i VBar( *this )
@@ -1781,7 +1781,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i CheckBox( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0 )
       Declare.i HyperLink( X.l, Y.l, Width.l, Height.l, Text.s, Color.i, flag.q = 0 )
       Declare.i ComboBox( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
-      Declare.i ButtonImage( X.l, Y.l, Width.l, Height.l, Image.i = -1, flag.q = 0, round.l = 0 )
+      Declare.i ButtonImage( X.l, Y.l, Width.l, Height.l, img.i = -1, flag.q = 0, round.l = 0 )
       
       ; text
       Declare.i Text( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0, round.l = 0 )
@@ -1800,7 +1800,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i Container( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_border_Flat )
       Declare.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_border_Flat )
       Declare.i Frame( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = #__flag_nogadgets )
-      Declare.i Image( X.l, Y.l, Width.l, Height.l, Image.i, flag.q = 0 )
+      Declare.i Image( X.l, Y.l, Width.l, Height.l, img.i, flag.q = 0 )
       Declare.i MDI( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
       
       ;
@@ -1879,9 +1879,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global img_indent = DPIScaled(10)
       
       ;\\
-      Macro edit_caret_0( ): txt\caret\pos[0]: EndMacro
-      Macro edit_caret_1( ): txt\caret\pos[1]: EndMacro
-      Macro edit_caret_2( ): txt\caret\pos[2]: EndMacro
+      Macro edit_caret_0( ): Text\caret\pos[0]: EndMacro
+      Macro edit_caret_1( ): Text\caret\pos[1]: EndMacro
+      Macro edit_caret_2( ): Text\caret\pos[2]: EndMacro
       
       ;-
       Macro row_x_( _this_, _address_ )
@@ -2095,51 +2095,51 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Macro update_align_image( _this_ )
-         change_align_horizontal( _this_\img, _this_\inner_width( ), _this_\img\width, _this_\img\rotate, _this_\img\align, _this_\padding\x )
-         change_align_vertical( _this_\img, _this_\inner_height( ), _this_\img\height, _this_\img\rotate, _this_\img\align, _this_\padding\y )
+         change_align_horizontal( _this_\picture, _this_\inner_width( ), _this_\picture\width, _this_\picture\rotate, _this_\picture\align, _this_\padding\x )
+         change_align_vertical( _this_\picture, _this_\inner_height( ), _this_\picture\height, _this_\picture\rotate, _this_\picture\align, _this_\padding\y )
       EndMacro
       
       Macro update_align_text_x( _this_, _address_, _width_ )
-         If Not _this_\txt\vertical
-            change_align_horizontal( _address_, _width_, _address_\width, _this_\txt\rotate, _this_\txt\align, _this_\padding\x )
+         If Not _this_\text\vertical
+            change_align_horizontal( _address_, _width_, _address_\width, _this_\text\rotate, _this_\text\align, _this_\padding\x )
          Else
-            change_align_horizontal( _address_, _width_, _address_\height, _this_\txt\rotate, _this_\txt\align, _this_\padding\x )
+            change_align_horizontal( _address_, _width_, _address_\height, _this_\text\rotate, _this_\text\align, _this_\padding\x )
          EndIf
       EndMacro
       
       Macro update_align_text_y( _this_, _address_, _height_ )
-         If Not _this_\txt\vertical
-            change_align_vertical( _address_, _height_, _address_\height, _this_\txt\rotate, _this_\txt\align, _this_\padding\y )
+         If Not _this_\text\vertical
+            change_align_vertical( _address_, _height_, _address_\height, _this_\text\rotate, _this_\text\align, _this_\padding\y )
          Else
-            change_align_vertical( _address_, _height_, _address_\width, _this_\txt\rotate, _this_\txt\align, _this_\padding\y )
+            change_align_vertical( _address_, _height_, _address_\width, _this_\text\rotate, _this_\text\align, _this_\padding\y )
          EndIf
       EndMacro
       
       
       ;-
       Macro set_text_flag_( _this_, _text_, _flag_, _x_ = 0, _y_ = 0 )
-         ;     If Not _this_\txt
-         ;       _this_\txt.allocate( TEXT )
+         ;     If Not _this_\text
+         ;       _this_\text.allocate( TEXT )
          ;     EndIf
          
-         If _this_\txt
+         If _this_\text
             _this_\TextChange( ) = 1
-            _this_\txt\x        = _x_
-            _this_\txt\y        = _y_
+            _this_\text\x        = _x_
+            _this_\text\y        = _y_
             
-            _this_\txt\editable = Bool( Not constants::BinaryFlag( _flag_, #__flag_text_readonly ))
-            _this_\txt\lower    = constants::BinaryFlag( _flag_, #__flag_text_lowercase )
-            _this_\txt\upper    = constants::BinaryFlag( _flag_, #__flag_text_uppercase )
-            _this_\txt\pass     = constants::BinaryFlag( _flag_, #__flag_text_password )
-            _this_\txt\invert   = constants::BinaryFlag( _flag_, #__flag_text_Invert )
-            _this_\txt\vertical = constants::BinaryFlag( _flag_, #__flag_text_Vertical )
+            _this_\text\editable = Bool( Not constants::BinaryFlag( _flag_, #__flag_text_readonly ))
+            _this_\text\lower    = constants::BinaryFlag( _flag_, #__flag_text_lowercase )
+            _this_\text\upper    = constants::BinaryFlag( _flag_, #__flag_text_uppercase )
+            _this_\text\pass     = constants::BinaryFlag( _flag_, #__flag_text_password )
+            _this_\text\invert   = constants::BinaryFlag( _flag_, #__flag_text_Invert )
+            _this_\text\vertical = constants::BinaryFlag( _flag_, #__flag_text_Vertical )
             
             If constants::BinaryFlag( _flag_, #__flag_text_wordwrap )
-               _this_\txt\multiLine = 1
+               _this_\text\multiLine = 1
             ElseIf constants::BinaryFlag( _flag_, #__flag_text_multiline )
-               _this_\txt\multiLine = - 1
+               _this_\text\multiLine = - 1
             Else
-               _this_\txt\multiLine = 0
+               _this_\text\multiLine = 0
             EndIf
             
             ;\\
@@ -2148,8 +2148,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                _this_\color\fore = 0
                
-               If _this_\txt\editable
-                  _this_\txt\caret\width = DPIScaled(1)
+               If _this_\text\editable
+                  _this_\text\caret\width = DPIScaled(1)
                   _this_\color\back[0]    = $FFFFFFFF
                Else
                   _this_\color\back[0] = $FFF0F0F0
@@ -2157,8 +2157,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;\\
                If _this_\type = #__type_Editor
-                  If Not _this_\txt\multiLine
-                     _this_\txt\multiLine = 1
+                  If Not _this_\text\multiLine
+                     _this_\text\multiLine = 1
                   EndIf
                EndIf
             EndIf
@@ -2168,17 +2168,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                _this_\type = #__type_CheckBox Or
                _this_\type = #__type_HyperLink
                
-               _this_\txt\multiline = - CountString( _text_, #LF$ )
+               _this_\text\multiline = - CountString( _text_, #LF$ )
             EndIf
             
             If _this_\type = #__type_String
-               If _this_\txt\multiline
+               If _this_\text\multiline
                   _this_\MarginLine( )\hide        = 0
                   _this_\MarginLine( )\color\front = $C8000000 ; \color\back[0]
                   _this_\MarginLine( )\color\back  = $C8F0F0F0 ; \color\back[0]
                Else
                   _this_\MarginLine( )\hide = 1
-                  _this_\txt\numeric       = Bool( _flag_ & #__flag_text_numeric = #__flag_text_numeric )
+                  _this_\text\numeric       = Bool( _flag_ & #__flag_text_numeric = #__flag_text_numeric )
                EndIf
             EndIf
             
@@ -2537,7 +2537,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;   (Доп. информацию см. в описании функции DragOSFormats().) 
          ; возвращает одно из следующих значений 
          ; #PB_Drop_Text   : Перетащен текст.  (для получения текста воспользуйтесь функцией EventDropText() )
-         ; #PB_Drop_Image  : Перетащено изображение.  (для получения изображения воспользуйтесь функцией EventDropImage())
+         ; #PB_Drop_image  : Перетащено изображение.  (для получения изображения воспользуйтесь функцией EventDropimage())
          ; #PB_Drop_Files  : Перетащены имена файлов. (для получения имён воспользуйтесь функцией EventDropFiles())
          ; #PB_Drop_Private: Завершена "внутренняя" операция. (чтобы узнать её тип, воспользуйтесь функцией EventDropPrivate())
          ProcedureReturn mouse( )\drop\format
@@ -2567,16 +2567,16 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn mouse( )\drop\string
       EndProcedure
       
-      Procedure.i DropImage( Image.i = #PB_Any, Depth.i = 24 )
+      Procedure.i DropImage( img.i = #PB_Any, Depth.i = 24 )
          ; эта функция возвращает изображения, который был сброшен.
-         ; после того, как произошло событие ( event-DROP ) с форматом #PB_Drop_Image (формат можно получить с помощью DropType( ))
+         ; после того, как произошло событие ( event-DROP ) с форматом #PB_Drop_image (формат можно получить с помощью DropType( ))
          If mouse( )\drop\imageID
-            If Image = #PB_Any
-               Image = CreateImage( #PB_Any, DropWidth( ), DropHeight( ) )
+            If img = #PB_Any
+               img = CreateImage( #PB_Any, DropWidth( ), DropHeight( ) )
             EndIf
             
-            If IsImage( Image ) And
-               StartDrawing( ImageOutput( Image ))
+            If IsImage( img ) And
+               StartDrawing( ImageOutput( img ))
                If Depth = 32
                   DrawAlphaImage( mouse( )\drop\imageID, 0, 0 )
                Else
@@ -2593,7 +2593,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;                        ; windows ;    macos   ; linux ;
          ; Формат = Format
          ; #PB_Drop_Text          ; = 1     ; 1413830740 ; -1    ; Accept text on this widget
-         ; #PB_Drop_Image         ; = 8     ; 1346978644 ; -2    ; Accept images on this widget
+         ; #PB_Drop_image         ; = 8     ; 1346978644 ; -2    ; Accept images on this widget
          ; #PB_Drop_Files         ; = 15    ; 1751544608 ; -3    ; Accept filenames on this widget
          ; #PB_Drop_Private       ; = 512   ; 1885499492 ; -4    ; Accept a "private" Drag & Drop on this gadgetProtected Result.i
          
@@ -2638,8 +2638,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn mouse( )\drop
       EndProcedure
       
-      Procedure.i DragDropImage( Image.i, Actions.b = #PB_Drag_Copy )
-         ;Debug "  drag image - " + Image
+      Procedure.i DragDropImage( img.i, Actions.b = #PB_Drag_Copy )
+         ;Debug "  drag img - " + img
          
          If Not mouse( )\drop
             mouse( )\drop.allocate( DRAG )
@@ -2647,10 +2647,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          mouse( )\drop\format  = #PB_Drop_Image
          mouse( )\drop\actions = Actions
          
-         If IsImage( Image )
-            mouse( )\drop\imageID = ImageID( Image )
-            mouse( )\drop\width   = ImageWidth( Image )
-            mouse( )\drop\height  = ImageHeight( Image )
+         If IsImage( img )
+            mouse( )\drop\imageID = ImageID( img )
+            mouse( )\drop\width   = ImageWidth( img )
+            mouse( )\drop\height  = ImageHeight( img )
          EndIf
          
          CurrentCursor( ) = cursor::#__cursor_Drag
@@ -3481,7 +3481,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         ;                      If StartDraw( *this\root )
                         ;                         Drawing( )
                         ;                         
-                        ;                         a_anchors( )\grab = GrabDrawingImage( #PB_Any, 0, 0, *this\root\width, *this\root\height )
+                        ;                         a_anchors( )\grab = GrabDrawingimage( #PB_Any, 0, 0, *this\root\width, *this\root\height )
                         ;                         
                         ;                         StopDraw( )
                         ;                      EndIf
@@ -3855,7 +3855,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             Protected layout = pos * 2
             Protected text_pos = DPIScaled(6)
-            Protected image_pos = DPIScaled(3)
+            Protected img_pos = DPIScaled(3)
             
             
             ;pos = ( pos )
@@ -3865,10 +3865,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *this\TabChange( ) Or *this\ResizeChange( )
                   
                   *bar\max = 0
-                  *this\img\x = ( *this\screen_height( ) - DPIScaled(16) - pos - DPIScaled(1) ) / 2
+                  *this\picture\x = ( *this\screen_height( ) - DPIScaled(16) - pos - DPIScaled(1) ) / 2
                   ; Debug " --- widget::Tab_Update( ) - " + *this\screen_width( ) +" "+ *this\screen_height( )
                   
-                  ; *this\txt\width = *this\screen_width( )
+                  ; *this\text\width = *this\screen_width( )
                   *this\scroll_width( ) = 0
                   *this\scroll_height( ) = 0
                   
@@ -3884,11 +3884,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                            
                            ; init items position
                            If *bar\vertical
-                              If *this\scroll_width( ) < DPIScaled(20)+*tabs( )\txt\width 
-                                 *this\scroll_width( ) = DPIScaled(20)+*tabs( )\txt\width
+                              If *this\scroll_width( ) < DPIScaled(20)+*tabs( )\text\width 
+                                 *this\scroll_width( ) = DPIScaled(20)+*tabs( )\text\width
                                  
                                  If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
-                                    *this\scroll_width( ) + *tabs( )\img\width 
+                                    *this\scroll_width( ) + *tabs( )\picture\width 
                                  EndIf
                               EndIf
                               If *tabs( )\childrens 
@@ -3945,16 +3945,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                            Debug "why "+*tabs( )\height +" ?"
                            *tabs( )\height = 0
                            ;
-                           If *tabs( )\img\height
-                              *tabs( )\height = *tabs( )\img\height
+                           If *tabs( )\picture\height
+                              *tabs( )\height = *tabs( )\picture\height
                            EndIf
-                           If *tabs( )\txt\height
+                           If *tabs( )\text\height
                               If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
-                                 If Not *tabs( )\img\height 
-                                    *tabs( )\height = *tabs( )\txt\height
+                                 If Not *tabs( )\picture\height 
+                                    *tabs( )\height = *tabs( )\text\height
                                  EndIf
                               Else
-                                 *tabs( )\height + *tabs( )\txt\height
+                                 *tabs( )\height + *tabs( )\text\height
                               EndIf
                            EndIf
                            
@@ -3963,27 +3963,27 @@ CompilerIf Not Defined( widget, #PB_Module )
                            ;
                            If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
                               ;
-                              ;                               *tabs( )\img\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\img\width - *tabs( )\txt\width ) / 2 
-                              ;                               *tabs( )\txt\x  = *tabs( )\img\x + *tabs( )\img\width + 5
+                              ;                               *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width - *tabs( )\text\width ) / 2 
+                              ;                               *tabs( )\text\x  = *tabs( )\picture\x + *tabs( )\picture\width + 5
                               Protected align_x = (5)
-                              *tabs( )\img\x = *tabs( )\x + align_x
-                              *tabs( )\txt\x  = *tabs( )\img\x + *tabs( )\img\width + align_x + (5)
+                              *tabs( )\picture\x = *tabs( )\x + align_x
+                              *tabs( )\text\x  = *tabs( )\picture\x + *tabs( )\picture\width + align_x + (5)
                               
                               ;
-                              *tabs( )\img\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\img\height )/2
-                              *tabs( )\txt\y  = *tabs( )\y + ( *tabs( )\height - *tabs( )\txt\height )/2
+                              *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height )/2
+                              *tabs( )\text\y  = *tabs( )\y + ( *tabs( )\height - *tabs( )\text\height )/2
                               ;                          
                            Else
-                              If *tabs( )\txt\width
-                                 *tabs( )\img\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\img\height - *tabs( )\txt\height ) / 2
+                              If *tabs( )\text\width
+                                 *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height - *tabs( )\text\height ) / 2
                               Else
-                                 *tabs( )\img\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\img\height ) / 2
+                                 *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height ) / 2
                               EndIf
                               ;
-                              *tabs( )\txt\y  = *tabs( )\img\y + *tabs( )\img\height
+                              *tabs( )\text\y  = *tabs( )\picture\y + *tabs( )\picture\height
                               ;
-                              *tabs( )\img\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\img\width )/2
-                              *tabs( )\txt\x  = *tabs( )\x + ( *tabs( )\width - *tabs( )\txt\width )/2
+                              *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width )/2
+                              *tabs( )\text\x  = *tabs( )\x + ( *tabs( )\width - *tabs( )\text\width )/2
                            EndIf
                         EndIf
                         
@@ -4020,18 +4020,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *bar\max + *tabs( )\width + pos + (separator_step * 2)
                         Else
                            ;
-                           *this\txt\y = ( *tabs( )\height - *tabs( )\txt\height ) / 2
+                           *this\text\y = ( *tabs( )\height - *tabs( )\text\height ) / 2
                            ;
-                           *tabs( )\img\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\img\height ) / 2
-                           *tabs( )\txt\y  = *tabs( )\y + *this\txt\y
+                           *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height ) / 2
+                           *tabs( )\text\y  = *tabs( )\y + *this\text\y
                            
                            ;
-                           *tabs( )\img\x = *tabs( )\x + Bool( *tabs( )\img\width ) * image_pos
-                           *tabs( )\txt\x  = text_pos + *tabs( )\img\x + *tabs( )\img\width
+                           *tabs( )\picture\x = *tabs( )\x + Bool( *tabs( )\picture\width ) * img_pos
+                           *tabs( )\text\x  = text_pos + *tabs( )\picture\x + *tabs( )\picture\width
                            
                            ;
-                           *tabs( )\width = (Bool( *tabs( )\txt\width ) * ( text_pos * 2 ) + *tabs( )\txt\width +
-                                             Bool( *tabs( )\img\width ) * ( image_pos * 2 ) + *tabs( )\img\width) - Bool( *tabs( )\img\width And *tabs( )\txt\width ) * ( text_pos )
+                           *tabs( )\width = (Bool( *tabs( )\text\width ) * ( text_pos * 2 ) + *tabs( )\text\width +
+                                             Bool( *tabs( )\picture\width ) * ( img_pos * 2 ) + *tabs( )\picture\width) - Bool( *tabs( )\picture\width And *tabs( )\text\width ) * ( text_pos )
                            
                            ;
                            If *this\type = #__type_TabBar
@@ -4039,16 +4039,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                               ;*bar\max + *tabs( )\width + pos + Bool( index = *this\countitems - 1 )
                            Else
                               If Not constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
-                                 If *tabs( )\txt\width
-                                    If *tabs( )\width > *tabs( )\img\width 
-                                       *tabs( )\width - *tabs( )\img\width 
+                                 If *tabs( )\text\width
+                                    If *tabs( )\width > *tabs( )\picture\width 
+                                       *tabs( )\width - *tabs( )\picture\width 
                                     EndIf
                                     ;
-                                    *tabs( )\img\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\img\height - *tabs( )\txt\height ) / 2
-                                    *tabs( )\txt\y  = *tabs( )\img\y + *tabs( )\img\height
+                                    *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height - *tabs( )\text\height ) / 2
+                                    *tabs( )\text\y  = *tabs( )\picture\y + *tabs( )\picture\height
                                     ;
-                                    *tabs( )\img\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\img\width )/2
-                                    *tabs( )\txt\x  = *tabs( )\x + ( *tabs( )\width - *tabs( )\txt\width )/2
+                                    *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width )/2
+                                    *tabs( )\text\x  = *tabs( )\x + ( *tabs( )\width - *tabs( )\text\width )/2
                                  EndIf
                               EndIf
                               
@@ -4160,21 +4160,21 @@ CompilerIf Not Defined( widget, #PB_Module )
             draw_gradientbox_( 0, _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _address_\color\fore#_mode_, _address_\color\back#_mode_, _round_, _address_\AlphaState( ) )
          EndIf
          ;
-         ; Draw items image
-         If _address_\img\imageID
+         ; Draw items img
+         If _address_\picture\imageID
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
-            DrawAlphaImage( _address_\img\imageID, _x_ + _address_\img\x, _y_ + _address_\img\y, _address_\color\ialpha )
+            DrawAlphaImage( _address_\picture\imageID, _x_ + _address_\picture\x, _y_ + _address_\picture\y, _address_\color\ialpha )
          EndIf
          ;
          ; Draw items text
-         If _address_\txt\string
+         If _address_\text\string
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
-            DrawText( _x_ + _address_\txt\x, _y_ + _address_\txt\y, _address_\txt\string, _address_\color\front#_mode_ & $FFFFFF | _address_\AlphaState24( ) )
+            DrawText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\string, _address_\color\front#_mode_ & $FFFFFF | _address_\AlphaState24( ) )
          EndIf
          
          If _vertical_ > 0
             If _address_\childrens
-               DrawText( _x_ + _address_\txt\x + _address_\txt\width + 20, _y_ + _address_\txt\y, ">", _address_\color\front#_mode_ & $FFFFFF | _address_\AlphaState24( ) )
+               DrawText( _x_ + _address_\text\x + _address_\text\width + 20, _y_ + _address_\text\y, ">", _address_\color\front#_mode_ & $FFFFFF | _address_\AlphaState24( ) )
             EndIf
          EndIf
          ;          
@@ -4225,12 +4225,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                Else
                   If is_menu_( *this )
                      If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
-                        If *tabs( )\img\imageID
+                        If *tabs( )\picture\imageID
                            If *this\bar\vertical
                               draw_mode_alpha_( #PB_2DDrawing_Default )
                               draw_roundbox_(X + *tabs( )\x,
                                              Y + *tabs( )\y - Bool( ListIndex( *tabs( ) ))*3, 
-                                             *tabs( )\img\width + 10,
+                                             *tabs( )\picture\width + 10,
                                              *tabs( )\height + Bool( ListIndex( *tabs( ) ))*3 + Bool( ListIndex( *tabs( ) ) <> *this\countitems - 1 )*3, 
                                              *this\round, *this\round, $FFF0F0F0 )
                            EndIf
@@ -4459,12 +4459,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ; ;                ;
                ; ;                If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
-               ; ;                            *this\img\width = 32 - 4
+               ; ;                            *this\picture\width = 32 - 4
                ; ;                   draw_mode_alpha_( #PB_2DDrawing_Default )
                ; ;                   If *this\bar\vertical
-               ; ;                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\img\width, *this\screen_height( ), *SB\round, *SB\round, *this\color\frame & $FFFFFF | *this\AlphaState24( ) )
+               ; ;                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\picture\width, *this\screen_height( ), *SB\round, *SB\round, *this\color\frame & $FFFFFF | *this\AlphaState24( ) )
                ; ;                   Else
-               ; ;                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\screen_width( ), *this\img\height, *SB\round, *SB\round, *this\color\frame & $FFFFFF | *this\AlphaState24( ) )
+               ; ;                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\screen_width( ), *this\picture\height, *SB\round, *SB\round, *this\color\frame & $FFFFFF | *this\AlphaState24( ) )
                ; ;                   EndIf
                ; ;                EndIf
                ;
@@ -4569,8 +4569,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                ; Debug "  Draw scrolbar " + *this\class +" "+ *this\screen_x( )+" "+ *this\screen_y( ) +" "+ *this\screen_width( ) +" "+ *this\screen_height( )
             EndIf
             
-            ;         DrawImage( ImageID( UpImage ), *BB1\x, *BB1\y )
-            ;         DrawImage( ImageID( DownImage ), *BB2\x, *BB2\y )
+            ;         Drawimage( imageiD( Upimg ), *BB1\x, *BB1\y )
+            ;         Drawimage( imageiD( Downimg ), *BB2\x, *BB2\y )
             ;         ProcedureReturn
             
             If *this\AlphaState( )
@@ -4900,16 +4900,16 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ; Draw string
-            If *this\txt And *this\txt\string 
+            If *this\text And *this\text\string 
                If *this\TextChange( ) Or *this\ResizeChange( )
-                  update_align_text_x( *this, *this\txt, *this\inner_width( ) )
-                  update_align_text_y( *this, *this\txt, *this\inner_height( ) )
+                  update_align_text_x( *this, *this\text, *this\inner_width( ) )
+                  update_align_text_y( *this, *this\text, *this\inner_height( ) )
                EndIf
                
                ;
-               If *this\screen_height( ) > *this\txt\height
+               If *this\screen_height( ) > *this\text\height
                   draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawRotatedText( *this\inner_x( )+*this\txt\x, *this\inner_y( )+*this\txt\y, *this\txt\string, *this\txt\rotate, $ff000000)
+                  DrawRotatedText( *this\inner_x( )+*this\text\x, *this\inner_y( )+*this\text\y, *this\text\string, *this\text\rotate, $ff000000)
                EndIf
             EndIf
             
@@ -6406,7 +6406,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *this\parent And *this\parent\scroll
                   If *bar\vertical
                      If *this\parent\scroll\v = *this
-                        If Not *this\parent\txt\editable
+                        If Not *this\parent\text\editable
                            *this\parent\WidgetChange( ) = - 1
                         EndIf
                         
@@ -6440,7 +6440,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   Else
                      If *this\parent\scroll\h = *this
-                        If Not *this\parent\txt\editable
+                        If Not *this\parent\text\editable
                            *this\parent\WidgetChange( ) = - 2
                         EndIf
                         
@@ -6855,7 +6855,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *bar\PageChange( )
             ;\\
             If *this\type = #__type_Progress
-               *this\txt\string = "%" + Str( *bar\page\pos )
+               *this\text\string = "%" + Str( *bar\page\pos )
             EndIf
             
             ;\\
@@ -7187,7 +7187,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             
             
-            If result ; And *this\screen_width( ) And *this\screen_height( ) ; есть проблемы с imagegadget и scrollareagadget
+            If result ; And *this\screen_width( ) And *this\screen_height( ) ; есть проблемы с imggadget и scrollareagadget
                       ;Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                
                If ( *bar\vertical And *this\screen_height( ) ) Or ( *bar\vertical = 0 And *this\screen_width( ) )
@@ -7523,7 +7523,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure   ToolTip( *this._s_WIDGET, Text.s, item = - 1 )
-         *this\tt\txt\string = Text
+         *this\tt\text\string = Text
       EndProcedure
       
       
@@ -8116,8 +8116,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If ( Change_x Or Change_y Or Change_width Or Change_height )
-            If *this\img\imageID
-               *this\img\change = #True
+            If *this\picture\imageID
+               *this\picture\change = #True
             EndIf
             
             *this\TextChange( ) = 1 ; без нее у кнопки проблемы перерисовкой текста
@@ -9006,21 +9006,21 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       ;-
-      Macro add_image( _address_, _image_, _size_ = 0 )
+      Macro add_image( _address_, _img_, _size_ = 0 )
          ;
-         If IsImage( _image_ )
+         If IsImage( _img_ )
             If _size_
                _address_\width  = _size_
                _address_\height = _size_
-               ResizeImage( _image_, _size_, _size_, #PB_Image_Raw )
+               ResizeImage( _img_, _size_, _size_, #PB_Image_Raw )
             Else
-               _address_\width  = ImageWidth( _image_ )
-               _address_\height = ImageHeight( _image_ )
+               _address_\width  = ImageWidth( _img_ )
+               _address_\height = ImageHeight( _img_ )
             EndIf
             
             _address_\change  = 1
-            _address_\image   = _image_
-            _address_\imageID = ImageID( _image_ )
+            _address_\image   = _img_
+            _address_\imageID = ImageID( _img_ )
          Else
             _address_\change  = - 1
             _address_\image   = - 1
@@ -9031,25 +9031,25 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Procedure.i GetImage( *this._s_WIDGET )
-         ProcedureReturn *this\img\image
+         ProcedureReturn *this\picture\image
       EndProcedure
       
       Procedure SetImage( *this._s_WIDGET, img );, mode.a = 0 )
-         add_image( *this\img, img )
+         add_image( *this\picture, img )
          
          If *this\type <> #__type_window
             If IsImage( img )
-               *this\img\x   = *this\padding\x
-               *this\img\y  = *this\padding\y
+               *this\picture\x   = *this\padding\x
+               *this\picture\y  = *this\padding\y
                
                ; make horizontal scroll max
-               If *this\scroll_width( ) <> *this\img\width + *this\padding\x * 2
-                  *this\scroll_width( ) = *this\img\width + *this\padding\x * 2
+               If *this\scroll_width( ) <> *this\picture\width + *this\padding\x * 2
+                  *this\scroll_width( ) = *this\picture\width + *this\padding\x * 2
                EndIf
                
                ; make vertical scroll max
-               If *this\scroll_height( ) <> *this\img\height + *this\padding\y * 2
-                  *this\scroll_height( ) = *this\img\height + *this\padding\y * 2
+               If *this\scroll_height( ) <> *this\picture\height + *this\padding\y * 2
+                  *this\scroll_height( ) = *this\picture\height + *this\padding\y * 2
                EndIf
                
                ; updatate scrollarea size
@@ -9057,22 +9057,22 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          
-         ProcedureReturn *this\img\imageID
+         ProcedureReturn *this\picture\imageID
       EndProcedure
       
       Procedure   RemoveImage( *this._s_WIDGET, img )
-         If *this\img\imageID And 
-            *this\img\image = img
+         If *this\picture\imageID And 
+            *this\picture\image = img
             SetImage( *this, - 1 )
          EndIf
-         If *this\img[#__image_background]\imageID And 
-            *this\img[#__image_background]\image = img
+         If *this\picture[#__image_background]\imageID And 
+            *this\picture[#__image_background]\image = img
             SetBackgroundImage( *this, - 1 )
          EndIf
          
          PushMapPosition( roots( ) )
          ForEach roots( )
-            If roots( )\img\image = img
+            If roots( )\picture\image = img
                ProcedureReturn 0
             EndIf
          Next
@@ -9080,7 +9080,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          PushListPosition( widgets( ) )
          ForEach widgets( )
-            If widgets( )\img\image = img
+            If widgets( )\picture\image = img
                ProcedureReturn 0
             EndIf
          Next
@@ -9105,7 +9105,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn #PB_Default
             EndIf
             
-            result = *this\__rows( )\img\image
+            result = *this\__rows( )\picture\image
          EndIf
          
          ProcedureReturn result
@@ -9119,8 +9119,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_ListView
             
             If SelectItem( *this, Item )
-               If *this\__rows( )\img\image <> img
-                  add_image( *this\__rows( )\img, img, *this\imgsize )
+               If *this\__rows( )\picture\image <> img
+                  add_image( *this\__rows( )\picture, img, *this\picturesize )
                   *this\WidgetChange( ) = 1
                EndIf
             EndIf
@@ -9130,9 +9130,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure SetBackgroundImage( *this._s_WIDGET, *image )
-         add_image( *this\img[#__image_background], *image )
-         ProcedureReturn *this\img[#__image_background]\imageID
+      Procedure SetBackgroundImage( *this._s_WIDGET, *img )
+         add_image( *this\picture[#__image_background], *img )
+         ProcedureReturn *this\picture[#__image_background]\imageID
       EndProcedure
       
       ;-
@@ -9185,7 +9185,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.i GetState( *this._s_WIDGET )
          ; This is a universal function which works For almost all gadgets: 
          ; 
-         ; - ButtonImage( )  : returns 1 If a #PB_Button_Toggle button is toggled, Else 0. 
+         ; - Buttonimage( )  : returns 1 If a #PB_Button_Toggle button is toggled, Else 0. 
          ; - Button( )       : returns 1 If a #PB_Button_Toggle button is toggled, Else 0. 
          ; - Option( )       : returns 1 If activated, 0 otherwise. 
          ; - CheckBox( )     : returns one of the following values:
@@ -9197,7 +9197,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; - Date( )         : returns the currently selected date/time. If #PB_Date_CheckBox was used, And the checkbox is unchecked, 0 is returned. 
          ;
          ; - Shortcut( )     : returns the currently selected keyboard shortcut. 
-         ; - Image( )        : returns the ImageID of the currently displayed image. 
+         ; - image( )        : returns the imageiD of the currently displayed img. 
          ; - IPAddress( )    : returns the current IP address. 
          ;
          ; - MDI( )          : returns the currently focused child window, -1 If none has the focus. 
@@ -9303,7 +9303,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.b SetState( *this._s_WIDGET, state.i )
          ; This is a universal function which works For almost all gadgets: 
          ; 
-         ; - ButtonImage( ) : change the current state of a #PB_Button_Toggle gadget (1 = toggled, 0 = normal). 
+         ; - Buttonimage( ) : change the current state of a #PB_Button_Toggle gadget (1 = toggled, 0 = normal). 
          ; - Button( )      : change the current state of a #PB_Button_Toggle gadget (1 = toggled, 0 = normal). 
          ; - Option( )      : 1 To activate it, 0 otherwise. 
          ; - CheckBox( )    : Change the state of the checkbox. The following values are possible:
@@ -9315,7 +9315,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; - Date( )        : set the currently displayed date/time. If #PB_Date_CheckBox was used, set 'State' To 0 To uncheck the checkbox. 
          ;
          ; - Shortcut( )    : Change the current shortcut. 
-         ; - Image( )       : change the current image of the gadget. 
+         ; - image( )       : change the current img of the gadget. 
          ; - IPAddress( )   : change the current IP address. 
          ;
          ; - Panel( )       : change the current panel. 
@@ -9393,17 +9393,17 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;
-         If *this\type = #__type_Image
-            add_image( *this\img, state )
+         If *this\type = #__type_image
+            add_image( *this\picture, state )
             
             ; make horizontal scroll max
-            If *this\scroll_width( ) <> *this\img\width + *this\padding\x * 2
-               *this\scroll_width( ) = *this\img\width + *this\padding\x * 2
+            If *this\scroll_width( ) <> *this\picture\width + *this\padding\x * 2
+               *this\scroll_width( ) = *this\picture\width + *this\padding\x * 2
             EndIf
             
             ; make vertical scroll max
-            If *this\scroll_height( ) <> *this\img\height + *this\padding\y * 2
-               *this\scroll_height( ) = *this\img\height + *this\padding\y * 2
+            If *this\scroll_height( ) <> *this\picture\height + *this\padding\y * 2
+               *this\scroll_height( ) = *this\picture\height + *this\padding\y * 2
             EndIf
             
             ; updatate scrollarea size
@@ -9654,14 +9654,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If is_integral_( *this ) 
                            If *this\parent  
                               If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
-                                 SetText( *this\parent\parent, *this\RowFocused( )\txt\string )
+                                 SetText( *this\parent\parent, *this\RowFocused( )\text\string )
                                  DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                                  If result  
                                     DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                                  EndIf 
                               Else
                                  If *this\parent\type = #__type_ComboBox
-                                    SetText( *this\parent, *this\RowFocused( )\txt\string )
+                                    SetText( *this\parent, *this\RowFocused( )\text\string )
                                  EndIf 
                                  DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                                  If result  
@@ -9898,10 +9898,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure   SetTextXY( *this._s_WIDGET, X.l, Y.l )
          If Not X < 0
-            *this\txt\x = DesktopScaledX(X)
+            *this\text\x = DesktopScaledX(X)
          EndIf
          If Not Y < 0
-            *this\txt\y = DesktopScaledX(Y)
+            *this\text\y = DesktopScaledX(Y)
          EndIf
       EndProcedure
       
@@ -9925,7 +9925,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.s GetText( *this._s_WIDGET );, column.l = 0 )
          If *this\type = #__type_Tree
             If *this\RowFocused( )
-               ProcedureReturn *this\RowFocused( )\txt\string
+               ProcedureReturn *this\RowFocused( )\text\string
             EndIf
          EndIf
          
@@ -9933,10 +9933,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             ProcedureReturn *this\TitleText( )\string
          EndIf
          
-         If *this\txt\pass
-            ProcedureReturn *this\txt\pass$
+         If *this\text\pass
+            ProcedureReturn *this\text\pass$
          Else
-            ProcedureReturn *this\txt\string
+            ProcedureReturn *this\text\string
          EndIf
       EndProcedure
       
@@ -9949,7 +9949,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ProcedureReturn ""
                EndIf
                
-               result = *this\popupbar\__rows( )\txt\string
+               result = *this\popupbar\__rows( )\text\string
             EndIf
          EndIf
          
@@ -9970,7 +9970,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn ""
             EndIf
             
-            result = *this\__tabs( )\txt\string
+            result = *this\__tabs( )\text\string
             
          Else
             If *this\countitems ; row count
@@ -9981,13 +9981,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ProcedureReturn ""
                   EndIf
                   
-                  result = *this\__lines( )\txt\string
+                  result = *this\__lines( )\text\string
                Else
                   If is_no_select_item_( *this\__rows( ), Item )
                      ProcedureReturn ""
                   EndIf
                   
-                  result = *this\__rows( )\txt\string
+                  result = *this\__rows( )\text\string
                EndIf
             EndIf
          EndIf
@@ -10006,14 +10006,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn #False
             EndIf
             
-            If *this\__rows( )\txt\string <> Text
-               *this\__rows( )\txt\string = Text
+            If *this\__rows( )\text\string <> Text
+               *this\__rows( )\text\string = Text
                result                        = #True
             EndIf
             
             If result
                *this\WidgetChange( )              = 1
-               ; *this\__rows( )\txt\TextChange( ) = 1
+               ; *this\__rows( )\text\TextChange( ) = 1
             EndIf
          EndIf
          
@@ -10034,8 +10034,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn #False
             EndIf
             
-            ; *this\__tabs( )\txt\TextChange( ) = 1
-            *this\__tabs( )\txt\string = Text.s
+            ; *this\__tabs( )\text\TextChange( ) = 1
+            *this\__tabs( )\text\string = Text.s
             *this\WidgetChange( )         = #True
             *this\TabChange( )          = #True
             result                      = #True
@@ -10213,9 +10213,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_Editor 
             If Attribute = #PB_Editor_WordWrap
                If *value > 0
-                  *this\txt\multiline = - 1
+                  *this\text\multiline = - 1
                Else
-                  *this\txt\multiline = 1
+                  *this\text\multiline = 1
                EndIf
                ;*this\WidgetChange( ) = 1
                *this\TextChange( ) = 1
@@ -10227,12 +10227,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_Button 
             Select Attribute
                Case #PB_Button_Image
-                  ; add_image( *this\img, *value )
+                  ; add_image( *this\picture, *value )
                   SetImage( *this, *value )
-                  add_image( *this\img[#__image_released], *value )
+                  add_image( *this\picture[#__image_released], *value )
                   
                Case #PB_Button_PressedImage
-                  add_image( *this\img[#__image_pressed], *value )
+                  add_image( *this\picture[#__image_pressed], *value )
                   
             EndSelect
          EndIf
@@ -10287,52 +10287,52 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndSelect
          EndIf
          
-         If *this\type = #__type_Image
+         If *this\type = #__type_image
             Select Attribute
                Case #__DisplayMode
                   Static Width, Height
                   
                   Select Value
                      Case 0 ; Default
-                        *this\img\align\left = 1
-                        *this\img\align\top = 1
-                        *this\img\align\right = 0
-                        *this\img\align\bottom = 0
+                        *this\picture\align\left = 1
+                        *this\picture\align\top = 1
+                        *this\picture\align\right = 0
+                        *this\picture\align\bottom = 0
                         
                         ;
                         If (Width And Height)
-                           ResizeImage( *this\img\image, Width, Height )
+                           ResizeImage( *this\picture\image, Width, Height )
                            Width = 0
                            Height = 0
                         EndIf
                         
                      Case 1 ; Center
-                        *this\img\align\left = 0
-                        *this\img\align\top = 0
-                        *this\img\align\right = 0
-                        *this\img\align\bottom = 0
+                        *this\picture\align\left = 0
+                        *this\picture\align\top = 0
+                        *this\picture\align\right = 0
+                        *this\picture\align\bottom = 0
                         
                      Case 2 ; Mosaic
                         
                         
                      Case 3 ; Stretch
                         If Not (Width And Height)
-                           Width = *this\img\width
-                           Height = *this\img\height
+                           Width = *this\picture\width
+                           Height = *this\picture\height
                         EndIf
-                        ResizeImage( *this\img\image, Width*3, Height*3 )
+                        ResizeImage( *this\picture\image, Width*3, Height*3 )
                         
                      Case 4 ; Proportionally
                         If Not (Width And Height)
-                           Width = *this\img\width
-                           Height = *this\img\height
+                           Width = *this\picture\width
+                           Height = *this\picture\height
                         EndIf
-                        ResizeImage( *this\img\image, Width*2, Height*2 )
+                        ResizeImage( *this\picture\image, Width*2, Height*2 )
                         
                   EndSelect
                   
                   ;
-                  SetState( *this, *this\img\image )
+                  SetState( *this, *this\picture\image )
                   
             EndSelect
          EndIf
@@ -10756,7 +10756,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;                If tabindex = 2
-               ;                    Debug ""+*this\txt\string +" last-"+ *last\class +" after-"+ *after\class
+               ;                    Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
                ;                EndIf
             EndIf
             ;
@@ -12331,7 +12331,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       ;-
-      Procedure.i AddColumn( *this._s_WIDGET, position.l, Text.s, Width.l, Image.i = -1 )
+      Procedure.i AddColumn( *this._s_WIDGET, position.l, Text.s, Width.l, img.i = -1 )
          Protected *columns.allocate( COLUMN )
          
          ;\\
@@ -12355,7 +12355,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\
             *columns\y     = 0
-            *columns\txt\string.s = Text.s
+            *columns\text\string.s = Text.s
             *columns\width = DPIScaled( Width )
             
             *columns\x = *this\scroll_width( )
@@ -12372,7 +12372,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.i AddItems( *this._s_WIDGET, List *rows._S_ROWS( ), position.l, Text.s, Image.i = -1, sublevel.i = 0 )
+      Procedure.i AddItems( *this._s_WIDGET, List *rows._S_ROWS( ), position.l, Text.s, img.i = -1, sublevel.i = 0 )
          Protected last
          Protected *rowLast._s_ROWS 
          Protected *row.allocate(ROWS)
@@ -12563,15 +12563,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                
                ;If Text
-               ; *row\txt\TextChange( ) = 1
-               *row\txt\string   = Text 
+               ; *row\text\TextChange( ) = 1
+               *row\text\string   = Text 
                
                
                ;\\
                If *row\columnindex = 0
                   *this\countitems + 1
                   *this\WidgetChange( ) = 1
-                  add_image( *row\img, Image, *this\imgsize )
+                  add_image( *row\picture, img, *this\picturesize )
                   
                   If *this\RowFocused( )
                      *this\RowFocused( )\_focus = 0
@@ -12599,13 +12599,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn *row
       EndProcedure
       
-      Procedure   AddItem( *this._s_WIDGET, Item.l, Text.s, Image.i = - 1, flag.q = 0 )
+      Procedure   AddItem( *this._s_WIDGET, Item.l, Text.s, img.i = - 1, flag.q = 0 )
          Protected result
          
          ;          ;          
          ;          ;CompilerIf #PB_Compiler_DPIAware
-         If IsImage( Image )
-            *this\imgsize = DPIScaled(16)
+         If IsImage( img )
+            *this\picturesize = DPIScaled(16)
          EndIf
          ;          ;CompilerEndIf
          
@@ -12620,11 +12620,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\countitems + 1 ;?
             *window = Window( #PB_Ignore, #PB_Ignore, 280, 180, Text, flag | #__flag_child, *this )
             ;
-            If IsImage( Image )
+            If IsImage( img )
                If constants::BinaryFlag( Flag, #PB_Window_BorderLess ) 
-                  SetBackgroundImage( *window, Image )
+                  SetBackgroundImage( *window, img )
                Else
-                  add_image( *window\img, Image )
+                  add_image( *window\picture, img )
                EndIf
             EndIf
             
@@ -12639,7 +12639,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Protected String.s
             ForEach *This\Columns( )
                String = StringField( Text, ListIndex( *this\columns( )) + 1, #LF$)
-               AddItems( *this, *this\__rows( ), Item, String, Image, flag )
+               AddItems( *this, *this\__rows( ), Item, String, img, flag )
             Next
          EndIf
          
@@ -12647,7 +12647,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_ListView Or
             *this\type = #__type_Properties
             
-            ProcedureReturn AddItems( *this, *this\__rows( ), Item, Text, Image, flag )
+            ProcedureReturn AddItems( *this, *this\__rows( ), Item, Text, img, flag )
          EndIf
          
          If *this\type = #__type_combobox
@@ -12661,7 +12661,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             ;
             If *this\popupbar
-               ProcedureReturn AddItem( *this\popupbar, Item, Text, Image, flag )
+               ProcedureReturn AddItem( *this\popupbar, Item, Text, img, flag )
             EndIf
          EndIf
          
@@ -12727,7 +12727,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *TabBox\__tabs( )\tindex     = item
             *TabBox\__tabs( )\color       = _get_colors_( )
             *TabBox\__tabs( )\height      = *TabBox\screen_height( ) - 1
-            *TabBox\__tabs( )\txt\string = Text.s
+            *TabBox\__tabs( )\text\string = Text.s
             
             ;\\ set default selected tab
             If item = 0 
@@ -12742,7 +12742,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;
-            add_image( *TabBox\__tabs( )\img, Image, *TabBox\imgsize )
+            add_image( *TabBox\__tabs( )\picture, img, *TabBox\picturesize )
             
             ;         
             If is_integral_( *TabBox )
@@ -12794,11 +12794,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If *this\type = #__type_Editor
             If item >- 1 And Item < *this\countitems
-               Protected String.s = StringField( *this\txt\string, 1 + item, #LF$ )
+               Protected String.s = StringField( *this\text\string, 1 + item, #LF$ )
                If String
-                  *this\txt\string = RemoveString( *this\txt\string, String + #LF$ )
-                  If StringField( *this\txt\string, *this\countitems, #LF$ )
-                     *this\txt\string = RemoveString( *this\txt\string, #LF$ + String )
+                  *this\text\string = RemoveString( *this\text\string, String + #LF$ )
+                  If StringField( *this\text\string, *this\countitems, #LF$ )
+                     *this\text\string = RemoveString( *this\text\string, #LF$ + String )
                   EndIf
                   *this\countitems - 1
                   *this\TextChange( ) = 1
@@ -12825,7 +12825,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Protected *rowParent._s_ROWS = *this\__rows( )\RowParent( )
             
             If test_delete
-               Debug " "+ Item +" remove ["+ *row\txt\string +"]"
+               Debug " "+ Item +" remove ["+ *row\text\string +"]"
             EndIf
             
             ;
@@ -12998,7 +12998,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_Editor
             If *this\countitems
                *this\countitems       = 0
-               *this\txt\string      = ""
+               *this\text\string      = ""
                ;          
                *this\edit_caret_1( )     = 0
                *this\edit_caret_2( )     = 0
@@ -13220,11 +13220,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          *item\sublevel = - 1
       EndProcedure
       
-      Procedure   BarButton( Button.i, Image.i, mode.i = 0, Text.s = #Null$ )
-         ProcedureReturn AddItem( widget( ), Button, Text, Image, mode )
+      Procedure   BarButton( Button.i, img.i, mode.i = 0, Text.s = #Null$ )
+         ProcedureReturn AddItem( widget( ), Button, Text, img, mode )
       EndProcedure
       
-      Procedure   BarItem( item, Text.s, Image = - 1 )
+      Procedure   BarItem( item, Text.s, img = - 1 )
          Protected._s_ROWS  *item, *tab
          Protected *this._s_WIDGET = widget( )
          ;
@@ -13235,7 +13235,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *tab = *this\popupbar\__tabs( )
             EndIf
             ;
-            *item = BarButton( item, Image, 0, Text.s )
+            *item = BarButton( item, img, 0, Text.s )
             ;
             If *tab
                *item\sublevel = *tab\sublevel + 1
@@ -13247,15 +13247,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn *item
       EndProcedure
       
-      Procedure   BarTitle( title.s, Image = - 1 )
+      Procedure   BarTitle( title.s, img = - 1 )
          CloseSubBar( )
-         OpenSubBar( title, Image )
+         OpenSubBar( title, img )
       EndProcedure
       
-      Procedure   OpenSubBar( Text.s, Image = - 1)
+      Procedure   OpenSubBar( Text.s, img = - 1)
          Protected *this._s_WIDGET
          If widget( )
-            BarItem( #PB_Any, Text.s, Image )
+            BarItem( #PB_Any, Text.s, img )
             ;
             *this = CreateBar( #__type_PopupBar, widget( ) ) 
             SetClass( *this, Text )
@@ -13723,8 +13723,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                chr$ = "]" Or 
                chr$ = "}" Or 
                chr$ = "=" Or 
-               chr$ = "'" Or 
-               ; chr$ = ~"\"" Or 
+               chr$ = "'" Or ; chr$ = ~"\"" Or 
                chr$ = "+" Or 
 chr$ = "-" Or 
 chr$ = "*" Or 
@@ -13746,8 +13745,7 @@ chr$ = ","
                chr$ = "[" Or 
                chr$ = "{" Or 
                chr$ = "=" Or 
-               chr$ = "'" Or 
-               ; chr$ = ~"\"" Or
+               chr$ = "'" Or ; chr$ = ~"\"" Or
                chr$ = "+" Or 
 chr$ = "-" Or 
 chr$ = "*" Or 
@@ -13765,20 +13763,20 @@ chr$ = ","
          EndIf
       EndProcedure
       
-      ;\\ Macro edit_row_caret_1_( _this_ ): _this_\txt\caret\pos[3]: EndMacro
+      ;\\ Macro edit_row_caret_1_( _this_ ): _this_\text\caret\pos[3]: EndMacro
       
       Macro edit_string_x_( _this_, _mode_ )
-         ( row_x_( _this_, _this_\__lines( ) ) + _this_\__lines( )\txt\edit#_mode_\x )
+         ( row_x_( _this_, _this_\__lines( ) ) + _this_\__lines( )\text\edit#_mode_\x )
       EndMacro
       
       Macro edit_string_y_( _this_, _mode_ ) ; пока не используется
-         ( row_y_( _this_, _this_\__lines( ) ) + _this_\__lines( )\txt\edit#_mode_\y )
+         ( row_y_( _this_, _this_\__lines( ) ) + _this_\__lines( )\text\edit#_mode_\y )
       EndMacro
       
       Macro edit_change_text_( _address_, _char_len_ = 0, _position_ = )
-         _address_\txt\edit#_position_\len + _char_len_
-         _address_\txt\len      = _address_\txt\edit[1]\len + _address_\txt\edit[3]\len
-         _address_\txt\string.s = Left( _address_\txt\string.s, _address_\txt\edit[1]\len ) + Right( _address_\txt\string.s, _address_\txt\edit[3]\len )
+         _address_\text\edit#_position_\len + _char_len_
+         _address_\text\len      = _address_\text\edit[1]\len + _address_\text\edit[3]\len
+         _address_\text\string.s = Left( _address_\text\string.s, _address_\text\edit[1]\len ) + Right( _address_\text\string.s, _address_\text\edit[3]\len )
       EndMacro
       
       ;-
@@ -13795,13 +13793,13 @@ chr$ = ","
       EndMacro
       
       Macro edit_sel_reset_( _this_ )
-         If _this_\txt\edit[2]\width <> 0
+         If _this_\text\edit[2]\width <> 0
             ; вызывать если только строки выделени
-            If _this_\txt\multiLine
+            If _this_\text\multiLine
                PushListPosition( _this_\__lines( ) )
                ForEach _this_\__lines( )
-                  If _this_\__lines( )\txt\edit[2]\width <> 0
-                     ; Debug " remove - " +" "+ _this_\__lines( )\txt\string
+                  If _this_\__lines( )\text\edit[2]\width <> 0
+                     ; Debug " remove - " +" "+ _this_\__lines( )\text\string
                      edit_sel_string_( _this_, _this_\__lines( ), #__sel_to_remove )
                   EndIf
                Next
@@ -13822,20 +13820,20 @@ chr$ = ","
          Protected result.i, i.i, char.i
          
          ; | <<<<<< left edge of the word
-         char = Asc( Mid( *rowLine\txt\string, caret + 1, 1 ))
+         char = Asc( Mid( *rowLine\text\string, caret + 1, 1 ))
          If edit_sel_end_( char )
-            result = *rowLine\txt\pos + caret
+            result = *rowLine\text\pos + caret
          Else
-            result = *rowLine\txt\pos
+            result = *rowLine\text\pos
             For i = caret To 1 Step - 1
-               char = Asc( Mid( *rowLine\txt\string, i, 1 ))
+               char = Asc( Mid( *rowLine\text\string, i, 1 ))
                If edit_sel_end_( char )
-                  result = *rowLine\txt\pos + i
+                  result = *rowLine\text\pos + i
                   Break
                EndIf
             Next
          EndIf
-         ;Debug result - *rowLine\txt\pos
+         ;Debug result - *rowLine\text\pos
          
          ProcedureReturn result
       EndProcedure
@@ -13844,15 +13842,15 @@ chr$ = ","
          Protected result.i, i.i, char.i
          
          ; >>>>>> | right edge of the word
-         char = Asc( Mid( *rowLine\txt\string, caret, 1 ))
+         char = Asc( Mid( *rowLine\text\string, caret, 1 ))
          If edit_sel_end_( char )
-            result.i = *rowLine\txt\pos + caret
+            result.i = *rowLine\text\pos + caret
          Else
-            result.i = *rowLine\txt\pos + *rowLine\txt\len
-            For i = caret + 1 To *rowLine\txt\len
-               char = Asc( Mid( *rowLine\txt\string, i, 1 ))
+            result.i = *rowLine\text\pos + *rowLine\text\len
+            For i = caret + 1 To *rowLine\text\len
+               char = Asc( Mid( *rowLine\text\string, i, 1 ))
                If edit_sel_end_( char )
-                  result = *rowLine\txt\pos + ( i - 1 )
+                  result = *rowLine\text\pos + ( i - 1 )
                   Break
                EndIf
             Next
@@ -13898,50 +13896,50 @@ chr$ = ","
          ElseIf mode = #__sel_to_set
             
             CaretLeftPos  = 0
-            CaretRightPos = *rowLine\txt\len
+            CaretRightPos = *rowLine\text\len
             *rowLine\selector  = lastselectlen
             
          ElseIf mode = #__sel_to_first
             
             CaretLeftPos = 0
             If *rowLine = *this\LinePressed( )
-               CaretRightPos = *this\edit_caret_2( ) - *rowLine\txt\pos
+               CaretRightPos = *this\edit_caret_2( ) - *rowLine\text\pos
             Else
-               CaretRightPos = *rowLine\txt\len
+               CaretRightPos = *rowLine\text\len
                *rowLine\selector  = lastselectlen
             EndIf
-            ;\\ *this\edit_caret_1( ) = *rowLine\txt\pos
+            ;\\ *this\edit_caret_1( ) = *rowLine\text\pos
             
          ElseIf mode = #__sel_to_last
             
             If *rowLine = *this\LinePressed( )
-               CaretLeftPos = *this\edit_caret_2( ) - *rowLine\txt\pos
+               CaretLeftPos = *this\edit_caret_2( ) - *rowLine\text\pos
             Else
                CaretLeftPos = 0
             EndIf
-            CaretRightPos = *rowLine\txt\len
+            CaretRightPos = *rowLine\text\len
             
             If *rowLine\lindex <> *this\countitems - 1
                *rowLine\selector = lastselectlen
             EndIf
-            ;\\ *this\edit_caret_1( ) = *rowLine\txt\pos + *rowLine\txt\len
+            ;\\ *this\edit_caret_1( ) = *rowLine\text\pos + *rowLine\text\len
             
          ElseIf mode = #__sel_to_line
             
             If *this\edit_caret_1( ) >= *this\edit_caret_2( )
-               If *rowLine\txt\pos <= *this\edit_caret_2( )
-                  CaretLeftPos = *this\edit_caret_2( ) - *rowLine\txt\pos
+               If *rowLine\text\pos <= *this\edit_caret_2( )
+                  CaretLeftPos = *this\edit_caret_2( ) - *rowLine\text\pos
                EndIf
-               CaretRightPos = *this\edit_caret_1( ) - *rowLine\txt\pos
+               CaretRightPos = *this\edit_caret_1( ) - *rowLine\text\pos
             Else
-               CaretLeftPos = *this\edit_caret_1( ) - *rowLine\txt\pos
-               If *this\edit_caret_2( ) > ( *rowLine\txt\pos + *rowLine\txt\len )
+               CaretLeftPos = *this\edit_caret_1( ) - *rowLine\text\pos
+               If *this\edit_caret_2( ) > ( *rowLine\text\pos + *rowLine\text\len )
                   If *rowLine <> *this\LinePressed( )
                      *rowLine\selector = lastselectlen
                   EndIf
-                  CaretRightPos = *rowLine\txt\len
+                  CaretRightPos = *rowLine\text\len
                Else
-                  CaretRightPos = *this\edit_caret_2( ) - *rowLine\txt\pos
+                  CaretRightPos = *this\edit_caret_2( ) - *rowLine\text\pos
                EndIf
             EndIf
             
@@ -13951,69 +13949,69 @@ chr$ = ","
             ; Debug "caret change " + CaretLeftPos +" "+ CaretRightPos
          EndIf
          
-         *rowLine\txt\edit[1]\pos = 0
-         *rowLine\txt\edit[2]\pos = CaretLeftPos  ; - *rowLine\txt\pos
-         *rowLine\txt\edit[3]\pos = CaretRightPos ; - *rowLine\txt\pos
+         *rowLine\text\edit[1]\pos = 0
+         *rowLine\text\edit[2]\pos = CaretLeftPos  ; - *rowLine\text\pos
+         *rowLine\text\edit[3]\pos = CaretRightPos ; - *rowLine\text\pos
          
-         *rowLine\txt\edit[1]\len = *rowLine\txt\edit[2]\pos
-         *rowLine\txt\edit[2]\len = *rowLine\txt\edit[3]\pos - *rowLine\txt\edit[2]\pos
-         *rowLine\txt\edit[3]\len = *rowLine\txt\len - *rowLine\txt\edit[3]\pos
+         *rowLine\text\edit[1]\len = *rowLine\text\edit[2]\pos
+         *rowLine\text\edit[2]\len = *rowLine\text\edit[3]\pos - *rowLine\text\edit[2]\pos
+         *rowLine\text\edit[3]\len = *rowLine\text\len - *rowLine\text\edit[3]\pos
          
          ; item left text
-         If *rowLine\txt\edit[1]\len > 0
-            *rowLine\txt\edit[1]\string = Left( *rowLine\txt\string, *rowLine\txt\edit[1]\len )
-            *rowLine\txt\edit[1]\width  = TextWidth( *rowLine\txt\edit[1]\string )
-            *rowLine\txt\edit[1]\y      = *rowLine\txt\y
-            *rowLine\txt\edit[1]\height = *rowLine\txt\height
+         If *rowLine\text\edit[1]\len > 0
+            *rowLine\text\edit[1]\string = Left( *rowLine\text\string, *rowLine\text\edit[1]\len )
+            *rowLine\text\edit[1]\width  = TextWidth( *rowLine\text\edit[1]\string )
+            *rowLine\text\edit[1]\y      = *rowLine\text\y
+            *rowLine\text\edit[1]\height = *rowLine\text\height
          Else
-            *rowLine\txt\edit[1]\string = ""
-            *rowLine\txt\edit[1]\width  = 0
+            *rowLine\text\edit[1]\string = ""
+            *rowLine\text\edit[1]\width  = 0
          EndIf
          ; item right text
-         If *rowLine\txt\edit[3]\len       > 0
-            *rowLine\txt\edit[3]\y         = *rowLine\txt\y
-            *rowLine\txt\edit[3]\height    = *rowLine\txt\height
-            If *rowLine\txt\edit[3]\len    = *rowLine\txt\len
-               *rowLine\txt\edit[3]\string = *rowLine\txt\string
-               *rowLine\txt\edit[3]\width  = *rowLine\txt\width
+         If *rowLine\text\edit[3]\len       > 0
+            *rowLine\text\edit[3]\y         = *rowLine\text\y
+            *rowLine\text\edit[3]\height    = *rowLine\text\height
+            If *rowLine\text\edit[3]\len    = *rowLine\text\len
+               *rowLine\text\edit[3]\string = *rowLine\text\string
+               *rowLine\text\edit[3]\width  = *rowLine\text\width
             Else
-               *rowLine\txt\edit[3]\string = Right( *rowLine\txt\string, *rowLine\txt\edit[3]\len )
-               *rowLine\txt\edit[3]\width  = TextWidth( *rowLine\txt\edit[3]\string )
+               *rowLine\text\edit[3]\string = Right( *rowLine\text\string, *rowLine\text\edit[3]\len )
+               *rowLine\text\edit[3]\width  = TextWidth( *rowLine\text\edit[3]\string )
             EndIf
          Else
-            *rowLine\txt\edit[3]\string = ""
-            *rowLine\txt\edit[3]\width  = 0
+            *rowLine\text\edit[3]\string = ""
+            *rowLine\text\edit[3]\width  = 0
          EndIf
          ; item edit text
-         If *rowLine\txt\edit[2]\len       > 0
-            If *rowLine\txt\edit[2]\len    = *rowLine\txt\len
-               *rowLine\txt\edit[2]\string = *rowLine\txt\string
-               *rowLine\txt\edit[2]\width  = *rowLine\txt\width
+         If *rowLine\text\edit[2]\len       > 0
+            If *rowLine\text\edit[2]\len    = *rowLine\text\len
+               *rowLine\text\edit[2]\string = *rowLine\text\string
+               *rowLine\text\edit[2]\width  = *rowLine\text\width
             Else
-               *rowLine\txt\edit[2]\string = Mid( *rowLine\txt\string, 1 + *rowLine\txt\edit[2]\pos, *rowLine\txt\edit[2]\len )
-               *rowLine\txt\edit[2]\width  = *rowLine\txt\width - ( *rowLine\txt\edit[1]\width + *rowLine\txt\edit[3]\width )
+               *rowLine\text\edit[2]\string = Mid( *rowLine\text\string, 1 + *rowLine\text\edit[2]\pos, *rowLine\text\edit[2]\len )
+               *rowLine\text\edit[2]\width  = *rowLine\text\width - ( *rowLine\text\edit[1]\width + *rowLine\text\edit[3]\width )
             EndIf
-            *rowLine\txt\edit[2]\y      = *rowLine\txt\y
-            *rowLine\txt\edit[2]\height = *rowLine\txt\height
+            *rowLine\text\edit[2]\y      = *rowLine\text\y
+            *rowLine\text\edit[2]\height = *rowLine\text\height
          Else
-            *rowLine\txt\edit[2]\string = ""
-            *rowLine\txt\edit[2]\width  = 0
+            *rowLine\text\edit[2]\string = ""
+            *rowLine\text\edit[2]\width  = 0
          EndIf
          
          ;
          If *rowLine\selector
-            *rowLine\txt\edit[2]\width + *rowLine\selector
+            *rowLine\text\edit[2]\width + *rowLine\selector
          EndIf
          
          ; Чтобы знать что строки выделени
-         If *rowLine\txt\edit[2]\width
-            *this\txt\edit[2]\width = *rowLine\txt\edit[2]\width
+         If *rowLine\text\edit[2]\width
+            *this\text\edit[2]\width = *rowLine\text\edit[2]\width
          EndIf
          
          ; set text position
-         *rowLine\txt\edit[1]\x = *rowLine\txt\x
-         *rowLine\txt\edit[2]\x = *rowLine\txt\x + *rowLine\txt\edit[1]\width
-         *rowLine\txt\edit[3]\x = *rowLine\txt\x + *rowLine\txt\edit[1]\width + *rowLine\txt\edit[2]\width
+         *rowLine\text\edit[1]\x = *rowLine\text\x
+         *rowLine\text\edit[2]\x = *rowLine\text\x + *rowLine\text\edit[1]\width
+         *rowLine\text\edit[3]\x = *rowLine\text\x + *rowLine\text\edit[1]\width + *rowLine\text\edit[2]\width
          
          ProcedureReturn #True
       EndProcedure
@@ -14033,55 +14031,55 @@ chr$ = ","
             ;*this\LinePressed( ) = *this\__lines( )
             PopListPosition( *this\__lines( ) )
             *this\edit_caret_1( ) = 0
-            *this\edit_caret_2( ) = *this\txt\len
+            *this\edit_caret_2( ) = *this\text\len
             *this\LinePressed( )  = *this\LineFocused( )
          EndIf
          
          If *rowLine
             If *this\edit_caret_1( ) > *this\edit_caret_2( )
-               *this\txt\edit[2]\pos = *this\edit_caret_2( )
-               *this\txt\edit[3]\pos = *this\edit_caret_1( )
-               *this\txt\caret\x     = *rowLine\x + *rowLine\txt\edit[3]\x - 1
+               *this\text\edit[2]\pos = *this\edit_caret_2( )
+               *this\text\edit[3]\pos = *this\edit_caret_1( )
+               *this\text\caret\x     = *rowLine\x + *rowLine\text\edit[3]\x - 1
             Else
-               *this\txt\edit[2]\pos = *this\edit_caret_1( )
-               *this\txt\edit[3]\pos = *this\edit_caret_2( )
-               *this\txt\caret\x     = *rowLine\x + *rowLine\txt\edit[2]\x - 1
+               *this\text\edit[2]\pos = *this\edit_caret_1( )
+               *this\text\edit[3]\pos = *this\edit_caret_2( )
+               *this\text\caret\x     = *rowLine\x + *rowLine\text\edit[2]\x - 1
             EndIf
             
             
-            *this\txt\caret\height = *rowLine\txt\height
-            *this\txt\caret\y      = *rowLine\y
+            *this\text\caret\height = *rowLine\text\height
+            *this\text\caret\y      = *rowLine\y
             
-            ;       ;*this\txt\caret\x = 13
-            ;       ;Debug ""+*this\padding\x +" "+ *this\txt\caret\x +" "+ *this\edit_caret_1( ) +" "+ *rowLine\txt\edit[1]\string
+            ;       ;*this\text\caret\x = 13
+            ;       ;Debug ""+*this\padding\x +" "+ *this\text\caret\x +" "+ *this\edit_caret_1( ) +" "+ *rowLine\text\edit[1]\string
             ;       ;Debug TextWidth("W")
             
             ;
-            *this\txt\edit[1]\len = *this\txt\edit[2]\pos
-            *this\txt\edit[3]\len = ( *this\txt\len - *this\txt\edit[3]\pos )
+            *this\text\edit[1]\len = *this\text\edit[2]\pos
+            *this\text\edit[3]\len = ( *this\text\len - *this\text\edit[3]\pos )
             
-            If *this\txt\edit[2]\len <> ( *this\txt\edit[3]\pos - *this\txt\edit[2]\pos )
-               *this\txt\edit[2]\len = ( *this\txt\edit[3]\pos - *this\txt\edit[2]\pos )
+            If *this\text\edit[2]\len <> ( *this\text\edit[3]\pos - *this\text\edit[2]\pos )
+               *this\text\edit[2]\len = ( *this\text\edit[3]\pos - *this\text\edit[2]\pos )
             EndIf
-            ;;Debug ""+*this\edit_caret_1( ) +" "+ *this\txt\edit[3]\pos;*this\txt\edit[2]\len;*this\txt\edit[2]\string
+            ;;Debug ""+*this\edit_caret_1( ) +" "+ *this\text\edit[3]\pos;*this\text\edit[2]\len;*this\text\edit[2]\string
             
             ; left text
-            If *this\txt\edit[1]\len > 0
-               *this\txt\edit[1]\string = Left( *this\txt\string.s, *this\txt\edit[1]\len )
+            If *this\text\edit[1]\len > 0
+               *this\text\edit[1]\string = Left( *this\text\string.s, *this\text\edit[1]\len )
             Else
-               *this\txt\edit[1]\string = ""
+               *this\text\edit[1]\string = ""
             EndIf
             ; right text
-            If *this\txt\edit[3]\len > 0
-               *this\txt\edit[3]\string = Right( *this\txt\string.s, *this\txt\edit[3]\len )
+            If *this\text\edit[3]\len > 0
+               *this\text\edit[3]\string = Right( *this\text\string.s, *this\text\edit[3]\len )
             Else
-               *this\txt\edit[3]\string = ""
+               *this\text\edit[3]\string = ""
             EndIf
             ; edit text
-            If *this\txt\edit[2]\len > 0
-               *this\txt\edit[2]\string = Mid( *this\txt\string.s, 1 + *this\txt\edit[2]\pos, *this\txt\edit[2]\len )
+            If *this\text\edit[2]\len > 0
+               *this\text\edit[2]\string = Mid( *this\text\string.s, 1 + *this\text\edit[2]\pos, *this\text\edit[2]\len )
             Else
-               *this\txt\edit[2]\string = ""
+               *this\text\edit[2]\string = ""
             EndIf
             
             ProcedureReturn 1
@@ -14097,10 +14095,10 @@ chr$ = ","
          If *rowLine 
             edit_redraw_font( *this )
             
-            mouse_x = mouse( )\x - row_x_( *this, *rowLine ) - *rowLine\txt\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
+            mouse_x = mouse( )\x - row_x_( *this, *rowLine ) - *rowLine\text\x - *this\scroll_x( ) - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) ; надо узнать, думаю это связано с DrawRotateText( )
             
-            For i = 0 To *rowLine\txt\len
-               caret_x = TextWidth( Left( *rowLine\txt\string, i ))
+            For i = 0 To *rowLine\text\len
+               caret_x = TextWidth( Left( *rowLine\text\string, i ))
                Distance = ( mouse_x - caret_x ) * ( mouse_x - caret_x )
                
                If MinDistance >= Distance
@@ -14120,10 +14118,10 @@ chr$ = ","
          bar_area_update( *this )
          
          ; make horizontal scroll x
-         make_scrollarea_x( *this, *this\scroll_width( ), *this\txt\align )
+         make_scrollarea_x( *this, *this\scroll_width( ), *this\text\align )
          
          ; make vertical scroll y
-         make_scrollarea_y( *this, *this\scroll_height( ), *this\txt\align )
+         make_scrollarea_y( *this, *this\scroll_height( ), *this\text\align )
          
          If *this\scroll\v And
             bar_PageChange( *this\scroll\v, - *this\scroll_y( ) )
@@ -14138,7 +14136,7 @@ chr$ = ","
          Protected String.s, i.i, Len.i
          
          With *this
-            If *this\txt\numeric And Text.s <> #LF$
+            If *this\text\numeric And Text.s <> #LF$
                Static Dot, Minus
                Protected Chr.s, Input.i, left.s, count.i
                
@@ -14157,22 +14155,22 @@ chr$ = ","
                   
                   If Input
                      If *this\type = #__type_IPAddress
-                        left.s = Left( *this\txt\string, *this\edit_caret_1( ) )
+                        left.s = Left( *this\text\string, *this\edit_caret_1( ) )
                         Select CountString( left.s, "." )
                            Case 0 : left.s = StringField( left.s, 1, "." )
                            Case 1 : left.s = StringField( left.s, 2, "." )
                            Case 2 : left.s = StringField( left.s, 3, "." )
                            Case 3 : left.s = StringField( left.s, 4, "." )
                         EndSelect
-                        count = Len( left.s + Trim( StringField( Mid( *this\txt\string, *this\edit_caret_1( ) + 1 ), 1, "." ), #LF$ ))
+                        count = Len( left.s + Trim( StringField( Mid( *this\text\string, *this\edit_caret_1( ) + 1 ), 1, "." ), #LF$ ))
                         If count < 3 And ( Val( left.s ) > 25 Or Val( left.s + Chr.s ) > 255 )
                            Continue
-                           ;               ElseIf Mid( *this\txt\string, *this\edit_caret_1( ) + 1, 1 ) = "."
+                           ;               ElseIf Mid( *this\text\string, *this\edit_caret_1( ) + 1, 1 ) = "."
                            ;                 *this\edit_caret_1( ) + 1 : *this\edit_caret_2( ) = *this\edit_caret_1( )
                         EndIf
                      EndIf
                      
-                     If Not Dot And Input = '.' And Mid( *this\txt\string, *this\edit_caret_1( ) + 1, 1 ) <> "."
+                     If Not Dot And Input = '.' And Mid( *this\text\string, *this\edit_caret_1( ) + 1, 1 ) <> "."
                         Dot = 1
                      ElseIf Input <> '.' And count < 3
                         Dot = 0
@@ -14180,7 +14178,7 @@ chr$ = ","
                         Continue
                      EndIf
                      
-                     If Not Minus And Input = '-' And Mid( *this\txt\string, *this\edit_caret_1( ) + 1, 1 ) <> "-"
+                     If Not Minus And Input = '-' And Mid( *this\text\string, *this\edit_caret_1( ) + 1, 1 ) <> "-"
                         Minus = 1
                      ElseIf Input <> '-'
                         Minus = 0
@@ -14192,7 +14190,7 @@ chr$ = ","
                   EndIf
                Next
                
-            ElseIf *this\txt\pass
+            ElseIf *this\text\pass
                Len = Len( Text.s )
                CompilerIf #PB_Compiler_Version =< 546
                   For i = 1 To Len : String.s + "*" : Next
@@ -14202,8 +14200,8 @@ chr$ = ","
                
             Else
                Select #True
-                  Case *this\txt\lower : String.s = LCase( Text.s )
-                  Case *this\txt\upper : String.s = UCase( Text.s )
+                  Case *this\text\lower : String.s = LCase( Text.s )
+                  Case *this\text\upper : String.s = UCase( Text.s )
                   Default
                      String.s = Text.s
                EndSelect
@@ -14217,7 +14215,7 @@ chr$ = ","
       Procedure edit_key_change_text( *this._s_WIDGET, Chr.s = "" ) ; Ok
          Protected key = keyboard( )\key
          
-         If Not *this\txt\editable
+         If Not *this\text\editable
             ProcedureReturn 0
          EndIf
          If Not *this\LineFocused( )
@@ -14236,10 +14234,10 @@ chr$ = ","
                   *this\edit_caret_1( ) + Len( Chr.s )
                   *this\edit_caret_2( ) = *this\edit_caret_1( )
                   
-                  If *this\txt\edit[2]\len
-                     If *this\edit_caret_2( ) > *this\LineFocused( )\txt\pos
+                  If *this\text\edit[2]\len
+                     If *this\edit_caret_2( ) > *this\LineFocused( )\text\pos
                         Debug "bug insert "
-                        *this\LinePressedIndex( ) - CountString( *this\txt\edit[2]\string, #LF$) 
+                        *this\LinePressedIndex( ) - CountString( *this\text\edit[2]\string, #LF$) 
                      EndIf
                   EndIf
                   ;
@@ -14253,16 +14251,16 @@ chr$ = ","
                   
                   ;  Debug ""+ *this\LineFocusedIndex( ) +" "+ *this\LinePressedIndex( ) +" "+ *this\LineFocused( )\lindex
                   
-                  ;                *this\txt\edit[2]\len = 0
-                  ;                *this\txt\edit[2]\string.s = ""
+                  ;                *this\text\edit[2]\len = 0
+                  ;                *this\text\edit[2]\string.s = ""
                   
-                  ;                *this\txt\edit[1]\len + Len( Chr.s )
-                  ;                *this\txt\edit[1]\string.s + Chr.s
+                  ;                *this\text\edit[1]\len + Len( Chr.s )
+                  ;                *this\text\edit[1]\string.s + Chr.s
                   ;                               
-                  ;                *this\txt\len = *this\txt\edit[1]\len + *this\txt\edit[3]\len
-                  ;                *this\txt\string.s = *this\txt\edit[1]\string + *this\txt\edit[3]\string
+                  ;                *this\text\len = *this\text\edit[1]\len + *this\text\edit[3]\len
+                  ;                *this\text\string.s = *this\text\edit[1]\string + *this\text\edit[3]\string
                   
-                  *this\txt\string.s = *this\txt\edit[1]\string + Chr.s + *this\txt\edit[3]\string
+                  *this\text\string.s = *this\text\edit[1]\string + Chr.s + *this\text\edit[3]\string
                   
                   ;result             = 1
                   
@@ -14279,7 +14277,7 @@ chr$ = ","
             EndIf
          Else
             If key = #PB_Shortcut_X
-               If *this\txt\edit[2]\len
+               If *this\text\edit[2]\len
                   If *this\edit_caret_1( ) > *this\edit_caret_2( )
                      *this\edit_caret_1( ) = *this\edit_caret_2( )
                   Else
@@ -14292,12 +14290,12 @@ chr$ = ","
             
             ; key_backup
             If key = #PB_Shortcut_Back
-               If *this\txt\edit[1]\string
+               If *this\text\edit[1]\string
                   If *this\edit_caret_1( ) > *this\edit_caret_2( )
                      *this\edit_caret_1( ) = *this\edit_caret_2( )
                   EndIf
-                  If Not *this\txt\edit[2]\len
-                     *this\txt\edit[1]\string = Left( *this\txt\edit[1]\string, *this\txt\edit[1]\len - 1 )
+                  If Not *this\text\edit[2]\len
+                     *this\text\edit[1]\string = Left( *this\text\edit[1]\string, *this\text\edit[1]\len - 1 )
                      *this\edit_caret_1( ) - 1
                   EndIf
                   *this\edit_caret_2( )    = *this\edit_caret_1( )
@@ -14308,9 +14306,9 @@ chr$ = ","
             
             ; key_delete
             If key = #PB_Shortcut_Delete
-               If *this\txt\edit[3]\string
-                  If Not *this\txt\edit[2]\len
-                     *this\txt\edit[3]\string = Right( *this\txt\edit[3]\string, *this\txt\edit[3]\len - 1 )
+               If *this\text\edit[3]\string
+                  If Not *this\text\edit[2]\len
+                     *this\text\edit[3]\string = Right( *this\text\edit[3]\string, *this\text\edit[3]\len - 1 )
                   EndIf
                   ;
                   If *this\edit_caret_1( ) > *this\edit_caret_2( )
@@ -14324,7 +14322,7 @@ chr$ = ","
             EndIf
             
             If key = #PB_Shortcut_Return
-               If *this\txt\multiline
+               If *this\text\multiline
                   If *this\edit_caret_1( ) > *this\edit_caret_2( )
                      *this\edit_caret_1( ) = *this\edit_caret_2( )
                   EndIf
@@ -14338,7 +14336,7 @@ chr$ = ","
             ;
             If Not *this\notify
                If key = #PB_Shortcut_Return
-                  *this\txt\string.s = *this\txt\edit[1]\string + #LF$ + *this\txt\edit[3]\string
+                  *this\text\string.s = *this\text\edit[1]\string + #LF$ + *this\text\edit[3]\string
                   ;
                   If *this\LinePressedIndex( ) > *this\LineFocused( )\lindex
                      *this\LinePressedIndex( ) = *this\LineFocused( )\lindex + 1
@@ -14346,14 +14344,14 @@ chr$ = ","
                      *this\LinePressedIndex( ) + 1
                   EndIf
                Else
-                  *this\txt\string.s = *this\txt\edit[1]\string + *this\txt\edit[3]\string
+                  *this\text\string.s = *this\text\edit[1]\string + *this\text\edit[3]\string
                   ;
-                  If *this\txt\edit[2]\len
+                  If *this\text\edit[2]\len
                      If *this\LinePressedIndex( ) > *this\LineFocused( )\lindex
                         *this\LinePressedIndex( ) = *this\LineFocused( )\lindex
                      EndIf
                   Else
-                     If *this\edit_caret_2( ) < *this\LineFocused( )\txt\pos
+                     If *this\edit_caret_2( ) < *this\LineFocused( )\text\pos
                         *this\LinePressedIndex( ) - 1
                      EndIf
                   EndIf
@@ -14390,16 +14388,16 @@ chr$ = ","
                   If select_index = first_index
                      *this\edit_caret_1( ) = 0
                   Else
-                     ;\\ *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\edit_caret_0( )
-                     *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\LineFocused( )\edit_caret_1( )
+                     ;\\ *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\edit_caret_0( )
+                     *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\LineFocused( )\edit_caret_1( )
                   EndIf
                   
                   page_height = *this\inner_height( )
                   repaint     = 1
                EndIf
             Else
-               If *this\edit_caret_1( ) <> *this\LineFocused( )\txt\pos
-                  *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos
+               If *this\edit_caret_1( ) <> *this\LineFocused( )\text\pos
+                  *this\edit_caret_1( ) = *this\LineFocused( )\text\pos
                   repaint               = 1
                EndIf
             EndIf
@@ -14415,18 +14413,18 @@ chr$ = ","
                   edit_select_line_( *this, *this\LineFocused( ), select_index )
                   
                   If select_index = last_index
-                     *this\edit_caret_1( ) = *this\txt\len
+                     *this\edit_caret_1( ) = *this\text\len
                   Else
-                     ;\\ *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\edit_caret_0( )
-                     *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\LineFocused( )\edit_caret_1( )
+                     ;\\ *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\edit_caret_0( )
+                     *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\LineFocused( )\edit_caret_1( )
                   EndIf
                   
                   page_height = *this\inner_height( )
                   repaint     = 1
                EndIf
             Else
-               If *this\edit_caret_1( ) <> *this\LineFocused( )\txt\pos + *this\LineFocused( )\txt\len
-                  *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\LineFocused( )\txt\len
+               If *this\edit_caret_1( ) <> *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
+                  *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
                   repaint               = 1
                EndIf
             EndIf
@@ -14460,8 +14458,8 @@ chr$ = ","
                result = 1
             EndIf
          Else
-            If *this\edit_caret_1( ) <> *this\LineFocused( )\txt\pos
-               *this\edit_caret_1( )     = *this\LineFocused( )\txt\pos
+            If *this\edit_caret_1( ) <> *this\LineFocused( )\text\pos
+               *this\edit_caret_1( )     = *this\LineFocused( )\text\pos
                *this\LinePressedIndex( ) = *this\LineFocused( )\lindex
                
                If test_edit_text
@@ -14473,8 +14471,8 @@ chr$ = ","
          
          If result
             *this\edit_caret_2( )     = *this\edit_caret_1( )
-            ;\\ *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\txt\pos
-            *this\LineFocused( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\LineFocused( )\txt\pos
+            ;\\ *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
+            *this\LineFocused( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
          EndIf
          
          ProcedureReturn result
@@ -14484,8 +14482,8 @@ chr$ = ","
          Protected result
          
          If keyboard( )\key[1] & #PB_Canvas_Control
-            If *this\edit_caret_1( ) <> *this\txt\len
-               *this\edit_caret_1( )     = *this\txt\len
+            If *this\edit_caret_1( ) <> *this\text\len
+               *this\edit_caret_1( )     = *this\text\len
                *this\LinePressedIndex( ) = *this\countitems - 1
                
                If test_edit_text
@@ -14494,8 +14492,8 @@ chr$ = ","
                result = 1
             EndIf
          Else
-            If *this\edit_caret_1( ) <> *this\LineFocused( )\txt\pos + *this\LineFocused( )\txt\len
-               *this\edit_caret_1( )     = *this\LineFocused( )\txt\pos + *this\LineFocused( )\txt\len
+            If *this\edit_caret_1( ) <> *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
+               *this\edit_caret_1( )     = *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
                *this\LinePressedIndex( ) = *this\LineFocused( )\lindex
                
                If test_edit_text
@@ -14507,8 +14505,8 @@ chr$ = ","
          
          If result
             *this\edit_caret_2( )     = *this\edit_caret_1( )
-            ;\\ *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\txt\pos
-            *this\LineFocused( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\LineFocused( )\txt\pos
+            ;\\ *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
+            *this\LineFocused( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
          EndIf
          
          ProcedureReturn result
@@ -14529,7 +14527,7 @@ chr$ = ","
             *rowLine   = SelectElement( e_rows( ), position )
             add_index  = e_rows( )\lindex
             ;             add_y      = e_rows( )\y + Bool( #PB_Compiler_OS = #PB_OS_Windows )
-            add_pos    = e_rows( )\txt\pos
+            add_pos    = e_rows( )\text\pos
             ;             add_height = e_rows( )\height + *this\mode\gridlines
             *rowLine   = InsertElement( e_rows( ))
             
@@ -14537,60 +14535,60 @@ chr$ = ","
             While NextElement( e_rows( ))
                e_rows( )\lindex = ListIndex( e_rows( ) )
                ;                e_rows( )\y + add_height
-               e_rows( )\txt\pos + string_len + Len( #LF$ )
+               e_rows( )\text\pos + string_len + Len( #LF$ )
             Wend
             PopListPosition(e_rows( ))
          EndIf
          
          ;\\
          e_rows( )\lindex      = position
-         e_rows( )\txt\len    = string_len
+         e_rows( )\text\len    = string_len
          If *text
-            e_rows( )\txt\string = PeekS ( *text, string_len )
+            e_rows( )\text\string = PeekS ( *text, string_len )
          EndIf
          
-         e_rows( )\height = e_rows( )\txt\height
+         e_rows( )\height = e_rows( )\text\height
          e_rows( )\width  = *this\inner_width( )
          
          e_rows( )\color  = _get_colors_( )
          
          If add_index >= 0
-            e_rows( )\txt\pos = add_pos
+            e_rows( )\text\pos = add_pos
          Else
-            If *this\txt\len
-               e_rows( )\txt\pos = *this\txt\len 
+            If *this\text\len
+               e_rows( )\text\pos = *this\text\len 
                If position > count
-                  e_rows( )\txt\pos + 1
+                  e_rows( )\text\pos + 1
                EndIf
             EndIf
          EndIf
          
          ;          ; make line position
-         ;          If *this\txt\vertical
+         ;          If *this\text\vertical
          ;          Else ; horizontal
-         ;             If *this\scroll_width( ) < e_rows( )\txt\width + *this\padding\x * 2
-         ;                *this\scroll_width( ) = e_rows( )\txt\width + *this\padding\x * 2
+         ;             If *this\scroll_width( ) < e_rows( )\text\width + *this\padding\x * 2
+         ;                *this\scroll_width( ) = e_rows( )\text\width + *this\padding\x * 2
          ;             EndIf
          ;             
-         ;             If *this\txt\rotate = 0
+         ;             If *this\text\rotate = 0
          ;                If add_index >= 0
          ;                   e_rows( )\y        = add_y - *this\padding\y
          ;                Else
          ;                   e_rows( )\y        = *this\scroll_height( ) - *this\padding\y
          ;                EndIf
-         ;             ElseIf *this\txt\rotate = 180
-         ;                e_rows( )\y = ( *this\inner_height( ) - *this\scroll_height( ) - e_rows( )\txt\height ) + *this\padding\y
+         ;             ElseIf *this\text\rotate = 180
+         ;                e_rows( )\y = ( *this\inner_height( ) - *this\scroll_height( ) - e_rows( )\text\height ) + *this\padding\y
          ;             EndIf
          ;             
          ;             *this\scroll_height( ) + e_rows( )\height + *this\mode\gridlines
          ;          EndIf
          
          *this\countitems + 1
-         *this\txt\len + string_len + Len( #LF$ )
+         *this\text\len + string_len + Len( #LF$ )
       EndProcedure
       
       Procedure edit_AddItem( *this._s_WIDGET, position, *text.Character, string_len )
-         ; edit_AddLine(*this, *this\__lines( ), position, *text, string_len, 0);CountString( *this\txt\string, #LF$ ) )
+         ; edit_AddLine(*this, *this\__lines( ), position, *text, string_len, 0);CountString( *this\text\string, #LF$ ) )
          
          Protected add_index = - 1, add_pos
          
@@ -14601,48 +14599,48 @@ chr$ = ","
          Else
             SelectElement( *this\__lines( ), position )
             add_index  = *this\__lines( )\lindex
-            add_pos    = *this\__lines( )\txt\pos
+            add_pos    = *this\__lines( )\text\pos
             InsertElement( *this\__lines( ))
             
             PushListPosition( *this\__lines( ))
             While NextElement( *this\__lines( ))
                *this\__lines( )\lindex = ListIndex( *this\__lines( ) )
-               *this\__lines( )\txt\pos + string_len + Len( #LF$ )
+               *this\__lines( )\text\pos + string_len + Len( #LF$ )
             Wend
             PopListPosition(*this\__lines( ))
          EndIf
          
          ;\\
          *this\__lines( )\lindex      = position
-         *this\__lines( )\txt\len    = string_len
+         *this\__lines( )\text\len    = string_len
          If *text
-            *this\__lines( )\txt\string = PeekS ( *text, string_len )
+            *this\__lines( )\text\string = PeekS ( *text, string_len )
          EndIf
          
          If add_index >= 0
-            *this\__lines( )\txt\pos = add_pos
+            *this\__lines( )\text\pos = add_pos
          Else
-            *this\__lines( )\txt\pos = *this\txt\len 
+            *this\__lines( )\text\pos = *this\text\len 
             If position > 0
-               *this\__lines( )\txt\pos + 1
+               *this\__lines( )\text\pos + 1
             EndIf
          EndIf
          
          *this\countitems + 1
-         *this\txt\len + string_len + Len( #LF$ )
+         *this\text\len + string_len + Len( #LF$ )
          
          
-         ; Debug ""+*this\__lines( )\lindex +" "+ *this\__lines( )\txt\pos
+         ; Debug ""+*this\__lines( )\lindex +" "+ *this\__lines( )\text\pos
          
          ; insert line 
-         If *this\__lines( )\txt\pos = 0
-            If *this\txt\string
-               *this\txt\string = InsertString( *this\txt\string, *this\__lines( )\txt\string + #LF$, 1)
+         If *this\__lines( )\text\pos = 0
+            If *this\text\string
+               *this\text\string = InsertString( *this\text\string, *this\__lines( )\text\string + #LF$, 1)
             Else
-               *this\txt\string = InsertString( *this\txt\string, *this\__lines( )\txt\string, 1)
+               *this\text\string = InsertString( *this\text\string, *this\__lines( )\text\string, 1)
             EndIf
          Else
-            *this\txt\string = InsertString( *this\txt\string, #LF$ + *this\__lines( )\txt\string, *this\__lines( )\txt\pos )
+            *this\text\string = InsertString( *this\text\string, #LF$ + *this\__lines( )\text\string, *this\__lines( )\text\pos )
          EndIf
          
          ;
@@ -14677,13 +14675,13 @@ chr$ = ","
             
             ;
             If state < 0 Or
-               state > *this\LineFocused( )\txt\len
-               state = *this\LineFocused( )\txt\len
+               state > *this\LineFocused( )\text\len
+               state = *this\LineFocused( )\text\len
             EndIf
             
             *this\edit_caret_0( ) = State
-            *this\edit_caret_1( ) = State + *this\LineFocused( )\txt\pos
-            *this\edit_caret_2( ) = State + *this\LineFocused( )\txt\pos
+            *this\edit_caret_1( ) = State + *this\LineFocused( )\text\pos
+            *this\edit_caret_2( ) = State + *this\LineFocused( )\text\pos
             
             ;
             edit_sel_string_( *this, *this\LineFocused( ) )
@@ -14695,15 +14693,15 @@ chr$ = ","
       
       Procedure edit_SetState( *this._s_WIDGET, State.i )
          If state < 0 Or
-            state > *this\txt\len
-            state = *this\txt\len
+            state > *this\text\len
+            state = *this\text\len
          EndIf
          
          If *this\edit_caret_1( ) <> State
             PushListPosition( *this\__lines( ) )
             ForEach *this\__lines( )
-               If *this\__lines( )\txt\pos <= state And
-                  *this\__lines( )\txt\pos + *this\__lines( )\txt\len >= state
+               If *this\__lines( )\text\pos <= state And
+                  *this\__lines( )\text\pos + *this\__lines( )\text\len >= state
                   
                   If *this\LineFocused( ) <> *this\__lines( )
                      If *this\LineFocused( )
@@ -14731,7 +14729,7 @@ chr$ = ","
             ;
             *this\edit_caret_1( ) = State
             *this\edit_caret_2( ) = State
-            *this\edit_caret_0( ) = State - *this\LineFocused( )\txt\pos
+            *this\edit_caret_0( ) = State - *this\LineFocused( )\text\pos
             
             ;
             edit_sel_string_( *this, *this\LineFocused( ) )
@@ -14750,7 +14748,7 @@ chr$ = ","
          
          If *this\type = #__type_Tree
             If *this\RowFocused( )
-               *this\RowFocused( )\txt\string = Text
+               *this\RowFocused( )\text\string = Text
             EndIf
          EndIf
          
@@ -14759,8 +14757,8 @@ chr$ = ","
                ProcedureReturn SetText( *this\stringbar, Text )
             Else
                ; ProcedureReturn SetText( *this, Text )
-               If *This\txt\string.s <> Text.s
-                  *This\txt\string.s = Text.s
+               If *This\text\string.s <> Text.s
+                  *This\text\string.s = Text.s
                   *this\TextChange( ) = #True
                   result              = #True
                   PostRepaint( *this\root )
@@ -14778,16 +14776,16 @@ chr$ = ","
             Text.s = ReplaceString( Text.s, #CRLF$, #LF$ )
             Text.s = ReplaceString( Text.s, #CR$, #LF$ )
             ;
-            If *this\txt\multiline = 0
+            If *this\text\multiline = 0
                Text.s = edit_make_insert_text( *this, Text.s )
                Text.s = RemoveString( Text.s, #LF$ )
             EndIf
             
-            If *This\txt\string.s <> Text.s
-               *This\txt\string.s = Text.s
+            If *This\text\string.s <> Text.s
+               *This\text\string.s = Text.s
                ;
-               If *this\txt\pass
-                  *this\txt\pass$ = *this\txt\string
+               If *this\text\pass
+                  *this\text\pass$ = *this\text\string
                EndIf
                
                ; ;                ;
@@ -14798,7 +14796,7 @@ chr$ = ","
                ;                ;                Protected focus_index = - 1: If *this\LineFocused( ): focus_index = *this\LineFocused( )\lindex: *this\LineFocused( ) = #Null: EndIf
                ;                ;                Protected press_index = - 1: If *this\LinePressed( ): press_index = *this\LinePressed( )\lindex: *this\LinePressed( ) = #Null: EndIf
                ;                
-               ;                *this\txt\len = 0;Len(Text.s)
+               ;                *this\text\len = 0;Len(Text.s)
                ;                *this\countitems = 0
                ;                ClearList( *this\__lines( ))
                ;                
@@ -14812,10 +14810,10 @@ chr$ = ","
                ;                      LastElement( *this\__lines( ))
                ;                      AddElement( *this\__lines( ))
                ;                      *this\__lines( )\lindex = ListIndex( *this\__lines( ))
-               ;                      *this\__lines( )\txt\len  = (*end - *str) >> #PB_Compiler_Unicode
-               ;                      *this\__lines( )\txt\string = PeekS ( *str, *this\__lines( )\txt\len )
-               ;                      *this\__lines( )\txt\pos = *this\txt\len 
-               ;                      *this\txt\len + *this\__lines( )\txt\len + len
+               ;                      *this\__lines( )\text\len  = (*end - *str) >> #PB_Compiler_Unicode
+               ;                      *this\__lines( )\text\string = PeekS ( *str, *this\__lines( )\text\len )
+               ;                      *this\__lines( )\text\pos = *this\text\len 
+               ;                      *this\text\len + *this\__lines( )\text\len + len
                ;                      *this\countitems + 1
                ;                      
                ;                      
@@ -14830,7 +14828,7 @@ chr$ = ","
                ;                Wend
                ;                
                ;                ;
-               ;                *this\txt\len - len
+               ;                *this\text\len - len
                
                ;; ReDraw(*this\root)
                ;*this\TextChange( )   = 1
@@ -14854,7 +14852,7 @@ chr$ = ","
                ProcedureReturn 1
             EndIf
          Else
-            ;         If *this\txt\multiline = 0
+            ;         If *this\text\multiline = 0
             ;           Text = RemoveString( Text, #LF$ )
             ;         EndIf
             
@@ -14863,8 +14861,8 @@ chr$ = ","
             Text = ReplaceString( Text, #CR$, #LF$ )
             ;Text + #LF$
             
-            If *This\txt\string.s <> Text.s
-               *This\txt\string.s = Text.s
+            If *This\text\string.s <> Text.s
+               *This\text\string.s = Text.s
                *this\TextChange( ) = #True
                result              = #True
                PostRepaint( *This\root )
@@ -14909,7 +14907,7 @@ chr$ = ","
                draw_mode_alpha_( #PB_2DDrawing_Default )
                draw_box_( 0, 1, *tt\width, *tt\height - 2, *color\back[*color\state] )
                draw_mode_( #PB_2DDrawing_Transparent )
-               DrawText( *tt\txt\x, *tt\txt\y, *tt\txt\string, *color\front[*color\state] )
+               DrawText( *tt\text\x, *tt\text\y, *tt\text\string, *color\front[*color\state] )
                draw_mode_( #PB_2DDrawing_Outlined )
                Line( 0, 0, *tt\width, 1, *color\frame[*color\state] )
                Line( 0, *tt\height - 1, *tt\width, 1, *color\frame[*color\state] )
@@ -14945,13 +14943,13 @@ chr$ = ","
                *this\RowToolTip( )\x       = X + *this\__rows( )\x + *this\__rows( )\width - 1
                *this\RowToolTip( )\y       = Y + *this\__rows( )\y - *this\scroll\v\bar\page\pos
                
-               *this\RowToolTip( )\width = *this\__rows( )\txt\width - *this\inner_width( ) + ( *this\__rows( )\txt\x - *this\__rows( )\x ) + 5 ; - ( *this\scroll_width( ) - *this\__rows( )\width )  ; - 32 + 5
+               *this\RowToolTip( )\width = *this\__rows( )\text\width - *this\inner_width( ) + ( *this\__rows( )\text\x - *this\__rows( )\x ) + 5 ; - ( *this\scroll_width( ) - *this\__rows( )\width )  ; - 32 + 5
                
                If *this\RowToolTip( )\width < 6
                   *this\RowToolTip( )\width = 0
                EndIf
                
-               ;Debug *this\RowToolTip( )\width ;Str( *this\__rows( )\txt\x - *this\__rows( )\x )
+               ;Debug *this\RowToolTip( )\width ;Str( *this\__rows( )\text\x - *this\__rows( )\x )
                
                *this\RowToolTip( )\height = *this\__rows( )\height
                Protected flag
@@ -14964,10 +14962,10 @@ chr$ = ","
                
                *this\RowToolTip( )\gadget      = CanvasGadget( #PB_Any, 0, 0, *this\RowToolTip( )\width, *this\RowToolTip( )\height )
                *this\RowToolTip( )\color       = *this\__rows( )\color
-               *this\RowToolTip( )\txt        = *this\__rows( )\txt
+               *this\RowToolTip( )\text        = *this\__rows( )\text
                
-               *this\RowToolTip( )\txt\x      = - ( *this\inner_width( ) - ( *this\__rows( )\txt\x - *this\__rows( )\x )) + 1
-               *this\RowToolTip( )\txt\y      = ( *this\__rows( )\txt\y - *this\__rows( )\y ) + *this\scroll\v\bar\page\pos
+               *this\RowToolTip( )\text\x      = - ( *this\inner_width( ) - ( *this\__rows( )\text\x - *this\__rows( )\x )) + 1
+               *this\RowToolTip( )\text\y      = ( *this\__rows( )\text\y - *this\__rows( )\y ) + *this\scroll\v\bar\page\pos
                
                BindEvent( #PB_Event_ActivateWindow, @tt_tree_callBack( ), *this\RowToolTip( )\window )
                SetWindowData( *this\RowToolTip( )\window, *this\RowToolTip( ) )
@@ -15266,59 +15264,59 @@ chr$ = ","
                   *this\TextChange( ) = 1
                   ; 
                   If constants::BinaryFlag( Flag, #__flag_text_Invert )
-                     *this\txt\invert = state
+                     *this\text\invert = state
                   EndIf
                   If constants::BinaryFlag( Flag, #__flag_text_Vertical )
-                     *this\txt\vertical = state
+                     *this\text\vertical = state
                   EndIf
                   If constants::BinaryFlag( Flag, #__flag_text_wordwrap )
-                     *this\txt\multiline = - state
+                     *this\text\multiline = - state
                   EndIf
                   If constants::BinaryFlag( Flag, #__flag_text_multiline )
-                     *this\txt\multiline = state
+                     *this\text\multiline = state
                   EndIf
                   ;
                   If constants::BinaryFlag( Flag, #__flag_text_Left )
-                     *this\txt\align\left = state
+                     *this\text\align\left = state
                      ;
-                     If Not *this\txt\align\left 
+                     If Not *this\text\align\left 
                         If constants::BinaryFlag( *this\flag, #__flag_text_Right )
-                           *this\txt\align\right = #True
+                           *this\text\align\right = #True
                         EndIf
                      EndIf
                   EndIf
                   If constants::BinaryFlag( Flag, #__flag_text_Top )
-                     *this\txt\align\top = state
+                     *this\text\align\top = state
                      ;
-                     If Not *this\txt\align\top 
+                     If Not *this\text\align\top 
                         If constants::BinaryFlag( *this\flag, #__flag_text_Bottom )
-                           *this\txt\align\bottom = #True
+                           *this\text\align\bottom = #True
                         EndIf
                      EndIf
                   EndIf
                   If constants::BinaryFlag( Flag, #__flag_text_Right )
-                     *this\txt\align\right = state
+                     *this\text\align\right = state
                      ;
-                     If Not *this\txt\align\right 
+                     If Not *this\text\align\right 
                         If constants::BinaryFlag( *this\flag, #__flag_text_Left )
-                           *this\txt\align\left = #True
+                           *this\text\align\left = #True
                         EndIf
                      EndIf
                   EndIf
                   If constants::BinaryFlag( Flag, #__flag_text_Bottom )
-                     *this\txt\align\bottom = state
+                     *this\text\align\bottom = state
                      ;
-                     If Not *this\txt\align\bottom 
+                     If Not *this\text\align\bottom 
                         If constants::BinaryFlag( *this\flag, #__flag_text_Top )
-                           *this\txt\align\top = #True
+                           *this\text\align\top = #True
                         EndIf
                      EndIf
                   EndIf
                   If constants::BinaryFlag( Flag, #__flag_text_Center )
-                     *this\txt\align\left   = #False
-                     *this\txt\align\top    = #False
-                     *this\txt\align\right  = #False
-                     *this\txt\align\bottom = #False
+                     *this\text\align\left   = #False
+                     *this\text\align\top    = #False
+                     *this\text\align\right  = #False
+                     *this\text\align\bottom = #False
                   EndIf
                   ;
                   ;\\0в ,
@@ -15346,19 +15344,19 @@ chr$ = ","
                      EndIf
                      
                      ;\\ reset to center vertical
-                     If *this\txt\align\top = #True And
-                        *this\txt\align\bottom = #True
+                     If *this\text\align\top = #True And
+                        *this\text\align\bottom = #True
                         ;
-                        *this\txt\align\top    = #False
-                        *this\txt\align\bottom = #False
+                        *this\text\align\top    = #False
+                        *this\text\align\bottom = #False
                      EndIf
                      
                      ;\\ reset to center horizontal
-                     If *this\txt\align\left = #True And
-                        *this\txt\align\right = #True
+                     If *this\text\align\left = #True And
+                        *this\text\align\right = #True
                         ;
-                        *this\txt\align\left  = #False
-                        *this\txt\align\right = #False
+                        *this\text\align\left  = #False
+                        *this\text\align\right = #False
                      EndIf
                   EndIf
                EndIf
@@ -15540,10 +15538,10 @@ chr$ = ","
                          "#PB_ComboBox_Image"
                ;}
                
-            Case #__Type_Image          
+            Case #__type_image          
                ;{- Ok
-               result$ = "#PB_Image_Border|"+
-                         "#PB_Image_Raised"
+               result$ = "#PB_image_Border|"+
+                         "#PB_image_Raised"
                ;}
                
             Case #__Type_HyperLink      
@@ -15936,9 +15934,9 @@ chr$ = ","
                   Case "#PB_Window_Tool"                    : Flag = Flag | #PB_Window_Tool
                   Case "#PB_Window_ScreenCentered"          : Flag = Flag | #PB_Window_ScreenCentered
                   Case "#PB_Window_WindowCentered"          : Flag = Flag | #PB_Window_WindowCentered
-                     ; buttonimage 
-                  Case "#PB_Button_Image"                   : Flag = Flag | #PB_Button_Image
-                  Case "#PB_Button_PressedImage"            : Flag = Flag | #PB_Button_PressedImage
+                     ; buttonimg 
+                  Case "#PB_Button_image"                   : Flag = Flag | #PB_Button_Image
+                  Case "#PB_Button_Pressedimage"            : Flag = Flag | #PB_Button_PressedImage
                      ; button  
                   Case "#PB_Button_Default"                 : Flag = Flag | #PB_Button_Default
                   Case "#PB_Button_Left"                    : Flag = Flag | #PB_Button_Left
@@ -15974,9 +15972,9 @@ chr$ = ","
                   Case "#PB_ComboBox_Image"                 : Flag = Flag | #PB_ComboBox_Image
                   Case "#PB_ComboBox_LowerCase"             : Flag = Flag | #PB_ComboBox_LowerCase
                   Case "#PB_ComboBox_UpperCase"             : Flag = Flag | #PB_ComboBox_UpperCase
-                     ; image 
-                  Case "#PB_Image_Border"                   : Flag = Flag | #PB_Image_Border
-                  Case "#PB_Image_Raised"                   : Flag = Flag | #PB_Image_Raised
+                     ; img 
+                  Case "#PB_image_Border"                   : Flag = Flag | #PB_Image_Border
+                  Case "#PB_image_Raised"                   : Flag = Flag | #PB_Image_Raised
                      ; hyperlink 
                   Case "#PB_HyperLink_Underline"            : Flag = Flag | #PB_HyperLink_Underline
                      ; container 
@@ -16175,7 +16173,7 @@ chr$ = ","
             Case "unknown"       : result = #__type_Unknown
                
             Case "button"        : result = #__type_Button
-            Case "buttonimage"   : result = #__type_ButtonImage
+            Case "buttonimg"   : result = #__Type_ButtonImage
             Case "calendar"      : result = #__type_Calendar
             Case "checkbox"      : result = #__type_CheckBox
             Case "combobox"      : result = #__type_ComboBox
@@ -16187,7 +16185,7 @@ chr$ = ","
             Case "explorertree"  : result = #__type_ExplorerTree
             Case "frame"         : result = #__type_Frame
             Case "hyperlink"     : result = #__type_HyperLink
-            Case "image"         : result = #__type_Image
+            Case "img"         : result = #__type_image
             Case "ipaddress"     : result = #__type_IPAddress
             Case "listicon"      : result = #__type_ListIcon
             Case "listview"      : result = #__type_ListView
@@ -16228,7 +16226,7 @@ chr$ = ","
             Case #__type_Unknown       : result.s = "Create"
                
             Case #__type_Button        : result.s = "Button"
-            Case #__type_ButtonImage   : result.s = "ButtonImage"
+            Case #__Type_ButtonImage   : result.s = "Buttonimg"
             Case #__type_String        : result.s = "String"
             Case #__type_Text          : result.s = "Text"
             Case #__type_CheckBox      : result.s = "CheckBox"
@@ -16236,7 +16234,7 @@ chr$ = ","
             Case #__type_ListView      : result.s = "ListView"
             Case #__type_Frame         : result.s = "Frame"
             Case #__type_ComboBox      : result.s = "ComboBox"
-            Case #__type_Image         : result.s = "Image"
+            Case #__type_image         : result.s = "img"
             Case #__type_HyperLink     : result.s = "HyperLink"
             Case #__type_Container     : result.s = "Container"
             Case #__type_ListIcon      : result.s = "ListIcon"
@@ -17301,7 +17299,7 @@ chr$ = ","
                      ;                   *this\RowFocused( )\ColorState( ) = 0
                      ;                 EndIf
                      ;
-                     ;                 ; edit_sel__( *this, *this\RowLastVisible( ), *this\LinePressed( ), *this\RowFocused( ), 0, *this\RowFocused( )\txt\len )
+                     ;                 ; edit_sel__( *this, *this\RowLastVisible( ), *this\LinePressed( ), *this\RowFocused( ), 0, *this\RowFocused( )\text\len )
                      ;                 *this\RowFocused( ) = *this\RowLastVisible( )
                      ;                 ;*this\RowFocused( ) = SelectElement( *this\__rows( ), *this\RowLastVisible( )\rindex )
                      ;                 *this\RowFocused( )\_focus = 1
@@ -17379,36 +17377,36 @@ chr$ = ","
                         If *this\LineFocused( ) And *this\edit_caret_1( ) > 0
                            If keyboard( )\key[1] & #PB_Canvas_Shift
                               If *this\LineFocused( ) = *this\LinePressed( )
-                                 ;Debug " le top remove - Pressed  " +" "+ *this\LineFocused( )\txt\string
+                                 ;Debug " le top remove - Pressed  " +" "+ *this\LineFocused( )\text\string
                                  edit_sel_string_( *this, *this\LineFocused( ), #__sel_to_first )
                                  edit_sel_text_( *this, *this\LineFocused( ))
                               ElseIf *this\LineFocused( )\lindex > *this\LinePressed( )\lindex
-                                 ;Debug "  le top remove - " +" "+ *this\LineFocused( )\txt\string
+                                 ;Debug "  le top remove - " +" "+ *this\LineFocused( )\text\string
                                  edit_sel_string_( *this, *this\LineFocused( ), #__sel_to_remove )
                                  edit_sel_text_( *this, SelectElement(*lines( ), *this\LineFocused( )\lindex - 1))
                               Else
-                                 ;Debug " ^le bottom  set - " +" "+ *this\LineFocused( )\txt\string
+                                 ;Debug " ^le bottom  set - " +" "+ *this\LineFocused( )\text\string
                                  edit_sel_string_( *this, *this\LineFocused( ), #__sel_to_set )
                                  edit_sel_text_( *this, *this\LineFocused( ))
                               EndIf
                            EndIf
                            
                            If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos
-                              *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\txt\pos
+                              *this\edit_caret_1( ) = *this\LineFocused( )\text\pos
+                              *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
                            Else
                               If *this\LineFocused( )\lindex > 0
                                  *this\LineFocused( )\ColorState( ) = #__s_0
                                  *this\LineFocused( )             = SelectElement( *lines( ), *this\LineFocused( )\lindex - 1 )
                                  *this\LineFocused( )\ColorState( ) = #__s_1
                                  
-                                 If *this\edit_caret_0( ) > *this\LineFocused( )\txt\len
-                                    *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\LineFocused( )\txt\len
+                                 If *this\edit_caret_0( ) > *this\LineFocused( )\text\len
+                                    *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
                                  Else
-                                    *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\edit_caret_0( )
+                                    *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\edit_caret_0( )
                                  EndIf
                               Else
-                                 *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos
+                                 *this\edit_caret_1( ) = *this\LineFocused( )\text\pos
                               EndIf
                            EndIf
                            
@@ -17432,39 +17430,39 @@ chr$ = ","
                         EndIf
                         
                      Case #PB_Shortcut_Down     ; Ok
-                        If *this\LineFocused( ) And *this\edit_caret_1( ) < *this\txt\len
+                        If *this\LineFocused( ) And *this\edit_caret_1( ) < *this\text\len
                            If keyboard( )\key[1] & #PB_Canvas_Shift
                               If *this\LineFocused( ) = *this\LinePressed( )
-                                 ;Debug " le bottom  set - Pressed  " +" "+ *this\LineFocused( )\txt\string
+                                 ;Debug " le bottom  set - Pressed  " +" "+ *this\LineFocused( )\text\string
                                  edit_sel_string_( *this, *this\LineFocused( ), #__sel_to_last )
                                  edit_sel_text_( *this, *this\LineFocused( ))
                               ElseIf *this\LineFocused( )\lindex < *this\LinePressed( )\lindex
-                                 ;Debug "  ^le top remove - " +" "+ *this\LineFocused( )\txt\string
+                                 ;Debug "  ^le top remove - " +" "+ *this\LineFocused( )\text\string
                                  edit_sel_string_( *this, *this\LineFocused( ), #__sel_to_remove )
                                  edit_sel_text_( *this, SelectElement( *lines( ), *this\LineFocused( )\lindex + 1))
                               Else
-                                 ;Debug " le bottom  set - " +" "+ *this\LineFocused( )\txt\string
+                                 ;Debug " le bottom  set - " +" "+ *this\LineFocused( )\text\string
                                  edit_sel_string_( *this, *this\LineFocused( ), #__sel_to_set )
                                  edit_sel_text_( *this, *this\LineFocused( ))
                               EndIf
                            EndIf
                            
                            If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\LineFocused( )\txt\len
-                              *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\txt\pos
+                              *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
+                              *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
                            Else
                               If *this\LineFocused( )\lindex < ( *this\countitems - 1 )
                                  *this\LineFocused( )\ColorState( ) = #__s_0
                                  *this\LineFocused( )             = SelectElement( *lines( ), *this\LineFocused( )\lindex + 1 )
                                  *this\LineFocused( )\ColorState( ) = #__s_1
                                  
-                                 If *this\edit_caret_0( ) > *this\LineFocused( )\txt\len
-                                    *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\LineFocused( )\txt\len
+                                 If *this\edit_caret_0( ) > *this\LineFocused( )\text\len
+                                    *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
                                  Else
-                                    *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\edit_caret_0( )
+                                    *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\edit_caret_0( )
                                  EndIf
                               Else
-                                 *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\LineFocused( )\txt\len
+                                 *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
                               EndIf
                            EndIf
                            
@@ -17489,11 +17487,11 @@ chr$ = ","
                         
                      Case #PB_Shortcut_Left     ; Ok
                         If *this\LineFocused( ) And *this\edit_caret_1( ) > 0
-                           If *this\edit_caret_1( ) > *this\LineFocused( )\txt\pos + *this\LineFocused( )\txt\len
-                              *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\LineFocused( )\txt\len
+                           If *this\edit_caret_1( ) > *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
+                              *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
                            EndIf
                            
-                           If *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos
+                           If *this\edit_caret_1( ) = *this\LineFocused( )\text\pos
                               If *this\LineFocused( )\lindex > 0
                                  *this\LineFocused( )\ColorState( ) = #__s_0
                                  *this\LineFocused( )               = SelectElement( *lines( ), *this\LineFocused( )\lindex - 1 )
@@ -17513,32 +17511,32 @@ chr$ = ","
                               *this\edit_caret_2( ) = *this\edit_caret_1( )
                            EndIf
                            
-                           *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\txt\pos
+                           *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
                            
                            edit_sel_string_( *this, *this\LineFocused( ) )
                            edit_sel_text_( *this, *this\LineFocused( ) )
                         EndIf
                         
                      Case #PB_Shortcut_Right    ; Ok
-                        If *this\LineFocused( ) And *this\edit_caret_1( ) < *this\txt\len
-                           If *this\edit_caret_1( ) > *this\LineFocused( )\txt\pos + *this\LineFocused( )\txt\len
-                              *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\LineFocused( )\txt\len
+                        If *this\LineFocused( ) And *this\edit_caret_1( ) < *this\text\len
+                           If *this\edit_caret_1( ) > *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
+                              *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
                            EndIf
                            
-                           If *this\edit_caret_1( ) = *this\LineFocused( )\txt\pos + *this\LineFocused( )\txt\len
+                           If *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
                               If *this\LineFocused( )\lindex < *this\countitems - 1
                                  
                                  If keyboard( )\key[1] & #PB_Canvas_Shift
                                     If *this\LineFocused( ) = *this\LinePressed( )
-                                       ;Debug " le bottom  set - Pressed  " +" "+ *this\LineFocused( )\txt\string
+                                       ;Debug " le bottom  set - Pressed  " +" "+ *this\LineFocused( )\text\string
                                        edit_sel_string_( *this, *this\LineFocused( ), #__sel_to_last )
                                        edit_sel_text_( *this, *this\LineFocused( ))
                                     ElseIf *this\LineFocused( )\lindex < *this\LinePressed( )\lindex
-                                       ;Debug "  ^le top remove - " +" "+ *this\LineFocused( )\txt\string
+                                       ;Debug "  ^le top remove - " +" "+ *this\LineFocused( )\text\string
                                        edit_sel_string_( *this, *this\LineFocused( ), #__sel_to_remove )
                                        edit_sel_text_( *this, SelectElement( *lines( ), *this\LineFocused( )\lindex + 1))
                                     Else
-                                       ;Debug " le bottom  set - " +" "+ *this\LineFocused( )\txt\string
+                                       ;Debug " le bottom  set - " +" "+ *this\LineFocused( )\text\string
                                        edit_sel_string_( *this, *this\LineFocused( ), #__sel_to_set )
                                        edit_sel_text_( *this, *this\LineFocused( ))
                                     EndIf
@@ -17562,7 +17560,7 @@ chr$ = ","
                               *this\edit_caret_2( ) = *this\edit_caret_1( )
                            EndIf
                            
-                           *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\txt\pos
+                           *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
                            
                            edit_sel_string_( *this, *this\LineFocused( ) )
                            edit_sel_text_( *this, *this\LineFocused( ) )
@@ -17598,7 +17596,7 @@ chr$ = ","
                         
                      Case #PB_Shortcut_A        ; Ok
                         If keyboard( )\key[1] & #PB_Canvas_Control
-                           If *this\txt\edit[2]\len <> *this\txt\len
+                           If *this\text\edit[2]\len <> *this\text\len
                               
                               ; select first and last items
                               *this\LineFocused( )      = SelectElement( *lines( ), 0 )
@@ -17610,8 +17608,8 @@ chr$ = ","
                         
                      Case #PB_Shortcut_C, #PB_Shortcut_X
                         If keyboard( )\key[1] & #PB_Canvas_Control
-                           If *this\txt\edit[2]\len
-                              SetClipboardText( *this\txt\edit[2]\string )
+                           If *this\text\edit[2]\len
+                              SetClipboardText( *this\text\edit[2]\string )
                            EndIf
                            
                            If keyboard( )\key = #PB_Shortcut_X
@@ -17620,11 +17618,11 @@ chr$ = ","
                         EndIf
                         
                      Case #PB_Shortcut_V
-                        If *this\txt\editable
+                        If *this\text\editable
                            If keyboard( )\key[1] & #PB_Canvas_Control
                               Protected Text.s = GetClipboardText( )
                               
-                              If Not *this\txt\multiLine
+                              If Not *this\text\multiLine
                                  Text = ReplaceString( Text, #LFCR$, #LF$ )
                                  Text = ReplaceString( Text, #CRLF$, #LF$ )
                                  Text = ReplaceString( Text, #CR$, #LF$ )
@@ -17776,19 +17774,19 @@ chr$ = ","
                            If mouse_y > ( *this\LineEntered( )\y + *this\LineEntered( )\height / 2 )
                               If *this\LineEntered( ) = *this\LinePressed( )
                                  If test_edit_text
-                                    Debug " le bottom  set - Pressed  " +" "+ *this\LineEntered( )\txt\string
+                                    Debug " le bottom  set - Pressed  " +" "+ *this\LineEntered( )\text\string
                                  EndIf
                                  edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_last )
                                  edit_sel_text_( *this, *this\LineEntered( ))
                               ElseIf *this\LineEntered( )\lindex < *this\LinePressed( )\lindex
                                  If test_edit_text
-                                    Debug "  ^le top remove - " +" "+ *this\LineEntered( )\txt\string
+                                    Debug "  ^le top remove - " +" "+ *this\LineEntered( )\text\string
                                  EndIf
                                  edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_remove )
                                  edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\LineEntered( )\lindex + 1))
                               Else
                                  If test_edit_text
-                                    Debug " le bottom  set - " +" "+ *this\LineEntered( )\txt\string
+                                    Debug " le bottom  set - " +" "+ *this\LineEntered( )\text\string
                                  EndIf
                                  edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_set )
                                  edit_sel_text_( *this, *this\LineEntered( ))
@@ -17796,19 +17794,19 @@ chr$ = ","
                            Else
                               If *this\LineEntered( ) = *this\LinePressed( )
                                  If test_edit_text
-                                    Debug " le top remove - Pressed  " +" "+ *this\LineEntered( )\txt\string
+                                    Debug " le top remove - Pressed  " +" "+ *this\LineEntered( )\text\string
                                  EndIf
                                  edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_first )
                                  edit_sel_text_( *this, *this\LineEntered( ))
                               ElseIf *this\LineEntered( )\lindex > *this\LinePressed( )\lindex
                                  If test_edit_text
-                                    Debug "  le top remove - " +" "+ *this\LineEntered( )\txt\string
+                                    Debug "  le top remove - " +" "+ *this\LineEntered( )\text\string
                                  EndIf
                                  edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_remove )
                                  edit_sel_text_( *this, SelectElement(*this\__lines( ), *this\LineEntered( )\lindex - 1))
                               Else
                                  If test_edit_text
-                                    Debug " ^le bottom  set - " +" "+ *this\LineEntered( )\txt\string
+                                    Debug " ^le bottom  set - " +" "+ *this\LineEntered( )\text\string
                                  EndIf
                                  edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_set )
                                  edit_sel_text_( *this, *this\LineEntered( ))
@@ -17841,11 +17839,11 @@ chr$ = ","
                            If *this\LineFocused( ) <> *rowLine
                               *this\LineFocused( ) = *rowLine
                               *this\edit_caret_0( ) = edit_make_caret_position( *this, *rowLine )
-                              *this\edit_caret_1( ) = *this\edit_caret_0( ) + *rowLine\txt\pos
+                              *this\edit_caret_1( ) = *this\edit_caret_0( ) + *rowLine\text\pos
                               
                               ; это на тот случай если резко выделили строки
                               ; чтобы не пропустить некоторые из них
-                              If *this\txt\multiLine 
+                              If *this\text\multiLine 
                                  If *this\LinePressed( )
                                     PushListPosition( *this\__lines( ) )
                                     ForEach *this\__lines( ) 
@@ -17860,8 +17858,8 @@ chr$ = ","
                                           EndIf
                                           
                                           
-                                          Debug ""+*this\__lines( )\lindex +" - "+ Str(*this\__lines( )\txt\edit[2]\width-*this\__lines( )\selector) +" "+ *this\__lines( )\txt\width
-                                          If Not *this\__lines( )\txt\edit[2]\width ; -*this\__lines( )\selector <> *this\__lines( )\txt\width
+                                          Debug ""+*this\__lines( )\lindex +" - "+ Str(*this\__lines( )\text\edit[2]\width-*this\__lines( )\selector) +" "+ *this\__lines( )\text\width
+                                          If Not *this\__lines( )\text\edit[2]\width ; -*this\__lines( )\selector <> *this\__lines( )\text\width
                                                                                     ;Debug *this\__lines( )\lindex
                                              edit_sel_string_( *this, *this\__lines( ), #__sel_to_set )
                                              ;  *this\root\repaint = 1
@@ -17870,7 +17868,7 @@ chr$ = ","
                                        Else
                                           
                                           ;If Not *this\__lines( )\press
-                                          If *this\__lines( )\txt\edit[2]\width <> 0
+                                          If *this\__lines( )\text\edit[2]\width <> 0
                                              edit_sel_string_( *this, *this\__lines( ), #__sel_to_remove )
                                           EndIf
                                           ;EndIf
@@ -17896,8 +17894,8 @@ chr$ = ","
                   If *this\LinePressed( ) And *this\LineFocused( ) And *this\LineEntered( )
                      
                      *this\edit_caret_0( ) = edit_make_caret_position( *this, *this\LineEntered( ) )
-                     If *this\edit_caret_1( ) <> *this\edit_caret_0( ) + *this\LineEntered( )\txt\pos
-                        *this\edit_caret_1( ) = *this\edit_caret_0( ) + *this\LineEntered( )\txt\pos
+                     If *this\edit_caret_1( ) <> *this\edit_caret_0( ) + *this\LineEntered( )\text\pos
+                        *this\edit_caret_1( ) = *this\edit_caret_0( ) + *this\LineEntered( )\text\pos
                         edit_sel_string_( *this, *this\LineEntered( ) )
                         edit_sel_text_( *this, *this\LineEntered( ) )
                      EndIf
@@ -17907,8 +17905,8 @@ chr$ = ","
                   ;                       *this\edit_caret_0( ) = edit_make_caret_position( *this, *this\LineEntered( ) )
                   ;                       ;Debug *this\edit_caret_0( )
                   ;                       
-                  ;                       If *this\edit_caret_1( ) <> *this\edit_caret_0( ) + *this\LineEntered( )\txt\pos
-                  ;                          *this\edit_caret_1( ) = *this\edit_caret_0( ) + *this\LineEntered( )\txt\pos
+                  ;                       If *this\edit_caret_1( ) <> *this\edit_caret_0( ) + *this\LineEntered( )\text\pos
+                  ;                          *this\edit_caret_1( ) = *this\edit_caret_0( ) + *this\LineEntered( )\text\pos
                   ;                          *this\edit_caret_2( ) = *this\edit_caret_1( )
                   ;                          
                   ;                          edit_sel_string_( *this, *this\LineEntered( ) )
@@ -17921,7 +17919,7 @@ chr$ = ","
             
             ;
             If event = #__event_Focus
-               If *this\txt\multiline
+               If *this\text\multiline
                   PushListPosition( *this\__lines( ) )
                   ForEach *this\__lines( )
                      If *this\__lines( )\_focus
@@ -17986,8 +17984,8 @@ chr$ = ","
             If event = #__event_Down
                If MouseButtons( ) & #PB_Canvas_LeftButton
                   ; windows type
-                  If Not *this\txt\multiline
-                     If *this\txt\len <> *this\txt\edit[2]\len
+                  If Not *this\text\multiline
+                     If *this\text\len <> *this\text\edit[2]\len
                         *this\LineEntered( )      = SelectElement( *this\__lines( ), 0 )
                      EndIf
                   EndIf
@@ -18025,15 +18023,15 @@ chr$ = ","
                      If mouse( )\click = 1
                         *this\edit_caret_0( ) = edit_make_caret_position( *this, *this\LineEntered( ) )
                         
-                        If *this\edit_caret_1( ) <> *this\edit_caret_0( ) + *this\LineEntered( )\txt\pos
-                           *this\edit_caret_1( ) = *this\edit_caret_0( ) + *this\LineEntered( )\txt\pos
+                        If *this\edit_caret_1( ) <> *this\edit_caret_0( ) + *this\LineEntered( )\text\pos
+                           *this\edit_caret_1( ) = *this\edit_caret_0( ) + *this\LineEntered( )\text\pos
                            *this\edit_caret_2( ) = *this\edit_caret_1( )
                            
                            *this\LinePressedIndex( )            = *this\LineEntered( )\lindex ;????
-                           *this\LineEntered( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\LineEntered( )\txt\pos
+                           *this\LineEntered( )\edit_caret_1( ) = *this\edit_caret_1( ) - *this\LineEntered( )\text\pos
                            
                            ;
-                           *this\txt\caret\word = GetWord( *this\LineEntered( )\txt\string, *this\LineEntered( )\txt\len, *this\txt\caret\pos )
+                           *this\text\caret\word = GetWord( *this\LineEntered( )\text\string, *this\LineEntered( )\text\len, *this\text\caret\pos )
                            ;
                            edit_sel_reset_( *this )
                            
@@ -18061,8 +18059,8 @@ chr$ = ","
             If event = #__event_Left3Click
                ; Debug "edit - Left3Click"
                If *this\LineEntered( )
-                  *this\edit_caret_2( ) = *this\LineEntered( )\txt\pos
-                  *this\edit_caret_1( ) = *this\LineEntered( )\txt\pos + *this\LineEntered( )\txt\len
+                  *this\edit_caret_2( ) = *this\LineEntered( )\text\pos
+                  *this\edit_caret_1( ) = *this\LineEntered( )\text\pos + *this\LineEntered( )\text\len
                   ;
                   edit_sel_string_( *this, *this\LineEntered( ) )
                   edit_sel_text_( *this, *this\LineEntered( ) )
@@ -18106,7 +18104,7 @@ chr$ = ","
          With *this
             Select event
                Case #__event_KeyDown
-                  If *this\txt\editable
+                  If *this\text\editable
                      Select keyboard( )\key
                         Case #PB_Shortcut_PageUp
                            If bar_PageChange( *this\scroll\v, 0 )
@@ -18658,13 +18656,13 @@ chr$ = ","
                   *this\RowFocusedIndex( ) = *this\RowEntered( )\rindex
                EndIf
                ;           If *this\RowEntered( )
-               ;             Debug "drop e - "+*this\RowEntered( ) +" "+ *this\RowEntered( )\txt\string +" "+ *this\RowEntered( )\press +" "+ *this\RowEntered( )\_enter +" "+ *this\RowEntered( )\_focus
+               ;             Debug "drop e - "+*this\RowEntered( ) +" "+ *this\RowEntered( )\text\string +" "+ *this\RowEntered( )\press +" "+ *this\RowEntered( )\_enter +" "+ *this\RowEntered( )\_focus
                ;           endif
                ;           If *this\RowPressed( )
-               ;             Debug "drop p - "+*this\RowPressed( ) +" "+ *this\RowPressed( )\txt\string +" "+ *this\RowPressed( )\press +" "+ *this\RowPressed( )\_enter +" "+ *this\RowPressed( )\_focus
+               ;             Debug "drop p - "+*this\RowPressed( ) +" "+ *this\RowPressed( )\text\string +" "+ *this\RowPressed( )\press +" "+ *this\RowPressed( )\_enter +" "+ *this\RowPressed( )\_focus
                ;           endif 
                ;           If *this\RowFocused( )
-               ;             Debug "drop f - "+*this\RowFocused( ) +" "+ *this\RowFocused( )\txt\string +" "+ *this\RowFocused( )\press +" "+ *this\RowFocused( )\_enter +" "+ *this\RowFocused( )\_focus
+               ;             Debug "drop f - "+*this\RowFocused( ) +" "+ *this\RowFocused( )\text\string +" "+ *this\RowFocused( )\press +" "+ *this\RowFocused( )\_enter +" "+ *this\RowFocused( )\_focus
                ;           EndIf
             EndIf
             
@@ -19116,8 +19114,7 @@ chr$ = ","
          
          ;\\ update current cursor state
          If event = #__event_MouseEnter Or
-            event = #__event_MouseMove Or
-            ;event = #__event_Drop Or
+            event = #__event_MouseMove Or ; event = #__event_Drop Or
             event = #__event_Up
             ;
             ; If Not *this\anchors
@@ -19336,8 +19333,8 @@ chr$ = ","
                                  *this\ColorState( ) = #__s_2
                               EndIf
                               
-                              If *this\img[#__image_pressed]\imageID
-                                 *this\img = *this\img[#__image_pressed]
+                              If *this\picture[#__image_pressed]\imageID
+                                 *this\picture = *this\picture[#__image_pressed]
                               EndIf
                            EndIf
                            
@@ -19350,8 +19347,8 @@ chr$ = ","
                               EndIf
                            EndIf
                            
-                           If *this\img[#__image_released]\imageID
-                              *this\img = *this\img[#__image_released]
+                           If *this\picture[#__image_released]\imageID
+                              *this\picture = *this\picture[#__image_released]
                            EndIf
                            
                      EndSelect
@@ -20219,10 +20216,10 @@ chr$ = ","
                   event = #__event_RightDown
                   
                   If Entered( ) And Not Entered( )\anchors
-                     If Entered( )\img[#__image_background]\imageID And
-                        ImageDepth( Entered( )\img[#__image_background]\image, #PB_Image_OriginalDepth ) > 31  
+                     If Entered( )\picture[#__image_background]\imageID And
+                        ImageDepth( Entered( )\picture[#__image_background]\image, #PB_Image_OriginalDepth ) > 31  
                         
-                        If StartDrawing( ImageOutput(  Entered( )\img[#__image_background]\image ) )
+                        If StartDrawing( ImageOutput(  Entered( )\picture[#__image_background]\image ) )
                            DrawingMode( #PB_2DDrawing_AlphaChannel )
                            
                            If Not Alpha( Point( mouse( )\x - Entered( )\inner_x( ), mouse( )\y - Entered( )\inner_y( ) ) )
@@ -20617,8 +20614,8 @@ chr$ = ","
                         *this\LastWidget( ) = *this
                      EndIf
                      
-                     If widgets( )\img\imageID
-                        ;   RemoveImage( widgets( ), widgets( )\img\image )
+                     If widgets( )\picture\imageID
+                        ;   Removeimage( widgets( ), widgets( )\picture\image )
                      EndIf
                      ;\\
                      widgets( )\parent  = #Null
@@ -20735,7 +20732,7 @@ chr$ = ","
          
          
          ;
-         Protected color, Image                 ;, *this.allocate( Widget )
+         Protected color, img                 ;, *this.allocate( Widget )
          
          Protected *this._s_WIDGET
          If *root And 
@@ -20887,7 +20884,7 @@ chr$ = ","
                *this\address = *parent\address
                ReParent( *this, *parent )
             Else
-               ;*this\txt\string = Text
+               ;*this\text\string = Text
                SetParent( *this, *parent, #PB_Default )
             EndIf
          EndIf
@@ -20916,7 +20913,7 @@ chr$ = ","
             ;\\ - Create String
             If *this\type = #__type_String
                *this\padding\x = DPIScaled(3)
-               *this\txt\caret\x = *this\padding\x
+               *this\text\caret\x = *this\padding\x
             EndIf
             
             ;\\ - Create Text
@@ -21317,8 +21314,8 @@ chr$ = ","
                
                *this\color         = _get_colors_( )
                *this\TextChange( ) = #True
-               *this\txt\invert = *this\bar\invert
-               *this\txt\vertical = *this\bar\vertical
+               *this\text\invert = *this\bar\invert
+               *this\text\vertical = *this\bar\vertical
             EndIf
             
             ; - Create Splitter
@@ -21466,14 +21463,14 @@ chr$ = ","
          EndIf
          
          
-         ;\\ Set image
-         If *this\type = #__type_Image
+         ;\\ Set img
+         If *this\type = #__type_image
             SetState( *this, *param_1 )
-            align_content( *this\img, *this\flag )
+            align_content( *this\picture, *this\flag )
          EndIf
          If *this\type = #__type_Button
             SetAttribute( *this, #PB_Button_Image, *param_1 )
-            align_content( *this\img, *this\flag )
+            align_content( *this\picture, *this\flag )
          EndIf
          
          ;\\
@@ -21488,7 +21485,7 @@ chr$ = ","
                
                If Not ( constants::BinaryFlag( *this\flag, #__align_image ) And 
                         constants::BinaryFlag( *this\flag, #__align_Text ))
-                  align_content( *this\txt, *this\flag )
+                  align_content( *this\text, *this\flag )
                EndIf
             EndIf
             
@@ -21524,9 +21521,9 @@ chr$ = ","
                    *this\type = #__type_ScrollArea
                
                bar_area_create( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
-            ElseIf *this\type = #__type_Image
+            ElseIf *this\type = #__type_image
                
-               bar_area_create( *this, 1, *this\img\width, *this\img\height, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
+               bar_area_create( *this, 1, *this\picture\width, *this\picture\height, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
             EndIf
          EndIf
          
@@ -21635,8 +21632,8 @@ chr$ = ","
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Button, X, Y, Width, Height, Text, flag, (-1), 0, 0, 0, round )
       EndProcedure
       
-      Procedure.i ButtonImage( X.l, Y.l, Width.l, Height.l, Image.i = -1 , flag.q = 0, round.l = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Button, X, Y, Width, Height, "", flag, (Image), 0, 0, 0, round )
+      Procedure.i ButtonImage( X.l, Y.l, Width.l, Height.l, img.i = -1 , flag.q = 0, round.l = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Button, X, Y, Width, Height, "", flag, (img), 0, 0, 0, round )
       EndProcedure
       
       Procedure.i HyperLink( X.l, Y.l, Width.l, Height.l, Text.s, Color.i, flag.q = 0 )
@@ -21675,8 +21672,8 @@ chr$ = ","
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Frame, X, Y, Width, Height, Text, flag, 0, 0, 0, 0, 7 )
       EndProcedure
       
-      Procedure.i Image( X.l, Y.l, Width.l, Height.l, Image.i, flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Image, X, Y, Width, Height, #Null$, flag, Image, 0, 0, #__bar_button_size, 0, 1 )
+      Procedure.i Image( X.l, Y.l, Width.l, Height.l, img.i, flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_image, X, Y, Width, Height, #Null$, flag, img, 0, 0, #__bar_button_size, 0, 1 )
       EndProcedure
       
       ;-
@@ -21928,8 +21925,8 @@ chr$ = ","
             EndIf
             ;
             SetFont( *root, #PB_Default )
-            ; SetImage( *root, #PB_Default )
-            *root\img\image = - 1
+            ; Setimage( *root, #PB_Default )
+            *root\picture\image = - 1
             
             ;\\
             PostEvent( #PB_Event_SizeWindow, window, Canvas ) ; Bug PB
@@ -22025,8 +22022,8 @@ chr$ = ","
                
                ;;;CocoaMessage(0, w, "makeFirstResponder:", g)
                
-               ; CocoaMessage(0, GadgetID(0), "setFillColor:", CocoaMessage(0, 0, "NSColor colorWithPatternImage:", ImageID(0)))
-               ; CocoaMessage(0, WindowID(w), "setBackgroundColor:", CocoaMessage(0, 0, "NSColor colorWithPatternImage:", ImageID(0)))
+               ; CocoaMessage(0, GadgetID(0), "setFillColor:", CocoaMessage(0, 0, "NSColor colorWithPatternimg:", imageiD(0)))
+               ; CocoaMessage(0, WindowID(w), "setBackgroundColor:", CocoaMessage(0, 0, "NSColor colorWithPatternimg:", imageiD(0)))
                ; CocoaMessage(0, g,"setFocusRingType:",1)
             CompilerEndIf
          EndIf
@@ -22195,8 +22192,8 @@ chr$ = ","
          
          
          
-         ; Background image
-         *this\img\image = - 1
+         ; Background img
+         *this\picture\image = - 1
          
          ;
          *this\bs = *this\fs
@@ -22310,13 +22307,13 @@ chr$ = ","
             
             Protected *str.Character
             Protected *end.Character
-            Protected TxtHeight = *this\txt\height
+            Protected textHeight = *this\text\height
             Protected String.s, String1.s, CountString
             Protected IT, len.l, Position.l, Width
             Protected ColorFont = *this\color\front[\ColorState( )]
             
             ; *this\max
-            If *this\txt\vertical
+            If *this\text\vertical
                If *this\scroll_height( ) > *this\inner_height( )
                   textchange = 1
                EndIf
@@ -22330,15 +22327,15 @@ chr$ = ","
                Width = *this\inner_width( ) - *this\padding\x * 2
             EndIf
             
-            If *this\txt\multiLine
+            If *this\text\multiLine
                ; make multiline text
-               Protected text$ = *this\txt\string.s + #LF$
+               Protected text$ = *this\text\string.s + #LF$
                
                ;     text$ = ReplaceString( text$, #LFCR$, #LF$ )
                ;     text$ = ReplaceString( text$, #CRLF$, #LF$ )
                ;     text$ = ReplaceString( text$, #CR$, #LF$ )
                
-               If *this\txt\multiLine > 0
+               If *this\text\multiLine > 0
                   String = text$
                Else
                   ; <http://www.purebasic.fr/english/viewtopic.php?f = 12&t = 53800>
@@ -22407,7 +22404,7 @@ chr$ = ","
                
                CountString = CountString( String, #LF$ )
             Else
-               String.s    = RemoveString( *this\txt\string, #LF$ ) + #LF$
+               String.s    = RemoveString( *this\text\string, #LF$ ) + #LF$
                CountString = 1
             EndIf
             
@@ -22421,8 +22418,8 @@ chr$ = ","
                *str.Character = @String
                *end.Character = @String
                
-               *this\txt\pos = 0
-               *this\txt\len = Len( *this\txt\string )
+               *this\text\pos = 0
+               *this\text\len = Len( *this\text\string )
                
                ;\\
                ClearList( *this\__lines( ))
@@ -22430,16 +22427,16 @@ chr$ = ","
                *this\scroll_height( ) =  *this\padding\y * 2 
                
                ;
-               If Not *this\txt\vertical And *this\img\width And *this\txt\string = ""
-                  *this\scroll_width( )  = *this\img\width + *this\padding\x * 2 
+               If Not *this\text\vertical And *this\picture\width And *this\text\string = ""
+                  *this\scroll_width( )  = *this\picture\width + *this\padding\x * 2 
                EndIf
                
                ;
                While *end\c
                   If *end\c = #LF
                      AddElement( *this\__lines( ))
-                     *this\__lines( )\txt\len    = ( *end - *str ) >> #PB_Compiler_Unicode
-                     *this\__lines( )\txt\string = PeekS ( *str, *this\__lines( )\txt\len )
+                     *this\__lines( )\text\len    = ( *end - *str ) >> #PB_Compiler_Unicode
+                     *this\__lines( )\text\string = PeekS ( *str, *this\__lines( )\text\len )
                      
                      ; drawing item font
                      draw_font( *this\__lines( ));, GetFontID( *this ) )
@@ -22451,36 +22448,36 @@ chr$ = ","
                         *this\LineFocused( ) = *this\__lines( )
                      EndIf
                      ;
-                     *this\__lines( )\height = *this\__lines( )\txt\height
+                     *this\__lines( )\height = *this\__lines( )\text\height
                      *this\__lines( )\width  = *this\inner_width( )
                      *this\__lines( )\color  = _get_colors_( )
                      
                      
                      ; make line position
-                     If *this\txt\vertical
-                        If *this\scroll_height( ) < *this\__lines( )\txt\width + *this\padding\y * 2 ;+ *this\mode\fullselection
-                           *this\scroll_height( ) = *this\__lines( )\txt\width + *this\padding\y * 2 ;+ *this\mode\fullselection
+                     If *this\text\vertical
+                        If *this\scroll_height( ) < *this\__lines( )\text\width + *this\padding\y * 2 ;+ *this\mode\fullselection
+                           *this\scroll_height( ) = *this\__lines( )\text\width + *this\padding\y * 2 ;+ *this\mode\fullselection
                         EndIf
                         
-                        If *this\txt\rotate = 90
+                        If *this\text\rotate = 90
                            *this\__lines( )\x = *this\scroll_width( ) - *this\padding\x
-                        ElseIf *this\txt\rotate = 270
-                           *this\__lines( )\x = ( *this\inner_width( ) - *this\scroll_width( ) - *this\__lines( )\txt\width ) + *this\padding\x
+                        ElseIf *this\text\rotate = 270
+                           *this\__lines( )\x = ( *this\inner_width( ) - *this\scroll_width( ) - *this\__lines( )\text\width ) + *this\padding\x
                         EndIf
                         
-                        *this\scroll_width( ) + TxtHeight + Bool( *this\__lines( )\lindex <> *this\countitems - 1 ) * *this\mode\gridlines
+                        *this\scroll_width( ) + textHeight + Bool( *this\__lines( )\lindex <> *this\countitems - 1 ) * *this\mode\gridlines
                      Else ; horizontal
-                        If *this\scroll_width( ) < *this\__lines( )\txt\width + *this\padding\x * 2 ;+ *this\mode\fullselection
-                           *this\scroll_width( ) = *this\__lines( )\txt\width + *this\padding\x * 2 ;+ *this\mode\fullselection
+                        If *this\scroll_width( ) < *this\__lines( )\text\width + *this\padding\x * 2 ;+ *this\mode\fullselection
+                           *this\scroll_width( ) = *this\__lines( )\text\width + *this\padding\x * 2 ;+ *this\mode\fullselection
                         EndIf
                         
-                        If *this\txt\rotate = 0
+                        If *this\text\rotate = 0
                            *this\__lines( )\y = *this\scroll_height( ) - *this\padding\y
-                        ElseIf *this\txt\rotate = 180
-                           *this\__lines( )\y = ( *this\inner_height( ) - *this\scroll_height( ) - *this\__lines( )\txt\height ) + *this\padding\y
+                        ElseIf *this\text\rotate = 180
+                           *this\__lines( )\y = ( *this\inner_height( ) - *this\scroll_height( ) - *this\__lines( )\text\height ) + *this\padding\y
                         EndIf
                         
-                        *this\scroll_height( ) + TxtHeight + Bool( *this\__lines( )\lindex <> *this\countitems - 1 ) * *this\mode\gridlines
+                        *this\scroll_height( ) + textHeight + Bool( *this\__lines( )\lindex <> *this\countitems - 1 ) * *this\mode\gridlines
                      EndIf
                      
                      *str = *end + #__sOC
@@ -22492,76 +22489,76 @@ chr$ = ","
                
                ;
                ForEach *this\__lines( )
-                  *this\__lines( )\txt\pos = *this\txt\pos
-                  *this\txt\pos + *this\__lines( )\txt\len + 1 ; Len( #LF$ )
+                  *this\__lines( )\text\pos = *this\text\pos
+                  *this\text\pos + *this\__lines( )\text\len + 1 ; Len( #LF$ )
                   
-                  If *this\txt\vertical
-                     If *this\txt\rotate = 270
+                  If *this\text\vertical
+                     If *this\text\rotate = 270
                         *this\__lines( )\x - ( *this\inner_width( ) - *this\scroll_width( ) )
                      EndIf
                      
                      ; changed
-                     If *this\txt\rotate = 0
-                        *this\__lines( )\txt\x = 0
-                     ElseIf *this\txt\rotate = 270
-                        *this\__lines( )\txt\x = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + *this\__lines( )\txt\width
+                     If *this\text\rotate = 0
+                        *this\__lines( )\text\x = 0
+                     ElseIf *this\text\rotate = 270
+                        *this\__lines( )\text\x = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + *this\__lines( )\text\width
                      Else
-                        *this\__lines( )\txt\x = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
+                        *this\__lines( )\text\x = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
                      EndIf
                      
-                     update_align_text_y( *this, *this\__lines( )\txt, *this\scroll_height( ) )
+                     update_align_text_y( *this, *this\__lines( )\text, *this\scroll_height( ) )
                   Else ; horizontal
-                     If *this\txt\rotate = 180
+                     If *this\text\rotate = 180
                         *this\__lines( )\y - ( *this\inner_height( ) - *this\scroll_height( ) )
                      EndIf
                      
                      ; changed
-                     If *this\txt\rotate = 90
-                        *this\__lines( )\txt\y = 0
-                     ElseIf *this\txt\rotate = 180
-                        *this\__lines( )\txt\y = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + *this\__lines( )\txt\height
+                     If *this\text\rotate = 90
+                        *this\__lines( )\text\y = 0
+                     ElseIf *this\text\rotate = 180
+                        *this\__lines( )\text\y = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + *this\__lines( )\text\height
                      Else
-                        *this\__lines( )\txt\y = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
+                        *this\__lines( )\text\y = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
                      EndIf
                      
-                     update_align_text_x( *this, *this\__lines( )\txt, *this\scroll_width( ) )
+                     update_align_text_x( *this, *this\__lines( )\text, *this\scroll_width( ) )
                   EndIf
                   
-                  ; align image 
-                  If *this\img\align
-                     If *this\img\align\left
-                        If *this\img\width
-                           *this\__lines( )\txt\x + img_indent + *this\img\width
+                  ; align img 
+                  If *this\picture\align
+                     If *this\picture\align\left
+                        If *this\picture\width
+                           *this\__lines( )\text\x + img_indent + *this\picture\width
                         EndIf
                      EndIf
-                     If *this\img\align\top
-                        If *this\img\height
-                           *this\__lines( )\txt\y + *this\img\height + img_indent
+                     If *this\picture\align\top
+                        If *this\picture\height
+                           *this\__lines( )\text\y + *this\picture\height + img_indent
                         EndIf
                      EndIf
                   EndIf
                   
                   ;
-                  ;                   If *this\__lines( )\txt\TextChange( ) <> 0
+                  ;                   If *this\__lines( )\text\TextChange( ) <> 0
                   ;                      ; edit_sel_update_( *this )
                   ;                      
-                  ;                      *this\__lines( )\txt\TextChange( ) = 0
+                  ;                      *this\__lines( )\text\TextChange( ) = 0
                   ;                   EndIf
                Next
             EndIf
             
-            ; align image
-            If *this\txt\string.s
-               If *this\img\align
+            ; align img
+            If *this\text\string.s
+               If *this\picture\align
                   ; If *this\flag & #__flag_Center 
-                  If *this\img\align\left Or *this\img\align\right
-                     If *this\img\width
-                        *this\scroll_width( ) + img_indent + *this\img\width
+                  If *this\picture\align\left Or *this\picture\align\right
+                     If *this\picture\width
+                        *this\scroll_width( ) + img_indent + *this\picture\width
                      EndIf
                   EndIf
-                  If *this\img\align\top Or *this\img\align\bottom 
-                     If *this\img\height
-                        *this\scroll_height( ) + *this\img\height + img_indent
+                  If *this\picture\align\top Or *this\picture\align\bottom 
+                     If *this\picture\height
+                        *this\scroll_height( ) + *this\picture\height + img_indent
                      EndIf
                   EndIf
                   ; EndIf
@@ -22573,20 +22570,20 @@ chr$ = ","
             bar_area_update( *this )
             
             ; make horizontal scroll x
-            make_scrollarea_x( *this, *this\scroll_width( ), *this\txt\align )
+            make_scrollarea_x( *this, *this\scroll_width( ), *this\text\align )
             
             ; make vertical scroll y
-            make_scrollarea_y( *this, *this\scroll_height( ), *this\txt\align )
+            make_scrollarea_y( *this, *this\scroll_height( ), *this\text\align )
             
             
             ;             ; vertical bar one before displaying
             ;             If *this\scroll\v And Not *this\scroll\v\bar\ThumbChange( ) ;And Not *this\show
             ;                If *this\scroll\v\bar\max > *this\scroll\v\bar\page\len
-            ;                   If *this\txt\align\bottom
+            ;                   If *this\text\align\bottom
             ;                      If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\end )
             ;                      EndIf
             ;                      
-            ;                   ElseIf Not *this\txt\align\top
+            ;                   ElseIf Not *this\text\align\top
             ;                      If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\end / 2 )
             ;                      EndIf
             ;                   EndIf
@@ -22596,11 +22593,11 @@ chr$ = ","
             ;             ; horizontal bar one before displaying
             ;             If *this\scroll\h And Not *this\scroll\h\bar\ThumbChange( ) ;And Not *this\show
             ;                If *this\scroll\h\bar\max > *this\scroll\h\bar\page\len
-            ;                   If *this\txt\align\right
+            ;                   If *this\text\align\right
             ;                      If bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\end )
             ;                      EndIf
             ;                      
-            ;                   ElseIf Not *this\txt\align\left
+            ;                   ElseIf Not *this\text\align\left
             ;                      If bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\end / 2 )
             ;                      EndIf
             ;                   EndIf
@@ -22653,18 +22650,18 @@ chr$ = ","
                      ;\\ draw items height
                      CompilerSelect #PB_Compiler_OS
                         CompilerCase #PB_OS_MacOS
-                           *rows( )\height = *rows( )\txt\height + 4
+                           *rows( )\height = *rows( )\text\height + 4
                         CompilerCase #PB_OS_Linux
                            CompilerIf Subsystem("qt")
-                              *rows( )\height = *rows( )\txt\height - 1
+                              *rows( )\height = *rows( )\text\height - 1
                            CompilerElse
-                              *rows( )\height = *rows( )\txt\height + 3
+                              *rows( )\height = *rows( )\text\height + 3
                            CompilerEndIf
                         CompilerCase #PB_OS_Windows
                            If *this\type = #__type_ListView
-                              *rows( )\height = *rows( )\txt\height
+                              *rows( )\height = *rows( )\text\height
                            Else
-                              *rows( )\height = *rows( )\txt\height + 2
+                              *rows( )\height = *rows( )\text\height + 2
                            EndIf
                      CompilerEndSelect
                      
@@ -22696,23 +22693,23 @@ chr$ = ","
                            EndIf
                         EndIf
                         
-                        ;\\ image position
-                        If *rows( )\img\imageID
-                           *rows( )\img\x = *this\row\sublevelpos + *this\padding\x
-                           *rows( )\img\y = ( *rows( )\height - *rows( )\img\height ) / 2
+                        ;\\ img position
+                        If *rows( )\picture\imageID
+                           *rows( )\picture\x = *this\row\sublevelpos + *this\padding\x
+                           *rows( )\picture\y = ( *rows( )\height - *rows( )\picture\height ) / 2
                         EndIf
                      EndIf
                      
                      ;\\ text position
-                     If *rows( )\txt\string
-                        *rows( )\txt\x = *this\padding\x
-                        *rows( )\txt\y = (*rows( )\height - *rows( )\txt\height) / 2
+                     If *rows( )\text\string
+                        *rows( )\text\x = *this\padding\x
+                        *rows( )\text\y = (*rows( )\height - *rows( )\text\height) / 2
                         ;
                         If *rows( )\columnindex = 0
-                           *rows( )\txt\x + *this\row\sublevelpos
+                           *rows( )\text\x + *this\row\sublevelpos
                            ;
-                           If *this\imgsize
-                              *rows( )\txt\x + *this\imgsize + *this\padding\x 
+                           If *this\picturesize
+                              *rows( )\text\x + *this\picturesize + *this\padding\x 
                            EndIf
                         EndIf
                      EndIf
@@ -22720,7 +22717,7 @@ chr$ = ","
                      If *rows( )\columnindex = 0
                         *rows( )\x = 0   
                      Else
-                        *rows( )\x = *this\columns( )\x + (*this\imgsize+*this\row\sublevelpos+*this\MarginLine( )\width)
+                        *rows( )\x = *this\columns( )\x + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
                      EndIf
                      
                      ;\\ vertical scroll max value
@@ -22728,13 +22725,13 @@ chr$ = ","
                      
                      ;\\ horizontal scroll max value
                      If *this\type = #__type_ListIcon
-                        *rows( )\img\x - DPIScaled(8)
+                        *rows( )\picture\x - DPIScaled(8)
                         If *rows( )\checkbox
                            *rows( )\checkbox\x - boxsize
                         EndIf
                         scroll_width = ( *this\columns( )\x + *this\columns( )\width + *this\row\sublevelpos + *this\padding\x + *this\MarginLine( )\width )
                      Else
-                        scroll_width = ( *rows( )\x + *rows( )\txt\x + *rows( )\txt\width + *this\mode\fullSelection + *this\padding\x * 2 ) ; - *this\inner_x( )
+                        scroll_width = ( *rows( )\x + *rows( )\text\x + *rows( )\text\width + *this\mode\fullSelection + *this\padding\x * 2 ) ; - *this\inner_x( )
                      EndIf
                      If *this\scroll_width( ) < scroll_width 
                         *this\scroll_width( ) = scroll_width
@@ -22742,7 +22739,7 @@ chr$ = ","
                      
                      ;                      If *rows( )\columnindex = 0
                      ;                         If *this\columns( )\width
-                     ;                            *rows( )\width = *this\columns( )\width + (*this\imgsize+*this\row\sublevelpos+*this\MarginLine( )\width)
+                     ;                            *rows( )\width = *this\columns( )\width + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
                      ;                         Else
                      ;                            If *this\scroll_width( ) > *this\inner_width( )
                      ;                               *rows( )\width = *this\inner_width( )
@@ -22815,7 +22812,7 @@ chr$ = ","
                      *this\columns( )\width = *this\inner_width( ) - *this\columns( )\x
                      *rows( )\width  = *this\columns( )\width
                   Else
-                     *rows( )\width = *this\columns( )\width + (*this\imgsize+*this\row\sublevelpos+*this\MarginLine( )\width)
+                     *rows( )\width = *this\columns( )\width + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
                   EndIf
                Else
                   ;\\
@@ -22833,7 +22830,7 @@ chr$ = ","
                ;                Else
                ;                   If *rows( )\columnindex = 0
                ;                      If *this\columns( )\width
-               ;                         *rows( )\width = *this\columns( )\width + (*this\imgsize+*this\row\sublevelpos+*this\MarginLine( )\width)
+               ;                         *rows( )\width = *this\columns( )\width + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
                ;                      Else
                ;                         If *this\scroll_width( ) > *this\inner_width( )
                ;                            *rows( )\width = *this\inner_width( )
@@ -23048,19 +23045,19 @@ chr$ = ","
                ;                EndIf
             EndIf
             
-            ;\\ Draw items image
-            If *rows( )\img\imageID
+            ;\\ Draw items img
+            If *rows( )\picture\imageID
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *rows( )\img\imageID, xs + *rows( )\img\x - property, ys + *rows( )\img\y, *rows( )\color\ialpha )
+               DrawAlphaImage( *rows( )\picture\imageID, xs + *rows( )\picture\x - property, ys + *rows( )\picture\y, *rows( )\color\ialpha )
             EndIf
             
             ;\\ Draw items text
-            If *rows( )\txt\string.s
+            If *rows( )\text\string.s
                draw_mode_( #PB_2DDrawing_Transparent )
-               If *rows( )\txt\x > *this\row\sublevelsize
-                  DrawRotatedText( xs + *rows( )\txt\x - property, ys + *rows( )\txt\y, *rows( )\txt\string.s, *this\txt\rotate, *rows( )\color\front[state] )
+               If *rows( )\text\x > *this\row\sublevelsize
+                  DrawRotatedText( xs + *rows( )\text\x - property, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
                Else
-                  DrawRotatedText( xs + *rows( )\txt\x, ys + *rows( )\txt\y, *rows( )\txt\string.s, *this\txt\rotate, *rows( )\color\front[state] )
+                  DrawRotatedText( xs + *rows( )\text\x, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
                EndIf
             EndIf
             
@@ -23104,7 +23101,7 @@ chr$ = ","
                   If Not *this\__rows( )\buttonbox
                      Break 
                   EndIf
-                  ; Debug " 9999 "+*this\__rows( )\columnindex+" "+ListIndex( *this\columns( ))+" "+*this\__rows( )\txt\string
+                  ; Debug " 9999 "+*this\__rows( )\columnindex+" "+ListIndex( *this\columns( ))+" "+*this\__rows( )\text\string
                   If *this\__rows( )\columnindex <> ListIndex( *this\columns( ))
                      Continue
                   EndIf
@@ -23138,14 +23135,14 @@ chr$ = ","
                         iheight = 0
                      EndIf
                      
-                     ;                         If *this\__rows( )\_last\txt\string = "text_7"
+                     ;                         If *this\__rows( )\_last\text\string = "text_7"
                      ;                            Debug "text_7 "+iheight
                      ;                         EndIf
-                     ;                         If *this\__rows( )\_last\txt\string = "text_3"
+                     ;                         If *this\__rows( )\_last\text\string = "text_3"
                      ;                            Debug iy
                      ;                            Debug "text_3 "+iheight
                      ;                         EndIf
-                     ;                         If *this\__rows( )\_last\txt\string = "panel_0"
+                     ;                         If *this\__rows( )\_last\text\string = "panel_0"
                      ;                            Debug "panel_0 "+iheight
                      ;                         EndIf
                      
@@ -23261,10 +23258,10 @@ chr$ = ","
                draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back )
             EndIf
             
-            ;\\ Draw background image
-            If *this\img\imageID
+            ;\\ Draw background img
+            If *this\picture\imageID
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *this\img\imageID, *this\img\x, *this\img\y, *this\color\ialpha )
+               DrawAlphaImage( *this\picture\imageID, *this\picture\x, *this\picture\y, *this\color\ialpha )
             EndIf
             
             ;\\
@@ -23319,16 +23316,16 @@ chr$ = ","
                EndIf
                
                Y      = row_y_( *this, e_rows( ) ) + *this\scroll_y( )
-               Text_x = row_x_( *this, e_rows( ) ) + *this\scroll_x( ) + e_rows( )\txt\x
-               Text_Y = Y + e_rows( )\txt\y
+               Text_x = row_x_( *this, e_rows( ) ) + *this\scroll_x( ) + e_rows( )\text\x
+               Text_Y = Y + e_rows( )\text\y
                
                Protected sel_text_x1 = edit_string_x_( *this, [1] ) + *this\scroll_x( )
                Protected sel_text_x2 = edit_string_x_( *this, [2] ) + *this\scroll_x( )
                Protected sel_text_x3 = edit_string_x_( *this, [3] ) + *this\scroll_x( )
                
-               Protected sel_x = *this\inner_x( ) + *this\txt\x
-               Protected sel_width = *this\inner_width( ) - *this\txt\y * 2
-               Protected text_sel_width = e_rows( )\txt\edit[2]\width
+               Protected sel_x = *this\inner_x( ) + *this\text\x
+               Protected sel_width = *this\inner_width( ) - *this\text\y * 2
+               Protected text_sel_width = e_rows( )\text\edit[2]\width
                
                ; Draw lines
                ; Если для итема установили задный
@@ -23355,7 +23352,7 @@ chr$ = ","
                      e_rows( ) = *this\LineFocused( )
                      
                      draw_mode_alpha_( #PB_2DDrawing_Default )
-                     draw_roundbox_( Text_x, Y, e_rows( )\txt\width, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\back[1] )
+                     draw_roundbox_( Text_x, Y, e_rows( )\text\width, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\back[1] )
                   EndIf
                EndIf
                
@@ -23367,14 +23364,14 @@ chr$ = ","
                   EndIf
                EndIf 
                
-               If e_rows( )\txt\string.s
+               If e_rows( )\text\string.s
                   ;                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                   ;                      ; GetDC_(*this\root\canvas\gadgetID)
                   ;                      SetBkMode_(DrawingDC, #TRANSPARENT)
                   ;                      SetTextColor_(DrawingDC, e_rows( )\color\front & $FFFFFF | e_rows( )\AlphaColor24( ) )
-                  ;                      TextOut_(DrawingDC, Text_x, Text_Y, e_rows( )\txt\string.s,Len(e_rows( )\txt\string.s))
+                  ;                      TextOut_(DrawingDC, Text_x, Text_Y, e_rows( )\text\string.s,Len(e_rows( )\text\string.s))
                   ;                   CompilerElse
-                  DrawRotatedText( Text_x, Text_Y, e_rows( )\txt\string.s, *this\txt\rotate, e_rows( )\color\front )
+                  DrawRotatedText( Text_x, Text_Y, e_rows( )\text\string.s, *this\text\rotate, e_rows( )\color\front )
                   ;                   CompilerEndIf
                EndIf
                
@@ -23388,30 +23385,30 @@ chr$ = ","
                         If ( ( *this\LineEntered( ) And *this\LinePressed( ) And *this\LineEntered( )\lindex > *this\LinePressed( )\lindex ) Or
                              ( *this\LineEntered( ) = *this\LinePressed( ) And *this\edit_caret_1( ) > *this\edit_caret_2( ) ))
                            
-                           If e_rows( )\txt\edit[2]\string.s
-                              DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\txt\edit[2]\string.s, *this\txt\rotate, e_rows( )\color\front[*this\ColorState( )] )
+                           If e_rows( )\text\edit[2]\string.s
+                              DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
                            EndIf
                            
                            ; to left select
                         Else
-                           If e_rows( )\txt\edit[2]\string.s
-                              DrawRotatedText( Text_x, Text_Y, e_rows( )\txt\edit[1]\string.s + e_rows( )\txt\edit[2]\string.s, *this\txt\rotate, e_rows( )\color\front[*this\ColorState( )] )
+                           If e_rows( )\text\edit[2]\string.s
+                              DrawRotatedText( Text_x, Text_Y, e_rows( )\text\edit[1]\string.s + e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
                            EndIf
                            
                            If e_rows( )\_enter
-                              If e_rows( )\txt\edit[1]\width
-                                 draw_box_( Text_x, Text_Y+2, e_rows( )\txt\edit[1]\width, e_rows( )\txt\height-2, e_rows( )\color\back[1] )
+                              If e_rows( )\text\edit[1]\width
+                                 draw_box_( Text_x, Text_Y+2, e_rows( )\text\edit[1]\width, e_rows( )\text\height-2, e_rows( )\color\back[1] )
                               EndIf
                            EndIf
                            
-                           If e_rows( )\txt\edit[1]\string.s
-                              DrawRotatedText( Text_x, Text_Y, e_rows( )\txt\edit[1]\string.s, *this\txt\rotate, e_rows( )\color\front )
+                           If e_rows( )\text\edit[1]\string.s
+                              DrawRotatedText( Text_x, Text_Y, e_rows( )\text\edit[1]\string.s, *this\text\rotate, e_rows( )\color\front )
                            EndIf
                         EndIf
                         
                      Else
-                        If e_rows( )\txt\edit[2]\string.s
-                           DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\txt\edit[2]\string.s, *this\txt\rotate, e_rows( )\color\front[*this\ColorState( )] )
+                        If e_rows( )\text\edit[2]\string.s
+                           DrawRotatedText( sel_text_x2, Text_Y, e_rows( )\text\edit[2]\string.s, *this\text\rotate, e_rows( )\color\front[*this\ColorState( )] )
                         EndIf
                      EndIf
                   EndIf
@@ -23422,17 +23419,17 @@ chr$ = ","
                ;                   ;draw_mode_alpha_( #PB_2DDrawing_XOr | #PB_2DDrawing_Outlined )
                ;                   draw_mode_alpha_( #PB_2DDrawing_Outlined )
                ;                   draw_roundbox_( Mouse()\x, Y, 20, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
-               ; ;                   draw_roundbox_( Text_x-2, Y, e_rows( )\txt\width+2 + 7, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
-               ; ;                   draw_roundbox_( Text_x-1, Y+1, e_rows( )\txt\width + 7 , e_rows( )\height-2, e_rows( )\round, e_rows( )\round, $ffffffff )
-               ; ;                   draw_roundbox_( Text_x, Y+2, e_rows( )\txt\width-2 + 7 , e_rows( )\height-4, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
+               ; ;                   draw_roundbox_( Text_x-2, Y, e_rows( )\text\width+2 + 7, e_rows( )\height, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
+               ; ;                   draw_roundbox_( Text_x-1, Y+1, e_rows( )\text\width + 7 , e_rows( )\height-2, e_rows( )\round, e_rows( )\round, $ffffffff )
+               ; ;                   draw_roundbox_( Text_x, Y+2, e_rows( )\text\width-2 + 7 , e_rows( )\height-4, e_rows( )\round, e_rows( )\round, e_rows( )\color\frame[1] )
                ;                EndIf
                
                ; Draw margin text
                If *this\MarginLine( )\width > 0
                   draw_mode_( #PB_2DDrawing_Transparent )
-                  DrawRotatedText( e_rows( )\margin\x + Bool( *this\txt\vertical ) * *this\scroll_x( ),
-                                   e_rows( )\margin\y + Bool( Not *this\txt\vertical ) * *this\scroll_y( ),
-                                   e_rows( )\margin\string, *this\txt\rotate, *this\MarginLine( )\color\front )
+                  DrawRotatedText( e_rows( )\margin\x + Bool( *this\text\vertical ) * *this\scroll_x( ),
+                                   e_rows( )\margin\y + Bool( Not *this\text\vertical ) * *this\scroll_y( ),
+                                   e_rows( )\margin\string, *this\text\rotate, *this\MarginLine( )\color\front )
                EndIf
                
                ; Horizontal line
@@ -23455,7 +23452,7 @@ chr$ = ","
             
             With *this
                ; Make output multi line text
-               If *this\TextChange( ) Or ( *this\ResizeChange( ) And *this\txt\multiline = - 1 )
+               If *this\TextChange( ) Or ( *this\ResizeChange( ) And *this\text\multiline = - 1 )
                   ;
                   Update_DrawText( *this, *this\TextChange( ) )
                   ;
@@ -23466,10 +23463,10 @@ chr$ = ","
                   EndIf
                EndIf
                
-               ; Debug ""+*this\txt\editable +" "+ *this\LinePressedIndex( ) +" "+ *this\TextChange( )
+               ; Debug ""+*this\text\editable +" "+ *this\LinePressedIndex( ) +" "+ *this\TextChange( )
                ;
                ; then change text update cursor pos
-               If *this\txt\editable And *this\TextChange( ) =- 99 And *this\LineFocusedIndex( ) >= 0
+               If *this\text\editable And *this\TextChange( ) =- 99 And *this\LineFocusedIndex( ) >= 0
                   Update_DrawText( *this, #True )
                   
                   If *this\LineFocused( )
@@ -23477,60 +23474,60 @@ chr$ = ","
                      ;                      *this\LinePressed( ) = *this\LineFocused( )
                      
                      If test_edit_text
-                        Debug "----- " + *this\txt\string
+                        Debug "----- " + *this\text\string
                         Debug "    key - change caret pos " + ListSize( *this\__lines( ) ) + " " + *this\LineFocused( )\lindex + " " + *this\LinePressedIndex( )
                      EndIf
                      
                      ;
                      If *this\scroll\v And Not *this\scroll\v\hide
-                        If *this\scroll_y( ) + *this\txt\caret\y < 0 Or
-                           *this\scroll_y( ) + *this\txt\caret\y + *this\txt\caret\height > *this\inner_height( )
+                        If *this\scroll_y( ) + *this\text\caret\y < 0 Or
+                           *this\scroll_y( ) + *this\text\caret\y + *this\text\caret\height > *this\inner_height( )
                            
                            If test_edit_text
-                              If *this\scroll_y( ) + *this\txt\caret\y < 0
+                              If *this\scroll_y( ) + *this\text\caret\y < 0
                                  Debug "       key - scroll UP"
-                              ElseIf *this\scroll_y( ) + *this\txt\caret\y + *this\txt\caret\height > *this\inner_height( )
+                              ElseIf *this\scroll_y( ) + *this\text\caret\y + *this\text\caret\height > *this\inner_height( )
                                  Debug "       key - scroll DOWN"
                               EndIf
                            EndIf
                            
-                           make_scrollarea_pos( *this\scroll\v, *this\txt\caret\y, *this\txt\caret\height ) ; ok
+                           make_scrollarea_pos( *this\scroll\v, *this\text\caret\y, *this\text\caret\height ) ; ok
                         EndIf
                      EndIf
                      
                      ;
                      If *this\scroll\h And Not *this\scroll\h\hide
-                        If *this\scroll_x( ) + *this\txt\caret\x < 0 Or
-                           *this\scroll_x( ) + *this\txt\caret\x + *this\txt\caret\width  > *this\inner_width( )
+                        If *this\scroll_x( ) + *this\text\caret\x < 0 Or
+                           *this\scroll_x( ) + *this\text\caret\x + *this\text\caret\width  > *this\inner_width( )
                            
                            If test_edit_text
-                              If *this\scroll_x( ) + *this\txt\caret\x < 0
+                              If *this\scroll_x( ) + *this\text\caret\x < 0
                                  Debug "       key - scroll LEFT"
-                              ElseIf *this\scroll_x( ) + *this\txt\caret\x + *this\txt\caret\width > *this\inner_width( )
+                              ElseIf *this\scroll_x( ) + *this\text\caret\x + *this\text\caret\width > *this\inner_width( )
                                  Debug "       key - scroll RIGHT"
                               EndIf
                            EndIf
                            
                            Debug "scroll ??????? "+*this\scroll\h\bar\page\pos
-                           make_scrollarea_pos( *this\scroll\h, *this\txt\caret\x, *this\txt\caret\width ) ; ok
+                           make_scrollarea_pos( *this\scroll\h, *this\text\caret\x, *this\text\caret\width ) ; ok
                         EndIf
                      EndIf
                      ;
                      ; text change
-                     *this\txt\caret\word = GetWord( *this\LineFocused( )\txt\string, *this\LineFocused( )\txt\len, *this\txt\caret\pos[1]-*this\LineFocused( )\txt\pos )
+                     *this\text\caret\word = GetWord( *this\LineFocused( )\text\string, *this\LineFocused( )\text\len, *this\text\caret\pos[1]-*this\LineFocused( )\text\pos )
                      DoEvents( *this, #__event_Change, *this\LineFocused( )\lindex, *this\LineFocused( ))
                      
                      ;                      If *this\edit_caret_1( ) > *this\edit_caret_2( )
                      ;                         *this\edit_caret_1( ) = *this\edit_caret_2( )
                      ;                      EndIf
                      ;                      If keyboard( )\key = #PB_Shortcut_Back
-                     ;                         If Not *this\txt\edit[2]\len
+                     ;                         If Not *this\text\edit[2]\len
                      ;                            *this\edit_caret_1( ) - 1
                      ;                         EndIf
                      ;                      Else
-                     ;                         If *this\txt\edit\string
-                     ;                            *this\edit_caret_1( ) + Len( *this\txt\edit\string )
-                     ;                            *this\txt\edit\string = ""
+                     ;                         If *this\text\edit\string
+                     ;                            *this\edit_caret_1( ) + Len( *this\text\edit\string )
+                     ;                            *this\text\edit\string = ""
                      ;                         EndIf
                      ;                      EndIf
                      ;                      *this\edit_caret_2( ) = *this\edit_caret_1( )
@@ -23568,11 +23565,11 @@ chr$ = ","
                EndIf
                
                ; Draw caret
-               ;If *this\txt\editable 
+               ;If *this\text\editable 
                If *this\focus = 2
                   ; If *this\edit_caret_0( ) >= 0
                   draw_mode_( #PB_2DDrawing_XOr )
-                  draw_box_( *this\inner_x( ) + *this\txt\caret\x + *this\scroll_x( ), *this\inner_y( ) + *this\txt\caret\y + *this\scroll_y( ), *this\txt\caret\width, *this\txt\caret\height, $FFFFFFFF )
+                  draw_box_( *this\inner_x( ) + *this\text\caret\x + *this\scroll_x( ), *this\inner_y( ) + *this\text\caret\y + *this\scroll_y( ), *this\text\caret\width, *this\text\caret\height, $FFFFFFFF )
                   ; EndIf
                EndIf
                ;EndIf
@@ -23766,20 +23763,20 @@ chr$ = ","
                draw_box_button( *this\MinimizeButton( ), color\back )
                draw_box_button( *this\HelpButton( ), color\back )
                
-               ; buttons image
+               ; buttons img
                draw_mode_alpha_( #PB_2DDrawing_Outlined )
                draw_close_button( *this\CloseButton( ), DPIScaled(6) )
                draw_maximize_button( *this\MaximizeButton( ), DPIScaled(4) )
                draw_minimize_button( *this\MinimizeButton( ), DPIScaled(4) )
                draw_help_button( *this\HelpButton( ), DPIScaled(4) )
                
-               ; Draw image
-               If *this\img\imageID
+               ; Draw img
+               If *this\picture\imageID
                   draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  ;                   DrawAlphaImage( *this\img\imageID,
-                  ;                                   *this\frame_x( ) + *this\bs + *this\scroll_x( ) + *this\img\x,
-                  ;                                   *this\frame_y( ) + *this\bs + *this\scroll_y( ) + *this\img\y - 2, *this\color\ialpha )
-                  draw_image_( *this, *this\inner_x( ), *this\inner_y( ) - (*this\img\height+*this\fs[2])/2 )
+                  ;                   DrawAlphaimage( *this\picture\imageID,
+                  ;                                   *this\frame_x( ) + *this\bs + *this\scroll_x( ) + *this\picture\x,
+                  ;                                   *this\frame_y( ) + *this\bs + *this\scroll_y( ) + *this\picture\y - 2, *this\color\ialpha )
+                  draw_img_( *this, *this\inner_x( ), *this\inner_y( ) - (*this\picture\height+*this\fs[2])/2 )
                EndIf
                
                If *this\TitleText( )\string
@@ -23789,8 +23786,8 @@ chr$ = ","
                   
                   ; Draw string
                   If *this\ResizeChange( )
-                     If *this\img\imageID
-                        *this\TitleText( )\x = *this\caption\x + *this\padding\x + *this\img\width + 10
+                     If *this\picture\imageID
+                        *this\TitleText( )\x = *this\caption\x + *this\padding\x + *this\picture\width + 10
                      Else
                         *this\TitleText( )\x = *this\caption\x + *this\padding\x
                      EndIf
@@ -23807,9 +23804,9 @@ chr$ = ","
             
             clip_output_( *this, [#__c_idraw] )
             
-            ; background image draw
-            If *this\img[#__image_background]\imageID
-               draw_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
+            ; background img draw
+            If *this\picture[#__image_background]\imageID
+               draw_img_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
             EndIf
             
             clip_output_( *this, [#__c_draw] )
@@ -23852,22 +23849,22 @@ chr$ = ","
                draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
             EndIf
             
-            ;\\ Draw background image
-            If *this\img\imageID
+            ;\\ Draw background img
+            If *this\picture\imageID
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *this\img\imageID, *this\img\x, *this\img\y, *this\color\ialpha )
+               DrawAlphaImage( *this\picture\imageID, *this\picture\x, *this\picture\y, *this\color\ialpha )
             EndIf
             
-            Protected sublevelwidth = (*this\imgsize+*this\row\sublevelpos+*this\MarginLine( )\width)
+            Protected sublevelwidth = (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
             ;\\
             ForEach *this\columns( )
                Y                           = *this\frame_y( ) + *this\fs + *this\columns( )\y
                X                           = *this\frame_x( ) + *this\fs + *this\columns( )\x + *this\scroll_x( ) 
                X                           + sublevelwidth
                ;
-               *this\columns( )\txt\height = *this\txt\height
-               *this\columns( )\txt\y      = (*this\columns( )\height - *this\columns( )\txt\height) / 2
-               *this\columns( )\txt\x      = *this\padding\x
+               *this\columns( )\text\height = *this\text\height
+               *this\columns( )\text\y      = (*this\columns( )\height - *this\columns( )\text\height) / 2
+               *this\columns( )\text\x      = *this\padding\x
                
                ;\\
                Draw_TreeRows( *this, *this\RowVisibleList( ) )
@@ -23882,16 +23879,16 @@ chr$ = ","
                   EndIf
                EndIf
                
-               ;\\ Draw items image
-               If *this\columns( )\img\imageID
+               ;\\ Draw items img
+               If *this\columns( )\picture\imageID
                   draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawAlphaImage( *this\columns( )\img\imageID, X + *this\columns( )\img\x, Y + *this\columns( )\img\y, *this\color\ialpha )
+                  DrawAlphaImage( *this\columns( )\picture\imageID, X + *this\columns( )\picture\x, Y + *this\columns( )\picture\y, *this\color\ialpha )
                EndIf
                
                ;\\ Draw items text
-               If *this\columns( )\txt\string.s
+               If *this\columns( )\text\string.s
                   draw_mode_( #PB_2DDrawing_Transparent )
-                  DrawRotatedText( X + *this\columns( )\txt\x, Y + *this\columns( )\txt\y, *this\columns( )\txt\string.s, *this\txt\rotate, *this\color\front )
+                  DrawRotatedText( X + *this\columns( )\text\x, Y + *this\columns( )\text\y, *this\columns( )\text\string.s, *this\text\rotate, *this\color\front )
                EndIf
                
                If *this\mode\GridLines
@@ -23928,8 +23925,8 @@ chr$ = ","
             state = 0
          EndIf
          
-         *this\txt\x = 5
-         *this\txt\y = ( *this\combobutton\height - *this\txt\height ) / 2
+         *this\text\x = 5
+         *this\text\y = ( *this\combobutton\height - *this\text\height ) / 2
          
          ;
          draw_mode_alpha_( #PB_2DDrawing_Gradient )
@@ -23944,13 +23941,13 @@ chr$ = ","
                   If *this\popupbar\RowFocused( )
                      draw_mode_alpha_( #PB_2DDrawing_Transparent )
                      
-                     If *this\popupbar\RowFocused( )\img\imageID
-                        DrawImage( *this\popupbar\RowFocused( )\img\imageID, *this\frame_x( )+5, *this\frame_y( ) + DPIUnScaled(*this\height-*this\popupbar\RowFocused( )\img\height) )
+                     If *this\popupbar\RowFocused( )\picture\imageID
+                        DrawImage( *this\popupbar\RowFocused( )\picture\imageID, *this\frame_x( )+5, *this\frame_y( ) + DPIUnScaled(*this\height-*this\popupbar\RowFocused( )\picture\height) )
                      EndIf
                      
-                     DrawText( *this\frame_x( ) + *this\txt\x + *this\popupbar\RowFocused( )\img\width + 5,
-                               *this\frame_y( ) + *this\txt\y,
-                               *this\popupbar\RowFocused( )\txt\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
+                     DrawText( *this\frame_x( ) + *this\text\x + *this\popupbar\RowFocused( )\picture\width + 5,
+                               *this\frame_y( ) + *this\text\y,
+                               *this\popupbar\RowFocused( )\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
                      
                   EndIf
                EndIf
@@ -24020,15 +24017,15 @@ chr$ = ","
             EndIf
             
             ;
-            If *this\img\change
+            If *this\picture\change
                ; update_align_image( *this  )
                
                
                ; make horizontal scroll x
-               make_scrollarea_x( *this, *this\scroll_width( ), *this\img\align )
+               make_scrollarea_x( *this, *this\scroll_width( ), *this\picture\align )
                
                ; make vertical scroll y
-               make_scrollarea_y( *this, *this\scroll_height( ), *this\img\align )
+               make_scrollarea_y( *this, *this\scroll_height( ), *this\picture\align )
             EndIf
             
             
@@ -24037,26 +24034,26 @@ chr$ = ","
             Y = *this\inner_y( ) + *this\scroll_y( )
             
             ;\\
-            If *this\img\imageID Or
-               *this\img[#__image_background]\imageID
+            If *this\picture\imageID Or
+               *this\picture[#__image_background]\imageID
                
                draw_mode_alpha_( #PB_2DDrawing_Default )
             EndIf
             
-            ;\\ background image draw
-            If *this\img[#__image_background]\imageID
-               draw_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
+            ;\\ background img draw
+            If *this\picture[#__image_background]\imageID
+               draw_img_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
             EndIf
             
-            ;\\ scroll image draw
-            If *this\img\imageID 
-               DrawAlphaImage( *this\img\imageID, X + *this\img\x, Y + *this\img\y, *this\color\ialpha )
+            ;\\ scroll img draw
+            If *this\picture\imageID 
+               DrawAlphaImage( *this\picture\imageID, X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
             EndIf
             
             ;\\
-            If *this\txt\string
+            If *this\text\string
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawText( X + *this\txt\x, Y + *this\txt\y, *this\txt\string, *this\color\front[\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+               DrawText( X + *this\text\x, Y + *this\text\y, *this\text\string, *this\color\front[\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
             EndIf
             
             
@@ -24148,8 +24145,8 @@ chr$ = ","
             EndIf
             
             ;             ;\\
-            If *this\img\change
-               If *this\txt\string = ""
+            If *this\picture\change
+               If *this\text\string = ""
                   ;                   *this\scroll_x( ) = 0
                   ;                   *this\scroll_y( ) = 0
                   ;                   
@@ -24157,16 +24154,16 @@ chr$ = ","
                   
                   
                   ; make horizontal scroll x
-                  make_scrollarea_x( *this, *this\scroll_width( ), *this\img\align )
+                  make_scrollarea_x( *this, *this\scroll_width( ), *this\picture\align )
                   
                   ; make vertical scroll y
-                  make_scrollarea_y( *this, *this\scroll_height( ), *this\img\align )
+                  make_scrollarea_y( *this, *this\scroll_height( ), *this\picture\align )
                   
                Else
-                  ;*this\img\x = *this\padding\x
-                  ;*this\img\y = *this\padding\y
-                  change_align_horizontal( *this\img, *this\scroll_width( ), *this\img\width, 0, *this\img\align, *this\padding\y )
-                  change_align_vertical( *this\img, *this\scroll_height( ), *this\img\height, 0, *this\img\align, *this\padding\y )
+                  ;*this\picture\x = *this\padding\x
+                  ;*this\picture\y = *this\padding\y
+                  change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, 0, *this\picture\align, *this\padding\y )
+                  change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, 0, *this\picture\align, *this\padding\y )
                EndIf
             EndIf
             
@@ -24175,13 +24172,13 @@ chr$ = ","
             Y = *this\inner_y( ) + *this\scroll_y( )
             
             ;\\ draw background
-            If *this\img[#__image_background]\imageID
-               draw_image_( *this, X, Y, [#__image_background] )
+            If *this\picture[#__image_background]\imageID
+               draw_img_( *this, X, Y, [#__image_background] )
             Else
                If *this\color\back <> - 1
                   If *this\color\fore <> - 1
                      draw_mode_alpha_( #PB_2DDrawing_Gradient )
-                     draw_gradient_( *this\txt\vertical, *this, *this\color\fore[state], *this\color\back[state], [#__c_frame] )
+                     draw_gradient_( *this\text\vertical, *this, *this\color\fore[state], *this\color\back[state], [#__c_frame] )
                   Else
                      draw_mode_alpha_( #PB_2DDrawing_Default )
                      draw_box( *this, color\back, [#__c_frame])
@@ -24190,16 +24187,16 @@ chr$ = ","
             EndIf
             
             ;\\ draw text items
-            If *this\txt\string.s
+            If *this\text\string.s
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
                ForEach *this\__lines( )
-                  DrawRotatedText( X + *this\__lines( )\x + *this\__lines( )\txt\x, Y + *this\__lines( )\y + *this\__lines( )\txt\y,
-                                   *this\__lines( )\txt\String.s, *this\txt\rotate, *this\color\front[state] ) ; *this\__lines( )\color\font )
+                  DrawRotatedText( X + *this\__lines( )\x + *this\__lines( )\text\x, Y + *this\__lines( )\y + *this\__lines( )\text\y,
+                                   *this\__lines( )\text\String.s, *this\text\rotate, *this\color\front[state] ) ; *this\__lines( )\color\font )
                   
                   If *this\mode\Lines
                      Protected i, count = Bool( func::GetFontSize( GetFontID( *this\__lines( ) ) ) > 13 )
                      For i = 0 To count
-                        Line( X + *this\__lines( )\x + *this\__lines( )\txt\x, Y + *this\__lines( )\y + *this\__lines( )\txt\y + *this\__lines( )\txt\height - count + i - 1, *this\__lines( )\txt\width, 1, *this\color\front[state] )
+                        Line( X + *this\__lines( )\x + *this\__lines( )\text\x, Y + *this\__lines( )\y + *this\__lines( )\text\y + *this\__lines( )\text\height - count + i - 1, *this\__lines( )\text\width, 1, *this\color\front[state] )
                      Next
                   EndIf
                Next
@@ -24211,13 +24208,13 @@ chr$ = ","
             If *this\togglebox And *this\togglebox\width And *this\WidgetChange( ) 
                *this\togglebox\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\togglebox\height ) / 2
                
-               If *this\txt\align\right
+               If *this\text\align\right
                   *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\height - 3 )
-               ElseIf Not *this\txt\align\left
+               ElseIf Not *this\text\align\left
                   *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\width ) / 2
                   
-                  If Not *this\txt\align\top
-                     If *this\txt\rotate = 0
+                  If Not *this\text\align\top
+                     If *this\text\rotate = 0
                         *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) - *this\togglebox\height
                      Else
                         *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
@@ -24239,10 +24236,10 @@ chr$ = ","
                draw_button_( _box_type_, *this\togglebox\x, *this\togglebox\y, *this\togglebox\width, *this\togglebox\height, *this\togglebox\checked, *this\togglebox\round )
             EndIf
             
-            ;\\ draw image
-            If *this\img\imageID 
+            ;\\ draw img
+            If *this\picture\imageID 
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *this\img\imageID, X + *this\img\x, Y + *this\img\y, *this\color\ialpha )
+               DrawAlphaImage( *this\picture\imageID, X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
             EndIf
             
             ;\\ Draw frames
@@ -24286,12 +24283,12 @@ chr$ = ","
                
                If *this\row
                   If *this\TextChange( )
-                     If *this\txt\string 
-                        If Not ( *this\txt\width And *this\txt\height )
+                     If *this\text\string 
+                        If Not ( *this\text\width And *this\text\height )
                            draw_font( *this, GetFontID( *this ) )
                            Update_DrawText( *this, 1 )
-                           make_scrollarea_x( *this, *this\frame_width( ), *this\txt\align )
-                           make_scrollarea_y( *this, *this\frame_height( ), *this\txt\align )
+                           make_scrollarea_x( *this, *this\frame_width( ), *this\text\align )
+                           make_scrollarea_y( *this, *this\frame_height( ), *this\text\align )
                         EndIf
                      EndIf
                   EndIf
@@ -24337,7 +24334,7 @@ chr$ = ","
                         Case #__type_MDI : Draw_Container( *this )
                         Case #__type_Container : Draw_Container( *this )
                         Case #__type_ScrollArea : Draw_Container( *this )
-                        Case #__type_Image : Draw_Container( *this )
+                        Case #__type_image : Draw_Container( *this )
                         Case #__type_Panel : Draw_Container( *this )
                            
                         Case #__type_ComboBox : Draw_ComboBox( *this )
@@ -24384,22 +24381,22 @@ chr$ = ","
                            ;                            
                            ;                         EndIf
                            Draw_Container( *this )
-                           If *this\txt\string
+                           If *this\text\string
                               ;
                               draw_mode_alpha_( #PB_2DDrawing_Default )
-                              draw_roundbox_(*this\inner_x( ) + *this\scroll_x( ) + *this\txt\x - 6,
-                                             *this\inner_y( ) + *this\scroll_y( ) + *this\txt\y + 1, *this\txt\width + 12, *this\txt\height, *this\round, *this\round, $BEEFEFEF )
+                              draw_roundbox_(*this\inner_x( ) + *this\scroll_x( ) + *this\text\x - 6,
+                                             *this\inner_y( ) + *this\scroll_y( ) + *this\text\y + 1, *this\text\width + 12, *this\text\height, *this\round, *this\round, $BEEFEFEF )
                               
                               ;
                               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-                              draw_roundbox_(*this\inner_x( ) + *this\scroll_x( ) + *this\txt\x - 6,
-                                             *this\inner_y( ) + *this\scroll_y( ) + *this\txt\y + 1, *this\txt\width + 12, *this\txt\height, *this\round, *this\round, *this\color\frame )
+                              draw_roundbox_(*this\inner_x( ) + *this\scroll_x( ) + *this\text\x - 6,
+                                             *this\inner_y( ) + *this\scroll_y( ) + *this\text\y + 1, *this\text\width + 12, *this\text\height, *this\round, *this\round, *this\color\frame )
                               
                               ;
                               draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                              DrawText( *this\inner_x( ) + *this\scroll_x( ) + *this\txt\x,
-                                        *this\inner_y( ) + *this\scroll_y( ) + *this\txt\y,
-                                        *this\txt\string, *this\color\front & $FFFFFF | *this\AlphaState24( ) )
+                              DrawText( *this\inner_x( ) + *this\scroll_x( ) + *this\text\x,
+                                        *this\inner_y( ) + *this\scroll_y( ) + *this\text\y,
+                                        *this\text\string, *this\color\front & $FFFFFF | *this\AlphaState24( ) )
                            EndIf
                            
                         Case #__type_Scroll   : bar_draw_scroll( *this )
@@ -24573,8 +24570,8 @@ chr$ = ","
                *this\TextChange( ) = 0
             EndIf
             
-            If *this\img\change <> 0
-               *this\img\change = 0
+            If *this\picture\change <> 0
+               *this\picture\change = 0
             EndIf
             
             If *this\resize\x <> 0
@@ -24765,7 +24762,7 @@ chr$ = ","
                         
                         If Not a_entered( )\AfterWidget( ) 
                            If widgets( ) = GetLast( a_entered( ) )
-                              ; Debug ""+widgets( )\parent\class +" "+ widgets( )\class +" "+ a_entered( )\class +" ("+ widgets( )\txt\string +") "+ IsChild( widgets( ), a_entered( ) )
+                              ; Debug ""+widgets( )\parent\class +" "+ widgets( )\class +" "+ a_entered( )\class +" ("+ widgets( )\text\string +") "+ IsChild( widgets( ), a_entered( ) )
                               
                               ; If IsChild( widgets( ), a_entered( ) )
                               clip_output_( a_entered( ), [#__c_draw] )
@@ -25132,12 +25129,12 @@ chr$ = ","
          SetClass( widget( ), "message_CONT" )
          If IsImage( img )
             Image( f2, f2, iw, iw, img, #__image_Center | #__flag_border_flat | #__flag_transparent )
-            SetClass( widget( ), "message_IMG" )
+            SetClass( widget( ), "message_img" )
             Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__flag_text_Center | #__flag_text_Left | #__flag_transparent );| #__flag_border_less )
          Else
             Text( f2, f2, Width - f2 * 2, iw, Text, #__flag_text_Center | #__flag_text_Left | #__flag_transparent );| #__flag_border_less )
          EndIf
-         SetClass( widget( ), "message_TXT" )
+         SetClass( widget( ), "message_text" )
          CloseList( )
          
          ;\\
@@ -25182,7 +25179,7 @@ chr$ = ","
          
          
          ;\\ close
-         If IsImage(img)
+         If IsImage( img )
             FreeImage( img )
          EndIf
          
@@ -25382,9 +25379,9 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseSubBar( )
       
       BarSeparator( )
-      ;BarButton(10, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #__flag_BarNormal, "New") ;: Debug widget( )\class
+      ;BarButton(10, Loadimage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #__flag_BarNormal, "New") ;: Debug widget( )\class
       BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #__flag_BarNormal, "Open")
-      ;BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #__flag_BarNormal, "Save")
+      ;BarButton(2, Loadimage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #__flag_BarNormal, "Save")
       BarSeparator( )
       
       OpenSubBar("3Menu")
@@ -26065,10 +26062,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 23073
-; FirstLine = 22236
-; Folding = --------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------8--------------------r-v--0--------------v-----------------------------------------------------------4-v----------------------------------------------------------------------fv--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-------------------------------------------+4+-------------------------------------------+fr---------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 25179
+; FirstLine = 24648
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------------r-v--0--------------v-----------------------------------------------------------4----------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--------------------------------------------4+-------------------------------------------+-----------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

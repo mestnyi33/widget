@@ -198,8 +198,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; change.b
       EndStructure
       
-      ;--     edit
-      Structure _s_edit Extends _s_COORDINATE
+      ;--     EDIT
+      Structure _s_EDIT Extends _s_COORDINATE
          pos.i
          len.i
          
@@ -208,11 +208,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;       ;--     syntax
       ;       Structure _s_syntax
-      ;          List *word._s_edit( )
+      ;          List *word._s_EDIT( )
       ;       EndStructure
       
       ;--     TEXT
-      Structure _s_TEXT Extends _s_edit
+      Structure _s_TEXT Extends _s_EDIT
          change.b
          ;
          pass$
@@ -229,11 +229,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          rotate.d
          
          ; char.c
-         ; short._s_edit ; ".."
-         ; short._s_text ; сокращенный текст
+         ; short._s_EDIT ; ".."
+         ; short._s_TEXT ; сокращенный текст
          ; syntax._s_syntax
          
-         edit._s_edit[4]
+         edit._s_EDIT[4]
          caret._s_caret
          align._s_align
       EndStructure
@@ -248,24 +248,22 @@ CompilerIf Not Defined(Structures, #PB_Module)
          style.q
       EndStructure
       
-      ;--     IMAGE
-      Structure _s_IMAGE Extends _s_COORDINATE
-         change.b ; TEMP
-         
-         Image.i
-         imageID.i
-         rotate.d
-         align._s_align
-      EndStructure
-      
       ;--     IMAGES
-      Structure _s_IMAGES
-         ; img._s_IMAGE
-         Image.i
+      Structure _s_IMAGEs
+         *image
          key$
          id$
          file$
          *data
+      EndStructure
+      
+      ;--     PICTURE
+      Structure _s_PICTURE Extends _s_COORDINATE
+         *image
+         *imageID
+         change.b 
+         rotate.d
+         align._s_align
       EndStructure
       
       ;
@@ -363,8 +361,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;*columnaddress
          columnindex.u
          
-         txt._s_text
-         img._s_IMAGE
+         Text._s_TEXT
+         picture._s_PICTURE
          color._s_color
          
          OffsetMove.i
@@ -390,13 +388,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          ;*_first._s_rows
          ;          ; если их убрать то при клике в примере tree(demo) в чек бокс происходит збой
-         ; когда переместил margin._s_edit выше *_last._s_rows то снова заработало
+         ; когда переместил margin._s_EDIT выше *_last._s_rows то снова заработало
          ;          *first._s_rows           ;TEMP first elemnt in the list
          ;          *after._s_rows           ;TEMP first elemnt in the list
          ;          *before._s_rows          ;TEMP first elemnt in the list
          
          ; edit
-         margin._s_edit
+         margin._s_EDIT
          
          StructureUnion
             *_last._s_rows            ; if parent - \last\child ; if child - \parent\last\child
@@ -520,8 +518,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          visible.b
          
-         txt._s_text
-         img._s_IMAGE
+         Text._s_TEXT
+         picture._s_PICTURE
          color._s_color
       EndStructure
       
@@ -538,8 +536,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_COLUMN Extends _s_COORDINATE
          ;index.i
          
-         txt._s_TEXT
-         img._s_IMAGE
+         Text._s_TEXT
+         picture._s_PICTURE
          
          
          ;--TEMP---
@@ -704,14 +702,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; \cursor[2]     ; change cursor 1
          ; \cursor[3]     ; change cursor 2
          ;
-         imgsize.w        ; icon small/large
-         img._s_IMAGE[4]
+         picturesize.w        ; icon small/large
+         picture._s_PICTURE[4]
          ; \image[0] - draw image
          ; \image[1] - released image
          ; \image[2] - pressed image
          ; \image[3] - background image
          ;
-         txt._s_TEXT
+         Text._s_TEXT
          Scroll._s_SCROLL            ; vertical & horizontal scrollbars
          color._s_color[4]
          
@@ -788,9 +786,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 288
-; FirstLine = 271
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 257
+; FirstLine = 240
 ; Folding = ----------
 ; Optimizer
 ; EnableXP

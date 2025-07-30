@@ -359,8 +359,7 @@ Procedure$  GetWord( text$, len, caret ) ; Ok
          chr$ = "]" Or 
          chr$ = "}" Or 
          chr$ = "=" Or 
-         chr$ = "'" Or 
-         ; chr$ = ~"\"" Or 
+         chr$ = "'" Or ; chr$ = ~"\"" Or 
          chr$ = "+" Or 
 chr$ = "-" Or 
 chr$ = "*" Or 
@@ -382,8 +381,7 @@ chr$ = ","
          chr$ = "[" Or 
          chr$ = "{" Or 
          chr$ = "=" Or 
-         chr$ = "'" Or 
-         ; chr$ = ~"\"" Or
+         chr$ = "'" Or ; chr$ = ~"\"" Or
          chr$ = "+" Or 
 chr$ = "-" Or 
 chr$ = "*" Or 
@@ -2051,9 +2049,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1055
-; FirstLine = 996
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 383
+; FirstLine = 344
 ; Folding = -f-----f------------------f9-4-----4r3f----b-ePA5--0--
 ; EnableXP
 ; DPIAware
