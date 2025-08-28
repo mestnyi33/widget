@@ -67,10 +67,10 @@ Enumeration
    #_tb_align_bottom
    #_tb_align_center
    
-   #_tb_widget_paste
-   #_tb_widget_delete
-   #_tb_widget_copy
-   #_tb_widget_cut
+   #_tb_new_widget_paste
+   #_tb_new_widget_delete
+   #_tb_new_widget_copy
+   #_tb_new_widget_cut
    
    #_tb_file_run
    #_tb_file_new
@@ -155,14 +155,14 @@ Global *parser._s_PARSER = AllocateStructure( _s_PARSER )
 
 ;
 ;- DECLAREs
-Declare   widget_events( )
 Declare   Properties_SetItemText( *splitter, item, Text.s )
 Declare.s Properties_GetItemText( *splitter, item )
 Declare   Properties_Updates( *object, type$ )
-Declare   widget_Create( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
-Declare   widget_add( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
-Declare   ide_addline( *new )
-Declare   MakeID( class$, *rootParent )
+;
+Declare   new_widget_events( )
+Declare   new_widget_create( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
+Declare   new_widget_add( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
+Declare   new_widget_line_add( *new )
 ;
 Declare.s Generate_Code( *parent )
 ;
@@ -174,6 +174,8 @@ Declare$  GetWord( text$, len, caret )
 Declare$  FindFunctions( string$, len, *start.Integer = 0, *stop.Integer = 0 ) 
 Declare   NumericString( string$ )
 Declare   MakeLine( *mdi, string$, findtext$ )
+Declare   MakeID( class$, *rootParent )
+;
 ;
 Declare   AddFont( key$, name$, size, style )
 Declare.s GetFontName( font.i )
@@ -300,74 +302,6 @@ Procedure   is_parent_item( *this._s_WIDGET, item )
 EndProcedure
 
 ;-
-Procedure ide_addline( *new._s_widget )
-   Protected *parent._s_widget, Param1, Param2, Param3, newClass.s = GetClass( *new )
-   
-   If ide_inspector_view
-      If *new
-         *parent = GetParent( *new )
-         ;
-         ; get new add position & sublevel
-         Protected i, CountItems, sublevel, position = GetData( *parent ) 
-         CountItems = CountItems( ide_inspector_view )
-         For i = 0 To CountItems - 1
-            Position = ( i+1 )
-            
-            If *parent = GetItemData( ide_inspector_view, i ) 
-               SubLevel = GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel ) + 1
-               Continue
-            EndIf
-            
-            If SubLevel > GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel )
-               Position = i
-               Break
-            EndIf
-         Next 
-         
-         ; set new widget data
-         SetData( *new, position )
-         
-         ; update new widget data item ;????
-         If CountItems > position
-            For i = position To CountItems - 1
-               SetData( GetItemData( ide_inspector_view, i ), i + 1 )
-            Next 
-         EndIf
-         
-         
-         ; get image associated with class
-         Protected img =- 1
-         CountItems = CountItems( ide_inspector_elements )
-         For i = 0 To CountItems - 1
-            If LCase(ClassFromType(Type(*new))) = LCase(GetItemText( ide_inspector_elements, i ))
-               img = GetItemData( ide_inspector_elements, i )
-               Break
-            EndIf
-         Next  
-         
-         ; add to inspector
-         AddItem( ide_inspector_view, position, newClass.s, img, sublevel )
-         SetItemData( ide_inspector_view, position, *new )
-         ; SetItemState( ide_inspector_view, position, #PB_tree_selected )
-         
-         ; Debug " "+position
-         SetState( ide_inspector_view, position )
-         
-         If IsGadget( ide_g_code )
-            AddGadgetItem( ide_g_code, position, newClass.s, ImageID(img), SubLevel )
-            SetGadgetItemData( ide_g_code, position, *new )
-            ; SetGadgetItemState( ide_g_code, position, #PB_tree_selected )
-            SetGadgetState( ide_g_code, position ) ; Bug
-         EndIf
-         
-         ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
-      EndIf
-   EndIf
-   
-   ProcedureReturn *new
-EndProcedure
-
-;-
 Procedure ReplaceText( *this._s_WIDGET, find$, replace$, NbOccurrences.b = 0 )
    Protected code$ = GetText( *this )
    
@@ -417,6 +351,7 @@ Procedure   ReplaceArg( *object._s_WIDGET, argument, replace$ )
    
 EndProcedure
 
+;-
 ;-
 Procedure Properties_ButtonGetItem( *inspector._s_WIDGET, item )
    Protected *second._s_WIDGET = GetAttribute(*inspector, #PB_Splitter_SecondGadget)
@@ -1298,175 +1233,8 @@ EndProcedure
 
 
 ;-
-Procedure.S Help_elements(Class.s)
-   Protected Result.S
-   
-   Class = UCase(Class)
-   
-   Select TypeFromClass(Class)
-      Case 0
-         Result.S = "[" +Class+ "] - Элемент не выбран"
-         
-      Case #__type_Date
-         Result.S = "Первая строка"+#CRLF$+
-                    "Вторая строка"
-         
-      Case #__type_Window
-         Result.S = "[" +Class+ "] - Это окно"
-         
-      Case #__type_Button
-         Result.S = "[" +Class+ "] - Это кнопка"
-         
-      Case #__type_ButtonImage
-         Result.S = "[" +Class+ "] - Это кнопка картинка"
-         
-      Case #__type_CheckBox
-         Result.S = "[" +Class+ "] - Это переключатель"
-         
-      Case #__type_ComboBox
-         Result.S = "[" +Class+ "] - Это выподающий список"
-         
-      Case #__type_Image
-         Result.S = "[" +Class+ "] - Это картинка"
-         
-      Case #__type_Calendar
-         Result.S = "[" +Class+ "] - Это календарь"
-         
-      Case #__type_Canvas
-         Result.S = "[" +Class+ "] - Это холст для рисования"
-         
-      Case #__type_Container
-         Result.S = "[" +Class+ "] - Это контейнер для других элементов"
-         
-      Case #__type_Editor
-         Result.S ="[" +Class+ "] - Это многострочное поле ввода"
-         
-      Default
-         Result.S = "[" +Class+ "] - не реализованно"
-         
-   EndSelect
-   
-   ProcedureReturn Result.S
-EndProcedure
-
 ;-
-#File = 0
-Procedure   ide_NewFile( )
-   ; Очишаем текст
-   ClearItems( ide_design_DEBUG ) 
-   ; удаляем всех детей у MDI 
-   ; (то есть освобождаем MDI)
-   ClearWidgets( ide_design_panel_MDI )
-   ; Free( ide_design_panel_MDI, 1 )
-   ; затем создаем новое окно
-   ide_design_FORM = widget_add( ide_design_panel_MDI, "window", 7, 7, 400, 250 )
-   
-   ; и показываем гаджеты для добавления
-   SetState( ide_design_PANEL, 0 )
-   SetState( ide_inspector_PANEL, 0 )
-   
-   If Not Hide( ide_design_panel_CODE )
-      SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
-      ;                SetActive( ide_design_panel_CODE )
-   EndIf
-   ; SetText( ide_design_DEBUG, Generate_Code( ide_design_panel_MDI ) )
-   
-EndProcedure
-
-Procedure   ide_OpenFile(Path$) ; Открытие файла
-   Protected Text$, String$
-   
-   If Path$
-      ClearDebugOutput( )
-      ClearItems( ide_design_DEBUG )
-      Debug "Открываю файл '"+Path$+"'"
-      ;
-      SetState( ide_design_PANEL, 0 )
-      SetState( ide_inspector_PANEL, 0 )
-      ;
-      ClearWidgets( ide_design_panel_MDI )
-      
-      If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
-         Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
-         FileSeek( #File, 0 )                                   ; 
-         
-         While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
-            String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
-            String$ = RemoveString( String$, "?" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
-            
-            MakeLine( ide_design_panel_MDI, String$, Text$ )
-         Wend
-         
-         ;          
-         ;          ForEach *parser\Line()
-         ;             Debug *parser\Line()\func$ +"?"+ *parser\Line()\arg$
-         ;          Next
-         
-         ;          ;          ;
-         ;          ;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
-         ;          
-         ;          ; bug hides
-         ;          If Not Hide( ide_design_panel_CODE )
-         ;             SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
-         ;             ;                SetActive( ide_design_panel_CODE )
-         ;          EndIf
-         
-         
-         Define code$ = Generate_Code( ide_design_panel_MDI )
-         code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
-         code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
-         SetText( ide_design_DEBUG, code$ )
-         
-         ;
-         CloseFile(#File) ; Закрывает ранее открытый файл
-         Debug "..успешно"
-         ProcedureReturn 1
-      Else
-         ProcedureReturn 0
-      EndIf
-   Else
-      ProcedureReturn 1
-   EndIf 
-EndProcedure
-
-Procedure   ide_SaveFile(Path$) ; Процедура сохранения файла
-   Protected Space$, Text$
-   Protected len, Length, Position, Object
-   
-   If Path$
-      ClearDebugOutput()
-      Debug "Сохраняю файл '"+Path$+"'"
-      
-      ;
-      If #PB_MessageRequester_Yes = Message("Как вы хотите сохранить",
-                                            " Нажмите OK чтобы сохранить PUREBASIC код"+#LF$+
-                                            " Нажмите NO чтобы сохранить WIDGET коде", #PB_MessageRequester_YesNo)
-         Text$ = Generate_Code( ide_design_panel_MDI )
-      Else
-         Text$ = GetText( ide_design_panel_CODE )
-      EndIf
-      
-      ;
-      If CreateFile( #File, Path$, #PB_UTF8 )
-         ; TruncateFile( #File )
-         
-         WriteStringFormat( #File, #PB_UTF8 )
-         WriteString( #File, Text$, #PB_UTF8 )
-         CloseFile( #File )
-         
-         Debug "..успешно"
-         ProcedureReturn 1
-      Else
-         ProcedureReturn 0
-      EndIf
-   Else
-      ProcedureReturn 1
-   EndIf
-EndProcedure
-
-
-;-
-Macro widget_copy( )
+Macro new_widget_copy( )
    ClearList( *copy( ) )
    
    If a_focused( )\anchors
@@ -1488,10 +1256,10 @@ Macro widget_copy( )
    mouse( )\selector\y = mouse( )\steps
 EndMacro
 
-Macro widget_paste( )
+Macro new_widget_paste( )
    If ListSize( *copy( ) )
       ForEach *copy( )
-         widget_add( *copy( )\widget\parent, 
+         new_widget_add( *copy( )\widget\parent, 
                      *copy( )\widget\class, 
                      *copy( )\widget\x[#__c_container] + ( mouse( )\selector\x ),; -*copy( )\widget\parent\x[#__c_inner] ),
                      *copy( )\widget\y[#__c_container] + ( mouse( )\selector\y ),; -*copy( )\widget\parent\y[#__c_inner] ), 
@@ -1515,7 +1283,76 @@ Macro widget_paste( )
    ;a_update( a_focused( ) )
 EndMacro
 
-Procedure widget_delete( *this._s_WIDGET  )
+Procedure new_widget_line_add( *new._s_widget )
+   Protected *parent._s_widget, Param1, Param2, Param3, newClass.s = GetClass( *new )
+   
+   If ide_inspector_view
+      If *new
+         *parent = GetParent( *new )
+         ;
+         ; get new add position & sublevel
+         Protected i, count, sublevel, position
+         count = CountItems( ide_inspector_view )
+         position = GetData( *parent ) 
+         ;
+         For i = 0 To count - 1
+            Position = ( i+1 )
+            
+            If *parent = GetItemData( ide_inspector_view, i ) 
+               SubLevel = GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel ) + 1
+               Continue
+            EndIf
+            
+            If SubLevel > GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel )
+               Position = i
+               Break
+            EndIf
+         Next 
+         
+         ; set new widget data
+         SetData( *new, position )
+         
+         ; update new widget data item ;????
+         If count > position
+            For i = position To count - 1
+               SetData( GetItemData( ide_inspector_view, i ), i + 1 )
+            Next 
+         EndIf
+         
+         
+         ; get image associated with class
+         Protected img =- 1
+         count = CountItems( ide_inspector_elements )
+         For i = 0 To count - 1
+            If LCase(ClassFromType(Type(*new))) = LCase(GetItemText( ide_inspector_elements, i ))
+               img = GetItemData( ide_inspector_elements, i )
+               Break
+            EndIf
+         Next  
+         
+         ; add to inspector
+         AddItem( ide_inspector_view, position, newClass.s, img, sublevel )
+         SetItemData( ide_inspector_view, position, *new )
+         ; SetItemState( ide_inspector_view, position, #PB_tree_selected )
+         
+         ; Debug " "+position
+         SetState( ide_inspector_view, position )
+         
+         If IsGadget( ide_g_code )
+            AddGadgetItem( ide_g_code, position, newClass.s, ImageID(img), SubLevel )
+            SetGadgetItemData( ide_g_code, position, *new )
+            ; SetGadgetItemState( ide_g_code, position, #PB_tree_selected )
+            SetGadgetState( ide_g_code, position ) ; Bug
+         EndIf
+         
+         ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
+      EndIf
+   EndIf
+   
+   ProcedureReturn *new
+EndProcedure
+
+Procedure new_widget_delete( *this._s_WIDGET  )
    Protected item
    Protected i 
    Protected CountItems
@@ -1556,20 +1393,20 @@ Procedure widget_delete( *this._s_WIDGET  )
    EndIf
 EndProcedure
 
-Procedure widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
+Procedure new_widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
    Protected *new._s_widget
    ; flag.i | #__flag_NoFocus
    
    If *parent 
       ; OpenList( *parent, CountItems( *parent ) - 1 )
-      *new = widget_Create( *parent, type$, X,Y, Width, Height, "", 0,100,0, flag )
+      *new = new_widget_create( *parent, type$, X,Y, Width, Height, "", 0,100,0, flag )
       
       If *new
          If LCase(type$) = "panel"
             AddItem( *new, -1, type$+"_item_0" )
          EndIf
          
-         ide_addline( *new )
+         new_widget_line_add( *new )
       EndIf
       ; CloseList( )
    EndIf
@@ -1577,9 +1414,7 @@ Procedure widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Hei
    ProcedureReturn *new
 EndProcedure
 
-
-;-
-Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
+Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
    Protected *new._s_widget
    ; flag.i | #__flag_NoFocus
    Protected newtype$
@@ -1713,7 +1548,7 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
                SetBackColor( *new, $FFECECEC )
                ;
                Properties_Updates( *new, "Resize" )
-               Bind( *new, @widget_events( ) )
+               Bind( *new, @new_widget_events( ) )
             Else
                If Not flag & #__flag_NoFocus 
                   a_set(*new, #__a_full, (10))
@@ -1729,7 +1564,7 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
             EndIf
          EndIf
          
-         Bind( *new, @widget_events( ), #__event_Resize )
+         Bind( *new, @new_widget_events( ), #__event_Resize )
       EndIf
       
       CloseList( ) 
@@ -1738,7 +1573,7 @@ Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, 
    ProcedureReturn *new
 EndProcedure
 
-Procedure widget_events( )
+Procedure new_widget_events( )
    Protected *new
    Protected *g._s_WIDGET = EventWidget( )
    Protected __event = WidgetEvent( )
@@ -1828,15 +1663,15 @@ Procedure widget_events( )
                
             Case #_DD_CreateNew 
                Debug " ----- DD_new ----- "+ GetText( ide_inspector_elements ) +" "+ DropX( ) +" "+ DropY( ) +" "+ DropWidth( ) +" "+ DropHeight( )
-               widget_add( *g, GetText( ide_inspector_elements ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
+               new_widget_add( *g, GetText( ide_inspector_elements ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
                
             Case #_DD_CreateCopy
                Debug " ----- DD_copy ----- " + GetText( Pressed( ) )
                
-               ;            *new = widget_add( *g, GetClass( Pressed( ) ), 
+               ;            *new = new_widget_add( *g, GetClass( Pressed( ) ), 
                ;                         X( Pressed( ) ), Y( Pressed( ) ), Width( Pressed( ) ), Height( Pressed( ) ) )
                
-               *new = widget_add( *g, DropText( ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
+               *new = new_widget_add( *g, DropText( ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
                SetText( *new, "Copy_"+ DropText( ) )
                
          EndSelect
@@ -1893,7 +1728,7 @@ Procedure widget_events( )
    If  __event = #__event_LeftUp
       If IsContainer(*g)
          If GetState( ide_inspector_elements) > 0
-            widget_add( *g, GetText( ide_inspector_elements ), GetMouseX( ) - X(*g, #__c_inner), GetMouseY( ) - Y(*g, #__c_inner))
+            new_widget_add( *g, GetText( ide_inspector_elements ), GetMouseX( ) - X(*g, #__c_inner), GetMouseY( ) - Y(*g, #__c_inner))
          EndIf
       EndIf
       
@@ -1923,7 +1758,174 @@ Procedure widget_events( )
 EndProcedure
 
 ;-
-Procedure.i ide_AddImages_list( *id, Directory$ )
+;-
+Procedure.S ide_help_elements(Class.s)
+   Protected Result.S
+   
+   Class = UCase(Class)
+   
+   Select TypeFromClass(Class)
+      Case 0
+         Result.S = "[" +Class+ "] - Элемент не выбран"
+         
+      Case #__type_Date
+         Result.S = "Первая строка"+#CRLF$+
+                    "Вторая строка"
+         
+      Case #__type_Window
+         Result.S = "[" +Class+ "] - Это окно"
+         
+      Case #__type_Button
+         Result.S = "[" +Class+ "] - Это кнопка"
+         
+      Case #__type_ButtonImage
+         Result.S = "[" +Class+ "] - Это кнопка картинка"
+         
+      Case #__type_CheckBox
+         Result.S = "[" +Class+ "] - Это переключатель"
+         
+      Case #__type_ComboBox
+         Result.S = "[" +Class+ "] - Это выподающий список"
+         
+      Case #__type_Image
+         Result.S = "[" +Class+ "] - Это картинка"
+         
+      Case #__type_Calendar
+         Result.S = "[" +Class+ "] - Это календарь"
+         
+      Case #__type_Canvas
+         Result.S = "[" +Class+ "] - Это холст для рисования"
+         
+      Case #__type_Container
+         Result.S = "[" +Class+ "] - Это контейнер для других элементов"
+         
+      Case #__type_Editor
+         Result.S ="[" +Class+ "] - Это многострочное поле ввода"
+         
+      Default
+         Result.S = "[" +Class+ "] - не реализованно"
+         
+   EndSelect
+   
+   ProcedureReturn Result.S
+EndProcedure
+
+#File = 0
+Procedure   ide_file_new( )
+   ; Очишаем текст
+   ClearItems( ide_design_DEBUG ) 
+   ; удаляем всех детей у MDI 
+   ; (то есть освобождаем MDI)
+   ClearWidgets( ide_design_panel_MDI )
+   ; Free( ide_design_panel_MDI, 1 )
+   ; затем создаем новое окно
+   ide_design_FORM = new_widget_add( ide_design_panel_MDI, "window", 7, 7, 400, 250 )
+   
+   ; и показываем гаджеты для добавления
+   SetState( ide_design_PANEL, 0 )
+   SetState( ide_inspector_PANEL, 0 )
+   
+   If Not Hide( ide_design_panel_CODE )
+      SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
+      ;                SetActive( ide_design_panel_CODE )
+   EndIf
+   ; SetText( ide_design_DEBUG, Generate_Code( ide_design_panel_MDI ) )
+   
+EndProcedure
+
+Procedure   ide_file_open(Path$) ; Открытие файла
+   Protected Text$, String$
+   
+   If Path$
+      ClearDebugOutput( )
+      ClearItems( ide_design_DEBUG )
+      Debug "Открываю файл '"+Path$+"'"
+      ;
+      SetState( ide_design_PANEL, 0 )
+      SetState( ide_inspector_PANEL, 0 )
+      ;
+      ClearWidgets( ide_design_panel_MDI )
+      
+      If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
+         Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
+         FileSeek( #File, 0 )                                   ; 
+         
+         While Eof( #File ) = 0 ; Цикл, пока не будет достигнут конец файла. (Eof = 'Конец файла')
+            String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
+            String$ = RemoveString( String$, "?" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
+            
+            MakeLine( ide_design_panel_MDI, String$, Text$ )
+         Wend
+         
+         ;          
+         ;          ForEach *parser\Line()
+         ;             Debug *parser\Line()\func$ +"?"+ *parser\Line()\arg$
+         ;          Next
+         
+         ;          ;          ;
+         ;          ;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
+         ;          
+         ;          ; bug hides
+         ;          If Not Hide( ide_design_panel_CODE )
+         ;             SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
+         ;             ;                SetActive( ide_design_panel_CODE )
+         ;          EndIf
+         
+         
+         Define code$ = Generate_Code( ide_design_panel_MDI )
+         code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
+         code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
+         SetText( ide_design_DEBUG, code$ )
+         
+         ;
+         CloseFile(#File) ; Закрывает ранее открытый файл
+         Debug "..успешно"
+         ProcedureReturn 1
+      Else
+         ProcedureReturn 0
+      EndIf
+   Else
+      ProcedureReturn 1
+   EndIf 
+EndProcedure
+
+Procedure   ide_file_save(Path$) ; Процедура сохранения файла
+   Protected Space$, Text$
+   Protected len, Length, Position, Object
+   
+   If Path$
+      ClearDebugOutput()
+      Debug "Сохраняю файл '"+Path$+"'"
+      
+      ;
+      If #PB_MessageRequester_Yes = Message("Как вы хотите сохранить",
+                                            " Нажмите OK чтобы сохранить PUREBASIC код"+#LF$+
+                                            " Нажмите NO чтобы сохранить WIDGET коде", #PB_MessageRequester_YesNo)
+         Text$ = Generate_Code( ide_design_panel_MDI )
+      Else
+         Text$ = GetText( ide_design_panel_CODE )
+      EndIf
+      
+      ;
+      If CreateFile( #File, Path$, #PB_UTF8 )
+         ; TruncateFile( #File )
+         
+         WriteStringFormat( #File, #PB_UTF8 )
+         WriteString( #File, Text$, #PB_UTF8 )
+         CloseFile( #File )
+         
+         Debug "..успешно"
+         ProcedureReturn 1
+      Else
+         ProcedureReturn 0
+      EndIf
+   Else
+      ProcedureReturn 1
+   EndIf
+EndProcedure
+
+
+Procedure.i ide_list_images_add( *id, Directory$ )
    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
    
    If FileSize( ZipFile$ ) < 1
@@ -2091,7 +2093,7 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
             
          Next
          
-         ;-  RUN
+         ;  RUN
       Case #_tb_file_run
          Define Code.s = Generate_Code( ide_design_panel_MDI ) ;GetText( ide_design_panel_CODE )
          
@@ -2100,7 +2102,7 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
          
          
       Case #_tb_file_new
-         ide_NewFile( )
+         ide_file_new( )
          
       Case #_tb_file_open
          Protected StandardFile$, Pattern$, File$
@@ -2110,7 +2112,7 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
          
          SetWindowTitle( EventWindow(), File$ )
          
-         If Not ide_OpenFile( File$ )
+         If Not ide_file_open( File$ )
             Message("Информация", "Не удалось открыть файл.")
          EndIf
          
@@ -2119,22 +2121,22 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
          Pattern$ = "PureBasic (*.pb)|*.pb;*.pbi;*.pbf"
          File$ = SaveFileRequester("Пожалуйста выберите файл для сохранения", StandardFile$, Pattern$, 0)
          
-         If Not ide_SaveFile( File$ )
+         If Not ide_file_save( File$ )
             Message("Информация","Не удалось сохранить файл.", #PB_MessageRequester_Error)
          EndIf
          
-      Case #_tb_widget_copy
-         widget_copy( )
+      Case #_tb_new_widget_copy
+         new_widget_copy( )
          
-      Case #_tb_widget_cut
-         widget_copy( )
-         widget_delete( a_focused( ) )
+      Case #_tb_new_widget_cut
+         new_widget_copy( )
+         new_widget_delete( a_focused( ) )
          
-      Case #_tb_widget_paste
-         widget_paste( )
+      Case #_tb_new_widget_paste
+         new_widget_paste( )
          
-      Case #_tb_widget_delete
-         widget_delete( a_focused( ) )
+      Case #_tb_new_widget_delete
+         new_widget_delete( a_focused( ) )
          
          
       Case #_tb_group_left,
@@ -2250,7 +2252,7 @@ Procedure ide_events( )
                   SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
                EndIf
                If *g = ide_inspector_elements
-                  SetText( ide_inspector_HELP, Help_elements(GetItemText( *g, __item )) )
+                  SetText( ide_inspector_HELP, ide_help_elements(GetItemText( *g, __item )) )
                EndIf
                If *g = ide_inspector_properties
                   SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
@@ -2275,13 +2277,17 @@ Procedure ide_events( )
          EndIf
          
       Case #__event_Left2Click
+         If *g = ide_design_PANEL
+            Debug #__event_Left2Click
+         EndIf
+         
          ; Debug "2click"
          If a_focused( )
             If IsContainer(a_focused( ))
                If GetState( ide_inspector_elements) > 0
                   Static _x_, _y_
-                  widget_add( a_focused( ), GetText( ide_inspector_elements ), _x_ + mouse( )\steps, _y_ + mouse( )\steps, #PB_Ignore, #PB_Ignore, #__flag_NoFocus )
-                  ;a_set( a_focused( )\parent )
+                  new_widget_add( a_focused( ), GetText( ide_inspector_elements ), _x_ + mouse( )\steps, _y_ + mouse( )\steps, #PB_Ignore, #PB_Ignore, #__flag_NoFocus )
+                  ; a_set( a_focused( )\parent )
                   _x_ + mouse( )\steps
                   _y_ + mouse( )\steps
                   SetState( ide_inspector_elements, 0 )
@@ -2290,6 +2296,11 @@ Procedure ide_events( )
          EndIf  
          
       Case #__event_LeftClick 
+         If *g = ide_design_PANEL
+            Debug #__event_LeftClick
+             SetClipboardText( GetText(ide_design_panel_CODE) )
+         EndIf
+         
          ; ide_menu_events( *g, __item )
          
          ; Debug *g\TabEntered( )
@@ -2304,7 +2315,7 @@ Procedure ide_events( )
          
    EndSelect
    
-   ;-\\ EDIT CODE EVENTS
+   ; CODE EDIT EVENTS
    If *g = ide_design_panel_CODE                      Or *g = ide_design_DEBUG ; TEMP
       Static argument, object  
       Protected name$, text$, len, caret
@@ -2427,27 +2438,27 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    BarItem( #_tb_file_open, "Open" )
    BarItem( #_tb_file_save, "Save" )
    BarSeparator( )
-   BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?widget_copy ) )
-   BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?widget_paste ) )
-   BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?widget_cut ) )
-   BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?widget_delete ) )
+   BarButton( #_tb_new_widget_copy, CatchImage( #PB_Any,?image_new_widget_copy ) )
+   BarButton( #_tb_new_widget_paste, CatchImage( #PB_Any,?image_new_widget_paste ) )
+   BarButton( #_tb_new_widget_cut, CatchImage( #PB_Any,?image_new_widget_cut ) )
+   BarButton( #_tb_new_widget_delete, CatchImage( #PB_Any,?image_new_widget_delete ) )
    BarSeparator( )
    BarItem( #_tb_file_run, "[RUN]" )
    BarSeparator( )
-   BarButton( #_tb_group_select, CatchImage( #PB_Any,?group ), #PB_ToolBar_Toggle ) 
+   BarButton( #_tb_group_select, CatchImage( #PB_Any,?image_group ), #PB_ToolBar_Toggle ) 
    ;
-   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_Image, CatchImage( #PB_Any,?group_un ) )
-   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_PressedImage, CatchImage( #PB_Any,?group ) )
+   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_Image, CatchImage( #PB_Any,?image_group_un ) )
+   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_PressedImage, CatchImage( #PB_Any,?image_group ) )
    ;
    BarSeparator( )
-   BarButton( #_tb_group_left, CatchImage( #PB_Any,?group_left ) )
-   BarButton( #_tb_group_right, CatchImage( #PB_Any,?group_right ) )
+   BarButton( #_tb_group_left, CatchImage( #PB_Any,?image_group_left ) )
+   BarButton( #_tb_group_right, CatchImage( #PB_Any,?image_group_right ) )
    BarSeparator( )
-   BarButton( #_tb_group_top, CatchImage( #PB_Any,?group_top ) )
-   BarButton( #_tb_group_bottom, CatchImage( #PB_Any,?group_bottom ) )
+   BarButton( #_tb_group_top, CatchImage( #PB_Any,?image_group_top ) )
+   BarButton( #_tb_group_bottom, CatchImage( #PB_Any,?image_group_bottom ) )
    BarSeparator( )
-   BarButton( #_tb_group_width, CatchImage( #PB_Any,?group_width ) )
-   BarButton( #_tb_group_height, CatchImage( #PB_Any,?group_height ) )
+   BarButton( #_tb_group_width, CatchImage( #PB_Any,?image_group_width ) )
+   BarButton( #_tb_group_height, CatchImage( #PB_Any,?image_group_height ) )
    
    ;    BarSeparator( )
    ;    OpenSubBar("ComboBox")
@@ -2457,11 +2468,11 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;    CloseSubBar( )
    
    BarSeparator( )
-   ;    BarButton( #_tb_align_left, CatchImage( #PB_Any,?group_left ) )
-   ;    BarButton( #_tb_align_top, CatchImage( #PB_Any,?group_top ) )
-   ;    BarButton( #_tb_align_center, CatchImage( #PB_Any,?group_width ) )
-   ;    BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?group_bottom ) )
-   ;    BarButton( #_tb_align_right, CatchImage( #PB_Any,?group_right ) )
+   ;    BarButton( #_tb_align_left, CatchImage( #PB_Any,?image_group_left ) )
+   ;    BarButton( #_tb_align_top, CatchImage( #PB_Any,?image_group_top ) )
+   ;    BarButton( #_tb_align_center, CatchImage( #PB_Any,?image_group_width ) )
+   ;    BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?image_group_bottom ) )
+   ;    BarButton( #_tb_align_right, CatchImage( #PB_Any,?image_group_right ) )
    CloseList( )
    
    ; gadgets
@@ -2507,7 +2518,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    AddItem( ide_inspector_PANEL, -1, "elements", 0, 0 ) 
    ide_inspector_elements = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_border_less ) : SetClass(ide_inspector_elements, "ide_inspector_elements" )
    If ide_inspector_elements
-      ide_AddImages_list( ide_inspector_elements, GetCurrentDirectory( )+"Themes/" )
+      ide_list_images_add( ide_inspector_elements, GetCurrentDirectory( )+"Themes/" )
    EndIf
    
    ; ide_inspector_panel_item_2
@@ -2653,7 +2664,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    SetState( ide_inspector_view_splitter, 100 )
    
    ;
-   ;\\\ ide events binds
+   ;-\\ ide binds events
    ;
    If Type( ide_toolbar ) = #__type_ToolBar
       Bind( ide_toolbar, @ide_events( ), #__event_LeftClick )
@@ -2661,6 +2672,8 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    Bind( ide_inspector_view, @ide_events( ) )
    ;
    Bind( ide_design_PANEL, @ide_events( ), #__event_Change )
+   Bind( ide_design_PANEL, @ide_events( ), #__event_LeftClick )
+   Bind( ide_design_PANEL, @ide_events( ), #__event_Left2Click )
    ;
    Bind( ide_design_panel_CODE, @ide_events( ), #__event_Down )
    Bind( ide_design_panel_CODE, @ide_events( ), #__event_Up )
@@ -2708,16 +2721,16 @@ CompilerIf #PB_Compiler_IsMainFile
    Define result, btn2, example = 3
    
    
-   ide_design_FORM = widget_add( ide_design_panel_MDI, "window", 10, 10, 350, 200 )
+   ide_design_FORM = new_widget_add( ide_design_panel_MDI, "window", 10, 10, 350, 200 )
    
    If example = 2
-      Define cont1 = widget_add( ide_design_FORM, "container", 10, 10, 320, 180 )
+      Define cont1 = new_widget_add( ide_design_FORM, "container", 10, 10, 320, 180 )
       SetBackColor( cont1, $FF9CF9F6)
-      widget_add( cont1, "button", 10, 20, 100, 30 )
-      Define cont2 = widget_add( cont1, "container", 130, 20, 90, 140 )
-      widget_add( cont2, "button", 10, 20, 30, 30 )
-      Define cont3 = widget_add( cont1, "container", 230, 20, 90, 140 )
-      widget_add( cont2, "button", 10, 20, 30, 30 )
+      new_widget_add( cont1, "button", 10, 20, 100, 30 )
+      Define cont2 = new_widget_add( cont1, "container", 130, 20, 90, 140 )
+      new_widget_add( cont2, "button", 10, 20, 30, 30 )
+      Define cont3 = new_widget_add( cont1, "container", 230, 20, 90, 140 )
+      new_widget_add( cont2, "button", 10, 20, 30, 30 )
       
       ;       ClearItems(ide_inspector_view)
       ; ;       AddItem(ide_inspector_view, -1, "window_0", -1, 0)
@@ -2749,49 +2762,49 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       ;PopListPosition(widgets())
       
       ;\\ example 2
-      ;       Define *container = widget_add( ide_design_FORM, "container", 130, 20, 220, 140 )
-      ;       widget_add( *container, "button", 10, 20, 30, 30 )
-      ;       widget_add( ide_design_FORM, "button", 10, 20, 100, 30 )
+      ;       Define *container = new_widget_add( ide_design_FORM, "container", 130, 20, 220, 140 )
+      ;       new_widget_add( *container, "button", 10, 20, 30, 30 )
+      ;       new_widget_add( ide_design_FORM, "button", 10, 20, 100, 30 )
       ;       
       ;       Define item = 1
       ;       SetState( ide_inspector_view, item )
       ;       If IsGadget( ide_g_code )
       ;          SetGadgetState( ide_g_code, item )
       ;       EndIf
-      ;       Define *container2 = widget_add( *container, "container", 60, 10, 220, 140 )
-      ;       widget_add( *container2, "button", 10, 20, 30, 30 )
+      ;       Define *container2 = new_widget_add( *container, "container", 60, 10, 220, 140 )
+      ;       new_widget_add( *container2, "button", 10, 20, 30, 30 )
       ;       
       ;       SetState( ide_inspector_view, 0 )
-      ;       widget_add( ide_design_FORM, "button", 10, 130, 100, 30 )
+      ;       new_widget_add( ide_design_FORM, "button", 10, 130, 100, 30 )
       
    ElseIf example = 3
       ;\\ example 3
       Resize(ide_design_FORM, #PB_Ignore, #PB_Ignore, 500, 250)
       
-      Disable(widget_add(ide_design_FORM, "button", 15, 25, 50, 30, #PB_Button_MultiLine),1)
-      widget_add(ide_design_FORM, "text", 25, 65, 50, 30)
-      btn2 = widget_add(ide_design_FORM, "button", 35, 65+40, 50, 30)
-      widget_add(ide_design_FORM, "string", 45, 65+40*2, 50, 30)
-      ;widget_add(ide_design_FORM, "button", 45, 65+40*2, 50, 30)
+      Disable(new_widget_add(ide_design_FORM, "button", 15, 25, 50, 30, #PB_Button_MultiLine),1)
+      new_widget_add(ide_design_FORM, "text", 25, 65, 50, 30)
+      btn2 = new_widget_add(ide_design_FORM, "button", 35, 65+40, 50, 30)
+      new_widget_add(ide_design_FORM, "string", 45, 65+40*2, 50, 30)
+      ;new_widget_add(ide_design_FORM, "button", 45, 65+40*2, 50, 30)
       
-      Define *scrollarea = widget_add(ide_design_FORM, "scrollarea", 120, 25, 165, 175, #PB_ScrollArea_Flat )
-      widget_add(*scrollarea, "button", 15, 25, 30, 30)
-      widget_add(*scrollarea, "text", 25, 65, 50, 30)
-      widget_add(*scrollarea, "button", 35, 65+40, 80, 30)
-      widget_add(*scrollarea, "text", 45, 65+40*2, 50, 30)
+      Define *scrollarea = new_widget_add(ide_design_FORM, "scrollarea", 120, 25, 165, 175, #PB_ScrollArea_Flat )
+      new_widget_add(*scrollarea, "button", 15, 25, 30, 30)
+      new_widget_add(*scrollarea, "text", 25, 65, 50, 30)
+      new_widget_add(*scrollarea, "button", 35, 65+40, 80, 30)
+      new_widget_add(*scrollarea, "text", 45, 65+40*2, 50, 30)
       
-      Define *panel = widget_add(ide_design_FORM, "panel", 320, 25, 165, 175)
-      widget_add(*panel, "button", 15, 25, 30, 30)
-      widget_add(*panel, "text", 25, 65, 50, 30)
-      widget_add(*panel, "button", 35, 65+40, 80, 30)
-      widget_add(*panel, "text", 45, 65+40*2, 50, 30)
+      Define *panel = new_widget_add(ide_design_FORM, "panel", 320, 25, 165, 175)
+      new_widget_add(*panel, "button", 15, 25, 30, 30)
+      new_widget_add(*panel, "text", 25, 65, 50, 30)
+      new_widget_add(*panel, "button", 35, 65+40, 80, 30)
+      new_widget_add(*panel, "text", 45, 65+40*2, 50, 30)
       
       AddItem( *panel, -1, "panel_item_1" )
       ;OpenList( *panel, 1 )
-      widget_add(*panel, "button", 115, 25, 30, 30)
-      widget_add(*panel, "text", 125, 65, 50, 30)
-      widget_add(*panel, "button", 135, 65+40, 80, 30)
-      widget_add(*panel, "text", 145, 65+40*2, 50, 30)
+      new_widget_add(*panel, "button", 115, 25, 30, 30)
+      new_widget_add(*panel, "text", 125, 65, 50, 30)
+      new_widget_add(*panel, "button", 135, 65+40, 80, 30)
+      new_widget_add(*panel, "text", 145, 65+40*2, 50, 30)
       ;CloseList( )
       SetState( *panel, 1 )
       
@@ -2806,32 +2819,32 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\ example 3
       Resize(ide_design_FORM, 30, 30, 400, 250)
       
-      Define q=widget_add(ide_design_FORM, "button", 15, 25, 50, 30)
-      widget_add(ide_design_FORM, "text", 25, 65, 50, 30)
-      widget_add(ide_design_FORM, "button", 285, 25, 50, 30)
-      widget_add(ide_design_FORM, "text", 45, 65+40*2, 50, 30)
+      Define q=new_widget_add(ide_design_FORM, "button", 15, 25, 50, 30)
+      new_widget_add(ide_design_FORM, "text", 25, 65, 50, 30)
+      new_widget_add(ide_design_FORM, "button", 285, 25, 50, 30)
+      new_widget_add(ide_design_FORM, "text", 45, 65+40*2, 50, 30)
       
-      Define *container = widget_add(ide_design_FORM, "scrollarea", 100, 25, 165, 170)
-      widget_add(*container, "button", 15, 25, 30, 30)
-      widget_add(*container, "text", 25, 65, 50, 30)
-      widget_add(*container, "button", 35, 65+40, 80, 30)
-      widget_add(*container, "text", 45, 65+40*2, 50, 30)
+      Define *container = new_widget_add(ide_design_FORM, "scrollarea", 100, 25, 165, 170)
+      new_widget_add(*container, "button", 15, 25, 30, 30)
+      new_widget_add(*container, "text", 25, 65, 50, 30)
+      new_widget_add(*container, "button", 35, 65+40, 80, 30)
+      new_widget_add(*container, "text", 45, 65+40*2, 50, 30)
       SetActive( q )
       
    ElseIf example = 5
       ;\\ example 3
       Resize(ide_design_FORM, 30, 30, 400, 250)
       
-      Define q=widget_add(ide_design_FORM, "button", 280, 25, 50, 30)
-      widget_add(ide_design_FORM, "text", 25, 65, 50, 30)
-      widget_add(ide_design_FORM, "button", 340, 25, 50, 30)
-      widget_add(ide_design_FORM, "text", 45, 65+40*2, 50, 30)
+      Define q=new_widget_add(ide_design_FORM, "button", 280, 25, 50, 30)
+      new_widget_add(ide_design_FORM, "text", 25, 65, 50, 30)
+      new_widget_add(ide_design_FORM, "button", 340, 25, 50, 30)
+      new_widget_add(ide_design_FORM, "text", 45, 65+40*2, 50, 30)
       
-      Define *container = widget_add(ide_design_FORM, "scrollarea", 100, 25, 155, 170)
-      widget_add(*container, "button", 15, 25, 30, 30)
-      widget_add(*container, "text", 25, 65, 50, 30)
-      widget_add(*container, "button", 35, 65+40, 80, 30)
-      widget_add(*container, "text", 45, 65+40*2, 50, 30)
+      Define *container = new_widget_add(ide_design_FORM, "scrollarea", 100, 25, 155, 170)
+      new_widget_add(*container, "button", 15, 25, 30, 30)
+      new_widget_add(*container, "text", 25, 65, 50, 30)
+      new_widget_add(*container, "button", 35, 65+40, 80, 30)
+      new_widget_add(*container, "text", 45, 65+40*2, 50, 30)
       SetActive( q )
    EndIf
    
@@ -2882,25 +2895,25 @@ CompilerEndIf
 DataSection   
    IncludePath #ide_path + "ide/include/images"
    
-   widget_delete:    : IncludeBinary "16/delete.png"
-   widget_paste:     : IncludeBinary "16/paste.png"
-   widget_copy:      : IncludeBinary "16/copy.png"
-   widget_cut:       : IncludeBinary "16/cut.png"
+   image_new_widget_delete:    : IncludeBinary "16/delete.png"
+   image_new_widget_paste:     : IncludeBinary "16/paste.png"
+   image_new_widget_copy:      : IncludeBinary "16/copy.png"
+   image_new_widget_cut:       : IncludeBinary "16/cut.png"
    *imagelogo:       : IncludeBinary "group/group_bottom.png"
    
-   group:            : IncludeBinary "group/group.png"
-   group_un:         : IncludeBinary "group/group_un.png"
-   group_top:        : IncludeBinary "group/group_top.png"
-   group_left:       : IncludeBinary "group/group_left.png"
-   group_right:      : IncludeBinary "group/group_right.png"
-   group_bottom:     : IncludeBinary "group/group_bottom.png"
-   group_width:      : IncludeBinary "group/group_width.png"
-   group_height:     : IncludeBinary "group/group_height.png"
+   image_group:            : IncludeBinary "group/group.png"
+   image_group_un:         : IncludeBinary "group/group_un.png"
+   image_group_top:        : IncludeBinary "group/group_top.png"
+   image_group_left:       : IncludeBinary "group/group_left.png"
+   image_group_right:      : IncludeBinary "group/group_right.png"
+   image_group_bottom:     : IncludeBinary "group/group_bottom.png"
+   image_group_width:      : IncludeBinary "group/group_width.png"
+   image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2852
-; FirstLine = 2722
-; Folding = -----------6P0-v-----B9-----------------------------
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 2300
+; FirstLine = 2176
+; Folding = ---------f+T--8----fA-----------------------8--+-----
 ; Optimizer
 ; EnableAsm
 ; EnableXP

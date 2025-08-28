@@ -5,8 +5,19 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   Declare CustomEvents( )
    Global object, object1, object2, object3, parent
+      
+   ;\\
+   Procedure EventsHandler( )
+      Select WidgetEvent( )
+         Case #__event_MouseEnter
+            Debug "enter " + EventWidget( )\class
+           
+         Case #__event_MouseLeave
+            Debug "leave " + EventWidget( )\class
+            
+      EndSelect
+   EndProcedure
    
    ;\\
    Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
@@ -14,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
-   SetColor(parent, #pb_gadget_backcolor, $FFAC97DB)
+   SetColor(parent, #PB_Gadget_BackColor, $FFAC97DB)
    SetFrame(parent, 20 )
    
    ;\\
@@ -54,28 +65,14 @@ CompilerIf #PB_Compiler_IsMainFile
    SetClass( Splitter_5, "Splitter_5")
    
    
-   Bind( #PB_All, @CustomEvents( ), #__event_MouseEnter )
-   Bind( #PB_All, @CustomEvents( ), #__event_MouseLeave )
+   Bind( #PB_All, @EventsHandler( ), #__event_MouseEnter )
+   Bind( #PB_All, @EventsHandler( ), #__event_MouseLeave )
   
    ;\\
    WaitClose( )
-   
-   ;\\
-   Procedure CustomEvents( )
-      Select WidgetEvent( )
-         Case #__event_MouseEnter
-            Debug "enter " + EventWidget( )\class
-           
-         Case #__event_MouseLeave
-            Debug "leave " + EventWidget( )\class
-            
-      EndSelect
-   EndProcedure
-   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16
-; FirstLine = 12
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 8
 ; Folding = -
 ; EnableXP
 ; DPIAware

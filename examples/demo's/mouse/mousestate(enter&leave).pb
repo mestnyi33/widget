@@ -3,15 +3,15 @@
 XIncludeFile "../../../widgets.pbi" 
 UseWidgets( )
 
-Declare events_widgets( )
+Declare EventsHandler( )
 
-Global colorback = colors::*this\blue\fore,
-       colorframe=colors::*this\blue\frame, 
+Global.l colorback = colors::*this\blue\fore,
+       colorframe = colors::*this\blue\frame, 
        colorback1 = $ff00ff00,
-       colorframe1=$ff0000ff
+       colorframe1 = $ff0000ff
 
 ;\\
-Procedure events_widgets( )
+Procedure EventsHandler( )
    Protected repaint
    
    Select WidgetEvent( )
@@ -31,7 +31,7 @@ Procedure events_widgets( )
                EndIf
                
                If repaint
-                  Debug "" + GetData( EventWidget( ) ) + " change Frame&back color"
+                  Debug "" + GetData( EventWidget( ) ) + " change frame&back color"
                EndIf
                
             Else 
@@ -99,16 +99,16 @@ CloseList( )
 CloseList( )
 
 ;\\
-Bind( #PB_All, @events_widgets( ), #__event_MouseEnter )
-Bind( #PB_All, @events_widgets( ), #__event_MouseMove )
-Bind( #PB_All, @events_widgets( ), #__event_MouseLeave )
+Bind( #PB_All, @EventsHandler( ), #__event_MouseEnter )
+Bind( #PB_All, @EventsHandler( ), #__event_MouseMove )
+Bind( #PB_All, @EventsHandler( ), #__event_MouseLeave )
 
 ;\\
 WaitClose( )
 
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 57
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 33
+; FirstLine = 18
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -163,14 +163,14 @@
       
       ;- 
       ;-\\ state
-      #__state_Selected  = 1<<5  ; выделено
-      #__state_expanded  = 1<<6  ; развернуто
-      #__state_Checked   = 1<<7  ; выбрано
-      #__state_Collapsed = 1<<8  ; свернуто
-      #__state_Inbetween = 1<<9
-      ;#__state_entered   = 1<<10 ; мышь внутри
-      ;#__state_pressed   = 1<<11 ; нажато
-      #__state_nofocus = 2; - 1
+      ;#__s_Selected  = 1<<5  ; выделено
+      ;#__s_Expanded  = 1<<6  ; развернуто
+      ;#__s_Checked   = 1<<7  ; выбрано
+      ;#__s_Collapsed = 1<<8  ; свернуто
+      ;#__s_Inbetween = 1<<9
+      ;#__s_Entered   = 1<<10 ; мышь внутри
+      ;#__s_Pressed   = 1<<11 ; нажато
+      #__s_nofocus = 2; - 1
       
       ;-\\ color-state
       Enumeration
@@ -778,8 +778,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 336
-; FirstLine = 313
+; CursorPosition = 169
+; FirstLine = 148
 ; Folding = ----
 ; Optimizer
 ; EnableXP

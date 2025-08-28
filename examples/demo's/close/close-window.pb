@@ -23,9 +23,8 @@ CompilerIf #PB_Compiler_IsMainFile
                   If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetTitle( EventWidget( )\window )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                      Define window = GetWindow( EventWidget( ) ) 
                      ;Free( @window) 
-                     Debug 4444
-                     ;Free( GetWindow( EventWidget( ) ) ) 
-                    ; ReDraw(GetWindow( EventWidget( ) ))
+                     Free( window) 
+                    ; Debug 4444
                   EndIf
                   
                Case "window_1_close"
@@ -66,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;\\ to send not free
             If is_window_(EventWidget( ))
-             Else
+            Else
              ;  ProcedureReturn 1
             EndIf
             

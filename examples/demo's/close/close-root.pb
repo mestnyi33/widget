@@ -23,8 +23,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    SetClass(root( ), "window_0_root" )
    SetBackColor( root( ), $FFB3FDFF )
-   Button(10,10,200,50,"window_0_close")
-   SetClass(widget( ), "window_0_close" )
+   Button(10,10,200,50,"button_window_0_close")
+   SetClass(widget( ), GetText(widget( )) )
    
    ;\\
    Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
@@ -34,8 +34,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    SetClass(root( ), "window_1_root" )
    SetBackColor( root( ), $FFB3FDFF )
-   Button(10,10,200,50,"window_1_close")
-   SetClass(widget( ), "window_1_close" )
+   Button(10,10,200,50,"button_window_1_close")
+   SetClass(widget( ), GetText(widget( )) )
    
    ;\\
    Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
@@ -45,8 +45,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    SetClass(root( ), "window_2_root" )
    SetBackColor( root( ), $FFB3FDFF )
-   Button(10,10,200,50,"window_all_close")
-   SetClass(widget( ), "window_all_close" )
+   Button(10,10,200,50,"button_window_all_close")
+   SetClass(widget( ), GetText(widget( )) )
    
    
    Procedure buttonEvent( )
@@ -68,17 +68,17 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_leftclick
             Select GetText( EventWidget( ))
-               Case "window_0_close"
+               Case "button_window_0_close"
                   If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                      
                      Free( GetWindow(EventWidget( )) )
                      
                   EndIf
                   
-               Case "window_1_close"
+               Case "button_window_1_close"
                   Post( GetWindow( EventWidget( ) ), #__event_Close )
                
-               Case "window_all_close"
+               Case "button_window_all_close"
                   If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
                      
                      Free( #PB_All )
@@ -88,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndSelect
             
          Case #__event_close
-            Debug "close - event " + EventWidget( )\class +" --- "+ GetWindowTitle( EventWindow( ) )
+            Debug "  [e-close] " + EventWidget( )\class +" --- "+ GetWindowTitle( EventWindow( ) )
             
             ;\\ demo main window
             If EventWindow( ) = 2
@@ -106,12 +106,12 @@ CompilerIf #PB_Compiler_IsMainFile
                EndIf
                
             ElseIf EventWindow( ) = 1
-              ; CloseWindow( 1 )
+               ; CloseWindow( 1 )
                ; ProcedureReturn #True
             EndIf
            
          Case #__event_free
-            Debug "free - event " + EventWidget( )\class 
+            Debug "  [e-free] " + EventWidget( )\class 
             
             ;\\ to send not free
             ; ProcedureReturn #False
@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 108
-; FirstLine = 84
+; CursorPosition = 90
+; FirstLine = 80
 ; Folding = ---
 ; EnableXP

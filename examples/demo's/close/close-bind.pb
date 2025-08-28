@@ -51,6 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_close
             Debug "close - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure
+            ProcedureReturn #True
             
          Case #__event_Down
             Debug "down - event " + EventWidget( )\class +" --- "+ #PB_Compiler_Procedure 
@@ -99,7 +100,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 18
+; CursorPosition = 53
+; FirstLine = 36
 ; Folding = --
 ; EnableXP

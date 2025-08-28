@@ -1044,7 +1044,7 @@ Procedure   MakeLine( *mdi, string$, findtext$ )
                   EndIf
                   
                   ;Debug "[Make]"+\func$ +" "+ Bool(\func$ = "Window") +" "+ *parent ;arg$
-                  *g = widget_Create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), text$, param1, param2, param3, flags )
+                  *g = new_widget_create( *parent, \func$, Val(x$), Val(y$), Val(width$), Val(height$), text$, param1, param2, param3, flags )
                  
                   If *g
                      If id$ = "WINDOW_MAIN"
@@ -1056,7 +1056,7 @@ Procedure   MakeLine( *mdi, string$, findtext$ )
                      
                      SetText( *g, text$ )
                      ; 
-                     ide_addline( *g )
+                     new_widget_line_add( *g )
                      ;
                      If IsContainer( *g ) > 0
                         *Parent = *g
@@ -2050,8 +2050,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 383
-; FirstLine = 344
+; CursorPosition = 1058
+; FirstLine = 991
 ; Folding = -f-----f------------------f9-4-----4r3f----b-ePA5--0--
 ; EnableXP
 ; DPIAware

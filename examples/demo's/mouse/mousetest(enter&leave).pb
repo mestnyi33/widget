@@ -5,11 +5,11 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   test_draw_contex = 0
+   ;test_draw_contex = 0
    
    Global i, *test._s_widget
    
-   Procedure HandlerEvents( )
+   Procedure EventsHandler( )
       Protected event = WidgetEvent( ) 
       Protected *this._s_widget = EventWidget( )
       
@@ -39,9 +39,9 @@ CompilerIf #PB_Compiler_IsMainFile
    If OpenWindow(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       If Open(0, 10,10, 480, 480)
          a_init( root( ) )
-         Bind(#PB_All, @HandlerEvents( ))
+         Bind(#PB_All, @EventsHandler( ))
          Window(80, 100, 300, 280, "Window_2")
-         ; Bind(widget(), @HandlerEvents( ))
+         ; Bind(widget(), @EventsHandler( ))
         
          ;\\
          *test = Tree(10, 10, 135, 80)
@@ -77,8 +77,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 43
+; CursorPosition = 43
+; FirstLine = 4
 ; Folding = --
 ; EnableXP
 ; DPIAware

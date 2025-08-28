@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define *r1, *g11, *g12, *g13, *g14, *g15
    Define *r2, *g21, *g22, *g23, *g24, *g25
    
-   Procedure Events( )
+   Procedure EventsHandler( )
       Static drag, deltax, deltay
       
       If EventWidget( ) <> root( )
@@ -100,23 +100,23 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       ;\\
-      Bind(#PB_All, @events( ), #__event_down)
-      Bind(#PB_All, @events( ), #__event_dragstart)
-      Bind(#PB_All, @events( ), #__event_up)
+      Bind(#PB_All, @EventsHandler( ), #__event_down)
+      Bind(#PB_All, @EventsHandler( ), #__event_dragstart)
+      Bind(#PB_All, @EventsHandler( ), #__event_up)
       
-      Bind(#PB_All, @events( ), #__event_mouseenter)
-      Bind(#PB_All, @events( ), #__event_mousemove)
-      Bind(#PB_All, @events( ), #__event_mouseleave)
+      Bind(#PB_All, @EventsHandler( ), #__event_mouseenter)
+      Bind(#PB_All, @EventsHandler( ), #__event_mousemove)
+      Bind(#PB_All, @EventsHandler( ), #__event_mouseleave)
       
-      Bind(#PB_All, @events( ), #__event_keydown)
-      Bind(#PB_All, @events( ), #__event_keyup)
+      Bind(#PB_All, @EventsHandler( ), #__event_keydown)
+      Bind(#PB_All, @EventsHandler( ), #__event_keyup)
       
       Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 40
-; FirstLine = 20
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 111
+; FirstLine = 72
 ; Folding = --
 ; EnableXP
 ; DPIAware
