@@ -15,9 +15,8 @@ Procedure EventsHandler( )
    Protected repaint
    
    Select WidgetEvent( )
-      Case #__event_MouseEnter,
-           #__event_MouseLeave,
-           #__event_MouseMove
+      Case #__event_MouseEnter, ;#__event_MouseMove,
+           #__event_MouseLeave
          
          If EventWidget( ) <> root( )
             If EventWidget( )\enter 
@@ -107,8 +106,8 @@ Bind( #PB_All, @EventsHandler( ), #__event_MouseLeave )
 WaitClose( )
 
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 18
+; CursorPosition = 17
+; FirstLine = 14
 ; Folding = --
 ; EnableXP
 ; DPIAware

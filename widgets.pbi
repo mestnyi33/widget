@@ -2880,12 +2880,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                If a_entered( )\AnchorState( ) <> #__s_0
                   a_entered( )\AnchorState( ) = #__s_0
                   ;
-                  ; reset cursor
-                  If a_entered( )\cursor[1] <> a_entered( )\cursor
+;                   ; reset cursor
+;                   If a_entered( )\cursor[1] <> a_entered( )\cursor
+;                      ; leave from anchor 
+;                      a_entered( )\cursor[1] = a_entered( )\cursor
+;                   EndIf
+                  If a_entered( )\cursor <> a_entered( )\cursor[1]
+                     ; Debug "a reset cursor"
                      ; leave from anchor 
-                     a_entered( )\cursor[1] = a_entered( )\cursor
+                     a_entered( )\cursor = a_entered( )\cursor[1]
                   EndIf
-                  ;
+                  
                   a_entered( )\root\repaint = 1
                EndIf
             EndIf
@@ -2904,7 +2909,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               a_entered( )\enter = 1
                            EndIf
                            ;
-                           DoEvents( a_entered( ), #__event_MouseEnter, #PB_All, 111111111111 )
+                           DoEvents( a_entered( ), #__event_MouseEnter, #PB_All, @"[?+a_enter]" )
                         Else
                            a_entered( )\enter = 0
                         EndIf   
@@ -2928,17 +2933,19 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; set new entered anchors index state
          If a_index
             a_index( ) = a_index
-            ; 
-            If *this\enter = 0
-               MouseEnter( *this, - 1 )
-            ElseIf *this\enter > 0
-               MouseEnter( *this, - 1 )
-               DoEvents( *this, #__event_MouseLeave, #PB_All, -111111111111  )
-            EndIf
-            ;
+;           ;
             If *this\anchors\id[a_index]  
                If *this\AnchorState( ) = #__s_0
                   *this\AnchorState( ) = #__s_1
+                  ;
+                  If *this\enter > 0
+                     If *this = Entered( )
+                        DoEvents( *this, #__event_MouseLeave, #PB_All, @"[?-a_leave]"  )
+                     EndIf
+                  EndIf   
+                  MouseEnter( *this, - 1 )
+                  ;
+                  Debug "ChangeCurrentCursor anchor " ; *this\enter
                   ChangeCurrentCursor( *this, a_anchors( )\cursor[a_index] )
                   *this\root\repaint = 1
                EndIf
@@ -8634,15 +8641,19 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i SetCursor( *this._s_WIDGET, *cursor, Type.a = 0 )
+         If Type = 0 
+            Type = 1
+         EndIf
+         
          If *this\cursor[Type] <> *cursor
             If test_setcursor
                Debug "setCURSOR( " + *cursor +" )"
             EndIf
             
             *this\cursor[Type] = *cursor
-            If Type <> 1
-               *this\cursor[1] = *cursor
-            EndIf
+;             If Type <> 1
+;                *this\cursor[1] = *cursor
+;             EndIf
             ProcedureReturn 1
          EndIf
       EndProcedure
@@ -8665,34 +8676,37 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected result.i
          Static cursor_change_widget
          
-         If CurrentCursor( ) <> *cursor
-            StopDraw( )
-            If *cursor 
-               cursor_change_widget = *this
-            Else
-               If cursor_change_widget
-                  *this = cursor_change_widget
-                  cursor_change_widget = 0
-               EndIf
+         StopDraw( )
+         If *cursor 
+            cursor_change_widget = *this
+         Else
+            If cursor_change_widget
+               *this = cursor_change_widget
+               cursor_change_widget = 0
             EndIf
-            
-            If test_changecursor
-               Debug ""+*this\class + "  ChangeCurrentCursor( "+ *cursor +" ) " +" reset "+ CurrentCursor( )
-            EndIf
-            
-            CurrentCursor( ) = *cursor
-            ;
-            If *this\bindcursor
-               result = Post( *this, #__event_CursorChange, #PB_All, CurrentCursor( ) )
+         EndIf
+         
+         If test_changecursor
+            Debug ""+*this\class + "  ChangeCurrentCursor( "+ *cursor +" ) " +" reset "+ CurrentCursor( )
+         EndIf
+         CurrentCursor( ) = *cursor
+         ;
+         If *cursor
+            If *this\bindcursor Or 
+               *this\root\canvas\bindcursor
+               ;
+               result = Post( *this, #__event_Cursor, #PB_All, *cursor )
                If result > 0
                   *cursor = result
-                  CurrentCursor( ) = *cursor
+                 ; Debug ""+ *cursor +" "+ CurrentCursor( ) 
+                  ;CurrentCursor( ) = *cursor
                EndIf
             EndIf
-            
-            Cursor::Set( *this\root\canvas\gadget, *cursor ) 
-            StartDraw( *this\root )
          EndIf
+         ; Debug *cursor
+         
+         Cursor::Set( *this\root\canvas\gadget, *cursor ) 
+         StartDraw( *this\root )
          
          ProcedureReturn *cursor
       EndProcedure
@@ -8730,7 +8744,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EndIf
                               
                               If CurrentCursor( ) = cursor::#__cursor_Drag
-                                 CurrentCursor( ) = 0
+                                 ; CurrentCursor( ) = 0
                                  ChangeCurrentCursor( *this, cursor::#__cursor_Drag )
                               EndIf
                            EndIf
@@ -8750,14 +8764,18 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          Else
             If Not a_index( )
+               ;Debug  *this\enter
+               
                If Not *this\disable And
                   MouseEnter( *this ) And *this\cursor[1]
-                  ;
+               
                   If CurrentCursor( ) <> *this\cursor[1]
+                     Debug "ChangeCurrentCursor 1"
                      ChangeCurrentCursor( *this, *this\cursor[1] )
                   EndIf
                Else
                   If CurrentCursor( )
+                     Debug "ChangeCurrentCursor 0 "+*this\enter
                      ChangeCurrentCursor( *this, 0 )
                   EndIf
                EndIf
@@ -16269,7 +16287,7 @@ chr$ = ","
          Protected result$
          
          Select event
-            Case #__event_CursorChange    : result$ = "CursorChange"
+            Case #__event_Cursor    : result$ = "CursorChange"
             Case #__event_free            : result$ = "Free"
             Case #__event_drop            : result$ = "Drop"
             Case #__event_create          : result$ = "Create"
@@ -16496,6 +16514,8 @@ chr$ = ","
                         Else
                            *this = a_entered( )
                         EndIf
+                        
+                        ;Debug "a "+a_index( ) +" "+ *this\enter
                      EndIf
                   Else
                      If a_index( )
@@ -16613,53 +16633,61 @@ chr$ = ","
             Protected *parent._s_WIDGET 
             ;
             ;
-            If Leaved( ) And Not ( *this And *this\parent = Leaved( ) And is_integral_( *this ) ) And
-               Leaved( )\enter > 0
-               Leaved( )\enter = 0
-               ;
-               If is_integral_( Leaved( ) )
-                  If Leaved( )\parent And
-                     Leaved( )\parent\enter
-                     
-                     If Leaved( )\parent = *this
-                        If is_atpoint_( Leaved( )\parent, mouse_x, mouse_y, [#__c_inner] ) And
-                           is_atpoint_( Leaved( )\parent, mouse_x, mouse_y, [#__c_draw] )
-                           MouseEnter( Leaved( )\parent )
+            If Leaved( ) And Not ( *this And *this\parent = Leaved( ) And is_integral_( *this ) )
+               If Leaved( )\enter > 0
+                  Leaved( )\enter = 0
+                  ;
+                  If is_integral_( Leaved( ) )
+                     If Leaved( )\parent And
+                        Leaved( )\parent\enter
+                        
+                        If Leaved( )\parent = *this
+                           If is_atpoint_( Leaved( )\parent, mouse_x, mouse_y, [#__c_inner] ) And
+                              is_atpoint_( Leaved( )\parent, mouse_x, mouse_y, [#__c_draw] )
+                              MouseEnter( Leaved( )\parent )
+                           Else
+                              Leaved( )\parent\enter = 1
+                           EndIf
                         Else
-                           Leaved( )\parent\enter = 1
+                           Leaved( )\parent\enter = 0
                         EndIf
-                     Else
-                        Leaved( )\parent\enter = 0
                      EndIf
-                  EndIf
-               Else
-                  If Not a_index( )
-                     If Not Leaved( )\anchors
-                        If Leaved( )\parent And 
-                           Leaved( )\parent\type = #__type_Splitter
-                           ;
-                           *parent = Leaved( )\parent
-                           While *parent And Not *parent\anchors
-                              *parent = *parent\parent
-                           Wend
-                           ;
-                           If *parent 
-                              If *parent\anchors And 
-                                 *parent\enter = - 2
-                                 *parent\enter = 0
+                  Else
+                     If Not a_index( )
+                        If Not Leaved( )\anchors
+                           If Leaved( )\parent And 
+                              Leaved( )\parent\type = #__type_Splitter
+                              ;
+                              *parent = Leaved( )\parent
+                              While *parent And Not *parent\anchors
+                                 *parent = *parent\parent
+                              Wend
+                              ;
+                              If *parent 
+                                 If *parent\anchors And 
+                                    *parent\enter = - 2
+                                    *parent\enter = 0
+                                 EndIf
                               EndIf
                            EndIf
                         EndIf
                      EndIf
                   EndIf
-               EndIf
-               ;
-               DoEvents( Leaved( ), #__event_MouseLeave )
-               ;
-               If is_integral_( Leaved( ) ) And 
-                  Leaved( )\parent\enter = 0
                   ;
-                  DoEvents( Leaved( )\parent, #__event_MouseLeave, -1, - 2 )
+                  DoEvents( Leaved( ), #__event_MouseLeave, -1, @"[?+leave]" )
+                  ;
+                  If Leaved( )\parent
+                     If is_integral_( Leaved( ) ) 
+                        If Leaved( )\parent\enter = 0
+                           DoEvents( Leaved( )\parent, #__event_MouseLeave, -1, @"[?-leave]" )
+                        Else
+                           If a_index( )
+                              Leaved( )\parent\enter = - 1
+                              DoEvents( Leaved( )\parent, #__event_MouseLeave, -1, @"[?-a-leave]" )
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
                EndIf
             EndIf
             ;
@@ -16670,25 +16698,27 @@ chr$ = ","
                If is_integral_( *this ) 
                   If *this\parent  
                      If *this\parent\enter = 0
-                        If *this\parent\anchors
-                           If Not MouseButtonPress( )
+                        *this\parent\enter = 1
+                        ;
+                        If Not MouseButtonPress( )
+                           If *this\parent\anchors
                               a_show( *this\parent )
+                              
+                              If a_index( )
+                                 *this\parent\enter = - 1
+                              EndIf
                            EndIf
                         EndIf
                         ;
                         If Not a_index( )
-                           *this\parent\enter = - 2
-                           DoEvents( *this\parent, #__event_MouseEnter, -1, - 2 )
+                           DoEvents( *this\parent, #__event_MouseEnter, -1, @"[?-enter]" )
                         EndIf
-                     Else
-                        *this\parent\enter = - 2
-                        ;
-                        ;DoEvents( *this\parent, #__event_StatusChange, -1, - 2 )
                      EndIf
                   EndIf
                Else
-                  If Not MouseButtonPress( )
-                     If Not a_index( )
+                  If a_index( )
+                  Else
+                     If Not MouseButtonPress( )
                         If *this\anchors
                            a_show( *this )
                         Else
@@ -16703,10 +16733,6 @@ chr$ = ","
                               If *parent
                                  If *parent\anchors
                                     a_show( *parent )
-                                    ;
-                                    If Not a_index( )
-                                       *parent\enter = - 2
-                                    EndIf
                                  EndIf
                               EndIf
                            EndIf
@@ -16714,11 +16740,12 @@ chr$ = ","
                      EndIf
                   EndIf
                EndIf
-               
+               ;
                If Not a_index( )
                   *this\enter = 1
-                  DoEvents( *this, #__event_MouseEnter )
+                  DoEvents( *this, #__event_MouseEnter, -1, @"[?+enter]" )
                EndIf
+               
             EndIf
          EndIf
          
@@ -16927,6 +16954,10 @@ chr$ = ","
          If *this < 0
             PushMapPosition(roots( ))
             ForEach roots( )
+               If event = #__event_Cursor
+                  roots( )\canvas\bindcursor = 1
+               EndIf
+               
                Bind( roots( ), *callback, event, item )
             Next
             PopMapPosition(roots( ))
@@ -16965,7 +16996,7 @@ chr$ = ","
                If event = #__event_Resize
                   *this\bindresize = 1
                EndIf
-               If event = #__event_CursorChange
+               If event = #__event_Cursor
                   *this\bindcursor = 1
                EndIf
                
@@ -18988,7 +19019,7 @@ chr$ = ","
                      Not ( *this\type = #__type_HyperLink And is_atpoint_( *this, mouse( )\x - *this\frame_x( ), mouse( )\y - *this\frame_y( ), [#__c_Required] ) = 0 ))
                ;
                If *this\enter = 1
-                  MouseEnter( *this )
+                  *this\enter = 2
                   mouse( )\data | #__mouse_update
                EndIf
             Else
@@ -25991,9 +26022,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 7197
-; FirstLine = 7071
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------ve8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 2888
+; FirstLine = 2869
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------f03------------------------------------------------------0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-+4--+---0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

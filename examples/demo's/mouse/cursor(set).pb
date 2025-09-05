@@ -5,10 +5,26 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
    
+   Procedure CustomDrawing( )
+      Protected *e._S_Widget = EventWidget()
+      With *e
+         DrawingMode(#PB_2DDrawing_Default)
+         Box(\x,\y,\width,\height, $74F6FE)
+         Box(\x[#__c_inner],\y[#__c_inner],\width[#__c_inner],\height[#__c_inner], $FFFFFF)
+      EndWith
+   EndProcedure
+   
    If Open(0, 0, 0, 430, 280, "установить курсор для виджета", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       Button_1 = Button(0,0,0,0, "Button 1")
-      Button_2 = Button(0,0,0,0, "Button 2") 
+      SetFrame(Button_1, 0)
+      SetCursor( Button_1, #PB_Cursor_Cross )
+      
+      ;Button_2 = Button(0,0,0,0, "Button 2") 
+      Button_2 = String(0,0,0,0, "Button 2") 
+      SetFrame(Button_2, 0)
+      SetFrame(Button_2, 5)
+      Bind(Button_2, @CustomDrawing(), #__event_Draw)
       
       Splitter_0 = Splitter(0,0,0,0, -1, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
       Splitter_1 = Splitter(0,0,0,0, Button_2, -1, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
@@ -23,8 +39,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 7
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 21
 ; Folding = -
 ; EnableXP
 ; DPIAware

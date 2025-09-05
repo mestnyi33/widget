@@ -9,6 +9,20 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global form1, btn1, btn2, Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
    
+   Procedure CustomDrawing( )
+      Protected *e._S_Widget = EventWidget()
+      With *e
+         DrawingMode(#PB_2DDrawing_Default)
+         If *e = Button_3
+            Box(\x,\y,\width,\height, $74F6FE)
+         EndIf
+         If *e = Button_4
+            Box(\x,\y,\width,\height, $F674FE)
+         EndIf
+         Box(\x[#__c_inner],\y[#__c_inner],\width[#__c_inner],\height[#__c_inner], $FFFFFF)
+      EndWith
+   EndProcedure
+   
    Procedure events_widgets( )
       Protected drop, source, selectedIndex, selectedText$
       
@@ -20,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             If EventWidget( ) = btn1
                If DragDropPrivate( #_DD_reParent )
-                  ChangeCurrentCursor( btn1, #PB_Cursor_Arrows ) 
+                  ChangeCurrentCursor( btn1, #PB_Cursor_Denied ) 
                EndIf
             EndIf
             
@@ -37,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_Drop   
             Debug "event( DROP )"
             
-         Case #__event_CursorChange      
+         Case #__event_Cursor      
             Debug Index(EventWidget( ))
             ProcedureReturn #__cursor_Hand
       EndSelect
@@ -82,17 +96,19 @@ CompilerIf #PB_Compiler_IsMainFile
       EnableDrop(Button_5, #PB_Drop_Text, #PB_Drag_Copy)
       Bind( #PB_All, @events_widgets( ), #__event_DragStart )
       Bind( #PB_All, @events_widgets( ), #__event_Drop )
+      Bind(Button_3, @CustomDrawing(), #__event_Draw)
+      Bind(Button_4, @CustomDrawing(), #__event_Draw)
       
       ;\\ change current cursor
-      ; Bind( #PB_All, @events_widgets( ), #__event_CursorChange )
+      ; Bind( #PB_All, @events_widgets( ), #__event_Cursor )
       
       WaitClose( )
    EndIf
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 43
+; CursorPosition = 51
+; FirstLine = 21
 ; Folding = --
 ; EnableXP
 ; DPIAware

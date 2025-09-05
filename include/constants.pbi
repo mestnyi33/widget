@@ -245,7 +245,7 @@
          #__event_Change
          #__event_StatusChange
          #__event_ScrollChange
-         #__event_CursorChange
+         #__event_Cursor
          ;
          #__event_KeyDown
          #__event_Input
@@ -297,7 +297,7 @@
       ;     #__eventmask_Change       = 1<<#__event_Change
       ;     #__eventmask_StatusChange = 1<<#__event_StatusChange
       ;     #__eventmask_ScrollChange = 1<<#__event_ScrollChange
-      ;     #__eventmask_CursorChange = 1<<#__event_CursorChange
+      ;     #__eventmask_CursorChange = 1<<#__event_Cursor
       ;     #__eventmask_KeyDown      = 1<<#__event_KeyDown
       ;     #__eventmask_Input        = 1<<#__event_Input
       ;     #__eventmask_Return       = 1<<#__event_Return
@@ -778,8 +778,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 169
-; FirstLine = 148
+; CursorPosition = 299
+; FirstLine = 261
 ; Folding = ----
 ; Optimizer
 ; EnableXP

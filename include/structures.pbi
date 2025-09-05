@@ -41,6 +41,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
          X.l
          Y.l
       EndStructure
+;       ;--     FRAME
+;       Structure _s_FRAME Extends _s_COORDINATE
+;          size.c                   ; 2 Byte unsigned [0..65535]
+;          border.c                 ; 2 Byte unsigned [0..65535]
+;                                   ;
+;          left.a
+;          top.a
+;          right.a
+;          bottom.a
+;       EndStructure
       ;--     RESIZEINFO
       Structure _s_RESIZEINFO Extends _s_COORDINATE
          flag.u
@@ -187,7 +197,21 @@ CompilerIf Not Defined(Structures, #PB_Module)
          color._s_color
          arrow._s_arrow
       EndStructure
-      
+      ;--     CAPTION
+      Structure _s_caption
+         Y.l
+         X.l
+         Height.l
+         Width.l
+         
+         Button._s_buttons[5]
+         color._s_color
+         
+         interact.b
+         Hide.b
+         round.b
+         _padding.b
+      EndStructure
       ;--     CARET
       Structure _s_CARET Extends _s_COORDINATE
          word.s ; слово под кареткой
@@ -197,7 +221,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; time.l
          ; change.b
       EndStructure
-      
       ;--     EDIT
       Structure _s_EDIT Extends _s_COORDINATE
          pos.i
@@ -489,22 +512,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *h._s_WIDGET     ; horizontal scrollbar
       EndStructure
       
-      ;--     caption
-      Structure _s_caption
-         Y.l;[5]
-         X.l;[5]
-         Height.l;[5]
-         Width.l ;[5]
-         
-         Button._s_buttons[5]
-         color._s_color
-         
-         interact.b
-         Hide.b
-         round.b
-         _padding.b
-      EndStructure
-      
       ;--     line_
       Structure _s_line_
          v._s_coordinate
@@ -619,6 +626,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *beforewidget._s_WIDGET
          *lastwidget._s_WIDGET
          
+         caption._s_caption
+         ;
+         bs.a                     ; border size
+         fs.a[5]                  ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
+         ;frame._s_FRAME
+         
          Y.l[constants::#__c]
          X.l[constants::#__c]
          Height.l[constants::#__c]
@@ -642,11 +655,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          CountItems.l             ; count items
          
          ;                        ;*Draw.DrawFunc          ; Function to Draw
-         caption._s_caption
-         ;
-         bs.a                     ; border size
-         fs.a[5]                  ; frame size; [1] - inner left; [2] - inner top; [3] - inner right; [4] - inner bottom
-         
          ;                        ;
          tt._s_tt                 ; notification = уведомление
          *drop._s_DROP
@@ -718,6 +726,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     CANVAS
       Structure _s_CANVAS
          repaint.b
+         bindcursor.b
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
          *gadgetID                ; canvas handle
@@ -786,9 +795,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 257
-; FirstLine = 240
-; Folding = ----------
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 191
+; FirstLine = 149
+; Folding = --8-------
 ; Optimizer
 ; EnableXP
