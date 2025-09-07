@@ -1576,7 +1576,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
    
    ProcedureReturn *new
 EndProcedure
-test_changecursor = 1
+
 Procedure new_widget_events( )
    Protected *new
    Protected *g._s_WIDGET = EventWidget( )
@@ -1723,7 +1723,7 @@ Procedure new_widget_events( )
          EndIf
          
       Case #__event_Cursor
-         Debug "CURSOR events"
+         ; Debug "CURSOR events"
          ProcedureReturn #PB_Cursor_Default
          
    EndSelect
@@ -2911,9 +2911,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1724
-; FirstLine = 1524
-; Folding = ---------f+T--8----fA----------v8P8---------0-f------
+; CursorPosition = 1725
+; FirstLine = 1557
+; Folding = ---------f+T--8----fA----------v-P8---------0-f------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
