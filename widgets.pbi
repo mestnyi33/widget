@@ -1728,8 +1728,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i GetItemAttribute( *this, Item.l, Attribute.l, Column.l = 0 )
       Declare.i SetItemAttribute( *this, Item.l, Attribute.l, *value, Column.l = 0 )
       
-      Macro     CurrentCursor( ) : mouse( )\cursor : EndMacro
-      Declare.i GetCursor( *this, Type.a = 0 )
+      Declare.i GetCursor( *this = #PB_All, Type.a = 0 )
       Declare   SetCursor( *this, *cursor, Type.a = 0 )
       Declare   ChangeCurrentCursor( *this, *cursor )
       Declare   ChangeCursor( *this, *cursor )
@@ -2463,7 +2462,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\enter > 0
                ;\\ first - draw backgraund color
                draw_mode_alpha_( #PB_2DDrawing_Default )
-               If *this\drop
+               If *this\drop And MouseEnter( *this )
                   If MouseEnter( *this )
                      If mouse( )\drag = #PB_Drag_Enter
                         draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $1000ff00 )
@@ -2474,8 +2473,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                      Else
                         draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $10ff0000 )
                      EndIf
-                  Else
-                     ;;draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $10ff0000 )
+;                   Else
+;                      draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $10ff0000 )
                   EndIf
                Else
                   If *this\press And MouseEnter( *this )
@@ -2487,7 +2486,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;\\ second - draw frame color
                draw_mode_( #PB_2DDrawing_Outlined )
-               If *this\drop
+               If *this\drop And MouseEnter( *this )
                   If MouseEnter( *this )
                      If mouse( )\drag = #PB_Drag_Enter
                         draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff00ff00 )
@@ -2498,8 +2497,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                      Else
                         draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ffff0000 )
                      EndIf
-                  Else
-                     ; draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $ffff0000 )
+;                   Else
+;                      draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $ffff0000 )
                   EndIf
                Else
                   If *this\press And MouseEnter( *this )
@@ -2633,7 +2632,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          mouse( )\drop\actions = Actions
          mouse( )\drop\string  = Text
          
-         CurrentCursor( ) = cursor::#__cursor_Drag
+         SetCursor( #PB_All, cursor::#__cursor_Drag )
          ProcedureReturn mouse( )\drop
       EndProcedure
       
@@ -2652,7 +2651,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             mouse( )\drop\height  = ImageHeight( img )
          EndIf
          
-         CurrentCursor( ) = cursor::#__cursor_Drag
+         SetCursor( #PB_All, cursor::#__cursor_Drag )
          ProcedureReturn mouse( )\drop
       EndProcedure
       
@@ -2666,7 +2665,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;         mouse( )\drop\actions = Actions
          ;         mouse( )\drop\files  = Files
          
-         CurrentCursor( ) = cursor::#__cursor_Drag
+         SetCursor( #PB_All, cursor::#__cursor_Drag )
          ProcedureReturn mouse( )\drop
       EndProcedure
       
@@ -2680,7 +2679,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          mouse( )\drop\actions = Actions
          mouse( )\drop\private = PrivateType
          
-         CurrentCursor( ) = cursor::#__cursor_Drag
+         SetCursor( #PB_All, cursor::#__cursor_Drag )
          ProcedureReturn mouse( )\drop
       EndProcedure
       
@@ -2884,26 +2883,20 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             ;
             If a_index( ) 
-               If a_entered( )\anchors\id[a_index( )] 
-                  If Not is_atpoint_( a_entered( )\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
-                     ;
-                     If MouseEnter( a_entered( ), - 1 )
-                        If ( is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
-                             is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_draw] ))
-                           ;
-                           If is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_inner] )
-                              MouseEnter( a_entered( ) )
-                           Else
-                              a_entered( )\enter = 1
-                           EndIf
-                           ;
-                           DoEvents( a_entered( ), #__event_MouseEnter, #PB_All, @"[?+a_enter]" )
-                        Else
-                           a_entered( )\enter = 0
-                        EndIf   
-                     EndIf
-                     
-                     a_index( ) = 0
+               If a_entered( )\anchors\id[a_index( )] And 
+                  Not is_atpoint_( a_entered( )\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
+                  ;
+                  a_index( ) = 0
+                  ;
+                  If MouseEnter( a_entered( ), - 1 )
+                     If ( is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_frame] ) And
+                          is_atpoint_( a_entered( ), mouse( )\x, mouse( )\y, [#__c_draw] ))
+                        
+                        a_entered( )\enter = 1
+                        DoEvents( a_entered( ), #__event_MouseEnter, #PB_All, @"[?+a_enter]" )
+                     Else
+                        a_entered( )\enter = 0
+                     EndIf   
                   EndIf
                EndIf
             EndIf
@@ -8631,20 +8624,28 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.i GetCursor( *this._s_WIDGET, Type.a = 0 )
-         ProcedureReturn *this\cursor[Type]
+      Procedure.i GetCursor( *this._s_WIDGET = #PB_All, Type.a = 0 )
+         If *this > 0
+            ProcedureReturn *this\cursor[Type]
+         Else
+            ProcedureReturn mouse( )\cursor
+         EndIf
       EndProcedure
       
       Procedure.i SetCursor( *this._s_WIDGET, *cursor, Type.a = 0 )
-         If *this\cursor[Type] <> *cursor
-            If test_setcursor
-               Debug "setCURSOR( " + *cursor +" )"
-            EndIf
-            *this\cursor[Type] = *cursor
-            If Type
+         If *this > 0
+            If *this\cursor[Type] <> *cursor
+               If test_setcursor
+                  Debug "setCURSOR( " + *cursor +" )"
+               EndIf
                *this\cursor[Type] = *cursor
+               If Type
+                  ; *this\cursor[Type] = *cursor
+               EndIf
+               ProcedureReturn 1
             EndIf
-            ProcedureReturn 1
+         Else
+            mouse( )\cursor = *cursor
          EndIf
       EndProcedure
       
@@ -8663,9 +8664,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          ;
          If test_changecursor
-            Debug ""+*this\class + "  ChangeCursor( "+ *cursor +" ) " +" reset "+ CurrentCursor( )
+            Debug ""+*this\class + "  ChangeCursor( "+ *cursor +" ) " +" reset "+ GetCursor( )
          EndIf
-         CurrentCursor( ) = *cursor
+         SetCursor( #PB_All, *cursor )
          ;
          If *cursor
             If *this\bindcursor Or *this\root\canvas\bindcursor 
@@ -8702,7 +8703,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         mouse( )\drag = #PB_Drag_Enter
                         ; Debug "#PB_Drag_Enter"
                         
-                        If CurrentCursor( ) = cursor::#__cursor_Drag
+                        If GetCursor( ) = cursor::#__cursor_Drag
                            ChangeCursor( Pressed( ), cursor::#__cursor_Drop )
                         EndIf
                      EndIf
@@ -8720,7 +8721,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  EndIf
                               EndIf
                               
-                              If CurrentCursor( ) = cursor::#__cursor_Drag
+                              If GetCursor( ) = cursor::#__cursor_Drag
                                  ChangeCursor( *this, cursor::#__cursor_Drag )
                               EndIf
                            EndIf
@@ -8730,7 +8731,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            mouse( )\drag = #PB_Drag_Leave
                            ; Debug "#PB_Drag_Leave"
                            
-                           If CurrentCursor( ) = cursor::#__cursor_Drop
+                           If GetCursor( ) = cursor::#__cursor_Drop
                               ChangeCursor( Pressed( ), cursor::#__cursor_Drag )
                            EndIf
                         EndIf
@@ -8743,11 +8744,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                If Not *this\disable And
                   MouseEnter( *this ) And *this\cursor
                
-                  If CurrentCursor( ) <> *this\cursor
+                  If GetCursor( ) <> *this\cursor
                      ChangeCursor( *this, *this\cursor )
                   EndIf
                Else
-                  If CurrentCursor( ) <> 0
+                  If GetCursor( ) <> 0
+                     ; Debug "reset cursor"
                      ChangeCursor( *this, 0 )
                   EndIf
                EndIf
@@ -16366,6 +16368,13 @@ chr$ = ","
       EndProcedure
       
       ;-
+      Procedure DoMouseEvents( *this._s_WIDGET, *data )
+         mouse( )\data | #__mouse_update
+         UpdateCurrentCursor( *this )
+         *this\root\repaint = 1
+         Debug "["+ *this\class +"] Do "+ UCase(PeekS(*data)) +")"
+      EndProcedure
+      
       Procedure GetAtPoint( *root._s_root, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
          Protected i, a_index, Repaint, *this._s_WIDGET, *e._s_WIDGET
          
@@ -16648,18 +16657,23 @@ chr$ = ","
                   ;
                   DoEvents( Leaved( ), #__event_MouseLeave, -1, @"[?+leave]" )
                   ;
-                  If Leaved( )\parent
-                     If is_integral_( Leaved( ) ) 
+                  If is_integral_( Leaved( ) ) 
+                     If Leaved( )\parent
                         If Leaved( )\parent\enter = 0
                            DoEvents( Leaved( )\parent, #__event_MouseLeave, -1, @"[?-leave]" )
                         Else
                            If a_index( )
                               Leaved( )\parent\enter = - 1
                               DoEvents( Leaved( )\parent, #__event_MouseLeave, -1, @"[?-a-leave]" )
+                           Else
+                              ; If MouseButtonPress( )
+                                   DoMouseEvents( Leaved( )\parent, @"Enter")
+                              ; EndIf
                            EndIf
                         EndIf
                      EndIf
                   EndIf
+                  
                EndIf
             EndIf
             ;
@@ -16685,11 +16699,14 @@ chr$ = ","
                         If Not a_index( )
                            DoEvents( *this\parent, #__event_MouseEnter, -1, @"[?-enter]" )
                         EndIf
+                     Else
+                        If MouseEnter( *this\parent )
+                           *this\parent\enter = 1
+                        EndIf
                      EndIf
                   EndIf
                Else
-                  If a_index( )
-                  Else
+                  If Not a_index( )
                      If Not MouseButtonPress( )
                         If *this\anchors
                            a_show( *this )
@@ -18983,25 +19000,6 @@ chr$ = ","
             ProcedureReturn 0
          EndIf
          
-         ;\\ update entered position state
-         If *this\enter > 0
-            If Bool( is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ) And
-                     is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_inner] ) And
-                     Not ( *this\type = #__type_Splitter And is_atpoint_( *this\bar\button, mouse( )\x, mouse( )\y ) = 0 ) And
-                     Not ( *this\type = #__type_HyperLink And is_atpoint_( *this, mouse( )\x - *this\frame_x( ), mouse( )\y - *this\frame_y( ), [#__c_Required] ) = 0 ))
-               ;
-               If *this\enter = 1
-                  *this\enter = 2
-                  mouse( )\data | #__mouse_update
-               EndIf
-            Else
-               If *this\enter <> 1
-                  *this\enter = 1
-                  mouse( )\data | #__mouse_update
-               EndIf
-            EndIf
-         EndIf
-         
          ;\\ combobox button state
          If event = #__event_MouseEnter
             If *this\parent
@@ -19038,21 +19036,39 @@ chr$ = ","
             EndIf
          EndIf
          
+         ;\\ update entered position state
+         If *this\enter > 0
+            If Bool( is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ) And
+                     is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_inner] ) And
+                     Not ( *this\type = #__type_Splitter And is_atpoint_( *this\bar\button, mouse( )\x, mouse( )\y ) = 0 ) And
+                     Not ( *this\type = #__type_HyperLink And is_atpoint_( *this, mouse( )\x - *this\frame_x( ), mouse( )\y - *this\frame_y( ), [#__c_Required] ) = 0 ))
+               ;
+               If *this\enter = 1
+                  *this\enter = 2
+                  DoMouseEvents( *this, @"i-update" )
+               EndIf
+            Else
+               If *this\enter = 1
+                  If event = #__event_MouseEnter
+                    DoMouseEvents( *this, @"m-e-update" )
+                  EndIf
+               Else
+                  *this\enter = 1
+                  DoMouseEvents( *this, @"e-update" )
+               EndIf
+            EndIf
+         EndIf
+         
          ;\\ update current cursor state
-         If event = #__event_MouseEnter Or 
-            event = #__event_MouseMove ; Or event = #__event_Drop
-            ;
-            UpdateCurrentCursor( *this )
-            ;
-         ElseIf event = #__event_Up 
+         If event = #__event_Up 
             If *this\enter
                If a_index( )
                   a_enter( *this, 9999999 )
                EndIf
-               UpdateCurrentCursor( *this )
+               DoMouseEvents( *this, @"up-update" )
             Else
                If Entered( )
-                  UpdateCurrentCursor( Entered( ) )
+                  DoMouseEvents( Entered( ), @"up-e-update" )
                EndIf
             EndIf
          EndIf
@@ -25987,9 +26003,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 8644
-; FirstLine = 8519
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------r4+---------------------------------------------------8-4--+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-0v--0---8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 2506
+; FirstLine = 2476
+; Folding = ----------------------------------------------------------7---------------------------------------------------------------------------------------------------------------f03--------------------------------------------------------f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-0v--0---8----------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

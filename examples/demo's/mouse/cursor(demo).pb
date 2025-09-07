@@ -44,7 +44,6 @@ CompilerIf #PB_Compiler_IsMainFile
                selectedIndex = GetState(EventWidget())           
                selectedText$ = GetItemText(EventWidget(), selectedIndex)
                DragDropText(selectedText$)   
-               ;CurrentCursor( ) = GetCursor( Button_0 )
                ;ChangeCursor( Button_0, #PB_Cursor_Hand ) 
             EndIf
             
@@ -109,8 +108,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 47
+; CursorPosition = 46
+; FirstLine = 42
 ; Folding = --
 ; EnableXP
 ; DPIAware

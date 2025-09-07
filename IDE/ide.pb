@@ -1462,10 +1462,14 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
                flag | #PB_Window_SystemMenu | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget | #PB_Window_NoActivate
                *new = Window( X,Y,Width,Height, text$, flag, *parent )
             EndIf
+            SetFrame( *new, 0)
             
          Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, Param1, Param2, Param3, flag ) : CloseList( ) ; 1 
+            SetFrame( *new, 30)
+            SetBackgroundColor( *new, $74F6FE )
          Case "container"   : *new = Container( X,Y,Width,Height, flag ) : CloseList( )
          Case "panel"       : *new = Panel( X,Y,Width,Height, flag ) : CloseList( )
+            SetFrame( *new, 0)
             
          Case "button"        : *new = Button(       X, Y, Width, Height, text$, flag ) 
          Case "string"        : *new = String(       X, Y, Width, Height, text$, flag )
@@ -1553,7 +1557,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
                If Not flag & #__flag_NoFocus 
                   a_set(*new, #__a_full, (10))
                EndIf
-               SetBackColor( *new, $FFF1F1F1 )
+               ;SetBackColor( *new, $FFF1F1F1 )
             EndIf 
             
             ; 
@@ -1572,7 +1576,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
    
    ProcedureReturn *new
 EndProcedure
-
+test_changecursor = 1
 Procedure new_widget_events( )
    Protected *new
    Protected *g._s_WIDGET = EventWidget( )
@@ -1703,24 +1707,25 @@ Procedure new_widget_events( )
             EndIf
          EndIf
          
-      Case #__event_MouseEnter,
-           #__event_MouseLeave,
-           #__event_MouseMove
-         ;
-         If Not MouseButtonPress( )
-            If IsContainer(*g) 
-               If GetState( ide_inspector_elements ) > 0 
-                  If __event = #__event_MouseLeave
-                    ; ChangeCurrentCursor( *g, GetCursor(*g))
-                  EndIf
-                  If __event = #__event_MouseEnter
-                     ; SetCursor( *g, #__Cursor_Cross, 1 )
-                     SetCursor( *g, Cursor::Create( ImageID( GetItemData( ide_inspector_elements, GetState( ide_inspector_elements ) ) ) ), 1 )
+      Case #__event_MouseMove
+         If IsContainer(*g) 
+            If MouseEnter( *g )
+               If Not MouseButtonPress( )
+                  If GetState( ide_inspector_elements ) > 0 
+                     If GetCursor( ) < 255 ; <> #__Cursor_Arrows
+                        Debug " mouse enter to change cursor " 
+                        ; ChangeCursor( *g, #__Cursor_Arrows )
+                        ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_inspector_elements, GetState( ide_inspector_elements ) ) ) ))
+                     EndIf
                   EndIf
                EndIf
             EndIf
          EndIf
-         ;
+         
+      Case #__event_Cursor
+         Debug "CURSOR events"
+         ProcedureReturn #PB_Cursor_Default
+         
    EndSelect
    
    ;
@@ -1744,9 +1749,6 @@ Procedure new_widget_events( )
       ; end new create
       If GetState( ide_inspector_elements ) > 0 
          SetState( ide_inspector_elements, 0 )
-         
-        ; ChangeCurrentCursor( *g, GetCursor(*g))
-         
       EndIf
    EndIf
    
@@ -2909,9 +2911,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1713
-; FirstLine = 1617
-; Folding = ---------f+T--8----fA--------------P--------0-f------
+; CursorPosition = 1724
+; FirstLine = 1524
+; Folding = ---------f+T--8----fA----------v8P8---------0-f------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
