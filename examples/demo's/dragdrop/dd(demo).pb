@@ -136,7 +136,7 @@ Procedure widget_events( )
               StopDrawing()
               
               If IsImage(img)
-                ChangeCurrentCursor( Gadget_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\__rows( )\txt\width/2, EventWidget( )\__rows( )\txt\height/2 ))
+                ChangeCursor( Gadget_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\__rows( )\txt\width/2, EventWidget( )\__rows( )\txt\height/2 ))
               EndIf
             EndIf
           EndIf
@@ -171,7 +171,7 @@ Procedure widget_events( )
             DragDropPrivate( 2 )
           EndIf
           
-          ChangeCurrentCursor( Gadget_SourcePrivate, cursor::#__cursor_Hand) 
+          ChangeCursor( Gadget_SourcePrivate, cursor::#__cursor_Hand) 
           
       EndSelect
       
@@ -411,7 +411,7 @@ Procedure ListIconWidget( X,Y,Width,Height, title.s, titleWidth )
   ; ProcedureReturn ListIcon(x,y,width,height, title.s, titleWidth)
   
    ;\\
-   Text(X,Y,Width,20,title, #__flag_text_inline) : SetColor( widget( ), #pb_gadget_backcolor, $FFC2C2C2)
+   Text(X,Y,Width,20,title, #__flag_text_inline) : SetColor( widget( ), #PB_Gadget_BackColor, $FFC2C2C2)
    
    ProcedureReturn Tree(X,Y+20,Width,Height-20)
 EndProcedure
@@ -509,9 +509,9 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
 EndIf
 
 End
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 413
-; FirstLine = 409
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 173
+; FirstLine = 138
 ; Folding = -----
 ; Optimizer
 ; EnableXP

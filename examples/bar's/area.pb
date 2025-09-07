@@ -194,8 +194,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure _ChangeCursor( *this._s_WIDGET, *cursor )
-      If SetCursor( *this, *cursor )
-         ProcedureReturn ChangeCurrentCursor( *this, *cursor )
+       ProcedureReturn ChangeCurrentCursor( *this, *cursor )
+       If SetCursor( *this, *cursor )
+         ProcedureReturn ChangeCursor( *this, *cursor )
       EndIf
    EndProcedure
 
@@ -402,7 +403,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 197
-; FirstLine = 188
+; CursorPosition = 196
+; FirstLine = 192
 ; Folding = ---------
 ; EnableXP

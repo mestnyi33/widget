@@ -159,7 +159,7 @@ Declare   widget_events( )
 Declare   Properties_SetItemText( *splitter, item, Text.s )
 Declare.s Properties_GetItemText( *splitter, item )
 Declare   Properties_Updates( *object, type$ )
-Declare   widget_Create( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
+Declare   new_widget_create( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
 Declare   widget_add( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
 Declare   ide_addline( *new )
 Declare   MakeID( class$, *rootParent )
@@ -1562,7 +1562,7 @@ Procedure widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Hei
    
    If *parent 
       ; OpenList( *parent, CountItems( *parent ) - 1 )
-      *new = widget_Create( *parent, type$, X,Y, Width, Height, "", 0,100,0, flag )
+      *new = new_widget_create( *parent, type$, X,Y, Width, Height, "", 0,100,0, flag )
       
       If *new
          If LCase(type$) = "panel"
@@ -1579,7 +1579,7 @@ EndProcedure
 
 
 ;-
-Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
+Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
    Protected *new._s_widget
    ; flag.i | #__flag_NoFocus
    Protected newtype$
@@ -1796,7 +1796,7 @@ Procedure widget_events( )
       Case #__event_DragStart
          If is_drag_move( )
             If DragDropPrivate( #_DD_reParent )
-               ChangeCurrentCursor( *g, #PB_Cursor_Arrows )
+               ChangeCursor( *g, #PB_Cursor_Arrows )
             EndIf
          Else
             If IsContainer(*g) 
@@ -1804,11 +1804,11 @@ Procedure widget_events( )
                   If Not a_index( )
                      If GetState( ide_inspector_elements) > 0 
                         If DragDropPrivate( #_DD_CreateNew )
-                           ChangeCurrentCursor( *g, #PB_Cursor_Cross )
+                           ChangeCursor( *g, #PB_Cursor_Cross )
                         EndIf
                      Else
                         If DragDropPrivate( #_DD_Group )
-                           ChangeCurrentCursor( *g, #PB_Cursor_Cross )
+                           ChangeCursor( *g, #PB_Cursor_Cross )
                         EndIf
                      EndIf
                   EndIf
@@ -1877,7 +1877,7 @@ Procedure widget_events( )
             If IsContainer(*g) 
                If GetState( ide_inspector_elements ) > 0 
                   If __event = #__event_MouseLeave
-                     ResetCursor(*g) 
+                     ChangeCursor( *g, GetCursor(*g))
                   EndIf
                   If __event = #__event_MouseEnter
                      ; SetCursor( *g, #__Cursor_Cross, 1 )
@@ -1912,9 +1912,8 @@ Procedure widget_events( )
       If GetState( ide_inspector_elements ) > 0 
          SetState( ide_inspector_elements, 0 )
          
-         ; ChangeCursor( *g, GetCursor(*g))
-         If ResetCursor(*g) 
-         EndIf
+         ChangeCursor( *g, GetCursor(*g))
+         
       EndIf
    EndIf
    
@@ -2244,7 +2243,7 @@ Procedure ide_events( )
                
                Debug " ------ drag ide_events() ----- "
                If DragDropPrivate( #_DD_CreateNew )
-                  ChangeCurrentCursor( *g, Cursor::Create( ImageID( GetItemData( *g, __item ) ) ) )
+                  ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( *g, __item ) ) ) )
                EndIf
             EndIf
          EndIf
@@ -2924,8 +2923,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1358
-; FirstLine = 1348
-; Folding = -------------------------------------------Ltvb----0-
+; CursorPosition = 2245
+; FirstLine = 2188
+; Folding = -------------------------------------------l44t----+-
 ; EnableXP
 ; DPIAware

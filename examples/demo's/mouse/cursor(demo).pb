@@ -29,12 +29,12 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_DragStart      
             If EventWidget( ) = form1
-               ChangeCurrentCursor( form1, #PB_Cursor_Cross ) 
+               ChangeCursor( form1, #PB_Cursor_Cross ) 
             EndIf
             
             If EventWidget( ) = btn1
                If DragDropPrivate( #_DD_reParent )
-                  ChangeCurrentCursor( btn1, #PB_Cursor_Denied ) 
+                  ChangeCursor( btn1, #PB_Cursor_Denied ) 
                EndIf
             EndIf
             
@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
                selectedText$ = GetItemText(EventWidget(), selectedIndex)
                DragDropText(selectedText$)   
                ;CurrentCursor( ) = GetCursor( Button_0 )
-               ;ChangeCurrentCursor( Button_0, #PB_Cursor_Hand ) 
+               ;ChangeCursor( Button_0, #PB_Cursor_Hand ) 
             EndIf
             
          Case #__event_Drop   
@@ -65,6 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
       form1 = Window(200,10,200,110,"form1")
          a_init(widget( ))
          btn1 = Button(10,10,80,50, "btn1") 
+         SetCursor( btn1, #__cursor_Hand )
          btn2 = Button(60,40,80,50, "btn2") 
          Disable( btn2, 1 )
          SetMoveBounds( btn1, -1,-1,-1,-1 )
@@ -94,6 +95,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EnableDrop(Button_1, #PB_Drop_Text, #PB_Drag_Copy)
       EnableDrop(Button_4, #PB_Drop_Text, #PB_Drag_Copy)
       EnableDrop(Button_5, #PB_Drop_Text, #PB_Drag_Copy)
+      ;
       Bind( #PB_All, @events_widgets( ), #__event_DragStart )
       Bind( #PB_All, @events_widgets( ), #__event_Drop )
       Bind(Button_3, @CustomDrawing(), #__event_Draw)
@@ -107,8 +109,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 21
+; CursorPosition = 58
+; FirstLine = 47
 ; Folding = --
 ; EnableXP
 ; DPIAware

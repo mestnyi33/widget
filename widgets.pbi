@@ -1731,9 +1731,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro     CurrentCursor( ) : mouse( )\cursor : EndMacro
       Declare.i GetCursor( *this, Type.a = 0 )
       Declare   SetCursor( *this, *cursor, Type.a = 0 )
-      Declare.b ResetCursor( *this )
-      Declare   ChangeCursor( *this, *cursor )
       Declare   ChangeCurrentCursor( *this, *cursor )
+      Declare   ChangeCursor( *this, *cursor )
       
       Declare.i GetImage( *this )
       Declare   SetImage( *this, img )
@@ -2880,17 +2879,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                If a_entered( )\AnchorState( ) <> #__s_0
                   a_entered( )\AnchorState( ) = #__s_0
                   ;
-;                   ; reset cursor
-;                   If a_entered( )\cursor[1] <> a_entered( )\cursor
-;                      ; leave from anchor 
-;                      a_entered( )\cursor[1] = a_entered( )\cursor
-;                   EndIf
-                  If a_entered( )\cursor <> a_entered( )\cursor[1]
-                     ; Debug "a reset cursor"
-                     ; leave from anchor 
-                     a_entered( )\cursor = a_entered( )\cursor[1]
-                  EndIf
-                  
                   a_entered( )\root\repaint = 1
                EndIf
             EndIf
@@ -2943,10 +2931,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                         DoEvents( *this, #__event_MouseLeave, #PB_All, @"[?-a_leave]"  )
                      EndIf
                   EndIf   
-                  MouseEnter( *this, - 1 )
+                  *this\enter = - 1
                   ;
-                  Debug "ChangeCurrentCursor anchor " ; *this\enter
-                  ChangeCurrentCursor( *this, a_anchors( )\cursor[a_index] )
+                  ChangeCursor( *this, a_anchors( )\cursor[a_index] )
                   *this\root\repaint = 1
                EndIf
             EndIf
@@ -3496,7 +3483,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   If a_index( ) = #__a_Moved
-                     ChangeCurrentCursor( *this, #PB_Cursor_Arrows )
+                     ChangeCursor( *this, #PB_Cursor_Arrows )
                   EndIf
                EndIf
             EndIf
@@ -6204,9 +6191,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;\\
-               If *this\press And 
-                  *this\type = #__type_splitter
-                  ChangeCursor( *this, *this\cursor[3] )
+               If *this\cursor[3]
+                  If *this\press And 
+                     *this\type = #__type_splitter
+                     ChangeCurrentCursor( *this, *this\cursor[3] )
+                  EndIf
                EndIf
             EndIf
          Else
@@ -6231,9 +6220,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;\\
-               If *this\press And 
-                  *this\type = #__type_splitter
-                  ChangeCursor( *this, *this\cursor )
+               If *this\cursor[1]
+                  If *this\press And 
+                     *this\type = #__type_splitter
+                     ChangeCurrentCursor( *this, *this\cursor[1] )
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -6261,9 +6252,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;\\
-               If *this\press And 
-                  *this\type = #__type_splitter
-                  ChangeCursor( *this, *this\cursor[2] )
+               If *this\cursor[2]
+                  If *this\press And 
+                     *this\type = #__type_splitter
+                     ChangeCurrentCursor( *this, *this\cursor[2] )
+                  EndIf
                EndIf
             EndIf
          Else
@@ -6287,9 +6280,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;\\
-               If *this\press And 
-                  *this\type = #__type_splitter
-                  ChangeCursor( *this, *this\cursor )
+               If *this\cursor[1]
+                  If *this\press And 
+                     *this\type = #__type_splitter
+                     ChangeCurrentCursor( *this, *this\cursor[1] )
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -8641,41 +8636,22 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i SetCursor( *this._s_WIDGET, *cursor, Type.a = 0 )
-         If Type = 0 
-            Type = 1
-         EndIf
-         
          If *this\cursor[Type] <> *cursor
             If test_setcursor
                Debug "setCURSOR( " + *cursor +" )"
             EndIf
-            
             *this\cursor[Type] = *cursor
-;             If Type <> 1
-;                *this\cursor[1] = *cursor
-;             EndIf
-            ProcedureReturn 1
-         EndIf
-      EndProcedure
-      
-      Procedure.b ResetCursor( *this._s_WIDGET )
-         If *this\cursor[1] <> *this\cursor
-            *this\cursor[1] = *this\cursor 
+            If Type
+               *this\cursor[Type] = *cursor
+            EndIf
             ProcedureReturn 1
          EndIf
       EndProcedure
       
       Procedure.i ChangeCursor( *this._s_WIDGET, *cursor )
-         If *this\cursor[1] <> *cursor
-            *this\cursor[1] = *cursor
-            ProcedureReturn ChangeCurrentCursor( *this, *cursor )
-         EndIf
-      EndProcedure
-      
-      Procedure.i ChangeCurrentCursor( *this._s_WIDGET, *cursor )
          Protected result.i
          Static cursor_change_widget
-         
+         ;
          StopDraw( )
          If *cursor 
             cursor_change_widget = *this
@@ -8685,30 +8661,31 @@ CompilerIf Not Defined( widget, #PB_Module )
                cursor_change_widget = 0
             EndIf
          EndIf
-         
+         ;
          If test_changecursor
-            Debug ""+*this\class + "  ChangeCurrentCursor( "+ *cursor +" ) " +" reset "+ CurrentCursor( )
+            Debug ""+*this\class + "  ChangeCursor( "+ *cursor +" ) " +" reset "+ CurrentCursor( )
          EndIf
          CurrentCursor( ) = *cursor
          ;
          If *cursor
-            If *this\bindcursor Or 
-               *this\root\canvas\bindcursor
-               ;
+            If *this\bindcursor Or *this\root\canvas\bindcursor 
                result = Post( *this, #__event_Cursor, #PB_All, *cursor )
                If result > 0
                   *cursor = result
-                 ; Debug ""+ *cursor +" "+ CurrentCursor( ) 
-                  ;CurrentCursor( ) = *cursor
                EndIf
             EndIf
          EndIf
-         ; Debug *cursor
-         
+         ;
          Cursor::Set( *this\root\canvas\gadget, *cursor ) 
          StartDraw( *this\root )
-         
+         ;
          ProcedureReturn *cursor
+      EndProcedure
+      
+      Procedure.i ChangeCurrentCursor( *this._s_WIDGET, *cursor )
+         If SetCursor( *this, *cursor )
+            ProcedureReturn ChangeCursor( *this, *cursor )
+         EndIf
       EndProcedure
       
       Procedure   UpdateCurrentCursor( *this._s_WIDGET )
@@ -8726,7 +8703,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         ; Debug "#PB_Drag_Enter"
                         
                         If CurrentCursor( ) = cursor::#__cursor_Drag
-                           ChangeCurrentCursor( Pressed( ), cursor::#__cursor_Drop )
+                           ChangeCursor( Pressed( ), cursor::#__cursor_Drop )
                         EndIf
                      EndIf
                   Else
@@ -8744,8 +8721,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EndIf
                               
                               If CurrentCursor( ) = cursor::#__cursor_Drag
-                                 ; CurrentCursor( ) = 0
-                                 ChangeCurrentCursor( *this, cursor::#__cursor_Drag )
+                                 ChangeCursor( *this, cursor::#__cursor_Drag )
                               EndIf
                            EndIf
                         EndIf
@@ -8755,7 +8731,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            ; Debug "#PB_Drag_Leave"
                            
                            If CurrentCursor( ) = cursor::#__cursor_Drop
-                              ChangeCurrentCursor( Pressed( ), cursor::#__cursor_Drag )
+                              ChangeCursor( Pressed( ), cursor::#__cursor_Drag )
                            EndIf
                         EndIf
                      EndIf
@@ -8764,19 +8740,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          Else
             If Not a_index( )
-               ;Debug  *this\enter
-               
                If Not *this\disable And
-                  MouseEnter( *this ) And *this\cursor[1]
+                  MouseEnter( *this ) And *this\cursor
                
-                  If CurrentCursor( ) <> *this\cursor[1]
-                     Debug "ChangeCurrentCursor 1"
-                     ChangeCurrentCursor( *this, *this\cursor[1] )
+                  If CurrentCursor( ) <> *this\cursor
+                     ChangeCursor( *this, *this\cursor )
                   EndIf
                Else
-                  If CurrentCursor( )
-                     Debug "ChangeCurrentCursor 0 "+*this\enter
-                     ChangeCurrentCursor( *this, 0 )
+                  If CurrentCursor( ) <> 0
+                     ChangeCursor( *this, 0 )
                   EndIf
                EndIf
             EndIf
@@ -19066,30 +19038,23 @@ chr$ = ","
             EndIf
          EndIf
          
-         
          ;\\ update current cursor state
-         If event = #__event_MouseEnter Or
-            event = #__event_MouseMove Or ; event = #__event_Drop Or
-            event = #__event_Up
+         If event = #__event_MouseEnter Or 
+            event = #__event_MouseMove ; Or event = #__event_Drop
             ;
-            ; If Not *this\anchors
-            If event = #__event_Up 
-               If *this\enter
-                  If a_index( )
-                     a_enter( *this, 9999999 )
-                     ChangeCurrentCursor( *this, a_anchors( )\cursor[a_index( )] )
-                  Else
-                     UpdateCurrentCursor( *this )
-                  EndIf
-               Else
-                  If Entered( )
-                     UpdateCurrentCursor( Entered( ) )
-                  EndIf
+            UpdateCurrentCursor( *this )
+            ;
+         ElseIf event = #__event_Up 
+            If *this\enter
+               If a_index( )
+                  a_enter( *this, 9999999 )
                EndIf
-            Else
                UpdateCurrentCursor( *this )
+            Else
+               If Entered( )
+                  UpdateCurrentCursor( Entered( ) )
+               EndIf
             EndIf
-            ; EndIf
          EndIf
          
          ;\\ before post-widget-events drop
@@ -19335,8 +19300,10 @@ chr$ = ","
                   
                Case #__type_HyperLink
                   If event = #__event_Down
-                     If MouseEnter( *this )
-                        ChangeCurrentCursor( *this, *this\cursor[2] )
+                     If *this\cursor[2]
+                        If MouseEnter( *this )
+                           ChangeCursor( *this, *this\cursor[2] )
+                        EndIf
                      EndIf
                   EndIf
                   If event = #__event_MouseMove Or
@@ -21358,7 +21325,7 @@ chr$ = ","
             EndIf
          EndIf
          
-         ;\\ cursor init
+         ;-\\ CURSOR init
          If *this\type = #__type_Splitter
             If *this\bar\vertical
                *this\cursor[1] = cursor::#__cursor_SplitUpDown
@@ -21369,17 +21336,15 @@ chr$ = ","
                *this\cursor[2] = cursor::#__cursor_SplitLeft
                *this\cursor[3] = cursor::#__cursor_SplitRight
             EndIf
-            
          ElseIf *this\type = #__type_HyperLink
             *this\cursor[1] = cursor::#__cursor_Hand
             *this\cursor[2] = cursor::#__cursor_IBeam
-            
          ElseIf *this\type = #__type_Editor Or
                 *this\type = #__type_String
             *this\cursor[1] = cursor::#__cursor_IBeam
          EndIf
          If *this\cursor[1]
-            *this\cursor = *this\cursor[1]
+            *this\cursor[0] = *this\cursor[1]
          EndIf
          
          ;\\
@@ -26022,9 +25987,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2888
-; FirstLine = 2869
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------f03------------------------------------------------------0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-+4--+---0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 8644
+; FirstLine = 8519
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------r4+---------------------------------------------------8-4--+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-0v--0---8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

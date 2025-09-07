@@ -1630,7 +1630,7 @@ Procedure new_widget_events( )
       Case #__event_DragStart
          If is_drag_move( )
             If DragDropPrivate( #_DD_reParent )
-               ChangeCurrentCursor( *g, #PB_Cursor_Arrows )
+               ChangeCursor( *g, #PB_Cursor_Arrows )
             EndIf
          Else
             If IsContainer(*g) 
@@ -1638,11 +1638,11 @@ Procedure new_widget_events( )
                   If Not a_index( )
                      If GetState( ide_inspector_elements) > 0 
                         If DragDropPrivate( #_DD_CreateNew )
-                           ChangeCurrentCursor( *g, #PB_Cursor_Cross )
+                           ChangeCursor( *g, #PB_Cursor_Cross )
                         EndIf
                      Else
                         If DragDropPrivate( #_DD_Group )
-                           ChangeCurrentCursor( *g, #PB_Cursor_Cross )
+                           ChangeCursor( *g, #PB_Cursor_Cross )
                         EndIf
                      EndIf
                   EndIf
@@ -1711,12 +1711,11 @@ Procedure new_widget_events( )
             If IsContainer(*g) 
                If GetState( ide_inspector_elements ) > 0 
                   If __event = #__event_MouseLeave
-                     ResetCursor(*g) 
+                    ; ChangeCurrentCursor( *g, GetCursor(*g))
                   EndIf
                   If __event = #__event_MouseEnter
                      ; SetCursor( *g, #__Cursor_Cross, 1 )
                      SetCursor( *g, Cursor::Create( ImageID( GetItemData( ide_inspector_elements, GetState( ide_inspector_elements ) ) ) ), 1 )
-                     
                   EndIf
                EndIf
             EndIf
@@ -1746,9 +1745,8 @@ Procedure new_widget_events( )
       If GetState( ide_inspector_elements ) > 0 
          SetState( ide_inspector_elements, 0 )
          
-         ; ChangeCursor( *g, GetCursor(*g))
-         If ResetCursor(*g) 
-         EndIf
+        ; ChangeCurrentCursor( *g, GetCursor(*g))
+         
       EndIf
    EndIf
    
@@ -2237,7 +2235,7 @@ Procedure ide_events( )
                
                Debug " ------ drag ide_events() ----- "
                If DragDropPrivate( #_DD_CreateNew )
-                  ChangeCurrentCursor( *g, Cursor::Create( ImageID( GetItemData( *g, __item ) ) ) )
+                  ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( *g, __item ) ) ) )
                EndIf
             EndIf
          EndIf
@@ -2911,9 +2909,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1749
-; FirstLine = 1652
-; Folding = ---------f+T--8----fA-----------------------8--+-----
+; CursorPosition = 1713
+; FirstLine = 1617
+; Folding = ---------f+T--8----fA--------------P--------0-f------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

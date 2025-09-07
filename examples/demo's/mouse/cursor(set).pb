@@ -14,11 +14,16 @@ CompilerIf #PB_Compiler_IsMainFile
       EndWith
    EndProcedure
    
+   Procedure CustomCursor( )
+      ChangeCursor( EventWidget( ), #PB_Cursor_Arrows ) 
+   EndProcedure
+   
    If Open(0, 0, 0, 430, 280, "установить курсор для виджета", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
       Button_1 = Button(0,0,0,0, "Button 1")
       SetFrame(Button_1, 0)
       SetCursor( Button_1, #PB_Cursor_Cross )
+      Bind(Button_1, @CustomCursor(), #__event_DragStart)
       
       ;Button_2 = Button(0,0,0,0, "Button 2") 
       Button_2 = String(0,0,0,0, "Button 2") 
@@ -40,7 +45,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 21
+; CursorPosition = 22
+; FirstLine = 10
 ; Folding = -
 ; EnableXP
 ; DPIAware
