@@ -16368,13 +16368,6 @@ chr$ = ","
       EndProcedure
       
       ;-
-      Procedure DoMouseEvents( *this._s_WIDGET, *data )
-         mouse( )\data | #__mouse_update
-         UpdateCurrentCursor( *this )
-         *this\root\repaint = 1
-         ; Debug "["+ *this\class +"] Do "+ UCase(PeekS(*data)) +")"
-      EndProcedure
-      
       Procedure GetAtPoint( *root._s_root, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
          Protected i, a_index, Repaint, *this._s_WIDGET, *e._s_WIDGET
          
@@ -16667,7 +16660,7 @@ chr$ = ","
                               DoEvents( Leaved( )\parent, #__event_MouseLeave, -1, @"[?-a-leave]" )
                            Else
                               ; If MouseButtonPress( )
-                                   DoMouseEvents( Leaved( )\parent, @"Enter")
+                                   UpdateCurrentCursor( Leaved( )\parent )
                               ; EndIf
                            EndIf
                         EndIf
@@ -19045,16 +19038,20 @@ chr$ = ","
                ;
                If *this\enter = 1
                   *this\enter = 2
-                  DoMouseEvents( *this, @"i-update" )
+                  mouse( )\data | #__mouse_update
+                  UpdateCurrentCursor( *this )
+                  *this\root\repaint = 1
                EndIf
             Else
                If *this\enter = 1
                   If event = #__event_MouseEnter
-                    DoMouseEvents( *this, @"m-e-update" )
+                     UpdateCurrentCursor( *this )
                   EndIf
                Else
                   *this\enter = 1
-                  DoMouseEvents( *this, @"e-update" )
+                  mouse( )\data | #__mouse_update
+                  UpdateCurrentCursor( *this )
+                  *this\root\repaint = 1
                EndIf
             EndIf
          EndIf
@@ -19065,10 +19062,10 @@ chr$ = ","
                If a_index( )
                   a_enter( *this, 9999999 )
                EndIf
-               DoMouseEvents( *this, @"up-update" )
+               UpdateCurrentCursor( *this )
             Else
                If Entered( )
-                  DoMouseEvents( Entered( ), @"up-e-update" )
+                  UpdateCurrentCursor( Entered( ) )
                EndIf
             EndIf
          EndIf
@@ -26003,9 +26000,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 16374
-; FirstLine = 16192
-; Folding = ----------------------------------------------------------7---------------------------------------------------------------------------------------------------------------f03--------------------------------------------------------f----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-0v--0---8----------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 19067
+; FirstLine = 18823
+; Folding = ----------------------------------------------------------7---------------------------------------------------------------------------------------------------------------f03--------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
