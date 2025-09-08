@@ -14,6 +14,7 @@ Enumeration
    #_pi_ID 
    #_pi_class
    #_pi_text
+   #_pi_IMAGE
    ;
    #_pi_group_LAYOUT 
    #_pi_align
@@ -26,7 +27,6 @@ Enumeration
    #_pi_cursor
    #_pi_hide
    #_pi_disable
-   #_pi_IMAGE
    #_pi_FLAG
    ;
    #_pi_FONT
@@ -739,6 +739,9 @@ Procedure   Properties_ButtonEvents( )
             SetState(*g\scroll\v, GetState( *g\scroll\v ) - __data )
          EndIf
          
+      Case #__event_Cursor
+         ProcedureReturn 0
+         
    EndSelect
    
    ProcedureReturn #PB_Ignore
@@ -1001,16 +1004,17 @@ Procedure   Properties_Events( )
             If GetState( *first\scroll\v ) <> __data
                SetState(*first\scroll\v, __data )
             EndIf
+            
+            Properties_ButtonResize( *second )
          EndIf
          
-   EndSelect
-   
-   ;
-   Select __event
-      Case #__event_resize, #__event_ScrollChange
+      Case #__event_resize
          If *g = *second
             Properties_ButtonResize( *second )
          EndIf
+         
+      Case #__event_Cursor
+         ProcedureReturn 0
          
    EndSelect
    
@@ -2529,6 +2533,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
       Properties_AddItem( ide_inspector_properties, #_pi_ID,             "#ID",      #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_class,          "Class",    #__Type_String, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_text,           "Text",     #__Type_String, 1 )
+      Properties_AddItem( ide_inspector_properties, #_pi_IMAGE,          "Image",    #__Type_Button, 1 )
       ;
       Properties_AddItem( ide_inspector_properties, #_pi_group_LAYOUT, "LAYOUT" )
       Properties_AddItem( ide_inspector_properties, #_pi_align,          "Align"+Chr(10)+"LEFT|TOP", #__Type_Button, 1 )
@@ -2541,7 +2546,6 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
       Properties_AddItem( ide_inspector_properties, #_pi_cursor,         "Cursor",   #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_hide,           "Hide",     #__Type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_properties, #_pi_disable,        "Disable",  #__Type_ComboBox, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_IMAGE,          "Image",    #__Type_Button, 1 )
       ;
       Properties_AddItem( ide_inspector_properties, #_pi_flag,          "Flag",      #__Type_ComboBox, 1 )
       ;
@@ -2910,10 +2914,9 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1725
-; FirstLine = 1557
-; Folding = ---------f+T--8----fA----------v-P8---------0-f------
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 17
+; Folding = ---------f+T--8----Pg----------4-n0---------+-v-----
 ; Optimizer
 ; EnableAsm
 ; EnableXP
