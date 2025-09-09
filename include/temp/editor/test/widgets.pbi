@@ -35,9 +35,9 @@ Procedure SetText(*this, text.s)
 EndProcedure
 
 Procedure SetState(*cursor._PBEdit_::TE_CURSOR, State)
-;   Protected text.s ;= *this\txt\string 
-;   Protected length ;= *this\txt\len
-;   Protected caret_pos = *this\currentCursor\position ; *this\txt\caret\pos
+;   Protected text.s ;= *this\text\string 
+;   Protected length ;= *this\text\len
+;   Protected caret_pos = *this\currentCursor\position ; *this\text\caret\pos
 ;   
 ;   If state < 0 Or state > length
 ;     state = length
@@ -59,8 +59,8 @@ Procedure SetState(*cursor._PBEdit_::TE_CURSOR, State)
 ; ;           *this\index[#__s_1] = i
 ; ;           *this\index[#__s_2] = i
 ; ;           
-; ;           *this\txt\caret\pos[1] = state - (len - (*end - *str)/#__sOC) - i
-; ;           *this\txt\caret\pos[2] = *this\txt\caret\pos[1]
+; ;           *this\text\caret\pos[1] = state - (len - (*end - *str)/#__sOC) - i
+; ;           *this\text\caret\pos[2] = *this\text\caret\pos[1]
 ;           
 ;           Break
 ;         EndIf
@@ -77,8 +77,8 @@ Procedure SetState(*cursor._PBEdit_::TE_CURSOR, State)
 ; ;       *this\index[#__s_1] = i
 ; ;       *this\index[#__s_2] = i
 ; ;       
-; ;       *this\txt\caret\pos[1] = (state - len - i) 
-; ;       *this\txt\caret\pos[2] = *this\txt\caret\pos[1]
+; ;       *this\text\caret\pos[1] = (state - len - i) 
+; ;       *this\text\caret\pos[2] = *this\text\caret\pos[1]
 ; ;     EndIf
 ; ;     
 ; ;     result = #True 

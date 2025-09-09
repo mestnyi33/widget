@@ -97,7 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             ;
             Properties_ButtonResize( *this )
-            SetText( *row\data, *row\txt\string )
+            SetText( *row\data, *row\text\string )
          EndIf
       EndIf
    EndProcedure
@@ -214,13 +214,13 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;             If *this\row
             ;                If *this\EnteredRow( )
-            ;                   Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\txt\string + " " + *this\EnteredRow( )\press + " " + *this\EnteredRow( )\enter + " " + *this\EnteredRow( )\focus
+            ;                   Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\press + " " + *this\EnteredRow( )\enter + " " + *this\EnteredRow( )\focus
             ;                EndIf
             ;                If *this\PressedRow( )
-            ;                   Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\txt\string + " " + *this\PressedRow( )\press + " " + *this\PressedRow( )\enter + " " + *this\PressedRow( )\focus
+            ;                   Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\press + " " + *this\PressedRow( )\enter + " " + *this\PressedRow( )\focus
             ;                EndIf
             ;                If *this\RowFocused( )
-            ;                   Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\txt\string + " " + *this\RowFocused( )\press + " " + *this\RowFocused( )\enter + " " + *this\RowFocused( )\focus
+            ;                   Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\press + " " + *this\RowFocused( )\enter + " " + *this\RowFocused( )\focus
             ;                EndIf
             ;             EndIf
             
@@ -245,13 +245,13 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;             If *this\row
             ;                If *this\EnteredRow( )
-            ;                   Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\txt\string + " " + *this\EnteredRow( )\press + " " + *this\EnteredRow( )\enter + " " + *this\EnteredRow( )\focus
+            ;                   Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\press + " " + *this\EnteredRow( )\enter + " " + *this\EnteredRow( )\focus
             ;                EndIf
             ;                If *this\PressedRow( )
-            ;                   Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\txt\string + " " + *this\PressedRow( )\press + " " + *this\PressedRow( )\enter + " " + *this\PressedRow( )\focus
+            ;                   Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\press + " " + *this\PressedRow( )\enter + " " + *this\PressedRow( )\focus
             ;                EndIf
             ;                If *this\RowFocused( )
-            ;                   Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\txt\string + " " + *this\RowFocused( )\press + " " + *this\RowFocused( )\enter + " " + *this\RowFocused( )\focus
+            ;                   Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\press + " " + *this\RowFocused( )\enter + " " + *this\RowFocused( )\focus
             ;                EndIf
             ;             EndIf
             

@@ -214,7 +214,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
      
     ButtonImage(2+((X(widget())+Width(widget())) * Bool(MacroExpandedCount - 1)), 2,barbuttonsize,barbuttonsize,_image_, _mode_)
     ;widget()\color = widget()\parent\color
-    ;widget()\txt\padding\x = 0
+    ;widget()\text\padding\x = 0
     widget()\class = "Tool"
     widget()\data = _button_
     ;SetData(widget(), _button_)

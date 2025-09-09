@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
               ForEach widgets()
                  If is_intersect_( widgets( ), mouse( )\selector, [#__c_frame] )
                     
-                    Debug widgets()\txt\string 
+                    Debug widgets()\text\string 
                     _a_set( widgets())
                     
                  EndIf

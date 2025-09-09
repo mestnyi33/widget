@@ -48,7 +48,7 @@ If Open(0, 150, 110, 222, 470, "ButtonGadgets", #PB_Window_SystemMenu)
   SetParent(*w, *p2)
   
   ForEach widgets( )
-    Debug  ""+ListIndex(widgets( )) +" - "+ widgets( )\index +" - "+ widgets( )\class +" - "+ widgets( )\txt\string +" - "+ widgets( )\root
+    Debug  ""+ListIndex(widgets( )) +" - "+ widgets( )\index +" - "+ widgets( )\class +" - "+ widgets( )\text\string +" - "+ widgets( )\root
   Next
   
   

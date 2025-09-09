@@ -61,7 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Debug "----panel all childrens-----"
     If StartEnum( *panel )
-      Debug widget( )\txt\string
+      Debug widget( )\text\string
       
       StopEnum( )
     EndIf
@@ -72,15 +72,15 @@ CompilerIf #PB_Compiler_IsMainFile
       line = "  "+ widgets( )\class +" "
       
       If widgets( )\BeforeWidget( )
-        line + widgets( )\BeforeWidget( )\class+"_"+widgets( )\BeforeWidget( )\txt\string +" <<  "
+        line + widgets( )\BeforeWidget( )\class+"_"+widgets( )\BeforeWidget( )\text\string +" <<  "
       Else
         line + "-------- <<  " 
       EndIf
       
-      line + widgets( )\txt\string
+      line + widgets( )\text\string
       
       If widgets( )\AfterWidget( )
-        line +"  >> "+ widgets( )\AfterWidget( )\class+"_"+widgets( )\AfterWidget( )\txt\string
+        line +"  >> "+ widgets( )\AfterWidget( )\class+"_"+widgets( )\AfterWidget( )\text\string
       Else
         line + "  >> --------" 
       EndIf

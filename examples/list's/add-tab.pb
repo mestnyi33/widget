@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
                EndIf
             Else
                SelectElement( *this\__rows( ), position )
-              ; Debug "   "+position +" "+ *this\__rows( )\txt\string
+              ; Debug "   "+position +" "+ *this\__rows( )\text\string
                ;                   PushListPosition( *this\__rows( ))
                ;                   While NextElement( *this\__rows( ))
                ;                      If *this\__rows( )\_index = position
@@ -214,9 +214,9 @@ CompilerIf #PB_Compiler_IsMainFile
             
             
             ;If Text
-            *row\txt\TextChange( ) = 1
-            *row\txt\string   = Text ; StringField( Text.s, ListIndex( *this\columns( )) + 1, #LF$);Chr(9) )
-                                      ;*row\txt\edit\string = StringField( Text.s, 2, #LF$ )
+            *row\text\TextChange( ) = 1
+            *row\text\string   = Text ; StringField( Text.s, ListIndex( *this\columns( )) + 1, #LF$);Chr(9) )
+                                      ;*row\text\edit\string = StringField( Text.s, 2, #LF$ )
                                       ;EndIf
             
             ;\\
@@ -328,7 +328,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       ;       Next
 ;       
       ForEach *g\__tabs( )
-         Debug ""+*g\__tabs( )\index +" "+*g\__tabs( )\txt\string
+         Debug ""+*g\__tabs( )\index +" "+*g\__tabs( )\text\string
       Next
       
       

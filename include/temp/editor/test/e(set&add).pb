@@ -102,8 +102,8 @@ CompilerIf #PB_Compiler_IsMainFile
               Case #PB_EventType_LeftClick
                 Define *E._s_widget = GetGadgetData(g)
                 
-                *E\txt\MultiLine !- 1
-                If  *E\txt\MultiLine = 1
+                *E\text\MultiLine !- 1
+                If  *E\text\MultiLine = 1
                   SetGadgetText(100,"~wrap")
                 Else
                   SetGadgetText(100,"wrap")
@@ -111,7 +111,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 
                 CompilerSelect #PB_Compiler_OS
                   CompilerCase #PB_OS_Linux
-                    If  *E\txt\MultiLine = 1
+                    If  *E\text\MultiLine = 1
                       gtk_text_view_set_wrap_mode_(GadgetID(0), #GTK_WRAP_WORD)
                     Else
                       gtk_text_view_set_wrap_mode_(GadgetID(0), #GTK_WRAP_NONE)
@@ -119,7 +119,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     
                   CompilerCase #PB_OS_MacOS
                     
-                    If  *E\txt\MultiLine = 1
+                    If  *E\text\MultiLine = 1
                       EditorGadget(0, 8, 8, 306, 133, #PB_Editor_WordWrap)
                     Else
                       EditorGadget(0, 8, 8, 306, 133) 

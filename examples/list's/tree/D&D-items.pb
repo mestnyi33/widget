@@ -85,7 +85,7 @@ Procedure DrawBar (*this._s_widget)
 ;       DrawingMode (#PB_2DDrawing_Default)
 ;       Box      ( x+Tabs()\x, y+Tabs()\Y + Tabs()\OffsetMove, 280-20, Tabs()\height, #ColTab)
 ;       DrawingMode (#PB_2DDrawing_Transparent)
-;       DrawText ( x+Tabs()\x + Tabs()\txt\x, y+Tabs()\y + Tabs()\txt\y + Tabs()\OffsetMove + 2, Tabs()\txt\string)
+;       DrawText ( x+Tabs()\x + Tabs()\text\x, y+Tabs()\y + Tabs()\text\y + Tabs()\OffsetMove + 2, Tabs()\text\string)
 ;     EndIf
 ;   Next
   
@@ -94,7 +94,7 @@ Procedure DrawBar (*this._s_widget)
     DrawingMode (#PB_2DDrawing_AlphaBlend)
     Box      ( X+*TabSwap\x, Y+*TabSwap\Y + *TabSwap\OffsetMove, 280-20, *TabSwap\height, $70000000 | #ColSwp)
     DrawingMode (#PB_2DDrawing_Transparent)
-    DrawText ( X+*TabSwap\x + *TabSwap\txt\x, Y+*TabSwap\Y + *TabSwap\txt\y + *TabSwap\OffsetMove + 2, *TabSwap\txt\string)
+    DrawText ( X+*TabSwap\x + *TabSwap\text\x, Y+*TabSwap\Y + *TabSwap\text\y + *TabSwap\OffsetMove + 2, *TabSwap\text\string)
   EndIf
   
  ; StopDrawing ()
@@ -200,7 +200,7 @@ Procedure DrawBarEvents( )
     ;Sum-up Offsets and sort list
     ForEach Tabs()
       Tabs()\Y + Tabs()\OffsetMove
-      ;Debug ""+Tabs()\OffsetMove+" "+Tabs()\txt\string
+      ;Debug ""+Tabs()\OffsetMove+" "+Tabs()\text\string
       Tabs()\OffsetMove = 0
     Next
     
@@ -249,13 +249,13 @@ Procedure Events( )
         If DragPrivate(#PrivateType, #PB_Drag_Move)
           Protected img =- 1
           SelectElement(EventWidget( )\__rows( ), SourceItem)
-          img = CreateImage(#PB_Any, EventWidget( )\__rows( )\txt\width, EventWidget( )\__rows( )\txt\height, 32, #PB_Image_Transparent )
+          img = CreateImage(#PB_Any, EventWidget( )\__rows( )\text\width, EventWidget( )\__rows( )\text\height, 32, #PB_Image_Transparent )
           StartDrawing(ImageOutput(img))
           DrawingMode( #PB_2DDrawing_AllChannels)
-          DrawText(0, 0, EventWidget( )\__rows( )\txt\string, $ff000000)
+          DrawText(0, 0, EventWidget( )\__rows( )\text\string, $ff000000)
           StopDrawing()
           If IsImage(img)
-            SetCursor( *tree, Cursor::Create( ImageID(img), EventWidget( )\__rows( )\txt\width/2, EventWidget( )\__rows( )\txt\height/2 ))
+            SetCursor( *tree, Cursor::Create( ImageID(img), EventWidget( )\__rows( )\text\width/2, EventWidget( )\__rows( )\text\height/2 ))
           EndIf
         EndIf
         
@@ -430,7 +430,7 @@ Procedure Events( )
           ;ClearDebugOutput()
           Define *this._s_widget = *tree
           ForEach *this\__rows( )
-            Debug ""+ *this\__rows( )\_index +" "+ ListIndex(*this\__rows( )) +" "+ *this\__rows( )\txt\string +""
+            Debug ""+ *this\__rows( )\_index +" "+ ListIndex(*this\__rows( )) +" "+ *this\__rows( )\text\string +""
           Next
         EndIf
         

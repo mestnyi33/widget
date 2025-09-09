@@ -12,15 +12,15 @@ Global i, *w._s_widget, *p1,*p2._s_widget, *ch
          line = "  "
          
          If widgets( )\BeforeWidget( )
-            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\txt\string
+            line + widgets( )\BeforeWidget( )\class +" <<  "    ;  +"_"+widgets( )\BeforeWidget( )\text\string
          Else
             line + "-------- <<  " 
          EndIf
          
-         line + widgets( )\class ; widgets( )\txt\string
+         line + widgets( )\class ; widgets( )\text\string
          
          If widgets( )\AfterWidget( )
-            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\txt\string
+            line +"  >> "+ widgets( )\AfterWidget( )\class ;+"_"+widgets( )\AfterWidget( )\text\string
          Else
             line + "  >> --------" 
          EndIf
@@ -73,7 +73,7 @@ EndProcedure
 ;         widgets( )\root = *p2\root
 ;       EndIf
 ;       
-;       Debug  ""+widgets( )\root +" "+ *p2\root +" - "+ widgets( )\txt\string
+;       Debug  ""+widgets( )\root +" "+ *p2\root +" - "+ widgets( )\text\string
 ;     Next
             
     Bind(change, @events_widgets())

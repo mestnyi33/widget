@@ -61,7 +61,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; 
       ForEach *g\__lines( )
-         Debug ""+*g\__lines( )\index +" "+*g\__lines( )\txt\string
+         Debug ""+*g\__lines( )\index +" "+*g\__lines( )\text\string
       Next
       
       

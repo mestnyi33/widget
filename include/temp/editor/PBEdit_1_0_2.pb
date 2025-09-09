@@ -890,7 +890,7 @@ Module _PBEdit_
 		With *te\find
 			\wnd_findReplace		= OpenWindow	(#PB_Any,   0,   0, 545, 205, PreferenceString("wnd_findReplace",		"Find/Replace"), #PB_Window_SystemMenu | #PB_Window_Invisible, WindowID(*te\window))
 			\cmb_search				= ComboBoxGadget(#PB_Any, 150,  10, 380,  20, #PB_ComboBox_Editable)
-			\txt_search				= TextGadget	(#PB_Any,  10,  10, 130,  20, PreferenceString("txt_search",			"Search for") + ":", #PB_Text_Right)
+			\text_search				= TextGadget	(#PB_Any,  10,  10, 130,  20, PreferenceString("txt_search",			"Search for") + ":", #PB_Text_Right)
 			\chk_replace			= CheckBoxGadget(#PB_Any,  10,  40, 130,  20, PreferenceString("chk_replace",			"Replace with") + ":")
 			\cmb_replace			= ComboBoxGadget(#PB_Any, 150,  40, 380,  20, #PB_ComboBox_Editable)
 			\frm_0					= FrameGadget	(#PB_Any,  10,  75, 520,  75, "", #PB_Frame_Single)
@@ -4286,7 +4286,7 @@ Module _PBEdit_
 						Else
 							token(i - 1) = " "
 						EndIf
-					ElseIf (*last\type <> #TE_Token_Operator Or *last\txt\c <> '-')
+					ElseIf (*last\type <> #TE_Token_Operator Or *last\text\c <> '-')
 						style = Style_FromCharNr(*textline, *last\charNr)
 						If style <> #TE_Style_Function And style <> #TE_Style_Structure
 							token(i - 1) + " "
@@ -4317,10 +4317,10 @@ Module _PBEdit_
 				ElseIf *current\type = #TE_Token_Whitespace And (*last\type = #TE_Token_Address Or *last\type = #TE_Token_BracketOpen Or *last\type = #TE_Token_Point Or *last\type = #TE_Token_Backslash)
 					token(i) = ""
 				ElseIf *current\type = #TE_Token_Whitespace And *last\type = #TE_Token_Operator
-					If *last\txt\c = '~'
+					If *last\text\c = '~'
 						token(i) = ""
 					EndIf
-				ElseIf (*current\type = #TE_Token_Operator And *current\txt\c <> '~') And *last\type <> #TE_Token_Whitespace
+				ElseIf (*current\type = #TE_Token_Operator And *current\text\c <> '~') And *last\type <> #TE_Token_Whitespace
 					token(i - 1) + " "
 				ElseIf (*current\type = #TE_Token_Equal Or *current\type = #TE_Token_Compare) And *last\type <> #TE_Token_Whitespace
 					If *last\type <> #TE_Token_Compare And *last\type <> #TE_Token_Equal
@@ -4335,7 +4335,7 @@ Module _PBEdit_
 						token(i - 1) + " "
 					EndIf
 				ElseIf *current\type <> #TE_Token_Whitespace And *last\type = #TE_Token_Operator
-					If *last\txt\c <> '~' And *last\txt\c <> '-'
+					If *last\text\c <> '~' And *last\text\c <> '-'
 						token(i - 1) + " "
 					EndIf
 				EndIf
