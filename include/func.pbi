@@ -948,6 +948,19 @@ Procedure.i GetImageHeight( ImageID.i )
     ProcedureReturn output_image
   EndProcedure
   
+  Procedure DrawTextEx(hDc,X, Y, Text.s, FrontColor, BackColor)
+     Protected chRect.RECT
+     chRect\left = X
+     chRect\top = Y
+     chRect\right = X ;+ VT\CharPixelW
+     chrect\bottom = Y ;+ VT\CharPixelH
+     
+     SetTextColor_(hdc, frontColor)
+     SetBkColor_(hdc, backColor)
+     
+     DrawText_(hDC, Text, Len(Text), @chRect.Rect, #DT_SINGLELINE )
+     
+  EndProcedure
 EndModule 
 
 
@@ -994,8 +1007,8 @@ CompilerEndIf
 ;     gtk_main_()
 ;   EndIf
 ; EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 443
-; FirstLine = 443
-; Folding = -----------------
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 954
+; FirstLine = 837
+; Folding = --------------4--
 ; EnableXP

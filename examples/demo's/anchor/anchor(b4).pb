@@ -61,7 +61,7 @@ If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (contex
    SetFont( root(), #Font)
    ; Container(0, 0, 800, 450) 
    a_init(widget() , 0);6)
-   SetColor(widget(), #pb_gadget_backcolor, RGBA(255, 255, 255, alpha))
+   SetColor(widget(), #PB_Gadget_BackColor, RGBA(255, 255, 255, alpha))
    
    
    a_object(20, 20, 200, 100, "Layer = 1", RGBA(64, 128, 192, alpha)) : SetTextXY( widget( ), 9,9)
@@ -75,9 +75,9 @@ If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (contex
    BindEvent( #PB_Event_Menu, @menu_events())
    WaitClose( )
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; IDE Options = PureBasic 6.20 (Windows - x64)
 ; CursorPosition = 63
-; FirstLine = 45
+; FirstLine = 39
 ; Folding = --
 ; EnableXP
 ; DPIAware

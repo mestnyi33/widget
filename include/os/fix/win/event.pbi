@@ -2,7 +2,7 @@
 XIncludeFile "../events.pbi"
 
 
-Module events
+Module Events
    Procedure Events( )
    EndProcedure
    
@@ -18,12 +18,15 @@ Module events
    EndProcedure
    
    Procedure CallbackHandler(hWnd, uMsg, wParam, lParam) 
-      Protected text.s, gadget = GetProp_( hWnd, "PB_ID" )
+      Protected Text.s, gadget = GetProp_( hWnd, "PB_ID" )
       Protected sysProc = GetProp_(hWnd, "sysProc")
       Protected *callBack = GetProp_(hWnd, "sysProc"+Str(GetProp_(hWnd, "sysProcType")))
       Static focus.i, enter.b, move.b 
       
       Select uMsg
+;          Case #WM_KEYDOWN
+;             Debug 656789098765
+            
          Case #WM_NCDESTROY 
             SetWindowLongPtr_(hwnd, #GWLP_USERDATA, sysProc)
             RemoveProp_(hwnd, sysProc)
@@ -37,11 +40,11 @@ Module events
           ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_LeftButtonUp )
               
          Case #WM_MOUSEFIRST
-            Protected TRACK.TRACKMOUSEEVENT
-            TRACK\cbSize = SizeOf(TRACK)
-            TRACK\dwFlags = #TME_HOVER|#TME_LEAVE
-            TRACK\hwndTrack = hWnd
-            TRACK\dwHoverTime = 1
+            Protected Track.TRACKMOUSEEVENT
+            Track\cbSize = SizeOf(Track)
+            Track\dwFlags = #TME_HOVER|#TME_LEAVE
+            Track\hwndTrack = hWnd
+            Track\dwHoverTime = 1
             TrackMouseEvent_(@TRACK)
             
             ;Case #WM_MOUSEMOVE
@@ -111,8 +114,8 @@ Module events
             ;             text = "Right button click on gadget #" + Str(gadget)
       EndSelect
       
-      If text
-         Debug text
+      If Text
+         Debug Text
       EndIf
       
       ProcedureReturn CallWindowProc_(sysProc, hWnd, uMsg, wParam, lParam)
@@ -133,8 +136,8 @@ Module events
    Procedure   SetCallBack(*callback)
    EndProcedure
 EndModule
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 30
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 29
+; FirstLine = 10
 ; Folding = ---
 ; EnableXP

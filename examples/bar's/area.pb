@@ -193,13 +193,6 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   Procedure _ChangeCursor( *this._s_WIDGET, *cursor )
-       ProcedureReturn ChangeCurrentCursor( *this, *cursor )
-       If SetCursor( *this, *cursor )
-         ProcedureReturn ChangeCursor( *this, *cursor )
-      EndIf
-   EndProcedure
-
    Procedure Canvas_Events( )
       Protected Repaint
       Protected Event = WidgetEventType( ) ; EventType( )
@@ -217,14 +210,14 @@ CompilerIf #PB_Compiler_IsMainFile
          
          Case #PB_EventType_LeftButtonUp 
             If Drag
-               _ChangeCursor( root( ), #PB_Cursor_Hand )
+               ChangeCursor( root( ), #PB_Cursor_Hand )
                Drag = #False
             EndIf
             
          Case #PB_EventType_LeftButtonDown
             Drag = Bool( Canvas_HitTest( _images_( ), Mousex, Mousey ) )
             If Drag 
-               _ChangeCursor( root( ), #PB_Cursor_Arrows )
+               ChangeCursor( root( ), #PB_Cursor_Arrows )
               ; Repaint = #True 
             EndIf
             
@@ -244,11 +237,11 @@ CompilerIf #PB_Compiler_IsMainFile
             Else 
                If Not MouseButtonPress( )
                   If Bool( Canvas_HitTest( _images_( ), Mousex, Mousey ) )
-                     If _ChangeCursor( root( ), #PB_Cursor_Hand )
+                     If ChangeCursor( root( ), #PB_Cursor_Hand )
                         Repaint = 1
                      EndIf
                   Else
-                     If _ChangeCursor( root( ), #PB_Cursor_Default )
+                     If ChangeCursor( root( ), #PB_Cursor_Default )
                         Repaint = 1
                      EndIf
                   EndIf
@@ -403,7 +396,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 196
-; FirstLine = 192
+; CursorPosition = 219
+; FirstLine = 201
 ; Folding = ---------
 ; EnableXP

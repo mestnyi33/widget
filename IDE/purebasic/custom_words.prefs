@@ -155,9 +155,7 @@ SetCursor
 GetCursor
 ResetCursor
 ChangeCursor
-CurrentCursor
-UpdateCurrentCursor
-ChangeCurrentCursor
+DoChangeCursor
 
 SetBackgroundImage
 GetCanvasWindow

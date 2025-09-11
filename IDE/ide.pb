@@ -749,18 +749,28 @@ EndProcedure
 
 Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
    Protected *this._s_WIDGET
-   Protected flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
+   Protected min, max, steps, flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
    
    Select Type
       Case #__type_Spin
+         flag = #__spin_Plus
+         steps = 1 
+         ;
          Select item
             Case #_pi_fontsize
-               *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag|#__spin_Plus, 1, 50, 0, #__bar_button_size, 0, 1 )
+               min = 1
+               max = 50
             Case #_pi_coloralpha, #_pi_colorblue, #_pi_colorgreen, #_pi_colorred
-               *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag|#__spin_Plus, 0, 255, 0, #__bar_button_size, 0, 1 )
+               min = 0
+               max = 255
             Default
-               *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag|#__spin_Plus, -2147483648, 2147483647, 0, #__bar_button_size, 0, 7 )
+               ; flag = #__flag_invert ; #__spin_Plus
+               min = -2147483648
+               max = 2147483647
+               steps = 7 
          EndSelect
+         
+         *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag, min, max, 0, #__bar_button_size, 0, steps )
          
       Case #__type_String
          *this = Create( *parent, "String", Type, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
@@ -2914,9 +2924,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17
-; Folding = ---------f+T--8----Pg----------4-n0---------+-v-----
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 766
+; FirstLine = 706
+; Folding = ---------f+T-------Pg----------4-n0---------+-v-----
 ; Optimizer
 ; EnableAsm
 ; EnableXP
