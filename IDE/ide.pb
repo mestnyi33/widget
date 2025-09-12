@@ -80,6 +80,8 @@ Enumeration
    #_tb_file_quit
    
    #_tb_menu 
+   #_tb_lng_ENG
+   #_tb_lng_RUS
 EndEnumeration
 
 ;- GLOBALs
@@ -196,6 +198,7 @@ Declare$  GetImageFile( img )
 ;
 ;- INCLUDEs
 XIncludeFile #ide_path + "widgets.pbi"
+XIncludeFile #ide_path + "lng.pbi"
 ; XIncludeFile "C:\Users\user\Downloads\Compressed\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widgets.pbi"
 ; Procedure.i GetFontColor( *this.structures::_s_WIDGET )
 ;    ProcedureReturn widget::GetColor( *this, constants::#__Color_Front )
@@ -1772,6 +1775,67 @@ Procedure new_widget_events( )
 EndProcedure
 
 ;-
+;- LENGUAGE
+#lng = #RUS
+
+Enumeration lng
+   #lng_MENU
+   #lng_RUN
+   ;
+   #lng_FORM
+   #lng_CODE
+   ;
+   #lng_ELEMENTS
+   #lng_PROPERTIES
+   #lng_EVENTS
+EndEnumeration
+
+InitLng( "yes|no|cancel|new|open|save")
+AddLng( #ENG, #lng_MENU ) = "Menu"
+AddLng( #RUS, #lng_MENU ) = "Меню"
+
+AddLng( #ENG, #lng_RUN ) = "Run"
+AddLng( #RUS, #lng_RUN ) = "Запуск"
+
+AddLng( #ENG, #lng_FORM ) = "Form"
+AddLng( #RUS, #lng_FORM ) = "Форма"
+
+AddLng( #ENG, #lng_CODE ) = "Code"
+AddLng( #RUS, #lng_CODE ) = "Код"
+
+AddLng( #ENG, #lng_ELEMENTS ) = "Elements"
+AddLng( #RUS, #lng_ELEMENTS ) = "Элементы"
+
+AddLng( #ENG, #lng_PROPERTIES ) = "Properties"
+AddLng( #RUS, #lng_PROPERTIES ) = "Свойства"
+
+AddLng( #ENG, #lng_EVENTS ) = "Events"
+AddLng( #RUS, #lng_EVENTS ) = "События"
+
+Procedure ide_change_Lng( lng_TYPE )
+   Debug "  LNG CHANGE "
+   ;SetBarItemText( ide_toolbar, #_tb_menu, lng(lng_TYPE, #lng_Menu))
+   SetBarItemText( ide_toolbar, #_tb_file_new, lng(lng_TYPE, #lng_New))
+   SetBarItemText( ide_toolbar, #_tb_file_open, lng(lng_TYPE, #lng_Open))
+   SetBarItemText( ide_toolbar, #_tb_file_save, lng(lng_TYPE, #lng_Save))
+   SetBarItemText( ide_toolbar, #_tb_file_run, "["+lng(lng_TYPE, #lng_RUN)+"]")
+   
+   SetItemText( ide_inspector_PANEL, 0, lng(lng_TYPE, #lng_ELEMENTS))
+   SetItemText( ide_inspector_PANEL, 1, lng(lng_TYPE, #lng_PROPERTIES))
+   SetItemText( ide_inspector_PANEL, 2, lng(lng_TYPE, #lng_EVENTS))
+   
+   SetItemText( ide_design_PANEL, 0, lng(lng_TYPE, #lng_FORM))
+   SetItemText( ide_design_PANEL, 1, lng(lng_TYPE, #lng_CODE))
+   
+   If lng_TYPE = #ENG
+      DisableBarButton( ide_toolbar, #_tb_lng_RUS, #False )
+      DisableBarButton( ide_toolbar, #_tb_lng_ENG, #True )
+   ElseIf lng_TYPE = #RUS
+      DisableBarButton( ide_toolbar, #_tb_lng_ENG, #False )
+      DisableBarButton( ide_toolbar, #_tb_lng_RUS, #True )
+   EndIf
+EndProcedure
+
 ;-
 Procedure.S ide_help_elements(Class.s)
    Protected Result.S
@@ -2074,6 +2138,7 @@ Procedure.i ide_list_images_add( *id, Directory$ )
    EndIf
 EndProcedure
 
+;-
 Procedure ide_menu_events( *g._s_WIDGET, BarButton )
    Protected transform, move_x, move_y
    Static NewList *copy._s_a_group( )
@@ -2081,6 +2146,12 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
    ; Debug "ide_menu_events "+BarButton
    
    Select BarButton
+      Case #_tb_lng_ENG
+         ide_change_Lng( #ENG )
+         
+      Case #_tb_lng_RUS
+         ide_change_Lng( #RUS )
+         
       Case #_tb_group_select
          If Type(*g) = #__type_ToolBar
             If GetItemState( *g, BarButton )  
@@ -2443,6 +2514,11 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    BarItem( #_tb_file_open, "Open" + Space(9) + Chr(9) + "Ctrl+O")
    BarItem( #_tb_file_save, "Save" + Space(9) + Chr(9) + "Ctrl+S")
    BarItem( #_tb_file_save_as, "Save as...")
+;    BarSeparator( )
+;    OpenSubBar("Lng")
+;    BarItem( #_tb_lng_ENG, "ENG")
+;    BarItem( #_tb_lng_RUS, "RUS")
+;    CloseSubBar( )
    BarSeparator( )
    BarItem( #_tb_file_quit, "Quit" );+ Chr(9) + "Ctrl+Q")
    CloseSubBar( )
@@ -2458,6 +2534,8 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    BarButton( #_tb_new_widget_delete, CatchImage( #PB_Any,?image_new_widget_delete ) )
    BarSeparator( )
    BarItem( #_tb_file_run, "[RUN]" )
+   BarItem( #_tb_lng_ENG, "[ENG]" )
+   BarItem( #_tb_lng_RUS, "[RUS]" )
    BarSeparator( )
    BarButton( #_tb_group_select, CatchImage( #PB_Any,?image_group ), #PB_ToolBar_Toggle ) 
    ;
@@ -2489,8 +2567,11 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;    BarButton( #_tb_align_right, CatchImage( #PB_Any,?image_group_right ) )
    CloseList( )
    
-   ; gadgets
+   DisableBarButton( ide_toolbar, #_tb_lng_ENG, #True )
    
+   ;
+   ; gadgets
+   ;
    ;\\\ 
    Define ide_root2 ;= Open(1) : Define ide_design_g_canvas =  GetCanvasGadget(ide_root2)
    
@@ -2676,6 +2757,10 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;SetState( ide_inspector_panel_splitter, 250 )
    ;SetState( ide_inspector_view_splitter, 200 )
    SetState( ide_inspector_view_splitter, 100 )
+   
+   ;
+   ; ide_change_Lng( #lng )
+   ;
    
    ;
    ;-\\ ide binds events
@@ -2925,9 +3010,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 766
-; FirstLine = 706
-; Folding = ---------f+T-------Pg----------4-n0---------+-v-----
+; CursorPosition = 2538
+; FirstLine = 1931
+; Folding = ---------f+T-------Pg----------4-n0--rd---v-8--+-----
 ; Optimizer
 ; EnableAsm
 ; EnableXP

@@ -62,7 +62,7 @@ UsePNGImageEncoder()
 ;- Declare
 Declare DrawPixel(selectedColor)
 Declare Border()
-Declare DrawArea(x, y)
+Declare DrawArea(X, Y)
 Declare DrawCan()
 Declare hsb_to_rgb()
 Declare rgb_to_hsb()
@@ -72,7 +72,7 @@ Declare Rotate(Direction)
 Declare SetColorBox(Color)
 
 ;- Global
-Global tmp, i, j, y, x, selectedColor, StyleBox
+Global tmp, i, j, Y, X, selectedColor, StyleBox
 Global mxxOld, myyOld, pendown, delmode, mxx, myy
 Global tmp$
 Global ImagePlugin
@@ -229,9 +229,9 @@ EndIf
       
       Border()
       
-      For y = 1 To YYY
-         For x = 1 To XXX
-            aPicturePx(x, y) = #Transparency
+      For Y = 1 To YYY
+         For X = 1 To XXX
+            aPicturePx(X, Y) = #Transparency
          Next
       Next
       
@@ -482,15 +482,15 @@ EndIf
                      If StartDrawing(CanvasOutput(#cnvScene))
                         Box(0, 0, BoxAreaX, BoxAreaY, 0)
                         
-                        For y = 1 To YYY
-                           For x = 1 To XXX
+                        For Y = 1 To YYY
+                           For X = 1 To XXX
                               Select StyleBox
                                  Case 0
-                                    Box((x - 1) * CELLSIZEW, (y - 1) * CELLSIZEH, CELLSIZEW, CELLSIZEH, aPicturePx(x, y))
+                                    Box((X - 1) * CELLSIZEW, (Y - 1) * CELLSIZEH, CELLSIZEW, CELLSIZEH, aPicturePx(X, Y))
                                  Case 1
-                                    Box((x - 1) * CELLSIZEW, (y - 1) * CELLSIZEH, CELLSIZEW - 1, CELLSIZEH - 1, aPicturePx(x, y))
+                                    Box((X - 1) * CELLSIZEW, (Y - 1) * CELLSIZEH, CELLSIZEW - 1, CELLSIZEH - 1, aPicturePx(X, Y))
                                  Case 2
-                                    RoundBox((x - 1) * CELLSIZEW + 1, (y - 1) * CELLSIZEH + 1, CELLSIZEW - 2, CELLSIZEH - 2, 2, 2, aPicturePx(x, y))
+                                    RoundBox((X - 1) * CELLSIZEW + 1, (Y - 1) * CELLSIZEH + 1, CELLSIZEW - 2, CELLSIZEH - 2, 2, 2, aPicturePx(X, Y))
                               EndSelect
                            Next
                         Next
@@ -542,9 +542,9 @@ EndIf
                      StyleBox = 0
                      If StartDrawing(CanvasOutput(#cnvScene))
                         Box(0, 0, BoxAreaX, BoxAreaY, 0)
-                        For y = 1 To YYY
-                           For x = 1 To XXX
-                              Box((x - 1) * CELLSIZEW, (y - 1) * CELLSIZEH, CELLSIZEW, CELLSIZEH, aPicturePx(x, y))
+                        For Y = 1 To YYY
+                           For X = 1 To XXX
+                              Box((X - 1) * CELLSIZEW, (Y - 1) * CELLSIZEH, CELLSIZEW, CELLSIZEH, aPicturePx(X, Y))
                            Next
                         Next
                         StopDrawing()
@@ -553,9 +553,9 @@ EndIf
                      StyleBox = 1
                      If StartDrawing(CanvasOutput(#cnvScene))
                         Box(0, 0, BoxAreaX, BoxAreaY, 0)
-                        For y = 1 To YYY
-                           For x = 1 To XXX
-                              Box((x - 1) * CELLSIZEW, (y - 1) * CELLSIZEH, CELLSIZEW - 1, CELLSIZEH - 1, aPicturePx(x, y))
+                        For Y = 1 To YYY
+                           For X = 1 To XXX
+                              Box((X - 1) * CELLSIZEW, (Y - 1) * CELLSIZEH, CELLSIZEW - 1, CELLSIZEH - 1, aPicturePx(X, Y))
                            Next
                         Next
                         StopDrawing()
@@ -564,9 +564,9 @@ EndIf
                      StyleBox = 2
                      If StartDrawing(CanvasOutput(#cnvScene))
                         Box(0, 0, BoxAreaX, BoxAreaY, 0)
-                        For y = 1 To YYY
-                           For x = 1 To XXX
-                              RoundBox((x - 1) * CELLSIZEW + 1, (y - 1) * CELLSIZEH + 1, CELLSIZEW - 2, CELLSIZEH - 2, 2, 2, aPicturePx(x, y))
+                        For Y = 1 To YYY
+                           For X = 1 To XXX
+                              RoundBox((X - 1) * CELLSIZEW + 1, (Y - 1) * CELLSIZEH + 1, CELLSIZEW - 2, CELLSIZEH - 2, 2, 2, aPicturePx(X, Y))
                            Next
                         Next
                         StopDrawing()
@@ -577,9 +577,9 @@ EndIf
                      ; 					If Asc(tmp$)
                      ; 					EndIf
                   Case #btnClear
-                     For y = 1 To YYY
-                        For x = 1 To XXX
-                           aPicturePx(x, y) = #Transparency
+                     For Y = 1 To YYY
+                        For X = 1 To XXX
+                           aPicturePx(X, Y) = #Transparency
                         Next
                      Next
                      CopyArray(aPicturePx() , aPicPxOld())
@@ -595,10 +595,10 @@ EndIf
                   Case #btnSave
                      If StartDrawing(CanvasOutput(#cnvScene))
                         DrawingMode(#PB_2DDrawing_Transparent)
-                        For y = 1 To YYY
-                           For x = 1 To XXX
-                              tmp = Point(x * CELLSIZEW - CELLSIZEW / 2, y * CELLSIZEH - CELLSIZEH / 2)
-                              aPicturePx(x, y) = tmp
+                        For Y = 1 To YYY
+                           For X = 1 To XXX
+                              tmp = Point(X * CELLSIZEW - CELLSIZEW / 2, Y * CELLSIZEH - CELLSIZEH / 2)
+                              aPicturePx(X, Y) = tmp
                            Next
                         Next
                         StopDrawing()
@@ -606,10 +606,10 @@ EndIf
                            ; 						If CreateImage(#Image, XXX, YYY)
                            If StartDrawing(ImageOutput(#Image))
                               DrawingMode(#PB_2DDrawing_Transparent)
-                              For y = 1 To YYY
-                                 For x = 1 To XXX
-                                    If aPicturePx(x, y) <> #Transparency
-                                       Plot(x - 1, y - 1, aPicturePx(x, y))
+                              For Y = 1 To YYY
+                                 For X = 1 To XXX
+                                    If aPicturePx(X, Y) <> #Transparency
+                                       Plot(X - 1, Y - 1, aPicturePx(X, Y))
                                     EndIf
                                  Next
                               Next
@@ -716,10 +716,10 @@ EndIf
                            pendown = 1
                         Case #PB_EventType_LeftButtonDown
                            If GetGadgetAttribute(#cnvScene, #PB_Canvas_Modifiers) & #PB_Canvas_Control
-                              x = GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseX)
-                              y = GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseY)
+                              X = GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseX)
+                              Y = GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseY)
                               If StartDrawing(CanvasOutput(#cnvScene))
-                                 selectedColor = Point(x, y)
+                                 selectedColor = Point(X, Y)
                                  StopDrawing()
                                  SetColorBox(selectedColor)
                                  SetGadgetText(#HexColor, RSet(Hex(RGBtoBGR(selectedColor)), 6, "0"))
@@ -741,15 +741,15 @@ EndIf
                            delmode = 0
                         Case #PB_EventType_MouseMove
                            If pendown = 1
-                              x = Int(GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseX) / CELLSIZEW)
-                              y = Int(GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseY) / CELLSIZEH)
+                              X = Int(GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseX) / CELLSIZEW)
+                              Y = Int(GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseY) / CELLSIZEH)
                               ; 								защиты выхода за пределы массива предотвращая запись в границы -3 иного значения
-                              If x < 0 Or x > XXX - 1 Or y < 0 Or y > YYY - 1
+                              If X < 0 Or X > XXX - 1 Or Y < 0 Or Y > YYY - 1
                                  Continue
                               EndIf
                               ; преобразование в позицию квадратов x, y, чтобы сравнить являются ли квадраты на одной линии
-                              mxx = x * CELLSIZEW
-                              myy = y * CELLSIZEH
+                              mxx = X * CELLSIZEW
+                              myy = Y * CELLSIZEH
                               If mxxOld = mxx And myyOld = myy
                                  Continue
                               Else
@@ -759,7 +759,7 @@ EndIf
                               
                               If StartDrawing(CanvasOutput(#cnvScene))
                                  If delmode
-                                    aPicturePx(x + 1, y + 1) = 0
+                                    aPicturePx(X + 1, Y + 1) = 0
                                     Select StyleBox
                                        Case 0
                                           Box(mxx, myy, CELLSIZEW, CELLSIZEH, 0)
@@ -769,7 +769,7 @@ EndIf
                                           RoundBox(mxx + 1, myy + 1, CELLSIZEW - 2, CELLSIZEH - 2, 2, 2, 0)
                                     EndSelect
                                  Else
-                                    aPicturePx(x + 1, y + 1) = selectedColor
+                                    aPicturePx(X + 1, Y + 1) = selectedColor
                                     Select StyleBox
                                        Case 0
                                           Box(mxx, myy, CELLSIZEW, CELLSIZEH, selectedColor)
@@ -792,12 +792,12 @@ EndIf
       
       Procedure RotateColor(Gadget)
          Protected tmp
-         For y = 1 To YYY
-            For x = 1 To XXX
-               If aPicPxOld(x, y) <> #Transparency
-                  arr_rgb(0) = Red(aPicPxOld(x, y))
-                  arr_rgb(1) = Green(aPicPxOld(x, y))
-                  arr_rgb(2) = Blue(aPicPxOld(x, y))
+         For Y = 1 To YYY
+            For X = 1 To XXX
+               If aPicPxOld(X, Y) <> #Transparency
+                  arr_rgb(0) = Red(aPicPxOld(X, Y))
+                  arr_rgb(1) = Green(aPicPxOld(X, Y))
+                  arr_rgb(2) = Blue(aPicPxOld(X, Y))
                   rgb_to_hsb()
                   tmp = GetGadgetState(Gadget)
                   ; 			Debug tmp
@@ -810,7 +810,7 @@ EndIf
                         arr_hsb(2) = tmp
                   EndSelect
                   hsb_to_rgb()
-                  aPicturePx(x, y) = RGB(arr_rgb(0), arr_rgb(1), arr_rgb(2))
+                  aPicturePx(X, Y) = RGB(arr_rgb(0), arr_rgb(1), arr_rgb(2))
                EndIf
             Next
          Next
@@ -818,15 +818,15 @@ EndIf
          If StartDrawing(CanvasOutput(#cnvScene))
             Box(0, 0, BoxAreaX, BoxAreaY, 0)
             
-            For y = 1 To YYY
-               For x = 1 To XXX
+            For Y = 1 To YYY
+               For X = 1 To XXX
                   Select StyleBox
                      Case 0
-                        Box((x - 1) * CELLSIZEW, (y - 1) * CELLSIZEH, CELLSIZEW, CELLSIZEH, aPicturePx(x, y))
+                        Box((X - 1) * CELLSIZEW, (Y - 1) * CELLSIZEH, CELLSIZEW, CELLSIZEH, aPicturePx(X, Y))
                      Case 1
-                        Box((x - 1) * CELLSIZEW, (y - 1) * CELLSIZEH, CELLSIZEW - 1, CELLSIZEH - 1, aPicturePx(x, y))
+                        Box((X - 1) * CELLSIZEW, (Y - 1) * CELLSIZEH, CELLSIZEW - 1, CELLSIZEH - 1, aPicturePx(X, Y))
                      Case 2
-                        RoundBox((x - 1) * CELLSIZEW + 1, (y - 1) * CELLSIZEH + 1, CELLSIZEW - 2, CELLSIZEH - 2, 2, 2, aPicturePx(x, y))
+                        RoundBox((X - 1) * CELLSIZEW + 1, (Y - 1) * CELLSIZEH + 1, CELLSIZEW - 2, CELLSIZEH - 2, 2, 2, aPicturePx(X, Y))
                   EndSelect
                Next
             Next
@@ -891,23 +891,23 @@ EndIf
                SetWindowTitle(#Window, "IconEditor   (" + Str(XXX) + "x" + Str(YYY) + ")")
                DrawImage(ImageID(#Image), 0, 0)
                ; 	считываем пиксели рисунка в массив
-               For y = 0 To YYY - 1
-                  For x = 0 To XXX - 1
-                     tmp = Point(x, y)
+               For Y = 0 To YYY - 1
+                  For X = 0 To XXX - 1
+                     tmp = Point(X, Y)
                      ; 										Debug tmp
-                     aPicturePx(x + 1, y + 1) = tmp
+                     aPicturePx(X + 1, Y + 1) = tmp
                   Next
                Next
                Box(0, 0, BoxAreaX, BoxAreaY, #Transparency) ; стираем холст
-               For y = 1 To YYY
-                  For x = 1 To XXX
+               For Y = 1 To YYY
+                  For X = 1 To XXX
                      Select StyleBox
                         Case 0
-                           Box((x - 1) * CELLSIZEW, (y - 1) * CELLSIZEH, CELLSIZEW, CELLSIZEH, aPicturePx(x, y))
+                           Box((X - 1) * CELLSIZEW, (Y - 1) * CELLSIZEH, CELLSIZEW, CELLSIZEH, aPicturePx(X, Y))
                         Case 1
-                           Box((x - 1) * CELLSIZEW, (y - 1) * CELLSIZEH, CELLSIZEW - 1, CELLSIZEH - 1, aPicturePx(x, y))
+                           Box((X - 1) * CELLSIZEW, (Y - 1) * CELLSIZEH, CELLSIZEW - 1, CELLSIZEH - 1, aPicturePx(X, Y))
                         Case 2
-                           RoundBox((x - 1) * CELLSIZEW + 1, (y - 1) * CELLSIZEH + 1, CELLSIZEW - 2, CELLSIZEH - 2, 2, 2, aPicturePx(x, y))
+                           RoundBox((X - 1) * CELLSIZEW + 1, (Y - 1) * CELLSIZEH + 1, CELLSIZEW - 2, CELLSIZEH - 2, 2, 2, aPicturePx(X, Y))
                      EndSelect
                   Next
                Next
@@ -920,38 +920,38 @@ EndIf
       
       Procedure Border()
          ; массив данных ограничен с краёв линией со значением -3
-         y = 0
-         For x = 0 To XXX + 1
-            aPicturePx(x, y) = -3
+         Y = 0
+         For X = 0 To XXX + 1
+            aPicturePx(X, Y) = -3
          Next
-         y = YYY + 1
-         For x = 0 To XXX + 1
-            aPicturePx(x, y) = -3
+         Y = YYY + 1
+         For X = 0 To XXX + 1
+            aPicturePx(X, Y) = -3
          Next
-         x = 0
-         For y = 0 To YYY + 1
-            aPicturePx(x, y) = -3
+         X = 0
+         For Y = 0 To YYY + 1
+            aPicturePx(X, Y) = -3
          Next
-         x = XXX + 1
-         For y = 0 To YYY + 1
-            aPicturePx(x, y) = -3
+         X = XXX + 1
+         For Y = 0 To YYY + 1
+            aPicturePx(X, Y) = -3
          Next
       EndProcedure
       
       
       Procedure DrawPixel(selectedColor)
-         Protected myy, mxx, x, y
+         Protected myy, mxx, X, Y
          CopyArray(aPicturePx() , aPicPxOld())
-         x = Int(GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseX) / CELLSIZEW) + 1
-         y = Int(GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseY) / CELLSIZEH) + 1
+         X = Int(GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseX) / CELLSIZEW) + 1
+         Y = Int(GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseY) / CELLSIZEH) + 1
          ; защиты выхода за пределы массива предотвращая запись в границы -3 иного значения
-         If x < 1 Or x > XXX Or y < 1 Or y > YYY
+         If X < 1 Or X > XXX Or Y < 1 Or Y > YYY
             ProcedureReturn
          EndIf
-         aPicturePx(x, y) = selectedColor
+         aPicturePx(X, Y) = selectedColor
          ; преобразование в позицию квадратов x, y, чтобы сравнить являются ли квадраты на одной линии
-         mxx = (x - 1) * CELLSIZEW
-         myy = (y - 1) * CELLSIZEH
+         mxx = (X - 1) * CELLSIZEW
+         myy = (Y - 1) * CELLSIZEH
          If StartDrawing(CanvasOutput(#cnvScene))
             Select StyleBox
                Case 0
@@ -967,38 +967,38 @@ EndIf
       EndProcedure
       
       
-      Procedure DrawArea(x, y)
-         If aPicturePx(x - 1, y) = ClickColor
-            aPicturePx(x - 1, y) = -1
-            DrawArea(x - 1, y)
+      Procedure DrawArea(X, Y)
+         If aPicturePx(X - 1, Y) = ClickColor
+            aPicturePx(X - 1, Y) = -1
+            DrawArea(X - 1, Y)
          EndIf
          
-         If aPicturePx(x, y - 1) = ClickColor
-            aPicturePx(x, y - 1) = -1
-            DrawArea(x, y - 1)
+         If aPicturePx(X, Y - 1) = ClickColor
+            aPicturePx(X, Y - 1) = -1
+            DrawArea(X, Y - 1)
          EndIf
          
-         If aPicturePx(x + 1, y) = ClickColor
-            aPicturePx(x + 1, y) = -1
-            DrawArea(x + 1, y)
+         If aPicturePx(X + 1, Y) = ClickColor
+            aPicturePx(X + 1, Y) = -1
+            DrawArea(X + 1, Y)
          EndIf
          
-         If aPicturePx(x, y + 1) = ClickColor
-            aPicturePx(x, y + 1) = -1
-            DrawArea(x, y + 1)
+         If aPicturePx(X, Y + 1) = ClickColor
+            aPicturePx(X, Y + 1) = -1
+            DrawArea(X, Y + 1)
          EndIf
       EndProcedure
       
       
       Procedure DrawCan()
-         Protected myy, mxx, x, y
+         Protected myy, mxx, X, Y
          CopyArray(aPicturePx(), aPicPxOld())
          ; 	реальные координаты в пикселах
-         x = GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseX)
-         y = GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseY)
+         X = GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseX)
+         Y = GetGadgetAttribute(#cnvScene, #PB_Canvas_MouseY)
          
          If StartDrawing(CanvasOutput(#cnvScene))
-            ClickColor = Point(x, y)
+            ClickColor = Point(X, Y)
             
             ; 		массив создаётся заранее, поэтому сграбливать его не надо
             ; 		DrawingMode(#PB_2DDrawing_Transparent)
@@ -1018,8 +1018,8 @@ EndIf
          ; 	EndIf
          
          ; преобразование в позицию квадратов x, y, чтобы сравнить являются ли квадраты на одной линии
-         mxx = Int(x / CELLSIZEW) + 1
-         myy = Int(y / CELLSIZEH) + 1
+         mxx = Int(X / CELLSIZEW) + 1
+         myy = Int(Y / CELLSIZEH) + 1
          ; защиты выхода за пределы массива
          ; 	If mxx < 0 Or mxx > XXX Or myy < 0 Or myy > YYY
          ; 		ProcedureReturn
@@ -1032,17 +1032,17 @@ EndIf
          ; 	Debug myy
          
          If StartDrawing(CanvasOutput(#cnvScene))
-            For y = 1 To YYY
-               For x = 1 To XXX
-                  If aPicturePx(x, y) = -1
-                     aPicturePx(x, y) = selectedColor
+            For Y = 1 To YYY
+               For X = 1 To XXX
+                  If aPicturePx(X, Y) = -1
+                     aPicturePx(X, Y) = selectedColor
                      Select StyleBox
                         Case 0
-                           Box((x - 1) * CELLSIZEW, (y - 1) * CELLSIZEH, CELLSIZEW, CELLSIZEH, selectedColor)
+                           Box((X - 1) * CELLSIZEW, (Y - 1) * CELLSIZEH, CELLSIZEW, CELLSIZEH, selectedColor)
                         Case 1
-                           Box((x - 1) * CELLSIZEW, (y - 1) * CELLSIZEH, CELLSIZEW - 1, CELLSIZEH - 1, selectedColor)
+                           Box((X - 1) * CELLSIZEW, (Y - 1) * CELLSIZEH, CELLSIZEW - 1, CELLSIZEH - 1, selectedColor)
                         Case 2
-                           RoundBox((x - 1) * CELLSIZEW + 1, (y - 1) * CELLSIZEH + 1, CELLSIZEW - 2, CELLSIZEH - 2, 2, 2, selectedColor)
+                           RoundBox((X - 1) * CELLSIZEW + 1, (Y - 1) * CELLSIZEH + 1, CELLSIZEW - 2, CELLSIZEH - 2, 2, 2, selectedColor)
                      EndSelect
                   EndIf
                Next
@@ -1068,17 +1068,17 @@ EndIf
       
       Procedure Rotate(Direction)
          CopyArray(aPicturePx(), aPicPxOld())
-         For y = 1 To YYY
-            For x = 1 To XXX
+         For Y = 1 To YYY
+            For X = 1 To XXX
                Select Direction
                   Case 0
-                     aPicturePx(x, y) = aPicPxOld(y, XXX - x + 1)
+                     aPicturePx(X, Y) = aPicPxOld(Y, XXX - X + 1)
                   Case 1
-                     aPicturePx(x, y) = aPicPxOld(YYY - y + 1, x)
+                     aPicturePx(X, Y) = aPicPxOld(YYY - Y + 1, X)
                   Case 2
-                     aPicturePx(x, y) = aPicPxOld(XXX - x + 1, y)
+                     aPicturePx(X, Y) = aPicPxOld(XXX - X + 1, Y)
                   Case 3
-                     aPicturePx(x, y) = aPicPxOld(x, YYY - y + 1)
+                     aPicturePx(X, Y) = aPicPxOld(X, YYY - Y + 1)
                EndSelect
                
                ; 			If Direction
@@ -1091,15 +1091,15 @@ EndIf
          If StartDrawing(CanvasOutput(#cnvScene))
             Box(0, 0, BoxAreaX, BoxAreaY, 0)
             
-            For y = 1 To YYY
-               For x = 1 To XXX
+            For Y = 1 To YYY
+               For X = 1 To XXX
                   Select StyleBox
                      Case 0
-                        Box((x - 1) * CELLSIZEW, (y - 1) * CELLSIZEH, CELLSIZEW, CELLSIZEH, aPicturePx(x, y))
+                        Box((X - 1) * CELLSIZEW, (Y - 1) * CELLSIZEH, CELLSIZEW, CELLSIZEH, aPicturePx(X, Y))
                      Case 1
-                        Box((x - 1) * CELLSIZEW, (y - 1) * CELLSIZEH, CELLSIZEW - 1, CELLSIZEH - 1, aPicturePx(x, y))
+                        Box((X - 1) * CELLSIZEW, (Y - 1) * CELLSIZEH, CELLSIZEW - 1, CELLSIZEH - 1, aPicturePx(X, Y))
                      Case 2
-                        RoundBox((x - 1) * CELLSIZEW + 1, (y - 1) * CELLSIZEH + 1, CELLSIZEW - 2, CELLSIZEH - 2, 2, 2, aPicturePx(x, y))
+                        RoundBox((X - 1) * CELLSIZEW + 1, (Y - 1) * CELLSIZEH + 1, CELLSIZEW - 2, CELLSIZEH - 2, 2, 2, aPicturePx(X, Y))
                   EndSelect
                Next
             Next
@@ -1118,13 +1118,12 @@ EndIf
             SetGadgetAttribute(#btnColor, #PB_Button_Image, ImageID(#imgColor))
          EndIf
       EndProcedure
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 920
-; FirstLine = 920
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 164
+; FirstLine = 147
 ; Folding = ------------------
 ; EnableAsm
 ; EnableXP
-; DPIAware
 ; UseIcon = icon.ico
 ; Executable = IconEditor.exe
 ; CompileSourceDirectory

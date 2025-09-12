@@ -397,63 +397,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndMacro
       
-      ;-\\ BAR
-      Macro CreateMenuBar( _parent_, _flags_ = 0 )
-         CreateBar( #__type_MenuBar, _parent_, #__flag_BarSmall|#__flag_BarText | _flags_ )
-      EndMacro
-      
-      Macro   CreatePopupBar( _flags_ = 0 )
-         CreateBar( #__type_PopupBar, root( ), _flags_ )
-      EndMacro
-      
-      Macro ToolBar( _parent_, _flags_ = 0 )
-         CreateBar( #__type_ToolBar, _parent_, _flags_ )
-      EndMacro
-      
-      Macro BarBar( )
-         BarSeparator( )
-      EndMacro
-      
-      Macro BarToolTip( _address_, _barbutton_, _text_ )
-      EndMacro
-      
-      Macro DisableBarButton( _address_, _barbutton_, _state_ )
-         DisableItem( _address_, _barbutton_, _state_ )
-      EndMacro
-      
-      Macro DisableBarItem( _address_, _baritem_, _state_ )
-         DisableItem( _address_, _baritem_, _state_ )
-      EndMacro
-      
-      Macro GetBarTitleText( _address_, _title_ )
-      EndMacro
-      
-      Macro SetBarTitleText( _address_, _title_, _text_ )
-      EndMacro
-      
-      Macro SetBarItemState( _address_, _baritem_, _state_ )
-         SetItemState( _address_, _baritem_, _state_ )
-      EndMacro
-      
-      Macro GetBarItemState( _address_, _baritem_ )
-         GetItemState( _address_, _baritem_ )
-      EndMacro
-      
-      Macro SetBarItemText( _address_, _baritem_, _text_ )
-         SetItemText( _address_, _baritem_, _text_ )
-      EndMacro
-      
-      Macro GetBarItemText( _address_, _baritem_ )
-         GetItemText( _address_, _baritem_ )
-      EndMacro
-      
-      Macro BindBarEvent( _address_, _baritem_, _callback_ )
-         Bind( _address_, _callback_, -1, _baritem_ )
-      EndMacro
-      
-      Macro UnbindBarEvent( _address_, _baritem_, _callback_ )
-         Unbind( _address_, _callback_, -1, _baritem_ )
-      EndMacro
       
       ;-
       Macro SetBackColor( _this_, _color_ )
@@ -1757,7 +1700,24 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   BarSeparator( )
       Declare   OpenSubBar( Text.s, img.i = - 1 )
       Declare   CloseSubBar( )
-      
+      ;
+      ;-\\ BAR
+      Declare   CreateMenuBar( _parent_, _flags_ = 0 )
+      Declare   CreatePopupBar( _flags_ = 0 )
+      Declare   ToolBar( _parent_, _flags_ = 0 )
+      Declare   BarBar( )
+      Declare   BarToolTip( *this, _barbutton_, _text_.s )
+      Declare   DisableBarButton( *this, _barbutton_, _state_ )
+      Declare   DisableBarItem( *this, _baritem_, _state_ )
+      Declare.s GetBarTitleText( *this, _title_.s )
+      Declare   SetBarTitleText( *this, _title_.s, _text_.s )
+      Declare   SetBarItemText( *this, _baritem_, _text_.s )
+      Declare.s GetBarItemText( *this, _baritem_ )
+      Declare   SetBarItemState( *this, _baritem_, _state_ )
+      Declare   GetBarItemState( *this, _baritem_ )
+      Declare   BindBarEvent( *this, _baritem_, *callback )
+      Declare   UnbindBarEvent( *this, _baritem_, *callback )
+
       Declare.i VBar( *this )
       Declare.i HBar( *this )
       
@@ -13345,7 +13305,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure HidePopupBar( *this._s_WIDGET )
+      Procedure   HidePopupBar( *this._s_WIDGET )
          If *this\popupbar  
             If *this\popupbar\TabFocused( )
                *this\popupbar\TabFocused( )\_focus = 0
@@ -13661,6 +13621,91 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
+      ;-
+      Procedure   CreateMenuBar( _parent_, _flags_ = 0 )
+         ProcedureReturn CreateBar( #__type_MenuBar, _parent_, #__flag_BarSmall|#__flag_BarText | _flags_ )
+      EndProcedure
+      
+      Procedure   CreatePopupBar( _flags_ = 0 )
+         ProcedureReturn CreateBar( #__type_PopupBar, root( ), _flags_ )
+      EndProcedure
+      
+      Procedure   ToolBar( _parent_, _flags_ = 0 )
+         ProcedureReturn CreateBar( #__type_ToolBar, _parent_, _flags_ )
+      EndProcedure
+      
+      Procedure   BarBar( )
+         ProcedureReturn BarSeparator( )
+      EndProcedure
+      
+      Procedure   BarToolTip( *this._s_WIDGET, _barbutton_, _text_.s )
+         ProcedureReturn 
+      EndProcedure
+      
+      Procedure.s GetBarTitleText( *this._s_WIDGET, _title_.s )
+         ProcedureReturn 
+      EndProcedure
+      
+      Procedure   SetBarTitleText( *this._s_WIDGET, _title_.s, _text_.s )
+         ProcedureReturn 
+      EndProcedure
+      
+      Procedure   DisableBarButton( *this._s_WIDGET, _barbutton_, _state_ )
+         ForEach *this\__tabs( )
+            If *this\__tabs( )\tindex = _barbutton_
+               ProcedureReturn DisableItem( *this, ListIndex(*this\__tabs( )), _state_ )
+            EndIf
+         Next
+      EndProcedure
+      
+      Procedure   DisableBarItem( *this._s_WIDGET, _baritem_, _state_ )
+         ForEach *this\__tabs( )
+            If *this\__tabs( )\tindex = _baritem_
+               ProcedureReturn DisableItem( *this, ListIndex(*this\__tabs( )), _state_ )
+            EndIf
+         Next
+      EndProcedure
+      
+      Procedure.s GetBarItemText( *this._s_WIDGET, _baritem_ )
+         ForEach *this\__tabs( )
+            If *this\__tabs( )\tindex = _baritem_
+               ProcedureReturn GetItemText( *this, ListIndex(*this\__tabs( )) )
+            EndIf
+         Next
+      EndProcedure
+      
+      Procedure   SetBarItemText( *this._s_WIDGET, _baritem_, _text_.s )
+         ForEach *this\__tabs( )
+            If *this\__tabs( )\tindex = _baritem_
+               ProcedureReturn SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
+            EndIf
+         Next
+      EndProcedure
+      
+      Procedure   SetBarItemState( *this._s_WIDGET, _baritem_, _state_ )
+         ForEach *this\__tabs( )
+            If *this\__tabs( )\tindex = _baritem_
+               ProcedureReturn SetItemState( *this, ListIndex(*this\__tabs( )), _state_ )
+            EndIf
+         Next
+      EndProcedure
+      
+      Procedure   GetBarItemState( *this._s_WIDGET, _baritem_ )
+         ForEach *this\__tabs( )
+            If *this\__tabs( )\tindex = _baritem_
+               ProcedureReturn GetItemState( *this, ListIndex(*this\__tabs( )) )
+            EndIf
+         Next
+      EndProcedure
+      
+      Procedure   BindBarEvent( *this._s_WIDGET, _baritem_, *callback )
+         ProcedureReturn Bind( *this, *callback, -1, _baritem_ )
+      EndProcedure
+      
+      Procedure   UnbindBarEvent( *this._s_WIDGET, _baritem_, *callback )
+         ProcedureReturn Unbind( *this, *callback, -1, _baritem_ )
+      EndProcedure
+
       ;-
       Procedure.i VBar( *this._s_WIDGET )
          If *this\scroll
@@ -26009,9 +26054,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 17180
-; FirstLine = 17162
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vvv-88-----------0-+47u70--v---r-e-----+-----+-------+4------------------------------------------------------------------------------------------------------------4-----
+; CursorPosition = 13307
+; FirstLine = 714
+; Folding = ACAg-B+-----------HA9------DA+-DAAAAAAEHAAAIAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAQIAAAAAAAAVVFAAAAAAAAAAAA5-HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg-B9PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5-----fAwr4HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
