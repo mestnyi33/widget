@@ -1,5 +1,5 @@
-﻿#IDE_path = "../../../"
-XIncludeFile #IDE_path + "widgets.pbi"
+﻿#IDE_path = "../"
+XIncludeFile #IDE_path + "../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   EnableExplicit
@@ -297,12 +297,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   
   DataSection   
-    IncludePath #IDE_path + "ide/include/images"
+    IncludePath #IDE_path + "../../ide/include/images"
     
-    widget_delete:    : IncludeBinary "delete.png"
-    widget_paste:     : IncludeBinary "paste.png"
-    widget_copy:      : IncludeBinary "copy.png"
-    widget_cut:       : IncludeBinary "cut.png"
+    widget_delete:    : IncludeBinary "16/delete.png"
+    widget_paste:     : IncludeBinary "16/paste.png"
+    widget_copy:      : IncludeBinary "16/copy.png"
+    widget_cut:       : IncludeBinary "16/cut.png"
     
     group:            : IncludeBinary "group/group.png"
     group_un:         : IncludeBinary "group/group_un.png"
@@ -322,7 +322,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 301
+; CursorPosition = 302
 ; FirstLine = 285
 ; Folding = --
 ; EnableXP

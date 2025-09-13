@@ -155,11 +155,11 @@ CompilerIf #PB_Compiler_IsMainFile
       If *toolbar
          SetColor( *toolbar, #PB_Gadget_BackColor, $FFDFDFDF )
          BarSeparator( )
-         BarButton(#tb_New, -1, #PB_ToolBar_Normal, "")
+         BarButton(#tb_New, -1, #PB_ToolBar_Normal, "" )
          BarSeparator( )
-         BarButton(#tb_Open, -1, #PB_ToolBar_Normal, "")
+         BarButton(#tb_Open, -1, #PB_ToolBar_Normal, "" )
          BarSeparator( )
-         BarButton(#tb_Save, -1, #PB_ToolBar_Normal, "")
+         BarButton(#tb_Save, -1, #PB_ToolBar_Normal, "" )
          BarSeparator( )
       EndIf
       
@@ -181,8 +181,8 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 172
-; FirstLine = 145
+; CursorPosition = 162
+; FirstLine = 138
 ; Folding = ---
 ; EnableXP
 ; DPIAware
