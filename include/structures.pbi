@@ -346,14 +346,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          click.a                 ; mouse clicked count
          buttons.a               ; mouse clicked button
          press.b                 ; mouse buttons state
+         press_x.l
+         press_y.l
          
          anchors._s_TRANSFORM    ; a_anchors( )
          *selector._s_SELECTOR   ; mouse select frame
          
          wheeldata.w
          wheeldirection.b
-         
-         *delta._s_POINT         ; 
          
          *button._s_BUTTONS[3]   ;
          *widget._s_WIDGET[3]    ;
@@ -796,8 +796,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 191
-; FirstLine = 149
+; CursorPosition = 351
+; FirstLine = 313
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP

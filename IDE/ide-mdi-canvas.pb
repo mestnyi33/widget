@@ -161,7 +161,7 @@ Declare.s Properties_GetItemText( *splitter, item )
 Declare   Properties_Updates( *object, type$ )
 Declare   new_widget_create( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
 Declare   widget_add( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
-Declare   ide_addline( *new )
+Declare   new_widget_line_add( *new )
 Declare   MakeID( class$, *rootParent )
 ;
 Declare.s Generate_Code( *parent )
@@ -300,7 +300,7 @@ Procedure   is_parent_item( *this._s_WIDGET, item )
 EndProcedure
 
 ;-
-Procedure ide_addline( *new._s_widget )
+Procedure new_widget_line_add( *new._s_widget )
    Protected *parent._s_widget, Param1, Param2, Param3, newClass.s = GetClass( *new )
    
    If ide_inspector_view
@@ -1569,7 +1569,7 @@ Procedure widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Hei
             AddItem( *new, -1, type$+"_item_0" )
          EndIf
          
-         ide_addline( *new )
+         new_widget_line_add( *new )
       EndIf
       ; CloseList( )
    EndIf
@@ -1894,7 +1894,7 @@ Procedure widget_events( )
    If  __event = #__event_LeftUp
       If IsContainer(*g)
          If GetState( ide_inspector_elements) > 0
-            widget_add( *g, GetText( ide_inspector_elements ), GetMouseX( ) - X(*g, #__c_inner), GetMouseY( ) - Y(*g, #__c_inner))
+            widget_add( *g, GetText( ide_inspector_elements ), GetMouseX( *g ), GetMouseY( *g ))
          EndIf
       EndIf
       
@@ -2492,12 +2492,12 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    AddItem( ide_design_PANEL, -1, "Form" )
    
    ;Define ide_root2 = Open(ide_window, 0, 0, 0, 0,"",0, 0, CanvasGadget(-1, 0,0,0,0))
-   Define ide_root2 = Canvas(ide_window, 0, 0, 0, 0); , #PB_Canvas_Container ) : CloseGadgetList()
+   Define ide_root2 = OpenCanvas(ide_window, 0, 0, 0, 0); , #PB_Canvas_Container ) : CloseGadgetList()
    ide_design_panel_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel_MDI, "ide_design_panel_MDI" ) ;: SetFrame(ide_design_panel_MDI, 10)
    SetColor( ide_design_panel_MDI, #PB_Gadget_BackColor, $FFBF9CC3 )
    a_init( ide_design_panel_MDI);, 0 )
    If ide_root2
-      CloseGadgetList( )
+      CloseCanvas( )
       OpenGadgetList( (ide_g_canvas))
       ;UseGadgetList( GadgetID(ide_g_canvas))
       OpenList(ide_root)
@@ -2923,8 +2923,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2432
-; FirstLine = 2373
+; CursorPosition = 2286
+; FirstLine = 2225
 ; Folding = -------------------------------------------l44t----+-
 ; EnableXP
 ; DPIAware

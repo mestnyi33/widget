@@ -22,6 +22,21 @@ CanvasMouseY
 CanvasMouseButton
 ChangeCurrentCanvas
 
+MouseEnter
+MouseButtons
+MouseButtonPress
+MouseData
+MouseWheelData
+MouseWheelDirection
+MouseMoveX
+MouseMoveY
+GadgetMouseX
+GadgetMouseY
+GetMouseX
+GetMouseY
+
+
+
 PressedButton
 EnteredButton
 
@@ -91,10 +106,7 @@ Bind
 Unbind
 
 IsBar
-IsMenuBar
 CreateBar
-ToolBar
-CreateMenuBar
 CreatePopupBar
 OpenSubBar
 CloseSubBar
@@ -137,19 +149,6 @@ DragDropText
 DragDropImage
 DragDropFiles
 DragDropPrivate
-
-MouseEnter
-MouseButtons
-MouseButtonPress
-MouseData
-MouseWheelData
-MouseWheelDirection
-GadgetMouseX
-GadgetMouseY
-GetMouseX
-GetMouseY
-GetMouseDeltaX
-GetMouseDeltaY
 
 SetCursor
 GetCursor

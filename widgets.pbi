@@ -852,12 +852,14 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro MouseWheelData( ): mouse( )\wheeldata: EndMacro              ; Returns mouse wheel
       Macro MouseWheelDirection( ): mouse( )\wheeldirection: EndMacro    ; Returns mouse direction
       Macro MouseData( ): mouse( )\data: EndMacro                        ; Returns mouse data
-                                                                         ;-
-      Macro GetMouseX( ): DPIUnScaledX( mouse( )\x ): EndMacro           ; Returns mouse x
-      Macro GetMouseY( ): DPIUnScaledY( mouse( )\y ): EndMacro           ; Returns mouse y
-      Macro GetMouseDeltaX( ): DPIUnScaledX( mouse( )\delta\x ): EndMacro; Returns mouse x
-      Macro GetMouseDeltaY( ): DPIUnScaledY( mouse( )\delta\y ): EndMacro; Returns mouse y
-                                                                         ;-
+      Macro MouseMoveX( ): DPIUnscaledX( mouse( )\x - mouse( )\press_x ): EndMacro ; Returns mouse x
+      Macro MouseMoveY( ): DPIUnscaledY( mouse( )\y - mouse( )\press_y ): EndMacro ; Returns mouse y
+      
+      ;-
+      Macro GetMouseX( _this_ ): DPIUnScaledX( mouse( )\x - _this_\x[#__c_inner] ): EndMacro           ; Returns mouse x
+      Macro GetMouseY( _this_ ): DPIUnScaledY( mouse( )\y - _this_\y[#__c_inner] ): EndMacro           ; Returns mouse y
+      
+      ;-
       Macro CanvasMouseX( ): mouse( )\x: EndMacro                        ; Returns mouse x
       Macro CanvasMouseY( ): mouse( )\x: EndMacro                        ; Returns mouse x
       Macro CanvasMouseButton( ): mouse( )\buttons: EndMacro             ; Returns mouse x
@@ -3443,8 +3445,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                *pressed\anchors\id[a_index( )] And 
                *pressed\AnchorState( ) = #__s_2
                ;
-               mouse_x - mouse( )\delta\x
-               mouse_y - mouse( )\delta\y
+               mouse_x - mouse( )\press_x
+               mouse_y - mouse( )\press_y
                If mouse( )\steps
                   mouse_x + ( *pressed\inner_x( ) % mouse( )\steps ) 
                   mouse_y + ( *pressed\inner_y( ) % mouse( )\steps ) 
@@ -17261,7 +17263,7 @@ chr$ = ","
             EndIf
             
             If Not is_inside_( *this\inner_y( ), *this\inner_height( ), mouse( )\y ) And *this\scroll\v
-               If mouse( )\y < mouse( )\delta\y
+               If mouse( )\y < mouse( )\press_y
                   If Not bar_in_start_( *this\scroll\v\bar )
                      scroll_y = mouse( )\y - ( *this\inner_y( ) )
                      bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos + scroll_y )
@@ -17271,7 +17273,7 @@ chr$ = ","
                   Else
                      ; Debug "scroll v stop top"
                   EndIf
-               ElseIf mouse( )\y > mouse( )\delta\y
+               ElseIf mouse( )\y > mouse( )\press_y
                   If Not bar_in_stop_( *this\scroll\v\bar )
                      scroll_y = 400;mouse( )\y - ( *this\inner_y( ) + *this\inner_height( ) )
                                    ;bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos + scroll_y )
@@ -17315,7 +17317,7 @@ chr$ = ","
             EndIf
             
             If Not is_inside_( *this\inner_x( ), *this\inner_width( ), mouse( )\x ) And *this\scroll\h
-               If mouse( )\x < mouse( )\delta\x
+               If mouse( )\x < mouse( )\press_x
                   If Not bar_in_start_( *this\scroll\h\bar )
                      scroll_x = mouse( )\x - ( *this\inner_x( ) )
                      Debug "timer scroll h top " + scroll_x
@@ -17324,7 +17326,7 @@ chr$ = ","
                   Else
                      ; Debug "scroll h stop top"
                   EndIf
-               ElseIf mouse( )\x > mouse( )\delta\x
+               ElseIf mouse( )\x > mouse( )\press_x
                   If Not bar_in_stop_( *this\scroll\h\bar )
                      scroll_x = mouse( )\x - ( *this\inner_x( ) + *this\inner_height( ) )
                      Debug "timer scroll h bottom " + scroll_x
@@ -17719,7 +17721,7 @@ chr$ = ","
             ;
             If dragged
                If *rowLine = #Null
-                  If mouse( )\y < mouse( )\delta\y + *this\inner_y( ) And mouse( )\y <= *this\inner_y( )
+                  If mouse( )\y < mouse( )\press_y + *this\inner_y( ) And mouse( )\y <= *this\inner_y( )
                      If *this\RowFirstVisible( ) And Not bar_in_start_( *this\scroll\v\bar )
                         ChangeCurrentElement( *this\__lines( ), *this\RowFirstVisible( ))
                         *rowLine = PreviousElement( *this\__lines( ) )
@@ -17730,7 +17732,7 @@ chr$ = ","
                      Else
                         ; *rowLine = *this\RowFirstVisible( )
                      EndIf
-                  ElseIf mouse( )\y > mouse( )\delta\y + *this\inner_y( ) And mouse( )\y > *this\inner_y( ) + *this\inner_height( )
+                  ElseIf mouse( )\y > mouse( )\press_y + *this\inner_y( ) And mouse( )\y > *this\inner_y( ) + *this\inner_height( )
                      If *this\RowLastVisible( ) And Not bar_in_stop_( *this\scroll\v\bar )
                         ChangeCurrentElement( *this\__lines( ), *this\RowLastVisible( ))
                         *rowLine = NextElement( *this\__lines( ) )
@@ -19031,11 +19033,11 @@ chr$ = ","
             If event = #__event_MouseMove
                If *SB\press
                   If *bar\vertical
-                     If bar_ThumbChange( *this, ( mouse( )\y - mouse( )\delta\y ))
+                     If bar_ThumbChange( *this, ( mouse( )\y - mouse( )\press_y ))
                         result = #True
                      EndIf
                   Else
-                     If bar_ThumbChange( *this, ( mouse( )\x - mouse( )\delta\x ))
+                     If bar_ThumbChange( *this, ( mouse( )\x - mouse( )\press_x ))
                         result = #True
                      EndIf
                   EndIf
@@ -19248,7 +19250,7 @@ chr$ = ","
                   
                   If event = #__event_MouseMove
                      If *this\caption\interact And *this\press And Not *this\anchors
-                        Resize( *this, mouse( )\x - mouse( )\delta\x, mouse( )\y - mouse( )\delta\y, #PB_Ignore, #PB_Ignore, 0 )
+                        Resize( *this, mouse( )\x - mouse( )\press_x, mouse( )\y - mouse( )\press_y, #PB_Ignore, #PB_Ignore, 0 )
                      EndIf
                   EndIf
                   
@@ -19711,8 +19713,8 @@ chr$ = ","
                ;
                If mouse( )\x <> mouse_x : event = #__event_MouseMove
                   If Pressed( )
-                     If mouse( )\selector And mouse( )\delta
-                        If mouse( )\delta\x > mouse_x
+                     If mouse( )\selector 
+                        If mouse( )\press_x > mouse_x
                            ; to left
                            mouse( )\selector\x    = mouse_x
                            If mouse( )\steps > 0
@@ -19720,10 +19722,10 @@ chr$ = ","
                               mouse( )\selector\x = ( mouse( )\selector\x / mouse( )\steps ) * mouse( )\steps
                               mouse( )\selector\x + ( Pressed( )\inner_x( ) % mouse( )\steps )
                            EndIf
-                           mouse( )\selector\width = ( mouse( )\delta\x - mouse( )\selector\x )
+                           mouse( )\selector\width = ( mouse( )\press_x - mouse( )\selector\x )
                         Else
                            ; to right
-                           mouse( )\selector\x = mouse( )\delta\x
+                           mouse( )\selector\x = mouse( )\press_x
                            mouse( )\selector\width = ( mouse_x - mouse( )\selector\x )
                            If mouse( )\steps > 0
                               mouse( )\selector\width + ( mouse( )\selector\width % mouse( )\steps )
@@ -19749,8 +19751,8 @@ chr$ = ","
                ;
                If mouse( )\y <> mouse_y : event = #__event_MouseMove
                   If Pressed( )
-                     If mouse( )\selector And mouse( )\delta
-                        If mouse( )\delta\y > mouse_y
+                     If mouse( )\selector 
+                        If mouse( )\press_y > mouse_y
                            ; to top
                            mouse( )\selector\y    = mouse_y 
                            If mouse( )\steps > 0
@@ -19758,10 +19760,10 @@ chr$ = ","
                               mouse( )\selector\y = ( mouse( )\selector\y / mouse( )\steps ) * mouse( )\steps
                               mouse( )\selector\y + ( Pressed( )\inner_y( ) % mouse( )\steps ) 
                            EndIf
-                           mouse( )\selector\height = ( mouse( )\delta\y - mouse( )\selector\y )
+                           mouse( )\selector\height = ( mouse( )\press_y - mouse( )\selector\y )
                         Else
                            ; to bottom
-                           mouse( )\selector\y = mouse( )\delta\y
+                           mouse( )\selector\y = mouse( )\press_y
                            mouse( )\selector\height = ( mouse_y - mouse( )\selector\y )
                            If mouse( )\steps > 0
                               mouse( )\selector\height + ( mouse( )\selector\height % mouse( )\steps )
@@ -20095,9 +20097,9 @@ chr$ = ","
             event = #__event_MiddleDown Or
             event = #__event_RightDown
             ;
-            mouse( )\delta.allocate( POINT )
-            mouse( )\delta\x = mouse( )\x
-            mouse( )\delta\y = mouse( )\y
+            ;mouse( )\delta.allocate( POINT )
+            mouse( )\press_x = mouse( )\x
+            mouse( )\press_y = mouse( )\y
             ; 
             If Entered( )
                Pressed( )       = Entered( )
@@ -20122,13 +20124,13 @@ chr$ = ","
                      ;
                      If Not Entered( )\autosize 
                         If mouse( )\steps
-                           mouse( )\delta\x + ( mouse( )\delta\x % mouse( )\steps )
-                           mouse( )\delta\x = ( mouse( )\delta\x / mouse( )\steps ) * mouse( )\steps
-                           mouse( )\delta\y + ( mouse( )\delta\y % mouse( )\steps )
-                           mouse( )\delta\y = ( mouse( )\delta\y / mouse( )\steps ) * mouse( )\steps
+                           mouse( )\press_x + ( mouse( )\press_x % mouse( )\steps )
+                           mouse( )\press_x = ( mouse( )\press_x / mouse( )\steps ) * mouse( )\steps
+                           mouse( )\press_y + ( mouse( )\press_y % mouse( )\steps )
+                           mouse( )\press_y = ( mouse( )\press_y / mouse( )\steps ) * mouse( )\steps
                            
-                           mouse( )\delta\x + ( Entered( )\inner_x( ) % mouse( )\steps ) 
-                           mouse( )\delta\y + ( Entered( )\inner_y( ) % mouse( )\steps ) 
+                           mouse( )\press_x + ( Entered( )\inner_x( ) % mouse( )\steps ) 
+                           mouse( )\press_y + ( Entered( )\inner_y( ) % mouse( )\steps ) 
                         EndIf
                      EndIf
                   EndIf
@@ -20136,15 +20138,15 @@ chr$ = ","
                   If EnteredButton( ) > 0
                      If Not Entered( )\anchors 
                         If Entered( )\bar 
-                           mouse( )\delta\x - Entered( )\bar\thumb\pos
-                           mouse( )\delta\y - Entered( )\bar\thumb\pos
+                           mouse( )\press_x - Entered( )\bar\thumb\pos
+                           mouse( )\press_y - Entered( )\bar\thumb\pos
                         EndIf
                      EndIf
                      
                   ElseIf Entered( )\autosize 
                      If Entered( )\parent
-                        mouse( )\delta\x - Entered( )\parent\container_x( )
-                        mouse( )\delta\y - Entered( )\parent\container_y( )
+                        mouse( )\press_x - Entered( )\parent\container_x( )
+                        mouse( )\press_y - Entered( )\parent\container_y( )
                      EndIf
                      
                   ElseIf a_index( )
@@ -20157,68 +20159,68 @@ chr$ = ","
                         ;\\ set delta pos
                         If Entered( )\parent
                            If Not ( Entered( )\bounds\attach And Entered( )\bounds\attach\mode = 2 )
-                              mouse( )\delta\x + Entered( )\parent\inner_x( )
+                              mouse( )\press_x + Entered( )\parent\inner_x( )
                            EndIf
                            If Not ( Entered( )\bounds\attach And Entered( )\bounds\attach\mode = 1 )
-                              mouse( )\delta\y + Entered( )\parent\inner_y( )
+                              mouse( )\press_y + Entered( )\parent\inner_y( )
                            EndIf
                            
                            ;\\
                            If Not Entered( )\child 
                               Select a_index( )
                                  Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
-                                    mouse( )\delta\x + Entered( )\parent\scroll_x( )
+                                    mouse( )\press_x + Entered( )\parent\scroll_x( )
                               EndSelect
                               
                               Select a_index( )
                                  Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
-                                    mouse( )\delta\y + Entered( )\parent\scroll_y( )
+                                    mouse( )\press_y + Entered( )\parent\scroll_y( )
                               EndSelect
                            EndIf
                         EndIf
                         
                         ;\\
-                        mouse( )\delta\x - Entered( )\anchors\id[a_index( )]\x
-                        mouse( )\delta\y - Entered( )\anchors\id[a_index( )]\y
+                        mouse( )\press_x - Entered( )\anchors\id[a_index( )]\x
+                        mouse( )\press_y - Entered( )\anchors\id[a_index( )]\y
                         
                         ;\\ window flag - sizeGadgets
                         If a_index( ) = #__a_moved
-                           mouse( )\delta\x + ( Entered( )\anchors\id[a_index( )]\x - Entered( )\screen_x( ))
-                           mouse( )\delta\y + ( Entered( )\anchors\id[a_index( )]\y - Entered( )\screen_y( ) )
+                           mouse( )\press_x + ( Entered( )\anchors\id[a_index( )]\x - Entered( )\screen_x( ))
+                           mouse( )\press_y + ( Entered( )\anchors\id[a_index( )]\y - Entered( )\screen_y( ) )
                         EndIf
                         
                         ;\\
                         Select a_index( )
                            Case #__a_left_top, #__a_moved
-                              mouse( )\delta\x - Entered( )\anchors\pos
-                              mouse( )\delta\y - Entered( )\anchors\pos
+                              mouse( )\press_x - Entered( )\anchors\pos
+                              mouse( )\press_y - Entered( )\anchors\pos
                            Case #__a_left
-                              mouse( )\delta\x - Entered( )\anchors\pos
+                              mouse( )\press_x - Entered( )\anchors\pos
                            Case #__a_top
-                              mouse( )\delta\y - Entered( )\anchors\pos
+                              mouse( )\press_y - Entered( )\anchors\pos
                            Case #__a_right, #__a_right_top
-                              mouse( )\delta\x + Entered( )\anchors\pos - Entered( )\anchors\size
-                              mouse( )\delta\y - Entered( )\anchors\pos
+                              mouse( )\press_x + Entered( )\anchors\pos - Entered( )\anchors\size
+                              mouse( )\press_y - Entered( )\anchors\pos
                            Case #__a_bottom, #__a_left_bottom
-                              mouse( )\delta\y + Entered( )\anchors\pos - Entered( )\anchors\size
-                              mouse( )\delta\x - Entered( )\anchors\pos
+                              mouse( )\press_y + Entered( )\anchors\pos - Entered( )\anchors\size
+                              mouse( )\press_x - Entered( )\anchors\pos
                            Case #__a_right_bottom
-                              mouse( )\delta\x + Entered( )\anchors\pos - Entered( )\anchors\size
-                              mouse( )\delta\y + Entered( )\anchors\pos - Entered( )\anchors\size
+                              mouse( )\press_x + Entered( )\anchors\pos - Entered( )\anchors\size
+                              mouse( )\press_y + Entered( )\anchors\pos - Entered( )\anchors\size
                         EndSelect
                         
                         ;\\
                         If Entered( )\type = #__type_window
                            Select a_index( )
                               Case #__a_right, #__a_right_top
-                                 mouse( )\delta\x + Entered( )\fs * 2 + Entered( )\fs[1] + Entered( )\fs[3]
+                                 mouse( )\press_x + Entered( )\fs * 2 + Entered( )\fs[1] + Entered( )\fs[3]
                                  
                               Case #__a_bottom, #__a_left_bottom
-                                 mouse( )\delta\y + Entered( )\fs * 2 + Entered( )\fs[2] + Entered( )\fs[4]
+                                 mouse( )\press_y + Entered( )\fs * 2 + Entered( )\fs[2] + Entered( )\fs[4]
                                  
                               Case #__a_right_bottom
-                                 mouse( )\delta\x + Entered( )\fs * 2 + Entered( )\fs[1] + Entered( )\fs[3]
-                                 mouse( )\delta\y + Entered( )\fs * 2 + Entered( )\fs[2] + Entered( )\fs[4]
+                                 mouse( )\press_x + Entered( )\fs * 2 + Entered( )\fs[1] + Entered( )\fs[3]
+                                 mouse( )\press_y + Entered( )\fs * 2 + Entered( )\fs[2] + Entered( )\fs[4]
                                  
                            EndSelect
                         EndIf
@@ -20226,13 +20228,13 @@ chr$ = ","
                      
                   Else
                      If Not Entered( )\anchors 
-                        mouse( )\delta\x - Entered( )\container_x( )
-                        mouse( )\delta\y - Entered( )\container_y( )
+                        mouse( )\press_x - Entered( )\container_x( )
+                        mouse( )\press_y - Entered( )\container_y( )
                         ;
                         If Entered( )\parent
                            If Not Entered( )\child
-                              mouse( )\delta\x - Entered( )\parent\scroll_x( )
-                              mouse( )\delta\y - Entered( )\parent\scroll_y( )
+                              mouse( )\press_x - Entered( )\parent\scroll_x( )
+                              mouse( )\press_y - Entered( )\parent\scroll_y( )
                            EndIf
                         EndIf
                      EndIf
@@ -20242,8 +20244,8 @@ chr$ = ","
                   ; например (Window;Container;Panel;ScrollArea) а не (Splitter;Frame)
                   If Entered( )\container > 0  And Not a_index( ) And Entered( )\enter = 2
                      mouse( )\selector.allocate( SELECTOR )
-                     mouse( )\selector\x = mouse( )\delta\x 
-                     mouse( )\selector\y = mouse( )\delta\y
+                     mouse( )\selector\x = mouse( )\press_x 
+                     mouse( )\selector\y = mouse( )\press_y
                      mouse( )\selector\width = 0
                      mouse( )\selector\height = 0
                      mouse( )\selector\dotted = 1
@@ -20391,7 +20393,8 @@ chr$ = ","
             EndIf
             
             ;\\ reset mouse states
-            mouse( )\delta = 0
+            mouse( )\press_x = 0
+            mouse( )\press_y = 0
             mouse( )\buttons = 0
             If mouse( )\selector
                If mouse( )\drag
@@ -26045,9 +26048,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 13198
-; FirstLine = 1719
-; Folding = AGAg-B+-----------HA9------DA+-DAAAAAAsDAAAEAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAAPAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAIEAAAAAAAgqqCEAAAAAAAAAAA9-DAAAgTnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw-A+HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBDAI5-AAAAAAAAAAUoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+-----HA970BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5AAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAECAAAAAAAAAAAAAAAAAAADQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAA9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAA+
+; CursorPosition = 864
+; FirstLine = 559
+; Folding = AGAg-B+-----------HA9------DA+-DAAAAAAsPAAAUAAAAAAAAAgCAAAAAAAAAAAAAAAAACAAA5BAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAA-AAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAoUAEAAAAAgqqKEAAAAAAAAAAA9-PAAAgTnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw-D+fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBDAI5-AAAAAAAAAAUoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+-----fA98-HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-GAAAAAAAAFcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAgAAA5HAAAAEgYAAAAAAAAAAgAAAQAGP95DAAAAgH---HBAAAIAAAAAAAAAACAAAAAAECAAAAAAAAAAAAAAAAAAAPQBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAA9DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAA+
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

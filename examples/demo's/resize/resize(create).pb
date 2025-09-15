@@ -20,14 +20,6 @@ CompilerIf #PB_Compiler_IsMainFile
       ; End
    EndProcedure
    
-   Macro MouseMoveX( )
-      DesktopUnscaledX( mouse( )\x - mouse( )\delta\x )
-   EndMacro
-   
-   Macro MouseMoveY( )
-      DesktopUnscaledY( mouse( )\y - mouse( )\delta\y )
-   EndMacro
-   
    Procedure _Events()
       Static DraggedGadget
       
@@ -198,8 +190,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 125
-; FirstLine = 93
-; Folding = f-
+; CursorPosition = 22
+; FirstLine = 29
+; Folding = --
 ; EnableXP
 ; DPIAware

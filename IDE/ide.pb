@@ -1749,7 +1749,7 @@ Procedure new_widget_events( )
    If  __event = #__event_LeftUp
       If IsContainer(*g)
          If GetState( ide_inspector_elements) > 0
-            new_widget_add( *g, GetText( ide_inspector_elements ), GetMouseX( ) - X(*g, #__c_inner), GetMouseY( ) - Y(*g, #__c_inner))
+            new_widget_add( *g, GetText( ide_inspector_elements ), GetMouseX( *g ), GetMouseY( *g ))
          EndIf
       EndIf
       
@@ -3010,8 +3010,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2508
-; FirstLine = 1917
+; CursorPosition = 1751
+; FirstLine = 1602
 ; Folding = ---------f+T-------Pg----------4-n0--rd---v-8--+-----
 ; Optimizer
 ; EnableAsm

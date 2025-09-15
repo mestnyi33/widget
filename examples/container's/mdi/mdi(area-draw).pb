@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_MouseMove
             If DragWidget = *ew
-              Resize( *ew\parent, mouse()\x-mouse()\delta\x, mouse()\y-mouse()\delta\y, #PB_Ignore, #PB_Ignore, 0)
+              Resize( *ew\parent, MouseMoveX( ), MouseMoveY( ), #PB_Ignore, #PB_Ignore);, 0)
             EndIf
             
          Case #__event_Draw
@@ -243,9 +243,9 @@ CompilerIf #PB_Compiler_IsMainFile
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 216
-; FirstLine = 207
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 61
+; FirstLine = 57
 ; Folding = ---
 ; EnableXP
 ; DPIAware

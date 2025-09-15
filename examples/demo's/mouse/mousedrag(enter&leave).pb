@@ -10,14 +10,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure EventsHandler( )
       Static drag, deltax, deltay
-      
       If EventWidget( ) <> root( )
          Select WidgetEvent( )
             Case #__event_down
                deltax = mouse( )\x-EventWidget( )\x
                deltay = mouse( )\y-EventWidget( )\y
-;                deltax = DesktopMouseX( )-EventWidget( )\x
-;                deltay = DesktopMouseY( )-EventWidget( )\y
                SetColor(EventWidget( ), #__FrameColor, $ffff0000)
                
             Case #__event_dragstart
@@ -43,10 +40,9 @@ CompilerIf #PB_Compiler_IsMainFile
                
                
             Case #__event_mousemove
-               If drag
-                  ;Debug " "+eventwidget( ) +" "+ Entered( )+" "+Pressed( )
-                  Resize(drag, DesktopUnscaledX(mouse( )\x-deltax), DesktopUnscaledY(mouse( )\y-deltay), #PB_Ignore, #PB_Ignore)
-               ;   Resize(drag,DesktopMouseX( )-deltax, DesktopMouseY( )-deltay, #PB_Ignore, #PB_Ignore)
+              ; Debug MouseMoveX( )
+               If drag = EventWidget( ) 
+                  Resize(drag, MouseMoveX( ), MouseMoveY( ), #PB_Ignore, #PB_Ignore)
                EndIf
                
             Case #__event_keyup
@@ -115,8 +111,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 111
-; FirstLine = 72
+; CursorPosition = 44
+; FirstLine = 21
 ; Folding = --
 ; EnableXP
 ; DPIAware

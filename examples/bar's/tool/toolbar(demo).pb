@@ -68,12 +68,12 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    If Open( 0, 0, ToolBarHeight( 0 ), 520, 380 )
-      ;If Open( 1, 550, 200, 500, 380, "ToolBar example");, #PB_Window_BorderLess ) ;      a_init(root( ))
-      Window( 10, 10, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget );| #PB_Window_NoActivate )
+      ; If Open( 1, 550, 200, 500, 380, "ToolBar example");, #PB_Window_BorderLess ) ;      a_init(root( ))
+      ; Window( 10, 10, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget );| #PB_Window_NoActivate )
       
-      ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
-      ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
-      ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_Buttons)
+      ; *toolbar = CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
+      ; *toolbar = CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
+      ; *toolbar = CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_Buttons)
       *toolbar = CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text)
       
       If *toolbar
@@ -102,9 +102,9 @@ CompilerIf #PB_Compiler_IsMainFile
       DisableBarButton(*toolbar, 2, 1) ; Disable the button '2'
       Bind( *toolbar, @ToolBarEvents( ) )
       
-      ;SetState(*toolbar, 12 )
-      Button( 10,10, 50,150,"" )
-      ;  Bind( root( ), #PB_Default )
+      ; SetState(*toolbar, 12 )
+      Button( 10,10, 50,150,"DEMO" )
+      ; Bind( root( ), #PB_Default )
    EndIf
    
    
@@ -128,8 +128,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End   ; All resources are automatically freed
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 106
-; FirstLine = 91
+; CursorPosition = 104
+; FirstLine = 85
 ; Folding = --
 ; EnableXP
 ; DPIAware
