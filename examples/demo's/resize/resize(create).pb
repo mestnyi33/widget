@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;a_init( root())
       
 ; ;       ;\\
-;       *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+;       *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
 ;       SetColor( *menu, #pb_gadget_backcolor, $FFF7FEE2 )
 ;       
 ;       BarTitle("Title-1")
@@ -197,9 +197,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 193
-; FirstLine = 130
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 125
+; FirstLine = 93
 ; Folding = f-
 ; EnableXP
 ; DPIAware

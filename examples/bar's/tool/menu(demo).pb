@@ -1,17 +1,17 @@
 ﻿;                                                                     - PB 
-;                                                                     - IsMenu( #Menu )
-;                                                                     - MenuID( #Menu )
+;                                                   IsBar( *address ) - IsMenu( #Menu )
+;                                                   BarID( *address ) - MenuID( #Menu )
 ;                                                 FreeBar( *address ) - FreeMenu( #Menu )
 ;                                                 HideBar( *address ) - HideMenu( #Menu, State )
-;                                           MenuBarHeight( *address ) - MenuHeight( )
+;                                               BarHeight( *address ) - MenuHeight( )
 ; 
 ;                                           CreatePopupBar( [flags] ) - CreatePopupMenu( #Menu )
 ;                                                                       CreatePopupImageMenu( #Menu [, Flags] )
 ;
-;                                  CreateMenuBar( *parent [, flags] ) - CreateMenu( #Menu, WindowID )
+;                                                CreateBar( *parent ) - CreateMenu( #Menu, WindowID )
 ;                                                                       CreateImageMenu( #Menu, WindowID [, Flags] )
 ; 
-;                     DisplayPopupBar( *address, *display [, x, y] )  - DisplayPopupMenu( #Menu, WindowID [, x, y] )
+;                      DisplayPopupBar( *address, *display [, x, y] ) - DisplayPopupMenu( #Menu, WindowID [, x, y] )
 ;
 ;                                                           BarBar( ) - MenuBar( )
 ;                                                  BarTitle( Title$ ) - MenuTitle( Title$ )
@@ -20,14 +20,14 @@
 ;                                                      CloseSubBar( ) - CloseSubMenu( )
 ; 
 ; 
-;                                 GetItemText( *address, TitleIndex ) - GetMenuTitleText( #Menu, Title )
-;                         SetItemText( *address, TitleIndex, text.s ) - SetMenuTitleText( #Menu, Title, Text$ )
+;                             GetBarTitleText( *address, TitleIndex ) - GetMenuTitleText( #Menu, Title )
+;                     SetBarTitleText( *address, TitleIndex, text.s ) - SetMenuTitleText( #Menu, Title, Text$ )
 ;
 ;                          DisableBarItem( *address, BarItem, state ) - DisableMenuItem( #Menu, MenuItem, State )
-;                         SetBarItemState( *address, BarItem, state ) - SetMenuItemState( #Menu, MenuItem, State )
 ;                                GetBarItemState( *address, BarItem ) - GetMenuItemState( #Menu, MenuItem )
-;                         SetBarItemText( *address, BarItem, text.s ) - SetMenuItemText( #Menu, Item, Text$ )
+;                         SetBarItemState( *address, BarItem, state ) - SetMenuItemState( #Menu, MenuItem, State )
 ;                                 GetBarItemText( *address, BarItem ) - GetMenuItemText( #Menu, Item )
+;                         SetBarItemText( *address, BarItem, text.s ) - SetMenuItemText( #Menu, Item, Text$ )
 ;
 ;                      BindBarEvent( *address, BarItem, @callback( )) - BindMenuEvent( #Menu, MenuItem, @Callback( ) )
 ;                    UnbindBarEvent( *address, BarItem, @callback( )) - UnbindMenuEvent( #Menu, MenuItem, @Callback( ) )
@@ -130,7 +130,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Bind(Button( 10, 220, 80, 35, "-777-" ), @HandlerEvents( ), #__event_LeftClick)  : SetClass(widget(), "-777-" )
    
    ;\\
-   *menu = CreateMenuBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
+   *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
    SetColor( *menu, #PB_Gadget_BackColor, $FFF7FEE2 )
    
    BarTitle("Title-1")
@@ -187,8 +187,8 @@ CompilerIf #PB_Compiler_IsMainFile
    String( 10, 100, 80, 35, "String1" )
    String( 10, 140, 80, 35, "String2" )
    
-   *menu = CreateMenuBar( *window ) : SetClass(widget(), "window_MenuBar" )
-   SetColor( *menu, #pb_gadget_backcolor, $FFDFDFDF )
+   *menu = CreateBar( *window ) : SetClass(widget(), "window_MenuBar" )
+   SetColor( *menu, #PB_Gadget_BackColor, $FFDFDFDF )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
@@ -245,9 +245,8 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 190
-; FirstLine = 153
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 10
 ; Folding = --
 ; EnableXP
 ; DPIAware

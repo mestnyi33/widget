@@ -99,11 +99,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Open(0, 300, 0,300,310)
    ; *panel = Panel(10, 10, 300 - 20, 180)
    *panel = Container(10, 10, 300 - 20, 180)
-   ToolBar( widget( ));, #PB_ToolBar_Small )
+   CreateBar( widget( ), #PB_ToolBar_InlineText )
    BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
    BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "open")
    BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"))
-   CloseList() ; *panel
+   CloseList( ) ; *panel
    
    Frame(30, 200, 300 - 60, 100, "Tab location")
    Option(130, GadgetY(1) + 20, 80, 20, "Top", #__flag_Transparent) : SetState(widget(), #True)
@@ -125,9 +125,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ForEver
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 25
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 105
+; FirstLine = 88
 ; Folding = --
 ; EnableXP
 ; DPIAware

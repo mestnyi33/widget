@@ -34,11 +34,11 @@ CompilerIf #PB_Compiler_IsMainFile
   EndEnumeration
   
   If Open(0, 0, 0, 430, 440, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    SetColor( widget( ), #pb_gadget_backcolor, $FF95E3F6 )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     
     Container( 100,100,200,100, #__flag_border_Flat ) ; #__flag_border_Single ; #__flag_border_Double
     
-    ToolBar( widget( ) );, #PB_ToolBar_Small )
+    CreateBar( widget( ) );, #PB_ToolBar_Small )
     BarButton( #_tb_file_open, -1, 0, "Open" )
     BarButton( #_tb_file_save, -1, 0, "Save" )
     BarSeparator( )
@@ -76,13 +76,13 @@ CompilerEndIf
 DataSection   
   IncludePath #IDE_path + "ide/include/images"
   
-  file_open:        : IncludeBinary "delete1.png"
-  file_save:        : IncludeBinary "paste.png"
+  file_open:        : IncludeBinary "16/delete.png"
+  file_save:        : IncludeBinary "16/paste.png"
   
-  widget_delete:    : IncludeBinary "delete1.png"
-  widget_paste:     : IncludeBinary "paste.png"
-  widget_copy:      : IncludeBinary "copy.png"
-  widget_cut:       : IncludeBinary "cut.png"
+  widget_delete:    : IncludeBinary "16/delete.png"
+  widget_paste:     : IncludeBinary "16/paste.png"
+  widget_copy:      : IncludeBinary "16/copy.png"
+  widget_cut:       : IncludeBinary "16/cut.png"
   
   group:            : IncludeBinary "group/group.png"
   group_un:         : IncludeBinary "group/group_un.png"
@@ -93,8 +93,8 @@ DataSection
   group_width:      : IncludeBinary "group/group_width.png"
   group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 32
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 81
+; FirstLine = 56
 ; Folding = -
 ; EnableXP

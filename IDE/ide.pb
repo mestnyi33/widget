@@ -2506,7 +2506,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;    Debug "create canvas - "+GadgetID(ide_g_canvas)
    
    ide_toolbar_container = Container( 0,0,0,0, #__flag_border_Flat ) 
-   ide_toolbar = ToolBar( ide_toolbar_container, #PB_ToolBar_Small );|#PB_ToolBar_Large|#PB_ToolBar_Buttons);| #PB_ToolBar_InlineText )
+   ide_toolbar = CreateBar( ide_toolbar_container, #PB_ToolBar_Small );|#PB_ToolBar_Large|#PB_ToolBar_Buttons);| #PB_ToolBar_InlineText )
    SetColor(ide_toolbar, #PB_Gadget_BackColor, $fffefefe )
    
    OpenSubBar("Menu")
@@ -3010,8 +3010,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2538
-; FirstLine = 1931
+; CursorPosition = 2508
+; FirstLine = 1917
 ; Folding = ---------f+T-------Pg----------4-n0--rd---v-8--+-----
 ; Optimizer
 ; EnableAsm

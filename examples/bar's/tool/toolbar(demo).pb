@@ -1,11 +1,11 @@
 ﻿;                                                       - PB
-;                                                       - ToolBarID( #ToolBar )
-;                                                       - IsToolBar( #ToolBar )
+;                                      BarID(*address ) - ToolBarID( #ToolBar )
+;                                      IsBar(*address ) - IsToolBar( #ToolBar )
 ;
-;                                      Free( *address ) - FreeToolBar( #ToolBar )
-;                                    Height( *address ) - ToolBarHeight( #ToolBar )
+;                                   FreeBar( *address ) - FreeToolBar( #ToolBar )
+;                                 BarHeight( *address ) - ToolBarHeight( #ToolBar )
 ;
-;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
+;                        CreateBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
 ;                            BarSeparator( [*address] ) - ToolBarSeparator( )
 ;             DisableBarButton( *address, item, state ) - DisableToolBarButton( #ToolBar, Button, State )
 ;                   GetBarButtonState( *address, item ) - GetToolBarButtonState( #ToolBar, Button )
@@ -15,7 +15,7 @@
 ;               BarButton( button, icon, mode, text.s ) - ToolBarStandardButton( #Button, #ButtonIcon [, Mode [, Text$]] )
 ;                BarToolTip( *address, button, text.s ) - ToolBarToolTip( #ToolBar, Button, Text$ )
 
-; IconBar
+;\\
 XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -68,16 +68,16 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    If Open( 0, 0, ToolBarHeight( 0 ), 520, 380 )
-   ;If Open( 1, 550, 200, 500, 380, "ToolBar example");, #PB_Window_BorderLess ) ;      a_init(root( ))
+      ;If Open( 1, 550, 200, 500, 380, "ToolBar example");, #PB_Window_BorderLess ) ;      a_init(root( ))
       Window( 10, 10, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget );| #PB_Window_NoActivate )
       
-      ;*toolbar = ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
-      ;*toolbar = ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
-      ;*toolbar = ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_Buttons)
-      *toolbar = ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text)
+      ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
+      ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
+      ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_Buttons)
+      *toolbar = CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text)
       
       If *toolbar
-         SetColor( *toolbar, #pb_gadget_backcolor, $FFDFDFDF )
+         SetColor( *toolbar, #PB_Gadget_BackColor, $FFDFDFDF )
          BarButton(10, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New") ;: Debug widget( )\class
          BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
          BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
@@ -102,9 +102,9 @@ CompilerIf #PB_Compiler_IsMainFile
       DisableBarButton(*toolbar, 2, 1) ; Disable the button '2'
       Bind( *toolbar, @ToolBarEvents( ) )
       
-          ;SetState(*toolbar, 12 )
-            Button( 10,10, 50,150,"" )
-           ;  Bind( root( ), #PB_Default )
+      ;SetState(*toolbar, 12 )
+      Button( 10,10, 50,150,"" )
+      ;  Bind( root( ), #PB_Default )
    EndIf
    
    
@@ -127,9 +127,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    End   ; All resources are automatically freed
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 75
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 106
+; FirstLine = 91
 ; Folding = --
 ; EnableXP
 ; DPIAware

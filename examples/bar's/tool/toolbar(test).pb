@@ -2,7 +2,7 @@
 ;                               BarSeparator( [*address] ) - ToolBarBarSeparator( )
 ;                                                         ToolBarID( #ToolBar )
 ;                                                         IsToolBar( #ToolBar )
-;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
+;                          CreateBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
 ;                  DisableItem( *address, item, state ) - DisableBarButton( #ToolBar, Button, State )
 ;                                      Free( *address ) - FreeToolBar( #ToolBar )
 ;                        GetItemState( *address, item ) - GetBarButtonState( #ToolBar, Button )
@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
 ;    Procedure _ToolBar( *parent._s_WIDGET, flag.i = #PB_ToolBar_Small )
-;     ;  ProcedureReturn ToolBar( *parent, flag )
+;     ;  ProcedureReturn CreateBar( *parent, flag )
 ; ;     *parent\ToolBarHeight = 32;+2 + 6
 ; ;                               ;  *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, 0,0,0, #Null$, flag | #__flag_child, 0,0,30 )
 ; ;     *parent\tab\widget = Create( *parent, *parent\class+"_"+#PB_Compiler_Procedure, #__type_ToolBar, 0,0,0,0, #Null$, flag | #__flag_child, 0,0,0, 0,0,30 )
@@ -78,7 +78,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open( 1, 300, 200, 300, 380, "ToolBar example", #PB_Window_SizeGadget )
      a_init(root( ))
-    *toolbar = ToolBar( root( ) )
+    *toolbar = CreateBar( root( ) )
     
     If *toolbar
       BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
@@ -130,8 +130,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   End   ; All resources are automatically freed
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 52
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 4
 ; Folding = --
 ; EnableXP

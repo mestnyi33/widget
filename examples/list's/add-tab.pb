@@ -214,7 +214,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             
             ;If Text
-            *row\text\TextChange( ) = 1
+            *row\TextChange( ) = 1
             *row\text\string   = Text ; StringField( Text.s, ListIndex( *this\columns( )) + 1, #LF$);Chr(9) )
                                       ;*row\text\edit\string = StringField( Text.s, 2, #LF$ )
                                       ;EndIf
@@ -234,9 +234,9 @@ CompilerIf #PB_Compiler_IsMainFile
                   *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
                EndIf
                
-               If *this\ScrollState( ) = #True
-                  *this\ScrollState( ) = - 1
-               EndIf
+;                If *this\ScrollState( ) = #True
+;                   *this\ScrollState( ) = - 1
+;                EndIf
                
                If test_redraw_items
                   PostReDraw( *this\root )
@@ -297,7 +297,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug ""
       
       ; demo widget
-      ;*g = ToolBar(root(), #__flag_vertical ) 
+      ;*g = CreateBar(root(), #__flag_vertical ) 
       *g = Tab(265, 10, 250, 450, #__flag_vertical ) 
       
       AddItem_(*g, 0, "    0_0", -1 )
@@ -342,9 +342,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 152
-; FirstLine = 139
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 238
+; FirstLine = 214
 ; Folding = -------
 ; EnableXP
 ; DPIAware

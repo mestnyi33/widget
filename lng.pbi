@@ -147,7 +147,7 @@ CompilerIf #PB_Compiler_IsMainFile
       BUTTON_FRENCH = Button( 259, 126, 120, 43, "french" )
       
       
-      *ToolBar = ToolBar( WINDOW_DEMO, #PB_ToolBar_Small|#PB_ToolBar_Text)
+      *ToolBar = CreateBar( WINDOW_DEMO, #PB_ToolBar_Small|#PB_ToolBar_Text)
       ResizeWindow(GetCanvasWindow(GetRoot(*ToolBar) ), #PB_Ignore, #PB_Ignore, #PB_Ignore, 176+25)
       ResizeGadget(GetCanvasGadget(GetRoot(*ToolBar) ), #PB_Ignore, #PB_Ignore, #PB_Ignore, 176+25)
       ;Resize(GetRoot(*ToolBar) , #PB_Ignore, #PB_Ignore, #PB_Ignore, 386+40)
@@ -167,7 +167,7 @@ CompilerIf #PB_Compiler_IsMainFile
       DisableBarButton( *toolbar, #tb_Open, #True ) 
       ; SetBarItemText( *toolbar, #tb_Save, "Save as ..." )
       
-      ChangeLng( #RUS )
+      ChangeLng( #ENG ); #RUS )
       
       Bind( *toolbar, @WINDOW_DEMO_ToolBarEvents( ) )
       Bind( #PB_All, @WINDOW_DEMO_Events( ), #__event_LeftClick )
@@ -181,8 +181,8 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 162
-; FirstLine = 138
+; CursorPosition = 147
+; FirstLine = 141
 ; Folding = ---
 ; EnableXP
 ; DPIAware

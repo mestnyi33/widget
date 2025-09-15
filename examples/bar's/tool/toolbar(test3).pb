@@ -2,7 +2,7 @@
 ;                               BarSeparator( [*address] ) - ToolBarSeparator( )
 ;                                                         ToolBarID( #ToolBar )
 ;                                                         IsToolBar( #ToolBar )
-;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
+;                          CreateBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
 ;                  DisableItem( *address, item, state ) - DisableBarButton( #ToolBar, Button, State )
 ;                                      Free( *address ) - FreeToolBar( #ToolBar )
 ;                        GetItemState( *address, item ) - GetBarButtonState( #ToolBar, Button )
@@ -88,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected BarButton = WidgetEventItem( ) ; GetData( *e_widget ) 
       
       If *e_widget\TabEntered( )
-         Debug "click " + BarButton +" "+ *e_widget\TabEntered( )\itemindex
+         Debug "click " + BarButton +" "+ *e_widget\TabEntered( )\index
       EndIf
    EndProcedure
    
@@ -124,7 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile
          
       EndIf
       
-      ;DisableBarButton(0, 2, 1) ; Disable the button '2'
+      ;DisableToolBarButton(0, 2, 1) ; Disable the button '2'
       
       
       Define w_ide_toolbar, w_ide_toolbar_container                          ;= Window( 10, 10, 195, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
@@ -138,7 +138,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Button( 10,10, 50,50,"btn0" ) : SetClass(widget( ), "btn0" )
       
-      w_ide_toolbar = ToolBar( w_ide_toolbar_container, #PB_ToolBar_Small)
+      w_ide_toolbar = CreateBar( w_ide_toolbar_container, #PB_ToolBar_Small)
       BarButton( #_tb_file_open, -1, 0, "Open" )
       BarButton( #_tb_file_save, -1, 0, "Save" )
       BarSeparator( )
@@ -203,13 +203,13 @@ End   ; All resources are automatically freed
 DataSection   
    IncludePath #IDE_path + "ide/include/images"
    
-   file_open:        : IncludeBinary "delete1.png"
-   file_save:        : IncludeBinary "paste.png"
+   file_open:        : IncludeBinary "16/delete.png"
+   file_save:        : IncludeBinary "16/paste.png"
    
-   widget_delete:    : IncludeBinary "delete1.png"
-   widget_paste:     : IncludeBinary "paste.png"
-   widget_copy:      : IncludeBinary "copy.png"
-   widget_cut:       : IncludeBinary "cut.png"
+   widget_delete:    : IncludeBinary "16/delete.png"
+   widget_paste:     : IncludeBinary "16/paste.png"
+   widget_copy:      : IncludeBinary "16/copy.png"
+   widget_cut:       : IncludeBinary "16/cut.png"
    
    group:            : IncludeBinary "group/group.png"
    group_un:         : IncludeBinary "group/group_un.png"
@@ -221,8 +221,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 140
-; FirstLine = 112
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 126
+; FirstLine = 74
 ; Folding = --
 ; EnableXP

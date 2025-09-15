@@ -32,19 +32,19 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 0,0,0,0, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ) )
+    CreateBar( widget( ), #PB_ToolBar_Small )
     CloseList( )
     Container( 0,0,0,0, #PB_Container_Single ) 
-    SetColor( widget( ), #pb_gadget_backcolor, $FF95E3F6 )
-    ToolBar( widget( ) )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
+    CreateBar( widget( ), #PB_ToolBar_Small )
     CloseList( )
     Splitter( 220,230,200,200, ID(3),ID(4) )
     
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 37
-; FirstLine = 7
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 38
+; FirstLine = 6
 ; Folding = -
 ; EnableXP

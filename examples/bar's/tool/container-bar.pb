@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 10,10,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Buttons | #PB_ToolBar_Bottom )
+    CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Buttons | #PB_ToolBar_Bottom )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
     BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 220,10,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_InlineText|#PB_ToolBar_Buttons | #PB_ToolBar_Bottom )
+    CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_InlineText|#PB_ToolBar_Buttons | #PB_ToolBar_Bottom )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
     BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 430,10,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText|#PB_ToolBar_Buttons | #PB_ToolBar_Right )
+    CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText|#PB_ToolBar_Buttons | #PB_ToolBar_Right )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
     BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 640,10,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText | #PB_ToolBar_Left )
+    CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText | #PB_ToolBar_Left )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
     BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
@@ -74,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;\\
     Container( 10,220,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large )
+    CreateBar( widget( ), #PB_ToolBar_Large )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
     BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
@@ -88,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 220,220,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_InlineText )
+    CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_InlineText )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
     BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
@@ -102,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 430,220,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Buttons | #PB_ToolBar_Right )
+    CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Buttons | #PB_ToolBar_Right )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
     BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
@@ -115,8 +115,8 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList( )
     
     Container( 640,220,200,200, #PB_Container_Flat ) 
-    SetColor( widget( ), #pb_gadget_backcolor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large | #PB_ToolBar_Left )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
+    CreateBar( widget( ), #PB_ToolBar_Large | #PB_ToolBar_Left )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #PB_ToolBar_Normal, "New")
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
     BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #PB_ToolBar_Normal, "Save")
@@ -131,9 +131,9 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 80
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 33
+; FirstLine = 29
 ; Folding = -
 ; Optimizer
 ; EnableXP

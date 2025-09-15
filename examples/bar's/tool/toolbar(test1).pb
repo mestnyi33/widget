@@ -5,7 +5,7 @@
 ;                                      Free( *address ) - FreeToolBar( #ToolBar )
 ;                                 BarHeight( *address ) - ToolBarHeight( #ToolBar )
 ;
-;                          ToolBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
+;                          CreateBar( *parent [, flags] ) - CreateToolBar( #ToolBar, WindowID [, Flags] )
 ;                            BarSeparator( [*address] ) - ToolBarSeparator( )
 ;             DisableBarButton( *address, item, state ) - DisableBarButton( #ToolBar, Button, State )
 ;                   GetBarButtonState( *address, item ) - GetBarButtonState( #ToolBar, Button )
@@ -70,10 +70,10 @@ CompilerIf #PB_Compiler_IsMainFile
    ;If Open( 1, 550, 200, 500, 380, "ToolBar example");, #PB_Window_BorderLess ) ;      a_init(root( ))
       Window( 10, 10, 420, 260, "ToolBar example", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_NoActivate )
       
-      ;*toolbar = ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
-      ;*toolbar = ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
-      ;*toolbar = ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_Buttons)
-      *toolbar = ToolBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text)
+      ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
+      ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text|#PB_ToolBar_InlineText)
+      ;*toolbar = CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Text);|#PB_ToolBar_Buttons)
+      *toolbar = CreateBar( widget( ), #PB_ToolBar_Small|#PB_ToolBar_Text)
       
       If *toolbar
          OpenSubBar("Menu")
@@ -161,9 +161,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    End   ; All resources are automatically freed
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 47
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 74
+; FirstLine = 62
 ; Folding = --
 ; EnableXP
 ; DPIAware

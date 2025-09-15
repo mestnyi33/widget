@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 10,10,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Buttons )
+    CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Buttons )
     TabViewType( widget( ), 4 )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 220,10,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText|#PB_ToolBar_Buttons )
+    CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText|#PB_ToolBar_Buttons )
     TabViewType( widget( ), 4 )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 430,10,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText|#PB_ToolBar_Buttons )
+    CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText|#PB_ToolBar_Buttons )
     TabViewType( widget( ), 3 )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 640,10,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText )
+    CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText )
     TabViewType( widget( ), 1 )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;\\
     Container( 10,220,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large )
+    CreateBar( widget( ), #PB_ToolBar_Large )
     TabViewType( widget( ), 2 )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
@@ -97,7 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 220,220,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText )
+    CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_InlineText )
     TabViewType( widget( ), 2 )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
@@ -112,7 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     Container( 430,220,200,200, #PB_Container_Flat ) 
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Buttons )
+    CreateBar( widget( ), #PB_ToolBar_Large|#PB_ToolBar_Buttons )
     TabViewType( widget( ), 3 )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
@@ -126,8 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList( )
     
     Container( 640,220,200,200, #PB_Container_Flat ) 
-    SetColor( widget( ), #pb_gadget_backcolor, $FF95E3F6 )
-    ToolBar( widget( ), #PB_ToolBar_Large )
+    SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
+    CreateBar( widget( ), #PB_ToolBar_Large )
     TabViewType( widget( ), 1 )
     BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
     BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal, "Open")
@@ -143,9 +143,9 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 92
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 129
+; FirstLine = 89
 ; Folding = -
 ; Optimizer
 ; EnableXP
