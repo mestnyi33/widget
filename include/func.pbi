@@ -949,17 +949,20 @@ Procedure.i GetImageHeight( ImageID.i )
   EndProcedure
   
   Procedure DrawTextEx(hDc,X, Y, Text.s, FrontColor, BackColor)
-     Protected chRect.RECT
-     chRect\left = X
-     chRect\top = Y
-     chRect\right = X ;+ VT\CharPixelW
-     chrect\bottom = Y ;+ VT\CharPixelH
-     
-     SetTextColor_(hdc, frontColor)
-     SetBkColor_(hdc, backColor)
-     
-     DrawText_(hDC, Text, Len(Text), @chRect.Rect, #DT_SINGLELINE )
-     
+    CompilerSelect #PB_Compiler_OS
+      CompilerCase #PB_OS_Windows
+        Protected chRect.RECT
+        chRect\left = X
+        chRect\top = Y
+        chRect\right = X ;+ VT\CharPixelW
+        chrect\bottom = Y;+ VT\CharPixelH
+        
+        SetTextColor_(hdc, frontColor)
+        SetBkColor_(hdc, backColor)
+        
+        DrawText_(hDC, Text, Len(Text), @chRect.Rect, #DT_SINGLELINE )
+        
+    CompilerEndSelect
   EndProcedure
 EndModule 
 
@@ -1007,8 +1010,8 @@ CompilerEndIf
 ;     gtk_main_()
 ;   EndIf
 ; EndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 954
-; FirstLine = 837
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 959
+; FirstLine = 834
 ; Folding = --------------4--
 ; EnableXP
