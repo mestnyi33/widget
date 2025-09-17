@@ -111,7 +111,7 @@ CompilerIf #PB_Compiler_IsMainFile
    BarBar( )
    BarItem(7, "exit")
    
-   If is_menu_( *menu )      = creation of the pop-up menu begins...
+   If is_menu_( *menu )      ; creation of the pop-up menu begins...
       BarItem(1, "Open")     ; You can use all commands for creating a menu
       BarItem(2, "Save")     ; just like in a normal menu...
       BarItem(3, "Save as")
@@ -137,7 +137,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
 ; CursorPosition = 113
-; FirstLine = 75
+; FirstLine = 98
 ; Folding = --
 ; EnableXP
 ; DPIAware

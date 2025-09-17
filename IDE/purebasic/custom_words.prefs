@@ -22,6 +22,11 @@ CanvasMouseY
 CanvasMouseButton
 ChangeCurrentCanvas
 
+GetCanvasWindow
+GetCanvasGadget
+GetWindow
+GetRoot
+
 MouseEnter
 MouseButtons
 MouseButtonPress
@@ -35,7 +40,8 @@ GadgetMouseY
 GetMouseX
 GetMouseY
 
-
+mouse
+keyboard
 
 PressedButton
 EnteredButton
@@ -44,6 +50,12 @@ Leaved
 Pressed
 Entered
 Opened
+
+widget
+widgets
+root
+roots
+address
 
 FirstWidget
 LastWidget
@@ -58,19 +70,10 @@ WidgetEventType
 WidgetEventData
 WidgetEventItem
 
-widget
-widgets
-root
-roots
-address
-
-Events
-EventsType
-EventsData
-EventsItem
-
-mouse
-keyboard
+GetEvent
+GetEventType
+GetEventData
+GetEventItem
 
 Draw
 ReDraw
@@ -133,6 +136,8 @@ BarPosition
 HideBar
 HidePopupBar
 DisplayPopupBar
+HBar
+VBar
 
 EnableDrop
 DropX
@@ -155,12 +160,6 @@ GetCursor
 ResetCursor
 ChangeCursor
 DoChangeCursor
-
-SetBackgroundImage
-GetCanvasWindow
-GetCanvasGadget
-GetWindow
-GetRoot
 
 GetLast
 SetPosition
@@ -198,22 +197,11 @@ GetParent
 
 AddColumn
 AddItem
-Button
-ButtonImage
-Calendar
-Canvas
-CheckBox
 ClearItems
-ComboBox
-Container
 CountItems
 CountType
-Date
-Editor
-ExplorerCombo
-ExplorerList
-ExplorerTree
-Frame
+RemoveColumn
+RemoveItem
 
 Is
 ItemID
@@ -228,6 +216,7 @@ X
 Y
 Width
 Height
+Resize
 
 Active
 ActiveBar
@@ -236,9 +225,6 @@ ActiveGadget
 GetActive
 SetActive
 SetForeground
-
-GetAttribute
-GetData
 
 AddFont
 GetFontKey
@@ -256,14 +242,12 @@ SetFontName
 SetFontSize
 SetFontStyle
 
-
 GetColor
 GetFontColor
 GetBackColor
 GetFrameColor
 GetLineColor
 GetForeColor
-
 SetColor
 SetFontColor
 SetBackColor
@@ -271,7 +255,6 @@ SetFrameColor
 SetLineColor
 SetForeColor
 SetBackgroundColor
-
 
 AddImage
 ChangeImage
@@ -283,42 +266,53 @@ SetImage
 RemoveImage
 SetItemImage
 GetItemImage
+SetBackgroundImage
 
+GetAttribute
 GetItemAttribute
 GetItemColor
 GetItemData
 GetItemState
 GetItemText
+GetData
 GetState
 GetText
-HyperLink
-IPAddress
-Image
-ListIcon
-ListView
-MDI
-OpenGL
-Option
-Panel
-Progress
-RemoveColumn
-RemoveItem
-Resize
-ScrollArea
-Scroll
-HBar
-VBar
 
 SetAttribute
-SetData
-
 SetItemAttribute
 SetItemColor
 SetItemData
 SetItemState
 SetItemText
+SetData
 SetState
 SetText
+
+Button
+ButtonImage
+Calendar
+Canvas
+CheckBox
+HyperLink
+IPAddress
+Image
+ListIcon
+ListView
+ComboBox
+Container
+Date
+Editor
+ExplorerCombo
+ExplorerList
+ExplorerTree
+Frame
+MDI
+OpenGL
+Option
+Panel
+Progress
+ScrollArea
+Scroll
 Shortcut
 Spin
 Splitter
@@ -328,5 +322,7 @@ Track
 Tree
 Web
 Tab
+
+
 
 

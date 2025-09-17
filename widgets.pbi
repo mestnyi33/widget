@@ -528,10 +528,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro WidgetEventData( ): widget::__gui\event\data: EndMacro
       Macro WidgetEventItem( ): widget::__gui\event\item: EndMacro
       
-      Macro Events( ): widget::__gui\event\type: EndMacro
-      Macro EventsType( ): PBEventType( WidgetEvent( ) ): EndMacro
-      Macro EventsData( ): widget::__gui\event\data: EndMacro
-      Macro EventsItem( ): widget::__gui\event\item: EndMacro
+      Macro GetEvent( ): widget::__gui\event\type: EndMacro
+      Macro GetEventType( ): PBEventType( WidgetEvent( ) ): EndMacro
+      Macro GetEventData( ): widget::__gui\event\data: EndMacro
+      Macro GetEventItem( ): widget::__gui\event\item: EndMacro
       ;
       Macro WaitEvent( _callback_ = #Null, _eventmask_ = #PB_All )
          If _callback_
@@ -5805,11 +5805,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          If mode
             ;\\ get area size
             If *bar\vertical
-               *bar\AreaChange( ) = *bar\area\len - Height
-               *bar\area\len = Height
+               If Height <> #PB_Ignore
+                  *bar\AreaChange( ) = *bar\area\len - Height
+                  *bar\area\len = Height
+               EndIf
             Else
-               *bar\AreaChange( ) = *bar\area\len - Width
-               *bar\area\len = Width
+               If Width <> #PB_Ignore
+                  *bar\AreaChange( ) = *bar\area\len - Width
+                  *bar\area\len = Width
+               EndIf
             EndIf
             
             If *this\type = #__type_Spin
@@ -5951,12 +5955,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   *bar\area\end = *bar\area\len - *bar\thumb\len - *BB2\size - *bar\min[2] 
+                  ;
                   If *bar\area\end < 0
                      *bar\area\end = 0
                   EndIf
                   If *bar\area\end > *bar\area\len
-                     *bar\area\end = *bar\area\len
+                     If Not ( *this\type = #__type_ToolBar Or 
+                              *this\type = #__type_MenuBar Or 
+                              *this\type = #__type_PopupBar Or 
+                              *this\type = #__type_TabBar )
+                        ;
+                        Debug " ??? "+*bar\area\end +" > "+ *bar\area\len +" "+ *this\class
+                        *bar\area\end = *bar\area\len
+                     EndIf
                   EndIf
+                  
                EndIf
             EndIf
          EndIf
@@ -5978,30 +5991,41 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;                   ; EndIf
                ;                EndIf
                
+                                    
                ;\\ scroll to active tab
                If *this\TabChange( )
-                  If *this\TabFocused( ) And *this\TabFocused( )\_enter = #False
-                     If *this\TabFocused( )\ScrollToActive( - 1 )
-                        *this\TabFocused( )\ScrollToActive( 1 )
-                        ;Debug " tab max - " + *bar\max + " " + " " + *bar\page\pos + " " + *bar\page\end
-                        ScrollPos = *bar\max - *this\TabFocused( )\x
-                        ;ScrollPos - *bar\thumb\end                                    ; to left
-                        ;ScrollPos - *this\TabFocused( )\width                        ; to right
-                        ScrollPos - ( *bar\thumb\end + *this\TabFocused( )\width ) / 2 ; to center
-                        
-                        ScrollPos     = bar_page_pos_( *bar, ScrollPos )
-                        ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
-                        *bar\page\pos = ScrollPos
+                  *bar\page\pos = *bar\max
+;                   If Not *bar\page\pos
+;                      ScrollPos = *bar\max
+;                      ScrollPos     = bar_page_pos_( *bar, ScrollPos )
+;                      ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
+;                      *bar\page\pos = ScrollPos
+;                   EndIf
+                                    ;
+                  If *this\TabFocused( ) 
+                     If *this\TabFocused( )\_enter = #False
+                        If *this\TabFocused( )\ScrollToActive( - 1 )
+                           *this\TabFocused( )\ScrollToActive( 1 )
+                           ;Debug " tab max - " + *bar\max + " " + " " + *bar\page\pos + " " + *bar\page\end
+                           ScrollPos = *bar\max - *this\TabFocused( )\x
+                           ;ScrollPos - *bar\thumb\end                                    ; to left
+                           ;ScrollPos - *this\TabFocused( )\width                         ; to right
+                           ScrollPos - ( *bar\thumb\end + *this\TabFocused( )\width ) / 2 ; to center
+                           
+                           ScrollPos     = bar_page_pos_( *bar, ScrollPos )
+                           ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
+                           *bar\page\pos = ScrollPos
+                        EndIf
                      EndIf
                   EndIf
                Else
                   ; Debug *bar\page\pos
-                  ;                   If Not *bar\page\pos
-                  ;                      ScrollPos = *bar\max
-                  ;                      ScrollPos     = bar_page_pos_( *bar, ScrollPos )
-                  ;                      ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
-                  ;                      *bar\page\pos = ScrollPos
-                  ;                   EndIf
+;                                     If Not *bar\page\pos
+;                                        ScrollPos = *bar\max
+;                                        ScrollPos     = bar_page_pos_( *bar, ScrollPos )
+;                                        ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
+;                                        *bar\page\pos = ScrollPos
+;                                     EndIf
                EndIf
                
             Else
@@ -21085,7 +21109,9 @@ chr$ = ","
             ;\\
             If *this\type = #__type_Panel
                CreateBar( *this, #__flag_BarSmall, #__type_TabBar ) 
-               
+               If constants::BinaryFlag( Flag, #__flag_Vertical ) 
+                  BarPosition(*this\tabbar, 1);, 100 )
+               EndIf
                If constants::BinaryFlag( Flag, #__flag_nobuttons ) 
                   If constants::BinaryFlag( Flag, #__flag_Vertical ) 
                      *this\fs[1] = 0
@@ -26063,9 +26089,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 9130
-; FirstLine = 1486
-; Folding = AGAg-B+-----------HA9------DA+-DAAAAAAsPAAAUAAAAAAAAAgCAAAAAAAAAAAAAAAAAAAAA5BAAAAAAAyAEAMAAAAAAAAiAAAAAAAAAAAA0AAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAAAAAAaAAAAAAGAoUAEAAAAAgqqKEAAAAAAAAAAA9-PAAAgTnAAAAAAAAAAAAAAAAAAAAAAAAAAAA9-IAAEAAAAAAAAAAAIAAAAAAIAEAAHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9-g-HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASwAAC+PAYAAESAAAAFaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg------HA-+-BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwvBAAAAAAAQBHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAwJAAA+BAAAABIGAAAAAAAAAYIAAAEgxDP+AAAAA5x---RAAAACAAAAAAAAAgAAAAAAAhAAAAAAAAAAAAAAAAAAAwDUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAAA-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAg-
+; CursorPosition = 6011
+; FirstLine = 1473
+; Folding = BGAg-B+-----------HA9------DA+-DAAAAAAsPAAAUAAAAAAAAAgCAAAAAAAAAAAAAAAAAAAAA5BAAAAAAAyAEAMAAAAAAAAiAAAAAAAAAAAA0AAAAAAAAAAAAAAAAAAAAA0BBAw-hHAAAAAAAAAAAAAAAAAAAAAAAAAgGAAAAAgBAKHABAAAAAoqqCBAAAAAAAAAAA--DAAA51JAAAAAAAAAAAAAAAAAAAAAAAAAAAA-PCAABAAAAAAAAAAACAAAAAACABAwBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-P5-BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg9Mjgg-DAGAAhEAAAQhGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5------Bwv-fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9bAAAAAAAAUwBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAcCAAgfAAAAQAiBAAAAAAAAAGCAAABY9wjPAAAAAe9--fEAAAgAAAAAAAAAAoAAAAAAQrHCAAAAAAAAAAAAAAAAA5BKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgCAAAAAAgfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAw-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

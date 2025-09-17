@@ -1,12 +1,12 @@
 ﻿
 XIncludeFile "../../../widgets.pbi" 
+EnableExplicit
+UseWidgets( )
 
-CompilerIf #PB_Compiler_IsMainFile
-  EnableExplicit
-  UseWidgets( )
-  
-  If Open(0, 0, 0, 250,240, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    SetColor(root(), #pb_gadget_backcolor, RGBA(244, 245, 233, 255))
+
+CompilerIf #PB_Compiler_IsMainFile = 99
+ If Open(0, 0, 0, 250,240, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    SetColor(root(), #PB_Gadget_BackColor, RGBA(244, 245, 233, 255))
     
     
     Define *g._S_WIDGET = Editor(20,20,200,100);, #__flag_autosize);|#__flag_transparent)
@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 
-CompilerIf #PB_Compiler_IsMainFile = 99
+CompilerIf #PB_Compiler_IsMainFile
   Define vertical = 0
   
   ; Scroll( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
@@ -60,8 +60,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndIf
 CompilerEndIf
 
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8
-; FirstLine = 4
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 25
+; FirstLine = 9
 ; Folding = --
 ; EnableXP

@@ -25,9 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*w1, -1, "tab_1_"+Str(i))
   Next
   
-  *w2 = widget::Splitter(300, 30, 250, 70, *w0, *w1, #PB_Splitter_Separator|#PB_Splitter_Vertical)
-  
-  ; first splitter
+   ; first splitter
   *w3 = widget::Tab(0, 0, 0, 0, #__flag_Vertical)
   For i=0 To 10
     widget::AddItem(*w3, -1, "tab_2_"+Str(i))
@@ -38,20 +36,18 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*w4, -1, "tab_3_"+Str(i))
   Next
   
+  
+  *w2 = widget::Splitter(300, 30, 250, 70, *w0, *w1, #PB_Splitter_Separator|#PB_Splitter_Vertical)
   *w5 = widget::Splitter(30, 110, 250, 70, *w3, *w4, #PB_Splitter_Separator|#PB_Splitter_Vertical)
+  *w6 = widget::Splitter(30, 30, 160, 150, *w2, 0, #PB_Splitter_Separator) : widget::SetState(*w6, 250)
+  *w7 = widget::Splitter(200, 30, 160, 150, *w5, 0, #PB_Splitter_Separator) : widget::SetState(*w7, 250)
   
   
-  *w6 = widget::Splitter(30, 30, 160, 150, *w2, 0, #PB_Splitter_Separator)
-  *w7 = widget::Splitter(200, 30, 160, 150, *w5, 0, #PB_Splitter_Separator)
-  widget::SetState(*w6, 250)
-  widget::SetState(*w7, 250)
-  
-   
   *w8 = widget::Tab(30, 210, 50, 150, #__flag_Vertical)
   For i=0 To 10
     widget::AddItem(*w8, -1, "Tab "+Str(i))
   Next
-  widget::bar_Tab_SetState(*w8, 6)
+  widget::SetState(*w8, 6)
   
   *w9 = widget::Panel(110, 210, 250, 150, #__flag_Vertical)
   For i=0 To 10
@@ -66,16 +62,16 @@ CompilerIf #PB_Compiler_IsMainFile
   ;   widget::SetState(*w3, 250/2)
   ;   widget::SetState(*w4, 10)
   
-  widget::bar_Tab_SetState(*w0, -1)
-  widget::bar_Tab_SetState(*w1, 9)
-  widget::bar_Tab_SetState(*w3, 6)
-  widget::bar_Tab_SetState(*w4, 1)
+  widget::SetState(*w0, -1)
+  widget::SetState(*w1, 9)
+  widget::SetState(*w3, 6)
+  widget::SetState(*w4, 1)
   
   widget::WaitClose( )
   End
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 31
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 38
+; FirstLine = 18
 ; Folding = -
 ; EnableXP

@@ -26,7 +26,6 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*w1, -1, "tab_"+Str(i))
   Next
   
-  
   ; first splitter
   *w3 = widget::Tab(30, 110, 250, 30)
   For i=0 To 10
@@ -38,15 +37,13 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*w4, -1, "tab_"+Str(i))
   Next
   
+  
   *w2 = widget::Splitter(30, 30, 250, 70, *w0, *w1, #PB_Splitter_Separator)
   *w5 = widget::Splitter(30, 110, 250, 70, *w3, *w4, #PB_Splitter_Separator)
-  
   *w6 = widget::Splitter(30, 30, 250, 70, *w2, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical) : widget::SetState(*w6, 250)
   *w7 = widget::Splitter(30, 110, 250, 70, *w5, 0, #PB_Splitter_Separator|#PB_Splitter_Vertical) : widget::SetState(*w7, 250)
   
   
-  
-   
   *w8 = widget::Tab(300, 30, 250, 30)
   For i=0 To 10
     widget::AddItem(*w8, -1, "Tab "+Str(i))
@@ -77,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 14
+; CursorPosition = 27
+; FirstLine = 26
 ; Folding = -
 ; EnableXP

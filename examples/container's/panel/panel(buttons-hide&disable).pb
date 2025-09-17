@@ -9,7 +9,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Global *c, *s
    Global *butt1, *butt2
    Global *butt3, *butt4
-   Global ._s_widget *w,*w1,*w2 ;
+   Global *butt5, *butt6
+   Global._s_widget *w,*w1,*w2 ;
    
    Open(3, 0, 0, 455, 405, "hide/show widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    
@@ -43,6 +44,10 @@ CompilerIf #PB_Compiler_IsMainFile
                DisableItem(*w, 2, 0)
                Disable(*butt3,0)
                Disable(*butt4,1)
+               
+            Case *butt5
+               Debug GetText( *butt5 )
+                SetBarItemText(*w\tabbar, 1, GetText( *butt5 ) )
          EndSelect
       EndProcedure
       
@@ -55,6 +60,8 @@ CompilerIf #PB_Compiler_IsMainFile
       *butt4 = Button(95, 44, 80, 24,"enable item3")
       Bind(*butt3, @events_butt(), #__event_LeftClick)
       Bind(*butt4, @events_butt(), #__event_LeftClick)
+      *butt5 = String(10, 73, 165, 24,"change item2")
+      Bind(*butt5, @events_butt(), #__event_Change)
       
       AddItem (*w, -1,"Панель 3")
       Button(10, 15, 80, 24,"Кнопка 4")
@@ -78,9 +85,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 48
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 47
 ; Folding = -
 ; EnableXP
 ; DPIAware
