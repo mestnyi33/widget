@@ -229,7 +229,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Open(#Window, 0, 0, 650, 650, "TabBar", #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget, #Null, #Gadget_Canvas)
    
    ;Resize( Get( ), 10, 10, 650-20, 30)
-   *g_tab1 = Tab(0, 0, WindowWidth(#Window), #__tab_DefaultHeight, #__flag_autosize)
+   ;;Container(0,0,0,0,#__flag_autosize)
+   *g_tab1 = Tab(0, 0, WindowWidth(#Window), #__tab_DefaultHeight);, #__flag_autosize)
    AddItem(*g_tab1, #PB_Default, "In this")
    AddItem(*g_tab1, #PB_Default, "example")
    AddItem(*g_tab1, #PB_Default, "you can")
@@ -864,8 +865,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       
    ForEver
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 770
-; FirstLine = 741
-; Folding = --------
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 232
+; FirstLine = 224
+; Folding = --vv----
 ; EnableXP

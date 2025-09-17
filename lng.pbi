@@ -146,29 +146,33 @@ CompilerIf #PB_Compiler_IsMainFile
       BUTTON_RUS = Button( 133, 126, 120, 43, "rus" )
       BUTTON_FRENCH = Button( 259, 126, 120, 43, "french" )
       
-      
+      ;
       *ToolBar = CreateBar( WINDOW_DEMO, #PB_ToolBar_Small|#PB_ToolBar_Text)
-      ResizeWindow(GetCanvasWindow(GetRoot(*ToolBar) ), #PB_Ignore, #PB_Ignore, #PB_Ignore, 176+25)
-      ResizeGadget(GetCanvasGadget(GetRoot(*ToolBar) ), #PB_Ignore, #PB_Ignore, #PB_Ignore, 176+25)
-      ;Resize(GetRoot(*ToolBar) , #PB_Ignore, #PB_Ignore, #PB_Ignore, 386+40)
-      
       If *toolbar
          SetColor( *toolbar, #PB_Gadget_BackColor, $FFDFDFDF )
          BarSeparator( )
          BarButton(#tb_New, -1, #PB_ToolBar_Normal, "" )
          BarSeparator( )
-         BarButton(#tb_Open, -1, #PB_ToolBar_Normal, "" )
-         BarSeparator( )
          BarButton(#tb_Save, -1, #PB_ToolBar_Normal, "" )
+         BarSeparator( )
+         BarButton(#tb_Open, -1, #PB_ToolBar_Normal, "" )
          BarSeparator( )
       EndIf
       
-      ; BUG
-      DisableBarButton( *toolbar, #tb_Open, #True ) 
-      ; SetBarItemText( *toolbar, #tb_Save, "Save as ..." )
+      ; FIXME
+      DisableBarButton( *toolbar, #tb_Save, #True ) 
+      ; Bug
+      SetBarItemText( *toolbar, #tb_Save, "Save as ..." )
       
+      ; TODO
+      ResizeWindow(GetCanvasWindow(GetRoot(*ToolBar) ), #PB_Ignore, #PB_Ignore, #PB_Ignore, 176+25)
+      ResizeGadget(GetCanvasGadget(GetRoot(*ToolBar) ), #PB_Ignore, #PB_Ignore, #PB_Ignore, 176+25)
+      ;Resize(GetRoot(*ToolBar) , #PB_Ignore, #PB_Ignore, #PB_Ignore, 386+40)
+      
+      ;
       ChangeLng( #ENG ); #RUS )
       
+      ;
       Bind( *toolbar, @WINDOW_DEMO_ToolBarEvents( ) )
       Bind( #PB_All, @WINDOW_DEMO_Events( ), #__event_LeftClick )
    EndProcedure
@@ -181,8 +185,8 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 147
-; FirstLine = 141
+; CursorPosition = 165
+; FirstLine = 145
 ; Folding = ---
 ; EnableXP
 ; DPIAware

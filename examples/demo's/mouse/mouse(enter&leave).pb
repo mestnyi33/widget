@@ -44,6 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
    a_set(object2, #__a_full, anchor_size)
    a_set(object3, #__a_full, anchor_size)
    
+   ;\\
    DisableExplicit
    Splitter_1 = widget::Splitter(0, 0, 0, 0, Button_2, Button_3, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
    widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
@@ -54,18 +55,19 @@ CompilerIf #PB_Compiler_IsMainFile
    Splitter_3 = widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
    Splitter_4 = widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
    Splitter_5 = widget::Splitter(180, 310, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
+   ;
    SetState(Splitter_5, 50)
    SetState(Splitter_4, 50)
    SetState(Splitter_3, 40)
    SetState(Splitter_1, 50)
-   
+   ;
    SetClass( Splitter_1, "Splitter_1")
    SetClass( Splitter_2, "Splitter_2")
    SetClass( Splitter_3, "Splitter_3")
    SetClass( Splitter_4, "Splitter_4")
    SetClass( Splitter_5, "Splitter_5")
    
-   
+   ;\\
    Bind( #PB_All, @EventsHandler( ), #__event_MouseEnter )
    Bind( #PB_All, @EventsHandler( ), #__event_MouseLeave )
   
@@ -73,7 +75,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2
+; CursorPosition = 56
+; FirstLine = 34
 ; Folding = -
 ; EnableXP
 ; DPIAware

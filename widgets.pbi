@@ -1543,7 +1543,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare a_free( *this )
       Declare a_object( X.l, Y.l, Width.l, Height.l, Text.s, color.i, flag.q = #Null, framesize = 1 )
       
-      Declare.b bar_UpdateItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
+      Declare.b bar_tab_UpdateItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
       Declare.l bar_setAttribute( *this, Attribute.l, *value )
       Declare   bar_mdi_resize( *this, X.l, Y.l, Width.l, Height.l )
       Declare   bar_mdi_update( *this, X.l, Y.l, Width.l, Height.l )
@@ -3774,7 +3774,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       ;-
-      Procedure.b bar_UpdateItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
+      Procedure.b bar_tab_UpdateItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
          With *this
             Protected Index
             Protected pos
@@ -4411,7 +4411,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ; ;                EndIf
                ;
                ;\\
-               bar_UpdateItems( *this, *this\__tabs( ) )
+               bar_tab_UpdateItems( *this, *this\__tabs( ) )
                ;
                X = *SB\x
                Y = *SB\y 
@@ -7175,7 +7175,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure GetItemIndex( *this._s_WIDGET, *row )
+      Procedure bar_tab_GetItemIndex( *this._s_WIDGET, *row )
          PushListPosition( *this\__tabs( ) )
          ForEach *this\__tabs( )
             If *row = *this\__tabs( )
@@ -9098,6 +9098,14 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i GetItemData( *this._s_WIDGET, item.l )
+         If *this\tabbar
+            If SelectElement( *this\tabbar\__tabs( ), item )
+               ProcedureReturn *this\tabbar\__tabs( )\data
+            Else
+               ProcedureReturn #False
+            EndIf
+         EndIf
+         
          If *this\countitems
             If *this\type = #__type_Editor
                If is_no_select_item_( *this\__lines( ), item )
@@ -9116,6 +9124,13 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i SetItemData( *This._s_WIDGET, item.l, *data )
+         If *this\tabbar
+            If SelectElement( *this\tabbar\__tabs( ), item )
+               *this\tabbar\__tabs( )\data = *data
+            EndIf
+            ProcedureReturn #False
+         EndIf
+         
          If *this\countitems
             If *this\type = #__type_Editor
                If is_no_select_item_( *this\__lines( ), item )
@@ -13472,7 +13487,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\type = #__type_PopupBar Or
                      *this\type = #__type_MenuBar Or
                      *this\type = #__type_TabBar 
-                     bar_UpdateItems( *this, *this\__tabs( ) )
+                     bar_tab_UpdateItems( *this, *this\__tabs( ) )
                   ElseIf *this\row
                      Update_DrawRows( *this, *this\__rows( ) )
                   EndIf
@@ -13672,7 +13687,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Next
          ;Debug 7777
          *this\TabChange( ) = #True
-         bar_UpdateItems( *this, *this\__tabs( ))
+         bar_tab_UpdateItems( *this, *this\__tabs( ))
       EndProcedure
       
       Procedure   SetBarItemState( *this._s_WIDGET, _baritem_, _state_ )
@@ -18926,7 +18941,7 @@ chr$ = ","
          If event = #__event_LeftClick
             If *this\type = #__type_TabBar
                If Not ( *this\TabPressed( ) And *this\TabPressed( )\disable )
-                  Protected state = GetItemIndex( *this, *this\TabPressed( ) )
+                  Protected state = bar_tab_GetItemIndex( *this, *this\TabPressed( ) )
                   ;
                   If state >= 0 
                      If SetState( *this, state ) 
@@ -26048,9 +26063,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 864
-; FirstLine = 559
-; Folding = AGAg-B+-----------HA9------DA+-DAAAAAAsPAAAUAAAAAAAAAgCAAAAAAAAAAAAAAAAACAAA5BAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAA-AAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAoUAEAAAAAgqqKEAAAAAAAAAAA9-PAAAgTnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw-D+fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBDAI5-AAAAAAAAAAUoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+-----fA98-HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-GAAAAAAAAFcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAgAAA5HAAAAEgYAAAAAAAAAAgAAAQAGP95DAAAAgH---HBAAAIAAAAAAAAAACAAAAAAECAAAAAAAAAAAAAAAAAAAPQBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAA9DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAA+
+; CursorPosition = 9130
+; FirstLine = 1486
+; Folding = AGAg-B+-----------HA9------DA+-DAAAAAAsPAAAUAAAAAAAAAgCAAAAAAAAAAAAAAAAAAAAA5BAAAAAAAyAEAMAAAAAAAAiAAAAAAAAAAAA0AAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAAAAAAaAAAAAAGAoUAEAAAAAgqqKEAAAAAAAAAAA9-PAAAgTnAAAAAAAAAAAAAAAAAAAAAAAAAAAA9-IAAEAAAAAAAAAAAIAAAAAAIAEAAHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9-g-HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASwAAC+PAYAAESAAAAFaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg------HA-+-BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwvBAAAAAAAQBHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAwJAAA+BAAAABIGAAAAAAAAAYIAAAEgxDP+AAAAA5x---RAAAACAAAAAAAAAgAAAAAAAhAAAAAAAAAAAAAAAAAAAwDUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAAA-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAg-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

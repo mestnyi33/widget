@@ -96,14 +96,22 @@ CompilerIf #PB_Compiler_IsMainFile
    BindGadgetEvent(5, @events_gadget( ), #PB_EventType_LeftClick )
    BindGadgetEvent(13, @events_gadget( ), #PB_EventType_LeftClick )
    
+   Define img_new = LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png")
+   Define img_open = LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png")
+   Define img_save = LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png")
+   If DesktopResolutionX() = 2.0
+     ResizeImage(img_new,32,32)
+     ResizeImage(img_open,32,32)
+     ResizeImage(img_save,32,32)
+   EndIf
    
    Open(0, 300, 0,300,310)
    ; *panel = Panel(10, 10, 300 - 20, 180)
    *panel = Panel(10, 10, 300 - 20, 180)
    ;ToolBar( widget( ));, #PB_ToolBar_Small )
-   AddItem(*panel, 0, "", LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-   AddItem(*panel, 1, "open", LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #PB_ToolBar_Normal)
-   AddItem(*panel, 2, "", LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"))
+   AddItem(*panel, 0, "", img_new )
+   AddItem(*panel, 1, "open", img_open, #PB_ToolBar_Normal)
+   AddItem(*panel, 2, "", img_save )
    CloseList() ; *panel
    
    Frame(30, 200, 300 - 60, 100, "Tab location")
@@ -126,9 +134,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ForEver
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 25
-; Folding = --
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 104
+; FirstLine = 91
+; Folding = ---
 ; EnableXP
 ; DPIAware

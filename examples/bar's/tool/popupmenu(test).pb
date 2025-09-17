@@ -140,6 +140,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Container(100,100,250,100)
    SetText(widget(), "  click mouse button to see popup menu")
    Bind(widget(), @ClickHandler(), #__event_leftclick)
+   ;
    *menu = CreatePopupBar( )
    If *menu                  ; creation of the pop-up menu begins...
       BarItem(1, "Open")     ; You can use all commands for creating a menu
@@ -165,8 +166,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 66
+; CursorPosition = 137
+; FirstLine = 128
 ; Folding = --
 ; EnableXP
 ; DPIAware
