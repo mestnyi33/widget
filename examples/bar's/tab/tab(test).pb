@@ -31,24 +31,25 @@ CompilerIf #PB_Compiler_IsMainFile
   widget::SetState(*w5, 1)
   
   
-  Debug " - "
-  Debug ""+widget( )\bar\page\pos +" - page\pos"
-  Debug ""+widget( )\bar\page\len +" - page\len"
-  Debug ""+widget( )\bar\page\end +" - page\end"
-  Debug ""+widget( )\bar\page\change +" - page\change"
-  Debug ""+widget( )\bar\percent +" - percent"
-  Debug ""+widget( )\bar\area\len +" - area\len"
-  Debug ""+widget( )\bar\area\end +" - area\end"
-  Debug ""+widget( )\bar\thumb\pos +" - thumb\pos"
-  Debug ""+widget( )\bar\thumb\len +" - thumb\len"
-  Debug ""+widget( )\bar\thumb\end +" - thumb\end"
-  Debug ""+widget( )\bar\thumb\change +" - thumb\change"
-  Debug " - "
-  
+;   Debug " - "
+;   Debug ""+widget( )\bar\page\pos +" - page\pos"
+;   Debug ""+widget( )\bar\page\len +" - page\len"
+;   Debug ""+widget( )\bar\page\end +" - page\end"
+;   Debug ""+widget( )\bar\page\change +" - page\change"
+;   Debug ""+widget( )\bar\percent +" - percent"
+;   Debug ""+widget( )\bar\area\len +" - area\len"
+;   Debug ""+widget( )\bar\area\end +" - area\end"
+;   Debug ""+widget( )\bar\thumb\pos +" - thumb\pos"
+;   Debug ""+widget( )\bar\thumb\len +" - thumb\len"
+;   Debug ""+widget( )\bar\thumb\end +" - thumb\end"
+;   Debug ""+widget( )\bar\thumb\change +" - thumb\change"
+;   Debug " - "
+;   
   widget::WaitClose( )
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 17
+; CursorPosition = 46
+; FirstLine = 12
 ; Folding = -
 ; EnableXP

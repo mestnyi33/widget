@@ -99,7 +99,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    PanelGadget(0, 10, 10, 300 - 20, 180)
    AddGadgetItem (0, -1, "Tab 1", LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"))
-   AddGadgetItem (0, -1, "Tab 2", LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
+   AddGadgetItem (0, -1, "Tab 2 (img-copy)", LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
    ButtonGadget( -1, 0,0,50,50,"Button" )
    ButtonGadget( -1, 0,GetGadgetAttribute(0, #PB_Panel_ItemHeight)-50,50,50,"Button" )
    AddGadgetItem (0, -1, "Tab 3", LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
@@ -125,7 +125,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;SetColor(root(), #pb_gadget_backcolor, $FFF2F2F2)
    *panel = Panel(10, 10, 300 - 20, 180)
    AddItem (*panel, -1, "Tab 1", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"))
-   AddItem (*panel, -1, "Tab 2", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
+   AddItem (*panel, -1, "Tab 2 (img-copy)", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
    Button( 0,0,50,50,"Button" )
    Button( 0, GetAttribute(*panel, #PB_Panel_ItemHeight)-50,50,50,"Button" )
    AddItem (*panel, -1, "Tab 3", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
@@ -160,9 +160,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ForEver
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 120
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 101
+; FirstLine = 87
 ; Folding = ---
 ; EnableXP
 ; DPIAware

@@ -1,118 +1,4 @@
-﻿; ;  ^^
-; ; (oo)\__________
-; ; (__)\          )\/\3
-; ;      ||------w||
-; ;      ||       ||
-; ;        _
-; ;       /(|
-; ;      (  :
-; ;     __\  \  _____
-; ;   (____)  `|
-; ;  (____)|   |
-; ;   (____).__|
-; ;    (___)__.|_____
-; ;  Mini Thread Control https://www.purebasic.fr/english/viewtopic.php?t=73231
-; ;
-; ; sudo adduser your_username vboxsf
-; ; https://linuxrussia.com/sh-ubuntu.html
-; ;
-; ;https://github.com/mestnyi33/widget/commits/macos/?after=24cf91f4b5a08e4a496f764416578125334e97ab+1154
-; ; 43025500559246
-; ; Regex Trim(Arguments)
-; ; https://regex101.com/r/zxBLgG/2
-; ; ~"((?:(?:\".*?\")|(?:\\(.*?\\))|[^,])+)"
-; ; ~"(?:\"(?:.*?)\"|(?:\\w*)\\s*\\((?:(?>[^( )]+|(?R))*)\\)|[\\^\\;\\/\\|\\!\\*\\w\\s\\.\\-\\+\\~\\#\\&\\$\\\\])+"
-; ; #Button_0, ReadPreferenceLong("x", WindowWidth(#Window_0)/WindowWidth(#Window_0)+20), 20, WindowWidth(#Window_0)-(390-155), WindowHeight(#Window_0) - 180 * 2, GetWindowTitle(#Window_0) + Space( 1 ) +"("+ "Button" + "_" + Str(1)+")"
-; 
-; ; Regex Trim(Captions)
-; ; https://regex101.com/r/3TwOgS/1
-; ; ~"((?:\"(.*?)\"|\\((.*?)\\)|[^+\\s])+)"
-; ; ~"(?:(\\w*)\\s*\\(((?>[^( )\"]+|(?R))+)\\))|\"(.*?)\"|[^+\\s]+"
-; ; ~"(?:\"(.*?)\"|(\\w*)\\s*\\(((?>[^( )\"]+|(?R))+)\\))|([\\d]+)|(\b[\\w]+)|([\\#\\w]+)|([\\/])|([\\*])|([\\-])|([\\+])"
-; ; ~"(?:(?:\"(.*?)\"|(\\w*)\\s*\\(((?>[^( )\"]+|(?R))*)\\))|([\\d]+)|(\b[\\w]+)|([\\#\\w]+)|([\\*\\w]+)|[\\.]([\\w]+)|([\\\\w]+)|([\\/])|([\\*])|([\\-])|([\\+]))"
-; ; Str(ListIndex(List( )))+"Число между"+Chr(10)+"это 2!"+
-; ; ListIndex(List( )) ; вот так не работает
-; 
-; ; ; https://regex101.com/r/RFubVd/14
-; ; ; #Эта часть нужна для поиска переменных
-; ; ; #Например, "Window" в выражении "Window=OpenWindow(#PB_Any...)"
-; ; ; (?:(\b[^:\n\s]+)\s*=\s*)?
-; ; ;
-; ; ; #Эта часть для поиска процедур
-; ; ; (?:\".*\"|(\w+)\s*\(((?>(?R)|[^)(])*)\))
-; ; ;
-; ; ; #После выполнения:
-; ; ; # - В группе \1 будет находиться название переменной
-; ; ; # - В группе \2 - название процедуры
-; ; ; # - В группе \3 - перечень всех аргументов найденной процедуры
-; ; ; ~"(?:(\\b[^:\\n\\s]+)\\s*=\\s*)?(?:\".*\"|(\\w+)\\s*\\(((?>(?R)|[^)(])*)\\))"
-; #RegEx_Pattern_FindFunction = ~"(?P<Comments>;).*|(?:(?P<Handle>\\b[^:\\n\\s]+)\\s*=\\s*)?(?:\".*\"|(?P<Function>\\w+)\\s*\\((?P<Arguments>(?>(?R)|[^)(])*)\\))" ; "(;).*|\b(?:.*(=)\s*\w*\(.*\)|([A-Za-z0-9_.]*)\b[^:\n\(]*\s*\((?>[^)(]|(?R))*\))"
-; 
-; ; Найти
-; ; https://regex101.com/r/u60Wqt/1
-; ; https://regex101.com/r/rQCwws/3
-; ; https://regex101.com/r/RFubVd/22
-; ; https://regex101.com/r/D4Jxuh/24
-; ; https://regex101.com/r/mBkJTA/29
-; 
-; #RegEx_Pattern_Find = "" +
-;                       ; https://regex101.com/r/oIDfrI/2
-; "(?P<Comments>;).* |" +
-; ; #Эта часть нужна для поиска переменных
-; ; #Например, "Window" в выражении "Window=OpenWindow(#PB_Any...)"
-; "(?:(?P<Handle>[^:\n\s]+)\s*=\s*)?" +
-; "(?P<FuncString>" +
-; ~"\".*\" |" +
-; ; #Эта часть для поиска функций
-; "\b(?P<FuncName>\w+)\s*" +
-; ; #Эта часть для поиска аргументов функции
-; "(?:\((?P<FuncArguments>(?>(?R)|[^()])*)\))" +
-; ") |" +
-; ; #Эта часть для поиска процедур
-; "(?P<StartPracedure>\bProcedure[.A-Za-z]* \s*" +
-; ; #Эта часть для поиска имени процедуры
-; "(?P<PracName>\w*) \s*" +
-; ; #Эта часть для поиска аргументов процедуры
-; "(?:\((?P<ProcArguments>(?>(?R)|[^()])*)\))) |" +
-; ; #Эта часть для поиска конец процедуры
-; "(?P<StopProcedure>\bEndProcedure\b)"
-; ;
-; ; #После выполнения:
-; ; # - В группе (Comments) будет находиться комментария
-; ; # - В группе (Handle) будет находиться название переменной
-; ; # - В группе (FuncName) - название Функции
-; ; # - В группе (FuncArguments) - перечень всех аргументов найденной Функции
-; ; # - В группе (ProcedureName) - название процедуры
-; ; # - В группе (ProcArguments) - перечень всех аргументов найденной процедуры
-
-; ; https://www.purebasic.fr/english/viewtopic.php?t=79212
-; !macro ppublic name{
-; !if name eq _SYS_StaticStringEnd
-; !repeat $-_SYS_StaticStringStart
-; !load zczc from _SYS_StaticStringStart+%-1
-; !store zczc xor 137 at _SYS_StaticStringStart+%-1
-; !end repeat
-; !end if
-; !public name}
-; !public fix ppublic
-; CompilerIf #PB_Compiler_Processor = #PB_Processor_x86
-;    !mov edi,_SYS_StaticStringStart
-;    !mov ecx,_SYS_StaticStringEnd-_SYS_StaticStringStart
-;    !@@:
-;    !xor byte[edi],137
-;    !inc edi
-;    !dec ecx
-; CompilerElse
-;    !mov rdi,_SYS_StaticStringStart
-;    !mov rcx,_SYS_StaticStringEnd-_SYS_StaticStringStart
-;    !@@:
-;    !xor byte[rdi],137
-;    !inc rdi
-;    !dec rcx
-; CompilerEndIf
-; !jnz @b
-
-
+﻿
 ; ver: 3.0.0.1 ;
 CompilerSelect #PB_Compiler_OS
    CompilerCase #PB_OS_MacOS
@@ -1211,7 +1097,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          DrawingMode( _mode_ )
       EndMacro
       
-      Macro draw_font( _address_, _font_id_ = 0 )
+      Macro draw_font( _address_, _font_id_ = 0, _update_ = 0 )
          If _font_id_
             If Not GetFontID( _address_ )
                SetFontID( _address_, _font_id_ )
@@ -1232,7 +1118,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             _address_\text\height = 0
          EndIf
          ;
-         If Not ( _address_\text\width And _address_\text\height )
+         If Not ( _address_\text\width And _address_\text\height ) Or _address_\TextChange( );Or _update_
             If _address_\text\string
                _address_\text\width = TextWidth( _address_\text\string )
             EndIf
@@ -1543,7 +1429,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare a_free( *this )
       Declare a_object( X.l, Y.l, Width.l, Height.l, Text.s, color.i, flag.q = #Null, framesize = 1 )
       
-      Declare.b bar_tab_UpdateItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
+      Declare.b bar_Update_DrawTabItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
       Declare.l bar_setAttribute( *this, Attribute.l, *value )
       Declare   bar_mdi_resize( *this, X.l, Y.l, Width.l, Height.l )
       Declare   bar_mdi_update( *this, X.l, Y.l, Width.l, Height.l )
@@ -3749,7 +3635,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       Macro bar_in_stop_( _bar_ )
-         Bool( _bar_\thumb\pos >= _bar_\area\end ) 
+         Bool( _bar_\thumb\pos >= _bar_\thumb\end ) 
       EndMacro
       
       ;       Macro bar_page_in_stop_( _bar_ )
@@ -3774,7 +3660,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       ;-
-      Procedure.b bar_tab_UpdateItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
+      Procedure.b bar_Update_DrawTabItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
          With *this
             Protected Index
             Protected pos
@@ -3805,7 +3691,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             If Not *this\hide 
                ; - widget::bar_tab_update_( )
                If *this\TabChange( ) Or *this\ResizeChange( )
-                  
                   *bar\max = 0
                   *this\picture\x = ( *this\screen_height( ) - DPIScaled(16) - pos - DPIScaled(1) ) / 2
                   ; Debug " --- widget::Tab_Update( ) - " + *this\screen_width( ) +" "+ *this\screen_height( )
@@ -3816,13 +3701,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   If *bar\vertical
                      If is_menu_( *this )
-                        ForEach *tabs( )
+                        If is_menu_( *this )
+                         Define childrens.b
+                         ForEach *tabs( )
                            ; if not visible then skip
                            If *tabs( )\hide
                               Continue
                            EndIf
                            ;
-                           draw_font( *tabs( ) )
+                           draw_font( *tabs( ), GetFontID( *this ), *this\TextChange( ))
                            
                            ; init items position
                            If *bar\vertical
@@ -3834,10 +3721,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  EndIf
                               EndIf
                               If *tabs( )\childrens 
-                                 *this\scroll_width( ) + DPIScaled(60)
+                                 childrens = #True
                               EndIf
                            EndIf
                         Next
+                        If childrens
+                           \scroll_width( ) + DPIScaled(50)
+                        EndIf
+                     Else
+                        *this\scroll_width( ) = *this\screen_width( ) 
+                     EndIf
                      Else
                         *this\scroll_width( ) = *this\screen_width( ) 
                      EndIf
@@ -3852,12 +3745,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      
                      ;\\
-                     draw_font( *tabs( ), GetFontID( *this ) )
+                     draw_font( *tabs( ), GetFontID( *this ), *this\TextChange( ))
                      
                      Index = ListIndex( *tabs( ) )
                      
                      ; init items position
                      If *bar\vertical
+                        *tabs( )\height = 0
                         *tabs( )\y = *bar\max + pos
                         
                         If *this\type = #__type_TabBar
@@ -3883,10 +3777,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *tabs( )\height = 1
                            *bar\max         + separator_step * 2
                         Else
-                           ;
-                           Debug "why "+*tabs( )\height +" ?"
-                           *tabs( )\height = 0
-                           ;
                            If *tabs( )\picture\height
                               *tabs( )\height = *tabs( )\picture\height
                            EndIf
@@ -3936,6 +3826,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *bar\max + *tabs( )\height + pos + Bool( Index = *this\countitems - 1 )
                         EndIf
                      Else
+                        *tabs( )\width = 0
                         *tabs( )\x = *bar\max + pos
                         ;
                         If *this\type = #__type_TabBar
@@ -3975,7 +3866,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *tabs( )\width = (Bool( *tabs( )\text\width ) * ( text_pos * 2 ) + *tabs( )\text\width +
                                              Bool( *tabs( )\picture\width ) * ( img_pos * 2 ) + *tabs( )\picture\width) - Bool( *tabs( )\picture\width And *tabs( )\text\width ) * ( text_pos )
                            
-                           ;
                            If *this\type = #__type_TabBar
                               *bar\max + *tabs( )\width + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
                               ;*bar\max + *tabs( )\width + pos + Bool( index = *this\countitems - 1 )
@@ -3999,6 +3889,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      EndIf
                   Next
+                  
                   ;
                   If *bar\vertical
                      *this\scroll_height( ) = *bar\max
@@ -4009,6 +3900,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   bar_Update( *this, #True )
                   ;
                   *this\TabChange( ) = #False
+                  *this\ResizeChange( ) = 0
                EndIf
                
                ;
@@ -4148,7 +4040,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                Continue
             EndIf
             ;
-            draw_font( *tabs( ) )
+            draw_font( *tabs( ), GetFontID( *this ), *this\TextChange( ))
             
             ; real visible items
             If vertical
@@ -4209,7 +4101,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\TabEntered( )\visible 
                ;
                If *this\TabEntered( )\tindex <> #PB_Ignore
-                  draw_font( *this\TabEntered( ) )
+                  draw_font( *this\TabEntered( ), GetFontID( *this ), *this\TextChange( ))
                   bar_draw_item_( *this\bar\vertical, *this\TabEntered( ), X, Y, round, [*this\TabEntered( )\ColorState( )] )
                EndIf
             EndIf
@@ -4222,7 +4114,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Protected._s_ITEMS *activeTAB = *this\TabFocused( )
             ;   
             If *this\TabFocused( )\tindex <> #PB_Ignore
-               draw_font( *this\TabFocused( ) )
+               draw_font( *this\TabFocused( ), GetFontID( *this ), *this\TextChange( ))
                ;
                If is_integral_( *this )
                   If *this\parent
@@ -4411,7 +4303,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ; ;                EndIf
                ;
                ;\\
-               bar_tab_UpdateItems( *this, *this\__tabs( ) )
+               bar_Update_DrawTabItems( *this, *this\__tabs( ) )
                ;
                X = *SB\x
                Y = *SB\y 
@@ -4427,16 +4319,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                ; draw lines
                If *this\type = #__type_TabBar
                   
-                  ; Navigation
+                  ; TODO Navigation
                   Protected pf
                   If is_integral_( *this )
                      pf = *this\parent\bs
                      If *this\parent\parent
-                        If is_root_( *this\parent\parent )
-                           backcolor = $FFf0f0f0
-                        Else
+;                         If is_root_( *this\parent\parent )
+;                            backcolor = $FFf0f0f0
+;                         Else
                            backcolor = *this\parent\parent\color\back[\parent\ColorState( )]
-                        EndIf
+;                         EndIf
                      Else
                         backcolor = *this\parent\color\back[\parent\ColorState( )]
                      EndIf
@@ -4444,7 +4336,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                         backcolor = *BB2\color\back[\ColorState( )]
                      EndIf
                   Else
-                     backcolor = *this\parent\color\back[\parent\ColorState( )]
+                     If *this\parent\type = #__type_Splitter
+                         backcolor = *this\root\color\back[\parent\ColorState( )]
+                     Else
+                         backcolor = *this\parent\color\back[\parent\ColorState( )]
+                     EndIf
                   EndIf
                   
                   Protected fabe_pos, round = 0, button_size = 20, Size = 60+pf, fabe_out = Size - button_size
@@ -5124,7 +5020,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             iheight = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( ) )
             If \v\bar\page\len = iheight
-               If \v\bar\thumb\len = \v\bar\thumb\end
+               If \v\bar\thumb\len = \v\bar\area\end
                   bar_Update( \v, #True )
                EndIf
                bar_Update( \h, #True )
@@ -5144,7 +5040,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             iwidth = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( ) )
             If \h\bar\page\len = iwidth
                bar_Update( \v, #True )
-               If \h\bar\thumb\len = \h\bar\thumb\end
+               If \h\bar\thumb\len = \h\bar\area\end
                   bar_Update( \h, #True )
                   
                EndIf
@@ -5241,7 +5137,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;
-            If \v\bar\max > \v\bar\page\len ; Or \v\bar\thumb\len <> \v\bar\thumb\end
+            If \v\bar\max > \v\bar\page\len ; Or \v\bar\thumb\len <> \v\bar\area\end
                If \v\hide <> \v\hide[1]
                   \v\hide = \v\hide[1]
                EndIf
@@ -5251,7 +5147,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             ;
-            If \h\bar\max > \h\bar\page\len ; Or \h\bar\thumb\len <> \h\bar\thumb\end
+            If \h\bar\max > \h\bar\page\len ; Or \h\bar\thumb\len <> \h\bar\area\end
                If \h\hide <> \h\hide[1]
                   \h\hide = \h\hide[1]
                EndIf
@@ -5309,7 +5205,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             iheight = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( ) )
             If \v\bar\page\len = iheight
-               If \v\bar\thumb\len = \v\bar\thumb\end
+               If \v\bar\thumb\len = \v\bar\area\end
                   bar_Update( \v, #True )
                EndIf
                bar_Update( \h, #True )
@@ -5329,7 +5225,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             iwidth = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( ) )
             If \h\bar\page\len = iwidth
                bar_Update( \v, #True )
-               If \h\bar\thumb\len = \h\bar\thumb\end
+               If \h\bar\thumb\len = \h\bar\area\end
                   bar_Update( \h, #True )
                EndIf
             Else
@@ -5724,7 +5620,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                result = 1
             EndIf
             
-            ; Debug ""+\h\bar\thumb\len +" "+ \h\bar\page\len +" "+ \h\bar\area\len +" "+ \h\bar\thumb\end +" "+ \h\bar\page\end +" "+ \h\bar\area\end
+            ; Debug ""+\h\bar\thumb\len +" "+ \h\bar\page\len +" "+ \h\bar\area\len +" "+ \h\bar\area\end +" "+ \h\bar\page\end +" "+ \h\bar\thumb\end
             
             ;\\
             *this\scroll_x( )      = scroll_x
@@ -5779,11 +5675,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;                      *bar\page\change +" >< "+
          ;                      *bar\area\pos +" "+
          ;                      *bar\area\len +" "+
-         ;                      *bar\area\end +" "+
+         ;                      *bar\thumb\end +" "+
          ;                      *bar\area\change +" >< "+
          ;                      *bar\thumb\pos +" "+
          ;                      *bar\thumb\len +" "+
-         ;                      *bar\thumb\end +" "+
+         ;                      *bar\area\end +" "+
          ;                      *bar\thumb\change +""
          ;                Debug "<<<<<<<<<<<<<<<<<"
          ;                
@@ -5824,11 +5720,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;*bar\area\pos = ( *BB1\size + *bar\min[1] )
-               *bar\thumb\end = *bar\area\len - ( *BB1\size + *BB2\size )
+               *bar\area\end = *bar\area\len - ( *BB1\size + *BB2\size )
                
                *bar\page\end = *bar\max
-               *bar\area\end = *bar\max - *bar\thumb\Len
-               *bar\percent  = ( *bar\area\end - *bar\area\pos ) / ( *bar\page\end - *bar\min )
+               *bar\thumb\end = *bar\max - *bar\thumb\Len
+               *bar\percent  = ( *bar\thumb\end - *bar\area\pos ) / ( *bar\page\end - *bar\min )
                
             Else
                ; scroll-bar default button size
@@ -5875,7 +5771,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *bar\area\pos = *bar\area\len
                   EndIf
                   ;
-                  *bar\thumb\end = *bar\area\len - ( *BB1\size + *BB2\size )
+                  *bar\area\end = *bar\area\len - ( *BB1\size + *BB2\size )
                   ;
                   If *this\type = #__type_ToolBar Or 
                      *this\type = #__type_MenuBar Or 
@@ -5883,8 +5779,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\type = #__type_TabBar
                      ;
                      If *bar\max
-                        *bar\thumb\len = *bar\thumb\end - ( *bar\max - *bar\area\len )
-                        *bar\page\end  = *bar\max - ( *bar\thumb\end - *bar\thumb\len )
+                        *bar\thumb\len = *bar\area\end - ( *bar\max - *bar\area\len )
+                        *bar\page\end  = *bar\max - ( *bar\area\end - *bar\thumb\len )
                         ; *bar\page\end  = *bar\max - ( *bar\area\len - *bar\thumb\len )
                      EndIf
                      ;
@@ -5892,12 +5788,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If *bar\page\len
                         ;
                         ; get thumb size
-                        *bar\thumb\len = Round(( *bar\thumb\end / ( *bar\max - *bar\min )) * *bar\page\len, #PB_Round_Nearest )
-                        If *bar\thumb\len > *bar\thumb\end
-                           *bar\thumb\len = *bar\thumb\end
+                        *bar\thumb\len = Round(( *bar\area\end / ( *bar\max - *bar\min )) * *bar\page\len, #PB_Round_Nearest )
+                        If *bar\thumb\len > *bar\area\end
+                           *bar\thumb\len = *bar\area\end
                         EndIf
                         If *bar\thumb\len < *SB\size
-                           If *bar\thumb\end > *SB\size + *bar\thumb\len
+                           If *bar\area\end > *SB\size + *bar\thumb\len
                               *bar\thumb\len = *SB\size
                            EndIf
                         EndIf
@@ -5909,7 +5805,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *bar\page\end = *bar\page\len - *bar\max
                         EndIf
                         ;
-                        If *bar\thumb\len = *bar\thumb\end
+                        If *bar\thumb\len = *bar\area\end
                            *bar\page\end = *bar\min
                         EndIf
                         ;
@@ -5947,26 +5843,28 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   If *bar\page\end
-                     *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\page\end - *bar\min )
+                     *bar\percent = ( *bar\area\end - *bar\thumb\len ) / ( *bar\page\end - *bar\min )
                   ElseIf *bar\min
-                     *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / *bar\min
+                     *bar\percent = ( *bar\area\end - *bar\thumb\len ) / *bar\min
                   Else
-                     *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / 1
+                     *bar\percent = ( *bar\area\end - *bar\thumb\len ) / 1
                   EndIf
                   
-                  *bar\area\end = *bar\area\len - *bar\thumb\len - *BB2\size - *bar\min[2] 
+                  *bar\thumb\end = *bar\area\len - *bar\thumb\len - *BB2\size - *bar\min[2] 
                   ;
-                  If *bar\area\end < 0
-                     *bar\area\end = 0
-                  EndIf
-                  If *bar\area\end > *bar\area\len
-                     If Not ( *this\type = #__type_ToolBar Or 
-                              *this\type = #__type_MenuBar Or 
-                              *this\type = #__type_PopupBar Or 
-                              *this\type = #__type_TabBar )
+                  If Not ( *this\type = #__type_ToolBar Or 
+                           *this\type = #__type_MenuBar Or 
+                           *this\type = #__type_PopupBar Or 
+                           *this\type = #__type_TabBar )
+                     ;
+                     If *bar\thumb\end < 0
+                        Debug " ??? "+*bar\thumb\end +"-*bar\thumb\end < null "+ *this\class
+                        *bar\thumb\end = 0
+                     EndIf
+                     If *bar\thumb\end > *bar\area\len
                         ;
-                        Debug " ??? "+*bar\area\end +" > "+ *bar\area\len +" "+ *this\class
-                        *bar\area\end = *bar\area\len
+                        Debug " ??? "+*bar\thumb\end +"-*bar\thumb\end > "+ *bar\area\len +"-*bar\area\len "+ *this\class
+                        *bar\thumb\end = *bar\area\len
                      EndIf
                   EndIf
                   
@@ -5975,7 +5873,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\
-         ; Debug ""+*bar\PageChange( ) +" "+ *bar\percent +" "+ *bar\min +" "+ *bar\min[2] +" "+ *bar\page\pos +" "+ *bar\area\end +" "+ *bar\page\end
+         ; Debug ""+*bar\PageChange( ) +" "+ *bar\percent +" "+ *bar\min +" "+ *bar\min[2] +" "+ *bar\page\pos +" "+ *bar\thumb\end +" "+ *bar\page\end
          
          ;\\
          ;\\ get thumb pos
@@ -5991,34 +5889,41 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;                   ; EndIf
                ;                EndIf
                
+                                    
                ;\\ scroll to active tab
                If *this\TabChange( )
-                  Debug 777
                   *bar\page\pos = *bar\max
-                  If *this\TabFocused( ) And *this\TabFocused( )\_enter = #False
-                     If *this\TabFocused( )\ScrollToActive( - 1 )
-                        *this\TabFocused( )\ScrollToActive( 1 )
-                        ;Debug " tab max - " + *bar\max + " " + " " + *bar\page\pos + " " + *bar\page\end
-                        ScrollPos = *bar\max - *this\TabFocused( )\x
-                        ;ScrollPos - *bar\thumb\end                                    ; to left
-                        ;ScrollPos - *this\TabFocused( )\width                        ; to right
-                        ScrollPos - ( *bar\thumb\end + *this\TabFocused( )\width ) / 2 ; to center
-                        
-                        ScrollPos     = bar_page_pos_( *bar, ScrollPos )
-                        ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
-                        *bar\page\pos = ScrollPos
+;                   If Not *bar\page\pos
+;                      ScrollPos = *bar\max
+;                      ScrollPos     = bar_page_pos_( *bar, ScrollPos )
+;                      ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
+;                      *bar\page\pos = ScrollPos
+;                   EndIf
+                                    ;
+                  If *this\TabFocused( ) 
+                     If *this\TabFocused( )\_enter = #False
+                        If *this\TabFocused( )\ScrollToActive( - 1 )
+                           *this\TabFocused( )\ScrollToActive( 1 )
+                           ;Debug " tab max - " + *bar\max + " " + " " + *bar\page\pos + " " + *bar\page\end
+                           ScrollPos = *bar\max - *this\TabFocused( )\x
+                           ;ScrollPos - *bar\area\end                                    ; to left
+                           ;ScrollPos - *this\TabFocused( )\width                         ; to right
+                           ScrollPos - ( *bar\area\end + *this\TabFocused( )\width ) / 2 ; to center
+                           
+                           ScrollPos     = bar_page_pos_( *bar, ScrollPos )
+                           ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
+                           *bar\page\pos = ScrollPos
+                        EndIf
                      EndIf
-                  Else
-                     *bar\page\pos = *bar\max
                   EndIf
                Else
                   ; Debug *bar\page\pos
-                  ;                   If Not *bar\page\pos
-                  ;                      ScrollPos = *bar\max
-                  ;                      ScrollPos     = bar_page_pos_( *bar, ScrollPos )
-                  ;                      ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
-                  ;                      *bar\page\pos = ScrollPos
-                  ;                   EndIf
+;                                     If Not *bar\page\pos
+;                                        ScrollPos = *bar\max
+;                                        ScrollPos     = bar_page_pos_( *bar, ScrollPos )
+;                                        ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
+;                                        *bar\page\pos = ScrollPos
+;                                     EndIf
                EndIf
                
             Else
@@ -6048,13 +5953,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos )
                ;
                If *bar\invert
-                  ThumbPos = *bar\area\end - ThumbPos
+                  ThumbPos = *bar\thumb\end - ThumbPos
                Else
                   ThumbPos = *bar\area\pos + ThumbPos
                EndIf
                ;
                If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
-               If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
+               If ThumbPos > *bar\thumb\end : ThumbPos = *bar\thumb\end : EndIf
                ;
                If *bar\thumb\pos <> ThumbPos
                   *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
@@ -6082,19 +5987,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *bar\fixed[1] = *bar\thumb\pos
                EndIf
                If *bar\fixed = 2
-                  *bar\fixed[2] = ( *bar\area\end + *bar\min[2] ) - *bar\thumb\pos 
+                  *bar\fixed[2] = ( *bar\thumb\end + *bar\min[2] ) - *bar\thumb\pos 
                EndIf
             Else
                
                If *bar\fixed = 1
-                  If *bar\area\end > *bar\fixed[1]
+                  If *bar\thumb\end > *bar\fixed[1]
                      ThumbPos = *bar\fixed[1]
                   Else
-                     If *bar\min[1] < *bar\area\end
-                        ThumbPos = *bar\area\end
+                     If *bar\min[1] < *bar\thumb\end
+                        ThumbPos = *bar\thumb\end
                      Else
-                        If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
-                           ThumbPos = ( *bar\area\end + *bar\min[2] )
+                        If *bar\min[1] > ( *bar\thumb\end + *bar\min[2] )
+                           ThumbPos = ( *bar\thumb\end + *bar\min[2] )
                         Else
                            If *bar\min[1] > *bar\area\len - *bar\thumb\len
                               ThumbPos = *bar\area\len - *bar\thumb\len
@@ -6107,11 +6012,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;
                If *bar\fixed = 2
-                  If *bar\min[1] < ( *bar\area\end + *bar\min[2] ) - *bar\fixed[2] 
-                     ThumbPos = ( *bar\area\end + *bar\min[2] ) - *bar\fixed[2] 
+                  If *bar\min[1] < ( *bar\thumb\end + *bar\min[2] ) - *bar\fixed[2] 
+                     ThumbPos = ( *bar\thumb\end + *bar\min[2] ) - *bar\fixed[2] 
                   Else
-                     If *bar\min[1] > ( *bar\area\end + *bar\min[2] )
-                        ThumbPos = ( *bar\area\end + *bar\min[2] )
+                     If *bar\min[1] > ( *bar\thumb\end + *bar\min[2] )
+                        ThumbPos = ( *bar\thumb\end + *bar\min[2] )
                      Else
                         If *bar\min[1] > *bar\area\len - *bar\thumb\len
                            ThumbPos = *bar\area\len - *bar\thumb\len
@@ -6740,12 +6645,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                *SB\x      = *this\inner_x( )
                *SB\width  = *this\inner_width( )
                *SB\height = *bar\max
-               *SB\y      = *this\frame_y( ) + ( *bar\thumb\pos - *bar\area\end )
+               *SB\y      = *this\frame_y( ) + ( *bar\thumb\pos - *bar\thumb\end )
             Else
                *SB\y      = *this\inner_y( )
                *SB\height = *this\inner_height( )
                *SB\width  = *bar\max
-               *SB\x      = *this\frame_x( ) + ( *bar\thumb\pos - *bar\area\end )
+               *SB\x      = *this\frame_x( ) + ( *bar\thumb\pos - *bar\thumb\end )
             EndIf
             ;EndIf
          EndIf
@@ -6820,11 +6725,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; ;                *bar\page\change +" >< "+
          ; ;                *bar\area\pos +" "+
          ; ;                *bar\area\len +" "+
-         ; ;                *bar\area\end +" "+
+         ; ;                *bar\thumb\end +" "+
          ; ;                *bar\area\change +" >< "+
          ; ;                *bar\thumb\pos +" "+
          ; ;                *bar\thumb\len +" "+
-         ; ;                *bar\thumb\end +" "+
+         ; ;                *bar\area\end +" "+
          ; ;                *bar\thumb\change +""
          ; ;          Debug "<<<<<<<<<<<<<<<<<"
          ;  
@@ -6889,7 +6794,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;????
             If *bar\thumb\len
-               If *bar\thumb\len = *bar\thumb\end 
+               If *bar\thumb\len = *bar\area\end 
                   ScrollPos = *bar\min
                EndIf
             EndIf
@@ -6909,8 +6814,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *bar\page\end
                   ScrollPos = *bar\page\end
                Else
-                  If *bar\area\end ; TODO - ? example-splitter(3)
-                     ScrollPos = bar_page_pos_( *bar, *bar\area\end ) - ScrollPos
+                  If *bar\thumb\end ; TODO - ? example-splitter(3)
+                     ScrollPos = bar_page_pos_( *bar, *bar\thumb\end ) - ScrollPos
                   EndIf
                EndIf
             EndIf
@@ -6925,7 +6830,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *bar\PageChange( ) = *bar\page\pos - ScrollPos
                *bar\page\pos      = ScrollPos
                
-               ; Debug ""+*this +" "+ ScrollPos +" "+ *bar\page\end +" "+ *bar\thumb\len +" "+ *bar\thumb\end +" "+ *bar\page\pos +" "+ Str(*bar\page\end-*bar\min[2])
+               ; Debug ""+*this +" "+ ScrollPos +" "+ *bar\page\end +" "+ *bar\thumb\len +" "+ *bar\area\end +" "+ *bar\page\pos +" "+ Str(*bar\page\end-*bar\min[2])
                
                result = *bar\PageChange( )
             EndIf
@@ -6945,7 +6850,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected ScrollPos,d
          
          If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
-         If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
+         If ThumbPos > *bar\thumb\end : ThumbPos = *bar\thumb\end : EndIf
          
          If *bar\thumb\pos <> ThumbPos
             *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
@@ -7296,8 +7201,14 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure.b HideItem( *this._s_widget, item.l, state.b )
          If *this\tabbar
-            SelectElement( *this\tabbar\__tabs( ), item )
-            *this\tabbar\__tabs( )\hide = state
+            ForEach *this\tabbar\__tabs( )
+               If *this\tabbar\__tabs( )\tindex = item
+                  ;SelectElement( *this\tabbar\__tabs( ), item )
+                  *this\tabbar\__tabs( )\hide = state
+                  *this\tabbar\TabChange( ) = #True
+                  Break
+               EndIf
+            Next
          EndIf
          If *this\row
             Protected *row._s_ROWS
@@ -7324,14 +7235,26 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.b DisableItem( *this._s_widget, item.l, state.b )
          If *this\type = #__type_panel
             If *this\tabbar
-               SelectElement( *this\tabbar\__tabs( ), item )
-               *this\tabbar\__tabs( )\disable = state
+               ForEach *this\tabbar\__tabs( )
+                  If *this\tabbar\__tabs( )\tindex = item
+                     ; SelectElement( *this\tabbar\__tabs( ), item )
+                     *this\tabbar\__tabs( )\disable = state
+                     *this\tabbar\TabChange( ) = #True
+                     Break
+                  EndIf
+               Next
             EndIf
          EndIf
          If *this\type = #__type_Toolbar
             If *this\__tabs( )
-               SelectElement( *this\__tabs( ), item )
-               *this\__tabs( )\disable = state
+               ForEach *this\__tabs( )
+                  If *this\__tabs( )\tindex = item
+                     ;SelectElement( *this\__tabs( ), item )
+                     *this\__tabs( )\disable = state
+                     *this\TabChange( ) = #True
+                     Break
+                  EndIf
+               Next
             EndIf
          EndIf
       EndProcedure
@@ -9692,28 +9615,21 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If *this\TabState( ) <> state
                *this\TabState( ) = state
+               
                *this\TabChange( ) = #True
                
                If *this\TabFocused( )
                   *this\TabFocused( )\_focus = 0
                   *this\TabFocused( )       = #Null
                EndIf
-               If *this\TabState( ) < 0
-                  state = 0
-               EndIf
-               
                
                If state >= 0
                   ;PushListPosition( *this\__tabs( ) )
                   SelectElement( *this\__tabs( ), state )
                   
-                  If *this\TabState( ) >= 0
-               *this\TabFocused( )       = *this\__tabs( )
+                  *this\TabFocused( )       = *this\__tabs( )
                   *this\TabFocused( )\ScrollToActive( - 1 ) ; scroll to active tab
-               Else
-                   *this\__tabs( )\ScrollToActive( - 1 ) ; scroll to active tab
-              EndIf
-               
+                  
                   ;PopListPosition( *this\__tabs( ) )
                EndIf
                
@@ -10005,7 +9921,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If result
                *this\WidgetChange( )              = 1
-               ; *this\__rows( )\text\TextChange( ) = 1
+               ; *this\__rows( )\TextChange( ) = 1
             EndIf
          EndIf
          
@@ -10026,7 +9942,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn #False
             EndIf
             
-            ; *this\__tabs( )\text\TextChange( ) = 1
+            *this\__tabs( )\TextChange( ) = 1
             *this\__tabs( )\text\string = Text.s
             *this\WidgetChange( )         = #True
             *this\TabChange( )          = #True
@@ -12554,8 +12470,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;                EndIf
                
                
-               ;If Text
-               ; *row\text\TextChange( ) = 1
+               ; 
+               *row\TextChange( ) = 1
                *row\text\string   = Text 
                
                
@@ -12718,7 +12634,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             *TabBox\__tabs( )\tindex     = item
             *TabBox\__tabs( )\color       = _get_colors_( )
-            *TabBox\__tabs( )\height      = *TabBox\screen_height( ) - 1
             *TabBox\__tabs( )\text\string = Text.s
             
             ;\\ set default selected tab
@@ -13511,7 +13426,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\type = #__type_PopupBar Or
                      *this\type = #__type_MenuBar Or
                      *this\type = #__type_TabBar 
-                     bar_tab_UpdateItems( *this, *this\__tabs( ) )
+                     ;
+                     bar_Update_DrawTabItems( *this, *this\__tabs( ) )
                   ElseIf *this\row
                      Update_DrawRows( *this, *this\__rows( ) )
                   EndIf
@@ -13625,7 +13541,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                         Y = *display\screen_y( ) + *display\screen_height( )
                         
                      ElseIf *display\bar And *display\TabEntered( )
-                        Y = *display\screen_y( ) + *display\TabEntered( )\y
+                        Debug " - "+*display\Scroll_height( )
+  Debug ""+*display\bar\page\pos +" - page\pos"
+  Debug ""+*display\bar\page\len +" - page\len"
+  Debug ""+*display\bar\page\end +" - page\end"
+  Debug ""+*display\bar\page\change +" - page\change"
+  Debug ""+*display\bar\percent +" - percent"
+  Debug ""+*display\bar\area\len +" - area\len"
+  Debug ""+*display\bar\thumb\end +" - area\end"
+  Debug ""+*display\bar\thumb\pos +" - thumb\pos"
+  Debug ""+*display\bar\thumb\len +" - thumb\len"
+  Debug ""+*display\bar\area\end +" - thumb\end"
+  Debug ""+*display\bar\thumb\change +" - thumb\change"
+  Debug " - "+ *display\TabEntered( )\y +" "+ *display\TabEntered( )\text\string
+  
+                        Y = *display\screen_y( ) + (*display\TabEntered( )\y + (*display\bar\thumb\pos-*display\bar\thumb\end))
                         ;  Debug ""+*display\scroll_height( )+" "+*display\TabEntered( )\y
                         
                         If Not *display\bar\vertical
@@ -13709,9 +13639,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
             EndIf
          Next
-         ;Debug 7777
-         *this\TabChange( ) = #True
-         bar_tab_UpdateItems( *this, *this\__tabs( ))
       EndProcedure
       
       Procedure   SetBarItemState( *this._s_WIDGET, _baritem_, _state_ )
@@ -22564,10 +22491,10 @@ chr$ = ","
                   EndIf
                   
                   ;
-                  ;                   If *this\__lines( )\text\TextChange( ) <> 0
+                  ;                   If *this\__lines( )\TextChange( ) <> 0
                   ;                      ; edit_sel_update_( *this )
                   ;                      
-                  ;                      *this\__lines( )\text\TextChange( ) = 0
+                  ;                      *this\__lines( )\TextChange( ) = 0
                   ;                   EndIf
                Next
             EndIf
@@ -25224,48 +25151,133 @@ Macro UseWidgets( )
    UseModule structures
 EndMacro
 
-CompilerIf #PB_Compiler_IsMainFile
-  EnableExplicit
-  UseWidgets( )
-  
-  Global i, *w0, *w1, *w2, *w3, *w4, *w5, *w6, *w7, *w8, *w9
-  
-  widget::Open(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
-  Define iw = 150 ; FIXME BUG
-  ;Define iw = 350
-  Define ix = (850 - iw)/2
-  
-   *w0 = widget::Tab(ix,  10, iw, 30) : For i=0 To 10 : widget::AddItem(*w0, -1, "tab_"+Str(i)) : Next
-  *w1 = widget::Tab(ix,  50, iw, 30) : For i=0 To 10 : widget::AddItem(*w1, -1, "tab_"+Str(i)) : Next
-;   *w3 = widget::Tab(ix,  90, iw, 30) : For i=0 To 10 : widget::AddItem(*w3, -1, "tab_"+Str(i)) : Next
-;   *w4 = widget::Tab(ix, 130, iw, 30) : For i=0 To 10 : widget::AddItem(*w4, -1, "tab_rrrrrrrr"+Str(i)) : Next
-;   *w5 = widget::Tab(ix, 170, iw, 30) : For i=0 To 10 : widget::AddItem(*w5, -1, "tab_"+Str(i)) : Next
 
-   widget::SetState(*w0, -1)
-  widget::SetState(*w1, 9)
-;   widget::SetState(*w3, 6)
-;   widget::SetState(*w4, 6)
-;   widget::SetState(*w5, 1)
-  
-;    - 
-; -6 - page\pos
-; 0 - page\len
-; 300 - page\end
-; 0 - page\change
-; 2.08 - percent
-; 300 - area\len
-; 300 - area\end
-; 31 - thumb\pos
-; -386 - thumb\len
-; 238 - thumb\end
-; -31 - thumb\change
-;  - 
-  widget::WaitClose( )
-  End
+CompilerIf #PB_Compiler_IsMainFile
+   EnableExplicit
+   UseWidgets( )
+   
+   Global menu, *menu._s_WIDGET
+   ;-
+   Procedure TestHandler()
+      Debug "Test menu event"
+   EndProcedure
+   
+   Procedure QuitHandler()
+      Debug "Quit menu event"
+      ;End
+   EndProcedure
+   
+   ;\\
+   OpenWindow( 1, 100, 100, 500, 400, "main window_1", #PB_Window_SystemMenu)
+   menu = CreatePopupMenu( #PB_Any )
+   MenuItem(1, "Open")      ; You can use all commands for creating a menu
+   MenuItem(2, "Save")      ; just like in a normal menu...
+   MenuBar( )
+   ;
+   OpenSubMenu("open sub item 1")
+   MenuItem(5, "5 sub item")
+   MenuItem(6, "6 sub item")
+   CloseSubMenu()
+   ;
+   MenuBar( )
+   MenuItem(3, "Before")
+   MenuItem(4, "After")
+   MenuBar( )
+   ;
+   OpenSubMenu("open sub item 2")
+   MenuItem(10, "10 sub item")
+   MenuItem(11, "11 sub item")
+   MenuBar( )
+   ;
+   OpenSubMenu("open sub item 3")
+   MenuItem(12, "12 sub item")
+   MenuItem(13, "13 sub item")
+   CloseSubMenu()
+   ;
+   MenuBar( )
+   MenuItem(14, "14 sub item")
+   MenuItem(15, "15 sub item")
+   MenuBar( )
+   MenuItem(16, "16 sub item")
+   MenuItem(17, "17 sub item")
+   CloseSubMenu( )
+   ;
+   MenuBar( )
+   MenuItem(7, "exit")
+   
+   If IsMenu(menu)                ; creation of the pop-up menu begins...
+      MenuItem(1, "Open")      ; You can use all commands for creating a menu
+      MenuItem(2, "Save")      ; just like in a normal menu...
+      MenuItem(3, "Save as")
+      MenuItem(4, "Quit")
+      MenuBar()
+      OpenSubMenu("Recent files")
+      MenuItem(5, "PureBasic.exe")
+      MenuItem(6, "Test.txt")
+      CloseSubMenu()
+   EndIf
+   
+   BindMenuEvent(menu, 6, @TestHandler())
+   BindMenuEvent(menu, 4, @QuitHandler())
+   
+   ;\\
+   Procedure ClickHandler( )
+      DisplayPopupBar( *menu, EventWidget( ) )
+   EndProcedure
+   
+   Bind(Open( 1, 10, 10, 480, 200), @ClickHandler(), #__event_LeftClick)
+   *menu = CreatePopupBar( )
+   BarItem(1, "test")      ; You can use all commands for creating a menu
+   BarItem(2, "Save")      ; just like in a normal menu...
+;    BarBar( )
+   ;
+;    OpenSubBar("open sub item 1")
+    BarItem(5, "5 sub item")
+;    BarItem(6, "6 sub item")
+;    CloseSubBar()
+   ;
+;    BarBar( )
+   BarItem(3, "Before")
+   BarItem(4, "After")
+   BarBar( )
+   ;
+   OpenSubBar("open sub item 2")
+   BarItem(10, "10 sub item")
+   BarItem(11, "11 sub item")
+   CloseSubBar( )
+   ;
+   BarBar( )
+   BarItem(7, "exit")
+   
+   If is_menu_( *menu )      ; creation of the pop-up menu begins...
+      BarItem(1, "Open")     ; You can use all commands for creating a menu
+      BarItem(2, "Save")     ; just like in a normal menu...
+      BarItem(3, "Save as")
+      BarItem(4, "Quit")
+      BarBar( )
+      OpenSubBar("Recent files")
+      BarItem(5, "PureBasic.exe")
+      BarItem(6, "Test.txt")
+      CloseSubBar( )
+   EndIf
+   
+   Bind(*menu, @TestHandler(), #__event_LeftClick, 6)
+   Bind(*menu, @QuitHandler(), #__event_LeftClick, 4)
+   
+   SetState( *menu, 6)
+   DisplayPopupBar( *menu, root( ) )
+   
+   
+   Define Event
+   Repeat
+      Event = WaitWindowEvent( )
+      If event = #PB_Event_LeftClick
+         DisplayPopupMenu( menu, WindowID(EventWindow()), DesktopMouseX(), DesktopMouseY())
+      EndIf
+   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 6012
-; FirstLine = 5987
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8fr--8-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 13557
+; FirstLine = 13490
+; Folding = ---------------------------------------------------------------------------------------f8-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
-; DPIAware

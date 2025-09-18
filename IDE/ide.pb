@@ -92,7 +92,8 @@ Global ide_window,
 Global ide_root,
        ide_splitter,
        ide_toolbar_container, 
-       ide_toolbar
+       ide_toolbar, 
+       ide_menu
 
 Global ide_design_splitter, 
        ide_design_PANEL_splitter,
@@ -1780,10 +1781,13 @@ EndProcedure
 
 Enumeration lng
    #lng_MENU
+   #lng_SAVEAS
+   
    #lng_RUN
    ;
    #lng_FORM
    #lng_CODE
+   #lng_QUIT
    ;
    #lng_ELEMENTS
    #lng_PROPERTIES
@@ -1793,6 +1797,12 @@ EndEnumeration
 InitLng( "yes|no|cancel|new|open|save")
 AddLng( #ENG, #lng_MENU ) = "Menu"
 AddLng( #RUS, #lng_MENU ) = "Меню"
+
+AddLng( #ENG, #lng_QUIT ) = "Quit"
+AddLng( #RUS, #lng_QUIT ) = "Выход"
+
+AddLng( #ENG, #lng_SAVEAS ) = "Save as..."
+AddLng( #RUS, #lng_SAVEAS ) = "Сохранить как..."
 
 AddLng( #ENG, #lng_RUN ) = "Run"
 AddLng( #RUS, #lng_RUN ) = "Запуск"
@@ -1812,14 +1822,21 @@ AddLng( #RUS, #lng_PROPERTIES ) = "Свойства"
 AddLng( #ENG, #lng_EVENTS ) = "Events"
 AddLng( #RUS, #lng_EVENTS ) = "События"
 
-Procedure ide_change_Lng( lng_TYPE )
+Procedure ide_Lng_change( lng_TYPE )
    Debug "  LNG CHANGE "
-   ;SetBarItemText( ide_toolbar, #_tb_menu, lng(lng_TYPE, #lng_Menu))
+   ;
+   SetBarItemText( ide_toolbar, 0, lng(lng_TYPE, #lng_Menu))
+   SetBarItemText( ide_menu, #_tb_file_new, lng(lng_TYPE, #lng_New)+" (Ctrl+N)")
+   SetBarItemText( ide_menu, #_tb_file_open, lng(lng_TYPE, #lng_Open)+" (Ctrl+O)")
+   SetBarItemText( ide_menu, #_tb_file_save, lng(lng_TYPE, #lng_Save)+" (Ctrl+S)")
+   SetBarItemText( ide_menu, #_tb_file_save_as, lng(lng_TYPE, #lng_SAVEAS))
+   SetBarItemText( ide_menu, #_tb_file_quit, lng(lng_TYPE, #lng_QUIT))
+   ;
    SetBarItemText( ide_toolbar, #_tb_file_new, lng(lng_TYPE, #lng_New))
    SetBarItemText( ide_toolbar, #_tb_file_open, lng(lng_TYPE, #lng_Open))
    SetBarItemText( ide_toolbar, #_tb_file_save, lng(lng_TYPE, #lng_Save))
-   SetBarItemText( ide_toolbar, #_tb_file_run, "["+lng(lng_TYPE, #lng_RUN)+"]")
-   
+   SetBarItemText( ide_toolbar, #_tb_file_run, "["+UCase(lng(lng_TYPE, #lng_RUN))+"]")
+   ;
    SetItemText( ide_inspector_PANEL, 0, lng(lng_TYPE, #lng_ELEMENTS))
    SetItemText( ide_inspector_PANEL, 1, lng(lng_TYPE, #lng_PROPERTIES))
    SetItemText( ide_inspector_PANEL, 2, lng(lng_TYPE, #lng_EVENTS))
@@ -2147,10 +2164,10 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
    
    Select BarButton
       Case #_tb_lng_ENG
-         ide_change_Lng( #ENG )
+         ide_Lng_change( #ENG )
          
       Case #_tb_lng_RUS
-         ide_change_Lng( #RUS )
+         ide_Lng_change( #RUS )
          
       Case #_tb_group_select
          If Type(*g) = #__type_ToolBar
@@ -2509,10 +2526,11 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ide_toolbar = CreateBar( ide_toolbar_container, #PB_ToolBar_Small );|#PB_ToolBar_Large|#PB_ToolBar_Buttons);| #PB_ToolBar_InlineText )
    SetColor(ide_toolbar, #PB_Gadget_BackColor, $fffefefe )
    
-   OpenSubBar("Menu")
-   BarItem( #_tb_file_new, "New" + Space(9) + Chr(9) + "Ctrl+O")
-   BarItem( #_tb_file_open, "Open" + Space(9) + Chr(9) + "Ctrl+O")
-   BarItem( #_tb_file_save, "Save" + Space(9) + Chr(9) + "Ctrl+S")
+   ide_menu = OpenSubBar("Menu")
+;    BarItem( #_tb_file_new, "New" + Space(9) + Chr(9) + "Ctrl+O")
+   BarItem( #_tb_file_new, "New (Ctrl+N)")
+   BarItem( #_tb_file_open, "Open (Ctrl+O)")
+   BarItem( #_tb_file_save, "Save (Ctrl+S)")
    BarItem( #_tb_file_save_as, "Save as...")
 ;    BarSeparator( )
 ;    OpenSubBar("Lng")
@@ -2759,7 +2777,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    SetState( ide_inspector_view_splitter, 100 )
    
    ;
-   ; ide_change_Lng( #lng )
+   ; ide_Lng_change( #lng )
    ;
    
    ;
@@ -3010,8 +3028,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1751
-; FirstLine = 1602
+; CursorPosition = 1826
+; FirstLine = 1681
 ; Folding = ---------f+T-------Pg----------4-n0--rd---v-8--+-----
 ; Optimizer
 ; EnableAsm

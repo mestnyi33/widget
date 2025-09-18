@@ -48,53 +48,6 @@ CompilerIf #PB_Compiler_IsMainFile
       SetActive( *panel )
    EndProcedure
    
-   Procedure GadgetTabViewType( gadget, position.i )
-      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-         CocoaMessage(0, GadgetID(gadget), "setTabViewType:", position)
-      CompilerEndIf
-   EndProcedure
-   
-   Procedure events_gadget( )
-      
-      Select GetGadgetText( EventGadget( ) )
-         Case "Top"
-            GadgetTabViewType( 0, 0 )
-            TabViewType( *panel, 2 )
-         Case "Left"
-            GadgetTabViewType( 0, 1 )
-            TabViewType( *panel, 1 )
-         Case "Right"
-            GadgetTabViewType( 0, 3 )
-            TabViewType( *panel, 3 )
-         Case "Bottom"
-            GadgetTabViewType( 0, 2 )
-            TabViewType( *panel, 4 )
-         Case "Hide"
-            GadgetTabViewType( 0, 4 )
-            TabViewType( *panel, 0 )
-      EndSelect
-      
-   EndProcedure
-   
-   OpenWindow(0, 270, 100, 600, 310, "Change tab location")
-   
-   PanelGadget(0, 10, 10, 300 - 20, 180)
-   AddGadgetItem (0, -1, "Tab 1")
-   AddGadgetItem (0, -1, "Tab 2")
-   CloseGadgetList()
-   
-   FrameGadget(1, 30, 200, 300 - 60, 100, "Tab location")
-   OptionGadget(2, 130, GadgetY(1) + 20, 80, 20, "Top"):SetGadgetState(2, #True)
-   OptionGadget(3, 50, GadgetY(1) + 45, 80, 20, "Left")
-   OptionGadget(13, 130, GadgetY(1) + 45, 80, 20, "Hide")
-   OptionGadget(4, 130, GadgetY(1) + 70, 80, 20, "Bottom")
-   OptionGadget(5, 210, GadgetY(1) + 45, 80, 20, "Right")
-   
-   BindGadgetEvent(2, @events_gadget( ), #PB_EventType_LeftClick )
-   BindGadgetEvent(3, @events_gadget( ), #PB_EventType_LeftClick )
-   BindGadgetEvent(4, @events_gadget( ), #PB_EventType_LeftClick )
-   BindGadgetEvent(5, @events_gadget( ), #PB_EventType_LeftClick )
-   BindGadgetEvent(13, @events_gadget( ), #PB_EventType_LeftClick )
    
    Define img_new = LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png")
    Define img_open = LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png")
@@ -105,21 +58,21 @@ CompilerIf #PB_Compiler_IsMainFile
      ResizeImage(img_save,32,32)
    EndIf
    
-   Open(0, 300, 0,300,310)
-   ; *panel = Panel(10, 10, 300 - 20, 180)
+   Open(0, 270, 100, 300, 310, "Change tab location")
+   
    *panel = Panel(10, 10, 300 - 20, 180)
    ;ToolBar( widget( ));, #PB_ToolBar_Small )
    AddItem(*panel, 0, "", img_new )
-   AddItem(*panel, 1, "open", img_open, #PB_ToolBar_Normal)
+   AddItem(*panel, 1, "open directory", img_open, #PB_ToolBar_Normal)
    AddItem(*panel, 2, "", img_save )
    CloseList() ; *panel
    
    Frame(30, 200, 300 - 60, 100, "Tab location")
-   Option(130, GadgetY(1) + 20, 80, 20, "Top", #__flag_Transparent) : SetState(widget(), #True)
-   Option(50, GadgetY(1) + 45, 80, 20, "Left", #__flag_Transparent)
-   Option(130, GadgetY(1) + 45, 80, 20, "Hide", #__flag_Transparent)
-   Option(130, GadgetY(1) + 70, 80, 20, "Bottom", #__flag_Transparent)
-   Option(210, GadgetY(1) + 45, 80, 20, "Right", #__flag_Transparent)
+   Option(130, 220, 80, 20, "Top", #__flag_Transparent) : SetState(widget(), #True)
+   Option(50, 245, 80, 20, "Left", #__flag_Transparent)
+   Option(130, 245, 80, 20, "Hide", #__flag_Transparent)
+   Option(130, 270, 80, 20, "Bottom", #__flag_Transparent)
+   Option(210, 245, 80, 20, "Right", #__flag_Transparent)
    Bind( #PB_All, @events_widget( ), #__event_Change )
    
    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -135,8 +88,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 104
-; FirstLine = 91
-; Folding = ---
+; CursorPosition = 60
+; FirstLine = 38
+; Folding = --
 ; EnableXP
 ; DPIAware
