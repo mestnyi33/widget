@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global i, *w0, *w1, *w2, *w3, *w4, *w5, *w6, *w7, *w8, *w9
   
   widget::Open(0, 10, 10, 850, 210, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
-  Define iw = 150 ; FIXME BUG
+  Define iw = 150 
   ;Define iw = 350
   Define ix = (850 - iw)/2
   
@@ -49,7 +49,6 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 12
+; CursorPosition = 16
 ; Folding = -
 ; EnableXP

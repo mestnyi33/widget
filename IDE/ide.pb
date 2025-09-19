@@ -76,12 +76,14 @@ Enumeration
    #_tb_file_new
    #_tb_file_open
    #_tb_file_save
-   #_tb_file_save_as
+   #_tb_file_SAVEAS
    #_tb_file_quit
    
-   #_tb_menu 
+   #_tb_LNG
    #_tb_lng_ENG
    #_tb_lng_RUS
+   #_tb_lng_FRENCH
+   #_tb_lng_GERMAN
 EndEnumeration
 
 ;- GLOBALs
@@ -93,6 +95,7 @@ Global ide_root,
        ide_splitter,
        ide_toolbar_container, 
        ide_toolbar, 
+       ide_popup_lenguage,
        ide_menu
 
 Global ide_design_splitter, 
@@ -199,7 +202,7 @@ Declare$  GetImageFile( img )
 ;
 ;- INCLUDEs
 XIncludeFile #ide_path + "widgets.pbi"
-XIncludeFile #ide_path + "lng.pbi"
+XIncludeFile #ide_path + "include\lng.pbi"
 ; XIncludeFile "C:\Users\user\Downloads\Compressed\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widgets.pbi"
 ; Procedure.i GetFontColor( *this.structures::_s_WIDGET )
 ;    ProcedureReturn widget::GetColor( *this, constants::#__Color_Front )
@@ -1777,65 +1780,59 @@ EndProcedure
 
 ;-
 ;- LENGUAGE
-#lng = #RUS
-
 Enumeration lng
+   #lng_YES
+   #lng_NO
+   #lng_CANCEL
+   #lng_NEW
+   #lng_OPEN
+   #lng_SAVE
    #lng_MENU
+   #lng_QUIT
    #lng_SAVEAS
-   
    #lng_RUN
-   ;
    #lng_FORM
    #lng_CODE
-   #lng_QUIT
-   ;
    #lng_ELEMENTS
    #lng_PROPERTIES
    #lng_EVENTS
+   #lng_LENGUAGE
 EndEnumeration
 
-InitLng( "yes|no|cancel|new|open|save")
-AddLng( #ENG, #lng_MENU ) = "Menu"
-AddLng( #RUS, #lng_MENU ) = "Меню"
+;                        ;eng = 0    ;rus = 1          ; french = 2         ; german = 3
+AddLng( #lng_NEW,        "New        |Новый            |Nouveau             |Neu" )
+AddLng( #lng_OPEN,       "Open       |Открыть          |Ouvrir              |Öffnen" )
+AddLng( #lng_SAVE,       "Save       |Сохранить        |Sauvegarder         |Speichern" )
+AddLng( #lng_YES,        "Yes        |Да               |Oui                 |Ja" )
+AddLng( #lng_NO,         "No         |Нет              |Non                 |Nein" )
+AddLng( #lng_CANCEL,     "Cancel     |Отмена           |Annuler             |Abbrechen" )
+AddLng( #lng_MENU,       "Menu       |Меню             |Menu                |Menü" )
+AddLng( #lng_QUIT,       "Quit       |Выход            |Quitter             |Beenden" )
+AddLng( #lng_SAVEAS,     "Save as... |Сохранить как... |Enregistrer sous... |Speichern unter..." )
+AddLng( #lng_RUN,        "Run        |Запуск           |Exécuter            |Ausführen" )
+AddLng( #lng_FORM,       "Form       |Форма            |Forme               |Formular" )
+AddLng( #lng_CODE,       "Code       |Код              |Code                |Code" )
+AddLng( #lng_ELEMENTS,   "Elements   |Элементы         |Éléments            |Elemente" )
+AddLng( #lng_PROPERTIES, "Properties |Свойства         |Propriétés          |Eigenschaften" )
+AddLng( #lng_EVENTS,     "Events     |События          |Événements          |Ereignisse" )
+AddLng( #lng_LENGUAGE,   "Lenguage   |Язык             |Langage             |Sprache" )
 
-AddLng( #ENG, #lng_QUIT ) = "Quit"
-AddLng( #RUS, #lng_QUIT ) = "Выход"
-
-AddLng( #ENG, #lng_SAVEAS ) = "Save as..."
-AddLng( #RUS, #lng_SAVEAS ) = "Сохранить как..."
-
-AddLng( #ENG, #lng_RUN ) = "Run"
-AddLng( #RUS, #lng_RUN ) = "Запуск"
-
-AddLng( #ENG, #lng_FORM ) = "Form"
-AddLng( #RUS, #lng_FORM ) = "Форма"
-
-AddLng( #ENG, #lng_CODE ) = "Code"
-AddLng( #RUS, #lng_CODE ) = "Код"
-
-AddLng( #ENG, #lng_ELEMENTS ) = "Elements"
-AddLng( #RUS, #lng_ELEMENTS ) = "Элементы"
-
-AddLng( #ENG, #lng_PROPERTIES ) = "Properties"
-AddLng( #RUS, #lng_PROPERTIES ) = "Свойства"
-
-AddLng( #ENG, #lng_EVENTS ) = "Events"
-AddLng( #RUS, #lng_EVENTS ) = "События"
-
-Procedure ide_Lng_change( lng_TYPE )
-   Debug "  LNG CHANGE "
+;
+Procedure ide_Lng_change( lng_TYPE=0 )
+   Debug "  LNG CHANGE "+lng_TYPE
    ;
    SetBarItemText( ide_toolbar, 0, lng(lng_TYPE, #lng_Menu))
-   SetBarItemText( ide_menu, #_tb_file_new, lng(lng_TYPE, #lng_New)+" (Ctrl+N)")
-   SetBarItemText( ide_menu, #_tb_file_open, lng(lng_TYPE, #lng_Open)+" (Ctrl+O)")
-   SetBarItemText( ide_menu, #_tb_file_save, lng(lng_TYPE, #lng_Save)+" (Ctrl+S)")
-   SetBarItemText( ide_menu, #_tb_file_save_as, lng(lng_TYPE, #lng_SAVEAS))
-   SetBarItemText( ide_menu, #_tb_file_quit, lng(lng_TYPE, #lng_QUIT))
-   ;
-   SetBarItemText( ide_toolbar, #_tb_file_new, lng(lng_TYPE, #lng_New))
-   SetBarItemText( ide_toolbar, #_tb_file_open, lng(lng_TYPE, #lng_Open))
-   SetBarItemText( ide_toolbar, #_tb_file_save, lng(lng_TYPE, #lng_Save))
+   SetBarItemText( ide_toolbar, #_tb_file_new, lng(lng_TYPE, #lng_NEW))
+   SetBarItemText( ide_toolbar, #_tb_file_open, lng(lng_TYPE, #lng_OPEN))
+   SetBarItemText( ide_toolbar, #_tb_file_save, lng(lng_TYPE, #lng_SAVE))
    SetBarItemText( ide_toolbar, #_tb_file_run, "["+UCase(lng(lng_TYPE, #lng_RUN))+"]")
+   SetBarItemText( ide_toolbar, #_tb_LNG, "["+UCase(lng(lng_TYPE, #lng_LENGUAGE))+"]")
+   ;
+   SetBarItemText( ide_menu, #_tb_file_new, lng(lng_TYPE, #lng_NEW)+" (Ctrl+N)")
+   SetBarItemText( ide_menu, #_tb_file_open, lng(lng_TYPE, #lng_OPEN)+" (Ctrl+O)")
+   SetBarItemText( ide_menu, #_tb_file_save, lng(lng_TYPE, #lng_SAVE)+" (Ctrl+S)")
+   SetBarItemText( ide_menu, #_tb_file_SAVEAS, lng(lng_TYPE, #lng_SAVEAS))
+   SetBarItemText( ide_menu, #_tb_file_quit, lng(lng_TYPE, #lng_QUIT))
    ;
    SetItemText( ide_inspector_PANEL, 0, lng(lng_TYPE, #lng_ELEMENTS))
    SetItemText( ide_inspector_PANEL, 1, lng(lng_TYPE, #lng_PROPERTIES))
@@ -1844,13 +1841,16 @@ Procedure ide_Lng_change( lng_TYPE )
    SetItemText( ide_design_PANEL, 0, lng(lng_TYPE, #lng_FORM))
    SetItemText( ide_design_PANEL, 1, lng(lng_TYPE, #lng_CODE))
    
-   If lng_TYPE = #ENG
+   If lng_TYPE = 0
       DisableBarButton( ide_toolbar, #_tb_lng_RUS, #False )
       DisableBarButton( ide_toolbar, #_tb_lng_ENG, #True )
-   ElseIf lng_TYPE = #RUS
+   ElseIf lng_TYPE = 1
       DisableBarButton( ide_toolbar, #_tb_lng_ENG, #False )
       DisableBarButton( ide_toolbar, #_tb_lng_RUS, #True )
    EndIf
+   
+   Define *root._s_ROOT = ide_root
+   PostReDraw( *root )
 EndProcedure
 
 ;-
@@ -2163,11 +2163,25 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
    ; Debug "ide_menu_events "+BarButton
    
    Select BarButton
+      Case #_tb_LNG
+         If Hide( ide_popup_lenguage )
+            DisplayPopupBar( ide_popup_lenguage, *g )
+         Else
+            HideWindow( GetCanvasWindow(GetRoot(ide_popup_lenguage)), 1 )
+            Hide( ide_popup_lenguage, 1 )
+         EndIf
+         
       Case #_tb_lng_ENG
-         ide_Lng_change( #ENG )
+         ide_Lng_change( 0 )
          
       Case #_tb_lng_RUS
-         ide_Lng_change( #RUS )
+         ide_Lng_change( 1 )
+         
+      Case #_tb_lng_FRENCH
+         ide_Lng_change( 2 )
+         
+      Case #_tb_lng_GERMAN
+         ide_Lng_change( 3 )
          
       Case #_tb_group_select
          If Type(*g) = #__type_ToolBar
@@ -2531,7 +2545,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    BarItem( #_tb_file_new, "New (Ctrl+N)")
    BarItem( #_tb_file_open, "Open (Ctrl+O)")
    BarItem( #_tb_file_save, "Save (Ctrl+S)")
-   BarItem( #_tb_file_save_as, "Save as...")
+   BarItem( #_tb_file_SAVEAS, "Save as...")
 ;    BarSeparator( )
 ;    OpenSubBar("Lng")
 ;    BarItem( #_tb_lng_ENG, "ENG")
@@ -2583,6 +2597,15 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;    BarButton( #_tb_align_center, CatchImage( #PB_Any,?image_group_width ) )
    ;    BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?image_group_bottom ) )
    ;    BarButton( #_tb_align_right, CatchImage( #PB_Any,?image_group_right ) )
+   BarItem( #_tb_LNG, "[LENGUAGE]" )
+   
+   ide_popup_lenguage = CreatePopupBar( )
+   If ide_popup_lenguage
+      BarItem(#_tb_lng_ENG, "ENG")
+      BarItem(#_tb_lng_RUS, "RUS")
+      BarItem(#_tb_lng_FRENCH, "FRENCH")
+      BarItem(#_tb_lng_GERMAN, "GERMAN")
+    EndIf
    CloseList( )
    
    DisableBarButton( ide_toolbar, #_tb_lng_ENG, #True )
@@ -2777,7 +2800,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    SetState( ide_inspector_view_splitter, 100 )
    
    ;
-   ; ide_Lng_change( #lng )
+   ; ide_Lng_change( )
    ;
    
    ;
@@ -2785,6 +2808,8 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;
    If Type( ide_toolbar ) = #__type_ToolBar
       Bind( ide_toolbar, @ide_events( ), #__event_LeftClick )
+      Bind( ide_menu, @ide_events( ), #__event_LeftClick )
+      Bind( ide_popup_lenguage, @ide_events( ), #__event_LeftClick )
    EndIf
    Bind( ide_inspector_view, @ide_events( ) )
    ;
@@ -3028,9 +3053,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1826
-; FirstLine = 1681
-; Folding = ---------f+T-------Pg----------4-n0--rd---v-8--+-----
+; CursorPosition = 2170
+; FirstLine = 1829
+; Folding = ---------f+T-------Pg----------4-n0--8d---f-4--0-----
 ; Optimizer
 ; EnableAsm
 ; EnableXP

@@ -1,0 +1,28 @@
+﻿
+[LanguageInfo]
+Application = PB_IDE
+Language = Russian
+Creator = purebasic.mybb.ru
+Email = 
+
+[MenuTitle]
+File = &Файл
+Edit = &Правка
+Project = П&роект
+Form = &Формы
+Compiler = &Компилятор
+Debugger = &Отладчик
+Tools = &Инструменты
+Help = &Справка
+
+[MenuItem]
+New = &Новый
+Open = &Открыть...
+Save = &Сохранить
+SaveAs = Сохранить как...
+Quit = Вы&ход
+Undo = Отменить
+Redo = Вернуть
+Cut = Вырезать
+Copy = Копировать
+Paste = Вставить

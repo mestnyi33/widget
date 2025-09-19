@@ -1,96 +1,38 @@
-﻿Global NewMap Lng_MAP.s( )
-
-Macro AddLng( _TYPE_, _VALUE_ )
-   Lng_MAP( Str(_TYPE_)+"_"+Str(_VALUE_) )
-EndMacro
-
-Macro Lng( _TYPE_, _VALUE_ )
-   Lng_MAP( Str(_TYPE_)+"_"+Str(_VALUE_) )
-EndMacro
-
-;
-Enumeration 
-   #ENG
-   #RUS
-   #FRENCH
-EndEnumeration
-
-Enumeration lng
-   #lng_YES
-   #lng_NO
-   #lng_CANCEL
-   #lng_NEW
-   #lng_OPEN
-   #lng_SAVE
-EndEnumeration
-
-; AddLng(#ENG, #lng_YES) = "Yes"
-; AddLng(#ENG, #lng_NO) = "No"
-; AddLng(#ENG, #lng_CANCEL) = "Cancel"
-; 
-; AddLng(#RUS, #lng_YES) = "Да"
-; AddLng(#RUS, #lng_NO) = "Нет"
-; AddLng(#RUS, #lng_CANCEL) = "Отмена"
-; 
-; AddLng(#FRENCH, #lng_YES) = "Oui"
-; AddLng(#FRENCH, #lng_NO) = "Non"
-; AddLng(#FRENCH, #lng_CANCEL) = "Annuler"
-
-
-Procedure InitLng( word.s )
-   word = RemoveString( word, "#lng_")
-   Protected str.s
-   Protected i, count = CountString( word, "|") + (1)
-   For i = 1 To count
-      str.s = LCase(Trim( StringField( word, i, "|" )))
-      If str = "new"
-         AddLng(#ENG, #lng_NEW) = "New"
-         AddLng(#RUS, #lng_NEW) = "Новый"
-         AddLng(#FRENCH, #lng_NEW) = "Nouveau" 
-      EndIf
-      If str = "open"
-         AddLng(#ENG, #lng_OPEN) = "Open"
-         AddLng(#RUS, #lng_OPEN) = "Открыть"
-         AddLng(#FRENCH, #lng_OPEN) = "Ouvrir" 
-      EndIf
-      If str = "save"
-         AddLng(#ENG, #lng_SAVE) = "Save"
-         AddLng(#RUS, #lng_SAVE) = "Сохранить"
-         AddLng(#FRENCH, #lng_SAVE) = "Sauvegarder" 
-      EndIf
-      If str = "yes"
-         AddLng(#ENG, #lng_YES) = "Yes"
-         AddLng(#RUS, #lng_YES) = "Да"
-         AddLng(#FRENCH, #lng_YES) = "Oui"
-      EndIf
-      If str = "no"
-         AddLng(#ENG, #lng_NO) = "No"
-         AddLng(#RUS, #lng_NO) = "Нет"
-         AddLng(#FRENCH, #lng_NO) = "Non"
-      EndIf
-      If str = "cancel"
-         AddLng(#ENG, #lng_CANCEL) = "Cancel"
-         AddLng(#RUS, #lng_CANCEL) = "Отмена"
-         AddLng(#FRENCH, #lng_CANCEL) = "Annuler"
-      EndIf
-      ; Debug str
-   Next
-EndProcedure
-
+﻿XIncludeFile "../../../widgets.pbi"
+XIncludeFile "../../../include/lng.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    
-   XIncludeFile "widgets.pbi"
-   
    UseWidgets( )
    
-   Enumeration 1
-      #tb_New
-      #tb_Open
-      #tb_Save
-   EndEnumeration
-   
+   Procedure InitLng( Path.s )
+      Protected texte$
+      ; Открывает файл настроек
+      OpenPreferences( Path )
+      
+      ; Исследует группы
+      ExaminePreferenceGroups()
+      ; Для каждой группы
+      While NextPreferenceGroup()
+         texte$ = texte$ + PreferenceGroupName() + #LF$ ; её имя
+                                                        ; Исследует ключи для текущей группы
+         ExaminePreferenceKeys()
+         ; Для каждого ключа
+         While  NextPreferenceKey()
+            texte$ = texte$ + PreferenceKeyName() + " = " + PreferenceKeyValue() + #LF$ ; его название и его данные
+         Wend
+         texte$ = texte$ +  #LF$
+      Wend
+      
+      ; Отображение всех групп и всех ключей с данными
+      MessageRequester("test.pref", texte$)
+      
+      ; Закрывает файл настроек
+      ClosePreferences()
+   EndProcedure
+
+   ;
    Global WINDOW_DEMO = - 1
    Global *ToolBar = - 1
    
@@ -101,8 +43,36 @@ CompilerIf #PB_Compiler_IsMainFile
    Global BUTTON_RUS = - 1
    Global BUTTON_FRENCH = - 1
    
-   InitLng( "yes | no | cancel | new | open | save" )
-   ;InitLng( "#lng_yes | #lng_no | #lng_cancel" )
+   Enumeration 1
+      #tb_New
+      #tb_Open
+      #tb_Save
+   EndEnumeration
+   
+   Enumeration lenguage
+      #ENG
+      #RUS
+      #FRENCH
+   EndEnumeration
+   
+   Enumeration lng
+      #lng_YES
+      #lng_NO
+      #lng_CANCEL
+      #lng_NEW
+      #lng_OPEN
+      #lng_SAVE
+   EndEnumeration
+   
+   ; lenguage               ;eng = 0    ;rus = 1          ; french = 2         ; german = 3
+   AddLng( #lng_NEW,        "New        |Новый            |Nouveau             |Neu" )
+   AddLng( #lng_OPEN,       "Open       |Открыть          |Ouvrir              |Öffnen" )
+   AddLng( #lng_SAVE,       "Save       |Сохранить        |Sauvegarder         |Speichern" )
+   AddLng( #lng_YES,        "Yes        |Да               |Oui                 |Ja" )
+   AddLng( #lng_NO,         "No         |Нет              |Non                 |Nein" )
+   AddLng( #lng_CANCEL,     "Cancel     |Отмена           |Annuler             |Abbrechen" )
+   
+   InitLng("lng.catalog")
    
    Procedure ChangeLng( Lng_TYPE )
       SetText( BUTTON_YES, Lng( Lng_TYPE, #lng_YES) )
@@ -185,8 +155,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 165
-; FirstLine = 145
-; Folding = ---
+; CursorPosition = 15
+; Folding = --
 ; EnableXP
 ; DPIAware

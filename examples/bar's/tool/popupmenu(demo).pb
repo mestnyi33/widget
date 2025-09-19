@@ -19,6 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    OpenWindow( 1, 100, 100, 500, 400, "main window_1", #PB_Window_SystemMenu)
    menu = CreatePopupMenu( #PB_Any )
+   MenuItem(4, "Quit")
    MenuItem(1, "Open")      ; You can use all commands for creating a menu
    MenuItem(2, "Save")      ; just like in a normal menu...
    MenuBar( )
@@ -58,7 +59,6 @@ CompilerIf #PB_Compiler_IsMainFile
       MenuItem(1, "Open")      ; You can use all commands for creating a menu
       MenuItem(2, "Save")      ; just like in a normal menu...
       MenuItem(3, "Save as")
-      MenuItem(4, "Quit")
       MenuBar()
       OpenSubMenu("Recent files")
       MenuItem(5, "PureBasic.exe")
@@ -76,6 +76,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Bind(Open( 1, 10, 10, 480, 200), @ClickHandler(), #__event_LeftClick)
    *menu = CreatePopupBar( )
+   BarItem(4, "Quit")
    BarItem(1, "test")      ; You can use all commands for creating a menu
    BarItem(2, "Save")      ; just like in a normal menu...
    BarBar( )
@@ -115,7 +116,6 @@ CompilerIf #PB_Compiler_IsMainFile
       BarItem(1, "Open")     ; You can use all commands for creating a menu
       BarItem(2, "Save")     ; just like in a normal menu...
       BarItem(3, "Save as")
-      BarItem(4, "Quit")
       BarBar( )
       OpenSubBar("Recent files")
       BarItem(5, "PureBasic.exe")
@@ -136,8 +136,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 98
+; CursorPosition = 127
+; FirstLine = 97
 ; Folding = --
 ; EnableXP
 ; DPIAware

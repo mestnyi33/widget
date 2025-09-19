@@ -5884,6 +5884,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;
                   *bar\area\end = *bar\area\len - ( *BB1\size + *BB2\size )
                   ;
+                  If *bar\area\end < *bar\area\pos
+                     ; Debug " ??? "+*bar\area\end +"-*bar\area\end < "+ *bar\area\pos +"-*bar\area\pos "+ *this\class +" "+ClassFromType(*this\type)
+                     *bar\area\end = *bar\area\pos
+                  EndIf
+                  
                   If *this\type = #__type_ToolBar Or 
                      *this\type = #__type_MenuBar Or 
                      *this\type = #__type_PopupBar Or 
@@ -5949,10 +5954,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EndIf
                            EndIf
                         EndIf
-                        
                      EndIf
                   EndIf
                   
+                  ;
                   If *bar\page\end
                      *bar\percent = ( *bar\area\end - *bar\thumb\len ) / ( *bar\page\end - *bar\min )
                   ElseIf *bar\min
@@ -5961,24 +5966,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *bar\percent = ( *bar\area\end - *bar\thumb\len ) / 1
                   EndIf
                   
-                  *bar\thumb\end = *bar\area\len - *bar\thumb\len - *BB2\size - *bar\min[2] 
                   ;
-                  If Not ( *this\type = #__type_ToolBar Or 
-                           *this\type = #__type_MenuBar Or 
-                           *this\type = #__type_PopupBar Or 
-                           *this\type = #__type_TabBar )
-                     ;
-                     If *bar\thumb\end < 0
-                        Debug " ??? "+*bar\thumb\end +"-*bar\thumb\end < null "+ *this\class
-                        *bar\thumb\end = 0
-                     EndIf
-                     If *bar\thumb\end > *bar\area\len
-                        ;
-                        Debug " ??? "+*bar\thumb\end +"-*bar\thumb\end > "+ *bar\area\len +"-*bar\area\len "+ *this\class
-                        *bar\thumb\end = *bar\area\len
-                     EndIf
+                  *bar\thumb\end = *bar\area\len - *bar\thumb\len - *BB2\size - *bar\min[2] 
+                  If *bar\thumb\end < *bar\thumb\pos
+                    ; Debug " ??? "+*bar\thumb\end +"-*bar\thumb\end < "+ *bar\thumb\pos +"-*bar\thumb\pos "+ *this\class
+                    *bar\thumb\end = *bar\thumb\pos
                   EndIf
-                  
                EndIf
             EndIf
          EndIf
@@ -10055,7 +10048,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             *this\__tabs( )\TextChange( ) = 1
             *this\__tabs( )\text\string = Text.s
-            *this\WidgetChange( )         = #True
+            *this\WidgetChange( )       = #True
             *this\TabChange( )          = #True
             result                      = #True
          EndIf
@@ -13176,7 +13169,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                ElseIf constants::BinaryFlag( *box\flag, #__flag_BarLarge )
                   size = 40
                Else ; If constants::BinaryFlag( *this\flag, #__flag_BarNormal )
-                  size = 32
+                  If *box\type = #__type_MenuBar
+                     size = 20
+                  Else
+                     size = 32
+                  EndIf
                EndIf
                
                If position = 1 Or position = 3
@@ -13188,7 +13185,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf   
             
-            size =DPIScaled( size )
+            size = DPIScaled( size )
             
             If *this  
                If *this\type = #__type_Panel Or *box\Type = #__type_ToolBar
@@ -13236,6 +13233,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn AddItem( widget( ), Button, Text, img, mode )
       EndProcedure
       
+      Procedure   BarSeparator( )
+         Protected *item._s_ROWS 
+         *item = BarButton( #PB_Ignore, - 1, 0, "" )
+         *item\sublevel = - 1
+      EndProcedure
+      
       Procedure   BarItem( item, Text.s, img = - 1 )
          Protected._s_ROWS  *item, *tab
          Protected *this._s_WIDGET = widget( )
@@ -13262,32 +13265,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure   BarTitle( title.s, img = - 1 )
          CloseSubBar( )
          ProcedureReturn OpenSubBar( title, img )
-      EndProcedure
-      
-      Procedure   OpenSubBar( Text.s, img = - 1)
-         Protected *this._s_WIDGET
-         If widget( )
-            BarItem( #PB_Any, Text.s, img )
-            ;
-            ; title index
-            widget( )\__tabs( )\tindex = ListIndex(widget( )\__tabs( ))
-            ;
-            *this = CreateBar( widget( ), 0, #__type_PopupBar ) 
-            SetClass( *this, Text )
-            ProcedureReturn *this
-         EndIf
-      EndProcedure
-      
-      Procedure   CloseSubBar( )
-         If widget( )\popupbar
-            widget( ) = widget( )\popupbar
-         EndIf
-      EndProcedure
-      
-      Procedure   BarSeparator( )
-         Protected *item._s_ROWS 
-         *item = BarButton( #PB_Ignore, - 1, 0, "" )
-         *item\sublevel = - 1
       EndProcedure
       
       Procedure   CreatePopupBar( _flags_ = 0 )
@@ -13318,6 +13295,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;
             SetBackgroundColor( *this, $FFF2F2F2)
             Hide( *this, #True ) 
+            
+         
          Else
             If Not *parent
                *parent = root( )
@@ -13356,6 +13335,26 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          widget( ) = *this ;?
          ProcedureReturn *this
+      EndProcedure
+      
+      Procedure   OpenSubBar( Text.s, img = - 1)
+         Protected *this._s_WIDGET
+         If widget( )
+            BarItem( #PB_Any, Text.s, img )
+            ;
+            ; title index
+            widget( )\__tabs( )\tindex = ListIndex(widget( )\__tabs( ))
+            ;
+            *this = CreateBar( widget( ), 0, #__type_PopupBar ) 
+            SetClass( *this, Text )
+            ProcedureReturn *this
+         EndIf
+      EndProcedure
+      
+      Procedure   CloseSubBar( )
+         If widget( )\popupbar
+            widget( ) = widget( )\popupbar
+         EndIf
       EndProcedure
       
       Procedure   HideBar( *this._s_WIDGET )
@@ -13742,31 +13741,45 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_toolbar
             ForEach *this\__tabs( )
                If *this\__tabs( )\tindex = _baritem_
-                  SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
+                  ; SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
+                  
+                  *this\__tabs( )\TextChange( ) = #True
+                  *this\__tabs( )\text\string = _text_
+                  *this\WidgetChange( )       = #True
+                  *this\TabChange( )          = #True
+                  
                   Break
                EndIf
             Next
          EndIf
-         If *this\type = #__type_popupbar
-            ; Debug _text_
+         If *this\type = #__type_popupbar Or *this\type = #__type_menubar
             ForEach *this\__tabs( )
-               If *this\__tabs( )\tindex = _baritem_
-                  SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
-                  Break
-               EndIf
-            Next
-         EndIf
-         If *this\type = #__type_menubar
-            ForEach *this\__tabs( )
-               Debug ""+*this\__tabs( )\text\string +" "+ *this\__tabs( )\tindex +" "+ *this\__tabs( )\_menubar
+               ; Debug ""+*this\__tabs( )\text\string +" "+ *this\__tabs( )\tindex +" "+ *this\__tabs( )\_menubar
                If *this\__tabs( )\_menubar
                   ForEach *this\__tabs( )\_menubar\__tabs( )
                      If *this\__tabs( )\_menubar\__tabs( )\tindex = _baritem_
-                        Debug ""+*this\__tabs( )\_menubar\__tabs( )\text\string +" "+ *this\__tabs( )\_menubar\__tabs( )\tindex +" "+ *this\__tabs( )\_menubar\__tabs( )\_menubar
-                        SetItemText( *this\__tabs( )\_menubar, ListIndex(*this\__tabs( )\_menubar\__tabs( )), _text_.s )
+                        ; Debug ""+*this\__tabs( )\_menubar\__tabs( )\text\string +" "+ *this\__tabs( )\_menubar\__tabs( )\tindex +" "+ *this\__tabs( )\_menubar\__tabs( )\_menubar
+                        ; SetItemText( *this\__tabs( )\_menubar, ListIndex(*this\__tabs( )\_menubar\__tabs( )), _text_.s )
+                        
+                        *this\__tabs( )\_menubar\__tabs( )\TextChange( ) = #True
+                        *this\__tabs( )\_menubar\__tabs( )\text\string = _text_
+                        *this\__tabs( )\_menubar\WidgetChange( )       = #True
+                        *this\__tabs( )\_menubar\TabChange( )          = #True
+                        
                         Break 2
                      EndIf
                   Next
+               Else
+                  If *this\__tabs( )\tindex = _baritem_
+                     ; SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
+                     
+                     *this\__tabs( )\TextChange( ) = #True
+                     *this\__tabs( )\text\string = _text_
+                     *this\WidgetChange( )       = #True
+                     *this\TabChange( )          = #True
+                     
+                     Break
+                  EndIf
                EndIf
             Next
          EndIf
@@ -26147,9 +26160,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 13723
-; FirstLine = 3919
-; Folding = BGAg-B+-----------HA9------DA+-DAAgAAAsPAACUAAAAAAAAAgCAAAAAAAAAAAAAAAAAAAAA5BAAAAAAI+-v0--NA9BAAA1--DABAAAgAAA7BQmBAAkgMDAAAAAABAAAA7D7Xw-DfYfXAAAAAAAAAAAAACIEABANYLPfAAAAAAzj-yBQAAAAAAqqqQBAAAAAAAAAAw--AAEAOdCAAAAAAAAAAAAAAAAAAAAAAAAAAAw-jAAQAAAAAAAAAAAgAAAAAAgAwUAcAAoBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw-D+fAAAAAAAAAAAAAAAAAAHAAAAABACACwDAAAgDAAIPzo-5-Cg--------fY-HAAAAAAAAAAAA6AAABAAAAAIAAAiXQAAAAAAAAcBAAAAAAAAAAA9------A54-PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+PAAAAAAAAK5AAAAAATAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAOfDAwPAAAAIAxAAAAAAAAAADBAAgAMe5xHAAAAAP+--PCAAAQAAAAAAAAAAUAAAAAgo2DBAUAAAAAAAAAAAAAAA9AFAAAAAgAABAAAAAAAAAAAAAAAAAAAAQBAAAwBAyPAAAAAAAAAAAIBAA1AAAAAAACAAAAAAAAADAAgAAAAAAA5
+; CursorPosition = 13755
+; FirstLine = 4033
+; Folding = BGAg-B+-----------HA9------DA+-DAAgAAAsPAACUAAAAAAAAAgCAAAAAAAAAAAAAAAAAAAAA5BAAAAAAI+-v0--NA9BAAA1--DABAAAgAAA7BQmBAAkgMDAAAAAABAAAA7D7vj-hPsvLAAAAAAAAAAAAABECgAgGslnPAAAAAg6xf6AIAAAAAAVVVoAAAAAAAAAAA5-fAACA-+FAAAAAAAAAAAAAAAAAAAAAAAAAAA5-RAAIAAAAAAAAAAAQAAAAAAQAYKAOAA1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5-B-PAAAAAAAAAAAAAAAAAgDAAAAgAABAB5BAAAwBAAk--8--v-h--------fY-DAAAAAAAAAAAgcAAgAAAAAAEAAAxLIAAAAAAAAuAAAAAAAAAAAA+-----fA98-HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-HAAAAAAAAFcAAAAAgJAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAnvBA5HAAAAEgYAAAAAAAAAghAAAQAGP95DAAAAgH---HBAAAIAAAAAAAAAAKAAAAAQ17hAAOAAAAAAAAAAAAAAAegCAAAAAQAgAAAAAAAAAAAAAAAAAAAAAoAAAA5AA6HAAAAAAAAAAAkAAAaAAAAAAABAAAAAAAAgBAAQAAAAAAA9
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
