@@ -3799,7 +3799,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             Protected text_pos = DPIScaled(6)
             Protected img_pos = DPIScaled(3)
             Protected childrens.b, qqq = DPIScaled(40)
-            
             ;
             If Not *this\hide 
                If *this\TabChange( ) Or *this\ResizeChange( )
@@ -4182,8 +4181,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *tabs( )\checked
                      bar_draw_item_( *this\bar\vertical, *tabs( ), X, Y, round, [2] )
                   Else
-                     If Not (*tabs( ) <> *this\TabFocused( ) And *tabs( )\_focus) And
-                        *tabs( ) <> *this\TabEntered( )
+                     If *tabs( ) <> *this\TabEntered( )
+                        ; And Not (*tabs( ) <> *this\TabFocused( ) And *tabs( )\_focus) 
                         
                         ; Debug *this\parent\class
                         ;                     ;
@@ -4201,8 +4200,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          Next
          ;
          ; draw mouse-enter visible item
-         If *this\TabEntered( ) <> *this\TabFocused( )
-            If *this\TabEntered( ) And
+         If *this\TabEntered( )
+            If *this\TabEntered( )\_focus = 0 And
                *this\TabEntered( )\checked = 0 And
                *this\TabEntered( )\visible 
                ;
@@ -4216,10 +4215,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          ; draw key-focus visible item
          If *this\TabFocused( ) And
+            *this\TabFocused( )\_focus And 
             *this\TabFocused( )\visible
             Protected._s_ITEMS *activeTAB = *this\TabFocused( )
             ;   
-            If *activeTAB\_focus And *activeTAB\tindex <> #PB_Ignore
+            If *activeTAB\tindex <> #PB_Ignore
                draw_font( *activeTAB, GetFontID( *this ), *this\TextChange( ))
                ;
                If is_integral_( *this )
@@ -4242,7 +4242,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   bar_draw_item_( *this\bar\vertical, *activeTAB, X, Y, round, [2] )
                EndIf
             EndIf
-         EndIf
          
          ; draw focus-item frame
          If is_integral_( *this )
@@ -4253,8 +4252,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                If *bar\vertical
-                  If *activeTAB And *activeTAB\_focus And 
-                     *activeTAB\visible
+;                   If *activeTAB And *activeTAB\_focus And 
+;                      *activeTAB\visible
                      If *this\parent\fs
                         Line( X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, color )
                         Line( X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, color )
@@ -4269,7 +4268,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If is_menu_( *this )
                         Line( X + *activeTAB\x + *activeTAB\width - 1, Y + *activeTAB\y, 1, *activeTAB\height, color )
                      EndIf
-                  EndIf
+;                   EndIf
                   ;
                   If *this\type = #__type_TabBar 
                      If *this\parent\fs
@@ -4305,8 +4304,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                Else
-                  If *activeTAB And *activeTAB\_focus And 
-                     *activeTAB\visible
+;                   If *activeTAB And *activeTAB\_focus And 
+;                      *activeTAB\visible
                      If *this\parent\fs
                         Line( X + *activeTAB\x, Y + *activeTAB\y, 1, (*activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4])), color )
                         Line( X + *activeTAB\x + *activeTAB\width - 1, Y + *activeTAB\y, 1, (*activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4])), color )
@@ -4321,7 +4320,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If is_menu_( *this )
                         Line( X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width, 1, color )
                      EndIf
-                  EndIf
+;                   EndIf
                   ;
                   If *this\type = #__type_TabBar
                      If *this\parent\fs
@@ -4365,6 +4364,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
          EndIf
+         EndIf
+         
       EndProcedure
       
       Procedure.b bar_draw_tab( *this._s_WIDGET )
@@ -18900,61 +18901,55 @@ chr$ = ","
                        *tab = 0    
                      EndIf  
                      *this\TabEntered( ) = *tab
-                       
+                     
                      ;
                      If *tab
                         If *this\enter 
                            ;\\ entered tabs
                            If is_entered( *tab )
                               *this\root\repaint = 1
-                              
+                              ;
                               ;\\ show popup bar
                               If is_bar_( *this )
-;                                  ;
-;                                  ;\\ change toggle state
-;                                  If *lasttab
-;                                     If *lasttab\checked
-;                                        *lasttab\checked = 0
-;                                     EndIf
-;                                     If *tab\childrens
-;                                        If *tab\checked = 0
-;                                           *tab\checked = 1
-;                                           *lasttab = *tab
-;                                        EndIf
-;                                     EndIf
-;                                  EndIf
-                                 ;
                                  ;
                                  ;\\ change focused tab
                                  If *this\TabFocused( ) <> *tab
                                     If *this\type = #__type_MenuBar 
                                        If *this\TabFocused( )
-                                          Debug " menubar focus change "
                                           *this\TabFocused( )\_focus = 0
                                           *this\TabFocused( ) = *tab
+                                          Debug " menubar focus change "
                                           *this\TabFocused( )\_focus = 1
                                        EndIf
                                     EndIf
                                     If *this\type = #__type_ToolBar 
                                        If *this\TabFocused( )
-                                          *this\TabFocused( )\_focus = 0
-                                          ; *this\TabFocused( ) = 0
+                                          ; *this\TabFocused( )\_focus = 0
+                                          *this\TabFocused( )\checked = 0
+                                          *this\TabFocused( ) = *tab
                                           If *tab\childrens  
-                                             If *tab\_focus = 0
-                                                Debug " toolbar focus change "
-                                                *this\TabFocused( ) = *tab
-                                                *this\TabFocused( )\_focus = 1
-                                             EndIf
+                                             Debug " toolbar focus change "
+                                             ; *this\TabFocused( )\_focus = 1
+                                             *this\TabFocused( )\checked = 1
                                           EndIf
                                        EndIf
                                     EndIf
                                     If *this\type = #__type_PopupBar 
                                        If *this\TabFocused( )
-                                          *this\TabFocused( )\_focus = 0
+                                          ; *this\TabFocused( )\_focus = 0
+                                          *this\TabFocused( )\checked = 0
                                        EndIf
                                        Debug " popupbar focus change "
                                        *this\TabFocused( ) = *tab
-                                       *this\TabFocused( )\_focus = 1
+                                       ; *this\TabFocused( )\_focus = 1
+                                       *this\TabFocused( )\checked = 1
+                                    EndIf
+                                 Else
+                                    If *this\type = #__type_PopupBar 
+                                       If *this\TabFocused( )\checked = 0
+                                          *this\TabFocused( )\checked = 1
+                                          ; Debug "----- popup enter "
+                                       EndIf
                                     EndIf
                                  EndIf
                                  ; 
@@ -18984,20 +18979,21 @@ chr$ = ","
             EndIf
          EndIf
          
-         If event = #__event_MouseLeave
-            If *this\popup\parent
-               If *this\TabFocused( ) And *this\TabFocused( )\childrens = 0 
-                  Debug ""+*this\TabFocused( )\_focus +" "+ *this\TabFocused( )\checked
-                  
-                  *this\TabFocused( )\_focus = 0
-                  ; *this\TabFocused( )\checked = 0
-                  *this\TabFocused( ) = 0
-                  ; *this\root\repaint = 1
+         ;
+         If *this\tab
+            If event = #__event_MouseLeave
+               If *this\popup\parent
+                  If *this\TabFocused( ) And *this\TabFocused( )\childrens = 0 
+                     ; Debug ""+*this\TabFocused( )\_focus +" "+ *this\TabFocused( )\checked
+                     
+                     *this\TabFocused( )\_focus = 0
+                     *this\TabFocused( )\checked = 0
+                     ;*this\TabFocused( ) = 0
+                     ; *this\root\repaint = 1
+                  EndIf
                EndIf
             EndIf
-         EndIf
             ;
-         If *this\tab
             If event = #__event_LostFocus
                If CurrentPopupBar( *this )
                   If CurrentPopupBar( *this )\enter = 0 
@@ -19064,9 +19060,8 @@ chr$ = ","
                               
                            ElseIf *this\TabEntered( )\childrens 
                               *this\TabFocused( ) = *tab
-                              *this\TabFocused( )\_focus = 1
-;                               *tab\checked ! 1
-;                               *lasttab = *tab
+                              ; *this\TabFocused( )\_focus = 1
+                              *this\TabFocused( )\checked ! 1
                            EndIf
                         EndIf
                      EndIf
@@ -25060,14 +25055,10 @@ chr$ = ","
          ResetEvents( *this )
          
          ;\\
-         If widget::__gui\DrawingRoot
-            ; Debug " ----REDRAW---- "
-         Else
-            If Not IsGadget( *this\canvas\gadget )
-               ProcedureReturn 0
-            EndIf
-            widget::StartDraw( *this )
+         If Not IsGadget( *this\canvas\gadget )
+            ProcedureReturn 0
          EndIf
+         widget::StartDraw( *this )
          widget::Drawing( )
          widget::StopDraw( )
          
@@ -26224,9 +26215,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 4184
-; FirstLine = 4152
-; Folding = B+-------------------------------------------------------------------------------------f-------0+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------------------------------------------------------fv----------------------f-8-------------------------------------------------------------------------------------------------------------------------------------------rAAAwAAA+
+; CursorPosition = 18950
+; FirstLine = 18754
+; Folding = B+-------------------------------------------------------------------------------------f------vff5------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------v--------v4----------------------v-tu-----------------------------------------------------------------------------------------------------------------------------f------------KAAAMAAg-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
