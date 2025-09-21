@@ -5,144 +5,100 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   Global *menu._s_widget
+   Global menu, *menu._s_WIDGET
    ;-
    Procedure TestHandler()
-      ;ClearDebugOutput()
       Debug "Test menu event"
    EndProcedure
    
    Procedure QuitHandler()
-      ;ClearDebugOutput()
       Debug "Quit menu event"
-      ; End
+      ;End
    EndProcedure
    
    ;\\
-   Define WindowID = OpenWindow( 0, 100, 100, 500, 350, "main window_0", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
-   
-   CreateMenu(0, WindowID(0))
-   MenuTitle("Title-1")
-   MenuItem(1, "title-1-item-1")
-   MenuBar()
-   ;
-   OpenSubMenu("title-1-sub-item")   
-   MenuItem(3, "title-1-item")
-   MenuBar()
-   ;
-   OpenSubMenu("title-2-sub-item")   
-   MenuItem(13, "title-2-item")
-   MenuBar()
-   ;
-   OpenSubMenu("title-3-sub-item")   
-   MenuItem(23, "title-3-item")
-   CloseSubMenu( ) 
-   ;
-   MenuBar()
-   MenuItem(24, "title-2-item")
-   CloseSubMenu( ) 
-   ;
-   MenuBar()
-   MenuItem(14, "title-1-item")
-   CloseSubMenu( ) 
-   ;
-   MenuBar()
-   MenuItem(2, "title-1-item-2")
-   
-   MenuTitle("Title-2")
-   ;    MenuItem(5, "title-2-item-1")
-   ;    MenuItem(6, "title-2-item-2")
-   
-   MenuTitle("Title-event-test")
-   MenuItem(7, "test")
+   OpenWindow( 1, 100, 100, 500, 400, "main window_1", #PB_Window_SystemMenu)
+   menu = CreatePopupMenu( #PB_Any )
+   MenuItem(1, "Open")      ; You can use all commands for creating a menu
+   MenuItem(2, "Save")      ; just like in a normal menu...
    MenuBar( )
-   MenuItem(8, "quit")
+   ;
+   OpenSubMenu("open sub item 1")
+   MenuItem(5, "5 sub item")
+   MenuItem(6, "6 sub item")
+   CloseSubMenu()
+   ;
+   MenuBar( )
+   MenuItem(3, "Before")
+   MenuItem(4, "After")
+   MenuBar( )
+   ;
+   OpenSubMenu("open sub item 2")
+   MenuItem(10, "10 sub item")
+   MenuItem(11, "11 sub item")
+   MenuBar( )
+   ;
+   OpenSubMenu("open sub item 3")
+   MenuItem(12, "12 sub item")
+   MenuItem(13, "13 sub item")
+   CloseSubMenu()
+   ;
+   MenuBar( )
+   MenuItem(14, "14 sub item")
+   MenuItem(15, "15 sub item")
+   MenuBar( )
+   MenuItem(16, "16 sub item")
+   MenuItem(17, "17 sub item")
+   CloseSubMenu( )
+   ;
+   MenuBar( )
+   MenuItem(7, "exit")
    
-   MenuTitle("Title-4")
-   MenuItem(9, "title-4-item-1")
-   MenuItem(10, "title-4-item-2")
+   If IsMenu(menu)                ; creation of the pop-up menu begins...
+      MenuItem(1, "Open")      ; You can use all commands for creating a menu
+      MenuItem(2, "Save")      ; just like in a normal menu...
+      MenuItem(3, "Save as")
+      MenuItem(4, "Quit")
+      MenuBar()
+      OpenSubMenu("Recent files")
+      MenuItem(5, "PureBasic.exe")
+      MenuItem(6, "Test.txt")
+      CloseSubMenu()
+   EndIf
    
-   BindMenuEvent(0, 7, @TestHandler())
-   BindMenuEvent(0, 8, @QuitHandler())
+   BindMenuEvent(menu, 6, @TestHandler())
+   BindMenuEvent(menu, 4, @QuitHandler())
    
    ;\\
-   Open(0, 50,50,400,250)
-   *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
-   
-   BarTitle("Title-1")
-   BarItem(1, "title-1-item-1")
-   BarSeparator( )
-   
-   OpenSubBar("title-1-sub-item")
-   BarItem(3, "title-1-item")
-   BarSeparator( )
-   ;
-   OpenSubBar("title-2-sub-item")   
-   BarItem(13, "title-2-item")
-   BarSeparator( )
-   ;
-   OpenSubBar("title-3-sub-item")   
-   BarItem(23, "title-3-item")
-   CloseSubBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(14, "title-2-item")
-   CloseSubBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(4, "title-1-item")
-   CloseSubBar( ) 
-   ;
-   BarSeparator( )
-   BarItem(2, "title-1-item-2")
-   
-   BarTitle("Title-2")
-   ;    BarItem(5, "title-2-item-1")
-   ;    BarItem(6, "title-2-item-2")
-   
-   BarTitle("Title-event-test")
-   BarItem(7, "test")
-   BarSeparator( )
-   BarItem(8, "quit")
-   
-   BarTitle("Title-4")
-   BarItem(9, "title-4-item-1")
-   BarItem(10, "title-4-item-2")
-   
-   Bind(*menu, @TestHandler(), -1, 7)
-   Bind(*menu, @QuitHandler(), -1, 8)
-   
-   ;\\
-   Define a
-   ComboBox(100, 10, 250, 21, #PB_ComboBox_Editable)
-   For a = 0 To 30
-      AddItem(widget(), -1,"ComboBox editable..." + Str(a))
-   Next
-   
-   ComboBox(100, 40, 250, 21, #PB_ComboBox_Image)
-   AddItem(widget(), -1, "ComboBox item0 with image0", (0))
-   AddItem(widget(), -1, "ComboBox item1 with image1", (1))
-   AddItem(widget(), -1, "ComboBox item2 with image2", (2))
-   
-   ComboBox(100, 70, 250, 21)
-   AddItem(widget(), -1, "ComboBox item0")
-   AddItem(widget(), -1, "ComboBox item1")
-   AddItem(widget(), -1, "ComboBox item3")
-   
-   SetState(ID(0), 2)
-   SetState(ID(1), 1)
-   SetState(ID(2), 0)    ; set (beginning with 0) the third item as active one
-   
-   Procedure ClickHandler()
-      Debug "DisplayPopupBar"
-      DisplayPopupBar( *menu, EventWidget())
+   Procedure ClickHandler( )
+      DisplayPopupBar( *menu, EventWidget( ) )
    EndProcedure
-   Container(100,100,250,100)
-   SetText(widget(), "  click mouse button to see popup menu")
-   Bind(widget(), @ClickHandler(), #__event_leftclick)
-   ;
+   
+   Bind(Open( 1, 10, 10, 480, 200), @ClickHandler(), #__event_LeftClick)
    *menu = CreatePopupBar( )
-   If *menu                  ; creation of the pop-up menu begins...
+   BarItem(1, "test")      ; You can use all commands for creating a menu
+   BarItem(2, "Save")      ; just like in a normal menu...
+;    BarBar( )
+   ;
+;    OpenSubBar("open sub item 1")
+    BarItem(5, "5 sub item")
+;    BarItem(6, "6 sub item")
+;    CloseSubBar()
+   ;
+;    BarBar( )
+   BarItem(3, "Before")
+   BarItem(4, "After")
+   BarBar( )
+   ;
+   OpenSubBar("open sub item 2")
+   BarItem(10, "10 sub item")
+   BarItem(11, "11 sub item")
+   CloseSubBar( )
+   ;
+   BarBar( )
+   BarItem(7, "exit")
+   
+   If is_menu_( *menu )      ; creation of the pop-up menu begins...
       BarItem(1, "Open")     ; You can use all commands for creating a menu
       BarItem(2, "Save")     ; just like in a normal menu...
       BarItem(3, "Save as")
@@ -153,21 +109,28 @@ CompilerIf #PB_Compiler_IsMainFile
       BarItem(6, "Test.txt")
       CloseSubBar( )
    EndIf
-   CloseList()
    
+   Bind(*menu, @TestHandler(), #__event_LeftClick, 6)
+   Bind(*menu, @QuitHandler(), #__event_LeftClick, 4)
+      
+   DisplayPopupBar( *menu, root( ) )
+   
+   SetBarTitleText(*menu, 1, "Файлwefrweteatearrtaertaertaertaer") 
+;    Hide( *menu,1)
+;    DisplayPopupBar( *menu, root( ) )
+    SetState( *menu, 6)
+  
    Define Event
    Repeat
-      Event = WaitWindowEvent()
-      If Event = #PB_Event_Gadget
-         If EventGadget() = 777
-            Debug " -777- event "
-         EndIf
+      Event = WaitWindowEvent( )
+      If event = #PB_Event_LeftClick
+         DisplayPopupMenu( menu, WindowID(EventWindow()), DesktopMouseX(), DesktopMouseY())
       EndIf
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 137
-; FirstLine = 128
+; CursorPosition = 121
+; FirstLine = 91
 ; Folding = --
 ; EnableXP
 ; DPIAware

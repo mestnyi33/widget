@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_Cursor      
             Debug Index(EventWidget( ))
-            ProcedureReturn #__cursor_Hand
+            ProcedureReturn #PB_Cursor_Hand
       EndSelect
       
    EndProcedure
@@ -64,7 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
       form1 = Window(200,10,200,110,"form1")
          a_init(widget( ))
          btn1 = Button(10,10,80,50, "btn1") 
-         SetCursor( btn1, #__cursor_Hand )
+         SetCursor( btn1, #PB_Cursor_Hand )
          btn2 = Button(60,40,80,50, "btn2") 
          Disable( btn2, 1 )
          SetMoveBounds( btn1, -1,-1,-1,-1 )
@@ -87,9 +87,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Disable( Button_1, 1 )
       
-      SetCursor( Button_0, #__cursor_Hand )
-      SetCursor( Button_1, #__cursor_Cross )
-      SetCursor( Button_2, #__cursor_IBeam )
+      SetCursor( Button_0, #PB_Cursor_Hand )
+      SetCursor( Button_1, #PB_Cursor_Cross )
+      SetCursor( Button_2, #PB_Cursor_IBeam )
       
       EnableDrop(Button_1, #PB_Drop_Text, #PB_Drag_Copy)
       EnableDrop(Button_4, #PB_Drop_Text, #PB_Drag_Copy)
@@ -108,8 +108,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 42
+; CursorPosition = 71
+; FirstLine = 53
 ; Folding = --
 ; EnableXP
 ; DPIAware

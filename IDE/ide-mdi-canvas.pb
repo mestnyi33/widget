@@ -1880,9 +1880,7 @@ Procedure widget_events( )
                      ChangeCursor( *g, GetCursor(*g))
                   EndIf
                   If __event = #__event_MouseEnter
-                     ; SetCursor( *g, #__Cursor_Cross, 1 )
                      SetCursor( *g, Cursor::Create( ImageID( GetItemData( ide_inspector_elements, GetState( ide_inspector_elements ) ) ) ), 1 )
-                     
                   EndIf
                EndIf
             EndIf
@@ -2923,8 +2921,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2286
-; FirstLine = 2225
+; CursorPosition = 1883
+; FirstLine = 1875
 ; Folding = -------------------------------------------l44t----+-
 ; EnableXP
 ; DPIAware

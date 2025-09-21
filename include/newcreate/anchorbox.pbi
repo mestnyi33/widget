@@ -40,7 +40,7 @@ Module AnchorBox
             
             If *this = *button
                
-               Protected a = *this\popupbar ; widget::GetData(*this)
+               Protected a = *this\popup\parent ; widget::GetData(*this)
                If a
                   
                   If widget::GetState(*this)
@@ -296,7 +296,7 @@ Module AnchorBox
       EndIf
       
       ;
-      *Button\popupbar = *a
+      *Button\popup\parent = *a
       widget::Bind(*button, @Events( ) )
       
       widget::Bind(LTBUTTON, @Events( ) )
@@ -359,8 +359,8 @@ CompilerIf #PB_Compiler_IsMainFile
    widget::WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 276
-; FirstLine = 249
+; CursorPosition = 298
+; FirstLine = 294
 ; Folding = --------
 ; EnableXP
 ; DPIAware

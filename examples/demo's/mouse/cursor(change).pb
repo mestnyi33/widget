@@ -16,9 +16,9 @@ CompilerIf #PB_Compiler_IsMainFile
             If EventWidget( ) = object
                Debug "CHANGE CURSOR "+ GetCursor( )
                If a_index( )
-                  ProcedureReturn cursor::#__cursor_Hand
+                  ProcedureReturn #PB_Cursor_Hand
                Else
-                  ProcedureReturn cursor::#__cursor_Cross
+                  ProcedureReturn #PB_Cursor_Cross
                EndIf
             EndIf
             
@@ -93,8 +93,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 12
+; CursorPosition = 25
+; FirstLine = 14
 ; Folding = --
 ; EnableXP
 ; DPIAware

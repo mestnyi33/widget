@@ -171,7 +171,7 @@ Procedure widget_events( )
             DragDropPrivate( 2 )
           EndIf
           
-          ChangeCursor( Gadget_SourcePrivate, cursor::#__cursor_Hand) 
+          ChangeCursor( Gadget_SourcePrivate, #PB_Cursor_Hand) 
           
       EndSelect
       
@@ -433,7 +433,7 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   
     
   ;\\   
-  SetCursor( Gadget_SourceText, cursor::#__cursor_Hand )
+  SetCursor( Gadget_SourceText, #PB_Cursor_Hand )
   
   ;\\
   AddItem( Gadget_SourceText, -1, "hello world" )
@@ -510,8 +510,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 358
-; FirstLine = 354
+; CursorPosition = 445
+; FirstLine = 431
 ; Folding = -----
 ; Optimizer
 ; EnableXP

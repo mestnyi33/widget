@@ -392,7 +392,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          OffsetMoveMin.i
          OffsetMoveMax.i
          
-         *_menubar._s_WIDGET
+         *popupbar._s_WIDGET
          StructureUnion
             *_parent._s_ROWS
             *parent._s_ROWS
@@ -530,15 +530,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
          color._s_color
       EndStructure
       
-      ;--     popup
-      Structure _s_popup
-         gadget.i
-         window.i
-         
-         ; *widget._s_WIDGET
+      ;--     POPUP
+      Structure _s_POPUP
+;          gadget.i
+;          window.i
+         display.b
+         StructureUnion
+            *menu._s_WIDGET
+            *parent._s_WIDGET
+         EndStructureUnion
       EndStructure
       
-      
+     
       ;--     COLUMN
       Structure _s_COLUMN Extends _s_COORDINATE
          ;index.i
@@ -666,13 +669,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
          Tab._s_TAB               ; 
          
+         popup._s_POPUP
          ;
          *tabbar._s_WIDGET
          *menubar._s_WIDGET
-         
-         displaypopup.b
-         *popupbar._s_WIDGET
-         
          *groupbar._s_WIDGET      ; = Option( ) group widget
          *stringbar._s_WIDGET     ; = SpinBar( ) string box widget
          
@@ -730,7 +730,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
          *gadgetID                ; canvas handle
-         *menu._s_WIDGET
       EndStructure
       
       ;--     ROOT
@@ -796,8 +795,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 351
-; FirstLine = 313
+; CursorPosition = 541
+; FirstLine = 509
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP

@@ -803,10 +803,10 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                
             Case #_pi_fontstyle
                AddItem(*this, -1, "None")         
-               If *this\popupbar
-                  *this\popupbar\mode\Checkboxes = 1
-                  *this\popupbar\mode\optionboxes = 1
-               ;    Flag( *this\popupbar, #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
+               If *this\popup\parent
+                  *this\popup\parent\mode\Checkboxes = 1
+                  *this\popup\parent\mode\optionboxes = 1
+               ;    Flag( *this\popup\parent, #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
                EndIf
                AddItem(*this, -1, "Bold")        ; Шрифт будет выделен жирным
                AddItem(*this, -1, "Italic")      ; Шрифт будет набран курсивом
@@ -1733,9 +1733,8 @@ Procedure new_widget_events( )
             If MouseEnter( *g )
                If Not MouseButtonPress( )
                   If GetState( ide_inspector_elements ) > 0 
-                     If GetCursor( ) < 255 ; <> #__Cursor_Arrows
+                     If GetCursor( ) < 255
                         Debug " mouse enter to change cursor " 
-                        ; ChangeCursor( *g, #__Cursor_Arrows )
                         ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_inspector_elements, GetState( ide_inspector_elements ) ) ) ))
                      EndIf
                   EndIf
@@ -2160,16 +2159,16 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
    Protected transform, move_x, move_y
    Static NewList *copy._s_a_group( )
    
-   ; Debug "ide_menu_events "+BarButton
+    Debug "ide_menu_events "+BarButton
    
    Select BarButton
       Case #_tb_LNG
-         If Hide( ide_popup_lenguage )
-            DisplayPopupBar( ide_popup_lenguage, *g )
-         Else
-            HideWindow( GetCanvasWindow(GetRoot(ide_popup_lenguage)), 1 )
-            Hide( ide_popup_lenguage, 1 )
-         EndIf
+;          If Hide( ide_popup_lenguage )
+;             DisplayPopupBar( ide_popup_lenguage, *g )
+;          Else
+;             HideWindow( GetCanvasWindow(GetRoot(ide_popup_lenguage)), 1 )
+;             Hide( ide_popup_lenguage, 1 )
+;          EndIf
          
       Case #_tb_lng_ENG
          ide_Lng_change( 0 )
@@ -2546,11 +2545,6 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    BarItem( #_tb_file_open, "Open (Ctrl+O)")
    BarItem( #_tb_file_save, "Save (Ctrl+S)")
    BarItem( #_tb_file_SAVEAS, "Save as...")
-;    BarSeparator( )
-;    OpenSubBar("Lng")
-;    BarItem( #_tb_lng_ENG, "ENG")
-;    BarItem( #_tb_lng_RUS, "RUS")
-;    CloseSubBar( )
    BarSeparator( )
    BarItem( #_tb_file_quit, "Quit" );+ Chr(9) + "Ctrl+Q")
    CloseSubBar( )
@@ -2564,10 +2558,6 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    BarButton( #_tb_new_widget_paste, CatchImage( #PB_Any,?image_new_widget_paste ) )
    BarButton( #_tb_new_widget_cut, CatchImage( #PB_Any,?image_new_widget_cut ) )
    BarButton( #_tb_new_widget_delete, CatchImage( #PB_Any,?image_new_widget_delete ) )
-   BarSeparator( )
-   BarItem( #_tb_file_run, "[RUN]" )
-   BarItem( #_tb_lng_ENG, "[ENG]" )
-   BarItem( #_tb_lng_RUS, "[RUS]" )
    BarSeparator( )
    BarButton( #_tb_group_select, CatchImage( #PB_Any,?image_group ), #PB_ToolBar_Toggle ) 
    ;
@@ -2583,29 +2573,32 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    BarSeparator( )
    BarButton( #_tb_group_width, CatchImage( #PB_Any,?image_group_width ) )
    BarButton( #_tb_group_height, CatchImage( #PB_Any,?image_group_height ) )
-   
-   ;    BarSeparator( )
-   ;    OpenSubBar("ComboBox")
-   ;    BarItem(55, "item1")
-   ;    BarItem(56, "item2")
-   ;    BarItem(57, "item3")
-   ;    CloseSubBar( )
-   
+;    
+;       BarSeparator( )
+;       OpenSubBar("ComboBox")
+;       BarItem(55, "item1")
+;       BarItem(56, "item2")
+;       BarItem(57, "item3")
+;       CloseSubBar( )
+;    
    BarSeparator( )
-   ;    BarButton( #_tb_align_left, CatchImage( #PB_Any,?image_group_left ) )
-   ;    BarButton( #_tb_align_top, CatchImage( #PB_Any,?image_group_top ) )
-   ;    BarButton( #_tb_align_center, CatchImage( #PB_Any,?image_group_width ) )
-   ;    BarButton( #_tb_align_bottom, CatchImage( #PB_Any,?image_group_bottom ) )
-   ;    BarButton( #_tb_align_right, CatchImage( #PB_Any,?image_group_right ) )
-   BarItem( #_tb_LNG, "[LENGUAGE]" )
-   
-   ide_popup_lenguage = CreatePopupBar( )
-   If ide_popup_lenguage
-      BarItem(#_tb_lng_ENG, "ENG")
-      BarItem(#_tb_lng_RUS, "RUS")
-      BarItem(#_tb_lng_FRENCH, "FRENCH")
-      BarItem(#_tb_lng_GERMAN, "GERMAN")
-    EndIf
+   BarItem( #_tb_file_run, "[RUN]" )
+   BarItem( #_tb_lng_ENG, "ENG")
+   BarItem( #_tb_lng_RUS, "RUS")
+   BarSeparator( )
+;    
+;    ide_popup_lenguage = OpenSubBar("[LENGUAGE]")
+;    ; BarItem( #_tb_LNG, "[LENGUAGE]" )
+;    BarSeparator( )
+;    
+;    ; ide_popup_lenguage = CreatePopupBar( )
+;    If ide_popup_lenguage
+;       BarItem(#_tb_lng_ENG, "ENG")
+;       BarItem(#_tb_lng_RUS, "RUS")
+;       BarItem(#_tb_lng_FRENCH, "FRENCH")
+;       BarItem(#_tb_lng_GERMAN, "GERMAN")
+;    EndIf
+;    
    CloseList( )
    
    DisableBarButton( ide_toolbar, #_tb_lng_ENG, #True )
@@ -3053,9 +3046,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2170
-; FirstLine = 1829
-; Folding = ---------f+T-------Pg----------4-n0--8d---f-4--0-----
+; CursorPosition = 808
+; FirstLine = 753
+; Folding = ---------f+T-------Pg----------4-n0--8d---v-8--+-----
 ; Optimizer
 ; EnableAsm
 ; EnableXP

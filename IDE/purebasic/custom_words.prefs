@@ -22,6 +22,7 @@ CanvasMouseY
 CanvasMouseButton
 ChangeCurrentCanvas
 
+ResizeRootWindow
 GetCanvasWindow
 GetCanvasGadget
 GetWindow
