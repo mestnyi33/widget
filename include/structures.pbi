@@ -730,6 +730,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
          *gadgetID                ; canvas handle
+         *popupmenu._s_WIDGET
       EndStructure
       
       ;--     ROOT
@@ -795,8 +796,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 541
-; FirstLine = 509
+; CursorPosition = 733
+; FirstLine = 702
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP

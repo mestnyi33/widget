@@ -2586,19 +2586,19 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    BarItem( #_tb_lng_ENG, "ENG")
    BarItem( #_tb_lng_RUS, "RUS")
    BarSeparator( )
-;    
-;    ide_popup_lenguage = OpenSubBar("[LENGUAGE]")
-;    ; BarItem( #_tb_LNG, "[LENGUAGE]" )
-;    BarSeparator( )
-;    
-;    ; ide_popup_lenguage = CreatePopupBar( )
-;    If ide_popup_lenguage
-;       BarItem(#_tb_lng_ENG, "ENG")
-;       BarItem(#_tb_lng_RUS, "RUS")
-;       BarItem(#_tb_lng_FRENCH, "FRENCH")
-;       BarItem(#_tb_lng_GERMAN, "GERMAN")
-;    EndIf
-;    
+   
+   ide_popup_lenguage = OpenSubBar("[LENGUAGE]")
+   ; BarItem( #_tb_LNG, "[LENGUAGE]" )
+   BarSeparator( )
+   
+   ; ide_popup_lenguage = CreatePopupBar( )
+   If ide_popup_lenguage
+      BarItem(#_tb_lng_ENG, "ENG")
+      BarItem(#_tb_lng_RUS, "RUS")
+      BarItem(#_tb_lng_FRENCH, "FRENCH")
+      BarItem(#_tb_lng_GERMAN, "GERMAN")
+   EndIf
+   
    CloseList( )
    
    DisableBarButton( ide_toolbar, #_tb_lng_ENG, #True )
@@ -3046,8 +3046,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 808
-; FirstLine = 753
+; CursorPosition = 2600
+; FirstLine = 2042
 ; Folding = ---------f+T-------Pg----------4-n0--8d---v-8--+-----
 ; Optimizer
 ; EnableAsm

@@ -13159,8 +13159,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       ;- MENU
       ;-
+      Global *popupmenu._s_WIDGET
       Macro CurrentPopupBar( _this_ )
-         _this_\root\popup\menu
+        *popupmenu ;  _this_\root\canvas\popupmenu ; popup\menu
       EndMacro
       
       Procedure   BarPosition( *this._s_widget, position.i, size.i = #PB_Default )
@@ -18918,7 +18919,7 @@ chr$ = ","
                                        If *this\TabFocused( )
                                           *this\TabFocused( )\_focus = 0
                                           *this\TabFocused( ) = *tab
-                                          Debug " menubar focus change "
+                                          ; Debug " menubar focus change "
                                           *this\TabFocused( )\_focus = 1
                                        EndIf
                                     EndIf
@@ -18927,11 +18928,12 @@ chr$ = ","
                                           ; *this\TabFocused( )\_focus = 0
                                           *this\TabFocused( )\checked = 0
                                           *this\TabFocused( ) = *tab
-                                          If *tab\childrens  
-                                             Debug " toolbar focus change "
-                                             ; *this\TabFocused( )\_focus = 1
-                                             *this\TabFocused( )\checked = 1
-                                          EndIf
+                                       EndIf
+                                       If *tab\childrens  
+                                          ; Debug " toolbar focus change "
+                                          ; *tab\_focus = 1
+                                          *this\TabFocused( ) = *tab
+                                          *this\TabFocused( )\checked = 1
                                        EndIf
                                     EndIf
                                     If *this\type = #__type_PopupBar 
@@ -18939,7 +18941,7 @@ chr$ = ","
                                           ; *this\TabFocused( )\_focus = 0
                                           *this\TabFocused( )\checked = 0
                                        EndIf
-                                       Debug " popupbar focus change "
+                                       ; Debug " popupbar focus change "
                                        *this\TabFocused( ) = *tab
                                        ; *this\TabFocused( )\_focus = 1
                                        *this\TabFocused( )\checked = 1
@@ -18953,9 +18955,12 @@ chr$ = ","
                                     EndIf
                                  EndIf
                                  ; 
-                                 If CurrentPopupBar( *this ) And
-                                    CurrentPopupBar( *this ) <> *tab\popupbar  
-                                    If CurrentPopupBar( *this )\parent\parent = *this
+                                 If CurrentPopupBar( *this )   
+                                    Debug ""+CurrentPopupBar( *this )\class ;+" "+ *tab\popupbar 
+                                    ;
+                                    If CurrentPopupBar( *this ) <> *tab\popupbar And
+                                       CurrentPopupBar( *this )\parent\parent = *this
+                                       ;
                                        HideBar( CurrentPopupBar( *this ) )
                                     EndIf
                                  EndIf
@@ -18973,6 +18978,26 @@ chr$ = ","
                               EndIf
                            EndIf
                         EndIf
+                     Else
+                        ; 
+                        If *this\type = #__type_ToolBar 
+                           If is_inside_( *this\root\y, *this\root\height, mouse( )\y )
+                              If *this\TabFocused( ) 
+                                 ; *this\TabFocused( )\_focus = 0
+                                 *this\TabFocused( )\checked = 0
+                              EndIf
+                              ;
+                              If CurrentPopupBar( *this ) 
+                                 If CurrentPopupBar( *this )\enter = 0 
+                                    If CurrentPopupBar( *this )\parent\parent = *this
+                                       HidePopupBar( CurrentPopupBar( *this ) )
+                                    EndIf
+                                 EndIf
+                                 CurrentPopupBar( *this ) = 0
+                              EndIf
+                           EndIf
+                        EndIf
+
                      EndIf
                   EndIf
                EndIf
@@ -18995,7 +19020,8 @@ chr$ = ","
             EndIf
             ;
             If event = #__event_LostFocus
-               If CurrentPopupBar( *this )
+               If CurrentPopupBar( *this ) = *this
+                  Debug 88888888
                   If CurrentPopupBar( *this )\enter = 0 
                      HidePopupBar( CurrentPopupBar( *this ) )
                   EndIf
@@ -19010,22 +19036,24 @@ chr$ = ","
                      
                      ;\\
                      If *tab And *tab\childrens 
-                        If Not *this\popup\display
-                           If Not HideBar( CurrentPopupBar( *this ) )
-                              If *tab\popupbar\hide
-                                 DisplayPopupBar( *tab\popupbar, *this )
+                        If *this\type = #__type_MenuBar
+                           If CurrentPopupBar( *this ) 
+                              If CurrentPopupBar( *this ) <> *this\popup\parent
+                                 ;
+                                 HidePopupBar( CurrentPopupBar( *this ) )
+                              EndIf
+                              CurrentPopupBar( *this ) = 0
+                           EndIf
+                           
+                           If Not *this\popup\display
+                              If Not HideBar( CurrentPopupBar( *this ) )
+                                 If *tab\popupbar\hide
+                                    DisplayPopupBar( *tab\popupbar, *this )
+                                 EndIf
                               EndIf
                            EndIf
                         EndIf
                      Else
-                        If CurrentPopupBar( *this ) 
-                           If CurrentPopupBar( *this ) <> *this\popup\parent
-                              ;
-                              HidePopupBar( CurrentPopupBar( *this ) )
-                           EndIf
-                           CurrentPopupBar( *this ) = 0
-                        EndIf
-                        
                         ;\\
                         *this\TabPressed( ) = *tab
                         
@@ -19045,8 +19073,7 @@ chr$ = ","
                         EndIf
                      EndIf
                      
-                     If *this\type = #__type_MenuBar Or
-                        *this\type = #__type_ToolBar
+                     If *this\type = #__type_MenuBar ;Or *this\type = #__type_ToolBar
                         ;
                         If *tab
                            If *this\TabFocused( )
@@ -19055,13 +19082,13 @@ chr$ = ","
                            EndIf
                            ;
                            If *this\type = #__type_MenuBar
-                              *this\TabFocused( ) = *tab
+                            *this\TabFocused( ) = *tab
                               *this\TabFocused( )\_focus = 1
                               
-                           ElseIf *this\TabEntered( )\childrens 
-                              *this\TabFocused( ) = *tab
-                              ; *this\TabFocused( )\_focus = 1
-                              *this\TabFocused( )\checked ! 1
+;                            ElseIf *this\TabEntered( )\childrens 
+;                               *this\TabFocused( ) = *tab
+;                               ; *this\TabFocused( )\_focus = 1
+;                               *this\TabFocused( )\checked ! 1
                            EndIf
                         EndIf
                      EndIf
@@ -25534,15 +25561,6 @@ CompilerIf #PB_Compiler_IsMainFile
       ;BarButton(2, Loadimage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #__flag_BarNormal, "Save")
       BarSeparator( )
       
-      OpenSubBar("3Menu")
-      BarItem(31, "3Open")
-      BarItem(32, "3Save")
-      BarItem(33, "3Save as...")
-      BarSeparator( )
-      BarItem(34, "3Quit")
-      CloseSubBar( )
-      
-      BarSeparator( )
       BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
       BarToolTip(*toolbar, 5, "Paste")
       
@@ -25556,6 +25574,14 @@ CompilerIf #PB_Compiler_IsMainFile
       
       BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
       BarToolTip(*toolbar, 6, "Find a document")
+      
+      OpenSubBar("3Menu")
+      BarItem(31, "3Open")
+      BarItem(32, "3Save")
+      BarItem(33, "3Save as...")
+      BarSeparator( )
+      BarItem(34, "3Quit")
+      CloseSubBar( )
       
       DisableBarButton(*toolbar, 2, 1) ; Disable the button '2'
       Bind( *toolbar, @ToolBarEvents( ) )
@@ -26215,9 +26241,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 18950
-; FirstLine = 18754
-; Folding = B+-------------------------------------------------------------------------------------f------vff5------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------v--------v4----------------------v-tu-----------------------------------------------------------------------------------------------------------------------------f------------KAAAMAAg-
+; CursorPosition = 18959
+; FirstLine = 18740
+; Folding = B+-------------------------------------------------------------------------------------f------vff5------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------v-n3------fv----------------------f-bd------------------------------------------------------------------------------------------------------------------------------+-----------VDCEYAAA-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
