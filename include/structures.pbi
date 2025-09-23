@@ -535,10 +535,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
 ;          gadget.i
 ;          window.i
          display.b
-         StructureUnion
-            *menu._s_WIDGET
-            *parent._s_WIDGET
-         EndStructureUnion
+         *parent._s_WIDGET
       EndStructure
       
      
@@ -669,7 +666,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *row._s_ROW              ; multi-text; buttons; lists; - gadgets
          Tab._s_TAB               ; 
          
-         popup._s_POPUP
+         menu._s_POPUP
+         
          ;
          *tabbar._s_WIDGET
          *menubar._s_WIDGET
@@ -679,6 +677,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;  
          *togglebox._s_BOX        ; checkbox; optionbox, ToggleButton
          *combobutton._s_BUTTONS  ; combobox button
+         *combobar._s_WIDGET
          
          
          ;                           
@@ -730,7 +729,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
          *gadgetID                ; canvas handle
-         *popupmenu._s_WIDGET
       EndStructure
       
       ;--     ROOT
@@ -777,6 +775,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *drawingroot._s_ROOT
          *opened._s_WIDGET             ; last opened-list element
          *widget._s_WIDGET             ; enumerate widget
+         *popup._s_WIDGET
          
          mouse._s_mouse                ; mouse( )\
          keyboard._s_keyboard          ; keyboard( )\
@@ -796,8 +795,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 733
-; FirstLine = 702
+; CursorPosition = 684
+; FirstLine = 634
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP

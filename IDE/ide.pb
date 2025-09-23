@@ -803,10 +803,10 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                
             Case #_pi_fontstyle
                AddItem(*this, -1, "None")         
-               If *this\popup\parent
-                  *this\popup\parent\mode\Checkboxes = 1
-                  *this\popup\parent\mode\optionboxes = 1
-               ;    Flag( *this\popup\parent, #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
+               If *this\PopupCombo( )
+                  *this\PopupCombo( )\mode\Checkboxes = 1
+                  *this\PopupCombo( )\mode\optionboxes = 1
+               ;    Flag( *this\PopupCombo( ), #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
                EndIf
                AddItem(*this, -1, "Bold")        ; Шрифт будет выделен жирным
                AddItem(*this, -1, "Italic")      ; Шрифт будет набран курсивом
@@ -3046,8 +3046,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2600
-; FirstLine = 2042
+; CursorPosition = 808
+; FirstLine = 768
 ; Folding = ---------f+T-------Pg----------4-n0--8d---v-8--+-----
 ; Optimizer
 ; EnableAsm

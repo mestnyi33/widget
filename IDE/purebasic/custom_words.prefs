@@ -110,8 +110,12 @@ Bind
 Unbind
 
 IsBar
+PopupCombo
+PopupBar
 CreateBar
 CreatePopupBar
+HidePopupBar
+DisplayPopupBar
 OpenSubBar
 CloseSubBar
 BarTitle
@@ -134,9 +138,6 @@ UnbindBarEvent
 BarBar
 BarSeparator
 BarPosition
-HideBar
-HidePopupBar
-DisplayPopupBar
 HBar
 VBar
 
@@ -170,6 +171,7 @@ GetRound
 SetRound
 
 IsChild
+IsPopupChild
 IsChildrens
 IsContainer
 

@@ -40,7 +40,7 @@ Module AnchorBox
             
             If *this = *button
                
-               Protected a = *this\popup\parent ; widget::GetData(*this)
+               Protected a = *this\menu\parent ; widget::GetData(*this)
                If a
                   
                   If widget::GetState(*this)
@@ -296,7 +296,7 @@ Module AnchorBox
       EndIf
       
       ;
-      *Button\popup\parent = *a
+      *Button\menu\parent = *a
       widget::Bind(*button, @Events( ) )
       
       widget::Bind(LTBUTTON, @Events( ) )

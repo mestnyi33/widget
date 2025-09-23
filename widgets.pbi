@@ -256,7 +256,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Global DrawingDC = 0
       
-      Global __gui._s_GUI
+      Global __GUI._s_GUI
       ;Global NewMap *roots._s_root( )
       ;Global *event._s_EVENT( )
       Global NewMap fonts._s_FONTS( )
@@ -483,6 +483,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Macro mouse( ): widget::__gui\mouse: EndMacro
       Macro keyboard( ): widget::__gui\keyboard: EndMacro
+      
       ;-
       Macro root( ): widget::__gui\root: EndMacro
       Macro roots( ): widget::__gui\__roots( ): EndMacro
@@ -492,9 +493,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro widgets( ): __gui\__widgets( ): EndMacro
       
       ;-
-      ;Macro Popup( ): widget::__gui\sticky\box: EndMacro
       Macro Opened( ): widget::__gui\opened: EndMacro ; object list opened container
       Macro Sticked( ): widget::__gui\sticky\window: EndMacro
+      ; Macro PopupCombo( ): menu\parent: EndMacro
+      Macro PopupCombo( ): combobar: EndMacro
       
       
       ;-
@@ -1693,6 +1695,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;
       ;-\\ BAR  [menu;popupmenu;toolbar]
       ;Declare.b IsBar( *this._s_widget )
+      Macro     PopupBar( ): __GUI\popup: EndMacro
       Macro     BarBar( ): BarSeparator( ): EndMacro
       Declare   BarSeparator( )
       Declare   CreatePopupBar( _flags_ = 0 )
@@ -7499,6 +7502,16 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
+      Procedure IsPopupChild( *this._s_WIDGET, *parent._s_WIDGET )
+         While *this\menu\parent
+            If *this\menu\parent = *parent
+               ; Debug *this\class
+               ProcedureReturn *this
+            EndIf
+            *this = *this\menu\parent
+         Wend
+      EndProcedure
+      
       Procedure.b IsContainer( *this._s_WIDGET )
          ProcedureReturn *this\container
       EndProcedure
@@ -8551,7 +8564,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ResizeWindow( *this\root\canvas\window, X, Y, Width, Height )
          ResizeGadget( *this\root\canvas\gadget, #PB_Ignore, #PB_Ignore, Width, Height )
          ; Resize( *this, #PB_Ignore, #PB_Ignore, Width, Height )
-        ; Debug *this\popup\parent
+        ; Debug *this\menu\parent
       EndProcedure
       
       
@@ -9275,8 +9288,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;
          If *this\type = #__type_ComboBox
-            If *this\popup\parent
-               ProcedureReturn GetState( *this\popup\parent )
+            If *this\PopupCombo( )
+               ProcedureReturn GetState( *this\PopupCombo( ) )
             EndIf
          EndIf
          
@@ -9556,8 +9569,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If *this\type = #__type_ComboBox
-            If *this\popup\parent
-               SetState( *this\popup\parent, state )
+            If *this\PopupCombo( )
+               SetState( *this\PopupCombo( ), state )
             EndIf
          EndIf
          
@@ -9981,12 +9994,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected result.s
          
          If *this\type = #__type_combobox
-            If *this\popup\parent
-               If is_no_select_item_( *this\popup\parent\__rows( ), Item )
+            If *this\PopupCombo( )
+               If is_no_select_item_( *this\PopupCombo( )\__rows( ), Item )
                   ProcedureReturn ""
                EndIf
                
-               result = *this\popup\parent\__rows( )\text\string
+               result = *this\PopupCombo( )\__rows( )\text\string
             EndIf
          EndIf
          
@@ -12688,17 +12701,17 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If *this\type = #__type_combobox
-            If Not *this\popup\parent
-               *this\popup\parent = Create( *this, "ComboListView", #__type_tree, 0,0,0,0,"",
+            If Not *this\PopupCombo( )
+               *this\PopupCombo( ) = Create( *this, "ComboListView", #__type_tree, 0,0,0,0,"",
                                         #__flag_child | #__flag_nobuttons | #__flag_nolines ) 
                
-               *this\popup\parent\fs = 2
-               Hide( *this\popup\parent, #True )
+               *this\PopupCombo( )\fs = 2
+               Hide( *this\PopupCombo( ), #True )
                widget( ) = *this
             EndIf
             ;
-            If *this\popup\parent
-               ProcedureReturn AddItem( *this\popup\parent, Item, Text, img, flag )
+            If *this\PopupCombo( )
+               ProcedureReturn AddItem( *this\PopupCombo( ), Item, Text, img, flag )
             EndIf
          EndIf
          
@@ -13050,22 +13063,22 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; - widget::tree_clear_items( )
          If *this\type = #__type_ComboBox
             
-            If *this\popup\parent
+            If *this\PopupCombo( )
                If *this\stringbar
                   SetText( *this\stringbar, "" )
                EndIf
-               If *this\popup\parent\countitems <> 0
-                  *this\popup\parent\WidgetChange( ) = 1
-                  *this\popup\parent\countitems     = 0
+               If *this\PopupCombo( )\countitems <> 0
+                  *this\PopupCombo( )\WidgetChange( ) = 1
+                  *this\PopupCombo( )\countitems     = 0
                   
-                  If *this\popup\parent\RowFocused( )
-                     *this\popup\parent\RowFocused( )\ColorState( ) = 0
-                     ClearStructure(*this\popup\parent\RowFocused( ), _s_ROWS)
-                     *this\popup\parent\RowFocused( ) = 0
+                  If *this\PopupCombo( )\RowFocused( )
+                     *this\PopupCombo( )\RowFocused( )\ColorState( ) = 0
+                     ClearStructure(*this\PopupCombo( )\RowFocused( ), _s_ROWS)
+                     *this\PopupCombo( )\RowFocused( ) = 0
                   EndIf
                   
-                  ClearList( *this\popup\parent\__rows( ))
-                  PostRepaint( *this\popup\parent\root )
+                  ClearList( *this\PopupCombo( )\__rows( ))
+                  PostRepaint( *this\PopupCombo( )\root )
                EndIf
             EndIf
          EndIf
@@ -13159,11 +13172,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       ;- MENU
       ;-
-      Global *popupmenu._s_WIDGET
-      Macro CurrentPopupBar( _this_ )
-        *popupmenu ;  _this_\root\canvas\popupmenu ; popup\menu
-      EndMacro
-      
       Procedure   BarPosition( *this._s_widget, position.i, size.i = #PB_Default )
          Protected fs = 0, *box._s_WIDGET
          
@@ -13271,8 +13279,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this
             ; get the address of the last item
             ; to make it the parent of the current item
-            If *this\popup\parent
-               *tab = *this\popup\parent\__tabs( )
+            If *this\menu\parent
+               *tab = *this\menu\parent\__tabs( )
             EndIf
             ;
             *item = BarButton( item, img, 0, Text.s )
@@ -13316,7 +13324,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                             0,0,0,0, #Null$, flag|#__flag_vertical | #__flag_child, 0, 0, 0, 0, 0, 30 ) ; 
             
             count + 1
-            *this\popup\parent = *menu
+            *this\menu\parent = *menu
             ;
             SetBackgroundColor( *this, $FFF2F2F2)
             Hide( *this, #True ) 
@@ -13377,48 +13385,35 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure   CloseSubBar( )
-         If widget( )\popup\parent
-            widget( ) = widget( )\popup\parent
-         EndIf
-      EndProcedure
-      
-      Procedure   HideBar( *this._s_WIDGET )
-;          Debug 666666
-;          ProcedureReturn 1
-         If *this
-            If Not *this\hide
-               Protected *PopupBar._s_WIDGET = *this
-               *PopupBar\root\repaint = 1
-               ;
-               While *PopupBar
-                  If *PopupBar 
-                     If *PopupBar\root\parent
-                        CurrentPopupBar( *PopupBar\root\parent ) = #Null
-                     EndIf
-                     Debug " Hide PopupMenuBar - "+ *PopupBar\class 
-                     HideWindow( GetCanvasWindow( *PopupBar\root ), #True, #PB_Window_NoActivate )
-                     Hide( *PopupBar, #True )
-                  EndIf
-                  *PopupBar = CurrentPopupBar( *PopupBar )
-               Wend
-               ProcedureReturn #True
-            EndIf 
+         If widget( )\menu\parent
+            widget( ) = widget( )\menu\parent
          EndIf
       EndProcedure
       
       Procedure   HidePopupBar( *this._s_WIDGET )
-         If *this\popup\parent  
-            If *this\popup\parent\TabFocused( )
-               *this\popup\parent\TabFocused( )\_focus = 0
-               *this\popup\parent\TabFocused( ) = 0
-            EndIf
+         If *this\type = #__type_MenuBar Or
+            *this\type = #__type_PopupBar Or
+            *this\type = #__type_ToolBar 
             ;
-            HideBar( *this )
-         Else
-            If *this\parent\parent And 
-               *this\parent\parent\type = #__type_ComboBox
-               DisplayPopupBar( *this, *this\parent\parent )
-            EndIf
+            While *this\menu\display
+               If *this\enter
+                  Break
+               EndIf
+               If *this\menu\display
+                  *this\menu\display = 0
+                  If *this\TabFocused( ) 
+                     *this\TabFocused( )\_focus = 0
+                     *this\TabFocused( )\checked = 0
+                     *this\TabFocused( ) = 0
+                  EndIf
+                  Hide( *this, #True )
+                  HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
+                  *this = *this\menu\parent
+                  PopupBar( ) = *this
+               EndIf
+            Wend
+            ;
+            ProcedureReturn *this
          EndIf
       EndProcedure
       
@@ -13486,7 +13481,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
                   ;
-                  If *this\popup\display
+                  If *this\menu\display
                      If Pressed( ) = *this
                         Pressed( ) = *display
                      EndIf
@@ -13510,13 +13505,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;\\
-            If *this\popup\display = 0
-               *this\popup\display = 1
+            If *this\menu\display = 0
+               *this\menu\display = 1
                ;
                Protected parentID
                Protected *popup._S_WIDGET = *display
-               While *popup\popup\parent
-                  *popup = *popup\popup\parent
+               While *popup\menu\parent
+                  *popup = *popup\menu\parent
                Wend
                If *popup
                   parentID = WindowID( *popup\root\canvas\window )
@@ -13643,8 +13638,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;\\
-            If *this\popup\display  
-               CurrentPopupBar( *display ) = *this
+            If *this\menu\display  
+               PopupBar( ) = *this
                
                If mode
                   X = mouse( )\x - Width / 2
@@ -13658,7 +13653,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                Else
                   If X = #PB_Ignore
                      If *display\bar And *display\bar\vertical
-                        X = ( *display\screen_width( ) ) - 5 ; DPIUnScaledX
+                        X = ( *display\screen_width( ) ) - DPIScaledX(5)
                      Else
                         If *display\type = #__type_ComboBox
                            X = *display\screen_x( )
@@ -16788,6 +16783,7 @@ chr$ = ","
             Leaved( ) = Entered( )
             Entered( ) = *this
             Protected *parent._s_WIDGET 
+            
             ;
             ;
             If Leaved( ) And Not ( *this And *this\parent = Leaved( ) And is_integral_( *this ) )
@@ -17018,9 +17014,9 @@ chr$ = ","
                
                ;\\ menu send bind event
                If is_bar_( *this ) 
-                  If *this\popup\parent
-                     While *this\popup\parent
-                        *this = *this\popup\parent
+                  If *this\menu\parent
+                     While *this\menu\parent
+                        *this = *this\menu\parent
                      Wend
                      EventWidget( )     = *this
                   EndIf
@@ -18955,13 +18951,17 @@ chr$ = ","
                                     EndIf
                                  EndIf
                                  ; 
-                                 If CurrentPopupBar( *this )   
-                                    Debug ""+CurrentPopupBar( *this )\class ;+" "+ *tab\popupbar 
-                                    ;
-                                    If CurrentPopupBar( *this ) <> *tab\popupbar And
-                                       CurrentPopupBar( *this )\parent\parent = *this
-                                       ;
-                                       HideBar( CurrentPopupBar( *this ) )
+                                 ;
+                                 If PopupBar( ) 
+                                    If PopupBar( ) <> *this
+                                       If PopupBar( ) <> *tab\popupbar
+                                          If IsPopupChild( PopupBar( ), *this )
+                                             Debug " Hide PopupMenuBar - " + PopupBar( )\class +" "+ *this\class
+                                             HidePopupBar( PopupBar( ) )
+                                          ElseIf *tab\childrens
+                                             HidePopupBar( PopupBar( ) )
+                                          EndIf
+                                       EndIf
                                     EndIf
                                  EndIf
                                  ; 
@@ -18978,26 +18978,13 @@ chr$ = ","
                               EndIf
                            EndIf
                         EndIf
+                        ;
                      Else
                         ; 
                         If *this\type = #__type_ToolBar 
-                           If is_inside_( *this\root\y, *this\root\height, mouse( )\y )
-                              If *this\TabFocused( ) 
-                                 ; *this\TabFocused( )\_focus = 0
-                                 *this\TabFocused( )\checked = 0
-                              EndIf
-                              ;
-                              If CurrentPopupBar( *this ) 
-                                 If CurrentPopupBar( *this )\enter = 0 
-                                    If CurrentPopupBar( *this )\parent\parent = *this
-                                       HidePopupBar( CurrentPopupBar( *this ) )
-                                    EndIf
-                                 EndIf
-                                 CurrentPopupBar( *this ) = 0
-                              EndIf
-                           EndIf
+                           
                         EndIf
-
+                        ;
                      EndIf
                   EndIf
                EndIf
@@ -19005,112 +18992,117 @@ chr$ = ","
          EndIf
          
          ;
-         If *this\tab
-            If event = #__event_MouseLeave
-               If *this\popup\parent
-                  If *this\TabFocused( ) And *this\TabFocused( )\childrens = 0 
-                     ; Debug ""+*this\TabFocused( )\_focus +" "+ *this\TabFocused( )\checked
-                     
+         If event = #__event_MouseLeave
+            If *this\TabFocused( )
+               If *this\TabFocused( )\childrens 
+                  If *this\type = #__type_ToolBar
+;                      If is_inside_( DesktopScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) + *this\x, *this\width, DesktopMouseX( ) ) And
+;                         is_inside_( DesktopScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) + *this\y, *this\height, DesktopMouseY( ) )
+;                      Else
+;                         If PopupBar( )
+;                            *this\TabFocused( )\_focus = 0
+;                            *this\TabFocused( )\checked = 0
+;                            *this\TabFocused( ) = 0
+;                            HidePopupBar( PopupBar( ) )
+;                            PopupBar( ) = 0
+;                         EndIf
+;                      EndIf
+                  EndIf
+               Else
+                  If *this\menu\display
                      *this\TabFocused( )\_focus = 0
                      *this\TabFocused( )\checked = 0
-                     ;*this\TabFocused( ) = 0
-                     ; *this\root\repaint = 1
+                     *this\TabFocused( ) = 0
                   EndIf
                EndIf
             EndIf
-            ;
-            If event = #__event_LostFocus
-               If CurrentPopupBar( *this ) = *this
-                  Debug 88888888
-                  If CurrentPopupBar( *this )\enter = 0 
-                     HidePopupBar( CurrentPopupBar( *this ) )
-                  EndIf
-                  CurrentPopupBar( *this ) = 0
-               EndIf
-            EndIf
-            ;
-            If event = #__event_Down
-               If MouseButtons( ) & #PB_Canvas_LeftButton
-                  *tab = *this\TabEntered( )
-                  If Not (*Tab And *Tab\disable )
-                     
-                     ;\\
-                     If *tab And *tab\childrens 
-                        If *this\type = #__type_MenuBar
-                           If CurrentPopupBar( *this ) 
-                              If CurrentPopupBar( *this ) <> *this\popup\parent
-                                 ;
-                                 HidePopupBar( CurrentPopupBar( *this ) )
-                              EndIf
-                              CurrentPopupBar( *this ) = 0
-                           EndIf
-                           
-                           If Not *this\popup\display
-                              If Not HideBar( CurrentPopupBar( *this ) )
-                                 If *tab\popupbar\hide
-                                    DisplayPopupBar( *tab\popupbar, *this )
-                                 EndIf
-                              EndIf
-                           EndIf
-                        EndIf
-                     Else
-                        ;\\
-                        *this\TabPressed( ) = *tab
-                        
-                        ;                                              ;
-                        If Not ( EnteredButton( ) And 
-                                 EnteredButton( )\press And 
-                                 ( EnteredButton( ) = *this\bar\button[1] Or 
-                                   EnteredButton( ) = *this\bar\button[2] ) )
-                           ;
-                           If *tab And
-                              *tab\press = #False
-                              *tab\press = #True
-                              
-                              *tab\ColorState( ) = #__s_2
-                              *this\root\repaint = 1
-                           EndIf
-                        EndIf
-                     EndIf
-                     
-                     If *this\type = #__type_MenuBar ;Or *this\type = #__type_ToolBar
-                        ;
-                        If *tab
-                           If *this\TabFocused( )
-                              *this\TabFocused( )\_focus = 0
-                              *this\TabFocused( ) = 0
-                           EndIf
-                           ;
-                           If *this\type = #__type_MenuBar
-                            *this\TabFocused( ) = *tab
-                              *this\TabFocused( )\_focus = 1
-                              
-;                            ElseIf *this\TabEntered( )\childrens 
-;                               *this\TabFocused( ) = *tab
-;                               ; *this\TabFocused( )\_focus = 1
-;                               *this\TabFocused( )\checked ! 1
-                           EndIf
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            If event = #__event_Up
-               If MouseButtons( ) & #PB_Canvas_LeftButton
+         EndIf
+         ;
+         If event = #__event_LostFocus
+            ;                If PopupBar( ) = *this
+            ;                   If PopupBar( )\enter = 0 
+            ;                      HidePopupBar( PopupBar( ) )
+            ;                   EndIf
+            ;                   PopupBar( ) = 0
+            ;                EndIf
+         EndIf
+         ;
+         If event = #__event_Up
+            If MouseButtons( ) & #PB_Canvas_LeftButton
+               If Not PopupBar( )
                   If *this\TabEntered( ) And
                      *this\TabEntered( )\childrens 
                      ;
-                     If Not CurrentPopupBar( *this )
-                        If *this\TabFocused( )
-                           *this\TabFocused( )\_focus = 0
-                           *this\TabFocused( ) = 0
+                     If *this\TabFocused( )
+                        *this\TabFocused( )\_focus = 0
+                        *this\TabFocused( ) = 0
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         ;
+         If event = #__event_Down
+            If *this\tab
+               If MouseButtons( ) & #PB_Canvas_LeftButton
+                  *tab = *this\TabEntered( )
+                  
+                  If PopupBar( )
+                     If PopupBar( )\menu\display
+                        If Not IsPopupChild( PopupBar( ), *this )
+                           If PopupBar( )\menu\parent And 
+                              PopupBar( )\menu\parent\TabFocused( )
+                              PopupBar( )\menu\parent\TabFocused( )\_focus = 0
+                              PopupBar( )\menu\parent\TabFocused( )\checked = 0
+                              PopupBar( )\menu\parent\TabFocused( ) = 0
+                              PostReDraw( PopupBar( )\menu\parent\root )
+                           EndIf
                         EndIf
+                        HidePopupBar( PopupBar( ) )
+                        PopupBar( ) = 0
                      EndIf
                   Else
-                     If *this\popup\display
-                        If *this\popup\parent
-                           HidePopupBar( *this )
+                     If *this\type = #__type_MenuBar
+                        If *tab And Not *tab\disable 
+                           If *this\TabFocused( ) <> *tab
+                              If *this\TabFocused( )
+                                 *this\TabFocused( )\_focus = 0
+                                 ; *this\TabFocused( )\checked = 0
+                                 *this\TabFocused( ) = 0 
+                              EndIf
+                              ;
+                              *this\TabFocused( ) = *tab
+                              *this\TabFocused( )\_focus ! 1
+                              ; *this\TabFocused( )\checked ! 1
+                           Else
+                              ; *this\TabFocused( )\checked = 0
+                              *this\TabFocused( )\_focus = 0 
+                              *this\TabFocused( ) = 0
+                           EndIf
+                           ;
+                           If *tab\childrens 
+                              DisplayPopupBar( *tab\popupbar, *this )
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+                  
+                  If Not (*Tab And *Tab\disable And *Tab\childrens )
+                     ;\\
+                     *this\TabPressed( ) = *tab
+                     
+                     ;                                              ;
+                     If Not ( EnteredButton( ) And 
+                              EnteredButton( )\press And 
+                              ( EnteredButton( ) = *this\bar\button[1] Or 
+                                EnteredButton( ) = *this\bar\button[2] ) )
+                        ;
+                        If *tab And
+                           *tab\press = #False
+                           *tab\press = #True
+                           
+                           *tab\ColorState( ) = #__s_2
+                           *this\root\repaint = 1
                         EndIf
                      EndIf
                   EndIf
@@ -19243,6 +19235,7 @@ chr$ = ","
          
          ProcedureReturn result 
       EndProcedure
+      
       
       Procedure DoEvents( *this._s_WIDGET, event.l, *button = #PB_All, *data = #Null )
          If Not *this
@@ -19587,8 +19580,8 @@ chr$ = ","
             If event = #__event_Down
                If MouseButtons( ) & #PB_Canvas_LeftButton
                   If *this\type = #__type_combobox
-                     If *this\popup\parent
-                        DisplayPopupBar( *this\popup\parent, *this )
+                     If *this\PopupCombo( )
+                        DisplayPopupBar( *this\PopupCombo( ), *this )
                      EndIf
                   Else
                      If *this\root\parent And
@@ -24118,18 +24111,18 @@ chr$ = ","
             draw_gradient_( 0, *this, *this\color\fore[*this\ColorState( )], *this\color\back[state], [#__c_frame] )
             
             ;
-            If *this\popup\parent 
-               If *this\popup\parent\row
-                  If *this\popup\parent\RowFocused( )
+            If *this\PopupCombo( ) 
+               If *this\PopupCombo( )\row
+                  If *this\PopupCombo( )\RowFocused( )
                      draw_mode_alpha_( #PB_2DDrawing_Transparent )
                      
-                     If *this\popup\parent\RowFocused( )\picture\imageID
-                        DrawImage( *this\popup\parent\RowFocused( )\picture\imageID, *this\frame_x( )+5, *this\frame_y( ) + DPIUnScaled(*this\height-*this\popup\parent\RowFocused( )\picture\height) )
+                     If *this\PopupCombo( )\RowFocused( )\picture\imageID
+                        DrawImage( *this\PopupCombo( )\RowFocused( )\picture\imageID, *this\frame_x( )+5, *this\frame_y( ) + DPIUnScaled(*this\height-*this\PopupCombo( )\RowFocused( )\picture\height) )
                      EndIf
                      
-                     DrawText( *this\frame_x( ) + *this\text\x + *this\popup\parent\RowFocused( )\picture\width + 5,
+                     DrawText( *this\frame_x( ) + *this\text\x + *this\PopupCombo( )\RowFocused( )\picture\width + 5,
                                *this\frame_y( ) + *this\text\y,
-                               *this\popup\parent\RowFocused( )\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
+                               *this\PopupCombo( )\RowFocused( )\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
                      
                   EndIf
                EndIf
@@ -26241,9 +26234,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 18959
-; FirstLine = 18740
-; Folding = B+-------------------------------------------------------------------------------------f------vff5------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------v-n3------fv----------------------f-bd------------------------------------------------------------------------------------------------------------------------------+-----------VDCEYAAA-
+; CursorPosition = 19011
+; FirstLine = 18848
+; Folding = B+--------------------------------------------------------------------------------------0------+0h----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-W4-----------------------------------------------------------------------------------------------------------------------------v-----------f2gABGAAw-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
