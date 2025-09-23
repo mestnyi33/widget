@@ -18950,13 +18950,12 @@ chr$ = ","
                                        EndIf
                                     EndIf
                                  EndIf
-                                 ; 
                                  ;
                                  If PopupBar( ) 
                                     If PopupBar( ) <> *this
                                        If PopupBar( ) <> *tab\popupbar
                                           If IsPopupChild( PopupBar( ), *this )
-                                             Debug " Hide PopupMenuBar - " + PopupBar( )\class +" "+ *this\class
+                                             ; Debug " Hide PopupMenuBar - " + PopupBar( )\class +" "+ *this\class
                                              HidePopupBar( PopupBar( ) )
                                           ElseIf *tab\childrens
                                              HidePopupBar( PopupBar( ) )
@@ -18996,17 +18995,17 @@ chr$ = ","
             If *this\TabFocused( )
                If *this\TabFocused( )\childrens 
                   If *this\type = #__type_ToolBar
-;                      If is_inside_( DesktopScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) + *this\x, *this\width, DesktopMouseX( ) ) And
-;                         is_inside_( DesktopScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) + *this\y, *this\height, DesktopMouseY( ) )
-;                      Else
-;                         If PopupBar( )
-;                            *this\TabFocused( )\_focus = 0
-;                            *this\TabFocused( )\checked = 0
-;                            *this\TabFocused( ) = 0
-;                            HidePopupBar( PopupBar( ) )
-;                            PopupBar( ) = 0
-;                         EndIf
-;                      EndIf
+                     If is_inside_( DesktopScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) + *this\x, *this\width, DesktopMouseX( ) ) And
+                        is_inside_( DesktopScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) + *this\y, *this\height, DesktopMouseY( ) )
+                     Else
+                        If PopupBar( )
+                           *this\TabFocused( )\_focus = 0
+                           *this\TabFocused( )\checked = 0
+                           *this\TabFocused( ) = 0
+                           HidePopupBar( PopupBar( ) )
+                           PopupBar( ) = 0
+                        EndIf
+                     EndIf
                   EndIf
                Else
                   If *this\menu\display
@@ -19048,7 +19047,7 @@ chr$ = ","
                   *tab = *this\TabEntered( )
                   
                   If PopupBar( )
-                     If PopupBar( )\menu\display
+                     If PopupBar( )\menu\display And Not (*this\type = #__type_ToolBar And *tab And *tab\childrens)
                         If Not IsPopupChild( PopupBar( ), *this )
                            If PopupBar( )\menu\parent And 
                               PopupBar( )\menu\parent\TabFocused( )
@@ -26234,9 +26233,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 19011
-; FirstLine = 18848
-; Folding = B+--------------------------------------------------------------------------------------0------+0h----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-W4-----------------------------------------------------------------------------------------------------------------------------v-----------f2gABGAAw-
+; CursorPosition = 19049
+; FirstLine = 18832
+; Folding = B+--------------------------------------------------------------------------------------0------+0h--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8------------------------------f-bd------------------------------------------------------------------------------------------------------------------------------+-----------VDCEYAAA-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
