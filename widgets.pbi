@@ -18981,7 +18981,17 @@ chr$ = ","
                      Else
                         ; 
                         If *this\type = #__type_ToolBar 
-                           
+                           If PopupBar( )
+                              If is_inside_( DesktopScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) +*this\y, *this\height + PopupBar()\height , DesktopMouseY( ) ) And
+                                 is_inside_( DesktopScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) +*this\x, *this\TabFocused( )\x+*this\TabFocused( )\width, DesktopMouseX( ) )
+                              Else
+                                 *this\TabFocused( )\_focus = 0
+                                 *this\TabFocused( )\checked = 0
+                                 *this\TabFocused( ) = 0
+                                 HidePopupBar( PopupBar( ) )
+                                 PopupBar( ) = 0
+                              EndIf
+                           EndIf
                         EndIf
                         ;
                      EndIf
@@ -18995,10 +19005,10 @@ chr$ = ","
             If *this\TabFocused( )
                If *this\TabFocused( )\childrens 
                   If *this\type = #__type_ToolBar
-                     If is_inside_( DesktopScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) + *this\x, *this\width, DesktopMouseX( ) ) And
-                        is_inside_( DesktopScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) + *this\y, *this\height, DesktopMouseY( ) )
-                     Else
-                        If PopupBar( )
+                     If PopupBar( )
+                        If is_inside_( DesktopScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) +*this\y, *this\height + PopupBar()\height , DesktopMouseY( ) ) And
+                           is_inside_( DesktopScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) +*this\x, *this\TabFocused( )\x+*this\TabFocused( )\width, DesktopMouseX( ) )
+                        Else
                            *this\TabFocused( )\_focus = 0
                            *this\TabFocused( )\checked = 0
                            *this\TabFocused( ) = 0
@@ -26233,9 +26243,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 19049
-; FirstLine = 18832
-; Folding = B+--------------------------------------------------------------------------------------0------+0h--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8------------------------------f-bd------------------------------------------------------------------------------------------------------------------------------+-----------VDCEYAAA-
+; CursorPosition = 19013
+; FirstLine = 18759
+; Folding = B+--------------------------------------------------------------------------------------0------+0h--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8-------------------------------0v20-----------------------------------------------------------------------------------------------------------------------------8-----------XNIQgBAA9
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
