@@ -1818,7 +1818,7 @@ AddLng( #lng_LENGUAGE,   "Lenguage   |Язык             |Langage             
 
 ;
 Procedure ide_Lng_change( lng_TYPE=0 )
-   Debug "  LNG CHANGE "+lng_TYPE
+   ; Debug "  LNG CHANGE "+lng_TYPE
    ;
    SetBarItemText( ide_toolbar, 0, lng(lng_TYPE, #lng_Menu))
    SetBarItemText( ide_toolbar, #_tb_file_new, lng(lng_TYPE, #lng_NEW))
@@ -2155,11 +2155,12 @@ Procedure.i ide_list_images_add( *id, Directory$ )
 EndProcedure
 
 ;-
-Procedure ide_menu_events( *g._s_WIDGET, BarButton )
+Procedure ide_menu_events(  )
+   Protected *g._s_WIDGET = EventWidget( ), BarButton = WidgetEventItem( )
    Protected transform, move_x, move_y
    Static NewList *copy._s_a_group( )
    
-    Debug "ide_menu_events "+BarButton
+   ; Debug "ide_menu_events "+BarButton
    
    Select BarButton
       Case #_tb_LNG
@@ -2418,25 +2419,6 @@ Procedure ide_events( )
          
    EndSelect
         
-   If __event = #__event_Change Or
-      __event = #__event_LeftClick
-      ;
-      ; ide_menu_events( *g, __item )
-      
-      ; Debug *g\TabEntered( )
-      If *g\TabEntered( )
-         ide_menu_events( *g, *g\TabEntered( )\index )
-      Else
-         If Type(*g) = #__type_toolbar
-            If GetData(*g) 
-               ide_menu_events( *g, GetData(*g) )
-            Else
-               ide_menu_events( *g, __item )
-            EndIf
-         EndIf
-      EndIf
-   EndIf
-      
    
    ; CODE EDIT EVENTS
    If *g = ide_design_panel_CODE                      Or *g = ide_design_DEBUG ; TEMP
@@ -2591,13 +2573,10 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
 ;    
    BarSeparator( )
    BarItem( #_tb_file_run, "[RUN]" )
-   BarItem( #_tb_lng_ENG, "ENG")
-   BarItem( #_tb_lng_RUS, "RUS")
    BarSeparator( )
    
    ide_popup_lenguage = OpenSubBar("[LENGUAGE]")
    ; BarItem( #_tb_LNG, "[LENGUAGE]" )
-   BarSeparator( )
    
    ; ide_popup_lenguage = CreatePopupBar( )
    If ide_popup_lenguage
@@ -2606,9 +2585,12 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
       BarItem(#_tb_lng_FRENCH, "FRENCH")
       BarItem(#_tb_lng_GERMAN, "GERMAN")
    EndIf
+   CloseSubBar( )
+   BarSeparator( )
    
    CloseList( )
    
+   DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #True )
    DisableBarButton( ide_toolbar, #_tb_lng_ENG, #True )
    
    ;
@@ -2808,15 +2790,9 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;-\\ ide binds events
    ;
    If Type( ide_toolbar ) = #__type_ToolBar
-;       BindBarEvent( ide_menu, -1, @ide_events( ) )
-;       BindBarEvent( ide_toolbar, -1, @ide_events( ) )
-;       BindBarEvent( ide_popup_lenguage, -1, @ide_events( ) )
-      Bind( ide_menu, @ide_events( ), #__event_Change )
-      Bind( ide_toolbar, @ide_events( ), #__event_Change )
-      Bind( ide_popup_lenguage, @ide_events( ), #__event_Change )
-      Bind( ide_menu, @ide_events( ), #__event_LeftClick )
-      Bind( ide_toolbar, @ide_events( ), #__event_LeftClick )
-      Bind( ide_popup_lenguage, @ide_events( ), #__event_LeftClick )
+      Bind( ide_menu, @ide_menu_events( ) )
+      Bind( ide_toolbar, @ide_menu_events( ) )
+      Bind( ide_popup_lenguage, @ide_menu_events( ) )
    EndIf
    Bind( ide_inspector_view, @ide_events( ) )
    ;
@@ -3059,10 +3035,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2431
-; FirstLine = 2064
-; Folding = ---------f+T-------Pg----------4-n0--8d-----8--8-----
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 2592
+; FirstLine = 2137
+; Folding = ---------f+T-------Pg----------4-n0--8d-----8-v------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

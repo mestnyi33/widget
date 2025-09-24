@@ -13423,8 +13423,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Break
                EndIf 
                If *this\enter
+                  ; Debug "e - "+*this\class
                   Break
                Else
+                  ; Debug *this\class
                   If *this\TabFocused( ) 
                      *this\TabFocused( )\_focus = 0
                      *this\TabFocused( )\checked = 0
@@ -19800,6 +19802,8 @@ chr$ = ","
                               Debug "deactive keyboard( ) "+keyboard( )\deactive\class +" "+ roots( )\active\class
                            EndIf
                            ChangeCurrentCanvas( GadgetID(eventgadget) )
+                           mouse( )\x = GadgetMouseX( eventgadget )
+                           mouse( )\y = GadgetMouseY( eventgadget )
                            SetActive( roots( )\active )
                            ; ReDraw( GetActive( )\root )
                         EndIf
@@ -19877,8 +19881,8 @@ chr$ = ","
             mouse( )\data = #__mouse_enter
             mouse( )\data | #__mouse_update
             ;
-            mouse( )\x   = GadgetMouseX( eventgadget )
-            mouse( )\y   = GadgetMouseY( eventgadget )
+            mouse( )\x = GadgetMouseX( eventgadget )
+            mouse( )\y = GadgetMouseY( eventgadget )
          EndIf
          
          If eventtype = #PB_EventType_MouseLeave
@@ -19888,8 +19892,8 @@ chr$ = ","
             EndIf
             ;
             mouse( )\data = #__mouse_leave
-            mouse( )\x   = - 1
-            mouse( )\y   = - 1
+            mouse( )\x = - 1
+            mouse( )\y = - 1
          EndIf
          
          If eventtype = #PB_EventType_LeftButtonDown Or
@@ -26278,10 +26282,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13415
-; FirstLine = 13303
-; Folding = B+--------------------------------------------------------------------------------------0-------0h----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------vvv4---------------+47+-----------------------------------------------------------------------------------------------------------------------------0-----------rGEIwAAA+
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 16880
+; FirstLine = 16766
+; Folding = B+--------------------------------------------------------------------------------------0-------0h----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------vvv4----------------47u70--vv--v--+-----------------------------------------------------------------------------------------------------------------0-----------rGEIwAAA+
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

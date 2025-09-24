@@ -73,6 +73,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open( 1, 300, 200, 650, 200, "ToolBar example", #PB_Window_SizeGadget )
       a_init(root( ))
       ide_toolbar = CreateBar( root( ), #PB_ToolBar_Small )
+      SetClass( ide_toolbar, "ide_toolbar")
       
       If ide_toolbar
          ide_menu = OpenSubBar("Menu")
@@ -191,8 +192,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 74
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 75
 ; FirstLine = 59
 ; Folding = --
 ; EnableXP
