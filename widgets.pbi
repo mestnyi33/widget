@@ -13408,8 +13408,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;    *this\TabFocused( ) = 0
                   ; EndIf
                   ;
+                  ;
                   Hide( *this, #True )
                   HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
+                  If MouseButtonPress( )
+                    Post( *this, #__event_Change, *this\TabFocused( )\tindex, *this\TabFocused( ) )
+                  EndIf
                EndIf
                If *this\menu\parent
                   *this = *this\menu\parent
@@ -13423,13 +13427,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\TabFocused( )\_focus = 0
                      *this\TabFocused( )\checked = 0
                      *this\TabFocused( ) = 0
-                     
-;                      ;
-;                      If Not *this\menu\parent
-;                         If Entered( )\root <> *this\root
-;                            PostReDraw( *this\root )
-;                         EndIf
-;                      EndIf
                   EndIf
                EndIf
             Wend
@@ -17012,11 +17009,15 @@ chr$ = ","
                ProcedureReturn AddEvents( *this, event, *button, *data )
             Else
                If is_bar_( *this )
+                  ;
                   If event = #__event_LeftClick Or
+                     event = #__event_Down Or
+                     event = #__event_Up Or
                      event = #__event_Change
                      If *this\TabEntered( )
                         *button = *this\TabEntered( )\tindex
                      EndIf
+                     ; Debug ""+ClassFromEvent(event)+" "+*this\TabEntered( ) +" "+ *Button
                   EndIf
                   ;
                   If *button < 0
@@ -17044,6 +17045,8 @@ chr$ = ","
                      Wend
                      EventWidget( )     = *this
                   EndIf
+                  
+                  Debug ""+*this\class +" POSTMENU"
                EndIf
                
                ; Debug "send - "+*this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
@@ -26275,9 +26278,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 19100
-; FirstLine = 18899
-; Folding = B+--------------------------------------------------------------------------------------0------+0h---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------------f-bd------------------------------------------------------------------------------------------------------------------------------+-----------VDCEYAAA-
+; CursorPosition = 13416
+; FirstLine = 13304
+; Folding = B+--------------------------------------------------------------------------------------0-------0h---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------------f-bd------------------------------------------------------------------------------------------------------------------------------+-----------VDCEYAAA-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

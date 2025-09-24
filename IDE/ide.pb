@@ -2800,9 +2800,15 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;-\\ ide binds events
    ;
    If Type( ide_toolbar ) = #__type_ToolBar
+;       BindBarEvent( ide_toolbar, -1, @ide_events( ) )
+;       BindBarEvent( ide_menu, -1, @ide_events( ) )
+;       BindBarEvent( ide_popup_lenguage, -1, @ide_events( ) )
       Bind( ide_toolbar, @ide_events( ), #__event_LeftClick )
       Bind( ide_menu, @ide_events( ), #__event_LeftClick )
       Bind( ide_popup_lenguage, @ide_events( ), #__event_LeftClick )
+;       Bind( ide_toolbar, @ide_events( ), #__event_Down )
+;       Bind( ide_menu, @ide_events( ), #__event_Down )
+;       Bind( ide_popup_lenguage, @ide_events( ), #__event_Down )
    EndIf
    Bind( ide_inspector_view, @ide_events( ) )
    ;
@@ -3046,8 +3052,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 808
-; FirstLine = 768
+; CursorPosition = 2806
+; FirstLine = 2252
 ; Folding = ---------f+T-------Pg----------4-n0--8d---v-8--+-----
 ; Optimizer
 ; EnableAsm
