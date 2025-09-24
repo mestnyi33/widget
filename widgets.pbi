@@ -13412,7 +13412,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Hide( *this, #True )
                   HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
                   If MouseButtonPress( )
-                    Post( *this, #__event_Change, *this\TabFocused( )\tindex, *this\TabFocused( ) )
+                     If *this\TabFocused( )
+                        Post( *this, #__event_LeftClick, *this\TabFocused( )\tindex, *this\TabFocused( ) )
+                     EndIf
                   EndIf
                EndIf
                If *this\menu\parent
@@ -17011,8 +17013,8 @@ chr$ = ","
                If is_bar_( *this )
                   ;
                   If event = #__event_LeftClick Or
-                     event = #__event_Down Or
-                     event = #__event_Up Or
+;                      event = #__event_Down Or
+;                      event = #__event_Up Or
                      event = #__event_Change
                      If *this\TabEntered( )
                         *button = *this\TabEntered( )\tindex
@@ -17046,7 +17048,7 @@ chr$ = ","
                      EventWidget( )     = *this
                   EndIf
                   
-                  Debug ""+*this\class +" POSTMENU"
+                 ; Debug ""+ *button +" "+ *this\class +" POSTMENU "
                EndIf
                
                ; Debug "send - "+*this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
@@ -17069,8 +17071,7 @@ chr$ = ","
                If Not is_root_( *this )
                   ;\\ 1 call (current-widget) bind event function
                   ForEach __gui\event\binds( )
-                     If __gui\event\binds( )\widget = *this And 
-                        __gui\event\binds( )\type = event And Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
+                     If __gui\event\binds( )\widget = *this And __gui\event\binds( )\type = event And Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
                         
                         If __gui\event\binds( )\data
                            WidgetEventData( ) = __gui\event\binds( )\data
@@ -26277,10 +26278,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 13416
-; FirstLine = 13304
-; Folding = B+--------------------------------------------------------------------------------------0-------0h---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------------f-bd------------------------------------------------------------------------------------------------------------------------------+-----------VDCEYAAA-
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 13415
+; FirstLine = 13303
+; Folding = B+--------------------------------------------------------------------------------------0-------0h----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------vvv4---------------+47+-----------------------------------------------------------------------------------------------------------------------------0-----------rGEIwAAA+
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

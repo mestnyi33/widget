@@ -2416,19 +2416,27 @@ Procedure ide_events( )
              SetClipboardText( GetText(ide_design_panel_CODE) )
          EndIf
          
-         ; ide_menu_events( *g, __item )
-         
-         ; Debug *g\TabEntered( )
-         
-         If *g\TabEntered( )
-            ide_menu_events( *g, *g\TabEntered( )\index )
-         Else
-            If Type(*g) = #__type_toolbar
+   EndSelect
+        
+   If __event = #__event_Change Or
+      __event = #__event_LeftClick
+      ;
+      ; ide_menu_events( *g, __item )
+      
+      ; Debug *g\TabEntered( )
+      If *g\TabEntered( )
+         ide_menu_events( *g, *g\TabEntered( )\index )
+      Else
+         If Type(*g) = #__type_toolbar
+            If GetData(*g) 
                ide_menu_events( *g, GetData(*g) )
+            Else
+               ide_menu_events( *g, __item )
             EndIf
          EndIf
-         
-   EndSelect
+      EndIf
+   EndIf
+      
    
    ; CODE EDIT EVENTS
    If *g = ide_design_panel_CODE                      Or *g = ide_design_DEBUG ; TEMP
@@ -2800,15 +2808,15 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;-\\ ide binds events
    ;
    If Type( ide_toolbar ) = #__type_ToolBar
-;       BindBarEvent( ide_toolbar, -1, @ide_events( ) )
 ;       BindBarEvent( ide_menu, -1, @ide_events( ) )
+;       BindBarEvent( ide_toolbar, -1, @ide_events( ) )
 ;       BindBarEvent( ide_popup_lenguage, -1, @ide_events( ) )
-      Bind( ide_toolbar, @ide_events( ), #__event_LeftClick )
+      Bind( ide_menu, @ide_events( ), #__event_Change )
+      Bind( ide_toolbar, @ide_events( ), #__event_Change )
+      Bind( ide_popup_lenguage, @ide_events( ), #__event_Change )
       Bind( ide_menu, @ide_events( ), #__event_LeftClick )
+      Bind( ide_toolbar, @ide_events( ), #__event_LeftClick )
       Bind( ide_popup_lenguage, @ide_events( ), #__event_LeftClick )
-;       Bind( ide_toolbar, @ide_events( ), #__event_Down )
-;       Bind( ide_menu, @ide_events( ), #__event_Down )
-;       Bind( ide_popup_lenguage, @ide_events( ), #__event_Down )
    EndIf
    Bind( ide_inspector_view, @ide_events( ) )
    ;
@@ -3051,10 +3059,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2806
-; FirstLine = 2252
-; Folding = ---------f+T-------Pg----------4-n0--8d---v-8--+-----
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 2431
+; FirstLine = 2064
+; Folding = ---------f+T-------Pg----------4-n0--8d-----8--8-----
 ; Optimizer
 ; EnableAsm
 ; EnableXP

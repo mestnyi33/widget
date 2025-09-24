@@ -23,6 +23,13 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    UsePNGImageDecoder()
    
+   Enumeration 1
+      #_tb_lng_ENG
+      #_tb_lng_RUS
+      #_tb_lng_FRENCH
+      #_tb_lng_GERMAN
+   EndEnumeration
+
    Global *toolbar._s_widget, th=24
    
    Procedure ToolBarEvents( )
@@ -97,6 +104,17 @@ CompilerIf #PB_Compiler_IsMainFile
          
          BarButton(6, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png"))
          BarToolTip(*toolbar, 6, "Find a document")
+         
+         BarSeparator( )
+         OpenSubBar("[LENGUAGE]")
+         BarItem(#_tb_lng_ENG, "ENG")
+         BarItem(#_tb_lng_RUS, "RUS")
+         BarItem(#_tb_lng_FRENCH, "FRENCH")
+         BarItem(#_tb_lng_GERMAN, "GERMAN")
+         CloseSubBar( )
+         BarSeparator( )
+         
+        
       EndIf
       
       DisableBarButton(*toolbar, 2, 1) ; Disable the button '2'
@@ -127,9 +145,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    End   ; All resources are automatically freed
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 104
-; FirstLine = 85
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 116
+; FirstLine = 97
 ; Folding = --
 ; EnableXP
 ; DPIAware
