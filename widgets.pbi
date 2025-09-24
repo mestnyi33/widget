@@ -881,6 +881,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          FindMapElement( widget::roots( ), Str( _canvasID_ ) )
          If _change_root_ = 1
             widget::root( ) = widget::roots( )
+;             mouse( )\x = GadgetMouseX( widget::root( )\canvas\gadget )
+;             mouse( )\y = GadgetMouseY( widget::root( )\canvas\gadget )
          EndIf
          ;Debug ""+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::root( )\class
       EndMacro
@@ -7997,7 +7999,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             If X = #PB_Ignore
                X = *this\container_x( )
-            ElseIf *this\parent 
+            ElseIf *this\parent And *this\parent\haschildren 
                If Not *this\child
                   X + *this\parent\scroll_x( )
                EndIf
@@ -8005,7 +8007,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             If Y = #PB_Ignore
                Y = *this\container_y( )
-            ElseIf *this\parent 
+            ElseIf *this\parent And *this\parent\haschildren 
                If Not *this\child
                   Y + *this\parent\scroll_y( )
                EndIf
@@ -13598,16 +13600,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;\\
+               Define pheight
                If *this\type = #__type_ToolBar Or
                   *this\type = #__type_PopupBar Or
                   *this\type = #__type_MenuBar Or
                   *this\type = #__type_TabBar 
-                  
+                  pheight = 16
                   Width = 0
                   Height = 1
                   PushListPosition( *this\__tabs( ) ) 
-                  If ListSize( *this\__tabs( ) ) > 9
-                     SelectElement( *this\__tabs( ), 9 )
+                  If ListSize( *this\__tabs( ) ) > pheight
+                     SelectElement( *this\__tabs( ), pheight )
                   Else
                      LastElement( *this\__tabs( ) ) 
                   EndIf
@@ -13615,11 +13618,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                   PopListPosition( *this\__tabs( ) ) 
                   
                ElseIf *this\row
+                  pheight = 9
                   Width = *this\padding\x + 1 ;*this\fs*2
                   Height = *this\padding\y + *this\fs*2
                   PushListPosition( *this\__rows( ) ) 
-                  If ListSize( *this\__rows( ) ) > 9
-                     SelectElement( *this\__rows( ), 9 )
+                  If ListSize( *this\__rows( ) ) > pheight
+                     SelectElement( *this\__rows( ), pheight )
                   Else
                      LastElement( *this\__rows( ) ) 
                   EndIf
@@ -26283,8 +26287,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 16880
-; FirstLine = 16766
+; CursorPosition = 884
+; FirstLine = 867
 ; Folding = B+--------------------------------------------------------------------------------------0-------0h----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------vvv4----------------47u70--vv--v--+-----------------------------------------------------------------------------------------------------------------0-----------rGEIwAAA+
 ; EnableXP
 ; DPIAware
