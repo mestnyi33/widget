@@ -13300,8 +13300,24 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn OpenSubBar( title, img )
       EndProcedure
       
-      Procedure   CreatePopupBar( _flags_ = 0 )
-         ProcedureReturn CreateBar( root( ), _flags_, #__type_PopupBar )
+      Procedure   OpenSubBar( Text.s, img = - 1)
+         Protected *this._s_WIDGET
+         If widget( )
+            BarItem( #PB_Any, Text.s, img )
+            ;
+            ; title index
+            widget( )\__tabs( )\tindex = ListIndex(widget( )\__tabs( ))
+            ;
+            *this = CreateBar( widget( ), 0, #__type_PopupBar ) 
+            SetClass( *this, Text )
+            ProcedureReturn *this
+         EndIf
+      EndProcedure
+      
+      Procedure   CloseSubBar( )
+         If widget( )\menu\parent
+            widget( ) = widget( )\menu\parent
+         EndIf
       EndProcedure
       
       Procedure   CreateBar( *parent._s_WIDGET, flag.q = #Null, Type.w = #__type_MenuBar )
@@ -13370,24 +13386,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn *this
       EndProcedure
       
-      Procedure   OpenSubBar( Text.s, img = - 1)
-         Protected *this._s_WIDGET
-         If widget( )
-            BarItem( #PB_Any, Text.s, img )
-            ;
-            ; title index
-            widget( )\__tabs( )\tindex = ListIndex(widget( )\__tabs( ))
-            ;
-            *this = CreateBar( widget( ), 0, #__type_PopupBar ) 
-            SetClass( *this, Text )
-            ProcedureReturn *this
-         EndIf
-      EndProcedure
-      
-      Procedure   CloseSubBar( )
-         If widget( )\menu\parent
-            widget( ) = widget( )\menu\parent
-         EndIf
+      Procedure   CreatePopupBar( _flags_ = 0 )
+         ProcedureReturn CreateBar( root( ), _flags_, #__type_PopupBar )
       EndProcedure
       
       Procedure   HidePopupBar( *this._s_WIDGET )
@@ -13396,24 +13396,48 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_ToolBar 
             ;
             While *this\menu\display
-               If *this\enter
-                  Break
-               EndIf
                If *this\menu\display
                   *this\menu\display = 0
+                  ;
+                  ; uncomment if you don't need to keep 
+                  ; the last selected item highlighted
+                  ;
+                  ; If *this\TabFocused( ) 
+                  ;    *this\TabFocused( )\_focus = 0
+                  ;    *this\TabFocused( )\checked = 0
+                  ;    *this\TabFocused( ) = 0
+                  ; EndIf
+                  ;
+                  Hide( *this, #True )
+                  HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
+               EndIf
+               If *this\menu\parent
+                  *this = *this\menu\parent
+               Else
+                  Break
+               EndIf 
+               If *this\enter
+                  Break
+               Else
                   If *this\TabFocused( ) 
                      *this\TabFocused( )\_focus = 0
                      *this\TabFocused( )\checked = 0
                      *this\TabFocused( ) = 0
+                     
+;                      ;
+;                      If Not *this\menu\parent
+;                         If Entered( )\root <> *this\root
+;                            PostReDraw( *this\root )
+;                         EndIf
+;                      EndIf
                   EndIf
-                  Hide( *this, #True )
-                  HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
-                  *this = *this\menu\parent
-                  PopupBar( ) = *this
                EndIf
             Wend
             ;
-            ProcedureReturn *this
+            If PopupBar( ) <> *this
+               PopupBar( ) = *this
+               ProcedureReturn *this
+            EndIf
          EndIf
       EndProcedure
       
@@ -18956,9 +18980,10 @@ chr$ = ","
                                        If PopupBar( ) <> *tab\popupbar
                                           If IsPopupChild( PopupBar( ), *this )
                                              ; Debug " Hide PopupMenuBar - " + PopupBar( )\class +" "+ *this\class
-                                             HidePopupBar( PopupBar( ) )
-                                          ElseIf *tab\childrens
-                                             HidePopupBar( PopupBar( ) )
+                                             Debug "1?   "+HidePopupBar( PopupBar( ) )
+                                          ElseIf *tab\childrens And ( *tab\_focus Or *tab\checked )
+                                             Debug "2?   "+HidePopupBar( PopupBar( ) )
+                                              PostReDraw( PopupBar( )\root )
                                           EndIf
                                        EndIf
                                     EndIf
@@ -18982,14 +19007,18 @@ chr$ = ","
                         ; 
                         If *this\type = #__type_ToolBar 
                            If PopupBar( )
-                              If is_inside_( DesktopScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) +*this\y, *this\height + PopupBar()\height , DesktopMouseY( ) ) And
-                                 is_inside_( DesktopScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) +*this\x, *this\TabFocused( )\x+*this\TabFocused( )\width, DesktopMouseX( ) )
-                              Else
-                                 *this\TabFocused( )\_focus = 0
-                                 *this\TabFocused( )\checked = 0
-                                 *this\TabFocused( ) = 0
-                                 HidePopupBar( PopupBar( ) )
-                                 PopupBar( ) = 0
+                              If *this\TabFocused( )
+                                 If *this\TabFocused( )\childrens 
+                                    If is_inside_( DesktopScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) +*this\y, *this\height + PopupBar()\height , DesktopMouseY( ) ) And
+                                       is_inside_( DesktopScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate )) +*this\x, *this\TabFocused( )\x+*this\TabFocused( )\width, DesktopMouseX( ) )
+                                    Else
+                                       *this\TabFocused( )\_focus = 0
+                                       *this\TabFocused( )\checked = 0
+                                       *this\TabFocused( ) = 0
+                                       Debug "3?   "+HidePopupBar( PopupBar( ) )
+                                       PopupBar( ) = 0
+                                    EndIf
+                                 EndIf
                               EndIf
                            EndIf
                         EndIf
@@ -19012,7 +19041,7 @@ chr$ = ","
                            *this\TabFocused( )\_focus = 0
                            *this\TabFocused( )\checked = 0
                            *this\TabFocused( ) = 0
-                           HidePopupBar( PopupBar( ) )
+                           Debug "4?   "+HidePopupBar( PopupBar( ) )
                            PopupBar( ) = 0
                         EndIf
                      EndIf
@@ -19030,7 +19059,7 @@ chr$ = ","
          If event = #__event_LostFocus
             ;                If PopupBar( ) = *this
             ;                   If PopupBar( )\enter = 0 
-            ;                      HidePopupBar( PopupBar( ) )
+            ;                      Debug "5?   "+HidePopupBar( PopupBar( ) )
             ;                   EndIf
             ;                   PopupBar( ) = 0
             ;                EndIf
@@ -19056,23 +19085,26 @@ chr$ = ","
                If MouseButtons( ) & #PB_Canvas_LeftButton
                   *tab = *this\TabEntered( )
                   
-                  If PopupBar( )
+                  If PopupBar( ) 
                      If PopupBar( )\menu\display And Not (*this\type = #__type_ToolBar And *tab And *tab\childrens)
-                        If Not IsPopupChild( PopupBar( ), *this )
-                           If PopupBar( )\menu\parent And 
-                              PopupBar( )\menu\parent\TabFocused( )
-                              PopupBar( )\menu\parent\TabFocused( )\_focus = 0
-                              PopupBar( )\menu\parent\TabFocused( )\checked = 0
-                              PopupBar( )\menu\parent\TabFocused( ) = 0
-                              PostReDraw( PopupBar( )\menu\parent\root )
-                           EndIf
-                        EndIf
-                        HidePopupBar( PopupBar( ) )
+                        ;                         If Not IsPopupChild( PopupBar( ), *this )
+                        ;                            If PopupBar( )\menu\parent And 
+                        ;                               PopupBar( )\menu\parent\TabFocused( )
+                        ;                               PopupBar( )\menu\parent\TabFocused( )\_focus = 0
+                        ;                               PopupBar( )\menu\parent\TabFocused( )\checked = 0
+                        ;                               PopupBar( )\menu\parent\TabFocused( ) = 0
+                        ;                               PostReDraw( PopupBar( )\menu\parent\root )
+                        ;                            EndIf
+                        ;                         EndIf
+                        Debug "6?   "+HidePopupBar( PopupBar( ) )
+                        PostReDraw( PopupBar( )\root )
                         PopupBar( ) = 0
                      EndIf
-                  Else
-                     If *this\type = #__type_MenuBar
-                        If *tab And Not *tab\disable 
+                  EndIf
+                  
+                  If *this\type = #__type_MenuBar
+                     If *tab And Not *tab\disable 
+                        If Not *this\TabFocused( )
                            If *this\TabFocused( ) <> *tab
                               If *this\TabFocused( )
                                  *this\TabFocused( )\_focus = 0
@@ -26243,9 +26275,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 19013
-; FirstLine = 18759
-; Folding = B+--------------------------------------------------------------------------------------0------+0h--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f8-------------------------------0v20-----------------------------------------------------------------------------------------------------------------------------8-----------XNIQgBAA9
+; CursorPosition = 19100
+; FirstLine = 18899
+; Folding = B+--------------------------------------------------------------------------------------0------+0h---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------------f-bd------------------------------------------------------------------------------------------------------------------------------+-----------VDCEYAAA-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
