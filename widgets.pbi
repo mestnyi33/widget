@@ -8001,16 +8001,16 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             If X = #PB_Ignore
                X = *this\container_x( )
-            ElseIf *this\parent And *this\parent\haschildren 
-               If Not *this\child
+            ElseIf *this\parent  
+               If Not *this\child And *this\parent\haschildren
                   X + *this\parent\scroll_x( )
                EndIf
                *this\container_x( ) = X
             EndIf
             If Y = #PB_Ignore
                Y = *this\container_y( )
-            ElseIf *this\parent And *this\parent\haschildren 
-               If Not *this\child
+            ElseIf *this\parent 
+               If Not *this\child And *this\parent\haschildren 
                   Y + *this\parent\scroll_y( )
                EndIf
                *this\container_y( ) = Y
@@ -12809,6 +12809,72 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       ;- BARMENU
       ;-
+      Procedure   CreateBar( *parent._s_WIDGET, flag.q = #Null, Type.w = #__type_MenuBar )
+         Static count
+         Protected *menu, *this._s_WIDGET
+         
+         If Type = #__type_MenuBar
+            If flag
+               Type = #__type_ToolBar
+            EndIf
+         EndIf
+         
+         If Type = #__type_PopupBar
+            If is_bar_( *parent )
+               *menu = *parent
+               *parent = *parent\parent
+            EndIf
+            
+            *this = Create( *parent, "PopupMenu_"+count, #__type_PopupBar,
+                            0,0,0,0, #Null$, flag|#__flag_vertical | #__flag_child, 0, 0, 0, 0, 0, 30 ) ; 
+            
+            count + 1
+            *this\menu\parent = *menu
+            ;
+            SetBackgroundColor( *this, $FFF2F2F2)
+            Hide( *this, #True ) 
+            
+         
+         Else
+            If Not *parent
+               *parent = root( )
+            EndIf
+            ;
+            If constants::BinaryFlag( Flag, #__flag_BarLeft ) Or 
+               constants::BinaryFlag( Flag, #__flag_BarRight )
+               Flag | #__flag_vertical
+            EndIf
+            
+            ;
+            *this = Create( *parent, "["+*parent\class +"]-"+ ClassFromType( Type ), Type,
+                            0, 0, 0, 0, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
+            
+            If *parent\type = #__type_Panel Or Type = #__type_ToolBar
+               *parent\tabbar = *this  
+               If *parent\MenuBarHeight
+                  Debug "--- "+*parent\MenuBarHeight;*parent\class
+               EndIf
+               ; *parent\ToolBarHeight = DPIScaled(24)
+            Else
+               *parent\menubar = *this  
+               ;  *parent\MenuBarHeight = DPIScaled(24)
+            EndIf
+            
+            If constants::BinaryFlag( Flag, #__flag_BarLeft ) 
+               BarPosition( *this, 1 )
+            ElseIf constants::BinaryFlag( Flag, #__flag_BarRight )
+               BarPosition( *this, 3 )
+            ElseIf constants::BinaryFlag( Flag, #__flag_BarBottom )
+               BarPosition( *this, 4 )
+            Else
+               BarPosition( *this, 2 )
+            EndIf
+         EndIf
+         
+         widget( ) = *this ;?
+         ProcedureReturn *this
+      EndProcedure
+      
       Procedure   BarPosition( *this._s_widget, position.i, size.i = #PB_Default )
          Protected fs = 0, *box._s_WIDGET
          
@@ -12957,70 +13023,127 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure   CreateBar( *parent._s_WIDGET, flag.q = #Null, Type.w = #__type_MenuBar )
-         Static count
-         Protected *menu, *this._s_WIDGET
-         
-         If Type = #__type_MenuBar
-            If flag
-               Type = #__type_ToolBar
+      Procedure   DisableBarButton( *this._s_WIDGET, _barbutton_, _state_ )
+         ForEach *this\__tabs( )
+            If *this\__tabs( )\tindex = _barbutton_
+               ProcedureReturn DisableItem( *this, ListIndex(*this\__tabs( )), _state_ )
             EndIf
+         Next
+      EndProcedure
+      
+      Procedure   DisableBarItem( *this._s_WIDGET, _baritem_, _state_ )
+         ForEach *this\__tabs( )
+            If *this\__tabs( )\tindex = _baritem_
+               ProcedureReturn DisableItem( *this, ListIndex(*this\__tabs( )), _state_ )
+            EndIf
+         Next
+      EndProcedure
+      
+      Procedure   BarToolTip( *this._s_WIDGET, _barbutton_, _text_.s )
+         ProcedureReturn 
+      EndProcedure
+      
+      Procedure UpdateBar( *this._s_WIDGET )
+         If PopupBar( )
+            StartDraw( *this\root )
+            Draw( *this )
+            StopDraw( )
+            
+            ;
+            ResizeRootWindow( *this, #PB_Ignore, #PB_Ignore, *this\scroll_width( ), #PB_Ignore)
          EndIf
+      EndProcedure
+      
+      Procedure.s GetBarTitleText( *this._s_WIDGET, _title_.s )
+         ProcedureReturn 
+      EndProcedure
+      
+      Procedure   SetBarTitleText( *this._s_WIDGET, _titleindex_, _text_.s )
+         ForEach *this\__tabs( )
+            If *this\__tabs( )\tindex = _titleindex_
+               SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
+               Break
+            EndIf
+         Next
          
-         If Type = #__type_PopupBar
-            If is_bar_( *parent )
-               *menu = *parent
-               *parent = *parent\parent
+         ;
+         UpdateBar( *this )
+      EndProcedure
+      
+      Procedure.s GetBarItemText( *this._s_WIDGET, _baritem_ )
+         ForEach *this\__tabs( )
+            If *this\__tabs( )\tindex = _baritem_
+               ProcedureReturn GetItemText( *this, ListIndex(*this\__tabs( )) )
             EndIf
-            
-            *this = Create( *parent, "PopupMenu_"+count, #__type_PopupBar,
-                            0,0,0,0, #Null$, flag|#__flag_vertical | #__flag_child, 0, 0, 0, 0, 0, 30 ) ; 
-            
-            count + 1
-            *this\menu\parent = *menu
-            ;
-            SetBackgroundColor( *this, $FFF2F2F2)
-            Hide( *this, #True ) 
-            
-         
-         Else
-            If Not *parent
-               *parent = root( )
-            EndIf
-            ;
-            If constants::BinaryFlag( Flag, #__flag_BarLeft ) Or 
-               constants::BinaryFlag( Flag, #__flag_BarRight )
-               Flag | #__flag_vertical
-            EndIf
-            
-            ;
-            *this = Create( *parent, "["+*parent\class +"]-"+ ClassFromType( Type ), Type,
-                            0, 0, 0, 0, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
-            
-            If *parent\type = #__type_Panel Or Type = #__type_ToolBar
-               *parent\tabbar = *this  
-               If *parent\MenuBarHeight
-                  Debug "--- "+*parent\MenuBarHeight;*parent\class
+         Next
+      EndProcedure
+      
+      Procedure   SetBarItemText( *this._s_WIDGET, _baritem_, _text_.s )
+         If *this\type = #__type_toolbar
+            ForEach *this\__tabs( )
+               If *this\__tabs( )\tindex = _baritem_
+                  ; SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
+                  
+                  *this\__tabs( )\TextChange( ) = #True
+                  *this\__tabs( )\text\string = _text_
+                  *this\WidgetChange( )       = #True
+                  *this\TabChange( )          = #True
+                  
+                  Break
                EndIf
-               ; *parent\ToolBarHeight = DPIScaled(24)
-            Else
-               *parent\menubar = *this  
-               ;  *parent\MenuBarHeight = DPIScaled(24)
-            EndIf
-            
-            If constants::BinaryFlag( Flag, #__flag_BarLeft ) 
-               BarPosition( *this, 1 )
-            ElseIf constants::BinaryFlag( Flag, #__flag_BarRight )
-               BarPosition( *this, 3 )
-            ElseIf constants::BinaryFlag( Flag, #__flag_BarBottom )
-               BarPosition( *this, 4 )
-            Else
-               BarPosition( *this, 2 )
-            EndIf
+            Next
          EndIf
-         
-         widget( ) = *this ;?
-         ProcedureReturn *this
+         If *this\type = #__type_popupbar Or *this\type = #__type_menubar
+            ForEach *this\__tabs( )
+               ; Debug ""+*this\__tabs( )\text\string +" "+ *this\__tabs( )\tindex +" "+ *this\__tabs( )\popupbar
+               If *this\__tabs( )\popupbar
+                  ForEach *this\__tabs( )\popupbar\__tabs( )
+                     If *this\__tabs( )\popupbar\__tabs( )\tindex = _baritem_
+                        ; Debug ""+*this\__tabs( )\popupbar\__tabs( )\text\string +" "+ *this\__tabs( )\popupbar\__tabs( )\tindex +" "+ *this\__tabs( )\popupbar\__tabs( )\popupbar
+                        ; SetItemText( *this\__tabs( )\popupbar, ListIndex(*this\__tabs( )\popupbar\__tabs( )), _text_.s )
+                        
+                        *this\__tabs( )\popupbar\__tabs( )\TextChange( ) = #True
+                        *this\__tabs( )\popupbar\__tabs( )\text\string = _text_
+                        *this\__tabs( )\popupbar\WidgetChange( )       = #True
+                        *this\__tabs( )\popupbar\TabChange( )          = #True
+                        
+                        Break 2
+                     EndIf
+                  Next
+               Else
+                  If *this\__tabs( )\tindex = _baritem_
+                     ; SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
+                     
+                     *this\__tabs( )\TextChange( ) = #True
+                     *this\__tabs( )\text\string = _text_
+                     *this\WidgetChange( )       = #True
+                     *this\TabChange( )          = #True
+                     
+                     
+                    ; Break
+                  EndIf
+               EndIf
+            Next
+            
+            ;
+            UpdateBar( *this )
+         EndIf
+      EndProcedure
+      
+      Procedure   SetBarItemState( *this._s_WIDGET, _baritem_, _state_ )
+         ForEach *this\__tabs( )
+            If *this\__tabs( )\tindex = _baritem_
+               ProcedureReturn SetItemState( *this, ListIndex(*this\__tabs( )), _state_ )
+            EndIf
+         Next
+      EndProcedure
+      
+      Procedure   GetBarItemState( *this._s_WIDGET, _baritem_ )
+         ForEach *this\__tabs( )
+            If *this\__tabs( )\tindex = _baritem_
+               ProcedureReturn GetItemState( *this, ListIndex(*this\__tabs( )) )
+            EndIf
+         Next
       EndProcedure
       
       Procedure   CreatePopupBar( _flags_ = 0 )
@@ -13382,132 +13505,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
          EndIf
-      EndProcedure
-      
-      Procedure   DisableBarItem( *this._s_WIDGET, _baritem_, _state_ )
-         ForEach *this\__tabs( )
-            If *this\__tabs( )\tindex = _baritem_
-               ProcedureReturn DisableItem( *this, ListIndex(*this\__tabs( )), _state_ )
-            EndIf
-         Next
-      EndProcedure
-      
-      Procedure   DisableBarButton( *this._s_WIDGET, _barbutton_, _state_ )
-         ForEach *this\__tabs( )
-            If *this\__tabs( )\tindex = _barbutton_
-               ProcedureReturn DisableItem( *this, ListIndex(*this\__tabs( )), _state_ )
-            EndIf
-         Next
-      EndProcedure
-      
-      Procedure   BarToolTip( *this._s_WIDGET, _barbutton_, _text_.s )
-         ProcedureReturn 
-      EndProcedure
-      
-      Procedure.s GetBarTitleText( *this._s_WIDGET, _title_.s )
-         ProcedureReturn 
-      EndProcedure
-      
-      Procedure   SetBarTitleText( *this._s_WIDGET, _titleindex_, _text_.s )
-         ForEach *this\__tabs( )
-            If *this\__tabs( )\tindex = _titleindex_
-               SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
-               Break
-            EndIf
-         Next
-         
-         ;
-         If PopupBar( )
-            StartDraw( *this\root )
-            Draw( *this )
-            StopDraw( )
-            
-            ;
-            ResizeRootWindow( *this, #PB_Ignore, #PB_Ignore, *this\scroll_width( ), #PB_Ignore)
-         EndIf
-      EndProcedure
-      
-      Procedure.s GetBarItemText( *this._s_WIDGET, _baritem_ )
-         ForEach *this\__tabs( )
-            If *this\__tabs( )\tindex = _baritem_
-               ProcedureReturn GetItemText( *this, ListIndex(*this\__tabs( )) )
-            EndIf
-         Next
-      EndProcedure
-      
-      Procedure   SetBarItemText( *this._s_WIDGET, _baritem_, _text_.s )
-         If *this\type = #__type_toolbar
-            ForEach *this\__tabs( )
-               If *this\__tabs( )\tindex = _baritem_
-                  ; SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
-                  
-                  *this\__tabs( )\TextChange( ) = #True
-                  *this\__tabs( )\text\string = _text_
-                  *this\WidgetChange( )       = #True
-                  *this\TabChange( )          = #True
-                  
-                  Break
-               EndIf
-            Next
-         EndIf
-         If *this\type = #__type_popupbar Or *this\type = #__type_menubar
-            ForEach *this\__tabs( )
-               ; Debug ""+*this\__tabs( )\text\string +" "+ *this\__tabs( )\tindex +" "+ *this\__tabs( )\popupbar
-               If *this\__tabs( )\popupbar
-                  ForEach *this\__tabs( )\popupbar\__tabs( )
-                     If *this\__tabs( )\popupbar\__tabs( )\tindex = _baritem_
-                        ; Debug ""+*this\__tabs( )\popupbar\__tabs( )\text\string +" "+ *this\__tabs( )\popupbar\__tabs( )\tindex +" "+ *this\__tabs( )\popupbar\__tabs( )\popupbar
-                        ; SetItemText( *this\__tabs( )\popupbar, ListIndex(*this\__tabs( )\popupbar\__tabs( )), _text_.s )
-                        
-                        *this\__tabs( )\popupbar\__tabs( )\TextChange( ) = #True
-                        *this\__tabs( )\popupbar\__tabs( )\text\string = _text_
-                        *this\__tabs( )\popupbar\WidgetChange( )       = #True
-                        *this\__tabs( )\popupbar\TabChange( )          = #True
-                        
-                        Break 2
-                     EndIf
-                  Next
-               Else
-                  If *this\__tabs( )\tindex = _baritem_
-                     ; SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
-                     
-                     *this\__tabs( )\TextChange( ) = #True
-                     *this\__tabs( )\text\string = _text_
-                     *this\WidgetChange( )       = #True
-                     *this\TabChange( )          = #True
-                     
-                     
-                    ; Break
-                  EndIf
-               EndIf
-            Next
-            
-            ;
-            If PopupBar( )
-               StartDraw( *this\root )
-               Draw( *this )
-               StopDraw( )
-               
-               ;
-               ResizeRootWindow( *this, #PB_Ignore, #PB_Ignore, *this\scroll_width( ), #PB_Ignore)
-            EndIf
-         EndIf
-      EndProcedure
-      
-      Procedure   SetBarItemState( *this._s_WIDGET, _baritem_, _state_ )
-         ForEach *this\__tabs( )
-            If *this\__tabs( )\tindex = _baritem_
-               ProcedureReturn SetItemState( *this, ListIndex(*this\__tabs( )), _state_ )
-            EndIf
-         Next
-      EndProcedure
-      
-      Procedure   GetBarItemState( *this._s_WIDGET, _baritem_ )
-         ForEach *this\__tabs( )
-            If *this\__tabs( )\tindex = _baritem_
-               ProcedureReturn GetItemState( *this, ListIndex(*this\__tabs( )) )
-            EndIf
-         Next
       EndProcedure
       
       Procedure   BindBarEvent( *this._s_WIDGET, _baritem_, *callback )
@@ -25946,9 +25943,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 13492
-; FirstLine = 12671
-; Folding = B+--------------------------------------------------------------------------------------1--f9---4H+-----------------------------------v+8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------------------------------------------------------v---------------------------------------------------------------uq----+-----------------------------------------------------------------------4-------------000+--------------4-e4Vv---00--0-4-----------------------------------------------------------------------------------------------------------------v-----------f2gABGAAw-
+; CursorPosition = 8012
+; FirstLine = 7421
+; Folding = B+--------------------------------------------------------------------------------------1--f9---4H+-----------------------------------v+8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------------4-------------------------------------------------------------------------uq----+-----------------------------------------------------------------------4-------------000+--------------4-e4Vv---00--0-4-----------------------------------------------------------------------------------------------------------------v-----------f2gABGAAw-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
