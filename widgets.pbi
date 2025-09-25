@@ -531,9 +531,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro WidgetEventItem( ): widget::__gui\event\item: EndMacro
       
       Macro GetEvent( ): widget::__gui\event\type: EndMacro
+      Macro GetEventWidget( ): widget::__gui\event\widget: EndMacro
       Macro GetEventType( ): PBEventType( WidgetEvent( ) ): EndMacro
       Macro GetEventData( ): widget::__gui\event\data: EndMacro
       Macro GetEventItem( ): widget::__gui\event\item: EndMacro
+      Macro EventBar( ): widget::__gui\event\item: EndMacro
       ;
       Macro WaitEvent( _callback_ = #Null, _eventmask_ = #PB_All )
          If _callback_
@@ -3839,8 +3841,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If childrens
                            *this\scroll_width( ) + DPIScaled(15)
                         EndIf
-                        ;
-                        ResizeRootWindow( *this, #PB_Ignore, #PB_Ignore, *this\scroll_width( ), #PB_Ignore )
                      Else
                         *this\scroll_width( ) = *this\screen_width( ) 
                      EndIf
@@ -4008,8 +4008,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   bar_Update( *this, #True )
-                  
-                  *this\TabChange( ) = #False
+                 
+                 *this\TabChange( ) = #False
                   *this\ResizeChange( ) = 0
                EndIf
                
@@ -4025,7 +4025,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
             EndIf
-            
          EndWith
       EndProcedure
       
@@ -8569,7 +8568,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          ResizeWindow( *this\root\canvas\window, X, Y, Width, Height )
          ResizeGadget( *this\root\canvas\gadget, #PB_Ignore, #PB_Ignore, Width, Height )
          ; Resize( *this, #PB_Ignore, #PB_Ignore, Width, Height )
-        ; Debug *this\menu\parent
       EndProcedure
       
       
@@ -11359,372 +11357,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn #True
       EndProcedure
       
-      Procedure.i _SetActive( *this._s_WIDGET )
-         Protected result.i, *active._s_WIDGET
-         Protected._s_WIDGET *deactive, *deactiveWindow, *deactiveGadget
-         
-         ; deactivate
-         If GetActive( )
-            *deactive = GetActive( )
-            *deactiveWindow = ActiveWindow( )
-            If *deactiveWindow
-               *deactiveGadget = ActiveGadget( )
-            EndIf
-            
-            ; deactivate canvas
-            If Not *this
-               If *deactiveWindow 
-                  If is_integral_( *deactive )
-                     *deactive = *deactive\parent
-                  EndIf
-                  ;\\ set deactive all parents
-                  If *deactiveWindow\root\focus = 2
-                     *deactiveWindow\root\focus = 3
-                     If test_focus_set
-                        Debug "Deactive canvas&root( ) "+*deactiveWindow\root\class
-                     EndIf
-                     ;
-                     DoFocus( *deactiveWindow\root, #__event_LostFocus )
-                  EndIf
-                  If *deactive\address
-                     If Not is_root_( *deactive )
-                        PushListPosition( widgets( ) )
-                        ChangeCurrentElement( widgets( ), *deactive\address )
-                        While PreviousElement( widgets( ) )
-                           If widgets( )
-                              widget( ) = widgets( )
-                              
-                              If widgets( ) And is_window_( widgets( ) )
-                                 If IsChild( *deactive, widgets( ) )
-                                    If widgets( )\focus = 2
-                                       widgets( )\focus = 3
-                                       If test_focus_set
-                                          Debug "Deactive canvas&widget( ) "+widgets( )\class
-                                       EndIf
-                                       ;
-                                       DoFocus( widgets( ), #__event_LostFocus )
-                                    EndIf
-                                 EndIf
-                              EndIf
-                           EndIf
-                        Wend
-                        PopListPosition( widgets( ) )
-                     EndIf
-                  EndIf
-                  
-                  If *deactiveWindow\focus = 2
-                     *deactiveWindow\focus = 3
-                     If test_focus_set
-                        Debug "Deactive canvas&widgetwindow "+*deactiveWindow\class
-                     EndIf
-                     ;
-                     DoFocus( *deactiveWindow, #__event_LostFocus )
-                  EndIf
-                  
-                  If *deactiveGadget And
-                     *deactiveGadget\focus = 2
-                     *deactiveGadget\focus = 3
-                     If test_focus_set
-                        Debug "Deactive canvas&widgetgadget "+*deactiveGadget\class
-                     EndIf
-                     ;
-                     DoFocus( *deactiveGadget, #__event_LostFocus )
-                  EndIf
-               EndIf
-               
-               ; reset active canvas
-               If GetActiveGadget( ) = *deactive\root\canvas\gadget
-                  SetActiveGadget( - 1 )
-               EndIf
-               ProcedureReturn 0
-            EndIf
-            
-            ; activate canvas
-            If GetActive( ) = *this
-               ;\\
-               If is_integral_( *this )
-                  *active = *this\parent
-               Else
-                  *active = *this
-               EndIf
-               
-               ;\\ set active all parents
-               If ActiveWindow( )\root\focus = 3
-                  ActiveWindow( )\root\focus = 2
-                  If test_focus_set
-                     Debug "Active widgetroot "+ActiveWindow( )\root\class
-                  EndIf
-                  ;
-                  DoFocus( ActiveWindow( )\root, #__event_Focus )
-               EndIf
-               If *active\address
-                  If Not is_root_( *active )
-                     PushListPosition( widgets( ) )
-                     ChangeCurrentElement( widgets( ), *active\address )
-                     While PreviousElement( widgets( ) )
-                        If widgets( )
-                           widget( ) = widgets( )
-                           
-                           If is_window_( widgets( ) )
-                              If IsChild( *active, widgets( ) )
-                                 If widgets( )\focus = 3
-                                    widgets( )\focus = 2
-                                    If test_focus_set
-                                       Debug "Active widget( ) "+widget( )\class
-                                    EndIf
-                                    ;
-                                    DoFocus( widgets( ), #__event_Focus )
-                                 EndIf
-                              EndIf
-                           EndIf
-                        EndIf
-                     Wend
-                     PopListPosition( widgets( ) )
-                  EndIf
-               EndIf
-               
-               If ActiveWindow( ) And ActiveWindow( )\root = *this\root
-                  If ActiveWindow( )\focus = 3
-                     ActiveWindow( )\focus = 2
-                     If test_focus_set
-                        Debug "Active canvas&widgetwindow "+ActiveWindow( )\class
-                     EndIf
-                     ;
-                     DoFocus( ActiveWindow( ), #__event_Focus )
-                  EndIf
-                  
-                  If ActiveGadget( ) And
-                     ActiveGadget( )\focus = 3
-                     ActiveGadget( )\focus = 2
-                     If test_focus_set
-                        Debug "Active canvas&widgetgadget "+ActiveGadget( )\class
-                     EndIf
-                     ;
-                     DoFocus( ActiveGadget( ), #__event_Focus )
-                  EndIf
-               Else
-                  If *this\focus = 3
-                     *this\focus = 2
-                     If test_focus_set
-                        Debug "Active canvas&widget "+*this\class
-                     EndIf
-                     ;
-                     DoFocus( *this, #__event_Focus )
-                  EndIf 
-               EndIf
-               ProcedureReturn 0
-            EndIf
-         EndIf
-         
-         
-         ; activate
-         If *this
-            If is_integral_( *this )
-               *active = *this\parent
-            Else
-               *active = *this
-            EndIf
-            ;
-            ;\\
-            If *active\anchors
-               If a_focused( ) = *active
-                  ProcedureReturn 0
-               Else
-                  If a_set( *active, *active\anchors\mode, a_getsize(*active), a_getpos(*active) )
-                     ; Debug "a_set active"
-                     ProcedureReturn 0
-                  EndIf
-               EndIf
-            Else
-               If *active\parent And 
-                  *active\parent\type = #__type_Splitter
-                  ;
-                  Protected *parent._s_WIDGET = *active\parent
-                  While *parent And Not *parent\anchors
-                     *parent = *parent\parent
-                  Wend
-                  ;
-                  If *parent And *parent\anchors
-                     *active = *parent
-                  EndIf
-               EndIf
-               
-               If *active\disable 
-                  ProcedureReturn 0
-               EndIf 
-            EndIf
-            
-            ;\\
-            If *active\focus = #__s_nofocus
-               *active = *active\parent
-               If *active And *active\focus = #__s_nofocus 
-                  ProcedureReturn 0
-               EndIf
-            EndIf
-            
-            If Not *active 
-               ProcedureReturn 0
-            EndIf
-            
-            ;\\
-            If GetActive( ) <> *this
-               keyboard( )\deactive = GetActive( )
-               *deactive = GetActive( )
-               *deactiveWindow = ActiveWindow( )
-               If *deactiveWindow
-                  *deactiveGadget = ActiveGadget( )
-               EndIf
-               
-               GetActive( ) = *this
-               *this\root\active = *this
-               
-               If is_Window_( *active )
-                  ActiveWindow( ) = *active
-               Else
-                  ActiveWindow( ) = *active\window
-                  If ActiveWindow( ) 
-                     If is_gadget_( *active )
-                        ActiveGadget( ) = *active
-                     EndIf
-                  EndIf
-               EndIf
-               ; это чтобы при активации окна, если есть активный гаджет
-               ; чтобы он получил фокус клавиатуры
-               If ActiveGadget( )
-                  GetActive( ) = ActiveGadget( )
-               EndIf
-               
-               ; 
-               If *deactive
-                  If is_integral_( *deactive )
-                     *deactive = *deactive\parent
-                  EndIf
-                  ;
-                  If *deactiveWindow And *deactiveWindow <> *active  
-                     ;\\ set deactive all parents
-                     If *deactive And
-                        *deactive\address And
-                        Not is_root_( *deactive )
-                        
-                        If Not IsChild( *this, *deactive )
-                           PushListPosition( widgets( ) )
-                           ChangeCurrentElement( widgets( ), *deactive\address )
-                           While PreviousElement( widgets( ))
-                              If widgets( )
-                                 widget( ) = widgets( )
-                                 
-                                 If widget( ) = *this\window
-                                    Break
-                                 EndIf
-                                 If widget( ) = *this
-                                    Break
-                                 EndIf
-                                 If IsChild( *deactive, widget( ))
-                                    ;If Not IsChild( *this, widget( ) )
-                                    If widget( )\focus = 2
-                                       widget( )\focus = 3
-                                       
-                                       If test_focus_set
-                                          Debug "Deactive widget( ) "+widget( )\class
-                                       EndIf
-                                       DoFocus( widget( ), #__event_LostFocus )
-                                    EndIf
-                                    ;EndIf
-                                 EndIf
-                              EndIf
-                           Wend
-                           PopListPosition( widgets( ) )
-                        EndIf
-                     EndIf
-                     
-                     ;\\
-                     If Not IsChild( *active, *deactiveWindow )
-                        If *deactiveWindow\focus <> 3 
-                           *deactiveWindow\focus = 3
-                           If test_focus_set
-                              Debug "Deactive widgetwindow "+*deactiveWindow\class
-                           EndIf
-                           ;
-                           DoFocus( *deactiveWindow, #__event_LostFocus )
-                        EndIf
-                     EndIf
-                     
-                     If *deactiveGadget And *deactiveGadget <> *active
-                        If *deactiveGadget\focus <> 3
-                           *deactiveGadget\focus = 3
-                           If test_focus_set
-                              Debug "Deactive widgetgadget "+*deactiveGadget\class
-                           EndIf
-                           ;
-                           DoFocus( *deactiveGadget, #__event_LostFocus )
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               
-               ;\\
-               If ActiveWindow( ) 
-                  ;\\ set active all parents
-                  If ActiveWindow( )\root\focus = 3
-                     ActiveWindow( )\root\focus = 2
-                     If test_focus_set
-                        Debug "Active widgetroot "+ActiveWindow( )\root\class
-                     EndIf
-                     ;
-                     DoFocus( ActiveWindow( )\root, #__event_Focus )
-                  EndIf
-                  If *active\address
-                     If Not is_root_( *active )
-                        PushListPosition( widgets( ) )
-                        ChangeCurrentElement( widgets( ), *active\address )
-                        While PreviousElement( widgets( ) )
-                           If widgets( )
-                              widget( ) = widgets( )
-                              
-                              If is_window_( widgets( ) )
-                                 If IsChild( *active, widgets( ) )
-                                    If widgets( )\focus = 3
-                                       widgets( )\focus = 2
-                                       If test_focus_set
-                                          Debug "Active widget( ) "+widget( )\class
-                                       EndIf
-                                       ;
-                                       DoFocus( widgets( ), #__event_Focus )
-                                    EndIf
-                                 EndIf
-                              EndIf
-                           EndIf
-                        Wend
-                        PopListPosition( widgets( ) )
-                     EndIf
-                  EndIf
-                  
-                  ; 
-                  If ActiveWindow( )\focus <> 2
-                     ActiveWindow( )\focus = 2
-                     If test_focus_set
-                        Debug "Active widgetwindow "+ActiveWindow( )\class
-                     EndIf
-                     ;
-                     DoFocus( ActiveWindow( ), #__event_Focus )
-                  EndIf
-                  
-                  If ActiveGadget( ) And
-                     ActiveGadget( )\focus <> 2
-                     ActiveGadget( )\focus = 2
-                     If test_focus_set
-                        Debug "Active widgetgadget "+ActiveGadget( )\class
-                     EndIf
-                     ;
-                     DoFocus( ActiveGadget( ), #__event_Focus )
-                  EndIf
-               EndIf
-            EndIf 
-         EndIf
-         
-         ProcedureReturn #True
-      EndProcedure
-      
       ;-
       Procedure.i SetAttach( *this._s_WIDGET, *parent._s_WIDGET, mode.a )
          If *parent
@@ -13175,7 +12807,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      ;- MENU
+      ;- BARMENU
       ;-
       Procedure   BarPosition( *this._s_widget, position.i, size.i = #PB_Default )
          Protected fs = 0, *box._s_WIDGET
@@ -13783,6 +13415,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                Break
             EndIf
          Next
+         
+         ;
+         If PopupBar( )
+            StartDraw( *this\root )
+            Draw( *this )
+            StopDraw( )
+            
+            ;
+            ResizeRootWindow( *this, #PB_Ignore, #PB_Ignore, *this\scroll_width( ), #PB_Ignore)
+         EndIf
       EndProcedure
       
       Procedure.s GetBarItemText( *this._s_WIDGET, _baritem_ )
@@ -13834,10 +13476,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\WidgetChange( )       = #True
                      *this\TabChange( )          = #True
                      
-                     Break
+                     
+                    ; Break
                   EndIf
                EndIf
             Next
+            
+            ;
+            If PopupBar( )
+               StartDraw( *this\root )
+               Draw( *this )
+               StopDraw( )
+               
+               ;
+               ResizeRootWindow( *this, #PB_Ignore, #PB_Ignore, *this\scroll_width( ), #PB_Ignore)
+            EndIf
          EndIf
       EndProcedure
       
@@ -16387,84 +16040,6 @@ chr$ = ","
          ProcedureReturn result.s
       EndProcedure
       
-      ;-
-      Procedure.i PBEventType( event.i )
-         If event = #__event_MouseEnter
-            ProcedureReturn #PB_EventType_MouseEnter
-         EndIf
-         If event = #__event_MouseLeave
-            ProcedureReturn #PB_EventType_MouseLeave
-         EndIf
-         If event = #__event_MouseMove
-            ProcedureReturn #PB_EventType_MouseMove
-         EndIf
-         If event = #__event_Focus
-            ProcedureReturn #PB_EventType_Focus
-         EndIf
-         If event = #__event_LostFocus
-            ProcedureReturn #PB_EventType_LostFocus
-         EndIf
-         
-         If event = #__event_Resize
-            ProcedureReturn #PB_EventType_Resize
-         EndIf
-         If event = #__event_Change
-            ProcedureReturn #PB_EventType_Change
-         EndIf
-         If event = #__event_StatusChange
-            ProcedureReturn #PB_EventType_StatusChange
-         EndIf
-         If event = #__event_Down
-            ProcedureReturn #PB_EventType_Down
-         EndIf
-         If event = #__event_Up
-            ProcedureReturn #PB_EventType_Up
-         EndIf
-         
-         If event = #__event_DragStart
-            ProcedureReturn #PB_EventType_DragStart
-         EndIf
-         If event = #__event_Input
-            ProcedureReturn #PB_EventType_Input
-         EndIf
-         If event = #__event_KeyDown
-            ProcedureReturn #PB_EventType_KeyDown
-         EndIf
-         If event = #__event_KeyUp
-            ProcedureReturn #PB_EventType_KeyUp
-         EndIf
-         
-         If event = #__event_LeftDown
-            ProcedureReturn #PB_EventType_LeftButtonDown
-         EndIf
-         If event = #__event_LeftUp
-            ProcedureReturn #PB_EventType_LeftButtonUp
-         EndIf
-         If event = #__event_LeftClick
-            ProcedureReturn #PB_EventType_LeftClick
-         EndIf
-         If event = #__event_Left2Click
-            ProcedureReturn #PB_EventType_LeftDoubleClick
-         EndIf
-         
-         If event = #__event_RightDown
-            ProcedureReturn #PB_EventType_RightButtonDown
-         EndIf
-         If event = #__event_RightUp
-            ProcedureReturn #PB_EventType_RightButtonUp
-         EndIf
-         If event = #__event_RightClick
-            ProcedureReturn #PB_EventType_RightClick
-         EndIf
-         If event = #__event_Right2Click
-            ProcedureReturn #PB_EventType_RightDoubleClick
-         EndIf
-         
-         If event = #__event_Draw
-            ProcedureReturn #PB_EventType_Repaint
-         EndIf
-      EndProcedure
-      
       Procedure.s ClassFromEvent( event.i )
          Protected result$
          
@@ -16517,7 +16092,86 @@ chr$ = ","
          ProcedureReturn result$
       EndProcedure
       
-      Procedure.s ClassFromPBEvent( event.i )
+      
+      ;-
+      Procedure.i PBEventType( wEvent.i )
+         If wEvent = #__event_MouseEnter
+            ProcedureReturn #PB_EventType_MouseEnter
+         EndIf
+         If wEvent = #__event_MouseLeave
+            ProcedureReturn #PB_EventType_MouseLeave
+         EndIf
+         If wEvent = #__event_MouseMove
+            ProcedureReturn #PB_EventType_MouseMove
+         EndIf
+         If wEvent = #__event_Focus
+            ProcedureReturn #PB_EventType_Focus
+         EndIf
+         If wEvent = #__event_LostFocus
+            ProcedureReturn #PB_EventType_LostFocus
+         EndIf
+         
+         If wEvent = #__event_Resize
+            ProcedureReturn #PB_EventType_Resize
+         EndIf
+         If wEvent = #__event_Change
+            ProcedureReturn #PB_EventType_Change
+         EndIf
+         If wEvent = #__event_StatusChange
+            ProcedureReturn #PB_EventType_StatusChange
+         EndIf
+         If wEvent = #__event_Down
+            ProcedureReturn #PB_EventType_Down
+         EndIf
+         If wEvent = #__event_Up
+            ProcedureReturn #PB_EventType_Up
+         EndIf
+         
+         If wEvent = #__event_DragStart
+            ProcedureReturn #PB_EventType_DragStart
+         EndIf
+         If wEvent = #__event_Input
+            ProcedureReturn #PB_EventType_Input
+         EndIf
+         If wEvent = #__event_KeyDown
+            ProcedureReturn #PB_EventType_KeyDown
+         EndIf
+         If wEvent = #__event_KeyUp
+            ProcedureReturn #PB_EventType_KeyUp
+         EndIf
+         
+         If wEvent = #__event_LeftDown
+            ProcedureReturn #PB_EventType_LeftButtonDown
+         EndIf
+         If wEvent = #__event_LeftUp
+            ProcedureReturn #PB_EventType_LeftButtonUp
+         EndIf
+         If wEvent = #__event_LeftClick
+            ProcedureReturn #PB_EventType_LeftClick
+         EndIf
+         If wEvent = #__event_Left2Click
+            ProcedureReturn #PB_EventType_LeftDoubleClick
+         EndIf
+         
+         If wEvent = #__event_RightDown
+            ProcedureReturn #PB_EventType_RightButtonDown
+         EndIf
+         If wEvent = #__event_RightUp
+            ProcedureReturn #PB_EventType_RightButtonUp
+         EndIf
+         If wEvent = #__event_RightClick
+            ProcedureReturn #PB_EventType_RightClick
+         EndIf
+         If wEvent = #__event_Right2Click
+            ProcedureReturn #PB_EventType_RightDoubleClick
+         EndIf
+         
+         If wEvent = #__event_Draw
+            ProcedureReturn #PB_EventType_Repaint
+         EndIf
+      EndProcedure
+      
+      Procedure.s PBClassFromEvent( event.i )
          Protected result.s
          
          Select event
@@ -16574,6 +16228,7 @@ chr$ = ","
          
          ProcedureReturn result.s
       EndProcedure
+      
       
       ;-
       Procedure GetAtPoint( *root._s_root, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
@@ -19840,7 +19495,7 @@ chr$ = ","
             ChangeCurrentCanvas( GadgetID( eventgadget ), 0)
             If Resize( roots( ), 0, 0, DPIScaledX(PB(GadgetWidth)( eventgadget )), DPIScaledY(PB(GadgetHeight)( eventgadget )), 0 )
                ; Debug "resize - canvas ["+eventgadget+"]"
-               PostReDraw( roots( ) )
+               ReDraw( roots( ) )
             EndIf
             PopMapPosition( roots( ) )
             ProcedureReturn #PB_Event_Gadget
@@ -25426,8 +25081,9 @@ Macro UseWidgets( )
    UseModule structures
 EndMacro
 
-
+;-
 ;-\\ EXAMPLE
+;-
 CompilerIf #PB_Compiler_IsMainFile = 99
    UseWidgets( )
    
@@ -26290,9 +25946,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 6000
-; FirstLine = 5813
-; Folding = B+--------------------------------------------------------------------------------------0-------0h------------------------------------r-+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------------fffv----------------v2d28--ff--f--0-----------------------------------------------------------------------------------------------------------------8-----------XNIQgBAA9
+; CursorPosition = 13492
+; FirstLine = 12671
+; Folding = B+--------------------------------------------------------------------------------------1--f9---4H+-----------------------------------v+8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------------------------------------------------------v---------------------------------------------------------------uq----+-----------------------------------------------------------------------4-------------000+--------------4-e4Vv---00--0-4-----------------------------------------------------------------------------------------------------------------v-----------f2gABGAAw-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

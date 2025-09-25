@@ -34,12 +34,12 @@ CompilerIf #PB_Compiler_IsMainFile
             Select EventGadget()
                Case 0
                   SetMenuTitleText(g, 1, "Файл") 
-                  SetMenuItemText(g, 1, "change")
-                  SetMenuItemText(g, 3, "change")
+                  SetMenuItemText(g, 1, "Открыть (change)")
+                  SetMenuItemText(g, 3, "Закрыть (change)")
                   
                   SetBarTitleText(*g, 1, "Файл") 
-                  SetBarItemText(*g, 1, "change") 
-                  SetBarItemText(*g, 3, "change")
+                  SetBarItemText(*g, 1, "Открыть (change)") 
+                  SetBarItemText(*g, 3, "Закрыть (change)")
                   
                   ReDraw( GetRoot(*g) )
             EndSelect
@@ -49,8 +49,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 6
-; FirstLine = 12
+; CursorPosition = 40
+; FirstLine = 9
 ; Folding = --
 ; EnableXP
 ; DPIAware

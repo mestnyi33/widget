@@ -19,16 +19,16 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    OpenWindow( 1, 100, 100, 500, 400, "main window_1", #PB_Window_SystemMenu)
    menu = CreatePopupMenu( #PB_Any )
-   MenuItem(1, "Open")      ; You can use all commands for creating a menu
+   MenuItem(1, "test")      ; You can use all commands for creating a menu
    MenuItem(2, "Save")      ; just like in a normal menu...
-   MenuBar( )
+;    MenuBar( )
    ;
-   OpenSubMenu("open sub item 1")
-   MenuItem(5, "5 sub item")
-   MenuItem(6, "6 sub item")
-   CloseSubMenu()
+;    OpenSubMenu("open sub item 1")
+    MenuItem(5, "5 sub item")
+;    MenuItem(6, "6 sub item")
+;    CloseSubMenu()
    ;
-   MenuBar( )
+;    MenuBar( )
    MenuItem(3, "Before")
    MenuItem(4, "After")
    MenuBar( )
@@ -36,35 +36,23 @@ CompilerIf #PB_Compiler_IsMainFile
    OpenSubMenu("open sub item 2")
    MenuItem(10, "10 sub item")
    MenuItem(11, "11 sub item")
-   MenuBar( )
-   ;
-   OpenSubMenu("open sub item 3")
-   MenuItem(12, "12 sub item")
-   MenuItem(13, "13 sub item")
-   CloseSubMenu()
-   ;
-   MenuBar( )
-   MenuItem(14, "14 sub item")
-   MenuItem(15, "15 sub item")
-   MenuBar( )
-   MenuItem(16, "16 sub item")
-   MenuItem(17, "17 sub item")
    CloseSubMenu( )
    ;
    MenuBar( )
    MenuItem(7, "exit")
    
-   If IsMenu(menu)                ; creation of the pop-up menu begins...
-      MenuItem(1, "Open")      ; You can use all commands for creating a menu
-      MenuItem(2, "Save")      ; just like in a normal menu...
+   If IsMenu( menu )      ; creation of the pop-up menu begins...
+      MenuItem(1, "Open")     ; You can use all commands for creating a menu
+      MenuItem(2, "Save")     ; just like in a normal menu...
       MenuItem(3, "Save as")
       MenuItem(4, "Quit")
-      MenuBar()
+      MenuBar( )
       OpenSubMenu("Recent files")
       MenuItem(5, "PureBasic.exe")
       MenuItem(6, "Test.txt")
-      CloseSubMenu()
+      CloseSubMenu( )
    EndIf
+   
    
    BindMenuEvent(menu, 6, @TestHandler())
    BindMenuEvent(menu, 4, @QuitHandler())
@@ -115,22 +103,28 @@ CompilerIf #PB_Compiler_IsMainFile
       
    DisplayPopupBar( *menu, root( ) )
    
-   SetBarTitleText(*menu, 1, "Файлwefrweteatearrtaertaertaertaer") 
+   ;SetBarTitleText(*menu, 1, "Файлwefrweteatearrtaertaertaertaer") 
+   SetBarItemText(*menu, 5, "Файлwefrweteatearrtaertaertaertaer") 
+   
+   ;SetMenuTitleText(menu, 1, "Файлwefrweteatearrtaertaertaertaer") 
+   SetMenuItemText(menu, 5, "Файлwefrweteatearrtaertaertaertaer") 
+   
 ;    Hide( *menu,1)
 ;    DisplayPopupBar( *menu, root( ) )
-    SetState( *menu, 6)
-  
+  ;  SetState( *menu, 6)
+   
+     
    Define Event
    Repeat
       Event = WaitWindowEvent( )
       If event = #PB_Event_LeftClick
-         DisplayPopupMenu( menu, WindowID(EventWindow()), DesktopMouseX(), DesktopMouseY())
-      EndIf
+      DisplayPopupMenu( menu, WindowID(1));, DesktopMouseX(), DesktopMouseY())
+   EndIf
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 121
-; FirstLine = 91
+; CursorPosition = 110
+; FirstLine = 83
 ; Folding = --
 ; EnableXP
 ; DPIAware

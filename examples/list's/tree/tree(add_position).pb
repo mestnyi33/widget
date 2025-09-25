@@ -6,7 +6,7 @@ CompilerIf Defined(widget, #PB_Module)
   Macro EventGadget() : EventWidget( ) : EndMacro
   Macro EventType() : WidgetEventType( ) : EndMacro
   Macro AddGadgetItem(gadget,position,Text,imageID=0,flags=) : AddItem(gadget,position,Text,imageID,flags) : EndMacro
-  Macro BindGadgetEvent(gadget,callback,eventtype=0) : Bind(gadget,callback,eventtype) : EndMacro
+  Macro BindGadgetEvent(gadget,callback,eventtype=-1) : Bind(gadget,callback,eventtype) : EndMacro
   Macro GetGadgetState(gadget) : GetState(gadget) : EndMacro
   Macro GetGadgetItemText(gadget,position) : GetItemText(gadget,position) : EndMacro
   Macro TreeGadget(gadget,X,Y,Width,Height,flags=0) : Tree(X,Y,Width,Height,flags) : EndMacro
@@ -34,8 +34,8 @@ If OpenWindow(0, 0, 0, 355, 180, "TreeGadget", #PB_Window_SystemMenu | #PB_Windo
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 17
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 1
 ; Folding = ---
 ; EnableXP
 ; DPIAware

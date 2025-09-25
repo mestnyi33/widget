@@ -9,11 +9,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure SetBarText( *this._s_WIDGET, _index_, _text_.s )
       If *this\type = #__type_menubar
          ForEach *this\__tabs( )
-            ; Debug ""+*this\__tabs( )\text\string +" "+ *this\__tabs( )\tindex +" "+ *this\__tabs( )\_menubar
-            ForEach *this\__tabs( )\_menubar\__tabs( )
-               If *this\__tabs( )\_menubar\__tabs( )\tindex = _index_
-                  ; Debug ""+*this\__tabs( )\_menubar\__tabs( )\text\string +" "+ *this\__tabs( )\_menubar\__tabs( )\tindex +" "+ *this\__tabs( )\_menubar\__tabs( )\_menubar
-                  SetItemText( *this\__tabs( )\_menubar, ListIndex(*this\__tabs( )\_menubar\__tabs( )), _text_.s )
+            ; Debug ""+*this\__tabs( )\text\string +" "+ *this\__tabs( )\tindex +" "+ *this\__tabs( )\popupbar
+            ForEach *this\__tabs( )\popupbar\__tabs( )
+               If *this\__tabs( )\popupbar\__tabs( )\tindex = _index_
+                  ; Debug ""+*this\__tabs( )\popupbar\__tabs( )\text\string +" "+ *this\__tabs( )\popupbar\__tabs( )\tindex +" "+ *this\__tabs( )\_menubar\__tabs( )\_menubar
+                  SetItemText( *this\__tabs( )\popupbar, ListIndex(*this\__tabs( )\popupbar\__tabs( )), _text_.s )
                   Break 2
                EndIf
             Next
@@ -78,8 +78,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 36
+; CursorPosition = 11
 ; Folding = --
 ; EnableXP
 ; DPIAware

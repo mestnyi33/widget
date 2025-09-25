@@ -648,26 +648,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure widget_events( )
     Protected EventWidget = EventWidget( )
     Select WidgetEvent( ) 
-        ; ;       Case #__event_DragStart
-        ; ;         If IsContainer( EventWidget )
-        ; ;           DragPrivate( #_drag_private_type )
-        ; ;           SetCursor( EventWidget, #PB_Cursor_Cross )
-        ; ;           ClearDebugOutput()
-        ; ;         EndIf
-        ; ;         
-        ; ;       Case #__event_Drop
-        ; ;         If IsContainer( EventWidget )
-        ; ;            ;Debug "DROP "+EventWidget( )\class  +" "+ WidgetEvent( ) 
-        ; ;           If GetState( id_elements_tree) <> 0 
-        ; ;             Debug "create - drop"
-        ; ;             widget_add( EventWidget, GetText( id_elements_tree ), 
-        ; ;                         EventDropX( ), EventDropY( ), EventDropWidth( ), EventDropHeight( ) )
-        ; ;             
-        ; ;             ; end new create 
-        ; ;             SetState( id_elements_tree, 0 )
-        ; ;           EndIf
-        ; ;         EndIf
-        
       Case #__event_DragStart
         If GetState( id_elements_tree) > 0 
           If IsContainer( EventWidget )
@@ -908,8 +888,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 605
-; FirstLine = 583
+; CursorPosition = 650
+; FirstLine = 641
 ; Folding = -------------
 ; EnableXP
 ; DPIAware
