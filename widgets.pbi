@@ -5897,7 +5897,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;
                      If *bar\max
                         *bar\thumb\len = *bar\area\end - ( *bar\max - *bar\area\len )
-                        *bar\page\end  = *bar\max - ( *bar\area\end - *bar\thumb\len )
+                        *bar\page\end = *bar\max - ( *bar\area\end - *bar\thumb\len )
                         ; *bar\page\end  = *bar\max - ( *bar\area\len - *bar\thumb\len )
                      EndIf
                      ;
@@ -5997,14 +5997,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                                     
                ;\\ scroll to active tab
                If *this\TabChange( )
-                  *bar\page\pos = *bar\max
-;                   If Not *bar\page\pos
-;                      ScrollPos = *bar\max
-;                      ScrollPos     = bar_page_pos_( *bar, ScrollPos )
-;                      ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
-;                      *bar\page\pos = ScrollPos
-;                   EndIf
-                                    ;
+                  If Not *bar\thumb\pos
+                     ; Debug ""+*bar\page\pos +" "+ *bar\thumb\pos
+                     *bar\page\pos = *bar\max
+                     ;                   If Not *bar\page\pos
+                     ;                      ScrollPos = *bar\max
+                     ;                      ScrollPos     = bar_page_pos_( *bar, ScrollPos )
+                     ;                      ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
+                     ;                      *bar\page\pos = ScrollPos
+                     ;                   EndIf
+                  EndIf
+                  ;
                   If *this\TabFocused( ) 
                      If *this\TabFocused( )\_enter = #False
                         If *this\TabFocused( )\ScrollToActive( - 1 )
@@ -26287,9 +26290,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 884
-; FirstLine = 867
-; Folding = B+--------------------------------------------------------------------------------------0-------0h----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------vvv4----------------47u70--vv--v--+-----------------------------------------------------------------------------------------------------------------0-----------rGEIwAAA+
+; CursorPosition = 6000
+; FirstLine = 5813
+; Folding = B+--------------------------------------------------------------------------------------0-------0h------------------------------------r-+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------------fffv----------------v2d28--ff--f--0-----------------------------------------------------------------------------------------------------------------8-----------XNIQgBAA9
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
