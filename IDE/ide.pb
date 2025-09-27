@@ -2513,6 +2513,7 @@ Procedure ide_events( )
    
 EndProcedure
 
+
 Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
    ;     ide_g_code = TreeGadget( -1,1,1,330,230 ) 
@@ -2602,7 +2603,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ide_design_PANEL = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_PANEL, "ide_design_PANEL" ) ; , #__flag_Vertical ) : OpenList( ide_design_PANEL )
    AddItem( ide_design_PANEL, -1, "Form" )
    ide_design_panel_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel_MDI, "ide_design_panel_MDI" ) ;: SetFrame(ide_design_panel_MDI, 10)
-   SetColor( ide_design_panel_MDI, #PB_Gadget_BackColor, $FFBF9CC3 )
+   SetColor( ide_design_panel_MDI, #PB_Gadget_BackColor, $FFD3D3D3 )
    a_init( ide_design_panel_MDI);, 0 )
    
    AddItem( ide_design_PANEL, -1, "Code" )
@@ -2698,61 +2699,34 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;
    ;\\\ ide splitters
    ;       ;
-   ;       ; main splitter 1 example
-   ;       ide_design_splitter = Splitter( 0,0,0,0, ide_toolbar_container,ide_design_g_canvas, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
-   ;       ide_inspector_view_splitter = Splitter( 0,0,0,0, ide_inspector_view,ide_inspector_PANEL, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_view_splitter, "ide_inspector_view_splitter" )
-   ;       ide_design_PANEL_splitter = Splitter( 0,0,0,0, ide_design_splitter,ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_PANEL_splitter, "ide_design_PANEL_splitter" )
-   ;       ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter,ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_panel_splitter" )
-   ;       ide_splitter = Splitter( 0,0,0,0, ide_design_PANEL_splitter,ide_inspector_panel_splitter, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed ) : SetClass(ide_splitter, "ide_splitter" )
-   ;       
-   ;       ; set splitters default minimum size
-   ;       SetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 500 )
-   ;       SetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 120 )
-   ;       SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_FirstMinimumSize, 230 )
-   ;       SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_SecondMinimumSize, 30 )
-   ;       SetAttribute( ide_design_PANEL_splitter, #PB_Splitter_FirstMinimumSize, 300 )
-   ;       SetAttribute( ide_design_PANEL_splitter, #PB_Splitter_SecondMinimumSize, 100 )
-   ;       SetAttribute( ide_inspector_view_splitter, #PB_Splitter_FirstMinimumSize, 100 )
-   ;       SetAttribute( ide_inspector_view_splitter, #PB_Splitter_SecondMinimumSize, 130 )
-   ;       SetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 20 )
-   ;       SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 200 )
-   ;       ; SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, $ffffff )
-   ;       
-   ;       ; set splitters dafault positions
-   ;       SetState( ide_splitter, Width( ide_splitter )-200 )
-   ;       SetState( ide_inspector_panel_splitter, Height( ide_inspector_panel_splitter )-80 )
-   ;       SetState( ide_design_PANEL_splitter, Height( ide_design_PANEL_splitter )-150 )
-   ;       SetState( ide_inspector_view_splitter, 200 )
-   ;       SetState( ide_design_splitter, Height( ide_toolbar ) - 1 + 2 )
-   ;    
-   ;    ;
-   ;    ;\\ main splitter 2 example 
-   ;    ide_inspector_view_splitter = Splitter( 0,0,0,0, ide_inspector_view,ide_inspector_PANEL, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_view_splitter, "ide_inspector_view_splitter" )
-   ;    ide_design_PANEL_splitter = Splitter( 0,0,0,0, ide_design_g_canvas,ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_PANEL_splitter, "ide_design_PANEL_splitter" )
-   ;    ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter,ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_panel_splitter" )
-   ;    ide_design_splitter = Splitter( 0,0,0,0, ide_inspector_panel_splitter, ide_design_PANEL_splitter, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
-   ;    ide_splitter = Splitter( 0,0,0,0, ide_toolbar_container, ide_design_splitter,#__flag_autosize | #PB_Splitter_FirstFixed ) : SetClass(ide_splitter, "ide_splitter" )
-   ;    
-   ;    ; set splitters default minimum size
-   ;    SetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 20 )
-   ;    SetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 500 )
-   ;    SetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 120 )
-   ;    SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 540 )
-   ;    SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_FirstMinimumSize, 230 )
-   ;    SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_SecondMinimumSize, 30 )
-   ;    SetAttribute( ide_design_PANEL_splitter, #PB_Splitter_FirstMinimumSize, 300 )
-   ;    SetAttribute( ide_design_PANEL_splitter, #PB_Splitter_SecondMinimumSize, 100 )
-   ;    SetAttribute( ide_inspector_view_splitter, #PB_Splitter_FirstMinimumSize, 100 )
-   ;    SetAttribute( ide_inspector_view_splitter, #PB_Splitter_SecondMinimumSize, 130 )
-   ;    
-   ;    ; set splitters dafault positions
-   ;    SetState( ide_splitter, Height( ide_toolbar ) )
-   ;    SetState( ide_design_splitter, 200 )
-   ;    SetState( ide_inspector_panel_splitter, Height( ide_inspector_panel_splitter )-80 )
-   ;    SetState( ide_design_PANEL_splitter, Height( ide_design_PANEL_splitter )-200 )
-   ;    SetState( ide_inspector_view_splitter, 230 )
-   ;    
-   
+;          ; main splitter 1 example
+;          ide_design_splitter = Splitter( 0,0,0,0, ide_toolbar_container,ide_design_g_canvas, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
+;          ide_inspector_view_splitter = Splitter( 0,0,0,0, ide_inspector_view,ide_inspector_PANEL, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_view_splitter, "ide_inspector_view_splitter" )
+;          ide_design_PANEL_splitter = Splitter( 0,0,0,0, ide_design_splitter,ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_PANEL_splitter, "ide_design_PANEL_splitter" )
+;          ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter,ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_panel_splitter" )
+;          ide_splitter = Splitter( 0,0,0,0, ide_design_PANEL_splitter,ide_inspector_panel_splitter, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed ) : SetClass(ide_splitter, "ide_splitter" )
+;          
+;          ; set splitters default minimum size
+;          SetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 500 )
+;          SetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 120 )
+;          SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_FirstMinimumSize, 230 )
+;          SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_SecondMinimumSize, 30 )
+;          SetAttribute( ide_design_PANEL_splitter, #PB_Splitter_FirstMinimumSize, 300 )
+;          SetAttribute( ide_design_PANEL_splitter, #PB_Splitter_SecondMinimumSize, 100 )
+;          SetAttribute( ide_inspector_view_splitter, #PB_Splitter_FirstMinimumSize, 100 )
+;          SetAttribute( ide_inspector_view_splitter, #PB_Splitter_SecondMinimumSize, 130 )
+;          SetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 20 )
+;          SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 200 )
+;          ; SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, $ffffff )
+;          
+;          ; set splitters dafault positions
+;          SetState( ide_splitter, Width( ide_splitter )-200 )
+;          SetState( ide_inspector_panel_splitter, Height( ide_inspector_panel_splitter )-80 )
+;          SetState( ide_design_PANEL_splitter, Height( ide_design_PANEL_splitter )-150 )
+;          SetState( ide_inspector_view_splitter, 200 )
+;          SetState( ide_design_splitter, Height( ide_toolbar ) - 1 + 2 )
+;       
+
    ;
    ;\\ main splitter 2 example 
    ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_PANEL, ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_view_splitter" )
@@ -3036,9 +3010,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2592
-; FirstLine = 2137
-; Folding = ---------f+T-------Pg----------4-n0--8d-----8-v------
+; CursorPosition = 2605
+; FirstLine = 2141
+; Folding = ---------f+T-------Pg----------40nf--8d-----8-v------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

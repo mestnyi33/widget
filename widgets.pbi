@@ -12965,6 +12965,31 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure AddBarItem( *this._s_WIDGET, item, Text.s, img = - 1 )
+         If *this
+            Protected._s_ROWS  *item, *tab
+            ; get the address of the last item
+            ; to make it the parent of the current item
+            If *this\menu\parent
+               *tab = *this\menu\parent\__tabs( )
+            EndIf
+            ;
+            *item = AddItem( *this, item, Text, img ) 
+            ;
+            If *tab
+               *item\sublevel = *tab\sublevel + 1
+               *tab\childrens + 1
+               ; *tab\popupbar = *this
+            EndIf
+         EndIf
+         ;
+         ProcedureReturn *item
+      EndProcedure
+      
+      Procedure   BarItem( item, Text.s, img = - 1 )
+         ProcedureReturn AddBarItem( widget( ), item, Text.s, img )
+      EndProcedure
+      
       Procedure   BarButton( Button.i, img.i, mode.i = 0, Text.s = #Null$ )
          ProcedureReturn AddItem( widget( ), Button, Text, img, mode )
       EndProcedure
@@ -12975,44 +13000,19 @@ CompilerIf Not Defined( widget, #PB_Module )
          *item\sublevel = - 1
       EndProcedure
       
-      Procedure   BarItem( item, Text.s, img = - 1 )
-         Protected._s_ROWS  *item, *tab
-         Protected *this._s_WIDGET = widget( )
-         ;
-         If *this
-            ; get the address of the last item
-            ; to make it the parent of the current item
-            If *this\menu\parent
-               *tab = *this\menu\parent\__tabs( )
-            EndIf
-            ;
-            *item = BarButton( item, img, 0, Text.s )
-            ;
-            If *tab
-               *item\sublevel = *tab\sublevel + 1
-               *tab\childrens + 1
-               *tab\popupbar = *this
-            EndIf
-         EndIf
-         ;
-         ProcedureReturn *item
-      EndProcedure
-      
-      Procedure   BarTitle( title.s, img = - 1 )
-         CloseSubBar( )
-         ProcedureReturn OpenSubBar( title, img )
-      EndProcedure
-      
       Procedure   OpenSubBar( Text.s, img = - 1)
+         Protected *menu._s_WIDGET = widget( )
          Protected *this._s_WIDGET
-         If widget( )
-            BarItem( #PB_Any, Text.s, img )
-            ;
-            ; title index
-            widget( )\__tabs( )\tindex = ListIndex(widget( )\__tabs( ))
-            ;
-            *this = CreateBar( widget( ), 0, #__type_PopupBar ) 
+         
+         If *menu
+            AddBarItem( *menu, #PB_Any, Text.s, img )
+            *this = CreateBar( *menu, #Null, #__type_PopupBar ) 
             SetClass( *this, Text )
+            
+            ; Debug ""+*menu\__tabs( )\tindex +" "+  ListIndex(*menu\__tabs( )) +" "+ *menu\class
+            *menu\__tabs( )\tindex = ListIndex(*menu\__tabs( ))
+            *menu\__tabs( )\popupbar = *this
+            
             ProcedureReturn *this
          EndIf
       EndProcedure
@@ -13021,6 +13021,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          If widget( )\menu\parent
             widget( ) = widget( )\menu\parent
          EndIf
+      EndProcedure
+      
+      Procedure   BarTitle( title.s, img = - 1 )
+         CloseSubBar( )
+         ProcedureReturn OpenSubBar( title, img )
       EndProcedure
       
       Procedure   DisableBarButton( *this._s_WIDGET, _barbutton_, _state_ )
@@ -13045,12 +13050,14 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure UpdateBar( *this._s_WIDGET )
          If PopupBar( )
-            StartDraw( *this\root )
-            Draw( *this )
-            StopDraw( )
-            
-            ;
-            ResizeRootWindow( *this, #PB_Ignore, #PB_Ignore, *this\scroll_width( ), #PB_Ignore)
+            If *this\menu\display
+               StartDraw( *this\root )
+               Draw( *this )
+               StopDraw( )
+               
+               ;
+               ResizeRootWindow( *this, #PB_Ignore, #PB_Ignore, *this\scroll_width( ), #PB_Ignore)
+            EndIf
          EndIf
       EndProcedure
       
@@ -16707,6 +16714,11 @@ chr$ = ","
                         *this = *this\menu\parent
                      Wend
                      EventWidget( )     = *this
+                  Else
+                     If *this\TabEntered( ) And *this\TabEntered( )\childrens
+                        ; Чтобы не отправлять события
+                        ProcedureReturn 0
+                     EndIf
                   EndIf
                   
                  ; Debug ""+ *button +" "+ *this\class +" POSTMENU "
@@ -19458,7 +19470,7 @@ chr$ = ","
                               Debug "CANVAS - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
                            EndIf
                            If keyboard( )\deactive
-                              Debug "deactive keyboard( ) "+keyboard( )\deactive\class +" "+ roots( )\active\class
+                             ; Debug "deactive keyboard( ) "+keyboard( )\deactive\class +" "+ roots( )\active\class
                            EndIf
                            ChangeCurrentCanvas( GadgetID(eventgadget) )
                            mouse( )\x = GadgetMouseX( eventgadget )
@@ -25943,9 +25955,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 8012
-; FirstLine = 7421
-; Folding = B+--------------------------------------------------------------------------------------1--f9---4H+-----------------------------------v+8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------------4-------------------------------------------------------------------------uq----+-----------------------------------------------------------------------4-------------000+--------------4-e4Vv---00--0-4-----------------------------------------------------------------------------------------------------------------v-----------f2gABGAAw-
+; CursorPosition = 16718
+; FirstLine = 15026
+; Folding = B+--------------------------------------------------------------------------------------1--f9---4H+-----------------------------------v+8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------------f-------------------------------------------------------------------------8q+---8------------------------------------------------------------------------+------------vvv4----------------48u70--vv--v--+-----------------------------------------------------------------------------------------------------------------0-----------rGEIwAAA+
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

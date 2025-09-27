@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case #__event_Change
-            Debug ""+ GetState(*size) +" "+  GetState(*position)
+           ; Debug ""+ GetState(*size) +" "+  GetState(*position)
             
             Select *this 
                Case *size
@@ -124,7 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 59
+; CursorPosition = 36
 ; FirstLine = 25
 ; Folding = --
 ; EnableXP
