@@ -67,10 +67,10 @@ Enumeration
    #_tb_align_bottom
    #_tb_align_center
    
-   #_tb_new_widget_paste
-   #_tb_new_widget_delete
-   #_tb_new_widget_copy
-   #_tb_new_widget_cut
+   #_tb_widget_paste
+   #_tb_widget_delete
+   #_tb_widget_copy
+   #_tb_widget_cut
    
    #_tb_file_run
    #_tb_file_new
@@ -1483,14 +1483,14 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
                flag | #PB_Window_SystemMenu | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget | #PB_Window_NoActivate
                *new = Window( X,Y,Width,Height, text$, flag, *parent )
             EndIf
-            SetFrame( *new, 0)
+            ; SetFrame( *new, 0)
             
          Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, Param1, Param2, Param3, flag ) : CloseList( ) ; 1 
-            SetFrame( *new, 30)
+            ; SetFrame( *new, 30)
             SetBackgroundColor( *new, $74F6FE )
          Case "container"   : *new = Container( X,Y,Width,Height, flag ) : CloseList( )
          Case "panel"       : *new = Panel( X,Y,Width,Height, flag ) : CloseList( )
-            SetFrame( *new, 0)
+            ; SetFrame( *new, 0)
             
          Case "button"        : *new = Button(       X, Y, Width, Height, text$, flag ) 
          Case "string"        : *new = String(       X, Y, Width, Height, text$, flag )
@@ -1652,6 +1652,13 @@ Procedure new_widget_events( )
             Properties_Updates( a_focused( ), "Resize" )
          EndIf
          
+      Case #__event_DragStop
+         Debug "#__event_DragStop selector "+mouse( )\selector\x +" "+ mouse( )\selector\y +" "+ mouse( )\selector\width +" "+ mouse( )\selector\height
+         Debug "#__event_DragStop "+mouse( )\drag\x +" "+ mouse( )\drag\y +" "+ mouse( )\drag\width +" "+ mouse( )\drag\height
+         ;Debug "#__event_DragStop "+DropX( ) +" "+ DropY( ) +" "+ DropWidth( ) +" "+ DropHeight( )
+             
+             
+         
       Case #__event_DragStart
          If is_drag_move( )
             If DragDropPrivate( #_DD_reParent )
@@ -1713,26 +1720,47 @@ Procedure new_widget_events( )
       Case #__event_LeftUp
          ; then group select
          If IsContainer(*g)
-            If mouse( )\selector And ListSize( a_group( ) )
-               SetState( ide_inspector_view, - 1 ) 
-               If IsGadget( ide_g_code )
-                  SetGadgetState( ide_g_code, - 1 )
-               EndIf
+            If mouse( )\selector 
                
-               ForEach a_group( )
-                  SetItemState( ide_inspector_view, GetData( a_group( )\widget ), #PB_Tree_Selected )
+               ;Debug mouse( )\selector\width
+               If ListSize( a_group( ) )
+                  SetState( ide_inspector_view, - 1 ) 
                   If IsGadget( ide_g_code )
-                     SetGadgetItemState( ide_g_code, GetData( a_group( )\widget ), #PB_Tree_Selected )
+                     SetGadgetState( ide_g_code, - 1 )
                   EndIf
-               Next
+                  
+                  ForEach a_group( )
+                     SetItemState( ide_inspector_view, GetData( a_group( )\widget ), #PB_Tree_Selected )
+                     If IsGadget( ide_g_code )
+                        SetGadgetItemState( ide_g_code, GetData( a_group( )\widget ), #PB_Tree_Selected )
+                     EndIf
+                  Next
+               EndIf
             EndIf
          EndIf
          
       Case #__event_MouseMove
          If IsContainer(*g) 
             If MouseEnter( *g )
-               If Not MouseButtonPress( )
-                  If GetState( ide_inspector_elements ) > 0 
+               If GetState( ide_inspector_elements ) > 0 
+                  If MouseButtonPress( )
+                     ; disable drop 
+                     If GetState( ide_inspector_elements ) = 1
+                        If *g = ide_design_panel_MDI  
+                        Else
+                           If mouse( )\dragstart = #PB_Drag_Enter
+                              mouse( )\dragstart = #PB_Drag_Leave
+                           EndIf
+                        EndIf
+                     Else
+                        If *g = ide_design_panel_MDI  
+                           If mouse( )\dragstart = #PB_Drag_Enter
+                              mouse( )\dragstart = #PB_Drag_Leave
+                           EndIf
+                        Else
+                        EndIf
+                     EndIf
+                  Else
                      If GetCursor( ) < 255
                         Debug " mouse enter to change cursor " 
                         ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_inspector_elements, GetState( ide_inspector_elements ) ) ) ))
@@ -1841,15 +1869,38 @@ Procedure ide_Lng_change( lng_TYPE=0 )
    SetItemText( ide_design_PANEL, 1, lng(lng_TYPE, #lng_CODE))
    
    If lng_TYPE = 0
-      DisableBarButton( ide_toolbar, #_tb_lng_RUS, #False )
-      DisableBarButton( ide_toolbar, #_tb_lng_ENG, #True )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #True )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #False )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #False )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #False )
    ElseIf lng_TYPE = 1
-      DisableBarButton( ide_toolbar, #_tb_lng_ENG, #False )
-      DisableBarButton( ide_toolbar, #_tb_lng_RUS, #True )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #True )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #False )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #False )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #False )
+   ElseIf lng_TYPE = 2
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #True )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #False )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #False )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #False )
+   ElseIf lng_TYPE = 3
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #True )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #False )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #False )
+      DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #False )
    EndIf
    
    Define *root._s_ROOT = ide_root
    PostReDraw( *root )
+EndProcedure
+
+Procedure HideBarButtons( *this._s_WIDGET, state )
+   DisableBarButton( *this, #_tb_group_left, state )
+   DisableBarButton( *this, #_tb_group_right, state )
+   DisableBarButton( *this, #_tb_group_top, state )
+   DisableBarButton( *this, #_tb_group_bottom, state )
+   DisableBarButton( *this, #_tb_group_height, state )
+   DisableBarButton( *this, #_tb_group_width, state )
 EndProcedure
 
 ;-
@@ -2241,17 +2292,17 @@ Procedure ide_menu_events(  )
             Message("Информация","Не удалось сохранить файл.", #PB_MessageRequester_Error)
          EndIf
          
-      Case #_tb_new_widget_copy
+      Case #_tb_widget_copy
          new_widget_copy( )
          
-      Case #_tb_new_widget_cut
+      Case #_tb_widget_cut
          new_widget_copy( )
          new_widget_delete( a_focused( ) )
          
-      Case #_tb_new_widget_paste
+      Case #_tb_widget_paste
          new_widget_paste( )
          
-      Case #_tb_new_widget_delete
+      Case #_tb_widget_delete
          new_widget_delete( a_focused( ) )
          
          
@@ -2513,7 +2564,6 @@ Procedure ide_events( )
    
 EndProcedure
 
-
 Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
    ;     ide_g_code = TreeGadget( -1,1,1,330,230 ) 
@@ -2545,10 +2595,11 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    BarItem( #_tb_file_open, "Open" )
    BarItem( #_tb_file_save, "Save" )
    BarSeparator( )
-   BarButton( #_tb_new_widget_copy, CatchImage( #PB_Any,?image_new_widget_copy ) )
-   BarButton( #_tb_new_widget_paste, CatchImage( #PB_Any,?image_new_widget_paste ) )
-   BarButton( #_tb_new_widget_cut, CatchImage( #PB_Any,?image_new_widget_cut ) )
-   BarButton( #_tb_new_widget_delete, CatchImage( #PB_Any,?image_new_widget_delete ) )
+   BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?image_new_widget_copy ) )
+   BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?image_new_widget_cut ) )
+   BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?image_new_widget_paste ) )
+   BarSeparator( )
+   BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?image_new_widget_delete ) )
    BarSeparator( )
    BarButton( #_tb_group_select, CatchImage( #PB_Any,?image_group ), #PB_ToolBar_Toggle ) 
    ;
@@ -2577,9 +2628,6 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    BarSeparator( )
    
    ide_popup_lenguage = OpenSubBar("[LENGUAGE]")
-   ; BarItem( #_tb_LNG, "[LENGUAGE]" )
-   
-   ; ide_popup_lenguage = CreatePopupBar( )
    If ide_popup_lenguage
       BarItem(#_tb_lng_ENG, "ENG")
       BarItem(#_tb_lng_RUS, "RUS")
@@ -2591,8 +2639,10 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    
    CloseList( )
    
-   DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #True )
-   DisableBarButton( ide_toolbar, #_tb_lng_ENG, #True )
+   DisableBarItem( ide_popup_lenguage, #_tb_lng_ENG, #True )
+   ;DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #True )
+   ;DisableBarButton( ide_toolbar, #_tb_lng_ENG, #True )
+   HideBarButtons( ide_toolbar, #True )
    
    ;
    ; gadgets
@@ -2749,11 +2799,9 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    
    ; set splitters dafault positions
    SetState( ide_splitter, Height( ide_toolbar ))
-   ; SetState( ide_design_splitter, 200 )
    SetState( ide_design_splitter, 250 )
    SetState( ide_design_PANEL_splitter, Height( ide_design_PANEL_splitter )-180 )
    ;SetState( ide_inspector_panel_splitter, 250 )
-   ;SetState( ide_inspector_view_splitter, 200 )
    SetState( ide_inspector_view_splitter, 100 )
    
    ;
@@ -2798,10 +2846,14 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    Bind( ide_inspector_elements, @ide_events( ), #__event_MouseLeave )
    Bind( ide_inspector_elements, @ide_events( ), #__event_DragStart )
    ;
-   ;
    Bind( ide_root, @ide_events( ), #__event_Close )
    Bind( ide_root, @ide_events( ), #__event_Focus )
    
+   ;
+   Bind( ide_design_panel_MDI, @new_widget_events( ) )
+   EnableDrop( ide_design_panel_MDI, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
+   
+   ;
    ;Bind( #PB_All, @ide_events( ) )
    ProcedureReturn ide_window
 EndProcedure
@@ -2817,12 +2869,22 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState( ide_inspector_PANEL, 1 )
    
    ;   ;OpenList(ide_design_panel_MDI)
-   Define result, btn2, example = 3
+   Define result, btn2, example = 1
    
    
    ide_design_FORM = new_widget_add( ide_design_panel_MDI, "window", 10, 10, 350, 200 )
    
-   If example = 2
+   If example = 1
+      Resize(ide_design_FORM, 30, 30, 400, 250)
+      
+      Define q=new_widget_add(ide_design_FORM, "button", 35, 25, 30, 30)
+      new_widget_add(ide_design_FORM, "text", 45, 65, 50, 30)
+      new_widget_add(ide_design_FORM, "button", 55, 65+40, 80, 30)
+      new_widget_add(ide_design_FORM, "text", 65, 65+40*2, 50, 30)
+      
+      ; SetActive( q )
+      
+   ElseIf example = 2
       Define cont1 = new_widget_add( ide_design_FORM, "container", 10, 10, 320, 180 )
       SetBackColor( cont1, $FF9CF9F6)
       new_widget_add( cont1, "button", 10, 20, 100, 30 )
@@ -2907,44 +2969,13 @@ CompilerIf #PB_Compiler_IsMainFile
       ;CloseList( )
       SetState( *panel, 1 )
       
-      ;       ;SetMoveBounds( *scrollarea, -1,-1,-1,-1 )
-      ;       ;SetSizeBounds( *scrollarea, -1,-1,-1,-1 )
-      ;       ;SetSizeBounds( *scrollarea )
-      ;       SetMoveBounds( btn2, -1,-1,-1,-1 )
-      SetMoveBounds( ide_design_FORM, -1,-1,-1,-1 )
-      ;       ;SetChildrenBounds( ide_design_panel_MDI )
+;       ;       ;SetMoveBounds( *scrollarea, -1,-1,-1,-1 )
+;       ;       ;SetSizeBounds( *scrollarea, -1,-1,-1,-1 )
+;       ;       ;SetSizeBounds( *scrollarea )
+;       ;       SetMoveBounds( btn2, -1,-1,-1,-1 )
+;       SetMoveBounds( ide_design_FORM, -1,-1,-1,-1 )
+;       ;       ;SetChildrenBounds( ide_design_panel_MDI )
       
-   ElseIf example = 4
-      ;\\ example 3
-      Resize(ide_design_FORM, 30, 30, 400, 250)
-      
-      Define q=new_widget_add(ide_design_FORM, "button", 15, 25, 50, 30)
-      new_widget_add(ide_design_FORM, "text", 25, 65, 50, 30)
-      new_widget_add(ide_design_FORM, "button", 285, 25, 50, 30)
-      new_widget_add(ide_design_FORM, "text", 45, 65+40*2, 50, 30)
-      
-      Define *container = new_widget_add(ide_design_FORM, "scrollarea", 100, 25, 165, 170)
-      new_widget_add(*container, "button", 15, 25, 30, 30)
-      new_widget_add(*container, "text", 25, 65, 50, 30)
-      new_widget_add(*container, "button", 35, 65+40, 80, 30)
-      new_widget_add(*container, "text", 45, 65+40*2, 50, 30)
-      SetActive( q )
-      
-   ElseIf example = 5
-      ;\\ example 3
-      Resize(ide_design_FORM, 30, 30, 400, 250)
-      
-      Define q=new_widget_add(ide_design_FORM, "button", 280, 25, 50, 30)
-      new_widget_add(ide_design_FORM, "text", 25, 65, 50, 30)
-      new_widget_add(ide_design_FORM, "button", 340, 25, 50, 30)
-      new_widget_add(ide_design_FORM, "text", 45, 65+40*2, 50, 30)
-      
-      Define *container = new_widget_add(ide_design_FORM, "scrollarea", 100, 25, 155, 170)
-      new_widget_add(*container, "button", 15, 25, 30, 30)
-      new_widget_add(*container, "text", 25, 65, 50, 30)
-      new_widget_add(*container, "button", 35, 65+40, 80, 30)
-      new_widget_add(*container, "text", 45, 65+40*2, 50, 30)
-      SetActive( q )
    EndIf
    
    
@@ -3010,9 +3041,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2605
-; FirstLine = 2141
-; Folding = ---------f+T-------Pg----------40nf--8d-----8-v------
+; CursorPosition = 2603
+; FirstLine = 2161
+; Folding = ---------f+T-------Pg----------4-n----48+----4-f------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

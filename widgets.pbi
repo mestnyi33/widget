@@ -2428,7 +2428,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                draw_mode_alpha_( #PB_2DDrawing_Default )
                If *this\drop And MouseEnter( *this )
                   If MouseEnter( *this )
-                     If mouse( )\drag = #PB_Drag_Enter
+                     If mouse( )\dragstart = #PB_Drag_Enter
                         draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $1000ff00 )
                         
                         If *this\row
@@ -2452,7 +2452,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                draw_mode_( #PB_2DDrawing_Outlined )
                If *this\drop And MouseEnter( *this )
                   If MouseEnter( *this )
-                     If mouse( )\drag = #PB_Drag_Enter
+                     If mouse( )\dragstart = #PB_Drag_Enter
                         draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff00ff00 )
                         
                         If *this\row
@@ -3195,115 +3195,51 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure a_update( *parent._s_WIDGET )
-         If *parent\anchors ;= 1 ; Not ListSize( a_group( ))
-            
-            ; check transform group
+         If *parent
             If StartEnum( *parent )
                If is_intersect_( widgets( ), mouse( )\selector, [#__c_frame] )
                   
-                  ;             ;             widgets( )\anchors = 2
-                  ;             ;             widgets( )\root\anchors =- 1
-                  ;             ;             widgets( )\parent\anchors =- 1
-                  ;             a_set_state( widgets( ), 2 )
-                  ;             a_set_state( widgets( )\root, - 1 )
-                  ;             a_set_state( widgets( )\parent, - 1 )
+                  If widgets( )\anchors\group_show = #False
+                     Debug "set "+widgets( )\class +" "+ mouse( )\y +" "+ widgets( )\y[#__c_container]
+                     widgets( )\anchors\group_show = #True
+                     widgets( )\anchors\group_x = widgets( )\x[#__c_container] 
+                     widgets( )\anchors\group_y = widgets( )\y[#__c_container]
+                     widgets( )\anchors\group_width = widgets( )\width[#__c_frame] 
+                     widgets( )\anchors\group_height = widgets( )\height[#__c_frame]
+                     
+                     a_add( widgets( ) )
+                     
+                     ;
+                     a_size( widgets( )\anchors\id,
+                             widgets( )\anchors\size, 
+                             widgets( )\anchors\mode )
+                     
+                     ;
+                     a_move( widgets( ),
+                             widgets( )\anchors\id,
+                             widgets( )\screen_x( ),
+                             widgets( )\screen_y( ),
+                             widgets( )\screen_width( ),
+                             widgets( )\screen_height( ) )
+                  EndIf
                   
                EndIf
                StopEnum( )
             EndIf
             
-            
-            ; reset
-            mouse( )\selector\x      = 0
-            mouse( )\selector\y      = 0
-            mouse( )\selector\width  = 0
-            mouse( )\selector\height = 0
-            ;ClearList( a_group( ))
-            
-            ; init group pos
-            ForEach widgets( )
-               If widgets( )\anchors = 2
-                  If mouse( )\selector\x = 0 Or
-                     mouse( )\selector\x > widgets( )\frame_x( )
-                     mouse( )\selector\x = widgets( )\frame_x( )
-                  EndIf
-                  If mouse( )\selector\y = 0 Or
-                     mouse( )\selector\y > widgets( )\frame_y( )
-                     mouse( )\selector\y = widgets( )\frame_y( )
-                  EndIf
-               EndIf
-            Next
-            
-            ; init group size
-            ForEach widgets( )
-               If widgets( )\anchors = 2
-                  If mouse( )\selector\x + mouse( )\selector\width < widgets( )\frame_x( ) + widgets( )\frame_width( )
-                     mouse( )\selector\width = ( widgets( )\frame_x( ) - mouse( )\selector\x ) + widgets( )\frame_width( )
-                  EndIf
-                  If mouse( )\selector\y + mouse( )\selector\height < widgets( )\frame_y( ) + widgets( )\frame_height( )
-                     mouse( )\selector\height = ( widgets( )\frame_y( ) - mouse( )\selector\y ) + widgets( )\frame_height( )
-                  EndIf
-               EndIf
-            Next
-            
-            ; init group list ( & delta size )
-            ForEach widgets( )
-               If widgets( )\anchors = 2
-                  If AddElement( a_group( ))
-                     mouse( )\selector\group.allocate( A_GROUP, ( ))
-                     ;a_group( )\widget.allocate( WIDGET )
-                     
-                     a_group( )\widget = widgets( )
-                     a_group( )\x      = a_group( )\widget\frame_x( ) - mouse( )\selector\x
-                     a_group( )\y      = a_group( )\widget\frame_y( ) - mouse( )\selector\y
-                     
-                     a_group( )\width  = mouse( )\selector\width - a_group( )\widget\frame_width( )
-                     a_group( )\height = mouse( )\selector\height - a_group( )\widget\frame_height( )
-                  EndIf
-               EndIf
-            Next
-            
          Else
-            ; update group pos
-            ForEach a_group( )
-               If mouse( )\selector\x = 0 Or
-                  mouse( )\selector\x > a_group( )\widget\frame_x( )
-                  mouse( )\selector\x = a_group( )\widget\frame_x( )
+            If a_entered( )\anchors\group_show = #False
+               If StartEnum( a_main( ) )
+                  If widgets( )\anchors\group_show 
+                     
+                     Debug "reset "+widgets( )\class
+                     widgets( )\anchors\group_show = #False
+                     
+                  EndIf
+                  StopEnum( )
                EndIf
-               If mouse( )\selector\y = 0 Or
-                  mouse( )\selector\y > a_group( )\widget\frame_y( )
-                  mouse( )\selector\y = a_group( )\widget\frame_y( )
-               EndIf
-            Next
-            
-            ; update group size
-            ForEach a_group( )
-               If mouse( )\selector\x + mouse( )\selector\width < a_group( )\widget\frame_x( ) + a_group( )\widget\frame_width( )
-                  mouse( )\selector\width = ( a_group( )\widget\frame_x( ) - mouse( )\selector\x ) + a_group( )\widget\frame_width( )
-               EndIf
-               If mouse( )\selector\y + mouse( )\selector\height < a_group( )\widget\frame_y( ) + a_group( )\widget\frame_height( )
-                  mouse( )\selector\height = ( a_group( )\widget\frame_y( ) - mouse( )\selector\y ) + a_group( )\widget\frame_height( )
-               EndIf
-            Next
-            
-            ; update delta size
-            ForEach a_group( )
-               a_group( )\x = a_group( )\widget\frame_x( ) - mouse( )\selector\x
-               a_group( )\y = a_group( )\widget\frame_y( ) - mouse( )\selector\y
-               
-               a_group( )\width  = mouse( )\selector\width - a_group( )\widget\frame_width( )
-               a_group( )\height = mouse( )\selector\height - a_group( )\widget\frame_height( )
-            Next
+            EndIf
          EndIf
-         
-         ;          ;
-         ;          a_size( mouse( )\selector, 7);a_anchors( )\size )
-         ;          a_move( a_entered( ),
-         ;                  mouse( )\selector,
-         ;                  mouse( )\selector\x - 3, ;a_anchors( )\pos,
-         ;                  mouse( )\selector\y - 3, ;a_anchors( )\pos,
-         ;                  mouse( )\selector\width + 6, ;a_anchors( )\pos * 2,
-         ;                  mouse( )\selector\height + 6);a_anchors( )\pos * 2 )
       EndProcedure
       
       Procedure a_object( X.l, Y.l, Width.l, Height.l, Text.s, color.i, flag.q = #Null, framesize = 1 )
@@ -3358,6 +3294,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          If event = #__event_Down
             If MouseButtons( ) & #PB_Canvas_LeftButton
                If *this\anchors
+                  ; reset show group anchors
+                  If Not *this\anchors\group_show
+                     a_update( 0 )
+                  EndIf
+                  
                   *pressed = *this
                EndIf
             EndIf
@@ -3366,6 +3307,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          If event = #__event_Up
             If MouseButtons( ) & #PB_Canvas_LeftButton
+               If *this\anchors
+                  ; show group anchors
+                  a_update( *this )
+               EndIf
+               
+               ;
                If *pressed 
                   If *pressed\anchors\id[a_index( )]
                      If is_atpoint_( *pressed\anchors\id[a_index( )], mouse_x, mouse_y )
@@ -3382,7 +3329,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;                      a_update( *pressed )
                   ;                   EndIf
                   ;                  
-                  If mouse( )\drag
+                  If mouse( )\dragstart
                      If a_anchors( )\grid_image
                         If *this\parent
                            If *this\parent\anchors
@@ -3394,6 +3341,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
+                  
                   ;
                   *pressed = #Null
                EndIf
@@ -3453,146 +3401,89 @@ CompilerIf Not Defined( widget, #PB_Module )
                *pressed\anchors\id[a_index( )] And 
                *pressed\AnchorState( ) = #__s_2
                ;
-               mouse_x - mouse( )\press_x
-               mouse_y - mouse( )\press_y
-               If mouse( )\steps
-                  mouse_x + ( *pressed\inner_x( ) % mouse( )\steps ) 
-                  mouse_y + ( *pressed\inner_y( ) % mouse( )\steps ) 
-               EndIf
+               mw = #PB_Ignore
+               mh = #PB_Ignore
                
-               If *pressed\anchors ;= 1
-                  mw = #PB_Ignore
-                  mh = #PB_Ignore
+               mx = mouse_x - mouse( )\press_x
+               my = mouse_y - mouse( )\press_y
+               
+               If mouse( )\steps
+                  mx + ( *pressed\inner_x( ) % mouse( )\steps ) 
+                  my + ( *pressed\inner_y( ) % mouse( )\steps ) 
+               EndIf
                   
-                  If a_index( ) <> #__a_moved
-                     ;\\ horizontal
-                     Select a_index( )
-                        Case #__a_left, #__a_left_top, #__a_left_bottom ; left
-                           mw = (( *pressed\container_x( ) - mouse_x ) + *pressed\container_width( )) - *pressed\parent\scroll_x( )
-                           If mw <= 0
-                              mouse_x = ( *pressed\container_x( ) + *pressed\container_width( )) - *pressed\parent\scroll_x( )
-                              mw      = 0
-                           EndIf
-                           If *pressed\fs
-                              If *pressed\type <> #__type_window
-                                 mw + *pressed\fs * 2 + *pressed\fs[1] + *pressed\fs[3] ; ( *pressed\frame_width( ) - *pressed\inner_width( ) )
-                              EndIf
-                           EndIf
-                           
-                        Case #__a_right, #__a_right_top, #__a_right_bottom ; right
-                           mw = ( mouse_x - *pressed\container_x( ) ) + IsGrid
-                     EndSelect
-                     
-                     ;\\ vertical
-                     Select a_index( )
-                        Case #__a_top, #__a_left_top, #__a_right_top ; top
-                           mh = (( *pressed\container_y( ) - mouse_y ) + *pressed\container_height( )) - *pressed\parent\scroll_y( )
-                           If mh <= 0
-                              mouse_y = ( *pressed\container_y( ) + *pressed\container_height( )) - *pressed\parent\scroll_y( )
-                              mh      = 0
-                           EndIf
-                           If *pressed\fs
-                              If *pressed\type <> #__type_window
-                                 mh + *pressed\fs * 2 + *pressed\fs[2] + *pressed\fs[4] ; ( *pressed\frame_height( ) - *pressed\inner_height( ) )
-                              EndIf
-                           EndIf
-                           
-                        Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
-                           mh = ( mouse_y - *pressed\container_y( ) ) + IsGrid
-                     EndSelect
-                     
-                     ;\\
-                     If a_index( ) <> #__a_left_top
-                        If a_index( ) <> #__a_left And a_index( ) <> #__a_left_bottom
-                           mouse_x = #PB_Ignore
+               If a_index( ) <> #__a_moved
+                  ;\\ horizontal
+                  Select a_index( )
+                     Case #__a_left, #__a_left_top, #__a_left_bottom ; left
+                        mw = (( *pressed\container_x( ) - mx ) + *pressed\container_width( )) - *pressed\parent\scroll_x( )
+                        If mw <= 0
+                           mx = ( *pressed\container_x( ) + *pressed\container_width( )) - *pressed\parent\scroll_x( )
+                           mw      = 0
                         EndIf
-                        If a_index( ) <> #__a_top And a_index( ) <> #__a_right_top
-                           mouse_y = #PB_Ignore
+                        If *pressed\fs
+                           If *pressed\type <> #__type_window
+                              mw + *pressed\fs * 2 + *pressed\fs[1] + *pressed\fs[3] ; ( *pressed\frame_width( ) - *pressed\inner_width( ) )
+                           EndIf
                         EndIf
+                        
+                     Case #__a_right, #__a_right_top, #__a_right_bottom ; right
+                        mw = ( mx - *pressed\container_x( ) ) + IsGrid
+                  EndSelect
+                  
+                  ;\\ vertical
+                  Select a_index( )
+                     Case #__a_top, #__a_left_top, #__a_right_top ; top
+                        mh = (( *pressed\container_y( ) - my ) + *pressed\container_height( )) - *pressed\parent\scroll_y( )
+                        If mh <= 0
+                           my = ( *pressed\container_y( ) + *pressed\container_height( )) - *pressed\parent\scroll_y( )
+                           mh      = 0
+                        EndIf
+                        If *pressed\fs
+                           If *pressed\type <> #__type_window
+                              mh + *pressed\fs * 2 + *pressed\fs[2] + *pressed\fs[4] ; ( *pressed\frame_height( ) - *pressed\inner_height( ) )
+                           EndIf
+                        EndIf
+                        
+                     Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
+                        mh = ( my - *pressed\container_y( ) ) + IsGrid
+                  EndSelect
+                  
+                  ;\\
+                  If a_index( ) <> #__a_left_top
+                     If a_index( ) <> #__a_left And a_index( ) <> #__a_left_bottom
+                        mx = #PB_Ignore
+                     EndIf
+                     If a_index( ) <> #__a_top And a_index( ) <> #__a_right_top
+                        my = #PB_Ignore
                      EndIf
                   EndIf
-                  
-                  ;Debug " " + mw + " " + mh
-                  Resize( *pressed, mouse_x, mouse_y, mw, mh, 0 )
-                  
-               Else
-                  ;                   If a_main( )
-                  ;                      mouse_x + a_main( )\container_x( )
-                  ;                      mouse_y + a_main( )\container_y( )
-                  ;                   EndIf
-                  
-                  ; horizontal
-                  Select a_index( )
-                     Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
-                        If a_index( ) <> #__a_moved
-                           mouse( )\selector\width = ( mouse( )\selector\x - mouse_x ) + mouse( )\selector\width
-                        EndIf
-                        mouse( )\selector\x = mouse_x
-                        
-                     Case #__a_right, #__a_right_top, #__a_right_bottom ; right
-                        mouse( )\selector\width = ( mouse_x - mouse( )\selector\x ) + IsGrid
-                  EndSelect
-                  
-                  ; vertical
-                  Select a_index( )
-                     Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
-                        If a_index( ) <> #__a_moved
-                           mouse( )\selector\height = ( mouse( )\selector\y - mouse_y ) + mouse( )\selector\height
-                        EndIf
-                        mouse( )\selector\y = mouse_y
-                        
-                     Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
-                        mouse( )\selector\height = ( mouse_y - mouse( )\selector\y ) + IsGrid
-                  EndSelect
-                  
-                  ;
-                  ;\\\ multi resize
-                  ;
-                  ;                            
-                  ;                            ;                   mouse( )\selector\x = _x_
-                  ;                            ;                   mouse( )\selector\y = _y_
-                  ;                            ;
-                  ;                            ;                   mouse( )\selector\width = _width_
-                  ;                            ;                   mouse( )\selector\height = _height_
-                  ;                            
-                  ;                            a_move( a_entered( ),
-                  ;                                    mouse( )\selector,
-                  ;                                    mouse( )\selector\x - 0, ;a_anchors( )\pos,
-                  ;                                    mouse( )\selector\y - 0, ;a_anchors( )\pos,
-                  ;                                    mouse( )\selector\width + 0, ;a_anchors( )\pos * 2,
-                  ;                                    mouse( )\selector\height + 0);a_anchors( )\pos * 2)
-                  
-                  Select a_index( )
-                     Case #__a_left, #__a_left_top, #__a_left_bottom, #__a_moved ; left
-                        ForEach a_group( )
-                           Resize( a_group( )\widget,
-                                   ( mouse( )\selector\x - *pressed\inner_x( ) ) + a_group( )\x,
-                                   #PB_Ignore, mouse( )\selector\width - a_group( )\width, #PB_Ignore )
-                        Next
-                        
-                     Case #__a_right, #__a_right_top, #__a_right_bottom ; right
-                        ForEach a_group( )
-                           Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, mouse( )\selector\width - a_group( )\width, #PB_Ignore )
-                        Next
-                  EndSelect
-                  
-                  Select a_index( )
-                     Case #__a_top, #__a_left_top, #__a_right_top, #__a_moved ; top
-                        ForEach a_group( )
-                           Resize( a_group( )\widget, #PB_Ignore,
-                                   ( mouse( )\selector\y - *pressed\inner_y( ) ) + a_group( )\y,
-                                   #PB_Ignore, mouse( )\selector\height - a_group( )\height )
-                        Next
-                        
-                     Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
-                        ForEach a_group( )
-                           Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, mouse( )\selector\height - a_group( )\height )
-                        Next
-                  EndSelect
-                  
                EndIf
                
-               
+               ;Debug " " + mw + " " + mh
+               Protected mx1 = mx, my1 = my, mh1 = mh, mw1 = mw
+               If *pressed\anchors\group_show
+                  If StartEnum( *pressed\parent )
+                     If widgets( )\anchors\group_show 
+                        If mx1 <> #PB_Ignore
+                           mx1 = mx+(widgets( )\anchors\group_x-*pressed\anchors\group_x)
+                        EndIf
+                        If my1 <> #PB_Ignore
+                           my1 = my+(widgets( )\anchors\group_y-*pressed\anchors\group_y)
+                        EndIf
+                        If mw1 <> #PB_Ignore
+                           mw1 = mw+(widgets( )\anchors\group_width-*pressed\anchors\group_width)
+                        EndIf
+                        If mh1 <> #PB_Ignore
+                           mh1 = mh+(widgets( )\anchors\group_height-*pressed\anchors\group_height)
+                        EndIf
+                        Resize( widgets( ), mx1, my1, mw1, mh1, 0 )
+                     EndIf
+                     StopEnum( )
+                  EndIf
+               Else
+                  Resize( *pressed, mx1, my1, mw1, mh1, 0 )
+               EndIf
                
             EndIf
             
@@ -7352,8 +7243,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                Next
             EndIf
          EndIf
-         If *this\type = #__type_Toolbar
+         If *this\type = #__type_MenuBar Or
+            *this\type = #__type_PopupBar Or
+            *this\type = #__type_ToolBar
+            ;
             If *this\__tabs( )
+               PushListPosition(*this\__tabs( ))
                ForEach *this\__tabs( )
                   If *this\__tabs( )\tindex = item
                      ;SelectElement( *this\__tabs( ), item )
@@ -7362,6 +7257,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      Break
                   EndIf
                Next
+               PopListPosition(*this\__tabs( ))
             EndIf
          EndIf
       EndProcedure
@@ -8745,8 +8641,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ( *this\drop\private = mouse( )\drop\private Or
                        *this\drop\private & mouse( )\drop\private )
                      ;
-                     If mouse( )\drag <> #PB_Drag_Enter
-                        mouse( )\drag = #PB_Drag_Enter
+                     If mouse( )\dragstart <> #PB_Drag_Enter
+                        mouse( )\dragstart = #PB_Drag_Enter
                         ; Debug "#PB_Drag_Enter"
                         
                         If GetCursor( ) = cursor::#__cursor_Drag
@@ -8756,8 +8652,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Else
                      If *this\press
                         If *this\enter
-                           If mouse( )\drag <> #PB_Drag_Leave
-                              mouse( )\drag = #PB_Drag_Leave
+                           If mouse( )\dragstart <> #PB_Drag_Leave
+                              mouse( )\dragstart = #PB_Drag_Leave
                               ; Debug "press #PB_Drag_Leave"
                               
                               ;                               Debug *this\RowPressed( )\rindex
@@ -8773,8 +8669,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                            EndIf
                         EndIf
                      Else
-                        If mouse( )\drag = #PB_Drag_Enter
-                           mouse( )\drag = #PB_Drag_Leave
+                        If mouse( )\dragstart = #PB_Drag_Enter
+                           mouse( )\dragstart = #PB_Drag_Leave
                            ; Debug "#PB_Drag_Leave"
                            
                            If GetCursor( ) = cursor::#__cursor_Drop
@@ -9621,7 +9517,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\WidgetChange( ) = 1
                      
                      ;\\ example file "D&D-items"
-                     If *this\drop And mouse( )\drag
+                     If *this\drop And mouse( )\dragstart
                         If *this\RowPressed( )
                            *this\__rows( )\rindex = State
                            
@@ -12978,8 +12874,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;
             If *tab
                *item\sublevel = *tab\sublevel + 1
+               *tab\popupbar = *this
                *tab\childrens + 1
-               ; *tab\popupbar = *this
             EndIf
          EndIf
          ;
@@ -13029,19 +12925,50 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure   DisableBarButton( *this._s_WIDGET, _barbutton_, _state_ )
-         ForEach *this\__tabs( )
-            If *this\__tabs( )\tindex = _barbutton_
-               ProcedureReturn DisableItem( *this, ListIndex(*this\__tabs( )), _state_ )
-            EndIf
-         Next
+         ProcedureReturn DisableItem( *this, _barbutton_, _state_ )
       EndProcedure
       
       Procedure   DisableBarItem( *this._s_WIDGET, _baritem_, _state_ )
-         ForEach *this\__tabs( )
-            If *this\__tabs( )\tindex = _baritem_
-               ProcedureReturn DisableItem( *this, ListIndex(*this\__tabs( )), _state_ )
-            EndIf
-         Next
+         PushListPosition( *this\__tabs( ) )
+         If *this\type = #__type_toolbar
+            ForEach *this\__tabs( )
+               If *this\__tabs( )\tindex = _baritem_
+                  *this\__tabs( )\disable = _state_
+                  *this\WidgetChange( )       = #True
+                  *this\TabChange( )          = #True
+                  
+                  Break
+               EndIf
+            Next
+         EndIf
+         If *this\type = #__type_popupbar Or *this\type = #__type_menubar
+            ForEach *this\__tabs( )
+               If *this\__tabs( )\popupbar
+                  ForEach *this\__tabs( )\popupbar\__tabs( )
+                     If *this\__tabs( )\popupbar\__tabs( )\tindex = _baritem_
+                        *this\__tabs( )\popupbar\__tabs( )\disable = _state_
+                        *this\__tabs( )\popupbar\WidgetChange( )       = #True
+                        *this\__tabs( )\popupbar\TabChange( )          = #True
+                        
+                        Break 2
+                     EndIf
+                  Next
+               Else
+                  If *this\__tabs( )\tindex = _baritem_
+                     *this\__tabs( )\disable = _state_
+                     *this\WidgetChange( )       = #True
+                     *this\TabChange( )          = #True
+                     
+                     
+                     ; Break
+                  EndIf
+               EndIf
+            Next
+            
+            ;
+            ; UpdateBar( *this )
+         EndIf
+         PopListPosition( *this\__tabs( ) )
       EndProcedure
       
       Procedure   BarToolTip( *this._s_WIDGET, _barbutton_, _text_.s )
@@ -13263,7 +13190,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\ hide current popup widget
                Hide( *this, *this\hide ! 1 )
                
-               test_display = 1
+               ; test_display = 1
                If *this\hide
                   
                   If test_display
@@ -13368,20 +13295,22 @@ CompilerIf Not Defined( widget, #PB_Module )
                Define pheight
                If *this\type = #__type_ToolBar Or
                   *this\type = #__type_PopupBar Or
-                  *this\type = #__type_MenuBar Or
-                  *this\type = #__type_TabBar 
-                  pheight = 16
-                  Width = 0
-                  Height = 1
-                  PushListPosition( *this\__tabs( ) ) 
-                  If ListSize( *this\__tabs( ) ) > pheight
-                     SelectElement( *this\__tabs( ), pheight )
-                  Else
-                     LastElement( *this\__tabs( ) ) 
-                  EndIf
-                  Height + ( *this\__tabs( )\y + *this\__tabs( )\height )
-                  PopListPosition( *this\__tabs( ) ) 
+                  *this\type = #__type_MenuBar 
                   
+                  If ListSize( *this\__tabs( ) )
+                     pheight = 16
+                     Width = 0
+                     Height = 1
+                     PushListPosition( *this\__tabs( ) ) 
+                     If ListSize( *this\__tabs( ) ) > pheight
+                        SelectElement( *this\__tabs( ), pheight )
+                     Else
+                        LastElement( *this\__tabs( ) ) 
+                     EndIf
+                     Height + ( *this\__tabs( )\y + *this\__tabs( )\height )
+                     PopListPosition( *this\__tabs( ) ) 
+                  EndIf
+               
                ElseIf *this\row
                   pheight = 9
                   Width = *this\padding\x + 1 ;*this\fs*2
@@ -16258,7 +16187,7 @@ chr$ = ","
                      is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_draw] )
                      
                      ;\\ если переместили виджет то его исключаем
-                     If mouse( )\drag
+                     If mouse( )\dragstart
                         If is_drag_move( )
                            If Pressed( ) = *list( )
                               Continue
@@ -16329,7 +16258,7 @@ chr$ = ","
                a_entered( )\anchors\id[a_index( )] And
                a_entered( )\AnchorState( )
                ;
-               If Not mouse( )\drag
+               If Not mouse( )\dragstart
                   If *this <> a_entered( ) And 
                      *this\root = a_entered( )\root 
                      ;
@@ -17504,7 +17433,7 @@ chr$ = ","
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
          
          If *this\press
-            dragged = mouse( )\drag
+            dragged = mouse( )\dragstart
          EndIf
          
          ;
@@ -18049,7 +17978,7 @@ chr$ = ","
       EndProcedure
       
       Procedure DoEvent_Rows( *this._s_WIDGET, List *rows._s_ROWS( ), event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-         Protected dragged = Bool( mouse( )\drag And *this\press )
+         Protected dragged = Bool( mouse( )\dragstart And *this\press )
          Protected repaint, *row._s_ROWS
          mouse_x - *this\inner_x( ) ; - *this\scroll_x( )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
@@ -18140,7 +18069,7 @@ chr$ = ","
             
             ;\\ change enter/leave state
             If *this\RowEntered( ) <> *row
-               If mouse( )\drag And *this\RowFocused( ) And  *this\RowFocused( )\press
+               If mouse( )\dragstart And *this\RowFocused( ) And  *this\RowFocused( )\press
                   If Not MouseButtonPress( )
                      ;Debug 555
                      *this\RowFocused( )\press = 0
@@ -18657,10 +18586,19 @@ chr$ = ","
                                        If PopupBar( ) <> *tab\popupbar
                                           If IsPopupChild( PopupBar( ), *this )
                                              ; Debug " Hide PopupMenuBar - " + PopupBar( )\class +" "+ *this\class
-                                             Debug "1?   "+HidePopupBar( PopupBar( ) )
-                                          ElseIf *tab\childrens And ( *tab\_focus Or *tab\checked )
-                                             Debug "2?   "+HidePopupBar( PopupBar( ) )
-                                              PostReDraw( PopupBar( )\root )
+                                             
+                                             If test_display
+                                                Debug "1?   " + HidePopupBar( PopupBar( ) )
+                                             Else
+                                                HidePopupBar( PopupBar( ) )
+                                             EndIf
+                                          ElseIf *Tab\childrens And ( *tab\_focus Or *tab\checked )
+                                             If test_display
+                                                Debug "2?   "+HidePopupBar( PopupBar( ) )
+                                             Else
+                                                HidePopupBar( PopupBar( ) )
+                                             EndIf
+                                             PostReDraw( PopupBar( )\root )
                                           EndIf
                                        EndIf
                                     EndIf
@@ -18692,7 +18630,11 @@ chr$ = ","
                                        *this\TabFocused( )\_focus = 0
                                        *this\TabFocused( )\checked = 0
                                        *this\TabFocused( ) = 0
-                                       Debug "3?   "+HidePopupBar( PopupBar( ) )
+                                       If test_display
+                                          Debug "3?   "+HidePopupBar( PopupBar( ) )
+                                       Else
+                                          HidePopupBar( PopupBar( ) )
+                                       EndIf
                                        PopupBar( ) = 0
                                     EndIf
                                  EndIf
@@ -18718,7 +18660,11 @@ chr$ = ","
                            *this\TabFocused( )\_focus = 0
                            *this\TabFocused( )\checked = 0
                            *this\TabFocused( ) = 0
-                           Debug "4?   "+HidePopupBar( PopupBar( ) )
+                           If test_display
+                              Debug "4?   "+HidePopupBar( PopupBar( ) )
+                           Else
+                              HidePopupBar( PopupBar( ) )
+                           EndIf
                            PopupBar( ) = 0
                         EndIf
                      EndIf
@@ -18773,7 +18719,11 @@ chr$ = ","
                         ;                               PostReDraw( PopupBar( )\menu\parent\root )
                         ;                            EndIf
                         ;                         EndIf
-                        Debug "6?   "+HidePopupBar( PopupBar( ) )
+                        If test_display
+                           Debug "6?   " + HidePopupBar( PopupBar( ) )
+                        Else
+                           HidePopupBar( PopupBar( ) )
+                        EndIf
                         PostReDraw( PopupBar( )\root )
                         PopupBar( ) = 0
                      EndIf
@@ -19936,9 +19886,9 @@ chr$ = ","
          If event = #__event_MouseMove
             If Pressed( ) And 
                Pressed( )\press And 
-               mouse( )\drag = #PB_Drag_None
+               mouse( )\dragstart = #PB_Drag_None
                ;
-               mouse( )\drag = #PB_Drag_Update
+               mouse( )\dragstart = #PB_Drag_Update
                DoEvents( Pressed( ), #__event_DragStart )
             EndIf
          EndIf
@@ -19977,7 +19927,7 @@ chr$ = ","
          ; mouse move event start
          If event = #__event_MouseMove
             ;\\ mouse-pressed-widget move event
-            If mouse( )\drag And 
+            If mouse( )\dragstart And 
                Pressed( ) And 
                Pressed( ) <> Entered( )
                ;
@@ -20191,8 +20141,8 @@ chr$ = ","
                   
                   ;\\ do drop events
                   If mouse( )\drop
-                     If mouse( )\drag = #PB_Drag_Enter
-                        mouse( )\drag = #PB_Drag_Finish
+                     If mouse( )\dragstart = #PB_Drag_Enter
+                        mouse( )\dragstart = #PB_Drag_Finish
                      EndIf
                      ;
                      If is_drag_move( )
@@ -20215,7 +20165,7 @@ chr$ = ","
                            EndIf
                            
                         ElseIf Entered( )\drop
-                           If mouse( )\drag = #PB_Drag_Finish
+                           If mouse( )\dragstart = #PB_Drag_Finish
                               mouse( )\drop\x = DPIUnScaledX( mouse( )\x - Entered( )\inner_x( ) - Entered( )\scroll_x( ) )
                               mouse( )\drop\y = DPIUnScaledY( mouse( )\y - Entered( )\inner_y( ) - Entered( )\scroll_y( ) )
                               
@@ -20233,7 +20183,7 @@ chr$ = ","
                   EndIf
                   
                   ;\\ do enter&leave events
-                  If mouse( )\drag
+                  If mouse( )\dragstart
                      If Entered( ) <> Pressed( )
                         GetAtPoint( root( ), mouse( )\x, mouse( )\y, widgets( ) )
                         
@@ -20255,8 +20205,8 @@ chr$ = ","
                   EndIf
                   
                   ;\\ do 1click events
-                  If mouse( )\drag
-                     mouse( )\drag = #PB_Drag_None
+                  If mouse( )\dragstart
+                     mouse( )\dragstart = #PB_Drag_None
                   Else
                      If Pressed( ) = Entered( )
                         If event = #__event_LeftUp
@@ -20298,6 +20248,17 @@ chr$ = ","
                   Debug " УДАЛЕНО пока было нажато"
                EndIf
                
+               If mouse( )\selector
+                  mouse( )\drag._s_DRAG = AllocateStructure( _s_DRAG )
+                  mouse( )\drag\x = DPIUnScaledX( mouse( )\selector\x - Pressed( )\inner_x( ) - Pressed( )\scroll_x( ) )
+                  mouse( )\drag\y = DPIUnScaledY( mouse( )\selector\y - Pressed( )\inner_y( ) - Pressed( )\scroll_y( ) )
+                  
+                  mouse( )\drag\width  = DPIUnScaledX( mouse( )\selector\width )
+                  mouse( )\drag\height = DPIUnScaledY( mouse( )\selector\height )
+                  
+                  DoEvents( Pressed( ), #__event_DragStop )
+                  mouse( )\drag = 0
+               EndIf
                Pressed( ) = 0
             EndIf
             
@@ -20305,8 +20266,9 @@ chr$ = ","
             mouse( )\press_x = 0
             mouse( )\press_y = 0
             mouse( )\buttons = 0
+            
             If mouse( )\selector
-               If mouse( )\drag
+               If mouse( )\dragstart
                   Debug "selector "+mouse( )\selector\x +" "+ mouse( )\selector\y +" "+ mouse( )\selector\width +" "+ mouse( )\selector\height
                EndIf
                mouse( )\selector = 0
@@ -24406,7 +24368,7 @@ chr$ = ","
                      
                      
                      If *this\anchors
-                        If *this\anchors\show
+                        If *this\anchors\group_show
                            a_draw( *this )
                         EndIf
                      EndIf  
@@ -25093,30 +25055,104 @@ EndMacro
 ;-
 ;-\\ EXAMPLE
 ;-
-CompilerIf #PB_Compiler_IsMainFile = 99
+CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
-   Global MDI, MDI_splitter, Splitter
+   Enumeration 
+      #_tb_group_select = 1
+      
+      #_tb_group_left = 3
+      #_tb_group_right
+      #_tb_group_top
+      #_tb_group_bottom
+      #_tb_group_width
+      #_tb_group_height
+      
+      #_tb_widget_delete
+      #_tb_widget_copy
+      #_tb_widget_cut
+      #_tb_widget_paste
+   EndEnumeration
+   
+   Global ide_toolbar
+   
+   Procedure ide_events( )
+      Protected *e_widget._s_WIDGET = EventWidget( )
+      Protected BarButton = GetData( *e_widget ) 
+      Debug WidgetEventItem()
+      
+   EndProcedure
    
    If Open(0, 0, 0, 700, 280, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      ide_toolbar = CreateBar( root( ), #PB_ToolBar_Small )
+      SetClass( ide_toolbar, "ide_toolbar")
       
-      MDI        = MDI(10, 10, 680, 260) ;, #PB_MDI_AutoSize) ; as they will be sized automatically
-      Define *g0 = AddItem(MDI, -1, "form_0")
-      ; 		Button(10,10,80,80,"button_0")
-      ; 		
-      ; 		Define *g1 = AddItem(MDI, -1, "form_1")
-      ; 		Button(10,10,80,80,"button_1")
-      ; 		
-      ; 		Define *g2 = AddItem(MDI, -1, "form_2")
-      ; 		Button(10,10,80,80,"button_2")
-      Resize(*g0, 190, 190, #PB_Ignore, #PB_Ignore)
+      If ide_toolbar
+         BarSeparator( )
+         BarButton( #_tb_group_select, CatchImage( #PB_Any,?image_group ), #PB_ToolBar_Toggle ) 
+         ;
+         ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_Image, CatchImage( #PB_Any,?image_group_un ) )
+         ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_PressedImage, CatchImage( #PB_Any,?image_group ) )
+         ;
+         BarSeparator( )
+         BarButton( #_tb_group_left, CatchImage( #PB_Any,?image_group_left ) )
+         BarButton( #_tb_group_right, CatchImage( #PB_Any,?image_group_right ) )
+         BarSeparator( )
+         BarButton( #_tb_group_top, CatchImage( #PB_Any,?image_group_top ) )
+         BarButton( #_tb_group_bottom, CatchImage( #PB_Any,?image_group_bottom ) )
+         BarSeparator( )
+         BarButton( #_tb_group_width, CatchImage( #PB_Any,?image_group_width ) )
+         BarButton( #_tb_group_height, CatchImage( #PB_Any,?image_group_height ) )
+         BarSeparator( )
+         BarSeparator( )
+         BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?image_new_widget_copy ) )
+         BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?image_new_widget_cut ) )
+         BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?image_new_widget_paste ) )
+         BarSeparator( )
+         BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?image_new_widget_delete ) )
+         BarSeparator( )
+         CloseList( ) 
+         
+         Bind( ide_toolbar, @ide_events( ) )
+      EndIf
       
+      
+      Define MDI = MDI(10, 10, 680, 260) ;, #PB_MDI_AutoSize) ; as they will be sized automatically
+      a_init( MDI , 0 )
+      Define *g0 = AddItem( MDI, -1, "form_0" )
+      Button( 15,35,100,20,"button_0" )
+      Button( 30,65,100,30,"button_1" )
+      Button( 45,100,100,40,"button_2" )
+      
+      Button( 175,35,100,20,"button_3" )
+      Button( 160,65,100,30,"button_4" )
+      Button( 150,100,100,40,"button_5" )
+     
+      ; Resize(*g0, 190, 190, #PB_Ignore, #PB_Ignore )
       Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
+      ;\\ include images
+      DataSection   
+         IncludePath "ide/include/images"
+         
+         image_new_widget_delete:    : IncludeBinary "16/delete.png"
+         image_new_widget_paste:     : IncludeBinary "16/paste.png"
+         image_new_widget_copy:      : IncludeBinary "16/copy.png"
+         image_new_widget_cut:       : IncludeBinary "16/cut.png"
+         
+         image_group:            : IncludeBinary "group/group.png"
+         image_group_un:         : IncludeBinary "group/group_un.png"
+         image_group_top:        : IncludeBinary "group/group_top.png"
+         image_group_left:       : IncludeBinary "group/group_left.png"
+         image_group_right:      : IncludeBinary "group/group_right.png"
+         image_group_bottom:     : IncludeBinary "group/group_bottom.png"
+         image_group_width:      : IncludeBinary "group/group_width.png"
+         image_group_height:     : IncludeBinary "group/group_height.png"
+      EndDataSection
    EndIf
    
 CompilerEndIf
 
-CompilerIf #PB_Compiler_IsMainFile 
+CompilerIf #PB_Compiler_IsMainFile = 99 
    
    EnableExplicit
    UseWidgets( )
@@ -25955,9 +25991,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 16718
-; FirstLine = 15026
-; Folding = B+--------------------------------------------------------------------------------------1--f9---4H+-----------------------------------v+8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------------f-------------------------------------------------------------------------8q+---8------------------------------------------------------------------------+------------vvv4----------------48u70--vv--v--+-----------------------------------------------------------------------------------------------------------------0-----------rGEIwAAA+
+; CursorPosition = 3480
+; FirstLine = 3373
+; Folding = B+--------------------------------------------------------------------f---v----f-------1--f9---4H+-----------------------------------v+8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------4-------------------------------------------------------------------------dV----------------------------------------------------------------------------f--------------8880--------------v-ture----8--8-v--------v---------------------------------------------------------------------------------------------------------+-----------0bQgADAA5
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

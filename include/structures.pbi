@@ -307,7 +307,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     ANCHORS
       Structure _s_ANCHORS
-         show.b
+         group_show.b
+         group_x.l
+         group_y.l
+         group_width.l
+         group_height.l
+         
          state.b
          pos.b
          size.a
@@ -338,8 +343,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_MOUSE Extends _s_POINT
          *cursor                 ; current visible cursor
          
-         drag.b
+         dragstart.b
          *drop._s_DRAG           ;
+         *drag._s_DRAG           ;
          
          Data.w                  ; mouse moved state
          steps.a
@@ -795,8 +801,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 672
-; FirstLine = 628
+; CursorPosition = 309
+; FirstLine = 275
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP

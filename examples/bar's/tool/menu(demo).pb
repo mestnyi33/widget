@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   Define *menu._s_widget
+   Define *menu._s_widget, *menu1._s_widget
    ;-
    Procedure HandlerEvents()
       Protected event = WidgetEvent( )
@@ -187,8 +187,8 @@ CompilerIf #PB_Compiler_IsMainFile
    String( 10, 100, 80, 35, "String1" )
    String( 10, 140, 80, 35, "String2" )
    
-   *menu = CreateBar( *window ) : SetClass(widget(), "window_MenuBar" )
-   SetColor( *menu, #PB_Gadget_BackColor, $FFDFDFDF )
+   *menu1 = CreateBar( *window ) : SetClass(widget(), "window_MenuBar" )
+   SetColor( *menu1, #PB_Gadget_BackColor, $FFDFDFDF )
    
    BarTitle("Title-1")
    BarItem(1, "title-1-item-1")
@@ -230,10 +230,12 @@ CompilerIf #PB_Compiler_IsMainFile
    BarItem(9, "title-4-item-1")
    BarItem(10, "title-4-item-2")
    
-   Bind(*menu, @TestHandler(), -1, 7)
-   Bind(*menu, @QuitHandler(), -1, 8)
+   Bind(*menu1, @TestHandler(), -1, 7)
+   Bind(*menu1, @QuitHandler(), -1, 8)
    
-   
+   ;
+   DisableBarItem( *menu, 1, #True )
+   DisableMenuItem( 0, 1, #True )
    
    Define Event
    Repeat
@@ -246,7 +248,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 10
+; CursorPosition = 232
+; FirstLine = 209
 ; Folding = --
 ; EnableXP
 ; DPIAware

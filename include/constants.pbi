@@ -254,6 +254,7 @@
          ;
          #__event_DragStart
          #__event_Drop
+         #__event_DragStop
          ;
          #__event_Draw
          ;
@@ -778,8 +779,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 299
-; FirstLine = 261
+; CursorPosition = 256
+; FirstLine = 230
 ; Folding = ----
 ; Optimizer
 ; EnableXP
