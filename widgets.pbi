@@ -2922,7 +2922,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Next a_index
       EndProcedure
       
-      Procedure a_add( *this._s_WIDGET )
+      Procedure a_add( *this._s_WIDGET, mode )
          Structure _s_CURSORDATA
             cursor.i[#__a_moved+1]
          EndStructure
@@ -2936,8 +2936,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             ; Debug "a_show_add "+*this\class
             For a_index = 0 To #__a_moved
-               If *this\anchors\mode & #__a_height = 0 And
-                  *this\anchors\mode & #__a_width = 0
+               If mode & #__a_height = 0 And
+                  mode & #__a_width = 0
                   If a_index = #__a_left Or
                      a_index = #__a_top Or
                      a_index = #__a_right Or
@@ -2945,13 +2945,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                      Continue
                   EndIf
                Else
-                  If *this\anchors\mode & #__a_height = 0
+                  If mode & #__a_height = 0
                      If a_index = #__a_top Or
                         a_index = #__a_bottom
                         Continue
                      EndIf
                   EndIf
-                  If *this\anchors\mode & #__a_width = 0
+                  If mode & #__a_width = 0
                      If a_index = #__a_left Or
                         a_index = #__a_right
                         Continue
@@ -2959,7 +2959,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                ;
-               If *this\anchors\mode & #__a_corner = 0
+               If mode & #__a_corner = 0
                   If a_index = #__a_left_top Or
                      a_index = #__a_right_top Or
                      a_index = #__a_right_bottom Or
@@ -2968,12 +2968,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                ;
-               If *this\anchors\mode & #__a_position = 0
+               If mode & #__a_position = 0
                   If a_index = #__a_moved
                      Continue
                   EndIf
                EndIf
                ;
+               ; add
                If Not *this\anchors\id[a_index]
                   *this\anchors\id.allocate( COORDINATE, [a_index] )
                EndIf
@@ -3000,6 +3001,28 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure a_show( *this._s_WIDGET )
          ; Debug ""+Bool(a_focused( ) <> *this) +" "+ Bool(a_entered( ) <> *this)
          
+         If a_entered( ) <> a_focused( )
+            ; reset
+            If a_entered( )\anchors\group_show
+               a_entered( )\anchors\id[#__a_Left_top] = 0
+               a_entered( )\anchors\id[#__a_Right_top] = 0
+               a_entered( )\anchors\id[#__a_Right_Bottom] = 0
+               a_entered( )\anchors\id[#__a_Left_Bottom] = 0
+               
+               a_anchors( )\cursor[#__a_Left_top] = 0
+               a_anchors( )\cursor[#__a_Right_top] = 0
+               a_anchors( )\cursor[#__a_Right_Bottom] = 0
+               a_anchors( )\cursor[#__a_Left_Bottom] = 0
+            Else
+               ;                   Protected a_index
+               ;                   For a_index = 0 To #__a_moved
+               ;                      a_entered( )\anchors\id[a_index] = 0
+               ;                      a_anchors( )\cursor[a_index]     = 0
+               ;                   Next
+            EndIf
+            a_entered( ) = 0
+         EndIf
+         
          If a_focused( ) <> *this And a_entered( ) <> *this
             ;
             If *this\anchors And *this\anchors\mode
@@ -3007,7 +3030,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Debug " a_show "+*this\class
                EndIf
                ;
-               a_add( *this )
+               a_add( *this, *this\anchors\mode )
                ;
                a_size( *this\anchors\id,
                        *this\anchors\size, 
@@ -3133,8 +3156,20 @@ CompilerIf Not Defined( widget, #PB_Module )
                If a_anchors( ) 
                   If a_focused( ) <> *this
                      If a_focused( )
-                        a_remove( a_focused( ) )
-                        ; a_focused( )\root\repaint = 1
+                        If a_focused( )\anchors\group_show
+                           a_focused( )\anchors\id[#__a_Left_top] = 0
+                           a_focused( )\anchors\id[#__a_Right_top] = 0
+                           a_focused( )\anchors\id[#__a_Right_Bottom] = 0
+                           a_focused( )\anchors\id[#__a_Left_Bottom] = 0
+                           
+                           a_anchors( )\cursor[#__a_Left_top] = 0
+                           a_anchors( )\cursor[#__a_Right_top] = 0
+                           a_anchors( )\cursor[#__a_Right_Bottom] = 0
+                           a_anchors( )\cursor[#__a_Left_Bottom] = 0
+                        Else
+                           a_remove( a_focused( ) )
+                        EndIf
+                         ; a_focused( )\root\repaint = 1
                         a_DoActive( a_focused( ), *this )
                      EndIf
                      ; Debug "a_set focus " + *this\class 
@@ -3155,6 +3190,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                         *this\root\repaint = 1
                      EndIf
                      a_focused( ) = *this
+                     
+                     If a_focused( )\anchors\group_show
+                        a_add( a_focused( ), a_focused( )\anchors\mode )
+                     EndIf
+
                      a_line( *this )
                      ;
                      a_DoActive( *this )
@@ -3188,58 +3228,116 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\anchors\size = DPIScaled(#__a_anchors_size)
             *this\anchors\pos = *this\anchors\size / 2
             ;
-            a_add( *this )
+            a_add( *this, mode )
          EndIf 
          ;
          ProcedureReturn *this\anchors
       EndProcedure
       
-      Procedure a_update( *parent._s_WIDGET )
-         If *parent
-            If StartEnum( *parent )
-               If is_intersect_( widgets( ), mouse( )\selector, [#__c_frame] )
-                  
-                  If widgets( )\anchors\group_show = #False
-                     Debug "set "+widgets( )\class +" "+ mouse( )\y +" "+ widgets( )\y[#__c_container]
-                     widgets( )\anchors\group_show = #True
-                     widgets( )\anchors\group_x = widgets( )\x[#__c_container] 
-                     widgets( )\anchors\group_y = widgets( )\y[#__c_container]
-                     widgets( )\anchors\group_width = widgets( )\width[#__c_frame] 
-                     widgets( )\anchors\group_height = widgets( )\height[#__c_frame]
-                     
-                     a_add( widgets( ) )
-                     
-                     ;
-                     a_size( widgets( )\anchors\id,
-                             widgets( )\anchors\size, 
-                             widgets( )\anchors\mode )
-                     
-                     ;
-                     a_move( widgets( ),
-                             widgets( )\anchors\id,
-                             widgets( )\screen_x( ),
-                             widgets( )\screen_y( ),
-                             widgets( )\screen_width( ),
-                             widgets( )\screen_height( ) )
-                  EndIf
-                  
+      Procedure a_update( *this._s_WIDGET )
+         Protected X.l,Y.l
+         
+         mouse( )\anchors\x = 0
+         mouse( )\anchors\y = 0
+         mouse( )\anchors\width = 0
+         mouse( )\anchors\height = 0
+         
+         If StartEnum( *this )
+            If widgets( )\anchors\group_show
+               X = widgets( )\x[#__c_frame] 
+               Y = widgets( )\y[#__c_frame] 
+;                X = widgets( )\x[#__c_container] 
+;                Y = widgets( )\y[#__c_container] 
+;                ;
+;                If mouse( )\steps
+;                   X + ( X % mouse( )\steps )
+;                   X = ( X / mouse( )\steps ) * mouse( )\steps
+;                   Y + ( Y % mouse( )\steps )
+;                   Y = ( Y / mouse( )\steps ) * mouse( )\steps
+;                EndIf
+;                ;
+;                X + widgets( )\parent\x[#__c_inner] 
+;                Y + widgets( )\parent\y[#__c_inner] 
+               ;
+               If Not mouse( )\anchors\x
+                  mouse( )\anchors\x = X
+               ElseIf mouse( )\anchors\x > X
+                  mouse( )\anchors\x = X
                EndIf
-               StopEnum( )
-            EndIf
-            
-         Else
-            If a_entered( )\anchors\group_show = #False
-               If StartEnum( a_main( ) )
-                  If widgets( )\anchors\group_show 
-                     
-                     Debug "reset "+widgets( )\class
-                     widgets( )\anchors\group_show = #False
-                     
-                  EndIf
-                  StopEnum( )
+               If Not mouse( )\anchors\y
+                  mouse( )\anchors\y = Y 
+               ElseIf mouse( )\anchors\y > Y
+                  mouse( )\anchors\y = Y
                EndIf
-            EndIf
+             EndIf
+            StopEnum( )
          EndIf
+         
+         If StartEnum( *this )
+            If widgets( )\anchors\group_show
+               X = widgets( )\x[#__c_frame] 
+               Y = widgets( )\y[#__c_frame] 
+;                ;
+;                If mouse( )\steps
+;                   X + ( X % mouse( )\steps )
+;                   X = ( X / mouse( )\steps ) * mouse( )\steps
+;                   Y + ( Y % mouse( )\steps )
+;                   Y = ( Y / mouse( )\steps ) * mouse( )\steps
+;                EndIf
+               ;
+               If Not mouse( )\anchors\width
+                  mouse( )\anchors\width = (X + widgets( )\width[#__c_frame]) - mouse( )\anchors\x
+               ElseIf mouse( )\anchors\width < (X + widgets( )\width[#__c_frame]) - mouse( )\anchors\x
+                  mouse( )\anchors\width = (X + widgets( )\width[#__c_frame]) - mouse( )\anchors\x
+               EndIf
+               If Not mouse( )\anchors\height
+                  mouse( )\anchors\height = (Y + widgets( )\height[#__c_frame]) - mouse( )\anchors\y
+               ElseIf mouse( )\anchors\height < (Y + widgets( )\height[#__c_frame]) - mouse( )\anchors\y
+                  mouse( )\anchors\height = (Y + widgets( )\height[#__c_frame]) - mouse( )\anchors\y
+               EndIf
+               
+               
+               ;
+               ;
+               widgets( )\anchors\group_x = widgets( )\x[#__c_container] 
+               widgets( )\anchors\group_y = widgets( )\y[#__c_container]
+               widgets( )\anchors\group_width = widgets( )\width[#__c_frame] 
+               widgets( )\anchors\group_height = widgets( )\height[#__c_frame]
+               
+               
+               ; reset
+               If widgets( ) <> a_focused( )
+                  widgets( )\anchors\id[#__a_Left_top] = 0
+                  widgets( )\anchors\id[#__a_Right_top] = 0
+                  widgets( )\anchors\id[#__a_Right_Bottom] = 0
+                  widgets( )\anchors\id[#__a_Left_Bottom] = 0
+                  
+                  a_anchors( )\cursor[#__a_Left_top] = 0
+                  a_anchors( )\cursor[#__a_Right_top] = 0
+                  a_anchors( )\cursor[#__a_Right_Bottom] = 0
+                  a_anchors( )\cursor[#__a_Left_Bottom] = 0
+               EndIf
+               
+               ;
+               ;a_add( widgets( ),  #__a_width|#__a_height )
+               
+               ;
+               a_size( widgets( )\anchors\id,
+                       widgets( )\anchors\size, 
+                       widgets( )\anchors\mode )
+               
+               ;
+               a_move( widgets( ),
+                       widgets( )\anchors\id,
+                       widgets( )\screen_x( ),
+                       widgets( )\screen_y( ),
+                       widgets( )\screen_width( ),
+                       widgets( )\screen_height( ) )
+               
+            EndIf
+            StopEnum( )
+         EndIf
+         
       EndProcedure
       
       Procedure a_object( X.l, Y.l, Width.l, Height.l, Text.s, color.i, flag.q = #Null, framesize = 1 )
@@ -3296,7 +3394,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                If *this\anchors
                   ; reset show group anchors
                   If Not *this\anchors\group_show
-                     a_update( 0 )
+                     If StartEnum( a_main( ) )
+                        If widgets( )\anchors\group_show 
+                           
+                           Debug "reset "+widgets( )\class
+                           widgets( )\anchors\group_show = #False
+                           
+                        EndIf
+                        StopEnum( )
+                     EndIf
                   EndIf
                   
                   *pressed = *this
@@ -3309,7 +3415,21 @@ CompilerIf Not Defined( widget, #PB_Module )
             If MouseButtons( ) & #PB_Canvas_LeftButton
                If *this\anchors
                   ; show group anchors
-                  a_update( *this )
+                  If mouse( )\selector
+                     If StartEnum( *this )
+                        If is_intersect_( widgets( ), mouse( )\selector, [#__c_frame] )
+                           If widgets( )\anchors\group_show = #False
+                              
+                              Debug "set "+widgets( )\class
+                              widgets( )\anchors\group_show = #True
+                              
+                           EndIf
+                        EndIf
+                        StopEnum( )
+                     EndIf
+                  EndIf
+                  
+                  a_update( *this\parent )
                EndIf
                
                ;
@@ -24739,6 +24859,11 @@ chr$ = ","
             EndIf
             
             
+            If mouse( )\anchors And mouse( )\anchors\width And mouse( )\anchors\height
+               ; Debug ""+mouse( )\anchors\x +" "+ mouse( )\anchors\y +" "+ mouse( )\anchors\width +" "+ mouse( )\anchors\height
+               DrawingMode(#PB_2DDrawing_Outlined)
+               Box( mouse( )\anchors\x, mouse( )\anchors\y, mouse( )\anchors\width, mouse( )\anchors\height, $ff0000ff )
+            EndIf
             ;             ; TEST ROW
             ;             If Entered( ) And Entered( )\root = *root And Entered( )\row And Entered( )\RowEntered( )
             ;                draw_mode_( #PB_2DDrawing_Outlined )
@@ -25074,12 +25199,140 @@ CompilerIf #PB_Compiler_IsMainFile
       #_tb_widget_paste
    EndEnumeration
    
-   Global ide_toolbar
+   Global ide_toolbar, *g0._s_WIDGET
    
+   Procedure Copy( *g._s_WIDGET )
+      PushListPosition( widgets( ) )
+      SelectElement( widgets( ), 2 )
+      AddElement( widgets( ) )
+       widgets( )  = @*g
+      PopListPosition( widgets( ) )
+   EndProcedure
+   
+   Procedure _a_align( *g._s_WIDGET, align )
+      Protected.l _x_
+      Protected.l X,Y,Width,Height
+      X = mouse( )\anchors\x-*g\x[#__c_inner]
+      Y = mouse( )\anchors\y
+      Width = mouse( )\anchors\width
+      Height = mouse( )\anchors\height
+      
+;       If mouse( )\steps
+;          X + ( X % mouse( )\steps )
+;          X = ( X / mouse( )\steps ) * mouse( )\steps
+;          Y + ( Y % mouse( )\steps )
+;          Y = ( Y / mouse( )\steps ) * mouse( )\steps
+;       EndIf
+      
+      If a_focused( )
+        X = a_focused( )\x[#__c_frame] 
+        Y = a_focused( )\y[#__c_frame] 
+        Width = a_focused( )\width[#__c_frame] 
+        Height = a_focused( )\height[#__c_frame] 
+      EndIf
+     
+      If StartEnum( *g )
+         If widgets( )\anchors\group_show 
+            Select align
+               Case 1
+                  Resize( widgets( ), (X), #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+                  ;Resize( widgets( ), (X-widgets( )\parent\x[#__c_inner]), #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+               Case 3
+                  Resize( widgets( ), (X+Width)-widgets( )\parent\x[#__c_inner]-widgets( )\width[#__c_frame], #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+               Case 2
+                  Resize( widgets( ), #PB_Ignore, Y-widgets( )\parent\y[#__c_inner], #PB_Ignore, #PB_Ignore, 0 )
+               Case 4
+                  Resize( widgets( ), #PB_Ignore, (Y+Height)-widgets( )\parent\y[#__c_inner]-widgets( )\height[#__c_frame], #PB_Ignore, #PB_Ignore, 0 )
+                  
+               Case 5
+                  If a_focused( )
+                     Resize( widgets( ), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore, 0 )
+                  EndIf
+                  
+               Case 6
+                  If a_focused( )
+                     Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, Height, 0 )
+                  EndIf
+                  
+               Case 7
+                  
+                  
+            EndSelect
+         EndIf
+         StopEnum( )
+      EndIf
+      
+      a_update( *g )
+   EndProcedure
+   
+   Procedure a_align( *g._s_WIDGET, align )
+      Protected.l X,Y,Width,Height
+      If *g
+         X = *g\x[#__c_frame] 
+         Y = *g\y[#__c_frame] 
+         Width = *g\width[#__c_frame] 
+         Height = *g\height[#__c_frame] 
+         
+         If StartEnum( *g\parent )
+            If widgets( )\anchors\group_show 
+               Select align
+                  Case 1
+                     Resize( widgets( ), X-widgets( )\parent\x[#__c_inner], #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+                  Case 3
+                     Resize( widgets( ), (X-widgets( )\parent\x[#__c_inner])+Width-widgets( )\width[#__c_frame], #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+                  Case 2
+                     Resize( widgets( ), #PB_Ignore, Y-widgets( )\parent\y[#__c_inner], #PB_Ignore, #PB_Ignore, 0 )
+                  Case 4
+                     Resize( widgets( ), #PB_Ignore, (Y-widgets( )\parent\y[#__c_inner])+Height-widgets( )\height[#__c_frame], #PB_Ignore, #PB_Ignore, 0 )
+                     
+                  Case 5
+                     Resize( widgets( ), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore, 0 )
+                  Case 6
+                     Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, Height, 0 )
+                     
+               EndSelect
+            EndIf
+            StopEnum( )
+         EndIf
+         
+         a_update( *g\parent )
+      EndIf
+   EndProcedure
+
    Procedure ide_events( )
-      Protected *e_widget._s_WIDGET = EventWidget( )
-      Protected BarButton = GetData( *e_widget ) 
-      Debug WidgetEventItem()
+      Protected *g._s_WIDGET = EventWidget( )
+      
+      Select WidgetEventItem( )
+         Case #_tb_group_left
+            a_align( a_focused( ), 1 )
+         Case #_tb_group_right 
+            a_align( a_focused( ), 3 )
+         Case #_tb_group_top 
+            a_align( a_focused( ), 2 )
+         Case #_tb_group_bottom
+            a_align( a_focused( ), 4 )
+         Case #_tb_group_width 
+            a_align( a_focused( ), 5 )
+         Case #_tb_group_height
+            a_align( a_focused( ), 6 )
+            
+            
+            
+         Case #_tb_widget_copy
+         Case #_tb_widget_paste
+;             If StartEnum( *g0 )
+;                If widgets( )\anchors\group_show 
+;                   
+;                   Debug "paste "+widgets( )\class
+;                   Copy( widgets( ) )
+;                EndIf
+;                StopEnum( )
+;             EndIf
+            
+         Case #_tb_widget_cut
+         Case #_tb_widget_delete
+            
+      EndSelect
       
    EndProcedure
    
@@ -25118,8 +25371,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       Define MDI = MDI(10, 10, 680, 260) ;, #PB_MDI_AutoSize) ; as they will be sized automatically
-      a_init( MDI , 0 )
-      Define *g0 = AddItem( MDI, -1, "form_0" )
+      a_init( MDI );, 0 )
+      *g0 = AddItem( MDI, -1, "form_0" )
       Button( 15,35,100,20,"button_0" )
       Button( 30,65,100,30,"button_1" )
       Button( 45,100,100,40,"button_2" )
@@ -25991,9 +26244,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 3480
-; FirstLine = 3373
-; Folding = B+--------------------------------------------------------------------f---v----f-------1--f9---4H+-----------------------------------v+8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------4-------------------------------------------------------------------------dV----------------------------------------------------------------------------f--------------8880--------------v-ture----8--8-v--------v---------------------------------------------------------------------------------------------------------+-----------0bQgADAA5
+; CursorPosition = 3168
+; FirstLine = 3131
+; Folding = B+--------------------------------------------------------------------8f----v----f-------1--f9---4H+-----------------------------------v+8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------4-------------------------------------------------------------------------dV----------------------------------------------------------------------------f--------------8880--------------v-ture----8--8-v--------v---------------------------------------------------------------------------------------------------------------------b--bDCEYAAA-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

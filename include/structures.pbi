@@ -323,7 +323,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_TRANSFORMDATA
       EndStructure
       ;--     TRANSFORM
-      Structure _s_TRANSFORM
+      Structure _s_TRANSFORM Extends _s_COORDINATE
          Index.a                             ; a_index( )
          *main._s_WIDGET                     ; a_main( )
          *entered._s_WIDGET                  ; a_entered( )
@@ -801,8 +801,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 309
-; FirstLine = 275
+; CursorPosition = 325
+; FirstLine = 301
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP

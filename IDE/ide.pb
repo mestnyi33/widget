@@ -1255,6 +1255,50 @@ EndProcedure
 
 ;-
 ;-
+Procedure a_align( *g._s_WIDGET, align )
+   Protected.l X,Y,Width,Height
+   If *g
+      X = *g\x[#__c_frame] 
+      Y = *g\y[#__c_frame] 
+      Width = *g\width[#__c_frame] 
+      Height = *g\height[#__c_frame] 
+      
+      If StartEnum( *g\parent )
+         If widgets( )\anchors\group_show 
+            Select align
+               Case 1
+                  Resize( widgets( ), X-widgets( )\parent\x[#__c_inner], #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+               Case 3
+                  Resize( widgets( ), (X-widgets( )\parent\x[#__c_inner])+Width-widgets( )\width[#__c_frame], #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+               Case 2
+                  Resize( widgets( ), #PB_Ignore, Y-widgets( )\parent\y[#__c_inner], #PB_Ignore, #PB_Ignore, 0 )
+               Case 4
+                  Resize( widgets( ), #PB_Ignore, (Y-widgets( )\parent\y[#__c_inner])+Height-widgets( )\height[#__c_frame], #PB_Ignore, #PB_Ignore, 0 )
+                
+               Case 5
+                  Resize( widgets( ), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore, 0 )
+               Case 6
+                  Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, Height, 0 )
+                
+            EndSelect
+         EndIf
+         StopEnum( )
+      EndIf
+      
+      a_update( *g\parent )
+   EndIf
+EndProcedure
+
+Procedure HideBarButtons( *this._s_WIDGET, state )
+   DisableBarButton( *this, #_tb_group_left, state )
+   DisableBarButton( *this, #_tb_group_right, state )
+   DisableBarButton( *this, #_tb_group_top, state )
+   DisableBarButton( *this, #_tb_group_bottom, state )
+   DisableBarButton( *this, #_tb_group_height, state )
+   DisableBarButton( *this, #_tb_group_width, state )
+EndProcedure
+
+
 Macro new_widget_copy( )
    ClearList( *copy( ) )
    
@@ -1718,24 +1762,37 @@ Procedure new_widget_events( )
          EndIf
          
       Case #__event_LeftUp
+         If Not a_focused( )
+            If StartEnum( a_main( ) )
+               If widgets( )\anchors\group_show 
+                  a_set( widgets( ))
+                  Break
+               EndIf
+               StopEnum( )
+            EndIf
+         EndIf
+         
+         If a_focused( )
+            HideBarButtons( ide_toolbar, Bool(a_focused( )\anchors\group_show=0) )
+         EndIf
+         
          ; then group select
          If IsContainer(*g)
-            If mouse( )\selector 
-               
-               ;Debug mouse( )\selector\width
-               If ListSize( a_group( ) )
-                  SetState( ide_inspector_view, - 1 ) 
-                  If IsGadget( ide_g_code )
-                     SetGadgetState( ide_g_code, - 1 )
-                  EndIf
+            
+;             SetState( ide_inspector_view, - 1 ) 
+;             If IsGadget( ide_g_code )
+;                SetGadgetState( ide_g_code, - 1 )
+;             EndIf
+            
+            If StartEnum( a_main( ) )
+               If widgets( )\anchors\group_show 
                   
-                  ForEach a_group( )
-                     SetItemState( ide_inspector_view, GetData( a_group( )\widget ), #PB_Tree_Selected )
-                     If IsGadget( ide_g_code )
-                        SetGadgetItemState( ide_g_code, GetData( a_group( )\widget ), #PB_Tree_Selected )
-                     EndIf
-                  Next
+;                   SetItemState( ide_inspector_view, GetData( widgets( ) ), #PB_Tree_Selected )
+;                   If IsGadget( ide_g_code )
+;                      SetGadgetItemState( ide_g_code, GetData( widgets( ) ), #PB_Tree_Selected )
+;                   EndIf
                EndIf
+               StopEnum( )
             EndIf
          EndIf
          
@@ -1892,15 +1949,6 @@ Procedure ide_Lng_change( lng_TYPE=0 )
    
    Define *root._s_ROOT = ide_root
    PostReDraw( *root )
-EndProcedure
-
-Procedure HideBarButtons( *this._s_WIDGET, state )
-   DisableBarButton( *this, #_tb_group_left, state )
-   DisableBarButton( *this, #_tb_group_right, state )
-   DisableBarButton( *this, #_tb_group_top, state )
-   DisableBarButton( *this, #_tb_group_bottom, state )
-   DisableBarButton( *this, #_tb_group_height, state )
-   DisableBarButton( *this, #_tb_group_width, state )
 EndProcedure
 
 ;-
@@ -2255,10 +2303,6 @@ Procedure ide_menu_events(  )
             EndIf
          EndIf
          
-         ForEach a_group( )
-            Debug a_group( )\widget\x
-            
-         Next
          
          ;  RUN
       Case #_tb_file_run
@@ -2306,54 +2350,19 @@ Procedure ide_menu_events(  )
          new_widget_delete( a_focused( ) )
          
          
-      Case #_tb_group_left,
-           #_tb_group_right, 
-           #_tb_group_top, 
-           #_tb_group_bottom, 
-           #_tb_group_width, 
-           #_tb_group_height
+      Case #_tb_group_left
+         a_align( a_focused( ), 1 )
+      Case #_tb_group_right 
+         a_align( a_focused( ), 3 )
+      Case #_tb_group_top 
+         a_align( a_focused( ), 2 )
+      Case #_tb_group_bottom
+         a_align( a_focused( ), 4 )
+      Case #_tb_group_width 
+         a_align( a_focused( ), 5 )
+      Case #_tb_group_height
+         a_align( a_focused( ), 6 )
          
-         ;\\ toolbar buttons events
-         If mouse( )\selector
-            move_x = mouse( )\selector\x - a_focused( )\x[#__c_inner]
-            move_y = mouse( )\selector\y - a_focused( )\y[#__c_inner]
-            
-            ForEach a_group( )
-               Select BarButton
-                  Case #_tb_group_left ; left
-                                       ;mouse( )\selector\x = 0
-                     mouse( )\selector\width = 0
-                     Resize( a_group( )\widget, move_x, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                     
-                  Case #_tb_group_right ; right
-                     mouse( )\selector\x = 0
-                     mouse( )\selector\width = 0
-                     Resize( a_group( )\widget, move_x + a_group( )\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                     
-                  Case #_tb_group_top ; top
-                                      ;mouse( )\selector\y = 0
-                     mouse( )\selector\height = 0
-                     Resize( a_group( )\widget, #PB_Ignore, move_y, #PB_Ignore, #PB_Ignore )
-                     
-                  Case #_tb_group_bottom ; bottom
-                     mouse( )\selector\y = 0
-                     mouse( )\selector\height = 0
-                     Resize( a_group( )\widget, #PB_Ignore, move_y + a_group( )\height, #PB_Ignore, #PB_Ignore )
-                     
-                  Case #_tb_group_width ; stretch horizontal
-                     Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, mouse( )\selector\width, #PB_Ignore )
-                     
-                  Case #_tb_group_height ; stretch vertical
-                     Resize( a_group( )\widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, mouse( )\selector\height )
-                     
-               EndSelect
-            Next
-            
-            a_update( a_focused( ) )
-         EndIf
-         
-         ;       Case #_tb_menu
-         ;          DisplayPopupBar(*g)
          
    EndSelect
    
@@ -3041,9 +3050,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2603
-; FirstLine = 2161
-; Folding = ---------f+T-------Pg----------4-n----48+----4-f------
+; CursorPosition = 1770
+; FirstLine = 1625
+; Folding = ---------f+T-------Pg-----------4-n----v40----8-v------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
