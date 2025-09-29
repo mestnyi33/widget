@@ -933,6 +933,28 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro a_getpos( _this_ )
          DPIUnScaled(_this_\anchors\pos)
       EndMacro
+      Macro a_setsize( _this_, _size_ )
+         _size_ = DPIScaled(_size_)
+         If _this_\anchors\size <> _size_
+            _this_\anchors\size = _size_
+            _this_\bs - _this_\anchors\pos
+            _this_\anchors\pos = _size_ / 2
+            _this_\bs + _this_\anchors\pos
+            a_size( _this_\anchors\id, _this_\anchors\size, _this_\anchors\mode )
+            Resize( _this_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+         EndIf
+      EndMacro
+      Macro a_setpos( _this_, _position_ )
+         _position_ = DPIScaled(_position_)
+         If _this_\anchors\pos <> _position_
+            _this_\bs - _this_\anchors\pos
+            _this_\anchors\pos = _position_
+            _this_\bs + _this_\anchors\pos 
+            a_size( _this_\anchors\id, _this_\anchors\size, _this_\anchors\mode )
+            Resize( _this_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+         EndIf
+      EndMacro
+      
       Macro a_size( _address_, _size_, _mode_=0 )
          If _address_[#__a_left] ; left
             _address_[#__a_left]\width  = _size_
@@ -3013,6 +3035,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                a_anchors( )\cursor[#__a_Right_top] = 0
                a_anchors( )\cursor[#__a_Right_Bottom] = 0
                a_anchors( )\cursor[#__a_Left_Bottom] = 0
+               
+               Define position = 0
+               a_setpos( a_entered( ), position )
+               
             Else
                ;                   Protected a_index
                ;                   For a_index = 0 To #__a_moved
@@ -3032,6 +3058,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
                a_add( *this, *this\anchors\mode )
                ;
+               If *this\anchors\group_show
+                  Define position = *this\anchors\group_a_pos
+                  a_setpos( *this, position )
+               EndIf
+               
                a_size( *this\anchors\id,
                        *this\anchors\size, 
                        *this\anchors\mode )
@@ -3130,26 +3161,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;
                If size >= 0
-                  size = DPIScaled(size)
-                  If *this\anchors\size <> size
-                     *this\anchors\size = size
-                     *this\bs - *this\anchors\pos
-                     *this\anchors\pos = size / 2
-                     *this\bs + *this\anchors\pos
-                     a_size( *this\anchors\id, *this\anchors\size, *this\anchors\mode )
-                     Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  EndIf
+                  a_setsize( *this, size )
                EndIf
                ;
                If position >= 0
-                  position = DPIScaled(position)
-                  If *this\anchors\pos <> position
-                     *this\bs - *this\anchors\pos
-                     *this\anchors\pos = position
-                     *this\bs + *this\anchors\pos 
-                     a_size( *this\anchors\id, *this\anchors\size, *this\anchors\mode )
-                     Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  EndIf
+                  a_setpos( *this, position )
                EndIf
                ;
                ;\\
@@ -3166,6 +3182,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                            a_anchors( )\cursor[#__a_Right_top] = 0
                            a_anchors( )\cursor[#__a_Right_Bottom] = 0
                            a_anchors( )\cursor[#__a_Left_Bottom] = 0
+                           
+;                            Define position1 = a_focused( )\anchors\group_a_pos
+;                               a_setpos( a_focused( ), position1 )
+                          
                         Else
                            a_remove( a_focused( ) )
                         EndIf
@@ -3193,6 +3213,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      If a_focused( )\anchors\group_show
                         a_add( a_focused( ), a_focused( )\anchors\mode )
+;                          Define position1 = a_focused( )\anchors\group_a_pos
+;                               a_setpos( a_focused( ), position1 )
+;                           
                      EndIf
 
                      a_line( *this )
@@ -3264,16 +3287,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;
-               a_set( widgets( ), #__a_full, widgets( )\anchors\size-widgets( )\anchors\pos, 0)
+              ; a_set( widgets( ), #__a_full, widgets( )\anchors\size-widgets( )\anchors\pos, 0)
                   ;a_add( widgets( ),  #__a_width|#__a_height )
-;                widgets( )\bs = 0
-;                widgets( )\anchors\pos = 0
-               ;
-               a_size( widgets( )\anchors\id,
-                       widgets( )\anchors\size, 
-                       widgets( )\anchors\mode )
+               widgets( )\anchors\group_a_pos = widgets( )\anchors\pos
+               Define position = 0
+               a_setpos( widgets( ), position )
                
-               ;
+;                ;
+;                a_size( widgets( )\anchors\id,
+;                        widgets( )\anchors\size, 
+;                        widgets( )\anchors\mode )
+;                
+;                ;
                a_move( widgets( ),
                        widgets( )\anchors\id,
                        widgets( )\screen_x( ),
@@ -26190,10 +26215,10 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 3266
-; FirstLine = 3230
-; Folding = B+--------------------------------------------------------------------f----v----f-------1--f9---4H+-----------------------------------v+8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------4-------------------------------------------------------------------------dV----------------------------------------------------------------------------f--------------8880--------------v-ture----8--8-v--------v---------------------------------------------------------------------------------------------------------------------b--bDCEYAAA-
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 3186
+; FirstLine = 3197
+; Folding = B+---------------------------------------------------------------------+---f-----+------p---5---vP9-----------------------------------f04------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------v-------------------------------------------------------------------------8q+----------------------------------------------------------------------------+-------------4448--------------f-bdX0+---4--4-f--------f---------------------------------------------------------------------------------------------------------------------4+-4GEIwAAA+
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

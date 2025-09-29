@@ -308,6 +308,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     ANCHORS
       Structure _s_ANCHORS
          group_show.b
+         group_a_pos.l
          group_x.l
          group_y.l
          group_width.l
@@ -800,9 +801,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 325
-; FirstLine = 301
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 310
+; FirstLine = 271
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP
