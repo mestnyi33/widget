@@ -3242,68 +3242,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          mouse( )\anchors\width = 0
          mouse( )\anchors\height = 0
          
-         If StartEnum( *this )
+          If StartEnum( *this )
             If widgets( )\anchors\group_show
-               X = widgets( )\x[#__c_frame] 
-               Y = widgets( )\y[#__c_frame] 
-;                X = widgets( )\x[#__c_container] 
-;                Y = widgets( )\y[#__c_container] 
-;                ;
-;                If mouse( )\steps
-;                   X + ( X % mouse( )\steps )
-;                   X = ( X / mouse( )\steps ) * mouse( )\steps
-;                   Y + ( Y % mouse( )\steps )
-;                   Y = ( Y / mouse( )\steps ) * mouse( )\steps
-;                EndIf
-;                ;
-;                X + widgets( )\parent\x[#__c_inner] 
-;                Y + widgets( )\parent\y[#__c_inner] 
-               ;
-               If Not mouse( )\anchors\x
-                  mouse( )\anchors\x = X
-               ElseIf mouse( )\anchors\x > X
-                  mouse( )\anchors\x = X
-               EndIf
-               If Not mouse( )\anchors\y
-                  mouse( )\anchors\y = Y 
-               ElseIf mouse( )\anchors\y > Y
-                  mouse( )\anchors\y = Y
-               EndIf
-             EndIf
-            StopEnum( )
-         EndIf
-         
-         If StartEnum( *this )
-            If widgets( )\anchors\group_show
-               X = widgets( )\x[#__c_frame] 
-               Y = widgets( )\y[#__c_frame] 
-;                ;
-;                If mouse( )\steps
-;                   X + ( X % mouse( )\steps )
-;                   X = ( X / mouse( )\steps ) * mouse( )\steps
-;                   Y + ( Y % mouse( )\steps )
-;                   Y = ( Y / mouse( )\steps ) * mouse( )\steps
-;                EndIf
-               ;
-               If Not mouse( )\anchors\width
-                  mouse( )\anchors\width = (X + widgets( )\width[#__c_frame]) - mouse( )\anchors\x
-               ElseIf mouse( )\anchors\width < (X + widgets( )\width[#__c_frame]) - mouse( )\anchors\x
-                  mouse( )\anchors\width = (X + widgets( )\width[#__c_frame]) - mouse( )\anchors\x
-               EndIf
-               If Not mouse( )\anchors\height
-                  mouse( )\anchors\height = (Y + widgets( )\height[#__c_frame]) - mouse( )\anchors\y
-               ElseIf mouse( )\anchors\height < (Y + widgets( )\height[#__c_frame]) - mouse( )\anchors\y
-                  mouse( )\anchors\height = (Y + widgets( )\height[#__c_frame]) - mouse( )\anchors\y
-               EndIf
-               
-               
-               ;
                ;
                widgets( )\anchors\group_x = widgets( )\x[#__c_container] 
                widgets( )\anchors\group_y = widgets( )\y[#__c_container]
                widgets( )\anchors\group_width = widgets( )\width[#__c_frame] 
                widgets( )\anchors\group_height = widgets( )\height[#__c_frame]
-               
                
                ; reset
                If widgets( ) <> a_focused( )
@@ -3319,8 +3264,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;
-               ;a_add( widgets( ),  #__a_width|#__a_height )
-               
+               a_set( widgets( ), #__a_full, widgets( )\anchors\size-widgets( )\anchors\pos, 0)
+                  ;a_add( widgets( ),  #__a_width|#__a_height )
+;                widgets( )\bs = 0
+;                widgets( )\anchors\pos = 0
                ;
                a_size( widgets( )\anchors\id,
                        widgets( )\anchors\size, 
@@ -26244,9 +26191,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 3168
-; FirstLine = 3131
-; Folding = B+--------------------------------------------------------------------8f----v----f-------1--f9---4H+-----------------------------------v+8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------4-------------------------------------------------------------------------dV----------------------------------------------------------------------------f--------------8880--------------v-ture----8--8-v--------v---------------------------------------------------------------------------------------------------------------------b--bDCEYAAA-
+; CursorPosition = 3266
+; FirstLine = 3230
+; Folding = B+--------------------------------------------------------------------f----v----f-------1--f9---4H+-----------------------------------v+8-----------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------4-------------------------------------------------------------------------dV----------------------------------------------------------------------------f--------------8880--------------v-ture----8--8-v--------v---------------------------------------------------------------------------------------------------------------------b--bDCEYAAA-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
