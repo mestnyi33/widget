@@ -1,4 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi"
+;XIncludeFile "../../../test.pbi"
 
 ; ;bug когда переходишь с якорья который находится под обЬектом не убираются якорья
 
@@ -75,8 +76,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 34
+; CursorPosition = 43
+; FirstLine = 29
 ; Folding = -
 ; EnableXP
 ; DPIAware

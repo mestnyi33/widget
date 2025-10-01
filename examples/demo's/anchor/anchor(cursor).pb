@@ -4,7 +4,7 @@
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   test_docursor = 1
+  ; test_docursor = 1
    test_changecursor = 1
    test_setcursor = 1
    
@@ -95,8 +95,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 19
-; FirstLine = 12
+; CursorPosition = 6
+; FirstLine = 2
 ; Folding = --
 ; EnableXP
 ; DPIAware
