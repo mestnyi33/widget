@@ -2894,6 +2894,31 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndDataSection
       EndProcedure
       
+      Procedure a_show( *this._s_WIDGET, event )
+         If event = #__event_Up Or
+            event = #__event_LostFocus Or
+            event = #__event_MouseLeave
+            
+            a_add( *this, #__a_Position|#__a_Corner )
+         EndIf
+         
+         If event = #__event_Down Or
+            event = #__event_Focus Or
+            event = #__event_MouseEnter
+            
+            a_add( *this, *this\anchors\mode )
+         EndIf
+            
+         If event = #__event_Down 
+            a_anchors( )\backcolor[#__s_0] = $ffFFFFFF
+         EndIf
+         If event = #__event_Up 
+            a_anchors( )\backcolor[#__s_0] = $ff000000
+         EndIf
+         
+         Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+      EndProcedure
+      
       Procedure a_enter( *this._s_WIDGET, *data )
          Protected i, result, a_index
          
@@ -2969,10 +2994,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If a_entered( )\anchors\group_show
                   If a_entered( ) <> a_focused( )
-                     a_add( a_entered( ), #__a_Position|#__a_Corner )
-                     Resize( a_entered( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                     a_show( a_entered( ), #__event_MouseLeave )
                   EndIf
-                  Debug "     a_hide group"+a_entered( )\class +" ["+ *data +"]"
+                  ; Debug "     a_hide group"+a_entered( )\class +" ["+ *data +"]"
                Else
                   If *data
                      ;   Debug "     a_hide "+a_entered( )\class +" ["+ *data +"]"
@@ -2983,10 +3007,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;
             If *this\anchors And *this\anchors\group_show
                If *this <> a_focused( )
-                  a_add( *this, *this\anchors\mode ); #__a_Position|#__a_Edge )
-                  Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                  a_show( *this, #__event_MouseEnter )
                EndIf
-               Debug "    a_show group"+*this\class +" ["+ *data +"]"
+               ; Debug "    a_show group"+*this\class +" ["+ *data +"]"
             Else
                If *data
                 ;  Debug "    a_show "+*this\class +" ["+ *data +"]"
@@ -3135,8 +3158,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If a_focused( ) <> *this
                      If a_focused( )
                         If a_focused( )\anchors\group_show
-                           a_add( a_focused( ), #__a_Position|#__a_Corner )
-                           Resize( a_focused( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                           a_show( a_focused( ), #__event_LostFocus )
                         Else
                            a_remove( a_focused( ) )
                         EndIf
@@ -3174,9 +3196,8 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;                              *this\screen_width( ),
 ;                              *this\screen_height( ) )
                      
-                     a_add( *this, *this\anchors\mode )
-                     Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                     
+                     a_show( *this, #__event_Focus )
+               
                      ;a_line( *this )
                      ;
                      a_DoActive( *this )
@@ -3319,9 +3340,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                               Debug "reset "+widgets( )\class
                               widgets( )\anchors\group_show = #False
                               
-                              a_add( widgets( ), widgets( )\anchors\mode )
-                              Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                              
+                              a_show( widgets( ), #__event_Down )
+                             
                            EndIf
                         EndIf
                         StopEnum( )
@@ -3346,9 +3366,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                               Debug "set "+widgets( )\class
                               widgets( )\anchors\group_show = #True
                               
-                              a_add( widgets( ), #__a_Corner|#__a_Position )
-                              Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                              
+                              a_show( widgets( ), #__event_Up )
+                             
                            EndIf
                         EndIf
                         StopEnum( )
@@ -26168,9 +26187,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2972
-; FirstLine = 2908
-; Folding = B+---------------------------------------------------------a0--+------0----0----8------n+--j----+w------------------------------------2f--------------------------------------------------------------------V4--------------------------------------------------------------------------------------------8----------------------------------------------------------------+------------------------------------------------------------------------vr7---------------------------------------------------------------------------f--------------888---------------v-ture----8--8-v--------v---------------------------------------------------------------------------------------------------------------------b--bDCEYAAA-
+; CursorPosition = 3007
+; FirstLine = 2858
+; Folding = B+------------------------------------------------------8--ft+-f4------+----+----0------T---x---ff5------------------------------------7v--------------------------------------------------------------------q8--------------------------------------------------------------------------------------------0---------------------------------------------------------------f-------------------------------------------------------------------------4V0---------------------------------------------------------------------------v--------------000---------------4-W4Vv----0--0-4--------4---------------------------------------------------------------------------------------------------------------------t--tBBCMAAg-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
