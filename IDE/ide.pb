@@ -2616,14 +2616,14 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_PressedImage, CatchImage( #PB_Any,?image_group ) )
    ;
    BarSeparator( )
+   BarButton( #_tb_group_width, CatchImage( #PB_Any,?image_group_width ) )
+   BarButton( #_tb_group_height, CatchImage( #PB_Any,?image_group_height ) )
+   BarSeparator( )
    BarButton( #_tb_group_left, CatchImage( #PB_Any,?image_group_left ) )
    BarButton( #_tb_group_right, CatchImage( #PB_Any,?image_group_right ) )
    BarSeparator( )
    BarButton( #_tb_group_top, CatchImage( #PB_Any,?image_group_top ) )
    BarButton( #_tb_group_bottom, CatchImage( #PB_Any,?image_group_bottom ) )
-   BarSeparator( )
-   BarButton( #_tb_group_width, CatchImage( #PB_Any,?image_group_width ) )
-   BarButton( #_tb_group_height, CatchImage( #PB_Any,?image_group_height ) )
 ;    
 ;       BarSeparator( )
 ;       OpenSubBar("ComboBox")
@@ -3050,8 +3050,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1770
-; FirstLine = 1625
+; CursorPosition = 2619
+; FirstLine = 2196
 ; Folding = ---------f+T-------Pg-----------4-n----v40----8-v------
 ; Optimizer
 ; EnableAsm

@@ -110,7 +110,6 @@ CompilerIf #PB_Compiler_IsMainFile
          ;*Object\root\widget =
          Define *this = Button(0,0,0,0,Text,#__flag_autosize, round)
         ; Define *this = Image(0,0,0,0,-1,#__flag_autosize) : SetRound( *this, round )
-        ; a_set( *this )
       EndIf
       
       Resize(*Object, X, Y, Width, Height)
@@ -244,8 +243,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 57
+; CursorPosition = 112
+; FirstLine = 108
 ; Folding = ---
 ; EnableXP
 ; DPIAware

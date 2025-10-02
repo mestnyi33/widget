@@ -30,8 +30,6 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;widget_id(Hex(0)) = Panel(50, 50, 280, 200) : AddItem(widget_id(Hex(0)), -1, "panel")
       ;widget_id(Hex(0)) = ScrollArea(50, 50, 280, 200, iw,300)
-      ;a_set(widget())
-      
       
       widget_id(Hex(8)) = Button(0, 0, 80, 40, "left")   
       widget_id(Hex(2)) = Button(0, 0, 80, 40, "top")     
@@ -124,8 +122,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 105
-; FirstLine = 90
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 32
+; FirstLine = 28
 ; Folding = --
 ; EnableXP

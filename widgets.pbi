@@ -932,23 +932,27 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro a_getpos( _this_ )
          DPIUnScaled(_this_\anchors\pos)
       EndMacro
-      Macro a_setsize( _this_, _size_ )
+      Macro a_setsize( _this_, _size_, _update_size_ = 1  )
          If _this_\anchors\size <> DPIScaled(_size_)
             _this_\anchors\size = DPIScaled(_size_)
-            _this_\bs - _this_\anchors\pos
-            _this_\anchors\pos = _this_\anchors\size / 2
-            _this_\bs + _this_\anchors\pos
+;             _this_\bs - _this_\anchors\pos
+;             _this_\anchors\pos = _this_\anchors\size / 2
+;             _this_\bs + _this_\anchors\pos
             ;a_size( _this_\anchors\id, _this_\anchors\size, _this_\anchors\mode )
-            ;Resize( _this_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            If _update_size_
+               Resize( _this_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            EndIf
          EndIf
       EndMacro
-      Macro a_setpos( _this_, _position_ )
+      Macro a_setpos( _this_, _position_, _update_position_ = 1 )
          If _this_\anchors\pos <> DPIScaled(_position_)
             _this_\bs - _this_\anchors\pos
             _this_\anchors\pos = DPIScaled(_position_)
             _this_\bs + _this_\anchors\pos 
             ;a_size( _this_\anchors\id, _this_\anchors\size, _this_\anchors\mode )
-            ;Resize( _this_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            If _update_position_
+               Resize( _this_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+            EndIf
          EndIf
       EndMacro
       
@@ -1835,7 +1839,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       ;-\\ DECLARE PRIVATEs
       ;-
-      Declare   a_DoActive( *this, *active = 0 )
+      Declare   a_doactive( *this, *active = 0 )
       Declare   DoFocus( *this, event.l, *button = #PB_All, *data = #Null )
       
       Declare   DoEvent_Lines( *this, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
@@ -2894,7 +2898,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndDataSection
       EndProcedure
       
-      Procedure a_show( *this._s_WIDGET, event )
+      Procedure a_group_show( *this._s_WIDGET, event )
          If event = #__event_Up Or
             event = #__event_LostFocus Or
             event = #__event_MouseLeave
@@ -2994,7 +2998,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If a_entered( )\anchors\group_show
                   If a_entered( ) <> a_focused( )
-                     a_show( a_entered( ), #__event_MouseLeave )
+                     a_group_show( a_entered( ), #__event_MouseLeave )
                   EndIf
                   ; Debug "     a_hide group"+a_entered( )\class +" ["+ *data +"]"
                Else
@@ -3007,7 +3011,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;
             If *this\anchors And *this\anchors\group_show
                If *this <> a_focused( )
-                  a_show( *this, #__event_MouseEnter )
+                  a_group_show( *this, #__event_MouseEnter )
                EndIf
                ; Debug "    a_show group"+*this\class +" ["+ *data +"]"
             Else
@@ -3053,7 +3057,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure a_remove( *this._s_WIDGET )
-         ProcedureReturn 
          Protected a_index
          If *this\container < 3
             *this\bindresize = #False
@@ -3067,7 +3070,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Next a_index
       EndProcedure
       
-      Procedure a_DoActive( *this._s_WIDGET, *active._s_WIDGET = 0 )
+      Procedure a_doactive( *this._s_WIDGET, *active._s_WIDGET = 0 )
          Protected *window._s_WIDGET
          
          If *Active
@@ -3146,11 +3149,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;
                If size >= 0
-                  a_setsize( *this, size )
+                  a_setsize( *this, size, #False )
                EndIf
                ;
                If position >= 0
-                  a_setpos( *this, position )
+                  a_setpos( *this, position, #False )
                EndIf
                ;
                ;\\
@@ -3158,12 +3161,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If a_focused( ) <> *this
                      If a_focused( )
                         If a_focused( )\anchors\group_show
-                           a_show( a_focused( ), #__event_LostFocus )
+                           a_group_show( a_focused( ), #__event_LostFocus )
                         Else
-                           a_remove( a_focused( ) )
+                           ; a_remove( a_focused( ) )
                         EndIf
-                         ; a_focused( )\root\repaint = 1
-                        a_DoActive( a_focused( ), *this )
+                        ;
+                        a_doactive( a_focused( ), *this )
                      EndIf
                      ; Debug "a_set focus " + *this\class 
                      ;
@@ -3179,28 +3182,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      
                      ;
-                     If a_focused( ) <> *this
-                        a_focused( ) = *this
-                     EndIf
-                  
-                     
-;                      a_size( *this\anchors\id,
-;                              *this\anchors\size, 
-;                              *this\anchors\mode )
-;                      
-;                      ;
-;                      a_move( *this,
-;                              *this\anchors\id,
-;                              *this\screen_x( ),
-;                              *this\screen_y( ),
-;                              *this\screen_width( ),
-;                              *this\screen_height( ) )
-                     
-                     a_show( *this, #__event_Focus )
+                     a_focused( ) = *this
+                     a_group_show( *this, #__event_Focus )
                
                      ;a_line( *this )
                      ;
-                     a_DoActive( *this )
+                     a_doactive( *this )
                      ;
                      If *this = a_main( )
                         a_focused( ) = #Null
@@ -3211,6 +3198,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      ;
                      result = *this
+                  Else
+                     ; update anchors size and position
+                     Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                   EndIf
                EndIf
             EndIf
@@ -3340,7 +3330,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               Debug "reset "+widgets( )\class
                               widgets( )\anchors\group_show = #False
                               
-                              a_show( widgets( ), #__event_Down )
+                              a_group_show( widgets( ), #__event_Down )
                              
                            EndIf
                         EndIf
@@ -3366,7 +3356,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               Debug "set "+widgets( )\class
                               widgets( )\anchors\group_show = #True
                               
-                              a_show( widgets( ), #__event_Up )
+                              a_group_show( widgets( ), #__event_Up )
                              
                            EndIf
                         EndIf
@@ -3374,7 +3364,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  a_update( *this\parent )
+                  If *this\parent
+                     a_update( *this\parent )
+                  Else
+                     a_update( *this )
+                  EndIf
                EndIf
                
                ;
@@ -26187,9 +26181,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 3007
-; FirstLine = 2858
-; Folding = B+------------------------------------------------------8--ft+-f4------+----+----0------T---x---ff5------------------------------------7v--------------------------------------------------------------------q8--------------------------------------------------------------------------------------------0---------------------------------------------------------------f-------------------------------------------------------------------------4V0---------------------------------------------------------------------------v--------------000---------------4-W4Vv----0--0-4--------4---------------------------------------------------------------------------------------------------------------------t--tBBCMAAg-
+; CursorPosition = 3263
+; FirstLine = 3093
+; Folding = B+------------------------------------------------------8--ft+-f-----+f-----+----0------T---x---ff5------------------------------------7v--------------------------------------------------------------------q8--------------------------------------------------------------------------------------------0---------------------------------------------------------------f-------------------------------------------------------------------------4V0---------------------------------------------------------------------------v--------------000---------------4-W4Vv----0--0-4--------4---------------------------------------------------------------------------------------------------------------------t--tBBCMAAg-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

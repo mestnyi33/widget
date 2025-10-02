@@ -175,8 +175,6 @@ CompilerIf #PB_Compiler_IsMainFile
    CloseList( ) ;: Resize( w_ide_toolbar, 0, 0, 800,60)
    
    
-   ; a_set( w_ide_toolbar_container )
-   
 EndIf
 
 Show_DEBUG( )
@@ -222,7 +220,7 @@ DataSection
 EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 74
+; CursorPosition = 176
+; FirstLine = 170
 ; Folding = --
 ; EnableXP

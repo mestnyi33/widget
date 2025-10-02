@@ -38,10 +38,12 @@ CompilerIf #PB_Compiler_IsMainFile
             
             Select *this 
                Case *size
-                  a_set( a_focused( ), #__a_full, GetState(*this), GetState(*position))
+                  ; a_set( a_focused( ), #__a_full, GetState(*this), GetState(*position))
+                  a_setsize( a_focused( ), GetState(*this) )
                   
                Case *position
-                  a_set( a_focused( ), #__a_full, GetState(*size), GetState(*this))
+                  ; a_set( a_focused( ), #__a_full, GetState(*size), GetState(*this))
+                  a_setpos( a_focused( ), GetState(*this) )
                   
                Case *grid, *gridType
                   mouse( )\steps = DPIScaled(GetState(*grid))
@@ -124,8 +126,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 25
+; CursorPosition = 41
+; FirstLine = 21
 ; Folding = --
 ; EnableXP
 ; DPIAware
