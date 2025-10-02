@@ -202,7 +202,7 @@ Declare$  GetImageFile( img )
 ;
 ;- INCLUDEs
 XIncludeFile #ide_path + "widgets.pbi"
-XIncludeFile #ide_path + "include\lng.pbi"
+XIncludeFile #ide_path + "include/lng.pbi"
 ; XIncludeFile "C:\Users\user\Downloads\Compressed\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widgets.pbi"
 ; Procedure.i GetFontColor( *this.structures::_s_WIDGET )
 ;    ProcedureReturn widget::GetColor( *this, constants::#__Color_Front )
@@ -3049,12 +3049,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2619
-; FirstLine = 2196
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 85
+; FirstLine = 78
 ; Folding = ---------f+T-------Pg-----------4-n----v40----8-v------
-; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = C:\Users\user\Downloads\Compressed\FormDesignerWindows4.70b2\ide.exe
+; Executable = C:/Users/user/Downloads/Compressed/FormDesignerWindows4.70b2/ide.exe
+; Optimizer

@@ -16668,8 +16668,6 @@ chr$ = ","
                If is_bar_( *this )
                   ;
                   If event = #__event_LeftClick Or
-;                      event = #__event_Down Or
-;                      event = #__event_Up Or
                      event = #__event_Change
                      If *this\TabEntered( )
                         *button = *this\TabEntered( )\tindex
@@ -25134,9 +25132,15 @@ CompilerIf #PB_Compiler_IsMainFile
       #_tb_widget_copy
       #_tb_widget_cut
       #_tb_widget_paste
-   EndEnumeration
-   
-   Global ide_toolbar, *g0._s_WIDGET
+      
+      #_tb_LNG
+      #_tb_lng_ENG
+      #_tb_lng_RUS
+      #_tb_lng_FRENCH
+      #_tb_lng_GERMAN
+    EndEnumeration
+    
+   Global ide_toolbar, ide_popup_lenguage, *g0._s_WIDGET
    
    Procedure Copy( *g._s_WIDGET )
       PushListPosition( widgets( ) )
@@ -25301,6 +25305,16 @@ CompilerIf #PB_Compiler_IsMainFile
          BarSeparator( )
          BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?image_new_widget_delete ) )
          BarSeparator( )
+         BarSeparator( )
+         
+         ide_popup_lenguage = OpenSubBar("[LENGUAGE]")
+         If ide_popup_lenguage
+           BarItem(#_tb_lng_ENG, "ENG")
+           BarItem(#_tb_lng_RUS, "RUS")
+           BarItem(#_tb_lng_FRENCH, "FRENCH")
+           BarItem(#_tb_lng_GERMAN, "GERMAN")
+         EndIf
+         CloseSubBar( )
          CloseList( ) 
          
          Bind( ide_toolbar, @ide_events( ) )
@@ -26180,10 +26194,10 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 3263
-; FirstLine = 3093
-; Folding = B+------------------------------------------------------8--ft+-f-----+f-----+----0------T---x---ff5------------------------------------7v--------------------------------------------------------------------q8--------------------------------------------------------------------------------------------0---------------------------------------------------------------f-------------------------------------------------------------------------4V0---------------------------------------------------------------------------v--------------000---------------4-W4Vv----0--0-4--------4---------------------------------------------------------------------------------------------------------------------t--tBBCMAAg-
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 25141
+; FirstLine = 22758
+; Folding = B+------------------------------------------------------8--ft+-f-----+f-----+----0------T---x---ff5------------------------------------7v--------------------------------------------------------------------q8--------------------------------------------------------------------------------------------0---------------------------------------------------------------f-------------------------------------------------------------------------4V0---------------------------------------------------------------------------v--------------000---------------4-W4Vv----0--0-4--------4---------------------------------------------------------------------------------------------------------------------t--fDCEYAAA-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
