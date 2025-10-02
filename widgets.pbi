@@ -872,13 +872,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro IsCanvas(_gadget_)
          FindMapElement( widget::gadgets( ), Str(_gadget_))
       EndMacro
-      Macro OpenCanvas( _window_, _canvas_ = #PB_Any, _x_ = #PB_Ignore, _y_ = #PB_Ignore, _width_ = #PB_Ignore, _height_ = #PB_Ignore );, WindowID = #PB_Any )
-         Open( _window_, 0,0,0,0, "", #PB_Canvas_Container, #PB_Default, _canvas_ )
-      EndMacro
-      Macro CloseCanvas( )
-         
-         CloseGadgetList( )
-      EndMacro
       Macro ChangeCurrentCanvas( _canvasID_, _change_root_ = 1 )
          FindMapElement( widget::roots( ), Str( _canvasID_ ) )
          If _change_root_ = 1
@@ -6486,10 +6479,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                
             Else
                If *this\split_1( ) > 0 And *this\split_1( ) <> *this
-                  If *this\split_1( )\container_x( ) <> *BB1\x Or
-                     *this\split_1( )\container_y( ) <> *BB1\y Or
-                     *this\split_1( )\container_width( ) <> *BB1\width Or
-                     *this\split_1( )\container_height( ) <> *BB1\height
+                  If *this\split_1( )\frame_x( ) <> *BB1\x Or
+                     *this\split_1( )\frame_y( ) <> *BB1\y Or
+                     *this\split_1( )\frame_width( ) <> *BB1\width Or
+                     *this\split_1( )\frame_height( ) <> *BB1\height
                      
                      If *this\split_1( )\type = #__type_window
                         Resize( *this\split_1( ),
@@ -6527,10 +6520,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                
             Else
                If *this\split_2( ) > 0 And *this\split_2( ) <> *this
-                  If *this\split_2( )\container_x( ) <> *BB2\x Or
-                     *this\split_2( )\container_y( ) <> *BB2\y Or
-                     *this\split_2( )\container_width( ) <> *BB2\width Or
-                     *this\split_2( )\container_height( ) <> *BB2\height
+                  If *this\split_2( )\frame_x( ) <> *BB2\x Or
+                     *this\split_2( )\frame_y( ) <> *BB2\y Or
+                     *this\split_2( )\frame_width( ) <> *BB2\width Or
+                     *this\split_2( )\frame_height( ) <> *BB2\height
                      
                      If *this\split_2( )\type = #__type_window
                         Resize( *this\split_2( ),
@@ -8063,6 +8056,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             *this\inner_height( ) = *this\container_height( )
          EndIf
+         
+              
          ; 
          ;          If *this\resize\clip <> 0
          ;             *this\resize\clip = 0
@@ -8250,7 +8245,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                bar_Update( *this, 2 )
             Else
                If *this\bar\max
-                  bar_Update( *this, 1 )
+                 bar_Update( *this, 1 )
                EndIf
             EndIf
          EndIf
@@ -18577,11 +18572,18 @@ chr$ = ","
                      ;\\ leaved tabs
                      If *this\TabEntered( ) And
                         is_leaved( *this\TabEntered( ) )
+                        ;
+                        If *this\type = #__type_PopupBar 
+                           If *this\TabEntered( )\checked
+                              *this\TabEntered( )\checked = 0
+                           EndIf
+                        EndIf
+                        ;
                         *this\root\repaint = 1
                      EndIf
                      ;
                      If *tab And *tab\disable
-                       *tab = 0    
+                        *tab = 0    
                      EndIf  
                      *this\TabEntered( ) = *tab
                      
@@ -18593,7 +18595,7 @@ chr$ = ","
                               *this\root\repaint = 1
                               ;
                               ;\\ show popup bar
-                              If is_bar_( *this )
+                              If is_bar_( *this ) 
                                  ;
                                  ;\\ change focused tab
                                  If *this\TabFocused( ) <> *tab
@@ -26194,10 +26196,10 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 25141
-; FirstLine = 22758
-; Folding = B+------------------------------------------------------8--ft+-f-----+f-----+----0------T---x---ff5------------------------------------7v--------------------------------------------------------------------q8--------------------------------------------------------------------------------------------0---------------------------------------------------------------f-------------------------------------------------------------------------4V0---------------------------------------------------------------------------v--------------000---------------4-W4Vv----0--0-4--------4---------------------------------------------------------------------------------------------------------------------t--fDCEYAAA-
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 18581
+; FirstLine = 16525
+; Folding = B+------------------------------------------------------+--Xr--4----v-4----v----f-------1--f9---4H+-----------------------------------v+8--------------f----------------------------------------------------v7+8+0848--4----------------------------------------------------------------------------------f----------------------------------------------------------------4-------------------------------------------------------------------------dV-------------------------------------------------------------------------------------------000---------------4-W4Vv----0--0-4--------4---------------------------------------------------------------------------------------------------------------------t--fDCEYAAA-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

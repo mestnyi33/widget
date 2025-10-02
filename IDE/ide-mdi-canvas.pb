@@ -2489,18 +2489,20 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ide_design_PANEL = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_PANEL, "ide_design_PANEL" ) ; , #__flag_Vertical ) : OpenList( ide_design_PANEL )
    AddItem( ide_design_PANEL, -1, "Form" )
    
-   ;Define ide_root2 = Open(ide_window, 0, 0, 0, 0,"",0, 0, CanvasGadget(-1, 0,0,0,0))
-   Define ide_root2 = OpenCanvas(ide_window, 0, 0, 0, 0); , #PB_Canvas_Container ) : CloseGadgetList()
+   Define ide_g_canvas2 = 0 : CanvasGadget(ide_g_canvas2, 0,0,0,0)
+   ;Define ide_g_canvas2 = CanvasGadget(#PB_Any, 0,0,0,0)
+   Define ide_root2 = Open( ide_window, 0,0,0,0,"",0, 0, ide_g_canvas2 )
    ide_design_panel_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel_MDI, "ide_design_panel_MDI" ) ;: SetFrame(ide_design_panel_MDI, 10)
    SetColor( ide_design_panel_MDI, #PB_Gadget_BackColor, $FFBF9CC3 )
    a_init( ide_design_panel_MDI);, 0 )
    If ide_root2
-      CloseCanvas( )
+      CloseGadgetList( )
       OpenGadgetList( (ide_g_canvas))
       ;UseGadgetList( GadgetID(ide_g_canvas))
       OpenList(ide_root)
    EndIf
-      
+   
+   
    AddItem( ide_design_PANEL, -1, "Code" )
    ide_design_panel_CODE = Editor( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel_CODE, "ide_design_panel_CODE" ) ; bug then move anchors window
    SetBackgroundColor( ide_design_panel_CODE, $FFDCF9F6)
@@ -2921,8 +2923,8 @@ DataSection
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2201
-; FirstLine = 2190
+; CursorPosition = 2504
+; FirstLine = 2418
 ; Folding = -------------------------------------------l34t----+-
 ; EnableXP
 ; DPIAware
