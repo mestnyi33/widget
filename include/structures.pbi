@@ -116,7 +116,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *value
       EndStructure
-      Structure _s_DRAG Extends _s_DROP
+      Structure _s_DROPMOUSE Extends _s_DROP
          Y.l
          X.l
          Width.l
@@ -306,12 +306,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          fontcolor.i
       EndStructure
       ;--     ANCHORS
+      Structure _s_ANCHORSGROUP Extends _s_COORDINATE
+         show.b
+      EndStructure
       Structure _s_ANCHORS
-         group_show.b
-         group_x.l
-         group_y.l
-         group_width.l
-         group_height.l
+         group._s_ANCHORSGROUP
          
          state.b
          pos.b
@@ -323,7 +322,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_TRANSFORMDATA
       EndStructure
       ;--     TRANSFORM
-      Structure _s_TRANSFORM Extends _s_COORDINATE
+      Structure _s_TRANSFORM 
+         group._s_ANCHORSGROUP
+         
          Index.a                             ; a_index( )
          *main._s_WIDGET                     ; a_main( )
          *entered._s_WIDGET                  ; a_entered( )
@@ -344,8 +345,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *cursor                 ; current visible cursor
          
          dragstart.b
-         *drop._s_DRAG           ;
-         *drag._s_DRAG           ;
+         *drop._s_DROPMOUSE           ;
+         *drag          ;
          
          Data.w                  ; mouse moved state
          steps.a
@@ -800,9 +801,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 314
-; FirstLine = 275
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 118
+; FirstLine = 103
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP
