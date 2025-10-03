@@ -1684,19 +1684,19 @@ Procedure new_widget_events( )
             Properties_Updates( a_focused( ), "Focus" )
          EndIf
          
+      Case #__event_Up
+         If mouse( )\anchors\group\show
+            ; set keyboard focus
+            SetActive( *g )
+         EndIf
+         
       Case #__event_Down
          If a_focused( ) = *g
-;             If GetActive( ) <> ide_inspector_view 
-;                SetActive( ide_inspector_view )
-;               ; Debug "------------- active "+GetClass(GetActive( ))
-;             EndIf
-            If GetActive( ) <> ide_design_PANEL
-               SetActive( ide_design_PANEL )
-              ; Debug "------------- active "+GetClass(GetActive( ))
+            If GetActive( ) <> ide_inspector_view 
+               SetActive( ide_inspector_view )
             EndIf
          EndIf
-         ; SetActive( *g )
-         
+          
       Case #__event_RightDown
          Debug "right"
          
@@ -3065,9 +3065,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 324
-; FirstLine = 311
-; Folding = ---------f+X-------Pk-f----------v-7----40----8-v------
+; CursorPosition = 1688
+; FirstLine = 1553
+; Folding = ---------f+X-------Pk-f----------f-2----v8----4-f------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
