@@ -445,7 +445,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro TabState( ): Tab\state: EndMacro      
       ;-
       Macro ColorState( ): color\state: EndMacro
-      Macro AnchorState( ): anchors\state: EndMacro
       
       ;-
       Macro MarginLine( ): row\margin: EndMacro ; temp
@@ -2896,26 +2895,29 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure a_enter( *this._s_WIDGET, *data )
-         Protected i, result, a_index
+         Protected i, a_index
          
          If Not (*this And *this\parent And Not *this\parent\hide);
             ProcedureReturn 0
          EndIf
          
          ; at point index
-         If is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] )
-            For i = 1 To #__a_moved  
-               If *this\anchors And 
-                  *this\anchors\id[i] And
-                  is_atpoint_( *this\anchors\id[i], mouse( )\x, mouse( )\y )
-                  ;
-                  a_index = i
-                  Break
-               EndIf
-            Next : i = 0
+         If *this\anchors  
+            If is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] )
+               For i = 1 To #__a_moved  
+                  If *this\anchors\id[i] And
+                     is_atpoint_( *this\anchors\id[i], mouse( )\x, mouse( )\y )
+                     ;
+                     a_index = i
+                     Break
+                  EndIf
+               Next : i = 0
+            EndIf
          EndIf
          ;
-         If a_focused( ) And a_focused( )\anchors
+         If a_focused( ) And
+            a_focused( )\anchors
+            ;
             For i = 1 To #__a_moved  
                If a_focused( )\anchors\id[i] And
                   is_atpoint_( a_focused( )\anchors\id[i], mouse( )\x, mouse( )\y )
@@ -2997,38 +2999,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             a_entered( ) = *this
          EndIf
          
-;          ;
-;          ; set new entered anchors index state
-;          If a_index
-;             a_index( ) = a_index
-;             ;
-;             If *this\anchors\id[a_index]  
-;                If *this\anchors\state = #__s_0
-;                   *this\anchors\state = #__s_1
-;                   Debug 444
-;                   ;
-;                   If *this\enter > 0
-;                      If *this = Entered( )
-;                         DoEvents( *this, #__event_MouseLeave, #PB_All, @"[?-a_leave]"  )
-;                      EndIf
-;                   EndIf   
-;                   *this\enter = - 1
-;                   
-;                   If a_entered( )
-;                      Debug ""+a_entered( )\text\string +" "+ a_entered( )\anchors\state +" "+ Bool(*this=a_entered());
-;                   EndIf
-;                   If a_focused( )
-;                      Debug " "+a_focused( )\text\string +" "+ a_focused( )\anchors\state +" "+ Bool(*this=a_focused());
-;                   EndIf
-;                   
-;                   ChangeCursor( *this, a_anchors( )\cursor[a_index] )
-;                   *this\root\repaint = 1
-;                EndIf
-;             EndIf
-;             ; 
-;             result = *this
-;          EndIf
-         
+         ;
+         ; set new entered anchors index state
          If a_index
             If *this\anchors\id[a_index]  
                If *this\anchors\state = #__s_0
@@ -3050,10 +3022,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             ; 
-            result = *this
+            ProcedureReturn *this
          EndIf
          
-         ProcedureReturn result
       EndProcedure
       
       Procedure a_free( *this._s_WIDGET )
@@ -26340,9 +26311,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2943
-; FirstLine = 2640
-; Folding = B+-------------------------------j-------------------------7-t-0--++-484----------------T---8---ff5------------------------------------7v---------------0----------------------------------------------------q8v84vfv--f---------------------------------------------------------------------------------fD+--f-tv----------------------------------------------------------+-------------------------------------------------------------------------r---------------------8------------------------------------------------------------------------f-4v7-------40-----7u70--v---v-+-----P-z0+--------------------------------------------------------------------------------------------------------------------88--NIQgBAA9
+; CursorPosition = 2890
+; FirstLine = 2606
+; Folding = B+-------------------------------x---------------------------t-0--++-484----------------T---8---ff5------------------------------------7v---------------0----------------------------------------------------q8v84vfv--f---------------------------------------------------------------------------------fD+--f-tv----------------------------------------------------------+-------------------------------------------------------------------------r---------------------8------------------------------------------------------------------------f-4v7-------40-----7u70--v---v-+-----P-z0+--------------------------------------------------------------------------------------------------------------------88--NIQgBAA9
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
