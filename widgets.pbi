@@ -3393,7 +3393,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      Else
                         a_anchors( )\group\show = 0
                         ; reset show group anchors
-                        If StartEnum( a_main( ) )
+                        
+                        
+                        If StartEnum( *this )
                            If widgets( )\anchors And 
                               widgets( )\anchors\group\show 
                               
@@ -8823,32 +8825,32 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;       gtk_widget_set_colormap_(*Widget, *colormap)
                ;       gtk_widget_shape_combine_mask_(*Widget, 0,0,0)
-               Protected FixedBox = GtkContainer(GtkWidget(GadgetID(0)));
-               
-               ;Protected FixedBox = g_list_nth_data_(gtk_container_get_children_(gtk_bin_get_child_(WindowID(Window))), 0) ; виджет привязанный к окну
-               Debug FixedBox
-               g_signal_connect(FixedBox, "expose-event", @RedrawWidget(), 0)                                              ; обработчик сигнала
-                                                                                                                           ; time = g_timeout_add_(60, @movie(), #Null)                                                           ; таймер движение окна
-               gtk_widget_set_app_paintable_(FixedBox, #True)                                                              ; разрешаем отрисовку в виджете
-               
-               
-               ; ----- Удалить GdkWindow ресурсы, чтобы иметь возможность изменить цветовую гамму
-               gtk_widget_unrealize_(WindowID(Window))
-               ;gtk_widget_unrealize_(GtkWidget(GadgetID(0)))
-               
-               ; ----- Поддержка альфа канала
-               Protected Screen = gtk_widget_get_screen_(WindowID(Window))
-               Protected Colormap = gdk_screen_get_rgba_colormap(Screen) ; RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color)) ;
-               
-               If Colormap
-                  gtk_widget_set_colormap_(WindowID(Window), Colormap)
-                  ;gtk_widget_set_colormap_(GtkWidget(GadgetID(0)), Colormap)
-               Else
-                  MessageRequester("Error", "Your current system configuration doesn't support transparency!")
-                  End
-               EndIf
-               
-               ;gtk_window_set_opacity(WindowID(Window), 0.3)
+;                Protected FixedBox = GadgetID(0) ; GtkContainer(GtkWidget(GadgetID(0)));
+;                
+;                ;Protected FixedBox = g_list_nth_data_(gtk_container_get_children_(gtk_bin_get_child_(WindowID(Window))), 0) ; виджет привязанный к окну
+;                Debug FixedBox
+;                g_signal_connect(FixedBox, "expose-event", @RedrawWidget(), 0)                                              ; обработчик сигнала
+;                                                                                                                            ; time = g_timeout_add_(60, @movie(), #Null)                                                           ; таймер движение окна
+;                gtk_widget_set_app_paintable_(FixedBox, #True)                                                              ; разрешаем отрисовку в виджете
+;                
+;                
+;                ; ----- Удалить GdkWindow ресурсы, чтобы иметь возможность изменить цветовую гамму
+;                gtk_widget_unrealize_(WindowID(Window))
+;                ;gtk_widget_unrealize_(GtkWidget(GadgetID(0)))
+;                
+;                ; ----- Поддержка альфа канала
+;                Protected Screen = gtk_widget_get_screen_(WindowID(Window))
+;                Protected Colormap = gdk_screen_get_rgba_colormap(Screen) ; RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color)) ;
+;                
+;                If Colormap
+;                   gtk_widget_set_colormap_(WindowID(Window), Colormap)
+;                   ;gtk_widget_set_colormap_(GtkWidget(GadgetID(0)), Colormap)
+;                Else
+;                   MessageRequester("Error", "Your current system configuration doesn't support transparency!")
+;                   End
+;                EndIf
+;                
+;                ;gtk_window_set_opacity(WindowID(Window), 0.3)
                
          CompilerEndSelect
       EndProcedure
@@ -26310,10 +26312,10 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2890
-; FirstLine = 2606
-; Folding = B+-------------------------------x---------------------------t-0--++-484----------------T---8---ff5------------------------------------7v---------------0----------------------------------------------------q8v84vfv--f---------------------------------------------------------------------------------fD+--f-tv----------------------------------------------------------+-------------------------------------------------------------------------r---------------------8------------------------------------------------------------------------f-4v7-------40-----7u70--v---v-+-----P-z0+--------------------------------------------------------------------------------------------------------------------88--NIQgBAA9
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 3389
+; FirstLine = 3037
+; Folding = B+-------------------------------x---------------------------t-0--++-484----------------T---8---ff5------------------------------------7v---------------0----------------------------------------------------q8v84vfv--f---------------------------------------------------------------------------------vB---v-34---------------------------------------------------------f--------------------------------------------------------------------------2---------------------0------------------------------------------------------------------------v-8X0-------8+----fdX0+--4---4f------n-6e---------------------------------------------------------------------------------------------------------------------00--GEIwAAA+
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

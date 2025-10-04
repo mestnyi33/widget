@@ -291,8 +291,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     SELECTOR
       Structure _s_SELECTOR Extends _s_COORDINATE
-         List *group._s_A_GROUP( )
-         
          dotted.a
          dotline.a
          dotspace.a
@@ -795,9 +793,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 317
-; FirstLine = 284
+; IDE Options = PureBasic 6.04 LTS (Linux - x64)
+; CursorPosition = 293
+; FirstLine = 254
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP
