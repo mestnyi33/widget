@@ -1692,8 +1692,13 @@ Procedure new_widget_events( )
          
       Case #__event_Down
          If a_focused( ) = *g
-            If GetActive( ) <> ide_inspector_view 
-               SetActive( ide_inspector_view )
+            If *g\anchors\group\show
+               ; set keyboard focus
+               SetActive( *g )
+            Else
+               If GetActive( ) <> ide_inspector_view 
+                  SetActive( ide_inspector_view )
+               EndIf
             EndIf
          EndIf
           
@@ -3064,10 +3069,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1688
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 1697
 ; FirstLine = 1553
-; Folding = ---------f+X-------Pk-f----------f-2----v8----4-f------
+; Folding = ---------f+X-------Pk-f-----------+r----f4----v--+-----
 ; Optimizer
 ; EnableAsm
 ; EnableXP
