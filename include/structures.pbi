@@ -289,10 +289,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          align._s_align
       EndStructure
       
-      ;
-      Structure _s_A_GROUP Extends _s_COORDINATE
-         *widget._s_WIDGET
-      EndStructure
       ;--     SELECTOR
       Structure _s_SELECTOR Extends _s_COORDINATE
          List *group._s_A_GROUP( )
@@ -319,8 +315,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *id._s_COORDINATE[constants::#__a_count]
       EndStructure
       ;
-      Structure _s_TRANSFORMDATA
-      EndStructure
       ;--     TRANSFORM
       Structure _s_TRANSFORM 
          group._s_ANCHORSGROUP
@@ -802,8 +796,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 745
-; FirstLine = 717
+; CursorPosition = 317
+; FirstLine = 284
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP

@@ -798,26 +798,6 @@ CompilerIf Not Defined( widget, #PB_Module )
               ( _address_1_\y#_address_1_mode_ + _address_1_\height#_address_1_mode_ ) > _address_2_\y And _address_1_\y#_address_1_mode_ < ( _address_2_\y + _address_2_\height ))
       EndMacro
       
-      Macro is_leaved( _address_ )
-         Bool( _address_\_enter )
-         If _address_\_enter
-            _address_\_enter = 0
-            
-            If _address_\ColorState( ) = #__s_1
-               _address_\ColorState( ) = #__s_0
-            EndIf
-         EndIf
-      EndMacro
-      Macro is_entered( _address_ )
-         Bool( Not _address_\_enter )
-         If Not _address_\_enter And Not _address_\disable
-            _address_\_enter = 1
-            
-            If _address_\ColorState( ) = #__s_0
-               _address_\ColorState( ) = #__s_1
-            EndIf
-         EndIf
-      EndMacro
       
       ;-
       Macro is_lines_( _this_ )
@@ -903,7 +883,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro a_anchors( )
          widget::mouse( )\anchors
       EndMacro
-      ;
       Macro a_index( )
          widget::a_anchors( )\index
       EndMacro
@@ -916,9 +895,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro a_focused( )
          widget::a_anchors( )\focused
       EndMacro
-      Macro a_group( )
-         widget::mouse( )\selector\group( )
-      EndMacro
+      ;
       Macro a_getsize( _this_ )
          DPIUnScaled(_this_\anchors\size)
       EndMacro
@@ -1645,6 +1622,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.l Level( *this )
       Declare.i CountType( *this, mode.b = 0 )
       
+      Declare.b GetFocus( *this )
+      Declare.b SetFocus( *this, state.b )
       Declare.i SetActive( *this )
       Declare   SetForeground( *window )
       
@@ -2666,7 +2645,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       ;-\\  ANCHORs
       ;-
-      Macro a_draw( _this_ )
+      Macro a_draw( _this_, _state_ )
          ; Debug "a_draw "+_this_\class +" "+ _this_\anchors +" "+ _this_\anchors\mode
          If Not _this_\anchors\mode & #__a_nodraw = #__a_nodraw; 
             draw_mode_alpha_( #PB_2DDrawing_Outlined )
@@ -2674,7 +2653,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; draw a_object frame 
             If _this_\anchors
                If _this_\anchors\id[0] 
-                  draw_box_( _this_\anchors\id[0]\x, _this_\anchors\id[0]\y, _this_\anchors\id[0]\width, _this_\anchors\id[0]\height , a_anchors( )\framecolor[Bool(a_index( )) * _this_\AnchorState( )] ) 
+                  draw_box_( _this_\anchors\id[0]\x, _this_\anchors\id[0]\y, _this_\anchors\id[0]\width, _this_\anchors\id[0]\height , a_anchors( )\framecolor[Bool(a_index( )) * _state_] ) 
                EndIf
                
                ; draw lines
@@ -2711,29 +2690,29 @@ CompilerIf Not Defined( widget, #PB_Module )
                draw_mode_alpha_( #PB_2DDrawing_Default )
                
                ;\\ draw background anchors
-               If _this_\anchors\id[#__a_left] :draw_box_( _this_\anchors\id[#__a_left]\x, _this_\anchors\id[#__a_left]\y, _this_\anchors\id[#__a_left]\width, _this_\anchors\id[#__a_left]\height ,a_anchors( )\backcolor[Bool(a_index( ) = #__a_left)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_top] :draw_box_( _this_\anchors\id[#__a_top]\x, _this_\anchors\id[#__a_top]\y, _this_\anchors\id[#__a_top]\width, _this_\anchors\id[#__a_top]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_top)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_right] :draw_box_( _this_\anchors\id[#__a_right]\x, _this_\anchors\id[#__a_right]\y, _this_\anchors\id[#__a_right]\width, _this_\anchors\id[#__a_right]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_right)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_bottom] :draw_box_( _this_\anchors\id[#__a_bottom]\x, _this_\anchors\id[#__a_bottom]\y, _this_\anchors\id[#__a_bottom]\width, _this_\anchors\id[#__a_bottom]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_bottom)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_left_top] :draw_box_( _this_\anchors\id[#__a_left_top]\x, _this_\anchors\id[#__a_left_top]\y, _this_\anchors\id[#__a_left_top]\width, _this_\anchors\id[#__a_left_top]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_left_top)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_right_top] :draw_box_( _this_\anchors\id[#__a_right_top]\x, _this_\anchors\id[#__a_right_top]\y, _this_\anchors\id[#__a_right_top]\width, _this_\anchors\id[#__a_right_top]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_right_top)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_right_bottom] :draw_box_( _this_\anchors\id[#__a_right_bottom]\x, _this_\anchors\id[#__a_right_bottom]\y, _this_\anchors\id[#__a_right_bottom]\width, _this_\anchors\id[#__a_right_bottom]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_right_bottom)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_left_bottom] :draw_box_( _this_\anchors\id[#__a_left_bottom]\x, _this_\anchors\id[#__a_left_bottom]\y, _this_\anchors\id[#__a_left_bottom]\width, _this_\anchors\id[#__a_left_bottom]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_left_bottom)*_this_\AnchorState( )] ) : EndIf
+               If _this_\anchors\id[#__a_left] :draw_box_( _this_\anchors\id[#__a_left]\x, _this_\anchors\id[#__a_left]\y, _this_\anchors\id[#__a_left]\width, _this_\anchors\id[#__a_left]\height ,a_anchors( )\backcolor[Bool(a_index( ) = #__a_left)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_top] :draw_box_( _this_\anchors\id[#__a_top]\x, _this_\anchors\id[#__a_top]\y, _this_\anchors\id[#__a_top]\width, _this_\anchors\id[#__a_top]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_top)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_right] :draw_box_( _this_\anchors\id[#__a_right]\x, _this_\anchors\id[#__a_right]\y, _this_\anchors\id[#__a_right]\width, _this_\anchors\id[#__a_right]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_right)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_bottom] :draw_box_( _this_\anchors\id[#__a_bottom]\x, _this_\anchors\id[#__a_bottom]\y, _this_\anchors\id[#__a_bottom]\width, _this_\anchors\id[#__a_bottom]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_bottom)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_left_top] :draw_box_( _this_\anchors\id[#__a_left_top]\x, _this_\anchors\id[#__a_left_top]\y, _this_\anchors\id[#__a_left_top]\width, _this_\anchors\id[#__a_left_top]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_left_top)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_right_top] :draw_box_( _this_\anchors\id[#__a_right_top]\x, _this_\anchors\id[#__a_right_top]\y, _this_\anchors\id[#__a_right_top]\width, _this_\anchors\id[#__a_right_top]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_right_top)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_right_bottom] :draw_box_( _this_\anchors\id[#__a_right_bottom]\x, _this_\anchors\id[#__a_right_bottom]\y, _this_\anchors\id[#__a_right_bottom]\width, _this_\anchors\id[#__a_right_bottom]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_right_bottom)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_left_bottom] :draw_box_( _this_\anchors\id[#__a_left_bottom]\x, _this_\anchors\id[#__a_left_bottom]\y, _this_\anchors\id[#__a_left_bottom]\width, _this_\anchors\id[#__a_left_bottom]\height , a_anchors( )\backcolor[Bool(a_index( ) = #__a_left_bottom)*_state_] ) : EndIf
                
                draw_mode_alpha_( #PB_2DDrawing_Outlined )
                
                ;\\ draw frame anchors
-               If _this_\anchors\id[#__a_left] :draw_box_( _this_\anchors\id[#__a_left]\x, _this_\anchors\id[#__a_left]\y, _this_\anchors\id[#__a_left]\width, _this_\anchors\id[#__a_left]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_left)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_top] :draw_box_( _this_\anchors\id[#__a_top]\x, _this_\anchors\id[#__a_top]\y, _this_\anchors\id[#__a_top]\width, _this_\anchors\id[#__a_top]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_top)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_right] :draw_box_( _this_\anchors\id[#__a_right]\x, _this_\anchors\id[#__a_right]\y, _this_\anchors\id[#__a_right]\width, _this_\anchors\id[#__a_right]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_right)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_bottom] :draw_box_( _this_\anchors\id[#__a_bottom]\x, _this_\anchors\id[#__a_bottom]\y, _this_\anchors\id[#__a_bottom]\width, _this_\anchors\id[#__a_bottom]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_bottom)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_left_top] :draw_box_( _this_\anchors\id[#__a_left_top]\x, _this_\anchors\id[#__a_left_top]\y, _this_\anchors\id[#__a_left_top]\width, _this_\anchors\id[#__a_left_top]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_left_top)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_right_top] :draw_box_( _this_\anchors\id[#__a_right_top]\x, _this_\anchors\id[#__a_right_top]\y, _this_\anchors\id[#__a_right_top]\width, _this_\anchors\id[#__a_right_top]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_right_top)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_right_bottom] :draw_box_( _this_\anchors\id[#__a_right_bottom]\x, _this_\anchors\id[#__a_right_bottom]\y, _this_\anchors\id[#__a_right_bottom]\width, _this_\anchors\id[#__a_right_bottom]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_right_bottom)*_this_\AnchorState( )] ) : EndIf
-               If _this_\anchors\id[#__a_left_bottom] :draw_box_( _this_\anchors\id[#__a_left_bottom]\x, _this_\anchors\id[#__a_left_bottom]\y, _this_\anchors\id[#__a_left_bottom]\width, _this_\anchors\id[#__a_left_bottom]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_left_bottom)*_this_\AnchorState( )] ) : EndIf
+               If _this_\anchors\id[#__a_left] :draw_box_( _this_\anchors\id[#__a_left]\x, _this_\anchors\id[#__a_left]\y, _this_\anchors\id[#__a_left]\width, _this_\anchors\id[#__a_left]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_left)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_top] :draw_box_( _this_\anchors\id[#__a_top]\x, _this_\anchors\id[#__a_top]\y, _this_\anchors\id[#__a_top]\width, _this_\anchors\id[#__a_top]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_top)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_right] :draw_box_( _this_\anchors\id[#__a_right]\x, _this_\anchors\id[#__a_right]\y, _this_\anchors\id[#__a_right]\width, _this_\anchors\id[#__a_right]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_right)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_bottom] :draw_box_( _this_\anchors\id[#__a_bottom]\x, _this_\anchors\id[#__a_bottom]\y, _this_\anchors\id[#__a_bottom]\width, _this_\anchors\id[#__a_bottom]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_bottom)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_left_top] :draw_box_( _this_\anchors\id[#__a_left_top]\x, _this_\anchors\id[#__a_left_top]\y, _this_\anchors\id[#__a_left_top]\width, _this_\anchors\id[#__a_left_top]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_left_top)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_right_top] :draw_box_( _this_\anchors\id[#__a_right_top]\x, _this_\anchors\id[#__a_right_top]\y, _this_\anchors\id[#__a_right_top]\width, _this_\anchors\id[#__a_right_top]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_right_top)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_right_bottom] :draw_box_( _this_\anchors\id[#__a_right_bottom]\x, _this_\anchors\id[#__a_right_bottom]\y, _this_\anchors\id[#__a_right_bottom]\width, _this_\anchors\id[#__a_right_bottom]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_right_bottom)*_state_] ) : EndIf
+               If _this_\anchors\id[#__a_left_bottom] :draw_box_( _this_\anchors\id[#__a_left_bottom]\x, _this_\anchors\id[#__a_left_bottom]\y, _this_\anchors\id[#__a_left_bottom]\width, _this_\anchors\id[#__a_left_bottom]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_left_bottom)*_state_] ) : EndIf
                ;
                If _this_\anchors\id[#__a_moved] And ( _this_\anchors\id[#__a_moved]\width <> _this_\anchors\id[0]\width And _this_\anchors\id[#__a_moved]\height <> _this_\anchors\id[0]\height )
-                  draw_box_( _this_\anchors\id[#__a_moved]\x, _this_\anchors\id[#__a_moved]\y, _this_\anchors\id[#__a_moved]\width, _this_\anchors\id[#__a_moved]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_moved)*_this_\AnchorState( )] )
+                  draw_box_( _this_\anchors\id[#__a_moved]\x, _this_\anchors\id[#__a_moved]\y, _this_\anchors\id[#__a_moved]\width, _this_\anchors\id[#__a_moved]\height, a_anchors( )\framecolor[Bool(a_index( ) = #__a_moved)*_state_] )
                EndIf
             EndIf
          EndIf
@@ -2949,23 +2928,17 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;
-         If *this And 
-            *this\anchors 
-            ;
-            ; reset last entered anchors index state
-            If a_index( ) <> a_index
-               ; Debug ""+a_index( ) +" "+ a_index
-               If *this\AnchorState( ) <> #__s_0
-                  *this\AnchorState( ) = #__s_0
+         ; leave from index
+         If a_index( )  
+            If *this\anchors And 
+               *this\anchors\id[a_index( )] And 
+               Not is_atpoint_( *this\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
+               ;
+               If *this\anchors\state <> #__s_0
+                  *this\anchors\state = #__s_0
                   ;
                   *this\root\repaint = 1
                EndIf
-            EndIf
-            ;
-            ; leave from index
-            If a_index( ) And 
-               *this\anchors\id[a_index( )] And 
-               Not is_atpoint_( *this\anchors\id[a_index( )], mouse( )\x, mouse( )\y )
                ;
                a_index( ) = 0
                ;
@@ -2985,6 +2958,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          If a_entered( ) <> *this
             If a_entered( )
+               If a_entered( )\anchors\state <> #__s_0
+                  a_entered( )\anchors\state = #__s_0
+                  ;
+                  a_entered( )\root\repaint = 1
+               EndIf
+               
                If MouseEnter( a_entered( ), - 1 )
                   a_entered( )\enter = 0
                EndIf
@@ -3002,7 +2981,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;
-            If *this\anchors And *this\anchors\group\show
+            If *this\anchors And 
+               *this\anchors\group\show
+               ;
                If *this <> a_focused( )
                   a_group_show( *this, #__event_MouseEnter )
                EndIf
@@ -3016,24 +2997,56 @@ CompilerIf Not Defined( widget, #PB_Module )
             a_entered( ) = *this
          EndIf
          
-         ;
-         ; set new entered anchors index state
+;          ;
+;          ; set new entered anchors index state
+;          If a_index
+;             a_index( ) = a_index
+;             ;
+;             If *this\anchors\id[a_index]  
+;                If *this\anchors\state = #__s_0
+;                   *this\anchors\state = #__s_1
+;                   Debug 444
+;                   ;
+;                   If *this\enter > 0
+;                      If *this = Entered( )
+;                         DoEvents( *this, #__event_MouseLeave, #PB_All, @"[?-a_leave]"  )
+;                      EndIf
+;                   EndIf   
+;                   *this\enter = - 1
+;                   
+;                   If a_entered( )
+;                      Debug ""+a_entered( )\text\string +" "+ a_entered( )\anchors\state +" "+ Bool(*this=a_entered());
+;                   EndIf
+;                   If a_focused( )
+;                      Debug " "+a_focused( )\text\string +" "+ a_focused( )\anchors\state +" "+ Bool(*this=a_focused());
+;                   EndIf
+;                   
+;                   ChangeCursor( *this, a_anchors( )\cursor[a_index] )
+;                   *this\root\repaint = 1
+;                EndIf
+;             EndIf
+;             ; 
+;             result = *this
+;          EndIf
+         
          If a_index
-            a_index( ) = a_index
-            ;
             If *this\anchors\id[a_index]  
-               If *this\AnchorState( ) = #__s_0
-                  *this\AnchorState( ) = #__s_1
+               If *this\anchors\state = #__s_0
+                  *this\anchors\state = #__s_1
+               EndIf
+               ;
+               If a_index( ) <> a_index
+                  a_index( ) = a_index
                   ;
                   If *this\enter > 0
                      If *this = Entered( )
                         DoEvents( *this, #__event_MouseLeave, #PB_All, @"[?-a_leave]"  )
                      EndIf
                   EndIf   
-                  *this\enter = - 1
                   ;
                   ChangeCursor( *this, a_anchors( )\cursor[a_index] )
                   *this\root\repaint = 1
+                  *this\enter = - 1
                EndIf
             EndIf
             ; 
@@ -3223,18 +3236,18 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure a_update( *this._s_WIDGET )
          ;
-         mouse( )\anchors\group\x = *this\x+*this\width 
-         mouse( )\anchors\group\y = *this\y+*this\height 
-         mouse( )\anchors\group\width = 0
-         mouse( )\anchors\group\height = 0
+         a_anchors( )\group\x = *this\x+*this\width 
+         a_anchors( )\group\y = *this\y+*this\height 
+         a_anchors( )\group\width = 0
+         a_anchors( )\group\height = 0
          ;
          If StartEnum( *this )
             If widgets( )\anchors\group\show
-               If mouse( )\anchors\group\x > widgets( )\x[#__c_frame]
-                  mouse( )\anchors\group\x = widgets( )\x[#__c_frame]
+               If a_anchors( )\group\x > widgets( )\x[#__c_frame]
+                  a_anchors( )\group\x = widgets( )\x[#__c_frame]
                EndIf
-               If mouse( )\anchors\group\y > widgets( )\y[#__c_frame] 
-                  mouse( )\anchors\group\y = widgets( )\y[#__c_frame] 
+               If a_anchors( )\group\y > widgets( )\y[#__c_frame] 
+                  a_anchors( )\group\y = widgets( )\y[#__c_frame] 
                EndIf
             EndIf
             StopEnum( )
@@ -3242,11 +3255,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          If StartEnum( *this )
             If widgets( )\anchors\group\show
-               If mouse( )\anchors\group\width < (widgets( )\x[#__c_frame] + widgets( )\width[#__c_frame]) - mouse( )\anchors\group\x
-                  mouse( )\anchors\group\width = (widgets( )\x[#__c_frame] + widgets( )\width[#__c_frame]) - mouse( )\anchors\group\x
+               If a_anchors( )\group\width < (widgets( )\x[#__c_frame] + widgets( )\width[#__c_frame]) - a_anchors( )\group\x
+                  a_anchors( )\group\width = (widgets( )\x[#__c_frame] + widgets( )\width[#__c_frame]) - a_anchors( )\group\x
                EndIf
-               If mouse( )\anchors\group\height < (widgets( )\y[#__c_frame] + widgets( )\height[#__c_frame]) - mouse( )\anchors\group\y
-                  mouse( )\anchors\group\height = (widgets( )\y[#__c_frame] + widgets( )\height[#__c_frame]) - mouse( )\anchors\group\y
+               If a_anchors( )\group\height < (widgets( )\y[#__c_frame] + widgets( )\height[#__c_frame]) - a_anchors( )\group\y
+                  a_anchors( )\group\height = (widgets( )\y[#__c_frame] + widgets( )\height[#__c_frame]) - a_anchors( )\group\y
                EndIf
             EndIf
             StopEnum( )
@@ -3318,7 +3331,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure a_doevents( *this._s_WIDGET, event.l )
-         Static *pressed._s_WIDGET
          Protected mouse_x.l = mouse( )\x
          Protected mouse_y.l = mouse( )\y
          
@@ -3335,8 +3347,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          If event = #__event_Focus 
             If *this\anchors
                If Not *this\anchors\group\show 
-                  If mouse( )\anchors\group\show 
-                     mouse( )\anchors\group\show = #False
+                  If a_anchors( )\group\show 
+                     a_anchors( )\group\show = #False
                      
                      ; reset show group anchors
                      If StartEnum( a_main( ) )
@@ -3360,26 +3372,23 @@ CompilerIf Not Defined( widget, #PB_Module )
             If MouseButtons( ) & #PB_Canvas_LeftButton
                If *this\anchors
                   If Not *this\anchors\group\show 
-                     If mouse( )\anchors\group\show 
-                        mouse( )\anchors\group\show = #False
+                     If a_anchors( )\group\show 
+                        a_anchors( )\group\show = #False
                         
                         ; reset show group anchors
                         If StartEnum( a_main( ) )
-                           If widgets( )\anchors 
-                              If widgets( )\anchors\group\show 
+                           If widgets( )\anchors And
+                              widgets( )\anchors\group\show 
                                  
-                                 Debug "reset d "+widgets( )\class
-                                 widgets( )\anchors\group\show = #False
-                                 a_group_show( widgets( ), #__event_Down )
+                              Debug "reset d "+widgets( )\class
+                              widgets( )\anchors\group\show = #False
+                              a_group_show( widgets( ), #__event_Down )
                                  
-                              EndIf
                            EndIf
                            StopEnum( )
                         EndIf
                      EndIf
                   EndIf
-                  
-                  *pressed = *this
                EndIf
             EndIf
          EndIf
@@ -3389,14 +3398,14 @@ CompilerIf Not Defined( widget, #PB_Module )
             If MouseButtons( ) & #PB_Canvas_LeftButton
                If *this\anchors
                   ; show group anchors
-                  If Not mouse( )\anchors\group\show
+                  If Not a_anchors( )\group\show
                      If mouse( )\selector
                         If StartEnum( *this )
-                           If is_intersect_( widgets( ), mouse( )\selector, [#__c_frame] )
-                              If widgets( )\anchors\group\show = #False
+                           If widgets( )\anchors\group\show = #False
+                              If is_intersect_( widgets( ), mouse( )\selector, [#__c_frame] )
                                  
                                  Debug "set "+widgets( )\class
-                                 mouse( )\anchors\group\show + 1
+                                 a_anchors( )\group\show + 1
                                  widgets( )\anchors\group\show = #True
                                  
                                  a_group_show( widgets( ), #__event_Up )
@@ -3408,20 +3417,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      
                      ;
-                     If mouse( )\anchors\group\show > 1
-                        mouse( )\anchors\group\show = 1
+                     If a_anchors( )\group\show > 1
+                        a_anchors( )\group\show = 1
                      Else
-                        mouse( )\anchors\group\show = 0
+                        a_anchors( )\group\show = 0
                         ; reset show group anchors
                         If StartEnum( a_main( ) )
-                           If widgets( )\anchors 
-                              If widgets( )\anchors\group\show 
-                                 
-                                 Debug "reset u "+widgets( )\class
-                                 widgets( )\anchors\group\show = #False
-                                 a_group_show( widgets( ), #__event_Down )
-                                 
-                              EndIf
+                           If widgets( )\anchors And 
+                              widgets( )\anchors\group\show 
+                              
+                              Debug "reset u "+widgets( )\class
+                              widgets( )\anchors\group\show = #False
+                              a_group_show( widgets( ), #__event_Down )
+                              
                            EndIf
                            StopEnum( )
                         EndIf
@@ -3429,45 +3437,35 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   ;
-                  If mouse( )\anchors\group\show 
+                  If a_anchors( )\group\show 
                      If *this\parent
                         a_update( *this\parent )
                      EndIf
                   EndIf
-               EndIf
-               
-               ;
-               If *pressed 
-                  If *pressed\anchors\id[a_index( )]
-                     If is_atpoint_( *pressed\anchors\id[a_index( )], mouse_x, mouse_y )
-                        *pressed\AnchorState( ) = #__s_1
+                  
+                  ;
+                  If *this\anchors\id[a_index( )]
+                     If is_atpoint_( *this\anchors\id[a_index( )], mouse_x, mouse_y )
+                        *this\anchors\state = #__s_1
                      Else
-                        *pressed\AnchorState( ) = #__s_0
+                        *this\anchors\state = #__s_0
                      EndIf
                      ;
-                     *pressed\root\repaint = 1
+                     *this\root\repaint = 1
                   EndIf
-                  ;                   
-                  ;                   ; init multi group selector
-                  ;                   If Not mouse( )\selector\type
-                  ;                      a_update( *pressed )
-                  ;                   EndIf
+                  
                   ;                  
                   If mouse( )\dragstart
                      If a_anchors( )\grid_image
-                        If *this\parent
-                           If *this\parent\anchors
-                              SetBackgroundImage( *this, 0 )
-                              If *this\parent
-                                 SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
-                              EndIf
-                           EndIf
+                        If *this\parent And 
+                           *this\parent\anchors
+                           ;
+                           SetBackgroundImage( *this, 0 )
+                           SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
+                           ;
                         EndIf
                      EndIf
                   EndIf
-                  
-                  ;
-                  *pressed = #Null
                EndIf
             EndIf
          EndIf
@@ -3521,9 +3519,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          If event = #__event_MouseMove
             If a_index( ) And 
-               *pressed And *pressed\press And 
-               *pressed\anchors\id[a_index( )] And 
-               *pressed\AnchorState( ) = #__s_2
+               *this\press And 
+               *this\anchors\id[a_index( )] And 
+               *this\anchors\state = #__s_2
                ;
                mw = #PB_Ignore
                mh = #PB_Ignore
@@ -3532,45 +3530,45 @@ CompilerIf Not Defined( widget, #PB_Module )
                my = mouse_y - mouse( )\press_y
                
                If mouse( )\steps
-                  mx + ( *pressed\inner_x( ) % mouse( )\steps ) 
-                  my + ( *pressed\inner_y( ) % mouse( )\steps ) 
+                  mx + ( *this\inner_x( ) % mouse( )\steps ) 
+                  my + ( *this\inner_y( ) % mouse( )\steps ) 
                EndIf
                   
                If a_index( ) <> #__a_moved
                   ;\\ horizontal
                   Select a_index( )
                      Case #__a_left, #__a_left_top, #__a_left_bottom ; left
-                        mw = (( *pressed\container_x( ) - mx ) + *pressed\container_width( )) - *pressed\parent\scroll_x( )
+                        mw = (( *this\container_x( ) - mx ) + *this\container_width( )) - *this\parent\scroll_x( )
                         If mw <= 0
-                           mx = ( *pressed\container_x( ) + *pressed\container_width( )) - *pressed\parent\scroll_x( )
+                           mx = ( *this\container_x( ) + *this\container_width( )) - *this\parent\scroll_x( )
                            mw      = 0
                         EndIf
-                        If *pressed\fs
-                           If *pressed\type <> #__type_window
-                              mw + *pressed\fs * 2 + *pressed\fs[1] + *pressed\fs[3] ; ( *pressed\frame_width( ) - *pressed\inner_width( ) )
+                        If *this\fs
+                           If *this\type <> #__type_window
+                              mw + *this\fs * 2 + *this\fs[1] + *this\fs[3] ; ( *this\frame_width( ) - *this\inner_width( ) )
                            EndIf
                         EndIf
                         
                      Case #__a_right, #__a_right_top, #__a_right_bottom ; right
-                        mw = ( mx - *pressed\container_x( ) ) + IsGrid
+                        mw = ( mx - *this\container_x( ) ) + IsGrid
                   EndSelect
                   
                   ;\\ vertical
                   Select a_index( )
                      Case #__a_top, #__a_left_top, #__a_right_top ; top
-                        mh = (( *pressed\container_y( ) - my ) + *pressed\container_height( )) - *pressed\parent\scroll_y( )
+                        mh = (( *this\container_y( ) - my ) + *this\container_height( )) - *this\parent\scroll_y( )
                         If mh <= 0
-                           my = ( *pressed\container_y( ) + *pressed\container_height( )) - *pressed\parent\scroll_y( )
+                           my = ( *this\container_y( ) + *this\container_height( )) - *this\parent\scroll_y( )
                            mh      = 0
                         EndIf
-                        If *pressed\fs
-                           If *pressed\type <> #__type_window
-                              mh + *pressed\fs * 2 + *pressed\fs[2] + *pressed\fs[4] ; ( *pressed\frame_height( ) - *pressed\inner_height( ) )
+                        If *this\fs
+                           If *this\type <> #__type_window
+                              mh + *this\fs * 2 + *this\fs[2] + *this\fs[4] ; ( *this\frame_height( ) - *this\inner_height( ) )
                            EndIf
                         EndIf
                         
                      Case #__a_bottom, #__a_left_bottom, #__a_right_bottom ; bottom
-                        mh = ( my - *pressed\container_y( ) ) + IsGrid
+                        mh = ( my - *this\container_y( ) ) + IsGrid
                   EndSelect
                   
                   ;\\
@@ -3586,27 +3584,27 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;Debug " " + mw + " " + mh
                Protected mx1 = mx, my1 = my, mh1 = mh, mw1 = mw
-               If *pressed\anchors\group\show
-                  If StartEnum( *pressed\parent )
+               If *this\anchors\group\show
+                  If StartEnum( *this\parent )
                      If widgets( )\anchors\group\show 
                         If mx1 <> #PB_Ignore
-                           mx1 = mx+(widgets( )\anchors\group\x-*pressed\anchors\group\x)
+                           mx1 = mx+(widgets( )\anchors\group\x-*this\anchors\group\x)
                         EndIf
                         If my1 <> #PB_Ignore
-                           my1 = my+(widgets( )\anchors\group\y-*pressed\anchors\group\y)
+                           my1 = my+(widgets( )\anchors\group\y-*this\anchors\group\y)
                         EndIf
                         If mw1 <> #PB_Ignore
-                           mw1 = mw+(widgets( )\anchors\group\width-*pressed\anchors\group\width)
+                           mw1 = mw+(widgets( )\anchors\group\width-*this\anchors\group\width)
                         EndIf
                         If mh1 <> #PB_Ignore
-                           mh1 = mh+(widgets( )\anchors\group\height-*pressed\anchors\group\height)
+                           mh1 = mh+(widgets( )\anchors\group\height-*this\anchors\group\height)
                         EndIf
                         Resize( widgets( ), mx1, my1, mw1, mh1, 0 )
                      EndIf
                      StopEnum( )
                   EndIf
                Else
-                  Resize( *pressed, mx1, my1, mw1, mh1, 0 )
+                  Resize( *this, mx1, my1, mw1, mh1, 0 )
                EndIf
                
             EndIf
@@ -3617,37 +3615,44 @@ CompilerIf Not Defined( widget, #PB_Module )
          If event = #__event_KeyDown
             If *this = a_focused( )
                ; Debug "event_KeyDown "+*this\class
-               If *this\anchors ;= 1
-                  mx = *this\container_x( )
-                  my = *this\container_y( )
-                  mw = *this\frame_width( )
-                  mh = *this\frame_height( )
+               If a_anchors( )\group\show
+                  mx = a_anchors( )\group\x
+                  my = a_anchors( )\group\y
+                  mw = a_anchors( )\group\width
+                  mh = a_anchors( )\group\height
                Else
-                  mx = mouse( )\anchors\group\x
-                  my = mouse( )\anchors\group\y
-                  mw = mouse( )\anchors\group\width
-                  mh = mouse( )\anchors\group\height
+                  If is_window_( *this )
+                     mx = *this\container_x( )
+                     my = *this\container_y( )
+                     mw = *this\inner_width( )
+                     mh = *this\inner_height( )
+                  Else
+                     mx = *this\container_x( )
+                     my = *this\container_y( )
+                     mw = *this\frame_width( )
+                     mh = *this\frame_height( )
+                  EndIf
                EndIf
                
                Select keyboard( )\Key[1]
                   Case (#PB_Canvas_Alt | #PB_Canvas_Control), #PB_Canvas_Shift
                      Select keyboard( )\Key
-                        Case #PB_Shortcut_Left : mw - mouse( )\steps : a_index( ) = #__a_right
+                        Case #PB_Shortcut_Left  : mw - mouse( )\steps : a_index( ) = #__a_right
                         Case #PB_Shortcut_Right : mw + mouse( )\steps : a_index( ) = #__a_right
                            
-                        Case #PB_Shortcut_Up : mh - mouse( )\steps : a_index( ) = #__a_bottom
-                        Case #PB_Shortcut_Down : mh + mouse( )\steps : a_index( ) = #__a_bottom
+                        Case #PB_Shortcut_Up    : mh - mouse( )\steps : a_index( ) = #__a_bottom
+                        Case #PB_Shortcut_Down  : mh + mouse( )\steps : a_index( ) = #__a_bottom
                      EndSelect
                      
                      Resize( *this, mx, my, mw, mh, 0 )
                      
                   Case (#PB_Canvas_Shift | #PB_Canvas_Control), #PB_Canvas_Alt ;, #PB_Canvas_Control, #PB_Canvas_Command, #PB_Canvas_Control | #PB_Canvas_Command
                      Select keyboard( )\Key
-                        Case #PB_Shortcut_Left : mx - mouse( )\steps : a_index( ) = #__a_moved
+                        Case #PB_Shortcut_Left  : mx - mouse( )\steps : a_index( ) = #__a_moved
                         Case #PB_Shortcut_Right : mx + mouse( )\steps : a_index( ) = #__a_moved
                            
-                        Case #PB_Shortcut_Up : my - mouse( )\steps : a_index( ) = #__a_moved
-                        Case #PB_Shortcut_Down : my + mouse( )\steps : a_index( ) = #__a_moved
+                        Case #PB_Shortcut_Up    : my - mouse( )\steps : a_index( ) = #__a_moved
+                        Case #PB_Shortcut_Down  : my + mouse( )\steps : a_index( ) = #__a_moved
                      EndSelect
                      
                      Resize( *this, mx, my, mw, mh, 0 )
@@ -11089,6 +11094,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure.b GetFocus( *this._s_WIDGET )
+         ProcedureReturn *this\ColorState( )
+      EndProcedure
+      Procedure.b SetFocus( *this._s_WIDGET, state.b )
+         If *this\ColorState( ) <> state 
+            *this\ColorState( ) = state 
+            ProcedureReturn #True
+         EndIf
+      EndProcedure
+      
       Procedure DoFocus( *this._s_WIDGET, event.l, *button = #PB_All, *data = #Null )
          ; Debug #PB_Compiler_Procedure +" "+ ClassFromEvent(event)
          
@@ -11157,7 +11172,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndMacro
       
-      Procedure SetForeground( *window._s_WIDGET )
+      Procedure   SetForeground( *window._s_WIDGET )
          Protected last
          ;
          If Not is_window_( *window )
@@ -16398,7 +16413,7 @@ chr$ = ","
             If a_index( ) And 
                a_entered( ) And 
                a_entered( )\anchors\id[a_index( )] And
-               a_entered( )\AnchorState( )
+               a_entered( )\anchors\state
                ;
                If Not mouse( )\dragstart
                   If *this <> a_entered( ) And 
@@ -16449,7 +16464,13 @@ chr$ = ","
             If a_index( ) Or ( Entered( ) And
                                Entered( ) <> *this )
                ;
-               If is_leaved( EnteredButton( ) )
+               If EnteredButton( )\_enter
+                  EnteredButton( )\_enter = 0
+                  
+                  If EnteredButton( )\ColorState( ) = #__s_1
+                     EnteredButton( )\ColorState( ) = #__s_0
+                  EndIf
+                  
                   If Entered( )
                      Entered( )\root\repaint = 1
                   Else
@@ -16507,15 +16528,29 @@ chr$ = ","
                   
                   ;\\ do buttons events entered & leaved
                   If EnteredButton( ) <> *EnteredButton
-                     If EnteredButton( ) And
-                        is_leaved( EnteredButton( ) )
-                        *this\root\repaint = 1
+                     If EnteredButton( ) 
+                        If EnteredButton( )\_enter
+                           EnteredButton( )\_enter = 0
+                           ;
+                           If EnteredButton( )\ColorState( ) = #__s_1
+                              EnteredButton( )\ColorState( ) = #__s_0
+                           EndIf
+                           ;
+                           *this\root\repaint = 1
+                        EndIf
                      EndIf
                      
                      EnteredButton( ) = *EnteredButton
                      
-                     If EnteredButton( ) And
-                        is_entered( EnteredButton( ) )
+                     If EnteredButton( ) And 
+                        Not EnteredButton( )\disable And
+                        Not EnteredButton( )\_enter
+                        ;
+                        EnteredButton( )\_enter = 1
+                        
+                        If EnteredButton( )\ColorState( ) = #__s_0
+                           EnteredButton( )\ColorState( ) = #__s_1
+                        EndIf
                         ;
                         If EnteredButton( ) = *BB0
                            If EnteredButton( )\_enter > 0
@@ -18654,16 +18689,22 @@ chr$ = ","
                   ; change enter/leave state
                   If *this\TabEntered( ) <> *tab 
                      ;\\ leaved tabs
-                     If *this\TabEntered( ) And
-                        is_leaved( *this\TabEntered( ) )
-                        ;
-                        If *this\type = #__type_PopupBar 
-                           If *this\TabEntered( )\checked
-                              *this\TabEntered( )\checked = 0
+                     If *this\TabEntered( ) 
+                        If *this\TabEntered( )\_enter
+                           *this\TabEntered( )\_enter = 0
+                           
+                           If *this\TabEntered( )\ColorState( ) = #__s_1
+                              *this\TabEntered( )\ColorState( ) = #__s_0
                            EndIf
+                           ;
+                           If *this\type = #__type_PopupBar 
+                              If *this\TabEntered( )\checked
+                                 *this\TabEntered( )\checked = 0
+                              EndIf
+                           EndIf
+                           ;
+                           *this\root\repaint = 1
                         EndIf
-                        ;
-                        *this\root\repaint = 1
                      EndIf
                      ;
                      If *tab And *tab\disable
@@ -18675,7 +18716,13 @@ chr$ = ","
                      If *tab
                         If *this\enter 
                            ;\\ entered tabs
-                           If is_entered( *tab )
+                           If Not *tab\_enter And Not *tab\disable
+                              *tab\_enter = 1
+                              
+                              If *tab\ColorState( ) = #__s_0
+                                 *tab\ColorState( ) = #__s_1
+                              EndIf
+                              ;
                               *this\root\repaint = 1
                               ;
                               ;\\ show popup bar
@@ -20163,7 +20210,7 @@ chr$ = ","
                      If Entered( )\anchors\id[a_index( )]
                         ;
                         ;\\ set current transformer index state
-                        Entered( )\AnchorState( ) = #__s_2
+                        Entered( )\anchors\state = #__s_2
                         
                         ;\\ set delta pos
                         If Entered( )\parent
@@ -24514,7 +24561,7 @@ chr$ = ","
                      
                      If *this\anchors
                         If *this\anchors\group\show
-                           a_draw( *this )
+                           a_draw( *this, *this\anchors\state )
                         EndIf
                      EndIf  
                         
@@ -24523,7 +24570,7 @@ chr$ = ","
                         ;\\ draw entered anchors
                         If Not *this\haschildren 
                            If *this\anchors And *this\anchors\mode
-                              a_draw( *this )
+                              a_draw( *this, *this\anchors\state )
                            EndIf
                         EndIf
                         
@@ -24698,7 +24745,7 @@ chr$ = ","
                                                      ;
                         If a_entered( )\AfterWidget( ) = widgets( )  
                            clip_output_( a_entered( ), [#__c_draw] )
-                           a_draw( a_entered( ) )
+                           a_draw( a_entered( ), a_entered( )\anchors\state )
                         EndIf
                      EndIf
                   EndIf
@@ -24768,7 +24815,7 @@ chr$ = ","
                               
                               ; If IsChild( widgets( ), a_entered( ) )
                               clip_output_( a_entered( ), [#__c_draw] )
-                              a_draw( a_entered( ) )
+                              a_draw( a_entered( ), a_entered( )\anchors\state )
                               ; EndIf
                            EndIf
                         EndIf
@@ -24798,7 +24845,7 @@ chr$ = ","
                         clip_output_( a_main( ), [#__c_idraw] )
                      EndIf
                      ;
-                     a_draw( a_focused( ) )
+                     a_draw( a_focused( ), a_focused( )\anchors\state )
                   EndIf
                   
                   ;\\
@@ -24884,10 +24931,10 @@ chr$ = ","
             EndIf
             
             
-            If mouse( )\anchors And
-               mouse( )\anchors\group\show
+            If a_anchors( ) And
+               a_anchors( )\group\show
                DrawingMode(#PB_2DDrawing_Outlined)
-               Box( mouse( )\anchors\group\x, mouse( )\anchors\group\y, mouse( )\anchors\group\width, mouse( )\anchors\group\height, $ff0000ff )
+               Box( a_anchors( )\group\x, a_anchors( )\group\y, a_anchors( )\group\width, a_anchors( )\group\height, $ff0000ff )
             EndIf
             ;             ; TEST ROW
             ;             If Entered( ) And Entered( )\root = *root And Entered( )\row And Entered( )\RowEntered( )
@@ -25243,7 +25290,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure _a_align( *g._s_WIDGET, align )
       Protected.l _x_
       Protected.l X,Y,Width,Height
-      If mouse( )\anchors\group\show
+      If a_anchors( )\group\show
       If a_focused( )
         X = a_focused( )\x[#__c_frame] 
         Y = a_focused( )\y[#__c_frame] 
@@ -25252,10 +25299,10 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       Debug "  "+X
-      X = mouse( )\anchors\group\x; - (*g\x[#__c_frame]-*g\x[#__c_container])
-      Y = mouse( )\anchors\group\y
-      Width = mouse( )\anchors\group\width
-      Height = mouse( )\anchors\group\height
+      X = a_anchors( )\group\x; - (*g\x[#__c_frame]-*g\x[#__c_container])
+      Y = a_anchors( )\group\y
+      Width = a_anchors( )\group\width
+      Height = a_anchors( )\group\height
       
 ;       If mouse( )\steps
 ;          X + ( X % mouse( )\steps )
@@ -26293,9 +26340,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 11278
-; FirstLine = 9733
-; Folding = B+------------------------------------------------------+--Xr--4--r8dfvf-d4-f+4----------T---x---ff5------------------------------------7v---------------0----------------------------------------------------q8v84vfv--f----------------------------------------------------------------------------------x---8v00---------------------------------------------------------4-------------------------------------------------------------------------f0--------------------0----------------------------------------------------------------------000f-q8------f4-----r8q4---+---+8------9P48--------------------------------------------------------------------------------------------------------------------vv--4gABGAAw-
+; CursorPosition = 2943
+; FirstLine = 2640
+; Folding = B+-------------------------------j-------------------------7-t-0--++-484----------------T---8---ff5------------------------------------7v---------------0----------------------------------------------------q8v84vfv--f---------------------------------------------------------------------------------fD+--f-tv----------------------------------------------------------+-------------------------------------------------------------------------r---------------------8------------------------------------------------------------------------f-4v7-------40-----7u70--v---v-+-----P-z0+--------------------------------------------------------------------------------------------------------------------88--NIQgBAA9
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

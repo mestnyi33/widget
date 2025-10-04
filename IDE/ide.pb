@@ -1255,7 +1255,7 @@ Procedure a_align( *g._s_WIDGET, align )
    Protected.l X,Y,Width,Height
    Protected *parent._s_WIDGET
    
-   If mouse( )\anchors\group\show
+   If a_anchors( )\group\show
       If *g And *g\anchors\group\show
          X = *g\x[#__c_frame] 
          Y = *g\y[#__c_frame] 
@@ -1264,10 +1264,10 @@ Procedure a_align( *g._s_WIDGET, align )
          *parent = *g\parent
       Else
          *parent = a_main( )
-         X = mouse( )\anchors\group\x
-         Y = mouse( )\anchors\group\y
-         Width = mouse( )\anchors\group\width
-         Height = mouse( )\anchors\group\height
+         X = a_anchors( )\group\x
+         Y = a_anchors( )\group\y
+         Width = a_anchors( )\group\width
+         Height = a_anchors( )\group\height
       EndIf 
       
       If *parent
@@ -1311,50 +1311,45 @@ EndProcedure
 Macro new_widget_copy( )
    ClearList( *copy( ) )
    
-   If a_focused( )\anchors
-      AddElement( *copy( ) ) 
-      *copy.allocate( A_GROUP, ( ) )
-      *copy( )\widget = a_focused( )
-   Else
-      ;       ForEach a_group( )
-      ;         AddElement( *copy( ) ) 
-      ;         *copy.allocate( GROUP, ( ) )
-      ;         *copy( )\widget = a_group( )\widget
-      ;       Next
-      
-      CopyList( a_group( ), *copy( ) )
-      
-   EndIf
-   
+;    If a_focused( )\anchors
+;       AddElement( *copy( ) ) 
+;       *copy.allocate( widget, ( ) )
+;       *copy( )\widget = a_focused( )
+;    Else
+;       
+;       ; CopyList( a_group( ), *copy( ) )
+;       
+;    EndIf
+;    
    mouse( )\selector\x = mouse( )\steps
    mouse( )\selector\y = mouse( )\steps
 EndMacro
 
 Macro new_widget_paste( )
-   If ListSize( *copy( ) )
-      ForEach *copy( )
-         new_widget_add( *copy( )\widget\parent, 
-                     *copy( )\widget\class, 
-                     *copy( )\widget\x[#__c_container] + ( mouse( )\selector\x ),; -*copy( )\widget\parent\x[#__c_inner] ),
-                     *copy( )\widget\y[#__c_container] + ( mouse( )\selector\y ),; -*copy( )\widget\parent\y[#__c_inner] ), 
-                     *copy( )\widget\width[#__c_frame],
-                     *copy( )\widget\height[#__c_frame] )
-      Next
-      
-      mouse( )\selector\x + mouse( )\steps
-      mouse( )\selector\y + mouse( )\steps
-      
-      ClearList( a_group( ) )
-      CopyList( *copy( ), a_group( ) )
-   EndIf
-   
-   ;
-   ForEach a_group( )
-      Debug " group "+a_group( )\widget
-   Next
-   
-   ;
-   ;a_update( a_focused( ) )
+;    If ListSize( *copy( ) )
+;       ForEach *copy( )
+;          new_widget_add( *copy( )\widget\parent, 
+;                      *copy( )\widget\class, 
+;                      *copy( )\widget\x[#__c_container] + ( mouse( )\selector\x ),; -*copy( )\widget\parent\x[#__c_inner] ),
+;                      *copy( )\widget\y[#__c_container] + ( mouse( )\selector\y ),; -*copy( )\widget\parent\y[#__c_inner] ), 
+;                      *copy( )\widget\width[#__c_frame],
+;                      *copy( )\widget\height[#__c_frame] )
+;       Next
+;       
+;       mouse( )\selector\x + mouse( )\steps
+;       mouse( )\selector\y + mouse( )\steps
+;       
+;       ; ClearList( a_group( ) )
+;       ; CopyList( *copy( ), a_group( ) )
+;    EndIf
+;    
+; ;    ;
+; ;    ForEach a_group( )
+; ;       Debug " group "+a_group( )\widget
+; ;    Next
+;    
+;    ;
+;    ;a_update( a_focused( ) )
 EndMacro
 
 Procedure new_widget_line_add( *new._s_widget )
@@ -1431,15 +1426,6 @@ Procedure new_widget_delete( *this._s_WIDGET  )
    Protected i 
    Protected CountItems
    
-   ;    If ListSize( a_group( ))
-   ;       ForEach a_group( )
-   ;          RemoveItem( ide_inspector_view, GetData( a_group( )\widget ) )
-   ;          Free( a_group( )\widget )
-   ;          DeleteElement( a_group( ) )
-   ;       Next
-   ;       
-   ;       ClearList( a_group( ) )
-   ;    Else
    
    If *this <> ide_design_panel_MDI
       item = GetData( *this )
@@ -1685,21 +1671,21 @@ Procedure new_widget_events( )
          EndIf
          
       Case #__event_Up
-         If mouse( )\anchors\group\show
+         If a_anchors( )\group\show
             ; set keyboard focus
             SetActive( *g )
          EndIf
          
       Case #__event_Down
          If a_focused( ) = *g
-            If *g\anchors\group\show
-               ; set keyboard focus
-               SetActive( *g )
-            Else
-               If GetActive( ) <> ide_inspector_view 
-                  SetActive( ide_inspector_view )
-               EndIf
-            EndIf
+;             If *g\anchors\group\show
+;                ; set keyboard focus
+;                SetActive( *g )
+;             Else
+;                If GetActive( ) <> ide_inspector_view 
+;                   SetActive( ide_inspector_view )
+;                EndIf
+;             EndIf
          EndIf
           
       Case #__event_RightDown
@@ -1777,7 +1763,7 @@ Procedure new_widget_events( )
          If mouse( )\selector
             Debug "#__event_DragStop selector "+mouse( )\selector\x +" "+ mouse( )\selector\y +" "+ mouse( )\selector\width +" "+ mouse( )\selector\height
          EndIf
-         Debug "#__event_DragStop "+mouse( )\anchors\group\x +" "+ mouse( )\anchors\group\y +" "+ mouse( )\anchors\group\width +" "+ mouse( )\anchors\group\height
+         Debug "#__event_DragStop "+a_anchors( )\group\x +" "+ a_anchors( )\group\y +" "+ a_anchors( )\group\width +" "+ a_anchors( )\group\height
          ;Debug "#__event_DragStop "+mouse( )\drag\x +" "+ mouse( )\drag\y +" "+ mouse( )\drag\width +" "+ mouse( )\drag\height
          ;Debug "#__event_DragStop "+DropX( ) +" "+ DropY( ) +" "+ DropWidth( ) +" "+ DropHeight( )
              
@@ -1796,7 +1782,7 @@ Procedure new_widget_events( )
          
       Case #__event_LeftUp
          ;If a_focused( )
-            HideBarButtons( ide_toolbar, Bool(mouse( )\anchors\group\show=0) )
+            HideBarButtons( ide_toolbar, Bool(a_anchors( )\group\show=0) )
          ;EndIf
          
          ; then group select
@@ -2278,7 +2264,7 @@ EndProcedure
 Procedure ide_menu_events(  )
    Protected *g._s_WIDGET = EventWidget( ), BarButton = WidgetEventItem( )
    Protected transform, move_x, move_y
-   Static NewList *copy._s_a_group( )
+    Static NewList *copy._s_WIDGET( )
    
    ; Debug "ide_menu_events "+BarButton
    
@@ -2462,7 +2448,10 @@ Procedure ide_events( )
          
       Case #__event_Change
          If *g = ide_inspector_view
-            a_set( GetItemData( *g, GetState(*g) ))
+            ;  SetActive( GetItemData( *g, GetState(*g) ) )
+            If a_set( GetItemData( *g, GetState(*g) ))
+               SetActive( a_focused( ) )
+            EndIf
          EndIf
          
          If *g = ide_design_PANEL
@@ -2899,7 +2888,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState( ide_inspector_PANEL, 1 )
    
    ;   ;OpenList(ide_design_panel_MDI)
-   Define result, btn2, example = 1
+   Define result, btn2, example = 3
    
    
    ide_design_FORM = new_widget_add( ide_design_panel_MDI, "window", 10, 10, 350, 200 )
@@ -3069,10 +3058,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1697
-; FirstLine = 1553
-; Folding = ---------f+X-------Pk-f-----------+r----f4----v--+-----
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 2890
+; FirstLine = 2435
+; Folding = ---------f+X-------Pk-f----------v-7----40----8-f------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
