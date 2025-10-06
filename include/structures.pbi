@@ -125,7 +125,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     KEYBOARD
       Structure _s_KEYBOARD  ; Ok
          *window._S_WIDGET   ; active window element ; FocusedWindow( )\
-         *widget._S_WIDGET   ; keyboard focus element ; GetActive( )\
+         *widget._S_WIDGET   
+         
+         *active._S_WIDGET ; keyboard focus element ; GetActive( )\
          *deactive._S_WIDGET ;
          
          change.b
@@ -793,9 +795,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.04 LTS (Linux - x64)
-; CursorPosition = 293
-; FirstLine = 254
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 127
+; FirstLine = 118
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP

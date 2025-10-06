@@ -1251,53 +1251,6 @@ EndProcedure
 
 ;-
 ;-
-Procedure a_align( *g._s_WIDGET, align )
-   Protected.l X,Y,Width,Height
-   Protected *parent._s_WIDGET
-   
-   If a_anchors( )\group\show
-      If *g And *g\anchors\group\show
-         X = *g\x[#__c_frame] 
-         Y = *g\y[#__c_frame] 
-         Width = *g\width[#__c_frame] 
-         Height = *g\height[#__c_frame] 
-         *parent = *g\parent
-      Else
-         *parent = a_main( )
-         X = a_anchors( )\group\x
-         Y = a_anchors( )\group\y
-         Width = a_anchors( )\group\width
-         Height = a_anchors( )\group\height
-      EndIf 
-      
-      If *parent
-         If StartEnum( *parent )
-            If widgets( )\anchors\group\show 
-               Select align
-                  Case 1
-                     Resize( widgets( ), (X-widgets( )\parent\x[#__c_inner]), #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
-                  Case 3
-                     Resize( widgets( ), (X-widgets( )\parent\x[#__c_inner])+Width-widgets( )\width[#__c_frame], #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
-                  Case 2
-                     Resize( widgets( ), #PB_Ignore, (Y-widgets( )\parent\y[#__c_inner]), #PB_Ignore, #PB_Ignore, 0 )
-                  Case 4
-                     Resize( widgets( ), #PB_Ignore, (Y-widgets( )\parent\y[#__c_inner])+Height-widgets( )\height[#__c_frame], #PB_Ignore, #PB_Ignore, 0 )
-                     
-                  Case 5
-                     Resize( widgets( ), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore, 0 )
-                  Case 6
-                     Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, Height, 0 )
-                     
-               EndSelect
-            EndIf
-            StopEnum( )
-         EndIf
-         
-         a_update( *parent )
-      EndIf
-   EndIf
-EndProcedure
-
 Procedure HideBarButtons( *this._s_WIDGET, state )
    DisableBarButton( *this, #_tb_group_left, state )
    DisableBarButton( *this, #_tb_group_right, state )
@@ -1653,7 +1606,7 @@ Procedure new_widget_events( )
       Case #__event_LostFocus
          If a_focused( ) = *g
             ; Debug "LOSTFOCUS "+GetClass(*g)
-            SetState( ide_inspector_view, - 1 )
+            ; SetState( ide_inspector_view, - 1 )
          EndIf
          
       Case #__event_Focus
@@ -1678,14 +1631,10 @@ Procedure new_widget_events( )
          
       Case #__event_Down
          If a_focused( ) = *g
-;             If *g\anchors\group\show
-;                ; set keyboard focus
-;                SetActive( *g )
-;             Else
-;                If GetActive( ) <> ide_inspector_view 
-;                   SetActive( ide_inspector_view )
-;                EndIf
-;             EndIf
+            If GetActive( ) <> *g ; Not GetFocus( ide_inspector_view ) ; GetActive( ) <> ide_inspector_view 
+               SetActive( ide_inspector_view )
+               GetActive( ) = *g
+            EndIf
          EndIf
           
       Case #__event_RightDown
@@ -1759,18 +1708,6 @@ Procedure new_widget_events( )
                
          EndSelect
          
-      Case #__event_DragStop
-         If mouse( )\selector
-            Debug "#__event_DragStop selector "+mouse( )\selector\x +" "+ mouse( )\selector\y +" "+ mouse( )\selector\width +" "+ mouse( )\selector\height
-         EndIf
-         Debug "#__event_DragStop "+a_anchors( )\group\x +" "+ a_anchors( )\group\y +" "+ a_anchors( )\group\width +" "+ a_anchors( )\group\height
-         ;Debug "#__event_DragStop "+mouse( )\drag\x +" "+ mouse( )\drag\y +" "+ mouse( )\drag\width +" "+ mouse( )\drag\height
-         ;Debug "#__event_DragStop "+DropX( ) +" "+ DropY( ) +" "+ DropWidth( ) +" "+ DropHeight( )
-             
-             
-         ;
-         ; 
-         ;
       Case #__event_LeftDown
          If IsContainer(*g)
             If GetState( ide_inspector_elements ) > 0 
@@ -2455,6 +2392,12 @@ Procedure ide_events( )
          EndIf
          
          If *g = ide_design_PANEL
+;             If __item = 0
+;                If GetActive( ) <> ide_inspector_view 
+;                   SetActive( ide_inspector_view )
+;                EndIf
+;             EndIf
+            
             If __item = 1
                AddItem( ide_design_panel_CODE, 0, "" ) ; BUG 
                SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
@@ -2987,6 +2930,14 @@ CompilerIf #PB_Compiler_IsMainFile
       ;CloseList( )
       SetState( *panel, 1 )
       
+      
+     Define ide_design_FORM2 = new_widget_add( ide_design_panel_MDI, "window", 10, 10, 350, 200 )
+     Resize(ide_design_FORM2, #PB_Ignore, Y(ide_design_FORM)+Height(ide_design_FORM), 500, 100)
+     
+     new_widget_add(ide_design_FORM2, "button", 25, 10, 30, 30)
+     new_widget_add(ide_design_FORM2, "button", 70, 40, 30, 30)
+     new_widget_add(ide_design_FORM2, "button", 110, 75, 30, 30)
+
 ;       ;       ;SetMoveBounds( *scrollarea, -1,-1,-1,-1 )
 ;       ;       ;SetSizeBounds( *scrollarea, -1,-1,-1,-1 )
 ;       ;       ;SetSizeBounds( *scrollarea )
@@ -3058,10 +3009,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2890
-; FirstLine = 2435
-; Folding = ---------f+X-------Pk-f----------v-7----40----8-f------
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 1633
+; FirstLine = 1496
+; Folding = ---------f+X-------Pk-f---------v-9----8+----0-v------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

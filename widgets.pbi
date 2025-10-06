@@ -514,7 +514,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro PressedButton( ): mouse( )\button[2]: EndMacro
       
       ;-
-      Macro GetActive( ): keyboard( )\widget: EndMacro         ; Returns actived object
+      Macro GetActive( ): keyboard( )\active: EndMacro         ; Returns actived object
       Macro ActiveWindow( ): keyboard( )\window: EndMacro      ; Returns activeed window
       Macro ActiveGadget( ): ActiveWindow( )\gadget: EndMacro  ; Returns activeed gadget
       Macro ActiveBar( ): ActiveWindow( )\gadget\bar\gadget: EndMacro ; Returns activeed gadget
@@ -1040,12 +1040,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                   _address_[#__a_top]\y = _y_
                EndIf
                If _address_[#__a_right] ; right
-                  _address_[#__a_right]\x = _x_ + _width_ - _address_[#__a_right]\width
+                  _address_[#__a_right]\x = _x_ + ( _width_ - _address_[#__a_right]\width )
                   _address_[#__a_right]\y = _y_ + ( _height_ - _address_[#__a_right]\height ) / 2
                EndIf
                If _address_[#__a_bottom] ; bottom
                   _address_[#__a_bottom]\x = _x_ + ( _width_ - _address_[#__a_bottom]\width ) / 2
-                  _address_[#__a_bottom]\y = _y_ + _height_ - _address_[#__a_bottom]\height
+                  _address_[#__a_bottom]\y = _y_ + ( _height_ - _address_[#__a_bottom]\height )
                EndIf
             EndIf
             
@@ -1054,17 +1054,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                _address_[#__a_left_top]\y = _y_
             EndIf
             If _address_[#__a_right_top] ; right&top
-               _address_[#__a_right_top]\x = _x_ + _width_ - _address_[#__a_right_top]\width
+               _address_[#__a_right_top]\x = _x_ + ( _width_ - _address_[#__a_right_top]\width )
                _address_[#__a_right_top]\y = _y_
             EndIf
             If _address_[#__a_left_bottom] ; left&bottom
                _address_[#__a_left_bottom]\x = _x_
-               _address_[#__a_left_bottom]\y = _y_ + _height_ - _address_[#__a_left_bottom]\height
+               _address_[#__a_left_bottom]\y = _y_ + ( _height_ - _address_[#__a_left_bottom]\height )
             EndIf
             If _address_[#__a_right_bottom] ; right&bottom
-               _address_[#__a_right_bottom]\x = _x_ + _width_ - _address_[#__a_right_bottom]\width
-               _address_[#__a_right_bottom]\y = _y_ + _height_ - _address_[#__a_right_bottom]\height
+               _address_[#__a_right_bottom]\x = _x_ + ( _width_ - _address_[#__a_right_bottom]\width )
+               _address_[#__a_right_bottom]\y = _y_ + ( _height_ - _address_[#__a_right_bottom]\height )
             EndIf
+         EndIf
+         
+         If a_focused( )
+            a_line( a_focused( ) )
          EndIf
       EndMacro
       
@@ -1077,22 +1081,22 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ line default size&pos
             a_anchors( )\line[#__a_line_left]\width  = DPIScaled(1)
-            a_anchors( )\line[#__a_line_left]\height = 0 ; _this_\frame_height( )
+            a_anchors( )\line[#__a_line_left]\height = 0
             a_anchors( )\line[#__a_line_left]\x      = _this_\frame_x( )
             a_anchors( )\line[#__a_line_left]\y      = _this_\frame_y( )
             
-            a_anchors( )\line[#__a_line_top]\height = DPIScaled(1)
-            a_anchors( )\line[#__a_line_top]\width  = 0 ; _this_\frame_width( )
+            a_anchors( )\line[#__a_line_top]\height = a_anchors( )\line[#__a_line_left]\width
+            a_anchors( )\line[#__a_line_top]\width  = 0
             a_anchors( )\line[#__a_line_top]\x      = _this_\frame_x( )
             a_anchors( )\line[#__a_line_top]\y      = _this_\frame_y( )
             
-            a_anchors( )\line[#__a_line_right]\width  = DPIScaled(1)
-            a_anchors( )\line[#__a_line_right]\height = 0 ; _this_\frame_height( )
+            a_anchors( )\line[#__a_line_right]\width  = a_anchors( )\line[#__a_line_left]\width
+            a_anchors( )\line[#__a_line_right]\height = 0
             a_anchors( )\line[#__a_line_right]\x      = ( _this_\frame_x( ) + _this_\frame_width( ) ) - a_anchors( )\line[#__a_line_right]\width
             a_anchors( )\line[#__a_line_right]\y      = _this_\frame_y( )
             
-            a_anchors( )\line[#__a_line_bottom]\height = DPIScaled(1)
-            a_anchors( )\line[#__a_line_bottom]\width  = 0 ; _this_\frame_width( )
+            a_anchors( )\line[#__a_line_bottom]\height = a_anchors( )\line[#__a_line_left]\width
+            a_anchors( )\line[#__a_line_bottom]\width  = 0
             a_anchors( )\line[#__a_line_bottom]\x      = _this_\frame_x( )
             a_anchors( )\line[#__a_line_bottom]\y      = ( _this_\frame_y( ) + _this_\frame_height( ) ) - a_anchors( )\line[#__a_line_bottom]\height
             
@@ -1538,6 +1542,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare a_init( *this, grid_size.a = 7, grid_type.b = 0 )
       Declare a_set( *this, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
       Declare a_update( *parent )
+      Declare a_align( *this, align )
       Declare a_free( *this )
       Declare a_object( X.l, Y.l, Width.l, Height.l, Text.s, color.i, flag.q = #Null, framesize = 1 )
       
@@ -2870,25 +2875,25 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure a_group_show( *this._s_WIDGET, event )
-         If event = #__event_Up Or
+         If event = #__event_Create Or
             event = #__event_LostFocus Or
             event = #__event_MouseLeave
             
             a_add( *this, #__a_Position|#__a_Corner )
          EndIf
          
-         If event = #__event_Down Or
+         If event = #__event_Free Or
             event = #__event_Focus Or
             event = #__event_MouseEnter
             
             a_add( *this, *this\anchors\mode )
          EndIf
             
-         If event = #__event_Down 
-            a_anchors( )\backcolor[#__s_0] = $ffFFFFFF
-         EndIf
-         If event = #__event_Up 
+         If event = #__event_Create 
             a_anchors( )\backcolor[#__s_0] = $ff000000
+         EndIf
+         If event = #__event_Free
+            a_anchors( )\backcolor[#__s_0] = $ffFFFFFF
          EndIf
          
          Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
@@ -3059,32 +3064,32 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                *this\focus = 0
                DoEvents( *this, #__event_Lostfocus )
-;                ;
-;                *window = *this
-;                While Not is_root_( *window )
-;                   *window = *window\window
-;                   If *window 
-;                      If *this = *window
-;                         Break
-;                      EndIf
-;                      If *active = *window
-;                         Break
-;                      EndIf
-;                      If Not *window\anchors
-;                         Break
-;                      EndIf
-;                      If IsChild( *active, *window )
-;                         Break
-;                      EndIf
-;                      If *window\focus <> 0
-;                         If test_focus_set
-;                            Debug "DEACTIVEWINDOW "+*window\class ;+" "+ *this\window\focus
-;                         EndIf
-;                         *window\focus = 0
-;                         DoEvents( *window, #__event_Lostfocus )
-;                      EndIf
-;                   EndIf
-;                Wend
+               ;
+               *window = *this
+               While Not is_root_( *window )
+                  *window = *window\window
+                  If *window 
+                     If *this = *window
+                        Break
+                     EndIf
+                     If *active = *window
+                        Break
+                     EndIf
+                     If Not *window\anchors
+                        Break
+                     EndIf
+                     If IsChild( *active, *window )
+                        Break
+                     EndIf
+                     If *window\focus <> 0
+                        If test_focus_set
+                           Debug "DEACTIVEWINDOW "+*window\class ;+" "+ *this\window\focus
+                        EndIf
+                        *window\focus = 0
+                        DoEvents( *window, #__event_Lostfocus )
+                     EndIf
+                  EndIf
+               Wend
             EndIf
          Else
             ; activate
@@ -3092,29 +3097,77 @@ CompilerIf Not Defined( widget, #PB_Module )
                Debug "ACTIVE "+*this\class ;+" "+ *this\focus
             EndIf
             *this\focus = 2
+            ;
+            *window = *this
+            While Not is_root_( *window )
+               *window = *window\window
+               If *window 
+                  If *this = *window 
+                     Break
+                  EndIf
+                  If Not *window\anchors
+                     Break
+                  EndIf
+                  If *window\focus = 0
+                     If test_focus_set
+                        Debug "ACTIVEWINDOW "+*window\class ; +" "+ *this\window\focus
+                     EndIf
+                     *window\focus = 2
+                     DoEvents( *window, #__event_focus )
+                  EndIf
+               EndIf
+            Wend
+            
             DoEvents( *this, #__event_focus )
-;             ;
-;             *window = *this
-;             While Not is_root_( *window )
-;                *window = *window\window
-;                If *window 
-;                   If *this = *window 
-;                      Break
-;                   EndIf
-;                   If Not *window\anchors
-;                      Break
-;                   EndIf
-;                   If *window\focus = 0
-;                      If test_focus_set
-;                         Debug "ACTIVEWINDOW "+*window\class ; +" "+ *this\window\focus
-;                      EndIf
-;                      *window\focus = 2
-;                      DoEvents( *window, #__event_focus )
-;                   EndIf
-;                EndIf
-;             Wend
-         EndIf
+          EndIf
          
+      EndProcedure
+      
+      Procedure a_align( *g._s_WIDGET, align )
+         Protected.l X,Y,Width,Height
+         Protected *parent._s_WIDGET
+         
+         If a_anchors( )\group\show
+            If *g And *g\anchors\group\show
+               X = *g\x[#__c_frame] 
+               Y = *g\y[#__c_frame] 
+               Width = *g\width[#__c_frame] 
+               Height = *g\height[#__c_frame] 
+               *parent = *g\parent
+            Else
+               *parent = a_main( )
+               X = a_anchors( )\group\x
+               Y = a_anchors( )\group\y
+               Width = a_anchors( )\group\width
+               Height = a_anchors( )\group\height
+            EndIf 
+            
+            If *parent
+               If StartEnum( *parent )
+                  If widgets( )\anchors\group\show 
+                     Select align
+                        Case 1
+                           Resize( widgets( ), (X-widgets( )\parent\x[#__c_inner]), #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+                        Case 3
+                           Resize( widgets( ), (X-widgets( )\parent\x[#__c_inner])+Width-widgets( )\width[#__c_frame], #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+                        Case 2
+                           Resize( widgets( ), #PB_Ignore, (Y-widgets( )\parent\y[#__c_inner]), #PB_Ignore, #PB_Ignore, 0 )
+                        Case 4
+                           Resize( widgets( ), #PB_Ignore, (Y-widgets( )\parent\y[#__c_inner])+Height-widgets( )\height[#__c_frame], #PB_Ignore, #PB_Ignore, 0 )
+                           
+                        Case 5
+                           Resize( widgets( ), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore, 0 )
+                        Case 6
+                           Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, Height, 0 )
+                           
+                     EndSelect
+                  EndIf
+                  StopEnum( )
+               EndIf
+               
+               a_update( *parent )
+            EndIf
+         EndIf
       EndProcedure
       
       Procedure.i a_set( *this._s_WIDGET, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
@@ -3145,6 +3198,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                         ;
                         a_doactive( a_focused( ), *this )
+;                         If a_focused( )
+;                            If a_focused( )\gadget
+;                               *this\gadget = a_focused( )\gadget
+;                               a_focused( )\gadget = 0
+;                            EndIf
+;                         EndIf
                      EndIf
                      ; Debug "a_set focus " + *this\class 
                      ;
@@ -3326,9 +3385,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If widgets( )\anchors 
                            If widgets( )\anchors\group\show 
                               
-                              Debug "reset f "+widgets( )\class
+                              Debug "reset f "+widgets( )\class +" "+ *this\class
                               widgets( )\anchors\group\show = #False
-                              a_group_show( widgets( ), #__event_Down )
+                              a_group_show( widgets( ), #__event_free )
                               
                            EndIf
                         EndIf
@@ -3351,9 +3410,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                            If widgets( )\anchors And
                               widgets( )\anchors\group\show 
                                  
-                              Debug "reset d "+widgets( )\class
+                              Debug "reset d "+widgets( )\class +" "+ *this\class
                               widgets( )\anchors\group\show = #False
-                              a_group_show( widgets( ), #__event_Down )
+                              a_group_show( widgets( ), #__event_free )
                                  
                            EndIf
                            StopEnum( )
@@ -3379,7 +3438,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  a_anchors( )\group\show + 1
                                  widgets( )\anchors\group\show = #True
                                  
-                                 a_group_show( widgets( ), #__event_Up )
+                                 a_group_show( widgets( ), #__event_Create )
                                  
                               EndIf
                            EndIf
@@ -3399,9 +3458,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                            If widgets( )\anchors And 
                               widgets( )\anchors\group\show 
                               
-                              Debug "reset u "+widgets( )\class
+                              Debug "reset u "+widgets( )\class +" "+ *this\class
                               widgets( )\anchors\group\show = #False
-                              a_group_show( widgets( ), #__event_Down )
+                              a_group_show( widgets( ), #__event_free )
                               
                            EndIf
                            StopEnum( )
@@ -3630,52 +3689,47 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      Resize( *this, mx, my, mw, mh, 0 )
                      
-                  Default
-                     ;\\ tab focus
-                     Select keyboard( )\Key
-                        Case #PB_Shortcut_Tab
-                           
-                        Case #PB_Shortcut_Left
-                           If *this\parent
-                              If *this\parent\parent And
-                                 *this\parent\parent\anchors
-                                 SetActive( *this\parent )
-                              Else
-                                 If *this\parent\FirstWidget( )
-                                    SetActive( *this\parent\FirstWidget( ) )
-                                 Else
-                                    If a_main( )\FirstWidget( )
-                                       SetActive( a_main( )\FirstWidget( ) )
-                                    EndIf
-                                 EndIf
-                              EndIf
-                           EndIf
-                           
-                        Case #PB_Shortcut_Up
-                           If *this\BeforeWidget( )
-                              ;                               If GetActive( )\row And GetActive( )\RowFocusedIndex( ) > 0
-                              ;                                 ; Debug "-"+GetActive( )\class +" "+ GetActive( )\RowFocusedIndex( )
-                              ;                                  GetActive( )\RowFocusedIndex( ) - 1 
-                              ;                               EndIf
-                              SetActive( *this\BeforeWidget( ) )
-                           EndIf
-                           
-                        Case #PB_Shortcut_Down
-                           If *this\AfterWidget( )
-                              ;                               If GetActive( )\row And GetActive( )\RowFocusedIndex( ) < GetActive( )\countitems
-                              ;                                 ; Debug "+"+GetActive( )\class +" "+ GetActive( )\RowFocusedIndex( )
-                              ;                                  GetActive( )\RowFocusedIndex( ) + 1 
-                              ;                               EndIf
-                              SetActive( *this\AfterWidget( ) )
-                           EndIf
-                           
-                        Case #PB_Shortcut_Right
-                           If *this\FirstWidget( )
-                              SetActive( *this\FirstWidget( ) )
-                           EndIf
-                           
-                     EndSelect
-                     
+;                   Default
+;                      ;\\ tab focus
+;                      Select keyboard( )\Key
+;                         Case #PB_Shortcut_Tab
+;                            
+;                         Case #PB_Shortcut_Left
+;                            If *this\parent
+;                               If *this\parent\parent And
+;                                  *this\parent\parent\anchors
+; ;                                  Debug 444
+;                                  SetActive( *this\parent )
+; ;                               Else
+; ;                                  If *this\parent\FirstWidget( )
+; ;                                     Debug 44
+; ;                                     SetActive( *this\parent\FirstWidget( ) )
+; ;                                  Else
+; ;                                     If a_main( )\FirstWidget( )
+; ;                                        Debug 4
+; ;                                        SetActive( a_main( )\FirstWidget( ) )
+; ;                                     EndIf
+; ;                                  EndIf
+;                               EndIf
+;                            EndIf
+;                            
+;                         Case #PB_Shortcut_Up
+;                            If *this\BeforeWidget( )
+;                               SetActive( *this\BeforeWidget( ) )
+;                            EndIf
+;                            
+;                         Case #PB_Shortcut_Down
+;                            If *this\AfterWidget( )
+;                               SetActive( *this\AfterWidget( ) )
+;                            EndIf
+;                            
+;                         Case #PB_Shortcut_Right
+;                            If *this\FirstWidget( )
+;                               SetActive( *this\FirstWidget( ) )
+;                            EndIf
+;                            
+;                      EndSelect
+;                      
                EndSelect
             EndIf
          EndIf
@@ -8128,8 +8182,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                     *this\screen_y( ),
                     *this\screen_width( ),
                     *this\screen_height( ) )
-            
-            a_line( *this )
          EndIf
          
          ;\\ if the widgets is composite
@@ -11073,6 +11125,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.b SetFocus( *this._s_WIDGET, state.b )
          If *this\ColorState( ) <> state 
             *this\ColorState( ) = state 
+            DoEvents( *this, #__event_Focus )
             ProcedureReturn #True
          EndIf
       EndProcedure
@@ -11081,7 +11134,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; Debug #PB_Compiler_Procedure +" "+ ClassFromEvent(event)
          
          If *this\anchors
-            a_set( *this )
+            
+            ; a_set( *this )
+            
          Else
             If MouseButtonPress( )
                SetForeground( *this )
@@ -11173,38 +11228,29 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;
          If *this
-             If is_integral_( *this )
+            If is_integral_( *this )
                *Active = *this\parent
             Else
                *active = *this
             EndIf
             
-            If GetActive( ) <> *active
-            ;
+            If keyboard( )\active <> *active
+               ;
                If *active
-;                   If *active\anchors And Not *active\anchors\mode & #__a_zoom 
-;                      If a_focused( ) = *active
-;                         ProcedureReturn 0
-;                      Else
-;                         If a_set( *active, *active\anchors\mode, a_getsize(*active), a_getpos(*active) )
-;                            ; Debug "a_set active"
-;                            ProcedureReturn 0
-;                         EndIf
-;                      EndIf
-;                   Else
-                     If *active\parent And 
-                        *active\parent\type = #__type_Splitter
-                        ;
-                        Protected *parent._s_WIDGET = *active\parent
-                        While *parent And Not *parent\anchors
-                           *parent = *parent\parent
-                        Wend
-                        ;
-                        If *parent And *parent\anchors
-                           *active = *parent
-                        EndIf
-                     EndIf
+                  If *active\parent And 
+                     *active\parent\type = #__type_Splitter
                      ;
+                     Protected *parent._s_WIDGET = *active\parent
+                     While *parent And Not *parent\anchors
+                        *parent = *parent\parent
+                     Wend
+                     ;
+                     If *parent And *parent\anchors
+                        *active = *parent
+                     EndIf
+                  EndIf
+                  ;
+                  If Not *active\anchors
                      If *active\disable 
                         If *active\window And 
                            *active\window\disable 
@@ -11214,58 +11260,62 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *active = *active\window 
                         EndIf
                      EndIf 
-;                   EndIf
-                  
-                  ;\\
-;                   If *active\focus = #__s_nofocus
-;                      *active = *active\parent
-;                      If *active And *active\focus = #__s_nofocus 
-;                         ProcedureReturn 0
-;                      EndIf
-;                   EndIf
+                     
+                     ;\\
+                     ;                   If *active\focus = #__s_nofocus
+                     ;                      *active = *active\parent
+                     ;                      If *active And *active\focus = #__s_nofocus 
+                     ;                         ProcedureReturn 0
+                     ;                      EndIf
+                     ;                   EndIf
+                  EndIf
                   
                   If Not *active 
                      ProcedureReturn 0
                   EndIf
                EndIf
-               
                ;
-               *deactive = GetActive( )
-               If ActiveWindow( )
-                  *deactiveWindow = ActiveWindow( )
-                  *deactiveGadget = ActiveGadget( )
-               EndIf
-               
                *active\root\active = *active
-               keyboard( )\deactive = *deactive
-               
-               If is_Window_( *active )
-                  ActiveWindow( ) = *active
+               keyboard( )\widget = *active
+                  
+               ;\\
+               If *active\anchors
+                 ; keyboard( )\active = *active
+                  a_set( *active )
                Else
-                  ActiveWindow( ) = *active\window
-                  If ActiveWindow( ) 
-                     If is_gadget_( *active )
-                        ActiveGadget( ) = *active
+                  keyboard( )\deactive = keyboard( )\active
+                  
+                  *deactive = keyboard( )\deactive
+                  If ActiveWindow( )
+                     *deactiveWindow = ActiveWindow( )
+                     *deactiveGadget = ActiveGadget( )
+                  EndIf
+                  
+                  If is_Window_( *active )
+                     ActiveWindow( ) = *active
+                  Else
+                     ActiveWindow( ) = *active\window
+                     If ActiveWindow( ) 
+                        If is_gadget_( *active )
+                           ActiveGadget( ) = *active
+                        EndIf
                      EndIf
                   EndIf
-               EndIf
-               
-               ; это чтобы при активации окна, если есть активный гаджет
-               ; чтобы он получил фокус клавиатуры
-               If ActiveGadget( ) And Not ActiveGadget( )\anchors 
-                  GetActive( ) = ActiveGadget( )
-               Else
-                  GetActive( ) = *active
-               EndIf
-               ; 
-               If *deactive
-                  If is_integral_( *deactive )
-                     *deactive = *deactive\parent
-                  EndIf
-                  ;
-                  If *deactive\anchors
-                     DoFocus( *deactive, #__event_LostFocus )
+                  
+                  ; это чтобы при активации окна, если есть активный гаджет
+                  ; чтобы он получил фокус клавиатуры
+                  If ActiveGadget( ) 
+                     keyboard( )\active = ActiveGadget( )
                   Else
+                     keyboard( )\active = *active
+                  EndIf
+                  
+                  ; 
+                  If *deactive
+                     If is_integral_( *deactive )
+                        *deactive = *deactive\parent
+                     EndIf
+                     ;
                      If *deactiveWindow And
                         *deactiveWindow <> *active  
                         
@@ -11296,12 +11346,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
-               EndIf
-               
-               ;\\
-               If *active\anchors
-                  DoFocus( *active, #__event_Focus )
-               Else
+                  
+                  ;
                   If ActiveWindow( )
                      If ActiveWindow( )
                         ;\\ set active all parents
@@ -11345,8 +11391,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf 
          Else
             ; deactivate canvas
-            If GetActive( )
-               *deactive = GetActive( )
+            If keyboard( )\active
+               *deactive = keyboard( )\active
                If is_integral_( *deactive )
                   *deactive = *deactive\parent
                EndIf
@@ -11372,12 +11418,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ; reset active canvas
                CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-                 If GetActiveGadget( ) = *deactive\root\canvas\gadget
-                   SetActiveGadget( - 1 )
-                 EndIf
+                  If GetActiveGadget( ) = *deactive\root\canvas\gadget
+                     SetActiveGadget( - 1 )
+                  EndIf
                CompilerEndIf
                ProcedureReturn 0   
-             EndIf
+            EndIf
          EndIf
          
          ProcedureReturn #True
@@ -17117,17 +17163,17 @@ chr$ = ","
                         SetWindowState( window, #PB_Window_Normal )
                      EndIf
                      
-                     ; BUG in windows
-                     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                     Case #WM_KEYDOWN 
-                        If EventwParam( ) = #TAB 
-                           If IsGadget( GetActiveGadget( ))
-                              ; Debug "KeyDown: TAB is down " 
-                              keyboard( )\Key = #PB_Shortcut_Tab
-                              PostEvent( #PB_Event_Gadget, EventWindow( ), GetActiveGadget( ), #PB_EventType_KeyDown )
-                           EndIf
-                        EndIf
-                     CompilerEndIf
+;                      ; BUG in windows
+;                      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+;                      Case #WM_KEYDOWN 
+;                         If EventwParam( ) = #TAB 
+;                            If IsGadget( GetActiveGadget( ))
+;                               ; Debug "KeyDown: TAB is down " 
+;                               keyboard( )\Key = #PB_Shortcut_Tab
+;                               PostEvent( #PB_Event_Gadget, EventWindow( ), GetActiveGadget( ), #PB_EventType_KeyDown )
+;                            EndIf
+;                         EndIf
+;                      CompilerEndIf
                EndSelect
                
                If __gui\event\quit
@@ -19842,12 +19888,45 @@ chr$ = ","
          If eventtype = #PB_EventType_KeyDown Or
             eventtype = #PB_EventType_Input Or
             eventtype = #PB_EventType_KeyUp
+            Protected *keywidget._s_WIDGET
             
-            ;\\
-            If GetActive( )
-               ; keyboard( )\input = 0;GetGadgetAttribute( GetActive( )\root\canvas\gadget, #PB_Canvas_Key )
-               ; keyboard( )\key[1] = GetGadgetAttribute( GetActive( )\root\canvas\gadget, #PB_Canvas_Modifiers )
+            If keyboard( )\widget
+               *keywidget = keyboard( )\widget
+            Else
+               *keywidget = GetActive( )
+            EndIf
                
+               ;\\
+            If *keywidget
+               ; это временное решение для properties гаджет
+               If is_gadget_(GetActive( ))
+                  If GetActive( )\gadget
+                     GetActive( ) = GetActive( )\gadget
+                  EndIf
+               EndIf
+               
+               ;
+               ;\\
+               keyboard( )\key[1] = GetGadgetAttribute( *keywidget\root\canvas\gadget, #PB_Canvas_Modifiers )
+               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  If keyboard( )\key[1] & #PB_Canvas_Command
+                     keyboard( )\key[1] & ~ #PB_Canvas_Command
+                     keyboard( )\key[1] | #PB_Canvas_Control
+                  EndIf
+               CompilerEndIf
+               
+               ;
+               ;\\
+               If eventtype = #PB_EventType_Input
+                  keyboard( )\input = GetGadgetAttribute( *keywidget\root\canvas\gadget, #PB_Canvas_Input )
+               Else
+                  Protected key = GetGadgetAttribute( *keywidget\root\canvas\gadget, #PB_Canvas_Key )
+                  If key
+                     keyboard( )\Key = key
+                  EndIf
+               EndIf
+               
+               ;{  shortcut to key
                ;                Select keyboard( )\input
                ;                  Case #PB_Shortcut_0 : keyboard( )\key = #PB_Key_0
                ;                  Case #PB_Shortcut_1 : keyboard( )\key = #PB_Key_1
@@ -19978,69 +20057,141 @@ chr$ = ","
                ; ;                   keyboard( )\key = #PB_key_Alt
                ; ;                EndIf
                ;                
-               ;
-               
-               ; это временное решение для properties гаджет
-               If is_gadget_(GetActive( ))
-                  If GetActive( )\gadget
-                     GetActive( ) = GetActive( )\gadget
-                  EndIf
-               EndIf
-               
-               ;
-               ;\\
-               keyboard( )\key[1] = GetGadgetAttribute( GetActive( )\root\canvas\gadget, #PB_Canvas_Modifiers )
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  If keyboard( )\key[1] & #PB_Canvas_Command
-                     keyboard( )\key[1] & ~ #PB_Canvas_Command
-                     keyboard( )\key[1] | #PB_Canvas_Control
-                  EndIf
-               CompilerEndIf
-               
-               ;
-               ;\\
-               If eventtype = #PB_EventType_Input
-                  keyboard( )\input = GetGadgetAttribute( GetActive( )\root\canvas\gadget, #PB_Canvas_Input )
-               Else
-                  Protected key = GetGadgetAttribute( GetActive( )\root\canvas\gadget, #PB_Canvas_Key )
-                  If key
-                     keyboard( )\Key = key
-                  EndIf
-               EndIf
+               ;}
                
                ;
                ;\\ keyboard events
                If eventtype = #PB_EventType_KeyDown 
-                  DoEvents( GetActive( ), #__event_KeyDown )
-                  ;
+             ;
                   ;\\ tab focus
                   Select keyboard( )\Key
                      Case #PB_Shortcut_Tab
-                        If GetActive( )\container And
-                           GetActive( )\FirstWidget( )
-                           ;
-                           SetActive( GetActive( )\FirstWidget( ) )
-                        ElseIf GetActive( )\AfterWidget( )
-                           SetActive( GetActive( )\AfterWidget( ) )
+                        Debug " BUG in windows #PB_Shortcut_Tab "
+                        
+                     Case #PB_Shortcut_Left
+;                         If *keywidget\BeforeWidget( )
+;                            If *keywidget\BeforeWidget( )\anchors
+;                               SetActive( *keywidget\BeforeWidget( ) )
+;                            EndIf
+;                         Else
+                           If *keywidget\parent
+                              If *keywidget\parent\anchors
+                                 SetActive( *keywidget\parent )
+                              EndIf
+                           EndIf
+;                         EndIf
+                        
+                     Case #PB_Shortcut_Up
+                        If *keywidget\BeforeWidget( )
+                           If *keywidget\BeforeWidget( )\anchors
+                              SetActive( *keywidget\BeforeWidget( ) )
+                           EndIf
+                        EndIf
+                        
+                     Case #PB_Shortcut_Down
+                        If *keywidget\AfterWidget( )
+                           If *keywidget\AfterWidget( )\anchors
+                              SetActive( *keywidget\AfterWidget( ) )
+                           EndIf
+                        EndIf
+                        
+                     Case #PB_Shortcut_Right
+                        If *keywidget\FirstWidget( )
+                           If *keywidget\FirstWidget( )\anchors
+                              SetActive( *keywidget\FirstWidget( ) )
+                           EndIf
                         Else
-                           If GetActive( )\parent
-                              If GetActive( )\parent\AfterWidget( )
-                                 SetActive( GetActive( )\parent\AfterWidget( ) )
-                              Else
-                                 If GetActive( )\root\FirstWidget( )
-                                    SetActive( GetActive( )\root\FirstWidget( ) )
+                           If *keywidget\AfterWidget( )
+                              If *keywidget\AfterWidget( )\anchors
+                                 SetActive( *keywidget\AfterWidget( ) )
+                              EndIf
+                           Else
+;                               ; type 1
+;                               If *keywidget\parent
+;                                  If *keywidget\parent\anchors
+;                                     SetActive( *keywidget\parent )
+;                                  EndIf
+;                               EndIf
+;                               
+;                               ; type 2
+                              If *keywidget\parent
+                                 If *keywidget\parent\AfterWidget( )
+                                    If *keywidget\parent\AfterWidget( )\anchors
+                                       SetActive( *keywidget\parent\AfterWidget( ) )
+                                    EndIf
                                  EndIf
                               EndIf
                            EndIf
                         EndIf
+                        
                   EndSelect
+                  
+                  DoEvents( *keywidget, #__event_KeyDown )
                EndIf
                If eventtype = #PB_EventType_Input
-                  DoEvents( GetActive( ), #__event_Input )
+                  DoEvents( *keywidget, #__event_Input )
                   ; keyboard( )\input = 0
                EndIf
                If eventtype = #PB_EventType_KeyUp
-                  DoEvents( GetActive( ), #__event_KeyUp )
+                  
+                  ;\\ tab focus
+                  Select keyboard( )\Key
+                     Case #PB_Shortcut_Tab
+;                         If Not *keywidget\anchors
+;                            If *keywidget\container And
+;                               *keywidget\FirstWidget( )
+;                               ;
+;                               SetActive( *keywidget\FirstWidget( ) )
+;                            ElseIf *keywidget\AfterWidget( )
+;                               SetActive( *keywidget\AfterWidget( ) )
+;                            Else
+;                               If *keywidget\parent
+;                                  If *keywidget\parent\AfterWidget( )
+;                                     SetActive( *keywidget\parent\AfterWidget( ) )
+;                                  Else
+;                                     If *keywidget\root\FirstWidget( )
+;                                        SetActive( *keywidget\root\FirstWidget( ) )
+;                                     EndIf
+;                                  EndIf
+;                               EndIf
+;                            EndIf
+                           
+                           If *keywidget\FirstWidget( )
+                              If Not *keywidget\FirstWidget( )\anchors
+                                 SetActive( *keywidget\FirstWidget( ) )
+                              EndIf
+                           Else
+                              If *keywidget\AfterWidget( )
+                                 If Not *keywidget\AfterWidget( )\anchors
+                                    SetActive( *keywidget\AfterWidget( ) )
+                                 EndIf
+                              Else
+                                 ;                               ; type 1
+                                 ;                               If *keywidget\parent
+                                 ;                                  If not *keywidget\parent\anchors
+                                 ;                                     SetActive( *keywidget\parent )
+                                 ;                                  EndIf
+                                 ;                               EndIf
+                                 ;                               
+                                 ;                               ; type 2
+                                 If *keywidget\parent
+                                    If *keywidget\parent\AfterWidget( )
+                                       If Not *keywidget\parent\AfterWidget( )\anchors
+                                          SetActive( *keywidget\parent\AfterWidget( ) )
+                                       EndIf
+                                    Else
+                                       If Not *keywidget\parent\anchors
+                                          SetActive( *keywidget\parent )
+                                       EndIf
+                                    EndIf
+                                 EndIf
+                              EndIf
+                           EndIf
+;                         EndIf
+                        
+                  EndSelect
+                  
+                  DoEvents( *keywidget, #__event_KeyUp )
                   ;
                   keyboard( )\key[1] = 0
                   keyboard( )\Key    = 0
@@ -20416,24 +20567,13 @@ chr$ = ","
                Else
                   Debug " УДАЛЕНО пока было нажато"
                EndIf
-               ;
-               If mouse( )\drag
-;                   If mouse( )\selector
-;                      mouse( )\drag\x = DPIUnScaledX( mouse( )\selector\x - Pressed( )\inner_x( ) - Pressed( )\scroll_x( ) )
-;                      mouse( )\drag\y = DPIUnScaledY( mouse( )\selector\y - Pressed( )\inner_y( ) - Pressed( )\scroll_y( ) )
-;                      
-;                      mouse( )\drag\width  = DPIUnScaledX( mouse( )\selector\width )
-;                      mouse( )\drag\height = DPIUnScaledY( mouse( )\selector\height )
-;                   EndIf
-
-                  DoEvents( Pressed( ), #__event_DragStop )
-                  mouse( )\drag = 0
-               EndIf
+               
                ;
                Pressed( ) = 0
             EndIf
             
             ;\\ reset mouse states
+            mouse( )\drag = 0
             mouse( )\press_x = 0
             mouse( )\press_y = 0
             mouse( )\buttons = 0
@@ -25250,7 +25390,7 @@ CompilerIf #PB_Compiler_IsMainFile
       #_tb_lng_GERMAN
     EndEnumeration
     
-   Global ide_toolbar, ide_popup_lenguage, *g0._s_WIDGET
+   Global ide_toolbar, ide_popup_lenguage, *g1._s_WIDGET, *g2._s_WIDGET
    
    Procedure Copy( *g._s_WIDGET )
       PushListPosition( widgets( ) )
@@ -25260,105 +25400,9 @@ CompilerIf #PB_Compiler_IsMainFile
       PopListPosition( widgets( ) )
    EndProcedure
    
-   Procedure _a_align( *g._s_WIDGET, align )
-      Protected.l _x_
-      Protected.l X,Y,Width,Height
-      If a_anchors( )\group\show
-      If a_focused( )
-        X = a_focused( )\x[#__c_frame] 
-        Y = a_focused( )\y[#__c_frame] 
-        Width = a_focused( )\width[#__c_frame] 
-        Height = a_focused( )\height[#__c_frame] 
-      EndIf
-      
-      Debug "  "+X
-      X = a_anchors( )\group\x; - (*g\x[#__c_frame]-*g\x[#__c_container])
-      Y = a_anchors( )\group\y
-      Width = a_anchors( )\group\width
-      Height = a_anchors( )\group\height
-      
-;       If mouse( )\steps
-;          X + ( X % mouse( )\steps )
-;          X = ( X / mouse( )\steps ) * mouse( )\steps
-;          Y + ( Y % mouse( )\steps )
-;          Y = ( Y / mouse( )\steps ) * mouse( )\steps
-;       EndIf
-      Debug ""+X
-      *g = a_main( )
-      If StartEnum( *g )
-         If widgets( )\anchors\group\show 
-            Select align
-               Case 1
-                  Resize( widgets( ), (X-widgets( )\parent\x[#__c_inner]), #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
-                  ;Resize( widgets( ), (X-widgets( )\parent\x[#__c_inner]), #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
-               Case 3
-                  Resize( widgets( ), (X+Width)-widgets( )\parent\x[#__c_inner]-widgets( )\width[#__c_frame], #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
-               Case 2
-                  Resize( widgets( ), #PB_Ignore, Y-widgets( )\parent\y[#__c_inner], #PB_Ignore, #PB_Ignore, 0 )
-               Case 4
-                  Resize( widgets( ), #PB_Ignore, (Y+Height)-widgets( )\parent\y[#__c_inner]-widgets( )\height[#__c_frame], #PB_Ignore, #PB_Ignore, 0 )
-                  
-               Case 5
-                  If a_focused( )
-                     Resize( widgets( ), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore, 0 )
-                  EndIf
-                  
-               Case 6
-                  If a_focused( )
-                     Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, Height, 0 )
-                  EndIf
-                  
-               Case 7
-                  
-                  
-            EndSelect
-         EndIf
-         StopEnum( )
-      EndIf
-      
-      a_update( *g )
-   EndIf
    
-   EndProcedure
    
-   Procedure a_align( *g._s_WIDGET, align )
-      _a_align( *g, align )
-      ProcedureReturn 
-      
-      Protected.l X,Y,Width,Height
-      If *g
-         X = *g\x[#__c_frame] 
-         Y = *g\y[#__c_frame] 
-         Width = *g\width[#__c_frame] 
-         Height = *g\height[#__c_frame] 
-         
-         If StartEnum( *g\parent )
-            If widgets( )\anchors\group\show 
-               Select align
-                  Case 1
-                     Resize( widgets( ), X-widgets( )\parent\x[#__c_inner], #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
-                  Case 3
-                     Resize( widgets( ), (X-widgets( )\parent\x[#__c_inner])+Width-widgets( )\width[#__c_frame], #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
-                  Case 2
-                     Resize( widgets( ), #PB_Ignore, Y-widgets( )\parent\y[#__c_inner], #PB_Ignore, #PB_Ignore, 0 )
-                  Case 4
-                     Resize( widgets( ), #PB_Ignore, (Y-widgets( )\parent\y[#__c_inner])+Height-widgets( )\height[#__c_frame], #PB_Ignore, #PB_Ignore, 0 )
-                     
-                  Case 5
-                     Resize( widgets( ), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore, 0 )
-                  Case 6
-                     Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, Height, 0 )
-                     
-               EndSelect
-            EndIf
-            StopEnum( )
-         EndIf
-         
-         a_update( *g\parent )
-      EndIf
-   EndProcedure
-
-   Procedure ide_events( )
+   Procedure ide_toolbar_events( )
       Protected *g._s_WIDGET = EventWidget( )
       
       Select WidgetEventItem( )
@@ -25395,7 +25439,12 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   If Open(0, 0, 0, 700, 280, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   Procedure ide_events( )
+      Protected *g._s_WIDGET = EventWidget( )
+      Debug ""+#PB_Compiler_Procedure +" "+ ClassFromEvent( WidgetEvent( )) +" "+ *g\class
+   EndProcedure
+   
+   If Open(0, 0, 0, 700, 320, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ide_toolbar = CreateBar( root( ), #PB_ToolBar_Small )
       SetClass( ide_toolbar, "ide_toolbar")
       
@@ -25435,23 +25484,53 @@ CompilerIf #PB_Compiler_IsMainFile
          CloseSubBar( )
          CloseList( ) 
          
-         Bind( ide_toolbar, @ide_events( ) )
+         Bind( ide_toolbar, @ide_toolbar_events( ) )
       EndIf
       
       
-      Define MDI = MDI(10, 10, 680, 260) ;, #PB_MDI_AutoSize) ; as they will be sized automatically
+      Define i,*t1,*t2
+      *t1=Tree( 15,15,80,120 )
+      For i=0 To 100
+         AddItem( *t1, -1, Str(i)+"item")
+      Next
+      *t2=Tree( 15,140,80,120 )
+      For i=0 To 100
+         AddItem( *t2, -1, Str(i)+"item")
+      Next
+      SetState( *t1, 3)
+      ;SetItemState( *t1, 3, #PB_Tree_Selected )
+      SetActive( *t1)
+      
+      Define MDI = MDI(100, 10, 680, 275) ;, #PB_MDI_AutoSize) ; as they will be sized automatically
       a_init( MDI );, 0 )
-      *g0 = AddItem( MDI, -1, "form_0" )
+      
+      ; FORM_1
+      *g1 = AddItem( MDI, -1, "form_0" )
       Button( 15,35,100,20,"button_0" )
       Button( 30,65,100,30,"button_1" )
-      Button( 45,100,100,40,"button_2" )
+      Disable(Button( 45,100,100,40,"button_2" ),1)
       
       Button( 175,35,100,20,"button_3" )
       Button( 160,65,100,30,"button_4" )
       Button( 150,100,100,40,"button_5" )
-     
-      ; Resize(*g0, 190, 190, #PB_Ignore, #PB_Ignore )
+      
+      ; FORM2
+      *g2 = AddItem( MDI, -1, "form_0" )
+      Button( 15,35,100,20,"button_0" )
+      Button( 30,65,100,30,"button_1" )
+      Disable(Button( 45,100,100,40,"button_2" ),1)
+      
+      Button( 175,35,100,20,"button_3" )
+      Button( 160,65,100,30,"button_4" )
+      Button( 150,100,100,40,"button_5" )
+      ; Resize( *g2, X(*g1)+Width(*g1), #PB_Ignore, #PB_Ignore, #PB_Ignore) ; BUG
+      Resize( *g2, X(*g1, #__c_container)+Width(*g1, #__c_frame), Y(*g1, #__c_container), #PB_Ignore, #PB_Ignore )
+      
+      Bind( root(), @ide_events( ), #__event_focus )
+      Bind( root(), @ide_events( ), #__event_lostfocus )
+      
       Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
+      
       ;\\ include images
       DataSection   
          IncludePath "ide/include/images"
@@ -26312,10 +26391,10 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Linux - x64)
-; CursorPosition = 3389
-; FirstLine = 3037
-; Folding = B+-------------------------------x---------------------------t-0--++-484----------------T---8---ff5------------------------------------7v---------------0----------------------------------------------------q8v84vfv--f---------------------------------------------------------------------------------vB---v-34---------------------------------------------------------f--------------------------------------------------------------------------2---------------------0------------------------------------------------------------------------v-8X0-------8+----fdX0+--4---4f------n-6e---------------------------------------------------------------------------------------------------------------------00--GEIwAAA+
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 11287
+; FirstLine = 10271
+; Folding = B+-------------------------------0---------------------------t-08P----0--vv---------------p---0---vP9-----------------------------------f04---------------+---------------------------------------------------f204084v4--v----------------------------------------------------------------------------------g---8------------------------------------------------------------v--------------------------------------------------------------------------7---------------------+------------------------------------------------------------------------+vf2-------v8----v2d28--f--8----04------6fu4--------------------------------------------------------------------------------------------------------------------vd2gABGAAw-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
