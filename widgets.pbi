@@ -20061,13 +20061,71 @@ chr$ = ","
                
                ;
                ;\\ keyboard events
-               If eventtype = #PB_EventType_KeyDown 
-             ;
+               If eventtype = #PB_EventType_KeyUp Or
+                  eventtype = #PB_EventType_KeyUp
+                  
                   ;\\ tab focus
                   Select keyboard( )\Key
                      Case #PB_Shortcut_Tab
-                        Debug " BUG in windows #PB_Shortcut_Tab "
+;                         If Not *keywidget\anchors
+;                            If *keywidget\container And
+;                               *keywidget\FirstWidget( )
+;                               ;
+;                               SetActive( *keywidget\FirstWidget( ) )
+;                            ElseIf *keywidget\AfterWidget( )
+;                               SetActive( *keywidget\AfterWidget( ) )
+;                            Else
+;                               If *keywidget\parent
+;                                  If *keywidget\parent\AfterWidget( )
+;                                     SetActive( *keywidget\parent\AfterWidget( ) )
+;                                  Else
+;                                     If *keywidget\root\FirstWidget( )
+;                                        SetActive( *keywidget\root\FirstWidget( ) )
+;                                     EndIf
+;                                  EndIf
+;                               EndIf
+;                            EndIf
+                           
+                           If *keywidget\FirstWidget( )
+                              If Not *keywidget\FirstWidget( )\anchors
+                                 SetActive( *keywidget\FirstWidget( ) )
+                              EndIf
+                           Else
+                              If *keywidget\AfterWidget( )
+                                 If Not *keywidget\AfterWidget( )\anchors
+                                    SetActive( *keywidget\AfterWidget( ) )
+                                 EndIf
+                              Else
+                                 ;                               ; type 1
+                                 ;                               If *keywidget\parent
+                                 ;                                  If not *keywidget\parent\anchors
+                                 ;                                     SetActive( *keywidget\parent )
+                                 ;                                  EndIf
+                                 ;                               EndIf
+                                 ;                               
+                                 ;                               ; type 2
+                                 If *keywidget\parent
+                                    If *keywidget\parent\AfterWidget( )
+                                       If Not *keywidget\parent\AfterWidget( )\anchors
+                                          SetActive( *keywidget\parent\AfterWidget( ) )
+                                       EndIf
+                                    Else
+                                       If Not *keywidget\parent\anchors
+                                          SetActive( *keywidget\parent )
+                                       EndIf
+                                    EndIf
+                                 EndIf
+                              EndIf
+                           EndIf
+;                         EndIf
                         
+                  EndSelect
+               EndIf
+               ;
+               If eventtype = #PB_EventType_KeyDown 
+             
+                  ;\\ anchor key focus
+                  Select keyboard( )\Key
                      Case #PB_Shortcut_Left
 ;                         If *keywidget\BeforeWidget( )
 ;                            If *keywidget\BeforeWidget( )\anchors
@@ -20133,64 +20191,6 @@ chr$ = ","
                   ; keyboard( )\input = 0
                EndIf
                If eventtype = #PB_EventType_KeyUp
-                  
-                  ;\\ tab focus
-                  Select keyboard( )\Key
-                     Case #PB_Shortcut_Tab
-;                         If Not *keywidget\anchors
-;                            If *keywidget\container And
-;                               *keywidget\FirstWidget( )
-;                               ;
-;                               SetActive( *keywidget\FirstWidget( ) )
-;                            ElseIf *keywidget\AfterWidget( )
-;                               SetActive( *keywidget\AfterWidget( ) )
-;                            Else
-;                               If *keywidget\parent
-;                                  If *keywidget\parent\AfterWidget( )
-;                                     SetActive( *keywidget\parent\AfterWidget( ) )
-;                                  Else
-;                                     If *keywidget\root\FirstWidget( )
-;                                        SetActive( *keywidget\root\FirstWidget( ) )
-;                                     EndIf
-;                                  EndIf
-;                               EndIf
-;                            EndIf
-                           
-                           If *keywidget\FirstWidget( )
-                              If Not *keywidget\FirstWidget( )\anchors
-                                 SetActive( *keywidget\FirstWidget( ) )
-                              EndIf
-                           Else
-                              If *keywidget\AfterWidget( )
-                                 If Not *keywidget\AfterWidget( )\anchors
-                                    SetActive( *keywidget\AfterWidget( ) )
-                                 EndIf
-                              Else
-                                 ;                               ; type 1
-                                 ;                               If *keywidget\parent
-                                 ;                                  If not *keywidget\parent\anchors
-                                 ;                                     SetActive( *keywidget\parent )
-                                 ;                                  EndIf
-                                 ;                               EndIf
-                                 ;                               
-                                 ;                               ; type 2
-                                 If *keywidget\parent
-                                    If *keywidget\parent\AfterWidget( )
-                                       If Not *keywidget\parent\AfterWidget( )\anchors
-                                          SetActive( *keywidget\parent\AfterWidget( ) )
-                                       EndIf
-                                    Else
-                                       If Not *keywidget\parent\anchors
-                                          SetActive( *keywidget\parent )
-                                       EndIf
-                                    EndIf
-                                 EndIf
-                              EndIf
-                           EndIf
-;                         EndIf
-                        
-                  EndSelect
-                  
                   DoEvents( *keywidget, #__event_KeyUp )
                   ;
                   keyboard( )\key[1] = 0
@@ -24627,6 +24627,12 @@ chr$ = ","
                         draw_mode_alpha_( #PB_2DDrawing_Default )
                         draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $AAE4E4E4 )
                      EndIf
+                     
+                     ;\\ draw focus state
+                     If *this\focus = 2
+                        draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                        draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $fffff0000 )
+                     EndIf
                   EndIf
                   
                   If *this\root\drawmode & 1<<1 
@@ -26392,9 +26398,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 11287
-; FirstLine = 10271
-; Folding = B+-------------------------------0---------------------------t-08P----0--vv---------------p---0---vP9-----------------------------------f04---------------+---------------------------------------------------f204084v4--v----------------------------------------------------------------------------------g---8------------------------------------------------------------v--------------------------------------------------------------------------7---------------------+------------------------------------------------------------------------+vf2-------v8----v2d28--f--8----04------6fu4--------------------------------------------------------------------------------------------------------------------vd2gABGAAw-
+; CursorPosition = 24633
+; FirstLine = 22694
+; Folding = B+-------------------------------0---------------------------t-0------0--vv---------------p---0---vP9-----------------------------------f04---------------+---------------------------------------------------f204084v4--v----------------------------------------------------------------------------------j---8------------------------------------------------------------v--------------------------------------------------------------------------7---------------------+------------------------------------------------------------------------+vf2-------v8----v2d28--f--8-0--8v------z-cv-------------------------------------------------------------------------------------------------rU+v----------------3VDCEYAAA-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
