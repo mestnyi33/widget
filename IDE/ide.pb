@@ -1643,11 +1643,18 @@ Procedure new_widget_events( )
             
       Case #__event_Down
          If a_focused( ) = *g
-            If GetActive( ) <> ide_inspector_view 
-             ; SetActive( ide_inspector_view )
+            If GetActive( ) <> ide_design_panel_MDI 
+              SetActive( ide_design_panel_MDI )
             EndIf
+;             If GetActive( ) <> ide_inspector_view 
+;               SetActive( ide_inspector_view )
+;             EndIf
+;               ;SetActive( *g\window )
          EndIf
-          
+;               If SetActive( *g )
+;                  a_set(*g)
+;               EndIf
+              
       Case #__event_RightDown
          Debug "right"
          
@@ -3020,9 +3027,9 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1627
-; FirstLine = 1449
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 1646
+; FirstLine = 1473
 ; Folding = ---------f+X-------Pk-f---z-----v-9----8+----0-f------
 ; Optimizer
 ; EnableAsm
