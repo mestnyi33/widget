@@ -74,8 +74,8 @@ CompilerIf #PB_Compiler_IsMainFile
                EndIf
                ;
                Resize(*row\data,
-                      *row\x + *this\scroll_x( ), 
-                      *row\y + *this\scroll_y( ), 
+                      *row\x, ; + *this\scroll_x( )
+                      *row\y, ; + *this\scroll_y( )
                       *this\inner_width( )-2, 
                       *row\height, 0 )
             EndIf
@@ -339,8 +339,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 265
-; FirstLine = 255
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 77
+; FirstLine = 56
 ; Folding = --------
 ; EnableXP
