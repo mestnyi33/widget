@@ -1634,6 +1634,8 @@ Procedure new_widget_events( )
             If GetActive( ) <> ide_inspector_view ; GetActive( ) <> *g ; Not GetFocus( ide_inspector_view ) ; 
               SetActive( ide_inspector_view )
               ;  GetActive( ) = *g
+              
+              Debug 444
             EndIf
          EndIf
           
@@ -3007,9 +3009,9 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.20 (Windows - x64)
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 1636
-; FirstLine = 1488
+; FirstLine = 1482
 ; Folding = ---------f+X-------Pk-f---------v-9----8+----0-f------
 ; Optimizer
 ; EnableAsm
