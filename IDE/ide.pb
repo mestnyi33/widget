@@ -1631,9 +1631,9 @@ Procedure new_widget_events( )
          
       Case #__event_Down
          If a_focused( ) = *g
-            If GetActive( ) <> *g ; Not GetFocus( ide_inspector_view ) ; GetActive( ) <> ide_inspector_view 
-               SetActive( ide_inspector_view )
-               GetActive( ) = *g
+            If GetActive( ) <> ide_inspector_view ; GetActive( ) <> *g ; Not GetFocus( ide_inspector_view ) ; 
+              SetActive( ide_inspector_view )
+              ;  GetActive( ) = *g
             EndIf
          EndIf
           
@@ -2392,11 +2392,9 @@ Procedure ide_events( )
          EndIf
          
          If *g = ide_design_PANEL
-;             If __item = 0
-;                If GetActive( ) <> ide_inspector_view 
-;                   SetActive( ide_inspector_view )
-;                EndIf
-;             EndIf
+            If __item = 0
+               SetActive( ide_design_panel_MDI )
+            EndIf
             
             If __item = 1
                AddItem( ide_design_panel_CODE, 0, "" ) ; BUG 
@@ -3010,9 +3008,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1633
-; FirstLine = 1496
-; Folding = ---------f+X-------Pk-f---------v-9----8+----0-v------
+; CursorPosition = 1636
+; FirstLine = 1488
+; Folding = ---------f+X-------Pk-f---------v-9----8+----0-f------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

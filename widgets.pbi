@@ -3052,76 +3052,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Next a_index
       EndProcedure
       
-      Procedure a_doactive( *this._s_WIDGET, *active._s_WIDGET = 0 )
-        ; ProcedureReturn 
-         Protected *window._s_WIDGET
-         
-         If *Active
-            If *this <> *active\window
-               ; deactivate
-               If test_focus_set
-                  Debug "DEACTIVE "+*this\class ;+" "+ *this\focus
-               EndIf
-               *this\focus = 0
-               DoEvents( *this, #__event_Lostfocus )
-               ;
-               *window = *this
-               While Not is_root_( *window )
-                  *window = *window\window
-                  If *window 
-                     If *this = *window
-                        Break
-                     EndIf
-                     If *active = *window
-                        Break
-                     EndIf
-                     If Not *window\anchors
-                        Break
-                     EndIf
-                     If IsChild( *active, *window )
-                        Break
-                     EndIf
-                     If *window\focus <> 0
-                        If test_focus_set
-                           Debug "DEACTIVEWINDOW "+*window\class ;+" "+ *this\window\focus
-                        EndIf
-                        *window\focus = 0
-                        DoEvents( *window, #__event_Lostfocus )
-                     EndIf
-                  EndIf
-               Wend
-            EndIf
-         Else
-            ; activate
-            If test_focus_set
-               Debug "ACTIVE "+*this\class ;+" "+ *this\focus
-            EndIf
-            *this\focus = 2
-            ;
-            *window = *this
-            While Not is_root_( *window )
-               *window = *window\window
-               If *window 
-                  If *this = *window 
-                     Break
-                  EndIf
-                  If Not *window\anchors
-                     Break
-                  EndIf
-                  If *window\focus = 0
-                     If test_focus_set
-                        Debug "ACTIVEWINDOW "+*window\class ; +" "+ *this\window\focus
-                     EndIf
-                     *window\focus = 2
-                     DoEvents( *window, #__event_focus )
-                  EndIf
-               EndIf
-            Wend
-            
-            DoEvents( *this, #__event_focus )
-          EndIf
-         
-      EndProcedure
+      Declare a_doactive( *this._s_WIDGET, *active._s_WIDGET = 0 )
       
       Procedure a_align( *g._s_WIDGET, align )
          Protected.l X,Y,Width,Height
@@ -3219,6 +3150,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      
                      ;
+                     keyboard( )\widget = *this
                      a_focused( ) = *this
                      a_group_show( *this, #__event_Focus )
                
@@ -11133,17 +11065,17 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure DoFocus( *this._s_WIDGET, event.l, *button = #PB_All, *data = #Null )
          ; Debug #PB_Compiler_Procedure +" "+ ClassFromEvent(event)
          
-         If *this\anchors
-            
-            ; a_set( *this )
-            
-         Else
+;          If *this\anchors
+;             
+;             ; a_set( *this )
+;             
+;          Else
             If MouseButtonPress( )
                SetForeground( *this )
             EndIf
             
             ProcedureReturn DoEvents( *this, event, *button, *data )
-         EndIf
+;          EndIf
       EndProcedure
       
       Macro DoActivate( _this_ )
@@ -11222,6 +11154,88 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure a_doactive( *this._s_WIDGET, *active._s_WIDGET = 0 )
+        ; ProcedureReturn 
+         Protected *window._s_WIDGET
+         
+         If *Active
+            If *this <> *active\window ; And *this <> a_main( )
+               ; deactivate
+               If test_focus_set
+                  Debug "DEACTIVE "+*this\class ;+" "+ *this\focus
+               EndIf
+               *this\focus = 0
+               DoEvents( *this, #__event_Lostfocus )
+               ;
+               *window = *this
+               While Not is_root_( *window )
+                  *window = *window\window
+                  If *window 
+                     If *this = *window
+                        Break
+                     EndIf
+                     If *active = *window
+                        Break
+                     EndIf
+                     If Not *window\anchors
+                        Break
+                     EndIf
+                     If IsChild( *active, *window )
+                        Break
+                     EndIf
+                     If *window\focus <> 0
+                        If test_focus_set
+                           Debug "DEACTIVEWINDOW "+*window\class ;+" "+ *this\window\focus
+                        EndIf
+                        *window\focus = 0
+                        DoEvents( *window, #__event_Lostfocus )
+                     EndIf
+                  EndIf
+               Wend
+            EndIf
+         Else
+;             ; activate
+;             If test_focus_set
+;                Debug "ACTIVE "+*this\class ;+" "+ *this\focus
+;             EndIf
+;            ; *this\focus = 2
+            ;
+            *window = *this
+            While Not is_root_( *window )
+               *window = *window\window
+               If *window 
+                  If *this = *window 
+                     Break
+                  EndIf
+                  If Not *window\anchors
+                     Break
+                  EndIf
+                  If *window\focus = 0
+                     If test_focus_set
+                        Debug "ACTIVEWINDOW "+*window\class ; +" "+ *this\window\focus
+                     EndIf
+                     *window\focus = 2
+                     DoEvents( *window, #__event_focus )
+                  EndIf
+               EndIf
+            Wend
+            
+;             *window = a_main( )
+;             If *window\focus = 0
+;                If test_focus_set
+;                   Debug "ACTIVEMDI "+*window\class ; +" "+ *this\window\focus
+;                EndIf
+;                *window\focus = 2
+;                DoEvents( *window, #__event_focus )
+;             EndIf
+;             SetActive( a_main( ) )
+            
+            DoActivate( *this )
+           ; DoEvents( *this, #__event_focus )
+         EndIf
+         
+      EndProcedure
+      
       Procedure.i SetActive( *this._s_WIDGET )
          Protected result.i 
          Protected._s_WIDGET *active, *deactive, *deactiveWindow, *deactiveGadget
@@ -11279,7 +11293,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                keyboard( )\widget = *active
                   
                ;\\
-               If *active\anchors
+               If  *active\anchors And 
+                   *active\parent And
+                  *active\parent\anchors
                  ; keyboard( )\active = *active
                   a_set( *active )
                Else
@@ -16745,7 +16761,9 @@ chr$ = ","
                      __gui\event\mask & 1<<__event
                      
                      DeleteElement( __gui\event\queues( ) )
-                     ; Debug ""+GetClass(__widget) +" "+ ClassFromEvent(__event) +" "+ Str(__gui\event\mask & 1<<__event)
+;                      If __event = #__event_focus
+;                         Debug "SET events "+GetClass(__widget) +" "+ ClassFromEvent(__event) +" "+ Str(__gui\event\mask & 1<<__event)
+;                      EndIf
                      
                      If __event = #__event_Free
                         Free( @__widget )
@@ -16771,19 +16789,31 @@ chr$ = ","
                Debug ""+*this\class + " - Put event queues( test "+test +" ) "+ ClassFromEvent(event)
                test + 1
             EndIf
+            
             ;
-            If ListSize(__gui\event\queues( )) And 
-               ListIndex( __gui\event\queues( ) ) >= 0 And
-               __gui\event\queues( )\type = event
-               ProcedureReturn __gui\event\queues( )
+            ; Если такое событие уже есть пропускаем
+            If ListSize(__gui\event\queues( ))  
+               If ListIndex( __gui\event\queues( ) ) >= 0 
+                  If __gui\event\queues( )\widget = *this
+                     If __gui\event\queues( )\type = event
+                        ProcedureReturn __gui\event\queues( )
+                     EndIf
+                  EndIf
+               EndIf
             EndIf
+            
             ;
+            ; 
             If AddElement( __gui\event\queues( ) )
                __gui\event\queues.allocate( EVENTDATA, ( ) )
                __gui\event\queues( )\widget = *this
                __gui\event\queues( )\type   = event
                __gui\event\queues( )\item   = *button
                __gui\event\queues( )\data   = *data
+               
+;                If event = #__event_focus
+;                   Debug  "ADD events "+ClassFromEvent( event ) +" "+ *this\class 
+;                EndIf
                ProcedureReturn __gui\event\queues( )
             EndIf
          EndIf
@@ -16792,12 +16822,16 @@ chr$ = ","
       Procedure.i Post( *this._s_root, event.l, *button = #PB_All, *data = #Null )
          Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
          
-         If *this > 0
+         If *this > 0 
             If Not __gui\event\queuesmask And 
                Not __gui\event\mask & 1<<event
                
                ProcedureReturn AddEvents( *this, event, *button, *data )
             Else
+;                If event = #__event_focus
+;                   Debug  " POST events "+ClassFromEvent( event ) +" "+ *this\class 
+;                EndIf
+               
                If is_bar_( *this )
                   ;
                   If event = #__event_LeftClick Or
@@ -19522,6 +19556,7 @@ chr$ = ","
                If event = #__event_Create
                ElseIf event = #__event_Focus Or
                       event = #__event_LostFocus
+                  ;
                   If GetActiveGadget( ) = *this\root\canvas\gadget
                      Post( *this, event, *button, *data )
                   EndIf
@@ -20067,57 +20102,47 @@ chr$ = ","
                   ;\\ tab focus
                   Select keyboard( )\Key
                      Case #PB_Shortcut_Tab
-;                         If Not *keywidget\anchors
-;                            If *keywidget\container And
-;                               *keywidget\FirstWidget( )
-;                               ;
-;                               SetActive( *keywidget\FirstWidget( ) )
-;                            ElseIf *keywidget\AfterWidget( )
-;                               SetActive( *keywidget\AfterWidget( ) )
-;                            Else
-;                               If *keywidget\parent
-;                                  If *keywidget\parent\AfterWidget( )
-;                                     SetActive( *keywidget\parent\AfterWidget( ) )
-;                                  Else
-;                                     If *keywidget\root\FirstWidget( )
-;                                        SetActive( *keywidget\root\FirstWidget( ) )
-;                                     EndIf
-;                                  EndIf
-;                               EndIf
-;                            EndIf
-                           
-                           If *keywidget\FirstWidget( )
-                              If Not *keywidget\FirstWidget( )\anchors
-                                 SetActive( *keywidget\FirstWidget( ) )
+                        If *keywidget\container And Not *keywidget\anchors And 
+                           *keywidget\FirstWidget( )
+                           ;
+                           SetActive( *keywidget\FirstWidget( ) )
+                        ElseIf *keywidget\AfterWidget( ) 
+                           If *keywidget\AfterWidget( )\anchors
+                              If Not *keywidget\AfterWidget( )\parent\anchors
+                                 SetActive( *keywidget\AfterWidget( ) )
+                              Else
+                                 SetActive( a_main( )\parent\FirstWidget( ) )
                               EndIf
                            Else
-                              If *keywidget\AfterWidget( )
-                                 If Not *keywidget\AfterWidget( )\anchors
-                                    SetActive( *keywidget\AfterWidget( ) )
-                                 EndIf
+                              SetActive( *keywidget\AfterWidget( ) )
+                           EndIf
+                        Else
+                           If *keywidget\parent
+                              If *keywidget\parent\AfterWidget( )
+                                 SetActive( *keywidget\parent\AfterWidget( ) )
                               Else
-                                 ;                               ; type 1
-                                 ;                               If *keywidget\parent
-                                 ;                                  If not *keywidget\parent\anchors
-                                 ;                                     SetActive( *keywidget\parent )
-                                 ;                                  EndIf
-                                 ;                               EndIf
-                                 ;                               
-                                 ;                               ; type 2
-                                 If *keywidget\parent
-                                    If *keywidget\parent\AfterWidget( )
-                                       If Not *keywidget\parent\AfterWidget( )\anchors
-                                          SetActive( *keywidget\parent\AfterWidget( ) )
-                                       EndIf
-                                    Else
-                                       If Not *keywidget\parent\anchors
-                                          SetActive( *keywidget\parent )
-                                       EndIf
-                                    EndIf
+                                 If *keywidget\root\FirstWidget( )
+                                    SetActive( *keywidget\root\FirstWidget( ) )
                                  EndIf
                               EndIf
                            EndIf
-;                         EndIf
+                        EndIf
+                        
+                        ;                         If Not GetActive( )\anchors And GetActive( )\FirstWidget( )
+                        ;                            SetActive( GetActive( )\FirstWidget( ) )
+                        ;                         Else
+                        ;                            If GetActive( )\AfterWidget( )
+                        ;                               SetActive( GetActive( )\AfterWidget( ) )
+                        ;                            Else
+                        ;                               If GetActive( )\parent
+                        ;                                  If GetActive( )\parent\gadget
+                        ;                                     DoDeactivate( GetActive( )\parent\gadget )
+                        ;                                     GetActive( )\parent\gadget = #Null
+                        ;                                  EndIf
+                        ;                                  SetActive( GetActive( )\parent )
+                        ;                               EndIf
+                        ;                            EndIf
+                        ;                         EndIf
                         
                   EndSelect
                EndIf
@@ -20125,65 +20150,70 @@ chr$ = ","
                If eventtype = #PB_EventType_KeyDown 
              
                   ;\\ anchor key focus
-                  Select keyboard( )\Key
-                     Case #PB_Shortcut_Left
-;                         If *keywidget\BeforeWidget( )
-;                            If *keywidget\BeforeWidget( )\anchors
-;                               SetActive( *keywidget\BeforeWidget( ) )
-;                            EndIf
-;                         Else
-                           If *keywidget\parent
-                              If *keywidget\parent\anchors
-                                 SetActive( *keywidget\parent )
-                              EndIf
-                           EndIf
-;                         EndIf
-                        
-                     Case #PB_Shortcut_Up
-                        If *keywidget\BeforeWidget( )
-                           If *keywidget\BeforeWidget( )\anchors
-                              SetActive( *keywidget\BeforeWidget( ) )
-                           EndIf
-                        EndIf
-                        
-                     Case #PB_Shortcut_Down
-                        If *keywidget\AfterWidget( )
-                           If *keywidget\AfterWidget( )\anchors
-                              SetActive( *keywidget\AfterWidget( ) )
-                           EndIf
-                        EndIf
-                        
-                     Case #PB_Shortcut_Right
-                        If *keywidget\FirstWidget( )
-                           If *keywidget\FirstWidget( )\anchors
-                              SetActive( *keywidget\FirstWidget( ) )
-                           EndIf
-                        Else
-                           If *keywidget\AfterWidget( )
-                              If *keywidget\AfterWidget( )\anchors
-                                 SetActive( *keywidget\AfterWidget( ) )
+                  If Not keyboard( )\key[1]
+                     Select keyboard( )\Key
+                        Case #PB_Shortcut_Left
+                           If *keywidget\BeforeWidget( )
+                              If *keywidget\BeforeWidget( )\anchors
+                                 a_set( *keywidget\BeforeWidget( ) )
                               EndIf
                            Else
-;                               ; type 1
-;                               If *keywidget\parent
-;                                  If *keywidget\parent\anchors
-;                                     SetActive( *keywidget\parent )
-;                                  EndIf
-;                               EndIf
-;                               
-;                               ; type 2
                               If *keywidget\parent
-                                 If *keywidget\parent\AfterWidget( )
-                                    If *keywidget\parent\AfterWidget( )\anchors
-                                       SetActive( *keywidget\parent\AfterWidget( ) )
+                                 If *keywidget\parent\anchors
+                                    a_set( *keywidget\parent )
+;                                     If *keywidget\parent = a_main( )
+;                                        a_set( a_main( ) )
+;                                     EndIf
+                                 EndIf
+                              EndIf
+                           EndIf
+                           
+                        Case #PB_Shortcut_Up
+                           If *keywidget\BeforeWidget( )
+                              If *keywidget\BeforeWidget( )\anchors
+                                 a_set( *keywidget\BeforeWidget( ) )
+                              EndIf
+                           EndIf
+                           
+                        Case #PB_Shortcut_Down
+                           If *keywidget\AfterWidget( )
+                              If *keywidget\AfterWidget( )\anchors
+                                 a_set( *keywidget\AfterWidget( ) )
+                              EndIf
+                           EndIf
+                           
+                        Case #PB_Shortcut_Right
+                           If *keywidget\FirstWidget( )
+                              If *keywidget\FirstWidget( )\anchors
+                                 a_set( *keywidget\FirstWidget( ) )
+                              EndIf
+                           Else
+                              If *keywidget\AfterWidget( )
+                                 If *keywidget\AfterWidget( )\anchors
+                                    a_set( *keywidget\AfterWidget( ) )
+                                 EndIf
+                              Else
+                                 ;                               ; type 1
+                                 ;                               If *keywidget\parent
+                                 ;                                  If *keywidget\parent\anchors
+                                 ;                                     a_set( *keywidget\parent )
+                                 ;                                  EndIf
+                                 ;                               EndIf
+                                 ;                               
+                                 ;                               ; type 2
+                                 If *keywidget\parent
+                                    If *keywidget\parent\AfterWidget( )
+                                       If *keywidget\parent\AfterWidget( )\anchors
+                                          a_set( *keywidget\parent\AfterWidget( ) )
+                                       EndIf
                                     EndIf
                                  EndIf
                               EndIf
                            EndIf
-                        EndIf
-                        
-                  EndSelect
-                  
+                           
+                     EndSelect
+                  EndIf
+               
                   DoEvents( *keywidget, #__event_KeyDown )
                EndIf
                If eventtype = #PB_EventType_Input
@@ -22091,11 +22121,6 @@ chr$ = ","
             *root\picture\image = - 1
             
             ;\\
-            PostEvent( #PB_Event_SizeWindow, window, Canvas ) ; Bug PB
-            Post( *root, #__event_create )
-            PostReDraw( *root )
-            
-            ;\\
             If Width Or Height
                Resize( *root, #PB_Ignore, #PB_Ignore, Width, Height )
             EndIf
@@ -22118,6 +22143,11 @@ chr$ = ","
                SetActive( *root )
                SetActiveGadget( *root\canvas\gadget )
             EndIf
+            
+            ;\\
+            PostEvent( #PB_Event_SizeWindow, window, Canvas ) ; Bug PB
+            Post( *root, #__event_create )
+            PostReDraw( *root )
          EndIf
          
          ;;;;;;;;;;;
@@ -22360,8 +22390,6 @@ chr$ = ","
          ;
          *this\bs = *this\fs
          
-         ;\\
-         Post( *this, #__event_create )
          
          ;\\
          If *parent
@@ -22388,6 +22416,8 @@ chr$ = ","
          ;
          ;\\ add count types
          CountType( *this, 1 )
+         ;\\
+         Post( *this, #__event_create )
          
          ;\\
          If constants::BinaryFlag( *this\flag, #PB_Window_SizeGadget&~#PB_Window_TitleBar )
@@ -24630,8 +24660,14 @@ chr$ = ","
                      
                      ;\\ draw focus state
                      If *this\focus = 2
+                        UnclipOutput( )
                         draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                        draw_box_( *this\frame_x( )+1, *this\frame_y( )+1, *this\frame_width( )-2, *this\frame_height( )-2, $fffff0000 )
+                        draw_box_( *this\frame_x( )+2, *this\frame_y( )+2, *this\frame_width( )-4, *this\frame_height( )-4, $fffff0000 )
                         draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $fffff0000 )
+                        draw_box_( *this\frame_x( )-1, *this\frame_y( )-1, *this\frame_width( )+2, *this\frame_height( )+2, $fffff0000 )
+                        draw_box_( *this\frame_x( )-2, *this\frame_y( )-2, *this\frame_width( )+4, *this\frame_height( )+4, $fffff0000 )
+                        clip_output_( *this )
                      EndIf
                   EndIf
                   
@@ -25398,6 +25434,15 @@ CompilerIf #PB_Compiler_IsMainFile
     
    Global ide_toolbar, ide_popup_lenguage, *g1._s_WIDGET, *g2._s_WIDGET
    
+   Procedure DisableBarButtons( *this._s_WIDGET, state )
+      DisableBarButton( *this, #_tb_group_left, state )
+      DisableBarButton( *this, #_tb_group_right, state )
+      DisableBarButton( *this, #_tb_group_top, state )
+      DisableBarButton( *this, #_tb_group_bottom, state )
+      DisableBarButton( *this, #_tb_group_height, state )
+      DisableBarButton( *this, #_tb_group_width, state )
+   EndProcedure
+   
    Procedure Copy( *g._s_WIDGET )
       PushListPosition( widgets( ) )
       SelectElement( widgets( ), 2 )
@@ -25412,6 +25457,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected *g._s_WIDGET = EventWidget( )
       
       Select WidgetEventItem( )
+         Case #_tb_group_select
+            If a_anchors( )\group\show
+               a_focused( ) = 0
+            EndIf
+      
          Case #_tb_group_left
             a_align( a_focused( ), 1 )
          Case #_tb_group_right 
@@ -25447,7 +25497,15 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure ide_events( )
       Protected *g._s_WIDGET = EventWidget( )
-      Debug ""+#PB_Compiler_Procedure +" "+ ClassFromEvent( WidgetEvent( )) +" "+ *g\class
+      If WidgetEvent( ) = #__event_Up
+         If a_anchors( )\group\show
+            DisableBarButtons( ide_toolbar, 0 )
+         Else
+            DisableBarButtons( ide_toolbar, 1 )
+         EndIf
+      Else
+         Debug ""+#PB_Compiler_Procedure +" "+ ClassFromEvent( WidgetEvent( )) +" "+ *g\class
+      EndIf
    EndProcedure
    
    If Open(0, 0, 0, 700, 320, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -25490,6 +25548,7 @@ CompilerIf #PB_Compiler_IsMainFile
          CloseSubBar( )
          CloseList( ) 
          
+         DisableBarButtons( ide_toolbar, 1 )
          Bind( ide_toolbar, @ide_toolbar_events( ) )
       EndIf
       
@@ -25505,7 +25564,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       SetState( *t1, 3)
       ;SetItemState( *t1, 3, #PB_Tree_Selected )
-      SetActive( *t1)
+      ;SetActive( *t1)
       
       Define MDI = MDI(100, 10, 680, 275) ;, #PB_MDI_AutoSize) ; as they will be sized automatically
       a_init( MDI );, 0 )
@@ -25532,8 +25591,15 @@ CompilerIf #PB_Compiler_IsMainFile
       ; Resize( *g2, X(*g1)+Width(*g1), #PB_Ignore, #PB_Ignore, #PB_Ignore) ; BUG
       Resize( *g2, X(*g1, #__c_container)+Width(*g1, #__c_frame), Y(*g1, #__c_container), #PB_Ignore, #PB_Ignore )
       
+      ;;test_focus_set = 1
+      Debug "-"
+      SetActive( MDI )
+      SetActive(*g2)
+      Debug "--"
+      
       Bind( root(), @ide_events( ), #__event_focus )
       Bind( root(), @ide_events( ), #__event_lostfocus )
+      Bind( root(), @ide_events( ), #__event_Up )
       
       Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
       
@@ -26398,9 +26464,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 24633
-; FirstLine = 22694
-; Folding = B+-------------------------------0---------------------------t-0------0--vv---------------p---0---vP9-----------------------------------f04---------------+---------------------------------------------------f204084v4--v----------------------------------------------------------------------------------j---8------------------------------------------------------------v--------------------------------------------------------------------------7---------------------+------------------------------------------------------------------------+vf2-------v8----v2d28--f--8-0--8v------z-cv-------------------------------------------------------------------------------------------------rU+v----------------3VDCEYAAA-
+; CursorPosition = 25593
+; FirstLine = 23476
+; Folding = B+-------------------------------0---------------------------t-0---8--ff---------------T---8---ff5------------------------------------7v---------------0----------------------------------------------------q8v84vfv--f----------------------------------------------------------------------------------j------+------------------------------------------------------------8-------------------------------------------------------------------------v+----------------------------------------------------------------------------------------------0f-q8-----ff4---8fr8q4---+-4----v-+-----P-z0+------------------------------------------------------------------------------------------------vS6-+---------------8-FDCEYAAA-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
