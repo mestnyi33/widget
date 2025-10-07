@@ -1356,9 +1356,7 @@ Procedure new_widget_line_add( *new._s_widget )
          AddItem( ide_inspector_view, position, newClass.s, img, sublevel )
          SetItemData( ide_inspector_view, position, *new )
          ; SetItemState( ide_inspector_view, position, #PB_tree_selected )
-         
-         ; Debug " "+position
-         SetState( ide_inspector_view, position )
+         ; SetState( ide_inspector_view, position )
          
          If IsGadget( ide_g_code )
             AddGadgetItem( ide_g_code, position, newClass.s, ImageID(img), SubLevel )
@@ -1420,8 +1418,20 @@ Procedure new_widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore,
          EndIf
          
          new_widget_line_add( *new )
+         
+         If Not flag & #__flag_NoFocus 
+            If IsContainer( *new )
+               If is_window_( *new )
+                  a_set(*new, #__a_full, (14))
+               Else
+                  a_set(*new, #__a_full, (10))
+               EndIf 
+            Else
+               a_set(*new, #__a_full)
+            EndIf
+         EndIf
+         ; CloseList( )
       EndIf
-      ; CloseList( )
    EndIf
    
    ProcedureReturn *new
@@ -1465,6 +1475,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
          EndIf
       EndIf
       
+        
       ; create elements
       Select type$
          Case "window"   
@@ -1559,26 +1570,26 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
                
                SetImage( *new, *imagelogo )
                
-               If Not flag & #__flag_NoFocus 
-                  a_set(*new, #__a_full, (14))
-               EndIf
+;                If Not flag & #__flag_NoFocus 
+;                   a_set(*new, #__a_full, (14))
+;                EndIf
                SetBackColor( *new, $FFECECEC )
                ;
                Properties_Updates( *new, "Resize" )
                Bind( *new, @new_widget_events( ) )
             Else
-               If Not flag & #__flag_NoFocus 
-                  a_set(*new, #__a_full, (10))
-               EndIf
-               ;SetBackColor( *new, $FFF1F1F1 )
+;                If Not flag & #__flag_NoFocus 
+;                   a_set(*new, #__a_full, (10))
+;                EndIf
+;                ;SetBackColor( *new, $FFF1F1F1 )
             EndIf 
             
             ; 
             *new\ChangeColor = 0
          Else
-            If Not flag & #__flag_NoFocus 
-               a_set(*new, #__a_full)
-            EndIf
+;             If Not flag & #__flag_NoFocus 
+;                a_set(*new, #__a_full)
+;             EndIf
          EndIf
          
          Bind( *new, @new_widget_events( ), #__event_Resize )
@@ -1611,9 +1622,10 @@ Procedure new_widget_events( )
          
       Case #__event_Focus
          If a_focused( ) = *g
-            ; Debug "FOCUS "+GetClass(*g)
-            
-            If GetData(*g) >= 0
+            If GetState( ide_inspector_view ) = GetData(*g)
+               Debug "FOCUS "+ GetData(*g)  +" "+ GetClass(*g)
+            Else
+               Debug "CHANGE "+ GetData(*g)  +" "+ GetClass(*g)
                If IsGadget( ide_g_code )
                   SetGadgetState( ide_g_code, GetData(*g) )
                EndIf
@@ -1624,18 +1636,15 @@ Procedure new_widget_events( )
          EndIf
          
       Case #__event_Up
+         ; set keyboard focus
          If a_anchors( )\group\show
-            ; set keyboard focus
-            SetActive( *g )
+           ; SetActive( *g )
          EndIf
-         
+            
       Case #__event_Down
          If a_focused( ) = *g
-            If GetActive( ) <> ide_inspector_view ; GetActive( ) <> *g ; Not GetFocus( ide_inspector_view ) ; 
-              SetActive( ide_inspector_view )
-              ;  GetActive( ) = *g
-              
-              Debug 444
+            If GetActive( ) <> ide_inspector_view 
+             ; SetActive( ide_inspector_view )
             EndIf
          EndIf
           
@@ -2387,9 +2396,12 @@ Procedure ide_events( )
          
       Case #__event_Change
          If *g = ide_inspector_view
-            ;  SetActive( GetItemData( *g, GetState(*g) ) )
+;             PushListPosition( *g\__rows())
+;             Debug "+CHANGE "+GetState(*g) +" "+ GetItemData( *g, GetState(*g) ) ; GetClass(GetItemData( *g, GetState(*g) ))
+;             PopListPosition( *g\__rows())
             If a_set( GetItemData( *g, GetState(*g) ))
-               SetActive( a_focused( ) )
+               ;
+            Else
             EndIf
          EndIf
          
@@ -2416,7 +2428,6 @@ Procedure ide_events( )
                If GetState( ide_inspector_elements) > 0
                   Static _x_, _y_
                   new_widget_add( a_focused( ), GetText( ide_inspector_elements ), _x_ + mouse( )\steps, _y_ + mouse( )\steps, #PB_Ignore, #PB_Ignore, #__flag_NoFocus )
-                  ; a_set( a_focused( )\parent )
                   _x_ + mouse( )\steps
                   _y_ + mouse( )\steps
                   SetState( ide_inspector_elements, 0 )
@@ -2968,7 +2979,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    
    
    
-   a_set( ide_design_FORM )
+   ; SetActive( ide_design_FORM )
      
    ;ReDraw(root())
    Define time = ElapsedMilliseconds( )
@@ -3009,10 +3020,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1636
-; FirstLine = 1482
-; Folding = ---------f+X-------Pk-f---------v-9----8+----0-f------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 1358
+; FirstLine = 1212
+; Folding = ---------f+X-------Pk-f---z-----v-9----8+----0-f------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

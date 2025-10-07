@@ -74,12 +74,14 @@ CompilerIf #PB_Compiler_IsMainFile
           Case *added
             widget::AddItem(*w1, -1, "item " +Str(widget::CountItems(*w1)) +" (added)")
             widget::AddItem(*w2, -1, "item " +Str(widget::CountItems(*w2)) +" (added)")
+            ;widget::SetState(*w2, CountItems(*w2)-1)
             
             AddGadgetItem_(*g1, -1, "item " +Str(CountGadgetItems(*g1)) +" (added)")
             AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
+            ;SetGadgetState(*g2, CountGadgetItems(*g2)-1)
             
-            widget::SetState(*last, widget::GetState(*reset))
-            widget::SetState(*first, 0)
+             widget::SetState(*last, Bool(widget::Disable(*reset)=0))
+             widget::SetState(*first, 0)
             
          Case *reset
             widget::Disable(*reset, 1)
@@ -106,7 +108,8 @@ CompilerIf #PB_Compiler_IsMainFile
         AddGadgetItem_(*g1, -1, "item " +Str(CountGadgetItems(*g1)) +" (added)")
         AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
         
-      Case #__event_Change
+     Case #__event_Change
+        Debug "change widget "+widget::GetState(widget::EventWidget( ))
         widget::Disable(*reset, 0)
         widget::SetState(*w1, widget::GetState(widget::EventWidget( )))
         
@@ -123,6 +126,7 @@ CompilerIf #PB_Compiler_IsMainFile
         AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
         
       Case #PB_EventType_Change
+        Debug "change gadget "+GetGadgetState(EventGadget( ))
         SetGadgetState_(*g1, GetGadgetState(EventGadget()))
         
     EndSelect
@@ -172,9 +176,9 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 110
-; FirstLine = 87
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 82
+; FirstLine = 66
 ; Folding = ---
 ; EnableXP
 ; DPIAware

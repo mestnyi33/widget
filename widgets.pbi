@@ -3103,7 +3103,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.i a_set( *this._s_WIDGET, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
          Protected result
-         ;
+         ; Debug ""+*this\class
+                    ;
          If *this
             If *this\anchors
                If mode >= 0
@@ -3121,6 +3122,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\
                If a_anchors( ) 
                   If a_focused( ) <> *this
+                    ; Debug " ? "+*this\class
                      If a_focused( )
                         If a_focused( )\anchors\group\show
                            a_group_show( a_focused( ), #__event_LostFocus )
@@ -3359,6 +3361,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          If event = #__event_Up
             If MouseButtons( ) & #PB_Canvas_LeftButton
                If *this\anchors
+                  ; set keyboard focus
+                  ;SetActive( *this )
+                   
                   ; show group anchors
                   If Not a_anchors( )\group\show
                      If mouse( )\selector
@@ -5472,7 +5477,57 @@ CompilerIf Not Defined( widget, #PB_Module )
                   row_scroll_y_( *this, *this\RowFocused( ) )
                   
                   *this\scroll\v\WidgetChange( ) = 0
+                  
+                  
+                  Protected result2
+                  If *this\RowFocused( )\_focus
+                     If *this\focus = 2
+                        If *this\RowFocused( )\ColorState( ) <> #__s_2
+                           *this\RowFocused( )\ColorState( ) = #__s_2
+                           result2 = 2
+                        EndIf
+                     Else
+                        If *this\RowFocused( )\ColorState( ) <> #__s_3
+                           *this\RowFocused( )\ColorState( ) = #__s_3
+                           result2 = 3
+                        EndIf
+                     EndIf
+                  Else
+                     If *this\RowFocused( )\ColorState( ) <> #__s_1
+                        *this\RowFocused( )\ColorState( ) = #__s_1
+                        result2 = 1
+                     EndIf
+                  EndIf
+                  
+                  ;
+                  If is_integral_( *this ) 
+                     If *this\parent  
+                        If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
+                           SetText( *this\parent\parent, *this\RowFocused( )\text\string )
+                           DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                           If result2  
+                              DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                           EndIf 
+                        Else
+                           If *this\parent\type = #__type_ComboBox
+                              SetText( *this\parent, *this\RowFocused( )\text\string )
+                           EndIf 
+                           DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                           If result2  
+                              DoEvents( *this\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                           EndIf 
+                        EndIf 
+                     EndIf 
+                  Else
+                     DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                     If result2  
+                        DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                     EndIf 
+                  EndIf
+                  
+                  
                EndIf
+                           
             EndIf
          EndIf
          
@@ -9672,50 +9727,50 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *this\RowFocused( )\_focus = 1
                         EndIf
                         
-                        If *this\RowFocused( )\_focus
-                           If *this\focus = 2
-                              If *this\RowFocused( )\ColorState( ) <> #__s_2
-                                 *this\RowFocused( )\ColorState( ) = #__s_2
-                                 result = 2
-                              EndIf
-                           Else
-                              If *this\RowFocused( )\ColorState( ) <> #__s_3
-                                 *this\RowFocused( )\ColorState( ) = #__s_3
-                                 result = 3
-                              EndIf
-                           EndIf
-                        Else
-                           If *this\RowFocused( )\ColorState( ) <> #__s_1
-                              *this\RowFocused( )\ColorState( ) = #__s_1
-                              result = 1
-                           EndIf
-                        EndIf
-                        
-                        ;
-                        If is_integral_( *this ) 
-                           If *this\parent  
-                              If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
-                                 SetText( *this\parent\parent, *this\RowFocused( )\text\string )
-                                 DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                                 If result  
-                                    DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                                 EndIf 
-                              Else
-                                 If *this\parent\type = #__type_ComboBox
-                                    SetText( *this\parent, *this\RowFocused( )\text\string )
-                                 EndIf 
-                                 DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                                 If result  
-                                    DoEvents( *this\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                                 EndIf 
-                              EndIf 
-                           EndIf 
-                        Else
-                           DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                           If result  
-                              DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                           EndIf 
-                        EndIf
+;                         If *this\RowFocused( )\_focus
+;                            If *this\focus = 2
+;                               If *this\RowFocused( )\ColorState( ) <> #__s_2
+;                                  *this\RowFocused( )\ColorState( ) = #__s_2
+;                                  result = 2
+;                               EndIf
+;                            Else
+;                               If *this\RowFocused( )\ColorState( ) <> #__s_3
+;                                  *this\RowFocused( )\ColorState( ) = #__s_3
+;                                  result = 3
+;                               EndIf
+;                            EndIf
+;                         Else
+;                            If *this\RowFocused( )\ColorState( ) <> #__s_1
+;                               *this\RowFocused( )\ColorState( ) = #__s_1
+;                               result = 1
+;                            EndIf
+;                         EndIf
+;                         
+;                         ;
+;                         If is_integral_( *this ) 
+;                            If *this\parent  
+;                               If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
+;                                  SetText( *this\parent\parent, *this\RowFocused( )\text\string )
+;                                  DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+;                                  If result  
+;                                     DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+;                                  EndIf 
+;                               Else
+;                                  If *this\parent\type = #__type_ComboBox
+;                                     SetText( *this\parent, *this\RowFocused( )\text\string )
+;                                  EndIf 
+;                                  DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+;                                  If result  
+;                                     DoEvents( *this\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+;                                  EndIf 
+;                               EndIf 
+;                            EndIf 
+;                         Else
+;                             DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+;                            If result  
+;                               DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+;                            EndIf 
+;                         EndIf
                         ProcedureReturn 1
                      EndIf
                   EndIf
@@ -11297,7 +11352,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                    *active\parent And
                   *active\parent\anchors
                  ; keyboard( )\active = *active
-                  a_set( *active )
+                 a_set( *active )
                Else
                   keyboard( )\deactive = keyboard( )\active
                   
@@ -12349,19 +12404,22 @@ CompilerIf Not Defined( widget, #PB_Module )
                   add_image( *row\picture, img, *this\picturesize )
                   
                   If *this\RowFocused( )
-                     *this\RowFocused( )\_focus = 0
-                     *this\RowFocused( )\ColorState( ) = #__s_0
-                     
-                     *this\RowFocused( )             = *row
-                     *this\RowFocused( )\_focus = 1
-                     *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
+;                      *this\RowFocused( )\_focus = 0
+;                      *this\RowFocused( )\ColorState( ) = #__s_0
+;                      
+;                      *this\RowFocused( )             = *row
+;                      *this\RowFocused( )\_focus = 1
+;                      *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
+;                      ;Debug 44
+                     SetState( *this, position )
+;                      ;Debug 55
                   EndIf
                   
-                  ; если был активирован авто скролл 
-                  ; то указываем что нужно скроллить бар 
-                  If *this\row\autoscroll = #PB_All
-                     *this\row\autoscroll = #True
-                  EndIf
+;                   ; если был активирован авто скролл 
+;                   ; то указываем что нужно скроллить бар 
+;                   If *this\row\autoscroll = #PB_All
+;                      *this\row\autoscroll = #True
+;                   EndIf
                   
                   If test_redraw_items
                      PostReDraw( *this\root )
@@ -20477,11 +20535,13 @@ chr$ = ","
                If mouse( )\click = 1
                   DoEvents( Entered( ), event )
                EndIf
-               ;
-               ;\\ set keiboard focus widget
-               If keyboard( )\widget <> Entered( )
-                  keyboard( )\widget = Entered( )
-               EndIf
+;                ;
+;                ;\\ set keiboard focus widget
+;                If Entered( )\anchors
+;                   If keyboard( )\widget <> Entered( )
+;                      keyboard( )\widget = Entered( )
+;                   EndIf
+;                EndIf
             EndIf
          EndIf
          
@@ -26468,10 +26528,10 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20454
-; FirstLine = 18605
-; Folding = B+-------------------------------0---------------------------t-0---8--ff---------------T---8---ff5------------------------------------7v---------------0----------------------------------------------------q8v84vfv--f----------------------------------------------------------------------------------j------+------------------------------------------------------------8-------------------------------------------------------------------------v+----------------------------------------------------------------------------------------------0f-q8-----ff4---8fr8q4---+-4----v-+-----f+n80------------------------------------------------------------------------------------------------fly-0---------------4-LGEIwAAA+
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 12414
+; FirstLine = 11223
+; Folding = B+-------------------------------0---------------------------t-0---8--ff-4f4-----------T---8---ff5--------------------------------------7v---------------0----------------------------------------------------q8v84vfv--f-------------------------------b0-z---------------------------------------------j------+------------------------------------------------------------0-------------------------------------------------------------------------X-----------------------------------------------------------------------------------------------+vf20-----vv8---0v2d28--f--8----4f------n-6e-------------------------------------------------------------------------------------------------Xp9f----------------0-iBBCMAAg-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
