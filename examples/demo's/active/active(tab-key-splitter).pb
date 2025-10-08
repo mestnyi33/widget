@@ -1,4 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi"
+; commit 1796 ok
 
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
@@ -52,8 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 9
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP
 ; DPIAware

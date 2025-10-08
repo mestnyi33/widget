@@ -1,4 +1,5 @@
-﻿XIncludeFile "C:\Users\user\Documents\GitHub/widget/widgets.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
+; commit 1796 ok
 
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   EnableExplicit
@@ -85,8 +86,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 48
 ; Folding = -
 ; EnableXP
 ; DPIAware

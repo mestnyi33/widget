@@ -19648,6 +19648,46 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure DoTabFocus( *this._s_WIDGET )
+         If *this\anchors And
+            Not *this\anchors\mode & #__a_zoom
+            If a_main( )\AfterWidget( )
+               SetActive( a_main( )\AfterWidget( ) )
+            Else
+               If a_main( )\parent\FirstWidget( )
+                  SetActive( a_main( )\parent\FirstWidget( ) )
+               EndIf
+            EndIf
+         Else
+            If *this\FirstWidget( )
+               ; SetActive( *this\FirstWidget( ) )
+               SetActive( GetPosition( *this, #PB_List_First, GetState( *this )))
+            Else
+               If *this\AfterWidget( ) And 
+                  *this\AfterWidget( )\TabIndex( ) = *this\TabIndex( )
+                  ;
+                  SetActive( *this\AfterWidget( ) )
+               Else
+                  If *this\parent
+                     If *this\parent\AfterWidget( )
+                        SetActive( *this\parent\AfterWidget( ) )
+                     Else
+                        If *this\root
+                           If *this\root\FirstWidget( )
+                              If *this\window\gadget
+                                 DoDeactivate( *this\window\gadget )
+                                 *this\window\gadget = #Null
+                              EndIf
+                              SetActive( *this\root\FirstWidget( ) )
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+      EndProcedure
+      
       Procedure EventHandler( eventgadget = - 1, eventtype = - 1, eventdata = 0 )
          Protected *root._s_root, repaint, event, mouse_x , mouse_y
          ;
@@ -20108,7 +20148,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      Case #PB_Shortcut_Tab
                         If *keywidget\anchors And
                            Not *keywidget\anchors\mode & #__a_zoom
-                           ;
                            If a_main( )\AfterWidget( )
                               SetActive( a_main( )\AfterWidget( ) )
                            Else
@@ -20118,9 +20157,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                            EndIf
                         Else
                            If *keywidget\FirstWidget( )
-                              SetActive( *keywidget\FirstWidget( ) )
+                              ; SetActive( *keywidget\FirstWidget( ) )
+                              SetActive( GetPosition( *keywidget, #PB_List_First, GetState( *keywidget )))
                            Else
-                              If *keywidget\AfterWidget( )
+                              If *keywidget\AfterWidget( ) And 
+                                 *keywidget\AfterWidget( )\TabIndex( ) = *keywidget\TabIndex( )
+                                 ;
                                  SetActive( *keywidget\AfterWidget( ) )
                               Else
                                  If *keywidget\parent
@@ -20143,6 +20185,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                         
                   EndSelect
+                  
+                  Debug ""+GetActive( )\class+" - [tab-key]"
+                        
                EndIf
                ;
                If eventtype = #PB_EventType_KeyDown 
@@ -26450,9 +26495,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 20180
-; FirstLine = 19783
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+47u70--v--+------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 19966
+; FirstLine = 19718
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-bdX0+--4-f------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
