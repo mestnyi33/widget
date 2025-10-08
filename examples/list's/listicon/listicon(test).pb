@@ -74,8 +74,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ; Here we change the ListIcon display to large icons and show an image
       If LoadImage(0, #PB_Compiler_Home+"Examples/Sources/Data/File.bmp")     ; change path/filename to your own 32x32 pixel image
         SetAttribute(ID(5), #PB_ListIcon_DisplayMode, #PB_ListIcon_LargeIcon)
-        AddItem(ID(5), 1, "Picture 1", ImageID(0))
-        AddItem(ID(5), 2, "Picture 2", ImageID(0))
+        AddItem(ID(5), 1, "Picture 1", (0))
+        AddItem(ID(5), 2, "Picture 2", (0))
       EndIf
       
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
@@ -84,7 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
 ; CursorPosition = 77
-; FirstLine = 61
+; FirstLine = 43
 ; Folding = -
 ; EnableXP
 ; DPIAware
