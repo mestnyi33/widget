@@ -2740,16 +2740,16 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ide_main_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
    
    ; set splitters default minimum size
-   SetAttribute( ide_main_SPLITTER, #PB_Splitter_FirstMinimumSize, 20 )
-   SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 500 )
-   SetAttribute( ide_SPLITTER, #PB_Splitter_FirstMinimumSize, 120 )
-   SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, 540 )
-   SetAttribute( ide_design_SPLITTER, #PB_Splitter_FirstMinimumSize, 300 )
-   SetAttribute( ide_design_SPLITTER, #PB_Splitter_SecondMinimumSize, 100 )
-   SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
-   SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_SecondMinimumSize, 200 )
    SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
    SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_SecondMinimumSize, 30 )
+   SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
+   SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_SecondMinimumSize, 200 )
+   SetAttribute( ide_design_SPLITTER, #PB_Splitter_FirstMinimumSize, 300 )
+   SetAttribute( ide_design_SPLITTER, #PB_Splitter_SecondMinimumSize, 100 )
+   SetAttribute( ide_SPLITTER, #PB_Splitter_FirstMinimumSize, 120 )
+   SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, 540 )
+   SetAttribute( ide_main_SPLITTER, #PB_Splitter_FirstMinimumSize, 20 )
+   SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 500 )
    
    ; set splitters dafault positions
    SetState( ide_main_SPLITTER, Height( ide_toolbar ))
@@ -3000,9 +3000,9 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2756
-; FirstLine = 2560
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 2749
+; FirstLine = 2554
 ; Folding = ---------f+X--------------8------------8-------------
 ; Optimizer
 ; EnableAsm
