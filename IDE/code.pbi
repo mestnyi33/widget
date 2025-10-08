@@ -1156,7 +1156,7 @@ Procedure   MakeLine( *mdi, string$, findtext$ )
       ; если строка такого ввида "containergadget() : closegadgetlist()" 
       Define lines$ = Trim( Mid( String$, arg_start+arg_stop + 1 ), ":" )
       If lines$
-         MakeLine( ide_design_panel_MDI, lines$, findtext$ )
+         MakeLine( ide_design_MDI, lines$, findtext$ )
       EndIf
       
       ProcedureReturn result
@@ -2049,9 +2049,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1058
-; FirstLine = 991
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 1158
+; FirstLine = 1047
 ; Folding = -f-----f------------------f9-4-----4r3f----b-ePA5--0--
 ; EnableXP
 ; DPIAware

@@ -92,28 +92,28 @@ Global ide_window,
        ide_g_canvas
 
 Global ide_root,
-       ide_splitter,
+       ide_main_SPLITTER,
+       ide_SPLITTER, 
        ide_toolbar_container, 
        ide_toolbar, 
        ide_popup_lenguage,
        ide_menu
 
-Global ide_design_splitter, 
-       ide_design_PANEL_splitter,
+Global ide_design_SPLITTER,
        ide_design_PANEL, 
-       ide_design_panel_MDI,
-       ide_design_panel_CODE, 
-       ide_design_PANEL_HIASM, 
+       ide_design_MDI,
+       ide_design_CODE, 
+       ide_design_HIASM, 
        ide_design_DEBUG 
 Global ide_design_FORM 
 
-Global ide_inspector_view_splitter, 
-       ide_inspector_view, 
-       ide_inspector_panel_splitter,
+Global ide_inspector_SPLITTER,
+       ide_inspector_VIEW, 
+       ide_inspector_panel_SPLITTER, 
        ide_inspector_PANEL,
-       ide_inspector_elements,
-       ide_inspector_properties, 
-       ide_inspector_events,
+       ide_inspector_ELEMENTS,
+       ide_inspector_PROPERTIES, 
+       ide_inspector_EVENTS,
        ide_inspector_HELP
 
 Global group_select
@@ -658,34 +658,34 @@ Procedure   Properties_ButtonEvents( )
                      EndIf
                      
                   Case #_pi_coloralpha
-                     If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
-                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorgreen))),
-                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorblue))),
+                     If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
+                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
+                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
                                                              (GetState(*g)) ))
                      Properties_Updates( a_focused( ), "Color" )
                   EndIf
                   
                   Case #_pi_colorblue
-                     If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
-                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorgreen))),
+                     If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
+                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
                                                              (GetState(*g)),
-                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_coloralpha))) ))
+                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
                         Properties_Updates( a_focused( ), "Color" )
                      EndIf
                      
                   Case #_pi_colorgreen
-                     If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorred))),
+                     If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
                                                              (GetState(*g)),
-                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorblue))),
-                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_coloralpha))) ))
+                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
+                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
                         Properties_Updates( a_focused( ), "Color" )
                      EndIf
                      
                   Case #_pi_colorred
                      If SetBackColor( a_focused( ), RGBA( (GetState(*g)),
-                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorgreen))),
-                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_colorblue))),
-                                                             (Val(Properties_GetItemText(ide_inspector_properties, #_pi_coloralpha))) ))
+                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
+                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
+                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
                         Properties_Updates( a_focused( ), "Color" )
                      EndIf
                      
@@ -694,16 +694,16 @@ Procedure   Properties_ButtonEvents( )
             Case #__type_ComboBox
                Select GetData(*g) 
                   Case #_pi_cursor
-                     Properties_SetItemText( ide_inspector_properties, GetData(*g), GetItemText( *g, GetState( *g)))
+                     Properties_SetItemText( ide_inspector_PROPERTIES, GetData(*g), GetItemText( *g, GetState( *g)))
                
                   Case #_pi_colorstate
                      ColorState = GetState(*g)
-                     Properties_SetItemText( ide_inspector_properties, GetData(*g), GetItemText( *g, GetState( *g)))
+                     Properties_SetItemText( ide_inspector_PROPERTIES, GetData(*g), GetItemText( *g, GetState( *g)))
                      Properties_Updates( a_focused( ), "Color" ) 
                      
                   Case #_pi_colortype
                      ColorType = MakeConstants("#PB_Gadget_" + GetItemText( *g, GetState( *g)))
-                     Properties_SetItemText( ide_inspector_properties, GetData(*g), GetItemText( *g, GetState( *g)))
+                     Properties_SetItemText( ide_inspector_PROPERTIES, GetData(*g), GetItemText( *g, GetState( *g)))
                      Properties_Updates( a_focused( ), "Color" ) 
                      
                   Case #_pi_FLAG
@@ -821,7 +821,7 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                AddItem(*this, -1, "Selected")
                AddItem(*this, -1, "Disabled")
 ;                ColorState = 0
-;                Properties_SetItemText( ide_inspector_properties, item, GetItemText( *this, 0) )
+;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
       
             Case #_pi_colortype
                AddItem(*this, -1, "BackColor")
@@ -830,7 +830,7 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                AddItem(*this, -1, "FrameColor")
                AddItem(*this, -1, "ForeColor")
 ;                ColorType = MakeConstants("#PB_Gadget_" + GetItemText( *this, 0))
-;                Properties_SetItemText( ide_inspector_properties, item, GetItemText( *this, 0) )
+;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
                      
             Case #_pi_cursor
                AddItem(*this, -1, "Default")
@@ -845,7 +845,7 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                AddItem(*this, -1, "LeftRight")
                AddItem(*this, -1, "LeftUpRightDown")
                AddItem(*this, -1, "UpDown")
-;                Properties_SetItemText( ide_inspector_properties, item, GetItemText( *this, 0) )
+;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
                
             Default
                AddItem(*this, -1, "False")
@@ -1075,31 +1075,31 @@ EndProcedure
 
 Procedure   Properties_Updates( *object._s_WIDGET, type$ )
    Protected find$, replace$, name$, class$, x$, y$, width$, height$
-   ; class$ = Properties_GetItemText( ide_inspector_properties, #_pi_class )
+   ; class$ = Properties_GetItemText( ide_inspector_PROPERTIES, #_pi_class )
    
-   If ide_inspector_properties
+   If ide_inspector_PROPERTIES
       If type$ = "Focus" Or type$ = "Align"
-         Properties_HideItem( ide_inspector_properties, #_pi_align, Bool( a_focused( )\parent = ide_design_panel_MDI )) 
+         Properties_HideItem( ide_inspector_PROPERTIES, #_pi_align, Bool( a_focused( )\parent = ide_design_MDI )) 
       EndIf
       If type$ = "Focus" Or type$ = "ID"
-         Properties_SetItemText( ide_inspector_properties, #_pi_id, BoolToStr( Bool( GetClass( *object ) <> Trim( GetClass( *object ), "#" ) )))
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_id, BoolToStr( Bool( GetClass( *object ) <> Trim( GetClass( *object ), "#" ) )))
       EndIf
       If type$ = "Focus" Or type$ = "Hide"
-         Properties_SetItemText( ide_inspector_properties, #_pi_hide, BoolToStr( Hide( *object )))
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_hide, BoolToStr( Hide( *object )))
       EndIf
       If type$ = "Focus" Or type$ = "Disable"
-         Properties_SetItemText( ide_inspector_properties, #_pi_disable, BoolToStr( Disable( *object )))
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_disable, BoolToStr( Disable( *object )))
       EndIf
       
       If type$ = "Focus" Or type$ = "Class"
-         find$ = Properties_GetItemText( ide_inspector_properties, #_pi_class )
+         find$ = Properties_GetItemText( ide_inspector_PROPERTIES, #_pi_class )
          replace$ = GetClass( *object )
-         Properties_SetItemText( ide_inspector_properties, #_pi_class, replace$ )
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_class, replace$ )
       EndIf
       If type$ = "Focus" Or type$ = "Text"
-         find$ = Properties_GetItemText( ide_inspector_properties, #_pi_text )
+         find$ = Properties_GetItemText( ide_inspector_PROPERTIES, #_pi_text )
          replace$ = GetText( *object )
-         Properties_SetItemText( ide_inspector_properties, #_pi_text, replace$ )
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_text, replace$ )
       EndIf
       If type$ = "Focus" Or type$ = "Resize"
          ; Debug "---- "+type$
@@ -1115,56 +1115,56 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
             height$ = Str( Height( *object ))
          EndIf
          
-         find$ = Properties_GetItemText( ide_inspector_properties, #_pi_x ) +", "+ 
-                 Properties_GetItemText( ide_inspector_properties, #_pi_y ) +", "+ 
-                 Properties_GetItemText( ide_inspector_properties, #_pi_width ) +", "+ 
-                 Properties_GetItemText( ide_inspector_properties, #_pi_height )
+         find$ = Properties_GetItemText( ide_inspector_PROPERTIES, #_pi_x ) +", "+ 
+                 Properties_GetItemText( ide_inspector_PROPERTIES, #_pi_y ) +", "+ 
+                 Properties_GetItemText( ide_inspector_PROPERTIES, #_pi_width ) +", "+ 
+                 Properties_GetItemText( ide_inspector_PROPERTIES, #_pi_height )
          replace$ = x$ +", "+ y$ +", "+ width$ +", "+ height$
          
-         Properties_SetItemText( ide_inspector_properties, #_pi_x,      x$ )
-         Properties_SetItemText( ide_inspector_properties, #_pi_y,      y$ )
-         Properties_SetItemText( ide_inspector_properties, #_pi_width,  width$ )
-         Properties_SetItemText( ide_inspector_properties, #_pi_height, height$ )
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_x,      x$ )
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_y,      y$ )
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_width,  width$ )
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_height, height$ )
          
          ;
-         Properties_ButtonChange( ide_inspector_properties )
+         Properties_ButtonChange( ide_inspector_PROPERTIES )
       EndIf
       
       If type$ = "Focus" Or type$ = "Flag"
-         Properties_SetItemText( ide_inspector_properties, #_pi_FLAG, MakeConstantsString( ClassFromType(*object\type), *object\flag ))
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, MakeConstantsString( ClassFromType(*object\type), *object\flag ))
       EndIf
       If type$ = "Focus" Or type$ = "Color" 
          Define color.l = GetColor( *object, ColorType, ColorState ) ;& $FFFFFF | *object\color\_alpha << 24
-         Properties_SetItemText( ide_inspector_properties, #_pi_COLOR, "$"+Hex(Color, #PB_Long))
-         Properties_SetItemText( ide_inspector_properties, #_pi_coloralpha, Str(Alpha(color)) )
-         Properties_SetItemText( ide_inspector_properties, #_pi_colorblue, Str(Blue(color)) )
-         Properties_SetItemText( ide_inspector_properties, #_pi_colorgreen, Str(Green(color)) )
-         Properties_SetItemText( ide_inspector_properties, #_pi_colorred, Str(Red(color)) )
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_COLOR, "$"+Hex(Color, #PB_Long))
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_coloralpha, Str(Alpha(color)) )
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_colorblue, Str(Blue(color)) )
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_colorgreen, Str(Green(color)) )
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_colorred, Str(Red(color)) )
       EndIf
       If type$ = "Focus" Or type$ = "Image"
-         Properties_SetItemText( ide_inspector_properties, #_pi_IMAGE, GetImageFile( GetImage( *object )))
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_IMAGE, GetImageFile( GetImage( *object )))
       EndIf
       If type$ = "Focus" Or type$ = "Font"
          Define font = GetFont( *object )
          ; Debug ""+font +" "+ GetClass(*object)
-         Properties_SetItemText( ide_inspector_properties, #_pi_FONT, GetFontName( font ) )
-         ; Properties_SetItemText( ide_inspector_properties, #_pi_fontcolor, Str( GetFontColor( font ) ))
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FONT, GetFontName( font ) )
+         ; Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_fontcolor, Str( GetFontColor( font ) ))
          If GetFontName( font )
-            Properties_SetItemText( ide_inspector_properties, #_pi_fontsize, Str( GetFontSize( font ) ))
+            Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_fontsize, Str( GetFontSize( font ) ))
          Else
-            Properties_SetItemText( ide_inspector_properties, #_pi_fontsize, "" )
+            Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_fontsize, "" )
          EndIf
          Define style$ = RemoveString( MakeConstantsString( "Font", GetFontStyle( font ) ), "#PB_Font_")
          If style$ = ""
             style$ = "None"
          EndIf
-         Properties_SetItemText( ide_inspector_properties, #_pi_fontstyle, style$)
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_fontstyle, style$)
       EndIf 
       
       ;\\
       If type$ = "Focus"
          If a_focused( )
-            Properties_ButtonAddItems( ide_inspector_properties, #_pi_flag, MakeFlagsString( Type( a_focused( ))))
+            Properties_ButtonAddItems( ide_inspector_PROPERTIES, #_pi_flag, MakeFlagsString( Type( a_focused( ))))
          EndIf
          
       Else
@@ -1173,11 +1173,11 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
          
          If find$
             If type$ = "Class"
-               If ide_inspector_view
-                  SetItemText( ide_inspector_view, GetState(ide_inspector_view), replace$)
+               If ide_inspector_VIEW
+                  SetItemText( ide_inspector_VIEW, GetState(ide_inspector_VIEW), replace$)
                EndIf
                
-               If *this = ide_design_panel_CODE Or 
+               If *this = ide_design_CODE Or 
                   *this = ide_design_DEBUG
                   ;
                   Define code$ = GetText( *this )
@@ -1237,9 +1237,9 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
             If *this <> ide_design_DEBUG
                ReplaceText( ide_design_DEBUG, find$, replace$, NbOccurrences )
             EndIf
-            If *this <> ide_design_panel_CODE
-               If Not Hide( ide_design_panel_CODE )
-                  ReplaceText( ide_design_panel_CODE, find$, replace$, NbOccurrences )
+            If *this <> ide_design_CODE
+               If Not Hide( ide_design_CODE )
+                  ReplaceText( ide_design_CODE, find$, replace$, NbOccurrences )
                EndIf 
             EndIf
          EndIf
@@ -1308,24 +1308,24 @@ EndMacro
 Procedure new_widget_line_add( *new._s_widget )
    Protected *parent._s_widget, Param1, Param2, Param3, newClass.s = GetClass( *new )
    
-   If ide_inspector_view
+   If ide_inspector_VIEW
       If *new
          *parent = GetParent( *new )
          ;
          ; get new add position & sublevel
          Protected i, count, sublevel, position
-         count = CountItems( ide_inspector_view )
+         count = CountItems( ide_inspector_VIEW )
          position = GetData( *parent ) 
          ;
          For i = 0 To count - 1
             Position = ( i+1 )
             
-            If *parent = GetItemData( ide_inspector_view, i ) 
-               SubLevel = GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel ) + 1
+            If *parent = GetItemData( ide_inspector_VIEW, i ) 
+               SubLevel = GetItemAttribute( ide_inspector_VIEW, i, #PB_Tree_SubLevel ) + 1
                Continue
             EndIf
             
-            If SubLevel > GetItemAttribute( ide_inspector_view, i, #PB_Tree_SubLevel )
+            If SubLevel > GetItemAttribute( ide_inspector_VIEW, i, #PB_Tree_SubLevel )
                Position = i
                Break
             EndIf
@@ -1337,26 +1337,26 @@ Procedure new_widget_line_add( *new._s_widget )
          ; update new widget data item ;????
          If count > position
             For i = position To count - 1
-               SetData( GetItemData( ide_inspector_view, i ), i + 1 )
+               SetData( GetItemData( ide_inspector_VIEW, i ), i + 1 )
             Next 
          EndIf
          
          
          ; get image associated with class
          Protected img =- 1
-         count = CountItems( ide_inspector_elements )
+         count = CountItems( ide_inspector_ELEMENTS )
          For i = 0 To count - 1
-            If LCase(ClassFromType(Type(*new))) = LCase(GetItemText( ide_inspector_elements, i ))
-               img = GetItemData( ide_inspector_elements, i )
+            If LCase(ClassFromType(Type(*new))) = LCase(GetItemText( ide_inspector_ELEMENTS, i ))
+               img = GetItemData( ide_inspector_ELEMENTS, i )
                Break
             EndIf
          Next  
          
          ; add to inspector
-         AddItem( ide_inspector_view, position, newClass.s, img, sublevel )
-         SetItemData( ide_inspector_view, position, *new )
-         ; SetItemState( ide_inspector_view, position, #PB_tree_selected )
-         ; SetState( ide_inspector_view, position )
+         AddItem( ide_inspector_VIEW, position, newClass.s, img, sublevel )
+         SetItemData( ide_inspector_VIEW, position, *new )
+         ; SetItemState( ide_inspector_VIEW, position, #PB_tree_selected )
+         ; SetState( ide_inspector_VIEW, position )
          
          If IsGadget( ide_g_code )
             AddGadgetItem( ide_g_code, position, newClass.s, ImageID(img), SubLevel )
@@ -1378,24 +1378,24 @@ Procedure new_widget_delete( *this._s_WIDGET  )
    Protected CountItems
    
    
-   If *this <> ide_design_panel_MDI
+   If *this <> ide_design_MDI
       item = GetData( *this )
       
       If item 
          Free( *this )
          
-         RemoveItem( ide_inspector_view, item )
+         RemoveItem( ide_inspector_VIEW, item )
          ;
          ; after remove item 
-         CountItems = CountItems( ide_inspector_view ) 
+         CountItems = CountItems( ide_inspector_VIEW ) 
          If CountItems 
             ; update widget data item
             For i = 0 To CountItems - 1
-               SetData( GetItemData( ide_inspector_view, i ), i )
+               SetData( GetItemData( ide_inspector_VIEW, i ), i )
             Next 
             ;
             ; set anchor focus
-            If a_set( GetItemData( ide_inspector_view, GetState( ide_inspector_view ) ) )
+            If a_set( GetItemData( ide_inspector_VIEW, GetState( ide_inspector_VIEW ) ) )
                ; Это не нужен так как a_set( ) мы получаем фокус выджета 
                ; Properties_Updates( a_focused( ), "Delete" )
             EndIf
@@ -1540,7 +1540,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
          newtype$ = type$+"_"+CountType( *new )
          ;Debug ""+*parent +" "+ newtype$
          ;\\ второй метод формирования названия переменной
-         ;          If *parent = ide_design_panel_MDI
+         ;          If *parent = ide_design_MDI
          ;             newtype$ = Class( *new )+"_"+CountType( *new , 2 )
          ;          Else
          ;             newtype$ = Class( *parent )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
@@ -1619,14 +1619,14 @@ Procedure new_widget_events( )
          
       Case #__event_Focus
          If a_focused( ) = *g
-            If GetState( ide_inspector_view ) = GetData(*g)
+            If GetState( ide_inspector_VIEW ) = GetData(*g)
                ;Debug "FOCUS "+ GetData(*g)  +" "+ GetClass(*g)
             Else
                ;Debug "CHANGE "+ GetData(*g)  +" "+ GetClass(*g)
                If IsGadget( ide_g_code )
                   SetGadgetState( ide_g_code, GetData(*g) )
                EndIf
-               SetState( ide_inspector_view, GetData(*g) )
+               SetState( ide_inspector_VIEW, GetData(*g) )
             EndIf
             
             Properties_Updates( a_focused( ), "Focus" )
@@ -1634,7 +1634,7 @@ Procedure new_widget_events( )
          
       Case #__event_Free
          Protected item = GetData(*g) 
-         RemoveItem( ide_inspector_view, item ) 
+         RemoveItem( ide_inspector_VIEW, item ) 
          
          ;
          DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
@@ -1660,7 +1660,7 @@ Procedure new_widget_events( )
             If IsContainer(*g) 
                If MouseEnter(*g)
                   If Not a_index( )
-                     If GetState( ide_inspector_elements ) > 0 
+                     If GetState( ide_inspector_ELEMENTS ) > 0 
                         If DragDropPrivate( #_DD_CreateNew )
                            ChangeCursor( *g, #PB_Cursor_Cross )
                         EndIf
@@ -1686,8 +1686,8 @@ Procedure new_widget_events( )
                ;                EndIf
                
             Case #_DD_CreateNew 
-               Debug " ----- DD_new ----- "+ GetText( ide_inspector_elements ) +" "+ DropX( ) +" "+ DropY( ) +" "+ DropWidth( ) +" "+ DropHeight( )
-               new_widget_add( *g, GetText( ide_inspector_elements ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
+               Debug " ----- DD_new ----- "+ GetText( ide_inspector_ELEMENTS ) +" "+ DropX( ) +" "+ DropY( ) +" "+ DropWidth( ) +" "+ DropHeight( )
+               new_widget_add( *g, GetText( ide_inspector_ELEMENTS ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
                
             Case #_DD_CreateCopy
                Debug " ----- DD_copy ----- " + GetText( Pressed( ) )
@@ -1702,7 +1702,7 @@ Procedure new_widget_events( )
          
       Case #__event_LeftDown
          If IsContainer(*g)
-            If GetState( ide_inspector_elements ) > 0 
+            If GetState( ide_inspector_ELEMENTS ) > 0 
                If mouse( )\selector
                   mouse( )\selector\dotted = 0
                EndIf
@@ -1717,7 +1717,7 @@ Procedure new_widget_events( )
          ; then group select
          If IsContainer(*g)
             
-;             SetState( ide_inspector_view, - 1 ) 
+;             SetState( ide_inspector_VIEW, - 1 ) 
 ;             If IsGadget( ide_g_code )
 ;                SetGadgetState( ide_g_code, - 1 )
 ;             EndIf
@@ -1725,7 +1725,7 @@ Procedure new_widget_events( )
             If StartEnum( a_main( ) )
                If widgets( )\anchors\group\show 
                   
-;                   SetItemState( ide_inspector_view, GetData( widgets( ) ), #PB_Tree_Selected )
+;                   SetItemState( ide_inspector_VIEW, GetData( widgets( ) ), #PB_Tree_Selected )
 ;                   If IsGadget( ide_g_code )
 ;                      SetGadgetItemState( ide_g_code, GetData( widgets( ) ), #PB_Tree_Selected )
 ;                   EndIf
@@ -1737,18 +1737,18 @@ Procedure new_widget_events( )
       Case #__event_MouseMove
          If IsContainer(*g) 
             If MouseEnter( *g )
-               If GetState( ide_inspector_elements ) > 0 
+               If GetState( ide_inspector_ELEMENTS ) > 0 
                   If MouseButtonPress( )
                      ; disable drop 
-                     If GetState( ide_inspector_elements ) = 1
-                        If *g = ide_design_panel_MDI  
+                     If GetState( ide_inspector_ELEMENTS ) = 1
+                        If *g = ide_design_MDI  
                         Else
                            If mouse( )\dragstart = #PB_Drag_Enter
                               mouse( )\dragstart = #PB_Drag_Leave
                            EndIf
                         EndIf
                      Else
-                        If *g = ide_design_panel_MDI  
+                        If *g = ide_design_MDI  
                            If mouse( )\dragstart = #PB_Drag_Enter
                               mouse( )\dragstart = #PB_Drag_Leave
                            EndIf
@@ -1758,7 +1758,7 @@ Procedure new_widget_events( )
                   Else
                      If GetCursor( ) < 255
                         Debug " mouse enter to change cursor " 
-                        ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_inspector_elements, GetState( ide_inspector_elements ) ) ) ))
+                        ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_inspector_ELEMENTS, GetState( ide_inspector_ELEMENTS ) ) ) ))
                      EndIf
                   EndIf
                EndIf
@@ -1774,8 +1774,8 @@ Procedure new_widget_events( )
    ;
    If  __event = #__event_LeftUp
       If IsContainer(*g)
-         If GetState( ide_inspector_elements) > 0
-            new_widget_add( *g, GetText( ide_inspector_elements ), GetMouseX( *g ), GetMouseY( *g ))
+         If GetState( ide_inspector_ELEMENTS) > 0
+            new_widget_add( *g, GetText( ide_inspector_ELEMENTS ), GetMouseX( *g ), GetMouseY( *g ))
          EndIf
       EndIf
       
@@ -1790,8 +1790,8 @@ Procedure new_widget_events( )
       __event = #__event_LeftUp
       
       ; end new create
-      If GetState( ide_inspector_elements ) > 0 
-         SetState( ide_inspector_elements, 0 )
+      If GetState( ide_inspector_ELEMENTS ) > 0 
+         SetState( ide_inspector_ELEMENTS, 0 )
       EndIf
    EndIf
    
@@ -1947,19 +1947,19 @@ Procedure   ide_file_new( )
    ClearItems( ide_design_DEBUG ) 
    ; удаляем всех детей у MDI 
    ; (то есть освобождаем MDI)
-   ClearWidgets( ide_design_panel_MDI )
-   ; Free( ide_design_panel_MDI, 1 )
+   ClearWidgets( ide_design_MDI )
+   ; Free( ide_design_MDI, 1 )
    ; затем создаем новое окно
-   ide_design_FORM = new_widget_add( ide_design_panel_MDI, "window", 7, 7, 400, 250 )
+   ide_design_FORM = new_widget_add( ide_design_MDI, "window", 7, 7, 400, 250 )
    
    ; и показываем гаджеты для добавления
    SetState( ide_design_PANEL, 0 )
    SetState( ide_inspector_PANEL, 0 )
    
-   If Not Hide( ide_design_panel_CODE )
-      SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
+   If Not Hide( ide_design_CODE )
+      SetText( ide_design_CODE, Generate_Code( ide_design_MDI ) )
    EndIf
-   ; SetText( ide_design_DEBUG, Generate_Code( ide_design_panel_MDI ) )
+   ; SetText( ide_design_DEBUG, Generate_Code( ide_design_MDI ) )
    
 EndProcedure
 
@@ -1974,7 +1974,7 @@ Procedure   ide_file_open(Path$) ; Открытие файла
       SetState( ide_design_PANEL, 0 )
       SetState( ide_inspector_PANEL, 0 )
       ;
-      ClearWidgets( ide_design_panel_MDI )
+      ClearWidgets( ide_design_MDI )
       
       If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
          Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
@@ -1984,7 +1984,7 @@ Procedure   ide_file_open(Path$) ; Открытие файла
             String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
             String$ = RemoveString( String$, "?" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
             
-            MakeLine( ide_design_panel_MDI, String$, Text$ )
+            MakeLine( ide_design_MDI, String$, Text$ )
          Wend
          
          ;          
@@ -1996,12 +1996,12 @@ Procedure   ide_file_open(Path$) ; Открытие файла
          ;          ;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
          ;          
          ;          ; bug hides
-         ;          If Not Hide( ide_design_panel_CODE )
-         ;             SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
+         ;          If Not Hide( ide_design_CODE )
+         ;             SetText( ide_design_CODE, Generate_Code( ide_design_MDI ) )
          ;          EndIf
          
          
-         Define code$ = Generate_Code( ide_design_panel_MDI )
+         Define code$ = Generate_Code( ide_design_MDI )
          code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
          code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
          SetText( ide_design_DEBUG, code$ )
@@ -2030,9 +2030,9 @@ Procedure   ide_file_save(Path$) ; Процедура сохранения фа�
       If #PB_MessageRequester_Yes = Message("Как вы хотите сохранить",
                                             " Нажмите OK чтобы сохранить PUREBASIC код"+#LF$+
                                             " Нажмите NO чтобы сохранить WIDGET коде", #PB_MessageRequester_YesNo)
-         Text$ = Generate_Code( ide_design_panel_MDI )
+         Text$ = Generate_Code( ide_design_MDI )
       Else
-         Text$ = GetText( ide_design_panel_CODE )
+         Text$ = GetText( ide_design_CODE )
       EndIf
       
       ;
@@ -2242,7 +2242,7 @@ Procedure ide_menu_events(  )
          
          ;  RUN
       Case #_tb_file_run
-         Define Code.s = Generate_Code( ide_design_panel_MDI ) ;GetText( ide_design_panel_CODE )
+         Define Code.s = Generate_Code( ide_design_MDI ) ;GetText( ide_design_CODE )
          
          RunPreview( Code )
          
@@ -2343,7 +2343,7 @@ Procedure ide_events( )
          EndIf
          
       Case #__event_DragStart
-         If *g = ide_inspector_elements
+         If *g = ide_inspector_ELEMENTS
             If __item >= 0
                SetState( *g, __item)
                
@@ -2359,24 +2359,24 @@ Procedure ide_events( )
             SetText( ide_inspector_HELP, "help for the inspector" )
          Else
             If __data < 0
-               If *g = ide_inspector_view
+               If *g = ide_inspector_VIEW
                   ; Debug ""+__data+" i "+__item
                   SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
                EndIf
-               If *g = ide_inspector_elements
+               If *g = ide_inspector_ELEMENTS
                   SetText( ide_inspector_HELP, ide_help_elements(GetItemText( *g, __item )) )
                EndIf
-               If *g = ide_inspector_properties
+               If *g = ide_inspector_PROPERTIES
                   SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
                EndIf
-               If *g = ide_inspector_events
+               If *g = ide_inspector_EVENTS
                   SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
                EndIf
             EndIf
          EndIf
          
       Case #__event_Change
-         If *g = ide_inspector_view
+         If *g = ide_inspector_VIEW
 ;             PushListPosition( *g\__rows())
 ;             Debug "+CHANGE "+GetState(*g) +" "+ GetItemData( *g, GetState(*g) ) ; GetClass(GetItemData( *g, GetState(*g) ))
 ;             PopListPosition( *g\__rows())
@@ -2388,13 +2388,13 @@ Procedure ide_events( )
          
          If *g = ide_design_PANEL
             If __item = 0
-               SetActive( ide_design_panel_MDI )
+               SetActive( ide_design_MDI )
             EndIf
             
             If __item = 1
-               AddItem( ide_design_panel_CODE, 0, "" ) ; BUG 
-               SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
-               SetActive( ide_design_panel_CODE )
+               AddItem( ide_design_CODE, 0, "" ) ; BUG 
+               SetText( ide_design_CODE, Generate_Code( ide_design_MDI ) )
+               SetActive( ide_design_CODE )
             EndIf
          EndIf
          
@@ -2406,12 +2406,12 @@ Procedure ide_events( )
          ; Debug "2click"
          If a_focused( )
             If IsContainer(a_focused( ))
-               If GetState( ide_inspector_elements) > 0
+               If GetState( ide_inspector_ELEMENTS) > 0
                   Static _x_, _y_
-                  new_widget_add( a_focused( ), GetText( ide_inspector_elements ), _x_ + mouse( )\steps, _y_ + mouse( )\steps, #PB_Ignore, #PB_Ignore, #__flag_NoFocus )
+                  new_widget_add( a_focused( ), GetText( ide_inspector_ELEMENTS ), _x_ + mouse( )\steps, _y_ + mouse( )\steps, #PB_Ignore, #PB_Ignore, #__flag_NoFocus )
                   _x_ + mouse( )\steps
                   _y_ + mouse( )\steps
-                  SetState( ide_inspector_elements, 0 )
+                  SetState( ide_inspector_ELEMENTS, 0 )
                EndIf
             EndIf  
          EndIf  
@@ -2419,14 +2419,14 @@ Procedure ide_events( )
       Case #__event_LeftClick 
          If *g = ide_design_PANEL
             Debug #__event_LeftClick
-             SetClipboardText( GetText(ide_design_panel_CODE) )
+             SetClipboardText( GetText(ide_design_CODE) )
          EndIf
          
    EndSelect
         
    
    ; CODE EDIT EVENTS
-   If *g = ide_design_panel_CODE                      Or *g = ide_design_DEBUG ; TEMP
+   If *g = ide_design_CODE                      Or *g = ide_design_DEBUG ; TEMP
       Static argument, object  
       Protected name$, text$, len, caret
       Protected *line._s_ROWS
@@ -2447,7 +2447,7 @@ Procedure ide_events( )
                name$ = *g\text\caret\word ; GetWord( text$, len, caret ) 
                
                If name$
-                  object = MakeID( name$, ide_design_panel_MDI )
+                  object = MakeID( name$, ide_design_MDI )
                   If Not object
                      If CountString( text$, "=" )
                         name$ = Trim( StringField( text$, 1, "=" ))
@@ -2456,7 +2456,7 @@ Procedure ide_events( )
                         EndIf
                      EndIf
                      
-                     object = MakeID( name$, ide_design_panel_MDI )
+                     object = MakeID( name$, ide_design_MDI )
                   EndIf
                EndIf
                
@@ -2606,13 +2606,13 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    
    ide_design_PANEL = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_PANEL, "ide_design_PANEL" ) ; , #__flag_Vertical ) : OpenList( ide_design_PANEL )
    AddItem( ide_design_PANEL, -1, "Form" )
-   ide_design_panel_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel_MDI, "ide_design_panel_MDI" ) ;: SetFrame(ide_design_panel_MDI, 10)
-   SetColor( ide_design_panel_MDI, #PB_Gadget_BackColor, $FFD3D3D3 )
-   a_init( ide_design_panel_MDI);, 0 )
+   ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_MDI, "ide_design_MDI" ) ;: SetFrame(ide_design_MDI, 10)
+   SetColor( ide_design_MDI, #PB_Gadget_BackColor, $FFD3D3D3 )
+   a_init( ide_design_MDI);, 0 )
    
    AddItem( ide_design_PANEL, -1, "Code" )
-   ide_design_panel_CODE = Editor( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel_CODE, "ide_design_panel_CODE" ) ; bug then move anchors window
-   SetBackColor( ide_design_panel_CODE, $FFDCF9F6)
+   ide_design_CODE = Editor( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_CODE, "ide_design_CODE" ) ; bug then move anchors window
+   SetBackColor( ide_design_CODE, $FFDCF9F6)
    AddItem( ide_design_PANEL, -1, "Hiasm" )
    CloseList( )
    
@@ -2627,76 +2627,76 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;
    ;ide_design_DEBUG = Editor( 0,0,0,0, #PB_Editor_ReadOnly ) : SetClass(ide_design_DEBUG, "ide_design_DEBUG" ) ; ListView( 0,0,0,0 ) 
    ide_design_DEBUG = Editor( 0,0,0,0 ) : SetClass(ide_design_DEBUG, "ide_design_DEBUG" ) ; ListView( 0,0,0,0 ) 
-   If Not ide_design_panel_CODE
-      ide_design_panel_CODE = ide_design_DEBUG
+   If Not ide_design_CODE
+      ide_design_CODE = ide_design_DEBUG
    EndIf
    
    ;\\\ open inspector gadgets 
-   ide_inspector_view = Tree( 0,0,0,0 ) : SetClass(ide_inspector_view, "ide_inspector_view" ) ;, #__flag_gridlines )
-   EnableDrop( ide_inspector_view, #PB_Drop_Text, #PB_Drag_Link )
+   ide_inspector_VIEW = Tree( 0,0,0,0 ) : SetClass(ide_inspector_VIEW, "ide_inspector_VIEW" ) ;, #__flag_gridlines )
+   EnableDrop( ide_inspector_VIEW, #PB_Drop_Text, #PB_Drag_Link )
    
-   ; ide_inspector_view_splitter_panel_open
+   ; ide_inspector_panel_SPLITTER_panel_open
    ide_inspector_PANEL = Panel( 0,0,0,0 ) : SetClass(ide_inspector_PANEL, "ide_inspector_PANEL" )
    
    ; ide_inspector_panel_item_1 
    AddItem( ide_inspector_PANEL, -1, "elements", 0, 0 ) 
-   ide_inspector_elements = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_border_less ) : SetClass(ide_inspector_elements, "ide_inspector_elements" )
-   If ide_inspector_elements
-      ide_list_images_add( ide_inspector_elements, GetCurrentDirectory( )+"Themes/" )
+   ide_inspector_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_border_less ) : SetClass(ide_inspector_ELEMENTS, "ide_inspector_ELEMENTS" )
+   If ide_inspector_ELEMENTS
+      ide_list_images_add( ide_inspector_ELEMENTS, GetCurrentDirectory( )+"Themes/" )
    EndIf
    
    ; ide_inspector_panel_item_2
    AddItem( ide_inspector_PANEL, -1, "properties", 0, 0 )  
-   ide_inspector_properties = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_border_less ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
-   If ide_inspector_properties
-      Properties_AddItem( ide_inspector_properties, #_pi_group_COMMON, "COMMON" )
-      Properties_AddItem( ide_inspector_properties, #_pi_ID,             "#ID",      #__Type_ComboBox, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_class,          "Class",    #__Type_String, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_text,           "Text",     #__Type_String, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_IMAGE,          "Image",    #__Type_Button, 1 )
+   ide_inspector_PROPERTIES = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_border_less ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
+   If ide_inspector_PROPERTIES
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_COMMON, "COMMON" )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_ID,             "#ID",      #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_class,          "Class",    #__Type_String, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_text,           "Text",     #__Type_String, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_IMAGE,          "Image",    #__Type_Button, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_group_LAYOUT, "LAYOUT" )
-      Properties_AddItem( ide_inspector_properties, #_pi_align,          "Align"+Chr(10)+"LEFT|TOP", #__Type_Button, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_x,              "X",        #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_y,              "Y",        #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_width,          "Width",    #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_height,         "Height",   #__Type_Spin, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_LAYOUT, "LAYOUT" )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_align,          "Align"+Chr(10)+"LEFT|TOP", #__Type_Button, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_x,              "X",        #__Type_Spin, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_y,              "Y",        #__Type_Spin, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_width,          "Width",    #__Type_Spin, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_height,         "Height",   #__Type_Spin, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_group_VIEW,   "VIEW" )
-      Properties_AddItem( ide_inspector_properties, #_pi_cursor,         "Cursor",   #__Type_ComboBox, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_hide,           "Hide",     #__Type_ComboBox, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_disable,        "Disable",  #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_VIEW,   "VIEW" )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_cursor,         "Cursor",   #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_hide,           "Hide",     #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_disable,        "Disable",  #__Type_ComboBox, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_flag,          "Flag",      #__Type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_flag,          "Flag",      #__Type_ComboBox, 1 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_FONT,           "Font",     #__Type_Button, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_fontsize,       "size",     #__Type_Spin, 2 )
-      Properties_AddItem( ide_inspector_properties, #_pi_fontstyle,      "style",    #__Type_ComboBox, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_FONT,           "Font",     #__Type_Button, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_fontsize,       "size",     #__Type_Spin, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_fontstyle,      "style",    #__Type_ComboBox, 2 )
       ;
-      Properties_AddItem( ide_inspector_properties, #_pi_COLOR,           "Color",   #__Type_Button, 1 )
-      Properties_AddItem( ide_inspector_properties, #_pi_colortype,       "type",    #__Type_ComboBox, 2 )
-      Properties_AddItem( ide_inspector_properties, #_pi_colorstate,      "state",    #__Type_ComboBox, 2 )
-      Properties_AddItem( ide_inspector_properties, #_pi_coloralpha,      "alpha",   #__Type_Spin, 2 )
-      Properties_AddItem( ide_inspector_properties, #_pi_colorblue,       "blue",    #__Type_Spin, 2 )
-      Properties_AddItem( ide_inspector_properties, #_pi_colorgreen,      "green",   #__Type_Spin, 2 )
-      Properties_AddItem( ide_inspector_properties, #_pi_colorred,        "red",     #__Type_Spin, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_COLOR,           "Color",   #__Type_Button, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colortype,       "type",    #__Type_ComboBox, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorstate,      "state",    #__Type_ComboBox, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_coloralpha,      "alpha",   #__Type_Spin, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorblue,       "blue",    #__Type_Spin, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorgreen,      "green",   #__Type_Spin, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorred,        "red",     #__Type_Spin, 2 )
    EndIf
    
    ; ide_inspector_panel_item_3 
    AddItem( ide_inspector_PANEL, -1, "events", 0, 0 )  
-   ;ide_inspector_events = Tree( 0,0,0,0, #__flag_autosize | #__flag_border_less ) : SetClass(ide_inspector_events, "ide_inspector_events" ) 
-   ide_inspector_events = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_border_less ) : SetClass(ide_inspector_properties, "ide_inspector_properties" )
-   If ide_inspector_events
-      Properties_AddItem( ide_inspector_events, #_ei_leftclick,  "LeftClick", #__Type_ComboBox )
-      Properties_AddItem( ide_inspector_events, #_ei_change,  "Change", #__Type_ComboBox )
-      Properties_AddItem( ide_inspector_events, #_ei_enter,  "Enter", #__Type_ComboBox )
-      Properties_AddItem( ide_inspector_events, #_ei_leave,  "Leave", #__Type_ComboBox )
+   ;ide_inspector_EVENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_border_less ) : SetClass(ide_inspector_EVENTS, "ide_inspector_EVENTS" ) 
+   ide_inspector_EVENTS = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_border_less ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
+   If ide_inspector_EVENTS
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "LeftClick", #__Type_ComboBox )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Change", #__Type_ComboBox )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_enter,  "Enter", #__Type_ComboBox )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leave,  "Leave", #__Type_ComboBox )
    EndIf
    
-   ; ide_inspector_view_splitter_panel_close
+   ; ide_inspector_panel_SPLITTER_panel_close
    CloseList( )
    
-   ; ide_inspector_ide_inspector_panel_splitter_text
+   ; ide_inspector_ide_inspector_SPLITTER_text
    ide_inspector_HELP  = Text( 0,0,0,0, "help for the inspector", #PB_Text_Border ) : SetClass(ide_inspector_HELP, "ide_inspector_HELP" )
    ;\\\ close inspector gadgets 
    
@@ -2704,59 +2704,58 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;\\\ ide splitters
    ;       ;
 ;          ; main splitter 1 example
-;          ide_design_splitter = Splitter( 0,0,0,0, ide_toolbar_container,ide_design_g_canvas, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
-;          ide_inspector_view_splitter = Splitter( 0,0,0,0, ide_inspector_view,ide_inspector_PANEL, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_view_splitter, "ide_inspector_view_splitter" )
-;          ide_design_PANEL_splitter = Splitter( 0,0,0,0, ide_design_splitter,ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_PANEL_splitter, "ide_design_PANEL_splitter" )
-;          ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter,ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_panel_splitter" )
-;          ide_splitter = Splitter( 0,0,0,0, ide_design_PANEL_splitter,ide_inspector_panel_splitter, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed ) : SetClass(ide_splitter, "ide_splitter" )
+;          ide_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container,ide_design_g_canvas, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(ide_SPLITTER, "ide_SPLITTER" )
+;          ide_inspector_panel_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW,ide_inspector_PANEL, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_panel_SPLITTER, "ide_inspector_panel_SPLITTER" )
+;          ide_design_SPLITTER = Splitter( 0,0,0,0, ide_SPLITTER,ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
+;          ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_panel_SPLITTER,ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
+;          ide_main_SPLITTER = Splitter( 0,0,0,0, ide_design_SPLITTER,ide_inspector_SPLITTER, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
 ;          
 ;          ; set splitters default minimum size
-;          SetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 500 )
-;          SetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 120 )
-;          SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_FirstMinimumSize, 230 )
-;          SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_SecondMinimumSize, 30 )
-;          SetAttribute( ide_design_PANEL_splitter, #PB_Splitter_FirstMinimumSize, 300 )
-;          SetAttribute( ide_design_PANEL_splitter, #PB_Splitter_SecondMinimumSize, 100 )
-;          SetAttribute( ide_inspector_view_splitter, #PB_Splitter_FirstMinimumSize, 100 )
-;          SetAttribute( ide_inspector_view_splitter, #PB_Splitter_SecondMinimumSize, 130 )
-;          SetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 20 )
-;          SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 200 )
-;          ; SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, $ffffff )
+;          SetAttribute( ide_main_SPLITTER, #PB_Splitter_FirstMinimumSize, 500 )
+;          SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 120 )
+;          SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_FirstMinimumSize, 230 )
+;          SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_SecondMinimumSize, 30 )
+;          SetAttribute( ide_design_SPLITTER, #PB_Splitter_FirstMinimumSize, 300 )
+;          SetAttribute( ide_design_SPLITTER, #PB_Splitter_SecondMinimumSize, 100 )
+;          SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
+;          SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_SecondMinimumSize, 130 )
+;          SetAttribute( ide_SPLITTER, #PB_Splitter_FirstMinimumSize, 20 )
+;          SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, 200 )
+;          ; SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, $ffffff )
 ;          
 ;          ; set splitters dafault positions
-;          SetState( ide_splitter, Width( ide_splitter )-200 )
-;          SetState( ide_inspector_panel_splitter, Height( ide_inspector_panel_splitter )-80 )
-;          SetState( ide_design_PANEL_splitter, Height( ide_design_PANEL_splitter )-150 )
-;          SetState( ide_inspector_view_splitter, 200 )
-;          SetState( ide_design_splitter, Height( ide_toolbar ) - 1 + 2 )
+;          SetState( ide_main_SPLITTER, Width( ide_main_SPLITTER )-200 )
+;          SetState( ide_inspector_SPLITTER, Height( ide_inspector_SPLITTER )-80 )
+;          SetState( ide_design_SPLITTER, Height( ide_design_SPLITTER )-150 )
+;          SetState( ide_inspector_panel_SPLITTER, 200 )
+;          SetState( ide_SPLITTER, Height( ide_toolbar ) - 1 + 2 )
 ;       
 
    ;
    ;\\ main splitter 2 example 
-   ide_inspector_panel_splitter = Splitter( 0,0,0,0, ide_inspector_PANEL, ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_splitter, "ide_inspector_view_splitter" )
-   ide_inspector_view_splitter = Splitter( 0,0,0,0, ide_inspector_view, ide_inspector_panel_splitter) : SetClass(ide_inspector_view_splitter, "ide_inspector_panel_splitter" )
-   ide_design_PANEL_splitter = Splitter( 0,0,0,0, ide_design_g_canvas, ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_PANEL_splitter, "ide_design_PANEL_splitter" )
-   ide_design_splitter = Splitter( 0,0,0,0, ide_inspector_view_splitter, ide_design_PANEL_splitter, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator ) : SetClass(ide_design_splitter, "ide_design_splitter" )
-   ide_splitter = Splitter( 0,0,0,0, ide_toolbar_container, ide_design_splitter,#__flag_autosize | #PB_Splitter_FirstFixed ) : SetClass(ide_splitter, "ide_splitter" )
+   ide_inspector_panel_SPLITTER = Splitter( 0,0,0,0, ide_inspector_PANEL, ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_SPLITTER, "ide_inspector_panel_SPLITTER" )
+   ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_inspector_panel_SPLITTER) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
+   ide_design_SPLITTER = Splitter( 0,0,0,0, ide_design_PANEL, ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
+   ide_SPLITTER = Splitter( 0,0,0,0, ide_inspector_SPLITTER, ide_design_SPLITTER, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator ) : SetClass(ide_SPLITTER, "ide_SPLITTER" )
+   ide_main_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
    
    ; set splitters default minimum size
-   SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_FirstMinimumSize, 100 )
-   SetAttribute( ide_inspector_panel_splitter, #PB_Splitter_SecondMinimumSize, 30 )
-   SetAttribute( ide_inspector_view_splitter, #PB_Splitter_FirstMinimumSize, 100 )
-   SetAttribute( ide_inspector_view_splitter, #PB_Splitter_SecondMinimumSize, 200 )
-   SetAttribute( ide_design_PANEL_splitter, #PB_Splitter_FirstMinimumSize, 300 )
-   SetAttribute( ide_design_PANEL_splitter, #PB_Splitter_SecondMinimumSize, 100 )
-   SetAttribute( ide_design_splitter, #PB_Splitter_FirstMinimumSize, 120 )
-   SetAttribute( ide_design_splitter, #PB_Splitter_SecondMinimumSize, 540 )
-   SetAttribute( ide_splitter, #PB_Splitter_FirstMinimumSize, 20 )
-   SetAttribute( ide_splitter, #PB_Splitter_SecondMinimumSize, 500 )
+   SetAttribute( ide_main_SPLITTER, #PB_Splitter_FirstMinimumSize, 20 )
+   SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 500 )
+   SetAttribute( ide_SPLITTER, #PB_Splitter_FirstMinimumSize, 120 )
+   SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, 540 )
+   SetAttribute( ide_design_SPLITTER, #PB_Splitter_FirstMinimumSize, 300 )
+   SetAttribute( ide_design_SPLITTER, #PB_Splitter_SecondMinimumSize, 100 )
+   SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
+   SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_SecondMinimumSize, 200 )
+   SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
+   SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_SecondMinimumSize, 30 )
    
    ; set splitters dafault positions
-   SetState( ide_splitter, Height( ide_toolbar ))
-   SetState( ide_design_splitter, 250 )
-   SetState( ide_design_PANEL_splitter, Height( ide_design_PANEL_splitter )-180 )
-   ;SetState( ide_inspector_panel_splitter, 250 )
-   SetState( ide_inspector_view_splitter, 100 )
+   SetState( ide_main_SPLITTER, Height( ide_toolbar ))
+   SetState( ide_SPLITTER, 250 )
+   SetState( ide_design_SPLITTER, Height( ide_design_SPLITTER )-180 )
+   SetState( ide_inspector_SPLITTER, 150 )
    
    ;
    ; ide_Lng_change( )
@@ -2770,42 +2769,42 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
       Bind( ide_toolbar, @ide_menu_events( ) )
       Bind( ide_popup_lenguage, @ide_menu_events( ) )
    EndIf
-   Bind( ide_inspector_view, @ide_events( ) )
+   Bind( ide_inspector_VIEW, @ide_events( ) )
    ;
    Bind( ide_design_PANEL, @ide_events( ), #__event_Change )
    Bind( ide_design_PANEL, @ide_events( ), #__event_LeftClick )
    Bind( ide_design_PANEL, @ide_events( ), #__event_Left2Click )
    ;
-   Bind( ide_design_panel_CODE, @ide_events( ), #__event_Down )
-   Bind( ide_design_panel_CODE, @ide_events( ), #__event_Up )
-   Bind( ide_design_panel_CODE, @ide_events( ), #__event_Change )
-   Bind( ide_design_panel_CODE, @ide_events( ), #__event_StatusChange )
+   Bind( ide_design_CODE, @ide_events( ), #__event_Down )
+   Bind( ide_design_CODE, @ide_events( ), #__event_Up )
+   Bind( ide_design_CODE, @ide_events( ), #__event_Change )
+   Bind( ide_design_CODE, @ide_events( ), #__event_StatusChange )
    ; TEMP
    Bind( ide_design_DEBUG, @ide_events( ), #__event_Down )
    Bind( ide_design_DEBUG, @ide_events( ), #__event_Up )
    Bind( ide_design_DEBUG, @ide_events( ), #__event_Change )
    Bind( ide_design_DEBUG, @ide_events( ), #__event_StatusChange )
    ;
-   Bind( ide_inspector_events, @ide_events( ), #__event_Change )
-   Bind( ide_inspector_events, @ide_events( ), #__event_StatusChange )
+   Bind( ide_inspector_EVENTS, @ide_events( ), #__event_Change )
+   Bind( ide_inspector_EVENTS, @ide_events( ), #__event_StatusChange )
    ;
-   Bind( ide_inspector_properties, @ide_events( ), #__event_Change )
-   Bind( ide_inspector_properties, @ide_events( ), #__event_StatusChange )
+   Bind( ide_inspector_PROPERTIES, @ide_events( ), #__event_Change )
+   Bind( ide_inspector_PROPERTIES, @ide_events( ), #__event_StatusChange )
    ;
-   Bind( ide_inspector_elements, @ide_events( ), #__event_Change )
-   Bind( ide_inspector_elements, @ide_events( ), #__event_StatusChange )
-   Bind( ide_inspector_elements, @ide_events( ), #__event_Left2Click )
-   Bind( ide_inspector_elements, @ide_events( ), #__event_LeftClick )
-   Bind( ide_inspector_elements, @ide_events( ), #__event_MouseEnter )
-   Bind( ide_inspector_elements, @ide_events( ), #__event_MouseLeave )
-   Bind( ide_inspector_elements, @ide_events( ), #__event_DragStart )
+   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_Change )
+   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_StatusChange )
+   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_Left2Click )
+   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_LeftClick )
+   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_MouseEnter )
+   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_MouseLeave )
+   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_DragStart )
    ;
    Bind( ide_root, @ide_events( ), #__event_Close )
    Bind( ide_root, @ide_events( ), #__event_Focus )
    
    ;
-   Bind( ide_design_panel_MDI, @new_widget_events( ) )
-   EnableDrop( ide_design_panel_MDI, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
+   Bind( ide_design_MDI, @new_widget_events( ) )
+   EnableDrop( ide_design_MDI, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
    
    ;
    ;Bind( #PB_All, @ide_events( ) )
@@ -2822,11 +2821,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    SetState( ide_inspector_PANEL, 1 )
    
-   ;   ;OpenList(ide_design_panel_MDI)
+   ;   ;OpenList(ide_design_MDI)
    Define result, btn2, example = 3
    
    
-   ide_design_FORM = new_widget_add( ide_design_panel_MDI, "window", 10, 10, 350, 200 )
+   ide_design_FORM = new_widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
    
    If example = 1
       Resize(ide_design_FORM, 30, 30, 400, 250)
@@ -2846,30 +2845,30 @@ CompilerIf #PB_Compiler_IsMainFile
       Define cont3 = new_widget_add( cont1, "container", 230, 20, 90, 140 )
       new_widget_add( cont2, "button", 10, 20, 30, 30 )
       
-      ;       ClearItems(ide_inspector_view)
-      ; ;       AddItem(ide_inspector_view, -1, "window_0", -1, 0)
-      ; ;       AddItem(ide_inspector_view, -1, "button_0", -1, 1)
-      ; ;       AddItem(ide_inspector_view, -1, "container_0", -1, 1)
-      ; ;       AddItem(ide_inspector_view, -1, "button_1", -1, 2)
+      ;       ClearItems(ide_inspector_VIEW)
+      ; ;       AddItem(ide_inspector_VIEW, -1, "window_0", -1, 0)
+      ; ;       AddItem(ide_inspector_VIEW, -1, "button_0", -1, 1)
+      ; ;       AddItem(ide_inspector_VIEW, -1, "container_0", -1, 1)
+      ; ;       AddItem(ide_inspector_VIEW, -1, "button_1", -1, 2)
       ; ;       
-      ;       Define *parent._s_WIDGET = ide_design_panel_MDI
+      ;       Define *parent._s_WIDGET = ide_design_MDI
       ;       ;PushListPosition(widgets())
       ;       If StartEnum( *parent ,0)
       ;          Debug "99 "+ GetClass(widget()) +" "+ GetClass(widget()\parent) +" "+ Str(Level(widget()))+" "+Str(Level(*parent));IsChild(widget(), *parent )
-      ;          Select CountItems(ide_inspector_view)
+      ;          Select CountItems(ide_inspector_VIEW)
       ;             Case 0 
-      ;                AddItem(ide_inspector_view, -1, "window_0", -1, Level(widget())-Level(*parent)-1)
+      ;                AddItem(ide_inspector_VIEW, -1, "window_0", -1, Level(widget())-Level(*parent)-1)
       ;             Case 1 
-      ;                AddItem(ide_inspector_view, -1, "button_0", -1, Level(widget())-Level(*parent)-1)
+      ;                AddItem(ide_inspector_VIEW, -1, "button_0", -1, Level(widget())-Level(*parent)-1)
       ;             Case 2 
-      ;                AddItem(ide_inspector_view, -1, "container_0", -1, Level(widget())-Level(*parent)-1)
+      ;                AddItem(ide_inspector_VIEW, -1, "container_0", -1, Level(widget())-Level(*parent)-1)
       ;             Case 3 
-      ;                AddItem(ide_inspector_view, -1, "button_1", -1, Level(widget())-Level(*parent)-1)
+      ;                AddItem(ide_inspector_VIEW, -1, "button_1", -1, Level(widget())-Level(*parent)-1)
       ;          EndSelect
       ;          
-      ;          ;   Debug CountItems(ide_inspector_view)-1
-      ;          SetData(widget(), CountItems(ide_inspector_view)-1)
-      ;          SetItemData(ide_inspector_view, CountItems(ide_inspector_view)-1, widget())
+      ;          ;   Debug CountItems(ide_inspector_VIEW)-1
+      ;          SetData(widget(), CountItems(ide_inspector_VIEW)-1)
+      ;          SetItemData(ide_inspector_VIEW, CountItems(ide_inspector_VIEW)-1, widget())
       ;          
       ;          StopEnum()
       ;       EndIf
@@ -2881,14 +2880,14 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       new_widget_add( ide_design_FORM, "button", 10, 20, 100, 30 )
       ;       
       ;       Define item = 1
-      ;       SetState( ide_inspector_view, item )
+      ;       SetState( ide_inspector_VIEW, item )
       ;       If IsGadget( ide_g_code )
       ;          SetGadgetState( ide_g_code, item )
       ;       EndIf
       ;       Define *container2 = new_widget_add( *container, "container", 60, 10, 220, 140 )
       ;       new_widget_add( *container2, "button", 10, 20, 30, 30 )
       ;       
-      ;       SetState( ide_inspector_view, 0 )
+      ;       SetState( ide_inspector_VIEW, 0 )
       ;       new_widget_add( ide_design_FORM, "button", 10, 130, 100, 30 )
       
    ElseIf example = 3
@@ -2923,7 +2922,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetState( *panel, 1 )
       
       
-     Define ide_design_FORM2 = new_widget_add( ide_design_panel_MDI, "window", 10, 10, 350, 200 )
+     Define ide_design_FORM2 = new_widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
      Resize(ide_design_FORM2, #PB_Ignore, Y(ide_design_FORM)+Height(ide_design_FORM), 500, 100)
      
      new_widget_add(ide_design_FORM2, "button", 25, 10, 30, 30)
@@ -2935,7 +2934,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       ;       ;SetSizeBounds( *scrollarea )
 ;       ;       SetMoveBounds( btn2, -1,-1,-1,-1 )
 ;       SetMoveBounds( ide_design_FORM, -1,-1,-1,-1 )
-;       ;       ;SetChildrenBounds( ide_design_panel_MDI )
+;       ;       ;SetChildrenBounds( ide_design_MDI )
       
    EndIf
    
@@ -2964,7 +2963,7 @@ CompilerIf #PB_Compiler_IsMainFile
      
    ;ReDraw(root())
    Define time = ElapsedMilliseconds( )
-   Define code$ = Generate_Code( ide_design_panel_MDI )
+   Define code$ = Generate_Code( ide_design_MDI )
    code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
    code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
    SetText( ide_design_DEBUG, code$ )
@@ -2973,7 +2972,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;ReDraw(root())
    HideWindow( ide_window, #False )
    
-   If SetActive( ide_inspector_view )
+   If SetActive( ide_inspector_VIEW )
       SetActiveGadget( ide_g_canvas )
    EndIf
    
@@ -3001,10 +3000,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1617
-; FirstLine = 1438
-; Folding = ---------f+X-------Pk-f---z-----+z4---v8----4--0-----
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 2756
+; FirstLine = 2560
+; Folding = ---------f+X--------------8------------8-------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
