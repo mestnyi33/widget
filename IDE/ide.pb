@@ -1612,10 +1612,10 @@ Procedure new_widget_events( )
       Case #__event_RightDown
          Debug "right"
          
-      Case #__event_KeyDown
-         Debug "#__event_KeyDown"
-      Case #__event_KeyUp
-         Debug "#__event_KeyUp"
+;       Case #__event_KeyDown
+;          Debug "#__event_KeyDown"
+;       Case #__event_KeyUp
+;          Debug "#__event_KeyUp"
          
       Case #__event_Focus
          If a_focused( ) = *g
@@ -3002,7 +3002,7 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1624
+; CursorPosition = 1617
 ; FirstLine = 1438
 ; Folding = ---------f+X-------Pk-f---z-----+z4---v8----4--0-----
 ; Optimizer

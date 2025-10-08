@@ -20106,47 +20106,41 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;\\ tab focus
                   Select keyboard( )\Key
                      Case #PB_Shortcut_Tab
-                        If *keywidget\container And Not *keywidget\anchors And 
-                           *keywidget\FirstWidget( )
+                        If *keywidget\anchors And
+                           Not *keywidget\anchors\mode & #__a_zoom
                            ;
-                           SetActive( *keywidget\FirstWidget( ) )
-                        ElseIf *keywidget\AfterWidget( ) 
-                           If *keywidget\AfterWidget( )\anchors
-                              If Not *keywidget\AfterWidget( )\parent\anchors
-                                 SetActive( *keywidget\AfterWidget( ) )
-                              Else
+                           If a_main( )\AfterWidget( )
+                              SetActive( a_main( )\AfterWidget( ) )
+                           Else
+                              If a_main( )\parent\FirstWidget( )
                                  SetActive( a_main( )\parent\FirstWidget( ) )
                               EndIf
-                           Else
-                              SetActive( *keywidget\AfterWidget( ) )
                            EndIf
                         Else
-                           If *keywidget\parent
-                              If *keywidget\parent\AfterWidget( )
-                                 SetActive( *keywidget\parent\AfterWidget( ) )
+                           If *keywidget\FirstWidget( )
+                              SetActive( *keywidget\FirstWidget( ) )
+                           Else
+                              If *keywidget\AfterWidget( )
+                                 SetActive( *keywidget\AfterWidget( ) )
                               Else
-                                 If *keywidget\root\FirstWidget( )
-                                    SetActive( *keywidget\root\FirstWidget( ) )
+                                 If *keywidget\parent
+                                    If *keywidget\parent\AfterWidget( )
+                                       SetActive( *keywidget\parent\AfterWidget( ) )
+                                    Else
+                                       If *keywidget\root
+                                          If *keywidget\root\FirstWidget( )
+                                             If *keywidget\window\gadget
+                                                DoDeactivate( *keywidget\window\gadget )
+                                                *keywidget\window\gadget = #Null
+                                             EndIf
+                                             SetActive( *keywidget\root\FirstWidget( ) )
+                                          EndIf
+                                       EndIf
+                                    EndIf
                                  EndIf
                               EndIf
                            EndIf
                         EndIf
-                        
-;                         If Not GetActive( )\anchors And GetActive( )\FirstWidget( )
-;                            SetActive( GetActive( )\FirstWidget( ) )
-;                         Else
-;                            If GetActive( )\AfterWidget( )
-;                               SetActive( GetActive( )\AfterWidget( ) )
-;                            Else
-;                               If GetActive( )\parent
-;                                  If GetActive( )\parent\gadget
-;                                     DoDeactivate( GetActive( )\parent\gadget )
-;                                     GetActive( )\parent\gadget = #Null
-;                                  EndIf
-;                                  SetActive( GetActive( )\parent )
-;                               EndIf
-;                            EndIf
-;                         EndIf
                         
                   EndSelect
                EndIf
@@ -20154,61 +20148,43 @@ CompilerIf Not Defined( widget, #PB_Module )
                If eventtype = #PB_EventType_KeyDown 
                   ;
                   ;\\ anchor key focus
-                  If *keywidget\anchors
+                  If *keywidget\anchors And Not *keywidget\anchors\mode & #__a_zoom
                      If Not keyboard( )\key[1]
                         Select keyboard( )\Key
                            Case #PB_Shortcut_Left
                               If *keywidget\parent
-                                 If *keywidget\parent\anchors
-                                    If a_set( *keywidget\parent )
-                                       keyboard( )\widget = *keywidget\parent
-                                    EndIf
-                                 EndIf
+                                 a_set( *keywidget\parent )
                               EndIf
                               
                            Case #PB_Shortcut_Up
                               If *keywidget\BeforeWidget( )
-                                 If *keywidget\BeforeWidget( )\anchors 
-                                    If *keywidget\BeforeWidget( )\TabIndex( ) = *keywidget\TabIndex( )
-                                       If a_set( *keywidget\BeforeWidget( ) )
-                                          keyboard( )\widget = *keywidget\BeforeWidget( )
-                                       EndIf
-                                    EndIf
+                                 If *keywidget\BeforeWidget( )\TabIndex( ) = *keywidget\TabIndex( )
+                                    a_set( *keywidget\BeforeWidget( ) )
                                  EndIf
                               EndIf
                               
                            Case #PB_Shortcut_Down
                               If *keywidget\AfterWidget( )
-                                 If *keywidget\AfterWidget( )\anchors
-                                    If *keywidget\AfterWidget( )\TabIndex( ) = *keywidget\TabIndex( )
-                                       If a_set( *keywidget\AfterWidget( ) )
-                                          keyboard( )\widget = *keywidget\AfterWidget( )
-                                       EndIf
-                                    EndIf
+                                 If *keywidget\AfterWidget( )\TabIndex( ) = *keywidget\TabIndex( )
+                                    a_set( *keywidget\AfterWidget( ) )
                                  EndIf
                               EndIf
                               
                            Case #PB_Shortcut_Right
                               If *keywidget\type = #__type_panel
-                                 Protected *first._s_WIDGET = GetPosition( *keywidget, #PB_List_First, GetState(*keywidget) )
+                                 Protected *first._s_WIDGET = GetPosition( *keywidget, #PB_List_First, GetState( *keywidget ))
                                  If *first
-                                    If *first\anchors
-                                       If a_set( *first )  
-                                          keyboard( )\widget = *first
-                                       EndIf
-                                    EndIf
+                                    a_set( *first )  
                                  EndIf
                               Else
                                  If *keywidget\FirstWidget( )
-                                    If *keywidget\FirstWidget( )\anchors
-                                       If a_set( *keywidget\FirstWidget( ) )  
-                                          keyboard( )\widget = *keywidget\FirstWidget( )
-                                       EndIf
-                                    EndIf
+                                    a_set( *keywidget\FirstWidget( ) )  
                                  EndIf
                               EndIf
                               
                         EndSelect
+                        
+                        ;keyboard( )\widget = a_focused( )
                      EndIf
                   EndIf
                   
@@ -26474,9 +26450,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 20124
-; FirstLine = 19724
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+47u70--v--+-------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 20180
+; FirstLine = 19783
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+47u70--v--+------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

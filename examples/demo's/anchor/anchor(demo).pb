@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../../widgets.pbi"    
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
@@ -125,9 +125,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 41
-; FirstLine = 21
+; IDE Options = PureBasic 6.21 (Windows - x64)
 ; Folding = --
 ; EnableXP
 ; DPIAware
