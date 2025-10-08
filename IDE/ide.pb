@@ -1609,23 +1609,20 @@ Procedure new_widget_events( )
    Protected __data = WidgetEventData( )
    
    Select __event 
+      Case #__event_RightDown
+         Debug "right"
+         
       Case #__event_KeyDown
          Debug "#__event_KeyDown"
       Case #__event_KeyUp
          Debug "#__event_KeyUp"
          
-      Case #__event_LostFocus
-         If a_focused( ) = *g
-            ; Debug "LOSTFOCUS "+GetClass(*g)
-            ; SetState( ide_inspector_view, - 1 )
-         EndIf
-         
       Case #__event_Focus
          If a_focused( ) = *g
             If GetState( ide_inspector_view ) = GetData(*g)
-               Debug "FOCUS "+ GetData(*g)  +" "+ GetClass(*g)
+               ;Debug "FOCUS "+ GetData(*g)  +" "+ GetClass(*g)
             Else
-               Debug "CHANGE "+ GetData(*g)  +" "+ GetClass(*g)
+               ;Debug "CHANGE "+ GetData(*g)  +" "+ GetClass(*g)
                If IsGadget( ide_g_code )
                   SetGadgetState( ide_g_code, GetData(*g) )
                EndIf
@@ -1634,29 +1631,6 @@ Procedure new_widget_events( )
             
             Properties_Updates( a_focused( ), "Focus" )
          EndIf
-         
-      Case #__event_Up
-         ; set keyboard focus
-         If a_anchors( )\group\show
-           ; SetActive( *g )
-         EndIf
-            
-      Case #__event_Down
-         If a_focused( ) = *g
-            If GetActive( ) <> ide_design_panel_MDI 
-              SetActive( ide_design_panel_MDI )
-            EndIf
-;             If GetActive( ) <> ide_inspector_view 
-;               SetActive( ide_inspector_view )
-;             EndIf
-;               ;SetActive( *g\window )
-         EndIf
-;               If SetActive( *g )
-;                  a_set(*g)
-;               EndIf
-              
-      Case #__event_RightDown
-         Debug "right"
          
       Case #__event_Free
          Protected item = GetData(*g) 
@@ -3027,10 +3001,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1646
-; FirstLine = 1473
-; Folding = ---------f+X-------Pk-f---z-----v-9----8+----0-f------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 1624
+; FirstLine = 1438
+; Folding = ---------f+X-------Pk-f---z-----+z4---v8----4--0-----
 ; Optimizer
 ; EnableAsm
 ; EnableXP

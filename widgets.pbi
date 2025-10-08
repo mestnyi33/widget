@@ -3152,7 +3152,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      
                      ;
-                     keyboard( )\widget = *this
+                     ; keyboard( )\widget = *this
                      a_focused( ) = *this
                      a_group_show( *this, #__event_Focus )
                
@@ -11290,7 +11290,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;
                *active\root\active = *active
-               keyboard( )\widget = *active
+               ; keyboard( )\widget = *active
                   
                ;\\
 ;                If  *active\anchors And 
@@ -20156,12 +20156,16 @@ chr$ = ","
                         Case #PB_Shortcut_Left
                            If *keywidget\BeforeWidget( )
                               If *keywidget\BeforeWidget( )\anchors
-                                 a_set( *keywidget\BeforeWidget( ) )
+                                 If a_set( *keywidget\BeforeWidget( ) )
+                                    keyboard( )\widget = *keywidget\BeforeWidget( )
+                                 EndIf
                               EndIf
                            Else
                               If *keywidget\parent
                                  If *keywidget\parent\anchors
-                                    a_set( *keywidget\parent )
+                                    If a_set( *keywidget\parent )
+                                       keyboard( )\widget = *keywidget\parent
+                                    EndIf
 ;                                     If *keywidget\parent = a_main( )
 ;                                        a_set( a_main( ) )
 ;                                     EndIf
@@ -20172,32 +20176,42 @@ chr$ = ","
                         Case #PB_Shortcut_Up
                            If *keywidget\BeforeWidget( )
                               If *keywidget\BeforeWidget( )\anchors
-                                 a_set( *keywidget\BeforeWidget( ) )
+                                 If a_set( *keywidget\BeforeWidget( ) )
+                                    keyboard( )\widget = *keywidget\BeforeWidget( )
+                                 EndIf
                               EndIf
                            EndIf
                            
                         Case #PB_Shortcut_Down
                            If *keywidget\AfterWidget( )
                               If *keywidget\AfterWidget( )\anchors
-                                 a_set( *keywidget\AfterWidget( ) )
+                                 If a_set( *keywidget\AfterWidget( ) )
+                                    keyboard( )\widget = *keywidget\AfterWidget( )
+                                 EndIf
                               EndIf
                            EndIf
                            
                         Case #PB_Shortcut_Right
                            If *keywidget\FirstWidget( )
                               If *keywidget\FirstWidget( )\anchors
-                                 a_set( *keywidget\FirstWidget( ) )
+                                 If a_set( *keywidget\FirstWidget( ) )  
+                                    keyboard( )\widget = *keywidget\FirstWidget( )
+                                 EndIf
                               EndIf
                            Else
                               If *keywidget\AfterWidget( )
                                  If *keywidget\AfterWidget( )\anchors
-                                    a_set( *keywidget\AfterWidget( ) )
+                                    If a_set( *keywidget\AfterWidget( ) )
+                                       keyboard( )\widget = *keywidget\AfterWidget( )
+                                    EndIf
                                  EndIf
                               Else
                                  ;                               ; type 1
                                  ;                               If *keywidget\parent
                                  ;                                  If *keywidget\parent\anchors
-                                 ;                                     a_set( *keywidget\parent )
+                                 ;                                     If a_set( *keywidget\parent )
+                                 ;                                        keyboard( )\widget = *keywidget\parent
+                                 ;                                     EndIf
                                  ;                                  EndIf
                                  ;                               EndIf
                                  ;                               
@@ -20205,7 +20219,9 @@ chr$ = ","
                                  If *keywidget\parent
                                     If *keywidget\parent\AfterWidget( )
                                        If *keywidget\parent\AfterWidget( )\anchors
-                                          a_set( *keywidget\parent\AfterWidget( ) )
+                                          If a_set( *keywidget\parent\AfterWidget( ) )
+                                             keyboard( )\widget = *keywidget\parent\AfterWidget( )
+                                          EndIf
                                        EndIf
                                     EndIf
                                  EndIf
@@ -20468,11 +20484,17 @@ chr$ = ","
                ;\\ set active widget
                If event = #__event_LeftDown
                   If GetActive( ) <> Entered( )
+                     keyboard( )\widget = Entered( )
                      ; Debug " \\ set active widget"
                      If  Entered( )\anchors And 
                          Entered( )\parent And
                          Entered( )\parent\anchors
-                        a_set( Entered( ) )
+                        ;
+                        If a_set( Entered( ) )
+                           If GetActive( ) <> a_main( ) 
+                              SetActive( a_main( ) )
+                           EndIf
+                        EndIf
                      Else
                         SetActive( Entered( ))
                      EndIf
@@ -20484,13 +20506,6 @@ chr$ = ","
                If mouse( )\click = 1
                   DoEvents( Entered( ), event )
                EndIf
-;                ;
-;                ;\\ set keiboard focus widget
-;                If Entered( )\anchors
-;                   If keyboard( )\widget <> Entered( )
-;                      keyboard( )\widget = Entered( )
-;                   EndIf
-;                EndIf
             EndIf
          EndIf
          
@@ -25608,7 +25623,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;;test_focus_set = 1
       Debug "-"
       SetActive( MDI )
-      SetActive(*g2)
+      a_set(*g2)
       Debug "--"
       
       Bind( root(), @ide_events( ), #__event_focus )
@@ -26477,10 +26492,10 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20474
-; FirstLine = 18377
-; Folding = B+-------------------------------0---------------------------t-0---8--ff-4f4-----------T---8---ff5--------------------------------------7v---------------0----------------------------------------------------q8v84vfv--f-------------------------------b0-z---------------------------------------------j4--M-8-----------------------------------------------------------+-------------------------------------------------------------------------r----------------------------------------------------------------------------------------------f-4v7+-----440-----7u70--v--0----8v------n-6e-------------------------------------------------------------------------------------------------Xp9f----------------0-iBBCMAAg-
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 20212
+; FirstLine = 18123
+; Folding = B+-------------------------------0---------------------------t-0---8--ff-4f4-----------T---8---ff5--------------------------------------7v---------------0----------------------------------------------------q8v84vfv--f-------------------------------b0-z---------------------------------------------j4--M-8-----------------------------------------------------------+-------------------------------------------------------------------------r----------------------------------------------------------------------------------------------f-4v7+-----440-----7u70--v--0-----2f-+----09P48-------------------------------------------------------------------------------------------------Kl-8---------------v-XMIQgBAA9
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
