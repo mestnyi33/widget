@@ -9,7 +9,7 @@ EnableExplicit
 #_DD_CreateCopy = 1<<4
 ;
 ; properties items
-Enumeration 
+Enumeration Properties
    #_pi_group_COMMON 
    #_pi_ID 
    #_pi_class
@@ -43,7 +43,7 @@ Enumeration
 EndEnumeration
 
 ; events items
-Enumeration 
+Enumeration Properties
    #_ei_leftclick
    #_ei_change
    #_ei_enter
@@ -538,7 +538,15 @@ Procedure   Properties_ButtonEvents( )
    Protected __event = WidgetEvent( )
    Protected __item = WidgetEventItem( )
    Protected __data = WidgetEventData( )
-   ; Debug ""+widget::ClassFromEvent(__event) +" "+ widget::GetClass( *g)
+   
+   ; Debug ""+widget::ClassFromEvent(__event) +" "+ widget::GetClass( *g) +" "+ GetData(*g)
+   
+;    If __event = #__event_Change
+;       Debug 4444
+;       If GetData(*g) = #_ei_leftclick
+;          Debug 333
+;       EndIf
+;    EndIf
    
    Select __event
       Case #__event_Down
@@ -2354,6 +2362,24 @@ Procedure ide_events( )
             EndIf
          EndIf
          
+      Case #__event_Change
+         If *g = ide_inspector_VIEW
+            If a_set( GetItemData( *g, GetState(*g) ))
+            EndIf
+         EndIf
+         
+         If *g = ide_design_PANEL
+            If __item = 0
+               SetActive( ide_design_MDI )
+            EndIf
+            
+            If __item = 1
+               AddItem( ide_design_CODE, 0, "" ) ; BUG 
+               SetText( ide_design_CODE, Generate_Code( ide_design_MDI ) )
+               SetActive( ide_design_CODE )
+            EndIf
+         EndIf
+         
       Case #__event_StatusChange
          If __item = - 1
             SetText( ide_inspector_HELP, "help for the inspector" )
@@ -2373,53 +2399,6 @@ Procedure ide_events( )
                   SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
                EndIf
             EndIf
-         EndIf
-         
-      Case #__event_Change
-         If *g = ide_inspector_VIEW
-;             PushListPosition( *g\__rows())
-;             Debug "+CHANGE "+GetState(*g) +" "+ GetItemData( *g, GetState(*g) ) ; GetClass(GetItemData( *g, GetState(*g) ))
-;             PopListPosition( *g\__rows())
-            If a_set( GetItemData( *g, GetState(*g) ))
-               ;
-            Else
-            EndIf
-         EndIf
-         
-         If *g = ide_design_PANEL
-            If __item = 0
-               SetActive( ide_design_MDI )
-            EndIf
-            
-            If __item = 1
-               AddItem( ide_design_CODE, 0, "" ) ; BUG 
-               SetText( ide_design_CODE, Generate_Code( ide_design_MDI ) )
-               SetActive( ide_design_CODE )
-            EndIf
-         EndIf
-         
-      Case #__event_Left2Click
-         If *g = ide_design_PANEL
-            Debug #__event_Left2Click
-         EndIf
-         
-         ; Debug "2click"
-         If a_focused( )
-            If IsContainer(a_focused( ))
-               If GetState( ide_inspector_ELEMENTS) > 0
-                  Static _x_, _y_
-                  new_widget_add( a_focused( ), GetText( ide_inspector_ELEMENTS ), _x_ + mouse( )\steps, _y_ + mouse( )\steps, #PB_Ignore, #PB_Ignore, #__flag_NoFocus )
-                  _x_ + mouse( )\steps
-                  _y_ + mouse( )\steps
-                  SetState( ide_inspector_ELEMENTS, 0 )
-               EndIf
-            EndIf  
-         EndIf  
-         
-      Case #__event_LeftClick 
-         If *g = ide_design_PANEL
-            Debug #__event_LeftClick
-             SetClipboardText( GetText(ide_design_CODE) )
          EndIf
          
    EndSelect
@@ -2687,7 +2666,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;ide_inspector_EVENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_border_less ) : SetClass(ide_inspector_EVENTS, "ide_inspector_EVENTS" ) 
    ide_inspector_EVENTS = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_border_less ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
    If ide_inspector_EVENTS
-      Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "LeftClick", #__Type_ComboBox )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "Click", #__Type_ComboBox )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Change", #__Type_ComboBox )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_enter,  "Enter", #__Type_ComboBox )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_leave,  "Leave", #__Type_ComboBox )
@@ -2777,6 +2756,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;
    Bind( ide_design_CODE, @ide_events( ), #__event_Down )
    Bind( ide_design_CODE, @ide_events( ), #__event_Up )
+   Bind( ide_design_CODE, @ide_events( ), #__event_RightClick )
    Bind( ide_design_CODE, @ide_events( ), #__event_Change )
    Bind( ide_design_CODE, @ide_events( ), #__event_StatusChange )
    ; TEMP
@@ -3001,9 +2981,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2749
-; FirstLine = 2554
-; Folding = ---------f+X--------------8------------8-------------
+; CursorPosition = 2373
+; FirstLine = 2146
+; Folding = ---------f+X--------------8------------8----------4-
 ; Optimizer
 ; EnableAsm
 ; EnableXP
