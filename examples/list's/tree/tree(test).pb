@@ -170,7 +170,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     EndIf
     
-    ;Repaints()
+    PostReDraw(root( ))
   EndProcedure  
   
   Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
@@ -254,9 +254,9 @@ Define a
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 122
-; FirstLine = 71
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 172
+; FirstLine = 117
 ; Folding = --yG--
 ; EnableXP
 ; DPIAware

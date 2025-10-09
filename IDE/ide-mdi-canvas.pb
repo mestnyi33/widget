@@ -95,7 +95,7 @@ Global ide_root,
 Global ide_design_splitter, 
        ide_design_PANEL_splitter,
        ide_design_PANEL, 
-       ide_design_panel_MDI,
+       ide_design_MDI,
        ide_design_panel_CODE, 
        ide_design_PANEL_HIASM, 
        ide_design_DEBUG 
@@ -1131,7 +1131,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
    
    If ide_inspector_properties
       If type$ = "Focus" Or type$ = "Align"
-         Properties_HideItem( ide_inspector_properties, #_pi_align, Bool( a_focused( )\parent = ide_design_panel_MDI )) 
+         Properties_HideItem( ide_inspector_properties, #_pi_align, Bool( a_focused( )\parent = ide_design_MDI )) 
       EndIf
       If type$ = "Focus" Or type$ = "ID"
          Properties_SetItemText( ide_inspector_properties, #_pi_id, BoolToStr( Bool( GetClass( *object ) <> Trim( GetClass( *object ), "#" ) )))
@@ -1356,20 +1356,20 @@ Procedure   ide_NewFile( )
    ClearItems( ide_design_DEBUG ) 
    ; удаляем всех детей у MDI 
    ; (то есть освобождаем MDI)
-   ClearWidgets( ide_design_panel_MDI )
-   ; Free( ide_design_panel_MDI, 1 )
+   ClearWidgets( ide_design_MDI )
+   ; Free( ide_design_MDI, 1 )
    ; затем создаем новое окно
-   ide_design_FORM = widget_add( ide_design_panel_MDI, "window", 7, 7, 400, 250 )
+   ide_design_FORM = widget_add( ide_design_MDI, "window", 7, 7, 400, 250 )
    
    ; и показываем гаджеты для добавления
    SetState( ide_design_PANEL, 0 )
    SetState( ide_inspector_PANEL, 0 )
    
    If Not Hide( ide_design_panel_CODE )
-      SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
+      SetText( ide_design_panel_CODE, Generate_Code( ide_design_MDI ) )
       ;                SetActive( ide_design_panel_CODE )
    EndIf
-   ; SetText( ide_design_DEBUG, Generate_Code( ide_design_panel_MDI ) )
+   ; SetText( ide_design_DEBUG, Generate_Code( ide_design_MDI ) )
    
 EndProcedure
 
@@ -1384,7 +1384,7 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
       SetState( ide_design_PANEL, 0 )
       SetState( ide_inspector_PANEL, 0 )
       ;
-      ClearWidgets( ide_design_panel_MDI )
+      ClearWidgets( ide_design_MDI )
       
       If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
          Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
@@ -1394,7 +1394,7 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
             String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
             String$ = RemoveString( String$, "?" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
             
-            MakeLine( ide_design_panel_MDI, String$, Text$ )
+            MakeLine( ide_design_MDI, String$, Text$ )
          Wend
          
          ;          
@@ -1407,12 +1407,12 @@ Procedure   ide_OpenFile(Path$) ; Открытие файла
          ;          
          ;          ; bug hides
          ;          If Not Hide( ide_design_panel_CODE )
-         ;             SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
+         ;             SetText( ide_design_panel_CODE, Generate_Code( ide_design_MDI ) )
          ;             ;                SetActive( ide_design_panel_CODE )
          ;          EndIf
          
          
-         Define code$ = Generate_Code( ide_design_panel_MDI )
+         Define code$ = Generate_Code( ide_design_MDI )
          code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
          code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
          SetText( ide_design_DEBUG, code$ )
@@ -1441,7 +1441,7 @@ Procedure   ide_SaveFile(Path$) ; Процедура сохранения фай
       If #PB_MessageRequester_Yes = Message("Как вы хотите сохранить",
                                             " Нажмите OK чтобы сохранить PUREBASIC код"+#LF$+
                                             " Нажмите NO чтобы сохранить WIDGET коде", #PB_MessageRequester_YesNo)
-         Text$ = Generate_Code( ide_design_panel_MDI )
+         Text$ = Generate_Code( ide_design_MDI )
       Else
          Text$ = GetText( ide_design_panel_CODE )
       EndIf
@@ -1530,7 +1530,7 @@ Procedure widget_delete( *this._s_WIDGET  )
    ;       ClearList( a_group( ) )
    ;    Else
    
-   If *this <> ide_design_panel_MDI
+   If *this <> ide_design_MDI
       item = GetData( *this )
       
       If item 
@@ -1677,7 +1677,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
          newtype$ = type$+"_"+CountType( *new )
          ;Debug ""+*parent +" "+ newtype$
          ;\\ второй метод формирования названия переменной
-         ;          If *parent = ide_design_panel_MDI
+         ;          If *parent = ide_design_MDI
          ;             newtype$ = Class( *new )+"_"+CountType( *new , 2 )
          ;          Else
          ;             newtype$ = Class( *parent )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
@@ -2091,7 +2091,7 @@ Procedure ide_menu_events( *g._s_WIDGET, BarButton )
          
          ;-  RUN
       Case #_tb_file_run
-         Define Code.s = Generate_Code( ide_design_panel_MDI ) ;GetText( ide_design_panel_CODE )
+         Define Code.s = Generate_Code( ide_design_MDI ) ;GetText( ide_design_panel_CODE )
          
          RunPreview( Code )
          
@@ -2199,7 +2199,7 @@ Procedure ide_events( )
    ;\\
    If __event = #__event_Resize
       If *g = ide_design_PANEL
-         ResizeGadget( GetCanvasGadget(ide_design_panel_MDI), X(*g, #__c_inner), Y(*g, #__c_inner), Width(*g, #__c_inner), Height(*g, #__c_inner))
+         ResizeGadget( GetCanvasGadget(ide_design_MDI), X(*g, #__c_inner), Y(*g, #__c_inner), Width(*g, #__c_inner), Height(*g, #__c_inner))
       EndIf
    EndIf
    
@@ -2278,7 +2278,7 @@ Procedure ide_events( )
                   Width(ide_design_PANEL, #__c_inner) +" "+ 
                   Height(ide_design_PANEL, #__c_inner)
             
-            Define g = GetCanvasGadget(ide_design_panel_MDI)
+            Define g = GetCanvasGadget(ide_design_MDI)
             If __item = 0
                HideGadget( g, 0 )
                ResizeGadget( g, X(ide_design_PANEL, #__c_inner), Y(ide_design_PANEL, #__c_inner), Width(ide_design_PANEL, #__c_inner), Height(ide_design_PANEL, #__c_inner))
@@ -2287,7 +2287,7 @@ Procedure ide_events( )
             EndIf
             If __item = 1
                AddItem( ide_design_panel_CODE, 0, "" ) ; BUG 
-               SetText( ide_design_panel_CODE, Generate_Code( ide_design_panel_MDI ) )
+               SetText( ide_design_panel_CODE, Generate_Code( ide_design_MDI ) )
                SetActive( ide_design_panel_CODE )
             EndIf
          EndIf
@@ -2344,7 +2344,7 @@ Procedure ide_events( )
                name$ = *g\text\caret\word ; GetWord( text$, len, caret ) 
                
                If name$
-                  object = MakeID( name$, ide_design_panel_MDI )
+                  object = MakeID( name$, ide_design_MDI )
                   If Not object
                      If CountString( text$, "=" )
                         name$ = Trim( StringField( text$, 1, "=" ))
@@ -2353,7 +2353,7 @@ Procedure ide_events( )
                         EndIf
                      EndIf
                      
-                     object = MakeID( name$, ide_design_panel_MDI )
+                     object = MakeID( name$, ide_design_MDI )
                   EndIf
                EndIf
                
@@ -2492,9 +2492,9 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    Define ide_g_canvas2 = 0 : CanvasGadget(ide_g_canvas2, 0,0,0,0)
    ;Define ide_g_canvas2 = CanvasGadget(#PB_Any, 0,0,0,0)
    Define ide_root2 = Open( ide_window, 0,0,0,0,"",0, 0, ide_g_canvas2 )
-   ide_design_panel_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_panel_MDI, "ide_design_panel_MDI" ) ;: SetFrame(ide_design_panel_MDI, 10)
-   SetColor( ide_design_panel_MDI, #PB_Gadget_BackColor, $FFBF9CC3 )
-   a_init( ide_design_panel_MDI);, 0 )
+   ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_MDI, "ide_design_MDI" ) ;: SetFrame(ide_design_MDI, 10)
+   SetColor( ide_design_MDI, #PB_Gadget_BackColor, $FFBF9CC3 )
+   a_init( ide_design_MDI);, 0 )
    If ide_root2
       CloseGadgetList( )
       OpenGadgetList( (ide_g_canvas))
@@ -2729,11 +2729,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    SetState( ide_inspector_PANEL, 1 )
    
-   ;   ;OpenList(ide_design_panel_MDI)
+   ;   ;OpenList(ide_design_MDI)
    Define result, btn2, example = 3
    
    
-   ide_design_FORM = widget_add( ide_design_panel_MDI, "window", 10, 10, 350, 200 )
+   ide_design_FORM = widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
    
    If example = 2
       Define cont1 = widget_add( ide_design_FORM, "container", 10, 10, 320, 180 )
@@ -2750,7 +2750,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ; ;       AddItem(ide_inspector_view, -1, "container_0", -1, 1)
       ; ;       AddItem(ide_inspector_view, -1, "button_1", -1, 2)
       ; ;       
-      ;       Define *parent._s_WIDGET = ide_design_panel_MDI
+      ;       Define *parent._s_WIDGET = ide_design_MDI
       ;       ;PushListPosition(widgets())
       ;       If StartEnum( *parent ,0)
       ;          Debug "99 "+ GetClass(widget()) +" "+ GetClass(widget()\parent) +" "+ Str(Level(widget()))+" "+Str(Level(*parent));IsChild(widget(), *parent )
@@ -2825,7 +2825,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       ;SetSizeBounds( *scrollarea )
       ;       SetMoveBounds( btn2, -1,-1,-1,-1 )
       SetMoveBounds( ide_design_FORM, -1,-1,-1,-1 )
-      ;       ;SetChildrenBounds( ide_design_panel_MDI )
+      ;       ;SetChildrenBounds( ide_design_MDI )
       
    ElseIf example = 4
       ;\\ example 3
@@ -2883,12 +2883,12 @@ CompilerIf #PB_Compiler_IsMainFile
    
    a_set( ide_design_FORM )
    
-   Define code$ = Generate_Code( ide_design_panel_MDI )
+   Define code$ = Generate_Code( ide_design_MDI )
    code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
    code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
    SetText( ide_design_DEBUG, code$ )
    
-   ;Define code$ = Generate_Code( ide_design_panel_MDI )
+   ;Define code$ = Generate_Code( ide_design_MDI )
    ; SetText( ide_design_panel_CODE, code$ )
    ;SetText( ide_design_DEBUG, code$ )
    
@@ -2922,9 +2922,9 @@ DataSection
    group_width:      : IncludeBinary "group/group_width.png"
    group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2504
-; FirstLine = 2418
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 2890
+; FirstLine = 2752
 ; Folding = -------------------------------------------l34t----+-
 ; EnableXP
 ; DPIAware

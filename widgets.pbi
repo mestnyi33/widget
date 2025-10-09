@@ -5947,7 +5947,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   *bar\area\end = *bar\area\len - ( *BB1\size + *BB2\size )
-                  ;
                   If *bar\area\end < *bar\area\pos
                      ; Debug " ??? "+*bar\area\end +"-*bar\area\end < "+ *bar\area\pos +"-*bar\area\pos "+ *this\class +" "+ClassFromType(*this\type)
                      *bar\area\end = *bar\area\pos
@@ -6032,16 +6031,25 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ;
                   *bar\thumb\end = *bar\area\len - *bar\thumb\len - *BB2\size - *bar\min[2] 
-                  If *bar\thumb\end < *bar\thumb\pos
-                     ; Debug " ??? "+*bar\thumb\end +"-*bar\thumb\end < "+ *bar\thumb\pos +"-*bar\thumb\pos "+ *this\class
-                     *bar\thumb\end = *bar\thumb\pos
+                  If *bar\thumb\end < 0
+                     *bar\thumb\end = 0
                   EndIf
+                  ; не работает без него пример splitter(e).pb
+                  If *bar\thumb\end > *bar\area\end
+                     *bar\thumb\end = *bar\area\end
+                  EndIf
+                  
+                  ;                   ; не для splitter
+                  ;                   If *bar\thumb\end < *bar\thumb\pos
+                  ;                      ; Debug " ??? "+*bar\thumb\end +"-*bar\thumb\end < "+ *bar\thumb\pos +"-*bar\thumb\pos "+ *this\class
+                  ;                      *bar\thumb\end = *bar\thumb\pos
+                  ;                   EndIf
                EndIf
             EndIf
          EndIf
          
          ;\\
-         ; Debug ""+*bar\PageChange( ) +" "+ *bar\percent +" "+ *bar\min +" "+ *bar\min[2] +" "+ *bar\page\pos +" "+ *bar\thumb\end +" "+ *bar\page\end
+         ; Debug ""+*bar\PageChange( ) +" "+ *bar\percent +" "+ *bar\min +" "+ *bar\min[2] +" "+ *bar\page\pos +" "+ *bar\area\end +" "+ *bar\thumb\end +" "+ *bar\page\end
          
          ;\\
          ;\\ get thumb pos
@@ -19681,7 +19689,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure EventResize( )
          Protected Canvas = PB(GetWindowData)( PB(EventWindow)( ))
          ; Debug "- resize - os - window - "+Canvas ; PB(WindowWidth)( PB(EventWindow)( ))
-         
          PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( Canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( Canvas ) * 2 ) ; bug
       EndProcedure
       
@@ -22011,13 +22018,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             If Not constants::BinaryFlag( Flag, #PB_Window_BorderLess ) 
                If Width = #PB_Ignore
                Else
-                  Width + #__window_FrameSize*2
+                  ;Width + #__window_FrameSize*2
                   IsWindow = 1
                EndIf
                If Height = #PB_Ignore
                Else
-                  ;Height + DPIScaled(#__window_FrameSize*2 + #__window_CaptionHeight)
-                  Height + #__window_FrameSize*2 + #__window_CaptionHeight
+                  ; пример align(autosize).pb
+                  ;Height + #__window_FrameSize*2 + #__window_CaptionHeight
                   IsWindow = 1
                EndIf
             EndIf
@@ -22204,9 +22211,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
             ;
             BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
-            ;             If constants::BinaryFlag( canvasflag, #PB_Canvas_Container )
-            ;                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
-            ;             EndIf
+            If constants::BinaryFlag( flag, #PB_Window_SizeGadget )
+               BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
+            EndIf
             
             ;\\ z - order
             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -25426,8 +25433,43 @@ EndMacro
 
 ;-
 ;-\\ EXAMPLE
+CompilerIf #PB_Compiler_IsMainFile = 99
+   UseWidgets( )
+   
+   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+   
+   If Open(0, 0, 0, 470, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      
+      Button_0 = 0;Button(0,0,0,0, "Button 0") ; as they will be sized automatically
+      Button_1 = 0;Button(0,0,0,0, "Button 1") ; as they will be sized automatically
+      
+      ;Button_2 = 0;MDI(0, 0, 0, 0) ; as they will be sized automatically
+      Button_2 = 0;Button(0,0,0,0, "Button 2") ; No need to specify size or coordinates
+      Button_3 = 0;Button(0,0,0,0, "Button 3") ; as they will be sized automatically
+      Button_4 = 0;Button(0,0,0,0, "Button 4") ; No need to specify size or coordinates
+      Button_5 = 0;Button(0,0,0,0, "Button 5") ; as they will be sized automatically
+      
+      Splitter_0 = Splitter(0,0,0,0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+      Splitter_1 = 0;Splitter(0,0,0,0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+;       SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
+;       SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
+      Splitter_2 = 0;Splitter(0,0,0,0, Splitter_1, Button_5)
+      Splitter_3 = 0;Splitter(0,0,0,0, Button_2, Splitter_2)
+      Splitter_4 = Splitter(30,30, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
+      
+      SetState(Splitter_4, 20)
+      
+      widget()=Splitter_0
+      Debug widget()\bar\thumb\pos
+      
+     
+      WaitClose( )
+   EndIf
+   
+CompilerEndIf
+
 ;- SPLITTER FOCUS DEMO
-CompilerIf #PB_Compiler_IsMainFile
+CompilerIf #PB_Compiler_IsMainFile = 99
   UseWidgets( )
   
   Global Container_0, Container_1, Container_2, Container_3, Container_4, Container_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
@@ -25506,7 +25548,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ;- MULTI SELECT WIDGETS
-CompilerIf #PB_Compiler_IsMainFile = 99
+CompilerIf #PB_Compiler_IsMainFile = 99  
    UseWidgets( )
    
    Enumeration 
@@ -25726,7 +25768,7 @@ CompilerEndIf
 
 
 ;- DEMO
-CompilerIf #PB_Compiler_IsMainFile = 99 
+CompilerIf #PB_Compiler_IsMainFile
    
    EnableExplicit
    UseWidgets( )
@@ -26565,9 +26607,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 19659
-; FirstLine = 19189
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------8fr8q4---+-8------------------------------------------------------------------------------------------------------------------------------------8----------
+; CursorPosition = 22025
+; FirstLine = 20656
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------d0x-8x----4-v-f---+--------f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------------------4-e4Vv---0-4------------------------------------------------------------------------------------------------------------------------------------2+-4-XH----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
