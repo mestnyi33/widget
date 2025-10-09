@@ -19613,6 +19613,52 @@ CompilerIf Not Defined( widget, #PB_Module )
          
       EndProcedure
       
+      Procedure DoTabFocus( *this._s_WIDGET, recursion.b = 0 )
+         If *this\anchors And
+            Not *this\anchors\mode & #__a_zoom
+            ;
+            If a_main( )\AfterWidget( )
+               SetActive( a_main( )\AfterWidget( ) )
+            Else
+               If a_main( )\parent\FirstWidget( )
+                  SetActive( a_main( )\parent\FirstWidget( ) )
+               EndIf
+            EndIf
+            ;
+         Else
+            If *this\FirstWidget( ) And Not recursion
+               ; SetActive( *this\FirstWidget( ) )
+               SetActive( GetPosition( *this, #PB_List_First, GetState( *this )))
+               ;
+            Else
+               If *this\AfterWidget( ) And 
+                  *this\AfterWidget( )\TabIndex( ) = *this\TabIndex( )
+                  ;
+                  SetActive( *this\AfterWidget( ) )
+                  ;
+               ElseIf *this\parent
+                  If *this\parent\AfterWidget( )
+                     SetActive( *this\parent\AfterWidget( ) )
+                     ;
+                  Else
+                     If *this\parent\parent
+                        DoTabFocus( *this\parent\parent, #True )
+                     EndIf
+                  EndIf
+                  ;
+               ElseIf *this\root
+                  If *this\root\FirstWidget( )
+                     If *this\window\gadget
+                        DoDeactivate( *this\window\gadget )
+                        *this\window\gadget = #Null
+                     EndIf
+                     SetActive( *this\root\FirstWidget( ) )
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+      EndProcedure
+      
       ;-
       Procedure EventResize( )
          Protected Canvas = PB(GetWindowData)( PB(EventWindow)( ))
@@ -19648,46 +19694,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                ReDraw( roots( ) )
             EndIf
             ; PopMapPosition(roots())
-         EndIf
-      EndProcedure
-      
-      Procedure DoTabFocus( *this._s_WIDGET )
-         If *this\anchors And
-            Not *this\anchors\mode & #__a_zoom
-            If a_main( )\AfterWidget( )
-               SetActive( a_main( )\AfterWidget( ) )
-            Else
-               If a_main( )\parent\FirstWidget( )
-                  SetActive( a_main( )\parent\FirstWidget( ) )
-               EndIf
-            EndIf
-         Else
-            If *this\FirstWidget( )
-               ; SetActive( *this\FirstWidget( ) )
-               SetActive( GetPosition( *this, #PB_List_First, GetState( *this )))
-            Else
-               If *this\AfterWidget( ) And 
-                  *this\AfterWidget( )\TabIndex( ) = *this\TabIndex( )
-                  ;
-                  SetActive( *this\AfterWidget( ) )
-               Else
-                  If *this\parent
-                     If *this\parent\AfterWidget( )
-                        SetActive( *this\parent\AfterWidget( ) )
-                     Else
-                        If *this\root
-                           If *this\root\FirstWidget( )
-                              If *this\window\gadget
-                                 DoDeactivate( *this\window\gadget )
-                                 *this\window\gadget = #Null
-                              EndIf
-                              SetActive( *this\root\FirstWidget( ) )
-                           EndIf
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
          EndIf
       EndProcedure
       
@@ -20149,45 +20155,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;\\ tab focus
                   Select keyboard( )\Key
                      Case #PB_Shortcut_Tab
-                        If *keywidget\anchors And
-                           Not *keywidget\anchors\mode & #__a_zoom
-                           If a_main( )\AfterWidget( )
-                              SetActive( a_main( )\AfterWidget( ) )
-                           Else
-                              If a_main( )\parent\FirstWidget( )
-                                 SetActive( a_main( )\parent\FirstWidget( ) )
-                              EndIf
-                           EndIf
-                        Else
-                           If *keywidget\FirstWidget( )
-                              ; SetActive( *keywidget\FirstWidget( ) )
-                              SetActive( GetPosition( *keywidget, #PB_List_First, GetState( *keywidget )))
-                           Else
-                              If *keywidget\AfterWidget( ) And 
-                                 *keywidget\AfterWidget( )\TabIndex( ) = *keywidget\TabIndex( )
-                                 ;
-                                 SetActive( *keywidget\AfterWidget( ) )
-                              Else
-                                 If *keywidget\parent
-                                    If *keywidget\parent\AfterWidget( )
-                                       SetActive( *keywidget\parent\AfterWidget( ) )
-                                    Else
-                                       If *keywidget\root
-                                          If *keywidget\root\FirstWidget( )
-                                             If *keywidget\window\gadget
-                                                DoDeactivate( *keywidget\window\gadget )
-                                                *keywidget\window\gadget = #Null
-                                             EndIf
-                                             SetActive( *keywidget\root\FirstWidget( ) )
-                                          EndIf
-                                       EndIf
-                                    EndIf
-                                 EndIf
-                              EndIf
-                           EndIf
-                        EndIf
-                        
-                     Debug ""+GetActive( )\class+" - [tab-key]"
+                        DoTabFocus( *keywidget )
+                        ; Debug ""+GetActive( )\class+" - [tab-key]"
                         
                   EndSelect
                EndIf
@@ -25439,8 +25408,87 @@ EndMacro
 
 ;-
 ;-\\ EXAMPLE
-;-
+;- SPLITTER FOCUS DEMO
 CompilerIf #PB_Compiler_IsMainFile
+  UseWidgets( )
+  
+  Global Container_0, Container_1, Container_2, Container_3, Container_4, Container_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4
+  
+  If OpenWindow(0, 0, 0, 470, 280, "tab focus demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    If Open(0);, 425, 40)
+       Container_0 = Container(0, 0, 0, 0)
+       Container(10,10,50,30)
+       Button( 10,10,50,30, "Container 0") ; as they will be sized automatically
+       CloseList( )
+       CloseList( )
+       Container_1 = Container(0, 0, 0, 0)
+       Container(10,10,50,30)
+       Container(10,10,50,30)
+       Button( 10,10,50,30, "Container 1") ; as they will be sized automatically
+       CloseList( )
+       CloseList( )
+       CloseList( )
+       
+       Container_2 = Container(0, 0, 0, 0)
+       Container(10,10,50,30)
+       Button( 10,10,50,30, "Container 2") ; No need to specify size or coordinates
+       CloseList( )
+       CloseList( )
+       Container_3 = Container(0, 0, 0, 0)
+       Container(10,10,50,30)
+       Button( 10,10,50,30, "Container 3") ; as they will be sized automatically
+       CloseList( )
+       CloseList( )
+       Container_4 = Container(0, 0, 0, 0)
+       Container(10,10,50,30)
+       Button( 10,10,50,30, "Container 4") ; No need to specify size or coordinates
+       CloseList( )
+       CloseList( )
+       Container_5 = Container(0, 0, 0, 0)
+       Container(10,10,50,30)
+       Button( 10,10,50,30, "Container 5") ; as they will be sized automatically
+       CloseList( )
+       CloseList( )
+       
+;       Hide(Container_0, 1 ) 
+;       Hide(Container_1, 1 ) 
+;       Hide(Container_2, 1 ) 
+;       Hide(Container_3, 1 ) 
+;       Hide(Container_4, 1 ) 
+;       Hide(Container_5, 1 ) 
+
+;       Container_0 = 0
+;       Container_1 = 0
+;       Container_2 = 0
+;       Container_3 = 0
+;       Container_4 = 0
+;       Container_5 = 0
+      
+      Splitter_0 = Splitter(0, 0, 0, 0, Container_0, Container_1, #PB_Splitter_FirstFixed) ; #PB_Splitter_Vertical|
+      Splitter_1 = Splitter(0, 0, 0, 0, Container_3, Container_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+      SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
+      SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
+      Splitter_2 = Splitter(0, 0, 0, 0, Splitter_1, Container_5)
+      Splitter_3 = Splitter(0, 0, 0, 0, Container_2, Splitter_2)
+      Splitter_4 = Splitter(30, 30, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
+      
+      SetText(Splitter_0, "0")
+      SetText(Splitter_1, "1")
+      SetText(Splitter_2, "2")
+      SetText(Splitter_3, "3")
+      SetText(Splitter_4, "4")
+      
+      SetState(Splitter_1, 20)
+      ;SetState(Splitter_1, 410-20)
+    EndIf
+    
+    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+  EndIf
+  
+CompilerEndIf
+
+;- MULTI SELECT WIDGETS
+CompilerIf #PB_Compiler_IsMainFile = 99
    UseWidgets( )
    
    Enumeration 
@@ -25658,6 +25706,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 
+
+;- DEMO
 CompilerIf #PB_Compiler_IsMainFile = 99 
    
    EnableExplicit
@@ -26497,9 +26547,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 20189
-; FirstLine = 19783
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+47u70--v--+------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 20165
+; FirstLine = 19305
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-------------------f-bdX0+--4-f------------------------------------------------------------------------------------------------------------------------------------f----------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
