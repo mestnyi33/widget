@@ -7371,6 +7371,25 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Procedure.b HideItem( *this._s_widget, item.l, state.b )
+         If *this\type = #__type_MenuBar Or
+            *this\type = #__type_PopupBar Or
+            *this\type = #__type_ToolBar
+            ;
+            If *this\__tabs( )
+               PushListPosition(*this\__tabs( ))
+               ForEach *this\__tabs( )
+                  If *this\__tabs( )\tindex = item
+                     ;SelectElement( *this\__tabs( ), item )
+                     *this\__tabs( )\hide = state
+                     *this\TabChange( ) = #True
+                     Break
+                  EndIf
+               Next
+               PopListPosition(*this\__tabs( ))
+            EndIf
+            ProcedureReturn 0
+         EndIf
+         
          If *this\tabbar
             ForEach *this\tabbar\__tabs( )
                If *this\tabbar\__tabs( )\tindex = item
@@ -19637,14 +19656,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                   SetActive( *this\AfterWidget( ) )
                   ;
                ElseIf *this\parent
-                  If *this\parent\AfterWidget( )
-                     SetActive( *this\parent\AfterWidget( ) )
-                     ;
-                  Else
-                     If *this\parent\parent
-                        DoTabFocus( *this\parent\parent, #True )
+                  If *this\window = *this\parent
+                     If *this\window\gadget
+                        DoDeactivate( *this\window\gadget )
+                        *this\window\gadget = #Null
                      EndIf
                   EndIf
+                  DoTabFocus( *this\parent, #True )
                   ;
                ElseIf *this\root
                   If *this\root\FirstWidget( )
@@ -26547,9 +26565,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 20165
-; FirstLine = 19305
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-------------------f-bdX0+--4-f------------------------------------------------------------------------------------------------------------------------------------f----------
+; CursorPosition = 19659
+; FirstLine = 19189
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------8fr8q4---+-8------------------------------------------------------------------------------------------------------------------------------------8----------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

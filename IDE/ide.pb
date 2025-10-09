@@ -121,7 +121,7 @@ Global group_drag
 
 Global ColorState
 Global ColorType 
-                        
+
 Global enum_object = 0
 Global enum_image = 0
 Global enum_font = 0
@@ -464,7 +464,7 @@ Procedure   Properties_ButtonResize( *second._s_WIDGET )
                Case #_pi_FONT, #_pi_COLOR, #_pi_IMAGE
                   Resize(*this,
                          *row\x + (*second\inner_width( )-*this\width), ; + *second\scroll_x( )
-                         *row\y, ; + *second\scroll_y( ), 
+                         *row\y,                                        ; + *second\scroll_y( ), 
                          #PB_Ignore, 
                          *row\height, 0 )
                Default
@@ -541,12 +541,12 @@ Procedure   Properties_ButtonEvents( )
    
    ; Debug ""+widget::ClassFromEvent(__event) +" "+ widget::GetClass( *g) +" "+ GetData(*g)
    
-;    If __event = #__event_Change
-;       Debug 4444
-;       If GetData(*g) = #_ei_leftclick
-;          Debug 333
-;       EndIf
-;    EndIf
+   ;    If __event = #__event_Change
+   ;       Debug 4444
+   ;       If GetData(*g) = #_ei_leftclick
+   ;          Debug 333
+   ;       EndIf
+   ;    EndIf
    
    Select __event
       Case #__event_Down
@@ -573,8 +573,8 @@ Procedure   Properties_ButtonEvents( )
                ;                   SetImage( a_focused( ), AddImage( Str(ListSize(images( ))), File$ ))
                ;                   
                ;                EndIf
-                  Properties_Updates( a_focused( ), "Image" )
-                  
+               Properties_Updates( a_focused( ), "Image" )
+               
             Case #_pi_FONT
                Define font = GetFont( a_focused( ) )
                Define FontName$ = GetFontName( font ) ; установить начальный шрифт (также может быть пустым)
@@ -667,33 +667,33 @@ Procedure   Properties_ButtonEvents( )
                      
                   Case #_pi_coloralpha
                      If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
-                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
-                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
-                                                             (GetState(*g)) ))
-                     Properties_Updates( a_focused( ), "Color" )
-                  EndIf
-                  
+                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
+                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
+                                                          (GetState(*g)) ))
+                        Properties_Updates( a_focused( ), "Color" )
+                     EndIf
+                     
                   Case #_pi_colorblue
                      If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
-                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
-                                                             (GetState(*g)),
-                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
+                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
+                                                          (GetState(*g)),
+                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
                         Properties_Updates( a_focused( ), "Color" )
                      EndIf
                      
                   Case #_pi_colorgreen
                      If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
-                                                             (GetState(*g)),
-                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
-                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
+                                                          (GetState(*g)),
+                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
+                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
                         Properties_Updates( a_focused( ), "Color" )
                      EndIf
                      
                   Case #_pi_colorred
                      If SetBackColor( a_focused( ), RGBA( (GetState(*g)),
-                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
-                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
-                                                             (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
+                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
+                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
+                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
                         Properties_Updates( a_focused( ), "Color" )
                      EndIf
                      
@@ -703,7 +703,7 @@ Procedure   Properties_ButtonEvents( )
                Select GetData(*g) 
                   Case #_pi_cursor
                      Properties_SetItemText( ide_inspector_PROPERTIES, GetData(*g), GetItemText( *g, GetState( *g)))
-               
+                     
                   Case #_pi_colorstate
                      ColorState = GetState(*g)
                      Properties_SetItemText( ide_inspector_PROPERTIES, GetData(*g), GetItemText( *g, GetState( *g)))
@@ -815,7 +815,7 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                If *this\PopupCombo( )
                   *this\PopupCombo( )\mode\Checkboxes = 1
                   *this\PopupCombo( )\mode\optionboxes = 1
-               ;    Flag( *this\PopupCombo( ), #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
+                  ;    Flag( *this\PopupCombo( ), #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
                EndIf
                AddItem(*this, -1, "Bold")        ; Шрифт будет выделен жирным
                AddItem(*this, -1, "Italic")      ; Шрифт будет набран курсивом
@@ -828,18 +828,18 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                AddItem(*this, -1, "Entered")
                AddItem(*this, -1, "Selected")
                AddItem(*this, -1, "Disabled")
-;                ColorState = 0
-;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
-      
+               ;                ColorState = 0
+               ;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
+               
             Case #_pi_colortype
                AddItem(*this, -1, "BackColor")
                AddItem(*this, -1, "FrontColor")
                AddItem(*this, -1, "LineColor")
                AddItem(*this, -1, "FrameColor")
                AddItem(*this, -1, "ForeColor")
-;                ColorType = MakeConstants("#PB_Gadget_" + GetItemText( *this, 0))
-;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
-                     
+               ;                ColorType = MakeConstants("#PB_Gadget_" + GetItemText( *this, 0))
+               ;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
+               
             Case #_pi_cursor
                AddItem(*this, -1, "Default")
                AddItem(*this, -1, "Arrows")
@@ -853,7 +853,7 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                AddItem(*this, -1, "LeftRight")
                AddItem(*this, -1, "LeftUpRightDown")
                AddItem(*this, -1, "UpDown")
-;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
+               ;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
                
             Default
                AddItem(*this, -1, "False")
@@ -1260,6 +1260,13 @@ EndProcedure
 ;-
 ;-
 Procedure HideBarButtons( *this._s_WIDGET, state )
+   ;    HideItem( *this, #_tb_group_left, state )
+   ;    HideItem( *this, #_tb_group_right, state )
+   ;    HideItem( *this, #_tb_group_top, state )
+   ;    HideItem( *this, #_tb_group_bottom, state )
+   ;    HideItem( *this, #_tb_group_height, state )
+   ;    HideItem( *this, #_tb_group_width, state )
+   
    DisableBarButton( *this, #_tb_group_left, state )
    DisableBarButton( *this, #_tb_group_right, state )
    DisableBarButton( *this, #_tb_group_top, state )
@@ -1272,45 +1279,45 @@ EndProcedure
 Macro new_widget_copy( )
    ClearList( *copy( ) )
    
-;    If a_focused( )\anchors
-;       AddElement( *copy( ) ) 
-;       *copy.allocate( widget, ( ) )
-;       *copy( )\widget = a_focused( )
-;    Else
-;       
-;       ; CopyList( a_group( ), *copy( ) )
-;       
-;    EndIf
-;    
+   ;    If a_focused( )\anchors
+   ;       AddElement( *copy( ) ) 
+   ;       *copy.allocate( widget, ( ) )
+   ;       *copy( )\widget = a_focused( )
+   ;    Else
+   ;       
+   ;       ; CopyList( a_group( ), *copy( ) )
+   ;       
+   ;    EndIf
+   ;    
    mouse( )\selector\x = mouse( )\steps
    mouse( )\selector\y = mouse( )\steps
 EndMacro
 
 Macro new_widget_paste( )
-;    If ListSize( *copy( ) )
-;       ForEach *copy( )
-;          new_widget_add( *copy( )\widget\parent, 
-;                      *copy( )\widget\class, 
-;                      *copy( )\widget\x[#__c_container] + ( mouse( )\selector\x ),; -*copy( )\widget\parent\x[#__c_inner] ),
-;                      *copy( )\widget\y[#__c_container] + ( mouse( )\selector\y ),; -*copy( )\widget\parent\y[#__c_inner] ), 
-;                      *copy( )\widget\width[#__c_frame],
-;                      *copy( )\widget\height[#__c_frame] )
-;       Next
-;       
-;       mouse( )\selector\x + mouse( )\steps
-;       mouse( )\selector\y + mouse( )\steps
-;       
-;       ; ClearList( a_group( ) )
-;       ; CopyList( *copy( ), a_group( ) )
-;    EndIf
-;    
-; ;    ;
-; ;    ForEach a_group( )
-; ;       Debug " group "+a_group( )\widget
-; ;    Next
-;    
-;    ;
-;    ;a_update( a_focused( ) )
+   ;    If ListSize( *copy( ) )
+   ;       ForEach *copy( )
+   ;          new_widget_add( *copy( )\widget\parent, 
+   ;                      *copy( )\widget\class, 
+   ;                      *copy( )\widget\x[#__c_container] + ( mouse( )\selector\x ),; -*copy( )\widget\parent\x[#__c_inner] ),
+   ;                      *copy( )\widget\y[#__c_container] + ( mouse( )\selector\y ),; -*copy( )\widget\parent\y[#__c_inner] ), 
+   ;                      *copy( )\widget\width[#__c_frame],
+   ;                      *copy( )\widget\height[#__c_frame] )
+   ;       Next
+   ;       
+   ;       mouse( )\selector\x + mouse( )\steps
+   ;       mouse( )\selector\y + mouse( )\steps
+   ;       
+   ;       ; ClearList( a_group( ) )
+   ;       ; CopyList( *copy( ), a_group( ) )
+   ;    EndIf
+   ;    
+   ; ;    ;
+   ; ;    ForEach a_group( )
+   ; ;       Debug " group "+a_group( )\widget
+   ; ;    Next
+   ;    
+   ;    ;
+   ;    ;a_update( a_focused( ) )
 EndMacro
 
 Procedure new_widget_line_add( *new._s_widget )
@@ -1483,7 +1490,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
          EndIf
       EndIf
       
-        
+      
       ; create elements
       Select type$
          Case "window"   
@@ -1497,7 +1504,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
             ; SetFrame( *new, 0)
             
          Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, Param1, Param2, Param3, flag ) : CloseList( ) ; 1 
-            ; SetFrame( *new, 30)
+                                                                                                                 ; SetFrame( *new, 30)
             SetBackgroundColor( *new, $74F6FE )
          Case "container"   : *new = Container( X,Y,Width,Height, flag ) : CloseList( )
          Case "panel"       : *new = Panel( X,Y,Width,Height, flag ) : CloseList( )
@@ -1570,34 +1577,34 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
                   ResizeImage(*imagelogo, DPIScaled(ImageWidth(*imagelogo)), DPIScaled(ImageHeight(*imagelogo)), #PB_Image_Raw)
                CompilerEndIf
                
-;                If AddImages( *imagelogo )
-;                   ;images( )\file$ = ReplaceString( #PB_Compiler_Home, "\", "/" ) + "ide/include/images/group/group_bottom.png"
-;                   images( )\file$ = "ide/include/images/group/group_bottom.png"
-;                   images( )\id$ = "*imagelogo"
-;                EndIf
+               ;                If AddImages( *imagelogo )
+               ;                   ;images( )\file$ = ReplaceString( #PB_Compiler_Home, "\", "/" ) + "ide/include/images/group/group_bottom.png"
+               ;                   images( )\file$ = "ide/include/images/group/group_bottom.png"
+               ;                   images( )\id$ = "*imagelogo"
+               ;                EndIf
                
                SetImage( *new, *imagelogo )
                
-;                If Not flag & #__flag_NoFocus 
-;                   a_set(*new, #__a_full, (14))
-;                EndIf
+               ;                If Not flag & #__flag_NoFocus 
+               ;                   a_set(*new, #__a_full, (14))
+               ;                EndIf
                SetBackColor( *new, $FFECECEC )
                ;
                Properties_Updates( *new, "Resize" )
                Bind( *new, @new_widget_events( ) )
             Else
-;                If Not flag & #__flag_NoFocus 
-;                   a_set(*new, #__a_full, (10))
-;                EndIf
-;                ;SetBackColor( *new, $FFF1F1F1 )
+               ;                If Not flag & #__flag_NoFocus 
+               ;                   a_set(*new, #__a_full, (10))
+               ;                EndIf
+               ;                ;SetBackColor( *new, $FFF1F1F1 )
             EndIf 
             
             ; 
             *new\ChangeColor = 0
          Else
-;             If Not flag & #__flag_NoFocus 
-;                a_set(*new, #__a_full)
-;             EndIf
+            ;             If Not flag & #__flag_NoFocus 
+            ;                a_set(*new, #__a_full)
+            ;             EndIf
          EndIf
          
          Bind( *new, @new_widget_events( ), #__event_Resize )
@@ -1620,10 +1627,10 @@ Procedure new_widget_events( )
       Case #__event_RightDown
          Debug "right"
          
-;       Case #__event_KeyDown
-;          Debug "#__event_KeyDown"
-;       Case #__event_KeyUp
-;          Debug "#__event_KeyUp"
+         ;       Case #__event_KeyDown
+         ;          Debug "#__event_KeyDown"
+         ;       Case #__event_KeyUp
+         ;          Debug "#__event_KeyUp"
          
       Case #__event_Focus
          If a_focused( ) = *g
@@ -1719,24 +1726,24 @@ Procedure new_widget_events( )
          
       Case #__event_LeftUp
          ;If a_focused( )
-            HideBarButtons( ide_toolbar, Bool(a_anchors( )\group\show=0) )
+         HideBarButtons( ide_toolbar, Bool(a_anchors( )\group\show=0) )
          ;EndIf
          
          ; then group select
          If IsContainer(*g)
             
-;             SetState( ide_inspector_VIEW, - 1 ) 
-;             If IsGadget( ide_g_code )
-;                SetGadgetState( ide_g_code, - 1 )
-;             EndIf
+            ;             SetState( ide_inspector_VIEW, - 1 ) 
+            ;             If IsGadget( ide_g_code )
+            ;                SetGadgetState( ide_g_code, - 1 )
+            ;             EndIf
             
             If StartEnum( a_main( ) )
                If widgets( )\anchors\group\show 
                   
-;                   SetItemState( ide_inspector_VIEW, GetData( widgets( ) ), #PB_Tree_Selected )
-;                   If IsGadget( ide_g_code )
-;                      SetGadgetItemState( ide_g_code, GetData( widgets( ) ), #PB_Tree_Selected )
-;                   EndIf
+                  ;                   SetItemState( ide_inspector_VIEW, GetData( widgets( ) ), #PB_Tree_Selected )
+                  ;                   If IsGadget( ide_g_code )
+                  ;                      SetGadgetItemState( ide_g_code, GetData( widgets( ) ), #PB_Tree_Selected )
+                  ;                   EndIf
                EndIf
                StopEnum( )
             EndIf
@@ -2201,18 +2208,18 @@ EndProcedure
 Procedure ide_menu_events(  )
    Protected *g._s_WIDGET = EventWidget( ), BarButton = WidgetEventItem( )
    Protected transform, move_x, move_y
-    Static NewList *copy._s_WIDGET( )
+   Static NewList *copy._s_WIDGET( )
    
    ; Debug "ide_menu_events "+BarButton
    
    Select BarButton
       Case #_tb_LNG
-;          If Hide( ide_popup_lenguage )
-;             DisplayPopupBar( ide_popup_lenguage, *g )
-;          Else
-;             HideWindow( GetCanvasWindow(GetRoot(ide_popup_lenguage)), 1 )
-;             Hide( ide_popup_lenguage, 1 )
-;          EndIf
+         ;          If Hide( ide_popup_lenguage )
+         ;             DisplayPopupBar( ide_popup_lenguage, *g )
+         ;          Else
+         ;             HideWindow( GetCanvasWindow(GetRoot(ide_popup_lenguage)), 1 )
+         ;             Hide( ide_popup_lenguage, 1 )
+         ;          EndIf
          
       Case #_tb_lng_ENG
          ide_Lng_change( 0 )
@@ -2402,7 +2409,7 @@ Procedure ide_events( )
          EndIf
          
    EndSelect
-        
+   
    
    ; CODE EDIT EVENTS
    If *g = ide_design_CODE                      Or *g = ide_design_DEBUG ; TEMP
@@ -2514,7 +2521,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    SetColor(ide_toolbar, #PB_Gadget_BackColor, $fffefefe )
    
    ide_menu = OpenSubBar("Menu")
-;    BarItem( #_tb_file_new, "New" + Space(9) + Chr(9) + "Ctrl+O")
+   ;    BarItem( #_tb_file_new, "New" + Space(9) + Chr(9) + "Ctrl+O")
    BarItem( #_tb_file_new, "New (Ctrl+N)")
    BarItem( #_tb_file_open, "Open (Ctrl+O)")
    BarItem( #_tb_file_save, "Save (Ctrl+S)")
@@ -2533,6 +2540,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?image_new_widget_paste ) )
    BarSeparator( )
    BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?image_new_widget_delete ) )
+   
    BarSeparator( )
    BarButton( #_tb_group_select, CatchImage( #PB_Any,?image_group ), #PB_ToolBar_Toggle ) 
    ;
@@ -2548,18 +2556,9 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    BarSeparator( )
    BarButton( #_tb_group_top, CatchImage( #PB_Any,?image_group_top ) )
    BarButton( #_tb_group_bottom, CatchImage( #PB_Any,?image_group_bottom ) )
-;    
-;       BarSeparator( )
-;       OpenSubBar("ComboBox")
-;       BarItem(55, "item1")
-;       BarItem(56, "item2")
-;       BarItem(57, "item3")
-;       CloseSubBar( )
-;    
    BarSeparator( )
    BarItem( #_tb_file_run, "[RUN]" )
    BarSeparator( )
-   
    ide_popup_lenguage = OpenSubBar("[LENGUAGE]")
    If ide_popup_lenguage
       BarItem(#_tb_lng_ENG, "ENG")
@@ -2569,7 +2568,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    EndIf
    CloseSubBar( )
    BarSeparator( )
-   
+   ;
    CloseList( )
    
    DisableBarItem( ide_popup_lenguage, #_tb_lng_ENG, #True )
@@ -2682,34 +2681,34 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;
    ;\\\ ide splitters
    ;       ;
-;          ; main splitter 1 example
-;          ide_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container,ide_design_g_canvas, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(ide_SPLITTER, "ide_SPLITTER" )
-;          ide_inspector_panel_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW,ide_inspector_PANEL, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_panel_SPLITTER, "ide_inspector_panel_SPLITTER" )
-;          ide_design_SPLITTER = Splitter( 0,0,0,0, ide_SPLITTER,ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
-;          ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_panel_SPLITTER,ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
-;          ide_main_SPLITTER = Splitter( 0,0,0,0, ide_design_SPLITTER,ide_inspector_SPLITTER, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
-;          
-;          ; set splitters default minimum size
-;          SetAttribute( ide_main_SPLITTER, #PB_Splitter_FirstMinimumSize, 500 )
-;          SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 120 )
-;          SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_FirstMinimumSize, 230 )
-;          SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_SecondMinimumSize, 30 )
-;          SetAttribute( ide_design_SPLITTER, #PB_Splitter_FirstMinimumSize, 300 )
-;          SetAttribute( ide_design_SPLITTER, #PB_Splitter_SecondMinimumSize, 100 )
-;          SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
-;          SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_SecondMinimumSize, 130 )
-;          SetAttribute( ide_SPLITTER, #PB_Splitter_FirstMinimumSize, 20 )
-;          SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, 200 )
-;          ; SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, $ffffff )
-;          
-;          ; set splitters dafault positions
-;          SetState( ide_main_SPLITTER, Width( ide_main_SPLITTER )-200 )
-;          SetState( ide_inspector_SPLITTER, Height( ide_inspector_SPLITTER )-80 )
-;          SetState( ide_design_SPLITTER, Height( ide_design_SPLITTER )-150 )
-;          SetState( ide_inspector_panel_SPLITTER, 200 )
-;          SetState( ide_SPLITTER, Height( ide_toolbar ) - 1 + 2 )
-;       
-
+   ;          ; main splitter 1 example
+   ;          ide_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container,ide_design_g_canvas, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(ide_SPLITTER, "ide_SPLITTER" )
+   ;          ide_inspector_panel_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW,ide_inspector_PANEL, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_panel_SPLITTER, "ide_inspector_panel_SPLITTER" )
+   ;          ide_design_SPLITTER = Splitter( 0,0,0,0, ide_SPLITTER,ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
+   ;          ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_panel_SPLITTER,ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
+   ;          ide_main_SPLITTER = Splitter( 0,0,0,0, ide_design_SPLITTER,ide_inspector_SPLITTER, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
+   ;          
+   ;          ; set splitters default minimum size
+   ;          SetAttribute( ide_main_SPLITTER, #PB_Splitter_FirstMinimumSize, 500 )
+   ;          SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 120 )
+   ;          SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_FirstMinimumSize, 230 )
+   ;          SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_SecondMinimumSize, 30 )
+   ;          SetAttribute( ide_design_SPLITTER, #PB_Splitter_FirstMinimumSize, 300 )
+   ;          SetAttribute( ide_design_SPLITTER, #PB_Splitter_SecondMinimumSize, 100 )
+   ;          SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
+   ;          SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_SecondMinimumSize, 130 )
+   ;          SetAttribute( ide_SPLITTER, #PB_Splitter_FirstMinimumSize, 20 )
+   ;          SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, 200 )
+   ;          ; SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, $ffffff )
+   ;          
+   ;          ; set splitters dafault positions
+   ;          SetState( ide_main_SPLITTER, Width( ide_main_SPLITTER )-200 )
+   ;          SetState( ide_inspector_SPLITTER, Height( ide_inspector_SPLITTER )-80 )
+   ;          SetState( ide_design_SPLITTER, Height( ide_design_SPLITTER )-150 )
+   ;          SetState( ide_inspector_panel_SPLITTER, 200 )
+   ;          SetState( ide_SPLITTER, Height( ide_toolbar ) - 1 + 2 )
+   ;       
+   
    ;
    ;\\ main splitter 2 example 
    ide_inspector_panel_SPLITTER = Splitter( 0,0,0,0, ide_inspector_PANEL, ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_SPLITTER, "ide_inspector_panel_SPLITTER" )
@@ -2902,19 +2901,19 @@ CompilerIf #PB_Compiler_IsMainFile
       SetState( *panel, 1 )
       
       
-     Define ide_design_FORM2 = new_widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
-     Resize(ide_design_FORM2, #PB_Ignore, Y(ide_design_FORM)+Height(ide_design_FORM), 500, 100)
-     
-     new_widget_add(ide_design_FORM2, "button", 25, 10, 30, 30)
-     new_widget_add(ide_design_FORM2, "button", 70, 40, 30, 30)
-     new_widget_add(ide_design_FORM2, "button", 110, 75, 30, 30)
-
-;       ;       ;SetMoveBounds( *scrollarea, -1,-1,-1,-1 )
-;       ;       ;SetSizeBounds( *scrollarea, -1,-1,-1,-1 )
-;       ;       ;SetSizeBounds( *scrollarea )
-;       ;       SetMoveBounds( btn2, -1,-1,-1,-1 )
-;       SetMoveBounds( ide_design_FORM, -1,-1,-1,-1 )
-;       ;       ;SetChildrenBounds( ide_design_MDI )
+      Define ide_design_FORM2 = new_widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
+      Resize(ide_design_FORM2, #PB_Ignore, Y(ide_design_FORM)+Height(ide_design_FORM), 500, 100)
+      
+      new_widget_add(ide_design_FORM2, "button", 25, 10, 30, 30)
+      new_widget_add(ide_design_FORM2, "button", 70, 40, 30, 30)
+      new_widget_add(ide_design_FORM2, "button", 110, 75, 30, 30)
+      
+      ;       ;       ;SetMoveBounds( *scrollarea, -1,-1,-1,-1 )
+      ;       ;       ;SetSizeBounds( *scrollarea, -1,-1,-1,-1 )
+      ;       ;       ;SetSizeBounds( *scrollarea )
+      ;       ;       SetMoveBounds( btn2, -1,-1,-1,-1 )
+      ;       SetMoveBounds( ide_design_FORM, -1,-1,-1,-1 )
+      ;       ;       ;SetChildrenBounds( ide_design_MDI )
       
    EndIf
    
@@ -2940,7 +2939,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ; SetActive( ide_design_FORM )
-     
+   
    ;ReDraw(root())
    Define time = ElapsedMilliseconds( )
    Define code$ = Generate_Code( ide_design_MDI )
@@ -2981,9 +2980,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2373
-; FirstLine = 2146
-; Folding = ---------f+X--------------8------------8----------4-
+; CursorPosition = 2980
+; FirstLine = 2944
+; Folding = ----------------------------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
