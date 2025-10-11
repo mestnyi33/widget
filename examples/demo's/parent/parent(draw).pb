@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     String( 100, 20, 250,  60, "String ( root - 1 )" )
     Bind( widget( ), @resize_event( ), #PB_EventType_Resize )
-    Button( 100, 100, 250,  60, "Button ( root - 1 )", #__flag_text_multiline,-1 )
+    Button( 100, 100, 250,  60, "Button ( root - 1 )", #__flag_Textmultiline,-1 )
     Bind( widget( ), @resize_event( ), #PB_EventType_Resize )
   EndIf
   
@@ -73,7 +73,7 @@ CompilerIf #PB_Compiler_IsMainFile
     a_init(root())
     *root_2 = Root( )
     
-    Button( 20, 20, 250,  60, "Button ( root - 2 )", #__flag_text_multiline,-1 )
+    Button( 20, 20, 250,  60, "Button ( root - 2 )", #__flag_Textmultiline,-1 )
     Bind( widget( ), @resize_event( ), #PB_EventType_Resize )
     String( 20, 100, 250,  60, "String ( root - 2 )" )
     Bind( widget( ), @resize_event( ), #PB_EventType_Resize )

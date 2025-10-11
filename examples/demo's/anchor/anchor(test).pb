@@ -24,8 +24,8 @@
   object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
    ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
   ;object = Container(100, 100, 250, 250) : CloseList()
-  ;object = String(100, 100, 250, 250, "string", #__flag_border_less)
-  ;object = Button(100, 100, 250, 250, "button");, #__flag_border_less)
+  ;object = String(100, 100, 250, 250, "string", #__flag_Borderless)
+  ;object = Button(100, 100, 250, 250, "button");, #__flag_Borderless)
   ;object = Tree(100, 100, 250, 250) : For i=0 To 10 : additem(object,-1,""+Str(i)) : Next
    
 ;   ;\\

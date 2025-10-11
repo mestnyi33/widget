@@ -199,7 +199,7 @@ CompilerIf #PB_Compiler_IsMainFile
     g_Canvas = GetCanvasGadget(root())
     g = 10
     
-    *g = Tree(10, 20, 210, th, #__tree_CheckBoxes)                                         
+    *g = Tree(10, 20, 210, th, #__flag_CheckBoxes)                                         
     
     
     ; 1_example
@@ -214,7 +214,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem (*g, -1, "File "+Str(a), -1, 0)  
     
     ;{  3_example
-    *g5 = Tree(230, 20, 103, th, #__Tree_NoButtons|#__flag_Collapsed)                                         
+    *g5 = Tree(230, 20, 103, th, #__flag_NoButtons|#__flag_Collapsed)                                         
     AddItem(*g5, 0, "Tree_0", -1 )
     AddItem(*g5, 1, "Tree_1", -1, 0) 
     AddItem(*g5, 2, "Tree_2", -1, 0) 
@@ -235,7 +235,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     ;{  6_example
-    *g6 = Tree(341, 20, 103, th, #__flag_border_Less|#__flag_Collapsed)                                         
+    *g6 = Tree(341, 20, 103, th, #__flag_BorderLess|#__flag_Collapsed)                                         
     AddItem(*g6, 0, "Tree_1", -1, 1) 
     AddItem(*g6, 0, "Tree_2_1", -1, 2) 
     AddItem(*g6, 0, "Tree_2_2", -1, 3) 
@@ -275,7 +275,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
  ;{  4_example
-    *g = Tree(670, 20, 210, th, #__tree_nolines|#__flag_OptionBoxes);|#__tree_NoButtons) ;                                        
+    *g = Tree(670, 20, 210, th, #__flag_nolines|#__flag_OptionBoxes);|#__flag_NoButtons) ;                                        
 ;         AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
 ;         AddItem(*g, 1, "Tree_1", -1, 1) 
 ;         AddItem(*g, 2, "Tree_2_2", -1, 2) 
@@ -302,7 +302,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}                                                    ;
     
     ;{  3_example
-    *g = Tree(890, 20, 210, th, #__tree_CheckBoxes|#__tree_nolines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__flag_OptionBoxes)                            
+    *g = Tree(890, 20, 210, th, #__flag_CheckBoxes|#__flag_nolines|#__flag_NoButtons|#__flag_GridLines | #__flag_ThreeState | #__flag_OptionBoxes)                            
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 Or i=6 Or i=7

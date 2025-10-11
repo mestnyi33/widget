@@ -241,7 +241,7 @@ Procedure Add(Text.s)
                   If *this
                      Free(*this)
                   EndIf
-                  *this = widget_create(root(), GetItemText( w_type, GetState( w_type)), 100, 100, 250, 200, Text, 0,0,0, #PB_Button_Toggle|#__flag_text_multiline) 
+                  *this = widget_create(root(), GetItemText( w_type, GetState( w_type)), 100, 100, 250, 200, Text, 0,0,0, #PB_Button_Toggle|#__flag_Textmultiline) 
                   Debug  ""+GetText( w_type)+" "+GetItemText( w_type, GetState( w_type))
                   If *this
                      flag = Flag(*this)
@@ -276,7 +276,7 @@ Procedure Add(Text.s)
    EndProcedure
    
    If Open(0, 0, 0, Width+205, Height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      ;*this = widget::Button(100, 100, 250, 200, Text, #PB_Button_Toggle|#__flag_text_multiline) 
+      ;*this = widget::Button(100, 100, 250, 200, Text, #PB_Button_Toggle|#__flag_Textmultiline) 
       
       
       w_type = widget::ListView(Width+45, 10, 150, 200) 
@@ -285,8 +285,8 @@ Procedure Add(Text.s)
       Next
       SetState(w_type, 1)
       
-      w_flag2 = widget::ComboBox(Width+45, 215, 150, 25, #__tree_CheckBoxes|#__flag_optionboxes|#__tree_nobuttons|#__tree_nolines) 
-      w_flag = widget::Tree(Width+45, 245, 150, 200-25, #__tree_CheckBoxes|#__flag_optionboxes|#__tree_nobuttons|#__tree_nolines) 
+      w_flag2 = widget::ComboBox(Width+45, 215, 150, 25, #__flag_CheckBoxes|#__flag_optionboxes|#__flag_nobuttons|#__flag_nolines) 
+      w_flag = widget::Tree(Width+45, 245, 150, 200-25, #__flag_CheckBoxes|#__flag_optionboxes|#__flag_nobuttons|#__flag_nolines) 
       
       
       Bind(#PB_All, @events_widgets())

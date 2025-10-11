@@ -41,14 +41,14 @@ Global my_font_2 = LoadFont(#PB_Any, "Consolas", 13, #PB_Font_Bold|#PB_Font_Unde
 If Open( 0, 0, 0, 592, 532, "Редактор изображения", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
    
    WINDOW_1 = Window( 10, 10, 392, 232, "Редактор изображения", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
-   IMAGE_VIEW = Image(7, 7, 253, 218, (0), #__flag_border_flat|#__image_center )
-   BUTTON_OPEN = Button(266, 7, 119, 22, "Открыть", #__image_left )
-   button_SAVE = Button(266, 35, 119, 22, "Сохранить", #__image_left )
-   BUTTON_COPY = Button(266, 77, 119, 22, "Копировать", #__image_left )
-   button_CUT = Button(266, 105, 119, 22, "Вырезать", #__image_left )
-   BUTTON_PASTE = Button(266, 133, 119, 22, "Вставить", #__image_left )
-   BUTTON_OK = Button(266, 175, 119, 22, "Ок", #__image_left )
-   BUTTON_CANCEL = Button(266, 203, 119, 22, "Отмена", #__image_left )
+   IMAGE_VIEW = Image(7, 7, 253, 218, (0), #__flag_Borderflat|#__flag_Imagecenter )
+   BUTTON_OPEN = Button(266, 7, 119, 22, "Открыть", #__flag_Imageleft )
+   button_SAVE = Button(266, 35, 119, 22, "Сохранить", #__flag_Imageleft )
+   BUTTON_COPY = Button(266, 77, 119, 22, "Копировать", #__flag_Imageleft )
+   button_CUT = Button(266, 105, 119, 22, "Вырезать", #__flag_Imageleft )
+   BUTTON_PASTE = Button(266, 133, 119, 22, "Вставить", #__flag_Imageleft )
+   BUTTON_OK = Button(266, 175, 119, 22, "Ок", #__flag_Imageleft )
+   BUTTON_CANCEL = Button(266, 203, 119, 22, "Отмена", #__flag_Imageleft )
    
    ;
    SetImage(BUTTON_OPEN, (0))

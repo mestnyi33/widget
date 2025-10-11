@@ -4,7 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
-  #__color_state_selected = 2
+  #__s_selected = 2
   
 Procedure events_progress_gadgets()
   ;ClearDebugOutput()
@@ -37,6 +37,7 @@ Procedure events_track_gadgets()
       SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
       SetGadgetState(EventGadget()-3, GetGadgetState(EventGadget()))
       ; Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
+      PostReDraw( root( ))
   EndSelect
 EndProcedure
 
@@ -98,11 +99,11 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
   SetColor(widget( ), #PB_Gadget_BackColor, $ff00ff00)
   SetColor(widget( ), #__ForeColor, $FFC1FFBC)
   
-  SetColor(widget( ), #__ForeColor,  $FFBCBFFF, #__color_state_selected)
-  SetColor(widget( ), #PB_Gadget_BackColor,  $ff0000ff, #__color_state_selected)
+  SetColor(widget( ), #__ForeColor,  $FFBCBFFF, 2);#__s_selected)
+  SetColor(widget( ), #PB_Gadget_BackColor,  $ff0000ff, 2);#__s_selected)
   
   ; SetColor(widget( ), #__FrameColor, $ff0000ff)
-  ; SetColor(widget( ), #__FrameColor,  $ffff0000, #__color_state_selected)
+  ; SetColor(widget( ), #__FrameColor,  $ffff0000, 2);#__s_selected)
   
   
   ;\\
@@ -117,9 +118,9 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
   Track    (301+330,10, 20,  140, 0, 300, #PB_TrackBar_Vertical)
   SetState(widget( ), 100)   ; set 3rd progressbar (ID = 2) to 100 of 300
   
-  Text    (10+330, 10, 250,  20, "ProgressBar Standard  (50/100)", #__flag_text_Center)
-  Text    (10+330, 90, 250,  20, "ProgressBar Smooth  (50/200)", #__flag_text_Center)
-  Text    (100+330,155, 200,  20, "ProgressBar Vertical  (100/300)", #__flag_text_Right)
+  Text    (10+330, 10, 250,  20, "ProgressBar Standard  (50/100)", #__flag_TextCenter)
+  Text    (10+330, 90, 250,  20, "ProgressBar Smooth  (50/200)", #__flag_TextCenter)
+  Text    (100+330,155, 200,  20, "ProgressBar Vertical  (100/300)", #__flag_TextRight)
   
   ;Bind(#PB_All, @events_widgets())
   
@@ -133,9 +134,9 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
   WaitClose( )
 EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 100
-; FirstLine = 94
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 39
+; FirstLine = 22
 ; Folding = --
 ; Optimizer
 ; EnableXP

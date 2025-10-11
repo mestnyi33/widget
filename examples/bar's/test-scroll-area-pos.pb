@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
             SetGadgetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
          EndIf
       Else
-         Define i,widget = Tree(0, 0, 0, 0, #__flag_border_less)
+         Define i,widget = Tree(0, 0, 0, 0, #__flag_Borderless)
          
          AddItem(widget, -1, Str(i)+"test item ")
          For i=1 To 20

@@ -33,59 +33,59 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(0, 0, 0, 908, (Height+5)*5+20+110, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;If OpenWindow(0, 0, 0, 458, (height)*3 + 30, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Open(0);, 0, 0, 908, (height+5)*5+20+110, "", #__flag_border_less)
+    Open(0);, 0, 0, 908, (height+5)*5+20+110, "", #__flag_Borderless)
     
-    Gadget(0, 8,  10, 140, Height, text_h,                        #__image_Left|#__image_Top);
-    Gadget(1, 8,  (Height+5)*1+10, 140, Height, text_h,           #__image_Left|#__image_Center);
-    Gadget(2, 8,  (Height+5)*2+10, 140, Height, text_h,           #__image_Left|#__image_Bottom);
+    Gadget(0, 8,  10, 140, Height, text_h,                        #__flag_ImageLeft|#__flag_ImageTop);
+    Gadget(1, 8,  (Height+5)*1+10, 140, Height, text_h,           #__flag_ImageLeft|#__flag_ImageCenter);
+    Gadget(2, 8,  (Height+5)*2+10, 140, Height, text_h,           #__flag_ImageLeft|#__flag_ImageBottom);
     
-    Gadget(3, 8+150,  10, 140, Height, text_h,                    #__image_Center|#__image_Top);
-    Gadget(4, 8+150,  (Height+5)*1+10, 140, Height, text_h,       #__image_Center);
-    Gadget(5, 8+150,  (Height+5)*2+10, 140, Height, text_h,       #__image_Center|#__image_Bottom);
+    Gadget(3, 8+150,  10, 140, Height, text_h,                    #__flag_ImageCenter|#__flag_ImageTop);
+    Gadget(4, 8+150,  (Height+5)*1+10, 140, Height, text_h,       #__flag_ImageCenter);
+    Gadget(5, 8+150,  (Height+5)*2+10, 140, Height, text_h,       #__flag_ImageCenter|#__flag_ImageBottom);
     
-    Gadget(6, 8+300,  10, 140, Height, text_h,                    #__image_Right|#__image_Top);
-    Gadget(7, 8+300,  (Height+5)*1+10, 140, Height, text_h,       #__image_Right|#__image_Center);
-    Gadget(8, 8+300,  (Height+5)*2+10, 140, Height, text_h,       #__image_Right|#__image_Bottom);
+    Gadget(6, 8+300,  10, 140, Height, text_h,                    #__flag_ImageRight|#__flag_ImageTop);
+    Gadget(7, 8+300,  (Height+5)*1+10, 140, Height, text_h,       #__flag_ImageRight|#__flag_ImageCenter);
+    Gadget(8, 8+300,  (Height+5)*2+10, 140, Height, text_h,       #__flag_ImageRight|#__flag_ImageBottom);
     
     ; invert
-    Gadget(10, 8+450,  10, 140, Height, text_h,                  #__flag_invert|#__image_Left|#__image_Top);
-    Gadget(11, 8+450,  (Height+5)*1+10, 140, Height, text_h,     #__flag_invert|#__image_Left|#__image_Center);
-    Gadget(12, 8+450,  (Height+5)*2+10, 140, Height, text_h,     #__flag_invert|#__image_Left|#__image_Bottom);
+    Gadget(10, 8+450,  10, 140, Height, text_h,                  #__flag_invert|#__flag_ImageLeft|#__flag_ImageTop);
+    Gadget(11, 8+450,  (Height+5)*1+10, 140, Height, text_h,     #__flag_invert|#__flag_ImageLeft|#__flag_ImageCenter);
+    Gadget(12, 8+450,  (Height+5)*2+10, 140, Height, text_h,     #__flag_invert|#__flag_ImageLeft|#__flag_ImageBottom);
     
-    Gadget(13, 8+150+450,  10, 140, Height, text_h,              #__flag_invert|#__image_Center|#__image_Top);
-    Gadget(14, 8+150+450,  (Height+5)*1+10, 140, Height, text_h, #__flag_invert|#__image_Center);
-    Gadget(15, 8+150+450,  (Height+5)*2+10, 140, Height, text_h, #__flag_invert|#__image_Center|#__image_Bottom);
+    Gadget(13, 8+150+450,  10, 140, Height, text_h,              #__flag_invert|#__flag_ImageCenter|#__flag_ImageTop);
+    Gadget(14, 8+150+450,  (Height+5)*1+10, 140, Height, text_h, #__flag_invert|#__flag_ImageCenter);
+    Gadget(15, 8+150+450,  (Height+5)*2+10, 140, Height, text_h, #__flag_invert|#__flag_ImageCenter|#__flag_ImageBottom);
     
-    Gadget(16, 8+300+450,  10, 140, Height, text_h,              #__flag_invert|#__image_Right|#__image_Top);
-    Gadget(17, 8+300+450,  (Height+5)*1+10, 140, Height, text_h, #__flag_invert|#__image_Right|#__image_Center);
-    Gadget(18, 8+300+450,  (Height+5)*2+10, 140, Height, text_h, #__flag_invert|#__image_Right|#__image_Bottom);
+    Gadget(16, 8+300+450,  10, 140, Height, text_h,              #__flag_invert|#__flag_ImageRight|#__flag_ImageTop);
+    Gadget(17, 8+300+450,  (Height+5)*1+10, 140, Height, text_h, #__flag_invert|#__flag_ImageRight|#__flag_ImageCenter);
+    Gadget(18, 8+300+450,  (Height+5)*2+10, 140, Height, text_h, #__flag_invert|#__flag_ImageRight|#__flag_ImageBottom);
     
     
     ; vertical
-    Gadget(20, 8,  (Height+5)*3+10, 140, Height, text_h,         #__flag_vertical|#__image_Left|#__image_Top);
-    Gadget(21, 8,  (Height+5)*4+10, 140, Height, text_h,         #__flag_vertical|#__image_Left|#__image_Center);
-    Gadget(22, 8,  (Height+5)*5+10, 140, Height, text_h,         #__flag_vertical|#__image_Left|#__image_Bottom);
+    Gadget(20, 8,  (Height+5)*3+10, 140, Height, text_h,         #__flag_vertical|#__flag_ImageLeft|#__flag_ImageTop);
+    Gadget(21, 8,  (Height+5)*4+10, 140, Height, text_h,         #__flag_vertical|#__flag_ImageLeft|#__flag_ImageCenter);
+    Gadget(22, 8,  (Height+5)*5+10, 140, Height, text_h,         #__flag_vertical|#__flag_ImageLeft|#__flag_ImageBottom);
     
-    Gadget(23, 8+150,  (Height+5)*3+10, 140, Height, text_h,     #__flag_vertical|#__image_Center|#__image_Top);
-    Gadget(24, 8+150,  (Height+5)*4+10, 140, Height, text_h,     #__flag_vertical|#__image_Center);
-    Gadget(25, 8+150,  (Height+5)*5+10, 140, Height, text_h,     #__flag_vertical|#__image_Center|#__image_Bottom);
+    Gadget(23, 8+150,  (Height+5)*3+10, 140, Height, text_h,     #__flag_vertical|#__flag_ImageCenter|#__flag_ImageTop);
+    Gadget(24, 8+150,  (Height+5)*4+10, 140, Height, text_h,     #__flag_vertical|#__flag_ImageCenter);
+    Gadget(25, 8+150,  (Height+5)*5+10, 140, Height, text_h,     #__flag_vertical|#__flag_ImageCenter|#__flag_ImageBottom);
     
-    Gadget(26, 8+300,  (Height+5)*3+10, 140, Height, text_h,     #__flag_vertical|#__image_Right|#__image_Top);
-    Gadget(27, 8+300,  (Height+5)*4+10, 140, Height, text_h,     #__flag_vertical|#__image_Right|#__image_Center);
-    Gadget(28, 8+300,  (Height+5)*5+10, 140, Height, text_h,     #__flag_vertical|#__image_Right|#__image_Bottom);
+    Gadget(26, 8+300,  (Height+5)*3+10, 140, Height, text_h,     #__flag_vertical|#__flag_ImageRight|#__flag_ImageTop);
+    Gadget(27, 8+300,  (Height+5)*4+10, 140, Height, text_h,     #__flag_vertical|#__flag_ImageRight|#__flag_ImageCenter);
+    Gadget(28, 8+300,  (Height+5)*5+10, 140, Height, text_h,     #__flag_vertical|#__flag_ImageRight|#__flag_ImageBottom);
     
     ; invert vertical
-    Gadget(30, 8+450,  (Height+5)*3+10, 140, Height, text_h,     #__flag_vertical|#__flag_invert|#__image_Left|#__image_Top);
-    Gadget(31, 8+450,  (Height+5)*4+10, 140, Height, text_h,     #__flag_vertical|#__flag_invert|#__image_Left|#__image_Center);
-    Gadget(32, 8+450,  (Height+5)*5+10, 140, Height, text_h,     #__flag_vertical|#__flag_invert|#__image_Left|#__image_Bottom);
+    Gadget(30, 8+450,  (Height+5)*3+10, 140, Height, text_h,     #__flag_vertical|#__flag_invert|#__flag_ImageLeft|#__flag_ImageTop);
+    Gadget(31, 8+450,  (Height+5)*4+10, 140, Height, text_h,     #__flag_vertical|#__flag_invert|#__flag_ImageLeft|#__flag_ImageCenter);
+    Gadget(32, 8+450,  (Height+5)*5+10, 140, Height, text_h,     #__flag_vertical|#__flag_invert|#__flag_ImageLeft|#__flag_ImageBottom);
     
-    Gadget(33, 8+150+450,  (Height+5)*3+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__image_Center|#__image_Top);
-    Gadget(34, 8+150+450,  (Height+5)*4+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__image_Center);
-    Gadget(35, 8+150+450,  (Height+5)*5+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__image_Center|#__image_Bottom);
+    Gadget(33, 8+150+450,  (Height+5)*3+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__flag_ImageCenter|#__flag_ImageTop);
+    Gadget(34, 8+150+450,  (Height+5)*4+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__flag_ImageCenter);
+    Gadget(35, 8+150+450,  (Height+5)*5+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__flag_ImageCenter|#__flag_ImageBottom);
     
-    Gadget(36, 8+300+450,  (Height+5)*3+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__image_Right|#__image_Top);
-    Gadget(37, 8+300+450,  (Height+5)*4+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__image_Right|#__image_Center);
-    Gadget(38, 8+300+450,  (Height+5)*5+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__image_Right|#__image_Bottom);
+    Gadget(36, 8+300+450,  (Height+5)*3+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__flag_ImageRight|#__flag_ImageTop);
+    Gadget(37, 8+300+450,  (Height+5)*4+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__flag_ImageRight|#__flag_ImageCenter);
+    Gadget(38, 8+300+450,  (Height+5)*5+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__flag_ImageRight|#__flag_ImageBottom);
     
   EndIf
   

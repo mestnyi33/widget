@@ -1299,7 +1299,7 @@ DeclareModule Gadget
       If OpenWindow(0, 0, 0, 355, 240, "TreeGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
          ;ListViewGadget(0, 10, 10, 160, 160) 
          PB(TreeGadget)(1, 10, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection)                                         ; TreeGadget standard
-         TreeGadget(2, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection | #PB_Tree_Collapsed)                       ; | #__Tree_GridLines)   ; TreeGadget with Checkboxes + NoLines
+         TreeGadget(2, 180, 10, 160, 160, #PB_Tree_CheckBoxes | #PB_Tree_NoLines | #PB_Tree_ThreeState | #PB_Tree_AlwaysShowSelection | #PB_Tree_Collapsed)                       ; | #__flag_GridLines)   ; TreeGadget with Checkboxes + NoLines
          
          For ID = 1 To 2
             For a = 0 To 10

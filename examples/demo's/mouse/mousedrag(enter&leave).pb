@@ -65,16 +65,16 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       *r1 = Open(0, 5, 5, 335, 60+h-10)
       Define X = 50, Y = 50
-      ;*g11 = Container( X+10,Y+10,size,size, #__flag_border_flat|#__flag_noGadgets ) : SetClass(*g11,"*g11")
+      ;*g11 = Container( X+10,Y+10,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g11,"*g11")
       *g11 = Tree( X+10,Y+10,size,size ) : SetClass(*g11,"*g11") 
       Define i
       For i=0 To 10
          AddItem(*g11, -1, "item-"+Str(i)) 
       Next
-      *g12 = Container( X+30,Y+30,size,size, #__flag_border_flat|#__flag_noGadgets ) : SetClass(*g12,"*g12") 
-      *g13 = Container( X+50,Y+50,size,size, #__flag_border_flat|#__flag_noGadgets ) : SetClass(*g13,"*g13") 
-      *g14 = Container( X+70,Y+70,size,size, #__flag_border_flat|#__flag_noGadgets ) : SetClass(*g14,"*g14") 
-      ;*g15 = Container( x+90,y+90,size,size, #__flag_border_flat|#__flag_noGadgets ) : setclass(*g15,"*g15") 
+      *g12 = Container( X+30,Y+30,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g12,"*g12") 
+      *g13 = Container( X+50,Y+50,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g13,"*g13") 
+      *g14 = Container( X+70,Y+70,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g14,"*g14") 
+      ;*g15 = Container( x+90,y+90,size,size, #__flag_Borderflat|#__flag_noGadgets ) : setclass(*g15,"*g15") 
       *g15 = Tree( X+90,Y+90,size,size ) : SetClass(*g15,"*g15") 
       Define i
       For i=0 To 10
@@ -86,12 +86,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       *r2 = Open(0, 345, 5, 335, 60+h-10, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       Define X = 0, Y = 0
-      ;*g21 = Container( X+10,Y+10,size,size, #__flag_border_flat|#__flag_noGadgets ) : SetClass(*g21,"*g21")
+      ;*g21 = Container( X+10,Y+10,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g21,"*g21")
       *g21 = Tree( X+10,Y+10,size,size ) : SetClass(*g21,"*g21") : AddItem(*g21, -1, "item-1") : AddItem(*g21, -1, "item-2") : AddItem(*g21, -1, "item-3")
-      *g22 = Container( X+30,Y+30,size,size, #__flag_border_flat|#__flag_noGadgets ) : SetClass(*g22,"*g22") 
-      *g23 = Container( X+50,Y+50,size,size, #__flag_border_flat|#__flag_noGadgets ) : SetClass(*g23,"*g23") 
-      *g24 = Container( X+70,Y+70,size,size, #__flag_border_flat|#__flag_noGadgets ) : SetClass(*g24,"*g24") 
-      ;*g25 = Container( x+90,y+90,size,size, #__flag_border_flat|#__flag_noGadgets ) : setclass(*g25,"*g25") 
+      *g22 = Container( X+30,Y+30,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g22,"*g22") 
+      *g23 = Container( X+50,Y+50,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g23,"*g23") 
+      *g24 = Container( X+70,Y+70,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g24,"*g24") 
+      ;*g25 = Container( x+90,y+90,size,size, #__flag_Borderflat|#__flag_noGadgets ) : setclass(*g25,"*g25") 
       *g25 = Tree( X+90,Y+90,size,size ) : SetClass(*g25,"*g25") : AddItem(*g25, -1, "item-1") : AddItem(*g25, -1, "item-2") : AddItem(*g25, -1, "item-3")
       
       

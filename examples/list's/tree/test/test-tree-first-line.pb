@@ -403,7 +403,7 @@ EndProcedure
     g_Canvas = GetCanvasGadget(root())
     g = 10
     
-; ;     *g = Tree(10, 100, 210, 210, #__tree_CheckBoxes)                                         
+; ;     *g = Tree(10, 100, 210, 210, #__flag_CheckBoxes)                                         
 ; ;     
 ; ;     
 ; ;     ; 1_example
@@ -428,7 +428,7 @@ EndProcedure
 ; ; ; ;     SetFont(*g, 3)
     
     ; 1_example
-    *g = Tree(10, 100, 210, 210, #__tree_CheckBoxes)                                         
+    *g = Tree(10, 100, 210, 210, #__flag_CheckBoxes)                                         
     AddItem (*g, 0, "Node "+Str(a), 0, 0)                                         
     AddItem (*g, 1, "Sub-Item 1", -1, 1)                                           
     AddItem (*g, 3, "Sub-Item 3", -1, 3)
@@ -437,7 +437,7 @@ EndProcedure
     ;;AddItem (*g, item, "Add-Item "+Str(item), -1, sublevel)
   
     ;{  3_example
-    *g5 = Tree(230, 100, 103, 210, #__Tree_NoButtons);|#__flag_Collapsed)                                         
+    *g5 = Tree(230, 100, 103, 210, #__flag_NoButtons);|#__flag_Collapsed)                                         
     AddItem(*g5, 0, "Tree_0", -1, 0 )
     AddItem(*g5, 1, "Tree_1", -1, 0) 
     AddItem(*g5, 2, "Tree_2", -1, 0) 
@@ -449,7 +449,7 @@ EndProcedure
     ;AddItem(*g5, 7, "Tree_4", -1, 0) 
    
     ; 4_example
-    *g6 = Tree(341, 100, 103, 210, #__flag_border_Less|#PB_Tree_Collapsed)                                         
+    *g6 = Tree(341, 100, 103, 210, #__flag_BorderLess|#PB_Tree_Collapsed)                                         
     
     AddItem(*g6, 0, "Tree_1", -1, 1) 
     AddItem(*g6, 0, "Tree_2_1", -1, 2) 

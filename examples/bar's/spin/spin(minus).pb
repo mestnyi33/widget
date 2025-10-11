@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Define *spin1 = SpinGadget(#PB_Any, 50, 20, 250, 50, -30, 30, #PB_Spin_Numeric|#PB_Spin_ReadOnly )
       ;SetGadgetState(*spin1, 0)
       
-      Define *spin2 = Spin(50, 80, 250, 50, -30, 30, #__flag_text_Right)
+      Define *spin2 = Spin(50, 80, 250, 50, -30, 30, #__flag_TextRight)
       ;SetState(*spin2, 0)
       
       WaitClose( )

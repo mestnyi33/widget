@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
     String(30,30*2, 100, 30, "string_0")
     CheckBox(30,30*3, 100, 30, "checkbox_0")
     
-    Define *Tree = widget::Properties(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
+    Define *Tree = widget::Properties(10, 10, 250, 200, #__flag_gridlines);|#__flag_nolines);, #__flag_autosize) 
     widget::AddItem(*Tree, #_pi_group_0, "common")
     widget::AddItem(*Tree, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
     widget::AddItem(*Tree, #_pi_class, "class:"+Chr(10)+GetClass(Value), #__type_String, 1)

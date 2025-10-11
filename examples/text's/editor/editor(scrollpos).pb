@@ -14,11 +14,11 @@ CompilerIf #PB_Compiler_IsMainFile
     SetText(*g1,     "left 00000000000000000000000000000000000")
     AddItem(*g1, -1, "left 00000000000000000000000000000000000")
     
-    *g2 = Editor( 30+210, 30, 200, h, #__flag_text_Top|#__flag_text_Center)
+    *g2 = Editor( 30+210, 30, 200, h, #__flag_TextTop|#__flag_TextCenter)
     SetText(*g2,     "0000000000000000000 center 00000000000000000000" )
     AddItem(*g2, -1, "0000000000000000000 center 00000000000000000000" )
     
-    *g3 = Editor( 30+420, 30, 200, h, #__flag_text_Top|#__flag_text_Right)
+    *g3 = Editor( 30+420, 30, 200, h, #__flag_TextTop|#__flag_TextRight)
     SetText(*g3,     "00000000000000000000000000000000000 right" )
     AddItem(*g3, -1, "00000000000000000000000000000000000 right" )
     

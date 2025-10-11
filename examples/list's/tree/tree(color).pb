@@ -3,8 +3,8 @@ XIncludeFile "widgets.pbi"
 
 
 CompilerIf #PB_Compiler_IsMainFile
-  #__color_state_entered = 1
-  #__color_state_selected = 2
+  #__s_entered = 1
+  #__s_selected = 2
   
   UseWidgets( )
   Global *w._S_widget
@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 0, 0, 390, 250, "SetGadgetItemColor", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     TreeGadget(0, 10, 10, 180, 230)
     
-    Open(0, 200, 10, 180, 230);, "", #__flag_border_less)
+    Open(0, 200, 10, 180, 230);, "", #__flag_Borderless)
     *w = Tree(0, 0, 180, 230)
     
     For i = 1 To 10
@@ -56,13 +56,13 @@ CompilerIf #PB_Compiler_IsMainFile
     SetItemColor(*w, #PB_All, #PB_Gadget_FrontColor, $FF0000FF)
     
     ; all selected item's text-color 
-    SetItemColor(*w, #PB_All, #PB_Gadget_FrontColor,  $FF00FFFF, #__color_state_selected)
+    SetItemColor(*w, #PB_All, #PB_Gadget_FrontColor,  $FF00FFFF, 2);#__s_selected)
     
     ; all selected item's back-color 
-    SetItemColor(*w, #PB_All, #PB_Gadget_BackColor,  $FF3F00F0, #__color_state_selected)
+    SetItemColor(*w, #PB_All, #PB_Gadget_BackColor,  $FF3F00F0, 2);#__s_selected)
     
     ; all entered item's back-color
-    SetItemColor(*w, #PB_All, #PB_Gadget_BackColor,  $FF3Ff0F0, #__color_state_entered)
+    SetItemColor(*w, #PB_All, #PB_Gadget_BackColor,  $FF3Ff0F0, 1);#__s_entered)
     
     ; vertical and horizontal line back-color
     SetItemColor(*w, #PB_All, #PB_Gadget_LineColor,  $C03AD55A)
@@ -71,8 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 32
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 4
 ; Folding = -
 ; EnableXP

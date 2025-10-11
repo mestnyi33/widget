@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
   object = AddItem(parent, -1, "Resize me !", -1, #PB_Window_BorderLess) : Resize(object, 100, 100, 250, 250) 
-  ;;object = AddItem(parent, -1, "Resize me !", -1, #__flag_border_Less) : Resize(object, 100, 100, 250, 250) 
+  ;;object = AddItem(parent, -1, "Resize me !", -1, #__flag_BorderLess) : Resize(object, 100, 100, 250, 250) 
    
   ;\\
   SetFrame(object, fs)

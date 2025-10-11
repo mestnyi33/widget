@@ -205,10 +205,10 @@ XIncludeFile #ide_path + "widgets.pbi"
 XIncludeFile #ide_path + "include/lng.pbi"
 ; XIncludeFile "C:\Users\user\Downloads\Compressed\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widgets.pbi"
 ; Procedure.i GetFontColor( *this.structures::_s_WIDGET )
-;    ProcedureReturn widget::GetColor( *this, constants::#__Color_Front )
+;    ProcedureReturn widget::GetColor( *this, constants::#__FrontColor )
 ; EndProcedure
 ; Procedure   SetFontColor( *this.structures::_s_WIDGET, color.i )
-;    ProcedureReturn widget::SetColor( *this, constants::#__Color_Front, color )
+;    ProcedureReturn widget::SetColor( *this, constants::#__FrontColor, color )
 ; EndProcedure
 
 
@@ -1040,8 +1040,8 @@ EndProcedure
 
 Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    Protected position = 90
-   Protected *first._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_border_Less)
-   Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_border_Less)
+   Protected *first._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_BorderLess)
+   Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_BorderLess)
    ;    *first\padding\x = 10
    ;    *second\padding\x = 10
    
@@ -1838,20 +1838,20 @@ EndEnumeration
 
 ;                        ;eng = 0    ;rus = 1          ; french = 2         ; german = 3
 AddLng( #lng_NEW,        "New        |Новый            |Nouveau             |Neu" )
-AddLng( #lng_OPEN,       "Open       |Открыть          |Ouvrir              |Öffnen" )
+AddLng( #lng_OPEN,       "Open       |Открыть          |Ouvrir              |Offnen" )
 AddLng( #lng_SAVE,       "Save       |Сохранить        |Sauvegarder         |Speichern" )
 AddLng( #lng_YES,        "Yes        |Да               |Oui                 |Ja" )
 AddLng( #lng_NO,         "No         |Нет              |Non                 |Nein" )
 AddLng( #lng_CANCEL,     "Cancel     |Отмена           |Annuler             |Abbrechen" )
-AddLng( #lng_MENU,       "Menu       |Меню             |Menu                |Menü" )
+AddLng( #lng_MENU,       "Menu       |Меню             |Menu                |Menu" )
 AddLng( #lng_QUIT,       "Quit       |Выход            |Quitter             |Beenden" )
 AddLng( #lng_SAVEAS,     "Save as... |Сохранить как... |Enregistrer sous... |Speichern unter..." )
-AddLng( #lng_RUN,        "Run        |Запуск           |Exécuter            |Ausführen" )
+AddLng( #lng_RUN,        "Run        |Запуск           |Executer            |Ausfuhren" )
 AddLng( #lng_FORM,       "Form       |Форма            |Forme               |Formular" )
 AddLng( #lng_CODE,       "Code       |Код              |Code                |Code" )
-AddLng( #lng_ELEMENTS,   "Elements   |Элементы         |Éléments            |Elemente" )
-AddLng( #lng_PROPERTIES, "Properties |Свойства         |Propriétés          |Eigenschaften" )
-AddLng( #lng_EVENTS,     "Events     |События          |Événements          |Ereignisse" )
+AddLng( #lng_ELEMENTS,   "Elements   |Элементы         |Elements            |Elemente" )
+AddLng( #lng_PROPERTIES, "Properties |Свойства         |Proprietes          |Eigenschaften" )
+AddLng( #lng_EVENTS,     "Events     |События          |Evenements          |Ereignisse" )
 AddLng( #lng_LENGUAGE,   "Lenguage   |Язык             |Langage             |Sprache" )
 
 ;
@@ -2516,7 +2516,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ;    Debug "create window - "+WindowID(ide_window)
    ;    Debug "create canvas - "+GadgetID(ide_g_canvas)
    
-   ide_toolbar_container = Container( 0,0,0,0, #__flag_border_Flat ) 
+   ide_toolbar_container = Container( 0,0,0,0, #__flag_BorderFlat ) 
    ide_toolbar = CreateBar( ide_toolbar_container, #PB_ToolBar_Small );|#PB_ToolBar_Large|#PB_ToolBar_Buttons);| #PB_ToolBar_InlineText )
    SetColor(ide_toolbar, #PB_Gadget_BackColor, $fffefefe )
    
@@ -2610,7 +2610,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    EndIf
    
    ;\\\ open inspector gadgets 
-   ide_inspector_VIEW = Tree( 0,0,0,0 ) : SetClass(ide_inspector_VIEW, "ide_inspector_VIEW" ) ;, #__flag_gridlines )
+   ide_inspector_VIEW = Tree( 0,0,0,0, #__flag_gridlines ) : SetClass(ide_inspector_VIEW, "ide_inspector_VIEW" ) ;, #__flag_gridlines )
    EnableDrop( ide_inspector_VIEW, #PB_Drop_Text, #PB_Drag_Link )
    
    ; ide_inspector_panel_SPLITTER_panel_open
@@ -2618,14 +2618,14 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    
    ; ide_inspector_panel_item_1 
    AddItem( ide_inspector_PANEL, -1, "elements", 0, 0 ) 
-   ide_inspector_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_border_less ) : SetClass(ide_inspector_ELEMENTS, "ide_inspector_ELEMENTS" )
+   ide_inspector_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_Borderless ) : SetClass(ide_inspector_ELEMENTS, "ide_inspector_ELEMENTS" )
    If ide_inspector_ELEMENTS
       ide_list_images_add( ide_inspector_ELEMENTS, GetCurrentDirectory( )+"Themes/" )
    EndIf
    
    ; ide_inspector_panel_item_2
    AddItem( ide_inspector_PANEL, -1, "properties", 0, 0 )  
-   ide_inspector_PROPERTIES = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_border_less ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
+   ide_inspector_PROPERTIES = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_Borderless ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
    If ide_inspector_PROPERTIES
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_COMMON, "COMMON" )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_ID,             "#ID",      #__Type_ComboBox, 1 )
@@ -2662,8 +2662,8 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    
    ; ide_inspector_panel_item_3 
    AddItem( ide_inspector_PANEL, -1, "events", 0, 0 )  
-   ;ide_inspector_EVENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_border_less ) : SetClass(ide_inspector_EVENTS, "ide_inspector_EVENTS" ) 
-   ide_inspector_EVENTS = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_border_less ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
+   ;ide_inspector_EVENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_Borderless ) : SetClass(ide_inspector_EVENTS, "ide_inspector_EVENTS" ) 
+   ide_inspector_EVENTS = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_Borderless ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
    If ide_inspector_EVENTS
       Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "Click", #__Type_ComboBox )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Change", #__Type_ComboBox )
@@ -2980,8 +2980,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2980
-; FirstLine = 2944
+; CursorPosition = 2612
+; FirstLine = 2602
 ; Folding = ----------------------------------------------------
 ; Optimizer
 ; EnableAsm

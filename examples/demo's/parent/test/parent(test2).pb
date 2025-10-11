@@ -590,7 +590,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
 ;         ; properties
-;         If *this\flag & #__tree_property
+;         If *this\flag & #__flag_property
 ;           If *parent_row And Not *parent_row\sublevel And Not *parent_row\text\fontID
 ;             *parent_row\color\back = $FFF9F9F9
 ;             *parent_row\color\back[1] = *parent_row\color\back
@@ -799,7 +799,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     id_inspector_tree = Tree( 590,10,200,250, #__flag_gridlines )
     id_design_code = TreeGadget(-1, 590,270,200,250 )
-    id_elements_tree = Tree( 430,10,150,510, #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_border_less )
+    id_elements_tree = Tree( 430,10,150,510, #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_Borderless )
     id_design_form = MDI( 10,10,410,510 ) 
     a_init( id_design_form )
     
@@ -818,7 +818,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ; ;     
     ; ; ;     ; id_inspector_panel 1 item
     ; ; ;     AddItem( id_inspector_panel, -1, "elements", 0, 0 ) 
-    ; ;     id_elements_tree = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_border_less )
+    ; ;     id_elements_tree = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_Borderless )
     ; ;     id_inspector_panel = id_elements_tree
     ; ; ;     ; id_inspector_panel 2 item
     ; ; ;     AddItem( id_inspector_panel, -1, "properties", 0, 0 )  

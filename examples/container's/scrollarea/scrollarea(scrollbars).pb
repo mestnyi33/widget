@@ -27,8 +27,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Debug " * "+Width(*mdi, #__c_inner)+" "+Height(*mdi, #__c_inner)
   
   ; add childrens to mdi gadget
-  Define *g0 = Button(20, 20, 288,212, "button", #PB_Button_Left|#__flag_text_Top)
-  Define *g1 = Button(50, 50, 288,212, "button", #PB_Button_Left|#__flag_text_Top)
+  Define *g0 = Button(20, 20, 288,212, "button", #PB_Button_Left|#__flag_TextTop)
+  Define *g1 = Button(50, 50, 288,212, "button", #PB_Button_Left|#__flag_TextTop)
   
   ; Debug " - test parent - mdi show and size scroll bars - "
   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,308,232 )

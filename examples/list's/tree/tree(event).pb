@@ -139,7 +139,7 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   ;}
   ;--------------
   
-  *g = Tree(270, 30, 250, 120, #__tree_CheckBoxes|#__Flag_GridLines)
+  *g = Tree(270, 30, 250, 120, #__flag_CheckBoxes|#__Flag_GridLines)
   For a = 0 To 6
     AddItem (*g, -1, "Item " + Str(a) + " of the Tree", -1, 0) ; define Tree content
     AddItem (*g, -1, "Subitem " + Str(a) + " of the Tree", -1, 1) ; define Tree content
@@ -151,7 +151,7 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   Next
   
   
-  Tree(270, 30+150, 250, 120, #__tree_CheckBoxes|#__flag_RowClickSelect|#__Flag_GridLines)
+  Tree(270, 30+150, 250, 120, #__flag_CheckBoxes|#__flag_RowClickSelect|#__Flag_GridLines)
   For a = 0 To 2
     AddItem (ID(1), -1, "Item " + Str(a) + " of the Tree long long long long long", -1, 0) ; define Tree content
     AddItem (ID(1), -1, "Subitem " + Str(a) + " of the Tree", -1, 1)                       ; define Tree content
@@ -167,7 +167,7 @@ If Open(0, 0, 0, 270+260, 160+150+150, "TreeGadget", #PB_Window_SystemMenu | #PB
   SetState(ID(1), 9) 
   
   
-  Tree(270, 30+150+150, 250, 120, #__tree_CheckBoxes|#__flag_RowMultiSelect|#__Flag_GridLines)
+  Tree(270, 30+150+150, 250, 120, #__flag_CheckBoxes|#__flag_RowMultiSelect|#__Flag_GridLines)
   For a = 0 To 6
     AddItem (ID(2), -1, "Item " + Str(a) + " of the Tree", -1, 0) ; define Tree content
     AddItem (ID(2), -1, "Subitem " + Str(a) + " of the Tree", -1, 1) ; define Tree content

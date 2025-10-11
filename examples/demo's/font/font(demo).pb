@@ -183,7 +183,7 @@ If Open(0, 322+50, 0, 322+50, 220)
 	AddItem (ID(0), -1, "Panel 1")
 	
 	;*g = Panel(10, 10, 334, 130)
-	*g = Tree(10, 10, 334, 130, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__flag_OptionBoxes)                            
+	*g = Tree(10, 10, 334, 130, #__flag_CheckBoxes|#__flag_NoLines|#__flag_NoButtons|#__flag_GridLines | #__flag_ThreeState | #__flag_OptionBoxes)                            
 	
 	If Type(*g) = #PB_GadgetType_Panel
 		Text = "Sub"
@@ -222,7 +222,7 @@ If Open(0, 322+50, 0, 322+50, 220)
 	
 	AddItem (ID(0), -1,"Panel 3")
 	Button(10, 15, 100, 24,"Button 3_1")
-	*b = Button(10, 15+24+10, 100, 24,"auto resize button when changing font", #__flag_text_multiline)
+	*b = Button(10, 15+24+10, 100, 24,"auto resize button when changing font", #__flag_Textmultiline)
 	SetFont(*b, 5)
 	;SetState(ID(0), 2)
 	

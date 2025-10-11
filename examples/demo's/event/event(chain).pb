@@ -64,7 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\
   If Open(1, 0, 0, 260, 360, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
-    *view = Tree( 10, 10, 240, 260, #__tree_nobuttons | #__tree_nolines ) 
+    *view = Tree( 10, 10, 240, 260, #__flag_nobuttons | #__flag_nolines ) 
     *dragbutton = Button( 10, 280, 240, 70, "   drag", #PB_Button_Left|#PB_Button_MultiLine );| #PB_Button_Toggle) 
     ;EnableDrop( *dragbutton, #PB_Drop_Text, #PB_Drag_Copy )
   
@@ -78,7 +78,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(*dragbutton, @events_widgets(), #__event_DragStart)
     Bind(*dragbutton, @events_widgets(), constants::#__event_Drop)
       
-    *dropbutton = Button( 195, 295, 40, 40, "drop", #__flag_text_multiline );| #PB_Button_Toggle) 
+    *dropbutton = Button( 195, 295, 40, 40, "drop", #__flag_Textmultiline );| #PB_Button_Toggle) 
     EnableDrop( *dropbutton, #PB_Drop_Text, #PB_Drag_Copy )
   
     Bind(*dropbutton, @events_widgets(), #__event_LeftDown)

@@ -70,7 +70,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       ; *mdi = MDI(0, 50, 800, 500)
-      *mdi = MDI(0, 0, 0, 0, #PB_MDI_AutoSize|#__flag_border_Double) 
+      *mdi = MDI(0, 0, 0, 0, #PB_MDI_AutoSize|#__flag_BorderDouble) 
       SetBackColor( *mdi, $D3D3D3 )
       MDI_AddItem(*mdi, 1, "child1")
       MDI_AddItem(*mdi, 2, "child2")

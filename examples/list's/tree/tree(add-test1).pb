@@ -40,8 +40,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 225, #PB_Ignore, 230)
     
-    *g = Tree(10, 10, 210, 210, #__tree_CheckBoxes)                                         
-    *g1 = Tree(230, 10, 210, 210, #__tree_CheckBoxes)                                         
+    *g = Tree(10, 10, 210, 210, #__flag_CheckBoxes)                                         
+    *g1 = Tree(230, 10, 210, 210, #__flag_CheckBoxes)                                         
     
     ; 1_example
     AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         

@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(0, 0, 0, 430, 440, "Container", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     SetColor( widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     
-    Container( 100,100,200,100, #__flag_border_Flat ) ; #__flag_border_Single ; #__flag_border_Double
+    Container( 100,100,200,100, #__flag_BorderFlat ) ; #__flag_BorderSingle ; #__flag_BorderDouble
     
     CreateBar( widget( ) );, #PB_ToolBar_Small )
     BarButton( #_tb_file_open, -1, 0, "Open" )

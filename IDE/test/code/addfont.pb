@@ -19,10 +19,10 @@ If Open( 0, 0, 0, 350, 280, "demo font", #PB_Window_SystemMenu | #PB_Window_Scre
    BUTTON_8 = Button( 21, 14, 260, 64, "button_8", #PB_Button_Left )
    SetFont( BUTTON_8, (1))
    SetColor( BUTTON_8, #PB_Gadget_BackColor, (0))
-   BUTTON_9 = Button( 21, 91, 260, 30, "button_9", #__flag_text_Right )
+   BUTTON_9 = Button( 21, 91, 260, 30, "button_9", #__flag_TextRight )
    ;SetFont( BUTTON_9, (2))
    SetFont( BUTTON_9, (#my_font_2))
-   BUTTON_19 = Button( 21, 126, 260, 30, "button_19", #__flag_text_Right )
+   BUTTON_19 = Button( 21, 126, 260, 30, "button_19", #__flag_TextRight )
    ;SetFont( BUTTON_19, (2))
    SetFont( BUTTON_19, (#my_font_2))
    

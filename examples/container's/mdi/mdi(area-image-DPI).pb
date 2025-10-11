@@ -74,22 +74,6 @@ CompilerIf #PB_Compiler_IsMainFile
             DragWidget = #Null
             
          Case #__event_LeftDown
-;             ; get alpha
-;             If *ew\image[#__image_background]\id And
-;                *ew\image[#__image_background]\depth > 31 And 
-;                StartDrawing( ImageOutput( *ew\image[#__image_background]\img ) )
-;                
-;                DrawingMode( #PB_2DDrawing_AlphaChannel )
-;                If Alpha( Point( Mouse( )\x - *ew\x[#__c_inner], Mouse( )\y - *ew\y[#__c_inner] ) )
-;                   DragWidget = *ew
-;                Else
-;                   DragWidget = GetAtPoint( Root( ), mouse( )\x, mouse( )\y, widgets( ), *ew\address )
-;                EndIf
-;                
-;                StopDrawing( )
-;             Else
-;                DragWidget = *ew
-;             EndIf
             DragWidget = *ew
             
          Case #__event_MouseMove
@@ -134,7 +118,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;ResizeImage(img, DpiScaled(width), DPIScaled(height) )
       
-      *this = AddItem( *mdi, -1, "", img, #__flag_border_Less|#__flag_Transparent )
+      *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess|#__flag_Transparent )
       *this\class = "image-"+Str(img)
       *this\cursor = #PB_Cursor_Hand
       *this\round = DPIScaled(round)
@@ -303,9 +287,9 @@ CompilerIf #PB_Compiler_IsMainFile
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 74
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 76
+; FirstLine = 63
 ; Folding = ------
 ; EnableXP
 ; DPIAware

@@ -57,10 +57,10 @@ CompilerIf #PB_Compiler_IsMainFile
    
          ;\\
          ; *test = Splitter( 10, 100, 280, 80, Button( 0,0,0,0,"1"),Button( 0,0,0,0,"2") )
-         *test = ScrollArea(10, 100, 135, 80, 200,200,1, #__flag_border_flat|#__flag_noGadgets)
+         *test = ScrollArea(10, 100, 135, 80, 200,200,1, #__flag_Borderflat|#__flag_noGadgets)
          SetBackColor(*test, $FE9CA784)
          SetFrame(*test, 10)
-         *test = ScrollArea(10+145, 100, 135, 80, 200,200,1, #__flag_border_less|#__flag_noGadgets)
+         *test = ScrollArea(10+145, 100, 135, 80, 200,200,1, #__flag_Borderless|#__flag_noGadgets)
          SetBackColor(*test, $FFAC86DB)
          SetFrame(*test, 0)
          

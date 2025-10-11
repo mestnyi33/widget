@@ -411,7 +411,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;       EndMacro
       
       Macro IPAddress( X,Y,Width,Height, flag=0 )
-         String( X,Y,Width,Height, "", #__flag_text_numeric|flag )
+         String( X,Y,Width,Height, "", #__flag_Textnumeric|flag )
          widget( )\class = "IPAddress"
       EndMacro
       
@@ -1757,9 +1757,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i Properties( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
       
       ; container
-      Declare.i Panel( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_border_Flat )
-      Declare.i Container( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_border_Flat )
-      Declare.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_border_Flat )
+      Declare.i Panel( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_BorderFlat )
+      Declare.i Container( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_BorderFlat )
+      Declare.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_BorderFlat )
       Declare.i Frame( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = #__flag_nogadgets )
       Declare.i Image( X.l, Y.l, Width.l, Height.l, img.i, flag.q = 0 )
       Declare.i MDI( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
@@ -2088,16 +2088,16 @@ CompilerIf Not Defined( widget, #PB_Module )
             _this_\text\x        = _x_
             _this_\text\y        = _y_
             
-            _this_\text\editable = Bool( Not constants::BinaryFlag( _flag_, #__flag_text_readonly ))
-            _this_\text\lower    = constants::BinaryFlag( _flag_, #__flag_text_lowercase )
-            _this_\text\upper    = constants::BinaryFlag( _flag_, #__flag_text_uppercase )
-            _this_\text\pass     = constants::BinaryFlag( _flag_, #__flag_text_password )
-            _this_\text\invert   = constants::BinaryFlag( _flag_, #__flag_text_Invert )
-            _this_\text\vertical = constants::BinaryFlag( _flag_, #__flag_text_Vertical )
+            _this_\text\editable = Bool( Not constants::BinaryFlag( _flag_, #__flag_Textreadonly ))
+            _this_\text\lower    = constants::BinaryFlag( _flag_, #__flag_Textlowercase )
+            _this_\text\upper    = constants::BinaryFlag( _flag_, #__flag_Textuppercase )
+            _this_\text\pass     = constants::BinaryFlag( _flag_, #__flag_Textpassword )
+            _this_\text\invert   = constants::BinaryFlag( _flag_, #__flag_TextInvert )
+            _this_\text\vertical = constants::BinaryFlag( _flag_, #__flag_TextVertical )
             
-            If constants::BinaryFlag( _flag_, #__flag_text_wordwrap )
+            If constants::BinaryFlag( _flag_, #__flag_Textwordwrap )
                _this_\text\multiLine = 1
-            ElseIf constants::BinaryFlag( _flag_, #__flag_text_multiline )
+            ElseIf constants::BinaryFlag( _flag_, #__flag_Textmultiline )
                _this_\text\multiLine = - 1
             Else
                _this_\text\multiLine = 0
@@ -2139,7 +2139,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   _this_\MarginLine( )\color\back  = $C8F0F0F0 ; \color\back[0]
                Else
                   _this_\MarginLine( )\hide = 1
-                  _this_\text\numeric       = Bool( _flag_ & #__flag_text_numeric = #__flag_text_numeric )
+                  _this_\text\numeric       = Bool( _flag_ & #__flag_Textnumeric = #__flag_Textnumeric )
                EndIf
             EndIf
             
@@ -3348,7 +3348,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          ;
          ;*this._s_WIDGET = Text(X, Y, Width, Height, "", #__flag_nogadgets|#__flag_Transparent)
-         *this._s_WIDGET = Container(X, Y, Width, Height, #__flag_nogadgets|#__flag_border_Less) : *this\container = 0
+         *this._s_WIDGET = Container(X, Y, Width, Height, #__flag_nogadgets|#__flag_BorderLess) : *this\container = 0
          ;*this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, 0, X, Y, Width, Height, #Null$, 0, 0, 0, 0, 0, 0, 0 )
          
          If Text
@@ -3440,15 +3440,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If Not a_anchors( )\group\show
                      If mouse( )\selector
                         If StartEnum( *this )
-                           If widgets( )\anchors\group\show = #False
-                              If is_intersect_( widgets( ), mouse( )\selector, [#__c_frame] )
-                                 
-                                 Debug "set "+widgets( )\class
-                                 a_anchors( )\group\show + 1
-                                 widgets( )\anchors\group\show = #True
-                                 
-                                 a_group_show( widgets( ), #__event_Create )
-                                 
+                           If widgets( )\anchors 
+                              If widgets( )\anchors\group\show = #False
+                                 If is_intersect_( widgets( ), mouse( )\selector, [#__c_frame] )
+                                    
+                                    Debug "set "+widgets( )\class
+                                    a_anchors( )\group\show + 1
+                                    widgets( )\anchors\group\show = #True
+                                    
+                                    a_group_show( widgets( ), #__event_Create )
+                                    
+                                 EndIf
                               EndIf
                            EndIf
                            StopEnum( )
@@ -8638,7 +8640,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
             EndIf
          EndIf
-         
+        
          ;
          ProcedureReturn *this\root\repaint
       EndProcedure
@@ -9203,8 +9205,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\picture\image = img
             SetImage( *this, - 1 )
          EndIf
-         If *this\picture[#__image_background]\imageID And 
-            *this\picture[#__image_background]\image = img
+         If *this\picture[#__image_BackGround]\imageID And 
+            *this\picture[#__image_BackGround]\image = img
             SetBackgroundImage( *this, - 1 )
          EndIf
          
@@ -9269,8 +9271,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure SetBackgroundImage( *this._s_WIDGET, *img )
-         add_image( *this\picture[#__image_background], *img )
-         ProcedureReturn *this\picture[#__image_background]\imageID
+         add_image( *this\picture[#__image_BackGround], *img )
+         ProcedureReturn *this\picture[#__image_BackGround]\imageID
       EndProcedure
       
       ;-
@@ -9380,10 +9382,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;
          If *this\type = #__type_Window
-            If *this\resize\flag & #__resize_minimize
+            If *this\resize\minimize
                ProcedureReturn #PB_Window_Minimize
             EndIf
-            If *this\resize\flag & #__resize_maximize
+            If *this\resize\maximize
                ProcedureReturn #PB_Window_Maximize
             EndIf
             ProcedureReturn #PB_Window_Normal
@@ -9578,89 +9580,83 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_Window
             ; restore state
             If state = #PB_Window_Normal
-               If Post( *this, #__event_restore )
-                  *this\resize\flag | #__resize_restore
-                  If *this\resize\flag & #__resize_minimize
-                     *this\resize\flag & ~ #__resize_minimize
-                     ;                   *this\CloseButton( )\hide    = 0
-                     ;                   *this\MinimizeButton( )\hide = 0
+               If *this\resize\minimize Or *this\resize\maximize
+                  If Post( *this, #__event_restore )
+                     *this\resize\minimize = #False
+                     *this\resize\maximize = #False
+                     ;
+                     If is_root_( *this )
+                        SetWindowState( *this\root\canvas\window, #PB_Window_Normal )
+                     Else
+                        Resize( *this,
+                                *this\x[#__c_restore],
+                                *this\y[#__c_restore],
+                                *this\width[#__c_restore],
+                                *this\height[#__c_restore], 0 )
+                     EndIf
+                     ;
+                     result = #True
                   EndIf
-                  If *this\resize\flag & #__resize_maximize
-                     *this\resize\flag & ~ #__resize_maximize
-                     ;                   *this\MaximizeButton( )\hide = 0
-                  EndIf
-                  
-                  Resize( *this,
-                          *this\x[#__c_restore],
-                          *this\y[#__c_restore],
-                          *this\width[#__c_restore],
-                          *this\height[#__c_restore], 0 )
-                  
-                  ;                If is_root_( *this )
-                  ;                   PostEvent( #PB_Event_RestoreWindow, *this\root\canvas\window, *this )
-                  ;                EndIf
-                  
-                  result = #True
                EndIf
             EndIf
             
             ; maximize state
             If state = #PB_Window_Maximize
-               If Post( *this, #__event_maximize )
-                  *this\resize\flag | #__resize_maximize
-                  If *this\resize\flag & #__resize_minimize
-                     *this\resize\flag & ~ #__resize_minimize
-                  Else
-                     *this\x[#__c_restore]      = *this\container_x( )
-                     *this\y[#__c_restore]      = *this\container_y( )
-                     *this\width[#__c_restore]  = *this\container_width( )
-                     *this\height[#__c_restore] = *this\container_height( )
+               If Not *this\resize\maximize
+                  If Post( *this, #__event_maximize )
+                     *this\resize\maximize = #True
+                     ;
+                     If Not *this\resize\minimize
+                        If *this\parent
+                           *this\x[#__c_restore]      = *this\container_x( )
+                           *this\y[#__c_restore]      = *this\container_y( )
+                           *this\width[#__c_restore]  = *this\container_width( )
+                           *this\height[#__c_restore] = *this\container_height( )
+                        EndIf
+                     EndIf
+                     ;
+                     If is_root_( *this )
+                        SetWindowState( *this\root\canvas\window, #PB_Window_Maximize )
+                     Else
+                        Resize( *this, 
+                                *this\bs - *this\fs, 
+                                *this\bs - *this\fs,
+                                *this\parent\container_width( ) - mouse( )\steps - *this\bs * 2,
+                                *this\parent\container_height( ) - mouse( )\steps - *this\bs * 2 - *this\fs[2], 0 )
+                     EndIf
+                     ;
+                     result = #True
                   EndIf
-                  
-                  ;                If *this\MinimizeButton( )\hide = 0
-                  ;                   *this\MaximizeButton( )\hide = 1
-                  ;                EndIf
-                  If *this\parent
-                     Resize( *this, *this\bs - *this\fs, *this\bs - *this\fs,
-                             *this\parent\container_width( ) - *this\bs * 2,
-                             *this\parent\container_height( ) - *this\bs * 2 - *this\fs[2], 0 )
-                  Else
-                     PostEvent( #PB_Event_MaximizeWindow, *this\root\canvas\window, *this )
-                  EndIf
-                  
-                  result = #True
                EndIf
             EndIf
             
             ; minimize state
             If state = #PB_Window_Minimize
-               If Post( *this, #__event_Minimize )
-                  *this\resize\flag | #__resize_minimize
-                  If *this\resize\flag & #__resize_maximize
-                     *this\resize\flag & ~ #__resize_maximize
-                  Else
-                     *this\x[#__c_restore]      = *this\container_x( )
-                     *this\y[#__c_restore]      = *this\container_y( )
-                     *this\width[#__c_restore]  = *this\container_width( )
-                     *this\height[#__c_restore] = *this\container_height( )
+               If Not *this\resize\minimize
+                  If Post( *this, #__event_Minimize )
+                     *this\resize\minimize = #True
+                     ;
+                     If Not *this\resize\maximize
+                        If *this\parent
+                           *this\x[#__c_restore]      = *this\container_x( )
+                           *this\y[#__c_restore]      = *this\container_y( )
+                           *this\width[#__c_restore]  = *this\container_width( )
+                           *this\height[#__c_restore] = *this\container_height( )
+                        EndIf
+                     EndIf
+                     ;
+                     If is_root_( *this )
+                        SetWindowState( *this\root\canvas\window, #PB_Window_Minimize )
+                     Else
+                        Resize( *this,
+                                #PB_Ignore,
+                                *this\parent\container_height( ) - *this\bs * 2 - *this\fs[2],
+                                #PB_Ignore,
+                                0, 0 )
+                     EndIf
+                     ;
+                     result = #True
                   EndIf
-                  
-                  ;                *this\CloseButton( )\hide = 1
-                  ;                If *this\MaximizeButton( )\hide = 0
-                  ;                   *this\MinimizeButton( )\hide = 1
-                  ;                EndIf
-                  
-                  If *this\parent
-                     Resize( *this,
-                             *this\x[#__c_restore],
-                             *this\parent\container_height( ) - *this\bs * 2 - *this\fs[2] + (*this\bs - *this\fs),
-                             *this\width[#__c_restore],
-                             *this\bs * 2 - *this\fs[2], 0 )
-                  Else
-                     PostEvent( #PB_Event_MinimizeWindow, *this\root\canvas\window, -1 )
-                  EndIf
-                  
-                  result = #True
                EndIf
             EndIf
          EndIf
@@ -10382,10 +10378,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                Case #PB_Button_Image
                   ; add_image( *this\picture, *value )
                   SetImage( *this, *value )
-                  add_image( *this\picture[#__image_released], *value )
+                  add_image( *this\picture[#__image_Released], *value )
                   
                Case #PB_Button_PressedImage
-                  add_image( *this\picture[#__image_pressed], *value )
+                  add_image( *this\picture[#__image_Pressed], *value )
                   
             EndSelect
          EndIf
@@ -12313,7 +12309,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ; properties
-               If *this\flag & #__tree_property
+               If *this\flag & #__flag_property
                   If *rowParent And Not *rowParent\sublevel And Not GetFontID( *rowParent )
                      *rowParent\color\back     = $FFF9F9F9
                      *rowParent\color\back[1]  = *rowParent\color\back
@@ -14925,38 +14921,38 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          Select Type
             Case #__type_Container
-               If constants::BinaryFlag( Flag, #__flag_border_Less )
-                  flags & ~ #__flag_border_Less
+               If constants::BinaryFlag( Flag, #__flag_BorderLess )
+                  flags & ~ #__flag_BorderLess
                   flags | #PB_Container_BorderLess
                EndIf
-               If constants::BinaryFlag( Flag, #__flag_border_Flat )
-                  flags & ~ #__flag_border_Flat
+               If constants::BinaryFlag( Flag, #__flag_BorderFlat )
+                  flags & ~ #__flag_BorderFlat
                   flags | #PB_Container_Flat
                EndIf
-               If constants::BinaryFlag( Flag, #__flag_border_Single )
-                  flags & ~ #__flag_border_Single
+               If constants::BinaryFlag( Flag, #__flag_BorderSingle )
+                  flags & ~ #__flag_BorderSingle
                   flags | #PB_Container_Single
                EndIf
-               If constants::BinaryFlag( Flag, #__flag_border_Raised )
-                  flags & ~ #__flag_border_Raised
+               If constants::BinaryFlag( Flag, #__flag_BorderRaised )
+                  flags & ~ #__flag_BorderRaised
                   flags | #PB_Container_Raised
                EndIf
-               If constants::BinaryFlag( Flag, #__flag_border_Double ) 
-                  flags & ~ #__flag_border_Double
+               If constants::BinaryFlag( Flag, #__flag_BorderDouble ) 
+                  flags & ~ #__flag_BorderDouble
                   flags | #PB_Container_Double
                EndIf
                
             Case #__type_Button
-               If constants::BinaryFlag( Flag, #__flag_text_MultiLine ) 
-                  flags & ~ #__flag_text_MultiLine
+               If constants::BinaryFlag( Flag, #__flag_TextMultiLine ) 
+                  flags & ~ #__flag_TextMultiLine
                   flag | #PB_Button_MultiLine
                EndIf
-               If constants::BinaryFlag( Flag, #__flag_text_Left ) 
-                  flags & ~ #__flag_text_Left
+               If constants::BinaryFlag( Flag, #__flag_TextLeft ) 
+                  flags & ~ #__flag_TextLeft
                   flags | #PB_Button_Left
                EndIf
-               If constants::BinaryFlag( Flag, #__flag_text_Right ) 
-                  flags & ~ #__flag_text_Right
+               If constants::BinaryFlag( Flag, #__flag_TextRight ) 
+                  flags & ~ #__flag_TextRight
                   flags | #PB_Button_Right
                EndIf
          EndSelect
@@ -14971,51 +14967,51 @@ CompilerIf Not Defined( widget, #PB_Module )
             Case #__type_window
                If constants::BinaryFlag( Flag, #PB_Window_BorderLess )
                   flags & ~ #PB_Window_BorderLess
-                  flags | #__flag_border_Less
+                  flags | #__flag_BorderLess
                EndIf
                ;
             Case #__type_Container
                ;                If constants::BinaryFlag( Flag, #PB_Container_BorderLess ) 
                ;                   flags & ~ #PB_Container_BorderLess
-               ;                   flags = #__flag_border_Less
+               ;                   flags = #__flag_BorderLess
                ;                EndIf
                If constants::BinaryFlag( Flag, #PB_Container_Flat )
                   flags & ~ #PB_Container_Flat
-                  flags | #__flag_border_Flat
+                  flags | #__flag_BorderFlat
                EndIf
                If constants::BinaryFlag( Flag, #PB_Container_Single )
                   flags & ~ #PB_Container_Single
-                  flags | #__flag_border_Single
+                  flags | #__flag_BorderSingle
                EndIf
                If constants::BinaryFlag( Flag, #PB_Container_Raised ) 
                   flags & ~ #PB_Container_Raised
-                  flags | #__flag_border_Raised
+                  flags | #__flag_BorderRaised
                EndIf
                If constants::BinaryFlag( Flag, #PB_Container_Double )
                   flags & ~ #PB_Container_Double
-                  flags | #__flag_border_Double
+                  flags | #__flag_BorderDouble
                EndIf
                ;
             Case #__type_Frame
                ;                If constants::BinaryFlag( Flag, #PB_Frame_BorderLess ) 
                ;                   flags & ~ #PB_Frame_BorderLess
-               ;                   flags | #__flag_border_Less
+               ;                   flags | #__flag_BorderLess
                ;                EndIf
                If constants::BinaryFlag( Flag, #PB_Frame_Flat )
                   flags & ~ #PB_Frame_Flat
-                  flags | #__flag_border_Flat
+                  flags | #__flag_BorderFlat
                EndIf
                If constants::BinaryFlag( Flag, #PB_Frame_Single )
                   flags & ~ #PB_Frame_Single
-                  flags | #__flag_border_Single
+                  flags | #__flag_BorderSingle
                EndIf
                ;                If constants::BinaryFlag( Flag, #PB_Frame_Raised ) 
                ;                   flags & ~ #PB_Frame_Raised
-               ;                   flags | #__flag_border_Raised
+               ;                   flags | #__flag_BorderRaised
                ;                EndIf
                If constants::BinaryFlag( Flag, #PB_Frame_Double )
                   flags & ~ #PB_Frame_Double
-                  flags | #__flag_border_Double
+                  flags | #__flag_BorderDouble
                EndIf
                ;
             Case #__type_MDI
@@ -15025,78 +15021,78 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                If constants::BinaryFlag( Flag, #PB_MDI_BorderLess )
                   flags & ~ #PB_MDI_BorderLess
-                  flags | #__flag_border_Less
+                  flags | #__flag_BorderLess
                EndIf
                ;
             Case #__type_CheckBox
                If constants::BinaryFlag( Flag, #PB_CheckBox_Right )
                   flags & ~ #PB_CheckBox_Right
-                  flags | #__flag_text_Right
+                  flags | #__flag_TextRight
                EndIf
                If constants::BinaryFlag( Flag, #PB_CheckBox_Center )
                   flags & ~ #PB_CheckBox_Center
-                  flags | #__flag_text_Center
+                  flags | #__flag_TextCenter
                EndIf
                ;
             Case #__type_Text
                If constants::BinaryFlag( Flag, #PB_Text_Center )
                   flags & ~ #PB_Text_Center
-                  flags | #__flag_text_Center
-                  ;flags & ~ #__flag_text_Left
+                  flags | #__flag_TextCenter
+                  ;flags & ~ #__flag_TextLeft
                EndIf
                If constants::BinaryFlag( Flag, #PB_Text_Right )
                   flags & ~ #PB_Text_Right
-                  flags | #__flag_text_Right
+                  flags | #__flag_TextRight
                EndIf
                ;
             Case #__type_Button ; ok
                If constants::BinaryFlag( Flag, #PB_Button_MultiLine ) 
                   flags & ~ #PB_Button_MultiLine
-                  flags | #__flag_text_MultiLine
+                  flags | #__flag_TextMultiLine
                EndIf
                If constants::BinaryFlag( Flag, #PB_Button_Left ) 
                   flags & ~ #PB_Button_Left
-                  flags | #__flag_text_Left
+                  flags | #__flag_TextLeft
                EndIf
                If constants::BinaryFlag( Flag, #PB_Button_Right ) 
                   flags & ~ #PB_Button_Right
-                  flags | #__flag_text_Right
+                  flags | #__flag_TextRight
                EndIf
                ;
             Case #__type_String ; ok
                If constants::BinaryFlag( Flag, #PB_String_Password ) 
                   flags & ~ #PB_String_Password
-                  flags | #__flag_text_password
+                  flags | #__flag_Textpassword
                EndIf
                If constants::BinaryFlag( Flag, #PB_String_LowerCase )
                   flags & ~ #PB_String_LowerCase
-                  flags | #__flag_text_lowercase
+                  flags | #__flag_Textlowercase
                EndIf
                If constants::BinaryFlag( Flag, #PB_String_UpperCase ) 
                   flags & ~ #PB_String_UpperCase
-                  flags | #__flag_text_uppercase
+                  flags | #__flag_Textuppercase
                EndIf
                If constants::BinaryFlag( Flag, #PB_String_BorderLess )
                   flags & ~ #PB_String_BorderLess
-                  flags | #__flag_border_Less
+                  flags | #__flag_BorderLess
                EndIf
                If constants::BinaryFlag( Flag, #PB_String_Numeric ) 
                   flags & ~ #PB_String_Numeric
-                  flags | #__flag_text_numeric
+                  flags | #__flag_Textnumeric
                EndIf
                If constants::BinaryFlag( Flag, #PB_String_ReadOnly )
                   flags & ~ #PB_String_ReadOnly
-                  flags | #__flag_text_readonly
+                  flags | #__flag_Textreadonly
                EndIf
                ;
             Case #__type_Editor
                If constants::BinaryFlag( Flag, #PB_Editor_ReadOnly ) 
                   flags & ~ #PB_Editor_ReadOnly
-                  flags | #__flag_text_readonly
+                  flags | #__flag_Textreadonly
                EndIf
                If constants::BinaryFlag( Flag, #PB_Editor_WordWrap ) 
                   flags & ~ #PB_Editor_WordWrap
-                  flags | #__flag_text_wordwrap
+                  flags | #__flag_Textwordwrap
                EndIf
                ;
             Case #__type_Tree
@@ -15105,19 +15101,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                If constants::BinaryFlag( Flag, #PB_Tree_CheckBoxes ) 
                   flags & ~ #PB_Tree_CheckBoxes
-                  flags | #__tree_checkboxes
+                  flags | #__flag_checkboxes
                EndIf
                If constants::BinaryFlag( Flag, #PB_Tree_ThreeState ) 
                   flags & ~ #PB_Tree_ThreeState
-                  flags | #__tree_threestate
+                  flags | #__flag_threestate
                EndIf
                If constants::BinaryFlag( Flag, #PB_Tree_NoButtons )
                   flags & ~ #PB_Tree_NoButtons
-                  flags | #__tree_nobuttons
+                  flags | #__flag_nobuttons
                EndIf
                If constants::BinaryFlag( Flag, #PB_Tree_NoLines ) 
                   flags & ~ #PB_Tree_NoLines
-                  flags | #__tree_nolines
+                  flags | #__flag_nolines
                EndIf
                ;   
             Case #__type_ListView ; Ok
@@ -15136,11 +15132,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                If constants::BinaryFlag( Flag, #PB_ListIcon_CheckBoxes )
                   flags & ~ #PB_ListIcon_CheckBoxes
-                  flags | #__tree_checkboxes
+                  flags | #__flag_checkboxes
                EndIf
                If constants::BinaryFlag( Flag, #PB_ListIcon_ThreeState )
                   flags & ~ #PB_ListIcon_ThreeState
-                  flags | #__tree_threestate
+                  flags | #__flag_threestate
                EndIf
                
          EndSelect
@@ -15198,56 +15194,56 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\WidgetChange( ) = 1
                   *this\TextChange( ) = 1
                   ; 
-                  If constants::BinaryFlag( Flag, #__flag_text_Invert )
+                  If constants::BinaryFlag( Flag, #__flag_TextInvert )
                      *this\text\invert = state
                   EndIf
-                  If constants::BinaryFlag( Flag, #__flag_text_Vertical )
+                  If constants::BinaryFlag( Flag, #__flag_TextVertical )
                      *this\text\vertical = state
                   EndIf
-                  If constants::BinaryFlag( Flag, #__flag_text_wordwrap )
+                  If constants::BinaryFlag( Flag, #__flag_Textwordwrap )
                      *this\text\multiline = - state
                   EndIf
-                  If constants::BinaryFlag( Flag, #__flag_text_multiline )
+                  If constants::BinaryFlag( Flag, #__flag_Textmultiline )
                      *this\text\multiline = state
                   EndIf
                   ;
-                  If constants::BinaryFlag( Flag, #__flag_text_Left )
+                  If constants::BinaryFlag( Flag, #__flag_TextLeft )
                      *this\text\align\left = state
                      ;
                      If Not *this\text\align\left 
-                        If constants::BinaryFlag( *this\flag, #__flag_text_Right )
+                        If constants::BinaryFlag( *this\flag, #__flag_TextRight )
                            *this\text\align\right = #True
                         EndIf
                      EndIf
                   EndIf
-                  If constants::BinaryFlag( Flag, #__flag_text_Top )
+                  If constants::BinaryFlag( Flag, #__flag_TextTop )
                      *this\text\align\top = state
                      ;
                      If Not *this\text\align\top 
-                        If constants::BinaryFlag( *this\flag, #__flag_text_Bottom )
+                        If constants::BinaryFlag( *this\flag, #__flag_TextBottom )
                            *this\text\align\bottom = #True
                         EndIf
                      EndIf
                   EndIf
-                  If constants::BinaryFlag( Flag, #__flag_text_Right )
+                  If constants::BinaryFlag( Flag, #__flag_TextRight )
                      *this\text\align\right = state
                      ;
                      If Not *this\text\align\right 
-                        If constants::BinaryFlag( *this\flag, #__flag_text_Left )
+                        If constants::BinaryFlag( *this\flag, #__flag_TextLeft )
                            *this\text\align\left = #True
                         EndIf
                      EndIf
                   EndIf
-                  If constants::BinaryFlag( Flag, #__flag_text_Bottom )
+                  If constants::BinaryFlag( Flag, #__flag_TextBottom )
                      *this\text\align\bottom = state
                      ;
                      If Not *this\text\align\bottom 
-                        If constants::BinaryFlag( *this\flag, #__flag_text_Top )
+                        If constants::BinaryFlag( *this\flag, #__flag_TextTop )
                            *this\text\align\top = #True
                         EndIf
                      EndIf
                   EndIf
-                  If constants::BinaryFlag( Flag, #__flag_text_Center )
+                  If constants::BinaryFlag( Flag, #__flag_TextCenter )
                      *this\text\align\left   = #False
                      *this\text\align\top    = #False
                      *this\text\align\right  = #False
@@ -15305,11 +15301,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *this\mode\multiSelect = 1
                   EndIf
                   
-                  If constants::BinaryFlag( Flag, #__tree_nolines )
+                  If constants::BinaryFlag( Flag, #__flag_nolines )
                      *this\mode\Lines = state
                   EndIf
                   
-                  If constants::BinaryFlag( Flag, #__tree_nobuttons )
+                  If constants::BinaryFlag( Flag, #__flag_nobuttons )
                      *this\mode\Buttons = state
                      
                      If constants::BinaryFlag( *this\flag, #__flag_optionboxes )
@@ -15330,10 +15326,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If constants::BinaryFlag( Flag, #__flag_optionboxes )
                      *this\mode\optionboxes = state
                   EndIf
-                  If constants::BinaryFlag( Flag, #__tree_checkboxes ) 
+                  If constants::BinaryFlag( Flag, #__flag_checkboxes ) 
                      *this\mode\checkboxes = state
                   EndIf
-                  If constants::BinaryFlag( Flag, #__tree_threestate ) 
+                  If constants::BinaryFlag( Flag, #__flag_threestate ) 
                      If *this\mode\checkboxes
                         *this\mode\threestate = state
                      EndIf
@@ -15771,10 +15767,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             Select type$
                Case "Container", "ScrollArea"
-                  If flag & #__flag_border_Flat = #__flag_border_Flat     : result$ + " #PB_" + type$ + "_Flat |" : EndIf
-                  If flag & #__flag_border_Raised = #__flag_border_Raised : result$ + " #PB_" + type$ + "_Raised |" : EndIf
-                  If flag & #__flag_border_Single = #__flag_border_Single : result$ + " #PB_" + type$ + "_Single |" : EndIf
-                  If flag & #__flag_border_Less = #__flag_border_Less     : result$ + " #PB_" + type$ + "_BorderLess |" : EndIf
+                  If flag & #__flag_BorderFlat = #__flag_BorderFlat     : result$ + " #PB_" + type$ + "_Flat |" : EndIf
+                  If flag & #__flag_BorderRaised = #__flag_BorderRaised : result$ + " #PB_" + type$ + "_Raised |" : EndIf
+                  If flag & #__flag_BorderSingle = #__flag_BorderSingle : result$ + " #PB_" + type$ + "_Single |" : EndIf
+                  If flag & #__flag_BorderLess = #__flag_BorderLess     : result$ + " #PB_" + type$ + "_BorderLess |" : EndIf
                   
                   If type$ = "ScrollArea"
                      If flag & #__flag_Center = #__flag_Center            : result$ + " #PB_ScrollArea_Center |" : EndIf
@@ -15782,16 +15778,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                Case "Button", "Text", "CheckBox"
                   If flag & #__align_image = #__align_image
-                     If flag & #__image_Left = #__image_Left           : result$ + " #__image_Left |" : EndIf
-                     If flag & #__image_Top = #__image_Top             : result$ + " #__image_Top |" : EndIf
-                     If flag & #__image_Right = #__image_Right         : result$ + " #__image_Right |" : EndIf
-                     If flag & #__image_Bottom = #__image_Bottom       : result$ + " #__image_Bottom |" : EndIf
+                     If flag & #__flag_ImageLeft = #__flag_ImageLeft           : result$ + " #__flag_ImageLeft |" : EndIf
+                     If flag & #__flag_ImageTop = #__flag_ImageTop             : result$ + " #__flag_ImageTop |" : EndIf
+                     If flag & #__flag_ImageRight = #__flag_ImageRight         : result$ + " #__flag_ImageRight |" : EndIf
+                     If flag & #__flag_ImageBottom = #__flag_ImageBottom       : result$ + " #__flag_ImageBottom |" : EndIf
                   Else
                      If flag & #__align_text 
-                        If flag & #__flag_text_Left = #__flag_text_Left           : result$ + " #__flag_text_Left |" : EndIf
-                        If flag & #__flag_text_Right = #__flag_text_Right         : result$ + " #__flag_text_Right |" : EndIf
-                        If flag & #__flag_text_WordWrap = #__flag_text_WordWrap   : result$ + " #__flag_text_WordWrap |" : EndIf
-                        If flag & #__flag_text_MultiLine = #__flag_text_MultiLine : result$ + " #__flag_text_MultiLine |" : EndIf
+                        If flag & #__flag_TextLeft = #__flag_TextLeft           : result$ + " #__flag_TextLeft |" : EndIf
+                        If flag & #__flag_TextRight = #__flag_TextRight         : result$ + " #__flag_TextRight |" : EndIf
+                        If flag & #__flag_TextWordWrap = #__flag_TextWordWrap   : result$ + " #__flag_TextWordWrap |" : EndIf
+                        If flag & #__flag_TextMultiLine = #__flag_TextMultiLine : result$ + " #__flag_TextMultiLine |" : EndIf
                         If flag & #__flag_button_Default = #__flag_button_Default : result$ + " #__flag_button_Default |" : EndIf
                      EndIf
                   EndIf
@@ -16024,11 +16020,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                         Case "#__flag_rowmultiselect"              : Flag = Flag | #__flag_RowMultiSelect 
                         Case "#__flag_rowfullselect"               : Flag = Flag | #__flag_RowFullSelect   
                         Case "#__flag_gridlines"                   : Flag = Flag | #__flag_GridLines           
-                        Case "#__flag_border_raised"               : Flag = Flag | #__flag_border_Raised   
-                        Case "#__flag_border_double"               : Flag = Flag | #__flag_border_Double   
-                        Case "#__flag_border_single"               : Flag = Flag | #__flag_border_Single   
-                        Case "#__flag_border_less"                 : Flag = Flag | #__flag_border_less       
-                        Case "#__flag_border_flat"                 : Flag = Flag | #__flag_border_Flat       
+                        Case "#__flag_borderraised"               : Flag = Flag | #__flag_BorderRaised   
+                        Case "#__flag_borderdouble"               : Flag = Flag | #__flag_BorderDouble   
+                        Case "#__flag_bordersingle"               : Flag = Flag | #__flag_BorderSingle   
+                        Case "#__flag_borderless"                 : Flag = Flag | #__flag_Borderless       
+                        Case "#__flag_borderflat"                 : Flag = Flag | #__flag_BorderFlat       
                         Case "#__flag_child"                       : Flag = Flag | #__flag_Child                   
                         Case "#__flag_invert"                      : Flag = Flag | #__flag_Invert                 
                         Case "#__flag_vertical"                    : Flag = Flag | #__flag_Vertical             
@@ -16037,15 +16033,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                         Case "#__flag_nolines"                     : Flag = Flag | #__flag_NoLines               
                         Case "#__flag_nobuttons"                   : Flag = Flag | #__flag_NoButtons           
                         Case "#__flag_noscrollbars"                : Flag = Flag | #__flag_NoScrollBars     
-                        Case "#__flag_text_password"               : Flag = Flag | #__flag_text_Password   
-                        Case "#__flag_text_wordwrap"               : Flag = Flag | #__flag_text_WordWrap   
-                        Case "#__flag_text_multiline"              : Flag = Flag | #__flag_text_MultiLine 
-                        Case "#__flag_text_inline"                 : Flag = Flag | #__flag_text_InLine       
-                        Case "#__flag_text_numeric"                : Flag = Flag | #__flag_text_Numeric     
-                        Case "#__flag_text_readonly"               : Flag = Flag | #__flag_text_Readonly   
-                        Case "#__flag_text_lowercase"              : Flag = Flag | #__flag_text_LowerCase 
-                        Case "#__flag_text_uppercase"              : Flag = Flag | #__flag_text_UpperCase 
-                        Case "#__flag_modal"                       : Flag = Flag | #__flag_Modal                  
+                        Case "#__flag_textpassword"               : Flag = Flag | #__flag_TextPassword   
+                        Case "#__flag_textwordwrap"               : Flag = Flag | #__flag_TextWordWrap   
+                        Case "#__flag_textmultiline"              : Flag = Flag | #__flag_TextMultiLine 
+                        Case "#__flag_textinline"                 : Flag = Flag | #__flag_TextInLine       
+                        Case "#__flag_textnumeric"                : Flag = Flag | #__flag_TextNumeric     
+                        Case "#__flag_textreadonly"               : Flag = Flag | #__flag_TextReadonly   
+                        Case "#__flag_textlowercase"              : Flag = Flag | #__flag_TextLowerCase 
+                        Case "#__flag_textuppercase"              : Flag = Flag | #__flag_TextUpperCase 
+                        ; Case "#__flag_modal"                       : Flag = Flag | #__flag_Modal                  
                         Case "#__flag_left"                        : Flag = Flag | #__flag_Left                    
                         Case "#__flag_top"                         : Flag = Flag | #__flag_Top                      
                         Case "#__flag_right"                       : Flag = Flag | #__flag_Right                  
@@ -16067,17 +16063,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                         Case "#__align_proportional"               : Flag = Flag | #__align_proportional 
                         Case "#__align_auto"                       : Flag = Flag | #__align_auto         
                            
-                        Case "#__image_left"                       : Flag = Flag | #__image_Left          
-                        Case "#__image_top"                        : Flag = Flag | #__image_Top            
-                        Case "#__image_right"                      : Flag = Flag | #__image_Right        
-                        Case "#__image_bottom"                     : Flag = Flag | #__image_Bottom      
-                        Case "#__image_center"                     : Flag = Flag | #__image_Center      
+                        Case "#__flag_imageleft"                       : Flag = Flag | #__flag_ImageLeft          
+                        Case "#__flag_imagetop"                        : Flag = Flag | #__flag_ImageTop            
+                        Case "#__flag_imageright"                      : Flag = Flag | #__flag_ImageRight        
+                        Case "#__flag_imagebottom"                     : Flag = Flag | #__flag_ImageBottom      
+                        Case "#__flag_imagecenter"                     : Flag = Flag | #__flag_ImageCenter      
                            
-                        Case "#__flag_text_left"                   : Flag = Flag | #__flag_text_Left          
-                        Case "#__flag_text_top"                    : Flag = Flag | #__flag_text_Top            
-                        Case "#__flag_text_right"                  : Flag = Flag | #__flag_text_Right        
-                        Case "#__flag_text_bottom"                 : Flag = Flag | #__flag_text_Bottom      
-                        Case "#__flag_text_center"                 : Flag = Flag | #__flag_text_Center      
+                        Case "#__flag_textleft"                   : Flag = Flag | #__flag_TextLeft          
+                        Case "#__flag_texttop"                    : Flag = Flag | #__flag_TextTop            
+                        Case "#__flag_textright"                  : Flag = Flag | #__flag_TextRight        
+                        Case "#__flag_textbottom"                 : Flag = Flag | #__flag_TextBottom      
+                        Case "#__flag_textcenter"                 : Flag = Flag | #__flag_TextCenter      
                            
                         Default
                            ;             Select Asc(String$)
@@ -16805,9 +16801,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                Else
                   If GetClass( __widget ) = GetClass( *this)
                      DeleteElement( __gui\event\queues( ) )
+                     Debug "ERRORS event reset ["+GetClass( __widget ) +" "+ GetClass( *this) +"]"
                      Break
                   EndIf
-                  Debug "ERRORS event reset ["+GetClass( __widget ) +" "+ GetClass( *this) +"]"
                EndIf
             Next
          EndIf
@@ -17212,33 +17208,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                         __gui\event\quit = 1
                      EndIf
                      
-                  Case #PB_Event_RestoreWindow
-                     Debug "restore.... "
-                     Post( root( ), #__event_Restore )
-                     
-                  Case #PB_Event_MaximizeWindow
-                     Debug "maximize.... "
-                     If Post( root( ), #__event_Maximize ) 
-                        SetWindowState( window, #PB_Window_Normal )
-                     EndIf
-                     
-                  Case #PB_Event_MinimizeWindow
-                     Debug "minimize.... "
-                     If Post( root( ), #__event_Minimize )
-                        SetWindowState( window, #PB_Window_Normal )
-                     EndIf
-                     
-                     ;                      ; BUG in windows
-                     ;                      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                     ;                      Case #WM_KEYDOWN 
-                     ;                         If EventwParam( ) = #TAB 
-                     ;                            If IsGadget( GetActiveGadget( ))
-                     ;                               ; Debug "KeyDown: TAB is down " 
-                     ;                               keyboard( )\Key = #PB_Shortcut_Tab
-                     ;                               PostEvent( #PB_Event_Gadget, EventWindow( ), GetActiveGadget( ), #PB_EventType_KeyDown )
-                     ;                            EndIf
-                     ;                         EndIf
-                     ;                      CompilerEndIf
                EndSelect
                
                If __gui\event\quit
@@ -19384,16 +19353,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  If event = #__event_Left2Click
-                     If *this\caption\interact
-                        If Not *this\resize\flag & #__resize_maximize
-                           ProcedureReturn SetState( *this, #PB_Window_Maximize )
-                        Else
-                           ProcedureReturn SetState( *this, #PB_Window_Normal )
-                        EndIf
-                     EndIf
-                  EndIf
-                  
                   If event = #__event_LeftClick
                      Select EnteredButton( )
                            ; close button
@@ -19406,7 +19365,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            
                            ; maximize button
                         Case *this\MaximizeButton( )
-                           If Not *this\resize\flag & #__resize_maximize
+                           If Not *this\resize\maximize
                               ProcedureReturn SetState( *this, #PB_Window_Maximize )
                            Else
                               ProcedureReturn SetState( *this, #PB_Window_Normal )
@@ -19414,12 +19373,22 @@ CompilerIf Not Defined( widget, #PB_Module )
                            
                            ; minimize button
                         Case *this\MinimizeButton( )
-                           If Not *this\resize\flag & #__resize_minimize
+                           If Not *this\resize\minimize
                               ProcedureReturn SetState( *this, #PB_Window_Minimize )
                            Else
                               ProcedureReturn SetState( *this, #PB_Window_Normal )
                            EndIf
                      EndSelect
+                  EndIf
+                  
+                  If event = #__event_Left2Click
+                     If *this\caption\interact
+                        If Not *this\resize\maximize
+                           ProcedureReturn SetState( *this, #PB_Window_Maximize )
+                        Else
+                           ProcedureReturn SetState( *this, #PB_Window_Normal )
+                        EndIf
+                     EndIf
                   EndIf
                   
                Case #__type_Button
@@ -19445,8 +19414,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                                  *this\ColorState( ) = #__s_2
                               EndIf
                               
-                              If *this\picture[#__image_pressed]\imageID
-                                 *this\picture = *this\picture[#__image_pressed]
+                              If *this\picture[#__image_Pressed]\imageID
+                                 *this\picture = *this\picture[#__image_Pressed]
                               EndIf
                            EndIf
                            
@@ -19459,8 +19428,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EndIf
                            EndIf
                            
-                           If *this\picture[#__image_released]\imageID
-                              *this\picture = *this\picture[#__image_released]
+                           If *this\picture[#__image_Released]\imageID
+                              *this\picture = *this\picture[#__image_Released]
                            EndIf
                            
                      EndSelect
@@ -19686,9 +19655,39 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure EventRestore( )
+         Protected window = PB(EventWindow)( )
+         Protected Canvas = PB(GetWindowData)( window )
+         Debug "Restore... " + window
+         If IsGadget( Canvas )
+            ChangeCurrentCanvas( GadgetID( Canvas ))
+            SetState( root( ), #PB_Window_Normal )
+         EndIf
+      EndProcedure
+      
+      Procedure EventMaximize( )
+         Protected window = PB(EventWindow)( )
+         Protected Canvas = PB(GetWindowData)( window )
+         Debug "Maximize... " + window
+         If IsGadget( Canvas )
+            ChangeCurrentCanvas( GadgetID( Canvas ))
+            SetState( root( ), #PB_Window_Maximize )
+         EndIf
+      EndProcedure
+      
+      Procedure EventMinimize( )
+         Protected window = PB(EventWindow)( )
+         Protected Canvas = PB(GetWindowData)( window )
+         Debug "Minimize... " + window
+         If IsGadget( Canvas )
+            ChangeCurrentCanvas( GadgetID( Canvas ))
+            SetState( root( ), #PB_Window_Minimize )
+         EndIf
+      EndProcedure
+      
       Procedure EventResize( )
          Protected Canvas = PB(GetWindowData)( PB(EventWindow)( ))
-         ; Debug "- resize - os - window - "+Canvas ; PB(WindowWidth)( PB(EventWindow)( ))
+         ; Debug "Resize..." + Canvas ; PB(WindowWidth)( PB(EventWindow)( ))
          PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( Canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( Canvas ) * 2 ) ; bug
       EndProcedure
       
@@ -20271,10 +20270,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   event = #__event_RightDown
                   
                   If Entered( ) And Not Entered( )\anchors
-                     If Entered( )\picture[#__image_background]\imageID And
-                        ImageDepth( Entered( )\picture[#__image_background]\image, #PB_Image_OriginalDepth ) > 31  
+                     If Entered( )\picture[#__image_BackGround]\imageID And
+                        ImageDepth( Entered( )\picture[#__image_BackGround]\image, #PB_Image_OriginalDepth ) > 31  
                         
-                        If StartDrawing( ImageOutput(  Entered( )\picture[#__image_background]\image ) )
+                        If StartDrawing( ImageOutput(  Entered( )\picture[#__image_BackGround]\image ) )
                            DrawingMode( #PB_2DDrawing_AlphaChannel )
                            
                            If Not Alpha( Point( mouse( )\x - Entered( )\inner_x( ), mouse( )\y - Entered( )\inner_y( ) ) )
@@ -20988,7 +20987,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If Type = #__type_Button Or
             Type = #__type_HyperLink
             
-            *this\flag | #__flag_text_Center
+            *this\flag | #__flag_TextCenter
             
          ElseIf Type = #__type_ComboBox Or
                 Type = #__type_Spin Or
@@ -20996,18 +20995,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                 Type = #__type_Option Or
                 Type = #__type_CheckBox
             
-            If constants::BinaryFlag( Flag, #__flag_text_Center, #False )
-               *this\flag | #__flag_text_Center | #__flag_text_Left
+            If constants::BinaryFlag( Flag, #__flag_TextCenter, #False )
+               *this\flag | #__flag_TextCenter | #__flag_TextLeft
             EndIf
             
-            If constants::BinaryFlag( Flag, #__flag_text_Right )
-               *this\flag & ~ #__flag_text_Left
-               *this\flag | #__flag_text_Right
+            If constants::BinaryFlag( Flag, #__flag_TextRight )
+               *this\flag & ~ #__flag_TextLeft
+               *this\flag | #__flag_TextRight
             EndIf
             
          ElseIf Type = #__type_Text
-            If constants::BinaryFlag( Flag, #__flag_text_InLine, #False )
-               *this\flag | #__flag_text_wordwrap
+            If constants::BinaryFlag( Flag, #__flag_TextInLine, #False )
+               *this\flag | #__flag_Textwordwrap
             EndIf
          EndIf
          
@@ -21056,13 +21055,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\fs = 0
             EndIf
          Else
-            If constants::BinaryFlag( *this\flag, #__flag_border_Double ) Or
-               constants::BinaryFlag( *this\flag, #__flag_border_Raised )
+            If constants::BinaryFlag( *this\flag, #__flag_BorderDouble ) Or
+               constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
                *this\fs = 2
-            ElseIf constants::BinaryFlag( *this\Flag, #__flag_border_Less )
+            ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderLess )
                *this\fs = 0
-            ElseIf constants::BinaryFlag( *this\Flag, #__flag_border_Flat ) Or
-                   constants::BinaryFlag( *this\Flag, #__flag_border_Single ) Or
+            ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderFlat ) Or
+                   constants::BinaryFlag( *this\Flag, #__flag_BorderSingle ) Or
                    *this\type = #__type_Panel Or
                    *this\type = #__type_Spin Or
                    *this\type = #__type_Button Or
@@ -21154,7 +21153,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\type = #__type_Editor
                *this\mode\fullselection = constants::BinaryFlag( *this\flag, #__flag_RowFullSelect, #False ) * DPIScaled(7)
                
-               *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flag, #__flag_text_Numeric, #False )
+               *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flag, #__flag_TextNumeric, #False )
                *this\MarginLine( )\color\front = $C8000000 ; *this\color\back[0]
                *this\MarginLine( )\color\back  = $C8F0F0F0 ; *this\color\back[0]
                
@@ -21247,16 +21246,16 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             *this\padding\x  = dpi_scale_two ;  DPIScaled(4)
             
-            If constants::BinaryFlag( Flag, #__tree_nolines )
-               flag & ~ #__tree_nolines
+            If constants::BinaryFlag( Flag, #__flag_nolines )
+               flag & ~ #__flag_nolines
             Else
-               flag | #__tree_nolines
+               flag | #__flag_nolines
             EndIf
             
-            If constants::BinaryFlag( Flag, #__tree_NoButtons ) 
-               flag & ~ #__tree_NoButtons
+            If constants::BinaryFlag( Flag, #__flag_NoButtons ) 
+               flag & ~ #__flag_NoButtons
             Else
-               flag | #__tree_NoButtons
+               flag | #__flag_NoButtons
             EndIf
             
             If flag
@@ -21334,7 +21333,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             If constants::BinaryFlag( *this\flag, #PB_ComboBox_Editable )
                *this\stringbar = Create( *this, "ComboString", #__type_String,
-                                         0, 0, 0, 0, #Null$, #__flag_child | #__flag_border_less )
+                                         0, 0, 0, 0, #Null$, #__flag_child | #__flag_Borderless )
             EndIf
             
             *this\fs[3] = size
@@ -21423,7 +21422,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      constants::BinaryFlag( Flag, #PB_Splitter_Vertical )
                      *this\bar\vertical = #True
                   EndIf
-                  *this\flag = flag | #__flag_text_Center
+                  *this\flag = flag | #__flag_TextCenter
                Else
                   If Not Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or 
                                constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
@@ -21440,7 +21439,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\
                *this\stringbar = Create( *this, "SpinString",
                                          #__type_String, 0, 0, 0, 0, #Null$,
-                                         #__flag_child | #__flag_text_numeric | #__flag_border_less | *this\flag&~(#__flag_invert|#__flag_vertical) )
+                                         #__flag_child | #__flag_Textnumeric | #__flag_Borderless | *this\flag&~(#__flag_invert|#__flag_vertical) )
                
                
             EndIf
@@ -21779,7 +21778,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i ListView( X.l, Y.l, Width.l, Height.l, flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ListView, X, Y, Width, Height, "", Flag | #__tree_nobuttons | #__tree_nolines )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ListView, X, Y, Width, Height, "", Flag | #__flag_nobuttons | #__flag_nolines )
       EndProcedure
       
       Procedure.i ListIcon( X.l, Y.l, Width.l, Height.l, ColumnTitle.s, ColumnWidth.i, flag.q = 0 )
@@ -21788,8 +21787,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i ExplorerList( X.l, Y.l, Width.l, Height.l, Directory.s, flag.q = 0 )
-         ;Protected *this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, #__type_ExplorerList, x, y, width, height, "", Flag | #__tree_nobuttons | #__tree_nolines )
-         Protected *this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, #__type_ListIcon, X, Y, Width, Height, "", Flag | #__tree_nobuttons | #__tree_nolines )
+         ;Protected *this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, #__type_ExplorerList, x, y, width, height, "", Flag | #__flag_nobuttons | #__flag_nolines )
+         Protected *this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, #__type_ListIcon, X, Y, Width, Height, "", Flag | #__flag_nobuttons | #__flag_nolines )
          
          ;\\
          AddColumn(*this, 0, "Name", 200)
@@ -21875,15 +21874,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_MDI, X, Y, Width, Height, #Null$, flag | #__flag_nogadgets, 0, 0, 0, #__bar_button_size, 0, 1 )
       EndProcedure
       
-      Procedure.i Panel( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_border_Flat )
+      Procedure.i Panel( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_BorderFlat )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Panel, X, Y, Width, Height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__bar_button_size, 0, 0 )
       EndProcedure
       
-      Procedure.i Container( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_border_Flat )
+      Procedure.i Container( X.l, Y.l, Width.l, Height.l, flag.q = #__flag_BorderFlat )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Container, X, Y, Width, Height, #Null$, flag | #__flag_noscrollbars, 0, 0, 0, #__bar_button_size, 0, 0 )
       EndProcedure
       
-      Procedure.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_border_Flat )
+      Procedure.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, flag.q = #__flag_BorderFlat )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ScrollArea, X, Y, Width, Height, #Null$, flag, ScrollAreaWidth, ScrollAreaHeight, ScrollStep, #__bar_button_size, 0, ScrollStep )
       EndProcedure
       
@@ -22210,6 +22209,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; BindGadgetEvent( Canvas, @CanvasEvents( ))
             ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
             ;
+            BindEvent( #PB_Event_RestoreWindow, @EventRestore( ), Window )
+            BindEvent( #PB_Event_MaximizeWindow, @EventMaximize( ), Window )
+            BindEvent( #PB_Event_MinimizeWindow, @EventMinimize( ), Window )
             BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
             If constants::BinaryFlag( flag, #PB_Window_SizeGadget )
                BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
@@ -22354,7 +22356,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\caption\color    = _get_colors_( )
          
          ; border frame size
-         *this\fs = constants::BinaryFlag( *this\flag, #__flag_border_less, #False ) * fs
+         *this\fs = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * fs
          
          
          ;
@@ -22376,7 +22378,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\TitleBarHeight = 0
             *this\fs[2] = 0
          Else
-            *this\fs[2] = constants::BinaryFlag( *this\flag, #__flag_border_less, #False ) * barHeight
+            *this\fs[2] = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * barHeight
             *this\TitleBarHeight = *this\fs[2]
             
             *this\padding\x = 5
@@ -24024,8 +24026,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             clip_output_( *this, [#__c_idraw] )
             
             ; background img draw
-            If *this\picture[#__image_background]\imageID
-               draw_img_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
+            If *this\picture[#__image_BackGround]\imageID
+               draw_img_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_BackGround] )
             EndIf
             
             clip_output_( *this, [#__c_draw] )
@@ -24198,14 +24200,14 @@ CompilerIf Not Defined( widget, #PB_Module )
          With *this
             If *this\fs
                draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               If constants::BinaryFlag( *this\flag, #__flag_border_Single ) Or 
-                  constants::BinaryFlag( *this\flag, #__flag_border_Double )
+               If constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or 
+                  constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
                   draw_roundbox_(*this\frame_x( ), *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
                   draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
                   draw_roundbox_(*this\frame_x( ), *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
                   draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
                EndIf
-               If constants::BinaryFlag( *this\flag, #__flag_border_Double )
+               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
                   draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
                   draw_roundbox_(*this\frame_x( )+1+*this\frame_width( )-*this\round*2, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
                   draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )-1+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
@@ -24254,14 +24256,14 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\
             If *this\picture\imageID Or
-               *this\picture[#__image_background]\imageID
+               *this\picture[#__image_BackGround]\imageID
                
                draw_mode_alpha_( #PB_2DDrawing_Default )
             EndIf
             
             ;\\ background img draw
-            If *this\picture[#__image_background]\imageID
-               draw_img_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_background] )
+            If *this\picture[#__image_BackGround]\imageID
+               draw_img_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_BackGround] )
             EndIf
             
             ;\\ scroll img draw
@@ -24293,7 +24295,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;                 EndIf
                ;               EndIf
                
-               If constants::BinaryFlag( *this\flag, #__flag_border_Flat )
+               If constants::BinaryFlag( *this\flag, #__flag_BorderFlat )
                   ;                   If *this\inner_width( ) And 
                   ;                      *this\inner_height( ) 
                   ;                      ;If *this\type <> #__type_Panel
@@ -24306,8 +24308,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;                   EndIf
                   
-               ElseIf constants::BinaryFlag( *this\flag, #__flag_border_Single ) Or
-                      constants::BinaryFlag( *this\flag, #__flag_border_Double )
+               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or
+                      constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
                   Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFAAAAAA)
                   Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFAAAAAA)
                   Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFFFFFFF)
@@ -24315,7 +24317,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;                 draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
                   ;                 draw_roundbox_(*this\inner_x( ) - 2, *this\inner_y( ) - 2, *this\inner_width( ) + 3, *this\inner_height( ) + 3, *this\round, *this\round, $FFFFFFFF )
                   
-               ElseIf constants::BinaryFlag( *this\flag, #__flag_border_Raised )
+               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
                   Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
                   Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
                   Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
@@ -24327,7 +24329,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFAAAAAA)
                EndIf
                
-               If constants::BinaryFlag( *this\flag, #__flag_border_Double )
+               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
                   ;                 Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
                   ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
                   ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFE7E7E7)
@@ -24391,8 +24393,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             Y = *this\inner_y( ) + *this\scroll_y( )
             
             ;\\ draw background
-            If *this\picture[#__image_background]\imageID
-               draw_img_( *this, X, Y, [#__image_background] )
+            If *this\picture[#__image_BackGround]\imageID
+               draw_img_( *this, X, Y, [#__image_BackGround] )
             Else
                If *this\color\back <> - 1
                   If *this\color\fore <> - 1
@@ -24686,7 +24688,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      
                      ;\\ draw focus state
-                     If *this\focus = 2
+                     If *this\focus = 2 And Not (is_window_(*this) And Not *this\parent )
                         UnclipOutput( )
                         draw_mode_alpha_( #PB_2DDrawing_Outlined )
                         draw_box_( *this\frame_x( )+1, *this\frame_y( )+1, *this\frame_width( )-2, *this\frame_height( )-2, $fffff0000 )
@@ -25360,11 +25362,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          Container( f1, f1, Width - f1 * 2, Height - bh - f1 - f2 * 2 - 1 )
          SetClass( widget( ), "message_CONT" )
          If IsImage( img )
-            Image( f2, f2, iw, iw, img, #__image_Center | #__flag_border_flat | #__flag_transparent )
+            Image( f2, f2, iw, iw, img, #__flag_ImageCenter | #__flag_Borderflat | #__flag_transparent )
             SetClass( widget( ), "message_img" )
-            Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__flag_text_Center | #__flag_text_Left | #__flag_transparent );| #__flag_border_less )
+            Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__flag_TextCenter | #__flag_TextLeft | #__flag_transparent );| #__flag_Borderless )
          Else
-            Text( f2, f2, Width - f2 * 2, iw, Text, #__flag_text_Center | #__flag_text_Left | #__flag_transparent );| #__flag_border_less )
+            Text( f2, f2, Width - f2 * 2, iw, Text, #__flag_TextCenter | #__flag_TextLeft | #__flag_transparent );| #__flag_Borderless )
          EndIf
          SetClass( widget( ), "message_text" )
          CloseList( )
@@ -25788,7 +25790,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global view, size_value, pos_value, grid_value, back_color, frame_color, size_text, pos_text, grid_text
    Define i
-   Define *w._s_WIDGET, *g._s_WIDGET, editable.q = #__flag_border_Flat
+   Define *w._s_WIDGET, *g._s_WIDGET, editable.q = #__flag_BorderFlat
    
    Procedure anchor_events( )
       Protected change
@@ -26174,7 +26176,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(*button_panel, 2)
    CloseList( ) ; close panel lists
    
-   *g = String(10, 200, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_text_password | #__flag_text_Right)
+   *g = String(10, 200, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_Textpassword | #__flag_TextRight)
    
    ;\\
    Global *button_item1, *button_item2, *button_menu
@@ -26320,7 +26322,7 @@ CompilerIf #PB_Compiler_IsMainFile
    *panel = Panel(20, 20, 180 + 40, 180 + 60, editable) : SetText(*panel, "1")
    AddItem( *panel, -1, "item_1" )
    ;Button( 20,20, 80,80, "item_1")
-   *g = Editor(0, 0, 0, 0, #__flag_autosize|#__flag_border_less|#__flag_text_wordwrap)
+   *g = Editor(0, 0, 0, 0, #__flag_autosize|#__flag_Borderless|#__flag_Textwordwrap)
    ;    For a = 0 To 2
    ;       AddItem(*g, a, "Line " + Str(a))
    ;    Next
@@ -26520,21 +26522,21 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(Splitter_3, 40)
    SetState(Splitter_1, 50)
    
-   Spin(10, 195, 80, 25, 5, 30, #__flag_text_Left )
-   Spin(10, 225, 80, 25, 5, 30, #__flag_text_Center|#__spin_mirror)
-   Spin(10, 255, 80, 25, 5, 30, #__flag_text_Right|#__flag_invert)
+   Spin(10, 195, 80, 25, 5, 30, #__flag_TextLeft )
+   Spin(10, 225, 80, 25, 5, 30, #__flag_TextCenter|#__spin_mirror)
+   Spin(10, 255, 80, 25, 5, 30, #__flag_TextRight|#__flag_invert)
    
-   Spin(95, 195, 80, 25, 5, 30, #__flag_text_Left|#__spin_Plus )
-   Spin(95, 225, 80, 25, 5, 30, #__flag_text_Center|#__spin_Plus|#__spin_mirror)
-   Spin(95, 255, 80, 25, 5, 30, #__flag_text_Right|#__spin_Plus|#__flag_invert)
+   Spin(95, 195, 80, 25, 5, 30, #__flag_TextLeft|#__spin_Plus )
+   Spin(95, 225, 80, 25, 5, 30, #__flag_TextCenter|#__spin_Plus|#__spin_mirror)
+   Spin(95, 255, 80, 25, 5, 30, #__flag_TextRight|#__spin_Plus|#__flag_invert)
    
-   Spin(180, 195, 80, 25, 5, 30, #__spin_vertical|#__flag_text_Right )
-   Spin(180, 225, 80, 25, 5, 30, #__spin_vertical|#__flag_text_Center|#__spin_mirror)
-   Spin(180, 255, 80, 25, 5, 30, #__spin_vertical|#__flag_text_Right|#__flag_invert)
+   Spin(180, 195, 80, 25, 5, 30, #__spin_vertical|#__flag_TextRight )
+   Spin(180, 225, 80, 25, 5, 30, #__spin_vertical|#__flag_TextCenter|#__spin_mirror)
+   Spin(180, 255, 80, 25, 5, 30, #__spin_vertical|#__flag_TextRight|#__flag_invert)
    
    ;-\\ OPENROOT3
    OpenList( *root3 )
-   Define *tree = Tree( 10, 20, 150, 200, #__tree_checkboxes)
+   Define *tree = Tree( 10, 20, 150, 200, #__flag_checkboxes)
    For i = 1 To 100;0000
       AddItem(*tree, i, "text-" + Str(i))
    Next
@@ -26544,7 +26546,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetItemFont(*tree, 4, 6)
    
    ;\\
-   *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_border_less | #__flag_RowMultiSelect) ; |#__flag_gridlines
+   *w = Tree( 100, 30, 100, 260 - 20 + 300, #__flag_Borderless | #__flag_RowMultiSelect) ; |#__flag_gridlines
    SetBackgroundColor( *w, $FF07EAF6 )
    For i = 1 To 10;00000
       AddItem(*w, i, "text-" + Str(i))
@@ -26554,7 +26556,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetItemFont(*w, 5, 6)
    
    ;\\
-   *w = Tree( 180, 40, 100, 260 - 20 + 300, #__tree_checkboxes|#__flag_RowClickSelect )
+   *w = Tree( 180, 40, 100, 260 - 20 + 300, #__flag_checkboxes|#__flag_RowClickSelect )
    For i = 1 To 100;0000
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -26607,9 +26609,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 22025
-; FirstLine = 20656
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------d0x-8x----4-v-f---+--------f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------------------4-e4Vv---0-4------------------------------------------------------------------------------------------------------------------------------------2+-4-XH----
+; CursorPosition = 16803
+; FirstLine = 16204
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+48u70--v--+-----------------------------------------------------------------------------------------------------------------------------------v3--+-75----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

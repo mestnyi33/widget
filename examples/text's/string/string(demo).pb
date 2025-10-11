@@ -150,8 +150,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug GetGadgetText(6)+" - get gadget text"
     
     EString(305+8, 10, 290, Height, "Read-only StringGadget..." + null$ + null$, #PB_String_ReadOnly)
-    EString(305+8, (Height+5)*1+10, 290, Height, null$ + " 123-only-4567 "+null$, #PB_String_Numeric|#__flag_text_Center)
-    EString(305+8, (Height+5)*2+10, 290, Height, null$ + null$ + " ...Right-text StringGadget", #__flag_text_Right)
+    EString(305+8, (Height+5)*1+10, 290, Height, null$ + " 123-only-4567 "+null$, #PB_String_Numeric|#__flag_TextCenter)
+    EString(305+8, (Height+5)*2+10, 290, Height, null$ + null$ + " ...Right-text StringGadget", #__flag_TextRight)
     EString(305+8, (Height+5)*3+10, 290, Height, "LOWERCASE...", #PB_String_LowerCase)
     EString(305+8, (Height+5)*4+10, 290, Height, "uppercase...", #PB_String_UpperCase)
     EString(305+8, (Height+5)*5+10, 290, Height, "Borderless StringGadget", #PB_String_BorderLess)

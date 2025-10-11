@@ -58,14 +58,14 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
           Case Button_0 : flag = #__flag_button_Default
-          Case Button_1 : flag = #__flag_text_multiline
-          Case Button_2 : flag = #__flag_text_left
-          Case Button_3 : flag = #__flag_text_Right
+          Case Button_1 : flag = #__flag_Textmultiline
+          Case Button_2 : flag = #__flag_Textleft
+          Case Button_3 : flag = #__flag_TextRight
           Case Button_4 : flag = #PB_Button_Toggle
-          Case Button_5 : flag = #__flag_text_Top
-          Case Button_6 : flag = #__flag_text_Bottom
-          Case Button_7 : flag = #__flag_text_Invert
-          Case Button_8 : flag = #__flag_text_Vertical
+          Case Button_5 : flag = #__flag_TextTop
+          Case Button_6 : flag = #__flag_TextBottom
+          Case Button_7 : flag = #__flag_TextInvert
+          Case Button_8 : flag = #__flag_TextVertical
         EndSelect
         
         If flag
@@ -78,9 +78,9 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(#PB_Any, 0, 0, Width+180, Height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__flag_text_multiline);|);|#__flag_text_left) 
+    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__flag_Textmultiline);|);|#__flag_Textleft) 
     Container(10, 10, Width, Height) : a_init( widget( ))
-    *this = widget::Editor(10, 10, 250, 250);, #__flag_text_wordwrap) 
+    *this = widget::Editor(10, 10, 250, 250);, #__flag_Textwordwrap) 
     CloseList( )
     SetText(*this, get_text())
     
@@ -101,12 +101,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(#PB_All, @events_widgets())
     
     ; set button toggled state
-    SetState(Button_1, Flag(*this, #__flag_text_multiline))
-    SetState(Button_4, Flag(*this, #__flag_text_wordwrap))
-    SetState(Button_5, Flag(*this, #__flag_text_Top))
-    SetState(Button_2, Flag(*this, #__flag_text_left))
-    SetState(Button_3, Flag(*this, #__flag_text_Right))
-    SetState(Button_6, Flag(*this, #__flag_text_Bottom))
+    SetState(Button_1, Flag(*this, #__flag_Textmultiline))
+    SetState(Button_4, Flag(*this, #__flag_Textwordwrap))
+    SetState(Button_5, Flag(*this, #__flag_TextTop))
+    SetState(Button_2, Flag(*this, #__flag_Textleft))
+    SetState(Button_3, Flag(*this, #__flag_TextRight))
+    SetState(Button_6, Flag(*this, #__flag_TextBottom))
     If Button_type
        Hide(Button_type, 1)
     EndIf

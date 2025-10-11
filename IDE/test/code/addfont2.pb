@@ -21,14 +21,14 @@ Global FONT_CONSOLAS_16_BOLD_ITALIC  = LoadFont( #PB_Any, "Consolas", 16, #PB_Fo
 Procedure Open_WINDOW_1( )
    WINDOW_1 = Open( #PB_Any, 21, 21, 323, 253, "window_1", #PB_Window_SystemMenu | #PB_Window_SizeGadget  )
      ; WINDOW_2 = Window( 10, 10, 320, 253, "window_1", #PB_Window_SystemMenu ) 
-      BUTTON_8 = Button( 21, 14, 260, 64, "button_8", #__flag_text_Left  )
+      BUTTON_8 = Button( 21, 14, 260, 64, "button_8", #__flag_TextLeft  )
          SetColor( BUTTON_8, #PB_Gadget_BackColor, $0 )
          SetFont( BUTTON_8, FONT_ARIAL_19 )
       
-      BUTTON_9 = Button( 21, 91, 260, 29, "button_9", #__flag_text_Right  )
+      BUTTON_9 = Button( 21, 91, 260, 29, "button_9", #__flag_TextRight  )
          SetFont( BUTTON_9, FONT_CONSOLAS_16_BOLD_ITALIC  )
       
-      BUTTON_19 = Button( 21, 126, 260, 29, "button_19", #__flag_text_Right  )
+      BUTTON_19 = Button( 21, 126, 260, 29, "button_19", #__flag_TextRight  )
       BUTTON_10 = Button( 21, 175, 260, 64, "button_10" )
          SetFont( BUTTON_10, FONT_CONSOLAS_25_BOLD  )
 EndProcedure

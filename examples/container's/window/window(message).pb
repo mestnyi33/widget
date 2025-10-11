@@ -42,7 +42,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open( 0, 150, 150, 600, 300, "demo message", #PB_Window_SizeGadget | #PB_Window_SystemMenu )
-      Tree=Tree(10, 10, 150, 200, #__tree_nobuttons | #__tree_nolines) 
+      Tree=Tree(10, 10, 150, 200, #__flag_nobuttons | #__flag_nolines) 
       Define i
       For i = 0 To 10
          AddItem(Tree, -1, Str(i)+"_item")

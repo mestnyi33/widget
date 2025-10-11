@@ -58,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Button(10,400+50,80,80,"mdi-bottom")
       CloseList()
       
-      Define flag = #PB_Window_systemmenu | #PB_Window_maximizegadget | #PB_Window_minimizegadget | #PB_Window_sizegadget ;| #__flag_child ;|#__flag_border_less
+      Define flag = #PB_Window_systemmenu | #PB_Window_maximizegadget | #PB_Window_minimizegadget | #PB_Window_sizegadget ;| #__flag_child ;|#__flag_Borderless
       Define vfs                                                                                                      ;= #__window_CaptionHeight+#__window_FrameSize*2
       
       Define *g0._s_widget = Window(50, 50, 400, 400-vfs, "main",flag|#__flag_child, *mdi) : SetClass(widget(), "main") 

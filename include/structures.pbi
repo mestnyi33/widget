@@ -53,8 +53,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
 ;       EndStructure
       ;--     RESIZEINFO
       Structure _s_RESIZEINFO Extends _s_COORDINATE
-         flag.u
          change.b
+         minimize.b
+         maximize.b
       EndStructure
       ;--     MODE
       Structure _s_mode
@@ -795,9 +796,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 118
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 57
+; FirstLine = 44
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP

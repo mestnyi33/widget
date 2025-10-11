@@ -72,7 +72,7 @@ If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemM
    ;
    ;id("Container") = Container(0, 0, 0, 0, #__flag_AutoSize) 
    ;\\ 1
-   w_1 = Button(5, 5, 160,95, "Multiline Button_"+Hex(#__type_Button)+" (longer text gets automatically multiline)", #__flag_text_multiline, round ) 
+   w_1 = Button(5, 5, 160,95, "Multiline Button_"+Hex(#__type_Button)+" (longer text gets automatically multiline)", #__flag_Textmultiline, round ) 
    w_2 = String(5, 105, 160,95, "String_"+Hex(#__type_String)+" set"+#LF$+"multi"+#LF$+"line"+#LF$+"text")                                 
    w_3 = Text(5, 205, 160,95, "Text_"+Hex(#__type_Text)+#LF$+"set"+#LF$+"multi"+#LF$+"line"+#LF$+"text", #PB_Text_Border)        
    w_4 = CheckBox(5, 305, 160,95, "CheckBox_"+Hex(#__type_CheckBox), #PB_CheckBox_ThreeState) : SetState(widget(), #PB_Checkbox_Inbetween)

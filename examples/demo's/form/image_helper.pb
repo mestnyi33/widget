@@ -121,16 +121,16 @@ Procedure CFE_Helper_Image(Parent =- 1, *Image.Integer=0, *Puth.String=0, Window
    Sticky(Window_0, #True)
    
   ;Button_ScrollArea_0 = ScrollArea( 5, 5, 291, 191, 291-30, 191-30, #PB_ScrollArea_Flat)           
-  image_View = Image(i, i, 271, 225, (0),#__image_Center) 
+  image_View = Image(i, i, 271, 225, (0),#__flag_ImageCenter) 
   SetBackColor( image_View, $FFB3FDFF )
   ;CloseList( )
-  Button_Load = Button(i+271+ii, i, 121, 25, "Загрузить", #__image_left )       : SetImage(Button_Load, (0))
-  Button_Save = Button(i+271+ii, i+30, 121, 25, "Сохранить", #__image_left )    : SetImage(Button_Save, (1))
-  Button_Copy = Button(i+271+ii, i+70, 121, 25, "Копировать", #__image_left )   : SetImage(Button_Copy, (2))
-  Button_Cut = Button(i+271+ii, i+100, 121, 25, "Вырезать", #__image_left )     : SetImage(Button_Cut, (3))
-  Button_Paste = Button(i+271+ii, i+130, 121, 25, "Вставить", #__image_left )   : SetImage(Button_Paste, (4)) 
-  Button_Ok = Button(i+271+ii, i+170, 121, 25, "Применить", #__image_left)         ;: SetImage(Button_Ok, (0))
-  Button_Cancel = Button(i+271+ii, i+200, 121, 25, "Отмена", #__image_left) ;: SetImage(Button_Cancel, (0))                                                            
+  Button_Load = Button(i+271+ii, i, 121, 25, "Загрузить", #__flag_Imageleft )       : SetImage(Button_Load, (0))
+  Button_Save = Button(i+271+ii, i+30, 121, 25, "Сохранить", #__flag_Imageleft )    : SetImage(Button_Save, (1))
+  Button_Copy = Button(i+271+ii, i+70, 121, 25, "Копировать", #__flag_Imageleft )   : SetImage(Button_Copy, (2))
+  Button_Cut = Button(i+271+ii, i+100, 121, 25, "Вырезать", #__flag_Imageleft )     : SetImage(Button_Cut, (3))
+  Button_Paste = Button(i+271+ii, i+130, 121, 25, "Вставить", #__flag_Imageleft )   : SetImage(Button_Paste, (4)) 
+  Button_Ok = Button(i+271+ii, i+170, 121, 25, "Применить", #__flag_Imageleft)         ;: SetImage(Button_Ok, (0))
+  Button_Cancel = Button(i+271+ii, i+200, 121, 25, "Отмена", #__flag_Imageleft) ;: SetImage(Button_Cancel, (0))                                                            
   
    
    ;

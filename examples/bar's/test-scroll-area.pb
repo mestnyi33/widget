@@ -49,7 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
      
       test_resize = 1
      ; test_resize_area = 1
-      widget = Tree(0, 0, 0, 0, #__flag_border_less)
+      widget = Tree(0, 0, 0, 0, #__flag_Borderless)
       Define i
       AddItem(widget, -1, Str(i)+"test item ")
       For i=1 To 20

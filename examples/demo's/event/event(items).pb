@@ -53,8 +53,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, 200, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
-    w_flag = widget::Tree( 10, 10, 180, 200, #__tree_nobuttons | #__tree_nolines ) 
-    w_this = widget::Tree( 10, 220, 180, 70, #__tree_nobuttons | #__tree_nolines )
+    w_flag = widget::Tree( 10, 10, 180, 200, #__flag_nobuttons | #__flag_nolines ) 
+    w_this = widget::Tree( 10, 220, 180, 70, #__flag_nobuttons | #__flag_nolines )
     
     widget::Bind(w_this, @events_widgets(), #__event_LeftDown)
     widget::Bind(w_this, @events_widgets(), #__event_LeftUp)
@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::Bind(w_this, @events_widgets(), #__event_DragStart)
     widget::Bind(w_this, @events_widgets(), constants::#__event_Drop)
       
-    w_this1 = widget::Tree( 140, 235, 40, 40, #__tree_nobuttons | #__tree_nolines) 
+    w_this1 = widget::Tree( 140, 235, 40, 40, #__flag_nobuttons | #__flag_nolines) 
     EnableDrop( w_this1, #PB_Drop_Text, #PB_Drag_Copy )
   
     widget::Bind(w_this1, @events_widgets(), #__event_LeftDown)

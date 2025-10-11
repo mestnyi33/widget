@@ -58,14 +58,14 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
           Case Button_0 : flag = #__flag_button_Default
-          Case Button_1 : flag = #__flag_text_multiline
-          Case Button_2 : flag = #__flag_text_left
-          Case Button_3 : flag = #__button_right
+          Case Button_1 : flag = #__flag_Textmultiline
+          Case Button_2 : flag = #__flag_Textleft
+          Case Button_3 : flag = #__flag_Textright
           Case Button_4 : flag = #PB_Button_Toggle
-          Case Button_5 : flag = #__flag_text_top
-          Case Button_6 : flag = #__flag_text_bottom
-          Case Button_7 : flag = #__flag_text_invert
-          Case Button_8 : flag = #__flag_text_vertical
+          Case Button_5 : flag = #__flag_Texttop
+          Case Button_6 : flag = #__flag_Textbottom
+          Case Button_7 : flag = #__flag_Textinvert
+          Case Button_8 : flag = #__flag_Textvertical
         EndSelect
         
         If flag
@@ -78,8 +78,8 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(0, 0, 0, Width+180, Height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) 
     HideGadget(gadget,1)
-    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__flag_text_multiline);|);|#__flag_text_left) 
-    *this = widget::Editor(100, 100, 250, 250, #__flag_text_wordwrap) : SetText(*this, get_text())
+    ;*this = widget::Button(100, 100, 250, 250, get_text(), #__flag_Textmultiline);|);|#__flag_Textleft) 
+    *this = widget::Editor(100, 100, 250, 250, #__flag_Textwordwrap) : SetText(*this, get_text())
     
     Define Y = 10
     ; flag
@@ -98,12 +98,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(#PB_All, @events_widgets())
     
     ; set button toggled state
-    SetState(Button_1, Flag(*this, #__flag_text_multiline))
-    SetState(Button_4, Flag(*this, #__flag_text_wordwrap))
-    SetState(Button_5, Flag(*this, #__flag_text_top))
-    SetState(Button_2, Flag(*this, #__flag_text_left))
-    SetState(Button_3, Flag(*this, #__flag_text_right))
-    SetState(Button_6, Flag(*this, #__flag_text_bottom))
+    SetState(Button_1, Flag(*this, #__flag_Textmultiline))
+    SetState(Button_4, Flag(*this, #__flag_Textwordwrap))
+    SetState(Button_5, Flag(*this, #__flag_Texttop))
+    SetState(Button_2, Flag(*this, #__flag_Textleft))
+    SetState(Button_3, Flag(*this, #__flag_Textright))
+    SetState(Button_6, Flag(*this, #__flag_Textbottom))
     Hide(Button_type, 1)
     
         Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
@@ -118,9 +118,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 69
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 52
 ; Folding = --
 ; Optimizer
 ; EnableXP

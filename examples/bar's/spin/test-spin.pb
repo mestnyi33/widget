@@ -14,10 +14,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Define *spin1 = Spin(50, 20, 250, 50, 0, 30)
       SetState(*spin1, 0)
       
-      Define *spin2 = Spin(50, 80, 250, 50, min, 30, #__flag_text_Center);|#__flag_Invert)
+      Define *spin2 = Spin(50, 80, 250, 50, min, 30, #__flag_TextCenter);|#__flag_Invert)
       SetState(*spin2, 15)
       
-      Define *spin3 = Spin(50, 140, 250, 50, 0, 30, #__flag_text_Right)
+      Define *spin3 = Spin(50, 140, 250, 50, 0, 30, #__flag_TextRight)
       SetState(*spin3, 30)
       
       WaitClose( )
@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;          Define *spin1 = Spin(20, 50, 50, 250,  0, 30, #PB_SpinBar_Vertical|#__flag_Invert)
    ;          SetState(*spin1, 5)
    ;          
-   ;          Define *spin2 = Spin(80, 50, 50, 250,  5, 30, #PB_SpinBar_Vertical|#__flag_text_Center)
+   ;          Define *spin2 = Spin(80, 50, 50, 250,  5, 30, #PB_SpinBar_Vertical|#__flag_TextCenter)
    ;          SetState(*spin2, 10)
    ;          
    ;          Define *spin3 = Spin(140, 50, 50, 250,  0, 30, #PB_SpinBar_Vertical)
@@ -53,10 +53,10 @@ CompilerIf #PB_Compiler_IsMainFile
    ;          Define *spin1 = Spin(50, 20, 250, 50,  0, 30, #__flag_Invert)
    ;          SetState(*spin1, 5)
    ;          
-   ;          Define *spin2 = Spin(50, 80, 250, 50,  5, 30, #__flag_text_Center)
+   ;          Define *spin2 = Spin(50, 80, 250, 50,  5, 30, #__flag_TextCenter)
    ;          SetState(*spin2, 10)
    ;          
-   ;          Define *spin3 = Spin(50, 140, 250, 50,  0, 30, #__flag_text_Right)
+   ;          Define *spin3 = Spin(50, 140, 250, 50,  0, 30, #__flag_TextRight)
    ;          SetState(*spin3, 5)
    ;          
    ;          

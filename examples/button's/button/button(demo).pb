@@ -116,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
      SetColor( *Button_0, #PB_Gadget_FrontColor, $4919D5 ) 
      SetFont( *Button_0, ( 0 ) )
     
-    *Button_1 = Button( 270, 15,  60, 120, "Button (Vertical)", #PB_Button_MultiLine|#__flag_text_Vertical|#__flag_text_Invert )
+    *Button_1 = Button( 270, 15,  60, 120, "Button (Vertical)", #PB_Button_MultiLine|#__flag_TextVertical|#__flag_TextInvert )
      SetColor( *Button_1, #PB_Gadget_FrontColor, $FFD56F1A )
      SetFont( *Button_1, ( 0 ) )
     

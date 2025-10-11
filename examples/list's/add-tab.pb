@@ -176,7 +176,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             ;                ; properties
-            ;                If *this\flag & #__tree_property
+            ;                If *this\flag & #__flag_property
             ;                   If *parent_row And Not *parent_row\sublevel And Not GetFontID( *parent_row )
             ;                      *parent_row\color\back     = $FFF9F9F9
             ;                      *parent_row\color\back[1]  = *parent_row\color\back

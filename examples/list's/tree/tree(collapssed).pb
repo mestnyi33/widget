@@ -213,7 +213,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   
-; ;     *g = Tree(10, 100, 210, 210, #__tree_CheckBoxes)                                         
+; ;     *g = Tree(10, 100, 210, 210, #__flag_CheckBoxes)                                         
 ; ;     
 ; ;     
 ; ;     ; 1_example
@@ -238,7 +238,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ; ; ;     SetFont(*g, 3)
     
     ; 1_example
-    *g = Tree(10, 10, 210, 100, #__tree_CheckBoxes)                                         
+    *g = Tree(10, 10, 210, 100, #__flag_CheckBoxes)                                         
     add(*g, -1, "Node "+Str(a), 0, 0)                                         
     add(*g, -1, "Sub-Item 1", -1, 1)                                           
     add(*g, -1, "Sub-Item 3", -1, 3)
@@ -246,7 +246,7 @@ CompilerIf #PB_Compiler_IsMainFile
     add(*g, -1, "Sub-Item 4", -1, 4)
     
     ; 2_example
-    *g = Tree(10, 10+110, 210, 100, #__tree_CheckBoxes)                                         
+    *g = Tree(10, 10+110, 210, 100, #__flag_CheckBoxes)                                         
     add(*g, 0, "Node "+Str(a), 0, 0)                                         
     add(*g, 1, "Sub-Item 1", -1, 1)                                           
     add(*g, 3, "Sub-Item 3", -1, 3)
@@ -254,7 +254,7 @@ CompilerIf #PB_Compiler_IsMainFile
     add(*g, 4, "Sub-Item 4", -1, 4)
     
     ;{  5_example
-    *g5 = Tree(230, 10, 103, 210, #__Tree_NoButtons|#__flag_collapsed)                                         
+    *g5 = Tree(230, 10, 103, 210, #__flag_NoButtons|#__flag_collapsed)                                         
     add(*g5, 0, "Tree_0", -1 )
     add(*g5, 1, "Tree_1", -1, 0) 
     add(*g5, 2, "Tree_2", -1, 0) 
@@ -278,7 +278,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}
     
     ;{  6_example
-    *g6 = Tree(341, 10, 103, 210, #__flag_border_Less|#__flag_collapsed)                                         
+    *g6 = Tree(341, 10, 103, 210, #__flag_BorderLess|#__flag_collapsed)                                         
     
     add(*g6, 0, "Tree_1", -1, 1) 
     add(*g6, 0, "Tree_2_1", -1, 2) 
@@ -320,7 +320,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
  ;{  4_example
-    *g = Tree(670, 10, 210, 210, #__tree_NoLines);|#__flag_optionboxes|#__tree_NoButtons) ;                                        
+    *g = Tree(670, 10, 210, 210, #__flag_NoLines);|#__flag_optionboxes|#__flag_NoButtons) ;                                        
         add(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
         add(*g, 1, "Tree_1", -1, 1) 
         add(*g, 2, "Tree_2_2", -1, 2) 
@@ -347,7 +347,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;}                                                    ;
     
     ;{  3_example
-    *g = Tree(890, 10, 210, 210, #__tree_CheckBoxes|#__tree_NoLines|#__tree_NoButtons|#__flag_GridLines | #__tree_ThreeState | #__flag_optionboxes)                            
+    *g = Tree(890, 10, 210, 210, #__flag_CheckBoxes|#__flag_NoLines|#__flag_NoButtons|#__flag_GridLines | #__flag_ThreeState | #__flag_optionboxes)                            
     add(*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 ;Or i%3=0

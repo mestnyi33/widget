@@ -9,7 +9,7 @@ Global *w._S_widget
 If OpenWindow(0, 100, 50, 530, 540, "editor set&get item state", #PB_Window_SystemMenu)
   EditorGadget(10, 10, 10, 250, 520, #PB_ListView_MultiSelect)
   
-  Open(0, 270, 10, 250, 520);, "", #__flag_border_less)
+  Open(0, 270, 10, 250, 520);, "", #__flag_Borderless)
   *w=Editor(0, 0, 250, 520, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
   SetActive( *w )
   ;

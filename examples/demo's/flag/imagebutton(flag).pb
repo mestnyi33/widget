@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
                     button_center
                   
                   
-                  Flag_(*this, #__image_Left|#__image_Right|#__image_Top|#__image_Bottom, 0)
+                  Flag_(*this, #__flag_ImageLeft|#__flag_ImageRight|#__flag_ImageTop|#__flag_ImageBottom, 0)
                   ;
                   If EventWidget <> button_top And EventWidget <> button_left And EventWidget <> button_right
                      SetState(button_top,0) 
@@ -109,26 +109,26 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetState(button_bottom,0) 
                   EndIf
                   If EventWidget <> button_center 
-                     Flag_(*this, #__image_Center, 0)
+                     Flag_(*this, #__flag_ImageCenter, 0)
                      SetState(button_center,0) 
                   EndIf
                   
                   If GetState(button_left) And GetState(button_bottom)
-                     Flag_(*this, #__image_Left|#__image_Bottom, 1)
+                     Flag_(*this, #__flag_ImageLeft|#__flag_ImageBottom, 1)
                   ElseIf GetState(button_right) And GetState(button_bottom)
-                     Flag_(*this, #__image_Right|#__image_Bottom, 1)
+                     Flag_(*this, #__flag_ImageRight|#__flag_ImageBottom, 1)
                   ElseIf GetState(button_left) And GetState(button_top)
-                     Flag_(*this, #__image_Left|#__image_Top, 1)
+                     Flag_(*this, #__flag_ImageLeft|#__flag_ImageTop, 1)
                   ElseIf GetState(button_right) And GetState(button_top)
-                     Flag_(*this, #__image_Right|#__image_Top, 1)
+                     Flag_(*this, #__flag_ImageRight|#__flag_ImageTop, 1)
                   ElseIf GetState(button_left)
-                     Flag_(*this, #__image_Left, 1)
+                     Flag_(*this, #__flag_ImageLeft, 1)
                   ElseIf GetState(button_right) 
-                     Flag_(*this, #__image_Right, 1)
+                     Flag_(*this, #__flag_ImageRight, 1)
                   ElseIf GetState(button_bottom)
-                     Flag_(*this, #__image_Bottom, 1)
+                     Flag_(*this, #__flag_ImageBottom, 1)
                   ElseIf GetState(button_top)
-                     Flag_(*this, #__image_Top, 1)
+                     Flag_(*this, #__flag_ImageTop, 1)
                   EndIf
                   
                   If GetState(button_left)=0 And 
@@ -136,16 +136,16 @@ CompilerIf #PB_Compiler_IsMainFile
                      GetState(button_right)=0 And
                      GetState(button_bottom)=0
                      SetState(button_center,1) 
-                     Flag_(*this, #__image_Center, 1)
+                     Flag_(*this, #__flag_ImageCenter, 1)
                   EndIf
                   
                   ;
                   Select EventWidget
-                     Case button_top       : flag = #__image_Top     
-                     Case button_left      : flag = #__image_Left
-                     Case button_right     : flag = #__image_Right
-                     Case button_bottom    : flag = #__image_Bottom
-                     Case button_center    : flag = #__image_Center
+                     Case button_top       : flag = #__flag_ImageTop     
+                     Case button_left      : flag = #__flag_ImageLeft
+                     Case button_right     : flag = #__flag_ImageRight
+                     Case button_bottom    : flag = #__flag_ImageBottom
+                     Case button_center    : flag = #__flag_ImageCenter
                   EndSelect
                   ;
                Case button_toggle    : flag = #PB_Button_Toggle
@@ -211,7 +211,7 @@ CompilerIf #PB_Compiler_IsMainFile
       button_mirror    = widget::Button(Width + 45, Y + p * 11, 100, bh, "mirror", #PB_Button_Toggle)
       
       ;     ; flag
-      ;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__flag_optionboxes | #__tree_CheckBoxes | #__Tree_threestate)
+      ;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__flag_NoLines | #__flag_NoButtons | #__flag_optionboxes | #__flag_CheckBoxes | #__flag_threestate)
       ;     AddItem(tree, #tree_item_default, "default")
       ;     AddItem(tree, #tree_item_multiline, "multiline")
       ;     AddItem(tree, #tree_item_text, "text alignment", -1, 0)
@@ -229,7 +229,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;Debug _Flag_(*this, #__flag_ImageMultiline)
       ;\\ set button toggled state
       ;SetState(button_multiline, Flag_(*this, #__flag_ImageMultiline ))
-      SetState(button_center, Flag_(*this, #__image_Center))
+      SetState(button_center, Flag_(*this, #__flag_ImageCenter))
       Hide(Button_type, 1)
       
       ;\\
@@ -240,7 +240,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       ;     ;ReDraw(root())
-      ;     ;  Flag_(*this, #__image_Top|#__image_Left, 1)
+      ;     ;  Flag_(*this, #__flag_ImageTop|#__flag_ImageLeft, 1)
       ;     
       
       ;     ;\\

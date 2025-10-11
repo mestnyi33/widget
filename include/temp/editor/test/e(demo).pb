@@ -115,7 +115,7 @@ CompilerIf #PB_Compiler_IsMainFile
     EditorGadget(22, 0,0,0,0, #PB_Editor_WordWrap)
     
     *w_211 = Editor(0,0,0,0)
-    *w_212 = Editor(0,0,0,0, #__flag_text_wordwrap)
+    *w_212 = Editor(0,0,0,0, #__flag_Textwordwrap)
     
     SetGadgetText(21, get_text(#LF$))
     SetGadgetText(22, get_text(""))

@@ -174,7 +174,7 @@ Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
    SetBackgroundColor( EDITORIMAGES, $DCDCDC )
    SetClass( EDITORIMAGES, "EDITORIMAGES" )
    
-   IMAGE_VIEW = Image( 7, 35, 253, 162, (-1), #__image_Center|#__flag_border_Flat )
+   IMAGE_VIEW = Image( 7, 35, 253, 162, (-1), #__flag_ImageCenter|#__flag_BorderFlat )
    SetBackgroundColor( IMAGE_VIEW, $54EDDE )
    SetText( IMAGE_VIEW, "Загрузите изображения" )
    widget( )\text\x = - 145
@@ -186,36 +186,36 @@ Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
    TRACK_SIZE = Track( 40, 7, 220, 22, 0, 10, #PB_TrackBar_Ticks );| #__flag_invert);, 8.0 )
    Disable( TRACK_SIZE, #True )
    
-   OPTION_RAW = Option( 7, 203, 120, 22, "Raw", #__flag_transparent|#__flag_border_less )
+   OPTION_RAW = Option( 7, 203, 120, 22, "Raw", #__flag_transparent|#__flag_Borderless )
    Disable( OPTION_RAW, #True )
    SetState( OPTION_RAW, 1 )
    
-   OPTION_SMOOTH = Option( 140, 203, 120, 22, "Smooth", #__flag_transparent|#__flag_border_less )
+   OPTION_SMOOTH = Option( 140, 203, 120, 22, "Smooth", #__flag_transparent|#__flag_Borderless )
    Disable( OPTION_SMOOTH, #True )
       
-   BUTTON_OPEN = Button( 266, 7, 119, 22, "Загрузить", #__image_Left )
+   BUTTON_OPEN = Button( 266, 7, 119, 22, "Загрузить", #__flag_ImageLeft )
    SetImage( BUTTON_OPEN, OPEN_IMAGE )
    
-   BUTTON_SAVE = Button( 266, 35, 119, 22, "Сохранить", #__image_Left )
+   BUTTON_SAVE = Button( 266, 35, 119, 22, "Сохранить", #__flag_ImageLeft )
    Disable( BUTTON_SAVE, #True )
    SetImage( BUTTON_SAVE, SAVE_IMAGE )
    
-   BUTTON_COPY = Button( 266, 77, 119, 22, "Копировать", #__image_Left )
+   BUTTON_COPY = Button( 266, 77, 119, 22, "Копировать", #__flag_ImageLeft )
    Disable( BUTTON_COPY, #True )
    SetImage( BUTTON_COPY, COPY_IMAGE )
    
-   BUTTON_CUT = Button( 266, 105, 119, 22, "Вырезать", #__image_Left )
+   BUTTON_CUT = Button( 266, 105, 119, 22, "Вырезать", #__flag_ImageLeft )
    Disable( BUTTON_CUT, #True )
    SetImage( BUTTON_CUT, CUT_IMAGE )
    
-   BUTTON_PASTE = Button( 266, 133, 119, 22, "Вставить", #__image_Left )
+   BUTTON_PASTE = Button( 266, 133, 119, 22, "Вставить", #__flag_ImageLeft )
    Disable( BUTTON_PASTE, #True )
    SetImage( BUTTON_PASTE, PASTE_IMAGE )
    
-   BUTTON_OK = Button( 266, 175, 119, 22, "Ок", #__image_Left )
+   BUTTON_OK = Button( 266, 175, 119, 22, "Ок", #__flag_ImageLeft )
    Disable( BUTTON_OK, #True )
    
-   BUTTON_CANCEL = Button( 266, 203, 119, 22, "Отмена", #__image_Left )
+   BUTTON_CANCEL = Button( 266, 203, 119, 22, "Отмена", #__flag_ImageLeft )
    
    Bind( #PB_All, @Events_EDITORIMAGES( ))
    ReDraw(EDITORIMAGES)
@@ -259,7 +259,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define root = Open( 0, 20, 20, 600, 600, "Загрузка изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
    SetBackgroundColor( widget( ), $54DE94 )
-   Button( 600-300-10, 600-30-10, 300, 30, ~"Открыть окно \"Редактор изображения\"", #__image_Left )
+   Button( 600-300-10, 600-30-10, 300, 30, ~"Открыть окно \"Редактор изображения\"", #__flag_ImageLeft )
    Disable( widget( ), #True )
    
    Bind( widget( ), @button_left_click_event( ), #__event_LeftClick )

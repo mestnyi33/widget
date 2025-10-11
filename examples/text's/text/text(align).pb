@@ -11,17 +11,17 @@ CompilerIf #PB_Compiler_IsMainFile
    Define i, Width = 200
    
    If Open(0, 0, 0, Width+20, 760, "text alignment test", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      Text(10,  10, Width, 65, Text, #__flag_border_Flat);, #__flag_text_left)
-      Text(10,  10+65+10, Width, 65, Text, #__flag_border_Flat|#__flag_text_Top)
-      Text(10, 160, Width, 65, Text, #__flag_border_Flat|#__flag_text_Right)
-      Text(10, 160+65+10, Width, 65, Text, #__flag_border_Flat|#__flag_text_Bottom)
+      Text(10,  10, Width, 65, Text, #__flag_BorderFlat);, #__flag_Textleft)
+      Text(10,  10+65+10, Width, 65, Text, #__flag_BorderFlat|#__flag_TextTop)
+      Text(10, 160, Width, 65, Text, #__flag_BorderFlat|#__flag_TextRight)
+      Text(10, 160+65+10, Width, 65, Text, #__flag_BorderFlat|#__flag_TextBottom)
       
-      Text(10, 310, Width, 65, Text, #__flag_border_Flat|#__flag_text_Center|#__flag_text_left)
-      Text(10, 310+65+10, Width, 65, Text, #__flag_border_Flat|#__flag_text_Center|#__flag_text_Top)
-      Text(10, 460, Width, 65, Text, #__flag_border_Flat|#__flag_text_Center|#__flag_text_Right)
-      Text(10, 460+65+10, Width, 65, Text, #__flag_border_Flat|#__flag_text_Center|#__flag_text_Bottom)
+      Text(10, 310, Width, 65, Text, #__flag_BorderFlat|#__flag_TextCenter|#__flag_Textleft)
+      Text(10, 310+65+10, Width, 65, Text, #__flag_BorderFlat|#__flag_TextCenter|#__flag_TextTop)
+      Text(10, 460, Width, 65, Text, #__flag_BorderFlat|#__flag_TextCenter|#__flag_TextRight)
+      Text(10, 460+65+10, Width, 65, Text, #__flag_BorderFlat|#__flag_TextCenter|#__flag_TextBottom)
       
-      Text(10, 610, Width, 140, Text, #__flag_border_Flat|#__flag_text_Center)
+      Text(10, 610, Width, 140, Text, #__flag_BorderFlat|#__flag_TextCenter)
       
       For i=0 To 8
          SetAlign(ID(i), 0, 1,0,1,0)

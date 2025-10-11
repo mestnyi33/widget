@@ -407,7 +407,7 @@ EndProcedure
     g_Canvas = GetCanvasGadget(root())
     g = 10
     
-; ;     *g = Tree(10, 100, 210, 210, #__tree_CheckBoxes)                                         
+; ;     *g = Tree(10, 100, 210, 210, #__flag_CheckBoxes)                                         
 ; ;     
 ; ;     
 ; ;     ; 1_example
@@ -432,7 +432,7 @@ EndProcedure
 ; ; ; ;     SetFont(*g, 3)
     
     ; 1_example
-    *g = Tree(10, 100, 210, 100, #__tree_CheckBoxes)                                         
+    *g = Tree(10, 100, 210, 100, #__flag_CheckBoxes)                                         
     AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
     AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
     AddItem (*g, -1, "Sub-Item 3", -1, 3)
@@ -441,7 +441,7 @@ EndProcedure
     ;;AddItem (*g, item, "Add-Item "+Str(item), -1, sublevel)
     
     ; 2_example
-    *g = Tree(10, 100+110, 210, 100, #__tree_CheckBoxes)                                         
+    *g = Tree(10, 100+110, 210, 100, #__flag_CheckBoxes)                                         
     AddItem (*g, 0, "Node "+Str(a), 0, 0)                                         
     AddItem (*g, 1, "Sub-Item 1", -1, 1)                                           
     AddItem (*g, 3, "Sub-Item 3", -1, 3)
@@ -450,7 +450,7 @@ EndProcedure
     ;;AddItem (*g, item, "Add-Item "+Str(item), -1, sublevel)
   
     ;{  3_example
-    *g5 = Tree(230, 100, 103, 210, #__Tree_NoButtons)                                    
+    *g5 = Tree(230, 100, 103, 210, #__flag_NoButtons)                                    
     AddItem(*g5, 0, "Tree_0", -1 )
     AddItem(*g5, 1, "Tree_1", -1, 0) 
     AddItem(*g5, 2, "Tree_2", -1, 0) 
@@ -474,7 +474,7 @@ EndProcedure
     ;}
     
     ;{  6_example
-    *g6 = Tree(341, 100, 103, 210, #__flag_border_Less|#__flag_Collapsed)                                         
+    *g6 = Tree(341, 100, 103, 210, #__flag_BorderLess|#__flag_Collapsed)                                         
     
     AddItem(*g6, 0, "Tree_1", -1, 1) 
     AddItem(*g6, 0, "Tree_2_1", -1, 2) 
@@ -518,7 +518,7 @@ EndProcedure
     
     
  ;{  4_example
-    *g = Tree(670, 100, 210, 210, #__tree_nolines|#__flag_optionboxes);|#__tree_NoButtons) ;                                        
+    *g = Tree(670, 100, 210, 210, #__flag_nolines|#__flag_optionboxes);|#__flag_NoButtons) ;                                        
 ;         AddItem(*g, 0, "Tree_0 (NoLines|AlwaysShowSelection)", -1 )
 ;         AddItem(*g, 1, "Tree_1", -1, 1) 
 ;         AddItem(*g, 2, "Tree_2_2", -1, 2) 
@@ -545,7 +545,7 @@ EndProcedure
     ;}                                                    ;
     
     ;{  3_example
-    *g = Tree(890, 100, 210, 210, #__tree_CheckBoxes|#__tree_nolines|#__tree_NoButtons | #__tree_ThreeState | #__flag_optionboxes)   ;  |#__flag_GridLines                       
+    *g = Tree(890, 100, 210, 210, #__flag_CheckBoxes|#__flag_nolines|#__flag_NoButtons | #__flag_ThreeState | #__flag_optionboxes)   ;  |#__flag_GridLines                       
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 Or i=6 Or i=7

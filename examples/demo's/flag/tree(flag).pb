@@ -45,13 +45,13 @@ CompilerIf #PB_Compiler_IsMainFile
         Select EventWidget
           Case Button_type 
             
-          Case nolines : flag = #__tree_nolines
-          Case nobuttons : flag = #__tree_nobuttons
-          Case checkboxes : flag = #__tree_checkboxes
+          Case nolines : flag = #__flag_nolines
+          Case nobuttons : flag = #__flag_nobuttons
+          Case checkboxes : flag = #__flag_checkboxes
           Case optionboxes : flag = #__flag_optionboxes
-          Case threestate : flag = #__tree_threestate
+          Case threestate : flag = #__flag_threestate
           ;Case Button_5 : flag = #__flag_collapsedd
-          ;Case Button_6 : flag = #__tree_expanded
+          ;Case Button_6 : flag = #__flag_expanded
           Case gridlines : flag = #__flag_gridlines
         EndSelect
         
@@ -123,13 +123,13 @@ CompilerIf #PB_Compiler_IsMainFile
     gridlines = widget::Button(Width+45, Y+30*8, 100, 26, "gridlines", #PB_Button_Toggle) 
     
     ;\\ set button toggled state
-    widget::SetState(nolines, Flag(*this, #__tree_nolines))
-    widget::SetState(nobuttons, Flag(*this, #__tree_nobuttons))
-    widget::SetState(checkboxes, Flag(*this, #__tree_checkboxes))
+    widget::SetState(nolines, Flag(*this, #__flag_nolines))
+    widget::SetState(nobuttons, Flag(*this, #__flag_nobuttons))
+    widget::SetState(checkboxes, Flag(*this, #__flag_checkboxes))
     widget::SetState(optionboxes, Flag(*this, #__flag_optionboxes))
-    widget::SetState(threestate, Flag(*this, #__tree_threestate))
+    widget::SetState(threestate, Flag(*this, #__flag_threestate))
     ;widget::SetState(Button_5, Flag(*this, #__flag_collapsedd))
-    ;widget::SetState(Button_6, Flag(*this, #__tree_expanded))
+    ;widget::SetState(Button_6, Flag(*this, #__flag_expanded))
     widget::SetState(gridlines, Flag(*this, #__flag_GridLines))
     
     If Button_type

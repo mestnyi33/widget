@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   If Open(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Define *prop = widget::Properties(10, 10, 250, 200);, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
+    Define *prop = widget::Properties(10, 10, 250, 200);, #__flag_gridlines);|#__flag_nolines);, #__flag_autosize) 
     Define Value = *prop
     widget::AddItem(*prop, #_pi_group_0, "common")
     widget::AddItem(*prop, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)
@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
     widget::AddItem(*prop, #_pi_disable, "disable:"+Chr(10)+"", #__type_ComboBox, 1);Str(Disable(Value)))
     widget::AddItem(*prop, #_pi_hide, "hide:"+Chr(10)+Str(Hide(Value)), #__type_ComboBox, 1)
     
-    Define *prop1 = widget::Properties(10, 10, 250, 200, #__flag_gridlines);|#__tree_nolines);, #__flag_autosize) 
+    Define *prop1 = widget::Properties(10, 10, 250, 200, #__flag_gridlines);|#__flag_nolines);, #__flag_autosize) 
     Define Value = *prop1
     widget::AddItem(*prop1, #_pi_group_0, "common")
     widget::AddItem(*prop1, #_pi_id, "id:"+Chr(10)+Str(Value), #__type_String, 1)

@@ -1,4 +1,5 @@
-﻿IncludePath "../../../"
+﻿
+IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -122,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 12
-; Folding = --
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 2
+; Folding = +-
 ; EnableXP

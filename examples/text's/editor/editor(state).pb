@@ -183,7 +183,7 @@ CompilerEndIf
 ; ;   
 ; ;   EditorGadget(10, 10, 170, 250, 520, #PB_ListView_MultiSelect)
 ; ;   
-; ;   Open(0, 270, 170, 250, 520);, "", #__flag_border_less)
+; ;   Open(0, 270, 170, 250, 520);, "", #__flag_Borderless)
 ; ;   *w=Editor(0, 0, 250, 520, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
 ; ;   ;
 ; ;   ;-

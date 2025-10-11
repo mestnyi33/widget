@@ -84,8 +84,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitEvent( @CallBack( ) )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 19
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 48
+; FirstLine = 27
 ; Folding = --
 ; EnableXP
 ; DPIAware

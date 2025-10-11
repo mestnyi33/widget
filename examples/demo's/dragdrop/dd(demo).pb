@@ -411,7 +411,7 @@ Procedure ListIconWidget( X,Y,Width,Height, title.s, titleWidth )
   ; ProcedureReturn ListIcon(x,y,width,height, title.s, titleWidth)
   
    ;\\
-   Text(X,Y,Width,20,title, #__flag_text_inline) : SetColor( widget( ), #PB_Gadget_BackColor, $FFC2C2C2)
+   Text(X,Y,Width,20,title, #__flag_Textinline) : SetColor( widget( ), #PB_Gadget_BackColor, $FFC2C2C2)
    
    ProcedureReturn Tree(X,Y+20,Width,Height-20)
 EndProcedure

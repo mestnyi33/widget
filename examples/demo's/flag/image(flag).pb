@@ -67,17 +67,17 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
           Case f_0 : flag = #__flag_button_Default
-          Case f_1 : flag = #__flag_text_multiline
+          Case f_1 : flag = #__flag_Textmultiline
           Case f_4 : flag = #PB_Button_Toggle
             
-          Case f_5 : flag = #__flag_text_Top
+          Case f_5 : flag = #__flag_TextTop
             ;SetState(f_6, 0)
-          Case f_2 : flag = #__flag_text_left
-          Case f_3 : flag = #__flag_text_Right
-          Case f_6 : flag = #__flag_text_Bottom
+          Case f_2 : flag = #__flag_Textleft
+          Case f_3 : flag = #__flag_TextRight
+          Case f_6 : flag = #__flag_TextBottom
             
-          Case f_7 : flag = #__flag_text_Invert
-          Case f_8 : flag = #__flag_text_Vertical
+          Case f_7 : flag = #__flag_TextInvert
+          Case f_8 : flag = #__flag_TextVertical
         EndSelect
         
         If flag
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
     *this = widget::Image(100, 100, 250, 250, get_image())
     
     ; flag
-    f = widget::Tree(Width+20, 10, 150, Y+10, #__Tree_NoLines|#__Tree_NoButtons|#__flag_OptionBoxes|#__tree_CheckBoxes|#__Tree_threestate)
+    f = widget::Tree(Width+20, 10, 150, Y+10, #__flag_NoLines|#__flag_NoButtons|#__flag_OptionBoxes|#__flag_CheckBoxes|#__flag_threestate)
     ; AddItem(f, -1, "align", -1,0)
     AddItem(f, -1, "top", -1,1)
     AddItem(f, -1, "left", -1,1)
@@ -122,11 +122,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(#PB_All, @events_widgets())
     
     ; set button toggled state
-    SetState(f_1, Flag(*this, #__flag_text_multiline))
-    SetState(f_5, Flag(*this, #__flag_text_Top))
-    SetState(f_2, Flag(*this, #__flag_text_left))
-    SetState(f_3, Flag(*this, #__flag_text_Right))
-    SetState(f_6, Flag(*this, #__flag_text_Bottom))
+    SetState(f_1, Flag(*this, #__flag_Textmultiline))
+    SetState(f_5, Flag(*this, #__flag_TextTop))
+    SetState(f_2, Flag(*this, #__flag_Textleft))
+    SetState(f_3, Flag(*this, #__flag_TextRight))
+    SetState(f_6, Flag(*this, #__flag_TextBottom))
     
     If Button_type
        Hide(Button_type, 1)

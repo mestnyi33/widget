@@ -42,7 +42,7 @@ If Open( 0, 0, 0, 160+160, 110, "CheckBoxGadget", #PB_Window_SystemMenu | #PB_Wi
   Next
   
   CheckBox( 10+160, 10, 140, 20, "CheckBox 1" )
-  CheckBox( 10+160, 35, 140, 40, Text, #PB_CheckBox_ThreeState );| #__flag_text_Center )
+  CheckBox( 10+160, 35, 140, 40, Text, #PB_CheckBox_ThreeState );| #__flag_TextCenter )
   CheckBox( 10+160, 80, 140, 20, "CheckBox (right)", #PB_CheckBox_Right )
   SetState( ID( 0 ), #PB_Checkbox_Checked )  
   SetState( ID( 1 ), #PB_Checkbox_Inbetween )  

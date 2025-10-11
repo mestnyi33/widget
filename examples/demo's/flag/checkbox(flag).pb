@@ -100,7 +100,7 @@ CompilerIf #PB_Compiler_IsMainFile
                button_bottom,
                button_center
             
-            Flag(*this, #__flag_text_left|#PB_CheckBox_Right|#__flag_text_Top|#__flag_text_Bottom, 0)
+            Flag(*this, #PB_CheckBox_Right|#__flag_Textleft|#__flag_TextTop|#__flag_TextBottom, 0)
             ;
             If EventWidget <> button_top And EventWidget <> button_left And EventWidget <> button_right
               SetState(button_top,0) 
@@ -120,21 +120,21 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             If GetState(button_left) And GetState(button_bottom)
-              Flag(*this, #__flag_text_left|#__flag_text_Bottom, 1)
+              Flag(*this, #__flag_Textleft|#__flag_TextBottom, 1)
             ElseIf GetState(button_right) And GetState(button_bottom)
-              Flag(*this, #PB_CheckBox_Right|#__flag_text_Bottom, 1)
+              Flag(*this, #PB_CheckBox_Right|#__flag_TextBottom, 1)
             ElseIf GetState(button_left) And GetState(button_top)
-              Flag(*this, #__flag_text_left|#__flag_text_Top, 1)
+              Flag(*this, #__flag_Textleft|#__flag_TextTop, 1)
             ElseIf GetState(button_right) And GetState(button_top)
-              Flag(*this, #PB_CheckBox_Right|#__flag_text_Top, 1)
+              Flag(*this, #PB_CheckBox_Right|#__flag_TextTop, 1)
             ElseIf GetState(button_left)
-              Flag(*this, #__flag_text_left, 1)
+              Flag(*this, #__flag_Textleft, 1)
             ElseIf GetState(button_right) 
               Flag(*this, #PB_CheckBox_Right, 1)
             ElseIf GetState(button_bottom)
-              Flag(*this, #__flag_text_Bottom, 1)
+              Flag(*this, #__flag_TextBottom, 1)
             ElseIf GetState(button_top)
-              Flag(*this, #__flag_text_Top, 1)
+              Flag(*this, #__flag_TextTop, 1)
             EndIf
             
             If GetState(button_left)=0 And 
@@ -146,16 +146,16 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             Select EventWidget
-              Case button_top       : flag = #__flag_text_Top     
-              Case button_left      : flag = #__flag_text_left
+              Case button_top       : flag = #__flag_TextTop     
+              Case button_left      : flag = #__flag_Textleft
               Case button_right     : flag = #PB_CheckBox_Right
-              Case button_bottom    : flag = #__flag_text_Bottom
+              Case button_bottom    : flag = #__flag_TextBottom
               Case button_center    : flag = #PB_CheckBox_Center
             EndSelect
             ;
           Case button_toggle    : flag = #PB_CheckBox_ThreeState
-          Case button_invert    : flag = #__flag_text_Invert
-          Case button_vertical  : flag = #__flag_text_Vertical
+          Case button_invert    : flag = #__flag_TextInvert
+          Case button_vertical  : flag = #__flag_TextVertical
         EndSelect
         
         If flag
@@ -191,7 +191,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, Width + 180, Height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     gadget = CheckBoxGadget(#PB_Any, 100, 100, 250, 200, Text) : HideGadget(gadget, 1)
-    *this  = widget::CheckBox(100, 100, 250, 200, Text, #__flag_text_multiline);|)
+    *this  = widget::CheckBox(100, 100, 250, 200, Text, #__flag_Textmultiline);|)
     
     Define Y  = 10
     Define bh = 24
@@ -210,7 +210,7 @@ CompilerIf #PB_Compiler_IsMainFile
     button_invert    = widget::Button(Width + 45, Y + p * 10, 100, bh, "invert", #PB_Button_Toggle)
     
 ;     ; flag
-;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__Tree_NoLines | #__Tree_NoButtons | #__flag_optionboxes | #__tree_CheckBoxes | #__Tree_threestate)
+;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__flag_NoLines | #__flag_NoButtons | #__flag_optionboxes | #__flag_CheckBoxes | #__flag_threestate)
 ;     AddItem(tree, #tree_item_default, "default")
 ;     AddItem(tree, #tree_item_multiline, "multiline")
 ;     AddItem(tree, #tree_item_text, "text alignment", -1, 0)
@@ -226,8 +226,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(#PB_All, @events_widgets())
     
     ;\\ set button toggled state
-    SetState(button_multiline, Flag(*this, #__flag_text_multiline))
-    SetState(button_left, Flag(*this, #__flag_text_left))
+    SetState(button_multiline, Flag(*this, #__flag_Textmultiline))
+    SetState(button_left, Flag(*this, #__flag_Textleft))
     If Button_type
        Hide(Button_type, 1)
     EndIf
@@ -247,9 +247,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 228
-; FirstLine = 137
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 102
+; FirstLine = 98
 ; Folding = ----
 ; EnableXP
 ; DPIAware
