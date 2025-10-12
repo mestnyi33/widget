@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             If EventWindow( ) = 2 
 ;                If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-                  ProcedureReturn #PB_All
+                    ProcedureReturn #PB_All
 ;                Else
 ;                   ProcedureReturn #False
 ;                EndIf
@@ -30,6 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "    do free - [" + EventWidget( )\class +"]"
             
             ;             ;\\ to send not free
+           ; ProcedureReturn #True
            ; ProcedureReturn #False
             
       EndSelect
@@ -99,7 +100,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 62
+; CursorPosition = 21
+; FirstLine = 3
 ; Folding = -
 ; EnableXP

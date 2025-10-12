@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ;\\ demo main window
             If GetTitle( EventWidget( ) ) = "window_2"
 ;                If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-;                    ProcedureReturn #PB_All
+                    ProcedureReturn #PB_All
 ;                Else
 ;                   ProcedureReturn #False
 ;                EndIf

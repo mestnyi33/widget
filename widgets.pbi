@@ -16972,18 +16972,26 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;\\
                If event = #__event_Close
-                  Debug "[" + ClassFromEvent(__event) +"] Post-Close-Event" 
+                  ; Debug "[" + ClassFromEvent(__event) +"] Post-Close-Event" 
                   If result
-                     
-                     If result = #PB_All
-                        If Not PostQuit( )
-                           Free( *this\root )
-                           CloseWindow( EventWindow( ))
-                        EndIf
+                     If is_root_( *this )
+                        Select result
+                           Case #True   
+                              CloseRootWindow( *this\root\canvas\window )
+                           Case #PB_All 
+                              CloseRootWindow( #PB_All )
+                        EndSelect
                      Else
-                        Free( *this )
+                        Select result 
+                           Case #PB_All
+                              If Not PostQuit( )
+                                 Free( *this\root )
+                                 ; CloseWindow( EventWindow( ))
+                              EndIf
+                           Default
+                              Free( *this )
+                        EndSelect
                      EndIf
-                     
                   EndIf
                EndIf
                
@@ -19647,8 +19655,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             If rootwindow = #PB_All
                canvasgadget = roots( )\canvas\gadget
                ;
-               ClearWidgets( roots( ) )
-               DeleteMapElement( roots( ) )
+               Free( roots( ))
+               ClearWidgets( roots( ))
+               DeleteMapElement( roots( ))
                ;
                If window <> canvaswindow
                   FreeGadget( canvasgadget )
@@ -19656,6 +19665,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             Else
                If window = rootwindow 
+                  Free( roots( ))
                   ClearWidgets( roots( ) )
                   DeleteMapElement( roots( ) )
                EndIf
@@ -19677,16 +19687,16 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If IsGadget(Canvas)
             If ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
-               ; Post( root( ), #__event_Close )
+               Post( root( ), #__event_Close )
                   
-               Select Post( root( ), #__event_Close )
-                  Case #True
-                      CloseRootWindow( window )
-                      
-                  Case #PB_All
-                     CloseRootWindow( #PB_All )
-                  
-               EndSelect
+;                Select Post( root( ), #__event_Close )
+;                   Case #True
+;                      CloseRootWindow( window )
+;                       
+;                   Case #PB_All
+;                      CloseRootWindow( #PB_All )
+;                   
+;                EndSelect
             EndIf
          Else
             Debug "not canvas then close"
@@ -26662,9 +26672,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 19681
-; FirstLine = 19055
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8v-------------------------------------------------------------------------------------f2-8fv8q4---+-8----------------+-------------------------------------------------------------------------------------------------------------------7----rj----
+; CursorPosition = 16987
+; FirstLine = 16354
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8v--------------------------------------------------------------------------------------q-4-e4Vv---0-4------------------------------------------------------------------------------------------------------------------------------------2----XH----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

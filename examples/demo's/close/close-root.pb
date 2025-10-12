@@ -50,11 +50,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    Procedure buttonEvent( )
-      If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+     ; If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
          
          Free( #PB_All )
                      
-      EndIf
+     ; EndIf
    EndProcedure
    ButtonGadget(1, 10,70,200,50, "window_all_close")
    BindGadgetEvent(1, @buttonEvent( ))
@@ -69,41 +69,41 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_leftclick
             Select GetText( EventWidget( ))
                Case "button_window_0_close"
-                  If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+;                   If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                      
                      Free( GetWindow(EventWidget( )) )
                      
-                  EndIf
+;                   EndIf
                   
                Case "button_window_1_close"
                   Post( GetWindow( EventWidget( ) ), #__event_Close )
                
                Case "button_window_all_close"
-                  If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
+;                   If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info | #__message_ScreenCentered )
                      
                      Free( #PB_All )
                      
-                  EndIf
+;                   EndIf
                   
             EndSelect
             
          Case #__event_close
-            Debug "  [e-close] " + EventWidget( )\class +" --- "+ GetWindowTitle( EventWindow( ) )
+            Debug "  do close [" + EventWidget( )\class +"] --- "+ GetWindowTitle( EventWindow( ) )
             
             ;\\ demo main window
             If EventWindow( ) = 2
-               If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+;                If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                   ProcedureReturn #PB_All ; all close
-               Else
-                  ProcedureReturn #False ; no close
-               EndIf
+;                Else
+;                   ProcedureReturn #False ; no close
+;                EndIf
                
             ElseIf EventWindow( ) = 0
-               If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-                  ProcedureReturn #True ; current close 
-               Else
-                  ProcedureReturn #False ; no close
-               EndIf
+;                If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetWindowTitle( EventWindow( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+;                   ProcedureReturn #True ; current close 
+;                Else
+;                   ProcedureReturn #False ; no close
+;                EndIf
                
             ElseIf EventWindow( ) = 1
                ; CloseWindow( 1 )
@@ -111,10 +111,10 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
            
          Case #__event_free
-            Debug "  [e-free] " + EventWidget( )\class 
+            Debug "    do free [" + EventWidget( )\class +"]"
             
             ;\\ to send not free
-            ; ProcedureReturn #False
+            ProcedureReturn #False
             
       EndSelect
       
@@ -122,8 +122,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 90
-; FirstLine = 80
-; Folding = ---
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 116
+; FirstLine = 84
+; Folding = --
 ; EnableXP
