@@ -1782,6 +1782,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
       Declare   Free( *this, mode = 0 )
       Declare   ClearWidgets( *this, mode = 0 )
+      Declare   CloseRootWindow( rootwindow )
       ;
       Declare   DoEvents( *this, event.l, *button = #PB_All, *data = #Null )
       Declare   EventHandler( Canvas.i = - 1, event.i = - 1, eventdata = 0 )
@@ -16973,6 +16974,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If event = #__event_Close
                   Debug "[" + ClassFromEvent(__event) +"] Post-Close-Event" 
                   If result
+                     
                      If result = #PB_All
                         If Not PostQuit( )
                            Free( *this\root )
@@ -16981,6 +16983,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      Else
                         Free( *this )
                      EndIf
+                     
                   EndIf
                EndIf
                
@@ -17179,61 +17182,39 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure  WaitClose( *window._s_WIDGET = #Null )
          
-         If MapSize( roots( ) )
-            Repeat
-               Select WaitWindowEvent( )
-                  Case #PB_Event_CloseWindow
-                     Protected window = PB(EventWindow)( )
-                     Protected Canvas = - 1 ;PB(GetWindowData)( window )
-                     Canvas = PB(GetWindowData)( window )
-                     
-                     If IsGadget(Canvas)
-                        If ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
-                           Debug "Wait close.... " + root( )\address + " " + root( )\canvas\window + " " + window + " - " + EventGadget( ) + " " + EventData( )
-                           
-                           Post( root( ), #__event_Close )
-                           
-                        Else
-                           FreeGadget( Canvas )
-                           CloseWindow( window )
-                        EndIf
-                     Else
-                        CloseWindow( window )
-                     EndIf
-                     
-                     ;\\
-                     If MapSize( roots( ) )
-                        __gui\event\quit = 0
-                     Else
-                        __gui\event\quit = 1
-                     EndIf
-                     
-               EndSelect
-               
-               If __gui\event\quit
-                  __gui\event\quit = 0
-                  Define info.s = "---------break-QUIT-------- " + IsWindow(root( )\canvas\window)
-                  Break
-               EndIf
-               If Not MapSize( roots( ) )
-                  Define info.s = "---------break-MAP---------"
-                  Break
-               EndIf
-            ForEver
+;          If MapSize( roots( ) )
+        ; Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
+         
+         Repeat  : WaitWindowEvent( 1 ) : Until Not MapSize( roots( ))
+;                WaitWindowEvent( )
+;                If __gui\event\quit
+;                   __gui\event\quit = 0
+;                   Define info.s = "---------break-QUIT-------- " + IsWindow(root( )\canvas\window)
+;                   Break
+;                EndIf
+;                If Not MapSize( roots( ) )
+;                   Define info.s = "---------break-MAP---------"
+;                   Break
+;                EndIf
+;                If Not IsWindow( EventWindow( ) )
+;                   Define info.s = "---------break-CLOSE-------- " + IsWindow(root( )\canvas\window)
+;                   Break
+;                EndIf
+;             ForEver
             
-            Debug ""
-            ;\\
-            If Not __gui\event\quit
-               If IsWindow( PB(EventWindow)( ))
-                  Debug "  END "+info.s
-                  PB(CloseWindow)( PB(EventWindow)( ))
-               Else
-                  Debug "  END "+info.s
-               EndIf
-            Else
-               Debug info.s
-            EndIf
-         EndIf
+;             Debug ""
+;             ;\\
+;             If Not __gui\event\quit
+;                If IsWindow( PB(EventWindow)( ))
+;                   Debug "  END "+PB(EventWindow)( ) ; info.s
+;                   PB(CloseWindow)( PB(EventWindow)( ))
+;                Else
+;                   Debug "  END ?";+info.s
+;                EndIf
+;             Else
+; ;                Debug info.s
+;             EndIf
+;          EndIf
          
       EndProcedure
       
@@ -19655,12 +19636,78 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure   CloseRootWindow( rootwindow )
+         Protected window
+         Protected canvaswindow = root( )\canvas\window
+         Protected canvasgadget = root( )\canvas\gadget
+         ;
+         ForEach roots( ) 
+            window = roots( )\canvas\window
+            ;
+            If rootwindow = #PB_All
+               canvasgadget = roots( )\canvas\gadget
+               ;
+               ClearWidgets( roots( ) )
+               DeleteMapElement( roots( ) )
+               ;
+               If window <> canvaswindow
+                  FreeGadget( canvasgadget )
+                  CloseWindow( window )
+               EndIf
+            Else
+               If window = rootwindow 
+                  ClearWidgets( roots( ) )
+                  DeleteMapElement( roots( ) )
+               EndIf
+            EndIf
+         Next
+         ;
+         If MapSize( roots( ) ) 
+            FreeGadget( canvasgadget )
+            ProcedureReturn CloseWindow( canvaswindow )
+         Else
+            ProcedureReturn #PB_All
+         EndIf
+      EndProcedure
+      
+      Procedure EventClose( )
+         Protected window = PB(EventWindow)( )
+         Protected Canvas = PB(GetWindowData)( window )
+         Debug "Close... " + window
+         
+         If IsGadget(Canvas)
+            If ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
+               ; Post( root( ), #__event_Close )
+                  
+               Select Post( root( ), #__event_Close )
+                  Case #True
+                      CloseRootWindow( window )
+                      
+                  Case #PB_All
+                     CloseRootWindow( #PB_All )
+                  
+               EndSelect
+            EndIf
+         Else
+            Debug "not canvas then close"
+         EndIf
+         
+         ;\\
+         If MapSize( roots( ))
+            __gui\event\quit = 0
+         Else
+            __gui\event\quit = 1
+            
+            Debug "Exit..."
+         EndIf
+      EndProcedure
+      
       Procedure EventRestore( )
          Protected window = PB(EventWindow)( )
          Protected Canvas = PB(GetWindowData)( window )
          Debug "Restore... " + window
          If IsGadget( Canvas )
-            ChangeCurrentCanvas( GadgetID( Canvas ))
+            ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
             SetState( root( ), #PB_Window_Normal )
          EndIf
       EndProcedure
@@ -19670,7 +19717,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected Canvas = PB(GetWindowData)( window )
          Debug "Maximize... " + window
          If IsGadget( Canvas )
-            ChangeCurrentCanvas( GadgetID( Canvas ))
+            ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
             SetState( root( ), #PB_Window_Maximize )
          EndIf
       EndProcedure
@@ -19680,7 +19727,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected Canvas = PB(GetWindowData)( window )
          Debug "Minimize... " + window
          If IsGadget( Canvas )
-            ChangeCurrentCanvas( GadgetID( Canvas ))
+            ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
             SetState( root( ), #PB_Window_Minimize )
          EndIf
       EndProcedure
@@ -19702,20 +19749,22 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;PushMapPosition(roots( ))
-            If EventData( ) <> roots( )\canvas\gadgetID
-               ChangeCurrentCanvas( EventData( ), 0 )
-               ; root( ) = roots( )
-            EndIf
-            
-            If roots( )\canvas\repaint = 1
-               roots( )\canvas\repaint = 0
-               
-               If test_draw_repaint
-                  Debug "   REPAINT " + roots( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
+            If MapSize( roots( ))
+               If EventData( ) <> roots( )\canvas\gadgetID
+                  ChangeCurrentCanvas( EventData( ), 0 )
+                  ; root( ) = roots( )
                EndIf
                
-               ;
-               ReDraw( roots( ) )
+               If roots( )\canvas\repaint = 1
+                  roots( )\canvas\repaint = 0
+                  
+                  If test_draw_repaint
+                     Debug "   REPAINT " + roots( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
+                  EndIf
+                  
+                  ;
+                  ReDraw( roots( ) )
+               EndIf
             EndIf
             ; PopMapPosition(roots())
          EndIf
@@ -20847,7 +20896,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      Break
                   EndIf
                   If ListSize( widgets( ) ) = 0
-                     Debug "bug remove haschildren "+*this\root\haschildren
+                     Debug "bug ClearWidgets haschildren "+*this\root\haschildren
                      Break
                   EndIf
                ElseIf PreviousElement( widgets( )) = 0
@@ -22209,6 +22258,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; BindGadgetEvent( Canvas, @CanvasEvents( ))
             ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
             ;
+            BindEvent( #PB_Event_CloseWindow, @EventClose( ), Window )
             BindEvent( #PB_Event_RestoreWindow, @EventRestore( ), Window )
             BindEvent( #PB_Event_MaximizeWindow, @EventMaximize( ), Window )
             BindEvent( #PB_Event_MinimizeWindow, @EventMinimize( ), Window )
@@ -25797,6 +25847,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected *this._s_widget = EventWidget( )
       
       Select WidgetEvent( )
+         Case #__event_Close
+            ProcedureReturn #True
+            
          Case #__event_LeftClick
             Select *this
                Case frame_color
@@ -26609,9 +26662,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 16803
-; FirstLine = 16204
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+48u70--v--+-----------------------------------------------------------------------------------------------------------------------------------v3--+-75----
+; CursorPosition = 19681
+; FirstLine = 19055
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8v-------------------------------------------------------------------------------------f2-8fv8q4---+-8----------------+-------------------------------------------------------------------------------------------------------------------7----rj----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

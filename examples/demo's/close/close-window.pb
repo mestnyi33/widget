@@ -46,18 +46,18 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;\\ demo main window
             If GetTitle( EventWidget( ) ) = "window_2"
-               If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-                  ProcedureReturn #PB_All
-               Else
-                  ProcedureReturn #False
-               EndIf
+;                If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+;                    ProcedureReturn #PB_All
+;                Else
+;                   ProcedureReturn #False
+;                EndIf
                
             ElseIf GetTitle( EventWidget( ) ) = "window_0"
-               If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetTitle( EventWidget( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-                  ProcedureReturn #True
-               Else
-                  ProcedureReturn #False
-               EndIf
+;                If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetTitle( EventWidget( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+;                    ProcedureReturn #True
+;                Else
+;                   ProcedureReturn #False
+;                EndIf
             EndIf
             
          Case #__event_free
@@ -102,9 +102,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 12
-; Folding = ---
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 49
+; FirstLine = 39
+; Folding = --
 ; EnableXP
 ; DPIAware

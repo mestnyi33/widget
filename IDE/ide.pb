@@ -1030,6 +1030,9 @@ Procedure   Properties_Events( )
             Properties_ButtonResize( *second )
          EndIf
          
+      Case #__event_Up
+         SetActive( Entered( ) )
+         
       Case #__event_Cursor
          ProcedureReturn 0
          
@@ -2980,8 +2983,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2612
-; FirstLine = 2602
+; CursorPosition = 1033
+; FirstLine = 1006
 ; Folding = ----------------------------------------------------
 ; Optimizer
 ; EnableAsm

@@ -15,21 +15,22 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure CallBack( )
       Select WidgetEvent( )
          Case #__event_close
-            Debug "close - event " + EventWidget( )\class +" --- "+ EventWidget( )\index
+            Debug "  do close - [" + EventWidget( )\class +"]"
             
             If EventWindow( ) = 2 
-               If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+;                If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                   ProcedureReturn #PB_All
-               Else
-                  ProcedureReturn #False
-               EndIf
+;                Else
+;                   ProcedureReturn #False
+;                EndIf
             EndIf
-            
+            ProcedureReturn #True
+             
          Case #__event_free
-            Debug "free - event " + EventWidget( )\class 
+            Debug "    do free - [" + EventWidget( )\class +"]"
             
             ;             ;\\ to send not free
-            ;                      ProcedureReturn #False
+           ; ProcedureReturn #False
             
       EndSelect
    EndProcedure
@@ -55,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetClass(widget( ), "Button_1" )
    
    ;\\
-   Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
+   Open(2, 400, 200, 300, 200, "window_2 (main)", #PB_Window_SystemMenu |
                                            #PB_Window_SizeGadget |
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
@@ -94,9 +95,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Bind( #PB_All, @CallBack( ) )
    
    ;\\
-   WaitClose( root( ) )
+   ; Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
+   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 31
-; Folding = --
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 97
+; FirstLine = 62
+; Folding = -
 ; EnableXP
