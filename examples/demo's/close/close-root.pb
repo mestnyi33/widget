@@ -52,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure buttonEvent( )
      ; If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
          
-         Free( #PB_All )
+         Close( #PB_All )
                      
      ; EndIf
    EndProcedure
@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 84
+; CursorPosition = 74
+; FirstLine = 57
 ; Folding = --
 ; EnableXP

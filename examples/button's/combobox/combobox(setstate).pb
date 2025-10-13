@@ -38,6 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      ParentID = GetParent(*CHILD)
                      ;*CHILD = #PB_All
                      Free( @*CHILD )
+                     
                      ;                      If Free( *CHILD )
                      ;                         Debug "free " + class$ 
                      ;                      EndIf
@@ -89,9 +90,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 26
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 39
+; FirstLine = 36
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -1782,7 +1782,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
       Declare   Free( *this, mode = 0 )
       Declare   FreeChildrens( *this, mode = 0 )
-      Declare   CloseRootWindow( rootwindow )
+      Declare   Close( *root )
       ;
       Declare   DoEvents( *this, event.l, *button = #PB_All, *data = #Null )
       Declare   EventHandler( Canvas.i = - 1, event.i = - 1, eventdata = 0 )
@@ -16812,6 +16812,16 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure   AddEvents( *this._s_root, event.l, *button = #PB_All, *data = #Null )
          If *this > 0
+            If event = #__event_free
+               If *this\haschildren
+                  If StartEnum( *this )
+                     AddEvents( widgets( ), #__event_free  ) 
+                     StopEnum( )
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;   
             If test_event_send
                Static test
                Debug ""+*this\class + " - Put event queues( test "+test +" ) "+ ClassFromEvent(event)
@@ -16983,10 +16993,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If result
                      If is_root_( *this )
                         Select result
-                           Case #True   
-                              CloseRootWindow( *this\root\canvas\window )
+                           Case #True 
+                              Close( *this\root )
                            Case #PB_All 
-                              CloseRootWindow( #PB_All )
+                              Close( #PB_All )
                         EndSelect
                      Else
                         Select result 
@@ -19651,44 +19661,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure   CloseRootWindow( rootwindow )
-         Protected window
-         Protected canvaswindow = root( )\canvas\window
-         Protected canvasgadget = root( )\canvas\gadget
-         ;
-         ForEach roots( ) 
-            window = roots( )\canvas\window
-            ;
-            If rootwindow = #PB_All
-               canvasgadget = roots( )\canvas\gadget
-               ;
-               FreeChildrens( roots( ))
-               If Post( roots( ), #__event_free )
-                  DeleteMapElement( roots( ))
-                  ;
-                  If window <> canvaswindow
-                     FreeGadget( canvasgadget )
-                     CloseWindow( window )
-                  EndIf
-               EndIf
-            Else
-               If window = rootwindow 
-                  FreeChildrens( roots( ), #True )
-                  If Post( roots( ), #__event_free )
-                     DeleteMapElement( roots( ) )
-                     ;
-                     If MapSize( roots( ) ) 
-                        FreeGadget( canvasgadget )
-                        ProcedureReturn CloseWindow( canvaswindow )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-         Next
-         ;
-         ProcedureReturn #PB_All
-      EndProcedure
-      
       Procedure EventClose( )
          Protected window = PB(EventWindow)( )
          Protected Canvas = PB(GetWindowData)( window )
@@ -20967,39 +20939,56 @@ CompilerIf Not Defined( widget, #PB_Module )
             
          ElseIf *this < 0
             Debug "free-[all]"
+            *g = root( )
             ForEach roots( ) 
-               *g =  roots( )
-               FreeChildrens( *g )
-               
-               ;               ; If Post( *g, #__event_free )
-               ;                   FreeChildrens( *g, #True )
-               ;                   Debug "free-[delete]"
-               ;                
-               ;                   ;\\
-               ;                   If is_root_( *g )
-               ;                      If FindMapElement( roots( ), Str( *g\root\canvas\gadgetID ) )
-               ;                         DeleteMapElement( roots( ) )
-               ;                         ; DeleteMapElement( roots( ), MapKey( roots( ) ) )
-               ;                         ; ResetMap( roots( ) )
-               ;                         If test_delete
-               ;                            Debug " FREE - " + *g\class + " " + *g\address
-               ;                         EndIf
-               ;                         
-               ;                         If Not MapSize( roots( ) )
-               ;                            __gui\event\quit = 1
-               ;                            PostQuit( )
-               ;                         EndIf
-               ;                         
-               ;                         ; bug 612
-               ;                         ; PostEvent( #PB_Event_CloseWindow, *g\root\canvas\window, #PB_Default ) 
-               ;                      EndIf
-               ;                   EndIf
-               ;                   
-               ;                 ;  ProcedureReturn 1
-               ;               ; EndIf
+               ;If *g = roots( )
+                  FreeChildrens( roots( ))
+                  If Post( roots( ), #__event_free )
+                     DeleteMapElement( roots( ))
+                  EndIf
+               ;EndIf
             Next
          EndIf
       EndProcedure
+      
+      Procedure   Close( *root._s_ROOT )
+         Protected window
+         Protected canvaswindow = root( )\canvas\window
+         Protected canvasgadget = root( )\canvas\gadget
+         ;
+         ForEach roots( ) 
+            window = roots( )\canvas\window
+            ;
+            If *root = #PB_All
+               canvasgadget = roots( )\canvas\gadget
+               ;
+               FreeChildrens( roots( ))
+               If Post( roots( ), #__event_free )
+                  DeleteMapElement( roots( ))
+                  ;
+                  If window <> canvaswindow
+                     FreeGadget( canvasgadget )
+                     CloseWindow( window )
+                  EndIf
+               EndIf
+            Else
+               If window = *root\canvas\window 
+                  FreeChildrens( roots( ))
+                  If Post( roots( ), #__event_free )
+                     DeleteMapElement( roots( ) )
+                     ;
+                     If MapSize( roots( ) ) 
+                        FreeGadget( canvasgadget )
+                        ProcedureReturn CloseWindow( canvaswindow )
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         Next
+         ;
+         ProcedureReturn #PB_All
+      EndProcedure
+      
       
       ;-
       ;-  CREATEs
@@ -26677,9 +26666,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 19659
-; FirstLine = 19086
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------q-4-e4Vv---0-4------------------bvH5--------------------------------------------------------------------------------------------------------------0----2x----
+; CursorPosition = 20975
+; FirstLine = 19945
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------r+f-8dX0+--4-f------------------v0eg---------------------------------------------------------------------------------------------------------------f----fd9----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
