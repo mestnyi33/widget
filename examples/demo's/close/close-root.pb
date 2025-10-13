@@ -16,54 +16,6 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
 
    ;\\
-   Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
-                                       #PB_Window_SizeGadget |
-                                       #PB_Window_MinimizeGadget |
-                                       #PB_Window_MaximizeGadget )
-   
-   SetClass(root( ), "window_0_root" )
-   SetBackColor( root( ), $FFB3FDFF )
-   Button(10,10,200,50,"button_window_0_close")
-   SetClass(widget( ), GetText(widget( )) )
-   
-   ;\\
-   Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
-                                           #PB_Window_SizeGadget |
-                                           #PB_Window_MinimizeGadget |
-                                           #PB_Window_MaximizeGadget )
-   
-   SetClass(root( ), "window_1_root" )
-   SetBackColor( root( ), $FFB3FDFF )
-   Button(10,10,200,50,"button_window_1_close")
-   SetClass(widget( ), GetText(widget( )) )
-   
-   ;\\
-   Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
-                                           #PB_Window_SizeGadget |
-                                           #PB_Window_MinimizeGadget |
-                                           #PB_Window_MaximizeGadget )
-   
-   SetClass(root( ), "window_2_root" )
-   SetBackColor( root( ), $FFB3FDFF )
-   Button(10,10,200,50,"button_window_all_close")
-   SetClass(widget( ), GetText(widget( )) )
-   
-   
-   Procedure buttonEvent( )
-     ; If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-         
-         Close( #PB_All )
-                     
-     ; EndIf
-   EndProcedure
-   ButtonGadget(1, 10,70,200,50, "window_all_close")
-   BindGadgetEvent(1, @buttonEvent( ))
-   
-   ;\\
-   Bind( #PB_All, @CallBack( ) )
-   WaitClose( )
-   
-   ;\\
    Procedure CallBack( )
       Select WidgetEvent( )
          Case #__event_leftclick
@@ -121,9 +73,58 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn #True
    EndProcedure
    
+   ;\\
+   Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
+                                       #PB_Window_SizeGadget |
+                                       #PB_Window_MinimizeGadget |
+                                       #PB_Window_MaximizeGadget )
+   
+   SetClass(root( ), "window_0_root" )
+   SetBackColor( root( ), $FFB3FDFF )
+   Button(10,10,200,50,"button_window_0_close")
+   SetClass(widget( ), GetText(widget( )) )
+   
+   ;\\
+   Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
+                                           #PB_Window_SizeGadget |
+                                           #PB_Window_MinimizeGadget |
+                                           #PB_Window_MaximizeGadget )
+   
+   SetClass(root( ), "window_1_root" )
+   SetBackColor( root( ), $FFB3FDFF )
+   Button(10,10,200,50,"button_window_1_close")
+   SetClass(widget( ), GetText(widget( )) )
+   
+   ;\\
+   Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
+                                           #PB_Window_SizeGadget |
+                                           #PB_Window_MinimizeGadget |
+                                           #PB_Window_MaximizeGadget )
+   
+   SetClass(root( ), "window_2_root" )
+   SetBackColor( root( ), $FFB3FDFF )
+   Button(10,10,200,50,"button_window_all_close")
+   SetClass(widget( ), GetText(widget( )) )
+   
+   
+   Procedure buttonEvent( )
+     ; If #PB_MessageRequester_Yes = MessageRequester( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+         
+         Close( #PB_All )
+                     
+     ; EndIf
+   EndProcedure
+   ButtonGadget(1, 10,70,200,50, "window_all_close")
+   BindGadgetEvent(1, @buttonEvent( ))
+   
+   ;\\
+   Bind( #PB_All, @CallBack( ) )
+   WaitClose( )
+   
+   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 57
+; CursorPosition = 75
+; FirstLine = 30
 ; Folding = --
 ; EnableXP

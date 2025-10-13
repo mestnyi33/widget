@@ -105,7 +105,6 @@ Global ide_design_SPLITTER,
        ide_design_CODE, 
        ide_design_HIASM, 
        ide_design_DEBUG 
-Global ide_design_FORM 
 
 Global ide_inspector_SPLITTER,
        ide_inspector_VIEW, 
@@ -1627,6 +1626,23 @@ Procedure new_widget_events( )
    Protected __data = WidgetEventData( )
    
    Select __event 
+      Case #__event_Close,
+           #__event_Maximize,
+           #__event_Minimize
+         ;
+         ; disable buttons states
+         ProcedureReturn #False
+         ;
+      Case #__event_Free
+         Protected item = GetData(*g) 
+         ; Debug "  do free "+item
+         RemoveItem( ide_inspector_VIEW, item ) 
+         
+         ;
+         DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
+         
+         ; ProcedureReturn 0
+         
       Case #__event_RightDown
          Debug "right"
          
@@ -1649,16 +1665,6 @@ Procedure new_widget_events( )
             
             Properties_Updates( a_focused( ), "Focus" )
          EndIf
-         
-      Case #__event_Free
-         Protected item = GetData(*g) 
-         RemoveItem( ide_inspector_VIEW, item ) 
-         
-         ;
-         DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
-         
-         ; Debug "free "+item
-         ; ProcedureReturn 0
          
       Case #__event_Resize
          If a_focused( ) = *g
@@ -1960,40 +1966,40 @@ Procedure.S ide_help_elements(Class.s)
 EndProcedure
 
 #File = 0
-Procedure   ide_file_new( )
+Procedure ide_mdi_clears( )
    ; Очишаем текст
+   ClearItems( ide_design_CODE ) 
+   ; TEMP
    ClearItems( ide_design_DEBUG ) 
-   ; удаляем всех детей у MDI 
-   ; (то есть освобождаем MDI)
+   ;
+   ; удаляем всех детей у MDI (то есть освобождаем его)
    FreeChildrens( ide_design_MDI )
-   ; Free( ide_design_MDI, 1 )
-   ; затем создаем новое окно
-   ide_design_FORM = new_widget_add( ide_design_MDI, "window", 7, 7, 400, 250 )
-   
-   ; и показываем гаджеты для добавления
+   ;
+   ; переключаем на форму 
    SetState( ide_design_PANEL, 0 )
+   ;
+   ; затем показываем гаджеты для добавления
    SetState( ide_inspector_PANEL, 0 )
-   
-   If Not Hide( ide_design_CODE )
-      SetText( ide_design_CODE, Generate_Code( ide_design_MDI ) )
-   EndIf
-   ; SetText( ide_design_DEBUG, Generate_Code( ide_design_MDI ) )
-   
+EndProcedure
+;
+Procedure   ide_file_new( )
+   ; очищаем MDI
+   ide_mdi_clears( )
+   ;
+   ; затем создаем новое окно
+   new_widget_add( ide_design_MDI, "window", 7, 7, 400, 250 )
 EndProcedure
 
 Procedure   ide_file_open(Path$) ; Открытие файла
    Protected Text$, String$
    
    If Path$
-      ClearDebugOutput( )
-      ClearItems( ide_design_DEBUG )
       Debug "Открываю файл '"+Path$+"'"
+      ClearDebugOutput( )
       ;
-      SetState( ide_design_PANEL, 0 )
-      SetState( ide_inspector_PANEL, 0 )
+      ; очищаем MDI
+      ide_mdi_clears( )
       ;
-      FreeChildrens( ide_design_MDI )
-      
       If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
          Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
          FileSeek( #File, 0 )                                   ; 
@@ -2009,15 +2015,15 @@ Procedure   ide_file_open(Path$) ; Открытие файла
          ;          ForEach *parser\Line()
          ;             Debug *parser\Line()\func$ +"?"+ *parser\Line()\arg$
          ;          Next
-         
+         ;          ;
          ;          ;          ;
          ;          ;          Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
-         ;          
+         ;          ;
          ;          ; bug hides
          ;          If Not Hide( ide_design_CODE )
          ;             SetText( ide_design_CODE, Generate_Code( ide_design_MDI ) )
          ;          EndIf
-         
+         ;
          
          Define code$ = Generate_Code( ide_design_MDI )
          code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
@@ -2807,25 +2813,25 @@ CompilerIf #PB_Compiler_IsMainFile
    Define result, btn2, example = 3
    
    
-   ide_design_FORM = new_widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
+   Define *form = new_widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
    
    If example = 1
-      Resize(ide_design_FORM, 30, 30, 400, 250)
+      Resize(*form, 30, 30, 400, 250)
       
-      Define q=new_widget_add(ide_design_FORM, "button", 35, 25, 30, 30)
-      new_widget_add(ide_design_FORM, "text", 45, 65, 50, 30)
-      new_widget_add(ide_design_FORM, "button", 55, 65+40, 80, 30)
-      new_widget_add(ide_design_FORM, "text", 65, 65+40*2, 50, 30)
+      new_widget_add(*form, "button", 35, 25, 30, 30)
+      new_widget_add(*form, "text", 45, 65, 50, 30)
+      new_widget_add(*form, "button", 55, 65+40, 80, 30)
+      new_widget_add(*form, "text", 65, 65+40*2, 50, 30)
       
       
    ElseIf example = 2
-      Define cont1 = new_widget_add( ide_design_FORM, "container", 10, 10, 320, 180 )
-      SetBackColor( cont1, $FF9CF9F6)
-      new_widget_add( cont1, "button", 10, 20, 100, 30 )
-      Define cont2 = new_widget_add( cont1, "container", 130, 20, 90, 140 )
-      new_widget_add( cont2, "button", 10, 20, 30, 30 )
-      Define cont3 = new_widget_add( cont1, "container", 230, 20, 90, 140 )
-      new_widget_add( cont2, "button", 10, 20, 30, 30 )
+      Define *cont1 = new_widget_add( *form, "container", 10, 10, 320, 180 )
+      SetBackColor( *cont1, $FF9CF9F6)
+      new_widget_add( *cont1, "button", 10, 20, 100, 30 )
+      Define *cont2 = new_widget_add( *cont1, "container", 130, 20, 90, 140 )
+      new_widget_add( *cont2, "button", 10, 20, 30, 30 )
+      Define *cont3 = new_widget_add( *cont1, "container", 230, 20, 90, 140 )
+      new_widget_add( *cont2, "button", 10, 20, 30, 30 )
       
       ;       ClearItems(ide_inspector_VIEW)
       ; ;       AddItem(ide_inspector_VIEW, -1, "window_0", -1, 0)
@@ -2857,9 +2863,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       ;PopListPosition(widgets())
       
       ;\\ example 2
-      ;       Define *container = new_widget_add( ide_design_FORM, "container", 130, 20, 220, 140 )
+      ;       Define *container = new_widget_add( *form, "container", 130, 20, 220, 140 )
       ;       new_widget_add( *container, "button", 10, 20, 30, 30 )
-      ;       new_widget_add( ide_design_FORM, "button", 10, 20, 100, 30 )
+      ;       new_widget_add( *form, "button", 10, 20, 100, 30 )
       ;       
       ;       Define item = 1
       ;       SetState( ide_inspector_VIEW, item )
@@ -2870,25 +2876,25 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       new_widget_add( *container2, "button", 10, 20, 30, 30 )
       ;       
       ;       SetState( ide_inspector_VIEW, 0 )
-      ;       new_widget_add( ide_design_FORM, "button", 10, 130, 100, 30 )
+      ;       new_widget_add( *form, "button", 10, 130, 100, 30 )
       
    ElseIf example = 3
       ;\\ example 3
-      Resize(ide_design_FORM, #PB_Ignore, #PB_Ignore, 500, 250)
+      Resize(*form, #PB_Ignore, #PB_Ignore, 500, 250)
       
-      Disable(new_widget_add(ide_design_FORM, "button", 15, 25, 50, 30, #PB_Button_MultiLine),1)
-      new_widget_add(ide_design_FORM, "text", 25, 65, 50, 30)
-      btn2 = new_widget_add(ide_design_FORM, "button", 35, 65+40, 50, 30)
-      new_widget_add(ide_design_FORM, "string", 45, 65+40*2, 50, 30)
-      ;new_widget_add(ide_design_FORM, "button", 45, 65+40*2, 50, 30)
+      Disable(new_widget_add(*form, "button", 15, 25, 50, 30, #PB_Button_MultiLine),1)
+      new_widget_add(*form, "text", 25, 65, 50, 30)
+      btn2 = new_widget_add(*form, "button", 35, 65+40, 50, 30)
+      new_widget_add(*form, "string", 45, 65+40*2, 50, 30)
+      ;new_widget_add(*form, "button", 45, 65+40*2, 50, 30)
       
-      Define *scrollarea = new_widget_add(ide_design_FORM, "scrollarea", 120, 25, 165, 175, #PB_ScrollArea_Flat )
+      Define *scrollarea = new_widget_add(*form, "scrollarea", 120, 25, 165, 175, #PB_ScrollArea_Flat )
       new_widget_add(*scrollarea, "button", 15, 25, 30, 30)
       new_widget_add(*scrollarea, "text", 25, 65, 50, 30)
       new_widget_add(*scrollarea, "button", 35, 65+40, 80, 30)
       new_widget_add(*scrollarea, "text", 45, 65+40*2, 50, 30)
       
-      Define *panel = new_widget_add(ide_design_FORM, "panel", 320, 25, 165, 175)
+      Define *panel = new_widget_add(*form, "panel", 320, 25, 165, 175)
       new_widget_add(*panel, "button", 15, 25, 30, 30)
       new_widget_add(*panel, "text", 25, 65, 50, 30)
       new_widget_add(*panel, "button", 35, 65+40, 80, 30)
@@ -2904,18 +2910,18 @@ CompilerIf #PB_Compiler_IsMainFile
       SetState( *panel, 1 )
       
       
-      Define ide_design_FORM2 = new_widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
-      Resize(ide_design_FORM2, #PB_Ignore, Y(ide_design_FORM)+Height(ide_design_FORM), 500, 100)
+      Define *form2 = new_widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
+      Resize(*form2, #PB_Ignore, Y(*form)+Height(*form), 500, 100)
       
-      new_widget_add(ide_design_FORM2, "button", 25, 10, 30, 30)
-      new_widget_add(ide_design_FORM2, "button", 70, 40, 30, 30)
-      new_widget_add(ide_design_FORM2, "button", 110, 75, 30, 30)
+      new_widget_add(*form2, "button", 25, 10, 30, 30)
+      new_widget_add(*form2, "button", 70, 40, 30, 30)
+      new_widget_add(*form2, "button", 110, 75, 30, 30)
       
       ;       ;       ;SetMoveBounds( *scrollarea, -1,-1,-1,-1 )
       ;       ;       ;SetSizeBounds( *scrollarea, -1,-1,-1,-1 )
       ;       ;       ;SetSizeBounds( *scrollarea )
       ;       ;       SetMoveBounds( btn2, -1,-1,-1,-1 )
-      ;       SetMoveBounds( ide_design_FORM, -1,-1,-1,-1 )
+      ;       SetMoveBounds( *form, -1,-1,-1,-1 )
       ;       ;       ;SetChildrenBounds( ide_design_MDI )
       
    EndIf
@@ -2941,7 +2947,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    
    
    
-   ; SetActive( ide_design_FORM )
+   ; SetActive( *form )
    
    ;ReDraw(root())
    Define time = ElapsedMilliseconds( )
@@ -2983,8 +2989,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1967
-; FirstLine = 1955
+; CursorPosition = 2838
+; FirstLine = 2865
 ; Folding = ----------------------------------------------------
 ; Optimizer
 ; EnableAsm

@@ -16776,474 +16776,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       ;- EVENTs
       ;-
-      Procedure   ResetEvents( *this._s_WIDGET )
-         If ListSize( __gui\event\queues( ) )
-            ForEach __gui\event\queues( )
-               Define __widget = __gui\event\queues( )\widget
-               Define __event  = __gui\event\queues( )\type
-               Define __item   = __gui\event\queues( )\item
-               Define __data   = __gui\event\queues( )\data
-               
-               If GetRoot( __widget ) = *this
-                  If __gui\event\queuesmask Or 
-                     __gui\event\mask & 1<<__event
-                     
-                     DeleteElement( __gui\event\queues( ) )
-                     ;                      If __event = #__event_focus
-                     ;                         Debug "SET events "+GetClass(__widget) +" "+ ClassFromEvent(__event) +" "+ Str(__gui\event\mask & 1<<__event)
-                     ;                      EndIf
-                     
-                     If __event = #__event_Free
-                        Free( @__widget )
-                     Else
-                        Post( __widget, __event, __item, __data )
-                     EndIf
-                  EndIf
-               Else
-                  If GetClass( __widget ) = GetClass( *this)
-                     DeleteElement( __gui\event\queues( ) )
-                     Debug "ERRORS event reset ["+GetClass( __widget ) +" "+ GetClass( *this) +"]"
-                     Break
-                  EndIf
-               EndIf
-            Next
-         EndIf
-      EndProcedure
-      
-      Procedure   AddEvents( *this._s_root, event.l, *button = #PB_All, *data = #Null )
-         If *this > 0
-            If event = #__event_free
-               If *this\haschildren
-                  If StartEnum( *this )
-                     AddEvents( widgets( ), #__event_free  ) 
-                     StopEnum( )
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;   
-            If test_event_send
-               Static test
-               Debug ""+*this\class + " - Put event queues( test "+test +" ) "+ ClassFromEvent(event)
-               test + 1
-            EndIf
-            
-            ;
-            ; Если такое событие уже есть пропускаем
-            If ListSize(__gui\event\queues( ))  
-               If ListIndex( __gui\event\queues( ) ) >= 0 
-                  If __gui\event\queues( )\widget = *this
-                     If __gui\event\queues( )\type = event
-                        ProcedureReturn __gui\event\queues( )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;
-            ; 
-            If AddElement( __gui\event\queues( ) )
-               __gui\event\queues.allocate( EVENTDATA, ( ) )
-               __gui\event\queues( )\widget = *this
-               __gui\event\queues( )\type   = event
-               __gui\event\queues( )\item   = *button
-               __gui\event\queues( )\data   = *data
-               
-               ;                If event = #__event_focus
-               ;                   Debug  "ADD events "+ClassFromEvent( event ) +" "+ *this\class 
-               ;                EndIf
-               ProcedureReturn __gui\event\queues( )
-            EndIf
-         EndIf
-      EndProcedure
-      
-      Procedure.i Post( *this._s_root, event.l, *button = #PB_All, *data = #Null )
-         Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
-         
-         If *this > 0 
-            If Not __gui\event\queuesmask And 
-               Not __gui\event\mask & 1<<event
-               
-               ProcedureReturn AddEvents( *this, event, *button, *data )
-            Else
-               ;                If event = #__event_focus
-               ;                   Debug  " POST events "+ClassFromEvent( event ) +" "+ *this\class 
-               ;                EndIf
-               
-               If is_bar_( *this )
-                  ;
-                  If event = #__event_LeftClick Or
-                     event = #__event_Change
-                     If *this\TabEntered( )
-                        *button = *this\TabEntered( )\tindex
-                     EndIf
-                     ; Debug ""+ClassFromEvent(event)+" "+*this\TabEntered( ) +" "+ *Button
-                  EndIf
-                  ;
-                  If *button < 0
-                     ProcedureReturn 0
-                  EndIf
-               EndIf
-               
-               ;\\ 
-               __widget = EventWidget( )
-               __event  = WidgetEvent( )
-               __item   = WidgetEventItem( )
-               __data   = WidgetEventData( )
-               
-               ;\\
-               EventWidget( )     = *this
-               WidgetEvent( )     = event
-               WidgetEventItem( ) = *button
-               WidgetEventData( ) = *data
-               
-               ;\\ menu send bind event
-               If is_bar_( *this ) 
-                  If *this\menu\parent
-                     While *this\menu\parent
-                        *this = *this\menu\parent
-                     Wend
-                     EventWidget( )     = *this
-                  Else
-                     If *this\TabEntered( ) And *this\TabEntered( )\childrens
-                        ; Чтобы не отправлять события
-                        ProcedureReturn 0
-                     EndIf
-                  EndIf
-                  
-                  ; Debug ""+ *button +" "+ *this\class +" POSTMENU "
-               EndIf
-               
-               ; Debug "send - "+*this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
-               result = #True
-               
-               ; examples bars area
-               If event = #__event_MouseMove
-                  If widget::__gui\DrawingRoot
-                     StopDraw( )
-                     widget::__gui\DrawingRoot = 0
-                  EndIf
-               EndIf    
-               
-               ;\\
-               If Not is_root_( *this )
-                  ;\\ 1 call (current-widget) bind event function
-                  ForEach __gui\event\binds( )
-                     If __gui\event\binds( )\widget = *this 
-                        If __gui\event\binds( )\type = event And
-                           Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
-                           
-                           If __gui\event\binds( )\data
-                              WidgetEventData( ) = __gui\event\binds( )\data
-                           EndIf
-                           
-                           result = __gui\event\binds( )\function( )
-                           If result = #PB_Ignore
-                              Break
-                           EndIf
-                        EndIf
-                     EndIf
-                  Next
-                  ;
-                  
-                  ;\\ 2 call (current-widget-window) bind event function
-                  If *this\window 
-                     If result <> #PB_Ignore
-                        If Not is_root_( *this\window )
-                           ForEach __gui\event\binds( )
-                              If __gui\event\binds( )\widget = *this\window  
-                                 If __gui\event\binds( )\type = event And
-                                    Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
-                                    result = __gui\event\binds( )\function( )
-                                    If result = #PB_Ignore
-                                       Break
-                                    EndIf
-                                 EndIf
-                              EndIf
-                           Next
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               
-               ;\\ 3 call (current-widget-root) bind event function
-               If *this\root
-                  If result <> #PB_Ignore
-                     ForEach __gui\event\binds( )
-                        If __gui\event\binds( )\widget = *this\root 
-                           If __gui\event\binds( )\type = event And
-                              Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
-                              result = __gui\event\binds( )\function( )
-                              If result = #PB_Ignore
-                                 Break
-                              EndIf
-                           EndIf
-                        EndIf
-                     Next
-                  EndIf
-               EndIf
-               
-               If result = #PB_Ignore
-                  result = #True
-               EndIf
-               
-               ;\\
-               If event = #__event_Close
-                  ; Debug "[" + ClassFromEvent(__event) +"] Post-Close-Event" 
-                  If result
-                     If is_root_( *this )
-                        Select result
-                           Case #True 
-                              Close( *this\root )
-                           Case #PB_All 
-                              Close( #PB_All )
-                        EndSelect
-                     Else
-                        Select result 
-                           Case #PB_All
-                              If Not PostQuit( )
-                                 Free( *this\root )
-                                 ; CloseWindow( EventWindow( ))
-                              EndIf
-                           Default
-                              Free( *this )
-                        EndSelect
-                     EndIf
-                  EndIf
-               EndIf
-               
-               ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
-               EventWidget( )       = __widget
-               WidgetEvent( )       = __event
-               WidgetEventItem( )   = __item
-               WidgetEventData( )   = __data
-            EndIf
-         EndIf
-         
-         ProcedureReturn result
-      EndProcedure
-      
-      Procedure.i Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
-         ;
-         If *this < 0
-            PushMapPosition(roots( ))
-            ForEach roots( )
-               If event = #__event_Cursor
-                  roots( )\canvas\bindcursor = 1
-               EndIf
-               
-               Bind( roots( ), *callback, event, item )
-            Next
-            PopMapPosition(roots( ))
-            ProcedureReturn #PB_All
-            ;
-         Else
-            If event < 0 
-               Define i
-               For i = 0 To #__event - 1
-                  If i = #__event_Draw ; And Not is_root_( *this )
-                     Continue
-                  EndIf
-                  If i = #__event_Resize
-                     Continue
-                  EndIf
-                  
-                  ; set defaul widget events
-                  Bind( *this, *callback, i, item )
-               Next
-               ;
-            Else
-               LastElement( __gui\event\binds( ) )
-               AddElement(__gui\event\binds( ))
-               __gui\event\binds.allocate( HOOK, ( ))
-               
-               __gui\event\binds( )\function = *callback
-               __gui\event\binds( )\widget   = *this
-               __gui\event\binds( )\type     = event
-               __gui\event\binds( )\item     = item
-               __gui\event\binds( )\data     = *data
-               
-               ; 
-               If event = #__event_Draw
-                  *this\binddraw = 1
-               EndIf
-               If event = #__event_Resize
-                  *this\bindresize = 1
-               EndIf
-               If event = #__event_Cursor
-                  *this\bindcursor = 1
-               EndIf
-               
-            EndIf
-         EndIf
-         
-      EndProcedure
-      
-      Procedure.i Unbind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
-         If *this < 0
-            PushMapPosition(roots( ))
-            ForEach roots( )
-               Unbind( roots( ), *callback, event, item )
-            Next
-            PopMapPosition(roots( ))
-            ProcedureReturn #PB_All
-            ;
-         Else
-            If event < 0
-               Define i
-               For i = 0 To #__event - 1
-                  Unbind( *this, *callback, i, item )
-               Next
-               ;
-            Else
-               ForEach __gui\event\binds( )
-                  ;   Debug ""+__gui\event\binds( )\widget +" "+ __gui\event\binds( )\type +" "+ event +" "+ __gui\event\binds( )\item +" "+ *button
-                  If __gui\event\binds( )\widget = *this And 
-                     __gui\event\binds( )\type = event And 
-                     __gui\event\binds( )\item = item
-                     
-                     DeleteElement( __gui\event\binds( ), 1 )
-                  EndIf
-               Next
-            EndIf
-         EndIf
-      EndProcedure
-      
-      
-      Procedure PostQuit( *root._s_root = #Null )
-         If __gui\event\loop = #True
-            __gui\event\loop = #False
-            
-            If *root And *root\parent
-               If IsWindow( *root\canvas\window )
-                  CloseWindow( *root\canvas\window )
-               EndIf
-               If IsGadget( *root\canvas\gadget )
-                  FreeGadget( *root\canvas\gadget )
-               EndIf
-               ;
-               DisableWindow( GetCanvasWindow(*root\parent), #False )
-               SetActiveGadget(GetCanvasGadget(*root\parent) )
-               ;ChangeCurrentCanvas( GadgetID(GetCanvasGadget(*root\parent)) )
-               ;SetActive ( *root\parent )
-            EndIf
-            
-            Debug "  post exit [LOOP]"
-            
-            ;\\ stop main loop
-            CompilerSelect #PB_Compiler_OS
-               CompilerCase #PB_OS_Linux
-                  gtk_main_quit_( )
-                  
-               CompilerCase #PB_OS_Windows
-                  PostQuitMessage_( 0 )
-                  
-               CompilerCase #PB_OS_MacOS
-                  CocoaMessage( 0, CocoaMessage( 0, 0, "NSApplication sharedApplication" ), "stop:", 0 )
-                  
-            CompilerEndSelect
-            
-            ProcedureReturn #True
-         EndIf
-      EndProcedure
-      
-      Procedure WaitQuit( *root._s_root = #Null )
-         If __gui\event\loop = #False
-            __gui\event\loop = #True
-            
-            ; ReDraw( *root )
-            
-            PushMapPosition( roots( ))
-            ForEach roots( )
-               ReDraw( roots( ) )
-            Next
-            PopMapPosition( roots( ))
-            
-            ; Debug ""+ EventWidget( )  +" "+ WidgetEvent( ) +" "+ WidgetEventItem( ) +" "+ WidgetEventData( )
-            
-            ;\\ start main loop
-            CompilerSelect #PB_Compiler_OS
-               CompilerCase #PB_OS_Linux
-                  gtk_main_( )
-                  
-               CompilerCase #PB_OS_Windows
-                  Protected msg.MSG
-                  
-                  While GetMessage_( @msg, #Null, 0, 0 )
-                     TranslateMessage_( msg )
-                     DispatchMessage_( msg )
-                  Wend
-                  
-               CompilerCase #PB_OS_MacOS
-                  ; Define sharedApplication = CocoaMessage( 0, 0, "NSApplication sharedApplication" )
-                  ; Define currentEvent = CocoaMessage(0,sharedApplication , "currentEvent") ; var currentEvent: NSEvent? { get }
-                  ; Debug " WaitQuit - "+currentEvent
-                  CocoaMessage( 0, CocoaMessage( 0, 0, "NSApplication sharedApplication" ), "run" )
-                  
-            CompilerEndSelect
-            
-            If *root
-               If is_root_( *root )
-                  If IsWindow( *root\canvas\window )
-                     CloseWindow( *root\canvas\window )
-                  EndIf
-                  If IsGadget( *root\canvas\gadget )
-                     FreeGadget( *root\canvas\gadget )
-                  EndIf
-               EndIf
-               
-               If *root\parent
-                  ; ChangeCurrentCanvas( GadgetID(GetCanvasGadget(*root\parent)) )
-                  ; DisableWindow( GetCanvasWindow(*root\parent), #False )
-                  ; SetActive ( *root\parent )
-               EndIf
-               ;
-               ; Free( *root )
-            EndIf
-            
-            Debug "Exit... [LOOP]"
-         EndIf
-      EndProcedure
-      
-      Procedure  WaitClose( *window._s_WIDGET = #Null )
-         
-;          If MapSize( roots( ) )
-        ; Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
-         
-         Repeat  : WaitWindowEvent( 1 ) : Until Not MapSize( roots( ))
-;                WaitWindowEvent( )
-;                If __gui\event\quit
-;                   __gui\event\quit = 0
-;                   Define info.s = "---------break-QUIT-------- " + IsWindow(root( )\canvas\window)
-;                   Break
-;                EndIf
-;                If Not MapSize( roots( ) )
-;                   Define info.s = "---------break-MAP---------"
-;                   Break
-;                EndIf
-;                If Not IsWindow( EventWindow( ) )
-;                   Define info.s = "---------break-CLOSE-------- " + IsWindow(root( )\canvas\window)
-;                   Break
-;                EndIf
-;             ForEver
-            
-;             Debug ""
-;             ;\\
-;             If Not __gui\event\quit
-;                If IsWindow( PB(EventWindow)( ))
-;                   Debug "  END "+PB(EventWindow)( ) ; info.s
-;                   PB(CloseWindow)( PB(EventWindow)( ))
-;                Else
-;                   Debug "  END ?";+info.s
-;                EndIf
-;             Else
-; ;                Debug info.s
-;             EndIf
-;          EndIf
-         
-      EndProcedure
-      
-      ;-
       Procedure DoEventTimer_Item( )
          ; Debug "  timer"
          Protected result
@@ -20705,7 +20237,472 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      ;- DELETEs
+      Procedure   ResetEvents( *this._s_WIDGET )
+         If ListSize( __gui\event\queues( ) )
+            ForEach __gui\event\queues( )
+               Define __widget = __gui\event\queues( )\widget
+               Define __event  = __gui\event\queues( )\type
+               Define __item   = __gui\event\queues( )\item
+               Define __data   = __gui\event\queues( )\data
+               
+               If GetRoot( __widget ) = *this
+                  If __gui\event\queuesmask Or 
+                     __gui\event\mask & 1<<__event
+                     
+                     DeleteElement( __gui\event\queues( ) )
+                     ;                      If __event = #__event_focus
+                     ;                         Debug "SET events "+GetClass(__widget) +" "+ ClassFromEvent(__event) +" "+ Str(__gui\event\mask & 1<<__event)
+                     ;                      EndIf
+                     
+                     If __event = #__event_Free
+                        Free( @__widget )
+                     Else
+                        Post( __widget, __event, __item, __data )
+                     EndIf
+                  EndIf
+               Else
+                  If GetClass( __widget ) = GetClass( *this)
+                     DeleteElement( __gui\event\queues( ) )
+                     Debug "ERRORS event reset ["+GetClass( __widget ) +" "+ GetClass( *this) +"]"
+                     Break
+                  EndIf
+               EndIf
+            Next
+         EndIf
+      EndProcedure
+      
+      Procedure   AddEvents( *this._s_root, event.l, *button = #PB_All, *data = #Null )
+         If *this > 0
+            If event = #__event_free
+               If *this\haschildren
+                  If StartEnum( *this )
+                     AddEvents( widgets( ), #__event_free  ) 
+                     StopEnum( )
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;   
+            If test_event_send
+               Static test
+               Debug ""+*this\class + " - Put event queues( test "+test +" ) "+ ClassFromEvent(event)
+               test + 1
+            EndIf
+            
+            ;
+            ; Если такое событие уже есть пропускаем
+            If ListSize(__gui\event\queues( ))  
+               If ListIndex( __gui\event\queues( ) ) >= 0 
+                  If __gui\event\queues( )\widget = *this
+                     If __gui\event\queues( )\type = event
+                        ProcedureReturn __gui\event\queues( )
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;
+            ; 
+            If AddElement( __gui\event\queues( ) )
+               __gui\event\queues.allocate( EVENTDATA, ( ) )
+               __gui\event\queues( )\widget = *this
+               __gui\event\queues( )\type   = event
+               __gui\event\queues( )\item   = *button
+               __gui\event\queues( )\data   = *data
+               
+               ;                If event = #__event_focus
+               ;                   Debug  "ADD events "+ClassFromEvent( event ) +" "+ *this\class 
+               ;                EndIf
+               ProcedureReturn __gui\event\queues( )
+            EndIf
+         EndIf
+      EndProcedure
+      
+      Procedure.i Post( *this._s_root, event.l, *button = #PB_All, *data = #Null )
+         Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
+         
+         If *this > 0 
+            If Not __gui\event\queuesmask And 
+               Not __gui\event\mask & 1<<event
+               
+               ProcedureReturn AddEvents( *this, event, *button, *data )
+            Else
+               ;                If event = #__event_focus
+               ;                   Debug  " POST events "+ClassFromEvent( event ) +" "+ *this\class 
+               ;                EndIf
+               
+               If is_bar_( *this )
+                  ;
+                  If event = #__event_LeftClick Or
+                     event = #__event_Change
+                     If *this\TabEntered( )
+                        *button = *this\TabEntered( )\tindex
+                     EndIf
+                     ; Debug ""+ClassFromEvent(event)+" "+*this\TabEntered( ) +" "+ *Button
+                  EndIf
+                  ;
+                  If *button < 0
+                     ProcedureReturn 0
+                  EndIf
+               EndIf
+               
+               ;\\ 
+               __widget = EventWidget( )
+               __event  = WidgetEvent( )
+               __item   = WidgetEventItem( )
+               __data   = WidgetEventData( )
+               
+               ;\\
+               EventWidget( )     = *this
+               WidgetEvent( )     = event
+               WidgetEventItem( ) = *button
+               WidgetEventData( ) = *data
+               
+               ;\\ menu send bind event
+               If is_bar_( *this ) 
+                  If *this\menu\parent
+                     While *this\menu\parent
+                        *this = *this\menu\parent
+                     Wend
+                     EventWidget( )     = *this
+                  Else
+                     If *this\TabEntered( ) And *this\TabEntered( )\childrens
+                        ; Чтобы не отправлять события
+                        ProcedureReturn 0
+                     EndIf
+                  EndIf
+                  
+                  ; Debug ""+ *button +" "+ *this\class +" POSTMENU "
+               EndIf
+               
+               ; Debug "send - "+*this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
+               result = #True
+               
+               ; examples bars area
+               If event = #__event_MouseMove
+                  If widget::__gui\DrawingRoot
+                     StopDraw( )
+                     widget::__gui\DrawingRoot = 0
+                  EndIf
+               EndIf    
+               
+               ;\\
+               If Not is_root_( *this )
+                  ;\\ 1 call (current-widget) bind event function
+                  ForEach __gui\event\binds( )
+                     If __gui\event\binds( )\widget = *this 
+                        If __gui\event\binds( )\type = event And
+                           Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
+                           
+                           If __gui\event\binds( )\data
+                              WidgetEventData( ) = __gui\event\binds( )\data
+                           EndIf
+                           
+                           result = __gui\event\binds( )\function( )
+                           If result = #PB_Ignore
+                              Break
+                           EndIf
+                        EndIf
+                     EndIf
+                  Next
+                  ;
+                  
+                  ;\\ 2 call (current-widget-window) bind event function
+                  If *this\window 
+                     If result <> #PB_Ignore
+                        If Not is_root_( *this\window )
+                           ForEach __gui\event\binds( )
+                              If __gui\event\binds( )\widget = *this\window  
+                                 If __gui\event\binds( )\type = event And
+                                    Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
+                                    result = __gui\event\binds( )\function( )
+                                    If result = #PB_Ignore
+                                       Break
+                                    EndIf
+                                 EndIf
+                              EndIf
+                           Next
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+               
+               ;\\ 3 call (current-widget-root) bind event function
+               If *this\root
+                  If result <> #PB_Ignore
+                     ForEach __gui\event\binds( )
+                        If __gui\event\binds( )\widget = *this\root 
+                           If __gui\event\binds( )\type = event And
+                              Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
+                              result = __gui\event\binds( )\function( )
+                              If result = #PB_Ignore
+                                 Break
+                              EndIf
+                           EndIf
+                        EndIf
+                     Next
+                  EndIf
+               EndIf
+               
+               If result = #PB_Ignore
+                  result = #True
+               EndIf
+               
+               ;\\
+               If event = #__event_Close
+                  If result
+                     If is_root_( *this )
+                        Select result
+                           Case #PB_All 
+                              Close( #PB_All )
+                           Default
+                              Close( *this\root )
+                        EndSelect
+                     Else
+                        Select result 
+                           Case #PB_All
+                              If Not PostQuit( )
+                                 Free( #PB_All )
+                              EndIf
+                           Default
+                              Free( *this )
+                        EndSelect
+                     EndIf
+                  EndIf
+               EndIf
+               
+               ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
+               EventWidget( )       = __widget
+               WidgetEvent( )       = __event
+               WidgetEventItem( )   = __item
+               WidgetEventData( )   = __data
+            EndIf
+         EndIf
+         
+         ProcedureReturn result
+      EndProcedure
+      
+      Procedure.i Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
+         ;
+         If *this < 0
+            PushMapPosition(roots( ))
+            ForEach roots( )
+               If event = #__event_Cursor
+                  roots( )\canvas\bindcursor = 1
+               EndIf
+               
+               Bind( roots( ), *callback, event, item )
+            Next
+            PopMapPosition(roots( ))
+            ProcedureReturn #PB_All
+            ;
+         Else
+            If event < 0 
+               Define i
+               For i = 0 To #__event - 1
+                  If i = #__event_Draw ; And Not is_root_( *this )
+                     Continue
+                  EndIf
+                  If i = #__event_Resize
+                     Continue
+                  EndIf
+                  
+                  ; set defaul widget events
+                  Bind( *this, *callback, i, item )
+               Next
+               ;
+            Else
+               LastElement( __gui\event\binds( ) )
+               AddElement(__gui\event\binds( ))
+               __gui\event\binds.allocate( HOOK, ( ))
+               
+               __gui\event\binds( )\function = *callback
+               __gui\event\binds( )\widget   = *this
+               __gui\event\binds( )\type     = event
+               __gui\event\binds( )\item     = item
+               __gui\event\binds( )\data     = *data
+               
+               ; 
+               If event = #__event_Draw
+                  *this\binddraw = 1
+               EndIf
+               If event = #__event_Resize
+                  *this\bindresize = 1
+               EndIf
+               If event = #__event_Cursor
+                  *this\bindcursor = 1
+               EndIf
+               
+            EndIf
+         EndIf
+         
+      EndProcedure
+      
+      Procedure.i Unbind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
+         If *this < 0
+            PushMapPosition(roots( ))
+            ForEach roots( )
+               Unbind( roots( ), *callback, event, item )
+            Next
+            PopMapPosition(roots( ))
+            ProcedureReturn #PB_All
+            ;
+         Else
+            If event < 0
+               Define i
+               For i = 0 To #__event - 1
+                  Unbind( *this, *callback, i, item )
+               Next
+               ;
+            Else
+               ForEach __gui\event\binds( )
+                  ;   Debug ""+__gui\event\binds( )\widget +" "+ __gui\event\binds( )\type +" "+ event +" "+ __gui\event\binds( )\item +" "+ *button
+                  If __gui\event\binds( )\widget = *this And 
+                     __gui\event\binds( )\type = event And 
+                     __gui\event\binds( )\item = item
+                     
+                     DeleteElement( __gui\event\binds( ), 1 )
+                  EndIf
+               Next
+            EndIf
+         EndIf
+      EndProcedure
+      
+      
+      Procedure PostQuit( *root._s_root = #Null )
+         If __gui\event\loop = #True
+            __gui\event\loop = #False
+            
+            If *root And *root\parent
+               If IsWindow( *root\canvas\window )
+                  CloseWindow( *root\canvas\window )
+               EndIf
+               If IsGadget( *root\canvas\gadget )
+                  FreeGadget( *root\canvas\gadget )
+               EndIf
+               ;
+               DisableWindow( GetCanvasWindow(*root\parent), #False )
+               SetActiveGadget(GetCanvasGadget(*root\parent) )
+               ;ChangeCurrentCanvas( GadgetID(GetCanvasGadget(*root\parent)) )
+               ;SetActive ( *root\parent )
+            EndIf
+            
+            Debug "  post exit [LOOP]"
+            
+            ;\\ stop main loop
+            CompilerSelect #PB_Compiler_OS
+               CompilerCase #PB_OS_Linux
+                  gtk_main_quit_( )
+                  
+               CompilerCase #PB_OS_Windows
+                  PostQuitMessage_( 0 )
+                  
+               CompilerCase #PB_OS_MacOS
+                  CocoaMessage( 0, CocoaMessage( 0, 0, "NSApplication sharedApplication" ), "stop:", 0 )
+                  
+            CompilerEndSelect
+            
+            ProcedureReturn #True
+         EndIf
+      EndProcedure
+      
+      Procedure WaitQuit( *root._s_root = #Null )
+         If __gui\event\loop = #False
+            __gui\event\loop = #True
+            
+            ; ReDraw( *root )
+            
+            PushMapPosition( roots( ))
+            ForEach roots( )
+               ReDraw( roots( ) )
+            Next
+            PopMapPosition( roots( ))
+            
+            ; Debug ""+ EventWidget( )  +" "+ WidgetEvent( ) +" "+ WidgetEventItem( ) +" "+ WidgetEventData( )
+            
+            ;\\ start main loop
+            CompilerSelect #PB_Compiler_OS
+               CompilerCase #PB_OS_Linux
+                  gtk_main_( )
+                  
+               CompilerCase #PB_OS_Windows
+                  Protected msg.MSG
+                  
+                  While GetMessage_( @msg, #Null, 0, 0 )
+                     TranslateMessage_( msg )
+                     DispatchMessage_( msg )
+                  Wend
+                  
+               CompilerCase #PB_OS_MacOS
+                  ; Define sharedApplication = CocoaMessage( 0, 0, "NSApplication sharedApplication" )
+                  ; Define currentEvent = CocoaMessage(0,sharedApplication , "currentEvent") ; var currentEvent: NSEvent? { get }
+                  ; Debug " WaitQuit - "+currentEvent
+                  CocoaMessage( 0, CocoaMessage( 0, 0, "NSApplication sharedApplication" ), "run" )
+                  
+            CompilerEndSelect
+            
+            If *root
+               If is_root_( *root )
+                  If IsWindow( *root\canvas\window )
+                     CloseWindow( *root\canvas\window )
+                  EndIf
+                  If IsGadget( *root\canvas\gadget )
+                     FreeGadget( *root\canvas\gadget )
+                  EndIf
+               EndIf
+               
+               If *root\parent
+                  ; ChangeCurrentCanvas( GadgetID(GetCanvasGadget(*root\parent)) )
+                  ; DisableWindow( GetCanvasWindow(*root\parent), #False )
+                  ; SetActive ( *root\parent )
+               EndIf
+               ;
+               ; Free( *root )
+            EndIf
+            
+            Debug "Exit... [LOOP]"
+         EndIf
+      EndProcedure
+      
+      Procedure  WaitClose( *window._s_WIDGET = #Null )
+         
+;          If MapSize( roots( ) )
+        ; Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
+         Repeat  : WaitWindowEvent( 10 ) : Until Not MapSize( roots( ))
+         
+;          Repeat 
+;                WaitWindowEvent( )
+;                If __gui\event\quit
+;                   __gui\event\quit = 0
+;                   Define info.s = "---------break-QUIT-------- " + IsWindow(root( )\canvas\window)
+;                   Break
+;                EndIf
+;                If Not MapSize( roots( ) )
+;                   Define info.s = "---------break-MAP---------"
+;                   Break
+;                EndIf
+;                If Not IsWindow( EventWindow( ) )
+;                   Define info.s = "---------break-CLOSE-------- " + IsWindow(root( )\canvas\window)
+;                   Break
+;                EndIf
+;             ForEver
+            
+;             Debug ""
+;             ;\\
+;             If Not __gui\event\quit
+;                If IsWindow( PB(EventWindow)( ))
+;                   Debug "  END "+PB(EventWindow)( ) ; info.s
+;                   PB(CloseWindow)( PB(EventWindow)( ))
+;                Else
+;                   Debug "  END ?";+info.s
+;                EndIf
+;             Else
+; ;                Debug info.s
+;             EndIf
+;          EndIf
+         
+      EndProcedure
+      
       ;-
       Procedure   FreeChildrens( *this._s_WIDGET, mode = 0 )
          If LastElement(widgets( ))
@@ -20939,14 +20936,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             
          ElseIf *this < 0
             Debug "free-[all]"
-            *g = root( )
+           
+;             *g = root( )
             ForEach roots( ) 
-               ;If *g = roots( )
+;                If *g = roots( )
                   FreeChildrens( roots( ))
-                  If Post( roots( ), #__event_free )
-                     DeleteMapElement( roots( ))
-                  EndIf
-               ;EndIf
+;                   If Post( roots( ), #__event_free )
+;                      DeleteMapElement( roots( ))
+;                   EndIf
+;                EndIf
             Next
          EndIf
       EndProcedure
@@ -26666,9 +26664,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 20975
-; FirstLine = 19945
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------r+f-8dX0+--4-f------------------v0eg---------------------------------------------------------------------------------------------------------------f----fd9----
+; CursorPosition = 20670
+; FirstLine = 19691
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------r+f-8dX0+--4-f--------------------------------------v-----------------------------------------------------------------------------------------------------------v----vO+----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
