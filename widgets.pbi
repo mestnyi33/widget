@@ -1781,7 +1781,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;
       Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
       Declare   Free( *this, mode = 0 )
-      Declare   ClearWidgets( *this, mode = 0 )
+      Declare   FreeChildrens( *this, mode = 0 )
       Declare   CloseRootWindow( rootwindow )
       ;
       Declare   DoEvents( *this, event.l, *button = #PB_All, *data = #Null )
@@ -16905,12 +16905,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ; Debug "send - "+*this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
-               If event = #__event_Free
-                  result = #True
-               EndIf
-               If event = #__event_Close
-                  result = #True
-               EndIf
+               result = #True
                
                ; examples bars area
                If event = #__event_MouseMove
@@ -16924,15 +16919,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                If Not is_root_( *this )
                   ;\\ 1 call (current-widget) bind event function
                   ForEach __gui\event\binds( )
-                     If __gui\event\binds( )\widget = *this And __gui\event\binds( )\type = event And Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
-                        
-                        If __gui\event\binds( )\data
-                           WidgetEventData( ) = __gui\event\binds( )\data
-                        EndIf
-                        
-                        result = __gui\event\binds( )\function( )
-                        If result = #PB_Ignore
-                           Break
+                     If __gui\event\binds( )\widget = *this 
+                        If __gui\event\binds( )\type = event And
+                           Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
+                           
+                           If __gui\event\binds( )\data
+                              WidgetEventData( ) = __gui\event\binds( )\data
+                           EndIf
+                           
+                           result = __gui\event\binds( )\function( )
+                           If result = #PB_Ignore
+                              Break
+                           EndIf
                         EndIf
                      EndIf
                   Next
@@ -16943,9 +16941,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If result <> #PB_Ignore
                         If Not is_root_( *this\window )
                            ForEach __gui\event\binds( )
-                              If __gui\event\binds( )\widget = *this\window And 
-                                 __gui\event\binds( )\type = event And Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
-                                 result = __gui\event\binds( )\function( )
+                              If __gui\event\binds( )\widget = *this\window  
+                                 If __gui\event\binds( )\type = event And
+                                    Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
+                                    result = __gui\event\binds( )\function( )
+                                    If result = #PB_Ignore
+                                       Break
+                                    EndIf
+                                 EndIf
                               EndIf
                            Next
                         EndIf
@@ -16955,19 +16958,23 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;\\ 3 call (current-widget-root) bind event function
                If *this\root
-                  If result = #PB_Ignore
-                     result = #True
-                  Else
+                  If result <> #PB_Ignore
                      ForEach __gui\event\binds( )
-                        If __gui\event\binds( )\widget = *this\root And 
-                           __gui\event\binds( )\type = event And Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
-                           result = __gui\event\binds( )\function( )
-                           If result = #PB_Ignore
-                              result = #True
+                        If __gui\event\binds( )\widget = *this\root 
+                           If __gui\event\binds( )\type = event And
+                              Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
+                              result = __gui\event\binds( )\function( )
+                              If result = #PB_Ignore
+                                 Break
+                              EndIf
                            EndIf
                         EndIf
                      Next
                   EndIf
+               EndIf
+               
+               If result = #PB_Ignore
+                  result = #True
                EndIf
                
                ;\\
@@ -17111,7 +17118,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;SetActive ( *root\parent )
             EndIf
             
-            Debug " POST QUIT MAIN LOOP"
+            Debug "  post exit [LOOP]"
             
             ;\\ stop main loop
             CompilerSelect #PB_Compiler_OS
@@ -17184,7 +17191,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ; Free( *root )
             EndIf
             
-            Debug " QUIT MAIN LOOP"
+            Debug "Exit... [LOOP]"
          EndIf
       EndProcedure
       
@@ -19645,34 +19652,44 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Procedure   CloseRootWindow( rootwindow )
+         Protected result
+         Protected root
          Protected window
          Protected canvaswindow = root( )\canvas\window
          Protected canvasgadget = root( )\canvas\gadget
          ;
          ForEach roots( ) 
+            root = roots( )
             window = roots( )\canvas\window
             ;
             If rootwindow = #PB_All
                canvasgadget = roots( )\canvas\gadget
                ;
-               Free( roots( ))
-               ClearWidgets( roots( ))
-               DeleteMapElement( roots( ))
-               ;
-               If window <> canvaswindow
-                  FreeGadget( canvasgadget )
-                  CloseWindow( window )
+               FreeChildrens( roots( ))
+               If Post( roots( ), #__event_free )
+                  DeleteMapElement( roots( ))
+                  ;
+                  If window <> canvaswindow
+                     FreeGadget( canvasgadget )
+                     CloseWindow( window )
+                  EndIf
                EndIf
             Else
                If window = rootwindow 
-                  Free( roots( ))
-                  ClearWidgets( roots( ) )
-                  DeleteMapElement( roots( ) )
+                  FreeChildrens( roots( ), #True )
+                  If Post( roots( ), #__event_free )
+                     DeleteMapElement( roots( ) )
+                     ;
+                     If MapSize( roots( ) ) 
+                        FreeGadget( canvasgadget )
+                        ProcedureReturn CloseWindow( canvaswindow )
+                     EndIf
+                  EndIf
                EndIf
             EndIf
          Next
          ;
-         If MapSize( roots( ) ) 
+         If result And MapSize( roots( ) ) 
             FreeGadget( canvasgadget )
             ProcedureReturn CloseWindow( canvaswindow )
          Else
@@ -19688,15 +19705,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          If IsGadget(Canvas)
             If ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
                Post( root( ), #__event_Close )
-                  
-;                Select Post( root( ), #__event_Close )
-;                   Case #True
-;                      CloseRootWindow( window )
-;                       
-;                   Case #PB_All
-;                      CloseRootWindow( #PB_All )
-;                   
-;                EndSelect
             EndIf
          Else
             Debug "not canvas then close"
@@ -19707,8 +19715,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             __gui\event\quit = 0
          Else
             __gui\event\quit = 1
-            
-            Debug "Exit..."
+            If __gui\event\loop
+               PostQuit( )
+            Else
+               Debug "Exit..."
+            EndIf
          EndIf
       EndProcedure
       
@@ -20732,12 +20743,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       ;- DELETEs
       ;-
-      Procedure   ClearWidgets( *this._s_WIDGET, mode = 0 )
+      Procedure   FreeChildrens( *this._s_WIDGET, mode = 0 )
          If LastElement(widgets( ))
             Repeat
                If IsChild( widgets( ), *this ) Or ( mode And widgets( ) = *this )
                   If widgets( ) = *this
-                     If widgets( )\haschildren
+                     If *this\haschildren
                         Break
                      EndIf
                      
@@ -20767,11 +20778,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ;
                   If widgets( )\root\haschildren > 0
+                     ;
                      widgets( )\root\haschildren - 1
                      If widgets( )\parent <> widgets( )\root
                         widgets( )\parent\haschildren - 1
                      EndIf
-                     
+                     ;
                      If widgets( )\tabbar
                         If widgets( )\tabbar = widgets( )
                            If test_delete
@@ -20782,7 +20794,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                         widgets( )\tabbar = #Null
                      EndIf
-                     
+                     ;
                      If widgets( )\scroll
                         If widgets( )\scroll\v
                            If test_delete
@@ -20800,7 +20812,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                         ; widgets( )\scroll = #Null
                      EndIf
-                     
+                     ;
                      If widgets( )\type = #__type_Splitter
                         If widgets( )\split_1( ) > 0
                            If test_delete
@@ -20817,18 +20829,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                            widgets( )\split_2( ) = 0
                         EndIf
                      EndIf
-                     
+                     ;
                      If widgets( )\bounds\attach
                         ;Debug " free - attach " +widgets( )\bounds\attach\parent\class
                         widgets( )\bounds\attach\parent = 0
                         FreeStructure( widgets( )\bounds\attach )
                         widgets( )\bounds\attach = #Null
                      EndIf
-                     
+                     ;
                      If test_delete
                         Debug " free - " + widgets( )\class
                      EndIf
-                     
+                     ;
                      ;\\
                      If Pressed( ) = widgets( )
                         Pressed( ) = #Null
@@ -20842,7 +20854,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If a_entered( ) = widgets( )
                         a_entered( ) = #Null
                      EndIf
-                     
+                     ;
                      ;\\
                      If GetActive( )
                         If GetActive( ) = widgets( )
@@ -20865,18 +20877,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                            EndIf
                         EndIf
                         
-                        If GetActive( ) = *this
-                           GetActive( ) = *this\parent
-                        EndIf
-                        If GetActive( ) And
-                           GetActive( )\root = *this
-                           GetActive( ) = #Null
-                        EndIf
+;                         If GetActive( ) = *this
+;                            GetActive( ) = *this\parent
+;                         EndIf
+;                            If GetActive( ) And
+;                               GetActive( )\root = *this
+;                               GetActive( ) = #Null
+;                            EndIf
                      EndIf
-                     
+                     ;
                      ;\\ remove count types
                      CountType( widgets( ), - 1 )
-                     
+                     ;
                      ;\\
                      If widgets( )\BeforeWidget( )
                         widgets( )\BeforeWidget( )\AfterWidget( ) = widgets( )\AfterWidget( )
@@ -20890,14 +20902,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If *this\LastWidget( ) = widgets( )
                         *this\LastWidget( ) = *this
                      EndIf
-                     
+                     ;
                      If widgets( )\picture\imageID
                         ;   Removeimage( widgets( ), widgets( )\picture\image )
                      EndIf
+                     ;
                      ;\\
                      widgets( )\parent  = #Null
                      widgets( )\address = #Null
-                     
+                     ;
                      DeleteElement( widgets( ), 1 )
                   EndIf
                   
@@ -20906,7 +20919,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      Break
                   EndIf
                   If ListSize( widgets( ) ) = 0
-                     Debug "bug ClearWidgets haschildren "+*this\root\haschildren
+                     Debug "bug FreeChildrens haschildren "+*this\root\haschildren
                      Break
                   EndIf
                ElseIf PreviousElement( widgets( )) = 0
@@ -20925,7 +20938,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\i = 0
                
                If Post( *g, #__event_free )
-                  ClearWidgets( *g, #True )
+                  FreeChildrens( *g, #True )
                   Debug "free-[delete] "+*g\class
                   
                   ;\\
@@ -20964,10 +20977,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             Debug "free-[all]"
             ForEach roots( ) 
                *g =  roots( )
-               ClearWidgets( *g )
+               FreeChildrens( *g )
                
                ;               ; If Post( *g, #__event_free )
-               ;                   ClearWidgets( *g, #True )
+               ;                   FreeChildrens( *g, #True )
                ;                   Debug "free-[delete]"
                ;                
                ;                   ;\\
@@ -26672,9 +26685,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 16987
-; FirstLine = 16354
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8v--------------------------------------------------------------------------------------q-4-e4Vv---0-4------------------------------------------------------------------------------------------------------------------------------------2----XH----
+; CursorPosition = 17123
+; FirstLine = 16532
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------V-v-0ure---8-v------------------4ePw--------------------------------------------------------------------------------------------------------------7----rj----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

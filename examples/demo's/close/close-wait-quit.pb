@@ -63,6 +63,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    Procedure CallBack( )
       Select WidgetEvent( )
+         Case #__event_Free
+            ProcedureReturn #True
+            
          Case #__event_Close
             ProcedureReturn #True
             
@@ -94,7 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 45
+; CursorPosition = 66
+; FirstLine = 44
 ; Folding = -
 ; EnableXP

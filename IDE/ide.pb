@@ -1965,7 +1965,7 @@ Procedure   ide_file_new( )
    ClearItems( ide_design_DEBUG ) 
    ; удаляем всех детей у MDI 
    ; (то есть освобождаем MDI)
-   ClearWidgets( ide_design_MDI )
+   FreeChildrens( ide_design_MDI )
    ; Free( ide_design_MDI, 1 )
    ; затем создаем новое окно
    ide_design_FORM = new_widget_add( ide_design_MDI, "window", 7, 7, 400, 250 )
@@ -1992,7 +1992,7 @@ Procedure   ide_file_open(Path$) ; Открытие файла
       SetState( ide_design_PANEL, 0 )
       SetState( ide_inspector_PANEL, 0 )
       ;
-      ClearWidgets( ide_design_MDI )
+      FreeChildrens( ide_design_MDI )
       
       If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
          Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
@@ -2983,8 +2983,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1033
-; FirstLine = 1006
+; CursorPosition = 1967
+; FirstLine = 1955
 ; Folding = ----------------------------------------------------
 ; Optimizer
 ; EnableAsm

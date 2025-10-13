@@ -18,11 +18,11 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "  do close - [" + EventWidget( )\class +"]"
             
             If EventWindow( ) = 2 
-;                If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+               If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                     ProcedureReturn #PB_All
-;                Else
-;                   ProcedureReturn #False
-;                EndIf
+               Else
+                  ProcedureReturn #False
+               EndIf
             EndIf
             ProcedureReturn #True
              
@@ -30,8 +30,11 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "    do free - [" + EventWidget( )\class +"]"
             
             ;             ;\\ to send not free
-           ; ProcedureReturn #True
-           ; ProcedureReturn #False
+;             If #__type_button = EventWidget( )\type
+;                PostReDraw( EventWidget( )\root )
+                 ProcedureReturn #True
+;             EndIf
+            ; ProcedureReturn #False
             
       EndSelect
    EndProcedure
@@ -43,8 +46,11 @@ CompilerIf #PB_Compiler_IsMainFile
                                        #PB_Window_MaximizeGadget )
    
    SetClass(root( ), "window_0_root" )
-   Button(10,10,200,50,"Button_0")
-   SetClass(widget( ), "Button_0" )
+   Container( 10,10,240,140 ) : SetClass(widget( ), "window_0_cont_1" )
+   Button(10,10,200,50,"window_0_butt_1")
+   SetClass(widget( ), "window_0_butt_1" )
+   Button(10,65,200,50,"window_0_butt_2")
+   SetClass(widget( ), "window_0_butt_2" )
    
    ;\\
    Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
@@ -53,18 +59,24 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MaximizeGadget )
    
    SetClass(root( ), "window_1_root" )
-   Button(10,10,200,50,"Button_1")
-   SetClass(widget( ), "Button_1" )
+   Container( 10,10,240,140 ) : SetClass(widget( ), "window_1_cont_1" )
+   Button(10,10,200,50,"window_1_butt_1")
+   SetClass(widget( ), "window_1_butt_1" )
+   Button(10,65,200,50,"window_1_butt_2")
+   SetClass(widget( ), "window_1_butt_2" )
    
    ;\\
-   Open(2, 400, 200, 300, 200, "window_2 (main)", #PB_Window_SystemMenu |
+   Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
                                            #PB_Window_SizeGadget |
                                            #PB_Window_MinimizeGadget |
                                            #PB_Window_MaximizeGadget )
    
    SetClass(root( ), "window_2_root" )
-   Button(10,10,200,50,"Button_2")
-   SetClass(widget( ), "Button_2" )
+   Container( 10,10,240,140 ) : SetClass(widget( ), "window_2_cont_1" )
+   Button(10,10,200,50,"button_2_butt_1")
+   SetClass(widget( ), "button_2_butt_1" )
+   Button(10,65,200,50,"window_2_butt_2")
+   SetClass(widget( ), "window_2_butt_2" )
    
    
 ;    
@@ -100,7 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 21
-; FirstLine = 3
-; Folding = -
+; CursorPosition = 10
+; FirstLine = 6
+; Folding = --
 ; EnableXP
