@@ -11163,7 +11163,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *parent\root
             If Not *this\child
                If Not is_root_( *parent )
-                  *parent\root\haschildren + 1
+                  If Not *parent\type = #__type_Splitter
+                     *parent\root\haschildren + 1
+                  EndIf
                EndIf
             EndIf
             *this\root = *parent\root
@@ -19237,7 +19239,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If widgets( )\tabbar
                         If widgets( )\tabbar = widgets( )
                            If test_delete
-                              Debug "   free - tab " + widgets( )\tabbar\class
+                              Debug "   free() - tab " + widgets( )\tabbar\class
                            EndIf
                            FreeStructure( widgets( )\tabbar )
                            widgets( )\tabbar = 0
@@ -19248,14 +19250,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If widgets( )\scroll
                         If widgets( )\scroll\v
                            If test_delete
-                              Debug "   free - scroll-v " + widgets( )\scroll\v\class
+                              Debug "   free() - scroll-v " + widgets( )\scroll\v\class
                            EndIf
                            FreeStructure( widgets( )\scroll\v )
                            widgets( )\scroll\v = 0
                         EndIf
                         If widgets( )\scroll\h
                            If test_delete
-                              Debug "   free scroll-h - " + widgets( )\scroll\h\class
+                              Debug "   free() scroll-h - " + widgets( )\scroll\h\class
                            EndIf
                            FreeStructure( widgets( )\scroll\h )
                            widgets( )\scroll\h = 0
@@ -19266,14 +19268,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If widgets( )\type = #__type_Splitter
                         If widgets( )\split_1( ) > 0
                            If test_delete
-                              Debug "   free - splitter - first " + widgets( )\split_1( )\class
+                              Debug "   free() - splitter - first " + widgets( )\split_1( )\class
                            EndIf
                            FreeStructure( widgets( )\split_1( ) )
                            widgets( )\split_1( ) = 0
                         EndIf
                         If widgets( )\split_2( ) > 0
                            If test_delete
-                              Debug "   free - splitter - second " + widgets( )\split_2( )\class
+                              Debug "   free() - splitter - second " + widgets( )\split_2( )\class
                            EndIf
                            FreeStructure( widgets( )\split_2( ) )
                            widgets( )\split_2( ) = 0
@@ -19288,7 +19290,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      ;
                      If test_delete
-                        Debug " free - " + widgets( )\class
+                        Debug " free() - " + widgets( )\class
                      EndIf
                      ;
                      ;\\
@@ -19438,6 +19440,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure   Close( *root._s_ROOT )
+         Protected result
          Protected window
          Protected canvaswindow = root( )\canvas\window
          Protected canvasgadget = root( )\canvas\gadget
@@ -19462,12 +19465,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                   FreeChildrens( roots( ))
                   If Post( roots( ), #__event_free )
                      DeleteMapElement( roots( ) )
+                     result = MapSize( roots( ) )
                   EndIf
                EndIf
             EndIf
          Next
          ;
-         If MapSize( roots( ) ) 
+         If result
             FreeGadget( canvasgadget )
             If CloseWindow( canvaswindow )
                ; если у окна есть дочернее окно 
@@ -19482,7 +19486,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   Next 
                EndIf
-               ProcedureReturn 1
+               ProcedureReturn #True
             EndIf
          Else
             ProcedureReturn #PB_All
@@ -20953,7 +20957,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ; Free( *root )
             EndIf
             
-            Debug "Exit... [LOOP]"
+            Debug "  Exit... [LOOP]"
          EndIf
       EndProcedure
       
@@ -26647,10 +26651,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 19505
-; FirstLine = 18915
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------r+--8dX0+--4-f---------------------8-0----------------------------------------------------------------------------------------------------------------4--0-XH----
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 20905
+; FirstLine = 19891
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----X0--48u70--v--+--------------------4-8----------------------------------------------------------------------------------------------------------------v--8-vO+----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -1641,7 +1641,7 @@ Procedure new_widget_events( )
          ;
          DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
          
-         ProcedureReturn #True
+         ; ProcedureReturn #True
          
       Case #__event_RightDown
          Debug "right"
@@ -2792,7 +2792,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_DragStart )
    ;
    Bind( ide_root, @ide_events( ), #__event_Close )
-   Bind( ide_root, @ide_events( ), #__event_Free )
+   ; Bind( ide_root, @ide_events( ), #__event_Free )
    Bind( ide_root, @ide_events( ), #__event_Focus )
    
    ;
@@ -2993,9 +2993,9 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2363
-; FirstLine = 2342
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 2794
+; FirstLine = 2774
 ; Folding = ----------------------------------------------------
 ; Optimizer
 ; EnableAsm

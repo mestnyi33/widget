@@ -23,9 +23,9 @@ CompilerIf #PB_Compiler_IsMainFile
                                        #PB_Window_MaximizeGadget )
    
    SetClass(root( ), "window_0_root" ) : SetBackColor( root( ), $FFB3FDFF )
-   Button(10,10,200,50,"button_0_close") : SetClass(widget( ), GetText(widget( )) )
-   Button(10,70,200,50,"button_1_close") : SetClass(widget( ), GetText(widget( )) )
-   Button(10,130,200,50,"button_2_close") : SetClass(widget( ), GetText(widget( )) )
+   Button(10,10,200,50,"warning") : SetClass(widget( ), GetText(widget( )) )
+   Button(10,70,200,50,"error") : SetClass(widget( ), GetText(widget( )) )
+   Button(10,130,200,50,"info") : SetClass(widget( ), GetText(widget( )) )
    
    
    
@@ -42,14 +42,14 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_leftclick
             Select GetText( widget )
-               Case "button_0_close"
-                  Message("Title", "text without image")
+               Case "warning"
+                  Message("message", "warning", #__message_YesNoCancel|#__message_Warning )
                   
-               Case "button_1_close"
-                  Message("Title", "text without image")
+               Case "error"
+                  Message("message", "error", #__message_YesNo|#__message_Error)
                
-               Case "button_2_close"
-                  Message("Title", "text without image")
+               Case "info"
+                  Message("message", "info", #__message_Ok|#__message_Info)
                   
             EndSelect
             
@@ -80,8 +80,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 30
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 50
+; FirstLine = 21
 ; Folding = --
 ; EnableXP
