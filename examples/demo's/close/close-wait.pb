@@ -8,10 +8,11 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
    Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
-     ; ProcedureReturn Message(title, Text, flags, parentID )
-     ProcedureReturn MessageRequester(title, Text, flags, parentID );
+      ProcedureReturn #PB_MessageRequester_Yes
+      ; ProcedureReturn Message(title, Text, flags, parentID )
+      ProcedureReturn MessageRequester(title, Text, flags, parentID );
    EndProcedure
-
+   
    Procedure CallBack( )
       Select WidgetEvent( )
          Case #__event_close
@@ -19,23 +20,27 @@ CompilerIf #PB_Compiler_IsMainFile
             
             If EventWindow( ) = 2 
                If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-                    ProcedureReturn #PB_All
+                  ProcedureReturn #PB_All
                Else
                   ProcedureReturn #False
                EndIf
             EndIf
             ProcedureReturn #True
-             
+            
          Case #__event_free
             Debug "    do free - [" + EventWidget( )\class +"]"
             
-            ;             ;\\ to send not free
+;             ;\\ Uncomment to see deletions of buttons only
 ;             If #__type_button = EventWidget( )\type
-;                PostReDraw( EventWidget( )\root )
-                 ProcedureReturn #True
+;                ProcedureReturn #True
+;             Else
+;                If is_root_(EventWidget( ))
+;                   ReDraw( EventWidget( )\root )
+;                EndIf
+;                ProcedureReturn #False
 ;             EndIf
-            ; ProcedureReturn #False
             
+            ProcedureReturn #True
       EndSelect
    EndProcedure
    
@@ -79,31 +84,31 @@ CompilerIf #PB_Compiler_IsMainFile
    SetClass(widget( ), "window_2_butt_2" )
    
    
-;    
-;    ;\\
-;    ForEach roots( )
-;       Debug roots( )\class
-;    Next
-;    
-;    ;   Debug ""
-;    ;   Define canvas, window
-;    ;   ForEach roots( )
-;    ;      Debug roots( )\class
-;    ;      canvas = roots( )\canvas\gadget
-;    ;      window = roots( )\canvas\window
-;    ;      
-;    ;      DeleteMapElement(roots( ))
-;    ;      FreeGadget( canvas )
-;    ;      CloseWindow( window )
-;    ;      
-;    ;      ResetMap(roots( ))
-;    ;   Next
-;    ;   
-;    ;   If Not MapSize(roots( ))
-;    ;     Debug "0"
-;    ;     End
-;    ;   EndIf
-;    ;   
+   ;    
+   ;    ;\\
+   ;    ForEach roots( )
+   ;       Debug roots( )\class
+   ;    Next
+   ;    
+   ;    ;   Debug ""
+   ;    ;   Define canvas, window
+   ;    ;   ForEach roots( )
+   ;    ;      Debug roots( )\class
+   ;    ;      canvas = roots( )\canvas\gadget
+   ;    ;      window = roots( )\canvas\window
+   ;    ;      
+   ;    ;      DeleteMapElement(roots( ))
+   ;    ;      FreeGadget( canvas )
+   ;    ;      CloseWindow( window )
+   ;    ;      
+   ;    ;      ResetMap(roots( ))
+   ;    ;   Next
+   ;    ;   
+   ;    ;   If Not MapSize(roots( ))
+   ;    ;     Debug "0"
+   ;    ;     End
+   ;    ;   EndIf
+   ;    ;   
    
    Bind( #PB_All, @CallBack( ) )
    
@@ -112,7 +117,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 6
+; CursorPosition = 40
+; FirstLine = 21
 ; Folding = --
 ; EnableXP

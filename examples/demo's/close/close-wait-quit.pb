@@ -9,8 +9,64 @@ CompilerIf #PB_Compiler_IsMainFile
    Declare CallBack( )
    
    Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
-      ProcedureReturn Message(title, Text, flags|#__message_ScreenCentered, parentID )
+      ProcedureReturn #PB_MessageRequester_Yes
+      ; ProcedureReturn Message(title, Text, flags|#__message_ScreenCentered, parentID )
       ProcedureReturn MessageRequester(title, Text, flags, parentID );
+   EndProcedure
+   
+   
+   ;\\
+   Procedure CallBack( )
+      Select WidgetEvent( )
+         Case #__event_close
+            Debug "  do close - [" + EventWidget( )\class +"]"
+            
+            If EventWindow( ) = 2 
+               If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+                  ProcedureReturn #PB_All
+               Else
+                  ProcedureReturn #False
+               EndIf
+            EndIf
+            ProcedureReturn #True
+            
+         Case #__event_free
+            Debug "    do free - [" + EventWidget( )\class +"]"
+            
+;             ;\\ Uncomment to see deletions of buttons only
+;             If #__type_button = EventWidget( )\type
+;                ProcedureReturn #True
+;             Else
+;                If is_root_(EventWidget( ))
+;                   ReDraw( EventWidget( )\root )
+;                EndIf
+;                ProcedureReturn #False
+;             EndIf
+  
+            ProcedureReturn #True
+         Case #__event_Focus
+            Debug "focus "+EventWidget( )\class
+            
+         Case #__event_LostFocus
+            Debug "lostfocus "+EventWidget( )\class
+            
+         Case #__event_Draw
+            Debug "draw " + EventWidget( )\class 
+            ;ProcedureReturn 1
+            
+         Case #__event_LeftClick
+            Select GetText( EventWidget( ) )
+               Case "button_message"
+                  OpenMessage( "message", "test" )
+                  
+                  ; WaitQuit( )
+                  
+            EndSelect
+            
+         Default
+            ; Debug ""+classfromevent(WidgetEvent( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEvent( )
+            
+      EndSelect
    EndProcedure
    
    ;\\
@@ -60,44 +116,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitQuit( root( ) )
    ;WaitClose( )
    
-   ;\\
-   Procedure CallBack( )
-      Select WidgetEvent( )
-         Case #__event_Free
-            ProcedureReturn #True
-            
-         Case #__event_Close
-            ProcedureReturn #True
-            
-         Case #__event_Focus
-            Debug "focus "+EventWidget( )\class
-            
-         Case #__event_LostFocus
-            Debug "lostfocus "+EventWidget( )\class
-            
-         Case #__event_Draw
-            Debug "draw " + EventWidget( )\class 
-            ;ProcedureReturn 1
-            
-         Case #__event_LeftClick
-            Select GetText( EventWidget( ) )
-               Case "button_message"
-                  OpenMessage( "message", "test" )
-                  
-                  ; WaitQuit( )
-                  
-            EndSelect
-            
-         Default
-            ; Debug ""+classfromevent(WidgetEvent( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEvent( )
-            
-      EndSelect
-   EndProcedure
-   
-   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 44
-; Folding = -
+; CursorPosition = 40
+; FirstLine = 27
+; Folding = --
 ; EnableXP
