@@ -1,4 +1,5 @@
-﻿#ide_path = "../"
+﻿
+#ide_path = "../../../"
 ;
 EnableExplicit
 ;
@@ -1619,209 +1620,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
 EndProcedure
 
 Procedure new_widget_events( )
-   Protected *new
-   Protected *g._s_WIDGET = EventWidget( )
-   Protected __event = WidgetEvent( )
-   Protected __item = WidgetEventItem( )
-   Protected __data = WidgetEventData( )
-   
-   Select __event 
-      Case #__event_Close,
-           #__event_Maximize,
-           #__event_Minimize
-         ;
-         ; disable buttons states
-         ProcedureReturn #False
-         ;
-      Case #__event_Free
-         Protected item = GetData(*g) 
-         ; Debug "  do free "+item
-         RemoveItem( ide_inspector_VIEW, item ) 
-         
-         ;
-         DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
-         
-         ProcedureReturn #True
-         
-      Case #__event_RightDown
-         Debug "right"
-         
-         ;       Case #__event_KeyDown
-         ;          Debug "#__event_KeyDown"
-         ;       Case #__event_KeyUp
-         ;          Debug "#__event_KeyUp"
-         
-      Case #__event_Focus
-         If a_focused( ) = *g
-            If GetState( ide_inspector_VIEW ) = GetData(*g)
-               ;Debug "FOCUS "+ GetData(*g)  +" "+ GetClass(*g)
-            Else
-               ;Debug "CHANGE "+ GetData(*g)  +" "+ GetClass(*g)
-               If IsGadget( ide_g_code )
-                  SetGadgetState( ide_g_code, GetData(*g) )
-               EndIf
-               SetState( ide_inspector_VIEW, GetData(*g) )
-            EndIf
-            
-            Properties_Updates( a_focused( ), "Focus" )
-         EndIf
-         
-      Case #__event_Resize
-         If a_focused( ) = *g
-            Properties_Updates( a_focused( ), "Resize" )
-         EndIf
-         
-         
-         ;
-         ;D&D
-         ;
-      Case #__event_DragStart
-         If is_drag_move( )
-            If DragDropPrivate( #_DD_reParent )
-               ChangeCursor( *g, #PB_Cursor_Arrows )
-            EndIf
-         Else
-            If IsContainer(*g) 
-               If MouseEnter(*g)
-                  If Not a_index( )
-                     If GetState( ide_inspector_ELEMENTS ) > 0 
-                        If DragDropPrivate( #_DD_CreateNew )
-                           ChangeCursor( *g, #PB_Cursor_Cross )
-                        EndIf
-                     Else
-                        If DragDropPrivate( #_DD_Group )
-                           ChangeCursor( *g, #PB_Cursor_Cross )
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
-      Case #__event_Drop
-         Select DropPrivate( )
-            Case #_DD_Group
-               Debug " ----- DD_group ----- " + GetClass(*g)
-               
-               ;             Case #_DD_reParent
-               ;                Debug " ----- DD_move ----- " +GetClass(Pressed( )) +" "+ Entered(  )\class
-               ;                If SetParent( Pressed( ), Entered(  ) )
-               ;                   Protected i = 3 : Debug "re-parent "+ GetClass(Pressed( )\parent) +" "+ Pressed( )\x[i] +" "+ Pressed( )\y[i] +" "+ Pressed( )\width[i] +" "+ Pressed( )\height[i]
-               ;                EndIf
-               
-            Case #_DD_CreateNew 
-               Debug " ----- DD_new ----- "+ GetText( ide_inspector_ELEMENTS ) +" "+ DropX( ) +" "+ DropY( ) +" "+ DropWidth( ) +" "+ DropHeight( )
-               new_widget_add( *g, GetText( ide_inspector_ELEMENTS ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
-               
-            Case #_DD_CreateCopy
-               Debug " ----- DD_copy ----- " + GetText( Pressed( ) )
-               
-               ;            *new = new_widget_add( *g, GetClass( Pressed( ) ), 
-               ;                         X( Pressed( ) ), Y( Pressed( ) ), Width( Pressed( ) ), Height( Pressed( ) ) )
-               
-               *new = new_widget_add( *g, DropText( ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
-               SetText( *new, "Copy_"+ DropText( ) )
-               
-         EndSelect
-         
-      Case #__event_LeftDown
-         If IsContainer(*g)
-            If GetState( ide_inspector_ELEMENTS ) > 0 
-               If mouse( )\selector
-                  mouse( )\selector\dotted = 0
-               EndIf
-            EndIf
-         EndIf
-         
-      Case #__event_LeftUp
-         ;If a_focused( )
-         HideBarButtons( ide_toolbar, Bool(a_anchors( )\group\show=0) )
-         ;EndIf
-         
-         ; then group select
-         If IsContainer(*g)
-            
-            ;             SetState( ide_inspector_VIEW, - 1 ) 
-            ;             If IsGadget( ide_g_code )
-            ;                SetGadgetState( ide_g_code, - 1 )
-            ;             EndIf
-            
-            If StartEnum( a_main( ) )
-               If widgets( )\anchors\group\show 
-                  
-                  ;                   SetItemState( ide_inspector_VIEW, GetData( widgets( ) ), #PB_Tree_Selected )
-                  ;                   If IsGadget( ide_g_code )
-                  ;                      SetGadgetItemState( ide_g_code, GetData( widgets( ) ), #PB_Tree_Selected )
-                  ;                   EndIf
-               EndIf
-               StopEnum( )
-            EndIf
-         EndIf
-         
-      Case #__event_MouseMove
-         If IsContainer(*g) 
-            If MouseEnter( *g )
-               If GetState( ide_inspector_ELEMENTS ) > 0 
-                  If MouseButtonPress( )
-                     ; disable drop 
-                     If GetState( ide_inspector_ELEMENTS ) = 1
-                        If *g = ide_design_MDI  
-                        Else
-                           If mouse( )\dragstart = #PB_Drag_Enter
-                              mouse( )\dragstart = #PB_Drag_Leave
-                           EndIf
-                        EndIf
-                     Else
-                        If *g = ide_design_MDI  
-                           If mouse( )\dragstart = #PB_Drag_Enter
-                              mouse( )\dragstart = #PB_Drag_Leave
-                           EndIf
-                        Else
-                        EndIf
-                     EndIf
-                  Else
-                     If GetCursor( ) < 255
-                        Debug " mouse enter to change cursor " 
-                        ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_inspector_ELEMENTS, GetState( ide_inspector_ELEMENTS ) ) ) ))
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
-      Case #__event_Cursor
-         ; Debug "CURSOR events"
-         ProcedureReturn #PB_Cursor_Default
-         
-   EndSelect
-   
-   ;
-   If  __event = #__event_LeftUp
-      If IsContainer(*g)
-         If GetState( ide_inspector_ELEMENTS) > 0
-            new_widget_add( *g, GetText( ide_inspector_ELEMENTS ), GetMouseX( *g ), GetMouseY( *g ))
-         EndIf
-      EndIf
-      
-      If keyboard( )\key[1]
-         ProcedureReturn #PB_Ignore
-      EndIf
-   EndIf
-   
-   ;\\
-   If __event = #__event_Drop  Or 
-      __event = #__event_RightUp Or
-      __event = #__event_LeftUp
-      
-      ; end new create
-      If GetState( ide_inspector_ELEMENTS ) > 0 
-         SetState( ide_inspector_ELEMENTS, 0 )
-      EndIf
-   EndIf
-   
-   ; отключаем дальнейшую обработку всех событий
-   ; а также события кнопок окна (Close, Maximize, Minimize)
-   ProcedureReturn #PB_Ignore
+   ProcedureReturn #True
 EndProcedure
 
 ;-
@@ -2337,24 +2136,6 @@ Procedure ide_events( )
    ; Debug ""+ClassFromEvent(__event) +" "+ GetClass(*g)
    
    Select __event
-      Case #__event_Focus
-         If is_root_(*g)
-            If PreviewRunning And 
-               IsProgram(PreviewRunning) And 
-               ProgramRunning(PreviewRunning)
-               ;
-               KillProgram(PreviewRunning)
-               CloseProgram(PreviewRunning)
-               Delay(50)
-               PreviewRunning = 0
-            EndIf
-         EndIf
-         If Not PreviewProgramName$ = "" And
-            FileSize(PreviewProgramName$)
-            DeleteFile(PreviewProgramName$)
-            PreviewProgramName$ = ""
-         EndIf
-         
       Case #__event_Free
          Debug "  do free " + *g\class
          ProcedureReturn #True
@@ -2370,150 +2151,8 @@ Procedure ide_events( )
             EndIf
          EndIf
          
-      Case #__event_DragStart
-         If *g = ide_inspector_ELEMENTS
-            If __item >= 0
-               SetState( *g, __item)
-               
-               Debug " ------ drag ide_events() ----- "
-               If DragDropPrivate( #_DD_CreateNew )
-                  ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( *g, __item ) ) ) )
-               EndIf
-            EndIf
-         EndIf
-         
-      Case #__event_Change
-         If *g = ide_inspector_VIEW
-            If a_set( GetItemData( *g, GetState(*g) ))
-            EndIf
-         EndIf
-         
-         If *g = ide_design_PANEL
-            If __item = 0
-               SetActive( ide_design_MDI )
-            EndIf
-            
-            If __item = 1
-               AddItem( ide_design_CODE, 0, "" ) ; BUG 
-               SetText( ide_design_CODE, Generate_Code( ide_design_MDI ) )
-               SetActive( ide_design_CODE )
-            EndIf
-         EndIf
-         
-      Case #__event_StatusChange
-         If __item = - 1
-            SetText( ide_inspector_HELP, "help for the inspector" )
-         Else
-            If __data < 0
-               If *g = ide_inspector_VIEW
-                  ; Debug ""+__data+" i "+__item
-                  SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
-               EndIf
-               If *g = ide_inspector_ELEMENTS
-                  SetText( ide_inspector_HELP, ide_help_elements(GetItemText( *g, __item )) )
-               EndIf
-               If *g = ide_inspector_PROPERTIES
-                  SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
-               EndIf
-               If *g = ide_inspector_EVENTS
-                  SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
-               EndIf
-            EndIf
-         EndIf
-         
+      
    EndSelect
-   
-   
-   ; CODE EDIT EVENTS
-   If *g = ide_design_CODE                      Or *g = ide_design_DEBUG ; TEMP
-      Static argument, object  
-      Protected name$, text$, len, caret
-      Protected *line._s_ROWS
-      
-      ;
-      If __event = #__event_Down
-         If __data
-            *line._s_ROWS  = __data
-            text$ = *line\text\string
-            len = *line\text\len
-            caret = *g\text\caret\pos[1] - *line\text\pos
-            
-            ;
-            If text$
-               *g\text\numeric = 0 
-               *g\text\editable = 0 
-               
-               name$ = *g\text\caret\word ; GetWord( text$, len, caret ) 
-               
-               If name$
-                  object = MakeID( name$, ide_design_MDI )
-                  If Not object
-                     If CountString( text$, "=" )
-                        name$ = Trim( StringField( text$, 1, "=" ))
-                        If CountString( name$, " " )
-                           name$ = Trim( StringField( name$, 2, " " ))
-                        EndIf
-                     EndIf
-                     
-                     object = MakeID( name$, ide_design_MDI )
-                  EndIf
-               EndIf
-               
-               ;
-               If object
-                  
-                  ;argument =  CountString( Left( text$, caret ), "," ) + 1 
-                  argument = GetArgIndex( text$, len, caret ) 
-                  name$ = *g\text\caret\word
-                  If name$ <> GetClass( object )
-                     If CountString( text$, "(" )
-                        name$ = Trim( StringField( text$, 1, "(" ))
-                        name$ = GetWord( name$, Len( name$ ), Len( name$ ) ) 
-                     EndIf
-                  EndIf
-                  If argument
-                     If name$ = ClassFromType( Type( object ))
-                        argument + 1
-                     EndIf
-                     If name$ = GetClass( object )
-                        argument - 1
-                     EndIf
-                  EndIf
-                  
-                  Debug "?"+ argument +" "+ name$
-                  
-                  If argument > 1
-                     If argument < 6 ; coordinate
-                        *g\text\numeric = 1 
-                     EndIf
-                     *g\text\editable = 1 
-                  EndIf
-                  
-                  If GetClass( object ) = *g\text\caret\word ; GetWord( text$, len, caret )
-                     *g\text\editable = 1
-                     *g\text\upper = 1 
-                  Else
-                     *g\text\upper = 0 
-                  EndIf
-               EndIf
-               
-               If *g\text\editable
-                  *line\color\back[1] = *g\color\back[1]
-               Else
-                  *line\color\back[1] = $CD9CC3EE
-               EndIf
-            EndIf
-         EndIf
-      EndIf
-      
-      ;
-      If __event = #__event_Change
-         If object
-            ReplaceArg( object, argument, *g\text\caret\word ) 
-            ; ReplaceArg( object, argument, GetWord( *line\text\string, *line\text\len, *g\text\caret\pos[1] - *line\text\pos )  )
-         EndIf
-      EndIf
-   EndIf
    
 EndProcedure
 
@@ -2690,117 +2329,37 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ; ide_inspector_ide_inspector_SPLITTER_text
    ide_inspector_HELP  = Text( 0,0,0,0, "help for the inspector", #PB_Text_Border ) : SetClass(ide_inspector_HELP, "ide_inspector_HELP" )
    ;\\\ close inspector gadgets 
+
+;    ;
+;    ;\\ main splitter 2 example 
+;    ide_inspector_panel_SPLITTER = Splitter( 0,0,0,0, ide_inspector_PANEL, ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_SPLITTER, "ide_inspector_panel_SPLITTER" )
+;    ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_inspector_panel_SPLITTER) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
+;    ide_design_SPLITTER = Splitter( 0,0,0,0, ide_design_PANEL, ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
+;    ide_SPLITTER = Splitter( 0,0,0,0, ide_inspector_SPLITTER, ide_design_SPLITTER, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator ) : SetClass(ide_SPLITTER, "ide_SPLITTER" )
+;    ide_main_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
+;    
+;    ; set splitters default minimum size
+;    SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
+;    SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_SecondMinimumSize, 30 )
+;    SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
+;    SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_SecondMinimumSize, 200 )
+;    SetAttribute( ide_design_SPLITTER, #PB_Splitter_FirstMinimumSize, 300 )
+;    SetAttribute( ide_design_SPLITTER, #PB_Splitter_SecondMinimumSize, 100 )
+;    SetAttribute( ide_SPLITTER, #PB_Splitter_FirstMinimumSize, 120 )
+;    SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, 540 )
+;    SetAttribute( ide_main_SPLITTER, #PB_Splitter_FirstMinimumSize, 20 )
+;    SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 500 )
+;    
+;    ; set splitters dafault positions
+;    SetState( ide_main_SPLITTER, Height( ide_toolbar ))
+;    SetState( ide_SPLITTER, 250 )
+;    SetState( ide_design_SPLITTER, Height( ide_design_SPLITTER )-180 )
+;    SetState( ide_inspector_SPLITTER, 150 )
    
-   ;
-   ;\\\ ide splitters
-   ;       ;
-   ;          ; main splitter 1 example
-   ;          ide_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container,ide_design_g_canvas, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(ide_SPLITTER, "ide_SPLITTER" )
-   ;          ide_inspector_panel_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW,ide_inspector_PANEL, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_panel_SPLITTER, "ide_inspector_panel_SPLITTER" )
-   ;          ide_design_SPLITTER = Splitter( 0,0,0,0, ide_SPLITTER,ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
-   ;          ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_panel_SPLITTER,ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
-   ;          ide_main_SPLITTER = Splitter( 0,0,0,0, ide_design_SPLITTER,ide_inspector_SPLITTER, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
-   ;          
-   ;          ; set splitters default minimum size
-   ;          SetAttribute( ide_main_SPLITTER, #PB_Splitter_FirstMinimumSize, 500 )
-   ;          SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 120 )
-   ;          SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_FirstMinimumSize, 230 )
-   ;          SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_SecondMinimumSize, 30 )
-   ;          SetAttribute( ide_design_SPLITTER, #PB_Splitter_FirstMinimumSize, 300 )
-   ;          SetAttribute( ide_design_SPLITTER, #PB_Splitter_SecondMinimumSize, 100 )
-   ;          SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
-   ;          SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_SecondMinimumSize, 130 )
-   ;          SetAttribute( ide_SPLITTER, #PB_Splitter_FirstMinimumSize, 20 )
-   ;          SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, 200 )
-   ;          ; SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, $ffffff )
-   ;          
-   ;          ; set splitters dafault positions
-   ;          SetState( ide_main_SPLITTER, Width( ide_main_SPLITTER )-200 )
-   ;          SetState( ide_inspector_SPLITTER, Height( ide_inspector_SPLITTER )-80 )
-   ;          SetState( ide_design_SPLITTER, Height( ide_design_SPLITTER )-150 )
-   ;          SetState( ide_inspector_panel_SPLITTER, 200 )
-   ;          SetState( ide_SPLITTER, Height( ide_toolbar ) - 1 + 2 )
-   ;       
-   
-   ;
-   ;\\ main splitter 2 example 
-   ide_inspector_panel_SPLITTER = Splitter( 0,0,0,0, ide_inspector_PANEL, ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_SPLITTER, "ide_inspector_panel_SPLITTER" )
-   ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_inspector_panel_SPLITTER) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
-   ide_design_SPLITTER = Splitter( 0,0,0,0, ide_design_PANEL, ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
-   ide_SPLITTER = Splitter( 0,0,0,0, ide_inspector_SPLITTER, ide_design_SPLITTER, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator ) : SetClass(ide_SPLITTER, "ide_SPLITTER" )
-   ide_main_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
-   
-   ; set splitters default minimum size
-   SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
-   SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_SecondMinimumSize, 30 )
-   SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
-   SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_SecondMinimumSize, 200 )
-   SetAttribute( ide_design_SPLITTER, #PB_Splitter_FirstMinimumSize, 300 )
-   SetAttribute( ide_design_SPLITTER, #PB_Splitter_SecondMinimumSize, 100 )
-   SetAttribute( ide_SPLITTER, #PB_Splitter_FirstMinimumSize, 120 )
-   SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, 540 )
-   SetAttribute( ide_main_SPLITTER, #PB_Splitter_FirstMinimumSize, 20 )
-   SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 500 )
-   
-   ; set splitters dafault positions
-   SetState( ide_main_SPLITTER, Height( ide_toolbar ))
-   SetState( ide_SPLITTER, 250 )
-   SetState( ide_design_SPLITTER, Height( ide_design_SPLITTER )-180 )
-   SetState( ide_inspector_SPLITTER, 150 )
-   
-   ;
-   ; ide_Lng_change( )
-   ;
-   
-   ;
-   ;-\\ ide binds events
-   ;
-   If Type( ide_toolbar ) = #__type_ToolBar
-      Bind( ide_menu, @ide_menu_events( ) )
-      Bind( ide_toolbar, @ide_menu_events( ) )
-      Bind( ide_popup_lenguage, @ide_menu_events( ) )
-   EndIf
-   Bind( ide_inspector_VIEW, @ide_events( ) )
-   ;
-   Bind( ide_design_PANEL, @ide_events( ), #__event_Change )
-   Bind( ide_design_PANEL, @ide_events( ), #__event_LeftClick )
-   Bind( ide_design_PANEL, @ide_events( ), #__event_Left2Click )
-   ;
-   Bind( ide_design_CODE, @ide_events( ), #__event_Down )
-   Bind( ide_design_CODE, @ide_events( ), #__event_Up )
-   Bind( ide_design_CODE, @ide_events( ), #__event_RightClick )
-   Bind( ide_design_CODE, @ide_events( ), #__event_Change )
-   Bind( ide_design_CODE, @ide_events( ), #__event_StatusChange )
-   ; TEMP
-   Bind( ide_design_DEBUG, @ide_events( ), #__event_Down )
-   Bind( ide_design_DEBUG, @ide_events( ), #__event_Up )
-   Bind( ide_design_DEBUG, @ide_events( ), #__event_Change )
-   Bind( ide_design_DEBUG, @ide_events( ), #__event_StatusChange )
-   ;
-   Bind( ide_inspector_EVENTS, @ide_events( ), #__event_Change )
-   Bind( ide_inspector_EVENTS, @ide_events( ), #__event_StatusChange )
-   ;
-   Bind( ide_inspector_PROPERTIES, @ide_events( ), #__event_Change )
-   Bind( ide_inspector_PROPERTIES, @ide_events( ), #__event_StatusChange )
-   ;
-   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_Change )
-   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_StatusChange )
-   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_Left2Click )
-   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_LeftClick )
-   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_MouseEnter )
-   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_MouseLeave )
-   Bind( ide_inspector_ELEMENTS, @ide_events( ), #__event_DragStart )
-   ;
    Bind( ide_root, @ide_events( ), #__event_Close )
    Bind( ide_root, @ide_events( ), #__event_Free )
-   Bind( ide_root, @ide_events( ), #__event_Focus )
-   
-   ;
-   Bind( ide_design_MDI, @new_widget_events( ) )
-   EnableDrop( ide_design_MDI, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
-   
-   ;
-   ;Bind( #PB_All, @ide_events( ) )
+
+   ; Bind( #PB_All, @ide_events( ) )
    ProcedureReturn ide_window
 EndProcedure
 
@@ -2809,160 +2368,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Define event
    ide_open( )
    
-   AddFont( Str(GetFont( root( ) )), "Courier", 9, 0 )
-   
-   
-   SetState( ide_inspector_PANEL, 1 )
-   
-   ;   ;OpenList(ide_design_MDI)
-   Define result, btn2, example = 3
-   
-   
+  
    Define *form = new_widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
    
-   If example = 1
-      Resize(*form, 30, 30, 400, 250)
-      
-      new_widget_add(*form, "button", 35, 25, 30, 30)
-      new_widget_add(*form, "text", 45, 65, 50, 30)
-      new_widget_add(*form, "button", 55, 65+40, 80, 30)
-      new_widget_add(*form, "text", 65, 65+40*2, 50, 30)
-      
-      
-   ElseIf example = 2
-      Define *cont1 = new_widget_add( *form, "container", 10, 10, 320, 180 )
-      SetBackColor( *cont1, $FF9CF9F6)
-      new_widget_add( *cont1, "button", 10, 20, 100, 30 )
-      Define *cont2 = new_widget_add( *cont1, "container", 130, 20, 90, 140 )
-      new_widget_add( *cont2, "button", 10, 20, 30, 30 )
-      Define *cont3 = new_widget_add( *cont1, "container", 230, 20, 90, 140 )
-      new_widget_add( *cont2, "button", 10, 20, 30, 30 )
-      
-      ;       ClearItems(ide_inspector_VIEW)
-      ; ;       AddItem(ide_inspector_VIEW, -1, "window_0", -1, 0)
-      ; ;       AddItem(ide_inspector_VIEW, -1, "button_0", -1, 1)
-      ; ;       AddItem(ide_inspector_VIEW, -1, "container_0", -1, 1)
-      ; ;       AddItem(ide_inspector_VIEW, -1, "button_1", -1, 2)
-      ; ;       
-      ;       Define *parent._s_WIDGET = ide_design_MDI
-      ;       ;PushListPosition(widgets())
-      ;       If StartEnum( *parent ,0)
-      ;          Debug "99 "+ GetClass(widget()) +" "+ GetClass(widget()\parent) +" "+ Str(Level(widget()))+" "+Str(Level(*parent));IsChild(widget(), *parent )
-      ;          Select CountItems(ide_inspector_VIEW)
-      ;             Case 0 
-      ;                AddItem(ide_inspector_VIEW, -1, "window_0", -1, Level(widget())-Level(*parent)-1)
-      ;             Case 1 
-      ;                AddItem(ide_inspector_VIEW, -1, "button_0", -1, Level(widget())-Level(*parent)-1)
-      ;             Case 2 
-      ;                AddItem(ide_inspector_VIEW, -1, "container_0", -1, Level(widget())-Level(*parent)-1)
-      ;             Case 3 
-      ;                AddItem(ide_inspector_VIEW, -1, "button_1", -1, Level(widget())-Level(*parent)-1)
-      ;          EndSelect
-      ;          
-      ;          ;   Debug CountItems(ide_inspector_VIEW)-1
-      ;          SetData(widget(), CountItems(ide_inspector_VIEW)-1)
-      ;          SetItemData(ide_inspector_VIEW, CountItems(ide_inspector_VIEW)-1, widget())
-      ;          
-      ;          StopEnum()
-      ;       EndIf
-      ;       ;PopListPosition(widgets())
-      
-      ;\\ example 2
-      ;       Define *container = new_widget_add( *form, "container", 130, 20, 220, 140 )
-      ;       new_widget_add( *container, "button", 10, 20, 30, 30 )
-      ;       new_widget_add( *form, "button", 10, 20, 100, 30 )
-      ;       
-      ;       Define item = 1
-      ;       SetState( ide_inspector_VIEW, item )
-      ;       If IsGadget( ide_g_code )
-      ;          SetGadgetState( ide_g_code, item )
-      ;       EndIf
-      ;       Define *container2 = new_widget_add( *container, "container", 60, 10, 220, 140 )
-      ;       new_widget_add( *container2, "button", 10, 20, 30, 30 )
-      ;       
-      ;       SetState( ide_inspector_VIEW, 0 )
-      ;       new_widget_add( *form, "button", 10, 130, 100, 30 )
-      
-   ElseIf example = 3
-      ;\\ example 3
-      Resize(*form, #PB_Ignore, #PB_Ignore, 500, 250)
-      
-      Disable(new_widget_add(*form, "button", 15, 25, 50, 30, #PB_Button_MultiLine),1)
-      new_widget_add(*form, "text", 25, 65, 50, 30)
-      btn2 = new_widget_add(*form, "button", 35, 65+40, 50, 30)
-      new_widget_add(*form, "string", 45, 65+40*2, 50, 30)
-      ;new_widget_add(*form, "button", 45, 65+40*2, 50, 30)
-      
-      Define *scrollarea = new_widget_add(*form, "scrollarea", 120, 25, 165, 175, #PB_ScrollArea_Flat )
-      new_widget_add(*scrollarea, "button", 15, 25, 30, 30)
-      new_widget_add(*scrollarea, "text", 25, 65, 50, 30)
-      new_widget_add(*scrollarea, "button", 35, 65+40, 80, 30)
-      new_widget_add(*scrollarea, "text", 45, 65+40*2, 50, 30)
-      
-      Define *panel = new_widget_add(*form, "panel", 320, 25, 165, 175)
-      new_widget_add(*panel, "button", 15, 25, 30, 30)
-      new_widget_add(*panel, "text", 25, 65, 50, 30)
-      new_widget_add(*panel, "button", 35, 65+40, 80, 30)
-      new_widget_add(*panel, "text", 45, 65+40*2, 50, 30)
-      
-      AddItem( *panel, -1, "panel_item_1" )
-      ;OpenList( *panel, 1 )
-      new_widget_add(*panel, "button", 115, 25, 30, 30)
-      new_widget_add(*panel, "text", 125, 65, 50, 30)
-      new_widget_add(*panel, "button", 135, 65+40, 80, 30)
-      new_widget_add(*panel, "text", 145, 65+40*2, 50, 30)
-      ;CloseList( )
-      SetState( *panel, 1 )
-      
-      
-      Define *form2 = new_widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
-      Resize(*form2, #PB_Ignore, Y(*form)+Height(*form), 500, 100)
-      
-      new_widget_add(*form2, "button", 25, 10, 30, 30)
-      new_widget_add(*form2, "button", 70, 40, 30, 30)
-      new_widget_add(*form2, "button", 110, 75, 30, 30)
-      
-      ;       ;       ;SetMoveBounds( *scrollarea, -1,-1,-1,-1 )
-      ;       ;       ;SetSizeBounds( *scrollarea, -1,-1,-1,-1 )
-      ;       ;       ;SetSizeBounds( *scrollarea )
-      ;       ;       SetMoveBounds( btn2, -1,-1,-1,-1 )
-      ;       SetMoveBounds( *form, -1,-1,-1,-1 )
-      ;       ;       ;SetChildrenBounds( ide_design_MDI )
-      
-   EndIf
-   
-   
-   ;    Define._S_WIDGET *this, *parent
-   ;    Debug "--- enumerate all gadgets ---"
-   ;    If StartEnum( root( ) )
-   ;       Debug "     gadget - "+ widget( )\index +" "+ GetClass(widget( )) +"               ("+ GetClass(widget( )\parent) +") " ;+" - ("+ widget( )\text\string +")"
-   ;       StopEnum( )
-   ;    EndIf
-   ;    
-   ;    Debug ""
-   ;    *parent = *container
-   ;    *this = GetPositionLast( *parent )
-   ;    Debug ""+GetClass(*this) +"           ("+ GetClass(*parent) +")" ;  +" - ("+ *this\text\string +")"
-   ;    
-   ;    
-   ;    If StartEnum( *parent )
-   ;       Debug "   *parent  gadget - "+ widget( )\index +" "+ GetClass(widget( )) +"               ("+ GetClass(widget( )\parent) +") " ;+" - ("+ widget( )\text\string +")"
-   ;       StopEnum( )
-   ;    EndIf
-   ;    
-   
-   
-   ; SetActive( *form )
-   
-   ;ReDraw(root())
-   Define time = ElapsedMilliseconds( )
-   Define code$ = Generate_Code( ide_design_MDI )
-   code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
-   code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
-   SetText( ide_design_DEBUG, code$ )
-   ;Debug ""+Str(ElapsedMilliseconds( )-time) +" generate code time"
-   
-   ;ReDraw(root())
    HideWindow( ide_window, #False )
    
    If SetActive( ide_inspector_VIEW )
@@ -2994,11 +2402,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 2363
-; FirstLine = 2342
-; Folding = ----------------------------------------------------
-; Optimizer
-; EnableAsm
+; CursorPosition = 1457
+; FirstLine = 1457
+; Folding = --------------------------------------z-
 ; EnableXP
 ; DPIAware
-; Executable = C:\Users\user\Downloads\Compressed\FormDesignerWindows4.70b2\ide.exe

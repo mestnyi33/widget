@@ -761,7 +761,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *function.EventFunc
       EndStructure
       Structure _s_EVENT Extends _s_EVENTDATA
-         quit.b                        ; quit from main loop
          loop.b
          queuesmask.b
          mask.q
@@ -796,9 +795,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 44
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 764
+; FirstLine = 729
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP
