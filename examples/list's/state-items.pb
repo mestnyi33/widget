@@ -10,6 +10,90 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global a, *first, *last, *added, *reset, *w1, *w2, *g1, *g2, CountItems=9; количесвто итемов 
    
+    Procedure.b SetItemState_( *this._s_WIDGET, Item.l, State.b )
+       ProcedureReturn SetItemState( *this, Item, State )
+       Protected result
+         
+         If *this\type = #__type_Editor
+          ;  result = edit_SetItemState( *this, Item, state )
+         EndIf
+         
+         If *this\type = #__type_Tree Or
+                *this\type = #__type_ListView Or
+                *this\type = #__type_ListIcon Or
+                *this\type = #__type_Properties
+                
+            If *this\countitems
+               If is_no_select_item_( *this\__rows( ), Item )
+                  ProcedureReturn #False
+               EndIf
+               
+               Protected *row._s_ROWS
+               *row = *this\__rows( )
+               ;
+               If State & #PB_Tree_Selected
+                  *row\_focus = 1
+                  If *this\focus
+                     *row\ColorState( ) = #__s_2
+                  Else
+                     *row\ColorState( ) = #__s_3
+                  EndIf
+               Else
+                  *row\_focus = 0
+                  *row\ColorState( ) = #__s_0
+               EndIf
+               ;
+               If State & #PB_Tree_Inbetween 
+                  *row\checkbox\checked = #PB_Checkbox_Inbetween
+               ElseIf State & #PB_Tree_Checked
+                  *row\checkbox\checked = #PB_Checkbox_Checked
+               Else
+                  *row\checkbox\checked = #PB_Checkbox_Unchecked
+               EndIf
+               ;
+               If *row\childrens
+                  If State & #PB_Tree_Expanded Or State & #PB_Tree_Collapsed 
+                     *row\buttonbox\checked = Bool( State & #PB_Tree_Collapsed )
+                     *this\WidgetChange( )             = #True
+                     
+                     PushListPosition( *this\__rows( ))
+                     While NextElement( *this\__rows( ))
+                        If *this\__rows( )\RowParent( )
+                           *this\__rows( )\hide = Bool( *this\__rows( )\RowParent( )\buttonbox\checked | *this\__rows( )\RowParent( )\hide )
+                        EndIf
+                        
+                        If *this\__rows( )\sublevel = *row\sublevel
+                           Break
+                        EndIf
+                     Wend
+                     PopListPosition( *this\__rows( ))
+                  EndIf
+                  ;
+                  ProcedureReturn #True
+               EndIf
+            EndIf
+            
+         EndIf
+         
+         If *this\type = #__type_ToolBar Or
+            *this\type = #__type_MenuBar Or
+            *this\type = #__type_PopupBar Or
+            *this\type = #__type_TabBar
+            ;
+            If is_no_select_item_( *this\__tabs( ), Item )
+               ProcedureReturn #False
+            EndIf
+            
+            If State & #PB_Tree_Selected = #PB_Tree_Selected
+;                If bar_tab_SetState( *this, Item )
+;                   result = #True
+;                EndIf
+            EndIf
+         EndIf
+         
+         ProcedureReturn result
+      EndProcedure
+     
    ;\\
    Procedure SetGadgetState_(gadget, state)
 ;       CompilerSelect #PB_Compiler_OS
@@ -86,11 +170,22 @@ CompilerIf #PB_Compiler_IsMainFile
                Debug " & (#PB_Tree_Checked | #PB_Tree_Selected) "
             EndIf
             
+            If item = 1
+               itemstate = #PB_Tree_Selected
+            ElseIf item = 2
+               itemstate &~ #PB_Tree_Checked
+            ElseIf item = 3
+               itemstate &~ #PB_Tree_Inbetween
+            ElseIf item = 4
+               itemstate &~ #PB_Tree_Collapsed
+            EndIf
+            
             
             If item = CountItems( *w1 ) - 1
                SetItemState(*w1, item, #PB_Tree_Selected)
             Else
-               SetItemState(*w1, item, itemstate &~ #PB_Tree_Selected)
+               SetItemState(*w1, item, itemstate)
+               ;SetItemState_(*w1, item, itemstate &~ #PB_Tree_Selected)
             EndIf
       EndSelect
    EndProcedure
@@ -194,7 +289,6 @@ CompilerIf #PB_Compiler_IsMainFile
       SetItemState(*w1, 2, #PB_Tree_Selected|#PB_Tree_Checked )
       SetItemState(*w1, 3, #PB_Tree_Selected|#PB_Tree_Inbetween )
       SetItemState(*w1, 4, #PB_Tree_Selected|#PB_Tree_Inbetween|#PB_Tree_Expanded)
-      ;SetState(*w1, 0) 
       
       Bind(*w2, @widget_events())
       
@@ -438,7 +532,8 @@ CompilerEndIf
 ;    EndIf
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 3
-; Folding = ------
+; CursorPosition = 179
+; FirstLine = 129
+; Folding = --P9-4---
 ; EnableXP
 ; DPIAware

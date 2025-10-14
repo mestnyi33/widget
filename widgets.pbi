@@ -19173,21 +19173,27 @@ CompilerIf Not Defined( widget, #PB_Module )
                   SetActive( *this\AfterWidget( ) )
                   ;
                ElseIf *this\parent
-                  If *this\window = *this\parent
-                     If *this\window\gadget
-                        DoDeactivate( *this\window\gadget )
-                        *this\window\gadget = #Null
+                  If *this\parent\root = *this\root
+                     If *this\window = *this\parent
+                        If *this\window\gadget
+                           DoDeactivate( *this\window\gadget )
+                           *this\window\gadget = #Null
+                        EndIf
                      EndIf
+                     DoTabFocus( *this\parent, #True )
+                  Else
+                     DoTabFocus( *this\FirstWidget( ), #True )
                   EndIf
-                  DoTabFocus( *this\parent, #True )
                   ;
-               ElseIf *this\root
-                  If *this\root\FirstWidget( )
-                     If *this\window\gadget
-                        DoDeactivate( *this\window\gadget )
-                        *this\window\gadget = #Null
+               Else
+                  If *this\root
+                     If *this\root\FirstWidget( )
+                        If *this\window\gadget
+                           DoDeactivate( *this\window\gadget )
+                           *this\window\gadget = #Null
+                        EndIf
+                        SetActive( *this\root\FirstWidget( ) )
                      EndIf
-                     SetActive( *this\root\FirstWidget( ) )
                   EndIf
                EndIf
             EndIf
@@ -25197,6 +25203,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure MessageEvents( )
          Select WidgetEvent( )
+            Case #__event_KeyDown
+               Debug "key - message"
+               
             Case #__event_LeftClick
                If #__type_Button = Type( EventWidget( ) )
                   Protected *message._s_WIDGET = GetWindow( EventWidget( ) )
@@ -25213,8 +25222,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   PostQuit( *message )
                EndIf
                
-               ; ProcedureReturn #PB_Ignore
          EndSelect
+               ; ProcedureReturn #PB_Ignore
       EndProcedure
       
       Procedure Message( Title.s, Text.s, flag.q = #Null, ParentID = #Null )
@@ -25262,7 +25271,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          *message = Open( #PB_Any, X, Y, Width, Height, Title, newflag, WindowID( *root\canvas\window ) )
          SetClass( *message, #PB_Compiler_Procedure )
          *message\parent = *root
-         
+         ;
          ;\\
          If constants::BinaryFlag( Flag, #__message_Info )
             img = CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info )
@@ -25398,7 +25407,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                end_img_warning:
             EndDataSection
          EndIf
-         
+         ;
          ;\\
          Container( f1, f1, Width - f1 * 2, Height - bh - f1 - f2 * 2 - 1 )
          SetClass( widget( ), "message_CONT" )
@@ -25425,11 +25434,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             *cancel = Button( Width - ( bw + f2 ) * 3 - f2 * 2, Height - bh - f2, bw, bh, "Cancel" )
             SetClass( *cancel, "message_Cancel" )
          EndIf
-         
+         SetActiveGadget( GetCanvasGadget( *message ))
+         SetActive( *ok )
+         ;
          ;\\
          DisableWindow( *root\canvas\window, #True )
-         HideWindow( *message\canvas\window, #False )
          StickyWindow( *Message\canvas\window, #True )
+         HideWindow( *message\canvas\window, #False )
          
          ;\\
          ;SetLayeredWindow( *message\canvas\window, igOpaque )
@@ -25440,9 +25451,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;SetBackgroundColor( *message, igOpaque )
          
          ;\\
-         Bind( *message, @MessageEvents( ), #__event_LeftClick )
+         Bind( *message, @MessageEvents( ));, #__event_LeftClick )
          WaitQuit( *message ) : result = GetData( *message )
-         Unbind( *message, @MessageEvents( ), #__event_LeftClick )
+         Unbind( *message, @MessageEvents( ));, #__event_LeftClick )
          
          ;          ;\\
          ;          If *root
@@ -26655,10 +26666,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 21804
-; FirstLine = 20789
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----X0--48u70--v--+--------------------4-8----------------------------------------------------------------------------------------------------------------f----fd9----
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 19179
+; FirstLine = 18587
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-----f2-8fr8q4---+-8--------------------f-v--------------------------------------------------------------------------------------------------------------fr-0----2x----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
