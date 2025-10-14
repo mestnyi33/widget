@@ -1043,8 +1043,8 @@ EndProcedure
 
 Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    Protected position = 90
-   Protected *first._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_BorderLess)
-   Protected *second._s_WIDGET ;= Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_BorderLess)
+   Protected *first._s_WIDGET = -1;Tree(0,0,0,0, #PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_BorderLess)
+   Protected *second._s_WIDGET = -1;Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_BorderLess)
    ;    *first\padding\x = 10
    ;    *second\padding\x = 10
    
@@ -1235,9 +1235,9 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1045
-; FirstLine = 1036
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 1046
+; FirstLine = 1018
 ; Folding = ------------------------
 ; EnableXP
 ; DPIAware

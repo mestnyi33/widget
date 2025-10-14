@@ -19472,10 +19472,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          Next
          ;
          If result
-            FreeGadget( canvasgadget )
-            If CloseWindow( canvaswindow )
-               ; если у окна есть дочернее окно 
-               ; в окнах при закрытии главного окна закрывается и дочернее 
+           FreeGadget( canvasgadget )   
+           result = CloseWindow( canvaswindow )
+           ;
+           ; если у окна есть дочернее окно 
+           ; в окнах при закрытии главного окна закрывается и дочернее 
+           If result
                If MapSize( roots( ) ) > 1
                   ForEach roots( ) 
                      If Not IsWindow( roots()\canvas\window )
@@ -20879,12 +20881,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;
                DisableWindow( GetCanvasWindow(*root\parent), #False )
-               SetActiveGadget(GetCanvasGadget(*root\parent) )
+               CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+                 SetActiveGadget(GetCanvasGadget(*root\parent) )
+               CompilerEndIf
                ;ChangeCurrentCanvas( GadgetID(GetCanvasGadget(*root\parent)) )
                ;SetActive ( *root\parent )
             EndIf
             
-            Debug "  post exit [LOOP]"
+            Debug "  Exit post... [LOOP]"
             
             ;\\ stop main loop
             CompilerSelect #PB_Compiler_OS
@@ -26651,10 +26655,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 20905
-; FirstLine = 19891
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----X0--48u70--v--+--------------------4-8----------------------------------------------------------------------------------------------------------------v--8-vO+----
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 21804
+; FirstLine = 20789
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------87j-4j----v-f--+--0---------+-----------------------------------------------------------------------------------4-3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----X0--48u70--v--+--------------------4-8----------------------------------------------------------------------------------------------------------------f----fd9----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

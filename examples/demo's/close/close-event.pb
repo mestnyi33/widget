@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
      ProcedureReturn Message(title, Text, flags, parentID )
-     ProcedureReturn MessageRequester(title, Text, flags, parentID );
+     ; ProcedureReturn MessageRequester(title, Text, flags, parentID );
    EndProcedure
 
    ;\\
@@ -80,9 +80,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 33
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 14
+; FirstLine = 10
 ; Folding = --
 ; EnableXP
 ; DPIAware
