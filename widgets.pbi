@@ -19218,7 +19218,19 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          If LastElement(widgets( ))
             Repeat
-              If IsChild( widgets( ), *this ) Or ( mode And widgets( ) = *this )
+               If ( mode And widgets( ) = *this ) Or 
+                  IsChild( widgets( ), *this )
+                  ;
+                  If Not Post( widgets( ), #__event_free )
+                     If PreviousElement( widgets( ))
+                        Continue
+                     Else
+                        Break
+                     EndIf
+                  EndIf
+                  
+                  ;
+                  ;
                   If widgets( ) = *this
                      If *this\haschildren
                         Break
@@ -19235,14 +19247,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                         
                         If Opened( ) = *this
                            OpenList( *this\parent )
-                        EndIf
-                     EndIf
-                  Else
-                     If Not Post( widgets( ), #__event_free )
-                        If PreviousElement( widgets( ))
-                           Continue
-                        Else
-                           Break
                         EndIf
                      EndIf
                   EndIf
@@ -19285,9 +19289,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;
                      If widgets( )\tabbar
                         If widgets( )\tabbar = widgets( )
-;                            If test_delete
-;                               Debug "   free (tab) " + widgets( )\tabbar\class
-;                            EndIf
+                           ;                            If test_delete
+                           ;                               Debug "   free (tab) " + widgets( )\tabbar\class
+                           ;                            EndIf
                            ResetStructure( widgets( )\tabbar, _s_WIDGET ) ; FreeStructure( widgets( )\tabbar )
                            widgets( )\tabbar = 0
                         EndIf
@@ -19296,16 +19300,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;
                      If widgets( )\scroll
                         If widgets( )\scroll\v
-;                            If test_delete
-;                               Debug "   free (scroll-v) " + widgets( )\scroll\v\class
-;                            EndIf
+                           ;                            If test_delete
+                           ;                               Debug "   free (scroll-v) " + widgets( )\scroll\v\class
+                           ;                            EndIf
                            ResetStructure( widgets( )\scroll\v, _s_WIDGET ) ; FreeStructure( widgets( )\scroll\v )
                            widgets( )\scroll\v = 0
                         EndIf
                         If widgets( )\scroll\h
-;                            If test_delete
-;                               Debug "   free (scroll-h) " + widgets( )\scroll\h\class
-;                            EndIf
+                           ;                            If test_delete
+                           ;                               Debug "   free (scroll-h) " + widgets( )\scroll\h\class
+                           ;                            EndIf
                            ResetStructure( widgets( )\scroll\h, _s_WIDGET ) ; FreeStructure( widgets( )\scroll\h )
                            widgets( )\scroll\h = 0
                         EndIf
@@ -19359,13 +19363,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                            EndIf
                         EndIf
                         
-;                         If GetActive( ) = *this
-;                            GetActive( ) = *this\parent
-;                         EndIf
-;                            If GetActive( ) And
-;                               GetActive( )\root = *this
-;                               GetActive( ) = #Null
-;                            EndIf
+                        ;                         If GetActive( ) = *this
+                        ;                            GetActive( ) = *this\parent
+                        ;                         EndIf
+                        ;                            If GetActive( ) And
+                        ;                               GetActive( )\root = *this
+                        ;                               GetActive( ) = #Null
+                        ;                            EndIf
                      EndIf
                      ;
                      ;\\ remove count types
@@ -19400,34 +19404,34 @@ CompilerIf Not Defined( widget, #PB_Module )
                      Next
                      
                      ;
-;                      ;                      ;
-;                      If widgets( )\haschildren
-;                         Protected *g._s_WIDGET = widgets( )
-;                         PushListPosition(widgets( ))
-;                         ForEach widgets( )
-;                            If widgets( )\parent = *g
-;                               Debug "a "+widgets( )\class +" "+ widgets( )\parent\class
-;                               SetParent( widgets( ), *g\parent )
-;                            EndIf
-;                         Next
-;                         PopListPosition(widgets( ))
-;                         
-; ;                         Protected *g._s_WIDGET = widgets( )
-; ;                         If StartEnum( *g )
-; ;                            SetParent( widgets( ), *g\parent )
-; ;                            StopEnum( )
-; ;                         EndIf
-;                      EndIf
+                     ;                      ;                      ;
+                     ;                      If widgets( )\haschildren
+                     ;                         Protected *g._s_WIDGET = widgets( )
+                     ;                         PushListPosition(widgets( ))
+                     ;                         ForEach widgets( )
+                     ;                            If widgets( )\parent = *g
+                     ;                               Debug "a "+widgets( )\class +" "+ widgets( )\parent\class
+                     ;                               SetParent( widgets( ), *g\parent )
+                     ;                            EndIf
+                     ;                         Next
+                     ;                         PopListPosition(widgets( ))
+                     ;                         
+                     ; ;                         Protected *g._s_WIDGET = widgets( )
+                     ; ;                         If StartEnum( *g )
+                     ; ;                            SetParent( widgets( ), *g\parent )
+                     ; ;                            StopEnum( )
+                     ; ;                         EndIf
+                     ;                      EndIf
                      
                      
-                  
-;                     ;\\
-;                      widgets( )\parent  = #Null
-;                      widgets( )\address = #Null
-;                      ;
-                      ResetStructure( widgets( ), _s_WIDGET )
-;                      ClearStructure( widgets( ), _s_WIDGET )
-                   ;  FreeStructure( widgets( ) )
+                     
+                     ;                     ;\\
+                     ;                      widgets( )\parent  = #Null
+                     ;                      widgets( )\address = #Null
+                     ;                      ;
+                     ResetStructure( widgets( ), _s_WIDGET )
+                     ;                      ClearStructure( widgets( ), _s_WIDGET )
+                     ;  FreeStructure( widgets( ) )
                      ; Debug widgets( )\root
                      DeleteElement( widgets( ), 1 )
                   EndIf
@@ -19455,33 +19459,35 @@ CompilerIf Not Defined( widget, #PB_Module )
                *g = *this\i
                *this\i = 0
                
-               If Post( *g, #__event_free )
-                  ; Debug "free-[delete] "+*g\class
-                  FreeChildrens( *g, #True )
-                  
-;                   ;\\
-;                   If is_root_( *g )
-;                      If FindMapElement( roots( ), Str( *g\root\canvas\gadgetID ) )
-;                         DeleteMapElement( roots( ) )
-;                         ; DeleteMapElement( roots( ), MapKey( roots( ) ) )
-;                         ; ResetMap( roots( ) )
-;                         If test_delete
-;                            Debug " FREE - " + *g\class + " " + *g\address
-;                         EndIf
-;                         
-;                         If Not MapSize( roots( ) )
-;                            PostQuit( )
-;                         EndIf
-;                         
-;                         ; bug 612
-;                         ; PostEvent( #PB_Event_CloseWindow, *g\root\canvas\window, #PB_Default ) 
-;                      EndIf
-;                   Else
-;                      PostReDraw( *g\root)
-;                   EndIf
-                  
-                  ProcedureReturn 1
-               EndIf
+               FreeChildrens( *g, #True )
+;                If Post( *g, #__event_free )
+;                   FreeChildrens( *g )
+;                   
+;                   ; Debug "free-[delete] "+*g\class
+;                   
+; ;                   ;\\
+; ;                   If is_root_( *g )
+; ;                      If FindMapElement( roots( ), Str( *g\root\canvas\gadgetID ) )
+; ;                         DeleteMapElement( roots( ) )
+; ;                         ; DeleteMapElement( roots( ), MapKey( roots( ) ) )
+; ;                         ; ResetMap( roots( ) )
+; ;                         If test_delete
+; ;                            Debug " FREE - " + *g\class + " " + *g\address
+; ;                         EndIf
+; ;                         
+; ;                         If Not MapSize( roots( ) )
+; ;                            PostQuit( )
+; ;                         EndIf
+; ;                         
+; ;                         ; bug 612
+; ;                         ; PostEvent( #PB_Event_CloseWindow, *g\root\canvas\window, #PB_Default ) 
+; ;                      EndIf
+; ;                   Else
+; ;                      PostReDraw( *g\root)
+; ;                   EndIf
+;                   
+;                   ProcedureReturn 1
+;                EndIf
             Else
                If IsChildrens( *this )
                   Debug "[" + GetClass(*this ) +"]childrens - free"
@@ -26745,9 +26751,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 19495
-; FirstLine = 18715
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------vrP+fP+----+-0-8--4---------8-----------------------------------------------------------------------------------f-b------------------------------------------------------4v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-f-----------------------------------------------------vv-----v7-0-2d28--f--0--------------------f-v---------------------------------------------------------------------------------------------------------------t+4----XH----
+; CursorPosition = 19228
+; FirstLine = 18482
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------vrP+fP+----+-0-8--4---------8-----------------------------------------------------------------------------------f-b------------------------------------------------------4v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-f------------------------------------------------------------X0-+-7u70--v--+--------------------v-4---------------------------------------------------------------------------------------------------------------W-8----rj----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

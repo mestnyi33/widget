@@ -1277,50 +1277,6 @@ Procedure HideBarButtons( *this._s_WIDGET, state )
    DisableBarButton( *this, #_tb_group_width, state )
 EndProcedure
 
-Macro new_widget_copy( )
-   ClearList( *copy( ) )
-   
-   ;    If a_focused( )\anchors
-   ;       AddElement( *copy( ) ) 
-   ;       *copy.allocate( widget, ( ) )
-   ;       *copy( )\widget = a_focused( )
-   ;    Else
-   ;       
-   ;       ; CopyList( a_group( ), *copy( ) )
-   ;       
-   ;    EndIf
-   ;    
-   mouse( )\selector\x = mouse( )\steps
-   mouse( )\selector\y = mouse( )\steps
-EndMacro
-
-Macro new_widget_paste( )
-   ;    If ListSize( *copy( ) )
-   ;       ForEach *copy( )
-   ;          new_widget_add( *copy( )\widget\parent, 
-   ;                      *copy( )\widget\class, 
-   ;                      *copy( )\widget\x[#__c_container] + ( mouse( )\selector\x ),; -*copy( )\widget\parent\x[#__c_inner] ),
-   ;                      *copy( )\widget\y[#__c_container] + ( mouse( )\selector\y ),; -*copy( )\widget\parent\y[#__c_inner] ), 
-   ;                      *copy( )\widget\width[#__c_frame],
-   ;                      *copy( )\widget\height[#__c_frame] )
-   ;       Next
-   ;       
-   ;       mouse( )\selector\x + mouse( )\steps
-   ;       mouse( )\selector\y + mouse( )\steps
-   ;       
-   ;       ; ClearList( a_group( ) )
-   ;       ; CopyList( *copy( ), a_group( ) )
-   ;    EndIf
-   ;    
-   ; ;    ;
-   ; ;    ForEach a_group( )
-   ; ;       Debug " group "+a_group( )\widget
-   ; ;    Next
-   ;    
-   ;    ;
-   ;    ;a_update( a_focused( ) )
-EndMacro
-
 Procedure new_widget_line_add( *new._s_widget )
    Protected *parent._s_widget, Param1, Param2, Param3, newClass.s = GetClass( *new )
    
@@ -1388,35 +1344,57 @@ Procedure new_widget_line_add( *new._s_widget )
    ProcedureReturn *new
 EndProcedure
 
-Procedure new_widget_delete( *this._s_WIDGET  )
-   Protected item
-   Protected i 
-   Protected CountItems
+Global NewList *copy._s_WIDGET( )
+Global copy_x,copy_y
+
+Procedure  new_widget_copy( )
+   copy_x = 0
+   copy_y = 0
+   ClearList( *copy( ) )
    
-   
-   If *this <> ide_design_MDI
-      item = GetData( *this )
+   ;    If a_focused( )\anchors
+   AddElement( *copy( ) ) 
+   *copy.allocate( widget, ( ) )
+   *copy( ) = a_focused( )
+   ;    Else
+   ;       
+   ;       ; CopyList( a_group( ), *copy( ) )
+   ;       
+   ;    EndIf
+   ;    
+EndProcedure
+
+Procedure  new_widget_paste( )
+   If ListSize( *copy( ) )
+      copy_x + mouse( )\steps
+      copy_y + mouse( )\steps
       
-      If item 
-         Free( *this )
+      ForEach *copy( )
+         Debug ""+*copy( )\class +" "+ 
+               *copy( )\x[#__c_container] +" "+ 
+               *copy( )\y[#__c_container] +" "+  
+               *copy( )\width[#__c_frame] +" "+ 
+               *copy( )\height[#__c_frame]
          
-         RemoveItem( ide_inspector_VIEW, item )
-         ;
-         ; after remove item 
-         CountItems = CountItems( ide_inspector_VIEW ) 
-         If CountItems 
-            ; update widget data item
-            For i = 0 To CountItems - 1
-               SetData( GetItemData( ide_inspector_VIEW, i ), i )
-            Next 
-            ;
-            ; set anchor focus
-            If a_set( GetItemData( ide_inspector_VIEW, GetState( ide_inspector_VIEW ) ) )
-               ; Это не нужен так как a_set( ) мы получаем фокус выджета 
-               ; Properties_Updates( a_focused( ), "Delete" )
-            EndIf
-         EndIf
-      EndIf
+         
+         new_widget_add( *copy( )\parent, 
+                         ClassFromType(*copy( )\type), 
+                         X(*copy( ), #__c_container)+copy_x,
+                         Y(*copy( ), #__c_container)+copy_y, 
+                         Width(*copy( ), #__c_frame),
+                         Height(*copy( ), #__c_frame), *copy( )\flag )
+         
+      Next
+      
+      ; ClearList( *copy( ) )
+   EndIf
+EndProcedure
+
+Procedure new_widget_delete( *this._s_WIDGET  )
+   If *this <> ide_design_MDI
+      ; we delete the object itself
+      ; and all its children
+      Free( @*this )
    EndIf
 EndProcedure
 
@@ -1637,9 +1615,24 @@ Procedure new_widget_events( )
             ProcedureReturn #False
          EndIf
          
-         Protected item = GetData(*g) 
          ; Debug "  do free "+item
-         RemoveItem( ide_inspector_VIEW, item ) 
+         ; remove items 
+         RemoveItem( ide_inspector_VIEW, GetData( *g )  ) 
+         
+         ; after remove items 
+         If *g = a_focused( )
+            Protected i, CountItems
+            CountItems = CountItems( ide_inspector_VIEW ) 
+            If CountItems 
+               ; update widget data item
+               For i = 0 To CountItems - 1
+                  SetData( GetItemData( ide_inspector_VIEW, i ), i )
+               Next 
+               ;
+               ; set anchor focus
+               a_set( GetItemData( ide_inspector_VIEW, GetState( ide_inspector_VIEW ) ) )
+            EndIf
+         EndIf
          
          ;
          DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
@@ -2007,7 +2000,7 @@ EndProcedure
 Procedure   ide_file_new( )
    ; очищаем MDI
    ide_mdi_clears( )
-          ;
+   ;
    ; затем создаем новое окно
    new_widget_add( ide_design_MDI, "window", 7, 7, 400, 250 )
 EndProcedure
@@ -2268,8 +2261,18 @@ Procedure ide_menu_events(  )
          new_widget_copy( )
          
       Case #_tb_widget_cut
-         new_widget_copy( )
-         new_widget_delete( a_focused( ) )
+        ; new_widget_copy( )
+         Protected *i = a_focused( )
+;          AddElement( *copy( ) ) 
+;    *copy.allocate( widget, ( ) )
+;    CopyStructure( *i, *copy( ), _s_WIDGET)
+         ChangeCurrentElement( widgets( ), a_focused( )\address )
+         ;CopyList( widgets( ), *copy( ))
+         ;MergeLists( widgets( ), *copy( ))
+         SplitList( widgets( ), *copy( ))
+         Debug ListSize(*copy( ))
+         
+         ;new_widget_delete( a_focused( ) )
          
       Case #_tb_widget_paste
          new_widget_paste( )
@@ -2384,7 +2387,7 @@ Procedure ide_events( )
             If #PB_MessageRequester_Yes = Message( "Message", 
                                                    "Are you sure you want to go out?",
                                                    #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-                ProcedureReturn #PB_All
+               ProcedureReturn #PB_All
             Else
                ProcedureReturn #False ; no close
             EndIf
@@ -2989,23 +2992,23 @@ CompilerIf #PB_Compiler_IsMainFile
       SetActiveGadget( ide_g_canvas )
    EndIf
    
-;    
-;    Debug ""+root( )\haschildren ;+" "+ *g\haschildren
-;    ReDraw(root())
-;    FreeChildrens(root())
-;    
-;    Debug "------"
-;    PushListPosition(widgets( ))
-;    ForEach widgets( )
-;       Debug "p "+widgets( )\class +" "+ widgets( )\text\string +" "+ widgets( )\parent\class
-;    Next
-;    PopListPosition(widgets( ))
-;    
-;    If root( )\FirstWidget( )
-;       Debug "  f "+ root( )\FirstWidget( )\class +" "+ root( )\FirstWidget( )\address
-;    EndIf
-;    
-;       
+   ;    
+   ;    Debug ""+root( )\haschildren ;+" "+ *g\haschildren
+   ;    ReDraw(root())
+   ;    FreeChildrens(root())
+   ;    
+   ;    Debug "------"
+   ;    PushListPosition(widgets( ))
+   ;    ForEach widgets( )
+   ;       Debug "p "+widgets( )\class +" "+ widgets( )\text\string +" "+ widgets( )\parent\class
+   ;    Next
+   ;    PopListPosition(widgets( ))
+   ;    
+   ;    If root( )\FirstWidget( )
+   ;       Debug "  f "+ root( )\FirstWidget( )\class +" "+ root( )\FirstWidget( )\address
+   ;    EndIf
+   ;    
+   ;       
    ;\\ 
    WaitClose( )
 CompilerEndIf
@@ -3031,9 +3034,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1995
-; FirstLine = 1890
-; Folding = --------------------------------------2t8-vf---------
+; CursorPosition = 2271
+; FirstLine = 2249
+; Folding = -----------------------------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
