@@ -1067,7 +1067,7 @@ Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    Hide( *first\scroll\h, 1 )
    Hide( *second\scroll\h, 1 )
    
-   ;CloseList( )
+   ; CloseList( )
    
    SetColor( *splitter, #PB_Gadget_BackColor, -1, #PB_All )
    SetColor( *first, #PB_Gadget_LineColor, $FFBF9CC3)
@@ -1276,7 +1276,6 @@ Procedure HideBarButtons( *this._s_WIDGET, state )
    DisableBarButton( *this, #_tb_group_height, state )
    DisableBarButton( *this, #_tb_group_width, state )
 EndProcedure
-
 
 Macro new_widget_copy( )
    ClearList( *copy( ) )
@@ -1634,6 +1633,10 @@ Procedure new_widget_events( )
          ProcedureReturn #False
          ;
       Case #__event_Free
+         If *g = ide_design_MDI
+            ProcedureReturn #False
+         EndIf
+         
          Protected item = GetData(*g) 
          ; Debug "  do free "+item
          RemoveItem( ide_inspector_VIEW, item ) 
@@ -1641,7 +1644,6 @@ Procedure new_widget_events( )
          ;
          DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
          
-         ; ProcedureReturn #True
          
       Case #__event_RightDown
          Debug "right"
@@ -1737,6 +1739,24 @@ Procedure new_widget_events( )
          ;If a_focused( )
          HideBarButtons( ide_toolbar, Bool(a_anchors( )\group\show=0) )
          ;EndIf
+         If a_anchors( )\group\show
+            If StartEnum( *g )
+               If widgets( )\anchors\group\show
+                  SetItemState( ide_inspector_VIEW, GetData( widgets( )), #PB_Tree_Selected )
+               EndIf
+               StopEnum( )
+            EndIf
+         Else
+            Define i, state
+            For i = 0 To CountItems( ide_inspector_VIEW )
+               If i <> GetData( *g )
+                  state = GetItemState( ide_inspector_VIEW, i )
+                  If state & #PB_Tree_Selected
+                     SetItemState( ide_inspector_VIEW, i, state &~ #PB_Tree_Selected )
+                  EndIf
+               EndIf
+            Next
+         EndIf
          
          ; then group select
          If IsContainer(*g)
@@ -1965,7 +1985,6 @@ Procedure.S ide_help_elements(Class.s)
    ProcedureReturn Result.S
 EndProcedure
 
-#File = 0
 Procedure ide_mdi_clears( )
    ; Очишаем текст
    ClearItems( ide_design_CODE ) 
@@ -1973,7 +1992,8 @@ Procedure ide_mdi_clears( )
    ClearItems( ide_design_DEBUG ) 
    ;
    ; удаляем всех детей у MDI (то есть освобождаем его)
-   FreeChildrens( ide_design_MDI )
+   ; FreeChildrens( ide_design_MDI )
+   Free( ide_design_MDI )
    ;
    ; переключаем на форму 
    SetState( ide_design_PANEL, 0 )
@@ -1981,11 +2001,13 @@ Procedure ide_mdi_clears( )
    ; затем показываем гаджеты для добавления
    SetState( ide_inspector_PANEL, 0 )
 EndProcedure
+
+#File = 0
 ;
 Procedure   ide_file_new( )
    ; очищаем MDI
    ide_mdi_clears( )
-   ;
+          ;
    ; затем создаем новое окно
    new_widget_add( ide_design_MDI, "window", 7, 7, 400, 250 )
 EndProcedure
@@ -2242,6 +2264,20 @@ Procedure ide_menu_events(  )
       Case #_tb_lng_GERMAN
          ide_Lng_change( 3 )
          
+      Case #_tb_widget_copy
+         new_widget_copy( )
+         
+      Case #_tb_widget_cut
+         new_widget_copy( )
+         new_widget_delete( a_focused( ) )
+         
+      Case #_tb_widget_paste
+         new_widget_paste( )
+         
+      Case #_tb_widget_delete
+         new_widget_delete( a_focused( ) )
+         
+         
       Case #_tb_group_select
          If Type(*g) = #__type_ToolBar
             If GetItemState( *g, BarButton )  
@@ -2263,14 +2299,25 @@ Procedure ide_menu_events(  )
             EndIf
          EndIf
          
+      Case #_tb_group_left
+         a_align( a_focused( ), 1 )
+      Case #_tb_group_right 
+         a_align( a_focused( ), 3 )
+      Case #_tb_group_top 
+         a_align( a_focused( ), 2 )
+      Case #_tb_group_bottom
+         a_align( a_focused( ), 4 )
+      Case #_tb_group_width 
+         a_align( a_focused( ), 5 )
+      Case #_tb_group_height
+         a_align( a_focused( ), 6 )
+         
          
          ;  RUN
       Case #_tb_file_run
          Define Code.s = Generate_Code( ide_design_MDI ) ;GetText( ide_design_CODE )
          
          RunPreview( Code )
-         
-         
          
       Case #_tb_file_new
          ide_file_new( )
@@ -2295,33 +2342,6 @@ Procedure ide_menu_events(  )
          If Not ide_file_save( File$ )
             Message("Информация","Не удалось сохранить файл.", #PB_MessageRequester_Error)
          EndIf
-         
-      Case #_tb_widget_copy
-         new_widget_copy( )
-         
-      Case #_tb_widget_cut
-         new_widget_copy( )
-         new_widget_delete( a_focused( ) )
-         
-      Case #_tb_widget_paste
-         new_widget_paste( )
-         
-      Case #_tb_widget_delete
-         new_widget_delete( a_focused( ) )
-         
-         
-      Case #_tb_group_left
-         a_align( a_focused( ), 1 )
-      Case #_tb_group_right 
-         a_align( a_focused( ), 3 )
-      Case #_tb_group_top 
-         a_align( a_focused( ), 2 )
-      Case #_tb_group_bottom
-         a_align( a_focused( ), 4 )
-      Case #_tb_group_width 
-         a_align( a_focused( ), 5 )
-      Case #_tb_group_height
-         a_align( a_focused( ), 6 )
          
          
    EndSelect
@@ -2969,6 +2989,23 @@ CompilerIf #PB_Compiler_IsMainFile
       SetActiveGadget( ide_g_canvas )
    EndIf
    
+;    
+;    Debug ""+root( )\haschildren ;+" "+ *g\haschildren
+;    ReDraw(root())
+;    FreeChildrens(root())
+;    
+;    Debug "------"
+;    PushListPosition(widgets( ))
+;    ForEach widgets( )
+;       Debug "p "+widgets( )\class +" "+ widgets( )\text\string +" "+ widgets( )\parent\class
+;    Next
+;    PopListPosition(widgets( ))
+;    
+;    If root( )\FirstWidget( )
+;       Debug "  f "+ root( )\FirstWidget( )\class +" "+ root( )\FirstWidget( )\address
+;    EndIf
+;    
+;       
    ;\\ 
    WaitClose( )
 CompilerEndIf
@@ -2993,12 +3030,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 1052
-; FirstLine = 1044
-; Folding = ----------------------------------------------------
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 1995
+; FirstLine = 1890
+; Folding = --------------------------------------2t8-vf---------
+; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = C:/Users/user/Downloads/Compressed/FormDesignerWindows4.70b2/ide.exe
-; Optimizer
+; Executable = C:\Users\user\Downloads\Compressed\FormDesignerWindows4.70b2\ide.exe

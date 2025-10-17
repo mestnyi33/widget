@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
         Select WidgetEvent( )
           Case #__Event_Change
             If *CHILD
-              Free(*CHILD)
+              Free(@*CHILD)
             EndIf
             
             Select GetState(*LIST)
@@ -161,8 +161,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 50
+; CursorPosition = 37
+; FirstLine = 33
 ; Folding = --
 ; EnableXP
 ; DPIAware

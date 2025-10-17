@@ -6,6 +6,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
+   ;test_delete = 1
    
    Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
       ProcedureReturn #PB_MessageRequester_Yes
@@ -17,6 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_close
             Debug "  do close - [" + EventWidget( )\class +"]"
+            Debug "     ;"
             
             If EventWindow( ) = 2 
                If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
@@ -29,6 +31,9 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_free
             Debug "    do free - [" + EventWidget( )\class +"]"
+            If is_root_(EventWidget( )) 
+               Debug "     ;"
+            EndIf
             
 ;             ;\\ Uncomment to see deletions of buttons only
 ;             If #__type_button = EventWidget( )\type
@@ -116,8 +121,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ; Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 12
-; FirstLine = 8
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 20
+; FirstLine = 10
 ; Folding = --
 ; EnableXP

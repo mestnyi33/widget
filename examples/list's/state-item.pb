@@ -116,12 +116,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;-
    Procedure widget_events()
-      If WidgetEvent( ) <> #__event_mousemove
-         ;If WidgetEventData( ) = 1
-         ;  Debug ""+ WidgetEventData( ) +" "+ classfromevent(WidgetEvent( )) +" "+ WidgetEventItem( ) +" "+ GetClass(EventWidget( ))
-         ;EndIf
-      EndIf
-      
       Select WidgetEvent( )
          Case #__event_Down
             ; чтобы выбирать сразу
@@ -332,15 +326,36 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*item4, @button_events(), #__event_Up)
       
       
-      ;        ReDraw( root( ))
-      ;       ;*demo\scroll\v\hide = 1
-      ;       Debug *demo\scroll\v\hide 
+      ReDraw(root())
+      ;Unbind(*w2, @widget_events())
+      FreeChildrens(root())
+      
+      PushListPosition(widgets( ))
+      ForEach widgets( )
+           Debug "p "+widgets( )\class +" "+ widgets( )\parent\class
+          If Not ( widgets( )\parent And widgets( )\parent\address )
+          ;  SetParent( widgets( ), roots( ) )
+         EndIf      
+      Next
+      PopListPosition(widgets( ))
+      
+      If root( )\FirstWidget( )
+         Debug "  f "+ root( )\FirstWidget( )\class +" "+ root( )\FirstWidget( )\address
+      EndIf
+      
+;       
+;       ;        ReDraw( root( ))
+;       ;       ;*demo\scroll\v\hide = 1
+;       ;       Debug *demo\scroll\v\hide 
       
       WaitClose()
+      
+      
+      
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 77
-; FirstLine = 56
-; Folding = --------
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 336
+; FirstLine = 264
+; Folding = ------0-
 ; EnableXP

@@ -239,8 +239,16 @@ Procedure Add(Text.s)
             Select EventWidget( )
                Case w_type 
                   If *this
-                     Free(*this)
+                     Free( *this )
+                     
+                     ForEach widgets()
+                        If widgets( ) = *this
+                           Debug "NO DELETE "+widgets( )\class
+                        EndIf
+                     Next
+                     
                   EndIf
+                  
                   *this = widget_create(root(), GetItemText( w_type, GetState( w_type)), 100, 100, 250, 200, Text, 0,0,0, #PB_Button_Toggle|#__flag_Textmultiline) 
                   Debug  ""+GetText( w_type)+" "+GetItemText( w_type, GetState( w_type))
                   If *this
@@ -297,8 +305,8 @@ Procedure Add(Text.s)
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 150
-; FirstLine = 138
+; CursorPosition = 248
+; FirstLine = 231
 ; Folding = ------
 ; EnableXP
 ; DPIAware

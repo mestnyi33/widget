@@ -137,10 +137,12 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure widget_events()
       Protected item, itemstate
       Select WidgetEvent( )
+         Case #__event_Free
+            ProcedureReturn #True
+            
          Case #__event_LeftClick
             item = GetState(EventWidget( ))
             itemstate = GetItemState(*w1, item)
-            Debug "w "+item+" "+itemstate
             
             If itemstate & #PB_Tree_Selected
                Debug " #PB_Tree_Selected "
@@ -170,16 +172,35 @@ CompilerIf #PB_Compiler_IsMainFile
                Debug " & (#PB_Tree_Checked | #PB_Tree_Selected) "
             EndIf
             
+            Debug "w item "+item+" state "+itemstate
             If item = 1
-               itemstate = #PB_Tree_Selected
+               If itemstate & #PB_Tree_Selected
+                  itemstate &~ #PB_Tree_Selected
+               Else
+                  itemstate | #PB_Tree_Selected
+               EndIf
             ElseIf item = 2
-               itemstate &~ #PB_Tree_Checked
+               If itemstate & #PB_Tree_Checked
+                  itemstate &~ #PB_Tree_Checked
+               Else
+                  itemstate | #PB_Tree_Checked
+               EndIf
             ElseIf item = 3
-               itemstate &~ #PB_Tree_Inbetween
+               If itemstate & #PB_Tree_Inbetween
+                  itemstate &~ #PB_Tree_Inbetween
+               Else
+                  itemstate | #PB_Tree_Inbetween
+               EndIf
             ElseIf item = 4
-               itemstate &~ #PB_Tree_Collapsed
+               If itemstate & #PB_Tree_Collapsed
+                  itemstate &~ #PB_Tree_Collapsed
+                  itemstate | #PB_Tree_Expanded
+               ElseIf itemstate & #PB_Tree_Expanded
+                  itemstate &~ #PB_Tree_Expanded
+                  itemstate | #PB_Tree_Collapsed
+               EndIf
             EndIf
-            
+            Debug "      item "+item+" state "+itemstate
             
             If item = CountItems( *w1 ) - 1
                SetItemState(*w1, item, #PB_Tree_Selected)
@@ -196,7 +217,6 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #PB_EventType_LeftClick
             item = GetGadgetState(EventGadget())
             itemstate = GetGadgetItemState(*g1, item )
-            Debug "g "+item+" "+itemstate
             
             If itemstate & #PB_Tree_Selected
                Debug " #PB_Tree_Selected "
@@ -226,10 +246,41 @@ CompilerIf #PB_Compiler_IsMainFile
                Debug " & (#PB_Tree_Checked | #PB_Tree_Selected) "
             EndIf
             
+            Debug "g item "+item+" state "+itemstate
+            If item = 1
+               If itemstate & #PB_Tree_Selected
+                  itemstate &~ #PB_Tree_Selected
+               Else
+                  itemstate | #PB_Tree_Selected
+               EndIf
+            ElseIf item = 2
+               If itemstate & #PB_Tree_Checked
+                  itemstate &~ #PB_Tree_Checked
+               Else
+                  itemstate | #PB_Tree_Checked
+               EndIf
+            ElseIf item = 3
+               If itemstate & #PB_Tree_Inbetween
+                  itemstate &~ #PB_Tree_Inbetween
+               Else
+                  itemstate | #PB_Tree_Inbetween
+               EndIf
+            ElseIf item = 4
+               If itemstate & #PB_Tree_Collapsed
+                  itemstate &~ #PB_Tree_Collapsed
+                  itemstate | #PB_Tree_Expanded
+               ElseIf itemstate & #PB_Tree_Expanded
+                  itemstate &~ #PB_Tree_Expanded
+                  itemstate | #PB_Tree_Collapsed
+               EndIf
+            EndIf
+            Debug "      item "+item+" state "+itemstate
+            
             If item = CountGadgetItems( *g1 ) - 1
                SetGadgetItemState_(*g1, item, #PB_Tree_Selected)
             Else
-               SetGadgetItemState_(*g1, item, itemstate &~#PB_Tree_Selected)
+               SetGadgetItemState_(*g1, item, itemstate )
+               ; SetGadgetItemState_(*g1, item, itemstate &~#PB_Tree_Selected)
             EndIf
       EndSelect
    EndProcedure
@@ -245,8 +296,14 @@ CompilerIf #PB_Compiler_IsMainFile
          Else
             AddGadgetItem_(*g1, -1, "Item "+Str(a), 0, 1)
          EndIf
-         If a > 0 And a < 5
-            AddGadgetItem_(*g2, -1, "Item "+Str(a) +" (нажмите чтобы убрать выделение)", 0)
+         If a = 1
+            AddGadgetItem_(*g2, -1, "Item "+Str(a) +" (нажмите чтобы убрать Selected)", 0)
+         ElseIf a = 2
+            AddGadgetItem_(*g2, -1, "Item "+Str(a) +" (нажмите чтобы убрать Checked)", 0)
+         ElseIf a = 3
+            AddGadgetItem_(*g2, -1, "Item "+Str(a) +" (нажмите чтобы убрать Inbetween)", 0)
+         ElseIf a = 4
+            AddGadgetItem_(*g2, -1, "Item "+Str(a) +" (нажмите чтобы убрать Collapsed)", 0)
          Else
             AddGadgetItem_(*g2, -1, "Item "+Str(a), 0)
          EndIf
@@ -275,8 +332,14 @@ CompilerIf #PB_Compiler_IsMainFile
          Else
             AddItem(*w1, -1, "Item "+Str(a), -1, 1)
          EndIf
-         If a > 0 And a < 5
-            AddItem(*w2, -1, "Item "+Str(a) +" (нажмите чтобы убрать выделение)", 0)
+         If a = 1
+            AddItem(*w2, -1, "Item "+Str(a) +" (нажмите чтобы убрать Selected)", -1)
+         ElseIf a = 2
+            AddItem(*w2, -1, "Item "+Str(a) +" (нажмите чтобы убрать Checked)", -1)
+         ElseIf a = 3
+            AddItem(*w2, -1, "Item "+Str(a) +" (нажмите чтобы убрать Inbetween)", -1)
+         ElseIf a = 4
+            AddItem(*w2, -1, "Item "+Str(a) +" (нажмите чтобы убрать Collapsed)", -1)
          Else
             AddItem(*w2, -1, "Item "+Str(a), -1)
          EndIf
@@ -291,7 +354,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetItemState(*w1, 4, #PB_Tree_Selected|#PB_Tree_Inbetween|#PB_Tree_Expanded)
       
       Bind(*w2, @widget_events())
-      
+       
       ;     *reset = Button( 10, 435, 100, 30, "reset [all] selected")
       ;     *first = Button( 525 - (10+120)*3, 435, 120, 30, "select [first] item", #__flag_ButtonToggle)
       ;     *last = Button( 525 - (10+120)*2, 435, 120, 30, "select [last] item", #__flag_ButtonToggle)
@@ -531,9 +594,9 @@ CompilerEndIf
 ;       WaitClose()
 ;    EndIf
 ; CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 179
-; FirstLine = 129
-; Folding = --P9-4---
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 211
+; FirstLine = 152
+; Folding = --P9--0---
 ; EnableXP
 ; DPIAware

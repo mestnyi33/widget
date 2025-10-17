@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    UsePNGImageDecoder()
-   
+   Declare CreateNewWindow( )
    Global *window, *buttonOpen, *buttonClose, *buttonTest
    
    ; disable window buttons events (MAXIMIZE|MINIMIZE|CLOSE)
@@ -33,19 +33,6 @@ CompilerIf #PB_Compiler_IsMainFile
             ProcedureReturn #False
             
       EndSelect
-   EndProcedure
-   
-   Procedure CreateNewWindow( )
-      Protected *window = Window(100,100,200,200,"window", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
-      Define *g1=Button(10, 10, 90,30,"button")
-      Define *g2=Button(10, 50, 90,30,"button")
-      
-      Splitter( 10,90,100,100,*g1,*g2 )
-      
-      Debug "" + root( )\haschildren
-                  
-      Bind( *window, @events_buttons( ) )
-      ProcedureReturn *window
    EndProcedure
    
    Procedure events_gadgets()
@@ -84,6 +71,19 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn #PB_Ignore
    EndProcedure
    
+   Procedure CreateNewWindow( )
+      Protected *window = Window(100,100,200,200,"window", #PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget)
+      Define *g1=Button(10, 10, 90,30,"button")
+      Define *g2=Button(10, 50, 90,30,"button")
+      
+      Splitter( 10,90,100,100,*g1,*g2 )
+      
+      Debug "" + root( )\haschildren
+                  
+      Bind( *window, @events_buttons( ) )
+      ProcedureReturn *window
+   EndProcedure
+   
    Open(0, 150, 150, 500, 400, "demo close", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
    
    *window = CreateNewWindow( )
@@ -99,9 +99,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 24
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 32
+; FirstLine = 33
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -20,6 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_close
             Debug "  do close - [" + EventWidget( )\class +"]"
+            Debug "     ;"
             
             If EventWindow( ) = 2 
                If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
@@ -32,6 +33,9 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_free
             Debug "    do free - [" + EventWidget( )\class +"]"
+            If is_root_(EventWidget( )) 
+               Debug "     ;"
+            EndIf
             
 ;             ;\\ Uncomment to see deletions of buttons only
 ;             If #__type_button = EventWidget( )\type
@@ -117,8 +121,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 13
-; FirstLine = 9
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 38
+; FirstLine = 24
 ; Folding = --
 ; EnableXP

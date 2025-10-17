@@ -54,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndSelect
             
          Case #__event_close
-            Debug "  [e-close] " + EventWidget( )\class +" --- "+ GetWindowTitle( EventWindow( ) )
+            Debug "  do close - [" + EventWidget( )\class +"]"
             
             ;\\ demo main window
             If EventWindow( ) = 2
@@ -69,10 +69,10 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
            
          Case #__event_free
-            Debug "  [e-free] " + EventWidget( )\class 
+            Debug "    do free - [" + EventWidget( )\class +"]" 
             
             ;\\ to send not free
-            ; ProcedureReturn #False
+            ProcedureReturn #False
             
       EndSelect
       
@@ -80,9 +80,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 14
-; FirstLine = 10
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 57
+; FirstLine = 38
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -9,6 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
    Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
+      ProcedureReturn #PB_MessageRequester_Yes
       ProcedureReturn Message(title, Text, flags, parentID )
      ;  ProcedureReturn MessageRequester(title, Text, flags, parentID );
    EndProcedure
@@ -18,12 +19,10 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_leftclick
             Select GetText( EventWidget())
                Case "window_0_close" 
-                  ; Post( GetWindow( EventWidget( ) ), #__event_Close )
-                  
                   If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetTitle( EventWidget( )\window )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                      Define window = GetWindow( EventWidget( ) ) 
-                     ;Free( @window) 
-                     Free( window) 
+                    ; Free( @window) 
+                     PostFree( window) 
                     ; Debug 4444
                   EndIf
                   
@@ -42,31 +41,30 @@ CompilerIf #PB_Compiler_IsMainFile
             EndSelect
             
          Case #__event_close
-            ; Debug "close - event " + EventWidget( )\class ;+" --- "+ GetTitle( EventWidget( ) ) +" "+ Type( EventWidget( )\window ) 
+            Debug "  do close - [" + EventWidget( )\class +"]"
             
             ;\\ demo main window
             If GetTitle( EventWidget( ) ) = "window_2"
-;                If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-                    ProcedureReturn #PB_All
-;                Else
-;                   ProcedureReturn #False
-;                EndIf
+               If #PB_MessageRequester_Yes = OpenMessage( "message", "Quit the program?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+                  ProcedureReturn #PB_All
+               Else
+                  ProcedureReturn #False
+               EndIf
                
             ElseIf GetTitle( EventWidget( ) ) = "window_0"
-;                If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetTitle( EventWidget( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
-;                    ProcedureReturn #True
-;                Else
-;                   ProcedureReturn #False
-;                EndIf
+               If #PB_MessageRequester_Yes = OpenMessage( "message", "Close a "+GetTitle( EventWidget( ) )+"?", #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
+                  ProcedureReturn #True
+               Else
+                  ProcedureReturn #False
+               EndIf
             EndIf
             
          Case #__event_free
-            Debug "free - event " + GetClass( EventWidget( ) ) 
+            Debug "    do free - [" + EventWidget( )\class +"]"
             
             ;\\ to send not free
-            If is_window_(EventWidget( ))
-            Else
-             ;  ProcedureReturn 1
+            If is_root_(EventWidget( ))
+             ;  ProcedureReturn 0
             EndIf
             
       EndSelect
@@ -102,9 +100,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 39
-; Folding = --
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 66
+; FirstLine = 45
+; Folding = ---
 ; EnableXP
 ; DPIAware

@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_MouseLeave      : AddItem(*view, -1, Space + "leave <<" + Trim(GetText(*eventWidget)) + ">>")
         
         If GetText( *eventWidget ) = "new"
-          Free( *eventWidget )
+          Free( @*eventWidget )
         EndIf
         
       Case #__event_DragStart       : AddItem(*view, -1, Space + " drag <<" + Trim(GetText(*eventWidget)) + ">>")
@@ -109,8 +109,8 @@ CompilerEndIf
 ;   leave <<drop>>
 ; enter <<drag>>
 ; leave <<drag>>
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 58
+; IDE Options = PureBasic 6.20 (Windows - x64)
+; CursorPosition = 27
+; FirstLine = 14
 ; Folding = --
 ; EnableXP

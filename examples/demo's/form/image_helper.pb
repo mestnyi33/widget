@@ -49,6 +49,12 @@ Procedure CFE_Helper_Buttons_Events( )
    Protected Checked ;= *Create\Checked
    
    Select WidgetEvent( )
+      Case #__Event_Close
+         ProcedureReturn #True
+         
+      Case #__Event_Free
+         ProcedureReturn #True
+         
       Case #__Event_LeftClick
          Select EventWidget( )
             Case Button_Cancel
@@ -58,29 +64,31 @@ Procedure CFE_Helper_Buttons_Events( )
                Window_0_0_Image = GetState(Image_View)
                
                If IsImage( Window_0_0_Image )
-                  Select Event_ ; Is(*Create\Checked)
-                     Case Properties_ImageBg
-                        SetBackgroundImage(Checked, Window_0_0_Image)
-                        
-                     Case Properties_Image
-                        If Width(Checked) <> ImageWidth(Window_0_0_Image) And Not IsContainer(Checked)
+                  If Checked
+                     Select Event_ ; Is(*Create\Checked)
+                        Case Properties_ImageBg
+                           SetBackgroundImage(Checked, Window_0_0_Image)
                            
-                           If MessageRequester("Сообщение","Хотите изменить размер элемента?", #PB_MessageRequester_YesNo) = #PB_MessageRequester_Yes
-                              SetText(Checked, "")
-                              Resize(Checked, #PB_Ignore, #PB_Ignore, ImageWidth(Window_0_0_Image)+8+1, ImageHeight(Window_0_0_Image)+8+1)
+                        Case Properties_Image
+                           If Width(Checked) <> ImageWidth(Window_0_0_Image) And Not IsContainer(Checked)
+                              
+                              If MessageRequester("Сообщение","Хотите изменить размер элемента?", #PB_MessageRequester_YesNo) = #PB_MessageRequester_Yes
+                                 SetText(Checked, "")
+                                 Resize(Checked, #PB_Ignore, #PB_Ignore, ImageWidth(Window_0_0_Image)+8+1, ImageHeight(Window_0_0_Image)+8+1)
+                              EndIf
+                              
                            EndIf
                            
-                        EndIf
-                        
-                        SetImage(Checked, Window_0_0_Image)
-                  EndSelect
-                  
-                  SetText(Event_, Window_0_OpenFile$)
-                  ;*Create\ImagePuch(Str(Window_0_0_Image)) = Window_0_OpenFile$
-            EndIf
+                           SetImage(Checked, Window_0_0_Image)
+                     EndSelect
+                     
+                     SetText(Event_, Window_0_OpenFile$)
+                     ;*Create\ImagePuch(Str(Window_0_0_Image)) = Window_0_OpenFile$
+                  EndIf
+               EndIf
             
                Free( GetWindow( Button_Ok ) )
-               
+              
             Case Button_Load
                Protected StandardFile$ = "C:\Users\mestnyi\Google Диск\SyncFolder()\Module()\"  
                Protected Pattern$ = "Image (png;bmp)|*.png;*.gif;*.bmp|All files (*.*)|*.*"
@@ -167,8 +175,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 120
+; CursorPosition = 109
+; FirstLine = 124
 ; Folding = ----
 ; Optimizer
 ; EnableXP
