@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *g0 = Container(30, 115, 250, 100 )
       *g1 = Button(10, 10, 30, 30, "1" )
       *g2 = Button(60, 10, 30, 30, "2" ) 
-      *g = Splitter(10, 115, 250, 100, *g1, *g2 )
+      *g = Splitter(10, 15, 250, 100, *g1, *g2 )
       CloseList( )
       
       Bind(*g2, @widget_events())
@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       ReDraw(root())
-      FreeChildrens(root())
+      Free(root())
       
       Debug "------"
       PushListPosition(widgets( ))
@@ -1302,8 +1302,8 @@ CompilerEndIf
 ;    image_group_height:     : IncludeBinary "group/group_height.png"
 ; EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 31
-; FirstLine = 21
+; CursorPosition = 40
+; FirstLine = 36
 ; Folding = -
 ; EnableXP
 ; DPIAware

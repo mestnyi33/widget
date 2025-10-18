@@ -328,7 +328,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ReDraw(root())
       ;Unbind(*w2, @widget_events())
-      FreeChildrens(root())
+      Free(root())
       
       PushListPosition(widgets( ))
       ForEach widgets( )
@@ -355,7 +355,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 336
-; FirstLine = 264
+; CursorPosition = 329
+; FirstLine = 268
 ; Folding = ------0-
 ; EnableXP

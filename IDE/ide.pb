@@ -1985,7 +1985,6 @@ Procedure ide_mdi_clears( )
    ClearItems( ide_design_DEBUG ) 
    ;
    ; удаляем всех детей у MDI (то есть освобождаем его)
-   ; FreeChildrens( ide_design_MDI )
    Free( ide_design_MDI )
    ;
    ; переключаем на форму 
@@ -2992,23 +2991,6 @@ CompilerIf #PB_Compiler_IsMainFile
       SetActiveGadget( ide_g_canvas )
    EndIf
    
-   ;    
-   ;    Debug ""+root( )\haschildren ;+" "+ *g\haschildren
-   ;    ReDraw(root())
-   ;    FreeChildrens(root())
-   ;    
-   ;    Debug "------"
-   ;    PushListPosition(widgets( ))
-   ;    ForEach widgets( )
-   ;       Debug "p "+widgets( )\class +" "+ widgets( )\text\string +" "+ widgets( )\parent\class
-   ;    Next
-   ;    PopListPosition(widgets( ))
-   ;    
-   ;    If root( )\FirstWidget( )
-   ;       Debug "  f "+ root( )\FirstWidget( )\class +" "+ root( )\FirstWidget( )\address
-   ;    EndIf
-   ;    
-   ;       
    ;\\ 
    WaitClose( )
 CompilerEndIf
@@ -3034,8 +3016,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 2271
-; FirstLine = 2249
+; CursorPosition = 1987
+; FirstLine = 1983
 ; Folding = -----------------------------------------------------
 ; Optimizer
 ; EnableAsm
