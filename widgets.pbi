@@ -25477,33 +25477,33 @@ CompilerIf Not Defined( widget, #PB_Module )
          SetClass( widget( ), "message_CONT" )
          If IsImage( img )
             Image( f2, f2, iw, iw, img, #__flag_ImageCenter | #__flag_Borderflat | #__flag_transparent )
-            SetClass( widget( ), "message_img" )
+            SetClass( widget( ), "message_IMAGE" )
             Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__flag_TextCenter | #__flag_TextLeft | #__flag_transparent );| #__flag_Borderless )
          Else
             Text( f2, f2, Width - f2 * 2, iw, Text, #__flag_TextCenter | #__flag_TextLeft | #__flag_transparent );| #__flag_Borderless )
          EndIf
-         SetClass( widget( ), "message_text" )
+         SetClass( widget( ), "message_INFO" )
          CloseList( )
          
          ;\\
          *ok = Button( Width - bw - f2, Height - bh - f2, bw, bh, "Ok", #PB_Button_Default )
-         SetClass( *ok, "message_Yes" )
+         SetClass( *ok, "message_YES" )
          If constants::BinaryFlag( Flag, #__message_YesNo ) Or
             constants::BinaryFlag( Flag, #__message_YesNoCancel )
             *no = Button( Width - ( bw + f2 ) * 2 - f2, Height - bh - f2, bw, bh, "No" )
-            SetClass( *no, "message_No" )
+            SetClass( *no, "message_NO" )
             SetText( *ok, "Yes" )
          EndIf
          If constants::BinaryFlag( Flag, #__message_YesNoCancel )
             *cancel = Button( Width - ( bw + f2 ) * 3 - f2 * 2, Height - bh - f2, bw, bh, "Cancel" )
-            SetClass( *cancel, "message_Cancel" )
+            SetClass( *cancel, "message_CANCEL" )
          EndIf
          
          ;\\
          HideWindow( *message\canvas\window, #False )
          StickyWindow( *Message\canvas\window, #True )
          SetActiveGadget( *Message\canvas\gadget )
-         Bind( *message, @MessageEvents( ));, #__event_LeftClick )
+         Bind( *message, @MessageEvents( ))
          SetActive( *ok )
          
 ;          SetLayeredWindow( *message\canvas\window, igOpaque )
@@ -25517,18 +25517,17 @@ CompilerIf Not Defined( widget, #PB_Module )
          DisableWindow( *root\canvas\window, #True )
          WaitQuit( )
          DisableWindow( *root\canvas\window, #False )
-         SetActive( *root )   
          ;
          StickyWindow( *Message\canvas\window, #True )
-         Unbind( *message, @MessageEvents( ));, #__event_LeftClick )
+         Unbind( *message, @MessageEvents( ))
          result = GetData( *message )
          Free( @*message )
          ;
          If IsImage( img )
             FreeImage( img )
          EndIf
-         
-         ;\\
+         ;
+         SetActive( *root )   
          EventWidget( ) = *widget
          ProcedureReturn result
       EndProcedure
@@ -26726,8 +26725,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 24955
-; FirstLine = 23757
+; CursorPosition = 25529
+; FirstLine = 24195
 ; Folding = ----------------------------------------------------------------------------------------------------------------------------------------vrP+fP+----+-0-8--4---------8-----------------------------------------------------------------------------------f-b------------------------------------------------------4v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-f------------------------------------------------------------v7-0-2d28--f--0--------------------f-v-------------------------------------------------------------------------------------------------------------fr-0----2x----
 ; EnableXP
 ; DPIAware
