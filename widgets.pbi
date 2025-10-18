@@ -8912,12 +8912,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Global igOpaque = RGBA(128,128,0,255)
+      Global igOpaque = RGB(0,0,0) ; RGBA(128,128,0,255)
       Procedure SetLayeredWindow( Window, Color )
          CompilerSelect #PB_Compiler_OS
             CompilerCase #PB_OS_Windows
-               SetWindowLongPtr_(WindowID(Window), #GWL_EXSTYLE, #WS_EX_LAYERED) 
-               SetLayeredWindowAttributes_(WindowID(Window), RGBA( Red(Color), Green(Color), Blue(Color), 0), 0, #LWA_COLORKEY)
+               SetWindowLongPtr_(WindowID(Window), #GWL_EXSTYLE, GetWindowLongPtr_(WindowID(Window), #GWL_EXSTYLE) | #WS_EX_LAYERED) 
+               SetLayeredWindowAttributes_(WindowID(Window), RGBA( Red(Color), Green(Color), Blue(Color), Alpha(color)), 0, #LWA_COLORKEY)
                
             CompilerCase #PB_OS_Linux
                ;XShapeCombineMask_()
@@ -19451,6 +19451,14 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure DestroyRootMap( Map *list._s_ROOT( ))
+         FreeChildrens( *list( ))
+         If Post( *list( ), #__event_free )
+            DeleteMapElement( *list( ) )
+            ProcedureReturn MapSize( *list( ) )
+         EndIf
+      EndProcedure
+      
       Procedure   Free( *this.integer, mode = 0 ) 
          Protected *g._s_WIDGET
          ;
@@ -19458,9 +19466,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\i > 0
                *g = *this\i
                *this\i = 0
-               
-               FreeChildrens( *g, #True )
-
+               ;
+               If is_root_( *g )
+                  Close( *g )
+               Else
+                  FreeChildrens( *g, #True )
+               EndIf
+               ;  
             Else
                If IsChildrens( *this )
                   Debug "[" + GetClass(*this ) +"]childrens - free"
@@ -19476,14 +19488,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             ForEach roots( ) 
                FreeChildrens( roots( ))
             Next
-         EndIf
-      EndProcedure
-      
-      Procedure DestroyRootMap( Map *list._s_ROOT( ))
-         FreeChildrens( *list( ))
-         If Post( *list( ), #__event_free )
-            DeleteMapElement( *list( ) )
-            ProcedureReturn MapSize( *list( ) )
          EndIf
       EndProcedure
       
@@ -20925,21 +20929,21 @@ CompilerIf Not Defined( widget, #PB_Module )
          If __gui\event\loop = #True
             __gui\event\loop = #False
             
-            If *root And *root\parent
-               If IsWindow( *root\canvas\window )
-                  CloseWindow( *root\canvas\window )
-               EndIf
-               If IsGadget( *root\canvas\gadget )
-                  FreeGadget( *root\canvas\gadget )
-               EndIf
-               ;
-               DisableWindow( GetCanvasWindow(*root\parent), #False )
-               CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-                 SetActiveGadget(GetCanvasGadget(*root\parent) )
-               CompilerEndIf
-               ;ChangeCurrentCanvas( GadgetID(GetCanvasGadget(*root\parent)) )
-               ;SetActive ( *root\parent )
-            EndIf
+;             If *root And *root\parent
+;                If IsWindow( *root\canvas\window )
+;                   CloseWindow( *root\canvas\window )
+;                EndIf
+;                If IsGadget( *root\canvas\gadget )
+;                   FreeGadget( *root\canvas\gadget )
+;                EndIf
+;                ;
+;                DisableWindow( GetCanvasWindow(*root\parent), #False )
+;                CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+;                  SetActiveGadget(GetCanvasGadget(*root\parent) )
+;                CompilerEndIf
+;                ;ChangeCurrentCanvas( GadgetID(GetCanvasGadget(*root\parent)) )
+;                ;SetActive ( *root\parent )
+;             EndIf
             
             Debug "  Exit post... [LOOP]"
             
@@ -20995,24 +20999,24 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
             CompilerEndSelect
             
-            If *root
-               If is_root_( *root )
-                  If IsWindow( *root\canvas\window )
-                     CloseWindow( *root\canvas\window )
-                  EndIf
-                  If IsGadget( *root\canvas\gadget )
-                     FreeGadget( *root\canvas\gadget )
-                  EndIf
-               EndIf
-               
-               If *root\parent
-                  ; ChangeCurrentCanvas( GadgetID(GetCanvasGadget(*root\parent)) )
-                  ; DisableWindow( GetCanvasWindow(*root\parent), #False )
-                  ; SetActive ( *root\parent )
-               EndIf
-               ;
-               ; Free( *root )
-            EndIf
+;             If *root
+;                If is_root_( *root )
+;                   If IsWindow( *root\canvas\window )
+;                      CloseWindow( *root\canvas\window )
+;                   EndIf
+;                   If IsGadget( *root\canvas\gadget )
+;                      FreeGadget( *root\canvas\gadget )
+;                   EndIf
+;                EndIf
+;                
+;                If *root\parent
+;                   ; ChangeCurrentCanvas( GadgetID(GetCanvasGadget(*root\parent)) )
+;                   ; DisableWindow( GetCanvasWindow(*root\parent), #False )
+;                   ; SetActive ( *root\parent )
+;                EndIf
+;                ;
+;                ; Free( *root )
+;             EndIf
             
             Debug "  Exit... [LOOP]"
          EndIf
@@ -24949,6 +24953,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; good transparent canvas
                   FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
                CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+                  ; Debug ""+IsWindow( *root\canvas\window ) +" "+ *root\canvas\window +" "+ MapSize(roots()) +" "+ *root\class
                   If GetWindowColor( *root\canvas\window ) = - 1
                      FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetSysColor_(#COLOR_BTNFACE) )
                   Else
@@ -25258,7 +25263,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Select WidgetEvent( )
             Case #__event_KeyDown
                If keyboard( )\key = #PB_Shortcut_Return
-                  Debug "key - message"
+                  ; Debug "key - message"
                   *message = GetWindow( EventWidget( ) )
                EndIf
                
@@ -25276,7 +25281,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndSelect
                
                ;\\
-               ; SetActiveGadget( - 1 )
                PostQuit( *message )
             EndIf
          EndIf
@@ -25291,15 +25295,17 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; MB_ICONHAND 
          ; MB_ICONQUESTION 
          ; MB_OK 
-         ; 
-         ;          MessageBeep_(#MB_ICONHAND);
+         ; MessageBeep_(#MB_ICONHAND)
+         ;
          
          Protected result, X, Y, Width = 400, Height = 120
          Protected img = - 1, f1 = - 1, f2 = 8
          Protected bw = 85, bh = 25, iw = Height - bh - f1 - f2 * 4 - 2 - 1
          
          Protected._s_root *root, *message
-         Protected._s_WIDGET *ok, *no, *cancel, *widget = EventWidget( )
+         Protected._s_WIDGET *ok, *no, *cancel, *widget
+         
+         *widget = EventWidget( )
          
          ;\\
          If *widget
@@ -25326,8 +25332,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          ;newflag = #PB_Window_ScreenCentered |#PB_Window_BorderLess
          
-         *message = Open( #PB_Any, X, Y, Width, Height, Title, newflag, WindowID( *root\canvas\window ) )
-         SetClass( *message, #PB_Compiler_Procedure )
+         *message = Open( #PB_Any, X, Y, Width, Height, Title, newflag, WindowID( *root\canvas\window ))
+         SetClass( *message, #PB_Compiler_Procedure+"_"+Str( *Message\canvas\window ))
          *message\parent = *root
          ;
          ;\\
@@ -25492,37 +25498,32 @@ CompilerIf Not Defined( widget, #PB_Module )
             *cancel = Button( Width - ( bw + f2 ) * 3 - f2 * 2, Height - bh - f2, bw, bh, "Cancel" )
             SetClass( *cancel, "message_Cancel" )
          EndIf
-         SetActiveGadget( GetCanvasGadget( *message ))
-         SetActive( *ok )
-         ;
+         
          ;\\
-         DisableWindow( *root\canvas\window, #True )
-         StickyWindow( *Message\canvas\window, #True )
          HideWindow( *message\canvas\window, #False )
-         
-         ;\\
-         ;SetLayeredWindow( *message\canvas\window, igOpaque )
-         ;;          If StartDrawing( CanvasOutput( *message\canvas\gadget ))
-         ;;             Box( 0, 0, OutputWidth( ), OutputHeight( ), igOpaque )
-         ;;             StopDrawing( )
-         ;;          EndIf
-         ;SetBackgroundColor( *message, igOpaque )
-         
-         ;\\
+         StickyWindow( *Message\canvas\window, #True )
+         SetActiveGadget( *Message\canvas\gadget )
          Bind( *message, @MessageEvents( ));, #__event_LeftClick )
-         WaitQuit( *message ) : result = GetData( *message )
+         SetActive( *ok )
+         
+;          SetLayeredWindow( *message\canvas\window, igOpaque )
+;          ;          If StartDrawing( CanvasOutput( *message\canvas\gadget ))
+;          ;             Box( 0, 0, OutputWidth( ), OutputHeight( ), igOpaque )
+;          ;             StopDrawing( )
+;          ;          EndIf
+;          SetBackgroundColor( *message, igOpaque )
+         
+         ;
+         DisableWindow( *root\canvas\window, #True )
+         WaitQuit( )
+         DisableWindow( *root\canvas\window, #False )
+         SetActive( *root )   
+         ;
+         StickyWindow( *Message\canvas\window, #True )
          Unbind( *message, @MessageEvents( ));, #__event_LeftClick )
-         
-         ;          ;\\
-         ;          If *root
-         ;             ChangeCurrentCanvas( *root\canvas\gadgetID )
-         ;             DisableWindow( *root\canvas\window, #False )
-         ;             SetActive( *root )
-         ;          EndIf
+         result = GetData( *message )
          Free( @*message )
-         
-         
-         ;\\ close
+         ;
          If IsImage( img )
             FreeImage( img )
          EndIf
@@ -26724,10 +26725,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 1784
-; FirstLine = 1781
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------vrP+fP+----+-0-8--4---------8-----------------------------------------------------------------------------------f-b------------------------------------------------------4v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-f------------------------------------------------------------X0-+-7u70--v--+--------------------v-4---------------------------------------------------------------------------------------------------------------t+4----XH----
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 24955
+; FirstLine = 23757
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------vrP+fP+----+-0-8--4---------8-----------------------------------------------------------------------------------f-b------------------------------------------------------4v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-f------------------------------------------------------------v7-0-2d28--f--0--------------------f-v-------------------------------------------------------------------------------------------------------------fr-0----2x----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
