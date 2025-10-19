@@ -47,13 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Button(10,65,200,50,"window_2_root_butt_2")
    SetClass(widget( ), "window_2_root_butt_2" )
    
-   
-;    ;Message( "message", "test", #__message_ScreenCentered )
-;             
-;    ;\\
-;    WaitEvent( #PB_All, @CallBack( ) )
-;    \
-   
+      
    ;\\
   Bind( #PB_All, @CallBack( ) )
   ; Message( "message", "test", #__message_ScreenCentered )
@@ -70,8 +64,8 @@ CompilerIf #PB_Compiler_IsMainFile
      EndIf
    EndProcedure
  CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 30
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 49
+; FirstLine = 28
 ; Folding = -
 ; EnableXP

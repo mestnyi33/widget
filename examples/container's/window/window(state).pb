@@ -81,12 +81,12 @@ CompilerIf #PB_Compiler_IsMainFile
       Button(10,65,200,50,"window_2_minimize")
       SetClass(widget( ), "window_2_minimize" )
       
-      WaitEvent( @CallBack( ) )
+      WaitClose( @CallBack( ) )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 27
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 83
+; FirstLine = 48
 ; Folding = --
 ; EnableXP
 ; DPIAware

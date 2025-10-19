@@ -55,12 +55,12 @@ CompilerIf #PB_Compiler_IsMainFile
       SetClass(widget( ), "window_2_button_2" )
       CloseList( )
       
-      WaitEvent( @CallBack( ) )
+      WaitClose( @CallBack( ) )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 31
+; CursorPosition = 57
+; FirstLine = 20
 ; Folding = -
 ; EnableXP
 ; DPIAware

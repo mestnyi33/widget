@@ -58,7 +58,7 @@ Procedure show_DEBUG( )
 EndProcedure
 
 Procedure events_widgets()
-   Select WidgetEvent()
+   Select WidgetEvent( )
       Case #__event_LeftClick
          If i 
             SetParent(*CHILD, *CONT2)
@@ -95,9 +95,11 @@ If Open(2, 0, 0, 222, 470, "ROOT2", #PB_Window_SystemMenu | #PB_Window_ScreenCen
    
    show_DEBUG( )
    
-   WaitEvent( @events_widgets() )
+   WaitClose( @events_widgets() )
 EndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 60
+; FirstLine = 61
 ; Folding = ---
 ; EnableXP
 ; DPIAware

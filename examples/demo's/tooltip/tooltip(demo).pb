@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 
@@ -69,11 +69,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Button(10,65,200,50,"window_2_butt_2")
       SetClass(widget( ), "window_2_butt_2" )
       
-      WaitEvent( @CallBack( ) )
+      WaitClose( @CallBack( ) )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16
-; FirstLine = 12
 ; Folding = --
 ; EnableXP

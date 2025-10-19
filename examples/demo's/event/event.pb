@@ -6,49 +6,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
-  Declare CallBack( )
   
-  ;\\
-  Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
-                                      #PB_Window_SizeGadget |
-                                      #PB_Window_MinimizeGadget |
-                                      #PB_Window_MaximizeGadget )
-  
-  SetClass(root( ), "window_0_root" )
-  Container( 10,10,240,140 ) : SetClass(widget( ), "window_0_root_container" )
-  Button(10,10,200,50,"window_0_root_butt_1")
-  SetClass(widget( ), "window_0_root_butt_1" )
-  Button(10,65,200,50,"window_0_root_butt_2")
-  SetClass(widget( ), "window_0_root_butt_2" )
-  
-  ;\\
-  Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
-                                          #PB_Window_SizeGadget |
-                                          #PB_Window_MinimizeGadget |
-                                          #PB_Window_MaximizeGadget )
-  
-  SetClass(root( ), "window_1_root" )
-  Container( 10,10,240,140 ) : SetClass(widget( ), "window_1_root_container" )
-  Button(10,10,200,50,"window_1_root_butt_1")
-  SetClass(widget( ), "window_1_root_butt_1" )
-  Button(10,65,200,50,"window_1_root_butt_2")
-  SetClass(widget( ), "window_1_root_butt_2" )
-  
-  ;\\
-  Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
-                                          #PB_Window_SizeGadget |
-                                          #PB_Window_MinimizeGadget |
-                                          #PB_Window_MaximizeGadget )
-  
-  SetClass(root( ), "window_2_root" )
-  Container( 10,10,240,140 ) : SetClass(widget( ), "window_2_root_container" )
-  Button(10,10,200,50,"window_2_root_butt_1")
-  SetClass(widget( ), "window_2_root_butt_1" )
-  Button(10,65,200,50,"window_2_root_butt_2")
-  SetClass(widget( ), "window_2_root_butt_2" )
-  
-  ;\\
-  WaitEvent( #PB_All, @CallBack( ) )
   
   ;\\
   Procedure CallBack( )
@@ -94,9 +52,50 @@ CompilerIf #PB_Compiler_IsMainFile
     ; ProcedureReturn 1
   EndProcedure
   
+ ;\\
+  Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
+                                      #PB_Window_SizeGadget |
+                                      #PB_Window_MinimizeGadget |
+                                      #PB_Window_MaximizeGadget )
+  
+  SetClass(root( ), "window_0_root" )
+  Container( 10,10,240,140 ) : SetClass(widget( ), "window_0_root_container" )
+  Button(10,10,200,50,"window_0_root_butt_1")
+  SetClass(widget( ), "window_0_root_butt_1" )
+  Button(10,65,200,50,"window_0_root_butt_2")
+  SetClass(widget( ), "window_0_root_butt_2" )
+  
+  ;\\
+  Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
+                                          #PB_Window_SizeGadget |
+                                          #PB_Window_MinimizeGadget |
+                                          #PB_Window_MaximizeGadget )
+  
+  SetClass(root( ), "window_1_root" )
+  Container( 10,10,240,140 ) : SetClass(widget( ), "window_1_root_container" )
+  Button(10,10,200,50,"window_1_root_butt_1")
+  SetClass(widget( ), "window_1_root_butt_1" )
+  Button(10,65,200,50,"window_1_root_butt_2")
+  SetClass(widget( ), "window_1_root_butt_2" )
+  
+  ;\\
+  Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
+                                          #PB_Window_SizeGadget |
+                                          #PB_Window_MinimizeGadget |
+                                          #PB_Window_MaximizeGadget )
+  
+  SetClass(root( ), "window_2_root" )
+  Container( 10,10,240,140 ) : SetClass(widget( ), "window_2_root_container" )
+  Button(10,10,200,50,"window_2_root_butt_1")
+  SetClass(widget( ), "window_2_root_butt_1" )
+  Button(10,65,200,50,"window_2_root_butt_2")
+  SetClass(widget( ), "window_2_root_butt_2" )
+  
+  ;\\
+  WaitClose( @CallBack( ) )
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 32
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 94
+; FirstLine = 58
 ; Folding = -
 ; EnableXP

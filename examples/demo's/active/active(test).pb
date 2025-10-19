@@ -146,12 +146,12 @@ CompilerIf #PB_Compiler_IsMainFile
       SetActiveGadget( root( )\canvas\gadget )
       
       ;Debug (GetActiveGadget())
-      WaitEvent( );@CallBack( ) )
+      WaitClose( );@CallBack( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 11
-; FirstLine = 8
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 148
+; FirstLine = 93
 ; Folding = --
 ; EnableXP
 ; DPIAware

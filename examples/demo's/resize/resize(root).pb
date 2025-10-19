@@ -22,10 +22,11 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       Debug "--"
 ;       SetAlign( widget( ), #__align_full )
       
-      WaitEvent( @resize_events( ), #__event_resize )
+      Bind( #PB_All, @resize_events( ), #__event_resize )
+      WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 22
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 23
 ; Folding = -
 ; EnableXP
