@@ -81,22 +81,22 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If Open(0, 0, 0, 615, 120, "ComboBox on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(0, 0, 0, 615, 190, "ComboBox on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;\\
-    ComboBoxGadget(0, 10, 10, 250, 21, #PB_ComboBox_Editable|#PB_ComboBox_Image)
+    ComboBoxGadget(0, 10, 10, 250, 50, #PB_ComboBox_Editable|#PB_ComboBox_Image)
     For a = 1 To 31 ; xp=31 ;linux-qt=11 ; mac = 5
-      AddGadgetItem(0, -1,"ComboBox item " + Str(a), ImageID(0))
+      AddGadgetItem(0, -1,"ComboBox editable... " + Str(a), ImageID(2))
     Next
     
-    ComboBoxGadget(1, 10, 40, 250, 21, #PB_ComboBox_Image)
+    ComboBoxGadget(1, 10, 70, 250, 50, #PB_ComboBox_Image)
     AddGadgetItem(1, -1, "ComboBox item with image1", ImageID(0))
     AddGadgetItem(1, -1, "ComboBox item with image2", ImageID(1))
     AddGadgetItem(1, -1, "ComboBox item with image3", ImageID(2))
     
-    ComboBoxGadget(2, 10, 70, 250, 21)
-    AddGadgetItem(2, -1, "ComboBox editable...1")
-    AddGadgetItem(2, -1, "ComboBox editable...2")
-    AddGadgetItem(2, -1, "ComboBox editable...3")
+    ComboBoxGadget(2, 10, 130, 250, 50)
+    AddGadgetItem(2, -1, "ComboBox item 1")
+    AddGadgetItem(2, -1, "ComboBox item 2")
+    AddGadgetItem(2, -1, "ComboBox item 3")
     
     SetGadgetState(0, 2)
     SetGadgetState(1, 1)
@@ -108,20 +108,20 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     ;\\
-    ComboBox(305+10, 10, 250, 21, #PB_ComboBox_Editable)
+    ComboBox(305+10, 10, 250, 50, #PB_ComboBox_Editable);|#PB_ComboBox_Image)
     For a = 1 To 31
-      AddItem(widget(), -1,"ComboBox item " + Str(a), (0))
+      AddItem(ID(0), -1,"ComboBox editable... " + Str(a), (2))
     Next
     
-    ComboBox(305+10, 40, 250, 21, #PB_ComboBox_Image)
-    AddItem(widget(), -1, "ComboBox item with image1", (0))
-    AddItem(widget(), -1, "ComboBox item with image2", (1))
-    AddItem(widget(), -1, "ComboBox item with image3", (2))
+    ComboBox(305+10, 70, 250, 50);, #PB_ComboBox_Image)
+    AddItem(ID(1), -1, "ComboBox item with image1", (0))
+    AddItem(ID(1), -1, "ComboBox item with image2", (1))
+    AddItem(ID(1), -1, "ComboBox item with image3", (2))
     
-    ComboBox(305+10, 70, 250, 21)
-    AddItem(widget(), -1, "ComboBox editable...1")
-    AddItem(widget(), -1, "ComboBox editable...2")
-    AddItem(widget(), -1, "ComboBox editable...3")
+    ComboBox(305+10, 130, 250, 50)
+    AddItem(ID(2), -1, "ComboBox item 1")
+    AddItem(ID(2), -1, "ComboBox item 2")
+    AddItem(ID(2), -1, "ComboBox item 3")
     
     SetState(ID(0), 2)
     SetState(ID(1), 1)
@@ -134,9 +134,9 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( ) 
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 8
-; FirstLine = 4
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 110
+; FirstLine = 74
 ; Folding = 8--
 ; Optimizer
 ; EnableXP

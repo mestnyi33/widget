@@ -101,9 +101,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 68
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 39
 ; Folding = -
 ; Optimizer
 ; EnableXP

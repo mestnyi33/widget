@@ -326,27 +326,27 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*item4, @button_events(), #__event_Up)
       
       
-      ReDraw(root())
-      ;Unbind(*w2, @widget_events())
-      Free(root())
-      
-      PushListPosition(widgets( ))
-      ForEach widgets( )
-           Debug "p "+widgets( )\class +" "+ widgets( )\parent\class
-          If Not ( widgets( )\parent And widgets( )\parent\address )
-          ;  SetParent( widgets( ), roots( ) )
-         EndIf      
-      Next
-      PopListPosition(widgets( ))
-      
-      If root( )\FirstWidget( )
-         Debug "  f "+ root( )\FirstWidget( )\class +" "+ root( )\FirstWidget( )\address
-      EndIf
-      
+;       ReDraw(root())
+;       ;Unbind(*w2, @widget_events())
+;       Free(root())
 ;       
-;       ;        ReDraw( root( ))
-;       ;       ;*demo\scroll\v\hide = 1
-;       ;       Debug *demo\scroll\v\hide 
+;       PushListPosition(widgets( ))
+;       ForEach widgets( )
+;            Debug "p "+widgets( )\class +" "+ widgets( )\parent\class
+;           If Not ( widgets( )\parent And widgets( )\parent\address )
+;           ;  SetParent( widgets( ), roots( ) )
+;          EndIf      
+;       Next
+;       PopListPosition(widgets( ))
+;       
+;       If root( )\FirstWidget( )
+;          Debug "  f "+ root( )\FirstWidget( )\class +" "+ root( )\FirstWidget( )\address
+;       EndIf
+;       
+; ;       
+; ;       ;        ReDraw( root( ))
+; ;       ;       ;*demo\scroll\v\hide = 1
+; ;       ;       Debug *demo\scroll\v\hide 
       
       WaitClose()
       
@@ -354,8 +354,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 329
-; FirstLine = 268
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 348
+; FirstLine = 264
 ; Folding = ------0-
 ; EnableXP

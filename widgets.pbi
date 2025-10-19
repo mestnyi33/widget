@@ -1785,8 +1785,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare   WaitClose( *callback = #Null )
       ;
       Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
-      Declare   Free( *this, mode = 0 )
-      Declare   FreeChildrens( *this, mode = 0 )
+      Declare   Free( *this )
       Declare   Close( *root )
       ;
       Declare   DoEvents( *this, event.l, *button = #PB_All, *data = #Null )
@@ -3530,11 +3529,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                         mouse( )\selector\dotline  = DPIScaled(5)
                         
                         mouse( )\selector\backcolor  = $80DFE2E2
-                        mouse( )\selector\framecolor = $BA161616
                      Else
                         mouse( )\selector\backcolor  = $9F646565
-                        mouse( )\selector\framecolor = $BA161616
                      EndIf
+                     ;
+                     mouse( )\selector\fontcolor = $FF000000
+                     mouse( )\selector\framecolor = $BA161616
                   EndIf
                   
                   ;\\
@@ -5516,7 +5516,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   *this\scroll\v\WidgetChange( ) = 0
                   
-                  
+                  ;
                   Protected result2
                   If *this\RowFocused( )\_focus
                      If *this\focus = 2
@@ -5539,23 +5539,23 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ;
                   If is_integral_( *this ) 
-                     If *this\parent  
-                        If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
-                           SetText( *this\parent\parent, *this\RowFocused( )\text\string )
-                           DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                           If result2  
-                              DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                           EndIf 
-                        Else
-                           If *this\parent\type = #__type_ComboBox
-                              SetText( *this\parent, *this\RowFocused( )\text\string )
-                           EndIf 
-                           DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                           If result2  
-                              DoEvents( *this\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                           EndIf 
-                        EndIf 
-                     EndIf 
+;                      If *this\parent  
+;                         If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
+;                            SetText( *this\parent\parent, *this\RowFocused( )\text\string )
+;                            DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+;                            If result2  
+;                               DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+;                            EndIf 
+;                         Else
+;                            If *this\parent\type = #__type_ComboBox
+;                               SetText( *this\parent, *this\RowFocused( )\text\string )
+;                            EndIf 
+;                            DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+;                            If result2  
+;                               DoEvents( *this\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+;                            EndIf 
+;                         EndIf 
+;                      EndIf 
                   Else
                      DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                      If result2  
@@ -9806,30 +9806,40 @@ CompilerIf Not Defined( widget, #PB_Module )
                         ;                         EndIf
                         ;                         
                         ;                         ;
-                        ;                         If is_integral_( *this ) 
-                        ;                            If *this\parent  
-                        ;                               If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
-                        ;                                  SetText( *this\parent\parent, *this\RowFocused( )\text\string )
-                        ;                                  DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                        ;                                  If result  
-                        ;                                     DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                        ;                                  EndIf 
-                        ;                               Else
-                        ;                                  If *this\parent\type = #__type_ComboBox
-                        ;                                     SetText( *this\parent, *this\RowFocused( )\text\string )
-                        ;                                  EndIf 
-                        ;                                  DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                        ;                                  If result  
-                        ;                                     DoEvents( *this\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                        ;                                  EndIf 
-                        ;                               EndIf 
-                        ;                            EndIf 
-                        ;                         Else
-                        ;                             DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                        ;                            If result  
-                        ;                               DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                        ;                            EndIf 
-                        ;                         EndIf
+                                                If is_integral_( *this ) 
+                                                   If *this\parent  
+                                                      If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
+                                                         SetText( *this\parent\parent, *this\RowFocused( )\text\string )
+                                                         If *this\parent\parent\stringbar
+                                                            If *this\RowFocused( )\picture\image > - 1
+                                                               SetImage( *this\parent\parent\stringbar, *this\RowFocused( )\picture\image )
+                                                            EndIf
+                                                         EndIf
+                                                         DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                                                         If result  
+                                                            DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                                                         EndIf 
+                                                      Else
+                                                         If *this\parent\type = #__type_ComboBox
+                                                            SetText( *this\parent, *this\RowFocused( )\text\string )
+                                                            If *this\parent\stringbar
+                                                               If *this\RowFocused( )\picture\image > - 1
+                                                                  SetImage( *this\parent\stringbar, *this\RowFocused( )\picture\image )
+                                                               EndIf
+                                                            EndIf
+                                                         EndIf 
+                                                         DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                                                         If result  
+                                                            DoEvents( *this\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                                                         EndIf 
+                                                      EndIf 
+                                                   EndIf 
+;                                                 Else
+;                                                     DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+;                                                    If result  
+;                                                       DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+;                                                    EndIf 
+                                                EndIf
                         ProcedureReturn 1
                      EndIf
                   EndIf
@@ -12461,8 +12471,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If *this\type = #__type_Tree Or
-            *this\type = #__type_ListView Or
-            *this\type = #__type_Properties
+            *this\type = #__type_ListView Or *this\type = #__type_Properties
             
             ProcedureReturn AddItems( *this, *this\__rows( ), Item, Text, img, flag )
          EndIf
@@ -15072,6 +15081,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                If constants::BinaryFlag( Flag, #PB_Button_Right ) 
                   flags & ~ #PB_Button_Right
                   flags | #__flag_TextRight
+               EndIf
+               ;
+            Case #__type_ComboBox ; ok
+               If constants::BinaryFlag( Flag, #PB_ComboBox_LowerCase )
+                  flags & ~ #PB_ComboBox_LowerCase
+                  flags | #__flag_Textlowercase
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ComboBox_UpperCase ) 
+                  flags & ~ #PB_ComboBox_UpperCase
+                  flags | #__flag_Textuppercase
                EndIf
                ;
             Case #__type_String ; ok
@@ -19213,7 +19232,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure   FreeChildrens( *this._s_WIDGET, mode = 0 )
+      Procedure   Delete( *this._s_WIDGET, mode = 0 )
          Protected *root._s_ROOT = *this\root
          
          If LastElement(widgets( ))
@@ -19451,15 +19470,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure DestroyRootMap( Map *list._s_ROOT( ))
-         FreeChildrens( *list( ))
-         If Post( *list( ), #__event_free )
-            DeleteMapElement( *list( ) )
-            ProcedureReturn MapSize( *list( ) )
-         EndIf
-      EndProcedure
-      
-      Procedure   Free( *this.integer, mode = 0 ) 
+      Procedure   Free( *this.integer ) 
          Protected *g._s_WIDGET
          ;
          If *this > 0
@@ -19470,13 +19481,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                If is_root_( *g )
                   Close( *g )
                Else
-                  FreeChildrens( *g, #True )
+                  Delete( *g, #True )
                EndIf
                ;  
             Else
                If IsChildrens( *this )
                   Debug "[" + GetClass(*this ) +"]childrens - free"
-                  FreeChildrens( *this )
+                  Delete( *this )
                Else
                   Debug "[" + GetClass(*this )+"] - free"
                   Free( @*this )
@@ -19486,7 +19497,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ElseIf *this < 0
             Debug "[all] - free"
             ForEach roots( ) 
-               FreeChildrens( roots( ))
+               Delete( roots( ))
             Next
          EndIf
       EndProcedure
@@ -19504,17 +19515,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                canvasgadget = roots( )\canvas\gadget
                ;
                ;
-               If DestroyRootMap( roots( ))
-                  If window = canvaswindow
-                     Continue
-                  Else
+               Delete( roots( ))
+               If Post( roots( ), #__event_free )
+                  DeleteMapElement( roots( ) )
+                  If window <> canvaswindow
                      FreeGadget( canvasgadget )
                      CloseWindow( window )
                   EndIf
                EndIf
             Else
                If window = *root\canvas\window 
-                  result = DestroyRootMap( roots( ))
+                  Delete( roots( ))
+                  If Post( roots( ), #__event_free )
+                     DeleteMapElement( roots( ) )
+                     result = MapSize( roots( ) )
+                  EndIf
                EndIf
             EndIf
          Next
@@ -19529,7 +19544,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                If MapSize( roots( ) ) > 1
                   ForEach roots( ) 
                      If Not IsWindow( roots()\canvas\window )
-                        DestroyRootMap( roots( ))
+                        Delete( roots( ))
+                        If Post( roots( ), #__event_free )
+                           DeleteMapElement( roots( ) )
+                        EndIf
                      EndIf
                   Next 
                EndIf
@@ -20601,7 +20619,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If __event = #__event_Free
                         If IsContainer( __widget )
 ;                            If IsChildrens( __widget)
-;                               FreeChildrens( __widget )
+;                               Delete( __widget )
 ;                            EndIf
                            Free( @__widget )
                         EndIf
@@ -20823,7 +20841,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
 ;                If event = #__event_Free
 ;                   If result
-;                      FreeChildrens( *this, #True )
+;                      Delete( *this, #True )
 ;                   EndIf
 ;                EndIf
                
@@ -21434,7 +21452,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             If constants::BinaryFlag( *this\flag, #PB_ComboBox_Editable )
                *this\stringbar = Create( *this, "ComboString", #__type_String,
-                                         0, 0, 0, 0, #Null$, #__flag_child | #__flag_Borderless )
+                                         0, 0, 0, 0, #Null$, #__flag_child | #__flag_Borderless|*this\flag )
+            Else
+               *this\stringbar = Create( *this, "ComboString", #__type_Button,
+                                         0, 0, 0, 0, #Null$, #__flag_child | #__flag_Borderless|*this\flag, (-1) )
             EndIf
             
             *this\fs[3] = size
@@ -23877,7 +23898,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   draw_box_( *this\MarginLine( )\x, *this\MarginLine( )\y, *this\MarginLine( )\width, *this\MarginLine( )\height, *this\MarginLine( )\color\back )
                EndIf
                
-               
                ; Draw Lines text
                If *this\countitems
                   *this\RowFirstVisible( ) = 0
@@ -24258,23 +24278,23 @@ CompilerIf Not Defined( widget, #PB_Module )
          Else
             draw_gradient_( 0, *this, *this\color\fore[*this\ColorState( )], *this\color\back[state], [#__c_frame] )
             
-            ;
-            If *this\PopupCombo( ) 
-               If *this\PopupCombo( )\row
-                  If *this\PopupCombo( )\RowFocused( )
-                     draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                     
-                     If *this\PopupCombo( )\RowFocused( )\picture\imageID
-                        DrawImage( *this\PopupCombo( )\RowFocused( )\picture\imageID, *this\frame_x( )+5, *this\frame_y( ) + DPIUnScaled(*this\height-*this\PopupCombo( )\RowFocused( )\picture\height) )
-                     EndIf
-                     
-                     DrawText( *this\frame_x( ) + *this\text\x + *this\PopupCombo( )\RowFocused( )\picture\width + 5,
-                               *this\frame_y( ) + *this\text\y,
-                               *this\PopupCombo( )\RowFocused( )\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
-                     
-                  EndIf
-               EndIf
-            EndIf
+;             ;
+;             If *this\PopupCombo( ) 
+;                If *this\PopupCombo( )\row
+;                   If *this\PopupCombo( )\RowFocused( )
+;                      draw_mode_alpha_( #PB_2DDrawing_Transparent )
+;                      
+;                      If *this\PopupCombo( )\RowFocused( )\picture\imageID
+;                         DrawImage( *this\PopupCombo( )\RowFocused( )\picture\imageID, *this\frame_x( )+5, *this\frame_y( ) + DPIUnScaled(*this\height-*this\PopupCombo( )\RowFocused( )\picture\height) )
+;                      EndIf
+;                      
+;                      DrawText( *this\frame_x( ) + *this\text\x + *this\PopupCombo( )\RowFocused( )\picture\width + 5,
+;                                *this\frame_y( ) + *this\text\y,
+;                                *this\PopupCombo( )\RowFocused( )\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
+;                      
+;                   EndIf
+;                EndIf
+;             EndIf
          EndIf
          
          ;
@@ -25143,7 +25163,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         ;\\ draw mouse selector
                         Protected selector_backcolor = mouse( )\selector\backcolor & $FFFFFF | 80 << 24
                         Protected selector_framecolor = mouse( )\selector\framecolor & $FFFFFF | 255 << 24
-                        ;Protected selector_frontcolor = mouse( )\selector\fontcolor & $FFFFFF | 255 << 24
+                        Protected selector_frontcolor = mouse( )\selector\fontcolor & $FFFFFF | 255 << 24
                         
                         ;
                         ;\\ draw selector back
@@ -25161,7 +25181,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            Protected selector_text.s = Str( mouse( )\selector\width ) + "x" + Str( mouse( )\selector\height )
                            DrawText( mouse( )\selector\x + (mouse( )\selector\width - TextWidth(selector_text))/2, 
                                      mouse( )\selector\y + (mouse( )\selector\height - TextHeight(selector_text))/2, 
-                                     selector_text );, selector_frontcolor, selector_backcolor )
+                                     selector_text, selector_frontcolor, selector_backcolor )
                         EndIf
                         ;
                         ;\\ draw selector frame
@@ -26725,9 +26745,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 25529
-; FirstLine = 24195
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------vrP+fP+----+-0-8--4---------8-----------------------------------------------------------------------------------f-b------------------------------------------------------4v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-f------------------------------------------------------------v7-0-2d28--f--0--------------------f-v-------------------------------------------------------------------------------------------------------------fr-0----2x----
+; CursorPosition = 23623
+; FirstLine = 21588
+; Folding = ------------------------------------------------------------------------------------------------------------------v--------------------fXf9-e9----0-8-4--v---------4--------------------------------------------------------------------------------------7-------------------------------------------------------84------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-+------------------------------------------------f----------f2-8-r8q4---+-8---------------------+f---------+-88-4---0+---------------------------------------------------+----------------------------------v--b0v----vO+----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

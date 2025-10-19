@@ -105,7 +105,8 @@ OpenList
 CloseList
 
 Free
-FreeChildrens
+Delete
+DeleteRoot
 
 Post
 Send
