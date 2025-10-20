@@ -3,7 +3,7 @@
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   test_focus_show = 1
+   test_focus_draw = 1
    
    Procedure CallBack( )
 ;       Select WidgetEvent( )

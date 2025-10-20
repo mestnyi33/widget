@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 UseWidgets( )
 test_focus_set = 1
-test_focus_show = 1
+test_focus_draw = 1
 
 Global group.i,cost.i
 Declare OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
@@ -60,7 +60,7 @@ Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
 ;     Debug " open message"
 ;     SetActive(*g_11)
 ; ;    
-   test_focus_show = 0
+   test_focus_draw = 0
    ;Define Message = Message(title, Text, flags, parentID ) 
    ; Define Message = MessageRequester(title, Text, flags, parentID );
    
@@ -72,7 +72,7 @@ Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
    
    Define Message = Message(title, Text, flags, parentID ) 
    ; WaitQuit()
-   test_focus_show = 1
+   test_focus_draw = 1
    ProcedureReturn Message
 EndProcedure
 

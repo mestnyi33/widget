@@ -201,7 +201,7 @@ CompilerEndIf
 ; ; test_changecursor = 1
 ; ; test_setcursor = 1
 ; ; test_delete = 1
-; ; test_focus_show = 1
+; ; test_focus_draw = 1
 ; ; test_focus_set = 1
 ; ; test_changecursor = 1
 ; 

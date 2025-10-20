@@ -3,23 +3,18 @@
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
+   test_focus_draw = 0
    
-   Global._s_widget *BackColor, *FrameColor, *position, *size, *grid, *gridType
-   
+   Global._s_widget *BackColor, *FrameColor, *BackColorType, *FrameColorType, *position, *size, *grid, *gridType
+   Global ColorState
+Global ColorType 
+
    Procedure events_widgets( )
       Protected *this._s_widget = EventWidget( )
       
       Select WidgetEvent( )
-         Case #__event_LeftClick
-            Select *this 
-               Case *FrameColor
-                  
-               Case *BackColor
-                  
-            EndSelect
-            
-         Case #__event_StatusChange
-            Debug " StatusChange"
+         Case #__event_Focus
+            Debug " Focus"
             
             If *size
                SetState(*size, a_getsize( *this ))
@@ -33,6 +28,39 @@ CompilerIf #PB_Compiler_IsMainFile
                SetState(*grid, DesktopUnscaledX(mouse( )\steps) )
             EndIf
             
+         Case #__event_LeftClick
+            Define Message$, Color.l 
+            
+            Select *this
+               Case *FrameColor
+                  color = a_anchors( )\framecolor[GetState(*FrameColorType)] & $FFFFFF
+               Case *BackColor
+                  color = a_anchors( )\backcolor[GetState(*BackColorType)] & $FFFFFF
+            EndSelect
+            
+            Define Message$, Color.l = ColorRequester( Color )
+            
+            If Color > - 1
+               Message$ = "Вы выбрали следующее значение цвета:"   + #LF$
+               Message$ + "32 Bit value: " + Str(Color)            + #LF$
+               Message$ + "Red значение:    " + Str(Red(Color))    + #LF$
+               Message$ + "Green значение:  " + Str(Green(Color))  + #LF$
+               Message$ + "Blue значение:  " + Str(Blue(Color))  + #LF$
+               Message$ + "Alpha значение:  " + Str(Alpha(Color))
+               
+               Select *this
+                  Case *FrameColor
+                     a_anchors( )\framecolor[GetState(*FrameColorType)] = Color & $FFFFFF | 255 << 24
+                  Case *BackColor
+                     a_anchors( )\backcolor[GetState(*BackColorType)] = Color & $FFFFFF | 255 << 24
+               EndSelect
+            Else
+               Message$ = "Запрос был отменён."
+            EndIf
+            ; MessageRequester("Инфо", Message$, 0)
+            
+            
+                     
          Case #__event_Change
            ; Debug ""+ GetState(*size) +" "+  GetState(*position)
             
@@ -69,49 +97,69 @@ CompilerIf #PB_Compiler_IsMainFile
       Container( 10,10,220,210 )
       a_init( widget( ),5 )
       
-      Image( 5,5,60,60, -1 )
-      Define *a._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
-      Image( 150,110,60,60, -1 )
-      a_set( *a )
+      Define *a1._s_widget = Image( 5,5,60,60, -1 )
+      Define *a2._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
+      Define *a3._s_widget = Image( 150,110,60,60, -1 )
+      
+      a_setpos( *a1, 2 )
+      a_setsize( *a1, 6 )
+      a_set( *a1 )
+      
+      a_setpos( *a2, 8 )
+      a_setsize( *a2, 12 )
+      a_set( *a2 )
       CloseList( )
       
-      Bind( ID(1), @events_widgets( ), #__event_StatusChange )
-      Bind( ID(2), @events_widgets( ), #__event_StatusChange )
-      Bind( ID(3), @events_widgets( ), #__event_StatusChange )
+      Bind( ID(1), @events_widgets( ), #__event_Focus )
+      Bind( ID(2), @events_widgets( ), #__event_Focus )
+      Bind( ID(3), @events_widgets( ), #__event_Focus )
       
-      Define Y = 0
-      ;Window( 235,10,230,190+y, "preferences", #PB_Window_TitleBar ) : widget( )\barHeight = 19 : SetFrame( widget( ), 1)
-      Container( 235,10,230,210, #PB_Container_BorderLess )
+      Define Y = 20
+      Window( 235,10,230,185, "preferences", #PB_Window_TitleBar ) : SetFrame( widget( ), 1) : Y - 25
+      ;Container( 235,10,230,210, #PB_Container_BorderLess )
       ;Frame( 0,0,230,210, " preferences " )
       
-      Y = 20
-      Text( 10,10+Y,100,18, "grid size");, #PB_Text_Border )
-      *grid = Spin( 10,30+Y,100,30, 0,100 )
+      Text( 10,10+Y,100,18, "grid size:");, #PB_Text_Border )
+      *grid = Spin( 10,30+Y,70,30, 0,100 )
       
-      Text( 10,70+Y,100,18, "anchor size");, #PB_Text_Border )
-      *size = Spin( 10,90+Y,100,30, 0,30 )
+      Text( 10,70+Y,100,18, "anchor size:");, #PB_Text_Border )
+      *size = Spin( 10,90+Y,70,30, 0,30 )
       
-      Text( 10,130+Y,100,18, "anchor position");, #PB_Text_Border )
-      *position = Spin( 10,150+Y,100,30, 0,59 )
+      Text( 10,130+Y,100,18, "anchor pos:");, #PB_Text_Border )
+      *position = Spin( 10,150+Y,70,30, 0,59 )
+      
       ;test_event_send=1
       ;\\
-      *gridType = ComboBox( 120,30+Y,100,30 )
+      Text( 90,10+Y,130,18, "grid type");, #PB_Text_Border )
+      *gridType = ComboBox( 90,30+Y,130,30 )
       AddItem(*gridType, -1, "grid [point]" )
       AddItem(*gridType, -1, "grid [line]" )
-      ;SetState(*gridType, 0)
+      SetState(*gridType, 0)
       
-      *FrameColor = Button( 120,90+Y,100,30, "FrameColor" )
-      *BackColor = Button( 120,150+Y,100,30, "BackColor" )
+      Text( 90,70+Y,130,18, "anchor frame color type");, #PB_Text_Border )
+      *FrameColorType = ComboBox( 90,90+Y,100,30 )
+      AddItem(*FrameColorType, -1, "default" )
+      AddItem(*FrameColorType, -1, "entered" )
+      AddItem(*FrameColorType, -1, "pressed" )
+      SetState(*FrameColorType, 0)
+      *FrameColor = Button( 190,90+Y,30,30, "..." )
       
-;      ;
-       Post( a_focused( ), #__event_StatusChange )
-;        
+      Text( 90,130+Y,130,18, "anchor back color type");, #PB_Text_Border )
+      *BackColorType = ComboBox( 90,150+Y,100,30 )
+      AddItem(*BackColorType, -1, "default" )
+      AddItem(*BackColorType, -1, "entered" )
+      AddItem(*BackColorType, -1, "pressed" )
+      SetState(*BackColorType, 0)
+      *BackColor = Button( 190,150+Y,30,30, "..." )
+      
       ;\\
       Bind( *grid, @events_widgets( ), #__event_Change )
       Bind( *size, @events_widgets( ), #__event_Change )
       Bind( *position, @events_widgets( ), #__event_Change )
       ;
       Bind( *gridType, @events_widgets( ), #__event_Change )
+      Bind( *BackColorType, @events_widgets( ), #__event_Change )
+      Bind( *FrameColorType, @events_widgets( ), #__event_Change )
       Bind( *BackColor, @events_widgets( ), #__event_LeftClick )
       Bind( *FrameColor, @events_widgets( ), #__event_LeftClick )
       
@@ -126,6 +174,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 56
+; FirstLine = 33
 ; Folding = --
 ; EnableXP
 ; DPIAware

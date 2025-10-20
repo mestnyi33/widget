@@ -231,7 +231,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global test_delete
       
       Global test_focus_set = 0
-      Global test_focus_show = 0
+      Global test_focus_draw = 0
       
       Global test_event_repost
       Global test_event_entered
@@ -22184,7 +22184,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; UnbindEvent( #PB_Event_SizeWindow, @EventResize( ), window )
          Else
-            If test_focus_show
+            If test_focus_draw
                canvasflag|#PB_Canvas_DrawFocus
             EndIf
             
@@ -24812,7 +24812,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;
                   If *this\root\drawmode & 1<<2
                      ;\\
-                     If test_focus_show
+                     If test_focus_draw
                         If *this\focus = 2
                            draw_mode_(#PB_2DDrawing_Outlined)
                            If Not *this\haschildren 
@@ -24964,7 +24964,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ForEach widgets( )
                   If widgets( )\root = *root 
                   ;
-                  If test_focus_show
+                  If test_focus_draw
                      ;\\ draw active containers frame
                      If GetActive( )
                         If GetActive( )\focus = 2 And 
@@ -25024,7 +25024,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Draw( widgets( ))
                   
                   ; 
-                  If test_focus_show
+                  If test_focus_draw
                      ;\\ draw active containers frame
                      If GetActive( ) 
                         If GetActive( )\focus = 2 And 
@@ -25340,7 +25340,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
          
          ;
-                  If test_focus_show
+                  If test_focus_draw
                      ;\\ draw active containers frame
                      If GetActive( )
                         If GetActive( )\focus = 2 And 
@@ -25400,7 +25400,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Draw( widgets( ))
                   
                   ; 
-                  If test_focus_show
+                  If test_focus_draw
                      ;\\ draw active containers frame
                      If GetActive( ) 
                         If GetActive( )\focus = 2 And 

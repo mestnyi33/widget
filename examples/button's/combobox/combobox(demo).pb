@@ -83,12 +83,12 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, 615, 190, "ComboBox on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;\\
-    ComboBoxGadget(0, 10, 10, 250, 50, #PB_ComboBox_Editable|#PB_ComboBox_Image)
+    ComboBoxGadget(0, 10, 10, 250, 50, #PB_ComboBox_Editable|#PB_ComboBox_UpperCase|#PB_ComboBox_Image)
     For a = 1 To 31 ; xp=31 ;linux-qt=11 ; mac = 5
       AddGadgetItem(0, -1,"ComboBox editable... " + Str(a), ImageID(2))
     Next
     
-    ComboBoxGadget(1, 10, 70, 250, 50, #PB_ComboBox_Image)
+    ComboBoxGadget(1, 10, 70, 250, 50, #PB_ComboBox_LowerCase|#PB_ComboBox_Image)
     AddGadgetItem(1, -1, "ComboBox item with image1", ImageID(0))
     AddGadgetItem(1, -1, "ComboBox item with image2", ImageID(1))
     AddGadgetItem(1, -1, "ComboBox item with image3", ImageID(2))
@@ -108,12 +108,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     ;\\
-    ComboBox(305+10, 10, 250, 50, #PB_ComboBox_Editable);|#PB_ComboBox_Image)
+    ComboBox(305+10, 10, 250, 50, #PB_ComboBox_Editable|#PB_ComboBox_UpperCase);|#PB_ComboBox_Image)
     For a = 1 To 31
       AddItem(ID(0), -1,"ComboBox editable... " + Str(a), (2))
     Next
     
-    ComboBox(305+10, 70, 250, 50);, #PB_ComboBox_Image)
+    ComboBox(305+10, 70, 250, 50, #PB_ComboBox_LowerCase);|#PB_ComboBox_Image)
     AddItem(ID(1), -1, "ComboBox item with image1", (0))
     AddItem(ID(1), -1, "ComboBox item with image2", (1))
     AddItem(ID(1), -1, "ComboBox item with image3", (2))
@@ -135,7 +135,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 110
+; CursorPosition = 95
 ; FirstLine = 74
 ; Folding = 8--
 ; Optimizer

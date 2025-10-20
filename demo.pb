@@ -9,7 +9,7 @@ UseWidgets( )
 
 
 ;test_focus_set = 1
-test_focus_show = 1
+test_focus_draw = 1
    
 Global i, *test._s_widget
 

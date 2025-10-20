@@ -1,6 +1,6 @@
 ﻿XIncludeFile "../../../widgets.pbi" : UseWidgets( )
 
-test_focus_show = 1
+test_focus_draw = 1
 
 Procedure active()
   If EventWidget( )\type = #__type_Window

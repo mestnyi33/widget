@@ -4,6 +4,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
   ; test_draw_repaint = 1
+  ; test_focus_set = 1
+   test_focus_draw = 1
    
    Global Tree, *showButton
    
@@ -54,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
       For i = 0 To 10
          AddItem(Tree, -1, Str(i)+"_item")
       Next
-      Button( 600-100, 10, 90,30, "test" )
+      Button( 405, 175, 90,30, "test" )
       *showButton = Button( 600-100, 300-40, 90,30, "show" )
       Bind( *showButton, @ButtonEvents( ) )
       SetActive( *showButton )
@@ -111,8 +113,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 26
+; CursorPosition = 5
 ; Folding = -8-
 ; EnableXP
 ; DPIAware

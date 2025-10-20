@@ -128,16 +128,6 @@ Global pb_object$ = "";"Gadget"
 
 
 Global font_properties = LoadFont( #PB_Any, "", 12 )
-
-
-; test_docursor = 1
-; test_changecursor = 1
-; test_setcursor = 1
-; test_delete = 1
-; test_focus_show = 1
-; test_focus_set = 1
-; test_changecursor = 1
-
 Global NewMap EventsString.s( )
 Global NewMap GetObject.s( )
 ;
@@ -221,6 +211,14 @@ CompilerEndIf
 ;- USES
 UseWidgets( )
 UsePNGImageDecoder( )
+; test_docursor = 1
+; test_changecursor = 1
+; test_setcursor = 1
+; test_delete = 1
+ test_focus_draw = 1
+; test_focus_set = 1
+; test_changecursor = 1
+
 
 Global PreviewRunning, PreviewProgramName$
 
@@ -1611,33 +1609,33 @@ Procedure new_widget_events( )
          ProcedureReturn #False
          ;
       Case #__event_Free
-         If *g = ide_design_MDI
-            ProcedureReturn #False
-         EndIf
-         
-         ; Debug "  do free "+item
-         ; remove items 
-         RemoveItem( ide_inspector_VIEW, GetData( *g )  ) 
-         
-         ; after remove items 
-         If *g = a_focused( )
-            Protected i, CountItems
-            CountItems = CountItems( ide_inspector_VIEW ) 
-            If CountItems 
-               ; update widget data item
-               For i = 0 To CountItems - 1
-                  SetData( GetItemData( ide_inspector_VIEW, i ), i )
-               Next 
-               ;
-               ; set anchor focus
-               a_set( GetItemData( ide_inspector_VIEW, GetState( ide_inspector_VIEW ) ) )
+         If ide_design_MDI = *g
+         Else
+            ; Debug "  do free "+item
+            ; remove items 
+            RemoveItem( ide_inspector_VIEW, GetData( *g )  ) 
+            
+            ; after remove items 
+            If *g = a_focused( )
+               Protected i, CountItems
+               CountItems = CountItems( ide_inspector_VIEW ) 
+               If CountItems 
+                  ; update widget data item
+                  For i = 0 To CountItems - 1
+                     SetData( GetItemData( ide_inspector_VIEW, i ), i )
+                  Next 
+                  ;
+                  ; set anchor focus
+                  a_set( GetItemData( ide_inspector_VIEW, GetState( ide_inspector_VIEW ) ) )
+               EndIf
             EndIf
+            
+            ;
+            DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
          EndIf
-         
-         ;
-         DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
-         
-         
+          
+      Case #__event_MouseEnter
+         Debug GetActive()\class
       Case #__event_RightDown
          Debug "right"
          
@@ -3016,9 +3014,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 806
-; FirstLine = 794
-; Folding = -----------------------------------------------------
+; CursorPosition = 1637
+; FirstLine = 1601
+; Folding = -------------------------------394-------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

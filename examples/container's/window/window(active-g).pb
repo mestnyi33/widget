@@ -2,7 +2,7 @@
 ;XIncludeFile "../../../widget-events.pbi" 
 UseWidgets( )
 
-test_focus_show = 1
+test_focus_draw = 1
 
 Procedure active()
   Protected *ew._s_widget = EventWidget( )

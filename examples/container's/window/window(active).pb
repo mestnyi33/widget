@@ -3,7 +3,7 @@
 
 EnableExplicit
 UseWidgets( )
-test_focus_show = 1
+test_focus_draw = 1
 test_focus_set = 1
 
 Define *win0,*win1,*win2, Width=500, Height=400

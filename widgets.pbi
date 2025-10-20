@@ -231,7 +231,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Global test_delete
       
       Global test_focus_set = 0
-      Global test_focus_show = 0
+      Global test_focus_draw = 0
       
       Global test_event_repost
       Global test_event_entered
@@ -3313,7 +3313,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                widgets( )\anchors\group\height = widgets( )\height[#__c_frame]
                
                
-               
                ;                Define position = 0
                ;                a_setpos( widgets( ), position )
                
@@ -3440,14 +3439,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If StartEnum( *this )
                            If widgets( )\anchors 
                               If widgets( )\anchors\group\show = #False
-                                 If is_intersect_( widgets( ), mouse( )\selector, [#__c_frame] )
-                                    
-                                    Debug "set "+widgets( )\class
-                                    a_anchors( )\group\show + 1
-                                    widgets( )\anchors\group\show = #True
-                                    
-                                    a_group_show( widgets( ), #__event_Create )
-                                    
+                                 If widgets( )\level = *this\level + 1
+                                    If is_intersect_( widgets( ), mouse( )\selector, [#__c_frame] )
+                                       
+                                       Debug "set "+widgets( )\class
+                                       a_anchors( )\group\show + 1
+                                       widgets( )\anchors\group\show = #True
+                                       
+                                       a_group_show( widgets( ), #__event_Create )
+                                       
+                                    EndIf
                                  EndIf
                               EndIf
                            EndIf
@@ -3479,8 +3480,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ;
                   If a_anchors( )\group\show 
-                     If *this\parent
+                     If *this\anchors\group\show 
                         a_update( *this\parent )
+                     Else
+                        a_update( *this )
                      EndIf
                   EndIf
                   
@@ -3641,9 +3644,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If mh1 <> #PB_Ignore
                            mh1 = mh+(widgets( )\anchors\group\height-*this\anchors\group\height)
                         EndIf
+                        ;
                         Resize( widgets( ), mx1, my1, mw1, mh1, 0 )
                      EndIf
                      StopEnum( )
+                     ;
+                     a_update( *this\parent )
                   EndIf
                Else
                   Resize( *this, mx1, my1, mw1, mh1, 0 )
@@ -19740,6 +19746,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If eventtype = #PB_EventType_MouseEnter
+            ; Debug " #PB_EventType_MouseEnter "+eventgadget
             If Not ( root( ) And root( )\canvas\gadget = eventgadget )
                ChangeCurrentCanvas( GadgetID( eventgadget ) )
             EndIf
@@ -20183,7 +20190,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If MouseData( )
             If root( ) And root( )\canvas\gadget = eventgadget
                If Not PressedButton( )
-                  GetAtPoint( root( ), mouse( )\x, mouse( )\y, widgets( ) )
+                  GetAtPoint( root( ), mouse( )\x, mouse( )\y, widgets( ))
                EndIf
                ;
                If event = #__event_LeftDown Or
@@ -20404,9 +20411,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If GetActive( ) <> Entered( )
                      keyboard( )\widget = Entered( )
                      ; Debug " \\ set active widget"
-                     If  Entered( )\anchors And 
-                         Entered( )\parent And
-                         Entered( )\parent\anchors
+                     If Entered( )\anchors And 
+                        Entered( )\parent And
+                        Entered( )\parent\anchors
                         ;
                         If a_set( Entered( ) )
                            If GetActive( ) <> a_main( ) 
@@ -22214,7 +22221,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; UnbindEvent( #PB_Event_SizeWindow, @EventResize( ), window )
          Else
-            If test_focus_show
+            If test_focus_draw = 1
                canvasflag|#PB_Canvas_DrawFocus
             EndIf
             
@@ -24802,16 +24809,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                         draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $AAE4E4E4 )
                      EndIf
                      
-                     ;\\ draw focus state
-                     If *this\focus = 2 And Not (is_window_(*this) And Not *this\parent )
-                        UnclipOutput( )
-                        draw_mode_alpha_( #PB_2DDrawing_Outlined )
-                        draw_box_( *this\frame_x( )+1, *this\frame_y( )+1, *this\frame_width( )-2, *this\frame_height( )-2, $fffff0000 )
-                        draw_box_( *this\frame_x( )+2, *this\frame_y( )+2, *this\frame_width( )-4, *this\frame_height( )-4, $fffff0000 )
-                        draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $fffff0000 )
-                        draw_box_( *this\frame_x( )-1, *this\frame_y( )-1, *this\frame_width( )+2, *this\frame_height( )+2, $fffff0000 )
-                        draw_box_( *this\frame_x( )-2, *this\frame_y( )-2, *this\frame_width( )+4, *this\frame_height( )+4, $fffff0000 )
-                        clip_output_( *this )
+                     ;\\ draw focus state TEMP
+                     If test_focus_draw = 2
+                        If *this\focus = 2 And Not (is_window_(*this) And Not *this\parent )
+                           UnclipOutput( )
+                           draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                           draw_box_( *this\frame_x( )+1, *this\frame_y( )+1, *this\frame_width( )-2, *this\frame_height( )-2, $fffff0000 )
+                           draw_box_( *this\frame_x( )+2, *this\frame_y( )+2, *this\frame_width( )-4, *this\frame_height( )-4, $fffff0000 )
+                           draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $fffff0000 )
+                           draw_box_( *this\frame_x( )-1, *this\frame_y( )-1, *this\frame_width( )+2, *this\frame_height( )+2, $fffff0000 )
+                           draw_box_( *this\frame_x( )-2, *this\frame_y( )-2, *this\frame_width( )+4, *this\frame_height( )+4, $fffff0000 )
+                           clip_output_( *this )
+                        EndIf
                      EndIf
                   EndIf
                   
@@ -24841,7 +24850,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;
                   If *this\root\drawmode & 1<<2
                      ;\\
-                     If test_focus_show
+                     If test_focus_draw = 1
                         If *this\focus = 2
                            draw_mode_(#PB_2DDrawing_Outlined)
                            If Not *this\haschildren 
@@ -24993,7 +25002,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\
                If StartEnum( *root )
                   ;
-                  If test_focus_show
+                  If test_focus_draw = 1
                      ;\\ draw active containers frame
                      If GetActive( )
                         If GetActive( )\focus = 2 And 
@@ -25053,7 +25062,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Draw( widgets( ))
                   
                   ; 
-                  If test_focus_show
+                  If test_focus_draw = 1
                      ;\\ draw active containers frame
                      If GetActive( ) 
                         If GetActive( )\focus = 2 And 
@@ -25271,9 +25280,19 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;- DIALOGs
       ;-
       Procedure MessageEvents( )
-         Protected *message._s_WIDGET
+         Protected *message._s_ROOT
          
          Select WidgetEvent( )
+            Case #__event_Create
+               ; Debug " do create " + EventWidget( )\class
+               
+            Case #__event_Free
+               ; Debug " do free " + EventWidget( )\class
+               If EventWidget( ) = *message
+                  StickyWindow( *message\canvas\window, #False )
+                  Unbind( *message, @MessageEvents( ))
+               EndIf
+               
             Case #__event_KeyDown
                If keyboard( )\key = #PB_Shortcut_Return
                   ; Debug "key - message"
@@ -25344,10 +25363,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             newflag | #PB_Window_WindowCentered
          EndIf
          ;newflag = #PB_Window_ScreenCentered |#PB_Window_BorderLess
-         
          *message = Open( #PB_Any, X, Y, Width, Height, Title, newflag, WindowID( *root\canvas\window ))
-         SetClass( *message, #PB_Compiler_Procedure+"_"+Str( *Message\canvas\window ))
+         SetClass( *message, #PB_Compiler_Procedure+"_"+Str( *Message\canvas\window )) 
          *message\parent = *root
+         mouse( )\x = GadgetMouseX( *message\canvas\gadget )
+         mouse( )\y = GadgetMouseY( *message\canvas\gadget )
+         GetAtPoint( *message, mouse( )\x, mouse( )\y, widgets( ))
          ;
          ;\\
          If constants::BinaryFlag( Flag, #__message_Info )
@@ -25514,10 +25535,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          HideWindow( *message\canvas\window, #False )
-         StickyWindow( *Message\canvas\window, #True )
+         StickyWindow( *message\canvas\window, #True )
          SetActiveGadget( *Message\canvas\gadget )
          Bind( *message, @MessageEvents( ))
          SetActive( *ok )
+         
          
 ;          SetLayeredWindow( *message\canvas\window, igOpaque )
 ;          ;          If StartDrawing( CanvasOutput( *message\canvas\gadget ))
@@ -25531,16 +25553,22 @@ CompilerIf Not Defined( widget, #PB_Module )
          WaitQuit( )
          DisableWindow( *root\canvas\window, #False )
          ;
-         StickyWindow( *Message\canvas\window, #True )
-         Unbind( *message, @MessageEvents( ))
          result = GetData( *message )
+         
+         SetActive( *root )  
          Free( @*message )
          ;
          If IsImage( img )
             FreeImage( img )
          EndIf
-         ;
-         SetActive( *root )   
+         
+;          ;\\
+;          SetActive( *root )  
+;          ChangeCurrentCanvas( *root\canvas\gadgetID )
+;          mouse( )\x = GadgetMouseX( *root\canvas\gadget )
+;          mouse( )\y = GadgetMouseY( *root\canvas\gadget )
+;          GetAtPoint( *root, mouse( )\x, mouse( )\y, widgets( ))
+          
          EventWidget( ) = *widget
          ProcedureReturn result
       EndProcedure
@@ -26737,10 +26765,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 537
-; FirstLine = 517
-; Folding = ------------------------------------------------------------------------------------------------------------------4--------------------vrP+fP+----+-0-8--4---------8-------------------------------------------------------------------------------------f0-------------------------------------------------------08-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-f-------------------------------------------------v----------v7-0-2d28--f--0--------------------f----------f--00-8---e---------------------------------------------------f-----------------------------------4--t+4----XH----
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 25564
+; FirstLine = 22763
+; Folding = ----------------------------------------------------------------------fvf----b-n8+--------------------------------v--------------------fXf9-e9----0-8-4--v---------4--------------------------------------------------------------------------------------7-------------------------------------------------------84------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-+------------------------------------------------f----------f2-8fr8r4---++8--0f-9d--0-----------+----------+-88-4---0+---------------------------------------------------+----------------------------------f--v2-+----75----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -75,9 +75,9 @@ If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (contex
    BindEvent( #PB_Event_Menu, @menu_events())
    WaitClose( )
 EndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 39
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 60
+; FirstLine = 37
 ; Folding = --
 ; EnableXP
 ; DPIAware

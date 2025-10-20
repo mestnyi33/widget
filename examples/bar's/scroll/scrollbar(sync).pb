@@ -7,7 +7,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   ;test_focus_show = 1
+   ;test_focus_draw = 1
    ;test_focus_set = 1
    
    Global a, CountItems = 20

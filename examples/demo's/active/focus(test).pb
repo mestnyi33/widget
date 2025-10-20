@@ -4,7 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;EnableExplicit
    UseWidgets( )
    test_focus_set = 0
-   test_focus_show = 1
+   test_focus_draw = 1
    
    Procedure DoFocus( *this._s_WIDGET, event.i )
       Debug ""+*this\class +" "+ ClassFromEvent(event)
