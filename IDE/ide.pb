@@ -1599,6 +1599,7 @@ Procedure new_widget_events( )
    Protected __event = WidgetEvent( )
    Protected __item = WidgetEventItem( )
    Protected __data = WidgetEventData( )
+   Static anchors_group_show
    
    Select __event 
          ; disable buttons state
@@ -1644,16 +1645,62 @@ Procedure new_widget_events( )
                   SetState( ide_inspector_VIEW, GetData(*g) )
                EndIf
                
-               Properties_Updates( a_focused( ), "Focus" )
+               Properties_Updates( *g, "Focus" )
             EndIf
          EndIf
          ;
-      Case #__event_Resize
-         If a_focused( ) = *g
-            Properties_Updates( a_focused( ), "Resize" )
+      Case #__event_LeftDown
+         If IsContainer(*g)
+            If GetState( ide_inspector_ELEMENTS ) > 0 
+               If mouse( )\selector
+                  mouse( )\selector\dotted = 0
+               EndIf
+            EndIf
+         EndIf
+         ;
+         If Not *g\anchors\group\show
+            If anchors_group_show
+               anchors_group_show = #False
+               Debug "group hide"
+               HideBarButtons( ide_toolbar, #True )
+               ;
+               Define i, state
+               For i = 0 To CountItems( ide_inspector_VIEW )
+                  If i <> GetData( *g )
+                     state = GetItemState( ide_inspector_VIEW, i )
+                     If state & #PB_Tree_Selected
+                        SetItemState( ide_inspector_VIEW, i, state &~ #PB_Tree_Selected )
+                     EndIf
+                  EndIf
+               Next
+            EndIf
+         EndIf
+         ;
+      Case #__event_LeftUp
+         If IsContainer(*g)
+            If Not mouse( )\drag
+               If GetState( ide_inspector_ELEMENTS) > 0
+                  new_widget_add( *g, GetText( ide_inspector_ELEMENTS ), GetMouseX( *g ), GetMouseY( *g ))
+               EndIf
+            EndIf
+         EndIf
+         ;
+         If a_anchors( )\group\show
+            If Not *g\anchors\group\show
+               anchors_group_show = 1
+               Debug "group show"
+               HideBarButtons( ide_toolbar, #False )
+               ;
+               If StartEnum( *g )
+                  If widgets( )\anchors\group\show
+                     SetItemState( ide_inspector_VIEW, GetData( widgets( )), #PB_Tree_Selected )
+                  EndIf
+                  StopEnum( )
+               EndIf
+            EndIf
          EndIf
          
-         
+         ;
          ;
          ;D&D
          ;
@@ -1679,7 +1726,7 @@ Procedure new_widget_events( )
                EndIf
             EndIf
          EndIf
-         
+         ;
       Case #__event_Drop
          Select DropPrivate( )
             Case #_DD_Group
@@ -1705,59 +1752,7 @@ Procedure new_widget_events( )
                SetText( *new, "Copy_"+ DropText( ) )
                
          EndSelect
-         
-      Case #__event_LeftDown
-         If IsContainer(*g)
-            If GetState( ide_inspector_ELEMENTS ) > 0 
-               If mouse( )\selector
-                  mouse( )\selector\dotted = 0
-               EndIf
-            EndIf
-         EndIf
-         
-      Case #__event_LeftUp
-         ;If a_focused( )
-         HideBarButtons( ide_toolbar, Bool(a_anchors( )\group\show=0) )
-         ;EndIf
-         If a_anchors( )\group\show
-            If StartEnum( *g )
-               If widgets( )\anchors\group\show
-                  SetItemState( ide_inspector_VIEW, GetData( widgets( )), #PB_Tree_Selected )
-               EndIf
-               StopEnum( )
-            EndIf
-         Else
-            Define i, state
-            For i = 0 To CountItems( ide_inspector_VIEW )
-               If i <> GetData( *g )
-                  state = GetItemState( ide_inspector_VIEW, i )
-                  If state & #PB_Tree_Selected
-                     SetItemState( ide_inspector_VIEW, i, state &~ #PB_Tree_Selected )
-                  EndIf
-               EndIf
-            Next
-         EndIf
-         
-         ; then group select
-         If IsContainer(*g)
-            
-            ;             SetState( ide_inspector_VIEW, - 1 ) 
-            ;             If IsGadget( ide_g_code )
-            ;                SetGadgetState( ide_g_code, - 1 )
-            ;             EndIf
-            
-            If StartEnum( a_main( ) )
-               If widgets( )\anchors\group\show 
-                  
-                  ;                   SetItemState( ide_inspector_VIEW, GetData( widgets( ) ), #PB_Tree_Selected )
-                  ;                   If IsGadget( ide_g_code )
-                  ;                      SetGadgetItemState( ide_g_code, GetData( widgets( ) ), #PB_Tree_Selected )
-                  ;                   EndIf
-               EndIf
-               StopEnum( )
-            EndIf
-         EndIf
-         
+         ;
       Case #__event_MouseMove
          If IsContainer(*g) 
             If MouseEnter( *g )
@@ -1783,39 +1778,41 @@ Procedure new_widget_events( )
                      If GetCursor( ) < 255
                         Debug " mouse enter to change cursor " 
                         ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_inspector_ELEMENTS, GetState( ide_inspector_ELEMENTS ) ) ) ))
+                        a_set( *g )
                      EndIf
                   EndIf
                EndIf
             EndIf
          EndIf
-         
+         ;
+      Case #__event_Resize
+         ; Debug  ""+GetFocus( *g )  +" "+ GetClass(*g)
+         If a_focused( ) = *g
+            Properties_Updates( *g, "Resize" )
+         EndIf
+         ;
       Case #__event_Cursor
          ; Debug "CURSOR events"
          ProcedureReturn #PB_Cursor_Default
-         
+         ;
    EndSelect
    
-   ;
-   If  __event = #__event_LeftUp
-      If IsContainer(*g)
-         If GetState( ide_inspector_ELEMENTS) > 0
-            new_widget_add( *g, GetText( ide_inspector_ELEMENTS ), GetMouseX( *g ), GetMouseY( *g ))
-         EndIf
-      EndIf
-      
-      If keyboard( )\key[1]
-         ProcedureReturn #PB_Ignore
-      EndIf
-   EndIf
    
    ;\\
    If __event = #__event_Drop  Or 
       __event = #__event_RightUp Or
+      __event = #__event_KeyUp Or
       __event = #__event_LeftUp
-      
+      ;
       ; end new create
-      If GetState( ide_inspector_ELEMENTS ) > 0 
-         SetState( ide_inspector_ELEMENTS, 0 )
+      If Not keyboard( )\key[1]
+         If GetState( ide_inspector_ELEMENTS ) > 0 
+            If GetCursor( ) <> GetCursor( *g ) 
+               Debug " reset cursor " 
+               ChangeCursor( *g, GetCursor( *g ))
+            EndIf
+            SetState( ide_inspector_ELEMENTS, 0 )
+         EndIf
       EndIf
    EndIf
    
@@ -3013,9 +3010,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1634
-; FirstLine = 1598
-; Folding = -------------------------------+6-------------4f--v--
+; CursorPosition = 1690
+; FirstLine = 1612
+; Folding = -------------------------------3084f+---------v-+-f---
 ; Optimizer
 ; EnableAsm
 ; EnableXP
