@@ -1814,7 +1814,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-\\ DECLARE PRIVATEs
       ;-
       Declare   a_doactive( *this, *active = 0 )
-      Declare   DoFocus( *this, event.l, *button = #PB_All, *data = #Null )
       
       Declare   DoEvent_Lines( *this, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       Declare   DoEvent_Rows( *this, List  *rows._s_ROWS( ), event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
@@ -9624,8 +9623,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                         SetWindowState( *this\root\canvas\window, #PB_Window_Maximize )
                      Else
                         Resize( *this, 
-                                *this\bs - *this\fs, 
-                                *this\bs - *this\fs,
+                                *this\bs - *this\fs + mouse( )\steps, 
+                                *this\bs - *this\fs + mouse( )\steps,
                                 *this\parent\container_width( ) - mouse( )\steps - *this\bs * 2,
                                 *this\parent\container_height( ) - mouse( )\steps - *this\bs * 2 - *this\fs[2], 0 )
                      EndIf
@@ -10568,22 +10567,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure DoFocus( *this._s_WIDGET, event.l, *button = #PB_All, *data = #Null )
-         ; Debug #PB_Compiler_Procedure +" "+ ClassFromEvent(event)
-         
-         ;          If *this\anchors
-         ;             
-         ;             ; a_set( *this )
-         ;             
-         ;          Else
-         If MouseButtonPress( )
-            SetForeground( *this )
-         EndIf
-         
-         ProcedureReturn DoEvents( *this, event, *button, *data )
-         ;          EndIf
-      EndProcedure
-      
       Macro DoActivate( _this_ )
          If _this_\focus <> 2 ;= 3
             If test_focus_set
@@ -10592,7 +10575,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             _this_\focus = 2
             ;
             widget( ) = _this_
-            DoFocus( _this_, #__event_Focus )
+            DoEvents( _this_, #__event_Focus )
          EndIf
       EndMacro
       
@@ -10604,7 +10587,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             _this_\focus = 3
             ;
             widget( ) = _this_
-            DoFocus( _this_, #__event_LostFocus )
+            DoEvents( _this_, #__event_LostFocus )
          EndIf
       EndMacro               
       
@@ -18721,7 +18704,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          If Not *this
             ProcedureReturn 0
          EndIf
-         
+         ;
+         ;\\
+         If event = #__event_Focus
+            If MouseButtonPress( )
+               SetForeground( *this )
+            EndIf
+         EndIf
          ;
          ;\\ combobox button state
          If event = #__event_MouseEnter
@@ -22416,7 +22405,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this = Open( #PB_Any, X, Y, Width + fs * 2, Height + fs * 2 + barHeight, Text,  #PB_Window_BorderLess, *parent )
             X     = 0
             Y     = 0
-            ;EndIf
          EndIf
          
          ;\\
@@ -26736,10 +26724,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 24402
-; FirstLine = 21724
-; Folding = ----------------------------------------------------------------------fvf----b-n8+--------------------------------v--------------------fXf9-e9----0-8-4--v---------4--------------------------------------------------------------------------------------7-------------------------------------------------------84------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-+------------------------------------------------f----------f2-8fr8r4---++8--0f-9d--0-----------+------------88-4---0+---------------------------------------------------+----------4----+------------------f--v2-+----75----
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 9626
+; FirstLine = 8740
+; Folding = ----------------------------------------------------------------------fvf----b-n8+--------------------------------v--------------------fXf9-e9----0-8-4--v---------4--------------------------------------------------------------------------------------+-------------------------------------------------------+0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-v-------------------------------------------------f----------f2-8fr8r4---++8--0f-9d--0-----------+------------88-4---0+------------4---v9---------------------------------+----------4----+------------------f--v2-+----75----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
