@@ -1999,7 +1999,17 @@ Procedure   ide_file_new( )
    ide_mdi_clears( )
    ;
    ; затем создаем новое окно
-   new_widget_add( ide_design_MDI, "window", 7, 7, 400, 250 )
+   Define form = new_widget_add( ide_design_MDI, "window", 7, 7, 400, 250 )
+;    SetPosition( form, #PB_List_After, ide_design_CODE )
+;    
+;    Debug "---"
+;    ForEach widgets( )
+;       If IsChild(widgets( ), ide_design_PANEL) 
+;          Debug ""+widgets( )\class +" "+ widgets( )\level +" "+ widgets( )\TabIndex( )
+;       EndIf
+;    Next
+;    Debug "---"
+   
 EndProcedure
 
 Procedure   ide_file_open(Path$) ; Открытие файла
@@ -3014,9 +3024,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1637
-; FirstLine = 1601
-; Folding = -------------------------------394-------------------
+; CursorPosition = 2010
+; FirstLine = 1968
+; Folding = --------------------------------9--------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

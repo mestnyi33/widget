@@ -25540,7 +25540,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Bind( *message, @MessageEvents( ))
          SetActive( *ok )
          
-         
+         ;\\
 ;          SetLayeredWindow( *message\canvas\window, igOpaque )
 ;          ;          If StartDrawing( CanvasOutput( *message\canvas\gadget ))
 ;          ;             Box( 0, 0, OutputWidth( ), OutputHeight( ), igOpaque )
@@ -25548,27 +25548,25 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;          ;          EndIf
 ;          SetBackgroundColor( *message, igOpaque )
          
-         ;
+         ;\\
          DisableWindow( *root\canvas\window, #True )
          WaitQuit( )
          DisableWindow( *root\canvas\window, #False )
-         ;
-         result = GetData( *message )
          
-         SetActive( *root )  
+         ;\\
+         result = GetData( *message )
          Free( @*message )
-         ;
          If IsImage( img )
             FreeImage( img )
          EndIf
          
-;          ;\\
-;          SetActive( *root )  
-;          ChangeCurrentCanvas( *root\canvas\gadgetID )
-;          mouse( )\x = GadgetMouseX( *root\canvas\gadget )
-;          mouse( )\y = GadgetMouseY( *root\canvas\gadget )
-;          GetAtPoint( *root, mouse( )\x, mouse( )\y, widgets( ))
-          
+         ;\\
+         SetActive( *root )  
+         ChangeCurrentCanvas( *root\canvas\gadgetID )
+         mouse( )\x = GadgetMouseX( *root\canvas\gadget )
+         mouse( )\y = GadgetMouseY( *root\canvas\gadget )
+         GetAtPoint( *root, mouse( )\x, mouse( )\y, widgets( ))
+         ; 
          EventWidget( ) = *widget
          ProcedureReturn result
       EndProcedure
@@ -26766,8 +26764,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 25564
-; FirstLine = 22763
+; CursorPosition = 25542
+; FirstLine = 22748
 ; Folding = ----------------------------------------------------------------------fvf----b-n8+--------------------------------v--------------------fXf9-e9----0-8-4--v---------4--------------------------------------------------------------------------------------7-------------------------------------------------------84------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-+------------------------------------------------f----------f2-8fr8r4---++8--0f-9d--0-----------+----------+-88-4---0+---------------------------------------------------+----------------------------------f--v2-+----75----
 ; EnableXP
 ; DPIAware
