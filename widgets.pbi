@@ -24257,47 +24257,163 @@ CompilerIf Not Defined( widget, #PB_Module )
          
       EndProcedure
       
+      Procedure   Draw_Button( *this._s_WIDGET )
+         Protected X, Y
+         
+         With *this
+            Protected state
+            If *this\type = #__type_Button 
+               state = *this\ColorState( )
+               If *this\togglebox And *this\togglebox\checked
+                  state = #__s_2
+               EndIf
+            EndIf
+            
+            ; update text
+            If *this\WidgetChange( ) Or *this\ResizeChange( )
+               Update_DrawText( *this, *this\TextChange( ) )
+            EndIf
+            
+            ;             ;\\
+            If *this\picture\change
+               If *this\text\string = ""
+                  ;                   *this\scroll_x( ) = 0
+                  ;                   *this\scroll_y( ) = 0
+                  ;                   
+                  ;                   update_align_image( *this )
+                  
+                  
+                  ; make horizontal scroll x
+                  make_scrollarea_x( *this, *this\scroll_width( ), *this\picture\align )
+                  
+                  ; make vertical scroll y
+                  make_scrollarea_y( *this, *this\scroll_height( ), *this\picture\align )
+                  
+               Else
+                  ;*this\picture\x = *this\padding\x
+                  ;*this\picture\y = *this\padding\y
+                  change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, 0, *this\picture\align, *this\padding\y )
+                  change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, 0, *this\picture\align, *this\padding\y )
+               EndIf
+            EndIf
+            
+            ;\\ origin position
+            X = *this\inner_x( ) + *this\scroll_x( )
+            Y = *this\inner_y( ) + *this\scroll_y( )
+            
+            ;\\ draw background
+            If *this\picture[#__image_BackGround]\imageID
+               draw_img_( *this, X, Y, [#__image_BackGround] )
+            Else
+               If *this\color\back <> - 1
+                  If *this\color\fore <> - 1
+                     draw_mode_alpha_( #PB_2DDrawing_Gradient )
+                     draw_gradient_( *this\text\vertical, *this, *this\color\fore[state], *this\color\back[state], [#__c_frame] )
+                  Else
+                     draw_mode_alpha_( #PB_2DDrawing_Default )
+                     draw_box( *this, color\back, [#__c_frame])
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\ draw text items
+            If *this\text\string.s
+               draw_mode_alpha_( #PB_2DDrawing_Transparent )
+               ForEach *this\__lines( )
+                  DrawRotatedText( X + *this\__lines( )\x + *this\__lines( )\text\x, Y + *this\__lines( )\y + *this\__lines( )\text\y,
+                                   *this\__lines( )\text\String.s, *this\text\rotate, *this\color\front[state] ) ; *this\__lines( )\color\font )
+                  
+                  If *this\mode\Lines
+                     Protected i, count = Bool( func::GetFontSize( GetFontID( *this\__lines( ) ) ) > 13 )
+                     For i = 0 To count
+                        Line( X + *this\__lines( )\x + *this\__lines( )\text\x, Y + *this\__lines( )\y + *this\__lines( )\text\y + *this\__lines( )\text\height - count + i - 1, *this\__lines( )\text\width, 1, *this\color\front[state] )
+                     Next
+                  EndIf
+               Next
+            EndIf
+            
+            ;\\ draw box
+            Protected _box_type_, _box_x_, _box_y_
+            ; update widget ( option&checkbox ) position
+            If *this\togglebox And *this\togglebox\width And *this\WidgetChange( ) 
+               *this\togglebox\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\togglebox\height ) / 2
+               
+               If *this\text\align\right
+                  *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\height - 3 )
+               ElseIf Not *this\text\align\left
+                  *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\width ) / 2
+                  
+                  If Not *this\text\align\top
+                     If *this\text\rotate = 0
+                        *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) - *this\togglebox\height
+                     Else
+                        *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
+                     EndIf
+                  EndIf
+               Else
+                  *this\togglebox\x = *this\inner_x( ) + 3
+               EndIf
+            EndIf
+            
+            
+            If #__type_Option = *this\type
+               _box_type_ = 1
+            EndIf
+            If #__type_CheckBox = *this\type
+               _box_type_ = 3
+            EndIf
+            If _box_type_
+               draw_button_( _box_type_, *this\togglebox\x, *this\togglebox\y, *this\togglebox\width, *this\togglebox\height, *this\togglebox\checked, *this\togglebox\round )
+            EndIf
+            
+            ;\\ draw img
+            If *this\picture\imageID 
+               draw_mode_alpha_( #PB_2DDrawing_Transparent )
+               DrawAlphaImage( *this\picture\imageID, X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
+            EndIf
+            
+            ;\\ Draw frames
+            If *this\fs
+               draw_mode_( #PB_2DDrawing_Outlined )
+               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ),
+                               *this\round, *this\round, *this\color\frame[state] & $FFFFFF | *this\AlphaState24( ) )
+            EndIf
+            
+            ;\\ draw frame defaul focus widget
+            If *this\type = #__type_Button
+               If *this\deffocus 
+                  draw_mode_( #PB_2DDrawing_Outlined )
+                  draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ),
+                                  *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
+                  If *this\round
+                     draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ), *this\inner_width( ) + 2, *this\inner_height( ),
+                                     *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
+                  EndIf
+                  draw_roundbox_( *this\screen_x( ), *this\screen_y( ), *this\screen_width( ), *this\screen_height( ),
+                                  *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
+               EndIf
+            EndIf
+            
+         EndWith
+      EndProcedure
+      
       Procedure   Draw_ComboBox( *this._s_WIDGET )
          ;ProcedureReturn Draw_Button( *this )
          
-         Protected state
-         Protected arrow_right
-         
-         state = *this\ColorState( )
+         Protected state = *this\ColorState( )
          If state = #__s_3
             state = 0
          EndIf
          
-         *this\text\x = 5
-         *this\text\y = ( *this\combobutton\height - *this\text\height ) / 2
-         
-         ;
+         ; gradient draw
          draw_mode_alpha_( #PB_2DDrawing_Gradient )
          If *this\stringbar
             draw_gradient_( 0, *this\combobutton, *this\color\fore[*this\ColorState( )], *this\color\back[state] )
          Else
             draw_gradient_( 0, *this, *this\color\fore[*this\ColorState( )], *this\color\back[state], [#__c_frame] )
-            
-;             ;
-;             If *this\PopupCombo( ) 
-;                If *this\PopupCombo( )\row
-;                   If *this\PopupCombo( )\RowFocused( )
-;                      draw_mode_alpha_( #PB_2DDrawing_Transparent )
-;                      
-;                      If *this\PopupCombo( )\RowFocused( )\picture\imageID
-;                         DrawImage( *this\PopupCombo( )\RowFocused( )\picture\imageID, *this\frame_x( )+5, *this\frame_y( ) + DPIUnScaled(*this\height-*this\PopupCombo( )\RowFocused( )\picture\height) )
-;                      EndIf
-;                      
-;                      DrawText( *this\frame_x( ) + *this\text\x + *this\PopupCombo( )\RowFocused( )\picture\width + 5,
-;                                *this\frame_y( ) + *this\text\y,
-;                                *this\PopupCombo( )\RowFocused( )\text\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
-;                      
-;                   EndIf
-;                EndIf
-;             EndIf
          EndIf
          
-         ;
+         ; arrow draw
          draw_mode_alpha_( #PB_2DDrawing_Default )
          Draw_Arrow( *this\combobutton\arrow\direction,
                      *this\combobutton\x + ( *this\combobutton\width - *this\combobutton\arrow\size * 2 ) - *this\combobutton\arrow\size / 2,
@@ -24311,9 +24427,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             draw_mode_( #PB_2DDrawing_Outlined )
             draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[state] )
          EndIf
-         
-         ;draw_box_( *this\combobutton\x, *this\combobutton\y, *this\combobutton\width, *this\combobutton\height, $ff000000 )
-         
       EndProcedure
       
       Procedure   Draw_Container( *this._s_WIDGET )
@@ -24466,146 +24579,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             
-            
-         EndWith
-      EndProcedure
-      
-      Procedure   Draw_Button( *this._s_WIDGET )
-         Protected X, Y
-         
-         With *this
-            Protected state
-            If *this\type = #__type_Button 
-               state = *this\ColorState( )
-               If *this\togglebox And *this\togglebox\checked
-                  state = #__s_2
-               EndIf
-            EndIf
-            
-            ; update text
-            If *this\WidgetChange( ) Or *this\ResizeChange( )
-               Update_DrawText( *this, *this\TextChange( ) )
-            EndIf
-            
-            ;             ;\\
-            If *this\picture\change
-               If *this\text\string = ""
-                  ;                   *this\scroll_x( ) = 0
-                  ;                   *this\scroll_y( ) = 0
-                  ;                   
-                  ;                   update_align_image( *this )
-                  
-                  
-                  ; make horizontal scroll x
-                  make_scrollarea_x( *this, *this\scroll_width( ), *this\picture\align )
-                  
-                  ; make vertical scroll y
-                  make_scrollarea_y( *this, *this\scroll_height( ), *this\picture\align )
-                  
-               Else
-                  ;*this\picture\x = *this\padding\x
-                  ;*this\picture\y = *this\padding\y
-                  change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, 0, *this\picture\align, *this\padding\y )
-                  change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, 0, *this\picture\align, *this\padding\y )
-               EndIf
-            EndIf
-            
-            ;\\ origin position
-            X = *this\inner_x( ) + *this\scroll_x( )
-            Y = *this\inner_y( ) + *this\scroll_y( )
-            
-            ;\\ draw background
-            If *this\picture[#__image_BackGround]\imageID
-               draw_img_( *this, X, Y, [#__image_BackGround] )
-            Else
-               If *this\color\back <> - 1
-                  If *this\color\fore <> - 1
-                     draw_mode_alpha_( #PB_2DDrawing_Gradient )
-                     draw_gradient_( *this\text\vertical, *this, *this\color\fore[state], *this\color\back[state], [#__c_frame] )
-                  Else
-                     draw_mode_alpha_( #PB_2DDrawing_Default )
-                     draw_box( *this, color\back, [#__c_frame])
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\ draw text items
-            If *this\text\string.s
-               draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               ForEach *this\__lines( )
-                  DrawRotatedText( X + *this\__lines( )\x + *this\__lines( )\text\x, Y + *this\__lines( )\y + *this\__lines( )\text\y,
-                                   *this\__lines( )\text\String.s, *this\text\rotate, *this\color\front[state] ) ; *this\__lines( )\color\font )
-                  
-                  If *this\mode\Lines
-                     Protected i, count = Bool( func::GetFontSize( GetFontID( *this\__lines( ) ) ) > 13 )
-                     For i = 0 To count
-                        Line( X + *this\__lines( )\x + *this\__lines( )\text\x, Y + *this\__lines( )\y + *this\__lines( )\text\y + *this\__lines( )\text\height - count + i - 1, *this\__lines( )\text\width, 1, *this\color\front[state] )
-                     Next
-                  EndIf
-               Next
-            EndIf
-            
-            ;\\ draw box
-            Protected _box_type_, _box_x_, _box_y_
-            ; update widget ( option&checkbox ) position
-            If *this\togglebox And *this\togglebox\width And *this\WidgetChange( ) 
-               *this\togglebox\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\togglebox\height ) / 2
-               
-               If *this\text\align\right
-                  *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\height - 3 )
-               ElseIf Not *this\text\align\left
-                  *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\width ) / 2
-                  
-                  If Not *this\text\align\top
-                     If *this\text\rotate = 0
-                        *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) - *this\togglebox\height
-                     Else
-                        *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
-                     EndIf
-                  EndIf
-               Else
-                  *this\togglebox\x = *this\inner_x( ) + 3
-               EndIf
-            EndIf
-            
-            
-            If #__type_Option = *this\type
-               _box_type_ = 1
-            EndIf
-            If #__type_CheckBox = *this\type
-               _box_type_ = 3
-            EndIf
-            If _box_type_
-               draw_button_( _box_type_, *this\togglebox\x, *this\togglebox\y, *this\togglebox\width, *this\togglebox\height, *this\togglebox\checked, *this\togglebox\round )
-            EndIf
-            
-            ;\\ draw img
-            If *this\picture\imageID 
-               draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *this\picture\imageID, X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
-            EndIf
-            
-            ;\\ Draw frames
-            If *this\fs
-               draw_mode_( #PB_2DDrawing_Outlined )
-               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ),
-                               *this\round, *this\round, *this\color\frame[state] & $FFFFFF | *this\AlphaState24( ) )
-            EndIf
-            
-            ;\\ draw frame defaul focus widget
-            If *this\type = #__type_Button
-               If *this\deffocus 
-                  draw_mode_( #PB_2DDrawing_Outlined )
-                  draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ),
-                                  *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
-                  If *this\round
-                     draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ), *this\inner_width( ) + 2, *this\inner_height( ),
-                                     *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
-                  EndIf
-                  draw_roundbox_( *this\screen_x( ), *this\screen_y( ), *this\screen_width( ), *this\screen_height( ),
-                                  *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
-               EndIf
-            EndIf
             
          EndWith
       EndProcedure
@@ -26764,9 +26737,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 25542
-; FirstLine = 22748
-; Folding = ----------------------------------------------------------------------fvf----b-n8+--------------------------------v--------------------fXf9-e9----0-8-4--v---------4--------------------------------------------------------------------------------------7-------------------------------------------------------84------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-+------------------------------------------------f----------f2-8fr8r4---++8--0f-9d--0-----------+----------+-88-4---0+---------------------------------------------------+----------------------------------f--v2-+----75----
+; CursorPosition = 24402
+; FirstLine = 21724
+; Folding = ----------------------------------------------------------------------fvf----b-n8+--------------------------------v--------------------fXf9-e9----0-8-4--v---------4--------------------------------------------------------------------------------------7-------------------------------------------------------84------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-+------------------------------------------------f----------f2-8fr8r4---++8--0f-9d--0-----------+------------88-4---0+---------------------------------------------------+----------4----+------------------f--v2-+----75----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
