@@ -1,6 +1,6 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 UseWidgets( )
-test_focus_set = 1
+;test_focus_set = 1
 test_focus_draw = 1
 
 Global group.i,cost.i
@@ -60,7 +60,6 @@ Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
 ;     Debug " open message"
 ;     SetActive(*g_11)
 ; ;    
-   test_focus_draw = 0
    ;Define Message = Message(title, Text, flags, parentID ) 
    ; Define Message = MessageRequester(title, Text, flags, parentID );
    
@@ -98,9 +97,8 @@ Bind( cost, @LostFocusEvents( ), #__event_LostFocus )
          
 WaitClose( )
 End
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 46
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 2
 ; Folding = --
 ; EnableXP
 ; DPIAware

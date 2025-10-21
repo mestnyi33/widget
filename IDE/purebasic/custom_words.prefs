@@ -231,6 +231,8 @@ ActiveWindow
 ActiveGadget
 GetActive
 SetActive
+GetFocus
+SetFocus
 SetForeground
 
 AddFont

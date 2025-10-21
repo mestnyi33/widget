@@ -1625,7 +1625,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i CountType( *this, mode.b = 0 )
       
       Declare.b GetFocus( *this )
-      Declare.b SetFocus( *this, state.b )
+      Declare.b SetFocus( *this, state.b = #__s_2 )
       Declare.i SetActive( *this )
       Declare   SetForeground( *window )
       
@@ -1813,8 +1813,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       ;-\\ DECLARE PRIVATEs
       ;-
-      Declare   a_doactive( *this, *active = 0 )
-      
       Declare   DoEvent_Lines( *this, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       Declare   DoEvent_Rows( *this, List  *rows._s_ROWS( ), event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       Declare   DoEvents( *this, event.l, *button = #PB_All, *data = #Null )
@@ -3049,8 +3047,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          Next a_index
       EndProcedure
       
-      Declare a_doactive( *this._s_WIDGET, *active._s_WIDGET = 0 )
-      
       Procedure a_align( *g._s_WIDGET, align )
          Protected.l X,Y,Width,Height
          Protected *parent._s_WIDGET
@@ -3098,81 +3094,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure a_doactive( *this._s_WIDGET, *active._s_WIDGET = 0 )
-         ; ProcedureReturn 
-         Protected *window._s_WIDGET
-         
-         If *Active
-            ;             If *this <> *active\window ; And *this <> a_main( )
-            ; deactivate
-            If test_focus_set
-               Debug "DEACTIVE "+*this\class ;+" "+ *this\focus
-            EndIf
-            *this\focus = 0
-            DoEvents( *this, #__event_Lostfocus )
-            ;                ;
-            ;                *window = *this
-            ;                While Not is_root_( *window )
-            ;                   *window = *window\window
-            ;                   If *window 
-            ;                      If *this = *window
-            ;                         Break
-            ;                      EndIf
-            ;                      If *active = *window
-            ;                         Break
-            ;                      EndIf
-            ;                      If Not *window\anchors
-            ;                         Break
-            ;                      EndIf
-            ;                      If IsChild( *active, *window )
-            ;                         Break
-            ;                      EndIf
-            ;                      If *window\focus <> 0
-            ;                         If test_focus_set
-            ;                            Debug "DEACTIVEWINDOW "+*window\class ;+" "+ *this\window\focus
-            ;                         EndIf
-            ;                         *window\focus = 0
-            ;                         DoEvents( *window, #__event_Lostfocus )
-            ;                      EndIf
-            ;                   EndIf
-            ;                Wend
-            ;             EndIf
-         Else
-            If *this = a_main( )
-               ProcedureReturn 
-            EndIf
-            ; activate
-            If test_focus_set
-               Debug "ACTIVE "+*this\class ;+" "+ *this\focus
-            EndIf
-            *this\focus = 2
-            ;             ;
-            ;             *window = *this
-            ;             While Not is_root_( *window )
-            ;                *window = *window\window
-            ;                If *window 
-            ;                   If *this = *window 
-            ;                      Break
-            ;                   EndIf
-            ;                   If Not *window\anchors
-            ;                      Break
-            ;                   EndIf
-            ;                   If *window\focus = 0
-            ;                      If test_focus_set
-            ;                         Debug "ACTIVEWINDOW "+*window\class ; +" "+ *this\window\focus
-            ;                      EndIf
-            ;                      *window\focus = 2
-            ;                      DoEvents( *window, #__event_focus )
-            ;                   EndIf
-            ;                EndIf
-            ;             Wend
-            
-            ; DoActivate( *this )
-            DoEvents( *this, #__event_focus )
-         EndIf
-         
-      EndProcedure
-      
       Procedure.i a_set( *this._s_WIDGET, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
          Protected result
          ; Debug ""+*this\class
@@ -3194,21 +3115,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;\\
                If a_anchors( ) 
                   If a_focused( ) <> *this
-                     ; Debug " ? "+*this\class
                      If a_focused( )
-                        If a_focused( )\anchors\group\show
-                           a_group_show( a_focused( ), #__event_LostFocus )
-                        Else
-                           ; a_remove( a_focused( ) )
+                        If SetFocus( a_focused( ), #__s_0 )
+                           If a_focused( )\anchors\group\show
+                              a_group_show( a_focused( ), #__event_LostFocus )
+                           EndIf
+                           DoEvents( a_focused( ), #__event_LostFocus )
                         EndIf
-                        ;
-                        a_doactive( a_focused( ), *this )
-                        ;                         If a_focused( )
-                        ;                            If a_focused( )\gadget
-                        ;                               *this\gadget = a_focused( )\gadget
-                        ;                               a_focused( )\gadget = 0
-                        ;                            EndIf
-                        ;                         EndIf
                      EndIf
                      ; Debug "a_set focus " + *this\class 
                      ;
@@ -3224,20 +3137,28 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      
                      ;
-                     ; keyboard( )\widget = *this
-                     a_focused( ) = *this
-                     a_group_show( *this, #__event_Focus )
-                     
-                     ;a_line( *this )
-                     ;
-                     a_doactive( *this )
-                     ;
                      If *this = a_main( )
                         a_focused( ) = #Null
                         a_entered( ) = #Null
                         ;   Debug "a_reset "+*this\class
                      Else
                         ;   Debug "a_set "+*this\class
+                        a_focused( ) = *this
+                        ;
+                        If SetFocus( *this, #__s_2 )
+                           If *this\anchors\group\show
+                              a_group_show( *this, #__event_Focus )
+                           EndIf
+                           DoEvents( *this, #__event_Focus )
+                        EndIf
+                     EndIf
+                     ;
+                     If MouseButtonPress( )
+                        If Entered( ) And Entered( )\press
+                           If GetActive( ) <> a_main( ) 
+                              SetActive( a_main( ) )
+                           EndIf
+                        EndIf
                      EndIf
                      ;
                      result = *this
@@ -10557,35 +10478,32 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Procedure.b GetFocus( *this._s_WIDGET )
-         ProcedureReturn *this\ColorState( )
+         ProcedureReturn *this\focus
       EndProcedure
-      Procedure.b SetFocus( *this._s_WIDGET, state.b )
-         If *this\ColorState( ) <> state 
-            *this\ColorState( ) = state 
-            DoEvents( *this, #__event_Focus )
+      
+      Procedure.b SetFocus( *this._s_WIDGET, state.b = #__s_2 )
+         If *this\focus <> state
+            If test_focus_set
+               If state = #__s_2
+                  Debug "DoActivate "+*this\focus +" "+ *this\class
+               ElseIf state = #__s_3
+                  Debug "DoDeactivate "+*this\focus +" "+ *this\class
+               EndIf
+            EndIf
+            *this\focus = state
             ProcedureReturn #True
          EndIf
       EndProcedure
       
       Macro DoActivate( _this_ )
-         If _this_\focus <> 2 ;= 3
-            If test_focus_set
-               Debug "DoActivate "+_this_\focus +" "+ _this_\class
-            EndIf
-            _this_\focus = 2
-            ;
+         If SetFocus( _this_, #__s_2 )
             widget( ) = _this_
             DoEvents( _this_, #__event_Focus )
          EndIf
       EndMacro
       
       Macro DoDeactivate( _this_ )
-         If _this_\focus <> 3 ;= 2
-            If test_focus_set
-               Debug "DoDeactivate "+_this_\focus +" "+ _this_\class
-            EndIf
-            _this_\focus = 3
-            ;
+         If SetFocus( _this_, #__s_3 )
             widget( ) = _this_
             DoEvents( _this_, #__event_LostFocus )
          EndIf
@@ -10650,7 +10568,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          If *this
             If is_integral_( *this )
-               *Active = *this\parent
+               *active = *this\parent
             Else
                *active = *this
             EndIf
@@ -10784,31 +10702,34 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;                EndIf
             Else
-               ; activate canvas
-               If ActiveWindow( ) 
-                  If ActiveWindow( )\root = *active\root
-                     DoActivate( ActiveWindow( ) )
-                     
-                     If *active\address
-                        ;\\ set active all parents
-                        DoActivateWindows( *active )
-                     EndIf
-                     
-                     If ActiveWindow( )\root
-                        DoActivate( ActiveWindow( )\root )
-                     EndIf
-                     
-                     If ActiveGadget( ) 
-                        DoActivate( ActiveGadget( ) )
+               Debug "-------"+ *this\class +" "+ *Active\class +"-------"
+                  If *this = *Active
+                  ; activate canvas
+                  If ActiveWindow( ) 
+                     If ActiveWindow( )\root = *active\root
+                        DoActivate( ActiveWindow( ) )
+                        
+                        If *active\address
+                           ;\\ set active all parents
+                           DoActivateWindows( *active )
+                        EndIf
+                        
+                        If ActiveWindow( )\root
+                           DoActivate( ActiveWindow( )\root )
+                        EndIf
+                        
+                        If ActiveGadget( ) 
+                           DoActivate( ActiveGadget( ) )
+                        EndIf
                      EndIf
                   EndIf
-               EndIf
-               
-               DoActivate( *active )
-               
-               ; set active canvas
-               If GetActiveGadget( ) <> *active\root\canvas\gadget
-                  SetActiveGadget( *active\root\canvas\gadget )
+                  
+                  DoActivate( *active )
+                  
+                  ; set active canvas
+                  If GetActiveGadget( ) <> *active\root\canvas\gadget
+                     SetActiveGadget( *active\root\canvas\gadget )
+                  EndIf
                EndIf
                ProcedureReturn 0
             EndIf 
@@ -20400,14 +20321,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If GetActive( ) <> Entered( )
                      keyboard( )\widget = Entered( )
                      ; Debug " \\ set active widget"
-                     If Entered( )\anchors And 
-                        Entered( )\parent And
+                     If Entered( )\parent And
                         Entered( )\parent\anchors
                         ;
-                        If a_set( Entered( ) )
-                           If GetActive( ) <> a_main( ) 
-                              SetActive( a_main( ) )
-                           EndIf
+                        If Entered( )\anchors
+                           a_set( Entered( ) )
+                        ElseIf is_integral_( Entered( )) 
+                           a_set( Entered( )\parent )
                         EndIf
                      Else
                         SetActive( Entered( ))
@@ -26724,10 +26644,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 9626
-; FirstLine = 8740
-; Folding = ----------------------------------------------------------------------fvf----b-n8+--------------------------------v--------------------fXf9-e9----0-8-4--v---------4--------------------------------------------------------------------------------------+-------------------------------------------------------+0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-v-------------------------------------------------f----------f2-8fr8r4---++8--0f-9d--0-----------+------------88-4---0+------------4---v9---------------------------------+----------4----+------------------f--v2-+----75----
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 3117
+; FirstLine = 3111
+; Folding = -----------------------------------------------------------------------e-+---4+P40--------------------------------f---------------------u+5-05----8-4-v--f---------v--------------------------------------------------------------------------------------0-------------------------------8f-f--------------------vf------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-8-------------------------------------------------4----------X0-+47u70--vv-+-f-4Pf4-f-----------4------------ff--+--v4-------------+---l---------------------------------4-----------+---4-------------------8--t+4----XH----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -1601,19 +1601,15 @@ Procedure new_widget_events( )
    Protected __data = WidgetEventData( )
    
    Select __event 
-      Case #__event_Close,
-           #__event_Maximize,
-           #__event_Minimize
-         ;
-         ; disable buttons states
+         ; disable buttons state
+      Case #__event_Close, #__event_Maximize, #__event_Minimize
          ProcedureReturn #False
          ;
       Case #__event_Free
-         If ide_design_MDI = *g
-         Else
+         If Not ( ide_design_MDI = *g )
             ; Debug "  do free "+item
             ; remove items 
-            RemoveItem( ide_inspector_VIEW, GetData( *g )  ) 
+            RemoveItem( ide_inspector_VIEW, GetData( *g )) 
             
             ; after remove items 
             If *g = a_focused( )
@@ -1633,32 +1629,25 @@ Procedure new_widget_events( )
             ;
             DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
          EndIf
-          
-      Case #__event_MouseEnter
-         Debug GetActive()\class
-      Case #__event_RightDown
-         Debug "right"
-         
-         ;       Case #__event_KeyDown
-         ;          Debug "#__event_KeyDown"
-         ;       Case #__event_KeyUp
-         ;          Debug "#__event_KeyUp"
-         
+         ;
       Case #__event_Focus
-         If a_focused( ) = *g
-            If GetState( ide_inspector_VIEW ) = GetData(*g)
-               ;Debug "FOCUS "+ GetData(*g)  +" "+ GetClass(*g)
-            Else
-               ;Debug "CHANGE "+ GetData(*g)  +" "+ GetClass(*g)
-               If IsGadget( ide_g_code )
-                  SetGadgetState( ide_g_code, GetData(*g) )
+         If Not ( ide_design_MDI = *g )
+            ; Debug  ""+GetFocus( *g )  +" "+ GetClass(*g)
+            If a_focused( ) = *g
+               If GetState( ide_inspector_VIEW ) = GetData(*g)
+                  ;Debug "FOCUS "+ GetData(*g)  +" "+ GetClass(*g)
+               Else
+                  ;Debug "CHANGE "+ GetData(*g)  +" "+ GetClass(*g)
+                  If IsGadget( ide_g_code )
+                     SetGadgetState( ide_g_code, GetData(*g) )
+                  EndIf
+                  SetState( ide_inspector_VIEW, GetData(*g) )
                EndIf
-               SetState( ide_inspector_VIEW, GetData(*g) )
+               
+               Properties_Updates( a_focused( ), "Focus" )
             EndIf
-            
-            Properties_Updates( a_focused( ), "Focus" )
          EndIf
-         
+         ;
       Case #__event_Resize
          If a_focused( ) = *g
             Properties_Updates( a_focused( ), "Resize" )
@@ -3024,9 +3013,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2010
-; FirstLine = 1968
-; Folding = --------------------------------9--------------------
+; CursorPosition = 1634
+; FirstLine = 1598
+; Folding = -------------------------------+6-------------4f--v--
 ; Optimizer
 ; EnableAsm
 ; EnableXP
