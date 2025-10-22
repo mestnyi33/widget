@@ -19877,20 +19877,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If *keywidget\anchors 
                keyboard( )\widget = a_focused( )
-               If keyboard( )\widget
-                  *keywidget = keyboard( )\widget
+               If a_focused( )
+                  *keywidget = a_focused( )
                EndIf
             EndIf
             
             ;\\
             If *keywidget
-               ;                ; это временное решение для properties гаджет
-               ;                If is_gadget_(GetActive( ))
-               ;                   If GetActive( )\gadget
-               ;                      GetActive( ) = GetActive( )\gadget
-               ;                   EndIf
-               ;                EndIf
-               
                ;
                ;\\
                keyboard( )\key[1] = GetGadgetAttribute( *keywidget\root\canvas\gadget, #PB_Canvas_Modifiers )
@@ -20047,15 +20040,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;
                ;\\ keyboard events
-               If eventtype = #PB_EventType_KeyUp Or
+               If eventtype = #PB_EventType_KeyDown Or
                   eventtype = #PB_EventType_KeyUp
-                  
+                  ;
                   ;\\ tab focus
                   Select keyboard( )\Key
                      Case #PB_Shortcut_Tab
                         DoTabFocus( *keywidget )
                         ; Debug ""+GetActive( )\class+" - [tab-key]"
-                        
+                        ;
                   EndSelect
                EndIf
                ;
@@ -20097,8 +20090,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EndIf
                               
                         EndSelect
-                        
-                        ;keyboard( )\widget = a_focused( )
                      EndIf
                   EndIf
                   
@@ -22326,8 +22317,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i Window( X.l, Y.l, Width.l, Height.l, Text.s, flag.q = 0, *parent._s_WIDGET = 0 )
-         Protected fs = DPIScaled(#__window_FrameSize)
-         Protected barHeight = DPIScaled( #__window_CaptionHeight )
+         Protected fs = (#__window_FrameSize)
+         Protected barHeight = ( #__window_CaptionHeight )
+         Protected fs1 = DPIScaled(fs)
+         Protected barHeight1 = DPIScaled( barHeight )
          
          ;Protected *this.allocate( Widget )
          If Opened( )
@@ -22427,7 +22420,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\caption\color    = _get_colors_( )
          
          ; border frame size
-         *this\fs = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * fs
+         *this\fs = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * fs1
          
          
          ;
@@ -22449,7 +22442,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\TitleBarHeight = 0
             *this\fs[2] = 0
          Else
-            *this\fs[2] = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * barHeight
+            *this\fs[2] = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * barHeight1
             *this\TitleBarHeight = *this\fs[2]
             
             *this\padding\x = 5
@@ -26685,9 +26678,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 9565
-; FirstLine = 8674
-; Folding = -----------------------------------------------------------------------e-+---4+P40--------------------------------f---------------------u+5-05----8-4-v--f---------v--------------------------------------------------------------------------------------0-------------------------------4-+-+-------------------f-+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-4------------------------------------------------------------f4-8fr8q4---+-8---f-0f--0----------f-------------00-8---e-----------------v9---------------------------------+----------4-----------------------f--v2-+----75----
+; CursorPosition = 20042
+; FirstLine = 18515
+; Folding = -----------------------------------------------------------------------e-+---4+P40--------------------------------f---------------------u+5-05----8-4-v--f---------v--------------------------------------------------------------------------------------0-------------------------------4-+-+-------------------f-+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-4------------------------------------------------------------f4-8fr8q4---+-80--f-0f--0----------f-------------00-8---e-----------------v9---------------------------------+----------4-----------------------f--v2-+----75----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

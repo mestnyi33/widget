@@ -79,8 +79,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Window_1()
 ;     w_list(Hex(110)) = Open(110, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
 ;     SetWindowTitle(GetCanvasWindow(root()), "Window_110") 
-     Open(110, 100, 100, 200+(#__window_FrameSize*2), 200+(#__window_CaptionHeight+#__window_FrameSize*2), "", #PB_Window_BorderLess)
+     ;Open(110, 100, 100, 200+(#__window_FrameSize*2), 200+(#__window_CaptionHeight+#__window_FrameSize*2), "", #PB_Window_BorderLess)
      w_list(Hex(110)) = Window(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
+     ;w_list(Hex(110)) = Window(0, 0, 200, 200, "Window_110", #__flag_autosize | #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
     w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
     w_list(Hex(112)) = String(10, 105, 180, 85, "String_112") : SetData(w_list(Hex(112)), 112) 
     
@@ -311,8 +312,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 14
-; FirstLine = 98
-; Folding = ----
+; CursorPosition = 83
+; FirstLine = 70
+; Folding = -40-
 ; EnableXP
 ; DPIAware
