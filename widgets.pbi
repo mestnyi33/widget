@@ -19145,13 +19145,13 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure   Delete( *this._s_WIDGET, mode = 0 )
-         Protected *root._s_ROOT = *this\root
+      Procedure   Delete( *parent._s_WIDGET, mode = 0 )
+         Protected *root._s_ROOT = *parent\root
          
          If LastElement(widgets( ))
             Repeat
-               If ( mode And widgets( ) = *this ) Or 
-                  IsChild( widgets( ), *this )
+               If ( mode And widgets( ) = *parent ) Or 
+                  IsChild( widgets( ), *parent )
                   ;
                   If Not Post( widgets( ), #__event_free )
                      If PreviousElement( widgets( ))
@@ -19163,22 +19163,22 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ;
                   ;
-                  If widgets( ) = *this
-                     If *this\haschildren
+                  If widgets( ) = *parent
+                     If *parent\haschildren
                         Break
                      EndIf
                      
-                     If *this\parent
-                        If *this\parent\FirstWidget( ) = *this
-                           *this\parent\FirstWidget( ) = *this\AfterWidget( )
+                     If *parent\parent
+                        If *parent\parent\FirstWidget( ) = *parent
+                           *parent\parent\FirstWidget( ) = *parent\AfterWidget( )
                         EndIf
                         
-                        If *this\parent\LastWidget( ) = *this
-                           *this\parent\LastWidget( ) = *this\BeforeWidget( )
+                        If *parent\parent\LastWidget( ) = *parent
+                           *parent\parent\LastWidget( ) = *parent\BeforeWidget( )
                         EndIf
                         
-                        If Opened( ) = *this
-                           OpenList( *this\parent )
+                        If Opened( ) = *parent
+                           OpenList( *parent\parent )
                         EndIf
                      EndIf
                   EndIf
@@ -19278,28 +19278,28 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If GetActive( ) = widgets( )
                            GetActive( ) = #Null
                            
-                           If Not is_root_( *this )
-                              If *this\BeforeWidget( )
-                                 SetActive( *this\BeforeWidget( ) )
+                           If Not is_root_( *parent )
+                              If *parent\BeforeWidget( )
+                                 SetActive( *parent\BeforeWidget( ) )
                               Else
-                                 If Not SetActive( *this\parent )
-                                    GetActive( ) = *this\parent
+                                 If Not SetActive( *parent\parent )
+                                    GetActive( ) = *parent\parent
                                  EndIf
                               EndIf
                            EndIf
                            
                            If test_focus_set
                               If keyboard( )\deactive
-                                 Debug "Free active - " + keyboard( )\deactive\class +" "+ *this\class +" "+ widgets( )\class
+                                 Debug "Free active - " + keyboard( )\deactive\class +" "+ *parent\class +" "+ widgets( )\class
                               EndIf
                            EndIf
                         EndIf
                         
-                        ;                         If GetActive( ) = *this
-                        ;                            GetActive( ) = *this\parent
+                        ;                         If GetActive( ) = *parent
+                        ;                            GetActive( ) = *parent\parent
                         ;                         EndIf
                         ;                            If GetActive( ) And
-                        ;                               GetActive( )\root = *this
+                        ;                               GetActive( )\root = *parent
                         ;                               GetActive( ) = #Null
                         ;                            EndIf
                      EndIf
@@ -19315,11 +19315,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If widgets( )\AfterWidget( )
                         widgets( )\AfterWidget( )\BeforeWidget( ) = widgets( )\BeforeWidget( )
                      EndIf
-                     If *this\FirstWidget( ) = widgets( )
-                        *this\FirstWidget( ) = widgets( )\AfterWidget( )
+                     If *parent\FirstWidget( ) = widgets( )
+                        *parent\FirstWidget( ) = widgets( )\AfterWidget( )
                      EndIf
-                     If *this\LastWidget( ) = widgets( )
-                        *this\LastWidget( ) = widgets( )\BeforeWidget( )
+;                      If *parent\LastWidget( ) = widgets( )
+;                         *parent\LastWidget( ) = widgets( )\BeforeWidget( )
+;                      EndIf
+;                      If Not *parent\LastWidget( )
+;                         *parent\LastWidget( ) = *parent
+;                      EndIf
+                     If *parent\LastWidget( ) = widgets( )
+                        If widgets( )\BeforeWidget( )
+                           *parent\LastWidget( ) = widgets( )\BeforeWidget( )
+                        Else
+                           *parent\LastWidget( ) = *parent
+                        EndIf
                      EndIf
                      
                      ;
@@ -21981,6 +21991,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure.i OpenList( *this._s_WIDGET, item.l = 0 )
          Protected result.i = Opened( )
          
+         If *this And *this\type = #__type_Unknown
+            *this = Opened( )
+         EndIf
+         
+         ; Debug "OpenList "+*this\class +" - "+ Opened( )\class
          
          If *this = Opened( )
             If Not( *this\tabbar And *this\tabbar\type = #__type_TabBar And *this\tabbar\TabIndex( ) <> item )
@@ -26648,9 +26663,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 3156
-; FirstLine = 3141
-; Folding = -----------------------------------------------------------------------e-+---4+P40--------------------------------f---------------------u+5-05----8-4-v--f---------v--------------------------------------------------------------------------------------0-------------------------------8f-f--------------------vf------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-8-------------------------------------------------4----------X0-+47u70--v--+---4Pf4-f-----------4------------ff--+--v4-------------+---l---------------------------------4-----------+---4-------------------8--t+4----XH----
+; CursorPosition = 21997
+; FirstLine = 19863
+; Folding = -----------------------------------------------------------------------e-+---4+P40--------------------------------f---------------------u+5-05----8-4-v--f---------v--------------------------------------------------------------------------------------0-------------------------------8f-f--------------------vf------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-8------------------------------------------------------------v7-0v2d28--f--0---vf+u--+----------v-------------++-0--fv-------------8---X+--------------------------------f-----------8---f-------------------v--47f----fd9----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

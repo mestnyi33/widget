@@ -30,19 +30,18 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "items count "+CountItems( *PANEL_1 )
       
       ; Free(ide_design_MDI)
-      Debug "--1-"
+      Debug "-1-"
       ForEach widgets( )
          If IsChild(widgets( ), ide_design_PANEL) 
             Debug ""+widgets( )\class +" "+ widgets( )\level +" "+ widgets( )\TabIndex( )
          EndIf
       Next
-      Debug "---"
       
       OpenList(ide_design_MDI)
       Button(30,30,60,30, "test")
       CloseList()
       
-      Debug "--2-"
+      Debug "-2-"
       ForEach widgets( )
          If IsChild(widgets( ), ide_design_PANEL) 
             Debug ""+widgets( )\class +" "+ widgets( )\level +" "+ widgets( )\TabIndex( )
@@ -52,19 +51,18 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Free(ide_design_MDI)
       
-      Debug "--3-"
+      Debug "-3-"
       ForEach widgets( )
          If IsChild(widgets( ), ide_design_PANEL) 
             Debug ""+widgets( )\class +" "+ widgets( )\level +" "+ widgets( )\TabIndex( )
          EndIf
       Next
-      Debug "---"
       
       OpenList(ide_design_MDI)
       Button(30,30,60,30, "test")
       CloseList()
       
-      Debug "--4-"
+      Debug "-4-"
       ForEach widgets( )
          If IsChild(widgets( ), ide_design_PANEL) 
             Debug ""+widgets( )\class +" "+ widgets( )\level +" "+ widgets( )\TabIndex( )
@@ -72,12 +70,14 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       Debug "---"
       
+      
+      
       WaitClose( )
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 32
+; CursorPosition = 31
+; FirstLine = 36
 ; Folding = --
 ; EnableXP
 ; DPIAware
