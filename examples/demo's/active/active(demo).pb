@@ -6,12 +6,14 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
-  
+  ; test_focus_set = 1
+  test_focus_draw = 1
+   
   Global.i gEvent, gQuit
   Global *this, *root, NewMap w_list.i()
   
   Procedure Widget_Handler()
-    Protected EventWidget.i = EventWidget( ),
+    Protected *g._s_WIDGET = EventWidget( ),
               EventType.i = WidgetEvent( ),
               EventItem.i = WidgetEventItem( ), 
               EventData.i = WidgetEventData( )
@@ -19,35 +21,35 @@ CompilerIf #PB_Compiler_IsMainFile
     Select EventType
       Case #__Event_MouseEnter
         ; bug in mac os
-        If GetActiveGadget() <> EventWidget( )\root\canvas\gadget
-         ; SetActiveGadget(EventWidget( )\root\canvas\gadget)
+        If GetActiveGadget() <> *g\root\canvas\gadget
+         ; SetActiveGadget(*g\root\canvas\gadget)
         EndIf
        
       Case #__Event_Focus   
-        If Type(EventWidget) > 0
-          Debug "Focus "+ GetData(EventWidget)
+        If Type(*g) > 0
+          Debug "Focus "+ GetData(*g)
         Else
-          Debug "Active "+ GetData(EventWidget)
+          Debug "Active "+ GetData(*g)
         EndIf
         
       Case #__Event_LostFocus 
-        If Type(EventWidget) > 0
-          Debug " LostFocus "+ GetData(EventWidget) 
+        If Type(*g) > 0
+          Debug " LostFocus "+ GetData(*g) 
         Else
-          Debug " DeActive "+ GetData(EventWidget)
+          Debug " DeActive "+ GetData(*g)
         EndIf
         
       Case #__Event_Draw
 ;         ; draw active window focused frame
-;         If GetActive( ) = EventWidget
+;         If GetActive( ) = *g
 ;           DrawingMode(#PB_2DDrawing_Outlined)
-;           Box(0, 0, Width(EventWidget), Height(EventWidget), $FFFF00FF)
+;           Box(0, 0, Width(*g), Height(*g), $FFFF00FF)
 ;         EndIf
 ;         
 ;         ; draw active gadget focused frame
-;         If GetCanvasGadget( GetActive( ) ) = EventWidget
+;         If GetCanvasGadget( GetActive( ) ) = *g
 ;           DrawingMode(#PB_2DDrawing_Outlined)
-;           Box(0, 0, Width(EventWidget), Height(EventWidget), $FFFFFF00)
+;           Box(0, 0, Width(*g), Height(*g), $FFFFFF00)
 ;         EndIf
         
     EndSelect
@@ -71,7 +73,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-    Bind(#PB_All, @Widget_Handler())
+    
   EndProcedure
   
   Procedure Window_1()
@@ -84,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-    Bind(#PB_All, @Widget_Handler())
+    
     ;       
     w_list(Hex(120)) = Open(120, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
     ;       Open(OpenWindow(-1, 160, 120, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
@@ -94,7 +96,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-    Bind(#PB_All, @Widget_Handler())
     
     w_list(Hex(130)) = Open(130, 220, 140, 200, 200, "Window_130") : SetData(w_list(Hex(130)), 130)
     ;       Open(OpenWindow(-1, 220, 140, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
@@ -104,7 +105,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
     ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-    Bind(#PB_All, @Widget_Handler())
   EndProcedure
   
   Procedure Window_2()
@@ -128,7 +128,6 @@ CompilerIf #PB_Compiler_IsMainFile
         ;         SetActive(w_list(Hex(22)))
         ;         SetActive(w_list(Hex(2)))
         
-        Bind(#PB_All, @Widget_Handler())
       EndIf
       
       Debug ""
@@ -150,7 +149,6 @@ CompilerIf #PB_Compiler_IsMainFile
         ;         SetActive(w_list(Hex(1022)))
         ;         SetActive(w_list(Hex(102)))
         
-        Bind(#PB_All, @Widget_Handler())
       EndIf
       
       w_list(Hex(210)) = Open(23, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(210)), 210)
@@ -160,7 +158,6 @@ CompilerIf #PB_Compiler_IsMainFile
       w_list(Hex(211)) = String(10, 10, 180, 85, "String_211") : SetData(w_list(Hex(211)), 211)
       w_list(Hex(212)) = String(10, 105, 180, 85, "String_212") : SetData(w_list(Hex(212)), 212) 
       
-      Bind(#PB_All, @Widget_Handler())
       
       w_list(Hex(220)) = Open(7, 160, 120, 200, 200, "Window_220", #PB_Window_SystemMenu) : SetData(w_list(Hex(220)), 220)
       ;       Open(OpenWindow(-1, 160, 120, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
@@ -168,7 +165,6 @@ CompilerIf #PB_Compiler_IsMainFile
       w_list(Hex(221)) = String(10, 10, 180, 85, "String_221") : SetData(w_list(Hex(221)), 221)
       w_list(Hex(222)) = String(10, 105, 180, 85, "String_222") : SetData(w_list(Hex(222)), 222)
       
-      Bind(#PB_All, @Widget_Handler())
       
       w_list(Hex(230)) = Open(24, 220, 140, 200, 200, "Window_230") : SetData(w_list(Hex(230)), 230)
       ;       Open(OpenWindow(-1, 220, 140, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
@@ -176,7 +172,6 @@ CompilerIf #PB_Compiler_IsMainFile
       w_list(Hex(231)) = String(10, 10, 180, 85, "String_231") : SetData(w_list(Hex(231)), 231)
       w_list(Hex(232)) = String(10, 105, 180, 85, "String_232") : SetData(w_list(Hex(232)), 232)
       
-      Bind(#PB_All, @Widget_Handler())
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
   EndProcedure
@@ -220,7 +215,6 @@ CompilerIf #PB_Compiler_IsMainFile
         SetActive(w_list(Hex(22)))
         SetActive(w_list(Hex(2)))
         
-        Bind(#PB_All, @Widget_Handler());, w_list(Hex(22)))
       EndIf
       
       Debug "-----"
@@ -234,7 +228,6 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-      Bind(#PB_All, @Widget_Handler())
       ;       
       w_list(Hex(120)) = Open(33, 160, 120, 200, 200, "Window_120", #PB_Window_SystemMenu) : SetData(w_list(Hex(120)), 120)
       ;       Open(OpenWindow(-1, 160, 120, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
@@ -244,7 +237,6 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-      Bind(#PB_All, @Widget_Handler())
       
       w_list(Hex(130)) = Open(34, 220, 140, 200, 200, "Window_130") : SetData(w_list(Hex(130)), 130)
       ;       Open(OpenWindow(-1, 220, 140, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
@@ -254,14 +246,17 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;       ResizeWindow(Root()\canvas\window, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
       ;       ResizeGadget(Root()\canvas\gadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height(w_list(Hex(110))))
-      Bind(#PB_All, @Widget_Handler())
       
       BindEvent(#PB_Event_SizeWindow, @Window_0_Resize(), 0)
     EndIf
   EndProcedure
   
   
+ ; Window_0()
   Window_1()
+ ; Window_2()
+ ; Window_3()
+  Bind(#PB_All, @Widget_Handler())
   
   Repeat
     gEvent= WaitWindowEvent()
@@ -315,9 +310,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Repaint()
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 39
-; FirstLine = 29
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 14
+; FirstLine = 98
 ; Folding = ----
 ; EnableXP
 ; DPIAware

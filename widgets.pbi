@@ -9516,6 +9516,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;
                      If is_root_( *this )
                         SetWindowState( *this\root\canvas\window, #PB_Window_Normal )
+                        ResizeGadget( *this\root\canvas\gadget, 
+                                      *this\x[#__c_restore],
+                                      *this\y[#__c_restore],
+                                      *this\width[#__c_restore],
+                                      *this\height[#__c_restore] )
                      Else
                         Resize( *this,
                                 *this\x[#__c_restore],
@@ -9541,17 +9546,36 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *this\y[#__c_restore]      = *this\container_y( )
                            *this\width[#__c_restore]  = *this\container_width( )
                            *this\height[#__c_restore] = *this\container_height( )
+                        Else
+                           *this\x[#__c_restore]      = #PB_Ignore
+                           *this\y[#__c_restore]      = #PB_Ignore
+                           *this\width[#__c_restore]  = Width( *this, #__c_frame )
+                           *this\height[#__c_restore] = Height( *this, #__c_frame )
                         EndIf
                      EndIf
                      ;
+                     Protected X,Y,Width,Height
                      If is_root_( *this )
                         SetWindowState( *this\root\canvas\window, #PB_Window_Maximize )
+                        Width = WindowWidth(*this\root\canvas\window)-GadgetX(*this\root\canvas\gadget)*2
+                        Height = WindowHeight(*this\root\canvas\window)-GadgetY(*this\root\canvas\gadget)*2
+                        If GadgetWidth(*this\root\canvas\gadget) <> Width Or 
+                           GadgetHeight(*this\root\canvas\gadget) <> Height
+                           ResizeGadget( *this\root\canvas\gadget, #PB_Ignore, #PB_Ignore, Width,Height )
+                        EndIf
                      Else
-                        Resize( *this, 
-                                *this\bs - *this\fs + mouse( )\steps, 
-                                *this\bs - *this\fs + mouse( )\steps,
-                                *this\parent\container_width( ) - mouse( )\steps - *this\bs * 2,
-                                *this\parent\container_height( ) - mouse( )\steps - *this\bs * 2 - *this\fs[2], 0 )
+;                         Resize( *this, 
+;                                 *this\bs - *this\fs + mouse( )\steps, 
+;                                 *this\bs - *this\fs + mouse( )\steps,
+;                                 *this\parent\container_width( ) - mouse( )\steps - *this\bs * 2,
+;                                 *this\parent\container_height( ) - mouse( )\steps - *this\bs * 2 - *this\fs[2], 0 )
+                        
+                        X = 0;*this\bs - *this\fs
+                        Y = 0;*this\bs - *this\fs
+                        Width = *this\parent\container_width( ) - *this\bs * 2
+                        Height = *this\parent\container_height( ) - *this\bs * 2 - *this\fs[2]
+                        
+                        Resize( *this, X, Y, Width, Height )
                      EndIf
                      ;
                      result = #True
@@ -9576,6 +9600,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;
                      If is_root_( *this )
                         SetWindowState( *this\root\canvas\window, #PB_Window_Minimize )
+                        ResizeGadget( *this\root\canvas\gadget, 
+                                      #PB_Ignore, 
+                                      #PB_Ignore,
+                                      #PB_Ignore,
+                                      #PB_Ignore )
                      Else
                         Resize( *this,
                                 #PB_Ignore,
@@ -20225,7 +20254,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         mouse( )\press_y - Entered( )\parent\container_y( )
                      EndIf
                      
-                  ElseIf a_index( )
+                  ElseIf Entered( )\anchors And a_index( )
                      ;
                      If Entered( )\anchors\id[a_index( )]
                         ;
@@ -26663,9 +26692,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 21997
-; FirstLine = 19863
-; Folding = -----------------------------------------------------------------------e-+---4+P40--------------------------------f---------------------u+5-05----8-4-v--f---------v--------------------------------------------------------------------------------------0-------------------------------8f-f--------------------vf------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-8------------------------------------------------------------v7-0v2d28--f--0---vf+u--+----------v-------------++-0--fv-------------8---X+--------------------------------f-----------8---f-------------------v--47f----fd9----
+; CursorPosition = 9573
+; FirstLine = 8692
+; Folding = -----------------------------------------------------------------------e-+---4+P40--------------------------------f---------------------u+5-05----8-4-v--f---------v--------------------------------------------------------------------------------------0-------------------------------4-+-+-------------------f-+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-4------------------------------------------------------------f4-8fr8q4---+-8---f-0f--0----------f-------------00-8---e-------------4---v9---------------------------------+----------4-----------------------f--v2-+----75----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

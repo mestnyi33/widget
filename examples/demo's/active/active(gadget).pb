@@ -3,7 +3,7 @@
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   test_focus_set = 1
+   ;test_focus_set = 1
    
    Define Width=500, Height=400
    
@@ -74,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    End  
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
+; IDE Options = PureBasic 6.21 (Windows - x64)
 ; CursorPosition = 5
 ; Folding = --
 ; EnableXP

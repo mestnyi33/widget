@@ -5,33 +5,34 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    test_event_repost = 1
+   test_resize = 1
    
    Procedure CallBack( )
       Select WidgetEvent( )
          Case #__event_Close
-            Debug "disable (close - event)"
+            Debug "[disable] - (close event)"
             ProcedureReturn #False
             
          Case #__event_Maximize
-            Debug "maximize - event " + EventWidget( )\class
+            Debug "[maximize] - " + EventWidget( )\class
             ProcedureReturn #True
          Case #__event_Minimize
-            Debug "minimize - event " + EventWidget( )\class
+            Debug "[minimize] - " + EventWidget( )\class
             ProcedureReturn #True
          Case #__event_Restore
-            Debug "restore - event " + EventWidget( )\class 
+            Debug "[restore] - " + EventWidget( )\class 
             ProcedureReturn #True
             
          Case #__event_LeftClick
             Select GetText( EventWidget( ))
-               Case "window_0_minimize", "window_1_minimize", "window_2_minimize"
+               Case "window_root_minimize"
                   If GetState( EventWidget( )\window ) = #PB_Window_Minimize
                      SetState( EventWidget( )\window, #PB_Window_Normal )
                   Else
                      SetState( EventWidget( )\window, #PB_Window_Minimize )
                   EndIf
                   
-               Case "window_0_maximize", "window_1_maximize", "window_2_maximize"
+               Case "window_root_maximize"
                   If GetState( EventWidget( )\window ) = #PB_Window_Maximize
                      SetState( EventWidget( )\window, #PB_Window_Normal )
                   Else
@@ -39,39 +40,38 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
             EndSelect
-            
       EndSelect
-      
-      
    EndProcedure
    
-   If Open(0, 0, 0, 800, 600, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu |
-                                                                                                 #PB_Window_SizeGadget |
-                                                                                                 #PB_Window_MinimizeGadget |
-                                                                                                 #PB_Window_MaximizeGadget | 
-                                                                                                 #PB_Window_ScreenCentered )
-      
-      Window( 0, 0, 0, 0, "window_0", #__flag_autosize |
-                                      #PB_Window_SystemMenu |
-                                      #PB_Window_SizeGadget |
-                                      #PB_Window_MinimizeGadget |
-                                      #PB_Window_MaximizeGadget )
-      
-      SetClass(widget( ), "window_0" )
-      Button(10,10,200,50,"window_0_maximize")
-      SetClass(widget( ), "window_0_maximize" )
-      Button(10,65,200,50,"window_0_minimize")
-      SetClass(widget( ), "window_0_minimize" )
-      
-      
-      Bind( #PB_All, @CallBack( ) )
-      
-      ; Repeat : Until WaitWindowEvent(1) = #PB_Event_CloseWindow
-      WaitClose( )
-   EndIf
+   ; Open(0, 0, 0, 600, 400, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu ) 
+   Open(0, 0, 0, 600, 400, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
+   
+   Window( 0, 0, 0, 0, "window_root", #__flag_autosize |
+                                   #PB_Window_SystemMenu |
+                                   #PB_Window_SizeGadget |
+                                   #PB_Window_MinimizeGadget |
+                                   #PB_Window_MaximizeGadget )
+   
+   SetClass(widget( ), "window_root" )
+   Button(10,10,200,50,"window_root_maximize")
+   SetClass(widget( ), "window_root_maximize" )
+   Button(10,65,200,50,"window_root_minimize")
+   SetClass(widget( ), "window_root_minimize" )
+;    Button(#PB_Ignore,#PB_Ignore,200,50,"window_root_close")
+;    SetClass(widget( ), "window_root_close" )
+;    
+;    ;SetAlign(widget( ), #__align_right|#__align_bottom)
+;    ;SetAlign(widget( ), #__align_auto, 0,0,-10,-10) : ResizeWindow(root()\canvas\window, #PB_Ignore,#PB_Ignore,801,#PB_Ignore) ; bug
+   
+   Bind( #PB_All, @CallBack( ))
+   
+   ; Repeat : Until WaitWindowEvent(1) = #PB_Event_CloseWindow
+   WaitClose( )
+   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 33
+; CursorPosition = 45
+; FirstLine = 29
 ; Folding = --
 ; EnableXP
+; DPIAware
