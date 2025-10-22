@@ -9564,18 +9564,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                            ResizeGadget( *this\root\canvas\gadget, #PB_Ignore, #PB_Ignore, Width,Height )
                         EndIf
                      Else
-;                         Resize( *this, 
-;                                 *this\bs - *this\fs + mouse( )\steps, 
-;                                 *this\bs - *this\fs + mouse( )\steps,
-;                                 *this\parent\container_width( ) - mouse( )\steps - *this\bs * 2,
-;                                 *this\parent\container_height( ) - mouse( )\steps - *this\bs * 2 - *this\fs[2], 0 )
-                        
-                        X = 0;*this\bs - *this\fs
-                        Y = 0;*this\bs - *this\fs
-                        Width = *this\parent\container_width( ) - *this\bs * 2
-                        Height = *this\parent\container_height( ) - *this\bs * 2 - *this\fs[2]
-                        
-                        Resize( *this, X, Y, Width, Height )
+                        X = mouse( )\steps ; *this\bs - *this\fs
+                        Y = mouse( )\steps ; *this\bs - *this\fs
+                        Width = *this\parent\container_width( ) - *this\bs * 2 - mouse( )\steps
+                        Height = *this\parent\container_height( ) - *this\bs * 2 - *this\fs[2] - mouse( )\steps
+                        Resize( *this, X, Y, Width, Height, 0 )
                      EndIf
                      ;
                      result = #True
@@ -26692,9 +26685,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 9573
-; FirstLine = 8692
-; Folding = -----------------------------------------------------------------------e-+---4+P40--------------------------------f---------------------u+5-05----8-4-v--f---------v--------------------------------------------------------------------------------------0-------------------------------4-+-+-------------------f-+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-4------------------------------------------------------------f4-8fr8q4---+-8---f-0f--0----------f-------------00-8---e-------------4---v9---------------------------------+----------4-----------------------f--v2-+----75----
+; CursorPosition = 9565
+; FirstLine = 8674
+; Folding = -----------------------------------------------------------------------e-+---4+P40--------------------------------f---------------------u+5-05----8-4-v--f---------v--------------------------------------------------------------------------------------0-------------------------------4-+-+-------------------f-+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-4------------------------------------------------------------f4-8fr8q4---+-8---f-0f--0----------f-------------00-8---e-----------------v9---------------------------------+----------4-----------------------f--v2-+----75----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

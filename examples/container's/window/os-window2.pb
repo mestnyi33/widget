@@ -25,7 +25,7 @@ If OpenWindow(0, X,Y, (Width+10)*h+10, (Height+40)*v+10, "PureBasic Window", #PB
   Y + CaptionHeight
   ;\\
   Window(X, Y, Width, Height, "", #PB_Window_BorderLess)
-  Window(X+(Width+10)*1, Y, Width, Height, "Tool", #PB_Window_Tool)
+  Window(X+(Width+10)*1, Y, Width, Height, "Tool", #PB_Window_BorderLess|#PB_Window_MaximizeGadget)
   Window(X+(Width+10)*2, Y, Width, Height, "TitleBar", #PB_Window_TitleBar)
   Window(X+(Width+10)*3, Y, Width, Height, "SystemMenu", #PB_Window_SystemMenu)
   
@@ -76,7 +76,8 @@ EndIf
 
 End   ; All the opened windows are closed automatically by PureBasic
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 37
-; FirstLine = 21
+; CursorPosition = 27
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
+; DPIAware
