@@ -269,34 +269,24 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; create elements
       Select Class
-        Case "window"    
-          If Type( *parent ) = #PB_GadgetType_MDI
+         Case "window"    
             *new = AddItem( *parent, #PB_Any, "", - 1, flag )
             Resize( *new, #PB_Ignore, #PB_Ignore, Width,Height )
-          Else
-            flag | #PB_Window_SystemMenu | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
-            a_init(*parent)
-            ;;a_set(*parent)
-            *new = Window( X,Y,Width,Height, "", flag, *parent )
-          EndIf
-          
-          SetColor( *new, #PB_Gadget_BackColor, $FFECECEC )
-          Bind( *new, @widget_events( ) )
-          
-        Case "container"   : *new = Container( X,Y,Width,Height, flag )                             : CloseList( )
-          SetColor( *new, #PB_Gadget_BackColor, $FFF1F1F1 )
-          
-        Case "button"      : *new = Button( X,Y,Width,Height, "", flag ) 
-          
+            SetColor( *new, #PB_Gadget_BackColor, $FFECECEC )
+            SetImage( *new, CatchImage( #PB_Any,?group_bottom ) )
+            Bind( *new, @widget_events( ) )
+            
+         Case "container"   
+            *new = Container( X,Y,Width,Height, flag )                             : CloseList( )
+            SetColor( *new, #PB_Gadget_BackColor, $FFF1F1F1 )
+            
+         Case "button"      
+            *new = Button( X,Y,Width,Height, "", flag ) 
+            
       EndSelect
       
       If *new
-        If *new\container ;> 0
-          If *new\container = #__type_window
-            SetImage( *new, CatchImage( #PB_Any,?group_bottom ) )
-          EndIf
-          
-          ;  SetBackgroundImage( *new, Points( mouse( )\steps-1, #__grid_type, $FF000000 ) ) ; $BDC5C6C6 ) )
+        If *new\container 
           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_widget_new_create|#_DD_widget_re_parent )
         EndIf
         
@@ -789,52 +779,18 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure ide_open( X=100,Y=100,Width=800,Height=530 )
-    ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
-    ;     id_design_code = TreeGadget( -1,1,1,330,230 ) 
-    
     Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
     Define root = widget::Open( 0, X,Y,Width,Height, "ide", flag ) 
     window_ide = widget::GetCanvasWindow( root )
     canvas_ide = widget::GetCanvasGadget( root )
     
-    id_inspector_tree = Tree( 590,10,200,250, #__flag_gridlines )
-    id_design_code = TreeGadget(-1, 590,270,200,250 )
+    id_design_form = MDI( 10,10,410,510 ) : a_init( id_design_form )
     id_elements_tree = Tree( 430,10,150,510, #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_Borderless )
-    id_design_form = MDI( 10,10,410,510 ) 
-    a_init( id_design_form )
+    id_inspector_tree = Tree( 590,10,200,250, #__flag_gridlines )
+    id_design_code = TreeGadget(#PB_Any, 590,270,200,250 )
     
-    ; ;     ; gadgets
-    ; ;     id_inspector_tree = Tree( 0,0,0,0, #__flag_gridlines )
-    ; ;     ;EnableDrop( id_inspector_tree, #PB_Drop_Text, #PB_Drag_Link )
-    ; ;     
-    ; ;     
-    ; ;     ;id_design_form = Container( 0,0,0,0 ) : a_init( id_design_form ) : CloseList( )
-    ; ;     id_design_form = MDI( 0,0,0,0 ) : a_init( id_design_form )
-    ; ;     ;id_design_form = MDI(10,10, Width( widget( ), #__c_inner )-20, Height( widget( ), #__c_inner )-20);, #__flag_autosize)
-    ; ;     id_design_panel = id_design_form
-    ; ;     ;id_design_code = listview_debug
-    ; ;     
-    ; ; ;     id_inspector_panel = Panel( 0,0,0,0 )
-    ; ; ;     
-    ; ; ;     ; id_inspector_panel 1 item
-    ; ; ;     AddItem( id_inspector_panel, -1, "elements", 0, 0 ) 
-    ; ;     id_elements_tree = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_Borderless )
-    ; ;     id_inspector_panel = id_elements_tree
-    ; ; ;     ; id_inspector_panel 2 item
-    ; ; ;     AddItem( id_inspector_panel, -1, "properties", 0, 0 )  
-    ; ; ;     
-    ; ; ;     ; id_inspector_panel 3 item
-    ; ; ;     AddItem( id_inspector_panel, -1, "events", 0, 0 )  
-    ; ; ;     
-    ; ; ;     ; id_inspector_panel closes
-    ; ; ;     CloseList( )
-    ; ;     
-    ; ;     
-    ; ;     Splitter_inspector = widget::Splitter( 0,0,0,0, id_inspector_tree,id_inspector_panel, #PB_Splitter_FirstFixed )
-    ; ;     ;splitter_debug = widget::Splitter( 0,0,0,0, id_design_panel,listview_debug, #PB_Splitter_SecondFixed )
-    ; ;     splitter_debug = id_design_panel
-    ; ;     Splitter_ide = widget::Splitter( 0,0,0,0, splitter_debug,Splitter_inspector, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed )
     
+    :
     Bind( id_inspector_tree, @ide_events( ) )
     Bind( id_elements_tree, @ide_events( ), #__event_DragStart )
     ProcedureReturn window_ide
@@ -887,9 +843,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
   
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 650
-; FirstLine = 641
-; Folding = -------------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 288
+; FirstLine = 259
+; Folding = ------------
 ; EnableXP
 ; DPIAware

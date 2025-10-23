@@ -44,9 +44,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ; Open(0, 0, 0, 600, 400, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu ) 
-   ; Open(0, 0, 0, 600, 400, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
+   Open(0, 0, 0, 600, 400, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
    ; Open(0, 0, 0, 600, 400, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_BorderLess )
-   Open(0, 0, 0, 600, 400, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_BorderLess | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget )
+   ; Open(0, 0, 0, 600, 400, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_BorderLess | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget )
    ; Open(0, 0, 0, 600, 400, " set (minimize & maximize - state) and disable (close - state) ", #PB_Window_SystemMenu | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget )
    
    Window( 0, 0, 0, 0, "window_root", #__flag_autosize |
@@ -73,8 +73,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 30
+; CursorPosition = 47
+; FirstLine = 34
 ; Folding = --
 ; EnableXP
 ; DPIAware

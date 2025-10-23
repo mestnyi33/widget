@@ -88,7 +88,7 @@ EndEnumeration
 
 ;- GLOBALs
 Global ide_window, 
-       ide_g_code,
+       ide_g_inspector_VIEW,
        ide_g_canvas
 
 Global ide_root,
@@ -157,7 +157,7 @@ Declare   Properties_Updates( *object, type$ )
 Declare   new_widget_events( )
 Declare   new_widget_create( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
 Declare   new_widget_add( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
-Declare   new_widget_line_add( *new )
+Declare   ide_inspector_VIEW_ADD_ITEMS( *new )
 ;
 Declare.s Generate_Code( *parent )
 ;
@@ -544,6 +544,9 @@ Procedure   Properties_ButtonEvents( )
    ;          Debug 333
    ;       EndIf
    ;    EndIf
+   If Not a_focused( )
+      ProcedureReturn 0
+   EndIf
    
    Select __event
       Case #__event_Down
@@ -1275,72 +1278,6 @@ Procedure HideBarButtons( *this._s_WIDGET, state )
    DisableBarButton( *this, #_tb_group_width, state )
 EndProcedure
 
-Procedure new_widget_line_add( *new._s_widget )
-   Protected *parent._s_widget, Param1, Param2, Param3, newClass.s = GetClass( *new )
-   
-   If ide_inspector_VIEW
-      If *new
-         *parent = GetParent( *new )
-         ;
-         ; get new add position & sublevel
-         Protected i, count, sublevel, position
-         count = CountItems( ide_inspector_VIEW )
-         position = GetData( *parent ) 
-         ;
-         For i = 0 To count - 1
-            Position = ( i+1 )
-            
-            If *parent = GetItemData( ide_inspector_VIEW, i ) 
-               SubLevel = GetItemAttribute( ide_inspector_VIEW, i, #PB_Tree_SubLevel ) + 1
-               Continue
-            EndIf
-            
-            If SubLevel > GetItemAttribute( ide_inspector_VIEW, i, #PB_Tree_SubLevel )
-               Position = i
-               Break
-            EndIf
-         Next 
-         
-         ; set new widget data
-         SetData( *new, position )
-         
-         ; update new widget data item ;????
-         If count > position
-            For i = position To count - 1
-               SetData( GetItemData( ide_inspector_VIEW, i ), i + 1 )
-            Next 
-         EndIf
-         
-         
-         ; get image associated with class
-         Protected img =- 1
-         count = CountItems( ide_inspector_ELEMENTS )
-         For i = 0 To count - 1
-            If LCase(ClassFromType(Type(*new))) = LCase(GetItemText( ide_inspector_ELEMENTS, i ))
-               img = GetItemData( ide_inspector_ELEMENTS, i )
-               Break
-            EndIf
-         Next  
-         
-         ; add to inspector
-         AddItem( ide_inspector_VIEW, position, newClass.s, img, sublevel )
-         SetItemData( ide_inspector_VIEW, position, *new )
-         ; SetItemState( ide_inspector_VIEW, position, #PB_tree_selected )
-         ; SetState( ide_inspector_VIEW, position )
-         
-         If IsGadget( ide_g_code )
-            AddGadgetItem( ide_g_code, position, newClass.s, ImageID(img), SubLevel )
-            SetGadgetItemData( ide_g_code, position, *new )
-            ; SetGadgetItemState( ide_g_code, position, #PB_tree_selected )
-            SetGadgetState( ide_g_code, position ) ; Bug
-         EndIf
-         
-         ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
-      EndIf
-   EndIf
-   
-   ProcedureReturn *new
-EndProcedure
 
 Global NewList *copy._s_WIDGET( )
 Global copy_x,copy_y
@@ -1409,7 +1346,7 @@ Procedure new_widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore,
             AddItem( *new, -1, type$+"_item_0" )
          EndIf
          
-         new_widget_line_add( *new )
+         ide_inspector_VIEW_ADD_ITEMS( *new )
          
          If Not flag & #__flag_NoFocus 
             If IsContainer( *new )
@@ -1639,8 +1576,8 @@ Procedure new_widget_events( )
                   ;Debug "FOCUS "+ GetData(*g)  +" "+ GetClass(*g)
                Else
                   ;Debug "CHANGE "+ GetData(*g)  +" "+ GetClass(*g)
-                  If IsGadget( ide_g_code )
-                     SetGadgetState( ide_g_code, GetData(*g) )
+                  If IsGadget( ide_g_inspector_VIEW )
+                     SetGadgetState( ide_g_inspector_VIEW, GetData(*g) )
                   EndIf
                   SetState( ide_inspector_VIEW, GetData(*g) )
                EndIf
@@ -1658,21 +1595,23 @@ Procedure new_widget_events( )
             EndIf
          EndIf
          ;
-         If Not *g\anchors\group\show
-            If anchors_group_show
-               anchors_group_show = #False
-               Debug "group hide"
-               HideBarButtons( ide_toolbar, #True )
-               ;
-               Define i, state
-               For i = 0 To CountItems( ide_inspector_VIEW )
-                  If i <> GetData( *g )
-                     state = GetItemState( ide_inspector_VIEW, i )
-                     If state & #PB_Tree_Selected
-                        SetItemState( ide_inspector_VIEW, i, state &~ #PB_Tree_Selected )
+         If *g\anchors
+            If Not *g\anchors\group\show
+               If anchors_group_show
+                  anchors_group_show = #False
+                  Debug "group hide"
+                  HideBarButtons( ide_toolbar, #True )
+                  ;
+                  Define i, state
+                  For i = 0 To CountItems( ide_inspector_VIEW )
+                     If i <> GetData( *g )
+                        state = GetItemState( ide_inspector_VIEW, i )
+                        If state & #PB_Tree_Selected
+                           SetItemState( ide_inspector_VIEW, i, state &~ #PB_Tree_Selected )
+                        EndIf
                      EndIf
-                  EndIf
-               Next
+                  Next
+               EndIf
             EndIf
          EndIf
          ;
@@ -2085,8 +2024,75 @@ Procedure   ide_file_save(Path$) ; Процедура сохранения фа�
    EndIf
 EndProcedure
 
+;-
+Procedure   ide_inspector_VIEW_ADD_ITEMS( *new._s_widget )
+   Protected *parent._s_widget, Param1, Param2, Param3, newClass.s = GetClass( *new )
+   
+   If ide_inspector_VIEW
+      If *new
+         *parent = GetParent( *new )
+         ;
+         ; get new add position & sublevel
+         Protected i, count, sublevel, position
+         count = CountItems( ide_inspector_VIEW )
+         position = GetData( *parent ) 
+         ;
+         For i = 0 To count - 1
+            Position = ( i+1 )
+            
+            If *parent = GetItemData( ide_inspector_VIEW, i ) 
+               SubLevel = GetItemAttribute( ide_inspector_VIEW, i, #PB_Tree_SubLevel ) + 1
+               Continue
+            EndIf
+            
+            If SubLevel > GetItemAttribute( ide_inspector_VIEW, i, #PB_Tree_SubLevel )
+               Position = i
+               Break
+            EndIf
+         Next 
+         
+         ; set new widget data
+         SetData( *new, position )
+         
+         ; update new widget data item ;????
+         If count > position
+            For i = position To count - 1
+               SetData( GetItemData( ide_inspector_VIEW, i ), i + 1 )
+            Next 
+         EndIf
+         
+         
+         ; get image associated with class
+         Protected img =- 1
+         count = CountItems( ide_inspector_ELEMENTS )
+         For i = 0 To count - 1
+            If LCase(ClassFromType(Type(*new))) = LCase(GetItemText( ide_inspector_ELEMENTS, i ))
+               img = GetItemData( ide_inspector_ELEMENTS, i )
+               Break
+            EndIf
+         Next  
+         
+         ; add to inspector
+         AddItem( ide_inspector_VIEW, position, newClass.s, img, sublevel )
+         SetItemData( ide_inspector_VIEW, position, *new )
+         ; SetItemState( ide_inspector_VIEW, position, #PB_tree_selected )
+         ; SetState( ide_inspector_VIEW, position )
+         
+         If IsGadget( ide_g_inspector_VIEW )
+            AddGadgetItem( ide_g_inspector_VIEW, position, newClass.s, ImageID(img), SubLevel )
+            SetGadgetItemData( ide_g_inspector_VIEW, position, *new )
+            ; SetGadgetItemState( ide_g_inspector_VIEW, position, #PB_tree_selected )
+            SetGadgetState( ide_g_inspector_VIEW, position ) ; Bug
+         EndIf
+         
+         ; Debug  " pos "+position + "   ( Debug >> "+ #PB_Compiler_Procedure +" ( "+#PB_Compiler_Line +" ) )"
+      EndIf
+   EndIf
+   
+   ProcedureReturn *new
+EndProcedure
 
-Procedure.i ide_list_images_add( *id, Directory$ )
+Procedure.i ide_inspector_ELEMENTS_ADD_ITEMS( *id, Directory$ )
    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
    
    If FileSize( ZipFile$ ) < 1
@@ -2222,7 +2228,7 @@ Procedure.i ide_list_images_add( *id, Directory$ )
 EndProcedure
 
 ;-
-Procedure ide_menu_events(  )
+Procedure   ide_menu_events(  )
    Protected *g._s_WIDGET = EventWidget( ), BarButton = WidgetEventItem( )
    Protected transform, move_x, move_y
    Static NewList *copy._s_WIDGET( )
@@ -2344,7 +2350,7 @@ Procedure ide_menu_events(  )
    
 EndProcedure
 
-Procedure ide_events( )
+Procedure   ide_events( )
    Protected *this._s_widget
    Protected *g._s_WIDGET = EventWidget( )
    Protected __event = WidgetEvent( )
@@ -2533,10 +2539,7 @@ Procedure ide_events( )
    
 EndProcedure
 
-Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
-   ;     OpenWindow( #PB_Any, 0,0,332,232, "" )
-   ;     ide_g_code = TreeGadget( -1,1,1,330,230 ) 
-   
+Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
    Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget | #PB_Window_Invisible
    ide_root = Open( 1, X,Y,Width,Height, "ide", flag ) 
    ide_window = GetCanvasWindow( ide_root )
@@ -2642,17 +2645,17 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    ide_inspector_VIEW = Tree( 0,0,0,0, #__flag_gridlines ) : SetClass(ide_inspector_VIEW, "ide_inspector_VIEW" ) ;, #__flag_gridlines )
    EnableDrop( ide_inspector_VIEW, #PB_Drop_Text, #PB_Drag_Link )
    
-   ; ide_inspector_panel_SPLITTER_panel_open
+   ; ide_inspector_PANEL_open
    ide_inspector_PANEL = Panel( 0,0,0,0 ) : SetClass(ide_inspector_PANEL, "ide_inspector_PANEL" )
    
-   ; ide_inspector_panel_item_1 
+   ; ide_inspector_PANEL_item_1 
    AddItem( ide_inspector_PANEL, -1, "elements", 0, 0 ) 
    ide_inspector_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_Borderless ) : SetClass(ide_inspector_ELEMENTS, "ide_inspector_ELEMENTS" )
    If ide_inspector_ELEMENTS
-      ide_list_images_add( ide_inspector_ELEMENTS, GetCurrentDirectory( )+"Themes/" )
+      ide_inspector_ELEMENTS_ADD_ITEMS( ide_inspector_ELEMENTS, GetCurrentDirectory( )+"Themes/" )
    EndIf
    
-   ; ide_inspector_panel_item_2
+   ; ide_inspector_PANEL_item_2
    AddItem( ide_inspector_PANEL, -1, "properties", 0, 0 )  
    ide_inspector_PROPERTIES = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_Borderless ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
    If ide_inspector_PROPERTIES
@@ -2689,7 +2692,7 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorred,        "red",     #__Type_Spin, 2 )
    EndIf
    
-   ; ide_inspector_panel_item_3 
+   ; ide_inspector_PANEL_item_3 
    AddItem( ide_inspector_PANEL, -1, "events", 0, 0 )  
    ;ide_inspector_EVENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_Borderless ) : SetClass(ide_inspector_EVENTS, "ide_inspector_EVENTS" ) 
    ide_inspector_EVENTS = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_Borderless ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
@@ -2700,8 +2703,9 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_leave,  "Leave", #__Type_ComboBox )
    EndIf
    
-   ; ide_inspector_panel_SPLITTER_panel_close
+   ; ide_inspector_PANEL_close
    CloseList( )
+   SetState( ide_inspector_PANEL, 1 )
    
    ; ide_inspector_ide_inspector_SPLITTER_text
    ide_inspector_HELP  = Text( 0,0,0,0, "help for the inspector", #PB_Text_Border ) : SetClass(ide_inspector_HELP, "ide_inspector_HELP" )
@@ -2765,10 +2769,6 @@ Procedure ide_open( X=50,Y=75,Width=900,Height=700 )
    SetState( ide_inspector_SPLITTER, 150 )
    
    ;
-   ; ide_Lng_change( )
-   ;
-   
-   ;
    ;-\\ ide binds events
    ;
    If Type( ide_toolbar ) = #__type_ToolBar
@@ -2825,15 +2825,23 @@ CompilerIf #PB_Compiler_IsMainFile
    Define event
    ide_open( )
    
+;
+;    ;
+;    ; ide_test_tree( )
+;    ;
+;    OpenWindow( 5, WindowX(ide_window)+WindowWidth(ide_window),WindowY(ide_window),170,WindowHeight(ide_window), "", #PB_Window_SizeGadget, WindowID(ide_window) )
+;    StickyWindow( 5, 1)
+;    ide_g_inspector_VIEW = TreeGadget( #PB_Any,1,1,WindowWidth(5),WindowHeight(5)) 
+;    UseGadgetList(WindowID(ide_window))
+;  
+   
+   
    AddFont( Str(GetFont( root( ) )), "Courier", 9, 0 )
    
    
-   SetState( ide_inspector_PANEL, 1 )
    
    ;   ;OpenList(ide_design_MDI)
    Define result, btn2, example = 3
-   
-   
    Define *form = new_widget_add( ide_design_MDI, "window", 10, 10, 350, 200 )
    
    If example = 1
@@ -2890,8 +2898,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ;       
       ;       Define item = 1
       ;       SetState( ide_inspector_VIEW, item )
-      ;       If IsGadget( ide_g_code )
-      ;          SetGadgetState( ide_g_code, item )
+      ;       If IsGadget( ide_g_inspector_VIEW )
+      ;          SetGadgetState( ide_g_inspector_VIEW, item )
       ;       EndIf
       ;       Define *container2 = new_widget_add( *container, "container", 60, 10, 220, 140 )
       ;       new_widget_add( *container2, "button", 10, 20, 30, 30 )
@@ -3010,9 +3018,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1690
-; FirstLine = 1612
-; Folding = -------------------------------3084f+---------v-+-f---
+; CursorPosition = 2094
+; FirstLine = 1869
+; Folding = ------------f------------------+84-+---u-+-8---+---06-
 ; Optimizer
 ; EnableAsm
 ; EnableXP

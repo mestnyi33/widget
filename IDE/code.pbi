@@ -1056,7 +1056,7 @@ Procedure   MakeLine( *mdi, string$, findtext$ )
                      
                      SetText( *g, text$ )
                      ; 
-                     new_widget_line_add( *g )
+                     ide_inspector_VIEW_ADD_ITEMS( *g )
                      ;
                      If IsContainer( *g ) > 0
                         *Parent = *g
@@ -2049,9 +2049,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1158
-; FirstLine = 1047
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 1058
+; FirstLine = 1000
 ; Folding = -f-----f------------------f9-4-----4r3f----b-ePA5--0--
 ; EnableXP
 ; DPIAware

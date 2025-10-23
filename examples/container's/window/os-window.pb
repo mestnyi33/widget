@@ -32,7 +32,23 @@ If OpenWindow(0, X,Y, (Width+10)*h+10, (Height+40)*v+10, "PureBasic Window", #PB
   Y + CaptionHeight
   ;\\
   Define window = Window(X, Y+(Height+10)*1, Width, Height, "", #PB_Window_SystemMenu)
-  
+  Define w = WindowID(window)
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+     If CocoaMessage(0, w, "hasShadow") = 0
+        CocoaMessage(0, w, "setHasShadow:", 1)
+     EndIf
+     ; https://www.purebasic.fr/english/viewtopic.php?p=393084#p393084
+     CocoaMessage(0, w, "setStyleMask:", CocoaMessage(0, w, "styleMask")&~#NSTitledWindowMask)
+  CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+     If GetClassLongPtr_( w, #GCL_STYLE ) & #CS_DROPSHADOW = 0
+        SetClassLongPtr_( w, #GCL_STYLE, #CS_DROPSHADOW )
+     EndIf
+     SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_BORDER) 
+     ;SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
+  CompilerElse
+     ;  
+  CompilerEndIf
+               
   Window(X+(Width+10)*1, Y+(Height+10)*1, Width, Height, "SizeGadget", #PB_Window_SizeGadget)
   Window(X+(Width+10)*2, Y+(Height+10)*1, Width, Height, "Size&TitleBar", #PB_Window_TitleBar|#PB_Window_SizeGadget)
   Window(X+(Width+10)*3, Y+(Height+10)*1, Width, Height, "Size&SystemMenu", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
@@ -76,7 +92,7 @@ EndIf
 
 End   ; All the opened windows are closed automatically by PureBasic
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 37
+; CursorPosition = 46
 ; FirstLine = 21
-; Folding = -
+; Folding = --
 ; EnableXP
