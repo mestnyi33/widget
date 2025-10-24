@@ -432,11 +432,11 @@
       #__align_Bottom         = 1<<54
       #__align_Left           = 1<<55
       #__align_Right          = 1<<56
-      ;
       #__align_Center         = 1<<57 
-      #__align_Full           = 1<<58
-      #__align_proportional   = 1<<59
-      #__align_auto           = 1<<60
+      #__align_auto           = 1<<58
+      ;
+      #__align_Full           = 1<<59
+      #__align_proportional   = 1<<60
       #__align_none           = 0
       #__align_text           = 1<<61
       #__align_image          = 1<<62
@@ -725,8 +725,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 171
-; FirstLine = 156
+; CursorPosition = 439
+; FirstLine = 421
 ; Folding = ----
 ; Optimizer
 ; EnableXP

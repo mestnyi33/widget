@@ -1986,7 +1986,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          
-         If test_align
+         If test_align = -1
             Debug " left "+ constants::BinaryFlag( _flag_, #__align_Left) +" "+  _address_\align\left +
                   " top "+ constants::BinaryFlag( _flag_, #__align_Top) +" "+  _address_\align\top + 
                   " right "+ constants::BinaryFlag( _flag_, #__align_Right) +" "+  _address_\align\right + 
@@ -21042,8 +21042,18 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             *this\flag | #__flag_TextCenter
             
-         ElseIf Type = #__type_ComboBox Or
-                Type = #__type_Spin Or
+         ElseIf Type = #__type_ComboBox 
+           *this\flag | #__flag_TextCenter
+           If constants::BinaryFlag( Flag, #__align_image, #False )
+              If Not (*this\flag & #__flag_Left Or
+                      *this\flag & #__flag_Right Or
+                      *this\flag & #__flag_Top Or
+                      *this\flag & #__flag_Bottom)
+                 *this\flag | #__flag_Left
+              EndIf
+           EndIf
+            
+        ElseIf Type = #__type_Spin Or
                 Type = #__type_String Or
                 Type = #__type_Option Or
                 Type = #__type_CheckBox
@@ -21761,9 +21771,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                         constants::BinaryFlag( *this\flag, #__align_Text ))
                   align_content( *this\text, *this\flag )
                EndIf
-;                If constants::BinaryFlag( flag, #__align_Text )
-;                   align_content( *this\text, *this\flag )
-;                EndIf
             EndIf
             
             set_text_flag_( *this, Text, *this\flag )
@@ -24238,6 +24245,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, 0, *this\picture\align, *this\padding\y )
                   change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, 0, *this\picture\align, *this\padding\y )
                EndIf
+               
+               If test_align = 1
+                  Debug "button "+*this\picture\align\left +" "+ *this\text\align\left +"  "+ *this\picture\align\top +" "+ *this\text\align\top +"  "+ *this\picture\align\right +" "+ *this\text\align\right +"  "+ *this\picture\align\bottom +" "+ *this\text\align\bottom +" "+ *this\text\string
+               EndIf
             EndIf
             
             ;\\ origin position
@@ -25500,6 +25511,56 @@ EndMacro
 
 ;-
 ;-\\ EXAMPLE
+CompilerIf #PB_Compiler_IsMainFile
+   EnableExplicit
+   UseWidgets( )
+   test_align = 1
+   test_draw_area = 1
+   
+   If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+      End
+   EndIf
+   If DesktopResolutionX() > 1
+      ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
+   EndIf
+   
+   Define Image = 1
+   Define i, Width = 250
+   
+   Procedure ComboButton( X,Y,Width,Height, Text.s, flags)
+      Protected *g._s_WIDGET
+      *g = ComboBox( X,Y,Width,Height, flags)
+      AddItem( *g, -1, Text,1 )
+      SetState( *g, 0 )
+   EndProcedure
+   
+   
+   
+   If Open(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+;       ComboButton(10,  10, Width/2-5, 65, "left&top"                    , #__flag_BorderFlat|#__flag_Left |#__flag_Top   )
+;       ComboButton(10+Width/2+5,  10, Width/2-5, 65, "right&top"         , #__flag_BorderFlat|#__flag_Right|#__flag_Top   )
+;       ComboButton(10,  10+65+10, Width/2-5, 65, "left&bottom"           , #__flag_BorderFlat|#__flag_Left |#__flag_Bottom)
+;       ComboButton(10+Width/2+5,  10+65+10, Width/2-5, 65, "right&bottom", #__flag_BorderFlat|#__flag_Right|#__flag_Bottom)
+      
+      ComboButton(10, 160, Width/2-5, 65, "left"                        , #__flag_BorderFlat|#__flag_Left  )
+      ComboButton(10+Width/2+5, 160, Width/2-5, 65, "right"             , #__flag_BorderFlat|#__flag_Right )
+      ComboButton(10, 160+65+10, Width/2-5, 65, "top"                   , #__flag_BorderFlat|#__flag_Top   )
+      ComboButton(10+Width/2+5, 160+65+10, Width/2-5, 65, "bottom"      , #__flag_BorderFlat|#__flag_Bottom)
+      
+      ComboButton(10, 310, Width, 65, "left&center"                     , #__flag_BorderFlat|#__flag_ImageLeft  )
+      ComboButton(10, 310+65+10, Width, 65, "right&center"              , #__flag_BorderFlat|#__flag_ImageRight )
+      ComboButton(10, 460, Width, 65, "top&center"                      , #__flag_BorderFlat|#__flag_ImageTop   )
+      ComboButton(10, 460+65+10, Width, 65, "bottom&center"             , #__flag_BorderFlat|#__flag_ImageBottom)
+      
+       ComboButton(10, 610, Width, 140, "default"                         , #__flag_BorderFlat);|#__flag_ImageCenter)
+      
+      
+      Repeat
+         Define Event = WaitWindowEvent()
+      Until Event = #PB_Event_CloseWindow
+   EndIf
+CompilerEndIf
+
 CompilerIf #PB_Compiler_IsMainFile = 99
    UseWidgets( )
    
@@ -25835,7 +25896,7 @@ CompilerEndIf
 
 
 ;- DEMO
-CompilerIf #PB_Compiler_IsMainFile
+CompilerIf #PB_Compiler_IsMainFile = 99
    
    EnableExplicit
    UseWidgets( )
@@ -26680,8 +26741,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 26680
-; FirstLine = 26643
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 22832
+; FirstLine = 22759
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------a----------
 ; EnableXP
 ; DPIAware

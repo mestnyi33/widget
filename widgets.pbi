@@ -2020,12 +2020,12 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       Macro set_align_content( _address_, _flag_ )
-         _address_\align\left   = constants::BinaryFlag( _flag_, #__align_left )
-         _address_\align\top    = constants::BinaryFlag( _flag_, #__align_top )
-         _address_\align\right  = constants::BinaryFlag( _flag_, #__align_right )
-         _address_\align\bottom = constants::BinaryFlag( _flag_, #__align_bottom )
+         _address_\align\left   = constants::BinaryFlag( _flag_, #__flag_left )
+         _address_\align\top    = constants::BinaryFlag( _flag_, #__flag_top )
+         _address_\align\right  = constants::BinaryFlag( _flag_, #__flag_right )
+         _address_\align\bottom = constants::BinaryFlag( _flag_, #__flag_bottom )
          
-         If constants::BinaryFlag( _flag_, #__align_Center, #False )
+         If constants::BinaryFlag( _flag_, #__flag_Center, #False )
             If Not _address_\align\top And
                Not _address_\align\left And
                Not _address_\align\right And
@@ -2033,47 +2033,47 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If Not _address_\align\right
                   _address_\align\left = #True
-                  _flag_ | #__align_left
+                  _flag_ | #__flag_left
                EndIf
                If Not _address_\align\bottom
                   _address_\align\top = #True
-                  _flag_ | #__align_top
+                  _flag_ | #__flag_top
                EndIf
             Else
                If _address_\align\left
                   If Not _address_\align\right Or
                      Not _address_\align\bottom
                      _address_\align\top = #True
-                     _flag_ | #__align_top
+                     _flag_ | #__flag_top
                   EndIf
                ElseIf _address_\align\top
                   If Not _address_\align\left Or
                      Not _address_\align\bottom
                      _address_\align\right = #True
-                     _flag_ | #__align_right
+                     _flag_ | #__flag_right
                   EndIf
                ElseIf _address_\align\right
                   If Not _address_\align\left Or
                      Not _address_\align\top
                      _address_\align\bottom = #True
-                     _flag_ | #__align_bottom
+                     _flag_ | #__flag_bottom
                   EndIf
                ElseIf _address_\align\bottom
                   If Not _address_\align\right Or
                      Not _address_\align\top
                      _address_\align\left = #True
-                     _flag_ | #__align_left
+                     _flag_ | #__flag_left
                   EndIf
                EndIf
             EndIf
          EndIf
          
-         If test_align
-            Debug " left "+ constants::BinaryFlag( _flag_, #__align_Left) +" "+  _address_\align\left +
-                  " top "+ constants::BinaryFlag( _flag_, #__align_Top) +" "+  _address_\align\top + 
-                  " right "+ constants::BinaryFlag( _flag_, #__align_Right) +" "+  _address_\align\right + 
-                  " bottom "+ constants::BinaryFlag( _flag_, #__align_Bottom) +" "+  _address_\align\bottom +
-                  " center "+ constants::BinaryFlag( _flag_, #__align_Center)
+         If test_align = -1
+            Debug " left "+ constants::BinaryFlag( _flag_, #__flag_Left) +" "+  _address_\align\left +
+                  " top "+ constants::BinaryFlag( _flag_, #__flag_Top) +" "+  _address_\align\top + 
+                  " right "+ constants::BinaryFlag( _flag_, #__flag_Right) +" "+  _address_\align\right + 
+                  " bottom "+ constants::BinaryFlag( _flag_, #__flag_Bottom) +" "+  _address_\align\bottom +
+                  " center "+ constants::BinaryFlag( _flag_, #__flag_Center)
          EndIf   
       EndMacro
       
@@ -4522,6 +4522,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndWith
       EndProcedure
       
+      Declare  Draw_Content( *this._s_WIDGET, state )
       Procedure.b bar_draw_progress( *this._s_WIDGET )
          Macro DrawHLines( _start_x_, _start_y_, _stop_x_, _stop_y_ )
             For y1 = _start_y_ To _stop_y_
@@ -4734,7 +4735,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; Draw string
             If *this\text\string
-               __draw_text( *this )
+               ;__draw_text( *this )
+                Draw_Content( *this, 0 )
             EndIf
             
          EndWith
@@ -6780,6 +6782,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             If *this\type = #__type_Progress
                *this\text\string = "%" + Str( *bar\page\pos )
+               ;*this\text\change = 1
             EndIf
             
             ;\\
@@ -7765,6 +7768,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                Width  = (*this\parent\inner_width( ))
                Height = (*this\parent\inner_height( ))
             EndIf
+            
+            ; Debug "auto resize "+X+" "+Y ; combobox bug fixed
          Else
             ;
             ;CompilerIf #PB_Compiler_DPIAware
@@ -7960,7 +7965,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                X = *this\container_x( )
             ElseIf *this\parent  
                If Not *this\child And *this\parent\haschildren
-                  X + *this\parent\scroll_x( )
+                  If *this\parent\container ; combobox bug fixed
+                     X + *this\parent\scroll_x( )
+                  EndIf
                EndIf
                *this\container_x( ) = X
             EndIf
@@ -7968,7 +7975,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                Y = *this\container_y( )
             ElseIf *this\parent 
                If Not *this\child And *this\parent\haschildren 
-                  Y + *this\parent\scroll_y( )
+                  If *this\parent\container ; combobox bug fixed
+                     Y + *this\parent\scroll_y( )
+                  EndIf
                EndIf
                *this\container_y( ) = Y
             EndIf
@@ -15946,22 +15955,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                            
                         Case "#__align_text"                       : Flag = Flag | #__align_text 
                         Case "#__align_image"                      : Flag = Flag | #__align_image
-                           
-                        Case "#__align_top"                        : Flag = Flag | #__align_top  
-                        Case "#__align_bottom"                     : Flag = Flag | #__align_Bottom 
-                        Case "#__align_left"                       : Flag = Flag | #__align_Left   
-                        Case "#__align_right"                      : Flag = Flag | #__align_Right  
-                           
-                        Case "#__align_center"                     : Flag = Flag | #__align_Center 
                         Case "#__align_full"                       : Flag = Flag | #__align_Full   
                         Case "#__align_proportional"               : Flag = Flag | #__align_proportional 
                         Case "#__align_auto"                       : Flag = Flag | #__align_auto         
                            
-                        Case "#__flag_imageleft"                       : Flag = Flag | #__flag_ImageLeft          
-                        Case "#__flag_imagetop"                        : Flag = Flag | #__flag_ImageTop            
-                        Case "#__flag_imageright"                      : Flag = Flag | #__flag_ImageRight        
-                        Case "#__flag_imagebottom"                     : Flag = Flag | #__flag_ImageBottom      
-                        Case "#__flag_imagecenter"                     : Flag = Flag | #__flag_ImageCenter      
+                        Case "#__flag_top"                        : Flag = Flag | #__flag_Top  
+                        Case "#__flag_bottom"                     : Flag = Flag | #__flag_Bottom 
+                        Case "#__flag_left"                       : Flag = Flag | #__flag_Left   
+                        Case "#__flag_right"                      : Flag = Flag | #__flag_Right  
+                        Case "#__flag_center"                     : Flag = Flag | #__flag_Center 
+                           
+                        Case "#__flag_imageleft"                  : Flag = Flag | #__flag_ImageLeft          
+                        Case "#__flag_imagetop"                   : Flag = Flag | #__flag_ImageTop            
+                        Case "#__flag_imageright"                 : Flag = Flag | #__flag_ImageRight        
+                        Case "#__flag_imagebottom"                : Flag = Flag | #__flag_ImageBottom      
+                        Case "#__flag_imagecenter"                : Flag = Flag | #__flag_ImageCenter      
                            
                         Case "#__flag_textleft"                   : Flag = Flag | #__flag_TextLeft          
                         Case "#__flag_texttop"                    : Flag = Flag | #__flag_TextTop            
@@ -20974,8 +20982,27 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             *this\flag | #__flag_TextCenter
             
-         ElseIf Type = #__type_ComboBox Or
-                Type = #__type_Spin Or
+         ElseIf Type = #__type_ComboBox 
+            
+            If constants::BinaryFlag( Flag, #__flag_Center, #False )
+               If Not (*this\flag & #__flag_Left Or
+                       *this\flag & #__flag_Right Or
+                       *this\flag & #__flag_Top Or
+                       *this\flag & #__flag_Bottom)
+                  *this\flag | #__flag_TextLeft
+               EndIf
+            EndIf
+            If constants::BinaryFlag( Flag, #__align_image )
+               *this\flag | #__flag_Center 
+            Else
+               *this\flag | #__flag_TextCenter ;| #__flag_TextLeft
+            EndIf
+            
+            If constants::BinaryFlag( Flag, #__flag_TextRight )
+               *this\flag & ~ #__flag_TextLeft
+               *this\flag | #__flag_TextRight
+            EndIf
+         ElseIf Type = #__type_Spin Or
                 Type = #__type_String Or
                 Type = #__type_Option Or
                 Type = #__type_CheckBox
@@ -21669,7 +21696,22 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ Set img
          If *this\type = #__type_ComboBox
-            set_align_content( *this\picture, *this\flag )
+            ;If constants::BinaryFlag( *this\flag, #__align_image )
+               set_align_content( *this\picture, *this\flag )
+            ;EndIf
+            If constants::BinaryFlag( *this\flag, #__align_Text )
+               set_align_content( *this\text, *this\flag )
+            EndIf
+            set_text_flag( *this, Text, *this\flag )
+         EndIf
+         If *this\type = #__type_Progress
+            ;If constants::BinaryFlag( *this\flag, #__align_image )
+               set_align_content( *this\picture, *this\flag )
+            ;EndIf
+            If constants::BinaryFlag( *this\flag, #__align_Text )
+               set_align_content( *this\text, *this\flag )
+            EndIf
+            set_text_flag( *this, Text, *this\flag )
          EndIf
          If *this\type = #__type_image
             SetState( *this, *param_1 )
@@ -21685,13 +21727,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_String Or
             *this\type = #__type_Button Or
             *this\type = #__type_Option Or
-            *this\type = #__type_ComboBox Or
             *this\type = #__type_CheckBox Or
             *this\type = #__type_HyperLink
             
             If Not ( constants::BinaryFlag( *this\flag, #__align_image ) And 
-                     constants::BinaryFlag( *this\flag, #__align_Text ))
-               set_align_content( *this\text, *this\flag )
+                        constants::BinaryFlag( *this\flag, #__align_Text ))
+                  set_align_content( *this\text, *this\flag )
             EndIf
             
             set_text_flag( *this, Text, *this\flag )
@@ -23218,6 +23259,157 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure Draw_Content( *this._s_WIDGET, state )
+         Protected img_indent_x = DPIScaled(6)
+         Protected img_indent_y = DPIScaled(3)
+         
+         If *this\TextChange( ) Or *this\picture\change
+            If test_align = 1
+               Debug "content "+*this\picture\align\left +" "+ *this\text\align\left +"  "+ *this\picture\align\top +" "+ *this\text\align\top +"  "+ *this\picture\align\right +" "+ *this\text\align\right +"  "+ *this\picture\align\bottom +" "+ *this\text\align\bottom +" "+ *this\text\string
+            EndIf
+            
+            ; make_scrollarea_size
+            If *this\text\vertical
+               *this\scroll_width( ) = *this\text\height + *this\padding\x * 2
+               *this\scroll_height( ) = *this\text\width + *this\padding\y * 2
+               
+            Else
+               *this\scroll_width( ) = *this\text\width + *this\padding\x * 2
+               *this\scroll_height( ) = *this\text\height + *this\padding\y * 2
+            EndIf
+            ;
+            ; make_scrollarea_width
+            If *this\picture\width
+               If *this\picture\align\left Or *this\picture\align\right 
+                  *this\scroll_width( ) + *this\picture\width + img_indent_x
+               Else
+                  If *this\scroll_width( ) < *this\picture\width + *this\padding\x * 2
+                     *this\scroll_width( ) = *this\picture\width + *this\padding\x * 2
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            ; make_scrollarea_height
+            If *this\picture\height
+               If *this\picture\align\top Or *this\picture\align\bottom 
+                  *this\scroll_height( ) + *this\picture\height + img_indent_y
+               Else
+                  If *this\scroll_height( ) < *this\picture\height + *this\padding\y * 2
+                     *this\scroll_height( ) = *this\picture\height + *this\padding\y * 2
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            ; make_scrollarea_pos
+            make_scrollarea_x( *this, *this\scroll_width( ), *this\text\align )
+            make_scrollarea_y( *this, *this\scroll_height( ), *this\text\align )
+            
+            
+            ;
+            ;
+            If *this\picture\change Or 
+               *this\ResizeChange( ) 
+               ;
+               change_align_horizontal( *this\picture, *this\inner_width( ), *this\picture\width, *this\picture\rotate, *this\picture\align, *this\padding\x )
+               change_align_vertical( *this\picture, *this\inner_height( ), *this\picture\height, *this\picture\rotate, *this\picture\align, *this\padding\y )
+               
+               If *this\picture\align\left
+                  If Not *this\text\align\left
+                     *this\picture\x = *this\scroll_x( ) + *this\padding\x
+                  EndIf
+               EndIf
+               If *this\picture\align\top
+                  If Not *this\text\align\top
+                     *this\picture\y = *this\scroll_y( ) + *this\padding\y
+                  EndIf
+               EndIf
+               If *this\picture\align\right
+                  If Not *this\text\align\right
+                     *this\picture\x = *this\scroll_x( ) + *this\scroll_width( ) - *this\picture\width - *this\padding\x
+                  EndIf
+               EndIf
+               If *this\picture\align\bottom
+                  If Not *this\text\align\bottom
+                     *this\picture\y = *this\scroll_y( ) + *this\scroll_height( ) - *this\picture\height - *this\padding\y
+                  EndIf
+               EndIf
+               
+            EndIf
+            
+            If *this\TextChange( ) Or 
+               *this\ResizeChange( )
+               ;
+               If *this\text\vertical
+                  change_align_horizontal( *this\text, *this\inner_width( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\x )
+                  change_align_vertical( *this\text, *this\inner_height( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\y )
+               Else
+                  change_align_horizontal( *this\text, *this\inner_width( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\x )
+                  change_align_vertical( *this\text, *this\inner_height( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\y )
+               EndIf
+               
+               ; align img left & top
+               If *this\picture\align
+                  If *this\picture\width
+                     If *this\picture\align\left
+                        If *this\text\align\left
+                           *this\text\x + ( *this\picture\width + img_indent_x )
+                        Else
+                           *this\text\x + ( *this\picture\width + img_indent_x ) / 2
+                        EndIf
+                     EndIf
+                     If *this\picture\align\right
+                        If *this\text\align\right
+                           *this\text\x - ( *this\picture\width + img_indent_x )
+                        Else
+                           *this\text\x - ( *this\picture\width + img_indent_x ) / 2
+                        EndIf
+                     EndIf
+                  EndIf
+                  If *this\picture\height
+                     If *this\picture\align\top
+                        If *this\picture\align\top
+                           If *this\text\align\top
+                              *this\text\y + ( *this\picture\height + img_indent_y )
+                           Else
+                              *this\text\y + ( *this\picture\height + img_indent_y ) / 2
+                           EndIf
+                        EndIf
+                     EndIf
+                     If *this\picture\align\bottom
+                        If *this\picture\align\bottom
+                           If *this\text\align\bottom
+                              *this\text\y - ( *this\picture\height + img_indent_y )
+                           Else
+                              *this\text\y - ( *this\picture\height + img_indent_y ) / 2
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+         
+         ;\\ draw img
+         If *this\picture
+            If *this\picture\imageID 
+               draw_mode_alpha_( #PB_2DDrawing_Transparent )
+               DrawAlphaImage( *this\picture\imageID, *this\inner_x( ) + *this\picture\x, *this\inner_y( ) + *this\picture\y, *this\color\ialpha )
+            EndIf
+         EndIf
+         ;\\
+         If *this\text 
+            If *this\text\string 
+               ;
+               If *this\screen_height( ) > *this\text\height
+                  draw_mode_alpha_( #PB_2DDrawing_Transparent )
+                  DrawRotatedText( *this\inner_x( ) + *this\text\x, *this\inner_y( ) + *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[state] )
+               EndIf
+            EndIf
+         EndIf
+         
+      EndProcedure
+      
       Procedure   Draw_TreeRows( *this._s_WIDGET, List *rows._s_ROWS( ) )
          Protected state.b, X.l, Y.l, xs.l, ys.l, _box_x_.l, _box_y_.l, minus.l = 7
          Protected bs = Bool( *this\fs )
@@ -24172,6 +24364,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, 0, *this\picture\align, *this\padding\y )
                   change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, 0, *this\picture\align, *this\padding\y )
                EndIf
+               
+               If test_align = 1
+                  Debug "button "+*this\picture\align\left +" "+ *this\text\align\left +"  "+ *this\picture\align\top +" "+ *this\text\align\top +"  "+ *this\picture\align\right +" "+ *this\text\align\right +"  "+ *this\picture\align\bottom +" "+ *this\text\align\bottom +" "+ *this\text\string
+               EndIf
             EndIf
             
             ;\\ origin position
@@ -24290,63 +24486,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             __draw_gradient( 0, *this, 0,0, state, 0,0, [#__c_frame] )
          EndIf
          
-         If *this\TextChange( ) Or *this\picture\change
-            If *this\picture\width
-               *this\scroll_width( ) = *this\picture\width + *this\padding\x + *this\text\width + *this\padding\x * 2
-            Else
-               *this\scroll_width( ) = *this\text\width + *this\padding\x * 2
-            EndIf
-            If *this\picture\height
-               *this\scroll_height( ) = *this\picture\height + *this\padding\y * 2
-            Else
-               *this\scroll_height( ) = *this\text\height + *this\padding\y * 2
-            EndIf
-            
-            ; make horizontal scroll x
-            make_scrollarea_x( *this, *this\scroll_width( ), *this\picture\align )
-            
-            ; make vertical scroll y
-            make_scrollarea_y( *this, *this\scroll_height( ), *this\picture\align )
-         EndIf
-         
-            
-         ;\\ draw img
-         If *this\picture
-            If *this\picture\imageID 
-               If *this\picture\change Or 
-                  *this\ResizeChange( ) 
-                  ;
-                  change_align_horizontal( *this\picture, *this\inner_width( ), *this\picture\width, *this\picture\rotate, *this\picture\align, *this\padding\x )
-                  change_align_vertical( *this\picture, *this\inner_height( ), *this\picture\height, *this\picture\rotate, *this\picture\align, *this\padding\y )
-               EndIf
-               
-               draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *this\picture\imageID, *this\inner_x( ) + *this\picture\x, *this\inner_y( ) + *this\picture\y, *this\color\ialpha )
-            EndIf
-         EndIf
-         ;\\
-         If *this\text 
-            If *this\text\string 
-               If *this\TextChange( ) Or 
-                  *this\ResizeChange( )
-                  ;
-                  If *this\text\vertical
-                     change_align_horizontal( *this\text, *this\inner_width( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\x )
-                     change_align_vertical( *this\text, *this\inner_height( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\y )
-                  Else
-                     change_align_horizontal( *this\text, *this\inner_width( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\x )
-                     change_align_vertical( *this\text, *this\inner_height( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\y )
-                  EndIf
-               EndIf
-               
-               ;
-               If *this\screen_height( ) > *this\text\height
-                  draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawRotatedText( *this\inner_x( ) + *this\picture\width+Bool(*this\picture\width)**this\padding\x + *this\text\x, *this\inner_y( ) + *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[state] )
-               EndIf
-            EndIf
-         EndIf
-         
+         ;
+         Draw_Content( *this, state )
          
          ; arrow draw
          draw_mode_alpha_( #PB_2DDrawing_Default )
@@ -25493,6 +25634,56 @@ EndMacro
 ;-
 ;-\\ EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
+   EnableExplicit
+   UseWidgets( )
+   test_align = 1
+   test_draw_area = 1
+   
+   If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+      End
+   EndIf
+   If DesktopResolutionX() > 1
+      ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
+   EndIf
+   
+   Define Image = 1
+   Define i, Width = 250
+   
+   Procedure ComboButton( X,Y,Width,Height, Text.s, flags)
+      Protected *g._s_WIDGET
+      *g = ComboBox( X,Y,Width,Height, flags)
+      AddItem( *g, -1, Text,1 )
+      SetState( *g, 0 )
+   EndProcedure
+   
+   
+   
+   If Open(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      ComboButton(10,  10, Width/2-5, 65, "left&top"                    , #__flag_BorderFlat|#__flag_Left |#__flag_Top   )
+      ComboButton(10+Width/2+5,  10, Width/2-5, 65, "right&top"         , #__flag_BorderFlat|#__flag_Right|#__flag_Top   )
+      ComboButton(10,  10+65+10, Width/2-5, 65, "left&bottom"           , #__flag_BorderFlat|#__flag_Left |#__flag_Bottom)
+      ComboButton(10+Width/2+5,  10+65+10, Width/2-5, 65, "right&bottom", #__flag_BorderFlat|#__flag_Right|#__flag_Bottom)
+      
+      ComboButton(10, 160, Width/2-5, 65, "left"                        , #__flag_BorderFlat|#__flag_Left  )
+      ComboButton(10+Width/2+5, 160, Width/2-5, 65, "right"             , #__flag_BorderFlat|#__flag_Right )
+      ComboButton(10, 160+65+10, Width/2-5, 65, "top"                   , #__flag_BorderFlat|#__flag_Top   )
+      ComboButton(10+Width/2+5, 160+65+10, Width/2-5, 65, "bottom"      , #__flag_BorderFlat|#__flag_Bottom)
+      
+      ComboButton(10, 310, Width, 65, "left&center"                     , #__flag_BorderFlat|#__flag_ImageLeft  )
+      ComboButton(10, 310+65+10, Width, 65, "right&center"              , #__flag_BorderFlat|#__flag_ImageRight )
+      ComboButton(10, 460, Width, 65, "top&center"                      , #__flag_BorderFlat|#__flag_ImageTop   )
+      ComboButton(10, 460+65+10, Width, 65, "bottom&center"             , #__flag_BorderFlat|#__flag_ImageBottom)
+      
+       ComboButton(10, 610, Width, 140, "default"                         , #__flag_BorderFlat);|#__flag_ImageCenter)
+      
+      
+      Repeat
+         Define Event = WaitWindowEvent()
+      Until Event = #PB_Event_CloseWindow
+   EndIf
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile = 99
   UseWidgets( )
   EnableExplicit
   test_clip = 1
@@ -26831,9 +27022,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 24294
-; FirstLine = 23795
-; Folding = -----------------------------------Hsf---4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---e4-----------------------------------------------------------------------------------------------------------
+; CursorPosition = 20986
+; FirstLine = 20417
+; Folding = -----------------------------------Hsf--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+--00-8---e4--0-------------------------------4------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
