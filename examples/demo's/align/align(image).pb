@@ -21,7 +21,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Macro gadget(_id_, _x_,_y_,_width_,_height_,_text_,_flag_)
-    Image(_x_,_y_,_width_,_height_,0,_flag_) : SetBackColor( widget( ), $FFB3FDFF )
+    ComboBox(_x_,_y_,_width_,_height_,_flag_|#__flag_Textmultiline) : AddItem(widget( ), -1,"combo") : SetState(widget( ), 0) : SetImage(widget( ), 0)
+    ;Image(_x_,_y_,_width_,_height_,0,_flag_) : SetBackColor( widget( ), $FFB3FDFF )
          
     ;   ButtonImage(_x_,_y_,_width_,_height_,0,_flag_)
   EndMacro
@@ -92,8 +93,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 23
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 25
 ; FirstLine = 19
 ; Folding = -
 ; EnableXP

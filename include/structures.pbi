@@ -289,6 +289,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *imageID
          change.b 
          rotate.d
+         ; vertical.b
          align._s_align
       EndStructure
       
@@ -795,9 +796,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 764
-; FirstLine = 729
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 291
+; FirstLine = 262
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP

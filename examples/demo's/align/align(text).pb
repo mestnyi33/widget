@@ -17,7 +17,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;_flag_|#__flag_vertical
       
-      Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
+      ComboBox(_x_,_y_,_width_,_height_,_flag_|#__flag_Textmultiline) : AddItem(widget( ), -1,"combo") : SetState(widget( ), 0)
+      ;Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
       ;
       ;Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
       ;CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
@@ -71,9 +72,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 33
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 19
 ; Folding = -
 ; EnableXP
 ; DPIAware

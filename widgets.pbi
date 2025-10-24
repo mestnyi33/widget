@@ -1211,6 +1211,23 @@ CompilerIf Not Defined( widget, #PB_Module )
          DrawingMode( _mode_ )
       EndMacro
       
+      Macro draw_box_( _x_, _y_, _width_, _height_, _color_ = $ffffffff )
+         Box( _x_, _y_, _width_, _height_, _color_ )
+      EndMacro
+      
+      Macro draw_roundbox_( _x_, _y_, _width_, _height_, _round_x_, _round_y_, _color_ = $ffffffff )
+         If _round_x_ Or _round_y_
+            RoundBox( _x_, _y_, _width_, _height_, _round_x_, _round_y_, _color_ ) ; bug _round_y_ = 0
+         Else
+            draw_box_( _x_, _y_, _width_, _height_, _color_ )
+         EndIf
+      EndMacro
+      
+      Macro draw_image_( _this_, _x_, _y_, _mode_ = )
+         ; draw_mode_alpha_( #PB_2DDrawing_Transparent )
+         DrawAlphaImage( _this_\picture#_mode_\imageID, _x_ + _this_\picture#_mode_\x + _this_\scroll_x( ), _y_ + _this_\picture#_mode_\y + _this_\scroll_y( ), _this_\color\ialpha )
+      EndMacro
+      
       Macro draw_font( _address_, _font_id_ = 0, _update_ = 0 )
          If _font_id_
             If Not GetFontID( _address_ )
@@ -1245,20 +1262,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndMacro
       
-      Macro draw_box_( _x_, _y_, _width_, _height_, _color_ = $ffffffff )
-         Box( _x_, _y_, _width_, _height_, _color_ )
-      EndMacro
-      
-      Macro draw_roundbox_( _x_, _y_, _width_, _height_, _round_x_, _round_y_, _color_ = $ffffffff )
-         If _round_x_ Or _round_y_
-            RoundBox( _x_, _y_, _width_, _height_, _round_x_, _round_y_, _color_ ) ; bug _round_y_ = 0
-         Else
-            draw_box_( _x_, _y_, _width_, _height_, _color_ )
-         EndIf
-      EndMacro
-      
       ;-
-      Macro draw_up_(_x_, _y_, _size_, _back_color_, _frame_color_)
+      Macro __draw_up_arrow(_x_, _y_, _size_, _back_color_, _frame_color_)
          ;                                                                                                                                                      ;
          ;                                                                                                                                                      ;
          Line(_x_ + 7, _y_, 2, 1, _frame_color_)                                                                                                                  ; 0,0,0,0,0,0,0,0,0,0
@@ -1270,7 +1275,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                                                                                                                                                                         ;                                                                                                                                                      ;
                                                                                                                                                                                         ;                                                                                                                                                      ;
       EndMacro
-      Macro draw_down_(_x_, _y_, _size_, _back_color_, _frame_color_)
+      Macro __draw_down_arrow(_x_, _y_, _size_, _back_color_, _frame_color_)
          ;                                                                                                                                                      ;
          ;                                                                                                                                                      ;
          Plot(_x_ + _size_ / 2 - 2, _y_ + 4, _frame_color_ ) : Line(_x_ + 7, _y_ + 4, 2, 1, _back_color_) : Plot(_x_ + _size_ / 2 + 1, _y_ + 4, _frame_color_ )                     ; 0,0,0,0,1,1,0,0,0,0
@@ -1282,7 +1287,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                                                                                                                                                                         ;                                                                                                                                                      ;
                                                                                                                                                                                         ;                                                                                                                                                      ;
       EndMacro
-      Macro draw_left_(_x_, _y_, _size_, _back_color_, _frame_color_)
+      Macro __draw_left_arrow(_x_, _y_, _size_, _back_color_, _frame_color_)
          ;                                                                                                                                                      ; 0,0,0,0,0,0
          ;                                                                                                                                                      ; 0,0,0,0,0,0
          Line(_x_, _y_ + 7, 1, 2, _frame_color_)                                                                                                                  ; 0,0,1,0,0,0
@@ -1294,7 +1299,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                                                                                                                                                                         ;                                                                                                                                                      ; 0,0,0,0,0,0
                                                                                                                                                                                         ;                                                                                                                                                      ; 0,0,0,0,0,0
       EndMacro
-      Macro draw_right_(_x_, _y_, _size_, _back_color_, _frame_color_)
+      Macro __draw_right_arrow(_x_, _y_, _size_, _back_color_, _frame_color_)
          ;                                                                                                                                                      ; 0,0,0,0,0,0
          ;                                                                                                                                                      ; 0,0,0,0,0,0
          Plot(_x_ + 4, _y_ + _size_ / 2 - 2, _frame_color_ ) : Line(_x_ + 4, _y_ + 7, 1, 2, _back_color_) : Plot(_x_ + 4, _y_ + _size_ / 2 + 1, _frame_color_ )                     ; 0,0,0,1,0,0
@@ -1306,43 +1311,47 @@ CompilerIf Not Defined( widget, #PB_Module )
                                                                                                                                                                                         ;                                                                                                                                                      ; 0,0,0,0,0,0
                                                                                                                                                                                         ;                                                                                                                                                      ; 0,0,0,0,0,0
       EndMacro
+      Macro __draw_arrows( _address_, _direction_ )
+         Draw_Arrow( _direction_,
+                     _address_\x + ( _address_\width - _address_\arrow\size ) / 2,
+                     _address_\y + ( _address_\height - _address_\arrow\size ) / 2, 
+                     _address_\arrow\size, _address_\arrow\type, 0,
+                     _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+      EndMacro
       
-      Macro draw_gradient_( _vertical_, _address_, _color_fore_, _color_back_, _mode_ = )
-         BackColor( _color_fore_ & $FFFFFF | _address_\AlphaState24( ) )
-         FrontColor( _color_back_ & $FFFFFF | _address_\AlphaState24( ) )
+      ;-
+      Macro __draw_gradient( _vertical_, _address_, _x_,_y_, _state_, _round_ = 0, _alpha_ = 255, _mode_ = )
+         BackColor( _address_\color\fore[_state_] & $FFFFFF | _address_\AlphaState24( ) )
+         FrontColor( _address_\color\back[_state_] & $FFFFFF | _address_\AlphaState24( ) )
          
          If _vertical_  ; _address_\vertical
-            LinearGradient( _address_\x#_mode_, _address_\y#_mode_, ( _address_\x#_mode_ + _address_\width#_mode_ ), _address_\y#_mode_ )
+            LinearGradient( (_x_+_address_\x#_mode_), (_y_+_address_\y#_mode_), ( (_x_+_address_\x#_mode_) + _address_\width#_mode_ ), (_y_+_address_\y#_mode_) )
          Else
-            LinearGradient( _address_\x#_mode_, _address_\y#_mode_, _address_\x#_mode_, ( _address_\y#_mode_ + _address_\height#_mode_ ))
+            LinearGradient( (_x_+_address_\x#_mode_), (_y_+_address_\y#_mode_), (_x_+_address_\x#_mode_), ( (_y_+_address_\y#_mode_) + _address_\height#_mode_ ))
          EndIf
          
-         draw_roundbox_( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_, _address_\round, _address_\round )
+         If _round_
+            draw_roundbox_( (_x_+_address_\x#_mode_), (_y_+_address_\y#_mode_), _address_\width#_mode_, _address_\height#_mode_, _round_, _round_ )
+         Else
+            draw_roundbox_( (_x_+_address_\x#_mode_), (_y_+_address_\y#_mode_), _address_\width#_mode_, _address_\height#_mode_, _address_\round, _address_\round )
+         EndIf
          
          BackColor( #PB_Default )
          FrontColor( #PB_Default ) ; bug
       EndMacro
       
-      Macro draw_gradientbox_( _vertical_, _x_, _y_, _width_, _height_, _color_1_, _color_2_, _round_ = 0, _alpha_ = 255 )
-         BackColor( _color_1_ & $FFFFFF | _alpha_ << 24 )
-         FrontColor( _color_2_ & $FFFFFF | _alpha_ << 24 )
-         
-         If _vertical_
-            LinearGradient( _x_, _y_, ( _x_ + _width_ ), _y_ )
-         Else
-            LinearGradient( _x_, _y_, _x_, ( _y_ + _height_ ))
+      Macro __draw_plus( _address_, _plus_, _size_ = DPIScaled( #__draw_plus_size ))
+         Line(_address_\x + (_address_\width - _size_) / 2, _address_\y + (_address_\height - 1) / 2, _size_, 1, _address_\color\front[_address_\ColorState( )])
+         If _plus_
+            Line(_address_\x + (_address_\width - 1) / 2, _address_\y + (_address_\height - _size_) / 2, 1, _size_, _address_\color\front[_address_\ColorState( )])
          EndIf
-         
-         draw_roundbox_( _x_, _y_, _width_, _height_, _round_, _round_ )
-         
-         BackColor( #PB_Default ) : FrontColor( #PB_Default ) ; bug
       EndMacro
       
-      Macro draw_button_( _type_, _x_, _y_, _width_, _height_, _checked_, _round_, _color_fore_ = $FFFFFFFF, _color_fore2_ = $FFE9BA81, _color_back_ = $80E2E2E2, _color_back2_ = $FFE89C3D, _color_frame_ = $80C8C8C8, _color_frame2_ = $FFDC9338, _alpha_ = 255, size=4 )
+      Macro __draw_checkbox( _type_, _address_, _x_,_y_,_round_, _color_fore_ = $FFFFFFFF, _color_fore2_ = $FFE9BA81, _color_back_ = $80E2E2E2, _color_back2_ = $FFE89C3D, _color_frame_ = $80C8C8C8, _color_frame2_ = $FFDC9338, _alpha_ = 255, size=4 )
          draw_mode_alpha_( #PB_2DDrawing_Gradient )
-         LinearGradient( _x_, _y_, _x_, ( _y_ + _height_ ))
+         LinearGradient( (_x_+_address_\x), (_y_+_address_\y), (_x_+_address_\x), ( (_y_+_address_\y) + _address_\height ))
          
-         If _checked_
+         If _address_\checked
             BackColor( _color_fore2_ & $FFFFFF | _alpha_ << 24 )
             FrontColor( _color_back2_ & $FFFFFF | _alpha_ << 24 )
          Else
@@ -1350,44 +1359,44 @@ CompilerIf Not Defined( widget, #PB_Module )
             FrontColor( _color_back_ & $FFFFFF | _alpha_ << 24 )
          EndIf
          
-         draw_roundbox_( _x_, _y_, _width_, _height_, _round_, _round_ )
+         draw_roundbox_( (_x_+_address_\x), (_y_+_address_\y), _address_\width, _address_\height, _round_, _round_ )
          
          If _type_ = 4
             FrontColor( $ff000000 & $FFFFFF | _alpha_ << 24 )
             BackColor( $ff000000 & $FFFFFF | _alpha_ << 24 )
             
-            Line( _x_ + 1 + ( _width_ - 6 ) / 2, _y_ + ( _height_ - 6 ) / 2, 6, 6 )
-            Line( _x_ + ( _width_ - 6 ) / 2, _y_ + ( _height_ - 6 ) / 2, 6, 6 )
+            Line( (_x_+_address_\x) + 1 + ( _address_\width - 6 ) / 2, (_y_+_address_\y) + ( _address_\height - 6 ) / 2, 6, 6 )
+            Line( (_x_+_address_\x) + ( _address_\width - 6 ) / 2, (_y_+_address_\y) + ( _address_\height - 6 ) / 2, 6, 6 )
             
-            Line( _x_ - 1 + 6 + ( _width_ - 6 ) / 2, _y_ + ( _height_ - 6 ) / 2, - 6, 6 )
-            Line( _x_ + 6 + ( _width_ - 6 ) / 2, _y_ + ( _height_ - 6 ) / 2, - 6, 6 )
+            Line( (_x_+_address_\x) - 1 + 6 + ( _address_\width - 6 ) / 2, (_y_+_address_\y) + ( _address_\height - 6 ) / 2, - 6, 6 )
+            Line( (_x_+_address_\x) + 6 + ( _address_\width - 6 ) / 2, (_y_+_address_\y) + ( _address_\height - 6 ) / 2, - 6, 6 )
          Else
             FrontColor( _color_fore_ & $FFFFFF | _alpha_ << 24 )
             BackColor( _color_fore_ & $FFFFFF | _alpha_ << 24 )
             
-            If _checked_
+            If _address_\checked
                If _type_ = 1
-                  If _width_ % 2
-                     draw_roundbox_( _x_ + ( _width_ - DesktopScaledY(4) ) / 2, _y_ + ( _height_ - DesktopScaledY(4) ) / 2, DesktopScaledY(5), DesktopScaledY(5), 4, 4 )
+                  If _address_\width % 2
+                     draw_roundbox_( (_x_+_address_\x) + ( _address_\width - DesktopScaledY(4) ) / 2, (_y_+_address_\y) + ( _address_\height - DesktopScaledY(4) ) / 2, DesktopScaledY(5), DesktopScaledY(5), 4, 4 )
                   Else
-                     draw_roundbox_( _x_ + ( _width_ - DesktopScaledY(4) ) / 2, _y_ + ( _height_ - DesktopScaledY(4) ) / 2, DesktopScaledY(4), DesktopScaledY(4), 4, 4 )
+                     draw_roundbox_( (_x_+_address_\x) + ( _address_\width - DesktopScaledY(4) ) / 2, (_y_+_address_\y) + ( _address_\height - DesktopScaledY(4) ) / 2, DesktopScaledY(4), DesktopScaledY(4), 4, 4 )
                   EndIf
                Else
-                  If _checked_ = - 1
-                     If _width_ % 2
-                        draw_box_( _x_ + ( _width_ - DesktopScaledY(4) ) / 2, _y_ + ( _height_ - DesktopScaledY(4) ) / 2, DesktopScaledY(5), DesktopScaledY(5) )
+                  If _address_\checked = - 1
+                     If _address_\width % 2
+                        draw_box_( (_x_+_address_\x) + ( _address_\width - DesktopScaledY(4) ) / 2, (_y_+_address_\y) + ( _address_\height - DesktopScaledY(4) ) / 2, DesktopScaledY(5), DesktopScaledY(5) )
                      Else
-                        draw_box_( _x_ + ( _width_ - DesktopScaledY(4) ) / 2, _y_ + ( _height_ - DesktopScaledY(4) ) / 2, DesktopScaledY(4), DesktopScaledY(4) )
+                        draw_box_( (_x_+_address_\x) + ( _address_\width - DesktopScaledY(4) ) / 2, (_y_+_address_\y) + ( _address_\height - DesktopScaledY(4) ) / 2, DesktopScaledY(4), DesktopScaledY(4) )
                      EndIf
                   Else
-                     _box_x_ = _width_ / 2 - 4
-                     _box_y_ = _box_x_ + Bool( _width_ % 2 )
+                     _box_x_ = _address_\width / 2 - 4
+                     _box_y_ = _box_x_ + Bool( _address_\width % 2 )
                      
-                     LineXY(( _x_ + 1 + _box_x_ ), ( _y_ + 4 + _box_y_ ), ( _x_ + 2 + _box_x_ ), ( _y_ + 5 + _box_y_ )) ; Левая линия
-                     LineXY(( _x_ + 1 + _box_x_ ), ( _y_ + 5 + _box_y_ ), ( _x_ + 2 + _box_x_ ), ( _y_ + 6 + _box_y_ )) ; Левая линия
+                     LineXY(( (_x_+_address_\x) + 1 + _box_x_ ), ( (_y_+_address_\y) + 4 + _box_y_ ), ( (_x_+_address_\x) + 2 + _box_x_ ), ( (_y_+_address_\y) + 5 + _box_y_ )) ; Левая линия
+                     LineXY(( (_x_+_address_\x) + 1 + _box_x_ ), ( (_y_+_address_\y) + 5 + _box_y_ ), ( (_x_+_address_\x) + 2 + _box_x_ ), ( (_y_+_address_\y) + 6 + _box_y_ )) ; Левая линия
                      
-                     LineXY(( _x_ + 6 + _box_x_ ), ( _y_ + 0 + _box_y_ ), ( _x_ + 3 + _box_x_ ), ( _y_ + 6 + _box_y_ )) ; правая линия
-                     LineXY(( _x_ + 7 + _box_x_ ), ( _y_ + 0 + _box_y_ ), ( _x_ + 4 + _box_x_ ), ( _y_ + 6 + _box_y_ )) ; правая линия
+                     LineXY(( (_x_+_address_\x) + 6 + _box_x_ ), ( (_y_+_address_\y) + 0 + _box_y_ ), ( (_x_+_address_\x) + 3 + _box_x_ ), ( (_y_+_address_\y) + 6 + _box_y_ )) ; правая линия
+                     LineXY(( (_x_+_address_\x) + 7 + _box_x_ ), ( (_y_+_address_\y) + 0 + _box_y_ ), ( (_x_+_address_\x) + 4 + _box_x_ ), ( (_y_+_address_\y) + 6 + _box_y_ )) ; правая линия
                   EndIf
                EndIf
             EndIf
@@ -1396,38 +1405,47 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          draw_mode_alpha_( #PB_2DDrawing_Outlined )
          
-         If _checked_
+         If _address_\checked
             FrontColor( _color_frame2_ & $FFFFFF | _alpha_ << 24 )
          Else
             FrontColor( _color_frame_ & $FFFFFF | _alpha_ << 24 )
          EndIf
          
-         draw_roundbox_( _x_, _y_, _width_, _height_, _round_, _round_, _color_frame_ & $FFFFFF | _alpha_ << 24 )
+         draw_roundbox_( (_x_+_address_\x), (_y_+_address_\y), _address_\width, _address_\height, _round_, _round_, _color_frame_ & $FFFFFF | _alpha_ << 24 )
       EndMacro
       
-      ;-
-      Macro draw_plus( _address_, _plus_, _size_ = DPIScaled( #__draw_plus_size ))
-         Line(_address_\x + (_address_\width - _size_) / 2, _address_\y + (_address_\height - 1) / 2, _size_, 1, _address_\color\front[_address_\ColorState( )])
-         If _plus_
-            Line(_address_\x + (_address_\width - 1) / 2, _address_\y + (_address_\height - _size_) / 2, 1, _size_, _address_\color\front[_address_\ColorState( )])
+      Macro __draw_text( _this_, _color_ = $ff000000 )
+         If _this_\text 
+            If _this_\text\string 
+               If _this_\TextChange( ) Or 
+                  _this_\ResizeChange( )
+                  ;
+                  If _this_\text\vertical
+                     change_align_horizontal( _this_\text, _this_\inner_width( ), _this_\text\height, _this_\text\rotate, _this_\text\align, _this_\padding\x )
+                     change_align_vertical( _this_\text, _this_\inner_height( ), _this_\text\width, _this_\text\rotate, _this_\text\align, _this_\padding\y )
+                  Else
+                     change_align_horizontal( _this_\text, _this_\inner_width( ), _this_\text\width, _this_\text\rotate, _this_\text\align, _this_\padding\x )
+                     change_align_vertical( _this_\text, _this_\inner_height( ), _this_\text\height, _this_\text\rotate, _this_\text\align, _this_\padding\y )
+                  EndIf
+               EndIf
+               
+               ;
+               If _this_\screen_height( ) > _this_\text\height
+                  draw_mode_alpha_( #PB_2DDrawing_Transparent )
+                  DrawRotatedText( _this_\inner_x( ) + _this_\text\x, _this_\inner_y( ) + _this_\text\y, _this_\text\string, _this_\text\rotate, _color_ )
+               EndIf
+            EndIf
          EndIf
       EndMacro
       
-      Macro draw_arrows( _address_, _direction_ )
-         Draw_Arrow( _direction_,
-                     _address_\x + ( _address_\width - _address_\arrow\size ) / 2,
-                     _address_\y + ( _address_\height - _address_\arrow\size ) / 2, 
-                     _address_\arrow\size, _address_\arrow\type, 0,
-                     _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-      EndMacro
-      
-      Macro draw_box( _address_, _color_type_, _mode_ = )
+      ;-
+      Macro __draw_box( _address_, _color_type_, _mode_ = )
          draw_roundbox_( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_,
                          _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
       EndMacro
       
-      Macro draw_box_button( _address_, _color_type_ )
-         ;draw_box( _address_, _color_type_)
+      Macro __draw_roundbox( _address_, _color_type_ )
+         ;__draw_box( _address_, _color_type_)
          If Not _address_\hide
             draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
             draw_roundbox_( _address_\x, _address_\y + 1, _address_\width, _address_\height - 2, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
@@ -1435,7 +1453,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndMacro
       
-      Macro draw_close_button( _address_, _size_ )
+      Macro __draw_close_button( _address_, _size_ )
          ; close button
          If Not _address_\hide
             If _address_\ColorState( )
@@ -1446,11 +1464,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                Line( _address_\x + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
             EndIf
             
-            draw_box_button( _address_, color\frame )
+            __draw_roundbox( _address_, color\frame )
          EndIf
       EndMacro
       
-      Macro draw_maximize_button( _address_, _size_ )
+      Macro __draw_maximize_button( _address_, _size_ )
          If Not _address_\hide
             If _address_\ColorState( )
                Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
@@ -1460,11 +1478,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
             EndIf
             
-            draw_box_button( _address_, color\frame )
+            __draw_roundbox( _address_, color\frame )
          EndIf
       EndMacro
       
-      Macro draw_minimize_button( _address_, _size_ )
+      Macro __draw_minimize_button( _address_, _size_ )
          If Not _address_\hide
             If _address_\ColorState( )
                Line( _address_\x + 1 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
@@ -1474,18 +1492,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                Line( _address_\x - 2 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
             EndIf
             
-            draw_box_button( _address_, color\frame )
+            __draw_roundbox( _address_, color\frame )
          EndIf
       EndMacro
       
-      Macro draw_help_button( _address_, _size_ )
+      Macro __draw_help_button( _address_, _size_ )
          If Not _address_\hide
             draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height,
                             _address_\round, _address_\round, _address_\color\frame[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
          EndIf
       EndMacro
       
-      Macro draw_option_button( _address_, _size_, _color_ )
+      ;-
+      Macro __draw_option_button( _address_, _size_, _color_ )
          If _address_\round > 2
             If _address_\width % 2
                draw_roundbox_( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_ + 1, _size_ + 1, _size_ + 1, _size_ + 1, _color_ )
@@ -1501,7 +1520,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndMacro
       
-      Macro draw_check_button( _address_, _size_, _color_ )
+      Macro __draw_check_button( _address_, _size_, _color_ )
          LineXY(( _address_\x + 0 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 4 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 5 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; Левая линия
          LineXY(( _address_\x + 0 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 5 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; Левая линия
          
@@ -1509,11 +1528,74 @@ CompilerIf Not Defined( widget, #PB_Module )
          LineXY(( _address_\x + 6 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 0 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 3 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; правая линия
       EndMacro
       
-      Macro draw_img_( _this_, _x_, _y_, _mode_ = )
-         ; draw_mode_alpha_( #PB_2DDrawing_Transparent )
-         DrawAlphaImage( _this_\picture#_mode_\imageID, _x_ + _this_\picture#_mode_\x + _this_\scroll_x( ), _y_ + _this_\picture#_mode_\y + _this_\scroll_y( ), _this_\color\ialpha )
-      EndMacro
+      Macro __draw_navigator_button( _this_ )
+         ; background buttons draw
+         If Not _this_\bar\button[1]\hide
+            If _this_\bar\button[1]\color\fore <> - 1
+               draw_mode_alpha_( #PB_2DDrawing_Gradient )
+               __draw_gradient(_this_\bar\vertical, _this_\bar\button[1], 0,0, _this_\bar\button[1]\ColorState( ))
+            Else
+               draw_mode_alpha_( #PB_2DDrawing_Default )
+               __draw_box(_this_\bar\button[1], color\back)
+               ; draw_roundbox_( _this_\bar\button[1]\x, _this_\bar\button[1]\y, _this_\bar\button[1]\width, _this_\bar\button[1]\height, _this_\bar\button[1]\round, _this_\bar\button[1]\round, _this_\bar\button[1]\color\frame[_this_\bar\button[1]\ColorState( )] & $FFFFFF | _this_\bar\button[1]\AlphaState24( ) )
+            EndIf
+         EndIf
+         If Not _this_\bar\button[2]\hide
+            If _this_\bar\button[2]\color\fore <> - 1
+               draw_mode_alpha_( #PB_2DDrawing_Gradient )
+               __draw_gradient(_this_\bar\vertical, _this_\bar\button[2], 0,0, _this_\bar\button[2]\ColorState( ))
+            Else
+               draw_mode_alpha_( #PB_2DDrawing_Default )
+               __draw_box(_this_\bar\button[2], color\back)
+               ; draw_roundbox_( _this_\bar\button[2]\x, _this_\bar\button[2]\y, _this_\bar\button[2]\width, _this_\bar\button[2]\height, _this_\bar\button[2]\round, _this_\bar\button[2]\round, _this_\bar\button[2]\color\frame[_this_\bar\button[2]\ColorState( )] & $FFFFFF | _this_\bar\button[2]\AlphaState24( ) )
+            EndIf
+         EndIf
+         
+         draw_mode_alpha_( #PB_2DDrawing_Outlined )
+         
+         ;
+         If _this_\type = #__type_Scroll
+            If _this_\bar\vertical
+               If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\frame_width( ) / 4 )) = _this_\frame_height( )
+                  Line(_this_\frame_x( ), _this_\frame_y( ), 1, _this_\bar\page\len + 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
+               Else
+                  Line(_this_\frame_x( ), _this_\frame_y( ) + _this_\bar\button[1]\round, 1, _this_\frame_height( ) - _this_\bar\button[1]\round - _this_\bar\button[2]\round, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
+               EndIf
+            Else
+               If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\frame_height( ) / 4 )) = _this_\frame_width( )
+                  Line(_this_\frame_x( ), _this_\frame_y( ), _this_\bar\page\len + 1, 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF0000ff ) ;
+               Else
+                  Line(_this_\frame_x( ) + _this_\bar\button[1]\round, _this_\frame_y( ), _this_\frame_width( ) - _this_\bar\button[1]\round - _this_\bar\button[2]\round, 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
+               EndIf
+            EndIf
+         EndIf
+         
+         ; frame buttons draw
+         If Not _this_\bar\button[1]\hide
+            If _this_\bar\button[1]\arrow\size
+               If _this_\flag & #__spin_Plus 
+                  __draw_plus( _this_\bar\button[1], Bool( _this_\bar\invert ) )
+               Else
+                  __draw_arrows( _this_\bar\button[1], Bool(_this_\bar\vertical ) + (Bool(_this_\type <> #__type_Scroll)*2))
+               EndIf
+            EndIf
+            __draw_box(_this_\bar\button[1], color\frame)
+            ; draw_roundbox_( _this_\bar\button[1]\x, _this_\bar\button[1]\y, _this_\bar\button[1]\width, _this_\bar\button[1]\height, _this_\bar\button[1]\round, _this_\bar\button[1]\round, _this_\bar\button[1]\color\frame[_this_\bar\button[1]\ColorState( )] & $FFFFFF | _this_\bar\button[1]\AlphaState24( ) )
+         EndIf
+         If Not _this_\bar\button[2]\hide
+            If _this_\bar\button[2]\arrow\size
+               If _this_\flag & #__spin_Plus 
+                  __draw_plus( _this_\bar\button[2], Bool( Not _this_\bar\invert ) )
+               Else
+                  __draw_arrows( _this_\bar\button[2], Bool(_this_\bar\vertical ) + (Bool(_this_\type = #__type_Scroll)*2) )
+               EndIf
+            EndIf
+            __draw_box(_this_\bar\button[2], color\frame)
+            ; draw_roundbox_( _this_\bar\button[2]\x, _this_\bar\button[2]\y, _this_\bar\button[2]\width, _this_\bar\button[2]\height, _this_\bar\button[2]\round, _this_\bar\button[2]\round, _this_\bar\button[2]\color\frame[_this_\bar\button[2]\ColorState( )] & $FFFFFF | _this_\bar\button[2]\AlphaState24( ) )
+         EndIf
+      EndMacro     
       
+      ;-
       
       ;-  
       ;-\\   DECLARE_globals
@@ -1937,11 +2019,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       
       ;-
-      Macro align_content( _address_, _flag_ )
-         _address_\align\left  = constants::BinaryFlag( _flag_, #__align_left )
-         _address_\align\right = constants::BinaryFlag( _flag_, #__align_right )
-         
+      Macro set_align_content( _address_, _flag_ )
+         _address_\align\left   = constants::BinaryFlag( _flag_, #__align_left )
          _address_\align\top    = constants::BinaryFlag( _flag_, #__align_top )
+         _address_\align\right  = constants::BinaryFlag( _flag_, #__align_right )
          _address_\align\bottom = constants::BinaryFlag( _flag_, #__align_bottom )
          
          If constants::BinaryFlag( _flag_, #__align_Center, #False )
@@ -1951,12 +2032,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                Not _address_\align\bottom 
                
                If Not _address_\align\right
-                  _flag_ | #__align_left
                   _address_\align\left = #True
+                  _flag_ | #__align_left
                EndIf
                If Not _address_\align\bottom
-                  _flag_ | #__align_top
                   _address_\align\top = #True
+                  _flag_ | #__align_top
                EndIf
             Else
                If _address_\align\left
@@ -2050,30 +2131,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndMacro
       
-      Macro update_align_image( _this_ )
-         change_align_horizontal( _this_\picture, _this_\inner_width( ), _this_\picture\width, _this_\picture\rotate, _this_\picture\align, _this_\padding\x )
-         change_align_vertical( _this_\picture, _this_\inner_height( ), _this_\picture\height, _this_\picture\rotate, _this_\picture\align, _this_\padding\y )
-      EndMacro
-      
-      Macro update_align_text_x( _this_, _address_, _width_ )
-         If Not _this_\text\vertical
-            change_align_horizontal( _address_, _width_, _address_\width, _this_\text\rotate, _this_\text\align, _this_\padding\x )
-         Else
-            change_align_horizontal( _address_, _width_, _address_\height, _this_\text\rotate, _this_\text\align, _this_\padding\x )
-         EndIf
-      EndMacro
-      
-      Macro update_align_text_y( _this_, _address_, _height_ )
-         If Not _this_\text\vertical
-            change_align_vertical( _address_, _height_, _address_\height, _this_\text\rotate, _this_\text\align, _this_\padding\y )
-         Else
-            change_align_vertical( _address_, _height_, _address_\width, _this_\text\rotate, _this_\text\align, _this_\padding\y )
-         EndIf
-      EndMacro
-      
-      
       ;-
-      Macro set_text_flag_( _this_, _text_, _flag_, _x_ = 0, _y_ = 0 )
+      Macro set_text_flag( _this_, _text_, _flag_, _x_ = 0, _y_ = 0 )
          ;     If Not _this_\text
          ;       _this_\text.allocate( TEXT )
          ;     EndIf
@@ -2134,7 +2193,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   _this_\MarginLine( )\color\back  = $C8F0F0F0 ; \color\back[0]
                Else
                   _this_\MarginLine( )\hide = 1
-                  _this_\text\numeric       = Bool( _flag_ & #__flag_Textnumeric = #__flag_Textnumeric )
+                  _this_\text\numeric       = constants::BinaryFlag( _flag_, #__flag_Textnumeric )
                EndIf
             EndIf
             
@@ -3974,78 +4033,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Macro draw_navigator_buttons( _this_ )
-         ; background buttons draw
-         If Not _this_\bar\button[1]\hide
-            If _this_\bar\button[1]\color\fore <> - 1
-               draw_mode_alpha_( #PB_2DDrawing_Gradient )
-               draw_gradient_(_this_\bar\vertical, _this_\bar\button[1], _this_\bar\button[1]\color\fore[_this_\bar\button[1]\ColorState( )], _this_\bar\button[1]\color\back[_this_\bar\button[1]\ColorState( )] )
-            Else
-               draw_mode_alpha_( #PB_2DDrawing_Default )
-               draw_box(_this_\bar\button[1], color\back)
-               ; draw_roundbox_( _this_\bar\button[1]\x, _this_\bar\button[1]\y, _this_\bar\button[1]\width, _this_\bar\button[1]\height, _this_\bar\button[1]\round, _this_\bar\button[1]\round, _this_\bar\button[1]\color\frame[_this_\bar\button[1]\ColorState( )] & $FFFFFF | _this_\bar\button[1]\AlphaState24( ) )
-            EndIf
-         EndIf
-         If Not _this_\bar\button[2]\hide
-            If _this_\bar\button[2]\color\fore <> - 1
-               draw_mode_alpha_( #PB_2DDrawing_Gradient )
-               draw_gradient_(_this_\bar\vertical, _this_\bar\button[2], _this_\bar\button[2]\color\fore[_this_\bar\button[2]\ColorState( )], _this_\bar\button[2]\color\back[_this_\bar\button[2]\ColorState( )] )
-            Else
-               draw_mode_alpha_( #PB_2DDrawing_Default )
-               draw_box(_this_\bar\button[2], color\back)
-               ; draw_roundbox_( _this_\bar\button[2]\x, _this_\bar\button[2]\y, _this_\bar\button[2]\width, _this_\bar\button[2]\height, _this_\bar\button[2]\round, _this_\bar\button[2]\round, _this_\bar\button[2]\color\frame[_this_\bar\button[2]\ColorState( )] & $FFFFFF | _this_\bar\button[2]\AlphaState24( ) )
-            EndIf
-         EndIf
-         
-         draw_mode_alpha_( #PB_2DDrawing_Outlined )
-         
-         ;
-         If _this_\type = #__type_Scroll
-            If _this_\bar\vertical
-               If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\frame_width( ) / 4 )) = _this_\frame_height( )
-                  Line(_this_\frame_x( ), _this_\frame_y( ), 1, _this_\bar\page\len + 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
-               Else
-                  Line(_this_\frame_x( ), _this_\frame_y( ) + _this_\bar\button[1]\round, 1, _this_\frame_height( ) - _this_\bar\button[1]\round - _this_\bar\button[2]\round, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
-               EndIf
-            Else
-               If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\frame_height( ) / 4 )) = _this_\frame_width( )
-                  Line(_this_\frame_x( ), _this_\frame_y( ), _this_\bar\page\len + 1, 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF0000ff ) ;
-               Else
-                  Line(_this_\frame_x( ) + _this_\bar\button[1]\round, _this_\frame_y( ), _this_\frame_width( ) - _this_\bar\button[1]\round - _this_\bar\button[2]\round, 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
-               EndIf
-            EndIf
-         EndIf
-         
-         ; frame buttons draw
-         If Not _this_\bar\button[1]\hide
-            If _this_\bar\button[1]\arrow\size
-               If _this_\flag & #__spin_Plus 
-                  draw_plus( _this_\bar\button[1], Bool( _this_\bar\invert ) )
-               Else
-                  draw_arrows( _this_\bar\button[1], Bool(_this_\bar\vertical ) + (Bool(_this_\type <> #__type_Scroll)*2))
-               EndIf
-            EndIf
-            draw_box(_this_\bar\button[1], color\frame)
-            ; draw_roundbox_( _this_\bar\button[1]\x, _this_\bar\button[1]\y, _this_\bar\button[1]\width, _this_\bar\button[1]\height, _this_\bar\button[1]\round, _this_\bar\button[1]\round, _this_\bar\button[1]\color\frame[_this_\bar\button[1]\ColorState( )] & $FFFFFF | _this_\bar\button[1]\AlphaState24( ) )
-         EndIf
-         If Not _this_\bar\button[2]\hide
-            If _this_\bar\button[2]\arrow\size
-               If _this_\flag & #__spin_Plus 
-                  draw_plus( _this_\bar\button[2], Bool( Not _this_\bar\invert ) )
-               Else
-                  draw_arrows( _this_\bar\button[2], Bool(_this_\bar\vertical ) + (Bool(_this_\type = #__type_Scroll)*2) )
-               EndIf
-            EndIf
-            draw_box(_this_\bar\button[2], color\frame)
-            ; draw_roundbox_( _this_\bar\button[2]\x, _this_\bar\button[2]\y, _this_\bar\button[2]\width, _this_\bar\button[2]\height, _this_\bar\button[2]\round, _this_\bar\button[2]\round, _this_\bar\button[2]\color\frame[_this_\bar\button[2]\ColorState( )] & $FFFFFF | _this_\bar\button[2]\AlphaState24( ) )
-         EndIf
-      EndMacro     
-      
-      Macro bar_draw_item_( _vertical_, _address_, _x_, _y_, _round_, _mode_, _flag_ = 1 )
+      Macro bar_draw_item_( _vertical_, _address_, _x_, _y_, _state_, _round_, _flag_ = 1 )
          ; Draw back
          If _flag_ = 1
             draw_mode_alpha_( #PB_2DDrawing_Gradient )
-            draw_gradientbox_( 0, _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _address_\color\fore#_mode_, _address_\color\back#_mode_, _round_, _address_\AlphaState( ) )
+            __draw_gradient( 0, _address_, _x_, _y_, _state_, _round_ )
          EndIf
          ;
          ; Draw items img
@@ -4057,19 +4049,19 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; Draw items text
          If _address_\text\string
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
-            DrawText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\string, _address_\color\front#_mode_ & $FFFFFF | _address_\AlphaState24( ) )
+            DrawText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\string, _address_\color\front[_state_] & $FFFFFF | _address_\AlphaState24( ) )
          EndIf
          
          If _vertical_ > 0
             If _address_\childrens
-               DrawText( _x_ + _address_\width - DPIScaled(15), _y_ + _address_\text\y, ">", _address_\color\front#_mode_ & $FFFFFF | _address_\AlphaState24( ) )
+               DrawText( _x_ + _address_\width - DPIScaled(15), _y_ + _address_\text\y, ">", _address_\color\front[_state_] & $FFFFFF | _address_\AlphaState24( ) )
             EndIf
          EndIf
          ;          
          ; Draw frame
          If _flag_ = 1
             draw_mode_alpha_( #PB_2DDrawing_Outlined )
-            draw_roundbox_( _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _round_, _round_, _address_\color\frame#_mode_ & $FFFFFF | _address_\AlphaState24( ) )
+            draw_roundbox_( _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _round_, _round_, _address_\color\frame[_state_] & $FFFFFF | _address_\AlphaState24( ) )
          EndIf
          
          ;\\ draw disable state
@@ -4128,7 +4120,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ;\\
                   If *tabs( )\checked
-                     bar_draw_item_( *this\bar\vertical, *tabs( ), X, Y, round, [2] )
+                     bar_draw_item_( *this\bar\vertical, *tabs( ), X, Y, 2, round )
                   Else
                      If *tabs( ) <> *this\TabEntered( )
                         ; And Not (*tabs( ) <> *this\TabFocused( ) And *tabs( )\_focus) 
@@ -4140,7 +4132,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         ;                         
                         ;                         If (( *BB2\x + *BB2\width < x + *tabs( )\x ) Or ( *BB2\hide And *BB2\x + *BB2\width > x + *tabs( )\x )) Or
                         ;                            (( *BB1\x > x + *tabs( )\x + *tabs( )\width ) Or ( *BB1\hide And *BB1\x < x + *tabs( )\x + *tabs( )\width )) 
-                        bar_draw_item_( *this\bar\vertical, *tabs( ), X, Y, round, [0], Bool( Not( is_bar_( *this ) And Not constants::BinaryFlag( *this\flag, #__flag_BarButtons ))) )
+                        bar_draw_item_( *this\bar\vertical, *tabs( ), X, Y, 0, round, Bool( Not( is_bar_( *this ) And Not constants::BinaryFlag( *this\flag, #__flag_BarButtons ))) )
                         ;                         EndIf
                      EndIf
                   EndIf
@@ -4156,7 +4148,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
                If *this\TabEntered( )\tindex <> #PB_Ignore
                   draw_font( *this\TabEntered( ), GetFontID( *this ), *this\TextChange( ))
-                  bar_draw_item_( *this\bar\vertical, *this\TabEntered( ), X, Y, round, [*this\TabEntered( )\ColorState( )] )
+                  bar_draw_item_( *this\bar\vertical, *this\TabEntered( ), X, Y, *this\TabEntered( )\ColorState( ), round)
                EndIf
             EndIf
          EndIf
@@ -4184,11 +4176,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  bar_draw_item_( *this\bar\vertical, *activeTAB, X, Y, round, [0], 0 )
+                  bar_draw_item_( *this\bar\vertical, *activeTAB, X, Y, 0, round, 0 )
                   
                Else
                   ;
-                  bar_draw_item_( *this\bar\vertical, *activeTAB, X, Y, round, [2] )
+                  bar_draw_item_( *this\bar\vertical, *activeTAB, X, Y, 2, round )
                EndIf
             EndIf
             
@@ -4444,7 +4436,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;\\
-               draw_navigator_buttons( *this )
+               __draw_navigator_button( *this )
                
             EndIf
             
@@ -4483,70 +4475,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;
-               ;                ; background buttons draw
-               ;                If Not *BB1\hide
-               ;                   If *BB1\color\fore <> - 1
-               ;                      draw_mode_alpha_( #PB_2DDrawing_Gradient )
-               ;                      draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\ColorState( )], *BB1\color\back[*BB1\ColorState( )] )
-               ;                   Else
-               ;                      draw_mode_alpha_( #PB_2DDrawing_Default )
-               ;                      draw_box(*BB1, color\back)
-               ;                   EndIf
-               ;                EndIf
-               ;                If Not *BB2\hide
-               ;                   If *BB2\color\fore <> - 1
-               ;                      draw_mode_alpha_( #PB_2DDrawing_Gradient )
-               ;                      draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\ColorState( )], *BB2\color\back[*BB2\ColorState( )] )
-               ;                   Else
-               ;                      draw_mode_alpha_( #PB_2DDrawing_Default )
-               ;                      draw_box(*BB2, color\back)
-               ;                   EndIf
-               ;                EndIf
-               ;                
-               ;                draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               ;                
-               ;                ;
-               ;                If *this\type = #__type_Scroll
-               ;                   If *bar\vertical
-               ;                      If (*bar\page\len + Bool(*this\round ) * (*this\screen_width( ) / 4 )) = *this\frame_height( )
-               ;                         Line(*this\frame_x( ), *this\frame_y( ), 1, *bar\page\len + 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
-               ;                      Else
-               ;                         Line(*this\frame_x( ), *this\frame_y( ) + *BB1\round, 1, *this\screen_height( ) - *BB1\round - *BB2\round, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
-               ;                      EndIf
-               ;                   Else
-               ;                      If (*bar\page\len + Bool(*this\round ) * (*this\screen_height( ) / 4 )) = *this\frame_width( )
-               ;                         Line(*this\frame_x( ), *this\frame_y( ), *bar\page\len + 1, 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF0000ff ) ;
-               ;                      Else
-               ;                         Line(*this\frame_x( ) + *BB1\round, *this\frame_y( ), *this\frame_width( ) - *BB1\round - *BB2\round, 1, *this\color\front & $FFFFFF | *this\AlphaState24( ) ) ; $FF000000 ) ;
-               ;                      EndIf
-               ;                   EndIf
-               ;                EndIf
-               ;                
-               ;                ; frame buttons draw
-               ;                If Not *BB1\hide
-               ;                   If *BB1\arrow\size
-               ;                      draw_arrows( *BB1, Bool(*bar\vertical ))
-               ;                   EndIf
-               ;                   draw_box(*BB1, color\frame)
-               ;                EndIf
-               ;                If Not *BB2\hide
-               ;                   If *BB2\arrow\size
-               ;                      draw_arrows( *BB2, Bool(*bar\vertical ) + 2 )
-               ;                   EndIf
-               ;                   draw_box(*BB2, color\frame)
-               ;                EndIf
-               ;                
-               draw_navigator_buttons( *this )
+               __draw_navigator_button( *this )
                
                If *bar\thumb\len And *this\type <> #__type_Progress
                   ; Draw thumb
                   draw_mode_alpha_( #PB_2DDrawing_Gradient )
-                  draw_gradient_(*bar\vertical, *SB, *SB\color\fore[*SB\ColorState( )], *SB\color\back[*SB\ColorState( )])
+                  __draw_gradient(*bar\vertical, *SB, 0,0, *SB\ColorState( ))
                   
                   If *SB\arrow\type ;*this\type = #__type_Scroll
                      If *SB\arrow\size
                         draw_mode_alpha_( #PB_2DDrawing_Default )
-                        draw_arrows( *SB, *SB\arrow\direction )
+                        __draw_arrows( *SB, *SB\arrow\direction )
                      EndIf
                   Else
                      ; Draw thumb lines
@@ -4575,7 +4514,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ; Draw thumb frame
                   draw_mode_alpha_( #PB_2DDrawing_Outlined )
-                  draw_box(*SB, color\frame)
+                  __draw_box(*SB, color\frame)
                EndIf
                
             EndIf
@@ -4794,17 +4733,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ; Draw string
-            If *this\text And *this\text\string 
-               If *this\TextChange( ) Or *this\ResizeChange( )
-                  update_align_text_x( *this, *this\text, *this\inner_width( ) )
-                  update_align_text_y( *this, *this\text, *this\inner_height( ) )
-               EndIf
-               
-               ;
-               If *this\screen_height( ) > *this\text\height
-                  draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawRotatedText( *this\inner_x( )+*this\text\x, *this\inner_y( )+*this\text\y, *this\text\string, *this\text\rotate, $ff000000)
-               EndIf
+            If *this\text\string
+               __draw_text( *this )
             EndIf
             
          EndWith
@@ -4817,7 +4747,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          *BB1 = *bar\button[1]
          *BB2 = *bar\button[2]
          
-         ;          draw_navigator_buttons( *this )
+         ;          __draw_navigator_button( *this )
          ;          ProcedureReturn  
          
          
@@ -4842,22 +4772,22 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ draw spin-buttons back
          draw_mode_alpha_( #PB_2DDrawing_Gradient )
-         draw_gradient_(*bar\vertical, *BB1, *BB1\color\fore[*BB1\ColorState( )], *BB1\color\back[*BB1\ColorState( )] )
-         draw_gradient_(*bar\vertical, *BB2, *BB2\color\fore[*BB2\ColorState( )], *BB2\color\back[*BB2\ColorState( )] )
+         __draw_gradient(*bar\vertical, *BB1, 0,0, *BB1\ColorState( ))
+         __draw_gradient(*bar\vertical, *BB2, 0,0, *BB2\ColorState( ))
          
          ;\\
          draw_mode_( #PB_2DDrawing_Outlined )
          If *this\flag & #__spin_Plus 
             ; -/+
-            draw_plus( *BB1, Bool( *bar\invert ) )
-            draw_plus( *BB2, Bool( Not *bar\invert ) )
+            __draw_plus( *BB1, Bool( *bar\invert ) )
+            __draw_plus( *BB2, Bool( Not *bar\invert ) )
          Else
             ; arrows on the buttons
             If *BB2\arrow\size
-               draw_arrows( *BB2, Bool(*bar\vertical ) )
+               __draw_arrows( *BB2, Bool(*bar\vertical ) )
             EndIf
             If *BB1\arrow\size
-               draw_arrows( *BB1, Bool(*bar\vertical ) + 2)
+               __draw_arrows( *BB1, Bool(*bar\vertical ) + 2)
             EndIf
          EndIf
          
@@ -9104,6 +9034,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure SetImage( *this._s_WIDGET, img );, mode.a = 0 )
+         If *this\stringbar
+            *this = *this\stringbar
+         EndIf
+         
          add_image( *this\picture, img )
          
          If *this\type <> #__type_window
@@ -9755,10 +9689,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                                                    If *this\parent  
                                                       If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
                                                          SetText( *this\parent\parent, *this\RowFocused( )\text\string )
-                                                         If *this\parent\parent\stringbar
-                                                            If *this\RowFocused( )\picture\image > - 1
-                                                               SetImage( *this\parent\parent\stringbar, *this\RowFocused( )\picture\image )
-                                                            EndIf
+                                                         If *this\RowFocused( )\picture\image > - 1
+                                                            SetImage( *this\parent\parent, *this\RowFocused( )\picture\image )
                                                          EndIf
                                                          DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                                                          If result  
@@ -9767,10 +9699,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                                                       Else
                                                          If *this\parent\type = #__type_ComboBox
                                                             SetText( *this\parent, *this\RowFocused( )\text\string )
-                                                            If *this\parent\stringbar
-                                                               If *this\RowFocused( )\picture\image > - 1
-                                                                  SetImage( *this\parent\stringbar, *this\RowFocused( )\picture\image )
-                                                               EndIf
+                                                            If *this\RowFocused( )\picture\image > - 1
+                                                               SetImage( *this\parent, *this\RowFocused( )\picture\image )
                                                             EndIf
                                                          EndIf 
                                                          DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
@@ -14715,6 +14645,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn SetText( *this\stringbar, Text )
             Else
                ; ProcedureReturn SetText( *this, Text )
+               Text.s = edit_make_insert_text( *this, Text.s )
                If *This\text\string.s <> Text.s
                   *This\text\string.s = Text.s
                   *this\TextChange( ) = #True
@@ -21349,8 +21280,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                If Text
                   *this\fs[2] = 8
                EndIf
-               
-               set_text_flag_( *this, Text, flag, 12, - *this\fs[2] - 1 )
             EndIf
             
             ;\\
@@ -21389,8 +21318,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\stringbar = Create( *this, "ComboString", #__type_String,
                                          0, 0, 0, 0, #Null$, #__flag_child | #__flag_Borderless|*this\flag )
             Else
-               *this\stringbar = Create( *this, "ComboString", #__type_Button,
-                                         0, 0, 0, 0, #Null$, #__flag_child | #__flag_Borderless|*this\flag, (-1) )
+               *this\padding\x = DPIScaled(4)
+               *this\padding\y = DPIScaled(4)
             EndIf
             
             *this\fs[3] = size
@@ -21698,14 +21627,14 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\cursor[0] = *this\cursor[1]
          EndIf
          
-         ;\\
+         ;\\ COLUMN
          If *this\row
             ;  If *this\type = #__type_ListIcon
             AddColumn( *this, 0, Text, *param_1 )
             ; EndIf
          EndIf
          
-         ;\\ Resize
+         ;\\ RESIZE
          If is_integral_( *this )
             If *this\type = #__type_Scroll
                If *this\parent
@@ -21739,34 +21668,39 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          
          ;\\ Set img
+         If *this\type = #__type_ComboBox
+            set_align_content( *this\picture, *this\flag )
+         EndIf
          If *this\type = #__type_image
             SetState( *this, *param_1 )
-            align_content( *this\picture, *this\flag )
+            set_align_content( *this\picture, *this\flag )
          EndIf
          If *this\type = #__type_Button
             SetAttribute( *this, #PB_Button_Image, *param_1 )
-            align_content( *this\picture, *this\flag )
+            set_align_content( *this\picture, *this\flag )
          EndIf
-         
-         ;\\
-         If *this\row 
-            If *this\type = #__type_Text Or
-               *this\type = #__type_Editor Or
-               *this\type = #__type_String Or
-               *this\type = #__type_Button Or
-               *this\type = #__type_Option Or
-               *this\type = #__type_CheckBox Or
-               *this\type = #__type_HyperLink
-               
-               If Not ( constants::BinaryFlag( *this\flag, #__align_image ) And 
-                        constants::BinaryFlag( *this\flag, #__align_Text ))
-                  align_content( *this\text, *this\flag )
-               EndIf
+         ;\\ text flag
+         If *this\type = #__type_Text Or
+            *this\type = #__type_Editor Or
+            *this\type = #__type_String Or
+            *this\type = #__type_Button Or
+            *this\type = #__type_Option Or
+            *this\type = #__type_ComboBox Or
+            *this\type = #__type_CheckBox Or
+            *this\type = #__type_HyperLink
+            
+            If Not ( constants::BinaryFlag( *this\flag, #__align_image ) And 
+                     constants::BinaryFlag( *this\flag, #__align_Text ))
+               set_align_content( *this\text, *this\flag )
             EndIf
             
-            set_text_flag_( *this, Text, *this\flag )
+            set_text_flag( *this, Text, *this\flag )
+         EndIf
+         If *this\type = #__type_Frame
+            set_text_flag( *this, Text, *this\flag, 12, - *this\fs[2] - 1 )
          EndIf
          
+            
          ;\\ Scroll bars
          If constants::BinaryFlag( Flag, #__flag_NoScrollBars, #False )
             If *this\type = #__type_String
@@ -21776,13 +21710,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\scroll\v\hide  = 1
                *this\scroll\h\hide  = 1
                *this\scroll\v\width = 0
+               *this\scroll\h\height = 0
                ;                *this\scroll\v\bar\button[0]\size = 1
                ;                *this\scroll\v\bar\button[1]\size = 1
                ;                *this\scroll\v\bar\button[2]\size = 1
                ;                *this\scroll\h\bar\button[0]\size = 1
                ;                *this\scroll\h\bar\button[1]\size = 1
                ;                *this\scroll\h\bar\button[2]\size = 1
-               *this\scroll\h\height = 0
                
             ElseIf *this\type = #__type_Editor Or
                    *this\type = #__type_Tree Or
@@ -22771,7 +22705,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *end + #__sOC
                Wend
                
-               
                ;
                ForEach *this\__lines( )
                   *this\__lines( )\text\pos = *this\text\pos
@@ -22791,7 +22724,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                         *this\__lines( )\text\x = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
                      EndIf
                      
-                     update_align_text_y( *this, *this\__lines( )\text, *this\scroll_height( ) )
+                     ; align text y
+                     change_align_vertical( *this\__lines( )\text, *this\scroll_height( ), *this\__lines( )\text\width, *this\text\rotate, *this\text\align, *this\padding\y )
+                  
                   Else ; horizontal
                      If *this\text\rotate = 180
                         *this\__lines( )\y - ( *this\inner_height( ) - *this\scroll_height( ) )
@@ -22803,10 +22738,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ElseIf *this\text\rotate = 180
                         *this\__lines( )\text\y = Bool( #PB_Compiler_OS = #PB_OS_MacOS ) * 2 + Bool( #PB_Compiler_OS = #PB_OS_Linux ) + *this\__lines( )\text\height
                      Else
-                        *this\__lines( )\text\y = - Bool( #PB_Compiler_OS = #PB_OS_MacOS )
+                        *this\__lines( )\text\y = - Bool( #PB_Compiler_OS = #PB_OS_MacOS ) - Bool( #PB_Compiler_OS = #PB_OS_Windows )*2
                      EndIf
                      
-                     update_align_text_x( *this, *this\__lines( )\text, *this\scroll_width( ) )
+                     ; align text x
+                     change_align_horizontal( *this\__lines( )\text, *this\scroll_width( ), *this\__lines( )\text\width, *this\text\rotate, *this\text\align, *this\padding\x )
                   EndIf
                   
                   ; align img 
@@ -23461,10 +23397,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      If *rows( )\RowParent( ) And *this\mode\optionboxes
                         ; option box
-                        draw_button_( 1, X + *rows( )\checkbox\x, Y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\checkbox\checked , *rows( )\checkbox\width )
+                        __draw_checkbox( 1, *rows( )\checkbox, X,Y, *rows( )\checkbox\width )
                      Else
                         ; check box
-                        draw_button_( 3, X + *rows( )\checkbox\x, Y + *rows( )\checkbox\y, *rows( )\checkbox\width, *rows( )\checkbox\height, *rows( )\checkbox\checked , DPIScaled(2) )
+                        __draw_checkbox( 3, *rows( )\checkbox, X,Y, DPIScaled(2) )
                      EndIf
                   EndIf
                Next
@@ -24042,17 +23978,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ; buttins background
                draw_mode_alpha_( #PB_2DDrawing_Default )
-               draw_box_button( *this\CloseButton( ), color\back )
-               draw_box_button( *this\MaximizeButton( ), color\back )
-               draw_box_button( *this\MinimizeButton( ), color\back )
-               draw_box_button( *this\HelpButton( ), color\back )
+               __draw_box( *this\CloseButton( ), color\back )
+               __draw_box( *this\MaximizeButton( ), color\back )
+               __draw_box( *this\MinimizeButton( ), color\back )
+               __draw_box( *this\HelpButton( ), color\back )
                
                ; buttons img
                draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               draw_close_button( *this\CloseButton( ), DPIScaled(6) )
-               draw_maximize_button( *this\MaximizeButton( ), DPIScaled(4) )
-               draw_minimize_button( *this\MinimizeButton( ), DPIScaled(4) )
-               draw_help_button( *this\HelpButton( ), DPIScaled(4) )
+               __draw_close_button( *this\CloseButton( ), DPIScaled(6) )
+               __draw_maximize_button( *this\MaximizeButton( ), DPIScaled(4) )
+               __draw_minimize_button( *this\MinimizeButton( ), DPIScaled(4) )
+               __draw_help_button( *this\HelpButton( ), DPIScaled(4) )
                
                ; Draw img
                If *this\picture\imageID
@@ -24060,7 +23996,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;                   DrawAlphaimage( *this\picture\imageID,
                   ;                                   *this\frame_x( ) + *this\bs + *this\scroll_x( ) + *this\picture\x,
                   ;                                   *this\frame_y( ) + *this\bs + *this\scroll_y( ) + *this\picture\y - 2, *this\color\ialpha )
-                  draw_img_( *this, *this\inner_x( ), *this\inner_y( ) - (*this\picture\height+*this\fs[2])/2 )
+                  draw_image_( *this, *this\inner_x( ), *this\inner_y( ) - (*this\picture\height+*this\fs[2])/2 )
                EndIf
                
                If *this\TitleText( )\string
@@ -24090,7 +24026,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; background img draw
             If *this\picture[#__image_BackGround]\imageID
-               draw_img_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_BackGround] )
+               draw_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_BackGround] )
             EndIf
             
             clip_output_( *this, [#__c_draw] )
@@ -24221,7 +24157,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;                   *this\scroll_x( ) = 0
                   ;                   *this\scroll_y( ) = 0
                   ;                   
-                  ;                   update_align_image( *this )
+                  ;                   change_align_image( *this )
                   
                   
                   ; make horizontal scroll x
@@ -24244,15 +24180,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ draw background
             If *this\picture[#__image_BackGround]\imageID
-               draw_img_( *this, X, Y, [#__image_BackGround] )
+               draw_image_( *this, X, Y, [#__image_BackGround] )
             Else
                If *this\color\back <> - 1
                   If *this\color\fore <> - 1
                      draw_mode_alpha_( #PB_2DDrawing_Gradient )
-                     draw_gradient_( *this\text\vertical, *this, *this\color\fore[state], *this\color\back[state], [#__c_frame] )
+                     __draw_gradient( *this\text\vertical, *this, 0,0, state, 0, 0, [#__c_frame] )
                   Else
                      draw_mode_alpha_( #PB_2DDrawing_Default )
-                     draw_box( *this, color\back, [#__c_frame])
+                     __draw_box( *this, color\back, [#__c_frame])
                   EndIf
                EndIf
             EndIf
@@ -24304,7 +24240,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                _box_type_ = 3
             EndIf
             If _box_type_
-               draw_button_( _box_type_, *this\togglebox\x, *this\togglebox\y, *this\togglebox\width, *this\togglebox\height, *this\togglebox\checked, *this\togglebox\round )
+               __draw_checkbox( _box_type_, *this\togglebox, 0,0, *this\togglebox\round )
             EndIf
             
             ;\\ draw img
@@ -24339,20 +24275,78 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure   Draw_ComboBox( *this._s_WIDGET )
-         ;ProcedureReturn Draw_Button( *this )
          
          Protected state = *this\ColorState( )
          If state = #__s_3
             state = 0
          EndIf
          
+            
          ; gradient draw
          draw_mode_alpha_( #PB_2DDrawing_Gradient )
          If *this\stringbar
-            draw_gradient_( 0, *this\combobutton, *this\color\fore[*this\ColorState( )], *this\color\back[state] )
+            __draw_gradient( 0, *this\combobutton, 0,0, state )
          Else
-            draw_gradient_( 0, *this, *this\color\fore[*this\ColorState( )], *this\color\back[state], [#__c_frame] )
+            __draw_gradient( 0, *this, 0,0, state, 0,0, [#__c_frame] )
          EndIf
+         
+         If *this\TextChange( ) Or *this\picture\change
+            If *this\picture\width
+               *this\scroll_width( ) = *this\picture\width + *this\padding\x + *this\text\width + *this\padding\x * 2
+            Else
+               *this\scroll_width( ) = *this\text\width + *this\padding\x * 2
+            EndIf
+            If *this\picture\height
+               *this\scroll_height( ) = *this\picture\height + *this\padding\y * 2
+            Else
+               *this\scroll_height( ) = *this\text\height + *this\padding\y * 2
+            EndIf
+            
+            ; make horizontal scroll x
+            make_scrollarea_x( *this, *this\scroll_width( ), *this\picture\align )
+            
+            ; make vertical scroll y
+            make_scrollarea_y( *this, *this\scroll_height( ), *this\picture\align )
+         EndIf
+         
+            
+         ;\\ draw img
+         If *this\picture
+            If *this\picture\imageID 
+               If *this\picture\change Or 
+                  *this\ResizeChange( ) 
+                  ;
+                  change_align_horizontal( *this\picture, *this\inner_width( ), *this\picture\width, *this\picture\rotate, *this\picture\align, *this\padding\x )
+                  change_align_vertical( *this\picture, *this\inner_height( ), *this\picture\height, *this\picture\rotate, *this\picture\align, *this\padding\y )
+               EndIf
+               
+               draw_mode_alpha_( #PB_2DDrawing_Transparent )
+               DrawAlphaImage( *this\picture\imageID, *this\inner_x( ) + *this\picture\x, *this\inner_y( ) + *this\picture\y, *this\color\ialpha )
+            EndIf
+         EndIf
+         ;\\
+         If *this\text 
+            If *this\text\string 
+               If *this\TextChange( ) Or 
+                  *this\ResizeChange( )
+                  ;
+                  If *this\text\vertical
+                     change_align_horizontal( *this\text, *this\inner_width( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\x )
+                     change_align_vertical( *this\text, *this\inner_height( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\y )
+                  Else
+                     change_align_horizontal( *this\text, *this\inner_width( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\x )
+                     change_align_vertical( *this\text, *this\inner_height( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\y )
+                  EndIf
+               EndIf
+               
+               ;
+               If *this\screen_height( ) > *this\text\height
+                  draw_mode_alpha_( #PB_2DDrawing_Transparent )
+                  DrawRotatedText( *this\inner_x( ) + *this\picture\width+Bool(*this\picture\width)**this\padding\x + *this\text\x, *this\inner_y( ) + *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[state] )
+               EndIf
+            EndIf
+         EndIf
+         
          
          ; arrow draw
          draw_mode_alpha_( #PB_2DDrawing_Default )
@@ -24415,7 +24409,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;
             If *this\picture\change
-               ; update_align_image( *this  )
+               ; change_align_image( *this  )
                
                
                ; make horizontal scroll x
@@ -24439,7 +24433,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ background img draw
             If *this\picture[#__image_BackGround]\imageID
-               draw_img_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_BackGround] )
+               draw_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_BackGround] )
             EndIf
             
             ;\\ scroll img draw
@@ -25498,6 +25492,165 @@ EndMacro
 
 ;-
 ;-\\ EXAMPLE
+CompilerIf #PB_Compiler_IsMainFile
+  UseWidgets( )
+  EnableExplicit
+  test_clip = 1
+  test_draw_area = 1
+  
+  Define a,i, Height=60
+  
+  UsePNGImageDecoder()
+  LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/world.png")
+  LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp")
+  LoadImage(2, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp")
+  CopyImage(1,3)
+  CopyImage(2,4)
+  ResizeImage(3, 32, 32)
+  
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    Define ImageSize.NSSize
+    ImageSize\width = 16
+    ImageSize\height = 16
+    CocoaMessage(0, ImageID(4), "setSize:@", @ImageSize)
+  CompilerElse
+    ResizeImage(4, 16, 16)
+  CompilerEndIf
+
+  
+  Procedure events_gadgets()
+    Protected ComboBox.s
+    ClearDebugOutput()
+    
+    Select EventType()
+      Case #PB_EventType_Focus
+        ComboBox.s = "focus "+EventGadget()+" "+EventType()
+      Case #PB_EventType_LostFocus
+        ComboBox.s = "lostfocus "+EventGadget()+" "+EventType()
+      Case #PB_EventType_Change
+        ComboBox.s = "change "+EventGadget()+" "+EventType()
+    EndSelect
+    
+    If EventType() = #PB_EventType_Focus
+      Debug ComboBox.s +" - gadget" +" get text - "+ GetGadgetText(EventGadget()) ; Bug in mac os
+    Else
+      Debug ComboBox.s +" - gadget"
+    EndIf
+  EndProcedure
+  
+  Procedure events_widgets()
+    Protected ComboBox.s
+    Protected eventtype = WidgetEvent( )
+    If eventtype = #__event_Draw Or eventtype = #__event_MouseMove
+      ProcedureReturn 
+    EndIf
+    If EventWidget( ) = EventWidget( )\root
+      ProcedureReturn 
+    EndIf
+    
+    ;ClearDebugOutput()
+    
+    Select eventtype
+      Case #__event_Focus
+        ComboBox.s = "focus "+Str(EventWidget( )\index)+" "+eventtype
+      Case #__event_LostFocus
+        ComboBox.s = "lostfocus "+Str(EventWidget( )\index)+" "+eventtype
+      Case #__event_Change
+        ComboBox.s = "change "+Str(EventWidget( )\index)+" "+eventtype
+    EndSelect
+    
+    If eventtype = #__event_Focus
+      Debug ComboBox.s +" - widget" +" get text - "+ GetText(EventWidget( ))
+    Else
+      If ComboBox.s <> "" 
+        Debug ComboBox.s +" - widget " + EventWidget( )\class
+        ComboBox.s = ""
+      EndIf
+    EndIf
+    
+  EndProcedure
+  
+  
+  If Open(0, 0, 0, 615, 190, "ComboBox on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    ;\\
+    ComboBoxGadget(0, 10, 10, 250, 50, #PB_ComboBox_Editable|#PB_ComboBox_UpperCase|#PB_ComboBox_Image)
+    For a = 1 To 31 ; xp=31 ;linux-qt=11 ; mac = 5
+      AddGadgetItem(0, -1,"ComboBox editable... " + Str(a), ImageID(2))
+    Next
+    
+    ComboBoxGadget(1, 10, 70, 250, 50, #PB_ComboBox_LowerCase|#PB_ComboBox_Image)
+    AddGadgetItem(1, -1, "ComboBox item with image1", ImageID(0))
+    AddGadgetItem(1, -1, "ComboBox item with image2", ImageID(1))
+    AddGadgetItem(1, -1, "ComboBox item with image3", ImageID(2))
+    
+    ComboBoxGadget(2, 10, 130, 250, 50)
+    AddGadgetItem(2, -1, "ComboBox item 1")
+    AddGadgetItem(2, -1, "ComboBox item 2")
+    AddGadgetItem(2, -1, "ComboBox item 3")
+    
+    SetGadgetState(0, 2)
+    SetGadgetState(1, 1)
+    SetGadgetState(2, 0)    ; set (beginning with 0) the third item as active one
+    
+    
+    For i = 0 To 2
+      BindGadgetEvent(i, @events_gadgets())
+    Next
+    
+    ;\\
+    ComboBox(305+10, 10, 250, 50, #PB_ComboBox_Editable|#PB_ComboBox_UpperCase);|#PB_ComboBox_Image)
+    For a = 1 To 31
+      AddItem(ID(0), -1,"ComboBox editable... " + Str(a), (2))
+    Next
+    
+    ComboBox(305+10, 70, 250, 50, #PB_ComboBox_LowerCase);|#PB_ComboBox_Image)
+    AddItem(ID(1), -1, "ComboBox item with image1", (0))
+    AddItem(ID(1), -1, "ComboBox item with image2", (1))
+    AddItem(ID(1), -1, "ComboBox item with image3", (2))
+    
+    ComboBox(305+10, 130, 250, 50)
+    AddItem(ID(2), -1, "ComboBox item 1")
+    AddItem(ID(2), -1, "ComboBox item 2")
+    AddItem(ID(2), -1, "ComboBox item 3")
+    
+    SetState(ID(0), 2)
+    SetState(ID(1), 1)
+    SetState(ID(2), 0)    ; set (beginning with 0) the third item as active one
+    
+    For i = 0 To 2
+      Bind(ID(i), @events_widgets())
+    Next
+    
+    WaitClose( ) 
+  EndIf
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile = 99
+   UseWidgets( )
+   
+   If Open( 0, 0, 0, 300, 260, "ComboBox Upper&Lower case test", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
+      SetBackColor( widget(), - 1 )
+      
+      ComboBox( 10, 10, 280, 50, #PB_ComboBox_UpperCase )
+      AddItem( widget(), - 1, "comboBOX"+" (UPPER)" )
+      SetState( widget(), 0 )
+      
+      ComboBox( 10, 70, 280, 50, #PB_ComboBox_LowerCase )
+      AddItem( widget(), - 1, "COMBObox"+" (lower)" )
+      SetState( widget(), 0 )
+      
+      ComboBox( 10, 130, 280, 50, #PB_ComboBox_Editable|#PB_ComboBox_UpperCase )
+      AddItem( widget(), - 1, "comboBOX"+" (UPPER)" )
+      SetState( widget(), 0 )
+      
+      ComboBox( 10, 190, 280, 50, #PB_ComboBox_Editable|#PB_ComboBox_LowerCase )
+      AddItem( widget(), - 1, "COMBObox"+" (lower)" )
+      SetState( widget(), 0 )
+      
+      WaitClose( ) 
+   EndIf
+CompilerEndIf
+
 CompilerIf #PB_Compiler_IsMainFile = 99
    UseWidgets( )
    
@@ -25833,7 +25986,7 @@ CompilerEndIf
 
 
 ;- DEMO
-CompilerIf #PB_Compiler_IsMainFile
+CompilerIf #PB_Compiler_IsMainFile = 99
    
    EnableExplicit
    UseWidgets( )
@@ -26678,9 +26831,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 8693
-; FirstLine = 7816
-; Folding = -----------------------------------------------------------------------e-+---4+P40--------------------------------f---------------------u+5-05----8-4-v--f---------v--------------------------------------------------------------------------------------0-------------------------------4-+-+-------------------f-+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-4------------------------------------------------------------f4-8fr8q4---+-80--f-0f--0----------f-------------00-8---e-----------------v9---------------------------------+----------4-----------------------f--v2-+----75----
+; CursorPosition = 24294
+; FirstLine = 23795
+; Folding = -----------------------------------Hsf---4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---e4-----------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -17,8 +17,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Define i, Width = 200
    
    If Open(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      Button(10,  10, Width/2, 65, "left&top"                  , #__flag_BorderFlat|#__align_Left |#__align_Top)
-      Button(10+Width/2,  10, Width/2, 65, "right&top"         , #__flag_BorderFlat|#__align_Right|#__align_Top)
+      Button(10,  10, Width/2, 65, "left&top"                  , #__flag_BorderFlat|#__align_Left |#__align_Top   )
+      Button(10+Width/2,  10, Width/2, 65, "right&top"         , #__flag_BorderFlat|#__align_Right|#__align_Top   )
       Button(10,  10+65+10, Width/2, 65, "left&bottom"         , #__flag_BorderFlat|#__align_Left |#__align_Bottom)
       Button(10+Width/2,  10+65+10, Width/2, 65, "right&bottom", #__flag_BorderFlat|#__align_Right|#__align_Bottom)
       
@@ -27,18 +27,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Button(10, 160+65+10, Width/2, 65, "top"                 , #__flag_BorderFlat|#__flag_Top   )
       Button(10+Width/2, 160+65+10, Width/2, 65, "bottom"      , #__flag_BorderFlat|#__flag_Bottom)
       
-      Button(10, 310, Width, 65, "left&center"                 , #__flag_BorderFlat|#__flag_ImageLeft  )
-      Button(10, 310+65+10, Width, 65, "right&center"          , #__flag_BorderFlat|#__flag_ImageRight )
-      Button(10, 460, Width, 65, "top&center"                  , #__flag_BorderFlat|#__flag_ImageTop   )
-      Button(10, 460+65+10, Width, 65, "bottom&center"         , #__flag_BorderFlat|#__flag_ImageBottom)
+      Button(10, 310, Width, 65, "left&center"                 , #__flag_BorderFlat|#__flag_TextLeft  )
+      Button(10, 310+65+10, Width, 65, "right&center"          , #__flag_BorderFlat|#__flag_TextRight )
+      Button(10, 460, Width, 65, "top&center"                  , #__flag_BorderFlat|#__flag_TextTop   )
+      Button(10, 460+65+10, Width, 65, "bottom&center"         , #__flag_BorderFlat|#__flag_TextBottom)
       
       Button(10, 610, Width, 140, "center"                     , #__flag_BorderFlat);|#__flag_ImageCenter)
       
-      For i=0 To 12
-        ; SetText(ID(i), "" )
-         SetImage(ID(i), (1) )
-         SetAlign(ID(i), 0, 1,0,1,0)
-      Next
       
       Repeat
          Define Event = WaitWindowEvent()
@@ -46,8 +41,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 7
+; CursorPosition = 22
+; FirstLine = 3
 ; Folding = -
 ; EnableXP
 ; DPIAware
