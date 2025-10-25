@@ -3,7 +3,9 @@
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
-  Global *B_0, *B_1, *B_2, *B_3, *B_4, *B_5
+  test_draw_area = 1
+   
+   Global *B_0, *B_1, *B_2, *B_3, *B_4, *B_5
   
   Global *Button_0._S_Widget
   Global *Button_1._S_Widget
@@ -41,13 +43,22 @@ CompilerIf #PB_Compiler_IsMainFile
     ResizeGadget(GetCanvasGadget( root( ) ), #PB_Ignore, #PB_Ignore, Width, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate))
   EndProcedure
   
+  Procedure TestButton( X,Y,Width,Height, Text.s, flags, round = 0)
+      Protected *g._s_WIDGET
+      ;*g = Button( X,Y,Width,Height, Text.s, #__align_text|flags, round) 
+      *g = ComboBox( X,Y,Width,Height, flags) : AddItem( *g, -1, Text,1 ) : SetState( *g, 0 )
+      ProcedureReturn *g
+   EndProcedure
+   
+   
   If Open(11, 0, 0, 150, 235, "ImageButton", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
     WindowBounds(11,150,235,#PB_Ignore,235)
+    ;a_init(root())
     
-    Button( 10,10,60,25,"text_right", #__align_text|#__align_Image|#__align_left)    : SetImage(widget( ), 0)
-    Button( 10,40,60,25,"text_left",#__align_text|#__align_Image|#__align_Right,10)  : SetImage(widget( ), 10)
-    Button( 10,70,60,75,"text_top",#__align_text|#__align_Image|#__align_Bottom )    : SetImage(widget( ), 0)
-    Button( 10,150,60,75,"text_bottom",#__align_text|#__align_Image|#__align_Top,10) : SetImage(widget( ), 11)
+    TestButton( 10,10,60,25,"text_right", #__align_Image|#__Flag_left)    : SetImage(widget( ), 0)
+    TestButton( 10,40,60,25,"text_left",#__align_Image|#__Flag_Right,10)  : SetImage(widget( ), 10)
+    TestButton( 10,70,60,75,"text_top",#__align_Image|#__Flag_Bottom )    : SetImage(widget( ), 0)
+    TestButton( 10,150,60,75,"text_bottom",#__align_Image|#__Flag_Top,10) : SetImage(widget( ), 11)
     
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack( ), 11)
     ResizeWindow(11, #PB_Ignore, #PB_Ignore, 300, #PB_Ignore)
@@ -56,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 18
+; CursorPosition = 55
+; FirstLine = 29
 ; Folding = --
 ; EnableXP

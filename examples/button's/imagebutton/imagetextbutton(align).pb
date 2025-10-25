@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Button(10, 610, Width, 140, "default"                          , #__flag_BorderFlat);|#__flag_ImageCenter)
       
-      For i=0 To 12-5
+      For i=0 To 12
         ; SetText(ID(i), "" )
          SetImage(ID(i), (1) )
          SetAlign(ID(i), 0, 1,0,1,0)
@@ -55,8 +55,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 34
-; FirstLine = 18
+; CursorPosition = 8
 ; Folding = -
 ; EnableXP
 ; DPIAware

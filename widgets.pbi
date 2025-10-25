@@ -1915,6 +1915,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.s edit_make_insert_text( *this, Text.s )
       
       Global img_indent = DPIScaled(10)
+      Declare  Draw_Content( *this._s_WIDGET, state )
       
       ;\\
       Macro edit_caret_0( ): Text\caret\pos[0]: EndMacro
@@ -4522,7 +4523,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndWith
       EndProcedure
       
-      Declare  Draw_Content( *this._s_WIDGET, state )
       Procedure.b bar_draw_progress( *this._s_WIDGET )
          Macro DrawHLines( _start_x_, _start_y_, _stop_x_, _stop_y_ )
             For y1 = _start_y_ To _stop_y_
@@ -20995,7 +20995,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If constants::BinaryFlag( Flag, #__align_image )
                *this\flag | #__flag_Center 
             Else
-               *this\flag | #__flag_TextCenter ;| #__flag_TextLeft
+               *this\flag | #__flag_TextCenter 
             EndIf
             
             If constants::BinaryFlag( Flag, #__flag_TextRight )
@@ -23260,10 +23260,19 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure Draw_Content( *this._s_WIDGET, state )
-         Protected img_indent_x = DPIScaled(6)
-         Protected img_indent_y = DPIScaled(3)
+         Protected img_indent_x, img_indent_y 
          
-         If *this\TextChange( ) Or *this\picture\change
+         ;\\ draw update
+         If *this\TextChange( ) Or 
+            *this\picture\change
+            ;
+            If *this\picture
+               If *this\picture\imageID 
+                  img_indent_x = img_indent ; DPIScaled(6)
+                  img_indent_y = img_indent ; DPIScaled(3)
+               EndIf
+            EndIf
+            ;
             If test_align = 1
                Debug "content "+*this\picture\align\left +" "+ *this\text\align\left +"  "+ *this\picture\align\top +" "+ *this\text\align\top +"  "+ *this\picture\align\right +" "+ *this\text\align\right +"  "+ *this\picture\align\bottom +" "+ *this\text\align\bottom +" "+ *this\text\string
             EndIf
@@ -23272,7 +23281,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\text\vertical
                *this\scroll_width( ) = *this\text\height + *this\padding\x * 2
                *this\scroll_height( ) = *this\text\width + *this\padding\y * 2
-               
             Else
                *this\scroll_width( ) = *this\text\width + *this\padding\x * 2
                *this\scroll_height( ) = *this\text\height + *this\padding\y * 2
@@ -23303,42 +23311,36 @@ CompilerIf Not Defined( widget, #PB_Module )
             ; make_scrollarea_pos
             make_scrollarea_x( *this, *this\scroll_width( ), *this\text\align )
             make_scrollarea_y( *this, *this\scroll_height( ), *this\text\align )
-            
-            
             ;
             ;
-            If *this\picture\change Or 
-               *this\ResizeChange( ) 
-               ;
+            If *this\picture\change
                change_align_horizontal( *this\picture, *this\inner_width( ), *this\picture\width, *this\picture\rotate, *this\picture\align, *this\padding\x )
                change_align_vertical( *this\picture, *this\inner_height( ), *this\picture\height, *this\picture\rotate, *this\picture\align, *this\padding\y )
                
                If *this\picture\align\left
                   If Not *this\text\align\left
-                     *this\picture\x = *this\scroll_x( ) + *this\padding\x
+                     *this\picture\x + *this\scroll_x( ) ;+ *this\padding\x
                   EndIf
                EndIf
                If *this\picture\align\top
                   If Not *this\text\align\top
-                     *this\picture\y = *this\scroll_y( ) + *this\padding\y
+                     *this\picture\y + *this\scroll_y( ) ;+ *this\padding\y
                   EndIf
                EndIf
                If *this\picture\align\right
                   If Not *this\text\align\right
-                     *this\picture\x = *this\scroll_x( ) + *this\scroll_width( ) - *this\picture\width - *this\padding\x
+                     *this\picture\x - *this\scroll_x( ) ;+ *this\scroll_width( ) - *this\picture\width - *this\padding\x
                   EndIf
                EndIf
                If *this\picture\align\bottom
                   If Not *this\text\align\bottom
-                     *this\picture\y = *this\scroll_y( ) + *this\scroll_height( ) - *this\picture\height - *this\padding\y
+                     *this\picture\y - *this\scroll_y( ) ;+ *this\scroll_height( ) - *this\picture\height - *this\padding\y
                   EndIf
                EndIf
                
             EndIf
             
-            If *this\TextChange( ) Or 
-               *this\ResizeChange( )
-               ;
+            If *this\TextChange( )
                If *this\text\vertical
                   change_align_horizontal( *this\text, *this\inner_width( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\x )
                   change_align_vertical( *this\text, *this\inner_height( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\y )
@@ -23386,21 +23388,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
+               
             EndIf
          EndIf
          
-         
-         ;\\ draw img
+         ;\\ draw picture
          If *this\picture
             If *this\picture\imageID 
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
                DrawAlphaImage( *this\picture\imageID, *this\inner_x( ) + *this\picture\x, *this\inner_y( ) + *this\picture\y, *this\color\ialpha )
             EndIf
          EndIf
-         ;\\
+         
+         ;\\ draw text
          If *this\text 
             If *this\text\string 
-               ;
                If *this\screen_height( ) > *this\text\height
                   draw_mode_alpha_( #PB_2DDrawing_Transparent )
                   DrawRotatedText( *this\inner_x( ) + *this\text\x, *this\inner_y( ) + *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[state] )
@@ -27022,9 +27024,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 20986
-; FirstLine = 20417
-; Folding = -----------------------------------Hsf--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+--00-8---e4--0-------------------------------4------------------------------------------------------------------------------
+; CursorPosition = 23271
+; FirstLine = 22073
+; Folding = -----------------------------------Hsf--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+--00-8---e4--0-------------------------------4-------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
