@@ -17,8 +17,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;_flag_|#__flag_vertical
       
-      Protected *g=ComboBox(_x_,_y_,_width_,_height_,_flag_) : AddItem(*g, -1,"combo") : SetState(*g, 0)
-      ;Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
+      ;Protected *g=ComboBox(_x_,_y_,_width_,_height_,_flag_) : AddItem(*g, -1,"combo") : SetState(*g, 0)
+      Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
+      ;Protected *g=ButtonImage(_x_,_y_,_width_,_height_,-1,_flag_|#__flag_Textmultiline) : SetText( *g, _text_)
       ;
       ;Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
       ;CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
@@ -73,8 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 37
+; CursorPosition = 21
 ; Folding = -
 ; EnableXP
 ; DPIAware

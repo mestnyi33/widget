@@ -21,10 +21,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Macro gadget(_id_, _x_,_y_,_width_,_height_,_text_,_flag_)
-    ComboBox(_x_,_y_,_width_,_height_,_flag_|#__flag_Textmultiline) : AddItem(widget( ), -1,"combo") : SetState(widget( ), 0) : SetImage(widget( ), 0)
-    ;Image(_x_,_y_,_width_,_height_,0,_flag_) : SetBackColor( widget( ), $FFB3FDFF )
+    ;ComboBox(_x_,_y_,_width_,_height_,_flag_|#__flag_Textmultiline) : AddItem(widget( ), -1,"combo") : SetState(widget( ), 0) : SetImage(widget( ), 0)
+    ;   Image(_x_,_y_,_width_,_height_,(0),_flag_) : SetBackColor( widget( ), $FFB3FDFF )
          
-    ;   ButtonImage(_x_,_y_,_width_,_height_,0,_flag_)
+    ButtonImage(_x_,_y_,_width_,_height_,(0),(_flag_&~#__align_image));|#__flag_BorderLess)
   EndMacro
   
   Define m.s = #LF$
@@ -94,8 +94,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 25
-; FirstLine = 19
+; CursorPosition = 26
+; FirstLine = 10
 ; Folding = -
 ; EnableXP
 ; DPIAware

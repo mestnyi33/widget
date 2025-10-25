@@ -1252,9 +1252,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          If Not ( _address_\text\width And _address_\text\height ) Or _address_\TextChange( );Or _update_
             If _address_\text\string
                _address_\text\width = TextWidth( _address_\text\string )
-            EndIf
             
-            _address_\text\height = TextHeight( "A" )
+               _address_\text\height = TextHeight( "A" )
+            EndIf
             
             ; set rotate text value
             _address_\text\rotate = Bool( _address_\text\invert ) * 180 + Bool( _address_\text\vertical ) * 90
@@ -9297,6 +9297,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          If *this\type = #__type_CheckBox Or
             *this\type = #__type_Option Or
+            *this\type = #__type_ButtonImage Or
             *this\type = #__type_Button
             
             If *this\togglebox
@@ -9385,7 +9386,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\togglebox\checked <> state
                *this\togglebox\checked = state
                
-               If *this\type = #__type_Button
+               If *this\type = #__type_ButtonImage Or
+                  *this\type = #__type_Button
                   If state
                      *this\ColorState( ) = #__s_2
                   Else
@@ -10275,7 +10277,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          
-         If *this\type = #__type_Button 
+         If *this\type = #__type_ButtonImage Or
+            *this\type = #__type_Button 
+            ;
             Select Attribute
                Case #PB_Button_Image
                   ; add_image( *this\picture, *value )
@@ -14668,6 +14672,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_String Or
             *this\type = #__type_text Or
             *this\type = #__type_hyperlink Or
+            *this\type = #__type_ButtonImage Or
             *this\type = #__type_Button
             
             Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
@@ -15053,6 +15058,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected string_bar = Bool( *this\type = #__type_Text Or
                                       *this\type = #__type_Editor Or
                                       *this\type = #__type_String Or
+                                      *this\type = #__type_ButtonImage Or
                                       *this\type = #__type_Button Or
                                       *this\type = #__type_Option Or
                                       *this\type = #__type_Spin Or
@@ -15154,7 +15160,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   ;
                   ;\\0в ,
-                  If *this\type = #__type_Button
+                  If *this\type = #__type_ButtonImage Or
+                     *this\type = #__type_Button
                      ; set toggle button
                      If constants::BinaryFlag( flag, #PB_Button_Toggle )
                         If constants::BinaryFlag( *this\Flag, #PB_Button_Toggle )
@@ -16006,7 +16013,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Case "unknown"       : result = #__type_Unknown
                
             Case "button"        : result = #__type_Button
-            Case "buttonimg"   : result = #__Type_ButtonImage
+            Case "buttonimage"   : result = #__Type_ButtonImage
             Case "calendar"      : result = #__type_Calendar
             Case "checkbox"      : result = #__type_CheckBox
             Case "combobox"      : result = #__type_ComboBox
@@ -16018,7 +16025,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Case "explorertree"  : result = #__type_ExplorerTree
             Case "frame"         : result = #__type_Frame
             Case "hyperlink"     : result = #__type_HyperLink
-            Case "img"         : result = #__type_image
+            Case "image"         : result = #__type_image
             Case "ipaddress"     : result = #__type_IPAddress
             Case "listicon"      : result = #__type_ListIcon
             Case "listview"      : result = #__type_ListView
@@ -16059,7 +16066,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Case #__type_Unknown       : result.s = "Create"
                
             Case #__type_Button        : result.s = "Button"
-            Case #__Type_ButtonImage   : result.s = "Buttonimg"
+            Case #__Type_ButtonImage   : result.s = "Buttonimage"
             Case #__type_String        : result.s = "String"
             Case #__type_Text          : result.s = "Text"
             Case #__type_CheckBox      : result.s = "CheckBox"
@@ -16067,7 +16074,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Case #__type_ListView      : result.s = "ListView"
             Case #__type_Frame         : result.s = "Frame"
             Case #__type_ComboBox      : result.s = "ComboBox"
-            Case #__type_image         : result.s = "img"
+            Case #__type_image         : result.s = "image"
             Case #__type_HyperLink     : result.s = "HyperLink"
             Case #__type_Container     : result.s = "Container"
             Case #__type_ListIcon      : result.s = "ListIcon"
@@ -20978,6 +20985,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\ Flags
          *this\flag = Flag
          If Type = #__type_Button Or
+            Type = #__type_ButtonImage Or
             Type = #__type_HyperLink
             
             *this\flag | #__flag_TextCenter
@@ -21028,7 +21036,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\frame_width( )  = #PB_Ignore
          *this\frame_height( ) = #PB_Ignore
          
-         If *this\type = #__type_Button 
+         If *this\type = #__type_ButtonImage Or
+            *this\type = #__type_Button 
             If constants::BinaryFlag( flag, #PB_Button_Toggle )
                flag &~ #PB_Button_Toggle
                If Not *this\togglebox
@@ -21076,6 +21085,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                    constants::BinaryFlag( *this\Flag, #__flag_BorderSingle ) Or
                    *this\type = #__type_Panel Or
                    *this\type = #__type_Spin Or
+                   *this\type = #__type_ButtonImage Or
                    *this\type = #__type_Button Or
                    *this\type = #__type_ComboBox Or
                    *this\type = #__type_ExplorerList 
@@ -21127,6 +21137,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_Text Or
             *this\type = #__type_Editor Or
             *this\type = #__type_String Or
+            *this\type = #__type_ButtonImage Or
             *this\type = #__type_Button Or
             *this\type = #__type_Option Or
             *this\type = #__type_CheckBox Or
@@ -21173,7 +21184,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             ;\\ - Create Button
-            If *this\type = #__type_Button
+            If *this\type = #__type_ButtonImage Or
+               *this\type = #__type_Button
                *this\padding\x = DPIScaled(4)
                *this\padding\y = DPIScaled(4)
             EndIf
@@ -21717,7 +21729,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             SetState( *this, *param_1 )
             set_align_content( *this\picture, *this\flag )
          EndIf
-         If *this\type = #__type_Button
+         If *this\type = #__type_ButtonImage Or 
+            *this\type = #__type_Button
+            ;
             SetAttribute( *this, #PB_Button_Image, *param_1 )
             set_align_content( *this\picture, *this\flag )
          EndIf
@@ -21725,7 +21739,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_Text Or
             *this\type = #__type_Editor Or
             *this\type = #__type_String Or
-            *this\type = #__type_Button Or
+            *this\type = #__type_ButtonImage Or
+            *this\type = #__type_Button Or 
             *this\type = #__type_Option Or
             *this\type = #__type_CheckBox Or
             *this\type = #__type_HyperLink
@@ -21883,7 +21898,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i ButtonImage( X.l, Y.l, Width.l, Height.l, img.i = -1 , flag.q = 0, round.l = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Button, X, Y, Width, Height, "", flag, (img), 0, 0, 0, round )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ButtonImage, X, Y, Width, Height, "", flag, (img), 0, 0, 0, round )
       EndProcedure
       
       Procedure.i HyperLink( X.l, Y.l, Width.l, Height.l, Text.s, Color.i, flag.q = 0 )
@@ -23263,6 +23278,23 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure Draw_BackGround( *this._s_WIDGET, state )
+         ;\\ draw background
+         If *this\picture[#__image_BackGround]\imageID
+            draw_image_( *this, 0, 0, [#__image_BackGround] )
+         Else
+            If *this\color\back <> - 1
+               If *this\color\fore <> - 1
+                  draw_mode_alpha_( #PB_2DDrawing_Gradient )
+                  __draw_gradient( *this\text\vertical, *this, 0,0, state, 0, 0, [#__c_frame] )
+               Else
+                  draw_mode_alpha_( #PB_2DDrawing_Default )
+                  __draw_box( *this, color\back, [#__c_frame])
+               EndIf
+            EndIf
+         EndIf
+      EndProcedure
+      
       Procedure Draw_Content( *this._s_WIDGET, state )
          Protected img_indent_x, img_indent_y 
          
@@ -23270,8 +23302,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\TextChange( ) Or 
             *this\picture\change
             ;
-            If *this\picture
-               If *this\picture\imageID 
+            If *this\picture And *this\picture\imageID 
+               If *this\text And *this\text\string 
                   img_indent_x = img_indent ; DPIScaled(6)
                   img_indent_y = img_indent ; DPIScaled(3)
                EndIf
@@ -23397,23 +23429,92 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\ draw picture
-         If *this\picture
-            If *this\picture\imageID 
-               draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *this\picture\imageID, *this\inner_x( ) + *this\picture\x, *this\inner_y( ) + *this\picture\y, *this\color\ialpha )
-            EndIf
+         If *this\picture And *this\picture\imageID 
+            draw_mode_alpha_( #PB_2DDrawing_Transparent )
+            DrawAlphaImage( *this\picture\imageID, *this\inner_x( ) + *this\picture\x, *this\inner_y( ) + *this\picture\y, *this\color\ialpha )
          EndIf
          
          ;\\ draw text
-         If *this\text 
-            If *this\text\string 
-               If *this\screen_height( ) > *this\text\height
-                  draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawRotatedText( *this\inner_x( ) + *this\text\x, *this\inner_y( ) + *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[state] )
+         If *this\text And *this\text\string 
+            If *this\screen_height( ) > *this\text\height
+               draw_mode_alpha_( #PB_2DDrawing_Transparent )
+               DrawRotatedText( *this\inner_x( ) + *this\text\x, *this\inner_y( ) + *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[state] )
+            EndIf
+         EndIf
+         
+      EndProcedure
+      
+      Procedure Draw_Frames( *this._s_WIDGET )
+         ;\\ draw frame
+         If *this\fs
+            If Not constants::BinaryFlag( *this\flag, #__flag_BorderLess )
+               draw_mode_alpha_( #PB_2DDrawing_Outlined )
+               ;                Debug " - "+ *this\inner_x( ) +" "+ *this\inner_y( ) +" "+ *this\inner_width( ) +" "+ *this\inner_height( ) ;+ 
+               ;                Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
+               
+               ;draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+               ;               If *this\fs[1] Or
+               ;                  *this\fs[2] Or
+               ;                  *this\fs[3] Or
+               ;                  *this\fs[4] 
+               ;                  ;
+               ;                 If *this\inner_width( ) And 
+               ;                    *this\inner_height( ) 
+               ;                   draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, *this\color\frame )
+               ;                 EndIf
+               ;               EndIf
+               
+               If constants::BinaryFlag( *this\flag, #__flag_BorderFlat )
+                  ;                   If *this\inner_width( ) And 
+                  ;                      *this\inner_height( ) 
+                  ;                      ;If *this\type <> #__type_Panel
+                  ;                         draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, $fff00fff);*this\color\frame )
+                  ;                      ;EndIf
+                  ;                   EndIf
+                  ;                   If *this\type = #__type_Container
+                  If Not ( *this\fs[1] Or *this\fs[2] Or *this\fs[3] Or *this\fs[4] )
+                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+                  EndIf
+                  ;                   EndIf
+                  
+               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or
+                      constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFAAAAAA)
+                  Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFAAAAAA)
+                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFFFFFFF)
+                  Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFFFFFFF)
+                  ;                 draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
+                  ;                 draw_roundbox_(*this\inner_x( ) - 2, *this\inner_y( ) - 2, *this\inner_width( ) + 3, *this\inner_height( ) + 3, *this\round, *this\round, $FFFFFFFF )
+                  
+               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
+                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
+                  Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
+                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
+                  Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
+                  
+                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
+                  Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
+                  Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFAAAAAA)
+                  Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFAAAAAA)
+               Else
+                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+               EndIf
+               
+               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+                  ;                 Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
+                  ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
+                  ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFE7E7E7)
+                  ;                 Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFE7E7E7)
+                  
+                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+1+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FF838383)
+                  Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FF838383)
+                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFE7E7E7)
+                  Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFE7E7E7)
                EndIf
             EndIf
          EndIf
          
+            
       EndProcedure
       
       Procedure   Draw_TreeRows( *this._s_WIDGET, List *rows._s_ROWS( ) )
@@ -24726,32 +24827,43 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;
                      ;\\ draw widgets
                      Select *this\type
-                        Case #__type_Window : Draw_Window( *this )
+                        Case #__type_Window     : Draw_Window( *this )
                            
-                        Case #__type_Root : Draw_Container( *this )
-                        Case #__type_MDI : Draw_Container( *this )
-                        Case #__type_Container : Draw_Container( *this )
+                        Case #__type_Root       : Draw_Container( *this )
+                        Case #__type_MDI        : Draw_Container( *this )
+                        Case #__type_Container  : Draw_Container( *this )
                         Case #__type_ScrollArea : Draw_Container( *this )
-                        Case #__type_image : Draw_Container( *this )
-                        Case #__type_Panel : Draw_Container( *this )
+                        Case #__type_image      : Draw_Container( *this )
+                        Case #__type_Panel      : Draw_Container( *this )
                            
-                        Case #__type_ComboBox : Draw_ComboBox( *this )
+                        Case #__type_ComboBox   : Draw_ComboBox( *this )
+                        Case #__type_ButtonImage
+                           
+                           Draw_BackGround( *this, *this\ColorState( ))
+                           Draw_Content( *this, *this\ColorState( ))
+                           Draw_Frames( *this )
                            
                            
                            ;Case #__type_String : Draw_Button( *this )
-                        Case #__type_String : Draw_Editor( *this )
-                        Case #__type_Editor : Draw_Editor( *this )
+                        Case #__type_String     : Draw_Editor( *this )
+                        Case #__type_Editor     : Draw_Editor( *this )
                            
-                        Case #__type_Tree : Draw_Tree( *this )
+                        Case #__type_Tree       : Draw_Tree( *this )
                         Case #__type_Properties : Draw_Tree( *this )
-                        Case #__type_ListView : Draw_Tree( *this )
-                        Case #__type_ListIcon : Draw_ListIcon( *this )
+                        Case #__type_ListView   : Draw_Tree( *this )
+                        Case #__type_ListIcon   : Draw_ListIcon( *this )
                            
-                        Case #__type_Text : Draw_Button( *this )
-                        Case #__type_Button : Draw_Button( *this )
-                        Case #__type_Option : Draw_Button( *this )
-                        Case #__type_CheckBox : Draw_Button( *this )
-                        Case #__type_HyperLink : Draw_Button( *this )
+                        Case #__type_Text       : Draw_Button( *this )
+                        Case #__type_Button     : Draw_Button( *this )
+                        Case #__type_Option     : Draw_Button( *this )
+                        Case #__type_CheckBox   : Draw_Button( *this )
+                        Case #__type_HyperLink  : Draw_Button( *this )
+                           
+                        Case #__type_Scroll     : bar_draw_scroll( *this )
+                        Case #__type_Track      : bar_draw_track( *this )
+                        Case #__type_Splitter   : bar_draw_splitter( *this )
+                        Case #__type_Progress   : bar_draw_progress( *this )
+                        Case #__type_Spin       : bar_draw_spin( *this )
                            
                            ; Draw frames
                         Case #__type_Frame
@@ -24797,11 +24909,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                                         *this\text\string, *this\color\front & $FFFFFF | *this\AlphaState24( ) )
                            EndIf
                            
-                        Case #__type_Scroll   : bar_draw_scroll( *this )
-                        Case #__type_Track    : bar_draw_track( *this )
-                        Case #__type_Splitter    : bar_draw_splitter( *this )
-                        Case #__type_Progress : bar_draw_progress( *this )
-                        Case #__type_Spin        : bar_draw_spin( *this )
                      EndSelect
                      
                      If *this\type = #__type_ToolBar Or
@@ -27027,10 +27134,10 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 22490
-; FirstLine = 21242
-; Folding = -----------------------------------Hsf--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+--00-8---e4--0-------------------------------v-------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 24842
+; FirstLine = 22413
+; Folding = -----------------------------------Hsf--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--00-8---e4--0-------------------------------v-----0-----vv-----vf----8---8-----v--t2---f-------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
