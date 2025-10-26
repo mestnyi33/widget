@@ -9366,7 +9366,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ custom object
          If *this = 0
-            Debug "не понятно почему вызывается при открытии примера addfont2 " + #PB_Compiler_Procedure +"()"
+            Debug "" + #PB_Compiler_Procedure +"( null )"
             ProcedureReturn #True
          EndIf
          
@@ -10531,7 +10531,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          If *this
             If is_integral_( *this )
-               *active = *this\parent
+               If *this\type = #__type_String
+                  *active = *this
+               Else
+                  *active = *this\parent
+               EndIf
             Else
                *active = *this
             EndIf
@@ -20036,6 +20040,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   DoEvents( *keywidget, #__event_KeyDown )
                EndIf
                If eventtype = #PB_EventType_Input
+                  Debug *keywidget\class
                   DoEvents( *keywidget, #__event_Input )
                   ; keyboard( )\input = 0
                EndIf
@@ -25712,7 +25717,8 @@ EndMacro
 
 ;-
 ;-\\ EXAMPLE
-CompilerIf #PB_Compiler_IsMainFile
+
+CompilerIf #PB_Compiler_IsMainFile = 99
    EnableExplicit
    UseWidgets( )
    test_align = 1
@@ -25762,7 +25768,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 
-CompilerIf #PB_Compiler_IsMainFile = 99
+CompilerIf #PB_Compiler_IsMainFile ;= 99
   UseWidgets( )
   EnableExplicit
   test_clip = 1
@@ -25872,23 +25878,15 @@ CompilerIf #PB_Compiler_IsMainFile = 99
     For a = 1 To 31
       AddItem(ID(0), -1,"ComboBox editable... " + Str(a), (2))
     Next
-    
-    ComboBox(305+10, 70, 250, 50, #PB_ComboBox_LowerCase);|#PB_ComboBox_Image)
-    AddItem(ID(1), -1, "ComboBox item with image1", (0))
-    AddItem(ID(1), -1, "ComboBox item with image2", (1))
-    AddItem(ID(1), -1, "ComboBox item with image3", (2))
-    
-    ComboBox(305+10, 130, 250, 50)
-    AddItem(ID(2), -1, "ComboBox item 1")
-    AddItem(ID(2), -1, "ComboBox item 2")
-    AddItem(ID(2), -1, "ComboBox item 3")
-    
     SetState(ID(0), 2)
-    SetState(ID(1), 1)
-    SetState(ID(2), 0)    ; set (beginning with 0) the third item as active one
+    
+    String(305+10, 70, 250, 50,"String editable...");, #__flag_child)
+    
+    SetState(Spin(305+10, 130, 250, 50, 0, 100000000), 1000000)
+    
     
     For i = 0 To 2
-      Bind(ID(i), @events_widgets())
+    ;  Bind(ID(i), @events_widgets())
     Next
     
     WaitClose( ) 
@@ -27101,9 +27099,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 24794
-; FirstLine = 23342
-; Folding = -----------------------------------Hsf--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---++----fv8--+-------------------------------4------------0--8-8------08----------br----+------------------------------------
+; CursorPosition = 10537
+; FirstLine = 10406
+; Folding = -----------------------------------Hsf--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-t-re---88v0-------------------------------+--00-----e4--0-------------------------------v------------8--4-4------84-----------W----0----------------------0--------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

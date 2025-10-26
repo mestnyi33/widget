@@ -467,7 +467,7 @@ Procedure   Properties_ButtonResize( *second._s_WIDGET )
                Default
                   Resize(*this,
                          *row\x,
-                         *row\y,
+                         *row\y + *second\scroll_y( ),
                          *second\inner_width( ), ; *row\width,
                          *row\height, 0 )
             EndSelect 
@@ -477,7 +477,15 @@ Procedure   Properties_ButtonResize( *second._s_WIDGET )
       EndIf
    EndIf
 EndProcedure
-
+Macro DoActivate( _this_ )
+   Debug _this_\class
+         If SetFocus( _this_, #__s_2 )
+            ;widget( ) = _this_
+            ;DoEvents( _this_, #__event_Focus )
+            ;_this_\ColorState( ) = #__s_2
+         EndIf
+      EndMacro
+      
 Procedure   Properties_ButtonDisplay( *second._s_WIDGET )
    Protected *this._s_WIDGET
    Protected *row._s_ROWS
@@ -523,6 +531,11 @@ Procedure   Properties_ButtonDisplay( *second._s_WIDGET )
             
             ;
             Properties_ButtonResize( *second )
+            
+;             DoActivate( *this )
+;             If *this\stringbar
+;               DoActivate( *this\stringbar )
+;             EndIf
          EndIf
       EndIf
    EndIf
@@ -752,7 +765,10 @@ Procedure   Properties_ButtonEvents( )
          
       Case #__event_MouseWheel
          If __item > 0
-            SetState(*g\scroll\v, GetState( *g\scroll\v ) - __data )
+            If *g\scroll\v
+               Debug "Properties_Button_event_MouseWheel "+*g\class
+               SetState(*g\scroll\v, GetState( *g\scroll\v ) - __data )
+            EndIf
          EndIf
          
       Case #__event_Cursor
@@ -1031,7 +1047,7 @@ Procedure   Properties_Events( )
          EndIf
          
       Case #__event_Up
-         SetActive( Entered( ) )
+         ;SetActive( Entered( ) )
          
       Case #__event_Cursor
          ProcedureReturn 0
@@ -3018,9 +3034,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1474
-; FirstLine = 1410
-; Folding = ------------f------------------+84-+---u-+-8---+---06-
+; CursorPosition = 537
+; FirstLine = 518
+; Folding = ----------+8--4vH+-------------8vf-8---8+8-v---8---4n-
 ; Optimizer
 ; EnableAsm
 ; EnableXP
