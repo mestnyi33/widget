@@ -1470,9 +1470,9 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
          ;Debug ""+*parent +" "+ newtype$
          ;\\ второй метод формирования названия переменной
          ;          If *parent = ide_design_MDI
-         ;             newtype$ = Class( *new )+"_"+CountType( *new , 2 )
+         ;             newtype$ = ClassFromType( *new\type )+"_"+CountType( *new , 2 )
          ;          Else
-         ;             newtype$ = Class( *parent )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
+         ;             newtype$ = ClassFromType( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
          ;          EndIf
          ;\\
          SetClass( *new, UCase(newtype$) )
@@ -3018,8 +3018,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2094
-; FirstLine = 1869
+; CursorPosition = 1474
+; FirstLine = 1410
 ; Folding = ------------f------------------+84-+---u-+-8---+---06-
 ; Optimizer
 ; EnableAsm

@@ -9,8 +9,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    Debug ""+EventWidget()+ " - widget event - " +WidgetEvent()
+     If WidgetEvent() <> #__Event_MouseMove
+        Debug ""+EventWidget()+ " - widget event - " +ClassFromEvent(WidgetEvent())
   ;  Debug ""+Str(Index(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +this()\item+ " direction - " +this()\data 
+     EndIf
   EndProcedure
   
   If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -25,8 +27,8 @@ CompilerIf #PB_Compiler_IsMainFile
     b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button")
     CloseGadgetList()
     
-    ;*g = ScrollArea(0, 0, 0, 0, Sw, Sh, 15, #PB_ScrollArea_Flat)
-    *g = Container(0, 0, 0, 0)
+    *g = ScrollArea(0, 0, 0, 0, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    ;*g = Container(0, 0, 0, 0)
     SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     
     Button(10,  10, 230, 30,"Button 1")
@@ -41,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;
     Splitter(10,10,590,480, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
     
-    SetAlign(*b1, #__align_right)
+    ;SetAlign(*b1, #__align_right)
     
     If count
       OpenGadgetList(g)
@@ -110,9 +112,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 34
-; FirstLine = 30
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 11
 ; Folding = --
 ; Optimizer
 ; EnableXP

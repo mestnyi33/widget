@@ -108,9 +108,9 @@ CompilerIf #PB_Compiler_IsMainFile
             ;Debug ""+*parent +" "+ newtype$
             ;\\ второй метод формирования названия переменной
             ;          If *parent = ide_design_panel_MDI
-            ;             newtype$ = Class( *new )+"_"+CountType( *new , 2 )
+            ;             newtype$ = ClassFromType( *new\type )+"_"+CountType( *new , 2 )
             ;          Else
-            ;             newtype$ = Class( *parent )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
+            ;             newtype$ = ClassFromType( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
             ;          EndIf
             ;\\
             SetClass( *new, UCase(newtype$) )
@@ -306,9 +306,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 231
-; FirstLine = 211
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 112
+; FirstLine = 100
 ; Folding = ------
 ; EnableXP
 ; DPIAware

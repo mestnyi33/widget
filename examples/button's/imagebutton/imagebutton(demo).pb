@@ -55,10 +55,10 @@ CompilerIf #PB_Compiler_IsMainFile
     WindowBounds(11,150,235,#PB_Ignore,235)
     ;a_init(root())
     
-    TestButton( 10,10,60,25,"text_right", #__align_Image|#__Flag_left)    : SetImage(widget( ), 0)
-    TestButton( 10,40,60,25,"text_left",#__align_Image|#__Flag_Right,10)  : SetImage(widget( ), 10)
-    TestButton( 10,70,60,75,"text_top",#__align_Image|#__Flag_Bottom )    : SetImage(widget( ), 0)
-    TestButton( 10,150,60,75,"text_bottom",#__align_Image|#__Flag_Top,10) : SetImage(widget( ), 11)
+    TestButton( 10,10,60,25,"text_right", #__Flag_Imageleft)    : SetImage(widget( ), 0)
+    TestButton( 10,40,60,25,"text_left",#__Flag_ImageRight,10)  : SetImage(widget( ), 10)
+    TestButton( 10,70,60,75,"text_top",#__Flag_ImageBottom )    : SetImage(widget( ), 0)
+    TestButton( 10,150,60,75,"text_bottom",#__Flag_ImageTop,10) : SetImage(widget( ), 11)
     
     BindEvent(#PB_Event_SizeWindow, @ResizeCallBack( ), 11)
     ResizeWindow(11, #PB_Ignore, #PB_Ignore, 300, #PB_Ignore)
@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 55
-; FirstLine = 29
+; CursorPosition = 60
+; FirstLine = 27
 ; Folding = --
 ; EnableXP

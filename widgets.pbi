@@ -1249,12 +1249,12 @@ CompilerIf Not Defined( widget, #PB_Module )
             _address_\text\height = 0
          EndIf
          ;
-         If Not ( _address_\text\width And _address_\text\height ) Or _address_\TextChange( );Or _update_
+         If Not ( _address_\text\width And _address_\text\height ) Or _address_\TextChange( )
             If _address_\text\string
                _address_\text\width = TextWidth( _address_\text\string )
-            
-               _address_\text\height = TextHeight( "A" )
             EndIf
+            
+            _address_\text\height = TextHeight( "A" )
             
             ; set rotate text value
             _address_\text\rotate = Bool( _address_\text\invert ) * 180 + Bool( _address_\text\vertical ) * 90
@@ -1649,7 +1649,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare$  MakeConstantsString( type$, flag.q ) 
       
       Declare.i PBEventType( event.i )
-      Declare.i TypeFromClass( Class.s )
+      Declare.i TypeFromClass( class.s )
       Declare.s ClassFromType( Type )
       Declare.s ClassFromEvent( event.i )
       Declare   SetBackgroundColor( *this, color.i )
@@ -1717,9 +1717,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.a GetFrame( *this, mode.b = 0 )
       Declare   SetFrame( *this, size.a, mode.b = 0 )
       
-      Declare.s Class( *this )
       Declare.s GetClass( *this )
-      Declare   SetClass( *this, Class.s )
+      Declare   SetClass( *this, class.s )
       
       Declare   SetTextXY( *this, X.l, Y.l )
       Declare   GetCaret( *this, mode.a = 0 )
@@ -1806,7 +1805,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare.i HBar( *this )
       
       ;
-      Declare.i Create( *parent, Class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
+      Declare.i Create( *parent, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
       
       ; bar
       Declare.i Spin( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, flag.q = 0, round.l = 0, increment.d = 1.0 )
@@ -4330,7 +4329,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             If Not *this\hide And *this\AlphaState( )
                If is_integral_( *this )
-                  ; draw_font( *this , CurrentFontID( ) );, GetFontID( *this\parent ) )
                   If ChangeFontID( *this, CurrentFontID( ))
                   EndIf
                EndIf
@@ -8625,18 +8623,14 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.s Class( *this._s_WIDGET )
-         ProcedureReturn ClassFromType( *this\type )
-      EndProcedure
-      
       Procedure.s GetClass( *this._s_WIDGET )
          ProcedureReturn *this\class
       EndProcedure
       
-      Procedure SetClass( *this._s_WIDGET, Class.s )
+      Procedure SetClass( *this._s_WIDGET, class.s )
          
-         If *this\class <> Class
-            *this\class = Class
+         If *this\class <> class
+            *this\class = class
             ;
             If *this\tabbar
                *this\tabbar\class = ClassFromType( *this\tabbar\type ) +"-"+ *this\class
@@ -15999,10 +15993,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.i TypeFromClass( Class.s )
+      Procedure.i TypeFromClass( class.s )
          Protected result.i
          
-         Select Trim( LCase( Class.s ))
+         Select Trim( LCase( class.s ))
             Case "status"        : result = #__type_StatusBar
             Case "popupmenu"     : result = #__type_PopupBar
             Case "tool"          : result = #__type_ToolBar
@@ -17654,7 +17648,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;
          If *this\row
-            ;Debug ""+*this\class +" "+ ClassFromEvent(event)
+            ;Debug ""+*this\class +" "+ classFromEvent(event)
             
             ;\\ search at point entered items
             If Not mouse( )\drop Or *this\drop
@@ -18687,7 +18681,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ; TEMP
          If event = #__event_Down
-            ; Debug " "+ Bool(*this = a_entered( )) +" "+ ClassFromEvent(event) +" "+ *this\class +" "+ a_index( ) +" "+ *this\press
+            ; Debug " "+ Bool(*this = a_entered( )) +" "+ classFromEvent(event) +" "+ *this\class +" "+ a_index( ) +" "+ *this\press
          EndIf
          
          ;\\ TEMP [before post-widget-events drop]
@@ -18843,7 +18837,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   EndIf
                   
-               Case #__type_Button
+               Case #__type_Button, #__type_ButtonImage
                   If Not ( *this\togglebox And *this\togglebox\checked)
                      Select event
                         Case #__event_MouseEnter
@@ -19043,7 +19037,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\ post repaint canvas
          If Not (*this\disable And Not *this\anchors)
             If *this\root And *this\root\repaint > 0 
-               ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ ClassFromEvent(event)
+               ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ classFromEvent(event)
                If ( MouseButtonPress( ) And
                     ( event = #__event_Focus Or
                       event = #__event_Drop Or
@@ -19051,7 +19045,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;
                   ReDraw( *this\root )
                Else
-                  ; Debug "post redraw "+ *this\class +" "+ ClassFromEvent(event) +" "+ ClassFromEvent(*data)
+                  ; Debug "post redraw "+ *this\class +" "+ classFromEvent(event) +" "+ classFromEvent(*data)
                   PostReDraw( *this\root )
                EndIf
                ;
@@ -20494,7 +20488,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      DeleteElement( __gui\event\queues( ) )
                      ;                      If __event = #__event_focus
-                     ;                         Debug "SET events "+GetClass(__widget) +" "+ ClassFromEvent(__event) +" "+ Str(__gui\event\mask & 1<<__event)
+                     ;                         Debug "SET events "+GetClass(__widget) +" "+ classFromEvent(__event) +" "+ Str(__gui\event\mask & 1<<__event)
                      ;                      EndIf
                      
                      If __event = #__event_Free
@@ -20623,7 +20617,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; Debug ""+ *button +" "+ *this\class +" POSTMENU "
                EndIf
                
-               ; Debug "send - "+*this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
+               ; Debug "send - "+*this\class +" "+ classFromEvent(event) +" "+ *button +" "+ *data
                result = #True
                
                ; examples bars area
@@ -20940,7 +20934,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       ;-  CREATEs
       ;-
-      Procedure.i Create( *parent._s_WIDGET, Class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
+      Procedure.i Create( *parent._s_WIDGET, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
          Protected *root._s_root
          If *parent
             *root = *parent\root
@@ -20971,7 +20965,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          *this\create = #True
          *this\color  = _get_colors_( )
          *this\type   = Type
-         *this\class  = Class
+         *this\class  = class
          *this\round  = DPIScaled( round )
          ;
          ;\\ replace pb flag
@@ -21397,9 +21391,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If is_integral_( *this )
                   If *this\bar\vertical
-                     *this\class = Class + "-v"
+                     *this\class = class + "-v"
                   Else
-                     *this\class = Class + "-h"
+                     *this\class = class + "-h"
                   EndIf
                EndIf
                
@@ -23281,7 +23275,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure Draw_BackGround( *this._s_WIDGET, state )
          ;\\ draw background
          If *this\picture[#__image_BackGround]\imageID
-            draw_image_( *this, 0, 0, [#__image_BackGround] )
+            clip_output_( *this, [#__c_idraw] )
+            draw_image_( *this, *this\inner_x( ), *this\Inner_y( ), [#__image_BackGround] )
+            clip_output_( *this, [#__c_draw] )
          Else
             If *this\color\back <> - 1
                If *this\color\fore <> - 1
@@ -23315,11 +23311,19 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ; make_scrollarea_size
             If *this\text\vertical
-               *this\scroll_width( ) = *this\text\height + *this\padding\x * 2
+               If *this\text\string
+                  *this\scroll_width( ) = *this\text\height + *this\padding\x * 2
+               Else
+                  *this\scroll_width( ) = *this\padding\x * 2
+               EndIf
                *this\scroll_height( ) = *this\text\width + *this\padding\y * 2
             Else
                *this\scroll_width( ) = *this\text\width + *this\padding\x * 2
-               *this\scroll_height( ) = *this\text\height + *this\padding\y * 2
+               If *this\text\string
+                  *this\scroll_height( ) = *this\text\height + *this\padding\y * 2
+               Else
+                  *this\scroll_height( ) = *this\padding\y * 2
+               EndIf
             EndIf
             ;
             ; make_scrollarea_width
@@ -23445,76 +23449,262 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure Draw_Frames( *this._s_WIDGET )
-         ;\\ draw frame
-         If *this\fs
-            If Not constants::BinaryFlag( *this\flag, #__flag_BorderLess )
-               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               ;                Debug " - "+ *this\inner_x( ) +" "+ *this\inner_y( ) +" "+ *this\inner_width( ) +" "+ *this\inner_height( ) ;+ 
-               ;                Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
-               
-               ;draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
-               ;               If *this\fs[1] Or
-               ;                  *this\fs[2] Or
-               ;                  *this\fs[3] Or
-               ;                  *this\fs[4] 
-               ;                  ;
-               ;                 If *this\inner_width( ) And 
-               ;                    *this\inner_height( ) 
-               ;                   draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, *this\color\frame )
-               ;                 EndIf
-               ;               EndIf
-               
-               If constants::BinaryFlag( *this\flag, #__flag_BorderFlat )
-                  ;                   If *this\inner_width( ) And 
-                  ;                      *this\inner_height( ) 
-                  ;                      ;If *this\type <> #__type_Panel
-                  ;                         draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, $fff00fff);*this\color\frame )
-                  ;                      ;EndIf
-                  ;                   EndIf
-                  ;                   If *this\type = #__type_Container
-                  If Not ( *this\fs[1] Or *this\fs[2] Or *this\fs[3] Or *this\fs[4] )
-                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
-                  EndIf
-                  ;                   EndIf
-                  
-               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or
-                      constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
-                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFAAAAAA)
-                  Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFAAAAAA)
-                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFFFFFFF)
-                  Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFFFFFFF)
-                  ;                 draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
-                  ;                 draw_roundbox_(*this\inner_x( ) - 2, *this\inner_y( ) - 2, *this\inner_width( ) + 3, *this\inner_height( ) + 3, *this\round, *this\round, $FFFFFFFF )
-                  
-               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
-                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
-                  Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
-                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
-                  Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
-                  
-                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
-                  Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
-                  Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFAAAAAA)
-                  Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFAAAAAA)
-               Else
-                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+         If *this\type = #__type_Window
+            ; чтобы закруглять только у окна с титлебаром
+            Protected gradient = 1
+            Protected r = DPIScaled(13)
+            ; 
+            If Not *this\round
+               If gradient
+                  draw_mode_alpha_( #PB_2DDrawing_Gradient )
+                  BackColor( *this\color\fore[*this\ColorState( )] & $FFFFFF | 255 << 24 )
+                  FrontColor( *this\color\frame[*this\ColorState( )] & $FFFFFF | 255 << 24 )
                EndIf
                
-               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
-                  ;                 Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
-                  ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
-                  ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFE7E7E7)
-                  ;                 Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFE7E7E7)
+               ; Draw caption frame
+               If *this\fs[2]
+                  Protected ch = *this\fs[2]
+                  If Not *this\round
+                     ch = *this\fs[2] - 1             ; (*this\fs+*this\fs[2])/2
+                  EndIf
                   
-                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+1+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FF838383)
-                  Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FF838383)
-                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFE7E7E7)
-                  Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFE7E7E7)
+                  ; top
+                  If gradient
+                     LinearGradient( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_x( ) + *this\fs, *this\frame_y( ) + (*this\fs[2] + *this\fs) * 2)
+                  EndIf
+                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs[2] + *this\fs, r, r, *this\color\frame[*this\ColorState( )] )
+                  
+                  If *this\fs[2]
+                     draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs[2] + *this\fs, r, r, *this\color\frame[*this\ColorState( )] )
+                  EndIf
+                  
+                  If gradient
+                     draw_mode_alpha_( #PB_2DDrawing_Gradient )
+                     BackColor( *this\color\fore[*this\ColorState( )] & $FFFFFF | 255 << 24 )
+                     FrontColor( *this\color\frame[*this\ColorState( )] & $FFFFFF | 255 << 24 )
+                     LinearGradient( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_x( ) + *this\fs, *this\frame_y( ) + (*this\fs[2] + *this\fs) * 2)
+                  EndIf
+                  draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\fs[2] - r, *this\frame_width( ), r + *this\fs, *this\color\frame[*this\ColorState( )] )
+               EndIf
+               
+               ; Draw frame
+               If *this\fs > 0
+                  If Not gradient
+                     draw_mode_alpha_( #PB_2DDrawing_Default )
+                  EndIf
+                  If *this\fs = 1
+                     gradient = 0
+                  EndIf
+                  
+                  If Not *this\fs[2]; top
+                     If gradient
+                        LinearGradient( *this\frame_x( ), *this\frame_y( ) + *this\fs * 2, *this\frame_x( ), *this\frame_y( ) - *this\fs )
+                     EndIf
+                     draw_box_( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_width( ) - *this\fs * 2, *this\fs, *this\color\frame[*this\ColorState( )] )
+                     ; left&top
+                     If gradient
+                        BoxedGradient(*this\frame_x( ), *this\frame_y( ), *this\fs * 2, *this\fs * 2)
+                     EndIf
+                     draw_box_( *this\frame_x( ), *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[*this\ColorState( )] )
+                     
+                     ; right&top
+                     If gradient
+                        BoxedGradient(*this\frame_x( ) + *this\frame_width( ) - *this\fs * 2, *this\frame_y( ), *this\fs * 2, *this\fs * 2)
+                     EndIf
+                     draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[*this\ColorState( )] )
+                  EndIf
+                  
+                  ; left
+                  If gradient
+                     LinearGradient( *this\frame_x( ) + *this\fs * 2, *this\frame_y( ) + *this\fs + ch, *this\frame_x( ) - *this\fs, *this\frame_y( ) + *this\fs + ch )
+                  EndIf
+                  draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\fs + ch, *this\fs, *this\frame_height( ) - *this\fs * 2 - ch, *this\color\frame[*this\ColorState( )] )
+                  ; right
+                  If gradient
+                     LinearGradient( *this\frame_x( ) + *this\frame_width( ) - *this\fs * 2, *this\frame_y( ) + *this\fs + ch, *this\frame_x( ) + *this\frame_width( ) + *this\fs, *this\frame_y( ) + *this\fs + ch )
+                  EndIf
+                  draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ) + *this\fs + ch, *this\fs, *this\frame_height( ) - *this\fs * 2 - ch, *this\color\frame[*this\ColorState( )] )
+                  ; bottom
+                  If gradient
+                     LinearGradient( *this\frame_x( ) + *this\fs, *this\frame_y( ) + *this\frame_height( ) - *this\fs * 2, *this\frame_x( ) + *this\fs, *this\frame_y( ) + *this\frame_height( ) + *this\fs )
+                  EndIf
+                  draw_box_( *this\frame_x( ) + *this\fs, *this\frame_y( ) + *this\frame_height( ) - *this\fs, *this\frame_width( ) - *this\fs * 2, *this\fs, *this\color\frame[*this\ColorState( )] )
+                  
+                  ; left&bottom
+                  If gradient
+                     BoxedGradient(*this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs * 2, *this\fs * 2, *this\fs * 2)
+                  EndIf
+                  draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs, *this\fs, *this\fs, *this\color\frame[*this\ColorState( )] )
+                  
+                  ; right&bottom
+                  If gradient
+                     BoxedGradient(*this\frame_x( ) + *this\frame_width( ) - *this\fs * 2, *this\frame_y( ) + *this\frame_height( ) - *this\fs * 2, *this\fs * 2, *this\fs * 2)
+                  EndIf
+                  draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ) + *this\frame_height( ) - *this\fs, *this\fs, *this\fs, *this\color\frame[*this\ColorState( )] )
+                  
+               EndIf
+            EndIf
+            
+            If *this\fs[2] Or ( *this\round And *this\fs > *this\round / 3 ) Or Not *this\round
+               If *this\fs
+                  draw_mode_alpha_( #PB_2DDrawing_Default )
+                  ; inner top
+                  Line( *this\frame_x( ) + *this\fs + *this\fs[1], *this\frame_y( ) + *this\fs + *this\fs[2] - 1, *this\frame_width( ) - *this\fs[1] - *this\fs[3] - *this\fs * 2, 1, *this\color\frame[*this\ColorState( )] )
+                  ; inner left
+                  Line( *this\frame_x( ) + *this\fs + *this\fs[1] - 1, *this\frame_y( ) + *this\fs + *this\fs[2] - 1, 1, *this\frame_height( ) - *this\fs[2] - *this\fs[4] - *this\fs * 2 + 1, *this\color\frame[*this\ColorState( )] )
+                  ; inner right
+                  Line( *this\frame_x( ) + *this\frame_width( ) - *this\fs[3] - *this\fs, *this\frame_y( ) + *this\fs + *this\fs[2] - 1, 1, *this\frame_height( ) - *this\fs[2] - *this\fs[4] - *this\fs * 2 + 1, *this\color\frame[*this\ColorState( )] )
+                  ; inner bottom
+                  Line( *this\frame_x( ) + *this\fs + *this\fs[1], *this\frame_y( ) + *this\frame_height( ) - *this\fs[4] - *this\fs, *this\frame_width( ) - *this\fs[1] - *this\fs[3] - *this\fs * 2, 1, *this\color\frame[*this\ColorState( )] )
+               EndIf
+               
+               If Not *this\round
+                  If *this\fs
+                     If Not *this\fs[2]
+                        ; frame top
+                        Line( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), 1, *this\color\frame[*this\ColorState( )] )
+                     EndIf
+                     ; frame bottom
+                     Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, *this\color\frame[*this\ColorState( )] )
+                     ; frame left
+                     Line( *this\frame_x( ), *this\frame_y( ) + *this\fs[2] - r, 1, *this\frame_height( ) - *this\fs[2] + r, *this\color\frame[*this\ColorState( )] )
+                     ; frame right
+                     Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ) + *this\fs[2] - r, 1, *this\frame_height( ) - *this\fs[2] + r, *this\color\frame[*this\ColorState( )] )
+                  ElseIf *this\fs[2]
+                     ; frame left
+                     Line( *this\frame_x( ), *this\frame_y( ) + *this\fs[2] - r, 1, r + *this\fs, *this\color\frame[*this\ColorState( )] )
+                     ; frame right
+                     Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ) + *this\fs[2] - r, 1, r + *this\fs, *this\color\frame[*this\ColorState( )] )
+                  EndIf
+               EndIf
+            Else
+               If *this\round
+                  draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\caption\color\back[*this\ColorState( )] )
+               EndIf
+            EndIf
+            
+            ; then caption
+            If *this\fs[2]
+               PB(ClipOutput)( *this\draw_x( ) + *this\fs, *this\draw_y( ) + *this\fs, *this\draw_width( ) - *this\fs*2, *this\draw_height( ) - *this\fs*2 )
+               
+               ; buttins background
+               draw_mode_alpha_( #PB_2DDrawing_Default )
+               __draw_box( *this\CloseButton( ), color\back )
+               __draw_box( *this\MaximizeButton( ), color\back )
+               __draw_box( *this\MinimizeButton( ), color\back )
+               __draw_box( *this\HelpButton( ), color\back )
+               
+               ; buttons img
+               draw_mode_alpha_( #PB_2DDrawing_Outlined )
+               __draw_close_button( *this\CloseButton( ), DPIScaled(6) )
+               __draw_maximize_button( *this\MaximizeButton( ), DPIScaled(4) )
+               __draw_minimize_button( *this\MinimizeButton( ), DPIScaled(4) )
+               __draw_help_button( *this\HelpButton( ), DPIScaled(4) )
+               
+               ; Draw img
+               If *this\picture\imageID
+                  draw_mode_alpha_( #PB_2DDrawing_Transparent )
+                  ;                   DrawAlphaimage( *this\picture\imageID,
+                  ;                                   *this\frame_x( ) + *this\bs + *this\scroll_x( ) + *this\picture\x,
+                  ;                                   *this\frame_y( ) + *this\bs + *this\scroll_y( ) + *this\picture\y - 2, *this\color\ialpha )
+                  draw_image_( *this, *this\inner_x( ), *this\inner_y( ) - (*this\picture\height+*this\fs[2])/2 )
+               EndIf
+               
+               If *this\TitleText( )\string
+                  If *this\inner_height( )
+                     PB(ClipOutput)( *this\draw_x( ) + *this\fs, *this\draw_y( ) + *this\fs, *this\caption\width, *this\draw_height( ) - *this\fs*2 )
+                  EndIf
+                  
+                  ; Draw string
+                  If *this\ResizeChange( )
+                     If *this\picture\imageID
+                        *this\TitleText( )\x = *this\caption\x + *this\padding\x + *this\picture\width + 10
+                     Else
+                        *this\TitleText( )\x = *this\caption\x + *this\padding\x
+                     EndIf
+                     *this\TitleText( )\y = *this\caption\y + ( *this\caption\height - *this\fs * 2 - TextHeight( "A" )) / 2
+                  EndIf
+                  
+                  draw_mode_alpha_( #PB_2DDrawing_Transparent )
+                  DrawText( *this\TitleText( )\x, *this\TitleText( )\y, *this\TitleText( )\string, *this\color\front[*this\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+                  
+                  ;                               draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                  ;                               draw_roundbox_( *this\caption\x, *this\caption\y, *this\caption\width, *this\caption\height - *this\fs * 2, *this\round, *this\round, $FF000000 )
+               EndIf
+            EndIf
+            
+         Else
+            ;\\ draw frame
+            If *this\fs
+               If Not constants::BinaryFlag( *this\flag, #__flag_BorderLess )
+                  draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                  ;                Debug " - "+ *this\inner_x( ) +" "+ *this\inner_y( ) +" "+ *this\inner_width( ) +" "+ *this\inner_height( ) ;+ 
+                  ;                Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
+                  
+                  ;draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+                  ;               If *this\fs[1] Or
+                  ;                  *this\fs[2] Or
+                  ;                  *this\fs[3] Or
+                  ;                  *this\fs[4] 
+                  ;                  ;
+                  ;                 If *this\inner_width( ) And 
+                  ;                    *this\inner_height( ) 
+                  ;                   draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, *this\color\frame )
+                  ;                 EndIf
+                  ;               EndIf
+                  
+                  If constants::BinaryFlag( *this\flag, #__flag_BorderFlat )
+                     ;                   If *this\inner_width( ) And 
+                     ;                      *this\inner_height( ) 
+                     ;                      ;If *this\type <> #__type_Panel
+                     ;                         draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, $fff00fff);*this\color\frame )
+                     ;                      ;EndIf
+                     ;                   EndIf
+                     ;                   If *this\type = #__type_Container
+                     If Not ( *this\fs[1] Or *this\fs[2] Or *this\fs[3] Or *this\fs[4] )
+                        draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+                     EndIf
+                     ;                   EndIf
+                     
+                  ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or
+                         constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+                     Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFAAAAAA)
+                     Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFAAAAAA)
+                     Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFFFFFFF)
+                     Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFFFFFFF)
+                     ;                 draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
+                     ;                 draw_roundbox_(*this\inner_x( ) - 2, *this\inner_y( ) - 2, *this\inner_width( ) + 3, *this\inner_height( ) + 3, *this\round, *this\round, $FFFFFFFF )
+                     
+                  ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
+                     Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
+                     Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
+                     Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
+                     Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
+                     
+                     Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
+                     Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
+                     Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFAAAAAA)
+                     Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFAAAAAA)
+                  Else
+                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+                  EndIf
+                  
+                  If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+                     ;                 Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
+                     ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
+                     ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFE7E7E7)
+                     ;                 Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFE7E7E7)
+                     
+                     Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+1+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FF838383)
+                     Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FF838383)
+                     Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFE7E7E7)
+                     Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFE7E7E7)
+                  EndIf
                EndIf
             EndIf
          EndIf
-         
-            
       EndProcedure
       
       Procedure   Draw_TreeRows( *this._s_WIDGET, List *rows._s_ROWS( ) )
@@ -24100,8 +24290,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, $FF0000FF ) : EndIf  ; Сглаживание краев ) ))
                ElseIf *this\bs
                   draw_mode_( #PB_2DDrawing_Outlined )
-                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[\ColorState( )] )
-                  If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[\ColorState( )] ) : EndIf  ; Сглаживание краев ) ))
+                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
+                  If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[*this\ColorState( )] ) : EndIf  ; Сглаживание краев ) ))
                EndIf
                
                If *this\TextChange( ) : *this\TextChange( ) = 0 : EndIf
@@ -24109,233 +24299,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndWith
          EndIf
          
-      EndProcedure
-      
-      Procedure   Draw_Window( *this._s_WIDGET )
-         Protected caption_height = *this\caption\height - *this\fs
-         Protected mouse_interact_state = 0
-         
-         With *this
-            ; чтобы закруглять только у окна с титлебаром
-            Protected gradient = 1
-            Protected r = DPIScaled(13)
-            
-            draw_mode_alpha_( #PB_2DDrawing_Default )
-            
-            If *this\fs And *this\round And Not *this\fs[2]
-               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\caption\color\back[\ColorState( )] )
-            EndIf
-            
-            ; Draw back
-            If *this\color\back <> - 1
-               If *this\color\back[mouse_interact_state * *this\ColorState( )]
-                  If *this\fs > *this\round / 3 And *this\round
-                     draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\color\back[mouse_interact_state * *this\ColorState( )] )
-                  Else
-                     If *this\round
-                        draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back[mouse_interact_state * *this\ColorState( )] )
-                     Else
-                        draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back[mouse_interact_state * *this\ColorState( )] )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-            If gradient And Not *this\round
-               draw_mode_alpha_( #PB_2DDrawing_Gradient )
-               BackColor( *this\color\fore[\ColorState( )] & $FFFFFF | 255 << 24 )
-               FrontColor( *this\color\frame[\ColorState( )] & $FFFFFF | 255 << 24 )
-            EndIf
-            
-            If *this\fs[2] And Not *this\round
-               Protected ch = *this\fs[2]
-               If Not *this\round
-                  ch = *this\fs[2] - 1             ; (*this\fs+*this\fs[2])/2
-               EndIf
-               
-               ; top
-               If gradient
-                  LinearGradient( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_x( ) + *this\fs, *this\frame_y( ) + (*this\fs[2] + *this\fs) * 2)
-               EndIf
-               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs[2] + *this\fs, r, r, *this\color\frame[\ColorState( )] )
-               
-               If *this\fs[2]
-                  draw_mode_alpha_( #PB_2DDrawing_Outlined )
-                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\fs[2] + *this\fs, r, r, *this\color\frame[\ColorState( )] )
-               EndIf
-               
-               If gradient
-                  draw_mode_alpha_( #PB_2DDrawing_Gradient )
-                  BackColor( *this\color\fore[\ColorState( )] & $FFFFFF | 255 << 24 )
-                  FrontColor( *this\color\frame[\ColorState( )] & $FFFFFF | 255 << 24 )
-                  LinearGradient( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_x( ) + *this\fs, *this\frame_y( ) + (*this\fs[2] + *this\fs) * 2)
-               EndIf
-               draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\fs[2] - r, *this\frame_width( ), r + *this\fs, *this\color\frame[\ColorState( )] )
-            EndIf
-            
-            ; Draw frame
-            If *this\fs > 0
-               If Not gradient
-                  draw_mode_alpha_( #PB_2DDrawing_Default )
-               EndIf
-               If Not *this\round
-                  If *this\fs = 1
-                     gradient = 0
-                  EndIf
-                  
-                  If Not *this\fs[2]; top
-                     If gradient
-                        LinearGradient( *this\frame_x( ), *this\frame_y( ) + *this\fs * 2, *this\frame_x( ), *this\frame_y( ) - *this\fs )
-                     EndIf
-                     draw_box_( *this\frame_x( ) + *this\fs, *this\frame_y( ), *this\frame_width( ) - *this\fs * 2, *this\fs, *this\color\frame[\ColorState( )] )
-                     ; left&top
-                     If gradient
-                        BoxedGradient(*this\frame_x( ), *this\frame_y( ), *this\fs * 2, *this\fs * 2)
-                     EndIf
-                     draw_box_( *this\frame_x( ), *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\ColorState( )] )
-                     
-                     ; right&top
-                     If gradient
-                        BoxedGradient(*this\frame_x( ) + *this\frame_width( ) - *this\fs * 2, *this\frame_y( ), *this\fs * 2, *this\fs * 2)
-                     EndIf
-                     draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ), *this\fs, *this\fs, *this\color\frame[\ColorState( )] )
-                  EndIf
-                  
-                  ; left
-                  If gradient
-                     LinearGradient( *this\frame_x( ) + *this\fs * 2, *this\frame_y( ) + *this\fs + ch, *this\frame_x( ) - *this\fs, *this\frame_y( ) + *this\fs + ch )
-                  EndIf
-                  draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\fs + ch, *this\fs, *this\frame_height( ) - *this\fs * 2 - ch, *this\color\frame[\ColorState( )] )
-                  ; right
-                  If gradient
-                     LinearGradient( *this\frame_x( ) + *this\frame_width( ) - *this\fs * 2, *this\frame_y( ) + *this\fs + ch, *this\frame_x( ) + *this\frame_width( ) + *this\fs, *this\frame_y( ) + *this\fs + ch )
-                  EndIf
-                  draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ) + *this\fs + ch, *this\fs, *this\frame_height( ) - *this\fs * 2 - ch, *this\color\frame[\ColorState( )] )
-                  ; bottom
-                  If gradient
-                     LinearGradient( *this\frame_x( ) + *this\fs, *this\frame_y( ) + *this\frame_height( ) - *this\fs * 2, *this\frame_x( ) + *this\fs, *this\frame_y( ) + *this\frame_height( ) + *this\fs )
-                  EndIf
-                  draw_box_( *this\frame_x( ) + *this\fs, *this\frame_y( ) + *this\frame_height( ) - *this\fs, *this\frame_width( ) - *this\fs * 2, *this\fs, *this\color\frame[\ColorState( )] )
-                  
-                  ; left&bottom
-                  If gradient
-                     BoxedGradient(*this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs * 2, *this\fs * 2, *this\fs * 2)
-                  EndIf
-                  draw_box_( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - *this\fs, *this\fs, *this\fs, *this\color\frame[\ColorState( )] )
-                  
-                  ; right&bottom
-                  If gradient
-                     BoxedGradient(*this\frame_x( ) + *this\frame_width( ) - *this\fs * 2, *this\frame_y( ) + *this\frame_height( ) - *this\fs * 2, *this\fs * 2, *this\fs * 2)
-                  EndIf
-                  draw_box_( *this\frame_x( ) + *this\frame_width( ) - *this\fs, *this\frame_y( ) + *this\frame_height( ) - *this\fs, *this\fs, *this\fs, *this\color\frame[\ColorState( )] )
-                  
-               EndIf
-            EndIf
-            
-            If *this\fs[2] Or (*this\fs > *this\round / 3 And *this\round) Or Not *this\round
-               If *this\fs
-                  draw_mode_alpha_( #PB_2DDrawing_Default )
-                  ; inner top
-                  Line( *this\frame_x( ) + *this\fs + *this\fs[1], *this\frame_y( ) + *this\fs + *this\fs[2] - 1, *this\frame_width( ) - *this\fs[1] - *this\fs[3] - *this\fs * 2, 1, *this\color\frame[\ColorState( )] )
-                  ; inner left
-                  Line( *this\frame_x( ) + *this\fs + *this\fs[1] - 1, *this\frame_y( ) + *this\fs + *this\fs[2] - 1, 1, *this\frame_height( ) - *this\fs[2] - *this\fs[4] - *this\fs * 2 + 1, *this\color\frame[\ColorState( )] )
-                  ; inner right
-                  Line( *this\frame_x( ) + *this\frame_width( ) - *this\fs[3] - *this\fs, *this\frame_y( ) + *this\fs + *this\fs[2] - 1, 1, *this\frame_height( ) - *this\fs[2] - *this\fs[4] - *this\fs * 2 + 1, *this\color\frame[\ColorState( )] )
-                  ; inner bottom
-                  Line( *this\frame_x( ) + *this\fs + *this\fs[1], *this\frame_y( ) + *this\frame_height( ) - *this\fs[4] - *this\fs, *this\frame_width( ) - *this\fs[1] - *this\fs[3] - *this\fs * 2, 1, *this\color\frame[\ColorState( )] )
-               EndIf
-            Else
-               If *this\round
-                  draw_mode_alpha_( #PB_2DDrawing_Outlined )
-                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\caption\color\back[\ColorState( )] )
-               EndIf
-            EndIf
-            
-            If Not *this\round
-               If *this\fs
-                  If Not *this\fs[2]
-                     ; frame top
-                     Line( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), 1, *this\color\frame[\ColorState( )] )
-                  EndIf
-                  ; frame bottom
-                  Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, *this\color\frame[\ColorState( )] )
-                  ; frame left
-                  Line( *this\frame_x( ), *this\frame_y( ) + *this\fs[2] - r, 1, *this\frame_height( ) - *this\fs[2] + r, *this\color\frame[\ColorState( )] )
-                  ; frame right
-                  Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ) + *this\fs[2] - r, 1, *this\frame_height( ) - *this\fs[2] + r, *this\color\frame[\ColorState( )] )
-               ElseIf *this\fs[2]
-                  ; frame left
-                  Line( *this\frame_x( ), *this\frame_y( ) + *this\fs[2] - r, 1, r + *this\fs, *this\color\frame[\ColorState( )] )
-                  ; frame right
-                  Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ) + *this\fs[2] - r, 1, r + *this\fs, *this\color\frame[\ColorState( )] )
-               EndIf
-            EndIf
-            
-            ; then caption
-            If *this\fs[2]
-               PB(ClipOutput)( *this\draw_x( ) + *this\fs, *this\draw_y( ) + *this\fs, *this\draw_width( ) - *this\fs*2, *this\draw_height( ) - *this\fs*2 )
-               
-               ; buttins background
-               draw_mode_alpha_( #PB_2DDrawing_Default )
-               __draw_box( *this\CloseButton( ), color\back )
-               __draw_box( *this\MaximizeButton( ), color\back )
-               __draw_box( *this\MinimizeButton( ), color\back )
-               __draw_box( *this\HelpButton( ), color\back )
-               
-               ; buttons img
-               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               __draw_close_button( *this\CloseButton( ), DPIScaled(6) )
-               __draw_maximize_button( *this\MaximizeButton( ), DPIScaled(4) )
-               __draw_minimize_button( *this\MinimizeButton( ), DPIScaled(4) )
-               __draw_help_button( *this\HelpButton( ), DPIScaled(4) )
-               
-               ; Draw img
-               If *this\picture\imageID
-                  draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  ;                   DrawAlphaimage( *this\picture\imageID,
-                  ;                                   *this\frame_x( ) + *this\bs + *this\scroll_x( ) + *this\picture\x,
-                  ;                                   *this\frame_y( ) + *this\bs + *this\scroll_y( ) + *this\picture\y - 2, *this\color\ialpha )
-                  draw_image_( *this, *this\inner_x( ), *this\inner_y( ) - (*this\picture\height+*this\fs[2])/2 )
-               EndIf
-               
-               If *this\TitleText( )\string
-                  If *this\inner_height( )
-                     PB(ClipOutput)( *this\draw_x( ) + *this\fs, *this\draw_y( ) + *this\fs, *this\caption\width, *this\draw_height( ) - *this\fs*2 )
-                  EndIf
-                  
-                  ; Draw string
-                  If *this\ResizeChange( )
-                     If *this\picture\imageID
-                        *this\TitleText( )\x = *this\caption\x + *this\padding\x + *this\picture\width + 10
-                     Else
-                        *this\TitleText( )\x = *this\caption\x + *this\padding\x
-                     EndIf
-                     *this\TitleText( )\y = *this\caption\y + ( *this\caption\height - *this\fs * 2 - TextHeight( "A" )) / 2
-                  EndIf
-                  
-                  draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawText( *this\TitleText( )\x, *this\TitleText( )\y, *this\TitleText( )\string, *this\color\front[\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
-                  
-                  ;                               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-                  ;                               draw_roundbox_( *this\caption\x, *this\caption\y, *this\caption\width, *this\caption\height - *this\fs * 2, *this\round, *this\round, $FF000000 )
-               EndIf
-            EndIf
-            
-            clip_output_( *this, [#__c_idraw] )
-            
-            ; background img draw
-            If *this\picture[#__image_BackGround]\imageID
-               draw_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_BackGround] )
-            EndIf
-            
-            clip_output_( *this, [#__c_draw] )
-            
-            ; UnclipOutput( )
-            ; draw_mode_alpha_( #PB_2DDrawing_Outlined )
-            ; draw_roundbox_( *this\frame_x( ),\frame_y( ),\frame_width( ),\frame_height( ), round,round,$ff000000 )
-            ; draw_roundbox_( *this\inner_x( ),\inner_y( ),\inner_width( ),\inner_height( ), round,round,$ff000000 )
-            
-         EndWith
       EndProcedure
       
       Procedure   Draw_ListIcon( *this._s_WIDGET )
@@ -24692,7 +24655,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;\\
             If *this\text\string
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawText( X + *this\text\x, Y + *this\text\y, *this\text\string, *this\color\front[\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+               DrawText( X + *this\text\x, Y + *this\text\y, *this\text\string, *this\color\front[*this\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
             EndIf
             
             
@@ -24827,7 +24790,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;
                      ;\\ draw widgets
                      Select *this\type
-                        Case #__type_Window     : Draw_Window( *this )
+                        Case #__type_Window     
+                           Draw_BackGround( *this, 0 )
+                           ; Draw_Content( *this, *this\ColorState( ))
+                           Draw_Frames( *this )
+            
                            
                         Case #__type_Root       : Draw_Container( *this )
                         Case #__type_MDI        : Draw_Container( *this )
@@ -24838,7 +24805,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                            
                         Case #__type_ComboBox   : Draw_ComboBox( *this )
                         Case #__type_ButtonImage
-                           
                            Draw_BackGround( *this, *this\ColorState( ))
                            Draw_Content( *this, *this\ColorState( ))
                            Draw_Frames( *this )
@@ -26834,7 +26800,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
             ;         ClearDebugOutput( )
             ;         If StartEnum(*panel);root( ))
             ;           If Not Hide(widget( )) ;And GetParent(widget( )) = *panel
-            ;             Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
+            ;             Debug " class - " + widget( )\class ;+" ("+ widget( )\item +" - parent_item)"
             ;           EndIf
             ;           StopEnum( )
             ;         EndIf
@@ -27135,9 +27101,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 24842
-; FirstLine = 22413
-; Folding = -----------------------------------Hsf--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--00-8---e4--0-------------------------------v-----0-----vv-----vf----8---8-----v--t2---f-------------------------------------
+; CursorPosition = 24794
+; FirstLine = 23342
+; Folding = -----------------------------------Hsf--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---++----fv8--+-------------------------------4------------0--8-8------08----------br----+------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -20,10 +20,10 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;*g4 = Splitter( 0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
     *g4 = Container( 0,0,0,0 ) 
-;     Button( 0,   0,0,bh, text, #__flag_TextRight) : SetAlign( widget( ), #__align_left|#__align_right)
-;     String( 0,bh*1,0,bh, text, #__flag_TextRight) : SetAlign( widget( ), #__align_left|#__align_right)
+ ;     Button( 0,   0,0,bh, Text, #__flag_TextRight) : SetAlign( widget( ), #__align_left|#__align_right)
+    String( 0,bh*1,0,bh, Text, #__flag_TextRight) : SetAlign( widget( ), #__align_left|#__align_right)
 ;     Text( 0,bh*2,0,bh, text, #__flag_TextRight) : SetAlign( widget( ), #__align_left|#__align_right)
-     Editor( 0,bh*3,10,bh, #__flag_TextRight) : SetText( widget( ), Text) ;: SetAlignmentFlag( widget( ), #__align_left|#__align_right)
+;     Editor( 0,bh*3,10,bh, #__flag_TextRight) : SetText( widget( ), Text) ;: SetAlignmentFlag( widget( ), #__align_left|#__align_right)
     ;Button( 0,bh*4,0,bh, text, #__flag_TextRight) : SetAlign( widget( ), #__align_left|#__align_right)
     
     CloseList( )
@@ -38,8 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 16
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 22
 ; Folding = -
 ; EnableXP
