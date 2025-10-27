@@ -477,15 +477,7 @@ Procedure   Properties_ButtonResize( *second._s_WIDGET )
       EndIf
    EndIf
 EndProcedure
-Macro DoActivate( _this_ )
-   Debug _this_\class
-         If SetFocus( _this_, #__s_2 )
-            ;widget( ) = _this_
-            ;DoEvents( _this_, #__event_Focus )
-            ;_this_\ColorState( ) = #__s_2
-         EndIf
-      EndMacro
-      
+
 Procedure   Properties_ButtonDisplay( *second._s_WIDGET )
    Protected *this._s_WIDGET
    Protected *row._s_ROWS
@@ -532,9 +524,9 @@ Procedure   Properties_ButtonDisplay( *second._s_WIDGET )
             ;
             Properties_ButtonResize( *second )
             
-;             DoActivate( *this )
+;             SetFocus( *this )
 ;             If *this\stringbar
-;               DoActivate( *this\stringbar )
+;               SetFocus( *this\stringbar )
 ;             EndIf
          EndIf
       EndIf
@@ -2929,7 +2921,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Disable(new_widget_add(*form, "button", 15, 25, 50, 30, #PB_Button_MultiLine),1)
       new_widget_add(*form, "text", 25, 65, 50, 30)
-      btn2 = new_widget_add(*form, "button", 35, 65+40, 50, 30)
+      btn2 = new_widget_add(*form, "image", 35, 65+40, 50, 30)
       new_widget_add(*form, "string", 45, 65+40*2, 50, 30)
       ;new_widget_add(*form, "button", 45, 65+40*2, 50, 30)
       
@@ -3034,9 +3026,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 537
-; FirstLine = 518
-; Folding = ----------+8--4vH+-------------8vf-8---8+8-v---8---4n-
+; CursorPosition = 2923
+; FirstLine = 2121
+; Folding = ---------f-0--84D--------------04v-0---0-0-4---0---8z-
 ; Optimizer
 ; EnableAsm
 ; EnableXP

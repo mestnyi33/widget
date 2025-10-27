@@ -1496,6 +1496,7 @@ Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
       function$ = ReplaceString( function$, "Gadget( #PB_Any, ", "( " )
       function$ = ReplaceString( function$, "OpenWindow(", "Open("  )
    EndIf
+   
    ;
    ;\\ make object string
    ;
@@ -2050,8 +2051,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1058
-; FirstLine = 1000
-; Folding = -f-----f------------------f9-4-----4r3f----b-ePA5--0--
+; CursorPosition = 1545
+; FirstLine = 1345
+; Folding = -f-----f------------------f9-4-----4r3f------ePA5--0--
 ; EnableXP
 ; DPIAware
