@@ -6777,44 +6777,45 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          If *bar\PageChange( )
-            ;\\
             If *this\type = #__type_Progress
                *this\text\string = "%" + Str( *bar\page\pos )
-               ;*this\text\change = 1
             EndIf
             
             ;\\
             If *this\type = #__type_Spin
+               
                If *this\stringbar
-                  Debug " update spin-change " + *bar\PageChange( ) + " " + Str( *bar\thumb\pos - *bar\area\pos )
+                  Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
+                  ; Debug " update spin-change " + *bar\PageChange( ) + " " + Str( *bar\thumb\pos - *bar\area\pos )
                   Protected i
                   For i = 0 To 3
                      If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
                         SetText( *this\stringbar, StrF( *bar\page\pos, i ) )
-                        ;SetText( *this\stringbar, StrF( ( *bar\thumb\pos - *bar\area\pos ), i ) )
                         Break
                      EndIf
                   Next
                EndIf
-            EndIf
-            
-            ;\\ post change event
-            If mode = 2
-               If is_scrollbars_( *this )
-                  If *this\type = #__type_Scroll
-                     Post( *this\parent, #__event_ScrollChange, *this, *bar\page\pos ) ; *bar\PageChange( ) )
-                     If *this\parent\type = #__type_tree Or 
-                        *this\parent\type = #__type_listicon Or 
-                        *this\parent\type = #__type_listview
-                        *this\parent\WidgetChange( ) = 1
+               
+            Else
+               ;\\ post change event
+               If mode = 2
+                  If is_scrollbars_( *this )
+                     If *this\type = #__type_Scroll
+                        Post( *this\parent, #__event_ScrollChange, *this, *bar\page\pos ) ; *bar\PageChange( ) )
+                        If *this\parent\type = #__type_tree Or 
+                           *this\parent\type = #__type_listicon Or 
+                           *this\parent\type = #__type_listview
+                           *this\parent\WidgetChange( ) = 1
+                        EndIf
                      EndIf
-                  EndIf
-               Else
-                  ; scroll area change
-                  ;__gui\event\queuesmask = 0
-                  ;Post( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ))
-                  AddEvents( *this, #__event_Change,  EnteredButton( ), *bar\PageChange( ))
-               EndIf  
+                  Else
+                     Debug "bar update AddEvents"
+                     ; scroll area change
+                     ;__gui\event\queuesmask = 0
+                     ;Post( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ))
+                     AddEvents( *this, #__event_Change,  EnteredButton( ), *bar\PageChange( ))
+                  EndIf  
+               EndIf
             EndIf
             
             *this\BarChange( ) = 0
@@ -6867,6 +6868,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                Else
                   *bar\direction = 1
                EndIf
+               
                ;
                *bar\PageChange( ) = *bar\page\pos - ScrollPos
                *bar\page\pos      = ScrollPos
@@ -14089,6 +14091,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                Next
                
+            
             ElseIf *this\text\pass
                Len = Len( Text.s )
                CompilerIf #PB_Compiler_Version =< 546
@@ -14648,6 +14651,20 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\type = #__type_Tree
             If *this\RowFocused( )
                *this\RowFocused( )\text\string = Text
+            EndIf
+         EndIf
+         
+         If *this\type = #__type_Spin
+            If *this\stringbar
+               ; Debug " update spin-change " + *this\bar\PageChange( ) + " " + Str( *this\bar\thumb\pos - *this\bar\area\pos )
+               ;Protected i ; *bar\page\pos
+               For i = 0 To 3
+                  If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
+                     SetText( *this\stringbar, StrF( Val(Text), i ) )
+                     ;SetText( *this\stringbar, StrF( ( *this\bar\thumb\pos - *this\bar\area\pos ), i ) )
+                     Break
+                  EndIf
+               Next
             EndIf
          EndIf
          
@@ -19026,13 +19043,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;                      EndIf
                   ;                   EndIf
                   
-                  If event = #__event_Down
-                     If *this\type = #__type_Spin
-                        If *this\stringbar
-                           Post( *this, #__event_Change, *this\stringbar, *this\bar\PageChange( ) )
-                        EndIf
-                     EndIf
-                  EndIf
+;                   If event = #__event_Down
+;                      If *this\type = #__type_Spin
+;                         If *this\stringbar
+;                            Post( *this, #__event_Change, *this\stringbar, *this\bar\PageChange( ) )
+;                         EndIf
+;                      EndIf
+;                   EndIf
                EndIf
             EndIf
          EndIf
@@ -20503,6 +20520,16 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;                            EndIf
                            Free( @__widget )
                         EndIf
+                     ElseIf __event = #__event_Change
+                        If Type(__widget) = #__type_Spin
+                           Static spin_change 
+                           If spin_change <> GetState(__widget)
+                              spin_change = GetState(__widget)
+                              Post( __widget, __event, __item, __data )
+                           EndIf
+                        Else
+                           Post( __widget, __event, __item, __data )
+                        EndIf
                      Else
                         Post( __widget, __event, __item, __data )
                      EndIf
@@ -20572,6 +20599,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             If Not __gui\event\queuesmask And 
                Not __gui\event\mask & 1<<event
                
+               If *this\type <> #__type_scroll
+                  Debug ""+ *this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
+               EndIf
                ProcedureReturn AddEvents( *this, event, *button, *data )
             Else
                ;                If event = #__event_focus
@@ -21427,7 +21457,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;- Create Spin
             If *this\type = #__type_Spin
-               *this\bar\PageChange( ) = 1
+               ; *this\bar\PageChange( ) = 1
                
                *this\color\back   = - 1
                *this\color\_alpha = 255
@@ -21459,13 +21489,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *BB1\arrow\type = #__arrow_type
                   *BB2\arrow\type = *BB1\arrow\type
                EndIf
-               
-               ;\\
-               *this\stringbar = Create( *this, "SpinString",
-                                         #__type_String, 0, 0, 0, 0, #Null$,
-                                         #__flag_child | #__flag_Textnumeric | #__flag_Borderless | *this\flag&~(#__flag_invert|#__flag_vertical) )
-               
-               
             EndIf
             
             ; - Create Track
@@ -21618,6 +21641,14 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          Post( *this, #__event_create )
          
+         
+         ; create integrall childrens   
+         If *this\type = #__type_Spin
+            *this\stringbar = Create( *this, *this\class + "_STRING",
+                                      #__type_String, 0, 0, 0, 0, "", ;Str(*param_1),
+                                      #__flag_child | #__flag_Textnumeric | #__flag_Borderless | *this\flag&~(#__flag_invert|#__flag_vertical) )
+         EndIf
+            
          ;\\ Set Attribute
          If *this\type = #__type_ToolBar Or
             *this\type = #__type_PopupBar Or
@@ -21789,6 +21820,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                bar_area_create( *this, 1, *this\picture\width, *this\picture\height, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
             EndIf
+         EndIf
+         
+         
+         If *this\type = #__type_Spin
+            SetState( *this, *param_1 )
          EndIf
          
          widget( ) = *this
@@ -25774,7 +25810,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
   test_clip = 1
   test_draw_area = 1
   
-  Define a,i, Height=60
+  Define a,i, Height=60, *g._s_WIDGET
   
   UsePNGImageDecoder()
   LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/world.png")
@@ -25793,26 +25829,6 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
     ResizeImage(4, 16, 16)
   CompilerEndIf
 
-  
-  Procedure events_gadgets()
-    Protected ComboBox.s
-    ClearDebugOutput()
-    
-    Select EventType()
-      Case #PB_EventType_Focus
-        ComboBox.s = "focus "+EventGadget()+" "+EventType()
-      Case #PB_EventType_LostFocus
-        ComboBox.s = "lostfocus "+EventGadget()+" "+EventType()
-      Case #PB_EventType_Change
-        ComboBox.s = "change "+EventGadget()+" "+EventType()
-    EndSelect
-    
-    If EventType() = #PB_EventType_Focus
-      Debug ComboBox.s +" - gadget" +" get text - "+ GetGadgetText(EventGadget()) ; Bug in mac os
-    Else
-      Debug ComboBox.s +" - gadget"
-    EndIf
-  EndProcedure
   
   Procedure events_widgets()
     Protected ComboBox.s
@@ -25849,40 +25865,16 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
   
   If Open(0, 0, 0, 615, 190, "ComboBox on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     ;\\
-    ComboBoxGadget(0, 10, 10, 250, 50, #PB_ComboBox_Editable|#PB_ComboBox_UpperCase|#PB_ComboBox_Image)
-    For a = 1 To 31 ; xp=31 ;linux-qt=11 ; mac = 5
-      AddGadgetItem(0, -1,"ComboBox editable... " + Str(a), ImageID(2))
-    Next
-    
-    ComboBoxGadget(1, 10, 70, 250, 50, #PB_ComboBox_LowerCase|#PB_ComboBox_Image)
-    AddGadgetItem(1, -1, "ComboBox item with image1", ImageID(0))
-    AddGadgetItem(1, -1, "ComboBox item with image2", ImageID(1))
-    AddGadgetItem(1, -1, "ComboBox item with image3", ImageID(2))
-    
-    ComboBoxGadget(2, 10, 130, 250, 50)
-    AddGadgetItem(2, -1, "ComboBox item 1")
-    AddGadgetItem(2, -1, "ComboBox item 2")
-    AddGadgetItem(2, -1, "ComboBox item 3")
-    
-    SetGadgetState(0, 2)
-    SetGadgetState(1, 1)
-    SetGadgetState(2, 0)    ; set (beginning with 0) the third item as active one
-    
-    
-    For i = 0 To 2
-      BindGadgetEvent(i, @events_gadgets())
-    Next
-    
-    ;\\
-    ComboBox(305+10, 10, 250, 50, #PB_ComboBox_Editable|#PB_ComboBox_UpperCase);|#PB_ComboBox_Image)
+    ComboBox(10, 10, 250, 50, #PB_ComboBox_Editable|#PB_ComboBox_UpperCase);|#PB_ComboBox_Image)
     For a = 1 To 31
       AddItem(ID(0), -1,"ComboBox editable... " + Str(a), (2))
     Next
     SetState(ID(0), 2)
     
-    String(305+10, 70, 250, 50,"String editable...");, #__flag_child)
+    String(10, 70, 250, 50,"String editable...");, #__flag_child)
     
-    SetState(Spin(305+10, 130, 250, 50, 0, 100000000), 1000000)
+    *g=Spin(10, 130, 250, 50, 0, 100000000 )
+    SetState(*g, 1000000)
     
     
     For i = 0 To 2
@@ -27099,9 +27091,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 16081
-; FirstLine = 15498
-; Folding = -----------------------------------Hsf--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v------------------------------------------------------------------------------------------------------------------------------------------------------------------4+f-f4--------------------------------------------------------------------------v-t-re---88v0-------------------------------+--00-----e4--0-------------------------------v------------8--4-4-------4-----------W----0----------------------0--------------
+; CursorPosition = 14092
+; FirstLine = 13348
+; Folding = -----------------------------------Hsf---------------------------------------------------------------------------------------------------------------------------------r---------------------------------------------------------------------------------v+-----------------------------------------------------------v------------------------------------------------------------------------------+------------------------------------------------------------------------------------3-8-8+-------------------------------------------------------------------------v-t-re---88v0-------------------------------4--vv-----v40-f--------------------------------4------------0--8-8-------8----------fr----+----------------------+-------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
