@@ -14079,12 +14079,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                         Continue
                      EndIf
                      
-                     If Not Minus And Input = '-' And Mid( *this\text\string, *this\edit_caret_1( ) + 1, 1 ) <> "-"
-                        Minus = 1
-                     ElseIf Input <> '-'
-                        Minus = 0
-                     Else
-                        Continue
+                     If Not ( *this\parent And *this\parent\type = #__type_Spin )
+                        If Not Minus And Input = '-' And Mid( *this\text\string, *this\edit_caret_1( ) + 1, 1 ) <> "-"
+                           Minus = 1
+                        ElseIf Input <> '-'
+                           Minus = 0
+                        Else
+                           Continue
+                        EndIf
                      EndIf
                      
                      String.s + Chr
@@ -20515,14 +20517,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                      If __event = #__event_Free
                         If IsContainer( __widget )
-;                            If IsChildrens( __widget)
-;                               Delete( __widget )
-;                            EndIf
                            Free( @__widget )
                         EndIf
                      ElseIf __event = #__event_Change
                         If Type(__widget) = #__type_Spin
-                           Static spin_change 
+                           Static spin_change = #PB_Ignore
                            If spin_change <> GetState(__widget)
                               spin_change = GetState(__widget)
                               Post( __widget, __event, __item, __data )
@@ -20599,9 +20598,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             If Not __gui\event\queuesmask And 
                Not __gui\event\mask & 1<<event
                
-               If *this\type <> #__type_scroll
-                  Debug ""+ *this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
-               EndIf
+;                If *this\type <> #__type_scroll
+;                   Debug ""+ *this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
+;                EndIf
                ProcedureReturn AddEvents( *this, event, *button, *data )
             Else
                ;                If event = #__event_focus
@@ -27091,9 +27090,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 14092
-; FirstLine = 13348
-; Folding = -----------------------------------Hsf---------------------------------------------------------------------------------------------------------------------------------r---------------------------------------------------------------------------------v+-----------------------------------------------------------v------------------------------------------------------------------------------+------------------------------------------------------------------------------------3-8-8+-------------------------------------------------------------------------v-t-re---88v0-------------------------------4--vv-----v40-f--------------------------------4------------0--8-8-------8----------fr----+----------------------+-------------
+; CursorPosition = 20602
+; FirstLine = 19246
+; Folding = -----------------------------------Hsf---------------------------------------------------------------------------------------------------------------------------------r---------------------------------------------------------------------------------v+-----------------------------------------------------------v------------------------------------------------------------------------------+------------------------------------------------------------------------------------t-4-40-------------------------------------------------------------------------f-b-X0+--44f8-------------------------------4--vv-----v40-f--------------------------------4------------0--8-8-------8----------fr----+----------------------+-------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
