@@ -6,9 +6,14 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define min = 25 ; bug fixed
    
+   Procedure spin_events( )
+      Debug "*g "+GetState(EventWidget()) +" "+ WidgetEventItem( ) +" "+ WidgetEventData( )
+   EndProcedure
+   
+   
    ;\\ test 1
    If Open(0, 0, 0, 350, 210, "Spin", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetColor(root( ), #pb_gadget_backcolor, $FFEFEFEF )
+      SetColor(root( ), #PB_Gadget_BackColor, $FFEFEFEF )
       a_init(root( ))
       
       Define *spin1 = Spin(50, 20, 250, 50, 0, 30)
@@ -20,6 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Define *spin3 = Spin(50, 140, 250, 50, 0, 30, #__flag_TextRight)
       SetState(*spin3, 30)
       
+      Bind( #PB_All, @spin_events(), #__event_Change )
       WaitClose( )
    EndIf
    
@@ -64,9 +70,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;       EndIf
    ;    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 6
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 6
+; FirstLine = 3
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -62,7 +62,7 @@ Global ColorType
             
                      
          Case #__event_Change
-           ; Debug ""+ GetState(*size) +" "+  GetState(*position)
+            Debug "CHANGE "+ GetState(*size) +" "+  GetState(*position) +" "+*this\class
             
             Select *this 
                Case *size
@@ -120,13 +120,13 @@ Global ColorType
       ;Frame( 0,0,230,210, " preferences " )
       
       Text( 10,10+Y,100,18, "grid size:");, #PB_Text_Border )
-      *grid = Spin( 10,30+Y,70,30, 0,100 )
+      *grid = Spin( 10,30+Y,70,30, 0,100 ) : SetClass(*grid,"GRID" )
       
       Text( 10,70+Y,100,18, "anchor size:");, #PB_Text_Border )
-      *size = Spin( 10,90+Y,70,30, 0,30 )
+      *size = Spin( 10,90+Y,70,30, 0,30 ) : SetClass(*size,"SIZE" )
       
       Text( 10,130+Y,100,18, "anchor pos:");, #PB_Text_Border )
-      *position = Spin( 10,150+Y,70,30, 0,59 )
+      *position = Spin( 10,150+Y,70,30, 0,59 ) : SetClass(*position,"POSITION" )
       
       ;test_event_send=1
       ;\\
@@ -174,8 +174,8 @@ Global ColorType
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 33
+; CursorPosition = 128
+; FirstLine = 107
 ; Folding = --
 ; EnableXP
 ; DPIAware

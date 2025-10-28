@@ -6785,7 +6785,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\type = #__type_Spin
                
                If *this\stringbar
-                  Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
+                  If __gui\event\queuesmask 
+                     Post( *this, #__event_Change, *this\stringbar, *bar\page\pos ) ; *bar\PageChange( ) )
+                  EndIf
                   ; Debug " update spin-change " + *bar\PageChange( ) + " " + Str( *bar\thumb\pos - *bar\area\pos )
                   Protected i
                   For i = 0 To 3
@@ -6828,6 +6830,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.b bar_PageChange( *this._s_WIDGET, ScrollPos.l, mode.b = 1 )
          Protected result.b, *bar._s_BAR = *this\bar
+         If *this\hide
+            ProcedureReturn 0
+         EndIf
          
          If *bar\area\len
             If Not *bar\max
@@ -6846,10 +6851,18 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          
+         
          If Not *bar\button\disable 
+;             If *bar\PageChange( ) <> ( *bar\page\pos - ScrollPos )
+;                *bar\PageChange( ) = *bar\page\pos - ScrollPos
+;                Debug "bar_PageChange "+*bar\page\pos +" "+ ScrollPos +" "+ *this\class +" "+ *bar\button\disable   
+;             EndIf
+            
             If ScrollPos < *bar\min
                If *bar\max > *bar\page\len
+                  ;*bar\PageChange( ) = *bar\page\pos - ScrollPos
                   ScrollPos = *bar\min
+                  ;result = 1
                EndIf
             EndIf
             If ScrollPos > *bar\page\end
@@ -6862,6 +6875,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
             
+            ; 
             If *bar\page\pos <> ScrollPos
                If *bar\page\pos > ScrollPos
                   *bar\direction =- 1
@@ -6870,12 +6884,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;
-               *bar\PageChange( ) = *bar\page\pos - ScrollPos
-               *bar\page\pos      = ScrollPos
-               
-               ; Debug ""+*this +" "+ ScrollPos +" "+ *bar\page\end +" "+ *bar\thumb\len +" "+ *bar\area\end +" "+ *bar\page\pos +" "+ Str(*bar\page\end-*bar\min[2])
-               
-               result = *bar\PageChange( )
+               result = *bar\page\pos - ScrollPos
+               *bar\PageChange( ) = result
+               *bar\page\pos = ScrollPos
             EndIf
             
             If *this\BarChange( ) Or result
@@ -9807,8 +9818,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
-               bar_PageChange( *this, state, 2 ) ; and post change event
-               
+               result = bar_PageChange( *this, state, 2 ) ; and post change event
+               If Not __gui\event\queuesmask 
+                  AddEvents( *this, #__event_Change, *this\stringbar, *this\bar\page\pos ) ; *bar\PageChange( ) )
+               EndIf
          EndSelect
          
          ProcedureReturn result
@@ -10671,7 +10684,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;                EndIf
             Else
-               Debug "-------"+ *this\class +" "+ *Active\class +"-------"
+               Debug "setactive()-------"+ *this\class +" "+ *Active\class +"-------"
                   If *this = *Active
                   ; activate canvas
                   If ActiveWindow( ) 
@@ -14140,7 +14153,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   If *this\text\edit[2]\len
                      If *this\edit_caret_2( ) > *this\LineFocused( )\text\pos
-                        Debug "bug insert "
+                        Debug "edit_key_change_text() bug insert "
                         *this\LinePressedIndex( ) - CountString( *this\text\edit[2]\string, #LF$) 
                      EndIf
                   EndIf
@@ -18952,6 +18965,19 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
+                  
+               Case #__type_String
+                  If event = #__event_Change
+                     If is_integral_( *this )
+                        If *this\parent
+                           If Not SetState( *this\parent, Val(GetText( *this )))
+                              SetText( *this, Str( *this\parent\bar\page\pos ))
+                           EndIf
+                           edit_SetState( *this, *this\text\len )
+                        EndIf
+                     EndIf
+                  EndIf
+                  
             EndSelect
             
             ;\\
@@ -20059,7 +20085,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   DoEvents( *keywidget, #__event_KeyDown )
                EndIf
                If eventtype = #PB_EventType_Input
-                  Debug *keywidget\class
+                  ; Debug *keywidget\class
                   DoEvents( *keywidget, #__event_Input )
                   ; keyboard( )\input = 0
                EndIf
@@ -20524,7 +20550,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            Static spin_change = #PB_Ignore
                            If spin_change <> GetState(__widget)
                               spin_change = GetState(__widget)
-                              Post( __widget, __event, __item, __data )
+                               Post( __widget, __event, __item, __data )
                            EndIf
                         Else
                            Post( __widget, __event, __item, __data )
@@ -21643,11 +21669,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ; create integrall childrens   
          If *this\type = #__type_Spin
+            *this\bar\PageChange( ) = 1
+            bar_SetAttribute( *this, #__bar_buttonsize, Size + 5 )
             *this\stringbar = Create( *this, *this\class + "_STRING",
                                       #__type_String, 0, 0, 0, 0, "", ;Str(*param_1),
                                       #__flag_child | #__flag_Textnumeric | #__flag_Borderless | *this\flag&~(#__flag_invert|#__flag_vertical) )
          EndIf
-            
+         
          ;\\ Set Attribute
          If *this\type = #__type_ToolBar Or
             *this\type = #__type_PopupBar Or
@@ -21657,10 +21685,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_Progress Or
             *this\type = #__type_Track Or
             *this\type = #__type_Spin
-            
-            If *this\type = #__type_Spin
-               bar_SetAttribute( *this, #__bar_buttonsize, Size + 5 )
-            EndIf
             
             If *param_1 ; > 0 ; в окнах работает так
                SetAttribute( *this, #__bar_minimum, *param_1 )
@@ -21822,9 +21846,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          
-         If *this\type = #__type_Spin
-            SetState( *this, *param_1 )
-         EndIf
          
          widget( ) = *this
          ProcedureReturn *this
@@ -27090,9 +27111,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 20602
-; FirstLine = 19246
-; Folding = -----------------------------------Hsf---------------------------------------------------------------------------------------------------------------------------------r---------------------------------------------------------------------------------v+-----------------------------------------------------------v------------------------------------------------------------------------------+------------------------------------------------------------------------------------t-4-40-------------------------------------------------------------------------f-b-X0+--44f8-------------------------------4--vv-----v40-f--------------------------------4------------0--8-8-------8----------fr----+----------------------+-------------
+; CursorPosition = 9821
+; FirstLine = 9317
+; Folding = -----------------------------------Hsf------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-7--f----8----------------------------------------------------------------------------------------------------------------------------------4-----------------------------------------------------------------------------------------v--------------------------------------------80-0P2b-4V8------------------------7---v--3-------------------------------v4-ff-vc4L-40rY--------------------------------8------------+--0-0-------0----------v2---f----------------------f--------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

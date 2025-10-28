@@ -14,9 +14,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Define *spin1 = Spin(50, 20, 250, 50, 10, 30 )
       SetState(*spin1, 0)
       
-      Define *spin2 = Spin(50, 80, 250, 50, min, 30, #__flag_vertical);|#__flag_invert)
+      Define *spin2 = Spin(50, 80, 250, 50, min, 30, #__flag_vertical|#__flag_TextCenter);|#__flag_invert)
        ;Define *spin2 = Create( root( ), "Spin", #__type_Spin, 0, 0, 0, 0, #Null$, #__flag_vertical|#__flag_invert, -1000, 1000, 0, #__bar_button_size, 0, 7 )
-      SetState(*spin2, 15)
+      ;SetState(*spin2, 15)
       
       Define *spin3 = Spin(50, 140, 250, 50, 0, 30, #__flag_TextRight|#__flag_invert)
       SetState(*spin3, 30)
@@ -26,7 +26,7 @@ CompilerIf #PB_Compiler_IsMainFile
 
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 13
+; CursorPosition = 16
 ; Folding = -
 ; EnableXP
 ; DPIAware
