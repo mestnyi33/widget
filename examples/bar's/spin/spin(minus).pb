@@ -32,10 +32,10 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetState(g, 0)
       
       Define *g = Spin(50, 80, 100, 50, min, 30, #__flag_TextRight);|#__flag_TextReadOnly)
-      ;Debug "//"
+      Debug "//"
       SetState(*g, 0)
      
-      ;Debug "---"
+      Debug "---"
       BindGadgetEvent( g, @g_spin_change_event(), #PB_EventType_Change )
       Bind( *g, @spin_change_event(), #__event_Change )
       Bind( *g, @spin_focus_event(), #__event_Focus )
@@ -45,7 +45,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 37
+; CursorPosition = 34
 ; FirstLine = 3
 ; Folding = 4-
 ; EnableXP
