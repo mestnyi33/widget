@@ -6600,10 +6600,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\type = #__type_Spin
                
                If *this\stringbar
-                  If __gui\event\queuesmask 
-                     Post( *this, #__event_Change, *this\stringbar, *bar\page\pos ) ; *bar\PageChange( ) )
-                  EndIf
-                  ; Debug " update spin-change " + *bar\PageChange( ) + " " + Str( *bar\thumb\pos - *bar\area\pos )
+;                   If __gui\event\queuesmask 
+;                      Post( *this, #__event_Change, *this\stringbar, *bar\page\pos ) ; *bar\PageChange( ) )
+;                   EndIf
+;                   ; Debug " update spin-change " + *bar\PageChange( ) + " " + Str( *bar\thumb\pos - *bar\area\pos )
                   Protected i
                   For i = 0 To 3
                      If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
@@ -6648,7 +6648,7 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;          If __gui\event\queuesmask
 ;             ;ProcedureReturn 0
 ;          EndIf
-;          Debug    ""+ ScrollPos +" "+ *this\class
+          Debug    ""+ ScrollPos +" "+ *this\class
          
          
          If *bar\area\len
@@ -6707,7 +6707,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             If *this\BarChange( ) Or result
                ; Debug ""+*this +" "+ result +" "+ *bar\PageChange( )
-               If bar_Update( *this, mode)
+               If bar_Update( *this, mode )
+                  Post( *this, #__event_Change, *this\stringbar, *this\bar\page\pos ) ; *bar\PageChange( ) )
                EndIf
             EndIf
          EndIf
@@ -9620,8 +9621,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\
          Select *this\type
-            Case #__type_Spin ,
-                 #__type_Track,
+            Case #__type_Track,
                  #__type_Scroll,
                  #__type_Progress,
                  #__type_Splitter
@@ -9634,11 +9634,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                
-               If Not __gui\event\queuesmask 
-                  result = bar_PageChange( *this, state, 2 ) ; and post change event
-                  AddEvents( *this, #__event_Change, *this\stringbar, *this\bar\page\pos ) ; *bar\PageChange( ) )
-               EndIf
-         EndSelect
+               result = bar_PageChange( *this, state, 2 ) ; and post change event
+           EndSelect
+         
+           If *this\type = #__type_Spin
+              result = bar_PageChange( *this, state, 2 )                                   ; and post change event
+              If result
+                 Debug 6666
+              Else
+                 AddEvents( *this, #__event_Change, *this\stringbar, *this\bar\page\pos ) ; *bar\PageChange( ) )
+              EndIf
+           EndIf
          
          ProcedureReturn result
       EndProcedure
@@ -26929,9 +26935,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 6651
-; FirstLine = 6525
-; Folding = -----------------------------------Hsf-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-v+--4----+----------------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------4--------------------------------------------0+-+n7t-8q0-----------------------f0---4-f8-------------------------------48-vv-Xu8l-8+Vs--------------------------------0-----------f---+-+-------+----------47---v----------------------v--------------
+; CursorPosition = 6709
+; FirstLine = 6564
+; Folding = -----------------------------------Hsf-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-X---8---f-----------------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------4--------------------------------------------0+-+n7t-8q0-----------------------f0---4-f8-------------------------------48-vv-Xu8l-8+Vs--------------------------------0-----------f---+-+-------+----------47---v----------------------v--------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
