@@ -7,8 +7,8 @@ ImportC ""; -gtk"
 ;   g_object_get_data_(*Widget,name.p-ascii) As "g_object_get_data"
 ;   g_object_set_property_(*widget, name.p-ascii, *val) As "g_object_set_property"
   
-  ;   g_signal_connect(*d, ev.p-ascii, *func, u.i, a=0, b=0) As "g_signal_connect_data"
-  ;g_signal_connect(instance,signal.p-ascii,*fn,*vdata,destroy=0,flags=0) As "g_signal_connect_data"
+  ; g_signal_connect(*d, ev.p-ascii, *func, u.i, a=0, b=0) As "g_signal_connect_data"
+  ; g_signal_connect(instance,signal.p-ascii,*fn,*vdata,destroy=0,flags=0) As "g_signal_connect_data"
   ; g_signal_connect() — это макрос, поэтому вместо него вы должны использовать g_signal_connect_data().
   g_signal_connect_data(*instance, signal.p-utf8, *handler, *data, *destroy_data, *connect_flags)
   
@@ -74,8 +74,7 @@ For i = 0 To 3
 Next
 
 While WaitWindowEvent() ! #PB_Event_CloseWindow : Wend
-; IDE Options = PureBasic 5.73 LTS (Linux - x64)
-; CursorPosition = 59
-; FirstLine = 49
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 9
 ; Folding = --
 ; EnableXP

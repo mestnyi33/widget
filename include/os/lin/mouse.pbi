@@ -213,7 +213,9 @@ CompilerIf #PB_Compiler_IsMainFile
     SpinGadget(302, 0, 0, 100,20,0,10)                 
     SplitterGadget(#PB_GadgetType_Splitter, 665, 405, 160, 95, 301, 302)
     
-    InitScintilla( )
+    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      InitScintilla( )
+    CompilerEndIf
     ScintillaGadget(#PB_GadgetType_Scintilla, 830, 5, 160,95,0 )
     ShortcutGadget(#PB_GadgetType_Shortcut, 830, 105, 160,95 ,-1)
     CanvasGadget(#PB_GadgetType_Canvas, 830, 205, 160,95 )
@@ -251,8 +253,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until eventID = #PB_Event_CloseWindow
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Linux - x64)
-; CursorPosition = 102
-; FirstLine = 40
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 217
+; FirstLine = 151
 ; Folding = ---8----
 ; EnableXP
