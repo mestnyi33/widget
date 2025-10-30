@@ -675,12 +675,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *tabbar._s_WIDGET
          *menubar._s_WIDGET
          *groupbar._s_WIDGET      ; = Option( ) group widget
-         *stringbar._s_WIDGET     ; = SpinBar( ) string box widget
-         
-         ;  
-         *togglebox._s_BOX        ; checkbox; optionbox, ToggleButton
+         *stringbar._s_WIDGET     ; = Spin( ) string box widget
+         *combobar._s_WIDGET      ; = ComboBox( ) popup list view widget
          *combobutton._s_BUTTONS  ; combobox button
-         *combobar._s_WIDGET
+         *togglebox._s_BOX        ; checkbox; optionbox, ToggleButton
          
          
          ;                           
@@ -797,8 +795,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 291
-; FirstLine = 262
+; CursorPosition = 678
+; FirstLine = 631
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP

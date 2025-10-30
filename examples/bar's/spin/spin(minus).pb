@@ -20,13 +20,13 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure spin_change_event( )
       Debug ""+ GetState(EventWidget()) +" "+ WidgetEventItem( ) +" "+ WidgetEventData( ) +" [CHANGE] - "+ GetClass(EventWidget())
-      SetActive( EventWidget( )\stringbar )
+      SetActive( EventWidget( ));\stringbar )
    EndProcedure
    
    ;\\ test 1
    If Open(0, 0, 0, 350, 210, "Spin", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       SetColor(root( ), #PB_Gadget_BackColor, $FFEFEFEF )
-      a_init(root( ))
+      ;a_init(root( ))
       
       Define g = SpinGadget(#PB_Any, 50, 20, 100, 50, min, 30, #PB_Spin_Numeric);|#PB_Spin_ReadOnly )
       SetGadgetState(g, 0)
@@ -45,8 +45,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 34
-; FirstLine = 3
+; CursorPosition = 22
+; FirstLine = 5
 ; Folding = 4-
 ; EnableXP
 ; DPIAware

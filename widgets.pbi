@@ -6648,7 +6648,7 @@ CompilerIf Not Defined( widget, #PB_Module )
 ;          If __gui\event\queuesmask
 ;             ;ProcedureReturn 0
 ;          EndIf
-          Debug    ""+ ScrollPos +" "+ *this\class
+          ; Debug    ""+ ScrollPos +" "+ *this\class
          
          
          If *bar\area\len
@@ -9639,9 +9639,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
            If *this\type = #__type_Spin
               result = bar_PageChange( *this, state, 2 )                                   ; and post change event
-              If result
-                 Debug 6666
-              Else
+              If Not result
                  AddEvents( *this, #__event_Change, *this\stringbar, *this\bar\page\pos ) ; *bar\PageChange( ) )
               EndIf
            EndIf
@@ -10295,50 +10293,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Macro DoActivate( _this_ )
-         If SetFocus( _this_, #__s_2 )
-            widget( ) = _this_
-            DoEvents( _this_, #__event_Focus )
-         EndIf
-      EndMacro
-      
-      Macro DoDeactivate( _this_ )
-         If SetFocus( _this_, #__s_3 )
-            widget( ) = _this_
-            DoEvents( _this_, #__event_LostFocus )
-         EndIf
-      EndMacro               
-      
-      Macro DoActivateWindows( _this_ )
-         If Not is_root_( _this_ ) And _this_\address And Not _this_\anchors
-            PushListPosition( widgets( ) )
-            ChangeCurrentElement( widgets( ), _this_\address )
-            While PreviousElement( widgets( ) )
-               If is_window_( widgets( ) )
-                  If IsChild( _this_, widgets( ) )
-                     DoActivate( widgets( ) )
-                  EndIf
-               EndIf
-            Wend
-            PopListPosition( widgets( ) )
-         EndIf
-      EndMacro
-      
-      Macro DoDeactiveWindows( _this_ )
-         If Not is_root_( _this_ ) And _this_\address And Not _this_\anchors
-            PushListPosition( widgets( ) )
-            ChangeCurrentElement( widgets( ), _this_\address )
-            While PreviousElement( widgets( ) )
-               If is_window_( widgets( ) )
-                  If Not IsChild( _this_, widgets( ) )
-                     DoDeactivate( widgets( ) )
-                  EndIf
-               EndIf
-            Wend
-            PopListPosition( widgets( ) )
-         EndIf
-      EndMacro
-      
       Procedure   SetForeground( *window._s_WIDGET )
          Protected last
          ;
@@ -10362,6 +10316,69 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i SetActive( *this._s_WIDGET )
+         Macro DoActivate( _this_ )
+            If SetFocus( _this_, #__s_2 )
+               ; widget( ) = _this_
+               DoEvents( _this_, #__event_Focus )
+               If _this_\stringbar
+                  If _this_\stringbar\focus <> _this_\focus
+                     _this_\stringbar\focus = _this_\focus
+                     DoEvents( _this_\stringbar, #__event_Focus )
+                  EndIf
+               EndIf
+               If is_integral_( _this_ )
+                  If _this_\parent\focus <> _this_\focus
+                     _this_\parent\focus = _this_\focus
+                     DoEvents( _this_\parent, #__event_Focus )
+                  EndIf
+               EndIf
+            EndIf
+         EndMacro
+         Macro DoDeactivate( _this_ )
+            If SetFocus( _this_, #__s_3 )
+               If _this_\stringbar
+                  _this_\stringbar\focus = _this_\focus
+                  DoEvents( _this_\stringbar, #__event_LostFocus )
+               EndIf
+               If is_integral_( _this_ )
+                  If _this_\parent\focus <> _this_\focus
+                     _this_\parent\focus = _this_\focus
+                     DoEvents( _this_\parent, #__event_LostFocus )
+                  EndIf
+               EndIf
+               ; widget( ) = _this_
+               DoEvents( _this_, #__event_LostFocus )
+            EndIf
+         EndMacro               
+         Macro DoActivateWindows( _this_ )
+            If Not is_root_( _this_ ) And _this_\address And Not _this_\anchors
+               PushListPosition( widgets( ) )
+               ChangeCurrentElement( widgets( ), _this_\address )
+               While PreviousElement( widgets( ) )
+                  If is_window_( widgets( ) )
+                     If IsChild( _this_, widgets( ) )
+                        DoActivate( widgets( ) )
+                     EndIf
+                  EndIf
+               Wend
+               PopListPosition( widgets( ) )
+            EndIf
+         EndMacro
+         Macro DoDeactiveWindows( _this_ )
+            If Not is_root_( _this_ ) And _this_\address And Not _this_\anchors
+               PushListPosition( widgets( ) )
+               ChangeCurrentElement( widgets( ), _this_\address )
+               While PreviousElement( widgets( ) )
+                  If is_window_( widgets( ) )
+                     If Not IsChild( _this_, widgets( ) )
+                        DoDeactivate( widgets( ) )
+                     EndIf
+                  EndIf
+               Wend
+               PopListPosition( widgets( ) )
+            EndIf
+         EndMacro
+      
          Protected result.i 
          Protected._s_WIDGET *active, *deactive, *deactiveWindow, *deactiveGadget
          
@@ -10378,7 +10395,13 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             If keyboard( )\active <> *active
-               ;
+               keyboard( )\deactive = keyboard( )\active
+               *deactive = keyboard( )\deactive
+               If ActiveWindow( )
+                  *deactiveWindow = ActiveWindow( )
+                  *deactiveGadget = ActiveGadget( )
+               EndIf
+               
                If *active
                   If *active\parent And 
                      *active\parent\type = #__type_Splitter
@@ -10417,25 +10440,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ProcedureReturn 0
                   EndIf
                EndIf
-               ;
+               
+               
                *active\root\active = *active
-               ; keyboard( )\widget = *active
-               
-               ;\\
-               ;                If  *active\anchors And 
-               ;                    *active\parent And
-               ;                   *active\parent\anchors
-               ;                  ; keyboard( )\active = *active
-               ;                  a_set( *active )
-               ;                Else
-               keyboard( )\deactive = keyboard( )\active
-               
-               *deactive = keyboard( )\deactive
-               If ActiveWindow( )
-                  *deactiveWindow = ActiveWindow( )
-                  *deactiveGadget = ActiveGadget( )
-               EndIf
-               
                If is_Window_( *active )
                   ActiveWindow( ) = *active
                Else
@@ -10457,8 +10464,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ; 
                If *deactive
+                  ; Debug "*deactive "+*deactive\class
                   If is_integral_( *deactive )
                      *deactive = *deactive\parent
+                     ; ProcedureReturn 0
                   EndIf
                   ;
                   If *deactiveWindow And
@@ -10485,7 +10494,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                      
                      If *deactiveGadget   
-                        If *deactiveGadget <> *active
+                        If *deactiveGadget <> *active And Not ( is_integral_( *deactiveGadget ) And *deactiveGadget\parent = *active )
                            DoDeactivate( *deactiveGadget )
                         EndIf
                      EndIf
@@ -10497,11 +10506,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If ActiveWindow( )
                      ;\\ set active all parents
                      DoActivateWindows( *active )
-                     DoActivate( ActiveWindow( ) )
+                     DoActivate( ActiveWindow( ))
                   EndIf
                   
                   If ActiveGadget( )
-                     DoActivate( ActiveGadget( ) )
+                     DoActivate( ActiveGadget( ))
                   EndIf
                EndIf
                ;                EndIf
@@ -14493,19 +14502,19 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          
-         If *this\type = #__type_Spin
-            If *this\stringbar
-               ; Debug " update spin-change " + *this\bar\PageChange( ) + " " + Str( *this\bar\thumb\pos - *this\bar\area\pos )
-               ;Protected i ; *bar\page\pos
-               For i = 0 To 3
-                  If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
-                     SetText( *this\stringbar, StrF( Val(Text), i ) )
-                     ;SetText( *this\stringbar, StrF( ( *this\bar\thumb\pos - *this\bar\area\pos ), i ) )
-                     Break
-                  EndIf
-               Next
-            EndIf
-         EndIf
+;          If *this\type = #__type_Spin
+;             If *this\stringbar
+;                ; Debug " update spin-change " + *this\bar\PageChange( ) + " " + Str( *this\bar\thumb\pos - *this\bar\area\pos )
+;                ;Protected i ; *bar\page\pos
+;                For i = 0 To 3
+;                   If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
+;                      SetText( *this\stringbar, StrF( Val(Text), i ) )
+;                      ;SetText( *this\stringbar, StrF( ( *this\bar\thumb\pos - *this\bar\area\pos ), i ) )
+;                      Break
+;                   EndIf
+;                Next
+;             EndIf
+;          EndIf
          
          If *this\type = #__type_ComboBox
             If *this\stringbar
@@ -14537,56 +14546,15 @@ CompilerIf Not Defined( widget, #PB_Module )
                Text.s = edit_make_insert_text( *this, Text.s )
                Text.s = RemoveString( Text.s, #LF$ )
             EndIf
-            
+             
             If *This\text\string.s <> Text.s
                *This\text\string.s = Text.s
                ;
                If *this\text\pass
-                  *this\text\pass$ = *this\text\string
+                  *this\text\pass$ = Text.s
                EndIf
                
-               ; ;                ;
-               ;                *this\scroll_width( )  = *this\padding\x * 2
-               ;                *this\scroll_height( ) = *this\padding\y * 2
-               ;                
-               ;                ;                Protected enter_index = - 1: If *this\LineEntered( ): enter_index = *this\LineEntered( )\lindex: *this\LineEntered( ) = #Null: EndIf
-               ;                ;                Protected focus_index = - 1: If *this\LineFocused( ): focus_index = *this\LineFocused( )\lindex: *this\LineFocused( ) = #Null: EndIf
-               ;                ;                Protected press_index = - 1: If *this\LinePressed( ): press_index = *this\LinePressed( )\lindex: *this\LinePressed( ) = #Null: EndIf
-               ;                
-               ;                *this\text\len = 0;Len(Text.s)
-               ;                *this\countitems = 0
-               ;                ClearList( *this\__lines( ))
-               ;                
-               ;                Protected String.s = Text.s + #LF$
-               ;                Protected *str.Character = @String
-               ;                Protected *end.Character = @String
-               ;                Protected len = Len( #LF$ )
-               ;                
-               ;                While *end\c
-               ;                   If *end\c = #LF
-               ;                      LastElement( *this\__lines( ))
-               ;                      AddElement( *this\__lines( ))
-               ;                      *this\__lines( )\lindex = ListIndex( *this\__lines( ))
-               ;                      *this\__lines( )\text\len  = (*end - *str) >> #PB_Compiler_Unicode
-               ;                      *this\__lines( )\text\string = PeekS ( *str, *this\__lines( )\text\len )
-               ;                      *this\__lines( )\text\pos = *this\text\len 
-               ;                      *this\text\len + *this\__lines( )\text\len + len
-               ;                      *this\countitems + 1
-               ;                      
-               ;                      
-               ;                      ;                      ;
-               ;                      ;                      If enter_index = *this\__lines( )\lindex: *this\LineEntered( ) = *this\__lines( ): EndIf
-               ;                      ;                      If focus_index = *this\__lines( )\lindex: *this\LineFocused( ) = *this\__lines( ): EndIf
-               ;                      ;                      If press_index = *this\__lines( )\lindex: *this\LinePressed( ) = *this\__lines( ): EndIf
-               ;                      
-               ;                      *str = *end + #__sOC
-               ;                   EndIf
-               ;                   *end + #__sOC
-               ;                Wend
-               ;                
-               ;                ;
-               ;                *this\text\len - len
-               
+              
                ;; ReDraw(*this\root)
                ;*this\TextChange( )   = 1
                ;*this\WidgetChange( ) = 1
@@ -14602,10 +14570,22 @@ CompilerIf Not Defined( widget, #PB_Module )
                Update_DrawText( *this, 1 )
                
                If *this\LineFocused( )
+                  If is_integral_( *this )
+                     If *this\parent\type = #__type_Spin
+                        If *this\focus
+                           *this\edit_caret_2( ) = 0
+                        Else
+                           *this\edit_caret_2( ) = *this\text\len
+                        EndIf
+                        *this\edit_caret_1( ) = *this\text\len 
+                        *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
+                     EndIf
+                  EndIf
+                  
                   edit_sel_string_( *this, *this\LineFocused( ) )
                   edit_sel_text_( *this, *this\LineFocused( ) )
                EndIf
-               
+                        
                ProcedureReturn 1
             EndIf
          Else
@@ -18791,14 +18771,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                Case #__type_String
-                  If event = #__event_Change
-                     If is_integral_( *this )
-                        If *this\parent
+                  If is_integral_( *this )
+                     If event = #__event_Change
+                        If keyboard( )\input
                            If Not SetState( *this\parent, Val(GetText( *this )))
                               SetText( *this, Str( *this\parent\bar\page\pos ))
                            EndIf
-                           edit_SetState( *this, *this\text\len )
                         EndIf
+                     EndIf
+                     
+                     If event = #__event_LostFocus
+                        edit_SetState( *this, 0 )
                      EndIf
                   EndIf
                   
@@ -23167,7 +23150,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\color\back <> - 1
                If *this\color\fore <> - 1
                   draw_mode_alpha_( #PB_2DDrawing_Gradient )
-                  __draw_gradient( *this\text\vertical, *this, 0,0, state, 0, 0, [#__c_frame] )
+                  __draw_gradient( *this\text\vertical, *this, *this\fs[1],*this\fs[2], state, 0, 0, [#__c_frame] )
                Else
                   draw_mode_alpha_( #PB_2DDrawing_Default )
                   __draw_box( *this, color\back, [#__c_frame])
@@ -26935,9 +26918,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 6709
-; FirstLine = 6564
-; Folding = -----------------------------------Hsf-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-X---8---f-----------------------------------------------------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------4--------------------------------------------0+-+n7t-8q0-----------------------f0---4-f8-------------------------------48-vv-Xu8l-8+Vs--------------------------------0-----------f---+-+-------+----------47---v----------------------v--------------
+; CursorPosition = 10320
+; FirstLine = 9814
+; Folding = -----------------------------------Hsf-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-X---8---f-----------------------0vv---------------------------------------------------------------------------------------------------------8---------------4-------------------------------------------------------------------------4------------------------------------------000+-+n7t-8q0--------------------+47u70--vv-3--04v--------------------------v4-ff-vc4L-40rY--------------------------------8------------+--0-0-------0----------v2---f----------------------f--------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
