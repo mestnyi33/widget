@@ -58,6 +58,8 @@ EndProcedure
 Procedure BindGadgets(gadgetNo)
   If IsGadget(gadgetNo)
     gtk_widget_add_events_(GadgetID(gadgetNo), #GDK_ALL_EVENTS_MASK  )
+    ; gtk_widget_add_events_(GadgetID(#Edt1), gtk_widget_get_events_(GadgetID(#Edt1)) | #GDK_SCROLL_MASK)
+	
     g_signal_connect_data(GadgetID(gadgetNo), "event", @GadgetHandler(), gadgetNo, 0, 0)
   EndIf
 EndProcedure
@@ -75,6 +77,7 @@ Next
 
 While WaitWindowEvent() ! #PB_Event_CloseWindow : Wend
 ; IDE Options = PureBasic 6.12 LTS (Linux - x64)
-; CursorPosition = 9
+; CursorPosition = 60
+; FirstLine = 42
 ; Folding = --
 ; EnableXP
