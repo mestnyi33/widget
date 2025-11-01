@@ -10283,9 +10283,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this\focus <> state
             If test_focus_set
                If state = #__s_2
-                  Debug "DoActivate "+*this\focus +" "+ *this\class
+                  Debug " ["+ *this\focus +"] DoActivate "+*this\class
                ElseIf state = #__s_3
-                  Debug "DoDeactivate "+*this\focus +" "+ *this\class
+                  Debug "   ["+ *this\focus +"] DoDeactivate "+*this\class
                EndIf
             EndIf
             *this\focus = state
@@ -10357,7 +10357,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                While PreviousElement( widgets( ) )
                   If is_window_( widgets( ) )
                      If IsChild( _this_, widgets( ) )
-                        DoActivate( widgets( ) )
+                        ;DoActivate( widgets( ) )
                      EndIf
                   EndIf
                Wend
@@ -10371,7 +10371,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                While PreviousElement( widgets( ) )
                   If is_window_( widgets( ) )
                      If Not IsChild( _this_, widgets( ) )
-                        DoDeactivate( widgets( ) )
+                        ;DoDeactivate( widgets( ) )
                      EndIf
                   EndIf
                Wend
@@ -10515,8 +10515,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;                EndIf
             Else
-               Debug "setactive()-------"+ *this\class +" "+ *Active\class +"-------"
-                  If *this = *Active
+               If test_focus_set > 1
+                  Debug "setactive()-------"+ *this\class +" "+ *Active\class +"-------"
+               EndIf
+               If *this = *Active
                   ; activate canvas
                   If ActiveWindow( ) 
                      If ActiveWindow( )\root = *active\root
@@ -19432,7 +19434,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If eventtype = #PB_EventType_LostFocus
             If GetActive( ) And GetActive( )\root And GetActive( )\root\canvas\gadget = eventgadget
                ; Debug IsWindow(GetActive( )\root\canvas\window)
-               If test_focus_set
+               If test_focus_set = 2
                   Debug "CANVAS - LostFocus " + GetActive( )\root\class +" "+ GetActive( )\root\canvas\gadget + " " + eventgadget
                EndIf
                SetActive( 0 )
@@ -20154,6 +20156,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         EndIf
                      Else
                         SetActive( Entered( ))
+                        ; Debug " PRESSTOSETACTIVE "
                      EndIf
                   EndIf
                EndIf
@@ -25326,6 +25329,14 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; MessageBeep_(#MB_ICONHAND)
          ;
          
+         ; Так как мы отрезали событие
+         If GetActive( )
+            If Not GetActive( )\focus
+               SetActive( GetActive( ))
+            EndIf
+         EndIf
+         
+         ;
          Protected result, X, Y, Width = 400, Height = 120
          Protected img = - 1, f1 = - 1, f2 = 8
          Protected bw = 85, bh = 25, iw = Height - bh - f1 - f2 * 4 - 2 - 1
@@ -26917,10 +26928,10 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Linux - x64)
-; CursorPosition = 19473
-; FirstLine = 18550
-; Folding = -----------------------------------Hsf-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-X---8---f-----------------------0vv---------------------------------------------------------------------------------------------------------8---------------4-------------------------------------------------------------------------4------------------------------------------000+-+n7t-8q0--------------------+47v70--vv-3--04v----f---------------------v4-ff-vc4L-40rY--------------------------------8------------+--0-0-------0----------v2---f----------------------f--------------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 20158
+; FirstLine = 18650
+; Folding = -----------------------------------Hsf-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-X---8---f-----------------------0-v---------------------------------------------------------------------------------------------------------4---------------v-------------------------------------------------------------------------v------------------------------------------8880-0P2b-4V8--------------------0-2d28--ff-t--8vf-----+--------------------fv--++f6uX+v8Xx+-------------------------------4------------0--8-8-------8----------fr----+----------------------8-------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
