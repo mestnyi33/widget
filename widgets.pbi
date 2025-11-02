@@ -223,7 +223,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-   GLOBALS
       ;-  -----------------
       Global display_mode_linux = 1
-      
+      Global test_canvas_events = 0 
       Global test_align = 0
       Global test_atpoint
       Global test_display
@@ -19398,6 +19398,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          ;
          If eventtype = #PB_EventType_Focus
+            If test_canvas_events
+               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+            EndIf
             If GetActive( )
                If Entered( ) And Entered( )\press
                   If Entered( )\root\canvas\gadget = eventgadget
@@ -19432,6 +19435,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If eventtype = #PB_EventType_LostFocus
+            If test_canvas_events
+               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+            EndIf
             If GetActive( ) And GetActive( )\root And GetActive( )\root\canvas\gadget = eventgadget
                ; Debug IsWindow(GetActive( )\root\canvas\window)
                If test_focus_set = 2
@@ -19444,6 +19450,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If eventtype = #PB_EventType_Resize 
+            If test_canvas_events
+               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+            EndIf
             ; PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
             PushMapPosition( roots( ) )
             ChangeCurrentCanvas( GadgetID( eventgadget ), 0)
@@ -19456,6 +19465,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If eventtype = #PB_EventType_MouseWheelX
+            If test_canvas_events
+               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+            EndIf
             If Entered( )
                MouseWheelDirection( ) = - 1
                mouse( )\wheeldata = eventdata
@@ -19473,7 +19485,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If eventtype = #PB_EventType_MouseWheelY
-           If Entered( )
+           If test_canvas_events
+               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+            EndIf
+            If Entered( )
                MouseWheelDirection( ) = 1
                mouse( )\wheeldata = eventdata
                If eventdata < 0
@@ -19490,6 +19505,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If eventtype = #PB_EventType_MouseEnter
+            If test_canvas_events
+               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+            EndIf
             ; Debug " #PB_EventType_MouseEnter "+eventgadget
             If Not ( root( ) And root( )\canvas\gadget = eventgadget )
                ChangeCurrentCanvas( GadgetID( eventgadget ) )
@@ -19503,6 +19521,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If eventtype = #PB_EventType_MouseLeave
+            If test_canvas_events
+               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+            EndIf
             If Pressed( ) And
                Pressed( )\root <> root( )
                ChangeCurrentCanvas( GadgetID( Pressed( )\root\canvas\gadget ) )
@@ -19516,6 +19537,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          If eventtype = #PB_EventType_LeftButtonDown Or
             eventtype = #PB_EventType_MiddleButtonDown Or
             eventtype = #PB_EventType_RightButtonDown
+            If test_canvas_events
+               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+            EndIf
             ;
             mouse( )\data | #__mouse_press
             ;
@@ -19648,6 +19672,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          If eventtype = #PB_EventType_LeftButtonUp Or 
             eventtype = #PB_EventType_MiddleButtonUp Or
             eventtype = #PB_EventType_RightButtonUp
+            If test_canvas_events
+               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+            EndIf
             ;
             If eventtype = #PB_EventType_LeftButtonUp : event = #__event_LeftUp : EndIf
             If eventtype = #PB_EventType_MiddleButtonUp : event = #__event_MiddleUp : EndIf
@@ -19669,6 +19696,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          If eventtype = #PB_EventType_KeyDown Or
             eventtype = #PB_EventType_Input Or
             eventtype = #PB_EventType_KeyUp
+            If test_canvas_events
+               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+            EndIf
             Protected *keywidget._s_WIDGET
             
             *keywidget = GetActive( )
@@ -26929,9 +26959,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 20158
-; FirstLine = 18650
-; Folding = -----------------------------------Hsf-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-X---8---f-----------------------0-v---------------------------------------------------------------------------------------------------------4---------------v-------------------------------------------------------------------------v------------------------------------------8880-0P2b-4V8--------------------0-2d28--ff-t--8vf-----+--------------------fv--++f6uX+v8Xx+-------------------------------4------------0--8-8-------8----------fr----+----------------------8-------------
+; CursorPosition = 19701
+; FirstLine = 18581
+; Folding = -----------------------------------Hsf-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-X---8---f-----------------------0-v---------------------------------------------------------------------------------------------------------4---------------v-------------------------------------------------------------------------v------------------------------------------8880-0P2b-4V8--------------------0f4evtv---08f8--+84----v---------------------48-vv-Xu8l-8+Vs--------------------------------0-----------f---+-+-------+----------47---v-----------------------+-------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -242,9 +242,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Until eventID = #PB_Event_CloseWindow
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Linux - x64)
-; CursorPosition = 131
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 146
 ; FirstLine = 125
 ; Folding = ---
 ; EnableXP
 ; DPIAware
+; LinkerOptions = gtk3

@@ -33,19 +33,20 @@ ProcedureC ChangeHandler(*Scrollbar, *event.GdkEventScroll, value.d, user_data)
   ;SetGadgetState(0, GetGadgetState(0)+1)
   
   ; return #true to stop default processing
+ ; ProcedureReturn  gtk_main_do_event_(*event)
   ProcedureReturn #True
 EndProcedure
   
   
 If OpenWindow(0, 0, 0, 305, 140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  CanvasGadget(0,  10, 42, 250,  200, #PB_Canvas_Border|#PB_Canvas_Container)
+  CanvasGadget(0,  10, 42, 250,  200, #PB_Canvas_Border);|#PB_Canvas_Container)
   g_signal_connect_data_(GadgetID(0), "scroll-event", @ChangeHandler(), 0, #Null, 0)
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-
 ; IDE Options = PureBasic 6.12 LTS (Linux - x64)
-; CursorPosition = 40
+; CursorPosition = 42
+; FirstLine = 11
 ; Folding = -
 ; EnableXP
 ; DPIAware

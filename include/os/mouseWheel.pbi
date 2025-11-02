@@ -1,205 +1,272 @@
-﻿    Declare update_vertical_scroll_bar_dictionary()
-   
-   
-    Enumeration
-    #WINDOW_MAIN
-    #PANEL_BOX_DICTIONARY
-    #PANEL_BOX_DICTIONARY_VERTICAL_BAR
-    EndEnumeration
-    
-    
-Enumeration 1000
-  #PB_EventType_MouseWheel_Down = #PB_EventType_FirstCustomValue
-  #PB_EventType_MouseWheel_Up
-EndEnumeration    
-    
-    
-    #ListIcon=#PANEL_BOX_DICTIONARY
-    #Window=#WINDOW_MAIN
-   
-    Global number_of_words=100
-    Global Dim words$(number_of_words-1)
-    Global number_of_lines=13
-    For f=0 To number_of_words-1
-      words$(f)="Word #"+Str(f)
-    Next f
-    
-    
+﻿
+Enumeration
+  #WINDOW
+  #OBJECT
+EndEnumeration
+
+
 CompilerSelect #PB_Compiler_OS
-  CompilerCase #PB_OS_Linux ; --------------------------------------------------
-    ProcedureC MouseWheelCallback(*Event.GdkEventScroll, *UserData)
-      Protected *ListView.GtkWidget = GadgetID(#ListIcon)
-     
-      If *ListView\window = gdk_window_get_parent_(*Event\window)
-        If *Event\type = #GDK_SCROLL
-          Select *Event\direction
-            Case #GDK_SCROLL_UP
-              PostEvent(#PB_Event_Gadget, #Window, #ListIcon,
-                #PB_EventType_MouseWheel_Up)
-            Case #GDK_SCROLL_DOWN
-              PostEvent(#PB_Event_Gadget, #Window, #ListIcon,
-                #PB_EventType_MouseWheel_Down)
-          EndSelect
-        EndIf
+  CompilerCase #PB_OS_Linux 
+    ImportC ""
+      gdk_event_get_scroll_deltas(*Event, *delta_x, *delta_y)
+      gdk_event_get_scroll_direction( *Event, *direction )
+    EndImport
+    ImportC ""
+      gtk_widget_is_composited(*widget.GtkWidget)
+      gtk_widget_set_opacity(*window.GtkWindow, opacity.d)
+      gtk_scale_clear_marks(*scale.GtkScale)
+      gtk_scale_add_mark(*scale.GtkScale, value.d, position.i, *markup)
+      gtk_range_get_value.d(*range.GtkRange)
+      gtk_adjustment_set_lower(*adjustment.GtkAdjustment, lower.d)
+      gtk_adjustment_set_value(*adjustment.GtkAdjustment, value.d)
+      g_signal_connect(*instance, detailed_signal.p-utf8, *c_handler, *data, destroy= 0, flags= 0) As "g_signal_connect_data"
+    EndImport
+
+    ProcedureC MouseWheelCallback( *event.GdkEventMotion, user_data ) ; GdkEventAny
+      Protected.d delta_x, delta_y
+      Protected *object.GtkWidget = user_data
+      
+      Protected *eventScroll.GdkEventScroll = *event
+      Protected *eventButton.GdkEventButton = *Event
+      
+      If *event\type = #GDK_SCROLL
+        gdk_event_get_scroll_deltas(*event, @deltaX, @deltaY)
+        
+        ;         Protected direction
+        ;         gdk_event_get_scroll_direction( *Event, @direction )
+        ;         Debug direction
+        
+        Debug "wheel "+*eventScroll\direction +" "+ delta_x +" "+delta_y ;+" "+ gtk_range_get_value(*object)
+        
+        ;         Select *event\direction
+        ;           Case #GDK_SCROLL_LEFT
+        ;             Debug "wheel left "+delta_x
+        ;           Case #GDK_SCROLL_RIGHT
+        ;             Debug "wheel right "+delta_x
+        ;           Case #GDK_SCROLL_UP
+        ;             Debug "wheel up "+delta_y
+        ;           Case #GDK_SCROLL_DOWN
+        ;             Debug "wheel down "+delta_y +" "+*event\y
+        ;         EndSelect
       EndIf
-     
-      gtk_main_do_event_(*Event)
+      
+      
+      
+;       Select *Event\type
+;         Case #GDK_DELETE
+;           Debug "Event: GDK_DELETE: 0 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_DESTROY
+;           Debug "Event: GDK_DESTROY: 1 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_EXPOSE ; огда перерисовываем наше окно
+;           Debug "Event: GDK_EXPOSE: 2 " + Str(*Event\type) + " user_data: " + *object\name ; Str(user_data)
+;           ; ;     Case #GDK_BUTTON_MOTION_MASK
+;           ; ;         Debug "Event: GDK_MOTION_NOTIFY: 3 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_MOTION_NOTIFY
+;           ; Debug "Event: GDK_MOTION_NOTIFY: 3 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_BUTTON_PRESS
+;           Debug "Event: GDK_BUTTON_PRESS: 4 " + Str(*eventButton\button) + " user_data: " + Str(user_data)
+;         Case #GDK_2BUTTON_PRESS
+;           Debug "Event: GDK_2BUTTON_PRESS: 5 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_3BUTTON_PRESS
+;           Debug "Event: GDK_3BUTTON_PRESS: 6 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_BUTTON_RELEASE
+;           Debug "Event: GDK_BUTTON_RELEASE: 7 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_KEY_PRESS
+;           Debug "Event: GDK_KEY_PRESS: 8 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_KEY_RELEASE
+;           Debug "Event: GDK_KEY_RELEASE: 9 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_ENTER_NOTIFY
+;           Debug "Event: GDK_ENTER_NOTIFY: 10 " + *Widget +" "+ Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_LEAVE_NOTIFY
+;           Debug "Event: GDK_LEAVE_NOTIFY: 11 " + *Widget +" "+ Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_FOCUS_CHANGE
+;           Debug "Event: GDK_FOCUS_CHANGE: 12 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_CONFIGURE
+;           Debug "Event: GDK_CONFIGURE: 13 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_MAP
+;           Debug "Event: GDK_MAP: 14 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_UNMAP
+;           Debug "Event: GDK_UNMAP: 15 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_PROPERTY_NOTIFY
+;           Debug "Event: GDK_PROPERTY_NOTIFY: 16 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_SELECTION_CLEAR
+;           Debug "Event: GDK_SELECTION_CLEAR: 17 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_SELECTION_REQUEST
+;           Debug "Event: GDK_SELECTION_REQUEST: 18 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_SELECTION_NOTIFY
+;           Debug "Event: GDK_SELECTION_NOTIFY: 19 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_PROXIMITY_IN
+;           Debug "Event: GDK_PROXIMITY_IN: 20 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_PROXIMITY_OUT
+;           Debug "Event: GDK_PROXIMITY_OUT: 21 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_DRAG_ENTER
+;           Debug "Event: GDK_DRAG_ENTER: 22 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_DRAG_LEAVE
+;           Debug "Event: GDK_DRAG_LEAVE: 23 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_DRAG_MOTION
+;           Debug "Event: GDK_DRAG_MOTION: 24 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_DRAG_STATUS
+;           Debug "Event: GDK_DRAG_STATUS: 25 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_DROP_START
+;           Debug "Event: GDK_DROP_START: 26 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_DROP_FINISHED
+;           Debug "Event: GDK_DROP_FINISHED: 27 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_CLIENT_EVENT
+;           Debug "Event: GDK_CLIENT_EVENT: 28 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_VISIBILITY_NOTIFY
+;           Debug "Event: GDK_VISIBILITY_NOTIFY: 29 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_NO_EXPOSE
+;           Debug "Event: GDK_NO_EXPOSE: 30 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_SCROLL
+;           Debug "Event: GDK_SCROLL: 31 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;         Case #GDK_WINDOW_STATE
+;           Debug "Event: GDK_WINDOW_STATE: 32 " + Str(*Event\type) + " user_data: " + Str(user_data)
+;       EndSelect
+; ;       
+;       Select *event\type
+;     Case #GTK_SCROLL_NONE: Debug "#GTK_SCROLL_NONE"
+;     Case #GTK_SCROLL_JUMP: Debug "#GTK_SCROLL_JUMP"
+;     Case #GTK_SCROLL_STEP_BACKWARD: Debug "#GTK_SCROLL_STEP_BACKWARD"
+;     Case #GTK_SCROLL_STEP_FORWARD: Debug "#GTK_SCROLL_STEP_FORWARD"
+;     Case #GTK_SCROLL_PAGE_BACKWARD: Debug "#GTK_SCROLL_PAGE_BACKWARD"
+;     Case #GTK_SCROLL_PAGE_FORWARD: Debug "#GTK_SCROLL_PAGE_FORWARD"
+;     Case #GTK_SCROLL_STEP_UP: Debug "#GTK_SCROLL_STEP_UP"
+;     Case #GTK_SCROLL_STEP_DOWN: Debug "#GTK_SCROLL_STEP_DOWN"
+;     Case #GTK_SCROLL_PAGE_UP: Debug "#GTK_SCROLL_PAGE_UP"
+;     Case #GTK_SCROLL_PAGE_DOWN: Debug "#GTK_SCROLL_PAGE_DOWN"
+;     Case #GTK_SCROLL_STEP_LEFT: Debug "#GTK_SCROLL_STEP_LEFT"
+;     Case #GTK_SCROLL_STEP_RIGHT: Debug "#GTK_SCROLL_STEP_RIGHT"
+;     Case #GTK_SCROLL_PAGE_LEFT: Debug "#GTK_SCROLL_PAGE_LEFT"
+;     Case #GTK_SCROLL_PAGE_RIGHT: Debug "#GTK_SCROLL_PAGE_RIGHT"
+;     Case #GTK_SCROLL_START: Debug "#GTK_SCROLL_START"
+;     Case #GTK_SCROLL_END: Debug "#GTK_SCROLL_END"
+;   EndSelect
+;  
+      gtk_main_do_event_(*event)
     EndProcedure
-  CompilerCase #PB_OS_MacOS ; --------------------------------------------------
+    
+  CompilerCase #PB_OS_MacOS 
+    Define MachPort.I
     #kCGEventTapOptionListenOnly = 1
     #kCGHeadInsertEventTap = 0
     #NX_SCROLLWHEELMOVED = 22
     #NX_SCROLLWHEELMOVEDMASK = 1 << #NX_SCROLLWHEELMOVED
-
+    
     ImportC ""
       CGEventTapCreateForPSN(*ProcessSerialNumber, CGEventTapPlacement.I, CGEventTapOptions.I, CGEventMask.Q, CGEventTapCallback.I, *UserData)
       GetCurrentProcess(*ProcessSerialNumber)
     EndImport
-
+    
     ProcedureC MouseWheelCallback(CGEventTapProxy.I, CGEventType.I, CGEvent.I,  *UserData)
       Protected DeltaY.CGFloat
-      Protected NSEvent.I
+      Protected NSEvent.I, contentView.I
       Protected Point.NSPoint
-     
+      
       NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", CGEvent)
       CocoaMessage(@Point, NSEvent, "locationInWindow")
-     
-      If CocoaMessage(0, CocoaMessage(0, WindowID(#Window), "contentView"), "hitTest:@", @Point) = GadgetID(#ListIcon)
+      contentView = CocoaMessage(0, WindowID(#WINDOW), "contentView")
+      
+      If CocoaMessage(0, contentView, "hitTest:@", @Point) = GadgetID(#OBJECT)
         CocoaMessage(@DeltaY, NSEvent, "deltaY")
-       
+        
         If DeltaY < 0.0
-          PostEvent(#PB_Event_Gadget, #Window, #ListIcon,
-            #PB_EventType_MouseWheel_Down)
+          Debug "down"
         Else
-          PostEvent(#PB_Event_Gadget, #Window, #ListIcon,
-            #PB_EventType_MouseWheel_Up)
+          Debug "up"
         EndIf
       EndIf
     EndProcedure
-  CompilerCase #PB_OS_Windows ; ------------------------------------------------
-    Define DefaultListIconCallback.I
-
-    Procedure CustomListIconCallback(WindowHandle.I, Msg.I, WParam.I, LParam.I)
-      Shared DefaultListIconCallback.I
-
+    
+  CompilerCase #PB_OS_Windows
+    Define DefaultObjectCallback.I
+    
+    Procedure.w HIWORD(Value.L)
+      ProcedureReturn (((Value) >> 16) & $FFFF)
+    EndProcedure
+    
+    Procedure.w LOWORD(Value)
+      ProcedureReturn ((Value) & $FFFF)
+    EndProcedure
+    
+    Procedure MouseWheelCallback(Handle.I, Msg.I, WParam.I, LParam.I)
+      Shared DefaultObjectCallback.I
+      
       If Msg = #WM_MOUSEWHEEL
         If (WParam >> 16) & $8000
-          PostEvent(#PB_Event_Gadget, #Window, #ListIcon,
-            #PB_EventType_MouseWheel_Down)
+          Debug ""+Str(WParam >> 16) 
         Else         
-          PostEvent(#PB_Event_Gadget, #Window, #ListIcon,
-            #PB_EventType_MouseWheel_Up)
+          Debug ""+Str(WParam >> 16) 
         EndIf
+        
+      ElseIf Msg = #WM_MOUSEHWHEEL
+        
       EndIf
-
-      ProcedureReturn CallWindowProc_(DefaultListIconCallback, WindowHandle, Msg, WParam, LParam)
-   EndProcedure
+      
+      ProcedureReturn CallWindowProc_(DefaultObjectCallback, Handle, Msg, WParam, LParam)
+    EndProcedure
 CompilerEndSelect
 
-Define i.I    
 
 
+Procedure FreeEventCallback( )
+  CompilerSelect #PB_Compiler_OS
+    CompilerCase #PB_OS_Linux
+      gdk_event_handler_set_(0, 0, 0)
+    CompilerCase #PB_OS_MacOS
+      CFRelease_( MachPort )
+  CompilerEndSelect
+EndProcedure
 
-    ; Open a Window
-    If OpenWindow(#WINDOW_MAIN,0,0,1024,600,"Proofing Tool GUI",#PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_ScreenCentered)=#False : MessageRequester("Error", "Can't open a window.", 0) : EndIf
-   
-   
-    ; Create the objects in the "Dictionary" tab
-    ListIconGadget(#PANEL_BOX_DICTIONARY,4,20-5,15+10+40+40+30+15+600-20+10+5+4+4+4-300-10-5-5-2,300-30+5+40,"#",30+40+10+5,#PB_ListIcon_FullRowSelect|#PB_ListIcon_AlwaysShowSelection|#PB_ListIcon_CheckBoxes)
-    AddGadgetColumn(#PANEL_BOX_DICTIONARY,1,"Words",100+10+20+20+10)
-    AddGadgetColumn(#PANEL_BOX_DICTIONARY,2,"Tags",150+5+15+300)
-    ScrollBarGadget(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,GadgetX(#PANEL_BOX_DICTIONARY)+GadgetWidth(#PANEL_BOX_DICTIONARY),20-5,25-5-2,300-30+5+40,0,0,number_of_lines,#PB_ScrollBar_Vertical)
-   
-   
-    ; New code to handle the vertical scroll bar
-    SetGadgetAttribute(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,#PB_ScrollBar_Maximum,number_of_words-1)
-    SetGadgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,0)
-    update_vertical_scroll_bar_dictionary()   
-   
-    
-CompilerSelect #PB_Compiler_OS
-  CompilerCase #PB_OS_Linux
-    gdk_event_handler_set_(@MouseWheelCallback(), 0, 0)
-  CompilerCase #PB_OS_MacOS
-    Define MachPort.I
-    Define ProcessSerialNumber.Q
-
-    GetCurrentProcess(@ProcessSerialNumber)
-    MachPort = CGEventTapCreateForPSN(@ProcessSerialNumber,
-      #kCGHeadInsertEventTap, #kCGEventTapOptionListenOnly,
-      #NX_SCROLLWHEELMOVEDMASK, @MouseWheelCallback(), 0)
-
-    If MachPort
-      CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"),
-      "addPort:", MachPort, "forMode:$", @"kCFRunLoopCommonModes")
-    EndIf
-  CompilerCase #PB_OS_Windows
-    DefaultListIconCallback = GetWindowLongPtr_(GadgetID(#ListIcon), #GWL_WNDPROC)
-    SetWindowLongPtr_(GadgetID(#ListIcon), #GWL_WNDPROC, @CustomListIconCallback())
-CompilerEndSelect
-
-SetActiveGadget(#ListIcon)    
-
-  BindGadgetEvent(#PANEL_BOX_DICTIONARY_VERTICAL_BAR, @update_vertical_scroll_bar_dictionary()) ; Dictionary
-
-Repeat
-  Select WaitWindowEvent()
-    Case #PB_Event_CloseWindow
-      CompilerSelect #PB_Compiler_OS
-        CompilerCase #PB_OS_Linux
-          gdk_event_handler_set_(0, 0, 0)
-        CompilerCase #PB_OS_MacOS
-          CFRelease_(MachPort)
-      CompilerEndSelect
-      Break
-    Case #PB_Event_Gadget
-      If EventGadget() = #ListIcon
-        Select EventType()
-          Case #PB_EventType_MouseWheel_Down
-            Debug "Mouse wheel moved down"
-            SetGadgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,GetGadgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR)+10)
-            update_vertical_scroll_bar_dictionary() 
-          Case #PB_EventType_MouseWheel_Up
-            Debug "Mouse wheel moved up"
-            SetGadgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,GetGadgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR)-10)
-            update_vertical_scroll_bar_dictionary() 
-        EndSelect
+Procedure SetEventCallback( object )
+  CompilerSelect #PB_Compiler_OS
+    CompilerCase #PB_OS_Linux
+      ; gtk_widget_add_events_(object, #GDK_ALL_EVENTS_MASK)
+      gdk_event_handler_set_( @MouseWheelCallback() , object, 0)
+      ; g_signal_connect(object, "event", @MouseWheelCallback2(), object )  
+                            
+    CompilerCase #PB_OS_MacOS
+      Shared MachPort.I
+      Protected ProcessSerialNumber.Q
+      
+      GetCurrentProcess(@ProcessSerialNumber)
+      MachPort = CGEventTapCreateForPSN(@ProcessSerialNumber,
+                                        #kCGHeadInsertEventTap, #kCGEventTapOptionListenOnly,
+                                        #NX_SCROLLWHEELMOVEDMASK,  @MouseWheelCallback() , 0)
+      
+      If MachPort
+        CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), 
+                     "addPort:", MachPort, "forMode:$", @"kCFRunLoopCommonModes")
       EndIf
-  EndSelect
-ForEver
-End
+    CompilerCase #PB_OS_Windows
+      Shared DefaultObjectCallback.I 
+      DefaultObjectCallback = GetWindowLongPtr_(object, #GWL_WNDPROC)
+      SetWindowLongPtr_(object, #GWL_WNDPROC,  @MouseWheelCallback() )
+  CompilerEndSelect
+EndProcedure
 
 
-   
-   
-  Procedure update_vertical_scroll_bar_dictionary() 
-    ClearGadgetItems(#PANEL_BOX_DICTIONARY)
-    If number_of_words=0
-      SetGadgetAttribute(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,#PB_ScrollBar_Minimum,0)
-      SetGadgetAttribute(#PANEL_BOX_DICTIONARY_VERTICAL_BAR,#PB_ScrollBar_Maximum,0)
-      ProcedureReturn
-    EndIf
-    beginloop = GetGadgetState(#PANEL_BOX_DICTIONARY_VERTICAL_BAR)
-;     endloop = beginloop + 10
-    endloop=beginloop+number_of_lines-1
-    If endloop>ArraySize(words$())
-      endloop=ArraySize(words$())
-    EndIf
-    For f=beginloop To endloop     
-      AddGadgetItem(#PANEL_BOX_DICTIONARY,-1,Str(f+1)+Chr(10)+words$(f))     
-      SetGadgetItemColor(#PANEL_BOX_DICTIONARY,#PB_All,#PB_Gadget_FrontColor,$999999,0)
-;       If words_selected(f)=#True : SetGadgetItemState(#PANEL_BOX_DICTIONARY,f-beginloop,#PB_ListIcon_Checked) : EndIf
-    Next f
-   
-    t=beginloop
-    t1=selected_dictionary_word-t
-;     If t1>=0 And t1<=10 : SetGadgetState(#PANEL_BOX_DICTIONARY,t1) : EndIf           
-    If t1>=0 And t1<=number_of_lines-1 : SetGadgetState(#PANEL_BOX_DICTIONARY,t1) : EndIf    
-    
+; Open a Window
+If OpenWindow(#WINDOW,0,0,600,400,"mouse wheel demo",#PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_ScreenCentered)
+  SetWindowColor( #WINDOW, $ffff00)
+  CanvasGadget(#OBJECT,10,10,580,380)
   
-  EndProcedure  
+  SetEventCallback( GadgetID(#OBJECT) )
+  
+  SetActiveGadget(#OBJECT)    
+  
+  
+  Repeat
+    Select WaitWindowEvent()
+      Case #PB_Event_CloseWindow
+        FreeEventCallback( )
+        Break
+    EndSelect
+  ForEver
+  End
+EndIf
 
-
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ----
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 224
+; FirstLine = 12
+; Folding = ---
 ; EnableXP

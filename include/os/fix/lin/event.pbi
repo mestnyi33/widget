@@ -98,8 +98,8 @@ Module events
       BindEvent( #PB_Event_Gadget, @Events( ) )
    EndProcedure
 EndModule
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 42
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 53
+; FirstLine = 65
 ; Folding = ---
 ; EnableXP
