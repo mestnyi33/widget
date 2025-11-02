@@ -577,7 +577,7 @@
   
   Procedure fixed_events( gadget, event )
     If event = #PB_EventType_MouseMove
-      ; ProcedureReturn 0
+       ProcedureReturn 0
     EndIf
     ;
     Debug " ["+gadget+"] "+ PBClassFromEvent(event) 
@@ -709,6 +709,8 @@
         EndIf
       EndIf
       
+      fixed_events( EventGadget( ), EventType( ) )
+    
     Else
       fixed_events( EventGadget( ), EventType( ) )
     EndIf
@@ -817,9 +819,9 @@ CompilerEndIf
 ; [20] MouseLeave
 ; [20] LeftButtonUp
 ; [20] LostFocus
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 739
-; FirstLine = 663
-; Folding = -------------------f-----
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 579
+; FirstLine = 567
+; Folding = ----------------------0--
 ; EnableXP
 ; DPIAware
