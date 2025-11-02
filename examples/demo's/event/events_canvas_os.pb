@@ -584,7 +584,7 @@
   EndProcedure
   
   Procedure windows_events( )
-    Static down, move, leave, drag, gadgetID, enterID
+    Static down, move, leave, drag, double, gadgetID, enterID
     
     If EventType( ) = #PB_EventType_LeftButtonDown
       down = 1
@@ -593,11 +593,18 @@
       drag = 0
       move = 1
       fixed_events( EventGadget( ), EventType( ))
+    ElseIf EventType( ) = #PB_EventType_LeftDoubleClick
+      double = 1
     ElseIf EventType( ) = #PB_EventType_LeftClick
-      If down = 1
-        down = 0
-        fixed_events( EventGadget( ), EventType( ))
-      EndIf
+       If down = 1
+          down = 0
+          If double = 1
+             double = 0
+             fixed_events( EventGadget( ), #PB_EventType_LeftDoubleClick)
+          Else
+             fixed_events( EventGadget( ), EventType( ))
+          EndIf
+       EndIf
     ElseIf EventType( ) = #PB_EventType_MouseLeave
       If drag
         ; drag = 0
@@ -708,7 +715,7 @@
   EndProcedure
   
   Procedure linux_events( )
-    Static down, enterID
+    Static down, double, enterID
     
     If EventType( ) = #PB_EventType_Focus
       fixed_events( EventGadget( ), EventType( ))
@@ -721,11 +728,18 @@
         down = 1
         fixed_events( EventGadget( ), EventType( ))
       EndIf
+    ElseIf EventType( ) = #PB_EventType_LeftDoubleClick
+      double = 1
     ElseIf EventType( ) = #PB_EventType_LeftClick
-      If down = 1
-        down = 0
-        fixed_events( EventGadget( ), EventType( ))
-      EndIf
+       If down = 1
+          down = 0
+          If double = 1
+             double = 0
+             fixed_events( EventGadget( ), #PB_EventType_LeftDoubleClick)
+          Else
+             fixed_events( EventGadget( ), EventType( ))
+          EndIf
+       EndIf
     ElseIf EventType( ) = #PB_EventType_MouseEnter
       enterID = 1
       fixed_events( EventGadget( ), EventType( ))
@@ -803,10 +817,9 @@ CompilerEndIf
 ; [20] MouseLeave
 ; [20] LeftButtonUp
 ; [20] LostFocus
-
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 805
-; FirstLine = 778
-; Folding = -------------------------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 739
+; FirstLine = 663
+; Folding = -------------------f-----
 ; EnableXP
 ; DPIAware
