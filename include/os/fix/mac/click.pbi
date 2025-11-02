@@ -23,7 +23,7 @@ ImportC ""
    GetCurrentProcess(*psn)
 EndImport
 
-DeclareC eventTapFunction(proxy, type, event, refcon)
+DeclareC eventTapFunction(proxy, , event, refcon)
 
 Global psn.q, mask, eventTap, key.s
 
@@ -42,11 +42,11 @@ EndIf
 
 ; callback function
 
-ProcedureC eventTapFunction(proxy, type, event, refcon)
+ProcedureC eventTapFunction(proxy, Type, event, refcon)
    Static gadget = #PB_Any
    Protected NSEvent, Window, View, Point.NSPoint
    
-   If type > 0 And type < 29
+   If Type > 0 And Type < 29
       NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
       
       If NSEvent
@@ -56,7 +56,7 @@ ProcedureC eventTapFunction(proxy, type, event, refcon)
             CocoaMessage(@Point, NSEvent, "locationInWindow")
             View = CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "hitTest:@", @Point)
             
-            If type = 1
+            If Type = 1
                If GetActiveWindow() <> EventWindow()
                   gadget = CocoaMessage(0, View, "tag")
                   If IsGadget( gadget )
@@ -64,14 +64,14 @@ ProcedureC eventTapFunction(proxy, type, event, refcon)
                      ;PostEvent( #PB_Event_Gadget, EventWindow() ,gadget, #PB_EventType_LeftButtonDown )
                   EndIf
                EndIf
-            ElseIf type = 2
+            ElseIf Type = 2
                If IsGadget( gadget )
                   ;PostEvent( #PB_Event_Gadget, EventWindow() ,gadget, #PB_EventType_LeftButtonUp )
                EndIf
                gadget = #PB_Any
             EndIf
          Else
-            If type = 10
+            If Typetype = 10
                key.s = PeekS(CocoaMessage(0, CocoaMessage(0, NSEvent, "charactersIgnoringModifiers"), "UTF8String"), 1, #PB_UTF8)
                Debug "Key " + key + " pressed (key code : " + Str(CocoaMessage(0, NSEvent, "keyCode")) + ")"
             EndIf
@@ -214,8 +214,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ; ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    ; ; CompilerEndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
 ; CursorPosition = 68
-; FirstLine = 54
+; FirstLine = 44
 ; Folding = ---
 ; EnableXP

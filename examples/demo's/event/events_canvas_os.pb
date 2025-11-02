@@ -1,6 +1,202 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    DeclareModule ID
+      Declare.i Window( WindowID.i )
+      Declare.i Gadget( GadgetID.i )
+      Declare.i IsWindowID( handle.i )
+      Declare.i GetWindowID( handle.i )
+      Declare.s ClassName( handle.i )
+    EndDeclareModule
+    
+    Module ID
+      ; XIncludeFile "../import.pbi"
+      Import ""
+        PB_Window_GetID( WindowID.i ) 
+      EndImport
+      
+      Procedure.s ClassName( handle.i )
+        Protected Result
+        CocoaMessage( @Result, CocoaMessage( 0, handle, "className" ), "UTF8String" )
+        
+        If Result
+          ProcedureReturn PeekS( Result, - 1, #PB_UTF8 )
+        EndIf
+      EndProcedure
+      
+      Procedure.i GetWindowID( handle.i ) ; Return the handle of the parent window from the handle
+        ProcedureReturn CocoaMessage( 0, handle, "window" )
+      EndProcedure
+      
+      Procedure.i IsWindowID( handle.i )
+        If ClassName( handle ) = "PBWindow"
+          ProcedureReturn 1
+        EndIf
+      EndProcedure
+      
+      Procedure.i Window( WindowID.i ) ; Return the id of the window from the window handle
+        If WindowID
+          Protected Window = PB_Window_GetID( WindowID )
+          If IsWindow( Window ) And WindowID( Window ) = WindowID
+            ProcedureReturn Window
+          EndIf
+          ProcedureReturn - 1
+        Else
+          ProcedureReturn - 1
+        EndIf
+      EndProcedure
+      
+      Procedure.i Gadget( GadgetID.i )  ; Return the id of the gadget from the gadget handle
+        If GadgetID
+          Protected Gadget = CocoaMessage(0, GadgetID, "tag")
+          If IsGadget( Gadget ) And GadgetID( Gadget ) = GadgetID
+            ProcedureReturn Gadget
+          EndIf
+          ProcedureReturn - 1
+        Else
+          ProcedureReturn - 1
+        EndIf
+      EndProcedure
+    EndModule
+    
+    ;-
+    DeclareModule mouse
+      Declare.i Window( )
+      Declare.i Gadget( WindowID )
+      Declare.i State( )
+    EndDeclareModule
+    
+    Module mouse
+      Procedure.s ClassName( handle.i )
+        Protected Result
+        CocoaMessage( @Result, CocoaMessage( 0, handle, "className" ), "UTF8String" )
+        If Result
+          ProcedureReturn PeekS( Result, -1, #PB_UTF8 )
+        EndIf
+      EndProcedure
+      
+      Procedure Window( )
+        Protected.i NSApp, NSWindow, WindowNumber, Point.CGPoint
+        
+        ; get-WindowNumber
+        CocoaMessage(@Point, 0, "NSEvent mouseLocation")
+        WindowNumber = CocoaMessage(0, 0, "NSWindow windowNumberAtPoint:@", @Point, "belowWindowWithWindowNumber:", 0)
+        
+        ; get-NSWindow
+        NSApp = CocoaMessage(0, 0, "NSApplication sharedApplication")
+        NSWindow = CocoaMessage(0, NSApp, "windowWithWindowNumber:", WindowNumber)
+        
+        ProcedureReturn NSWindow
+      EndProcedure
+      
+      Procedure Gadget( WindowID )
+        Protected.i handle, superview, ContentView, Point.CGPoint
+        
+        If  WindowID 
+          ContentView = CocoaMessage(0,  WindowID , "contentView")
+          CocoaMessage(@Point,  WindowID , "mouseLocationOutsideOfEventStream")
+          
+          ; func hitTest(_ point: NSPoint) -> NSView? ; Point.NSPoint ; hitTest(_:) 
+          handle = CocoaMessage(0, ContentView, "hitTest:@", @Point)
+          
+          If handle
+            Select ClassName(handle)
+              Case "PBFlippedWindowView"
+                handle = 0
+              Case "NSStepper" 
+                handle = CocoaMessage( 0, handle, "superview" )     ; PB_SpinView
+                handle = CocoaMessage(0, handle, "subviews")
+                handle = CocoaMessage(0, handle, "objectAtIndex:", 0)
+                
+              Case "NSTableHeaderView" 
+                handle = CocoaMessage(0, handle, "tableView") ; PB_NSTableView
+                
+              Case "NSScroller"                                 ;
+                                                                ; PBScrollView
+                handle = CocoaMessage(0, handle, "superview")   ; NSScrollView
+                                                                ;
+                Select ClassName(handle) 
+                  Case "WebDynamicScrollBarsView"
+                    handle = CocoaMessage(0, handle, "superview") ; WebFrameView
+                    handle = CocoaMessage(0, handle, "superview") ; PB_WebView
+                    
+                  Case "PBTreeScrollView"
+                    handle = CocoaMessage(0, handle, "documentView")
+                    
+                  Case "NSScrollView"
+                    superview = CocoaMessage(0, handle, "superview")
+                    If ClassName(superview) = "PBScintillaView"
+                      handle = superview ; PBScintillaView
+                    Else
+                      handle = CocoaMessage(0, handle, "documentView")
+                    EndIf
+                    
+                EndSelect
+                
+              Case "_NSRulerContentView", "SCIContentView" 
+                handle = CocoaMessage(0, handle, "superview") ; NSClipView
+                handle = CocoaMessage(0, handle, "superview") ; NSScrollView
+                handle = CocoaMessage(0, handle, "superview") ; PBScintillaView
+                
+              Case "NSView" 
+                handle = CocoaMessage(0, handle, "superview") ; PB_NSBox
+                
+              Case "NSTextField", "NSButton"
+                handle = CocoaMessage(0, handle, "superview") ; PB_DateView
+                
+              Case "WebHTMLView" 
+                handle = CocoaMessage(0, handle, "superview") ; WebClipView
+                handle = CocoaMessage(0, handle, "superview") ; WebDynamicScrollBarsView
+                handle = CocoaMessage(0, handle, "superview") ; WebFrameView
+                handle = CocoaMessage(0, handle, "superview") ; PB_WebView
+                
+              Case "PB_NSFlippedView"                           ;
+                                                                ; container
+                handle = CocoaMessage(0, handle, "superview")   ; NSClipView
+                                                                ; scrollarea
+                If ClassName(handle) = "NSClipView"             ;
+                  handle = CocoaMessage(0, handle, "superview") ; PBScrollView
+                EndIf
+                ;           Default
+                ;             Debug "-"  
+                ;             Debug  Get::ClassName(handle) ; PB_NSTextField
+                ;             Debug "-"
+            EndSelect
+          EndIf
+        EndIf
+        
+        ;Debug ClassName(handle)
+        ProcedureReturn handle
+      EndProcedure
+      
+      Procedure State( )
+        Static press.b
+        Protected state.b = CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
+        
+        If press <> state
+          If state
+            If state = 1
+              Debug "LeftDown - "+state
+            ElseIf state = 2
+              Debug "RightDown - "+state
+            EndIf
+          Else
+            If press = 1
+              Debug "LeftUp - "+press
+            ElseIf press = 2
+              Debug "RightUp - "+press
+            EndIf
+          EndIf
+          press = state
+        EndIf
+        
+      EndProcedure
+    EndModule
+    
+  CompilerEndIf
+  
+  ;-
   Procedure.s PBClassFromEvent( event.i )
     Protected result.s
     
@@ -60,6 +256,10 @@
   EndProcedure
   
   Procedure fixed_events( gadget, event )
+    If event = #PB_EventType_MouseMove
+      ProcedureReturn 0
+    EndIf
+    ;
     Debug " ["+gadget+"] "+ PBClassFromEvent(event) 
   EndProcedure
   
@@ -79,22 +279,74 @@
       EndIf
     ElseIf EventType( ) = #PB_EventType_MouseLeave
       If Not GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
-         fixed_events( EventGadget( ), EventType( ) )
+        fixed_events( EventGadget( ), EventType( ) )
       EndIf
     Else
       fixed_events( EventGadget( ), EventType( ) )
     EndIf
   EndProcedure
   
-  Procedure macos_events( )
-    fixed_events( EventGadget( ), EventType( ) )
+  Procedure macos_events( ) ; OK
+    Static leave, drag, gadgetID, enterID
+    
+    If EventType( ) = #PB_EventType_LeftButtonDown
+      If GetActiveGadget( ) = EventGadget( )
+        fixed_events( EventGadget( ), EventType( ) )
+      EndIf
+    ElseIf EventType( ) = #PB_EventType_Focus
+      fixed_events( EventGadget( ), EventType( ) )
+      If GetActiveGadget( ) = EventGadget( )
+        fixed_events( EventGadget( ), #PB_EventType_LeftButtonDown )
+      EndIf
+    ElseIf EventType( ) = #PB_EventType_DragStart
+      fixed_events( EventGadget( ), EventType( ) )
+      drag = 1
+    ElseIf EventType( ) = #PB_EventType_MouseEnter
+      If drag = 1
+        drag = 0
+      Else
+        fixed_events( EventGadget( ), EventType( ) )
+      EndIf
+    ElseIf EventType( ) = #PB_EventType_MouseLeave
+      
+      If GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
+        If leave = 0
+          leave = 1
+          fixed_events( EventGadget( ), EventType( ) )
+        EndIf
+      Else
+        fixed_events( EventGadget( ), EventType( ) )
+      EndIf
+      
+    ElseIf EventType( ) = #PB_EventType_MouseMove
+      If leave 
+        enterID = mouse::Gadget( mouse::Window( ))
+        ;
+        If gadgetID <> enterID 
+;           If gadgetID
+;             fixed_events( ID::Gadget(gadgetID), #PB_EventType_MouseLeave )
+;           EndIf
+;           If enterID
+;             fixed_events( ID::Gadget(enterID), #PB_EventType_MouseEnter )
+;           EndIf
+          
+          If gadgetID = GadgetID( EventGadget( ))
+            fixed_events( EventGadget( ), #PB_EventType_MouseLeave )
+          EndIf
+          If enterID = GadgetID( EventGadget( ))
+            fixed_events( EventGadget( ), #PB_EventType_MouseEnter )
+          EndIf
+          
+           gadgetID = enterID
+        EndIf
+      EndIf
+      
+    Else
+      fixed_events( EventGadget( ), EventType( ) )
+    EndIf
   EndProcedure
   
   Procedure all_events( )
-    If EventType( ) = #PB_EventType_MouseMove
-      ProcedureReturn 0
-    EndIf
-    ;
     CompilerIf #PB_Compiler_OS = #PB_OS_Windows
       windows_events( )
     CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
@@ -136,23 +388,9 @@
   EndIf
   
 CompilerEndIf
-
-; [1] MouseEnter
-; [1] Focus
-; [1] Down
-; [1] LeftButtonDown
-; [1] Up
-; [1] LeftButtonUp
-; [1] LeftClick
-; [1] Down
-; [1] LeftButtonDown
-; [1] DragStart
-; [1] Up
-; [1] LeftButtonUp
-; [1] MouseLeave
-; IDE Options = PureBasic 6.12 LTS (Linux - x64)
-; CursorPosition = 80
-; FirstLine = 62
-; Folding = ---
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 293
+; FirstLine = 277
+; Folding = ----------
 ; EnableXP
 ; DPIAware
