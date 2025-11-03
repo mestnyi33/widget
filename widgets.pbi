@@ -20353,7 +20353,7 @@ CompilerIf Not Defined( widget, #PB_Module )
         ; ProcedureReturn EventHandler( EventGadget( ), EventType( ), EventData( ) )
          
          CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-            Static down, move, leave, drag, double, gadgetID, enterID
+            Static down, move, leave, drag, double, gadgetID, enterID, focus
             
             If EventType( ) = #PB_EventType_LeftButtonDown
                down = 1
@@ -20374,6 +20374,35 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EventHandler( EventGadget( ), EventType( ), EventData( ))
                   EndIf
                EndIf
+            ElseIf EventType( ) = #PB_EventType_Focus
+               If focus = GadgetID( EventGadget( ))
+                  ProcedureReturn 0
+               Else
+                  EventHandler( EventGadget( ), EventType( ), EventData( ))
+                  focus = GadgetID( EventGadget( ))
+               EndIf
+               
+            ElseIf EventType( ) = #PB_EventType_LostFocus
+               If GetFocus_( ) = GadgetID( EventGadget( ))
+                  ProcedureReturn 0
+               Else
+                  EventHandler( EventGadget( ), EventType( ), EventData( ))
+                  focus = 0
+               EndIf
+               
+            ElseIf EventType( ) = #PB_EventType_MouseEnter
+               
+               If Not GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
+                  If enterID <> GadgetID( EventGadget( ))
+                     If enterID
+                        EventHandler(  ID::Gadget( enterID ), #PB_EventType_MouseLeave, EventData( ))
+                     EndIf
+                     
+                     enterID = GadgetID( EventGadget( ))
+                  EndIf
+               EndIf
+               EventHandler( EventGadget( ), EventType( ), EventData( ))
+               
             ElseIf EventType( ) = #PB_EventType_MouseLeave
                If drag
                   ; drag = 0
@@ -20381,15 +20410,22 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If leave = 1
                      leave = 0
                   Else
-                     EventHandler( EventGadget( ), EventType( ), EventData( ))
+                     If enterID = GadgetID( EventGadget( ))
+                        enterID = 0
+                        EventHandler( EventGadget( ), EventType( ), EventData( ))
+                     EndIf
                   EndIf
                EndIf
             ElseIf EventType( ) = #PB_EventType_MouseMove
-               If down = 1
+               If down 
+               If down = 2
                   down = 0
                   drag = 1
                   EventHandler( EventGadget( ), #PB_EventType_DragStart, EventData( ))
                Else
+                  down + 1
+               EndIf
+            Else
                   If drag 
                      enterID = mouse::Gadget( mouse::Window( ))
                      ;
@@ -27166,9 +27202,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 25804
-; FirstLine = 23017
-; Folding = -----------------------------------D3v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-r---0---v-----------------------+-4---------------------------------------------------------------------------------------------------------8---------------4-------------------------------------------------------------------------4------------------------------------------00-e-+n7t-8q0--------------------0f4---------f8--+84----v------------v--------------80-44-L40y-d-K3---------+-vtz------------------8------------+--0-0-------0----------v2---f------------------------8-------------
+; CursorPosition = 20427
+; FirstLine = 19008
+; Folding = -----------------------------------D3v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-r---0---v-----------------------+-4---------------------------------------------------------------------------------------------------------8---------------4-------------------------------------------------------------------------4------------------------------------------00-e-+n7t-8q0--------------------0f4---------f8--+84----v-------------f--------------48-vv-Xu8l-8+Vs---------0-fbn------------------4------------0--8-8-------8----------fr----+-----------------------4-------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

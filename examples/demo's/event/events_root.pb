@@ -27,21 +27,35 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define flag.q = #PB_Canvas_DrawFocus
    
-   Procedure TestRoot( gadget, X,Y,Width,Height, flag )
+   Procedure TestRoot( gadget, X,Y,Width,Height, flag=0 )
       Protected *g
-      *g = Open(0, X,Y,Width,Height,"", flag, 0, gadget) 
+      *g = Open(gadget, X,Y,Width,Height,"", flag, 0, gadget) 
+      SetBackColor(*g, RGB( Random(255), Random(255), Random(255) ))
       SetText(*g, Str(gadget))
       SetClass(*g, Str(gadget))
    EndProcedure
    
-   If OpenWindow(0, 0, 0, 370, 370, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      TestRoot(10, 10, 10, 150, 150,flag) 
-      
-      TestRoot(20, 210, 10, 150, 150,flag) 
-      
-      TestRoot(30, 10, 210, 150, 150,flag) 
-      
-      TestRoot(40, 210, 210, 150, 150,flag) 
+   Procedure TestWindow( ID )
+     Static X,Y
+     OpenWindow( ID, 300+X,150+Y,170,170,"window_"+Str(ID), #PB_Window_BorderLess)
+     TestRoot( ID, 10, 0, 160, 170 )
+     
+     X + 100
+     Y + 100
+     ProcedureReturn 1
+  EndProcedure
+  
+  If TestWindow( 10 )
+     TestWindow( 30 )
+
+;    If OpenWindow(0, 0, 0, 370, 370, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+;       TestRoot(10, 10, 10, 150, 150,flag) 
+;       
+;       TestRoot(20, 210, 10, 150, 150,flag) 
+;       
+;       TestRoot(30, 10, 210, 150, 150,flag) 
+;       
+;       TestRoot(40, 210, 210, 150, 150,flag) 
       
      
       Bind( #PB_All, @all_events( ))
@@ -64,8 +78,8 @@ CompilerEndIf
 ; [1] LeftButtonUp
 ; [1] MouseLeave
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 15
-; FirstLine = 12
+; CursorPosition = 49
+; FirstLine = 23
 ; Folding = --
 ; EnableXP
 ; DPIAware
