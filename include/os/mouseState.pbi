@@ -53,7 +53,7 @@ EndProcedure
 
 Procedure MouseState( )
   Static press.b, ClickTime.q, ClickCount
-  Protected DoubleClickTime, ElapsedMilliseconds.q, state.b
+  Protected DoubleClickTime, ElapsedMilliseconds.q, buttons.b
   
   CompilerSelect #PB_Compiler_OS 
     CompilerCase #PB_OS_Linux
@@ -64,28 +64,28 @@ Procedure MouseState( )
       EndIf
       
       If mask & 256; #GDK_BUTTON1_MASK
-        state = 1
+        buttons = 1
       EndIf
       If mask & 512 ; #GDK_BUTTON3_MASK
-        state = 3
+        buttons = 3
       EndIf
       If mask & 1024 ; #GDK_BUTTON2_MASK
-        state = 2
+        buttons = 2
       EndIf
       
     CompilerCase #PB_OS_Windows
-      state = GetAsyncKeyState_(#VK_LBUTTON) >> 15 & 1 + 
+      buttons = GetAsyncKeyState_(#VK_LBUTTON) >> 15 & 1 + 
               GetAsyncKeyState_(#VK_RBUTTON) >> 15 & 2 + 
               GetAsyncKeyState_(#VK_MBUTTON) >> 15 & 3 
     CompilerCase #PB_OS_MacOS
        ;EnableDebugger
-       state = CocoaMessage(0, 0, "NSEvent pressedMouseButtons") ; class var pressedMouseButtons: Int { get }
+       buttons = CocoaMessage(0, 0, "NSEvent pressedMouseButtons") ; class var pressedMouseButtons: Int { get }
        ;Debug CocoaMessage(0, 0, "buttonNumber") ; var buttonNumber: Int { get }
        ;Debug CocoaMessage(0, 0, "clickCount") ; var clickCount: Int { get }
   CompilerEndSelect
   
-  If press <> state
-    If state
+  If press <> buttons
+    If buttons
       ElapsedMilliseconds.q = ElapsedMilliseconds( ) 
       
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -102,10 +102,10 @@ Procedure MouseState( )
       ClickTime = ElapsedMilliseconds
       
       If ClickCount = 1
-        If state = 1
+        If buttons = 1
           Debug "LeftDown - "
           DoEvents( #PB_EventType_LeftButtonDown )
-        ElseIf state = 2
+        ElseIf buttons = 2
           Debug "RightDown - "
         EndIf
       EndIf
@@ -155,7 +155,7 @@ Procedure MouseState( )
       EndIf
       
     EndIf
-    press = state
+    press = buttons
   EndIf
   
 EndProcedure
@@ -171,8 +171,8 @@ Repeat
   MouseState( )
   
 Until Event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 83
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 8
 ; FirstLine = 56
 ; Folding = ----
 ; EnableXP

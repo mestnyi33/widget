@@ -1,14 +1,7 @@
-﻿;-\\ LINUX OS
+﻿;-\\ WINDOWS OS
 XIncludeFile "../events.pbi"
 
-
 Module Events
-   Procedure Events( )
-   EndProcedure
-   
-   ; fixed bug mouse enter & leave
-   
-   ;
    Procedure.w HIWORD(Value.L)
       ProcedureReturn (((Value) >> 16) & $FFFF)
    EndProcedure
@@ -18,27 +11,18 @@ Module Events
    EndProcedure
    
    Procedure CallbackHandler(hWnd, uMsg, wParam, lParam) 
-      Protected Text.s, gadget = GetProp_( hWnd, "PB_ID" )
+      Protected gadget = GetProp_( hWnd, "PB_ID" )
       Protected sysProc = GetProp_(hWnd, "sysProc")
       Protected *callBack = GetProp_(hWnd, "sysProc"+Str(GetProp_(hWnd, "sysProcType")))
       Static focus.i, enter.b, move.b 
       
       Select uMsg
-;          Case #WM_KEYDOWN
-;             Debug 656789098765
-            
          Case #WM_NCDESTROY 
             SetWindowLongPtr_(hwnd, #GWLP_USERDATA, sysProc)
             RemoveProp_(hwnd, sysProc)
             
-         Case #WM_LBUTTONDOWN
-            move = 0
-           ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_LeftButtonDown )
-             
-         Case #WM_LBUTTONUP
-            move = 0
-          ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_LeftButtonUp )
-              
+         Case #WM_LBUTTONDOWN : move = 0
+         Case #WM_LBUTTONUP : move = 0
          Case #WM_MOUSEFIRST
             Protected Track.TRACKMOUSEEVENT
             Track\cbSize = SizeOf(Track)
@@ -47,76 +31,25 @@ Module Events
             Track\dwHoverTime = 1
             TrackMouseEvent_(@TRACK)
             
-            ;Case #WM_MOUSEMOVE
+            ; Case #WM_MOUSEMOVE
             If move
-               CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseMove )
-            ProcedureReturn 0
+               ; CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseMove )
+               ProcedureReturn 0
             Else
                move = 1
             EndIf
             
-         Case #WM_MOUSEHOVER
-            If enter = 0
-               enter = 1
-               CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseEnter )
-            ProcedureReturn 0
-            EndIf
-            
-         Case #WM_MOUSELEAVE
-            enter = 0
-            CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseLeave )
-            ProcedureReturn 0
-            
          Case #WM_MOUSEHWHEEL 
-            CallFunctionFast( *callBack,  gadget, constants::#PB_EventType_MouseWheelX, - HIWORD(wparam) );(delta * step / #WHEEL_DELTA) )
+            CallFunctionFast( *callBack,  gadget, constants::#PB_EventType_MouseWheelX, - HIWORD(wparam) );( delta * step / #WHEEL_DELTA )) )
             ProcedureReturn 0
             
          Case #WM_MOUSEWHEEL 
-            CallFunctionFast( *callBack,  gadget, constants::#PB_EventType_MouseWheelY , HIWORD(wparam) );(delta * step / #WHEEL_DELTA))
+            CallFunctionFast( *callBack,  gadget, constants::#PB_EventType_MouseWheelY , HIWORD(wparam) );( delta * step / #WHEEL_DELTA ))
             ProcedureReturn 0
             
-         Case #WM_SETFOCUS
-            If focus = hWnd
-               ProcedureReturn 0
-            Else
-               CallFunctionFast( *callBack,  gadget, #PB_EventType_Focus )
-               focus = hWnd
-            EndIf
-            
-         Case #WM_KILLFOCUS
-            If GetFocus_( ) = hWnd
-               ProcedureReturn 0
-            Else
-               CallFunctionFast( *callBack,  gadget, #PB_EventType_LostFocus)
-               focus = 0
-            EndIf
-            
-            ;          Case #WM_SETFOCUS
-            ;             ;text = "Focus on gadget #" + Str(gadget)
-            ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_Focus )
-            ;             
-            ;          Case #WM_KILLFOCUS
-            ;             ; text = "Lost focus on gadget #" + Str(gadget)
-            ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_LostFocus)
-            ;             
-            ;          Case #WM_LBUTTONDBLCLK
-            ;             text = "Left button click on gadget #" + Str(gadget)
-            ;             
-            ;          Case #WM_RBUTTONDOWN
-            ;             ;text = "Right button down on gadget #" + Str(gadget)
-            ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_RightButtonDown )
-            ;             
-            ;          Case #WM_RBUTTONUP
-            ;             ; text = "Right button up on gadget #" + Str(gadget)
-            ;             CallFunctionFast( *callBack,  gadget, #PB_EventType_RightButtonUp )
-            ;             
-            ;          Case #WM_RBUTTONDBLCLK
-            ;             text = "Right button click on gadget #" + Str(gadget)
+;          Case #WM_KEYDOWN
+;             Debug 656789098765
       EndSelect
-      
-      If Text
-         Debug Text
-      EndIf
       
       ProcedureReturn CallWindowProc_(sysProc, hWnd, uMsg, wParam, lParam)
    EndProcedure 
@@ -134,10 +67,11 @@ Module Events
    ;    EndProcedure
    
    Procedure   SetCallBack(*callback)
+      
    EndProcedure
 EndModule
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 10
-; Folding = ---
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 42
+; FirstLine = 20
+; Folding = f-
 ; EnableXP

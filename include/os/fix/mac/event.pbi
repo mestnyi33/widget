@@ -33,11 +33,8 @@ Module events
    ;   #NSEventTypeEndGesture   = 20
    ;   #NSEventTypeSmartMagnify = 32
    ;   #NSEventTypeQuickLook   = 33
-   ;-
-   Global psn.q, mask, key.s
    
-   Global event_window =- 1
-   Global event_gadget =- 1
+   Global psn.q, mask, key.s
    
    ImportC ""
       CFRunLoopGetCurrent( )
@@ -55,9 +52,7 @@ Module events
    ProcedureC eventTapFunction(proxy, eType, event, refcon)
       Protected Gadget, scrollX, scrollY, NSClass, NSEvent, Window, View, Point.NSPoint
       
-      If eType = #NSScrollWheel Or
-         eType = #NSLeftMouseDown Or eType = #NSRightMouseDown 
-         
+      If eType = #NSScrollWheel 
          NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
          If NSEvent
             Window = CocoaMessage(0, NSEvent, "window")
@@ -75,14 +70,6 @@ Module events
                   ;
                   Gadget = CocoaMessage(0, View, "tag")
                   If IsGadget( Gadget )
-                     If GetActiveGadget( ) <> Gadget 
-                        If GetActiveGadget() 
-                           SetActiveGadget( #PB_Default )
-                        EndIf
-                        SetActiveGadget( Gadget )
-                        objc_setAssociatedObject_( Window, "focus_bug_fixed", Gadget, 0 ) 
-                     EndIf
-                     
                      If eType = #NSScrollWheel
                         Window = EventWindow( )
                         scrollX = CocoaMessage(0, NSEvent, "scrollingDeltaX")
@@ -102,16 +89,6 @@ Module events
                            CompilerEndIf
                         EndIf
                      EndIf
-                  Else
-                     gadget = objc_getAssociatedObject_( Window, "focus_bug_fixed")
-                     If GetActiveGadget( ) <> Gadget
-                        If GetActiveGadget( )
-                           SetActiveGadget( #PB_Default )
-                        EndIf
-                        If IsGadget( Gadget )
-                           SetActiveGadget( Gadget )
-                        EndIf
-                     EndIf
                   EndIf
                 EndIf
             EndIf
@@ -120,292 +97,11 @@ Module events
       
    EndProcedure
    
-   ProcedureC  _eventTapFunction(proxy, eType, event, refcon) ; CGEventTapProxy.i, CGEventType.i, CGEvent.i,  *UserData
-      Protected Point.CGPoint
-      Protected *cursor.cursor::_s_cursor = #Null
-      ; Debug "eventTapFunction - "+ID::ClassName(event)
-      
-      If refcon
-         Static LeftClick, ClickTime, MouseDrag, MouseMoveX, MouseMoveY, DeltaX, DeltaY, LeftDoubleClickTime
-         Protected MouseMove, MouseX, MouseY, MoveStart, EnteredID, gadget =- 1
-         
-         ;       If eType = #NSMouseEntered
-         ;         Debug "en "+proxy+" "+CocoaMessage(0, CocoaMessage(0, NSEvent, "window"), "contentView") +" "+CocoaMessage(0, NSEvent, "windowNumber")
-         ;       EndIf
-         ;       If eType = #NSMouseExited
-         ;         Debug "le "+proxy+" "+ CocoaMessage(0, NSEvent, "windowNumber")
-         ;       EndIf
-         
-         If eType = #NSLeftMouseDown
-            ;Debug CocoaMessage(0, Mouse::Gadget(Mouse::Window( )), "pressedMouseButtons")
-            MouseDrag = 1
-         ElseIf eType = #NSLeftMouseUp
-            MouseDrag = 0
-            ;             If EnteredGadget( ) >= 0 
-            ;                If DraggedGadget( ) >= 0 And DraggedGadget( ) = PressedGadget( ) 
-            ;                   CompilerIf Defined(constants::PB_EventType_Drop, #PB_Constant) 
-            ;                      CallCFunctionFast(refcon, EnteredGadget( ), constants::#PB_EventType_Drop)
-            ;                   CompilerEndIf
-            ;                EndIf
-            ;             EndIf
-         EndIf
-         
-         ;
-         If MouseDrag >= 0 
-            EnteredID = Mouse::Gadget(Mouse::Window( ))
-         EndIf
-         
-         ;
-         If EnteredID
-            gadget = ID::Gadget(EnteredID)
-            
-            If gadget >= 0
-               Mousex = GadgetMouseX(gadget)
-               Mousey = GadgetMouseY(gadget)
-            Else
-               Mousex =- 1
-               Mousey =- 1
-            EndIf
-         Else
-            Mousex =- 1
-            Mousey =- 1
-         EndIf
-         
-         ;
-         If MouseDrag And
-            Mousex =- 1 And Mousey =- 1
-            
-            If PressedGadget( ) >= 0
-               Mousex = GadgetMouseX(PressedGadget( ))
-               Mousey = GadgetMouseY(PressedGadget( ))
-            EndIf
-         EndIf
-         
-         If MouseMoveX <> Mousex
-            MouseMoveX = Mousex
-            MouseMove = #True
-         EndIf
-         
-         If MouseMoveY <> Mousey
-            MouseMoveY = Mousey
-            MouseMove = #True
-         EndIf
-         
-         ;
-         If MouseMove 
-            If MouseDrag >= 0 And 
-               EnteredGadget( ) <> gadget
-               If EnteredGadget( ) >= 0 ;And GadgetType(EnteredGadget( )) = #PB_GadgetType_Canvas
-                  If Not MouseDrag
-                     Cursor::change(EnteredGadget( ), 0)
-                  EndIf
-                  
-                  CallCFunctionFast(refcon, EnteredGadget( ) , #PB_EventType_MouseLeave)
-               EndIf
-               
-               EnteredGadget( ) = gadget
-               
-               If EnteredGadget( ) >= 0 ;And GadgetType(EnteredGadget( )) = #PB_GadgetType_Canvas
-                  If Not MouseDrag
-                     Cursor::change(EnteredGadget( ), 1)
-                  EndIf
-                  
-                  CallCFunctionFast(refcon, EnteredGadget( ), #PB_EventType_MouseEnter)
-               EndIf
-            Else
-               ; mouse drag start
-               If MouseDrag > 0
-                  If EnteredGadget( ) >= 0 And
-                     DraggedGadget( ) <> PressedGadget( )
-                     DraggedGadget( ) = PressedGadget( )
-                     CallCFunctionFast(refcon, PressedGadget( ), #PB_EventType_DragStart)
-                     DeltaX = GadgetX(PressedGadget( )) 
-                     DeltaY = GadgetY(PressedGadget( ))
-                  EndIf
-               EndIf
-               
-               If MouseDrag And EnteredGadget( ) <> PressedGadget( )
-                  CallCFunctionFast(refcon, PressedGadget( ), #PB_EventType_MouseMove)
-               EndIf
-               
-               If EnteredGadget( ) >= 0
-                  CallCFunctionFast(refcon, EnteredGadget( ), #PB_EventType_MouseMove)
-                  
-                  ; if move gadget x&y position
-                  If MouseDrag > 0 And PressedGadget( ) = EnteredGadget( ) 
-                     If DeltaX <> GadgetX(PressedGadget( )) Or 
-                        DeltaY <> GadgetY(PressedGadget( ))
-                        MouseDrag =- 1
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
-         ;
-         If eType = #NSLeftMouseDown Or
-            eType = #NSRightMouseDown
-            
-            PressedGadget( ) = EnteredGadget( ) ; EventGadget( )
-                                                ; Debug CocoaMessage(0, Mouse::Window( ), "focusView")
-                                                ;             If GetActiveGadget() <> PressedGadget( ) 
-                                                ;                ; If GetActiveWindow() <> EventWindow()
-                                                ;                SetActiveGadget( #PB_Default )
-                                                ;                SetActiveGadget( PressedGadget( ) )
-                                                ;                ; EndIf
-                                                ;             EndIf
-            If PressedGadget( ) >= 0
-               If FocusedGadget( ) = - 1
-                  If GetActiveGadget( )
-                     If FocusedGadget( ) <> GetActiveGadget( )
-                        FocusedGadget( ) = GetActiveGadget( )
-                        ; CallCFunctionFast(refcon, FocusedGadget( ), #PB_EventType_LostFocus)
-                     EndIf
-                  EndIf
-               EndIf
-               
-               If FocusedGadget( ) <> PressedGadget( )
-                  If FocusedGadget( ) >= 0
-                     CallCFunctionFast(refcon, FocusedGadget( ), #PB_EventType_LostFocus)
-                  EndIf
-                  
-                  FocusedGadget( ) = PressedGadget( )
-                  CallCFunctionFast(refcon, FocusedGadget( ), #PB_EventType_Focus)
-               EndIf
-               
-               If eType = #NSLeftMouseDown
-                  CallCFunctionFast(refcon, PressedGadget( ), #PB_EventType_LeftButtonDown)
-               EndIf
-               If eType = #NSRightMouseDown
-                  CallCFunctionFast(refcon, PressedGadget( ), #PB_EventType_RightButtonDown)
-               EndIf
-            EndIf
-         EndIf
-         
-         ;
-         If eType = #NSLeftMouseUp Or 
-            eType = #NSRightMouseUp
-            
-            If PressedGadget( ) >= 0 And 
-               PressedGadget( ) <> gadget  
-               Cursor::change(PressedGadget( ), 0)
-            EndIf
-            
-            If gadget >= 0 And 
-               gadget <> PressedGadget( )
-               EnteredGadget( ) = gadget
-               Cursor::change(EnteredGadget( ), 1)
-            EndIf
-            
-            If PressedGadget( ) >= 0 
-               If eType = #NSLeftMouseUp
-                  CallCFunctionFast(refcon, PressedGadget( ), #PB_EventType_LeftButtonUp)
-               EndIf
-               If eType = #NSRightMouseUp
-                  CallCFunctionFast(refcon, PressedGadget( ), #PB_EventType_RightButtonUp)
-               EndIf
-            EndIf
-            
-            ; PressedGadget( ) =- 1
-            DraggedGadget( ) =- 1
-         EndIf
-         
-         ;         ;
-         ;         If eType = #PB_EventType_LeftDoubleClick
-         ;           CallCFunctionFast(refcon, EnteredGadget( ), #PB_EventType_LeftDoubleClick)
-         ;         EndIf
-         
-         If eType = #NSScrollWheel
-            Protected NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
-            
-            If NSEvent
-               Protected scrollX = CocoaMessage(0, NSEvent, "scrollingDeltaX")
-               Protected scrollY = CocoaMessage(0, NSEvent, "scrollingDeltaY")
-               
-               If scrollX And Not scrollY
-                  ; Debug "X - scroll"
-                  If EnteredGadget( ) >= 0
-                     CompilerIf Defined(constants::PB_EventType_MouseWheelY, #PB_Constant) 
-                        CallCFunctionFast(refcon, EnteredGadget( ), constants::#PB_EventType_MouseWheelX, scrollX)
-                     CompilerEndIf
-                  EndIf
-               EndIf
-               
-               If scrollY And Not scrollX
-                  ; Debug "Y - scroll"
-                  If EnteredGadget( ) >= 0
-                     CompilerIf Defined(constants::PB_EventType_MouseWheelX, #PB_Constant) 
-                        CallCFunctionFast(refcon, EnteredGadget( ), constants::#PB_EventType_MouseWheelY, scrollY)
-                     CompilerEndIf
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
-         If eType = #NSKeyDown 
-            Debug "eventtap key down"
-         EndIf
-         
-         If eType = #NSKeyUp
-            Debug "eventtap key up"
-         EndIf
-      EndIf
-      
-   EndProcedure
-   
-   Procedure.i WaitEvent( event.i, second.i = 0 )
-      ;       Protected EventGadget, EventType, EventData
-      ;       
-      ;       If *setcallback 
-      ;          ;          If event = #PB_Event_ActivateWindow
-      ;          ;              Debug " WaitEvent - ActivateWindow"
-      ;          ;             ;CallCFunctionFast(*setcallback, #PB_Event_ActivateWindow, #PB_All, #PB_EventType_Focus, #Null )
-      ;          ;          EndIf
-      ;          ;          
-      ;          ;          If event = #PB_Event_DeactivateWindow
-      ;          ;              Debug " WaitEvent - DeactivateWindow"
-      ;          ;             ;CallCFunctionFast(*setcallback, #PB_Event_DeactivateWindow, #PB_All, #PB_EventType_LostFocus, #Null )
-      ;          ;          EndIf
-      ;          
-      ;          If event = #PB_Event_Gadget
-      ;             EventGadget = EventGadget( )
-      ;             EventType   = EventType( )
-      ;             EventData   = EventData( )
-      ;             
-      ;             
-      ; ;             If EventType = #PB_EventType_Focus 
-      ; ;                ;Debug "f "+FocusedGadget( ) +" "+ PressedGadget( )
-      ; ;                If FocusedGadget( ) = - 1
-      ; ;                   CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-      ; ;                EndIf
-      ; ;             ElseIf EventType = #PB_EventType_LostFocus
-      ; ;                ; Debug "l "+FocusedGadget( ) +" "+ PressedGadget( )
-      ; ;                If FocusedGadget( ) = - 1
-      ; ;                   CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-      ; ;                EndIf
-      ; ;             ElseIf (EventType = #PB_EventType_KeyDown Or
-      ; ;                     EventType = #PB_EventType_KeyUp Or
-      ; ;                     EventType = #PB_EventType_Input)
-      ; ;                
-      ; ;                CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-      ; ; ;             ElseIf (EventType = #PB_EventType_RightButtonDown Or
-      ; ; ;                     EventType = #PB_EventType_RightButtonUp)
-      ; ; ;                
-      ; ; ;                CallCFunctionFast(*setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-      ; ;             Else
-      ; ;                
-      ; ;               ;\\ CallCFunctionFast( *setcallback, #PB_Event_Gadget, EventGadget, EventType, EventData )
-      ; ;                
-      ; ;             EndIf
-      ;          EndIf
-      ;       EndIf
-      ;       
-      ProcedureReturn event
-   EndProcedure
+;    Procedure.i WaitEvent( event.i, second.i = 0 )
+;      ProcedureReturn event
+;    EndProcedure
    
    Procedure   SetCallBack( *callback )
-      *setcallback = *callback
-      
       Protected mask, EventTap
       mask = #NSMouseMovedMask | #NSScrollWheelMask
      ; mask | #NSMouseEnteredMask | #NSMouseExitedMask  ;| #NSCursorUpdateMask
@@ -494,13 +190,13 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   Procedure Open( id, flag=0 )
-      Static x,y
-      OpenWindow( id, x,y,200,200,"window_"+Str(id), #PB_Window_SystemMenu|flag)
-      CanvasGadget( id, 40,40,200-80,55, #PB_Canvas_Keyboard );| #PB_Canvas_Container) : CloseGadgetList()
-      CanvasGadget( 10+id, 40,110,200-80,55, #PB_Canvas_Keyboard)
-      x + 100
-      y + 100
+   Procedure Open( ID, flag=0 )
+      Static X,Y
+      OpenWindow( ID, X,Y,200,200,"window_"+Str(ID), #PB_Window_SystemMenu|flag)
+      CanvasGadget( ID, 40,40,200-80,55, #PB_Canvas_Keyboard );| #PB_Canvas_Container) : CloseGadgetList()
+      CanvasGadget( 10+ID, 40,110,200-80,55, #PB_Canvas_Keyboard)
+      X + 100
+      Y + 100
    EndProcedure
    
    
@@ -548,8 +244,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 337
-; FirstLine = 79
-; Folding = -------------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 36
+; FirstLine = 56
+; Folding = ----
 ; EnableXP

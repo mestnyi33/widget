@@ -658,8 +658,10 @@
     
     If EventType( ) = #PB_EventType_Focus
       fixed_events( EventGadget( ), EventType( ) )
-      If GetActiveGadget( ) = EventGadget( )
-        fixed_events( EventGadget( ), #PB_EventType_LeftButtonDown )
+      If GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
+        If GetActiveGadget( ) = EventGadget( )
+          fixed_events( EventGadget( ), #PB_EventType_LeftButtonDown )
+        EndIf
       EndIf
     ElseIf EventType( ) = #PB_EventType_LeftButtonDown
       If GetActiveGadget( ) = EventGadget( )
@@ -721,9 +723,11 @@
     
     If EventType( ) = #PB_EventType_Focus
       fixed_events( EventGadget( ), EventType( ))
-      If GetActiveGadget( ) = EventGadget( )
-        down = 1
-        fixed_events( EventGadget( ), #PB_EventType_LeftButtonDown )
+      If GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
+        If GetActiveGadget( ) = EventGadget( )
+          down = 1
+          fixed_events( EventGadget( ), #PB_EventType_LeftButtonDown )
+        EndIf
       EndIf
     ElseIf EventType( ) = #PB_EventType_LeftButtonDown
       If GetActiveGadget( ) = EventGadget( )
@@ -779,8 +783,10 @@
     StartDrawing(CanvasOutput(gadget))
     DrawText(10,10,Str(gadget))
     StopDrawing()
+    ; SetActiveGadget( gadget ) ; bug in windows before bind
     BindGadgetEvent( gadget, @all_events( ))
-  EndProcedure
+    SetActiveGadget( gadget ) 
+ EndProcedure
   
   If OpenWindow(0, 0, 0, 370, 370, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     TestRoot(10, 10, 10, 150, 150,flag) 
@@ -819,9 +825,9 @@ CompilerEndIf
 ; [20] MouseLeave
 ; [20] LeftButtonUp
 ; [20] LostFocus
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 579
-; FirstLine = 567
-; Folding = ----------------------0--
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 663
+; FirstLine = 587
+; Folding = -----------------v----4--
 ; EnableXP
 ; DPIAware

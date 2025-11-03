@@ -7,6 +7,7 @@ DeclareModule mouse
    Declare.i Window( )
    Declare.i Gadget( WindowID )
    Declare.i Handle( WindowID )
+   Declare.i Buttons( )
 EndDeclareModule
 
 Module mouse
@@ -112,22 +113,31 @@ Module mouse
    Procedure Handle( WindowID )
       Protected Cursorpos.q, handle, GadgetID
       GetCursorPos_( @Cursorpos )
-      
+      ;
       If WindowID
          GadgetID = WindowFromPoint_( Cursorpos )
-         
+         ;
          ScreenToClient_( GadgetID, @Cursorpos ) 
          handle = ChildWindowFromPoint_( GadgetID, Cursorpos )
-         
-         If Not handle
-            ; Debug ""+ handle +" "+ GadgetID
-            handle = GadgetID
+         ;
+         If handle
+            ProcedureReturn handle
+         Else
+            ProcedureReturn GadgetID
          EndIf
-         
-         ProcedureReturn handle
       Else
          ProcedureReturn 0
       EndIf
+   EndProcedure
+     
+   Procedure Buttons( )
+      ; Debug #PB_MouseButton_Left   ; 1
+      ; Debug #PB_MouseButton_Right  ; 2
+      ; Debug #PB_MouseButton_Middle ; 3
+      ;      
+      ProcedureReturn GetAsyncKeyState_(#VK_LBUTTON) >> 15 & 1 + 
+                      GetAsyncKeyState_(#VK_RBUTTON) >> 15 & 2 + 
+                      GetAsyncKeyState_(#VK_MBUTTON) >> 15 & 3 
    EndProcedure
 EndModule
 
@@ -275,8 +285,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Until eventID = #PB_Event_CloseWindow
    EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 253
-; FirstLine = 200
-; Folding = --0---
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 122
+; FirstLine = 57
+; Folding = --0----
 ; EnableXP

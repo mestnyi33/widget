@@ -411,9 +411,11 @@
       
       If EventType( ) = #PB_EventType_Focus
         fixed_events( EventGadget( ), EventType( ))
-        If GetActiveGadget( ) = EventGadget( )
-          down = 1
-          fixed_events( EventGadget( ), #PB_EventType_LeftButtonDown )
+        If GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
+          If GetActiveGadget( ) = EventGadget( )
+            down = 1
+            fixed_events( EventGadget( ), #PB_EventType_LeftButtonDown )
+          EndIf
         EndIf
       ElseIf EventType( ) = #PB_EventType_LeftButtonDown
         If GetActiveGadget( ) = EventGadget( )
@@ -456,8 +458,10 @@
       
       If EventType( ) = #PB_EventType_Focus
         fixed_events( EventGadget( ), EventType( ) )
-        If GetActiveGadget( ) = EventGadget( )
-          fixed_events( EventGadget( ), #PB_EventType_LeftButtonDown )
+        If GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
+          If GetActiveGadget( ) = EventGadget( )
+            fixed_events( EventGadget( ), #PB_EventType_LeftButtonDown )
+          EndIf
         EndIf
       ElseIf EventType( ) = #PB_EventType_LeftButtonDown
         If GetActiveGadget( ) = EventGadget( )
@@ -562,9 +566,9 @@ CompilerEndIf
 ; [20] MouseLeave
 ; [20] LeftButtonUp
 ; [20] LostFocus
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 563
-; FirstLine = 536
-; Folding = --------------
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 464
+; FirstLine = 342
+; Folding = -------f-f-----
 ; EnableXP
 ; DPIAware

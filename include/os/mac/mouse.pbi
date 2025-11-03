@@ -2,13 +2,13 @@
   XIncludeFile "id.pbi"
 CompilerEndIf
 
-DeclareModule Mouse
+DeclareModule mouse
   Declare.i Window( )
   Declare.i Gadget( WindowID )
-  Declare.i State( )
+  Declare.i Buttons( )
 EndDeclareModule
 
-Module Mouse
+Module mouse
   Procedure.s ClassName( handle.i )
     Protected Result
     CocoaMessage( @Result, CocoaMessage( 0, handle, "className" ), "UTF8String" )
@@ -111,27 +111,12 @@ Module Mouse
     ProcedureReturn handle
   EndProcedure
   
-  Procedure State( )
-    Static press.b
-    Protected state.b = CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
-    
-    If press <> state
-      If state
-        If state = 1
-          Debug "LeftDown - "+state
-        ElseIf state = 2
-          Debug "RightDown - "+state
-        EndIf
-      Else
-        If press = 1
-          Debug "LeftUp - "+press
-        ElseIf press = 2
-          Debug "RightUp - "+press
-        EndIf
-      EndIf
-      press = state
-    EndIf
-    
+  Procedure Buttons( )
+     ; Debug #PB_MouseButton_Left   ; 1
+     ; Debug #PB_MouseButton_Right  ; 2
+     ; Debug #PB_MouseButton_Middle ; 3
+     ;      
+     ProcedureReturn CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
   EndProcedure
 EndModule
 
@@ -148,7 +133,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Global x,y,i
+  Global X,Y,i
   
   Procedure scrolled()
     
@@ -232,11 +217,11 @@ CompilerIf #PB_Compiler_IsMainFile
     Define eventID,  WindowID , gadgetID, gadget
     Repeat
       eventID = WaitWindowEvent( )
-      WindowID = Mouse::Window( )
-      gadgetID = Mouse::Gadget( WindowID )
+      WindowID = mouse::Window( )
+      gadgetID = mouse::Gadget( WindowID )
       
       If gadgetID
-        Mouse::State( )
+        ; Debug mouse::Buttons( )
         
         If ID::Gadget( gadgetID ) =- 1
           Debug "window - ("+ ID::Window( WindowID ) +") "+ WindowID ;+" "+ GetClassName( WindowID )
@@ -262,6 +247,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Until eventID = #PB_Event_CloseWindow
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; Folding = -v---
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 223
+; FirstLine = 115
+; Folding = fu---
 ; EnableXP

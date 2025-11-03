@@ -14,6 +14,39 @@ ImportC ""; -gtk"
   
 EndImport
 
+ProcedureC ChangeHandler2(*Scrollbar, ScrollType, value.d, user_data)
+      ; https://www.purebasic.fr/english/viewtopic.php?p=370832#p370832
+      
+      ; display the scroll event
+      Select ScrollType
+         Case #GTK_SCROLL_NONE: Debug "#GTK_SCROLL_NONE"
+         Case #GTK_SCROLL_JUMP: Debug "#GTK_SCROLL_JUMP"
+         Case #GTK_SCROLL_STEP_BACKWARD: Debug "#GTK_SCROLL_STEP_BACKWARD"
+         Case #GTK_SCROLL_STEP_FORWARD: Debug "#GTK_SCROLL_STEP_FORWARD"
+         Case #GTK_SCROLL_PAGE_BACKWARD: Debug "#GTK_SCROLL_PAGE_BACKWARD"
+         Case #GTK_SCROLL_PAGE_FORWARD: Debug "#GTK_SCROLL_PAGE_FORWARD"
+         Case #GTK_SCROLL_STEP_UP: Debug "#GTK_SCROLL_STEP_UP"
+         Case #GTK_SCROLL_STEP_DOWN: Debug "#GTK_SCROLL_STEP_DOWN"
+         Case #GTK_SCROLL_PAGE_UP: Debug "#GTK_SCROLL_PAGE_UP"
+         Case #GTK_SCROLL_PAGE_DOWN: Debug "#GTK_SCROLL_PAGE_DOWN"
+         Case #GTK_SCROLL_STEP_LEFT: Debug "#GTK_SCROLL_STEP_LEFT"
+         Case #GTK_SCROLL_STEP_RIGHT: Debug "#GTK_SCROLL_STEP_RIGHT"
+         Case #GTK_SCROLL_PAGE_LEFT: Debug "#GTK_SCROLL_PAGE_LEFT"
+         Case #GTK_SCROLL_PAGE_RIGHT: Debug "#GTK_SCROLL_PAGE_RIGHT"
+         Case #GTK_SCROLL_START: Debug "#GTK_SCROLL_START"
+         Case #GTK_SCROLL_END: Debug "#GTK_SCROLL_END"
+      EndSelect
+      Debug value
+      
+      ; move scrollbar 1 step forward regardless of the event
+      SetGadgetState(0, GetGadgetState(0)+1)
+      
+      ; return #true to stop default processing
+      ProcedureReturn #True
+   EndProcedure
+; g_signal_connect_data_(GadgetID(gadget), "change-value", @ChangeHandler2(), 0, #Null, 0)
+      
+   
 ProcedureC.i GadgetHandler(*widget.GtkWidget,*event.GdkEventAny,*gadget)
   Protected stat.s
   Protected *eventMouseButtons.GdkEventButton = *event
@@ -76,8 +109,8 @@ For i = 0 To 3
 Next
 
 While WaitWindowEvent() ! #PB_Event_CloseWindow : Wend
-; IDE Options = PureBasic 6.12 LTS (Linux - x64)
-; CursorPosition = 60
-; FirstLine = 42
-; Folding = --
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 48
+; FirstLine = 12
+; Folding = +-
 ; EnableXP
