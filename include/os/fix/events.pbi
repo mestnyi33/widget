@@ -5,10 +5,6 @@ DeclareModule events
   EnableExplicit
   UseModule constants
   
-  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-     Declare BindGadget( gadget, *callBack, eventtype = #PB_All )
-  CompilerEndIf
-
   Macro GadgetMouseX( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
      ;GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
      ;WindowMouseX( ID::Window(ID::GetWindowID(GadgetID(_canvas_))) ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )
@@ -35,6 +31,9 @@ DeclareModule events
   FocusedGadget() =- 1 
   
   ;Declare.i WaitEvent(event.i, second.i=0)
+  CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+     Declare BindGadget( gadget, *callBack, eventtype = #PB_All )
+  CompilerEndIf
   Declare SetCallBack(*callback)
 EndDeclareModule
 
@@ -91,18 +90,18 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Resize_2()
-    Protected canvas = 2
-    ResizeGadget(canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()) - GadgetX(canvas)*2, WindowHeight(EventWindow()) - GadgetY(canvas)*2)
+    Protected Canvas = 2
+    ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()) - GadgetX(Canvas)*2, WindowHeight(EventWindow()) - GadgetY(Canvas)*2)
   EndProcedure
   
   Procedure Resize_3()
-    Protected canvas = 3
-    ResizeGadget(canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()) - GadgetX(canvas)*2, WindowHeight(EventWindow()) - GadgetY(canvas)*2)
+    Protected Canvas = 3
+    ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow()) - GadgetX(Canvas)*2, WindowHeight(EventWindow()) - GadgetY(Canvas)*2)
   EndProcedure
   
   Procedure EventHandler( event, eventobject, eventtype, eventdata )
     Protected window = EventWindow()
-    Protected dropx, dropy
+    Protected DropX, DropY
     Static deltax, deltay
     
     Select eventtype
@@ -118,9 +117,9 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug ""+eventobject + " #PB_EventType_DragStart " + "x="+ deltax +" y="+ deltay
         
       Case #PB_EventType_Drop
-        dropx = events::GadgetMouseX(eventobject, #PB_Gadget_ScreenCoordinate)
-        dropy = events::GadgetMouseY(eventobject, #PB_Gadget_ScreenCoordinate)
-        Debug ""+eventobject + " #PB_EventType_Drop " + "x="+ dropx +" y="+ dropy
+        DropX = events::GadgetMouseX(eventobject, #PB_Gadget_ScreenCoordinate)
+        DropY = events::GadgetMouseY(eventobject, #PB_Gadget_ScreenCoordinate)
+        Debug ""+eventobject + " #PB_EventType_Drop " + "x="+ DropX +" y="+ DropY
         
       Case #PB_EventType_Focus
         Debug ""+eventobject + " #PB_EventType_Focus " 
@@ -166,8 +165,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  Procedure OpenWindow_(window, x,y,width,height, title.s, flag=0)
-    Protected result = OpenWindow(window, x,y,width,height, title.s, flag)
+  Procedure OpenWindow_(window, X,Y,Width,Height, title.s, flag=0)
+    Protected result = OpenWindow(window, X,Y,Width,Height, title.s, flag)
     If window >= 0
       WindowID = WindowID(window)
     Else
@@ -178,8 +177,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn result
   EndProcedure
   
-  Macro OpenWindow(window, x,y,width,height, title, flag=0)
-    OpenWindow_(window, x,y,width,height, title, flag)
+  Macro OpenWindow(window, X,Y,Width,Height, title, flag=0)
+    OpenWindow_(window, X,Y,Width,Height, title, flag)
   EndMacro
   
   ;/// first
@@ -273,8 +272,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16
-; FirstLine = 6
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 35
+; FirstLine = 3
 ; Folding = -------
 ; EnableXP
