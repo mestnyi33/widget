@@ -17,10 +17,10 @@ CompilerIf #PB_Compiler_IsMainFile
           Protected class.s = GetText(EventObject)
           Select EventType
                Case #__event_MouseWheel
-                  If MouseWheelDirection( ) > 0
-                     Debug "wheelvertical - "+class +" "+ EventData +" "+ MouseWheelData( ) +" "+ MouseData( )
+                  If MouseDirection( ) > 0
+                     Debug "wheel_vertical - "+class +" "+ EventData +" "+ MouseData( )
                   Else
-                     Debug "wheelhorizontal - "+class +" "+ EventData +" "+ MouseWheelData( ) +" "+ MouseData( )
+                     Debug "wheel_horizontal - "+class +" "+ EventData +" "+ MouseData( )
                   EndIf
                   
                Case #__event_Focus
@@ -92,9 +92,9 @@ CompilerIf #PB_Compiler_IsMainFile
       event = WaitWindowEvent(1)
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16
-; FirstLine = 3
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 19
+; FirstLine = 15
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -31,8 +31,7 @@ MouseEnter
 MouseButtons
 MouseButtonPress
 MouseData
-MouseWheelData
-MouseWheelDirection
+MouseDirection
 MouseMoveX
 MouseMoveY
 GadgetMouseX

@@ -4,14 +4,25 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   test_focus_set = 2
+   ; test_focus_set = 2
    
    Procedure all_events( )
+      Protected event$
       If WidgetEvent( ) = #__event_MouseMove
          ProcedureReturn 0
       EndIf
       ;
-      Debug " ["+GetClass(EventWidget( )) +"] "+ ClassFromEvent(WidgetEvent( )) ;+" "+ EventWidget( )\index
+      If WidgetEvent( ) = #__event_MouseWheel
+         If MouseDirection( ) > 0
+            event$ = "MouseWheelVertical"
+         Else
+            event$ = "MouseWheelHorizontal"
+         EndIf
+      Else
+         event$ = ClassFromEvent(WidgetEvent( ))
+      EndIf
+      
+      Debug " ["+GetClass(EventWidget( )) +"] "+ event$ +" "+ WidgetEventData( ) +" "+ MouseData( )
    EndProcedure
    
    Define flag.q = #PB_Canvas_DrawFocus
@@ -53,8 +64,8 @@ CompilerEndIf
 ; [1] LeftButtonUp
 ; [1] MouseLeave
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 20
-; FirstLine = 3
-; Folding = -
+; CursorPosition = 15
+; FirstLine = 12
+; Folding = --
 ; EnableXP
 ; DPIAware

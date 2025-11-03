@@ -355,7 +355,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          anchors._s_TRANSFORM    ; a_anchors( )
          *selector._s_SELECTOR   ; mouse select frame
          
-         wheeldata.w
          wheeldirection.b
          
          *button._s_BUTTONS[3]   ;
@@ -795,8 +794,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 678
-; FirstLine = 631
+; CursorPosition = 357
+; FirstLine = 315
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP
