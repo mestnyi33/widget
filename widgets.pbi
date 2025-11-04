@@ -16385,10 +16385,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ do events entered & leaved
          If Entered( ) <> *this
+            Debug ""+*root +" "+ Entered( ) +" "+ *this +" "+ Leaved( )
             Leaved( ) = Entered( )
             Entered( ) = *this
             Protected *parent._s_WIDGET 
-            
             ;
             ;
             If Leaved( ) And Not ( *this And *this\parent = Leaved( ) And is_integral_( *this ) )
@@ -25837,6 +25837,70 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       Debug " ["+GetClass(EventWidget( )) +"] "+ event$ +" "+ WidgetEventData( ) +" "+ MouseData( )
+   EndProcedure
+   
+   Define flag.q = #PB_Canvas_DrawFocus
+   
+   Procedure TestRoot( gadget, X,Y,Width,Height, flag=0 )
+      Protected *g
+      *g = Open(gadget, X,Y,Width,Height,"", flag, 0, gadget) 
+      SetBackColor(*g, RGB( Random(255), Random(255), Random(255) ))
+      SetText(*g, Str(gadget))
+      SetClass(*g, Str(gadget))
+   EndProcedure
+   
+   Procedure TestWindow( ID )
+     Static X,Y
+     OpenWindow( ID, 300+X,150+Y,170,170,"window_"+Str(ID), #PB_Window_BorderLess)
+     TestRoot( ID, 10, 0, 160, 170 )
+     
+     X + 100
+     Y + 100
+     ProcedureReturn 1
+  EndProcedure
+  
+  If TestWindow( 10 )
+     TestWindow( 30 )
+
+;    If OpenWindow(0, 0, 0, 370, 370, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+;       TestRoot(10, 10, 10, 150, 150,flag) 
+;       
+;       TestRoot(20, 210, 10, 150, 150,flag) 
+;       
+;       TestRoot(30, 10, 210, 150, 150,flag) 
+;       
+;       TestRoot(40, 210, 210, 150, 150,flag) 
+      
+     
+      Bind( #PB_All, @all_events( ))
+      WaitClose( )
+   EndIf
+
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile = 99
+   EnableExplicit
+   UseWidgets( )
+   
+   ; test_focus_set = 2
+   
+   Procedure all_events( )
+      Protected event$
+      If WidgetEvent( ) = #__event_MouseMove
+         ProcedureReturn 0
+      EndIf
+      ;
+      If WidgetEvent( ) = #__event_MouseWheel
+         If MouseDirection( ) > 0
+            event$ = "MouseWheelVertical"
+         Else
+            event$ = "MouseWheelHorizontal"
+         EndIf
+      Else
+         event$ = ClassFromEvent(WidgetEvent( ))
+      EndIf
+      
+      Debug " ["+GetClass(EventWidget( )) +"] "+ event$ +" "+ WidgetEventData( ) +" "+ MouseData( )
       ProcedureReturn #PB_Ignore
    EndProcedure
    
@@ -27202,9 +27266,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 20427
-; FirstLine = 19008
-; Folding = -----------------------------------D3v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-r---0---v-----------------------+-4---------------------------------------------------------------------------------------------------------8---------------4-------------------------------------------------------------------------4------------------------------------------00-e-+n7t-8q0--------------------0f4---------f8--+84----v-------------f--------------48-vv-Xu8l-8+Vs---------0-fbn------------------4------------0--8-8-------8----------fr----+-----------------------4-------------
+; CursorPosition = 16387
+; FirstLine = 15589
+; Folding = -----------------------------------D3v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-r---0---v-----------------------+-4---------------------------------------------------------------------------------------------------------8---------------4-----------------------------------------8X-0-07-------------------------4------------------------------------------00-e-+n7t-8q0--------------------0f4e--------f8--+84----v-----0-------f--------------48-vv-Xu8l-8+Vs---------0-fbn------------------4------------0--8-8-------8----------fr----+------------------------f--------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
