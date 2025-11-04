@@ -161,47 +161,59 @@
       ProcedureC eventTapFunction(proxy, eType, event, refcon)
          Protected Gadget, scrollX, scrollY, NSClass, NSEvent, Window, View, Point.NSPoint
          
-         If eType = #NSScrollWheel 
-            NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
-            If NSEvent
+         If refcon
+           If eType = #NSScrollWheel Or
+              eType = #NSLeftMouseDown Or eType = #NSRightMouseDown 
+             
+             NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
+             If NSEvent
                Window = CocoaMessage(0, NSEvent, "window")
                If Window
-                  CocoaMessage(@Point, NSEvent, "locationInWindow")
-                  ;
-                  View = CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "hitTest:@", @Point)
-                  If View
-                     CocoaMessage( @NSClass, CocoaMessage( 0, View, "className" ), "UTF8String" )
-                     ;
-                     If NSClass And 
-                        PeekS( NSClass, -1, #PB_UTF8 ) = "PB_NSFlippedView"
-                        View = CocoaMessage(0, View, "superview")
+                 CocoaMessage(@Point, NSEvent, "locationInWindow")
+                 ;
+                 View = CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "hitTest:@", @Point)
+                 If View
+                   CocoaMessage( @NSClass, CocoaMessage( 0, View, "className" ), "UTF8String" )
+                   ;
+                   If NSClass And 
+                      PeekS( NSClass, -1, #PB_UTF8 ) = "PB_NSFlippedView"
+                     View = CocoaMessage(0, View, "superview")
+                   EndIf
+                   ;
+                   Gadget = CocoaMessage(0, View, "tag")
+                   If IsGadget( Gadget )
+                     If GetActiveGadget( ) <> Gadget 
+                       If GetActiveGadget() 
+                         SetActiveGadget( #PB_Default )
+                       EndIf
+                       ; SetActiveWindow( EventWindow( ))
+                       SetActiveGadget( Gadget )
                      EndIf
-                     ;
-                     Gadget = CocoaMessage(0, View, "tag")
-                     If IsGadget( Gadget )
-                        If eType = #NSScrollWheel
-                           Window = EventWindow( )
-                           scrollX = CocoaMessage(0, NSEvent, "scrollingDeltaX")
-                           scrollY = CocoaMessage(0, NSEvent, "scrollingDeltaY")
-                           
-                           If scrollX And Not scrollY
-                              ; Debug "X - scroll"
-                              CompilerIf Defined(constants::PB_EventType_MouseWheelY, #PB_Constant) 
-                                 CallCFunctionFast(refcon, Gadget, constants::#PB_EventType_MouseWheelX, scrollX )
-                              CompilerEndIf
-                           EndIf
-                           
-                           If scrollY And Not scrollX
-                              ; Debug "Y - scroll"
-                              CompilerIf Defined(constants::PB_EventType_MouseWheelX, #PB_Constant) 
-                                 CallCFunctionFast(refcon, Gadget, constants::#PB_EventType_MouseWheelY, scrollY )
-                              CompilerEndIf
-                           EndIf
-                        EndIf
+                     
+                     If eType = #NSScrollWheel
+                       Window = EventWindow( )
+                       scrollX = CocoaMessage(0, NSEvent, "scrollingDeltaX")
+                       scrollY = CocoaMessage(0, NSEvent, "scrollingDeltaY")
+                       
+                       If scrollX And Not scrollY
+                         ; Debug "X - scroll"
+                         CompilerIf Defined(PB_EventType_MouseWheelY, #PB_Constant) 
+                           CallCFunctionFast(refcon, Gadget, #PB_EventType_MouseWheelX, scrollX )
+                         CompilerEndIf
+                       EndIf
+                       
+                       If scrollY And Not scrollX
+                         ; Debug "Y - scroll"
+                         CompilerIf Defined(PB_EventType_MouseWheelX, #PB_Constant) 
+                           CallCFunctionFast(refcon, Gadget, #PB_EventType_MouseWheelY, scrollY )
+                         CompilerEndIf
+                       EndIf
                      EndIf
-                  EndIf
+                   EndIf
+                 EndIf
                EndIf
-            EndIf
+             EndIf
+           EndIf
          EndIf
          
       EndProcedure
@@ -244,7 +256,8 @@
          ; CFRelease_(eventTap)
       EndProcedure
       
-      SetCallBack( 0 )
+      Declare EventHandler( gadget, event, *data )
+      SetCallBack( @EventHandler( ) )
       
       ;-
    CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
@@ -605,19 +618,28 @@
          EndIf
          
       CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
-         Static leave, drag, gadgetID, enterID
+         Static leave, drag, gadgetID, enterID, focus =- 1
          
          If EventType( ) = #PB_EventType_Focus
-            EventHandler( EventGadget( ), EventType( ), EventData( ))
+           If focus <> EventGadget( )
+             If IsGadget( focus )
+               SetActiveWindow(focus)
+               SetActiveGadget(#PB_Default)
+               SetActiveWindow(EventWindow( ))
+               ;EventHandler( focus, #PB_EventType_LostFocus, EventData( ))
+             EndIf
+             focus = EventGadget( )
+           EndIf
+           EventHandler( EventGadget( ), EventType( ), EventData( ))
             If GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
                If GetActiveGadget( ) = EventGadget( )
                   EventHandler( EventGadget( ), #PB_EventType_LeftButtonDown, EventData( ))
                EndIf
             EndIf
          ElseIf EventType( ) = #PB_EventType_LeftButtonDown
-            If GetActiveGadget( ) = EventGadget( )
-               EventHandler( EventGadget( ), EventType( ), EventData( ))
-            EndIf
+           If GetActiveGadget( ) = EventGadget( )
+             EventHandler( EventGadget( ), EventType( ), EventData( ))
+           EndIf
          ElseIf EventType( ) = #PB_EventType_DragStart
             EventHandler( EventGadget( ), EventType( ), EventData( ))
             drag = 1
@@ -677,14 +699,13 @@
       ; SetActiveGadget( Canvas ) ; BUG
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
          BindGadgetEvent( Canvas, @CanvasEvents( ))
-      CompilerElse
+       CompilerElse
          BindGadget( Canvas, @EventHandler( ))
          BindGadgetEvent( Canvas, @CanvasEvents( ))
       CompilerEndIf
       
-      
       SetActiveGadget( Canvas )
-   EndProcedure
+    EndProcedure
    
    Procedure TestWindow( ID )
       Static X,Y
@@ -727,9 +748,9 @@
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Linux - x64)
-; CursorPosition = 417
-; FirstLine = 395
-; Folding = -------------------
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 627
+; FirstLine = 479
+; Folding = -----------+--0-----
 ; EnableXP
 ; DPIAware
