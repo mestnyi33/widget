@@ -20,24 +20,24 @@ Module Events
          Case #WM_NCDESTROY 
             SetWindowLongPtr_(hwnd, #GWLP_USERDATA, sysProc)
             RemoveProp_(hwnd, sysProc)
-            
-         Case #WM_LBUTTONDOWN : move = 0
-         Case #WM_LBUTTONUP : move = 0
-         Case #WM_MOUSEFIRST
-            Protected Track.TRACKMOUSEEVENT
-            Track\cbSize = SizeOf(Track)
-            Track\dwFlags = #TME_HOVER|#TME_LEAVE
-            Track\hwndTrack = hWnd
-            Track\dwHoverTime = 1
-            TrackMouseEvent_(@TRACK)
-            
-            ; Case #WM_MOUSEMOVE
-            If move
-               CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseMove )
-               ProcedureReturn 0
-            Else
-               move = 1
-            EndIf
+;             
+;          Case #WM_LBUTTONDOWN : move = 0
+;          Case #WM_LBUTTONUP : move = 0
+;          Case #WM_MOUSEFIRST
+;             Protected Track.TRACKMOUSEEVENT
+;             Track\cbSize = SizeOf(Track)
+;             Track\dwFlags = #TME_HOVER|#TME_LEAVE
+;             Track\hwndTrack = hWnd
+;             Track\dwHoverTime = 1
+;             TrackMouseEvent_(@TRACK)
+;             
+;             ; Case #WM_MOUSEMOVE
+;             If move
+;                CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseMove )
+;                ProcedureReturn 0
+;             Else
+;                move = 1
+;             EndIf
 ;             
          Case #WM_MOUSEHWHEEL 
             CallFunctionFast( *callBack,  gadget, constants::#PB_EventType_MouseWheelX, - HIWORD(wparam) );( delta * step / #WHEEL_DELTA )) )
@@ -71,7 +71,7 @@ Module Events
    EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 7
+; CursorPosition = 39
+; FirstLine = 19
 ; Folding = --
 ; EnableXP

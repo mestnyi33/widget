@@ -143,6 +143,109 @@
          EndProcedure
       EndModule
       
+      Global psn.q, mask, key.s
+      
+      ImportC ""
+         CFRunLoopGetCurrent( )
+         CFRunLoopAddCommonMode(rl, mode)
+         
+         CGEventTapCreate(tap.i, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
+         
+         ;     GetCurrentProcess(*psn)
+         ;     CGEventTapCreateForPSN(*psn, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
+         
+         GetCurrentProcess(*ProcessSerialNumber)
+         CGEventTapCreateForPSN(*ProcessSerialNumber, CGEventTapPlacement.i, CGEventTapOptions.i, CGEventMask.q, CGEventTapCallback.i, *UserData)
+      EndImport
+      
+      ProcedureC eventTapFunction(proxy, eType, event, refcon)
+         Protected Gadget, scrollX, scrollY, NSClass, NSEvent, Window, View, Point.NSPoint
+         
+         If eType = #NSScrollWheel 
+            NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
+            If NSEvent
+               Window = CocoaMessage(0, NSEvent, "window")
+               If Window
+                  CocoaMessage(@Point, NSEvent, "locationInWindow")
+                  ;
+                  View = CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "hitTest:@", @Point)
+                  If View
+                     CocoaMessage( @NSClass, CocoaMessage( 0, View, "className" ), "UTF8String" )
+                     ;
+                     If NSClass And 
+                        PeekS( NSClass, -1, #PB_UTF8 ) = "PB_NSFlippedView"
+                        View = CocoaMessage(0, View, "superview")
+                     EndIf
+                     ;
+                     Gadget = CocoaMessage(0, View, "tag")
+                     If IsGadget( Gadget )
+                        If eType = #NSScrollWheel
+                           Window = EventWindow( )
+                           scrollX = CocoaMessage(0, NSEvent, "scrollingDeltaX")
+                           scrollY = CocoaMessage(0, NSEvent, "scrollingDeltaY")
+                           
+                           If scrollX And Not scrollY
+                              ; Debug "X - scroll"
+                              CompilerIf Defined(constants::PB_EventType_MouseWheelY, #PB_Constant) 
+                                 CallCFunctionFast(refcon, Gadget, constants::#PB_EventType_MouseWheelX, scrollX )
+                              CompilerEndIf
+                           EndIf
+                           
+                           If scrollY And Not scrollX
+                              ; Debug "Y - scroll"
+                              CompilerIf Defined(constants::PB_EventType_MouseWheelX, #PB_Constant) 
+                                 CallCFunctionFast(refcon, Gadget, constants::#PB_EventType_MouseWheelY, scrollY )
+                              CompilerEndIf
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+      EndProcedure
+      
+      ;    Procedure.i WaitEvent( event.i, second.i = 0 )
+      ;      ProcedureReturn event
+      ;    EndProcedure
+      
+      Procedure   SetCallBack( *callback )
+         Protected mask, EventTap
+         mask = #NSMouseMovedMask | #NSScrollWheelMask
+         ; mask | #NSMouseEnteredMask | #NSMouseExitedMask  ;| #NSCursorUpdateMask
+         mask | #NSLeftMouseDownMask | #NSLeftMouseUpMask | #NSOtherMouseUpMask
+         mask | #NSRightMouseDownMask | #NSRightMouseDownMask | #NSOtherMouseDownMask
+         mask | #NSLeftMouseDraggedMask | #NSRightMouseDraggedMask | #NSOtherMouseDraggedMask 
+         mask | #NSKeyDownMask | #NSKeyUpMask
+         
+         ;mask = #kCGEventForAllEventsMask
+         
+         #cghidEventTap = 0              ; Указывает, что отвод события размещается в точке, где системные события HID поступают на оконный сервер.
+         #cgSessionEventTap = 1          ; Указывает, что отвод события размещается в точке, где события системы HID и удаленного управления входят в сеанс входа в систему.
+         #cgAnnotatedSessionEventTap = 2 ; Указывает, что отвод события размещается в точке, где события сеанса были аннотированы для передачи в приложение.
+         
+         #headInsertEventTap = 0         ; Указывает, что новое касание события должно быть вставлено перед любым ранее существовавшим касанием события в том же месте.
+         #tailAppendEventTap = 1         ; Указывает, что новое касание события должно быть вставлено после любого ранее существовавшего касания события в том же месте
+         
+         ;\\
+         GetCurrentProcess( @psn )
+         eventTap = CGEventTapCreateForPSN( @psn, #headInsertEventTap, 1, mask, @eventTapFunction( ), *callback )
+         
+         ;\\ с ним mousemove не происходит если приложение не активно
+         ; eventTap = CGEventTapCreate(2, 0, 1, mask, @eventTapFunction( ), *callback)
+         
+         ;\\
+         If eventTap
+            CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), "addPort:", eventTap, "forMode:$", @"kCFRunLoopDefaultMode")
+         EndIf
+         
+         ;\\
+         ; CFRelease_(eventTap)
+      EndProcedure
+      
+      SetCallBack( 0 )
+      
       ;-
    CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
       DeclareModule mouse
@@ -210,8 +313,77 @@
          
       EndModule
       
+      Procedure.w HIWORD(Value.L)
+         ProcedureReturn (((Value) >> 16) & $FFFF)
+      EndProcedure
+      
+      Procedure.w LOWORD(Value)
+         ProcedureReturn ((Value) & $FFFF)
+      EndProcedure
+      
+      Procedure CallbackHandler(hWnd, uMsg, wParam, lParam) 
+         Protected gadget = GetProp_( hWnd, "PB_ID" )
+         Protected sysProc = GetProp_(hWnd, "sysProc")
+         Protected *callBack = GetProp_(hWnd, "sysProc"+Str(GetProp_(hWnd, "sysProcType")))
+         Static focus.i, enter.b, move.b 
+         
+         Select uMsg
+            Case #WM_NCDESTROY 
+               SetWindowLongPtr_(hwnd, #GWLP_USERDATA, sysProc)
+               RemoveProp_(hwnd, sysProc)
+               
+            Case #WM_MOUSEHWHEEL 
+               CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseWheelX, - HIWORD(wparam) );( delta * step / #WHEEL_DELTA )) )
+               ProcedureReturn 0
+               
+            Case #WM_MOUSEWHEEL 
+               CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseWheelY , HIWORD(wparam) );( delta * step / #WHEEL_DELTA ))
+               ProcedureReturn 0
+               
+               ;          Case #WM_KEYDOWN
+               ;             Debug 656789098765
+         EndSelect
+         
+         ProcedureReturn CallWindowProc_(sysProc, hWnd, uMsg, wParam, lParam)
+      EndProcedure 
+      
+      Procedure BindGadget( gadget, *callBack, eventtype = #PB_All )
+         Protected hWnd = GadgetID( gadget )
+         Protected sysProc = SetWindowLongPtr_(hWnd, #GWL_WNDPROC, @CallbackHandler())
+         SetProp_(hWnd, "sysProc", sysProc)
+         SetProp_(hWnd, "sysProcType", eventtype)
+         SetProp_(hWnd, "sysProc"+Str(eventtype), *callBack)
+      EndProcedure
       ;-
    CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+      
+      ImportC ""
+         gdk_event_get_scroll_deltas(*Event, *delta_x, *delta_y)
+      EndImport
+      
+      Procedure signal_event( *self, *event.gdkeventscroll, user_data )
+         Protected deltaX.d, deltaY.d
+         
+         If *event\type = #GDK_SCROLL
+            ;Debug "Scroll State " + *event\state
+            gdk_event_get_scroll_deltas(*event, @deltaX, @deltaY)
+            
+            If user_data
+              If *event\direction = 2 Or *event\direction = 3
+                CallCFunctionFast( user_data, ID::gadget( *self ), #PB_EventType_MouseWheelX, deltaX )
+              EndIf
+              If *event\direction = 0 Or *event\direction = 1
+                CallCFunctionFast( user_data, ID::gadget( *self ), #PB_EventType_MouseWheelY, deltay )
+              EndIf
+              ProcedureReturn #True
+             EndIf
+         EndIf
+      EndProcedure
+      
+      Procedure BindGadget( gadget, *callBack, eventtype = #PB_All  )
+         ; g_signal_connect_data_(GadgetID(gadget), "change-value", @ChangeHandler( ), 0, #Null, 0)
+         g_signal_connect_( GadgetID(gadget), "event", @signal_event( ), *callBack )
+      EndProcedure
       
    CompilerEndIf
    
@@ -226,42 +398,55 @@
    EndProcedure
    
    Procedure EventHandler( gadget, event, *data )
+      If event = #PB_EventType_MouseMove
+         Static move
+         If move = 0
+            move = 1
+            
+            Debug "     ["+gadget+"] Move" 
+         EndIf
+      Else
+         move = 0
+      EndIf
+      
       Select event
-         Case #PB_EventType_MouseEnter       : Debug " ["+gadget+"] MouseEnter"           
-         Case #PB_EventType_MouseLeave       : Debug " ["+gadget+"] MouseLeave"          
-            ; Case #PB_EventType_MouseMove        : Debug " ["+gadget+"] MouseMove"           
-         Case #PB_EventType_MouseWheel       : Debug " ["+gadget+"] MouseWheel"           
+         Case #PB_EventType_MouseEnter       : Debug "["+gadget+"] Enter"           
+         Case #PB_EventType_MouseLeave       : Debug "["+gadget+"] Leave"          
+            ; Case #PB_EventType_MouseMove        : Debug "["+gadget+"] Move"           
+         Case #PB_EventType_MouseWheel       : Debug "["+gadget+"] Wheel " + *data            
+         Case #PB_EventType_MouseWheelX      : Debug "["+gadget+"] WheelHorizontal " + *data           
+         Case #PB_EventType_MouseWheelY      : Debug "["+gadget+"] WheelVertical " + *data           
             
-         Case #PB_EventType_LeftButtonDown   : Debug " ["+gadget+"] LeftButtonDown"  
-         Case #PB_EventType_LeftButtonUp     : Debug " ["+gadget+"] LeftButtonUp"     
-         Case #PB_EventType_LeftClick        : Debug " ["+gadget+"] LeftClick"        
-         Case #PB_EventType_LeftDoubleClick  : Debug " ["+gadget+"] LeftDoubleClick"  
+         Case #PB_EventType_LeftButtonDown   : Debug "["+gadget+"] LeftDown"  
+         Case #PB_EventType_LeftButtonUp     : Debug "["+gadget+"] LeftUp"     
+         Case #PB_EventType_LeftClick        : Debug "["+gadget+"] LeftClick"        
+         Case #PB_EventType_LeftDoubleClick  : Debug "["+gadget+"] Left2Click"  
             
-         Case #PB_EventType_RightButtonDown  : Debug " ["+gadget+"] RightButtonDown" 
-         Case #PB_EventType_RightButtonUp    : Debug " ["+gadget+"] RightButtonUp"   
-         Case #PB_EventType_RightClick       : Debug " ["+gadget+"] RightClick"      
-         Case #PB_EventType_RightDoubleClick : Debug " ["+gadget+"] RightDoubleClick"
+         Case #PB_EventType_RightButtonDown  : Debug "["+gadget+"] RightDown" 
+         Case #PB_EventType_RightButtonUp    : Debug "["+gadget+"] RightUp"   
+         Case #PB_EventType_RightClick       : Debug "["+gadget+"] RightClick"      
+         Case #PB_EventType_RightDoubleClick : Debug "["+gadget+"] Right2Click"
             
-         Case #PB_EventType_MiddleButtonDown : Debug " ["+gadget+"] MiddleButtonDown" 
-         Case #PB_EventType_MiddleButtonUp   : Debug " ["+gadget+"] MiddleButtonUp"   
+         Case #PB_EventType_MiddleButtonDown : Debug "["+gadget+"] MiddleDown" 
+         Case #PB_EventType_MiddleButtonUp   : Debug "["+gadget+"] MiddleUp"   
             
-         Case #PB_EventType_Focus            : Debug " ["+gadget+"] Focus"   
+         Case #PB_EventType_Focus            : Debug "["+gadget+"] Focus"   
             Draw(gadget, "Focus")
             
-         Case #PB_EventType_LostFocus        : Debug " ["+gadget+"] LostFocus"        
+         Case #PB_EventType_LostFocus        : Debug "["+gadget+"] LostFocus"        
             Draw(gadget, "")
             
-         Case #PB_EventType_KeyDown          : Debug " ["+gadget+"] KeyDown"          
-         Case #PB_EventType_KeyUp            : Debug " ["+gadget+"] KeyUp"           
-         Case #PB_EventType_Input            : Debug " ["+gadget+"] Input"            
+         Case #PB_EventType_KeyDown          : Debug "["+gadget+"] KeyDown"          
+         Case #PB_EventType_KeyUp            : Debug "["+gadget+"] KeyUp"           
+         Case #PB_EventType_Input            : Debug "["+gadget+"] Input"            
             
-         Case #PB_EventType_Resize           : Debug " ["+gadget+"] Resize"           
-         Case #PB_EventType_DragStart        : Debug " ["+gadget+"] DragStart"
-         Case #PB_EventType_StatusChange     : Debug " ["+gadget+"] StatusChange"
-         Case #PB_EventType_TitleChange      : Debug " ["+gadget+"] TitleChange"
-         Case #PB_EventType_Change           : Debug " ["+gadget+"] Change"
-         Case #PB_EventType_Down             : Debug " ["+gadget+"] Down"
-         Case #PB_EventType_Up               : Debug " ["+gadget+"] Up"
+         Case #PB_EventType_Resize           : Debug "["+gadget+"] Resize"           
+         Case #PB_EventType_DragStart        : Debug "["+gadget+"] DragStart"
+         Case #PB_EventType_StatusChange     : Debug "["+gadget+"] StatusChange"
+         Case #PB_EventType_TitleChange      : Debug "["+gadget+"] TitleChange"
+         Case #PB_EventType_Change           : Debug "["+gadget+"] Change"
+         Case #PB_EventType_Down             : Debug "["+gadget+"] Down"
+         Case #PB_EventType_Up               : Debug "["+gadget+"] Up"
       EndSelect
    EndProcedure
    
@@ -303,7 +488,7 @@
                EventHandler( EventGadget( ), EventType( ), EventData( ))
                focus = 0
             EndIf
-               
+            
          ElseIf EventType( ) = #PB_EventType_MouseEnter
             If Not GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
                If enterID <> GadgetID( EventGadget( ))
@@ -314,9 +499,7 @@
                   enterID = GadgetID( EventGadget( ))
                EndIf
             EndIf
-            
             EventHandler( EventGadget( ), EventType( ), EventData( ))
-            ; SetActiveGadget( EventGadget( ) )
             
          ElseIf EventType( ) = #PB_EventType_MouseLeave
             If drag
@@ -333,7 +516,7 @@
             EndIf
          ElseIf EventType( ) = #PB_EventType_MouseMove
             If down 
-               If down = 2
+               If down = 3
                   down = 0
                   drag = 1
                   EventHandler( EventGadget( ), #PB_EventType_DragStart, EventData( ))
@@ -355,6 +538,8 @@
                            leave = 0
                            EventHandler( EventGadget( ), #PB_EventType_MouseEnter, EventData( ))
                         EndIf
+                     Else
+                        enterID = 0
                      EndIf
                      
                      gadgetID = enterID
@@ -492,38 +677,11 @@
       ; SetActiveGadget( Canvas ) ; BUG
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
          BindGadgetEvent( Canvas, @CanvasEvents( ))
-      CompilerEndIf
-      CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+      CompilerElse
          BindGadget( Canvas, @EventHandler( ))
          BindGadgetEvent( Canvas, @CanvasEvents( ))
       CompilerEndIf
-      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-         ; BindGadget( Canvas, @EventHandler( ))
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_Focus )
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_LostFocus )
-         
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_MouseEnter )
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_MouseLeave )
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_MouseMove )
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_MouseWheel )
-         
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_LeftButtonDown )
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_LeftButtonUp )
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_LeftClick )
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_LeftDoubleClick )
-         
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_RightButtonDown )
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_RightButtonUp )
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_RightClick )
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_RightDoubleClick )
-         
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_DragStart )
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_Resize )
-         
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_Input )
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_KeyDown )
-         BindGadgetEvent( Canvas, @CanvasEvents( ), #PB_EventType_KeyUp )
-      CompilerEndIf
+      
       
       SetActiveGadget( Canvas )
    EndProcedure
@@ -569,10 +727,9 @@
    EndIf
    
 CompilerEndIf
-
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 342
-; FirstLine = 67
-; Folding = 6z-z-808-04----
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 417
+; FirstLine = 395
+; Folding = -------------------
 ; EnableXP
 ; DPIAware

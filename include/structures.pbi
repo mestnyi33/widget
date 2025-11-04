@@ -726,6 +726,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_CANVAS
          repaint.b
          bindcursor.b
+         enter.b
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
          *gadgetID                ; canvas handle
@@ -794,8 +795,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 357
-; FirstLine = 315
+; CursorPosition = 729
+; FirstLine = 701
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP

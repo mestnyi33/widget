@@ -60,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
      
       Bind( #PB_All, @all_events( ))
       WaitClose( )
-   EndIf
+   EndIf 
 
 CompilerEndIf
 
@@ -77,9 +77,8 @@ CompilerEndIf
 ; [1] Up
 ; [1] LeftButtonUp
 ; [1] MouseLeave
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 23
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 11
 ; Folding = --
 ; EnableXP
 ; DPIAware
