@@ -47,8 +47,15 @@ Module Events
             CallFunctionFast( *callBack,  gadget, constants::#PB_EventType_MouseWheelY , HIWORD(wparam) );( delta * step / #WHEEL_DELTA ))
             ProcedureReturn 0
             
-;          Case #WM_KEYDOWN
-;             Debug 656789098765
+;          Case #WM_KEYUP
+;             If wParam = 9
+;                ProcedureReturn 0
+;             EndIf
+            
+         Case #WM_KEYDOWN
+           If wParam = 9
+             Debug ""+wParam +" "+ lParam +" "
+            EndIf
       EndSelect
       
       ProcedureReturn CallWindowProc_(sysProc, hWnd, uMsg, wParam, lParam)
@@ -71,7 +78,7 @@ Module Events
    EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 39
-; FirstLine = 19
+; CursorPosition = 52
+; FirstLine = 33
 ; Folding = --
 ; EnableXP

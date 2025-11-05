@@ -50,53 +50,65 @@ Module events
    EndImport
    
    ProcedureC eventTapFunction(proxy, eType, event, refcon)
-      Protected Gadget, scrollX, scrollY, NSClass, NSEvent, Window, View, Point.NSPoint
-      
-      If eType = #NSScrollWheel 
-         NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
-         If NSEvent
-            Window = CocoaMessage(0, NSEvent, "window")
-            If Window
-               CocoaMessage(@Point, NSEvent, "locationInWindow")
-               ;
-               View = CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "hitTest:@", @Point)
-               If View
-                  CocoaMessage( @NSClass, CocoaMessage( 0, View, "className" ), "UTF8String" )
-                  ;
-                  If NSClass And 
-                     PeekS( NSClass, -1, #PB_UTF8 ) = "PB_NSFlippedView"
+         Protected Gadget, scrollX, scrollY, NSClass, NSEvent, Window, View, Point.NSPoint
+         
+         If refcon
+           If eType = #NSScrollWheel Or
+              eType = #NSLeftMouseDown Or eType = #NSRightMouseDown 
+             
+             NSEvent = CocoaMessage(0, 0, "NSEvent eventWithCGEvent:", event)
+             If NSEvent
+               Window = CocoaMessage(0, NSEvent, "window")
+               If Window
+                 CocoaMessage(@Point, NSEvent, "locationInWindow")
+                 ;
+                 View = CocoaMessage(0, CocoaMessage(0, Window, "contentView"), "hitTest:@", @Point)
+                 If View
+                   CocoaMessage( @NSClass, CocoaMessage( 0, View, "className" ), "UTF8String" )
+                   ;
+                   If NSClass And 
+                      PeekS( NSClass, -1, #PB_UTF8 ) = "PB_NSFlippedView"
                      View = CocoaMessage(0, View, "superview")
-                  EndIf
-                  ;
-                  Gadget = CocoaMessage(0, View, "tag")
-                  If IsGadget( Gadget )
-                     If eType = #NSScrollWheel
-                        Window = EventWindow( )
-                        scrollX = CocoaMessage(0, NSEvent, "scrollingDeltaX")
-                        scrollY = CocoaMessage(0, NSEvent, "scrollingDeltaY")
-                        
-                        If scrollX And Not scrollY
-                           ; Debug "X - scroll"
-                           CompilerIf Defined(constants::PB_EventType_MouseWheelY, #PB_Constant) 
-                              CallCFunctionFast(refcon, Gadget, constants::#PB_EventType_MouseWheelX, scrollX )
-                           CompilerEndIf
-                        EndIf
-                        
-                        If scrollY And Not scrollX
-                           ; Debug "Y - scroll"
-                           CompilerIf Defined(constants::PB_EventType_MouseWheelX, #PB_Constant) 
-                             CallCFunctionFast(refcon, Gadget, constants::#PB_EventType_MouseWheelY, scrollY )
-                           CompilerEndIf
-                        EndIf
+                   EndIf
+                   ;
+                   Gadget = CocoaMessage(0, View, "tag")
+                   If IsGadget( Gadget )
+                     If GetActiveGadget( ) <> Gadget 
+                       If GetActiveGadget() 
+                         SetActiveGadget( #PB_Default )
+                       EndIf
+                       ; SetActiveWindow( EventWindow( ))
+                       SetActiveGadget( Gadget )
                      EndIf
-                  EndIf
-                EndIf
-            EndIf
+                     
+                     If eType = #NSScrollWheel
+                       Window = EventWindow( )
+                       scrollX = CocoaMessage(0, NSEvent, "scrollingDeltaX")
+                       scrollY = CocoaMessage(0, NSEvent, "scrollingDeltaY")
+                       
+                       If scrollX And Not scrollY
+                         ; Debug "X - scroll"
+                         CompilerIf Defined(PB_EventType_MouseWheelY, #PB_Constant) 
+                           CallCFunctionFast(refcon, Gadget, #PB_EventType_MouseWheelX, scrollX )
+                         CompilerEndIf
+                       EndIf
+                       
+                       If scrollY And Not scrollX
+                         ; Debug "Y - scroll"
+                         CompilerIf Defined(PB_EventType_MouseWheelX, #PB_Constant) 
+                           CallCFunctionFast(refcon, Gadget, #PB_EventType_MouseWheelY, scrollY )
+                         CompilerEndIf
+                       EndIf
+                     EndIf
+                   EndIf
+                 EndIf
+               EndIf
+             EndIf
+           EndIf
          EndIf
-      EndIf
+         
+      EndProcedure
       
-   EndProcedure
-   
 ;    Procedure.i WaitEvent( event.i, second.i = 0 )
 ;      ProcedureReturn event
 ;    EndProcedure
@@ -245,7 +257,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 56
+; CursorPosition = 110
+; FirstLine = 9
 ; Folding = ----
 ; EnableXP
