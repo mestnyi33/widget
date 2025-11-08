@@ -6,30 +6,72 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    EnableExplicit
    
-   Global NewMap Widgets.i()
-   Global.i Canvas_0, gEvent, gQuit, x=10,y=10
+   Define cont, butt
+   Define gEvent, gQuit
+   Define state, direction = 1
+   Define Width, Height
    
-   Procedure Window_0()
-      Define i,*w._S_widget = Open(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      If *w
-         Widgets(Hex(0)) = Container(50, 50, 280, 200)
-         Widgets(Hex(1)) = Button(0, 0, 80, 40, "Button")    
-         ; Widgets(Hex(1)) = Tab(0, 0, 80, 40) : For i=0 To 3 : AddItem(widget( ), -1, "tab_"+Str(i)) : Next  
-         CloseList()
-         
-         SetAlign(Widgets(Hex(1)), #__align_Full|#__align_Top)
-         
-         ;Resize(Widgets(Hex(0)), 51, #PB_Ignore, #PB_Ignore,#PB_Ignore)
+   Procedure GetAlign( *this._s_WIDGET )
+      Protected result = 0
+      
+      If *this\align
+         If *this\align\left
+            result | #__align_Left
+         EndIf
+         If *this\align\top
+            result | #__align_Top
+         EndIf
+         If *this\align\right
+            result | #__align_Right
+         EndIf
+         If *this\align\bottom
+            result | #__align_Bottom
+         EndIf
+         If Not result
+            result = #__align_Center
+         EndIf
       EndIf
+      
+      ProcedureReturn result
    EndProcedure
    
+   Procedure.s GetAlignString( *this._s_WIDGET )
+      Protected result.s
+      
+      If *this\align
+         If *this\align\left
+            result + "#__align_Left|"
+         EndIf
+         If *this\align\top
+            result + "#__align_Top|"
+         EndIf
+         If *this\align\right
+            result + "#__align_Right|"
+         EndIf
+         If *this\align\bottom
+            result + "#__align_Bottom|"
+         EndIf
+         If result = ""
+            result = "#__align_Center"
+         Else
+            result = Trim( result, "|" )
+         EndIf
+      EndIf
+      
+      ProcedureReturn result
+   EndProcedure
    
-   Window_0()
+   Open(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+   cont = Container(50, 50, 280, 200)
+   butt = Button(0, 0, 100, 100, "press", #__flag_TextMultiline)    
+   CloseList()
    
-   Define direction = 1
-   Define Width, Height
-   Define state
+    SetAlign(butt, #__align_Full|#__align_Right)
+   ; SetAlign(butt, #__align_auto|#__align_Right) ; bug без флага #__align_Center выравнивает на середину по вертикали
+   ;SetAlign(butt, #__align_auto|#__align_Right|#__align_Top) 
    
+   ;SetText(butt, Str(GetAlign(butt)))
+   SetText(butt, ReplaceString(GetAlignString(butt), "|", #LF$))
    Repeat
       gEvent= WaitWindowEvent()
       
@@ -38,31 +80,31 @@ CompilerIf #PB_Compiler_IsMainFile
             gQuit= #True
             
          Case #PB_Event_Timer
-            If Width = 480
+            If Width = 300
                direction = 1
-            ElseIf Width = Width(root())-100
+            ElseIf Width = 400
                direction =- 1
             EndIf
             ;         
             Width + direction
             Height + direction
             
-            Resize(Widgets(Hex(0)), #PB_Ignore, #PB_Ignore, Width, Height)
-            
+            If Resize(cont, #PB_Ignore, #PB_Ignore, Width, Height)
+               SetText(butt, Str(Width) +"x"+ Str(Height) )
+               PostReDraw( root() )
+            EndIf
             
          Case #PB_Event_Gadget
-            
             Select EventType( )
                Case #PB_EventType_LeftButtonDown
-                  Define *th._s_widget = Widgets(Str(0))
-                  Width = Width(*th)
-                  Height = Height(*th)
+                  Width = Width(cont)
+                  Height = Height(cont)
                   
-                  If state
-                     state = 0
-                     AddWindowTimer(0, 1, 200)
-                  Else
+                  If state = 0
                      state = 1
+                     AddWindowTimer(0, 1, 10)
+                  Else
+                     state = 0
                      RemoveWindowTimer(0, 1)
                   EndIf
             EndSelect
@@ -71,8 +113,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 48
-; Folding = --
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 68
+; FirstLine = 60
+; Folding = ----
 ; EnableXP

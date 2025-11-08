@@ -53,12 +53,12 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   
-  If Open( OpenWindow( #PB_Any, 300, 150, 380, 200, "form1", #PB_Window_SystemMenu ) )
-    canvas_1 = GetCanvasGadget( Root( ) )
-    canvas_1_win = GetCanvasWindow( Root( ) )
+  If Open(1, 300, 150, 380, 200, "form1", #PB_Window_SystemMenu ) 
+    canvas_1 = GetCanvasGadget( root( ) )
+    canvas_1_win = GetCanvasWindow( root( ) )
     ;BindEventCanvas( )
     a_init(root())
-    *root_1 = Root( )
+    *root_1 = root( )
     
     String( 100, 20, 250,  60, "String ( root - 1 )" )
     Bind( widget( ), @resize_event( ), #PB_EventType_Resize )
@@ -66,12 +66,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind( widget( ), @resize_event( ), #PB_EventType_Resize )
   EndIf
   
-  If Open( OpenWindow( #PB_Any, 300, 400, 380, 200, "form2", #PB_Window_SystemMenu | #PB_Window_SizeGadget ) )
-    canvas_2 = GetCanvasGadget( Root( ) )
-    canvas_2_win = GetCanvasWindow( Root( ) )
+  If Open(2, 300, 400, 380, 200, "form2", #PB_Window_SystemMenu | #PB_Window_SizeGadget )
+    canvas_2 = GetCanvasGadget( root( ) )
+    canvas_2_win = GetCanvasWindow( root( ) )
     ;BindEventCanvas( ) 
     a_init(root())
-    *root_2 = Root( )
+    *root_2 = root( )
     
     Button( 20, 20, 250,  60, "Button ( root - 2 )", #__flag_Textmultiline,-1 )
     Bind( widget( ), @resize_event( ), #PB_EventType_Resize )
@@ -118,9 +118,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   ;WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 60
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 68
+; FirstLine = 43
 ; Folding = --
 ; EnableXP
 ; DPIAware

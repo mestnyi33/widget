@@ -97,7 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     EndSelect
  EndProcedure
   
-  If Open(#PB_Any, 0, 0, 450, 200, "Disable-demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+  If Open(0, 0, 0, 450, 200, "Disable-demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     *item1 = Button( 10, 10, 50, 25, "item-1") : SetClass( *item1, "button-item-1" )
     *item2 = Button( 60, 10, 50, 25, "item-2") : SetClass( *item2, "button-item-2" )
     *item3 = Button( 110, 10, 50, 25, "item-3") : SetClass( *item3, "button-item-3" )
@@ -160,9 +160,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     WaitClose( )
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 37
-; FirstLine = 33
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 99
+; FirstLine = 126
 ; Folding = --
 ; EnableXP
 ; DPIAware

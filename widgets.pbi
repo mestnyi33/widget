@@ -11268,48 +11268,44 @@ CompilerIf Not Defined( widget, #PB_Module )
       Procedure SetAlign( *this._s_WIDGET, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
          Protected flag.q
          ;\\
-         If Not (( mode & #__align_full = #__align_full ) Or ( mode & #__align_auto = #__align_auto ))
-            If mode = 0 And left = 0 And top = 0 And right = 0 And bottom = 0
-               left = #__align_auto
-               top  = #__align_auto
-               mode | #__align_auto
-            EndIf
-            If mode & #__align_right
-               If mode & #__align_center = 0 And mode & #__align_bottom = 0
-                  top = 1
-                  mode | #__align_auto
-               EndIf
-               right = #__align_auto
-            EndIf
-            If mode & #__align_bottom
-               If mode & #__align_center = 0 And mode & #__align_right = 0
-                  left = 1
-                  mode | #__align_auto
-               EndIf
-               bottom = #__align_auto
-            EndIf
-            If mode & #__align_left
-               If mode & #__align_center = 0
-                  top = 1
-                  mode | #__align_auto
-               EndIf
-               left = #__align_auto
-            EndIf
-            If mode & #__align_top
-               If mode & #__align_center = 0
-                  left = 1
-                  mode | #__align_auto
-               EndIf
-               top = #__align_auto
-            EndIf
-            If right = #__align_auto And bottom = #__align_auto
-               right  = 1
-               bottom = 1
-               If mode & #__align_auto = 0
-                  ; mode = 0 ;????
-               EndIf
-            EndIf
-         EndIf
+;          If Not (( mode & #__align_full = #__align_full ) Or
+;                  ( mode & #__align_auto = #__align_auto ))
+;             If mode = 0 And left = 0 And top = 0 And right = 0 And bottom = 0
+;                left = #__align_auto
+;                top  = #__align_auto
+;                mode | #__align_auto
+;             EndIf
+;                ;
+;             If mode & #__align_right And mode & #__align_bottom
+;                right  = 1
+;                bottom = 1
+;             Else
+;                If mode & #__align_right
+;                   If mode & #__align_center = 0 And mode & #__align_bottom = 0
+;                      top = 1
+;                   EndIf
+;                   right = #__align_auto
+;                EndIf
+;                If mode & #__align_bottom
+;                   If mode & #__align_center = 0 And mode & #__align_right = 0
+;                      left = 1
+;                   EndIf
+;                   bottom = #__align_auto
+;                EndIf
+;             EndIf
+;             If mode & #__align_left
+;                If mode & #__align_center = 0
+;                   top = 1
+;                EndIf
+;                left = #__align_auto
+;             EndIf
+;             If mode & #__align_top
+;                If mode & #__align_center = 0
+;                   left = 1
+;                EndIf
+;                top = #__align_auto
+;             EndIf
+;          EndIf
          
          ;\\
          If mode & #__align_auto = #__align_auto
@@ -11503,7 +11499,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\align
                ;\\ horizontal
                If left Or ( Not right And constants::BinaryFlag( Flag, #__align_full ))
-                  If left = #__align_proportional ;Or ( left And mode & #__align_proportional = #__align_proportional )
+                  If left = #__align_proportional 
                      *this\align\left = - 1
                   Else
                      *this\align\left = 1
@@ -11512,7 +11508,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\align\left = 0
                EndIf
                If right Or ( Not left And constants::BinaryFlag( Flag, #__align_full ))
-                  If right = #__align_proportional ;Or ( right And mode & #__align_proportional = #__align_proportional )
+                  If right = #__align_proportional
                      *this\align\right = - 1
                   Else
                      *this\align\right = 1
@@ -11522,8 +11518,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;\\ vertical
-               If top Or ( Not bottom And constants::BinaryFlag( Flag, #__align_full ))
-                  If top = #__align_proportional ;Or ( top And mode & #__align_proportional = #__align_proportional )
+               If top Or ( Not bottom And constants::BinaryFlag( Flag, #__align_full )) 
+                  If top = #__align_proportional
                      *this\align\top = - 1
                   Else
                      *this\align\top = 1
@@ -11532,7 +11528,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this\align\top = 0
                EndIf
                If bottom Or ( Not top And constants::BinaryFlag( Flag, #__align_full ))
-                  If bottom = #__align_proportional ;Or ( bottom And mode & #__align_proportional = #__align_proportional )
+                  If bottom = #__align_proportional
                      *this\align\bottom = - 1
                   Else
                      *this\align\bottom = 1
@@ -11540,6 +11536,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                Else
                   *this\align\bottom = 0
                EndIf
+               
                
                ;\\
                ; Debug ""+mode +" - "+ left+" "+top+" "+right+" "+bottom
@@ -11565,20 +11562,23 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   Else
                      *this\align\width = *this\frame_width( )
-                     If *this\align\left And Not *this\align\right
-                        ; left
-                        *this\align\x = 0
-                     ElseIf Not *this\align\right And Not *this\align\left
-                        ; center
-                        *this\align\x = ( *this\parent\align\width - *this\frame_width( ) ) / 2
-                     ElseIf *this\align\right And Not *this\align\left
-                        ; right
-                        *this\align\x = *this\parent\align\width - *this\frame_width( )
-                        If *this\type = #__type_window
-                           *this\align\x - *this\fs * 2
+                        If *this\align\left And Not *this\align\right
+                           ; left
+                           *this\align\x = 0
+                        ElseIf Not *this\align\right And Not *this\align\left
+                           ; center
+                           *this\align\x = ( *this\parent\align\width - *this\frame_width( ) ) / 2
+                        ElseIf *this\align\right And Not *this\align\left
+                           ; right
+                           If ( mode & #__align_full = #__align_full ) Or
+                              ( mode & #__align_auto = #__align_auto )
+                              *this\align\x = *this\parent\align\width - *this\frame_width( )
+                              If *this\type = #__type_window
+                                 *this\align\x - *this\fs * 2
+                              EndIf
+                           EndIf
                         EndIf
                      EndIf
-                  EndIf
                   
                   ;\\ full vertical
                   If *this\align\bottom And *this\align\top
@@ -11597,9 +11597,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                         *this\align\y = ( *this\parent\align\height - *this\frame_height( ) ) / 2
                      ElseIf *this\align\bottom And Not *this\align\top
                         ; bottom
-                        *this\align\y = *this\parent\align\height - *this\frame_height( )
-                        If *this\type = #__type_window
-                           *this\align\y - *this\fs * 2
+                        If ( mode & #__align_full = #__align_full ) Or
+                           ( mode & #__align_auto = #__align_auto )
+                           *this\align\y = *this\parent\align\height - *this\frame_height( )
+                           If *this\type = #__type_window
+                              *this\align\y - *this\fs * 2
+                           EndIf
                         EndIf
                      EndIf
                   EndIf
@@ -20305,8 +20308,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ; 
                If Pressed( ) 
-                  If Pressed( )\align 
-                     UpdateAlign( Pressed( ) )
+                  If Pressed( )\anchors
+                     If Pressed( )\align 
+                        Debug "UpdateAlign( ) "
+                        UpdateAlign( Pressed( ) )
+                     EndIf
                   EndIf
                Else
                   Debug " УДАЛЕНО пока было нажато"
@@ -22623,15 +22629,11 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.i Gadget( Type.w, Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, flag.q = #Null )
-         Protected *this, g, Window = ID::Window( UseGadgetList( 0 ) )
-         Flag = FromPBFlag( Type, Flag ) | #__flag_autosize
-         
-         ;          If MapSize( roots( ) )
-         ;             Protected Canvas = root( )\canvas\gadget
-         ;          EndIf
-         ;
+         Protected *this, g
+         Protected Window = ID::Window( UseGadgetList(0))
          Open( Window, X, Y, Width, Height, "", #PB_Canvas_Container|#PB_Window_BorderLess, #Null, Gadget )
          ;
+         Flag = FromPBFlag( Type, Flag ) | #__flag_autosize
          Select Type
             Case #__type_Tree      : *this = Tree( 0, 0, Width, Height, flag )
             Case #__type_Text      : *this = Text( 0, 0, Width, Height, Text, flag )
@@ -22648,22 +22650,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             Gadget = GetCanvasGadget( root( ))
             g      = Gadget
          Else
-            g = GadgetID( Gadget )
+            g      = GadgetID( Gadget )
          EndIf
          
-         ;          Static count
-         ;          SetClass( *this, GetClass(*this)+"_"+count); Index(*this))
-         ;          count + 1
-         
-         ;          ;SetGadgetData( Gadget, *this )
+         ; SetGadgetData( Gadget, *this )
          widget::gadgets(Str(Gadget)) = *this
-         
-         ;          If IsGadget(Canvas)
-         ;             ; CloseList( )
-         ;             ;Debug ""+Gadget+" "+canvas
-         ;             ChangeCurrentCanvas( GadgetID(Canvas) )
-         ;             ; OpenList( root( ) )
-         ;          EndIf
          
          ProcedureReturn g
       EndProcedure
@@ -27268,9 +27259,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 19872
-; FirstLine = 19442
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-u0ebf---8--+------------------f-0---------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 20312
+; FirstLine = 19780
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-838t00--v--8-------------------8v------------------------------------------------4--------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -5,21 +5,21 @@ CompilerIf #PB_Compiler_IsMainFile
   
   EnableExplicit
   Global Event.i, MyCanvas, *spl1,*spl2
-  Global x=100,y=100, width=420, height=420 , focus
+  Global X=100,Y=100, Width=420, Height=420 , focus
   
-  If Not OpenWindow(0, 0, 0, width+x*2+20, height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
+  If Not OpenWindow(0, 0, 0, Width+X*2+20, Height+Y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
     MessageRequester("Fatal error", "Program terminated.")
     End
   EndIf
   
-  MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
+  MyCanvas = GetCanvasGadget(Open(0, 10, 10))
    a_init( root(), 0 )
   
   ;Define *Tree = Tree(0,0,0,0,#__flag_autosize)
   ;Define *Tree = Tree(x,y,width, height)
   Define *Tree = Tree(10, 10, 160,95) 
   ; 
-  Debug " * "+width(*Tree, #__c_inner)+" "+height(*Tree, #__c_inner)
+  Debug " * "+Width(*Tree, #__c_inner)+" "+Height(*Tree, #__c_inner)
   
   ; 
   ; a_init( *Tree )
@@ -56,6 +56,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 14
+; FirstLine = 4
 ; Folding = -
 ; EnableXP

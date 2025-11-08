@@ -528,6 +528,8 @@ Procedure   Properties_ButtonDisplay( *second._s_WIDGET )
 ;             If *this\stringbar
 ;               SetFocus( *this\stringbar )
 ;             EndIf
+            ; SetActive( *this )
+            
          EndIf
       EndIf
    EndIf
@@ -3026,8 +3028,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1029
-; FirstLine = 740
+; CursorPosition = 523
+; FirstLine = 501
 ; Folding = ---------f----84D--------------04v-0---0-0-4---0---8z-
 ; Optimizer
 ; EnableAsm

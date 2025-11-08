@@ -28,7 +28,10 @@ CompilerIf #PB_Compiler_IsMainFile
    Define flag.q = #PB_Canvas_DrawFocus
    
    Procedure TestRoot( gadget, X,Y,Width,Height, flag=0 )
-      Protected *g
+     Protected *g
+     CanvasGadget(gadget, X,Y,Width,Height, #PB_Canvas_Container ) : CloseGadgetList( )
+     ; CanvasGadget(0, 0, 0, 420, 420)
+
       *g = Open(gadget, X,Y,Width,Height,"", flag, 0, gadget) 
       SetBackColor(*g, RGB( Random(255), Random(255), Random(255) ))
       SetText(*g, Str(gadget))
@@ -77,8 +80,9 @@ CompilerEndIf
 ; [1] Up
 ; [1] LeftButtonUp
 ; [1] MouseLeave
-; IDE Options = PureBasic 6.12 LTS (Linux - x64)
-; CursorPosition = 11
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 34
+; FirstLine = 19
 ; Folding = --
 ; EnableXP
 ; DPIAware

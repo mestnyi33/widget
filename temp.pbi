@@ -370,29 +370,45 @@
       ;-
    CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
       
-      ImportC ""
+     #GDK_SCROLL_SMOOTH = 4
+     ImportC ""
          gdk_event_get_scroll_deltas(*Event, *delta_x, *delta_y)
       EndImport
       
       Procedure signal_event( *self, *event.gdkeventscroll, user_data )
-         Protected deltaX.d, deltaY.d
+        Protected deltaX.d, deltaY.d
+        Protected Window = EventWindow( )
+        Protected Gadget = EventGadget( ) 
          
          If *event\type = #GDK_SCROLL
-            ;Debug "Scroll State " + *event\state
-            gdk_event_get_scroll_deltas(*event, @deltaX, @deltaY)
-            
-            If user_data
-              If *event\direction = 2 Or *event\direction = 3
-                CallCFunctionFast( user_data, ID::gadget( *self ), #PB_EventType_MouseWheelX, deltaX )
-              EndIf
-              If *event\direction = 0 Or *event\direction = 1
-                CallCFunctionFast( user_data, ID::gadget( *self ), #PB_EventType_MouseWheelY, deltay )
-              EndIf
-              ProcedureReturn #True
+           ;Debug "Scroll State " + *event\state
+           
+           If user_data
+             
+             If *event\direction = #GDK_SCROLL_LEFT
+               PostEvent(#PB_Event_Gadget, Window, Gadget, #PB_EventType_MouseWheelX, 1)
+             ElseIf *event\direction = #GDK_SCROLL_RIGHT
+               PostEvent(#PB_Event_Gadget, Window, Gadget, #PB_EventType_MouseWheelX, -1)
+             ElseIf *event\direction = #GDK_SCROLL_UP
+               PostEvent(#PB_Event_Gadget, Window, Gadget, #PB_EventType_MouseWheelY, 1)
+             ElseIf *event\direction = #GDK_SCROLL_DOWN
+               PostEvent(#PB_Event_Gadget, Window, Gadget, #PB_EventType_MouseWheelY, -1)
+             ElseIf *event\direction = #GDK_SCROLL_SMOOTH
+               gdk_event_get_scroll_deltas(*event, @deltaX, @deltaY)
+               
+               If deltax <> 0.0
+                 PostEvent(#PB_Event_Gadget, Window, Gadget, #PB_EventType_MouseWheelX, - deltaX)
+               EndIf
+               If deltaY <> 0.0
+                 PostEvent(#PB_Event_Gadget, Window, Gadget, #PB_EventType_MouseWheelY, - deltaY)
+               EndIf
              EndIf
+             
+             ProcedureReturn #True
+           EndIf
          EndIf
-      EndProcedure
-      
+       EndProcedure
+    
       Procedure BindGadget( gadget, *callBack, eventtype = #PB_All  )
          ; g_signal_connect_data_(GadgetID(gadget), "change-value", @ChangeHandler( ), 0, #Null, 0)
          g_signal_connect_( GadgetID(gadget), "event", @signal_event( ), *callBack )
@@ -694,7 +710,10 @@
    
    
    Procedure TestGadget( Canvas, X,Y,Width,Height )
-      CanvasGadget(Canvas, X,Y,Width,Height, #PB_Canvas_Keyboard ) 
+     ; scroll wheel delta linux
+     ; CanvasGadget(Canvas, X,Y,Width,Height, #PB_Canvas_Keyboard ) 
+     CanvasGadget(Canvas, X,Y,Width,Height, #PB_Canvas_Keyboard|#PB_Canvas_Container ) : CloseGadgetList( )
+     
       Draw(Canvas, "")
       ; SetActiveGadget( Canvas ) ; BUG
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -748,9 +767,9 @@
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 627
-; FirstLine = 479
-; Folding = -----------+--0-----
+; IDE Options = PureBasic 6.12 LTS (Linux - x64)
+; CursorPosition = 402
+; FirstLine = 381
+; Folding = -----------0--8-----
 ; EnableXP
 ; DPIAware

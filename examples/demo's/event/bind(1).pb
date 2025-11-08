@@ -118,7 +118,7 @@ CompilerEndIf
 ;     Debug ""+#PB_Compiler_Procedure+" "+WidgetEvent()+" "+*ew\index
 ;   EndProcedure
 ;   
-;   If Open(OpenWindow(#PB_Any, 100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
+;   If Open(0, 100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
 ;     ; If Open(Window(100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget))
 ;     ; If Window(100, 200, 195, 260, "PureBasic Window", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
 ;     
@@ -153,9 +153,9 @@ CompilerEndIf
 ;   EndIf
 ; CompilerEndIf
 ; End  
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 54
-; FirstLine = 26
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 120
+; FirstLine = 105
 ; Folding = ----
 ; EnableXP
 ; DPIAware

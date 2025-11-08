@@ -5,15 +5,14 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   
   EnableExplicit
-  Global Event.i, MyCanvas
-  Global x=100,y=100, Width=350, Height=350 , focus
+  Global Event.i
+  Global X=100,Y=100, Width=350, Height=350 , focus
   
-  If Not OpenWindow(0, 0, 0, Width+x*2+20, Height+y*2+20, "form no child's", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
+  If Not Open(0, 0, 0, Width+X*2+20, Height+Y*2+20, "form no child's", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
     MessageRequester("Fatal error", "Program terminated.")
     End
   EndIf
   
-  MyCanvas = GetCanvasGadget(Open(0, 10, 10))
   a_init(root())
   
   
@@ -52,8 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 33
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 7
 ; Folding = -
 ; EnableXP

@@ -189,9 +189,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 29
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 111
+; FirstLine = 88
 ; Folding = --
 ; EnableXP
 ; DPIAware

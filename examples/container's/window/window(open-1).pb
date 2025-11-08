@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure Events_widgets()
-    Debug "ww "+ widgetevent()\type +" "+ eventwidget()\index
+    Debug "ww "+ WidgetEvent() +" "+ EventWidget()\index
   EndProcedure
   
   OpenWindow(0, 100, 100, 200, 200, "PB (window_0 & gadget)", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
@@ -33,27 +33,29 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   
-  Open(OpenWindow(#PB_Any, 150, 150, 200, 200, "PB (main window_1)", #PB_Window_SizeGadget | #PB_Window_SystemMenu))
+  Open(1, 150, 150, 200, 200, "PB (main window_1)", #PB_Window_SizeGadget | #PB_Window_SystemMenu)
 ;   Button(0,0,80,20,"button")
 ;   Button(200-80,200-20,80,20,"button")
   ButtonGadget(#PB_Any, 0,0,80,20,"button")
   ButtonGadget(#PB_Any, 200-80,200-20,80,20,"button")
   
-  Bind(Root(), @Events_widgets())
+  Bind(root(), @Events_widgets())
   
   
+;   
+;   Open(Window(200, 200, 200, 200, "main window_2", #PB_Window_SizeGadget | #PB_Window_SystemMenu))
+;   Button(0,0,80,20,"button")
+;   Button(200-80,200-20,80,20,"button")
+; ;   ContainerGadget(#PB_Any, widget()\x[#__c_inner], widget()\y[#__c_inner], widget()\width[#__c_inner], widget()\height[#__c_inner])
+; ;   ButtonGadget(#PB_Any, 0,0,80,20,"button")
+; ;   ButtonGadget(#PB_Any, 200-80,200-20,80,20,"button")
+; ;   CloseGadgetList()
   
-  Open(Window(200, 200, 200, 200, "main window_2", #PB_Window_SizeGadget | #PB_Window_SystemMenu))
-  Button(0,0,80,20,"button")
-  Button(200-80,200-20,80,20,"button")
-;   ContainerGadget(#PB_Any, widget()\x[#__c_inner], widget()\y[#__c_inner], widget()\width[#__c_inner], widget()\height[#__c_inner])
-;   ButtonGadget(#PB_Any, 0,0,80,20,"button")
-;   ButtonGadget(#PB_Any, 200-80,200-20,80,20,"button")
-;   CloseGadgetList()
-  
-  Bind(Root(), @Events_widgets())
+;   Bind(root(), @Events_widgets())
   WaitClose()
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 53
+; FirstLine = 17
 ; Folding = -
 ; EnableXP

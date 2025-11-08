@@ -31,8 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Window_0()
     Protected i
     
-    If OpenWindow(0, 0, 0, 600, 600, "Demo docking enum", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-     Open(0)
+    If Open(0, 0, 0, 600, 600, "Demo docking enum", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
        
       
@@ -116,8 +115,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 48
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 34
+; FirstLine = 39
 ; Folding = ---
 ; EnableXP
