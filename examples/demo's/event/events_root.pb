@@ -11,6 +11,12 @@ CompilerIf #PB_Compiler_IsMainFile
       If WidgetEvent( ) = #__event_MouseMove
          ProcedureReturn 0
       EndIf
+      If WidgetEvent( ) = #__event_Down
+         ProcedureReturn 0
+      EndIf
+      If WidgetEvent( ) = #__event_Up
+         ProcedureReturn 0
+      EndIf
       ;
       If WidgetEvent( ) = #__event_MouseWheel
          If MouseDirection( ) > 0
@@ -81,8 +87,8 @@ CompilerEndIf
 ; [1] LeftButtonUp
 ; [1] MouseLeave
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 34
-; FirstLine = 19
+; CursorPosition = 16
+; FirstLine = 4
 ; Folding = --
 ; EnableXP
 ; DPIAware

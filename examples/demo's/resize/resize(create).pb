@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ; End
    EndProcedure
    
-   Procedure _Events()
+   Procedure Callback()
       Static DraggedGadget
       
       Protected eventobject = EventWidget( )
@@ -183,15 +183,15 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;Resize(widget, 50,50,150,150)
       
-      ;Bind( widget, @_Events())
-      Bind( #PB_All, @_Events())
+      ;Bind( widget, @Callback())
+      Bind( #PB_All, @Callback())
       
       WaitClose( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 111
-; FirstLine = 88
-; Folding = --
+; CursorPosition = 174
+; FirstLine = 99
+; Folding = -+
 ; EnableXP
 ; DPIAware

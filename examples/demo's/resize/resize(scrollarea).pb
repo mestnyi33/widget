@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
         ButtonGadget(#PB_Any, 100-i*2, 10+i*2, 50, 30, Str(i)+"_button")
       Next
       
-      Debug Str(ElapsedMilliseconds()-time)+ " - time " +count+ " create gadget"; 204 - macos
+      Debug Str(ElapsedMilliseconds()-time)+ " - time [" +count+ "] create gadget"; 204 - macos
       CloseGadgetList()
     EndIf
     
@@ -63,15 +63,16 @@ CompilerIf #PB_Compiler_IsMainFile
         Button(100-i*2, 10+i*2, 50, 30, Str(i)+"_button")
       Next
       
-      Debug Str(ElapsedMilliseconds()-time)+ " - time " +count+ " create widget"; 75 - macos
+      Debug Str(ElapsedMilliseconds()-time)+ " - time [" +count+ "] create widget"; 75 - macos
       CloseList()
     EndIf
     
     WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 38
+; FirstLine = 27
 ; Folding = -
 ; EnableXP
 ; DPIAware

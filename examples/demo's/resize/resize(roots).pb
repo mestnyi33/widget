@@ -52,12 +52,10 @@ CompilerIf #PB_Compiler_IsMainFile
   ;Bind( *root4, @HandlerEvents( ) )
   SetAlign(*root4, 0, 0,1,1,1)
   
-  Bind( #PB_All, @HandlerEvents( ) )
-  
-  WaitClose( )
+  WaitClose( @HandlerEvents( ) )
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 28
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 54
+; FirstLine = 11
 ; Folding = -
 ; EnableXP

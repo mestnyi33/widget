@@ -210,6 +210,7 @@
       EndEnumeration
       
       Enumeration 1
+         #__event_Create
          #__event_Focus
          #__event_LostFocus
          ;
@@ -229,10 +230,10 @@
          #__event_RightUp
          ;
          #__event_LeftClick
-         #__event_RightClick
          #__event_Left2Click
-         #__event_Right2Click
          #__event_Left3Click
+         #__event_RightClick
+         #__event_Right2Click
          #__event_Right3Click
          ;
          #__event_Change
@@ -250,14 +251,13 @@
          ;
          #__event_Draw
          ;
-         #__event_Resize
          #__event_ResizeBegin
+         #__event_Resize
          #__event_ResizeEnd
          #__event_Maximize
          #__event_Minimize
          #__event_Restore
          ;
-         #__event_Create
          #__event_Close
          #__event_Free
          #__event
@@ -725,8 +725,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 439
-; FirstLine = 421
+; CursorPosition = 213
+; FirstLine = 199
 ; Folding = ----
 ; Optimizer
 ; EnableXP

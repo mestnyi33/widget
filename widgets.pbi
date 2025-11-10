@@ -2859,9 +2859,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected a_index
          Protected *CURSORDATA._s_CURSORDATA = ?CURSORDATA
          
-         If *this\container < 3
-            *this\bindresize = #True
-         EndIf
+;          If *this\container < 3
+;             *this\bindresize = #True
+;          EndIf
          ; Debug "a_add "+*this\class
          For a_index = 0 To #__a_moved
             ; reset
@@ -3093,9 +3093,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure a_remove( *this._s_WIDGET )
          Protected a_index
-         If *this\container < 3
-            *this\bindresize = #False
-         EndIf
+;          If *this\container < 3
+;             *this\bindresize = #False
+;          EndIf
          For a_index = 0 To #__a_moved
             If *this\anchors And
                *this\anchors\id[a_index]
@@ -7595,7 +7595,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                Width  = (*this\parent\inner_width( ))
                Height = (*this\parent\inner_height( ))
             EndIf
-            
             ; Debug "auto resize "+X+" "+Y ; combobox bug fixed
          Else
             ;
@@ -8181,7 +8180,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             
             ;\\ Post Event
-            If *this\bindresize ; Or Not __gui\event\queuesmask
+            If *this\bindresize
+               ; Debug ""+Change_x +" "+ Change_y +" "+ Change_width +" "+ Change_height
+               ; Debug "   "+X +" "+ Y +" "+ Width +" "+ Height
                Post( *this, #__event_resize )
             EndIf
          EndIf
@@ -15945,13 +15946,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          Select event
             Case #__event_Cursor    : result$ = "CursorChange"
             Case #__event_free            : result$ = "Free"
-            Case #__event_drop            : result$ = "Drop"
-            Case #__event_create          : result$ = "Create"
+            Case #__event_Drop            : result$ = "Drop"
+            Case #__event_Create          : result$ = "Create"
             Case #__event_Draw            : result$ = "Draw"
                ;Case #__event_SizeItem    : result$ = "SizeItem"
                
-            Case #__event_resizeend       : result$ = "ResizeEnd"
-            Case #__event_scrollchange    : result$ = "ScrollChange"
+            Case #__event_ScrollChange    : result$ = "ScrollChange"
                
             Case #__event_close           : result$ = "CloseWindow"
             Case #__event_maximize        : result$ = "MaximizeWindow"
@@ -15966,23 +15966,27 @@ CompilerIf Not Defined( widget, #PB_Module )
             Case #__event_LeftUp          : result$ = "LeftButtonUp"     ; The left mouse button was released
             Case #__event_LeftClick       : result$ = "LeftClick"        ; A click With the left mouse button
             Case #__event_Left2Click      : result$ = "Left2Click"       ; A double-click With the left mouse button
+            Case #__event_Left3Click      : result$ = "Left3Click"       ; A 3-click With the left mouse button
             Case #__event_RightDown       : result$ = "RightButtonDown"  ; The right mouse button was pressed
             Case #__event_RightUp         : result$ = "RightButtonUp"    ; The right mouse button was released
             Case #__event_RightClick      : result$ = "RightClick"       ; A click With the right mouse button
             Case #__event_Right2Click     : result$ = "Right2Click"      ; A double-click With the right mouse button
-                                                                         ;Case #__event_MiddleDown : result$ = "MiddleButtonDown" ; The middle mouse button was pressed
-                                                                         ;Case #__event_MiddleUp : result$ = "MiddleButtonUp"     ; The middle mouse button was released
+            Case #__event_Right3Click     : result$ = "Right3Click"      ; A 3-click With the right mouse button
+            Case #__event_MiddleDown      : result$ = "MiddleButtonDown" ; The middle mouse button was pressed
+            Case #__event_MiddleUp        : result$ = "MiddleButtonUp"   ; The middle mouse button was released
             Case #__event_Focus           : result$ = "Focus"            ; The gadget gained keyboard focus
             Case #__event_LostFocus       : result$ = "LostFocus"        ; The gadget lost keyboard focus
             Case #__event_KeyDown         : result$ = "KeyDown"          ; A key was pressed
-            Case #__event_KeyUp           : result$ = "KeyUp"            ; A key was released
             Case #__event_Input           : result$ = "Input"            ; Text input was generated
+            Case #__event_Return          : result$ = "ReturnKey"
+            Case #__event_KeyUp           : result$ = "KeyUp"            ; A key was released
+            Case #__event_ResizeBegin       : result$ = "ResizeBegin"
             Case #__event_Resize          : result$ = "Resize"           ; The gadget has been resized
+            Case #__event_ResizeEnd       : result$ = "ResizeEnd"
             Case #__event_StatusChange    : result$ = "StatusChange"
                ;Case #__event_TitleChange : result$ = "TitleChange"
             Case #__event_Change          : result$ = "Change"
             Case #__event_DragStart       : result$ = "DragStart"
-            Case #__event_Return          : result$ = "ReturnKey"
                
             Case #__event_Down            : result$ = "Down"
             Case #__event_Up              : result$ = "Up"
@@ -20273,36 +20277,38 @@ CompilerIf Not Defined( widget, #PB_Module )
                      DoEvents( Pressed( ), event )
                   EndIf
                   
-                  ;\\ do 1click left&right events
+                  ;\\ do click left&right events
                   If Not mouse( )\drag
-                     If Pressed( ) = Entered( )
+                     If mouse( )\click = 1
+                        ;\\ do 1-click
+                        If Pressed( ) = Entered( )
+                           If event = #__event_LeftUp
+                              DoEvents( Pressed( ), #__event_LeftClick )
+                           EndIf
+                           If event = #__event_RightUp
+                              DoEvents( Pressed( ), #__event_RightClick )
+                           EndIf
+                        EndIf
+                        
+                        ;\\ do 2-click
+                     ElseIf mouse( )\click = 2
                         If event = #__event_LeftUp
-                           DoEvents( Pressed( ), #__event_LeftClick )
+                           DoEvents( Pressed( ), #__event_Left2Click )
                         EndIf
                         If event = #__event_RightUp
-                           DoEvents( Pressed( ), #__event_RightClick )
+                           DoEvents( Pressed( ), #__event_Right2Click )
                         EndIf
+                        
+                        ;\\ do 3-click
+                     ElseIf mouse( )\click = 3
+                        If event = #__event_LeftUp
+                           DoEvents( Pressed( ), #__event_Left3Click )
+                        EndIf
+                        If event = #__event_RightUp
+                           DoEvents( Pressed( ), #__event_Right3Click )
+                        EndIf
+                        
                      EndIf
-                  EndIf
-                  
-                  ;\\ do 2click left&right events
-                  If mouse( )\click = 2
-                     If event = #__event_LeftUp
-                        DoEvents( Pressed( ), #__event_Left2Click )
-                     EndIf
-                     If event = #__event_RightUp
-                        DoEvents( Pressed( ), #__event_Right2Click )
-                     EndIf
-                     
-                     ;\\ do 3click events
-                  ElseIf mouse( )\click = 3
-                     If event = #__event_LeftUp
-                        DoEvents( Pressed( ), #__event_Left3Click )
-                     EndIf
-                     If event = #__event_RightUp
-                        DoEvents( Pressed( ), #__event_Right3Click )
-                     EndIf
-                     
                   EndIf
                EndIf
                
@@ -20864,22 +20870,53 @@ CompilerIf Not Defined( widget, #PB_Module )
             If event < 0 
                Define i
                For i = 0 To #__event - 1
-                  If i = #__event_Draw ; And Not is_root_( *this )
-                     Continue
+                  If i = #__event_Draw
+                     If Not *this\binddraw
+                        Continue
+                     EndIf
                   EndIf
                   If i = #__event_Resize
-                     Continue
+                     If Not *this\bindresize
+                        Continue
+                     EndIf
                   EndIf
-                  
+                  If i = #__event_Cursor
+                     If Not *this\bindcursor
+                        Continue
+                     EndIf
+                  EndIf
+               
                   ; set defaul widget events
                   Bind( *this, *callback, i, item )
                Next
                ;
             Else
-               LastElement( __gui\event\binds( ) )
-               AddElement(__gui\event\binds( ))
-               __gui\event\binds.allocate( HOOK, ( ))
+               Protected alloc = 1
+               If ListSize( __gui\event\binds( ) )
+                  ForEach __gui\event\binds( )
+                     If __gui\event\binds( )\function = *callback
+                        If __gui\event\binds( )\widget = *this
+                           If __gui\event\binds( )\type = event
+                              Debug "__gui\event\binds( )\type = event"
+                              alloc = 0
+                           Else
+                              ;Debug "другое событие ["+event+"] "+ClassFromEvent(event)
+                              alloc = 1
+                           EndIf
+                        Else
+                           ;Debug "другое гаджет ["+*this\index+"] "+*this\class
+                           alloc = 0
+                        EndIf
+                     EndIf
+                  Next
+               EndIf
                
+               If alloc
+                  LastElement( __gui\event\binds( ) )
+                  AddElement(__gui\event\binds( ))
+                  __gui\event\binds.allocate( HOOK, ( ))
+               EndIf
+            
                __gui\event\binds( )\function = *callback
                __gui\event\binds( )\widget   = *this
                __gui\event\binds( )\type     = event
@@ -20896,7 +20933,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If event = #__event_Cursor
                   *this\bindcursor = 1
                EndIf
-               
+                  
             EndIf
          EndIf
          
@@ -21140,11 +21177,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\
-         *this\frame_x( )      = #PB_Ignore
-         *this\frame_y( )      = #PB_Ignore
-         *this\frame_width( )  = #PB_Ignore
-         *this\frame_height( ) = #PB_Ignore
-         
          If *this\type = #__type_ButtonImage Or
             *this\type = #__type_Button 
             If constants::BinaryFlag( flag, #PB_Button_Toggle )
@@ -21411,7 +21443,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *this\container = 4
             Else
                *this\container = 5
-               *this\bindresize = #True
+               *this\bindresize = 1
             EndIf
             *this\color\back = $FFF9F9F9
             
@@ -21807,9 +21839,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                Debug " canvas gadget resize"
                ResizeGadget( *this\root\canvas\gadget, X, Y, Width, Height )
             Else
-               ;If X Or Y Or Width Or Height
-               Resize( *this, X, Y, Width, Height )
-               ;EndIf
+               If Not ( *this\autosize And is_root_( *this ))
+                  *this\frame_x( )      = #PB_Ignore
+                  *this\frame_y( )      = #PB_Ignore
+                  *this\frame_width( )  = #PB_Ignore
+                  *this\frame_height( ) = #PB_Ignore
+               EndIf
+               
+               If Not ( *this\autosize And is_root_( *this ))
+                  Resize( *this, X, Y, Width, Height )
+               EndIf
             EndIf
          EndIf
          
@@ -22312,6 +22351,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\
             If Width Or Height
+               *root\bindresize = 1
                Resize( *root, #PB_Ignore, #PB_Ignore, Width, Height )
             EndIf
             
@@ -23719,6 +23759,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   
                   ;                               draw_mode_alpha_( #PB_2DDrawing_Outlined )
                   ;                               draw_roundbox_( *this\caption\x, *this\caption\y, *this\caption\width, *this\caption\height - *this\fs * 2, *this\round, *this\round, $FF000000 )
+                  If *this\inner_height( )
+                     clip_output_( *this, [#__c_draw] )
+                  EndIf
                EndIf
             EndIf
             
@@ -25807,7 +25850,7 @@ EndMacro
 
 ;-
 ;-\\ EXAMPLE
-CompilerIf #PB_Compiler_IsMainFile
+CompilerIf #PB_Compiler_IsMainFile = 99
    EnableExplicit
    UseWidgets( )
    
@@ -26414,7 +26457,7 @@ CompilerEndIf
 
 
 ;- DEMO
-CompilerIf #PB_Compiler_IsMainFile = 99
+CompilerIf #PB_Compiler_IsMainFile ;= 99
    
    EnableExplicit
    UseWidgets( )
@@ -27259,9 +27302,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 20312
-; FirstLine = 19780
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-838t00--v--8-------------------8v------------------------------------------------4--------------------------------------------------------------------------------------------------
+; CursorPosition = 23762
+; FirstLine = 21504
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v4--+-------V4V4vf-7--f------------------------------------------------------------------------------------------------8--4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-u0ebf---84-+-f048-------8------+8---------f-X0-------2-44-r---40+------------------+---------------------------------------------------------------------------------v-+0+Xt----------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
