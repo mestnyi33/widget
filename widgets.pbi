@@ -5372,7 +5372,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                \v\bar\page\len = Height - \h\height
                If scroll_x <= X
                   \h\bar\page\pos = - ( scroll_x - X )
-                  h_max           = 0
+                  ;h_max           = 0
                EndIf
             Else
                \h\bar\max   = scroll_width
@@ -5402,7 +5402,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                \h\bar\page\len = Width - \v\frame_width( )
                If scroll_y <= Y
                   \v\bar\page\pos = - ( scroll_y - Y )
-                  v_max           = 0
+                  ;v_max           = 0
                EndIf
             Else
                \v\bar\max    = scroll_height
@@ -6569,7 +6569,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ; ;          
          ; ;          ;Debug ">>>>>>>>>"+Str(*bar)+">>>>>>>>"
-         ; ;          Debug " - ["+ *this\class +"] "+
+                   Debug " - ["+ *this\class +"] "+ *this\ResizeChange( ) +" "+ *this\WidgetChange( ) +" "+ *bar\ThumbChange( )
          ; ;                *bar\percent +" >< "+
          ; ;                *bar\min +" "+
          ; ;                *bar\max +" >< "+
@@ -6624,9 +6624,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *this\parent\WidgetChange( ) = 1
                         EndIf
                      EndIf
-                  Else
-                     ; Debug "bar update AddEvents"
-                     ;Post( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ))
+;                   Else
+;                      ; Debug "bar update AddEvents"
+;                      Post( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ))
                   EndIf  
                EndIf
             EndIf
@@ -6699,12 +6699,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                result = *bar\page\pos - ScrollPos
                *bar\PageChange( ) = result
                *bar\page\pos = ScrollPos
+            ;   Debug result
             EndIf
             
             If *this\BarChange( ) Or result
                ; Debug ""+*this +" "+ result +" "+ *bar\PageChange( )
                If bar_Update( *this, mode )
-                  Post( *this, #__event_Change, *this\stringbar, *this\bar\page\pos ) ; *bar\PageChange( ) )
+                  Post( *this, #__event_Change, *this\stringbar, result ) ;*bar\page\pos ) ; *bar\PageChange( ) )
                EndIf
             EndIf
          EndIf
@@ -28078,10 +28079,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 23085
-; FirstLine = 23060
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 6707
+; FirstLine = 5700
+; Folding = --------------------------------------------------------------------------------------------------------------------------------8-+--0b-4-f--+-0--8--f480-8-0-2----+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

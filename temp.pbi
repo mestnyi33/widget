@@ -767,9 +767,9 @@
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Linux - x64)
-; CursorPosition = 402
-; FirstLine = 381
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 209
+; FirstLine = 194
 ; Folding = -----------0--8-----
 ; EnableXP
 ; DPIAware
