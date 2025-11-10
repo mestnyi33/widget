@@ -87,6 +87,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
       EndSelect
       
+      ProcedureReturn #PB_Ignore 
    EndProcedure
    
    
@@ -201,8 +202,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected MouseX = widget::mouse( )\x
       Protected MouseY = widget::mouse( )\y
       
-      Width = widget::root( )\width - X*2
-      Height = widget::root( )\height - Y*2
+;       Width = widget::root( )\width - X*2
+;       Height = widget::root( )\height - Y*2
       
       Select Event
          Case #PB_EventType_Repaint
@@ -250,7 +251,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #PB_EventType_Resize 
             ResizeGadget( Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore ) ; Bug ( 562 )
-            Resize( *this, X, Y, X+Width, Y+Height )
+           ; Resize( *this, X, Y, X+Width, Y+Height )
             
             ; Repaint = #True
       EndSelect
@@ -395,8 +396,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 219
-; FirstLine = 201
-; Folding = ---------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 86
+; FirstLine = 56
+; Folding = 4------8-
 ; EnableXP
