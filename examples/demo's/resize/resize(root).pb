@@ -21,14 +21,14 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Button(0,0,0,0,"auto-resize-root-size" ) 
       SetAlign( widget( ), #__align_full )
-      ; widget( )\bindresize = 1
-      Bind( widget( ), @resize_events( ), #__event_resize )
+      widget( )\bindresize = 1
+      ; Bind( widget( ), @resize_events( ), #__event_resize )
       
       Bind( #PB_All, @resize_events( ));, #__event_resize )
       WaitClose( ) ; @resize_events( ))
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 19
+; CursorPosition = 24
 ; Folding = -
 ; EnableXP

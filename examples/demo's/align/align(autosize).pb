@@ -9,11 +9,11 @@ CompilerIf #PB_Compiler_IsMainFile
     SetColor(root(), #PB_Gadget_BackColor, RGBA(244, 245, 233, 255))
     ;a_init(root(), 20 )
     
-    Define vfs = #__window_CaptionHeight+#__window_FrameSize*2
     Define hfs = #__window_FrameSize*2
-  
+    Define vfs = #__window_CaptionHeight+hfs
+    
     ;a_init(Root())
-    ;Window(50,50,440-hfs,240-vfs,"window", #PB_Window_systemmenu)
+    Window(50,50,440-hfs,240-vfs,"window", #PB_Window_SystemMenu)
     ;MDI(50,50,440,240) : OpenList(widget())
     ;Container(50,50,440,240)
     ;ScrollArea(50,50,440,240, 800,500)
@@ -34,8 +34,8 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 29
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 13
 ; Folding = -
 ; EnableXP
 ; DPIAware

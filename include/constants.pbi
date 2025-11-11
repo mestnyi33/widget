@@ -408,24 +408,23 @@
       #__flag_Transparent     = 1<<36
       ;
       #__flag_NoFocus         = 1<<37
-      #__flag_NoLines         = 1<<38
-      #__flag_NoButtons       = 1<<39
-      #__flag_NoGadgets       = #__flag_NoButtons
-      #__flag_NoScrollBars    = 1<<40
+      #__flag_NoLines         = 1<<38 ; 50 BUG
+      #__flag_NoButtons       = 1<<39 ; 50 BUG
+      #__flag_NoGadgets       = 1<<40
+      #__flag_NoScrollBars    = 1<<41
       ;
-      #__flag_TextPassword    = 1<<41
-      #__flag_TextWordWrap    = 1<<42
-      #__flag_TextMultiLine   = 1<<43
-      #__flag_TextInLine      = 1<<44
-      #__flag_TextNumeric     = 1<<45
-      #__flag_TextReadonly    = 1<<46
-      #__flag_TextLowerCase   = 1<<47
-      #__flag_TextUpperCase   = 1<<48
+      #__flag_TextPassword    = 1<<42
+      #__flag_TextWordWrap    = 1<<43
+      #__flag_TextMultiLine   = 1<<44
+      #__flag_TextInLine      = 1<<45
+      #__flag_TextNumeric     = 1<<46
+      #__flag_TextReadonly    = 1<<47
+      #__flag_TextLowerCase   = 1<<48
+      #__flag_TextUpperCase   = 1<<49
       ;
-      ; #__flag_Modal         = 1<<49
-      ; #__flag_              = 1<<50
-      ; #__flag_              = 1<<51
-      ; #__flag_Limit         = 1<<52
+      ; #__flag_Modal         = 1<<50
+      ; #__flag_AllEvents     = 1<<51
+      ; #__flag_              = 1<<52
       
       ;- \\ align-flag
       #__align_top            = 1<<53
@@ -437,9 +436,10 @@
       ;
       #__align_Full           = 1<<59
       #__align_proportional   = 1<<60
-      #__align_none           = 0
       #__align_text           = 1<<61
       #__align_image          = 1<<62
+      #__align_none           = 0
+      ; #__flag_Limit         = 1<<63
       ;
       
       #__flag_Left             = #__align_Left
@@ -450,22 +450,22 @@
       #__flag_AutoSize         = #__align_Auto
       ;
       
-      ;
-      #__window_Normal         = #PB_Window_Normal
-      #__window_Maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers sUpport this)
-      #__window_Minimize       = #PB_Window_Minimize       ; Opens the window minimized.
-      #__window_SystemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
-      #__window_MinimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_window_SystemMenu is automatically added.
-      #__window_MaximizeGadget = #PB_Window_MaximizeGadget ; Adds the maximize gadget To the window title bar. #PB_window_SystemMenu is automatically added.
-      #__window_SizeGadget     = #PB_Window_SizeGadget     ; Adds the sizeable feature To a window.
-      #__window_Invisible      = #PB_Window_Invisible      ; Creates the window but don't display.
-      #__window_TitleBar       = #PB_Window_TitleBar       ; Creates a window with a titlebar.
-      #__window_Tool           = #PB_Window_Tool           ; Creates a window with a smaller titlebar And no taskbar entry.
-      #__window_BorderLess     = #__flag_Borderless        ; Creates a window without any borders.
-      #__window_ScreenCentered = #PB_Window_ScreenCentered ; Centers the window in the middle of the screen. x,y parameters are ignored.
-      #__window_WindowCentered = #PB_Window_WindowCentered ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified). x,y parameters are ignored.
-      #__window_NoGadgets      = #__flag_NoButtons         ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
-      #__window_NoActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
+;       ;
+;       #__window_Normal         = #PB_Window_Normal
+;       #__window_Maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers sUpport this)
+;       #__window_Minimize       = #PB_Window_Minimize       ; Opens the window minimized.
+;       #__window_SystemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
+;       #__window_MinimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_window_SystemMenu is automatically added.
+;       #__window_MaximizeGadget = #PB_Window_MaximizeGadget ; Adds the maximize gadget To the window title bar. #PB_window_SystemMenu is automatically added.
+;       #__window_SizeGadget     = #PB_Window_SizeGadget     ; Adds the sizeable feature To a window.
+;       #__window_Invisible      = #PB_Window_Invisible      ; Creates the window but don't display.
+;       #__window_TitleBar       = #PB_Window_TitleBar       ; Creates a window with a titlebar.
+;       #__window_Tool           = #PB_Window_Tool           ; Creates a window with a smaller titlebar And no taskbar entry.
+;       #__window_BorderLess     = #PB_Window_BorderLess        ; Creates a window without any borders.
+;       #__window_ScreenCentered = #PB_Window_ScreenCentered ; Centers the window in the middle of the screen. x,y parameters are ignored.
+;       #__window_WindowCentered = #PB_Window_WindowCentered ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified). x,y parameters are ignored.
+;       #__window_NoGadgets      = #PB_Window_NoButtons         ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
+;       #__window_NoActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
       
       ;
       ;-\\ Window
@@ -725,8 +725,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 213
-; FirstLine = 199
+; CursorPosition = 425
+; FirstLine = 396
 ; Folding = ----
 ; Optimizer
 ; EnableXP

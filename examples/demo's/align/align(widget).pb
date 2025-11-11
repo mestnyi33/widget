@@ -86,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure example_1( )
-      *root = Open( 1, 30, 30, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
+      *root = Open( 1, 30, 465, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
       Canvas_0 = GetCanvasGadget(*root)
       window = GetCanvasWindow(*root)
       SetColor(*root, #PB_Gadget_BackColor, $FFACE3FF )
@@ -456,7 +456,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;
    Procedure example_demo()
-      *root = Open( 8, 30, 340, 250, 410, "test", #PB_Window_SizeGadget)
+      *root = Open( 8, 30, 30, 250, 410, "test", #PB_Window_SizeGadget)
       Canvas_0 = GetCanvasGadget(*root)
       window = GetCanvasWindow(*root)
       
@@ -466,8 +466,11 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       Define tree_button1 = Button( 5,   345, 240,  25, "")
       Define tree_button2 = Button( 5,   345+30, 240, 30,"")
-      Define tree_container = Window( 10, 10, 230-#__window_FrameSize*2,  325-#__window_FrameSize*2-#__window_CaptionHeight, "", #PB_Window_SystemMenu)
-      tree_view = Tree(10, 10, 230-20-#__window_FrameSize*2,  325-20-#__window_FrameSize*2-#__window_CaptionHeight)  : CloseList( )
+      
+      Define hfs = #__window_FrameSize*2
+      Define vfs = #__window_CaptionHeight+hfs
+      Define tree_container = Window( 10, 10, 230-hfs,  325-vfs, "", #PB_Window_SystemMenu)
+      tree_view = Tree(10, 10, 230-hfs-20,  325-vfs-20)  : CloseList( )
       
       SetAlign(tree_container, 0, 1,1,1,1 )
       SetAlign(tree_view, 0, 1,1,1,1 )
@@ -475,7 +478,6 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAlign(tree_button1, 0, 1,0,1,1 )
       SetAlign(tree_button2, 0, 1,0,1,1 )
       
-      Bind(#PB_All, @all_events())
       ResizeWindow(window, #PB_Ignore, #PB_Ignore, 260,400)
    EndProcedure
    
@@ -488,6 +490,8 @@ CompilerIf #PB_Compiler_IsMainFile
    example_7()
    
    example_demo( )
+   
+   Bind(#PB_All, @all_events())
    
    Repeat
       gEvent= WaitWindowEvent()
@@ -533,9 +537,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 533
-; FirstLine = 499
-; Folding = -----
+; CursorPosition = 472
+; FirstLine = 31
+; Folding = 0-D5-
 ; Optimizer
 ; EnableXP
 ; DPIAware
