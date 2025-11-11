@@ -32,6 +32,7 @@ Procedure Tool_Gadget_Event( )
       Case Tool_Align_To_Grid, Tool_Align_To_Line
          Select WidgetEvent( )
             Case #__Event_Change
+               Debug 8888
                Protected State1 = Bool(GetState(Tool_Align_To_Line) = #PB_Checkbox_Checked)
                Protected State2 = Bool(GetState(Tool_Align_To_Grid) = #PB_Checkbox_Checked)
                
@@ -123,9 +124,9 @@ CompilerEndIf
 
 DisableExplicit
 
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 67
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 108
+; FirstLine = 4
 ; Folding = --
 ; Optimizer
 ; EnableXP

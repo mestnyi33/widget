@@ -1401,7 +1401,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
             If type$ = "scrollarea"
                Param1 = Width
                Param2 = Height
-               Param3 = 5
+               Param3 = DPIUnscaled( mouse( )\steps )
             EndIf
          EndIf
          
@@ -3028,8 +3028,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 523
-; FirstLine = 501
+; CursorPosition = 1403
+; FirstLine = 1125
 ; Folding = ---------f----84D--------------04v-0---0-0-4---0---8z-
 ; Optimizer
 ; EnableAsm
