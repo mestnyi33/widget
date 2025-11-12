@@ -79,11 +79,11 @@ ReDraw
 Drawing
 StartDraw
 StopDraw
-
-PostReDraw
+Repaint
 PostRepaint
-PostFree
+PostReDraw
 PostClose
+PostFree
 
 StartEnum
 StopEnum

@@ -12,16 +12,19 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure events_gadgets()
       Select EventType()
          Case #PB_EventType_LeftClick
-            SetState(ID(EventGadget()), GetGadgetState(EventGadget()))
-            Debug  ""+ EventGadget() +" - gadget change " + GetGadgetState(EventGadget())
+            Define state = GetGadgetState(EventGadget())
+            Debug "["+ state +"] - gadget change " + EventGadget()
+            SetState(ID(EventGadget()), state)
+            Repaint( )
       EndSelect
    EndProcedure
    
    Procedure events_widgets()
       Select WidgetEvent( )
          Case #__event_Change
-            SetGadgetState(Index(EventWidget( )), GetState(EventWidget( )))
-            Debug  Str(Index(EventWidget( )))+" - widget change " + GetState(EventWidget( ))
+            Define state = GetState(EventWidget( ))
+            Debug "  ["+ state +"] - widget change " + Str(Index(EventWidget( )))
+            SetGadgetState(Index(EventWidget( )), state)
       EndSelect
    EndProcedure
    
@@ -59,9 +62,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 37
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 26
+; FirstLine = 13
 ; Folding = --
 ; Optimizer
 ; EnableXP

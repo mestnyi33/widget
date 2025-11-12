@@ -643,6 +643,9 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndMacro
       
       ;-
+      Macro Repaint( )
+         ReDraw(root())
+      EndMacro
       Macro PostRepaint( )
          PostReDraw(root())
       EndMacro
@@ -5597,18 +5600,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *BB2\size = *SB\size
                         EndIf
                      EndIf
-                     
-                     ;           If *SB\size
-                     ;             If *bar\vertical
-                     ;               If *this\screen_width( ) = 0
-                     ;                 *this\screen_width( ) = *SB\size
-                     ;               EndIf
-                     ;             Else
-                     ;               If *this\screen_height( ) = 0
-                     ;                 *this\screen_height( ) = *SB\size
-                     ;               EndIf
-                     ;             EndIf
-                     ;           EndIf
                   EndIf
                EndIf
                
@@ -5649,6 +5640,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If *bar\thumb\len > *bar\area\end
                            *bar\thumb\len = *bar\area\end
                         EndIf
+                        ;
                         If *bar\thumb\len < *SB\size
                            If *bar\area\end > *SB\size + *bar\thumb\len
                               *bar\thumb\len = *SB\size
@@ -5712,10 +5704,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *bar\thumb\end < 0
                      *bar\thumb\end = 0
                   EndIf
-                  ; не работает без него пример splitter(e).pb
-                  If *bar\thumb\end > *bar\area\end
-                     *bar\thumb\end = *bar\area\end
-                  EndIf
+;                   ; не работает без него пример splitter(e).pb, а с ним не работает scrollbar(resize).pb
+;                   If *bar\thumb\end > *bar\area\end
+;                      *bar\thumb\end = *bar\area\end
+;                   EndIf
                   
                   ;                   ; не для splitter
                   ;                   If *bar\thumb\end < *bar\thumb\pos
@@ -6718,12 +6710,11 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure.b bar_ThumbChange( *this._s_WIDGET, ThumbPos.i, increment.i )
+      Procedure.b bar_ThumbChange( *this._s_WIDGET, ThumbPos.i, increment.i = 0 )
          Protected *bar._s_BAR = *this\bar
          Protected ScrollPos,d
          ;
          If increment
-            ThumbPos + increment
             ThumbPos + ( ThumbPos % increment )
             ThumbPos = ( ThumbPos / increment ) * increment
          EndIf
@@ -14919,7 +14910,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure edit_key_page_up_down_( *this._s_WIDGET, wheel, index_select_row )
-         Protected repaint, select_index, page_height
+         Protected Repaint, select_index, page_height
          Protected first_index = 0, last_index = *this\countitems - 1
          
          If wheel = - 1 ; page-up
@@ -14940,12 +14931,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   page_height = *this\inner_height( )
-                  repaint     = 1
+                  Repaint     = 1
                EndIf
             Else
                If *this\edit_caret_1( ) <> *this\LineFocused( )\text\pos
                   *this\edit_caret_1( ) = *this\LineFocused( )\text\pos
-                  repaint               = 1
+                  Repaint               = 1
                EndIf
             EndIf
             
@@ -14967,17 +14958,17 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   page_height = *this\inner_height( )
-                  repaint     = 1
+                  Repaint     = 1
                EndIf
             Else
                If *this\edit_caret_1( ) <> *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
                   *this\edit_caret_1( ) = *this\LineFocused( )\text\pos + *this\LineFocused( )\text\len
-                  repaint               = 1
+                  Repaint               = 1
                EndIf
             EndIf
          EndIf
          
-         If repaint
+         If Repaint
             *this\edit_caret_2( )     = *this\edit_caret_1( )
             *this\LinePressedIndex( ) = *this\LineFocused( )\lindex
             
@@ -14988,7 +14979,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;             EndIf
          EndIf
          
-         ProcedureReturn repaint
+         ProcedureReturn Repaint
       EndProcedure
       
       Procedure edit_key_home_( *this._s_WIDGET )
@@ -17733,7 +17724,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure DoEvent_Lines( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
          Protected dragged 
-         Protected repaint, *rowLine._s_ROWS
+         Protected Repaint, *rowLine._s_ROWS
          mouse_x - *this\inner_x( )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
          
@@ -18284,7 +18275,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure DoEvent_Rows( *this._s_WIDGET, List *rows._s_ROWS( ), event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
          Protected dragged = Bool( mouse( )\dragstart And *this\press )
-         Protected repaint, *row._s_ROWS
+         Protected Repaint, *row._s_ROWS
          mouse_x - *this\inner_x( ) ; - *this\scroll_x( )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
          
@@ -18821,7 +18812,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               result = #True
                            EndIf
                         Else
-                           If bar_ThumbChange( *this, *bar\thumb\pos, - increment )
+                           If bar_ThumbChange( *this, *bar\thumb\pos - increment )
                               result = #True
                            EndIf
                         EndIf
@@ -18835,7 +18826,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               result = #True
                            EndIf
                         Else
-                           If bar_ThumbChange( *this, *bar\thumb\pos, increment ) 
+                           If bar_ThumbChange( *this, *bar\thumb\pos + increment ) 
                               result = #True
                            EndIf
                         EndIf
@@ -18889,11 +18880,11 @@ CompilerIf Not Defined( widget, #PB_Module )
             If event = #__event_MouseMove
                If *SB\press
                   If *bar\vertical
-                     If bar_ThumbChange( *this, ( mouse( )\y - mouse( )\press_y - increment ), increment )
+                     If bar_ThumbChange( *this, ( mouse( )\y - mouse( )\press_y ), increment )
                         result = #True
                      EndIf
                   Else
-                     If bar_ThumbChange( *this, ( mouse( )\x - mouse( )\press_x - increment ), increment )
+                     If bar_ThumbChange( *this, ( mouse( )\x - mouse( )\press_x ), increment )
                         result = #True
                      EndIf
                   EndIf
@@ -20196,7 +20187,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure EventHandler( eventgadget = - 1, eventtype = - 1, eventdata = 0 )
-         Protected *root._s_root, repaint, event, mouse_x , mouse_y
+         Protected *root._s_root, Repaint, event, mouse_x , mouse_y
          ;
          ;\\
          ;
@@ -27886,7 +27877,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    AddItem( *panel, -1, "(enter&leave)-test" ) : SetItemFont(*panel, 2, 6)
    
    Procedure enter_leave_containers_events( )
-      Protected.b repaint
+      Protected.b Repaint
       Protected.l colorback = colors::*this\blue\fore,
                colorframe = colors::*this\blue\frame,
                colorback1 = $ff00ff00,
@@ -27902,20 +27893,20 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
             If EventWidget( ) <> root( )
                If EventWidget( )\enter
                   If EventWidget( )\color\frame <> colorframe1
-                     repaint                    = 1
+                     Repaint                    = 1
                      EventWidget( )\color\frame = colorframe1
                   EndIf
                   If EventWidget( )\color\back <> colorback1
-                     repaint                   = 1
+                     Repaint                   = 1
                      EventWidget( )\color\back = colorback1
                   EndIf
                Else
                   If EventWidget( )\color\back = colorback1
-                     repaint                   = 1
+                     Repaint                   = 1
                      EventWidget( )\color\back = colorback
                   EndIf
                   If EventWidget( )\color\frame = colorframe1
-                     repaint                    = 1
+                     Repaint                    = 1
                      EventWidget( )\color\frame = colorframe
                   EndIf
                EndIf
@@ -27923,7 +27914,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
             
       EndSelect
       
-      If repaint
+      If Repaint
          ; Debug "change state"
       EndIf
    EndProcedure
@@ -28108,9 +28099,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 18895
-; FirstLine = 18871
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 5706
+; FirstLine = 5697
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
