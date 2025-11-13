@@ -5702,7 +5702,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *bar\thumb\end = *bar\area\len - *bar\thumb\len - *BB2\size - *bar\min[2] 
                   If *bar\thumb\end < 0
                      *bar\thumb\end = 0
-                  EndIf
+                  EndIf 
+                  
+                  ;                   ;
+                  ;                   *bar\thumb\end = *bar\area\len - *bar\thumb\len - ( *BB2\size + *bar\min[2] )
+                  ;                   If *bar\thumb\end < *bar\area\pos
+                  ;                      *bar\thumb\end = *bar\area\pos
+                  ;                   EndIf
+                  
                   ;                   ; не работает без него пример splitter(e).pb, а с ним не работает scrollbar(resize).pb
                   ;                   If *bar\thumb\end > *bar\area\end
                   ;                      *bar\thumb\end = *bar\area\end
@@ -6609,23 +6616,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Next
                EndIf
                
-            Else
-               ;\\ post change event
-               If mode = 2
-                  If is_scrollbars_( *this )
-                     If *this\type = #__type_Scroll
-                        Post( *this\parent, #__event_ScrollChange, *this, *bar\page\pos ) ; *bar\PageChange( ) )
-                        If *this\parent\type = #__type_tree Or 
-                           *this\parent\type = #__type_listicon Or 
-                           *this\parent\type = #__type_listview
-                           *this\parent\WidgetChange( ) = 1
-                        EndIf
-                     EndIf
-;                   Else
-;                      ; Debug "bar update AddEvents"
-;                      Post( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ))
-                  EndIf  
-               EndIf
             EndIf
             
             *this\BarChange( ) = 0
@@ -6636,7 +6626,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure.b bar_PageChange( *this._s_WIDGET, ScrollPos.l, mode.b = 1 )
-         Protected result.b, *bar._s_BAR = *this\bar
+         Protected result.l, *bar._s_BAR = *this\bar
          ;          If __gui\event\queuesmask
          ;             ;ProcedureReturn 0
          ;          EndIf
@@ -6701,7 +6691,20 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\BarChange( ) Or result
                ; Debug ""+*this +" "+ result +" "+ *bar\PageChange( )
                If bar_Update( *this, mode )
-                  Post( *this, #__event_Change, *this\stringbar, result ) ;*bar\page\pos ) ; *bar\PageChange( ) )
+                  If is_scrollbars_( *this )
+                     If *this\type = #__type_Scroll
+                        If *this\parent\type = #__type_tree Or 
+                           *this\parent\type = #__type_listicon Or 
+                           *this\parent\type = #__type_listview
+                           *this\parent\WidgetChange( ) = 1
+                        EndIf
+                        Post( *this\parent, #__event_ScrollChange, *this, *bar\page\pos ) ; *bar\PageChange( ) )
+                     EndIf
+                  Else
+;                      ; Debug "bar update AddEvents"
+;                      Post( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ))
+                   Post( *this, #__event_Change, *this\stringbar, result ) ;*bar\page\pos ) ; *bar\PageChange( ) )
+                  EndIf   
                EndIf
             EndIf
          EndIf
@@ -10760,15 +10763,15 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\type = #__type_Track Or
             *this\type = #__type_Spin
             ;
-           ; Protected result.l
-         Protected value = *value
-         Protected *bar._s_BAR = *this\bar
-         Protected._s_BUTTONS *BB1, *BB2, *SB
-         
-         *SB  = *bar\button
-         *BB1 = *bar\button[1]
-         *BB2 = *bar\button[2]
-         
+            ; Protected result.l
+            Protected value = *value
+            Protected *bar._s_BAR = *this\bar
+            Protected._s_BUTTONS *BB1, *BB2, *SB
+            
+            *SB  = *bar\button
+            *BB1 = *bar\button[1]
+            *BB2 = *bar\button[2]
+            
             ;\\
             If Attribute = #__flag_Invert
                If *bar\invert <> Bool( value )
@@ -10896,7 +10899,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If *SB\size <> *value
                         *SB\size = *value
                         
-                        ;- SPIN BUTTON POSITION
+                        ; - SPIN BUTTON POSITION
                         If *this\type = #__type_Spin
                            If *this\flag & #__spin_plus
                               ; set real spin-buttons width
@@ -10966,7 +10969,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                EndSelect
             EndIf
-            
             
             ;\\
             If result 
@@ -17126,15 +17128,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *this\root\repaint = 1
                         EndIf
                      EndIf
-                     
+                     ;
                      EnteredButton( ) = *EnteredButton
-                     
+                     ;
                      If EnteredButton( ) And 
-                        Not EnteredButton( )\disable And
-                        Not EnteredButton( )\_enter
-                        ;
+                        EnteredButton( )\disable = 0 And
+                        EnteredButton( )\_enter = 0
                         EnteredButton( )\_enter = 1
-                        
+                        ;
                         If EnteredButton( )\ColorState( ) = #__s_0
                            EnteredButton( )\ColorState( ) = #__s_1
                         EndIf
@@ -17144,6 +17145,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               EnteredButton( )\_enter = - 1
                            EndIf
                         EndIf
+                        ;
                         *this\root\repaint = 1
                      EndIf
                   EndIf
@@ -17153,10 +17155,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If *this\caption
                         *this\caption\interact = is_atpoint_( *this\caption, mouse( )\x, mouse( )\y )
                      EndIf
-                     ;                   Else
-                     ;                      If *this\row And *this\RowEntered( ) And *this\RowEntered( )\checkbox
-                     ;                         Debug ""+ Bool( EnteredButton( ) = *this\RowEntered( )\checkbox ) +" "+ *this\RowEntered( )\checkbox\enter
-                     ;                      EndIf
                   EndIf
                EndIf
             EndIf
@@ -17389,6 +17387,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
       EndProcedure
       
+      ;-
       Procedure.l DoKeyEvent_Lines( *this._s_WIDGET, List *lines._s_ROWS( ), event.l )
          Static _caret_last_pos_, DoubleClick.i
          Protected i.i, caret.i
@@ -18142,6 +18141,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
       EndProcedure
       
+      ;-
       Procedure.l DoKeyEvent_Rows( *this._s_WIDGET, List  *rows._s_ROWS( ), event.l )
          Protected result, from = - 1
          Static cursor_change, Down, *row_selected._s_ROWS
@@ -18408,7 +18408,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;\\
                   If *this\mode\multiSelect
                      If *this\RowPressed( )
-                        ;-
                         Macro multi_select_rows_( _this_, _current_row_ )
                            PushListPosition( *this\__rows( ))
                            ForEach *this\__rows( )
@@ -18755,6 +18754,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
       EndProcedure
       
+      ;-
       Procedure DoEvent_BarButtons( *this._s_WIDGET, event.l, *button._s_BUTTONS )
          Protected result.b
          Protected *bar._s_BAR = *this\bar
@@ -18883,7 +18883,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ProcedureReturn result
       EndProcedure
-
+      
       Procedure DoEvent_Bar( *this._s_WIDGET, event.l )
          Protected result.b
          Protected *bar._s_BAR = *this\bar
@@ -19135,8 +19135,8 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          ;
          If event = #__event_Down
-            If *this\tab
-               If MouseButtons( ) & #PB_Canvas_LeftButton
+            If MouseButtons( ) & #PB_Canvas_LeftButton
+               If *this\tab
                   *tab = *this\TabEntered( )
                   
                   If PopupBar( ) 
@@ -28088,9 +28088,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 10189
-; FirstLine = 10155
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------4-+-----------------------------------------------------------------------------------------------------------------------------------------------------------------0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-----------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 6617
+; FirstLine = 6565
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------4-+-----------------------------------------------------------------------------------------------------------------------------------------------------------------++-fve4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------08---------------------------------------------------+--f-P-4X-0vv00---------------------------------------------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

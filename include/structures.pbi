@@ -473,13 +473,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          List *_s._s_ITEMS( )
       EndStructure
       
-      ;--     BAR
+      ;--     PAGE
       Structure _s_PAGE
          pos.l
          len.l
          *end
          change.l
       EndStructure
+      ;--     BAR
       Structure _s_BAR
          change.w
          
@@ -724,7 +725,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     CANVAS
       Structure _s_CANVAS
-         repaint.b
+         Repaint.b
          bindcursor.b
          enter.b
          window.i                 ; canvas window
@@ -734,7 +735,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROOT
       Structure _s_ROOT Extends _s_WIDGET
-         repaint.b
+         Repaint.b
          drawmode.b
          Canvas._s_canvas
          *active._s_WIDGET
@@ -795,8 +796,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 729
-; FirstLine = 701
+; CursorPosition = 478
+; FirstLine = 438
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP
