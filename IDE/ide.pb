@@ -1414,7 +1414,6 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
          EndIf
       EndIf
       
-      
       ; create elements
       Select type$
          Case "window"   
@@ -3028,8 +3027,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1403
-; FirstLine = 1125
+; CursorPosition = 1415
+; FirstLine = 1140
 ; Folding = ---------f----84D--------------04v-0---0-0-4---0---8z-
 ; Optimizer
 ; EnableAsm

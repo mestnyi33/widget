@@ -24,13 +24,14 @@ CompilerIf #PB_Compiler_IsMainFile
     SetState(*g5, 200*2+8)
     SetState(*g6, h)
     
-    ;SetState(*g5, 260) ; BUG
+    ; SetState(*g5, 260) ; BUG
+    ; SetState(*g5, 240) ; BUG
     
     WaitClose( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 26
+; CursorPosition = 27
 ; Folding = -
 ; EnableXP
 ; DPIAware

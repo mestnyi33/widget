@@ -1632,7 +1632,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Declare a_object( X.l, Y.l, Width.l, Height.l, Text.s, color.i, flag.q = #Null, framesize = 1 )
       
       Declare.b bar_Update_DrawTabItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
-      Declare.l bar_setAttribute( *this, Attribute.l, *value )
       Declare   bar_mdi_resize( *this, X.l, Y.l, Width.l, Height.l )
       Declare   bar_mdi_update( *this, X.l, Y.l, Width.l, Height.l )
       Declare.b bar_Update( *this, mode.b = 1 )
@@ -5159,13 +5158,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ;\\ change vertical scrollbar max
          If *this\scroll\v And *this\scroll\v\bar\max <> *this\scroll_height( ) And
-            bar_SetAttribute( *this\scroll\v, #PB_ScrollBar_Maximum, *this\scroll_height( ) )
+            SetAttribute( *this\scroll\v, #PB_ScrollBar_Maximum, *this\scroll_height( ) )
             result = 1
          EndIf
          
          ;\\ change horizontal scrollbar max
          If *this\scroll\h And *this\scroll\h\bar\max <> *this\scroll_width( ) And
-            bar_SetAttribute( *this\scroll\h, #PB_ScrollBar_Maximum, *this\scroll_width( ) )
+            SetAttribute( *this\scroll\h, #PB_ScrollBar_Maximum, *this\scroll_width( ) )
             result = 1
          EndIf
          
@@ -5621,9 +5620,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                      *bar\area\end = *bar\area\pos
                   EndIf
                   
-                  If *this\type = #__type_ToolBar Or 
-                     *this\type = #__type_MenuBar Or 
+                  If *this\type = #__type_MenuBar Or 
                      *this\type = #__type_PopupBar Or 
+                     *this\type = #__type_ToolBar Or 
                      *this\type = #__type_TabBar
                      ;
                      If *bar\max
@@ -5704,10 +5703,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *bar\thumb\end < 0
                      *bar\thumb\end = 0
                   EndIf
-;                   ; не работает без него пример splitter(e).pb, а с ним не работает scrollbar(resize).pb
-;                   If *bar\thumb\end > *bar\area\end
-;                      *bar\thumb\end = *bar\area\end
-;                   EndIf
+                  ;                   ; не работает без него пример splitter(e).pb, а с ним не работает scrollbar(resize).pb
+                  ;                   If *bar\thumb\end > *bar\area\end
+                  ;                      *bar\thumb\end = *bar\area\end
+                  ;                   EndIf
                   
                   ;                   ; не для splitter
                   ;                   If *bar\thumb\end < *bar\thumb\pos
@@ -5732,9 +5731,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;\\
          ;\\ get thumb pos
          If Not ( *bar\fixed And Not *bar\PageChange( ) )
-            If *this\type = #__type_ToolBar Or
+            If *this\type = #__type_MenuBar Or
                *this\type = #__type_PopupBar Or
-               *this\type = #__type_MenuBar Or
+               *this\type = #__type_ToolBar Or
                *this\type = #__type_TabBar
                ;                ;
                ;                If *bar\page\pos < *bar\min
@@ -5908,9 +5907,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;\\
-               If *this\type = #__type_ToolBar Or
+               If *this\type = #__type_MenuBar Or
                   *this\type = #__type_PopupBar Or
-                  *this\type = #__type_MenuBar Or
+                  *this\type = #__type_ToolBar Or
                   *this\type = #__type_TabBar
                   ;
                   *BB1\hide = 1
@@ -5940,9 +5939,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;\\
-               If *this\type = #__type_ToolBar Or
+               If *this\type = #__type_MenuBar Or
                   *this\type = #__type_PopupBar Or
-                  *this\type = #__type_MenuBar Or
+                  *this\type = #__type_ToolBar Or
                   *this\type = #__type_TabBar
                   ;
                   *BB1\hide = 0
@@ -5975,9 +5974,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;\\
-               If *this\type = #__type_ToolBar Or
+               If *this\type = #__type_MenuBar Or
                   *this\type = #__type_PopupBar Or
-                  *this\type = #__type_MenuBar Or
+                  *this\type = #__type_ToolBar Or
                   *this\type = #__type_TabBar
                   ;
                   *BB2\hide = 1
@@ -6006,9 +6005,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                ;\\
-               If *this\type = #__type_ToolBar Or
+               If *this\type = #__type_MenuBar Or
                   *this\type = #__type_PopupBar Or
-                  *this\type = #__type_MenuBar Or
+                  *this\type = #__type_ToolBar Or
                   *this\type = #__type_TabBar
                   ;
                   *BB2\hide = 0
@@ -6442,9 +6441,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\
-         If *this\type = #__type_ToolBar Or
+         If *this\type = #__type_MenuBar Or
             *this\type = #__type_PopupBar Or
-            *this\type = #__type_MenuBar Or
+            *this\type = #__type_ToolBar Or
             *this\type = #__type_TabBar
             ;
             ; inner coordinate
@@ -6736,244 +6735,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             bar_PageChange( *this, ScrollPos, 2 ) ; and post change event 
             ProcedureReturn #True
          EndIf
-      EndProcedure
-      
-      Procedure.l bar_SetAttribute( *this._s_WIDGET, Attribute.l, *value )
-         Protected result.l
-         Protected value = *value
-         Protected *bar._s_BAR = *this\bar
-         Protected._s_BUTTONS *BB1, *BB2, *SB
-         
-         *SB  = *bar\button
-         *BB1 = *bar\button[1]
-         *BB2 = *bar\button[2]
-         
-         With *this
-            ;\\
-            If Attribute = #__flag_Invert
-               If *bar\invert <> Bool( value )
-                  *bar\invert = Bool( value )
-                  result      = 1
-               EndIf
-            EndIf
-            
-            ;\\
-            If Attribute = #__bar_ScrollStep
-               If *this\scroll\increment <> value
-                  *this\scroll\increment = value
-                  result                 = 1
-               EndIf
-            EndIf
-            
-            ;\\
-            If *this\type = #__type_Splitter
-               Select Attribute
-                  Case #PB_Splitter_FirstMinimumSize
-                     *bar\min[1] = DPIScaled(*value)
-                     result = Bool( *bar\max )
-                     
-                  Case #PB_Splitter_SecondMinimumSize
-                     *bar\min[2] = DPIScaled(*value)
-                     result = Bool( *bar\max )
-                     
-                  Case #PB_Splitter_FirstGadget
-                     result                   = - 1
-                     *this\split_1( )         = *value
-                     *this\bar\button[1]\hide = Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
-                     
-                     If IsGadget( *this\split_1( ) )
-                        Debug "bar_is_first_gadget_ " + IsGadget( *this\split_1( ) )
-                        parent::set( *this\split_1( ), *this\root\canvas\GadgetID )
-                     ElseIf *this\split_1( ) > 65535
-                        SetParent( *this\split_1( ), *this )
-                     Else
-                        *this\split_1( ) = 0
-                     EndIf
-                     
-                  Case #PB_Splitter_SecondGadget
-                     result                   = - 1
-                     *this\split_2( )         = *value
-                     *this\bar\button[2]\hide = Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
-                     
-                     If IsGadget( *this\split_2( ) )
-                        Debug "bar_is_second_gadget_ " + IsGadget( *this\split_2( ) )
-                        parent::set( *this\split_2( ), *this\root\canvas\GadgetID )
-                     ElseIf *this\split_2( ) > 65535
-                        SetParent( *this\split_2( ), *this )
-                     Else
-                        *this\split_2( ) = 0
-                     EndIf
-                     
-               EndSelect
-            EndIf
-            
-            ;\\
-            If *this\type = #__type_ToolBar Or
-               *this\type = #__type_PopupBar Or
-               *this\type = #__type_MenuBar Or
-               *this\type = #__type_TabBar Or
-               *this\type = #__type_Scroll Or
-               *this\type = #__type_Progress Or
-               *this\type = #__type_Track Or
-               *this\type = #__type_Spin
-               
-               Select Attribute
-                  Case #__bar_minimum
-                     If *bar\min <> *value ;And Not *value < 0
-                                           ;*bar\AreaChange( ) = *bar\min - value
-                        If *bar\page\pos < *value
-                           *bar\page\pos = *value
-                        EndIf
-                        *bar\min = *value
-                        ; Debug  " min " + *bar\min + " max " + *bar\max
-                        result = #True
-                     EndIf
-                     
-                  Case #__bar_maximum
-                     If *bar\max <> *value ;And Not ( *value < 0 And Not #__bar_minus)
-                                           ;*bar\AreaChange( ) = *bar\max - value
-                        
-                        If *bar\min > *value ;And Not #__bar_minus
-                           *bar\max = *bar\min + 1
-                        Else
-                           *bar\max = *value
-                        EndIf
-                        ;
-                        If Not *bar\max ;And Not #__bar_minus
-                           *bar\page\pos = *bar\max
-                        EndIf
-                        ; Debug  "   min " + *bar\min + " max " + *bar\max
-                        
-                        ;\\
-                        If *bar And *this\parent And is_integral_( *this )
-                           If *bar\vertical
-                              *this\parent\scroll_height( ) = *bar\max
-                           Else
-                              *this\parent\scroll_width( ) = *bar\max
-                           EndIf
-                        EndIf
-                        
-                        result = #True
-                     EndIf
-                     
-                  Case #__bar_pagelength
-                     If *bar\page\len <> *value ;And Not ( *value < 0 And Not #__bar_minus )
-                                                ;*bar\AreaChange( ) = *bar\page\len - value
-                        *bar\page\len      = *value
-                        
-                        If Not *bar\max ;And Not #__bar_minus
-                           If *bar\min > *value
-                              *bar\max = *bar\min + 1
-                           Else
-                              *bar\max = *value
-                           EndIf
-                        EndIf
-                        
-                        result = #True
-                     EndIf
-                     
-                  Case #__bar_buttonsize
-                     If *SB\size <> *value
-                        *SB\size = *value
-                        
-                        ;- SPIN BUTTON POSITION
-                        If *this\type = #__type_Spin
-                           If *this\flag & #__spin_plus
-                              ; set real spin-buttons width
-                              *BB1\size = *value
-                              *BB2\size = *value
-                              
-                              If *bar\vertical
-                                 *this\fs[2] = *BB2\size - 1
-                                 *this\fs[4] = *BB1\size - 1
-                              Else
-                                 *this\fs[1] = *BB1\size - 1
-                                 *this\fs[3] = *BB2\size - 1
-                              EndIf
-                           Else
-                              ;                               If *bar\vertical
-                              If *bar\mirror
-                                 *this\fs[1] = *value - 1
-                              Else
-                                 *this\fs[3] = *value - 1
-                              EndIf
-                              ;                               Else
-                              ;                                  If *bar\invert
-                              ;                                     *this\fs[2] = *value - 1
-                              ;                                  Else
-                              ;                                     *this\fs[4] = *value - 1
-                              ;                                  EndIf
-                              ;                               EndIf
-                           EndIf
-                           
-                           
-                        Else
-                           ; to reset the button size to default
-                           If *this\type = #__type_ToolBar Or
-                              *this\type = #__type_PopupBar Or
-                              *this\type = #__type_MenuBar Or
-                              *this\type = #__type_TabBar Or
-                              *this\type = #__type_Scroll
-                              ;
-                              If *value
-                                 *BB1\size = - 1
-                                 *BB2\size = - 1
-                                 *BB1\hide = 0
-                                 *BB2\hide = 0
-                              Else
-                                 *BB1\size = 0
-                                 *BB2\size = 0
-                                 *BB1\hide = 1
-                                 *BB2\hide = 1
-                              EndIf
-                           EndIf
-                           
-                           ; if it is a composite element of the parent
-                           If is_integral_( *this ) And *this\parent And *value
-                              *value + 1
-                              If *bar\vertical
-                                 Resize(*this, *this\parent\container_width( ) - *value, #PB_Ignore, *value, #PB_Ignore)
-                              Else
-                                 Resize(*this, #PB_Ignore, *this\parent\container_width( ) - *value, #PB_Ignore, *value)
-                              EndIf
-                           EndIf
-                           
-                           bar_Update( *this, #True )
-                           PostEventReDraw( *this\root )
-                           ProcedureReturn #True
-                        EndIf
-                     EndIf
-                     
-               EndSelect
-            EndIf
-            
-            
-            ;\\
-            If result ; And *this\screen_width( ) And *this\screen_height( ) ; есть проблемы с imggadget и scrollareagadget
-                      ;Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-               
-               If ( *bar\vertical And *this\screen_height( ) ) Or ( *bar\vertical = 0 And *this\screen_width( ) )
-                  ; Debug "bar_SetAttribute - "+*this\screen_height( ) +" "+ *this\screen_width( ) +" "+ *bar\vertical
-                  bar_Update( *this, #True ) ; ??????????????
-               EndIf
-               
-               ; after update and resize bar
-               If *this\type = #__type_Scroll 
-                  If Attribute = #__bar_buttonsize
-                     *BB1\size = - 1
-                     *BB2\size = - 1
-                  EndIf
-               EndIf
-               
-               If *this\type = #__type_Splitter
-                  If result = - 1
-                     SetParent(*value, *this)
-                  EndIf
-               EndIf
-            EndIf
-         EndWith
-         
-         ProcedureReturn result
       EndProcedure
       
       Procedure bar_tab_GetItemIndex( *this._s_WIDGET, *row )
@@ -7396,9 +7157,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                
                If is_integral_( *this ) And Not *this\bounds\attach
-                  If *this\type = #__type_ToolBar Or
+                  If *this\type = #__type_MenuBar Or
                      *this\type = #__type_PopupBar Or
-                     *this\type = #__type_MenuBar Or
+                     *this\type = #__type_ToolBar Or
                      *this\type = #__type_TabBar Or
                      *this\type = #__type_Scroll
                      ;
@@ -9577,9 +9338,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected *TabBox._s_WIDGET
          If *this\type = #__type_Panel
             *TabBox = *this\tabbar
-         ElseIf *this\type = #__type_ToolBar Or
+         ElseIf *this\type = #__type_MenuBar Or
                 *this\type = #__type_PopupBar Or
-                *this\type = #__type_MenuBar Or
+                *this\type = #__type_ToolBar Or
                 *this\type = #__type_TabBar
             *TabBox = *this
          EndIf
@@ -9921,9 +9682,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected *TabBox._s_WIDGET
          If *this\type = #__type_Panel
             *TabBox = *this\tabbar
-         ElseIf *this\type = #__type_ToolBar Or
+         ElseIf *this\type = #__type_MenuBar Or
                 *this\type = #__type_PopupBar Or
-                *this\type = #__type_MenuBar Or
+                *this\type = #__type_ToolBar Or
                 *this\type = #__type_TabBar
             *TabBox = *this
          EndIf
@@ -10350,9 +10111,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected *TabBox._s_WIDGET
          If *this\type = #__type_Panel
             *TabBox = *this\tabbar
-         ElseIf *this\type = #__type_ToolBar Or
+         ElseIf *this\type = #__type_MenuBar Or
                 *this\type = #__type_PopupBar Or
-                *this\type = #__type_MenuBar Or
+                *this\type = #__type_ToolBar Or
                 *this\type = #__type_TabBar
             *TabBox = *this
          EndIf
@@ -10408,30 +10169,28 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\
-         Select *this\type
-            Case #__type_Track,
-                 #__type_Scroll,
-                 #__type_Progress,
-                 #__type_Splitter
-               
-               If *this\type = #__type_Splitter
-                  If *this\bar\vertical
-                     state = DPIScaledX( state )
-                  Else
-                     state = DPIScaledY( state )
-                  EndIf
-               EndIf
-               
-               result = bar_PageChange( *this, state, 2 ) ; and post change event
-         EndSelect
-         
+         If *this\type = #__type_Progress Or 
+            *this\type = #__type_Scroll Or 
+            *this\type = #__type_Track
+            result = bar_PageChange( *this, state, 2 ) ; and post change event
+         EndIf
+         ;
+         If *this\type = #__type_Splitter
+            If *this\bar\vertical
+               state = DPIScaledX( state )
+            Else
+               state = DPIScaledY( state )
+            EndIf
+            result = bar_PageChange( *this, state, 2 ) ; and post change event
+         EndIf
+         ;
          If *this\type = #__type_Spin
-            result = bar_PageChange( *this, state, 2 )                                   ; and post change event
+            result = bar_PageChange( *this, state, 2 ) ; and post change event
             If Not result
                AddEvents( *this, #__event_Change, *this\stringbar, *this\bar\page\pos ) ; *bar\PageChange( ) )
             EndIf
          EndIf
-         
+         ;
          ProcedureReturn result
       EndProcedure
       
@@ -10626,9 +10385,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected *TabBox._s_WIDGET
          If *this\type = #__type_Panel
             *TabBox = *this\tabbar
-         ElseIf *this\type = #__type_ToolBar Or
+         ElseIf *this\type = #__type_MenuBar Or
                 *this\type = #__type_PopupBar Or
-                *this\type = #__type_MenuBar Or
+                *this\type = #__type_ToolBar Or
                 *this\type = #__type_TabBar
             *TabBox = *this
          EndIf
@@ -10691,9 +10450,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected *TabBox._s_WIDGET
          If *this\type = #__type_Panel
             *TabBox = *this\tabbar
-         ElseIf *this\type = #__type_ToolBar Or
+         ElseIf *this\type = #__type_MenuBar Or
                 *this\type = #__type_PopupBar Or
-                *this\type = #__type_MenuBar Or
+                *this\type = #__type_ToolBar Or
                 *this\type = #__type_TabBar
             *TabBox = *this
          EndIf
@@ -10838,12 +10597,12 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;
-         If *this\type = #__type_ToolBar Or
+         If *this\type = #__type_MenuBar Or
             *this\type = #__type_PopupBar Or
-            *this\type = #__type_MenuBar Or
+            *this\type = #__type_ToolBar Or
             *this\type = #__type_TabBar Or
+            *this\type = #__type_Progress Or 
             *this\type = #__type_Scroll Or
-            *this\type = #__type_Progress Or ; *this\type = #__type_Splitter Or
             *this\type = #__type_Track Or
             *this\type = #__type_Spin
             
@@ -10865,19 +10624,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       Procedure.i SetAttribute( *this._s_WIDGET, Attribute.l, *value )
          Protected result.i
-         
-         If *this\type = #__type_ToolBar Or
-            *this\type = #__type_PopupBar Or
-            *this\type = #__type_MenuBar Or
-            *this\type = #__type_TabBar Or
-            *this\type = #__type_Scroll Or
-            *this\type = #__type_Progress Or
-            *this\type = #__type_Track Or
-            *this\type = #__type_Splitter Or
-            *this\type = #__type_Spin
-            ;
-            result = bar_SetAttribute( *this, Attribute, *value )
-         EndIf
          
          If *this\type = #__type_Editor 
             If Attribute = #PB_Editor_WordWrap
@@ -10905,52 +10651,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                Case #PB_Button_PressedImage
                   add_image( *this\picture[#__image_Pressed], *value )
                   
-            EndSelect
-         EndIf
-         
-         ;  is_scrollbars_( *this )
-         If *this\type = #__type_ScrollArea Or
-            *this\type = #__type_MDI
-            
-            Select Attribute
-               Case #PB_ScrollArea_X
-                  If bar_PageChange( *this\scroll\h, DPIScaledX(*value), 2 ) ; and post event
-                     result = 1
-                  EndIf
-                  
-               Case #PB_ScrollArea_Y
-                  If bar_PageChange( *this\scroll\v, DPIScaledY(*value), 2 ) ; and post event
-                     result = 1
-                  EndIf
-                  
-               Case #PB_ScrollArea_InnerWidth
-                  If bar_SetAttribute( *this\scroll\h, #__bar_maximum, DPIScaledX(*value) )
-                     If IsGadget(*this\scroll\gadget[2])
-                        ResizeGadget(*this\scroll\gadget[2], #PB_Ignore, #PB_Ignore, *value, #PB_Ignore)
-                        CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                           UpdateWindow_(GadgetID(*this\scroll\gadget[2]))
-                        CompilerEndIf
-                     EndIf
-                     result = 1
-                  EndIf
-                  
-               Case #PB_ScrollArea_InnerHeight
-                  If bar_SetAttribute( *this\scroll\v, #__bar_maximum, DPIScaledY(*value))
-                     If IsGadget(*this\scroll\gadget[2])
-                        ResizeGadget(*this\scroll\gadget[2], #PB_Ignore, #PB_Ignore, #PB_Ignore, *value)
-                        CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                           UpdateWindow_(GadgetID(*this\scroll\gadget[2]))
-                        CompilerEndIf
-                     EndIf
-                     result = 1
-                  EndIf
-                  
-               Case #PB_ScrollArea_ScrollStep
-                  If *this\scroll
-                     bar_SetAttribute( *this\scroll\v, #__bar_ScrollStep, *value )
-                     bar_SetAttribute( *this\scroll\h, #__bar_ScrollStep, *value )
-                     *this\scroll\increment = *this\scroll\v\scroll\increment
-                  EndIf
             EndSelect
          EndIf
          
@@ -11002,6 +10702,293 @@ CompilerIf Not Defined( widget, #PB_Module )
                   SetState( *this, *this\picture\image )
                   
             EndSelect
+         EndIf
+         
+         ;  is_scrollbars_( *this )
+         If *this\type = #__type_ScrollArea Or
+            *this\type = #__type_MDI
+            
+            Select Attribute
+               Case #PB_ScrollArea_X
+                  If bar_PageChange( *this\scroll\h, DPIScaledX(*value), 2 ) ; and post event
+                     result = 1
+                  EndIf
+                  
+               Case #PB_ScrollArea_Y
+                  If bar_PageChange( *this\scroll\v, DPIScaledY(*value), 2 ) ; and post event
+                     result = 1
+                  EndIf
+                  
+               Case #PB_ScrollArea_InnerWidth
+                  If SetAttribute( *this\scroll\h, #__bar_maximum, DPIScaledX(*value) )
+                     If IsGadget(*this\scroll\gadget[2])
+                        ResizeGadget(*this\scroll\gadget[2], #PB_Ignore, #PB_Ignore, *value, #PB_Ignore)
+                        CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                           UpdateWindow_(GadgetID(*this\scroll\gadget[2]))
+                        CompilerEndIf
+                     EndIf
+                     result = 1
+                  EndIf
+                  
+               Case #PB_ScrollArea_InnerHeight
+                  If SetAttribute( *this\scroll\v, #__bar_maximum, DPIScaledY(*value))
+                     If IsGadget(*this\scroll\gadget[2])
+                        ResizeGadget(*this\scroll\gadget[2], #PB_Ignore, #PB_Ignore, #PB_Ignore, *value)
+                        CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                           UpdateWindow_(GadgetID(*this\scroll\gadget[2]))
+                        CompilerEndIf
+                     EndIf
+                     result = 1
+                  EndIf
+                  
+               Case #PB_ScrollArea_ScrollStep
+                  If *this\scroll
+                     SetAttribute( *this\scroll\v, #__bar_ScrollStep, *value )
+                     SetAttribute( *this\scroll\h, #__bar_ScrollStep, *value )
+                     *this\scroll\increment = *this\scroll\v\scroll\increment
+                  EndIf
+            EndSelect
+         EndIf
+         
+         If *this\type = #__type_ToolBar Or
+            *this\type = #__type_PopupBar Or
+            *this\type = #__type_MenuBar Or
+            *this\type = #__type_TabBar Or
+            *this\type = #__type_Splitter Or
+            *this\type = #__type_Progress Or
+            *this\type = #__type_Scroll Or
+            *this\type = #__type_Track Or
+            *this\type = #__type_Spin
+            ;
+           ; Protected result.l
+         Protected value = *value
+         Protected *bar._s_BAR = *this\bar
+         Protected._s_BUTTONS *BB1, *BB2, *SB
+         
+         *SB  = *bar\button
+         *BB1 = *bar\button[1]
+         *BB2 = *bar\button[2]
+         
+            ;\\
+            If Attribute = #__flag_Invert
+               If *bar\invert <> Bool( value )
+                  *bar\invert = Bool( value )
+                  result      = 1
+               EndIf
+            EndIf
+            
+            ;\\
+            If Attribute = #__bar_ScrollStep
+               If *this\scroll\increment <> value
+                  *this\scroll\increment = value
+                  result                 = 1
+               EndIf
+            EndIf
+            
+            ;\\
+            If *this\type = #__type_Splitter
+               Select Attribute
+                  Case #PB_Splitter_FirstMinimumSize
+                     *bar\min[1] = DPIScaled(*value)
+                     result = Bool( *bar\max )
+                     
+                  Case #PB_Splitter_SecondMinimumSize
+                     *bar\min[2] = DPIScaled(*value)
+                     result = Bool( *bar\max )
+                     
+                  Case #PB_Splitter_FirstGadget
+                     result                   = - 1
+                     *this\split_1( )         = *value
+                     *this\bar\button[1]\hide = Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
+                     
+                     If IsGadget( *this\split_1( ) )
+                        Debug "bar_is_first_gadget_ " + IsGadget( *this\split_1( ) )
+                        parent::set( *this\split_1( ), *this\root\canvas\GadgetID )
+                     ElseIf *this\split_1( ) > 65535
+                        SetParent( *this\split_1( ), *this )
+                     Else
+                        *this\split_1( ) = 0
+                     EndIf
+                     
+                  Case #PB_Splitter_SecondGadget
+                     result                   = - 1
+                     *this\split_2( )         = *value
+                     *this\bar\button[2]\hide = Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
+                     
+                     If IsGadget( *this\split_2( ) )
+                        Debug "bar_is_second_gadget_ " + IsGadget( *this\split_2( ) )
+                        parent::set( *this\split_2( ), *this\root\canvas\GadgetID )
+                     ElseIf *this\split_2( ) > 65535
+                        SetParent( *this\split_2( ), *this )
+                     Else
+                        *this\split_2( ) = 0
+                     EndIf
+                     
+               EndSelect
+            EndIf
+            
+            ;\\
+            If *this\type = #__type_MenuBar Or
+               *this\type = #__type_PopupBar Or
+               *this\type = #__type_ToolBar Or
+               *this\type = #__type_TabBar Or
+               *this\type = #__type_Progress Or
+               *this\type = #__type_Scroll Or
+               *this\type = #__type_Track Or
+               *this\type = #__type_Spin
+               
+               Select Attribute
+                  Case #__bar_minimum
+                     If *bar\min <> *value ;And Not *value < 0
+                                           ;*bar\AreaChange( ) = *bar\min - value
+                        If *bar\page\pos < *value
+                           *bar\page\pos = *value
+                        EndIf
+                        *bar\min = *value
+                        ; Debug  " min " + *bar\min + " max " + *bar\max
+                        result = #True
+                     EndIf
+                     
+                  Case #__bar_maximum
+                     If *bar\max <> *value ;And Not ( *value < 0 And Not #__bar_minus)
+                                           ;*bar\AreaChange( ) = *bar\max - value
+                        
+                        If *bar\min > *value ;And Not #__bar_minus
+                           *bar\max = *bar\min + 1
+                        Else
+                           *bar\max = *value
+                        EndIf
+                        ;
+                        If Not *bar\max ;And Not #__bar_minus
+                           *bar\page\pos = *bar\max
+                        EndIf
+                        ; Debug  "   min " + *bar\min + " max " + *bar\max
+                        
+                        ;\\
+                        If *bar And *this\parent And is_integral_( *this )
+                           If *bar\vertical
+                              *this\parent\scroll_height( ) = *bar\max
+                           Else
+                              *this\parent\scroll_width( ) = *bar\max
+                           EndIf
+                        EndIf
+                        
+                        result = #True
+                     EndIf
+                     
+                  Case #__bar_pagelength
+                     If *bar\page\len <> *value ;And Not ( *value < 0 And Not #__bar_minus )
+                                                ;*bar\AreaChange( ) = *bar\page\len - value
+                        *bar\page\len      = *value
+                        
+                        If Not *bar\max ;And Not #__bar_minus
+                           If *bar\min > *value
+                              *bar\max = *bar\min + 1
+                           Else
+                              *bar\max = *value
+                           EndIf
+                        EndIf
+                        
+                        result = #True
+                     EndIf
+                     
+                  Case #__bar_buttonsize
+                     If *SB\size <> *value
+                        *SB\size = *value
+                        
+                        ;- SPIN BUTTON POSITION
+                        If *this\type = #__type_Spin
+                           If *this\flag & #__spin_plus
+                              ; set real spin-buttons width
+                              *BB1\size = *value
+                              *BB2\size = *value
+                              
+                              If *bar\vertical
+                                 *this\fs[2] = *BB2\size - 1
+                                 *this\fs[4] = *BB1\size - 1
+                              Else
+                                 *this\fs[1] = *BB1\size - 1
+                                 *this\fs[3] = *BB2\size - 1
+                              EndIf
+                           Else
+                              ;                               If *bar\vertical
+                              If *bar\mirror
+                                 *this\fs[1] = *value - 1
+                              Else
+                                 *this\fs[3] = *value - 1
+                              EndIf
+                              ;                               Else
+                              ;                                  If *bar\invert
+                              ;                                     *this\fs[2] = *value - 1
+                              ;                                  Else
+                              ;                                     *this\fs[4] = *value - 1
+                              ;                                  EndIf
+                              ;                               EndIf
+                           EndIf
+                           
+                           
+                        Else
+                           ; to reset the button size to default
+                           If *this\type = #__type_MenuBar Or
+                              *this\type = #__type_PopupBar Or
+                              *this\type = #__type_ToolBar Or
+                              *this\type = #__type_TabBar Or
+                              *this\type = #__type_Scroll
+                              ;
+                              If *value
+                                 *BB1\size = - 1
+                                 *BB2\size = - 1
+                                 *BB1\hide = 0
+                                 *BB2\hide = 0
+                              Else
+                                 *BB1\size = 0
+                                 *BB2\size = 0
+                                 *BB1\hide = 1
+                                 *BB2\hide = 1
+                              EndIf
+                           EndIf
+                           
+                           ; if it is a composite element of the parent
+                           If is_integral_( *this ) And *this\parent And *value
+                              *value + 1
+                              If *bar\vertical
+                                 Resize(*this, *this\parent\container_width( ) - *value, #PB_Ignore, *value, #PB_Ignore)
+                              Else
+                                 Resize(*this, #PB_Ignore, *this\parent\container_width( ) - *value, #PB_Ignore, *value)
+                              EndIf
+                           EndIf
+                           
+                           bar_Update( *this, #True )
+                           PostEventReDraw( *this\root )
+                           ProcedureReturn #True
+                        EndIf
+                     EndIf
+                     
+               EndSelect
+            EndIf
+            
+            
+            ;\\
+            If result 
+               If ( *bar\vertical And *this\screen_height( ) ) Or ( *bar\vertical = 0 And *this\screen_width( ) )
+                  ; Debug "SetAttribute - "+*this\screen_height( ) +" "+ *this\screen_width( ) +" "+ *bar\vertical
+                  bar_Update( *this, #True ) ; ??????????????
+               EndIf
+               
+               ; after update and resize bar
+               If *this\type = #__type_Scroll 
+                  If Attribute = #__bar_buttonsize
+                     *BB1\size = - 1
+                     *BB2\size = - 1
+                  EndIf
+               EndIf
+               
+               If *this\type = #__type_Splitter
+                  If result = - 1
+                     SetParent(*value, *this)
+                  EndIf
+               EndIf
+            EndIf
          EndIf
          
          ProcedureReturn result
@@ -12998,18 +12985,18 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected *TabBox._s_WIDGET
          If *this\type = #__type_Panel
             *TabBox = *this\tabbar
-         ElseIf *this\type = #__type_ToolBar Or
+         ElseIf *this\type = #__type_MenuBar Or
                 *this\type = #__type_PopupBar Or
-                *this\type = #__type_MenuBar Or
+                *this\type = #__type_ToolBar Or
                 *this\type = #__type_TabBar
             *TabBox = *this
          EndIf
          
          If *TabBox
             ; add tabs
-            If *TabBox\type = #__type_ToolBar Or
+            If *TabBox\type = #__type_MenuBar Or 
                *TabBox\type = #__type_PopupBar Or
-               *TabBox\type = #__type_MenuBar 
+               *TabBox\type = #__type_ToolBar
                
                LastElement( *TabBox\__tabs( ))
                AddElement( *TabBox\__tabs( ))
@@ -13300,10 +13287,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected *TabBox._s_WIDGET
          If *this\type = #__type_Panel
             *TabBox = *this\tabbar
-         ElseIf *this\type = #__type_ToolBar Or
-                *this\type = #__type_PopupBar Or
-                *this\type = #__type_MenuBar Or
-                *this\type = #__type_TabBar
+         ElseIf *this\type = #__type_MenuBar Or
+               *this\type = #__type_PopupBar Or
+               *this\type = #__type_ToolBar Or
+               *this\type = #__type_TabBar
             *TabBox = *this
          EndIf
          
@@ -13387,10 +13374,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected *TabBox._s_WIDGET
          If *this\type = #__type_Panel
             *TabBox = *this\tabbar
-         ElseIf *this\type = #__type_ToolBar Or
-                *this\type = #__type_PopupBar Or
-                *this\type = #__type_MenuBar Or
-                *this\type = #__type_TabBar
+         ElseIf *this\type = #__type_MenuBar Or
+               *this\type = #__type_PopupBar Or
+               *this\type = #__type_ToolBar Or
+               *this\type = #__type_TabBar
             *TabBox = *this
          EndIf
          
@@ -14025,10 +14012,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                      EndIf
                   CompilerEndIf
                   ;
-                  If *this\type = #__type_ToolBar Or
+                  If *this\type = #__type_MenuBar Or
                      *this\type = #__type_PopupBar Or
-                     *this\type = #__type_MenuBar Or
-                     *this\type = #__type_TabBar 
+                     *this\type = #__type_ToolBar Or
+                     *this\type = #__type_TabBar
                      ;
                      bar_Update_DrawTabItems( *this, *this\__tabs( ) )
                   ElseIf *this\row
@@ -14040,9 +14027,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;\\
                Define pheight
-               If *this\type = #__type_ToolBar Or
+               If *this\type = #__type_MenuBar Or
                   *this\type = #__type_PopupBar Or
-                  *this\type = #__type_MenuBar 
+                  *this\type = #__type_ToolBar 
                   
                   If ListSize( *this\__tabs( ) )
                      pheight = 16
@@ -18778,7 +18765,9 @@ CompilerIf Not Defined( widget, #PB_Module )
             *SB  = *bar\button
             *BB1 = *bar\button[1]
             *BB2 = *bar\button[2]
-            Protected increment = Round( *bar\percent, #PB_Round_Nearest )
+            ;
+            Protected increment
+            increment = Round( *bar\percent, #PB_Round_Nearest )
             If Not increment
                increment = *this\scroll\increment
             EndIf
@@ -22570,22 +22559,22 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; create integrall childrens   
          If *this\type = #__type_Spin
             *this\bar\PageChange( ) = 1
-            bar_SetAttribute( *this, #__bar_buttonsize, Size + 5 )
+            SetAttribute( *this, #__bar_buttonsize, Size + 5 )
             *this\stringbar = Create( *this, *this\class + "_STRING",
                                       #__type_String, 0, 0, 0, 0, "", ;Str(*param_1),
                                       #__flag_child | #__flag_Textnumeric | #__flag_Borderless | *this\flag&~(#__flag_invert|#__flag_vertical) )
          EndIf
          
          ;\\ Set Attribute
-         If *this\type = #__type_ToolBar Or
+         If *this\type = #__type_MenuBar Or
             *this\type = #__type_PopupBar Or
-            *this\type = #__type_MenuBar Or
+            *this\type = #__type_ToolBar Or
             *this\type = #__type_TabBar Or
-            *this\type = #__type_Scroll Or
             *this\type = #__type_Progress Or
+            *this\type = #__type_Scroll Or
             *this\type = #__type_Track Or
             *this\type = #__type_Spin
-            
+            ;
             If *param_1 ; > 0 ; в окнах работает так
                SetAttribute( *this, #__bar_minimum, *param_1 )
             EndIf
@@ -25803,9 +25792,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                            
                      EndSelect
                      
-                     If *this\type = #__type_ToolBar Or
+                     If *this\type = #__type_MenuBar Or
                         *this\type = #__type_PopupBar Or
-                        *this\type = #__type_MenuBar Or
+                        *this\type = #__type_ToolBar Or
                         *this\type = #__type_TabBar
                         ;
                         bar_draw_tab( *this )
@@ -25820,10 +25809,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If *this\tabbar And
                         *this\tabbar\countitems
                         ;
-                        If *this\tabbar\type = #__type_ToolBar Or
-                           *this\tabbar\type = #__type_PopupBar Or
-                           *this\tabbar\type = #__type_MenuBar Or
-                           *this\tabbar\type = #__type_TabBar
+                        If *this\type = #__type_MenuBar Or
+                           *this\type = #__type_PopupBar Or
+                           *this\type = #__type_ToolBar Or
+                           *this\type = #__type_TabBar
                            ;
                            bar_draw_tab( *this\tabbar )
                         Else 
@@ -25834,10 +25823,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If *this\menubar And
                         *this\menubar\countitems
                         ;
-                        If *this\menubar\type = #__type_ToolBar Or
-                           *this\menubar\type = #__type_PopupBar Or
-                           *this\menubar\type = #__type_MenuBar Or
-                           *this\menubar\type = #__type_TabBar
+                        If *this\type = #__type_MenuBar Or
+                           *this\type = #__type_PopupBar Or
+                           *this\type = #__type_ToolBar Or
+                           *this\type = #__type_TabBar
                            ;
                            bar_draw_tab( *this\menubar )
                         Else 
@@ -28099,9 +28088,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 5706
-; FirstLine = 5697
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 10189
+; FirstLine = 10155
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------4-+-----------------------------------------------------------------------------------------------------------------------------------------------------------------0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-----------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

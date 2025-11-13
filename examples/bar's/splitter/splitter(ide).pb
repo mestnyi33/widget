@@ -4,7 +4,8 @@
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   UseWidgets( )
   EnableExplicit
-  #__flag_TextBorder = #PB_Text_Border
+  #__flag_TextBorder = #__flag_BorderFlat
+  
   
   Global window_ide, canvas_ide, fixed=1, state=1, minsize=1
   Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
@@ -165,9 +166,9 @@ CompilerEndIf
 ;   Bind(-1,-1)
 ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 48
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 7
+; FirstLine = 7
 ; Folding = -
 ; Optimizer
 ; EnableXP

@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
    Procedure events_widgets( )
       widget( ) = Splitter_1
-      Debug " - "+classfromevent(WidgetEvent())
+      Debug " - "+ClassFromEvent(WidgetEvent())
       Debug ""+widget( )\bar\page\pos +" - page\pos"
       Debug ""+widget( )\bar\page\len +" - page\len"
       Debug ""+widget( )\bar\page\end +" - page\end"
@@ -169,9 +169,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Splitter::Bind(Splitter_3, @event_resize( ), #PB_EventType_Resize )
       
-      Define *this.structures::_S_WIDGET = GetGadgetData(0)
-      Debug ""+*this\width[constants::#__c_Draw] +" "+ *this\root\width +" "+ GadgetWidth(0)
-      ;ResizeGadget(0, #PB_Ignore, #PB_Ignore, 30, #PB_Ignore)
+;       Define *this.structures::_S_WIDGET = GetGadgetData(0)
+;       Debug ""+*this\width[constants::#__c_Draw] +" "+ *this\root\width +" "+ GadgetWidth(0)
+;       ;ResizeGadget(0, #PB_Ignore, #PB_Ignore, 30, #PB_Ignore)
       
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
       ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
@@ -179,9 +179,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 173
-; FirstLine = 104
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 159
+; FirstLine = 96
 ; Folding = +----
 ; Optimizer
 ; EnableXP
