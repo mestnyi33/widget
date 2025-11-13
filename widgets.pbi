@@ -6698,12 +6698,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                            *this\parent\type = #__type_listview
                            *this\parent\WidgetChange( ) = 1
                         EndIf
-                        Post( *this\parent, #__event_ScrollChange, *this, *bar\page\pos ) ; *bar\PageChange( ) )
+                        Post( *this\parent, #__event_ScrollChange, *this, *bar\page\pos ) 
                      EndIf
                   Else
-;                      ; Debug "bar update AddEvents"
-;                      Post( *this, #__event_Change, EnteredButton( ), *bar\PageChange( ))
-                   Post( *this, #__event_Change, *this\stringbar, result ) ;*bar\page\pos ) ; *bar\PageChange( ) )
+                     ; Debug "bar update AddEvents" + EnteredButton( )
+                     Post( *this, #__event_Change, *this\stringbar, result )
                   EndIf   
                EndIf
             EndIf
@@ -7334,7 +7333,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn Bool( *this\draw_width( ) > 0 And *this\draw_height( ) > 0 )
       EndProcedure
       
-      Procedure.b _Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, scale.b = 1 )
+      Procedure.b Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, scale.b = 1 )
          Protected.b result
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
          ;\\
@@ -7361,7 +7360,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          ;\\
-         If *this\autosize ;And not is_root_( *this )
+         If *this\autosize  ;And not is_root_( *this )
             If *this\parent And *this\parent <> *this 
                X      = (*this\parent\inner_x( ))
                Y      = (*this\parent\inner_y( ))
@@ -8114,7 +8113,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ProcedureReturn *this\root\repaint
       EndProcedure
       
-      Procedure.b Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, scale.b = 1 )
+      Procedure.b _1Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, scale.b = 1 )
          Protected.b result
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
          ;\\
@@ -8892,7 +8891,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          ProcedureReturn *this\root\repaint
       EndProcedure
-      
       Procedure ResizeRootWindow( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
          If X = #PB_Ignore
             X = WindowX( *this\root\canvas\window )
@@ -22628,7 +22626,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If Not ( *this\autosize And is_root_( *this ))
                   Resize( *this, X, Y, Width, Height )
+               Else
+                  If *this\type = #__type_Splitter
+                     bar_Update( *this )
+                  EndIf
                EndIf
+               
             EndIf
          EndIf
          
@@ -24185,21 +24188,36 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure Draw_BackGround( *this._s_WIDGET, state )
-         ;\\ draw background
-         If *this\picture[#__image_BackGround]\imageID
-            clip_output_( *this, [#__c_idraw] )
-            draw_image_( *this, *this\inner_x( ), *this\Inner_y( ), [#__image_BackGround] )
-            clip_output_( *this, [#__c_draw] )
-         Else
-            If *this\color\back <> - 1
+         If *this\color\back <> - 1
+            If *this\type = #__type_Window
+               draw_mode_alpha_( #PB_2DDrawing_Default )
+               If *this\color\back[state * *this\ColorState( )]
+                  If *this\fs > *this\round / 3 And *this\round
+                     draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\color\back[state * *this\ColorState( )] )
+                  Else
+                     If *this\round
+                        draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back[state * *this\ColorState( )] )
+                     Else
+                        draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back[state * *this\ColorState( )] )
+                     EndIf
+                  EndIf
+               EndIf
+            Else
                If *this\color\fore <> - 1
                   draw_mode_alpha_( #PB_2DDrawing_Gradient )
-                  __draw_gradient( *this\text\vertical, *this, *this\fs[1],*this\fs[2], state, 0, 0, [#__c_frame] )
+                  __draw_gradient( *this\text\vertical, *this, *this\fs[1], *this\fs[2], state, 0, 0, [#__c_frame] )
                Else
                   draw_mode_alpha_( #PB_2DDrawing_Default )
                   __draw_box( *this, color\back, [#__c_frame])
                EndIf
             EndIf
+         EndIf
+         
+         ;\\ draw background
+         If *this\picture[#__image_BackGround]\imageID
+            clip_output_( *this, [#__c_idraw] )
+            draw_image_( *this, *this\inner_x( ), *this\Inner_y( ), [#__image_BackGround] )
+            clip_output_( *this, [#__c_draw] )
          EndIf
       EndProcedure
       
@@ -28088,9 +28106,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 6617
-; FirstLine = 6565
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------4-+-----------------------------------------------------------------------------------------------------------------------------------------------------------------++-fve4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------08---------------------------------------------------+--f-P-4X-0vv00---------------------------------------------------------------------------------------------------v---------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 24200
+; FirstLine = 22422
+; Folding = --------------------------------------------------------------------------------------------------------------------------------84-+------------------------------0------------------rB--------------------------------------------------------------------------------------------------------------++-fve4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------08---------------------------------------------------+--f-P-4X-0vv00---------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

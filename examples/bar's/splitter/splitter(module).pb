@@ -180,7 +180,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 159
+; CursorPosition = 165
 ; FirstLine = 96
 ; Folding = +----
 ; Optimizer
