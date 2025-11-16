@@ -1,74 +1,86 @@
-﻿CompilerIf #PB_Compiler_IsMainFile
-   XIncludeFile "../../ide.pb"
-   XIncludeFile "../../code.pbi"
-CompilerEndIf
-
-DisableExplicit
-
-UsePNGImageDecoder()
-
-If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png")
-   End
-EndIf
-
-If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png")
-   End
-EndIf
-
-If Not LoadImage(2, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png")
-   End
-EndIf
-
-If Not LoadImage(3, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Cut.png")
-   End
-EndIf
-
-Global img = LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
-If Not img
-   End
-EndIf
-
-; CompilerIf #PB_Compiler_DPIAware
-;    ResizeImage(0, DesktopScaledX(ImageWidth(0)), DesktopScaledY(ImageHeight(0)), #PB_Image_Raw )
-;    ResizeImage(1, DesktopScaledX(ImageWidth(1)), DesktopScaledY(ImageHeight(1)), #PB_Image_Raw )
-;    ResizeImage(2, DesktopScaledX(ImageWidth(2)), DesktopScaledY(ImageHeight(2)), #PB_Image_Raw )
-;    ResizeImage(3, DesktopScaledX(ImageWidth(3)), DesktopScaledY(ImageHeight(3)), #PB_Image_Raw )
-;    ResizeImage(img, DesktopScaledX(ImageWidth(img)), DesktopScaledY(ImageHeight(img)), #PB_Image_Raw )
-; CompilerEndIf
-
-Global my_font_2 = LoadFont(#PB_Any, "Consolas", 13, #PB_Font_Bold|#PB_Font_Underline )
-
-If Open( 0, 0, 0, 592, 532, "Редактор изображения", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-   
-   WINDOW_1 = Window( 10, 10, 392, 232, "Редактор изображения", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
-   IMAGE_VIEW = Image(7, 7, 253, 218, (0), #__flag_Borderflat|#__flag_Imagecenter )
-   BUTTON_OPEN = Button(266, 7, 119, 22, "Открыть", #__flag_Imageleft )
-   button_SAVE = Button(266, 35, 119, 22, "Сохранить", #__flag_Imageleft )
-   BUTTON_COPY = Button(266, 77, 119, 22, "Копировать", #__flag_Imageleft )
-   button_CUT = Button(266, 105, 119, 22, "Вырезать", #__flag_Imageleft )
-   BUTTON_PASTE = Button(266, 133, 119, 22, "Вставить", #__flag_Imageleft )
-   BUTTON_OK = Button(266, 175, 119, 22, "Ок", #__flag_Imageleft )
-   BUTTON_CANCEL = Button(266, 203, 119, 22, "Отмена", #__flag_Imageleft )
-   
-   ;
-   SetImage(BUTTON_OPEN, (0))
-   SetImage(button_SAVE, (1))
-   SetImage(BUTTON_COPY, (2))
-   SetImage(BUTTON_CUT, (3))
-   SetImage(BUTTON_PASTE, (img))
-   
-   SetFont( BUTTON_OK, (my_font_2))
-  
-   ;SetImage( IMAGE_VIEW, (0))
-   SetColor( IMAGE_VIEW, #PB_Gadget_BackColor, RGBA(222, 237, 84, 186) )
-EndIf
+﻿EnableExplicit
 
 CompilerIf #PB_Compiler_IsMainFile
-   WaitClose( )
+   XIncludeFile "C:\Users\user\Documents\GitHub\widget\widgets.pbi"
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 27
-; Folding = --
-; EnableXP
-; DPIAware
+
+UseWidgets( )
+UsePNGImageDecoder( )
+
+Global WINDOW_1 = - 1
+Global WINDOW_0 = - 1
+
+Global BUTTON_0 = - 1
+Global BUTTON_1 = - 1
+Global BUTTON_2 = - 1
+Global BUTTON_0 = - 1
+Global TEXT_0 = - 1
+Global IMAGE_0 = - 1
+Global STRING_0 = - 1
+Global SCROLLAREA_0 = - 1
+Global BUTTON_1 = - 1
+Global TEXT_1 = - 1
+Global BUTTON_2 = - 1
+Global TEXT_2 = - 1
+Global PANEL_0 = - 1
+Global BUTTON_3 = - 1
+Global TEXT_3 = - 1
+Global BUTTON_4 = - 1
+Global TEXT_4 = - 1
+Global BUTTON_5 = - 1
+Global TEXT_5 = - 1
+Global BUTTON_6 = - 1
+Global TEXT_6 = - 1
+
+Procedure Open_WINDOW_1( )
+   WINDOW_1 = Open( #PB_Any, 7, 322, 498, 99, "window_1", #PB_Window_SystemMenu | #PB_Window_SizeGadget  )
+      BUTTON_0 = Button( 28, 7, 29, 29, "button_0" )
+      BUTTON_1 = Button( 70, 42, 29, 29, "button_1" )
+      BUTTON_2 = Button( 112, 77, 29, 29, "button_2" )
+EndProcedure
+
+Procedure Open_WINDOW_0( )
+   WINDOW_0 = Open( #PB_Any, 7, 7, 498, 253, "window_0", #PB_Window_SystemMenu | #PB_Window_SizeGadget  )
+      BUTTON_0 = Button( 14, 21, 92, 36, "button_0", #__flag_TextMultiLine  )
+         Disable( BUTTON_0, #True )
+      
+      TEXT_0 = Text( 14, 63, 92, 36, "text_0" )
+         SetColor( TEXT_0, #PB_Gadget_BackColor, $FF8080 )
+      
+      IMAGE_0 = Image( 14, 105, 92, 36, -1 )
+         SetColor( IMAGE_0, #PB_Gadget_BackColor, $8000 )
+      
+      STRING_0 = String( 14, 147, 92, 36, "string_0" )
+
+      SCROLLAREA_0 = ScrollArea( 112, 21, 141, 162, 165, 175, 7, #PB_ScrollArea_Flat  )
+         BUTTON_1 = Button( 14, 28, 29, 29, "button_1" )
+         TEXT_1 = Text( 28, 63, 50, 29, "text_1" )
+         BUTTON_2 = Button( 35, 105, 78, 29, "button_2" )
+         TEXT_2 = Text( 42, 147, 50, 29, "text_2" )
+      CloseList( ) ; SCROLLAREA_0
+
+      PANEL_0 = Panel( 259, 21, 218, 162 )
+         AddItem( PANEL_0, - 1, "panel_item_0" )
+         BUTTON_3 = Button( 14, 28, 29, 29, "button_3" )
+         TEXT_3 = Text( 28, 63, 50, 29, "text_3" )
+         BUTTON_4 = Button( 7, 84, 64, 29, "button_4" )
+         TEXT_4 = Text( 42, 147, 50, 29, "text_4" )
+         
+         AddItem( PANEL_0, - 1, "panel_item_1" )
+         BUTTON_5 = Button( 7, 7, 64, 29, "button_5" )
+         TEXT_5 = Text( 7, 49, 64, 29, "text_5" )
+            SetColor( TEXT_5, #PB_Gadget_BackColor, $80FF )
+         
+         BUTTON_6 = Button( 7, 91, 64, 29, "button_6" )
+         TEXT_6 = Text( 147, 147, 50, 29, "text_6" )
+         SetState( PANEL_0, 1 )
+      CloseList( ) ; PANEL_0
+EndProcedure
+
+CompilerIf #PB_Compiler_IsMainFile
+   Open_WINDOW_1( )
+   Open_WINDOW_0( )
+
+   WaitClose( )
+   End
+CompilerEndIf

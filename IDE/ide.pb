@@ -1596,6 +1596,15 @@ Procedure new_widget_events( )
          EndIf
          ;
       Case #__event_LeftDown
+         If ( ide_design_MDI = *g )
+            If Not a_focused( )
+               If GetState( ide_inspector_VIEW ) > 0
+                  Debug "select reset "+*g\class
+                  SetState( ide_inspector_VIEW, - 1 )
+               EndIf
+            EndIf
+         EndIf
+         ;
          If IsContainer(*g)
             If GetState( ide_inspector_ELEMENTS ) > 0 
                If mouse( )\selector
@@ -3027,9 +3036,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1415
-; FirstLine = 1140
-; Folding = ---------f----84D--------------04v-0---0-0-4---0---8z-
+; CursorPosition = 1600
+; FirstLine = 1297
+; Folding = ---------f----84D-------------+-030v---v-v--+--v---ff+-
 ; Optimizer
 ; EnableAsm
 ; EnableXP

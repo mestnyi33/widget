@@ -2933,7 +2933,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure a_group_show( *this._s_WIDGET, event )
-         If event = #__event_Create Or
+         If event = #__event_Change Or
             event = #__event_LostFocus Or
             event = #__event_MouseLeave
             
@@ -2947,7 +2947,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             a_add( *this, *this\anchors\mode )
          EndIf
          
-         If event = #__event_Create 
+         If event = #__event_Change 
             a_anchors( )\backcolor[#__s_0] = $ff000000
          EndIf
          If event = #__event_Free
@@ -3161,8 +3161,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected result
          ; Debug ""+*this\class
          ;
-         If *this
-            If *this\anchors
+         If a_anchors( ) 
+            ;
+            If *this And *this\anchors
                If mode >= 0
                   *this\anchors\mode = mode
                EndIf
@@ -3174,66 +3175,72 @@ CompilerIf Not Defined( widget, #PB_Module )
                If position >= 0
                   a_setpos( *this, position, #False )
                EndIf
+            EndIf
+            ;
+            If a_focused( ) <> *this
                ;
-               ;\\
-               If a_anchors( ) 
-                  If a_focused( ) <> *this
-                     If a_focused( )
-                        If SetFocus( a_focused( ), #__s_0 )
-                           If a_focused( )\anchors\group\show
-                              a_group_show( a_focused( ), #__event_LostFocus )
-                           EndIf
-                           DoEvents( a_focused( ), #__event_LostFocus )
+               If Not ( *this And *this\anchors = 0 )
+                  If a_focused( )
+                     If SetFocus( a_focused( ), #__s_0 )
+                        If a_focused( )\anchors\group\show
+                           a_group_show( a_focused( ), #__event_LostFocus )
                         EndIf
+                        DoEvents( a_focused( ), #__event_LostFocus )
                      EndIf
-                     ; Debug "a_set focus " + *this\class 
+                     a_focused( ) = 0
+                  EndIf
+               EndIf
+               ;
+               If Entered( ) And 
+                  Entered( )\parent
+                  ;
+                  If Entered( )\anchors Or 
+                     Entered( )\parent\anchors
                      ;
-                     If a_anchors( )\grid_image
-                        If a_focused( ) And a_focused( )\parent And a_focused( )\parent <> *this\parent 
-                           SetBackgroundImage( a_focused( )\parent, 0 )
-                        EndIf  
-                        If *this\parent
-                           If Not ( a_focused( ) And a_focused( )\parent = *this\parent )
-                              SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
-                           EndIf
-                        EndIf
+                     If GetActive( ) <> a_main( ) 
+                        SetActive( a_main( ) )
                      EndIf
-                     
+                  EndIf
+               EndIf
+               ;
+               If *this 
+                  If *this\anchors
+;                      If *this\parent
+;                         If a_anchors( )\grid_image
+;                            If a_focused( ) And a_focused( )\parent And a_focused( )\parent <> *this\parent 
+;                               Debug "reset point "+a_focused( )\parent\class
+;                               SetBackgroundImage( a_focused( )\parent, 0 )
+;                            EndIf  
+;                            If Not ( a_focused( ) And a_focused( )\parent = *this\parent )
+;                               Debug "set point "+*this\parent\class
+;                               SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
+;                            EndIf
+;                         EndIf
+;                      EndIf
+                     ; Debug "a_set "+*this\class
                      ;
-                     If *this = a_main( )
-                        a_focused( ) = #Null
-                        a_entered( ) = #Null
-                        ;   Debug "a_reset "+*this\class
-                     Else
-                        ;   Debug "a_set "+*this\class
-                        a_focused( ) = *this
-                        ;
-                        If SetFocus( *this, #__s_2 )
-                           If *this\anchors\group\show
-                              a_group_show( *this, #__event_Focus )
-                           EndIf
-                           DoEvents( *this, #__event_Focus )
-                        EndIf
-                     EndIf
+                     a_focused( ) = *this
                      ;
-                     If Entered( ) And 
-                        Entered( )\parent
-                        ;
-                        If Entered( )\anchors Or 
-                           Entered( )\parent\anchors
-                           ;
-                           If GetActive( ) <> a_main( ) 
-                              SetActive( a_main( ) )
-                           EndIf
+                     If SetFocus( *this, #__s_2 )
+                        If *this\anchors\group\show
+                           a_group_show( *this, #__event_Focus )
                         EndIf
+                        DoEvents( *this, #__event_Focus )
                      EndIf
                      ;
                      result = *this
-                  Else
-                     ; update anchors size and position
-                     Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                   EndIf
+               Else
+;                   ;If Entered( ) <> a_focused( )\parent
+;                      Debug "reset point "+a_focused( )\parent\class
+;                      SetBackgroundImage( a_focused( )\parent, 0 )
+;                   ;EndIf
+                  a_focused( ) = #Null
+                  a_entered( ) = #Null
                EndIf
+            Else
+               ; update anchors size and position
+               Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
             EndIf
          EndIf
          ;
@@ -3364,7 +3371,95 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          Protected Text.s
          
-         
+         Static *grid_parent._s_WIDGET
+;          If event = #__event_LostFocus 
+;             If *this\anchors 
+;                ;If MouseButtonPress( )
+;                If *grid_parent <> *this\parent
+;                  Debug "reset point "+*this\class
+;                  SetBackgroundImage( *this\parent, 0 )
+;                 ; *grid_parent = *this\parent
+;                EndIf
+;             EndIf
+;          EndIf
+         If event = #__event_Create
+            If *this =  a_focused( )
+               If *grid_parent <> *this\parent
+                  Debug "create " + a_focused( )\class
+                  SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
+                  *grid_parent = *this\parent
+               EndIf
+            EndIf
+         EndIf
+         If event = #__event_LeftDown
+            If *this\parent And *this\parent\anchors
+               If is_integral_( *this ) 
+                  If *grid_parent <> *this\parent\parent
+                     If *grid_parent
+                        Debug "reset parent a"+ *grid_parent\class
+                        SetBackgroundImage( *grid_parent, 0 )
+                     EndIf
+                     *grid_parent = *this\parent\parent
+                     Debug "set parent a"+ *grid_parent\class
+                     SetBackgroundImage( *grid_parent, a_anchors( )\grid_image )
+                  EndIf
+               Else
+                  If *grid_parent <> *this\parent
+                     If *grid_parent
+                        Debug "reset a "+ *grid_parent\class
+                        SetBackgroundImage( *grid_parent, 0 )
+                     EndIf
+                     *grid_parent = *this\parent
+                     Debug "set a "+ *grid_parent\class
+                     SetBackgroundImage( *grid_parent, a_anchors( )\grid_image )
+                  EndIf
+               EndIf
+            Else
+               If Not a_focused( )
+                  If *this\FirstWidget( )
+                     If *this\FirstWidget( )\anchors
+                        If *grid_parent
+                           Debug "reset all "+ *grid_parent\class
+                           SetBackgroundImage( *grid_parent, 0 )
+                           *grid_parent = 0
+                        EndIf
+                        ;    Debug "reset a "+ *this\class
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         If event = #__event_LeftClick
+            ;             Debug "change point " + a_focused( )\class
+            ;             SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
+         EndIf
+         If event = #__event_DragStart 
+            If *this\anchors 
+               If *this\container > 0 And MouseEnter( *this )
+                  If Not a_index( )
+                     If *grid_parent <> *this
+                        If *grid_parent
+                           If Not ( Not *this\anchors And *this = *grid_parent )
+                              Debug "reset point "+GetClass(*grid_parent)
+                              SetBackgroundImage( *grid_parent, 0 )
+                           EndIf
+                        EndIf
+                           If *this\anchors
+                              Debug "set point "+*this\class
+                              SetBackgroundImage( *this, a_anchors( )\grid_image )
+                              *grid_parent = *this
+                           Else
+                              If *grid_parent <> *this
+                                 Debug "set point "+*this\class
+                                 SetBackgroundImage( *this, a_anchors( )\grid_image )
+                                 *grid_parent = *this
+                              EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
          ;
          ;
          If event = #__event_Focus 
@@ -3433,7 +3528,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                                        a_anchors( )\group\show + 1
                                        widgets( )\anchors\group\show = #True
                                        
-                                       a_group_show( widgets( ), #__event_Create )
+                                       a_group_show( widgets( ), #__event_Change )
                                        
                                     EndIf
                                  EndIf
@@ -3518,27 +3613,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                      ;
                      mouse( )\selector\fontcolor = $FF000000
                      mouse( )\selector\framecolor = $BA161616
-                  EndIf
-                  
-                  ;\\
-                  If *this\container > 0 And MouseEnter( *this )
-                     If Not a_index( )
-                        If a_anchors( )\grid_image
-                           If *this\parent
-                              SetBackgroundImage( *this\parent, 0 )
-                           EndIf
-                           SetBackgroundImage( *this, a_anchors( )\grid_image )
-                        EndIf
-                        
-                        ;                      
-                        ;                      If StartDraw( *this\root )
-                        ;                         Drawing( )
-                        ;                         
-                        ;                         a_anchors( )\grab = GrabDrawingimage( #PB_Any, 0, 0, *this\root\width, *this\root\height )
-                        ;                         
-                        ;                         StopDraw( )
-                        ;                      EndIf
-                     EndIf
                   EndIf
                   
                   If a_index( ) = #__a_Moved
@@ -11280,6 +11354,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   If ActiveGadget( )
+                     ; Debug " DoActivate "+ActiveGadget( )\class
                      DoActivate( ActiveGadget( ))
                   EndIf
                EndIf
@@ -16717,7 +16792,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             Case #__event_Cursor    : result$ = "CursorChange"
             Case #__event_free            : result$ = "Free"
             Case #__event_Drop            : result$ = "Drop"
-            Case #__event_Create          : result$ = "Create"
             Case #__event_Draw            : result$ = "Draw"
                ;Case #__event_SizeItem    : result$ = "SizeItem"
                
@@ -19649,7 +19723,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                         *this\root\repaint = 1
                      EndIf
                   EndIf
-                  
                EndIf
             EndIf
             
@@ -19657,18 +19730,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             If *this\child And *this\parent And *this\parent\tabbar And *this\parent\tabbar\type = #__type_tabbar
                Post( *this\parent, event, *button, *data )
             Else
-               If event = #__event_Create
-                  ;                ElseIf event = #__event_Focus Or
-                  ;                       event = #__event_LostFocus
-                  ;                   ;
-                  ;                   ;If GetActiveGadget( ) = *this\root\canvas\gadget
-                  ;                      Post( *this, event, *button, *data )
-                  ;                   ;EndIf
-                  ;                ElseIf event = #__event_Change
-                  ;                   Post( *this, event, *button, *data )
-               Else
-                  Post( *this, event, *button, *data )
-               EndIf
+               Post( *this, event, *button, *data )
             EndIf
          EndIf
          
@@ -20968,19 +21030,25 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
                ;\\ set active widget
                If event = #__event_LeftDown
-                  If GetActive( ) <> Entered( )
-                     ; Debug " \\ set active widget"
-                     If Entered( )\parent And
-                        Entered( )\parent\anchors
-                        ;
-                        If Entered( )\anchors
-                           a_set( Entered( ) )
-                        ElseIf is_integral_( Entered( )) 
-                           a_set( Entered( )\parent )
-                        EndIf
+                  ; Debug " \\ set active widget"
+                  If Entered( )\parent And Entered( )\parent\anchors
+                     If is_integral_( Entered( )) 
+                        a_set( Entered( )\parent )
                      Else
+                        a_set( Entered( ) )
+                     EndIf
+                  Else
+                     ; reset all anchors
+                     If a_focused( )
+                        If Entered( )\FirstWidget( )
+                           If Entered( )\FirstWidget( )\anchors
+                              ; a_set( 0 )
+                           EndIf
+                        EndIf
+                     EndIf
+                     ;
+                     If GetActive( ) <> Entered( )
                         SetActive( Entered( ))
-                        ; Debug " PRESSTOSETACTIVE "
                      EndIf
                   EndIf
                EndIf
@@ -21398,6 +21466,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If IsContainer( __widget )
                            Free( @__widget )
                         EndIf
+                     ElseIf __event = #__event_Create
+                        DoEvents( __widget, __event )
+                        
                      ElseIf __event = #__event_Change
                         If Type(__widget) = #__type_Spin
                            Static spin_change = #PB_Ignore
@@ -21424,7 +21495,8 @@ CompilerIf Not Defined( widget, #PB_Module )
       EndProcedure
       
       Procedure   AddEvents( *this._s_root, event.l, *button = #PB_All, *data = #Null )
-         If *this > 0
+        
+        If *this > 0
             If event = #__event_free
                If *this\haschildren
                   If StartEnum( *this )
@@ -21652,7 +21724,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If event = #__event_Cursor
                   roots( )\canvas\bindcursor = 1
                EndIf
-               
+               ;
                Bind( roots( ), *callback, event, item )
             Next
             PopMapPosition(roots( ))
@@ -21683,38 +21755,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                Next
                ;
             Else
-               Protected alloc = 1
-;                If ListSize( __gui\event\binds( ) )
-;                   ForEach __gui\event\binds( )
-;                      If __gui\event\binds( )\function = *callback
-;                         If __gui\event\binds( )\widget = *this
-;                            If __gui\event\binds( )\type = event
-;                               Debug "__gui\event\binds( )\type = event"
-;                               alloc = 0
-;                            Else
-;                               ;Debug "другое событие ["+event+"] "+ClassFromEvent(event)
-;                               alloc = 1
-;                            EndIf
-;                         Else
-;                            ;Debug "другое гаджет ["+*this\index+"] "+*this\class
-;                            alloc = 0
-;                         EndIf
-;                      EndIf
-;                   Next
-;                EndIf
-               
-               If alloc
-                  LastElement( __gui\event\binds( ) )
-                  AddElement(__gui\event\binds( ))
-                  __gui\event\binds.allocate( HOOK, ( ))
-               EndIf
-            
-               __gui\event\binds( )\function = *callback
-               __gui\event\binds( )\widget   = *this
-               __gui\event\binds( )\type     = event
-               __gui\event\binds( )\item     = item
-               __gui\event\binds( )\data     = *data
-               
                ; 
                If event = #__event_Draw
                   *this\binddraw = 1
@@ -21725,7 +21765,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                If event = #__event_Cursor
                   *this\bindcursor = 1
                EndIf
+               
+               If *callback
+                  LastElement( __gui\event\binds( ))
+                  AddElement( __gui\event\binds( ))
+                  __gui\event\binds.allocate( HOOK, ( ))
                   
+                  __gui\event\binds( )\function = *callback
+                  __gui\event\binds( )\widget   = *this
+                  __gui\event\binds( )\type     = event
+                  __gui\event\binds( )\item     = item
+                  __gui\event\binds( )\data     = *data
+               EndIf
             EndIf
          EndIf
          
@@ -22529,9 +22580,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             *this\color\back =- 1
          EndIf
          
-         ;\\
-         Post( *this, #__event_create )
-         
          ;-\\ CURSOR init
          If *this\type = #__type_Splitter
             If *this\bar\vertical
@@ -22728,7 +22776,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
             
             
-         
+         AddEvents( *this, #__event_Create )
          widget( ) = *this
          ProcedureReturn *this
       EndProcedure
@@ -23210,8 +23258,6 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             ;\\ 
             If *root
-               Post( *root, #__event_create )
-               ;
                If constants::BinaryFlag( Flag, #PB_Window_NoActivate )
                   *root\focus = #__s_nofocus
                Else
@@ -23424,11 +23470,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          ;\\ add count types
          CountType( *this, 1 )
-         
-         ;\\
-         If Not autosize
-            Post( *this, #__event_create )
-         EndIf
          
          ;\\
          If constants::BinaryFlag( *this\flag, #PB_Window_SizeGadget&~#PB_Window_TitleBar )
@@ -26344,9 +26385,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected *message._s_ROOT
          
          Select WidgetEvent( )
-            Case #__event_Create
-               ; Debug " do create " + EventWidget( )\class
-               
             Case #__event_Free
                ; Debug " do free " + EventWidget( )\class
                If EventWidget( ) = *message
@@ -27303,7 +27341,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
             
          Case #__event_Focus
             If *this\anchors
-               Debug "a_FocusStatusChange"
+               Debug "a_FocusChange " + *this\class
                If size_value
                   SetState(size_value, a_getsize(*this) )
                EndIf
@@ -27320,24 +27358,29 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
             EndIf
             
          Case #__event_Change
-            Select *this
-               Case size_value
-                  If GetState(*this) <> a_getsize(a_focused( ))
-                     a_set( a_focused( ), #__a_full, GetState(*this), a_getpos(a_focused( )) )
-                  EndIf
-                  
-               Case pos_value
-                  If GetState(*this) <> a_getpos(a_focused( ))
-                     a_set( a_focused( ), #__a_full, a_getsize(a_focused( )), GetState(*this))
-                  EndIf
-                  
-               Case grid_value
-                  mouse( )\steps = DPIScaled(GetState(grid_value))
-                  
-            EndSelect
-            
-            change = 1
-            
+            If a_focused( )
+               Debug "a_StatusChange " + *this\class +" "+ GetState(*this) +" "+ a_getsize(a_focused( ))
+               Select *this
+                  Case size_value
+                     If GetState(*this) <> a_getsize(a_focused( ))
+                        Debug 33
+                        a_set( a_focused( ), #__a_full, GetState(*this), a_getpos(a_focused( )) )
+                     EndIf
+                     
+                  Case pos_value
+                     If GetState(*this) <> a_getpos(a_focused( ))
+                        Debug 766
+                        a_set( a_focused( ), #__a_full, a_getsize(a_focused( )), GetState(*this))
+                     EndIf
+                     
+                  Case grid_value
+                     mouse( )\steps = DPIScaled(GetState(grid_value))
+                     
+               EndSelect
+               
+               change = 1
+            EndIf
+         
       EndSelect
       
       If change
@@ -27459,8 +27502,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    Define *a2._s_WIDGET = ScrollArea( 50, 45, 135, 95, 300, 300, mouse( )\steps, #__flag_nogadgets )
    Define *a3._s_WIDGET = Image( 150, 110, 60, 60, -1 )
    
-   a_set( *a0, -1, (10))
-   a_set( *a3, -1, (10))
+;    a_set( *a0, -1, (10))
+    a_set( *a3, -1, DPIScaled(10))
    
    CloseList( )
    size_value  = Track(56, 262, 240, 26, 0, 30, #PB_TrackBar_Ticks)
@@ -28106,9 +28149,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 24200
-; FirstLine = 22422
-; Folding = --------------------------------------------------------------------------------------------------------------------------------84-+------------------------------0------------------rB--------------------------------------------------------------------------------------------------------------++-fve4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------08---------------------------------------------------+--f-P-4X-0vv00---------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 21044
+; FirstLine = 18418
+; Folding = -------------------------------------------------------------------------0f-+------------------------------------------------------08f-------------------------------+------------------2g-------------------------------------------------------------------------------------------------------------ff--vXv8--------8-z--------------------------------------------------------------------------------------------------------------------------------------------------------------------+0--------------------------------------------------f---v-n-8r-+44++---------------------------------v+vbv434---+0---X-044--4------------------------------------------f----------------------------------------------------------------------------------------------------------------f-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

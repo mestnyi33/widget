@@ -13,10 +13,6 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
             
       Select WidgetEvent( )
-         Case #__event_Create
-            Debug ""
-            Debug text$ + " create - event " + EventWidget( )\class
-            
          Case #__event_Focus
             Debug text$ + " focus - event " + EventWidget( )\class
             
@@ -89,8 +85,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 88
-; FirstLine = 62
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 15
+; FirstLine = 11
 ; Folding = -
 ; EnableXP
