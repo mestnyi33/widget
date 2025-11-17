@@ -210,7 +210,7 @@
       EndEnumeration
       
       Enumeration 1
-         #__event_Create
+         ;#__event_Create
          #__event_Focus
          #__event_LostFocus
          ;

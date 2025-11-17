@@ -3037,7 +3037,7 @@ DataSection
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
 ; CursorPosition = 1600
-; FirstLine = 1297
+; FirstLine = 1285
 ; Folding = ---------f----84D-------------+-030v---v-v--+--v---ff+-
 ; Optimizer
 ; EnableAsm
