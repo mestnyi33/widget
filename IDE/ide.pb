@@ -3036,8 +3036,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1600
-; FirstLine = 1285
+; CursorPosition = 1583
+; FirstLine = 1279
 ; Folding = ---------f----84D-------------+-030v---v-v--+--v---ff+-
 ; Optimizer
 ; EnableAsm

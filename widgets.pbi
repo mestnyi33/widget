@@ -3219,13 +3219,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *this = a_focused( )
                   a_focused( ) = #Null
                   a_entered( ) = #Null
-                  If *this
-                     If SetFocus( *this, #__s_0 )
-                        If *this\anchors\group\show
-                           a_group_show( *this, #__event_LostFocus )
-                        EndIf
-                        DoEvents( *this, #__event_LostFocus )
+                  ;
+                  If SetFocus( *this, #__s_0 )
+                     If *this\anchors\group\show
+                        a_group_show( *this, #__event_LostFocus )
                      EndIf
+                     DoEvents( *this, #__event_LostFocus )
                   EndIf
                EndIf
             Else
@@ -3362,120 +3361,71 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected Text.s
          
          Static *grid_parent._s_WIDGET
-         If event = #__event_LostFocus 
-            If *this\anchors
-               If a_anchors( )\grid_image
-                  If *this\parent
-                     If a_focused( )
-                        If a_focused( )\parent
-                           If a_focused( )\parent <> *this\parent 
-                              SetBackgroundImage( *this\parent, 0 )
-                              SetBackgroundImage( a_focused( )\parent, a_anchors( )\grid_image )
-                           EndIf
-                        EndIf
-;                      Else
-;                         SetBackgroundImage( *this\parent, 0 )
+         
+         If event = #__event_Focus 
+            If *this\press
+               If *this\parent
+                  If *this\parent\anchors
+                     If a_anchors( )\grid_image
+                        Debug " f1 "+*this\parent\class
+                        SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
                      EndIf
                   EndIf
                EndIf
             EndIf
          EndIf            
-         
-;          If event = #__event_Create
-;             If *this =  a_focused( )
-;                If *grid_parent <> *this\parent
-;                   Debug "create " + a_focused( )\class
-;                   SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
-;                   *grid_parent = *this\parent
-;                EndIf
-;             EndIf
-;          EndIf
+         ;
          If event = #__event_LeftDown
-;             If *this\parent And *this\parent\anchors
-;                If is_integral_( *this ) 
-;                   If *grid_parent <> *this\parent\parent
-;                      If *grid_parent
-;                         Debug "reset parent a"+ *grid_parent\class
-;                         SetBackgroundImage( *grid_parent, 0 )
-;                      EndIf
-;                      *grid_parent = *this\parent\parent
-;                      Debug "set parent a"+ *grid_parent\class
-;                      SetBackgroundImage( *grid_parent, a_anchors( )\grid_image )
-;                   EndIf
-;                Else
-;                   If *grid_parent <> *this\parent
-;                      If *grid_parent
-;                         Debug "reset a "+ *grid_parent\class
-;                         SetBackgroundImage( *grid_parent, 0 )
-;                      EndIf
-;                      *grid_parent = *this\parent
-;                      Debug "set a "+ *grid_parent\class
-;                      SetBackgroundImage( *grid_parent, a_anchors( )\grid_image )
-;                   EndIf
-;                EndIf
-;             Else
-;                If Not a_focused( )
-;                   If *this\FirstWidget( )
-;                      If *this\FirstWidget( )\anchors
-;                         If *grid_parent
-;                            Debug "reset all "+ *grid_parent\class
-;                            SetBackgroundImage( *grid_parent, 0 )
-;                            *grid_parent = 0
-;                         EndIf
-;                      EndIf
-;                   EndIf
-;                EndIf
-;             EndIf
-            
             If *grid_parent
                If *this\parent
+                  Debug " 0 "+*grid_parent\class
                   SetBackgroundImage( *grid_parent, 0 )
+                  Debug " 1 "+*this\parent\class
                   SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
                EndIf
                *grid_parent = 0
             EndIf
          EndIf
-         
+         ;
+         If event = #__event_LostFocus 
+            If *this\parent
+               If *this\parent\anchors
+                  If a_focused( )
+                     If a_focused( )\parent
+                        If a_anchors( )\grid_image
+                           If a_focused( )\parent <> *this\parent 
+                              Debug " 0 "+*this\parent\class
+                              SetBackgroundImage( *this\parent, 0 )
+                              If Not MouseButtonPress( )
+                                 Debug " 1 "+a_focused( )\parent\class
+                                 SetBackgroundImage( a_focused( )\parent, a_anchors( )\grid_image )
+                              EndIf
+                           EndIf
+                        EndIf
+                     EndIf
+                  Else
+                     SetBackgroundImage( *this\parent, 0 )
+                  EndIf
+               EndIf
+            EndIf
+         EndIf            
+         ;
          If event = #__event_DragStart 
             If *this\anchors
                If *this\container > 0 And MouseEnter( *this )
                   If Not a_index( )
                      If a_anchors( )\grid_image
                         If *this\parent
+                           Debug " 0 "+*this\parent\class
                            SetBackgroundImage( *this\parent, 0 )
                         EndIf
+                        Debug " 1 "+*this\class
                         SetBackgroundImage( *this, a_anchors( )\grid_image )
                         *grid_parent = *this
                      EndIf
                   EndIf
                EndIf
             EndIf
-            
-;             If *this\anchors 
-;                If *this\container > 0 And MouseEnter( *this )
-;                   If Not a_index( )
-;                      If *grid_parent <> *this
-;                         If *grid_parent
-;                            If Not ( Not *this\anchors And *this = *grid_parent )
-;                               Debug "reset point "+GetClass(*grid_parent)
-;                               SetBackgroundImage( *grid_parent, 0 )
-;                            EndIf
-;                         EndIf
-;                            If *this\anchors
-;                               Debug "set point "+*this\class
-;                               SetBackgroundImage( *this, a_anchors( )\grid_image )
-;                               *grid_parent = *this
-;                            Else
-;                               If *grid_parent <> *this
-;                                  Debug "set2 point "+*this\class
-;                                  SetBackgroundImage( *this, a_anchors( )\grid_image )
-;                                  *grid_parent = *this
-;                               EndIf
-;                         EndIf
-;                      EndIf
-;                   EndIf
-;                EndIf
-;             EndIf
          EndIf
          ;
          ;
@@ -11242,7 +11192,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          Protected result.i 
          Protected._s_WIDGET *active, *deactive, *deactiveWindow, *deactiveGadget
-         
          ;
          If *this
             If is_integral_( *this )
@@ -21059,7 +21008,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If a_focused( )
                         If Entered( )\FirstWidget( )
                            If Entered( )\FirstWidget( )\anchors
-                              ; a_set( 0 )
+                              a_set( 0 )
                            EndIf
                         EndIf
                      EndIf
@@ -28166,9 +28115,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 21061
-; FirstLine = 18328
-; Folding = --------------------------------------------------------------------3-8--f-+------------------------------------------------------08f-------------------------------+------------------2g-------------------------------------------------------------------------------------------------------------ff--vXv8--------8-z--------------------------------------------------------------------------------------------------------------------------------------------------------------------+0--------------------------------------------------f---v-n-8r-+44++---------------------------------v+vbv434---+0---X-044--4------------------------------------------f----------------------------------------------------------------------------------------------------------------f-----
+; CursorPosition = 3398
+; FirstLine = 3270
+; Folding = -------------------------------------------------------------------f8-0---vf-------------------------------------------------------+0v------------------------------f-------------------aw-------------------------------------------------------------------------------------------------------------vv--4r40--------0-6-------------------------------------------------------------------------------------------------------------------------------------------------------------------f-+--------------------------------------------------v---4-z-02f-8bf----------------------------------X-4t4b88--f-+---r-+88--8------------------------------------------v----------------------------------------------------------------------------------------------------------------v-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
