@@ -3372,16 +3372,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected Text.s
          
          Static *grid_parent._s_WIDGET
-;          If event = #__event_LostFocus 
-;             If *this\anchors 
-;                ;If MouseButtonPress( )
-;                If *grid_parent <> *this\parent
-;                  Debug "reset point "+*this\class
-;                  SetBackgroundImage( *this\parent, 0 )
-;                 ; *grid_parent = *this\parent
-;                EndIf
-;             EndIf
-;          EndIf
          If event = #__event_Create
             If *this =  a_focused( )
                If *grid_parent <> *this\parent
@@ -3423,15 +3413,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                            SetBackgroundImage( *grid_parent, 0 )
                            *grid_parent = 0
                         EndIf
-                        ;    Debug "reset a "+ *this\class
                      EndIf
                   EndIf
                EndIf
             EndIf
-         EndIf
-         If event = #__event_LeftClick
-            ;             Debug "change point " + a_focused( )\class
-            ;             SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
          EndIf
          If event = #__event_DragStart 
             If *this\anchors 
@@ -3450,7 +3435,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                               *grid_parent = *this
                            Else
                               If *grid_parent <> *this
-                                 Debug "set point "+*this\class
+                                 Debug "set2 point "+*this\class
                                  SetBackgroundImage( *this, a_anchors( )\grid_image )
                                  *grid_parent = *this
                               EndIf
@@ -28149,9 +28134,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 21044
-; FirstLine = 18418
-; Folding = -------------------------------------------------------------------------0f-+------------------------------------------------------08f-------------------------------+------------------2g-------------------------------------------------------------------------------------------------------------ff--vXv8--------8-z--------------------------------------------------------------------------------------------------------------------------------------------------------------------+0--------------------------------------------------f---v-n-8r-+44++---------------------------------v+vbv434---+0---X-044--4------------------------------------------f----------------------------------------------------------------------------------------------------------------f-----
+; CursorPosition = 3437
+; FirstLine = 3413
+; Folding = --------------------------------------------------------------------------vf-------------------------------------------------------+0v------------------------------f-------------------aw-------------------------------------------------------------------------------------------------------------vv--4r40--------0-6-------------------------------------------------------------------------------------------------------------------------------------------------------------------f-+--------------------------------------------------v---4-z-02f-8bf----------------------------------X-4t4b88--f-+---r-+88--8------------------------------------------v----------------------------------------------------------------------------------------------------------------v-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
