@@ -3361,50 +3361,38 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected Text.s
          
          Static *grid_parent._s_WIDGET
-         
+         ;
+         If event = #__event_LostFocus 
+            If *this\parent
+               If *this\parent\anchors
+                  *grid_parent = *this\parent
+               EndIf
+            EndIf
+         EndIf            
+         ;
          If event = #__event_Focus 
-            If *this\press
-               If *this\parent
-                  If *this\parent\anchors
-                     If a_anchors( )\grid_image
-                        Debug " f1 "+*this\parent\class
-                        SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
+            If *this\parent
+               If *this\parent\anchors
+                  If *grid_parent <> *this\parent
+                     If *grid_parent
+                        Debug " reset "+*grid_parent\class
+                        SetBackgroundImage( *grid_parent, 0 )
+                        *grid_parent = 0
                      EndIf
+                     Debug " set "+*this\parent\class
+                     SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
                   EndIf
                EndIf
             EndIf
          EndIf            
          ;
-         If event = #__event_LeftDown
-            If *grid_parent
-               If *this\parent
-                  Debug " 0 "+*grid_parent\class
-                  SetBackgroundImage( *grid_parent, 0 )
-                  Debug " 1 "+*this\parent\class
-                  SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
-               EndIf
-               *grid_parent = 0
-            EndIf
-         EndIf
-         ;
-         If event = #__event_LostFocus 
+         If event = #__event_LeftDown 
             If *this\parent
-               If *this\parent\anchors
-                  If a_focused( )
-                     If a_focused( )\parent
-                        If a_anchors( )\grid_image
-                           If a_focused( )\parent <> *this\parent 
-                              Debug " 0 "+*this\parent\class
-                              SetBackgroundImage( *this\parent, 0 )
-                              If Not MouseButtonPress( )
-                                 Debug " 1 "+a_focused( )\parent\class
-                                 SetBackgroundImage( a_focused( )\parent, a_anchors( )\grid_image )
-                              EndIf
-                           EndIf
-                        EndIf
-                     EndIf
-                  Else
-                     SetBackgroundImage( *this\parent, 0 )
+               If Not *this\parent\anchors
+                  If *grid_parent
+                     Debug " reset all "+*grid_parent\class
+                     SetBackgroundImage( *grid_parent, 0 )
+                     *grid_parent = 0
                   EndIf
                EndIf
             EndIf
@@ -28115,9 +28103,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 3398
-; FirstLine = 3270
-; Folding = -------------------------------------------------------------------f8-0---vf-------------------------------------------------------+0v------------------------------f-------------------aw-------------------------------------------------------------------------------------------------------------vv--4r40--------0-6-------------------------------------------------------------------------------------------------------------------------------------------------------------------f-+--------------------------------------------------v---4-z-02f-8bf----------------------------------X-4t4b88--f-+---r-+88--8------------------------------------------v----------------------------------------------------------------------------------------------------------------v-----
+; CursorPosition = 3391
+; FirstLine = 3276
+; Folding = -------------------------------------------------------------------f8-0---+0------------------------------------------------------84-+------------------------------0------------------rB--------------------------------------------------------------------------------------------------------------++-fve4--------4-n--------------------------------------------------------------------------------------------------------------------------------------------------------------------08---------------------------------------------------+--f-P-4X-0vv00---------------------------------f0f4evtv---08---v+8vv--v-------------------------------------------+----------------------------------------------------------------------------------------------------------------+-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
