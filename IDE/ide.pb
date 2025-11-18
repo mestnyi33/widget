@@ -765,7 +765,7 @@ Procedure   Properties_ButtonEvents( )
             EndIf
          EndIf
          
-      Case #__event_Cursor
+      Case #__event_CursorChange
          ProcedureReturn 0
          
    EndSelect
@@ -1043,7 +1043,7 @@ Procedure   Properties_Events( )
       Case #__event_Up
          ;SetActive( Entered( ) )
          
-      Case #__event_Cursor
+      Case #__event_CursorChange
          ProcedureReturn 0
          
    EndSelect
@@ -1748,7 +1748,7 @@ Procedure new_widget_events( )
             Properties_Updates( *g, "Resize" )
          EndIf
          ;
-      Case #__event_Cursor
+      Case #__event_CursorChange
          ; Debug "CURSOR events"
          ProcedureReturn #PB_Cursor_Default
          ;
@@ -3036,8 +3036,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1583
-; FirstLine = 1279
+; CursorPosition = 1750
+; FirstLine = 1336
 ; Folding = ---------f----84D-------------+-030v---v-v--+--v---ff+-
 ; Optimizer
 ; EnableAsm

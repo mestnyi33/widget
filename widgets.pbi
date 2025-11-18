@@ -3192,6 +3192,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                EndIf
                ;
+               If a_anchors( )\grid_image
+                  If a_focused( ) And a_focused( )\parent And a_focused( )\parent <> *this\parent 
+                     SetBackgroundImage( a_focused( )\parent, 0 )
+                  EndIf  
+                  If *this\parent
+                     If Not ( a_focused( ) And a_focused( )\parent = *this\parent )
+                        SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
+                     EndIf
+                  EndIf
+               EndIf
                ;
                If *this 
                   If *this\anchors
@@ -3359,62 +3369,31 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected.l Px, Py, IsGrid = DPIScaled(Bool( mouse( )\steps > 1 ))
          
          Protected Text.s
-         
-         Static *grid_parent._s_WIDGET
-         ;
-         If event = #__event_LostFocus 
-            If *this\parent
-               If *this\parent\anchors
-                  *grid_parent = *this\parent
-               EndIf
-            EndIf
-         EndIf            
-         ;
-         If event = #__event_Focus 
-            If *this\parent
-               If *this\parent\anchors
-                  If *grid_parent <> *this\parent
-                     If *grid_parent
-                        Debug " reset "+*grid_parent\class
-                        SetBackgroundImage( *grid_parent, 0 )
-                        *grid_parent = 0
-                     EndIf
-                     Debug " set "+*this\parent\class
-                     SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
-                  EndIf
-               EndIf
-            EndIf
-         EndIf            
-         ;
-         If event = #__event_LeftDown 
-            If *this\parent
-               If Not *this\parent\anchors
-                  If *grid_parent
-                     Debug " reset all "+*grid_parent\class
-                     SetBackgroundImage( *grid_parent, 0 )
-                     *grid_parent = 0
-                  EndIf
-               EndIf
-            EndIf
-         EndIf            
+                 
          ;
          If event = #__event_DragStart 
-            If *this\anchors
-               If *this\container > 0 And MouseEnter( *this )
-                  If Not a_index( )
-                     If a_anchors( )\grid_image
-                        If *this\parent
-                           Debug " 0 "+*this\parent\class
-                           SetBackgroundImage( *this\parent, 0 )
-                        EndIf
-                        Debug " 1 "+*this\class
-                        SetBackgroundImage( *this, a_anchors( )\grid_image )
-                        *grid_parent = *this
+            If a_anchors( )\grid_image
+               If *this\container > 0 And Not a_index( ) And MouseEnter( *this )
+                  If *this\parent
+                     SetBackgroundImage( *this\parent, 0 )
+                  EndIf
+                  SetBackgroundImage( *this, a_anchors( )\grid_image )
+               EndIf
+            EndIf
+         EndIf
+         If event = #__event_Up
+            If mouse( )\drag
+               If *this\container > 0
+                  If a_focused( ) = *this
+                     SetBackgroundImage( *this, 0 )
+                     If *this\parent
+                        SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
                      EndIf
                   EndIf
                EndIf
             EndIf
          EndIf
+         
          ;
          ;
          If event = #__event_Focus 
@@ -9095,7 +9074,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          If *cursor
             If *this\bindcursor Or *this\root\canvas\bindcursor 
-               result = Post( *this, #__event_Cursor, #PB_All, *cursor )
+               result = Post( *this, #__event_CursorChange, #PB_All, *cursor )
                If result > 0
                   *cursor = result
                EndIf
@@ -16743,7 +16722,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          Protected result$
          
          Select event
-            Case #__event_Cursor    : result$ = "CursorChange"
+            Case #__event_CursorChange    : result$ = "CursorChange"
             Case #__event_free            : result$ = "Free"
             Case #__event_Drop            : result$ = "Drop"
             Case #__event_Draw            : result$ = "Draw"
@@ -20996,7 +20975,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If a_focused( )
                         If Entered( )\FirstWidget( )
                            If Entered( )\FirstWidget( )\anchors
-                              a_set( 0 )
+                              ; a_set( 0 )
                            EndIf
                         EndIf
                      EndIf
@@ -21675,7 +21654,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this < 0
             PushMapPosition(roots( ))
             ForEach roots( )
-               If event = #__event_Cursor
+               If event = #__event_CursorChange
                   roots( )\canvas\bindcursor = 1
                EndIf
                ;
@@ -21698,7 +21677,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         Continue
                      EndIf
                   EndIf
-                  If i = #__event_Cursor
+                  If i = #__event_CursorChange
                      If Not *this\bindcursor
                         Continue
                      EndIf
@@ -21716,7 +21695,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If event = #__event_Resize
                   *this\bindresize = 1
                EndIf
-               If event = #__event_Cursor
+               If event = #__event_CursorChange
                   *this\bindcursor = 1
                EndIf
                
@@ -28103,9 +28082,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 3391
-; FirstLine = 3276
-; Folding = -------------------------------------------------------------------f8-0---+0------------------------------------------------------84-+------------------------------0------------------rB--------------------------------------------------------------------------------------------------------------++-fve4--------4-n--------------------------------------------------------------------------------------------------------------------------------------------------------------------08---------------------------------------------------+--f-P-4X-0vv00---------------------------------f0f4evtv---08---v+8vv--v-------------------------------------------+----------------------------------------------------------------------------------------------------------------+-----
+; CursorPosition = 21697
+; FirstLine = 18962
+; Folding = --------------------------------------------------------------------4+f--08------------------------------------------------------4v-0------------------------------8------------------XD+-------------------------------------------------------------------------------------------------------------00--e0u--------v-P--------------------------------------------------------------------------------------------------------------------------------------------------------------------84---------------------------------------------------0---+f+vv+8ff88----------------------------------7-u0ebf---84---f04ff--f-------------------------------------------0----------------------------------------------------------------------------------------------------------------0-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

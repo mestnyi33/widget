@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_Drop   
             Debug "event( DROP )"
             
-         Case #__event_Cursor      
+         Case #__event_CursorChange      
             Debug Index(EventWidget( ))
             ProcedureReturn #PB_Cursor_Hand
       EndSelect
@@ -101,15 +101,15 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(Button_4, @CustomDrawing(), #__event_Draw)
       
       ;\\ change current cursor
-      ; Bind( #PB_All, @events_widgets( ), #__event_Cursor )
+      ; Bind( #PB_All, @events_widgets( ), #__event_CursorChange )
       
       WaitClose( )
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 53
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 25
+; FirstLine = 42
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -821,9 +821,6 @@ CompilerEndIf
 ;             SetState(*g\scroll\v, GetState( *g\scroll\v ) - __data )
 ;          EndIf
 ;          
-;       Case #__event_Cursor
-;          ProcedureReturn 0
-;          
 ;    EndSelect
 ;    
 ;    ProcedureReturn #PB_Ignore
@@ -1099,9 +1096,6 @@ CompilerEndIf
 ;       Case #__event_Up
 ;          SetActive( Entered( ) )
 ;          
-;       Case #__event_Cursor
-;          ProcedureReturn 0
-;          
 ;    EndSelect
 ;    
 ;    ProcedureReturn #PB_Ignore
@@ -1301,9 +1295,9 @@ CompilerEndIf
 ;    image_group_width:      : IncludeBinary "group/group_width.png"
 ;    image_group_height:     : IncludeBinary "group/group_height.png"
 ; EndDataSection
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 40
-; FirstLine = 36
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 1098
+; FirstLine = 1080
 ; Folding = -
 ; EnableXP
 ; DPIAware

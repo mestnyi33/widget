@@ -85,7 +85,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetClass( Splitter_5, "Splitter_5")
    
    ;\\
-   Bind( #PB_All, @CustomEvents( ), #__event_Cursor )
+   Bind( #PB_All, @CustomEvents( ), #__event_CursorChange )
    
    ;\\
    WaitClose( )
@@ -93,13 +93,13 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    Procedure CustomEvents( )
       Select WidgetEvent( )
-         Case #__event_Cursor
+         Case #__event_CursorChange
           ; Debug ""+EventWidget( )\cursor +" "+ EventWidget( )\cursor[3]
       EndSelect
    EndProcedure
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
+; IDE Options = PureBasic 6.21 (Windows - x64)
 ; CursorPosition = 95
 ; FirstLine = 61
 ; Folding = -

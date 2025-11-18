@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\
    Procedure CustomEvents( )
       Select WidgetEvent( )
-         Case #__event_Cursor
+         Case #__event_CursorChange
             ;\\ demo change current cursor
             If EventWidget( ) = object
                Debug "CHANGE CURSOR "+ GetCursor( )
@@ -86,15 +86,15 @@ CompilerIf #PB_Compiler_IsMainFile
       a_set(widget( ), #__a_full, anchor_size)
       
       ;\\
-      Bind( #PB_All, @CustomEvents( ), #__event_Cursor )
+      Bind( #PB_All, @CustomEvents( ), #__event_CursorChange )
       
       ;\\
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 25
-; FirstLine = 14
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 88
+; FirstLine = 54
 ; Folding = --
 ; EnableXP
 ; DPIAware
