@@ -3381,20 +3381,18 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
             EndIf
          EndIf
+         ;
          If event = #__event_Up
-            If mouse( )\drag
-               If *this\container > 0
-                  If a_focused( ) = *this
-                     SetBackgroundImage( *this, 0 )
-                     If *this\parent
-                        SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
-                     EndIf
+            If a_anchors( )\grid_image
+               If *this\container > 0 And a_focused( ) = *this And mouse( )\drag
+                  SetBackgroundImage( *this, 0 )
+                  If *this\parent
+                     SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
                   EndIf
                EndIf
             EndIf
          EndIf
          
-         ;
          ;
          If event = #__event_Focus 
             If *this\anchors
@@ -3453,7 +3451,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If Not a_anchors( )\group\show
                      If mouse( )\selector
                         If StartEnum( *this )
-                           If widgets( )\anchors 
+                           If widgets( )\anchors And Not widgets( )\hide 
                               If widgets( )\anchors\group\show = #False
                                  If widgets( )\level = *this\level + 1
                                     If is_intersect_( widgets( ), mouse( )\selector, [#__c_frame] )
@@ -28082,9 +28080,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 21697
-; FirstLine = 18962
-; Folding = --------------------------------------------------------------------4+f--08------------------------------------------------------4v-0------------------------------8------------------XD+-------------------------------------------------------------------------------------------------------------00--e0u--------v-P--------------------------------------------------------------------------------------------------------------------------------------------------------------------84---------------------------------------------------0---+f+vv+8ff88----------------------------------7-u0ebf---84---f04ff--f-------------------------------------------0----------------------------------------------------------------------------------------------------------------0-----
+; CursorPosition = 3389
+; FirstLine = 3316
+; Folding = --------------------------------------------------------------------4-f--+08-----------------------------------------------------84-+------------------------------0------------------rB--------------------------------------------------------------------------------------------------------------++-fve4--------4-n--------------------------------------------------------------------------------------------------------------------------------------------------------------------08---------------------------------------------------+--f-P-4X-0vv00---------------------------------f0f4evtv---08---v+8vv--v-------------------------------------------+----------------------------------------------------------------------------------------------------------------+-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
