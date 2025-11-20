@@ -9,10 +9,10 @@ Declare OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
 Procedure FocusEvents( )
    Select EventWidget( )
       Case group
-         Debug "  do focus ABC"
+         ;Debug "  do focus ABC"
          
       Case cost
-         Debug "  do focus 1000"
+         ;Debug "  do focus 1000"
          
       Default  
          Debug "------- focus "+GetClass(EventWidget())
@@ -25,7 +25,7 @@ Procedure LostFocusEvents( )
       Case group
          If ActiveWindow( ) = GetWindow( EventWidget( ))
          ;If ActiveGadget( ) <> EventWidget( )
-            Debug "    do lostfocus ABC"
+            ;Debug "    do lostfocus ABC"
             OpenMessage("Warning", "Group code must be four characters", #PB_MessageRequester_Error)
          Else
             Debug "LOST1  "+ActiveGadget( )\class +" "+ EventWidget( )\class
@@ -35,7 +35,7 @@ Procedure LostFocusEvents( )
          
          If ActiveWindow( ) = GetWindow( EventWidget( ))
          ;If ActiveGadget( ) <> EventWidget( )
-            Debug "    do lostfocus 1000"
+            ;Debug "    do lostfocus 1000"
             OpenMessage("Warning", "Cost must be positive And Not more than 999.99", #PB_MessageRequester_Error )
          Else
             Debug "LOST2  "+ActiveGadget( )\class +" "+ EventWidget( )\class
@@ -69,9 +69,9 @@ Procedure OpenMessage( title.s, Text.s, flags = 0, parentID = 0)
    ; SetActiveGadget(-1)
    ; SetActiveGadget(EventGadget())
    
+   Debug ">"
    Define Message = Message(title, Text, flags, parentID ) 
-   ; WaitQuit()
-   test_focus_draw = 1
+   Debug "<"
    ProcedureReturn Message
 EndProcedure
 
@@ -94,7 +94,7 @@ Bind( cost, @LostFocusEvents( ), #__event_LostFocus )
 ; Bind( #PB_All, @FocusEvents( ), #__event_Focus )
 ; Bind( #PB_All, @LostFocusEvents( ), #__event_LostFocus )
 
-; SetActive(group.i)
+ SetActive(group.i)
 ; SetActiveGadget(GetCanvasGadget())
 
 ;OpenMessage("Warning", "Group code must be four characters", #PB_MessageRequester_Error)
@@ -102,7 +102,8 @@ Bind( cost, @LostFocusEvents( ), #__event_LostFocus )
 WaitClose( )
 End
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2
+; CursorPosition = 96
+; FirstLine = 63
 ; Folding = --
 ; EnableXP
 ; DPIAware
