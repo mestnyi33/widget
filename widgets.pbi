@@ -133,6 +133,10 @@ CompilerIf #PB_Compiler_Version < 520
    EndMacro
 CompilerEndIf
 
+CompilerIf Not Defined( lng, #PB_Module )
+   XIncludeFile "include/lng.pbi"
+CompilerEndIf
+
 CompilerIf Not Defined( constants, #PB_Module )
    XIncludeFile "include/constants.pbi"
 CompilerEndIf
@@ -171,6 +175,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       CompilerEndIf
       
       EnableExplicit
+      UseModule lng
       UseModule Events
       UseModule constants
       UseModule structures
@@ -21643,24 +21648,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If GetActive( )
                         If GetActive( ) = widgets( )
                            ; Debug "? "+GetActive( )\class
-                           ; GetActive( ) = #Null
-                           
-;                            If Not is_root_( *parent )
-;                               If *parent\BeforeWidget( )
-;                                  SetActive( *parent\BeforeWidget( ) )
-;                               Else
-;                                  If Not SetActive( *parent\parent )
-;                                     Debug 333
-;                                     GetActive( ) = *parent\parent
-;                                  EndIf
-;                               EndIf
-;                            EndIf
-                           
-                           If keyboard( )\deactive And 
-                              keyboard( )\deactive\address
-                              ; Debug "  ? "+keyboard( )\deactive\class
-                              SetActive( keyboard( )\deactive\root )
-                           EndIf
+                           GetActive( ) = #Null
+                           SetActive( *parent\parent )
                         EndIf
                      EndIf
                      ;
@@ -21765,9 +21754,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          ForEach roots( ) 
             window = roots( )\canvas\window
+;             If Not IsWindow( window )
+;                Break
+;             EndIf
             ;
             If *root = #PB_All
                canvasgadget = roots( )\canvas\gadget
+;                If Not IsGadget( canvasgadget )
+;                   Break
+;                EndIf
                ;
                ;
                Delete( roots( ))
@@ -26548,16 +26543,16 @@ CompilerIf Not Defined( widget, #PB_Module )
          CloseList( )
          
          ;\\
-         *ok = Button( Width - bw - f2, Height - bh - f2, bw, bh, "Ok", #PB_Button_Default )
+         *ok = Button( Width - bw - f2, Height - bh - f2, bw, bh, lng( "Ok" ), #PB_Button_Default )
          SetClass( *ok, "message_YES" )
          If constants::BinaryFlag( Flag, #__message_YesNo ) Or
             constants::BinaryFlag( Flag, #__message_YesNoCancel )
-            *no = Button( Width - ( bw + f2 ) * 2 - f2, Height - bh - f2, bw, bh, "No" )
+            *no = Button( Width - ( bw + f2 ) * 2 - f2, Height - bh - f2, bw, bh, lng( "No" ))
             SetClass( *no, "message_NO" )
-            SetText( *ok, "Yes" )
+            SetText( *ok, lng( "Yes" ))
          EndIf
          If constants::BinaryFlag( Flag, #__message_YesNoCancel )
-            *cancel = Button( Width - ( bw + f2 ) * 3 - f2 * 2, Height - bh - f2, bw, bh, "Cancel" )
+            *cancel = Button( Width - ( bw + f2 ) * 3 - f2 * 2, Height - bh - f2, bw, bh, lng( "Cancel" ))
             SetClass( *cancel, "message_CANCEL" )
          EndIf
          
@@ -26605,6 +26600,7 @@ CompilerEndIf
 ;- <<<
 ;-
 Macro UseWidgets( )
+   UseModule lng
    UseModule widget
    UseModule constants
    UseModule structures
@@ -28070,9 +28066,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 21666
-; FirstLine = 18913
-; Folding = --------------------------------------------------------------------4-f--+08-----------------------------------------------------84-+------------------------------0------------------rB--------------------------------------------------------------------------------------------------------------++-fve4-----------v------------------------------------------------------------------------------------------------------------------------------------------------------------------84---------------------------------------------------0---+f+vv+8ff88-----------------------v--t4b88--f-+---r-+88--8--------------------------4X-+2+--+f----------------8---------------------------------------------------------------------------------------------------C+-----------+-----
+; CursorPosition = 21760
+; FirstLine = 19036
+; Folding = --------------------------------------------------------------------v--+-084-----------------------------------------------------4v-0------------------------------8------------------XD+-------------------------------------------------------------------------------------------------------------00--e0u-----------f------------------------------------------------------------------------------------------------------------------------------------------------------------------4v---------------------------------------------------8---0-9ff04-+34-----------------------f--bv434---+0---X-044--4---------------------------v+0r0---f----------------8---------------------------------------------------------------------------------------------------C+-----------+-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

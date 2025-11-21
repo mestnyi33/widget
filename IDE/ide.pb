@@ -77,7 +77,7 @@ Enumeration
    #_tb_file_open
    #_tb_file_save
    #_tb_file_SAVEAS
-   #_tb_file_quit
+   #_tb_QUIT
    
    #_tb_LNG
    #_tb_lng_ENG
@@ -191,7 +191,6 @@ Declare$  GetImageFile( img )
 ;
 ;- INCLUDEs
 XIncludeFile #ide_path + "widgets.pbi"
-XIncludeFile #ide_path + "include/lng.pbi"
 ; XIncludeFile "C:\Users\user\Downloads\Compressed\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widgets.pbi"
 ; Procedure.i GetFontColor( *this.structures::_s_WIDGET )
 ;    ProcedureReturn widget::GetColor( *this, constants::#__FrontColor )
@@ -1776,91 +1775,151 @@ EndProcedure
 
 ;-
 ;- LENGUAGE
-Enumeration lng
-   #lng_YES
-   #lng_NO
-   #lng_CANCEL
-   #lng_NEW
-   #lng_OPEN
-   #lng_SAVE
-   #lng_MENU
-   #lng_QUIT
-   #lng_SAVEAS
-   #lng_RUN
-   #lng_FORM
-   #lng_CODE
-   #lng_ELEMENTS
-   #lng_PROPERTIES
-   #lng_EVENTS
-   #lng_LENGUAGE
-EndEnumeration
 
-;                        ;eng = 0    ;rus = 1          ; french = 2         ; german = 3
-AddLng( #lng_NEW,        "New        |Новый            |Nouveau             |Neu" )
-AddLng( #lng_OPEN,       "Open       |Открыть          |Ouvrir              |Offnen" )
-AddLng( #lng_SAVE,       "Save       |Сохранить        |Sauvegarder         |Speichern" )
-AddLng( #lng_YES,        "Yes        |Да               |Oui                 |Ja" )
-AddLng( #lng_NO,         "No         |Нет              |Non                 |Nein" )
-AddLng( #lng_CANCEL,     "Cancel     |Отмена           |Annuler             |Abbrechen" )
-AddLng( #lng_MENU,       "Menu       |Меню             |Menu                |Menu" )
-AddLng( #lng_QUIT,       "Quit       |Выход            |Quitter             |Beenden" )
-AddLng( #lng_SAVEAS,     "Save as... |Сохранить как... |Enregistrer sous... |Speichern unter..." )
-AddLng( #lng_RUN,        "Run        |Запуск           |Executer            |Ausfuhren" )
-AddLng( #lng_FORM,       "Form       |Форма            |Forme               |Formular" )
-AddLng( #lng_CODE,       "Code       |Код              |Code                |Code" )
-AddLng( #lng_ELEMENTS,   "Elements   |Элементы         |Elements            |Elemente" )
-AddLng( #lng_PROPERTIES, "Properties |Свойства         |Proprietes          |Eigenschaften" )
-AddLng( #lng_EVENTS,     "Events     |События          |Evenements          |Ereignisse" )
-AddLng( #lng_LENGUAGE,   "Lenguage   |Язык             |Langage             |Sprache" )
+; #lng_YES$                      = "Yes"
+; #lng_NO$                       = "No"
+; #lng_CANCEL$                   = "Cancel"
+#lng_NEW$                      = "New"
+#lng_OPEN$                     = "Open"
+#lng_SAVE$                     = "Save"
+#lng_MENU$                     = "Menu"
+#lng_QUIT$                     = "Quit"
+#lng_SAVEAS$                   = "Save as..."
+#lng_RUN$                      = "Run"
+#lng_FORM$                     = "Form"
+#lng_CODE$                     = "Code"
+#lng_ELEMENTS$                 = "Elements"
+#lng_PROPERTIES$               = "Properties"
+#lng_EVENTS$                   = "Events"
+#lng_LENGUAGE$                 = "Lenguage"
+#lng_MESSAGE$                  = "Message"
+#lng_MESSAGE_EXIT_QUESTION$    = "Are you sure you want to go out?"
+
+
+;       ;eng = 0                     ;rus = 1          ;french = 2          ;german = 3
+; AddLng( #lng_YES$                  +"|Да               |Oui                 |Ja" )
+; AddLng( #lng_NO$                   +"|Нет              |Non                 |Nein" )
+; AddLng( #lng_CANCEL$               +"|Отмена           |Annuler             |Abbrechen" )
+AddLng( #lng_MENU$                 +"|Меню             |Menu                |Menu" )
+AddLng( #lng_NEW$                  +"|Новый            |Nouveau             |Neu" )
+AddLng( #lng_OPEN$                 +"|Открыть          |Ouvrir              |Offnen" )
+AddLng( #lng_SAVE$                 +"|Сохранить        |Sauvegarder         |Speichern" )
+AddLng( #lng_SAVEAS$               +"|Сохранить как... |Enregistrer sous... |Speichern unter..." )
+AddLng( #lng_RUN$                  +"|Запуск           |Executer            |Ausfuhren" )
+AddLng( #lng_QUIT$                 +"|Выход            |Quitter             |Beenden" )
+AddLng( #lng_FORM$                 +"|Форма            |Forme               |Formular" )
+AddLng( #lng_CODE$                 +"|Код              |Code                |Code" )
+AddLng( #lng_ELEMENTS$             +"|Элементы         |Elements            |Elemente" )
+AddLng( #lng_PROPERTIES$           +"|Свойства         |Proprietes          |Eigenschaften" )
+AddLng( #lng_EVENTS$               +"|События          |Evenements          |Ereignisse" )
+AddLng( #lng_LENGUAGE$             +"|Язык             |Langage             |Sprache" )
+AddLng( #lng_MESSAGE$              +"|Сообщения        |Message             |Nachricht" )
+AddLng( #lng_MESSAGE_EXIT_QUESTION$+"|"+
+        "Ты уверен, что хочешь выйти?|"+
+        "Es-tu sûr de vouloir sortir?|"+
+        "Bist du sicher, dass du nach draußen gehen willst?" )
+
+; Debug MapSize(lng_MAP( ))
+
+; If InitLng( "Yes|No|Cancel|New|Open|Save|Menu|Quit|Save as...|Run|Form|Code|Elements|Properties|Events|Lenguage|Message|Are you sure you want To go out?" )
+;    #lng_YES                      = 0
+;    #lng_NO                       = 1
+;    #lng_CANCEL                   = 2
+;    #lng_NEW                      = 3
+;    #lng_OPEN                     = 4
+;    #lng_SAVE                     = 5
+;    #lng_MENU                     = 6
+;    #lng_QUIT                     = 7
+;    #lng_SAVEAS                   = 8
+;    #lng_RUN                      = 9
+;    #lng_FORM                     = 10
+;    #lng_CODE                     = 11
+;    #lng_ELEMENTS                 = 12
+;    #lng_PROPERTIES               = 13
+;    #lng_EVENTS                   = 14
+;    #lng_LENGUAGE                 = 15
+;    #lng_MESSAGE                  = 16
+;    #lng_MESSAGE_EXIT_QUESTION    = 17
+;    ;
+;    ;       ;eng = 0    ;rus = 1          ;french = 2          ;german = 3
+;    AddLng( lngString(#lng_YES)                  +"|Да               |Oui                 |Ja" )
+;    AddLng( lngString(#lng_NO)                   +"|Нет              |Non                 |Nein" )
+;    AddLng( lngString(#lng_CANCEL)               +"|Отмена           |Annuler             |Abbrechen" )
+;    AddLng( lngString(#lng_NEW)                  +"|Новый            |Nouveau             |Neu" )
+;    AddLng( lngString(#lng_OPEN)                 +"|Открыть          |Ouvrir              |Offnen" )
+;    AddLng( lngString(#lng_SAVE)                 +"|Сохранить        |Sauvegarder         |Speichern" )
+;    AddLng( lngString(#lng_MENU)                 +"|Меню             |Menu                |Menu" )
+;    AddLng( lngString(#lng_QUIT)                 +"|Выход            |Quitter             |Beenden" )
+;    AddLng( lngString(#lng_SAVEAS)               +"|Сохранить как... |Enregistrer sous... |Speichern unter..." )
+;    AddLng( lngString(#lng_RUN)                  +"|Запуск           |Executer            |Ausfuhren" )
+;    AddLng( lngString(#lng_FORM)                 +"|Форма            |Forme               |Formular" )
+;    AddLng( lngString(#lng_CODE)                 +"|Код              |Code                |Code" )
+;    AddLng( lngString(#lng_ELEMENTS)             +"|Элементы         |Elements            |Elemente" )
+;    AddLng( lngString(#lng_PROPERTIES)           +"|Свойства         |Proprietes          |Eigenschaften" )
+;    AddLng( lngString(#lng_EVENTS)               +"|События          |Evenements          |Ereignisse" )
+;    AddLng( lngString(#lng_LENGUAGE)             +"|Язык             |Langage             |Sprache" )
+;    AddLng( lngString(#lng_MESSAGE)              +"|Сообщения        |Message             |Nachricht" )
+;    AddLng( lngString(#lng_MESSAGE_EXIT_QUESTION)+"|"+
+;            "Ты уверен, что хочешь выйти?|"+
+;            "Es-tu sûr de vouloir sortir?|"+
+;            "Bist du sicher, dass du nach draußen gehen willst?" )
+; EndIf
+
+; LoadLng( "../IDE/lng.ini" )
+   
 
 ;
 Procedure ide_Lng_change( lng_TYPE=0 )
-   ; Debug "  LNG CHANGE "+lng_TYPE
-   ;
-   SetBarItemText( ide_toolbar, 0, lng(lng_TYPE, #lng_Menu))
-   SetBarItemText( ide_toolbar, #_tb_file_new, lng(lng_TYPE, #lng_NEW))
-   SetBarItemText( ide_toolbar, #_tb_file_open, lng(lng_TYPE, #lng_OPEN))
-   SetBarItemText( ide_toolbar, #_tb_file_save, lng(lng_TYPE, #lng_SAVE))
-   SetBarItemText( ide_toolbar, #_tb_file_run, "["+UCase(lng(lng_TYPE, #lng_RUN))+"]")
-   SetBarItemText( ide_toolbar, #_tb_LNG, "["+UCase(lng(lng_TYPE, #lng_LENGUAGE))+"]")
-   ;
-   SetBarItemText( ide_menu, #_tb_file_new, lng(lng_TYPE, #lng_NEW)+" (Ctrl+N)")
-   SetBarItemText( ide_menu, #_tb_file_open, lng(lng_TYPE, #lng_OPEN)+" (Ctrl+O)")
-   SetBarItemText( ide_menu, #_tb_file_save, lng(lng_TYPE, #lng_SAVE)+" (Ctrl+S)")
-   SetBarItemText( ide_menu, #_tb_file_SAVEAS, lng(lng_TYPE, #lng_SAVEAS))
-   SetBarItemText( ide_menu, #_tb_file_quit, lng(lng_TYPE, #lng_QUIT))
-   ;
-   SetItemText( ide_inspector_PANEL, 0, lng(lng_TYPE, #lng_ELEMENTS))
-   SetItemText( ide_inspector_PANEL, 1, lng(lng_TYPE, #lng_PROPERTIES))
-   SetItemText( ide_inspector_PANEL, 2, lng(lng_TYPE, #lng_EVENTS))
-   
-   SetItemText( ide_design_PANEL, 0, lng(lng_TYPE, #lng_FORM))
-   SetItemText( ide_design_PANEL, 1, lng(lng_TYPE, #lng_CODE))
-   
-   If lng_TYPE = 0
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #True )
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #False )
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #False )
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #False )
-   ElseIf lng_TYPE = 1
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #True )
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #False )
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #False )
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #False )
-   ElseIf lng_TYPE = 2
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #True )
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #False )
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #False )
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #False )
-   ElseIf lng_TYPE = 3
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #True )
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #False )
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #False )
-      DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #False )
+   If ChangeLng(lng_TYPE)
+      ; Debug "  LNG CHANGE "+lng_TYPE
+      ;
+      SetBarItemText( ide_toolbar, 0, lng(#lng_Menu$))
+      SetBarItemText( ide_toolbar, #_tb_file_new, lng(#lng_NEW$))
+      SetBarItemText( ide_toolbar, #_tb_file_open, lng(#lng_OPEN$))
+      SetBarItemText( ide_toolbar, #_tb_file_save, lng(#lng_SAVE$))
+      SetBarItemText( ide_toolbar, #_tb_file_run, "["+UCase(lng(#lng_RUN$))+"]")
+      SetBarItemText( ide_toolbar, #_tb_LNG, "["+UCase(lng(#lng_LENGUAGE$))+"]")
+      ;
+      SetBarItemText( ide_menu, #_tb_file_new, lng(#lng_NEW$)+" (Ctrl+N)")
+      SetBarItemText( ide_menu, #_tb_file_open, lng(#lng_OPEN$)+" (Ctrl+O)")
+      SetBarItemText( ide_menu, #_tb_file_save, lng(#lng_SAVE$)+" (Ctrl+S)")
+      SetBarItemText( ide_menu, #_tb_file_SAVEAS, lng(#lng_SAVEAS$))
+      SetBarItemText( ide_menu, #_tb_QUIT, lng(#lng_QUIT$))
+      ;
+      SetItemText( ide_inspector_PANEL, 0, lng(#lng_ELEMENTS$))
+      SetItemText( ide_inspector_PANEL, 1, lng(#lng_PROPERTIES$))
+      SetItemText( ide_inspector_PANEL, 2, lng(#lng_EVENTS$))
+      
+      SetItemText( ide_design_PANEL, 0, lng(#lng_FORM$))
+      SetItemText( ide_design_PANEL, 1, lng(#lng_CODE$))
+      SetItemText( ide_design_PANEL, 2, "V-"+lng(#lng_CODE$))
+      
+      ;\\
+      If lng_TYPE = 0
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #True )
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #False )
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #False )
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #False )
+      ElseIf lng_TYPE = 1
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #True )
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #False )
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #False )
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #False )
+      ElseIf lng_TYPE = 2
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #True )
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #False )
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #False )
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #False )
+      ElseIf lng_TYPE = 3
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #True )
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #False )
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #False )
+         DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #False )
+      EndIf
+      
+      Define *root._s_ROOT = ide_root
+      PostReDraw( *root )
    EndIf
-   
-   Define *root._s_ROOT = ide_root
-   PostReDraw( *root )
 EndProcedure
 
 ;-
@@ -2250,25 +2309,20 @@ Procedure   ide_menu_events(  )
    ; Debug "ide_menu_events "+BarButton
    
    Select BarButton
-      Case #_tb_LNG
-         ;          If Hide( ide_popup_lenguage )
-         ;             DisplayPopupBar( ide_popup_lenguage, *g )
-         ;          Else
-         ;             HideWindow( GetCanvasWindow(GetRoot(ide_popup_lenguage)), 1 )
-         ;             Hide( ide_popup_lenguage, 1 )
-         ;          EndIf
+      Case #_tb_QUIT
+         PostClose( *g\root )
          
       Case #_tb_lng_ENG
-         ide_Lng_change( 0 )
+         ide_Lng_change( #ENG )
          
       Case #_tb_lng_RUS
-         ide_Lng_change( 1 )
+         ide_Lng_change( #RUS )
          
       Case #_tb_lng_FRENCH
-         ide_Lng_change( 2 )
+         ide_Lng_change( #FRENCH )
          
       Case #_tb_lng_GERMAN
-         ide_Lng_change( 3 )
+         ide_Lng_change( #GERMAN )
          
       Case #_tb_widget_copy
          new_widget_copy( )
@@ -2397,8 +2451,8 @@ Procedure   ide_events( )
          
       Case #__event_Close
          If *g = ide_root
-            If #PB_MessageRequester_Yes = Message( "Message", 
-                                                   "Are you sure you want to go out?",
+            If #PB_MessageRequester_Yes = Message( lng( #lng_MESSAGE$ ), 
+                                                   lng( #lng_MESSAGE_EXIT_QUESTION$ ),
                                                    #PB_MessageRequester_YesNo | #PB_MessageRequester_Info )
                ProcedureReturn #PB_All
             Else
@@ -2566,20 +2620,19 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
    ide_toolbar = CreateBar( ide_toolbar_container, #PB_ToolBar_Small );|#PB_ToolBar_Large|#PB_ToolBar_Buttons);| #PB_ToolBar_InlineText )
    SetColor(ide_toolbar, #PB_Gadget_BackColor, $fffefefe )
    
-   ide_menu = OpenSubBar("Menu")
-   ;    BarItem( #_tb_file_new, "New" + Space(9) + Chr(9) + "Ctrl+O")
-   BarItem( #_tb_file_new, "New (Ctrl+N)")
-   BarItem( #_tb_file_open, "Open (Ctrl+O)")
-   BarItem( #_tb_file_save, "Save (Ctrl+S)")
-   BarItem( #_tb_file_SAVEAS, "Save as...")
+   ide_menu = OpenSubBar(lng(#lng_MENU$))
+   BarItem( #_tb_file_new, lng(#lng_NEW$)+" (Ctrl+N)")
+   BarItem( #_tb_file_open, lng(#lng_OPEN$)+" (Ctrl+O)")
+   BarItem( #_tb_file_save, lng(#lng_SAVE$)+" (Ctrl+S)")
+   BarItem( #_tb_file_SAVEAS, lng(#lng_SAVEAS$))
    BarSeparator( )
-   BarItem( #_tb_file_quit, "Quit" );+ Chr(9) + "Ctrl+Q")
+   BarItem( #_tb_QUIT, lng(#lng_QUIT$) );+ Chr(9) + "Ctrl+Q")
    CloseSubBar( )
    ;
    BarSeparator( )
-   BarItem( #_tb_file_new, "New" )
-   BarItem( #_tb_file_open, "Open" )
-   BarItem( #_tb_file_save, "Save" )
+   BarItem( #_tb_file_new, lng(#lng_NEW$) )
+   BarItem( #_tb_file_open, lng(#lng_OPEN$) )
+   BarItem( #_tb_file_save, lng(#lng_SAVE$) )
    BarSeparator( )
    BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?image_new_widget_copy ) )
    BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?image_new_widget_cut ) )
@@ -2629,15 +2682,15 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
    Define ide_root2 ;= Open(1) : Define ide_design_g_canvas =  GetCanvasGadget(ide_root2)
    
    ide_design_PANEL = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_PANEL, "ide_design_PANEL" ) ; , #__flag_Vertical ) : OpenList( ide_design_PANEL )
-   AddItem( ide_design_PANEL, -1, "Form" )
+   AddItem( ide_design_PANEL, -1, lng(#lng_FORM$) )
    ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_MDI, "ide_design_MDI" ) ;: SetFrame(ide_design_MDI, 10)
    SetColor( ide_design_MDI, #PB_Gadget_BackColor, $FFD3D3D3 )
    a_init( ide_design_MDI);, 0 )
    
-   AddItem( ide_design_PANEL, -1, "Code" )
+   AddItem( ide_design_PANEL, -1, lng(#lng_CODE$) )
    ide_design_CODE = Editor( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_CODE, "ide_design_CODE" ) ; bug then move anchors window
    SetBackColor( ide_design_CODE, $FFDCF9F6)
-   AddItem( ide_design_PANEL, -1, "Hiasm" )
+   AddItem( ide_design_PANEL, -1, "V-"+lng(#lng_CODE$) )
    CloseList( )
    
    If ide_root2
@@ -3032,9 +3085,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 526
-; FirstLine = 524
-; Folding = ---------f----84D-------------+-030v---v-v--+--v---ff+-
+; CursorPosition = 1865
+; FirstLine = 1433
+; Folding = ---------f----84D-------------+-030v---f-f-----f----+9-
 ; Optimizer
 ; EnableAsm
 ; EnableXP
