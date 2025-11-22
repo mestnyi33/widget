@@ -36,15 +36,6 @@ Module lng
       EndIf
    EndProcedure
    
-   Procedure.s Lng( key.s )
-      Protected lng.s = GetLng( lng_TYPE, LCase( key.s ))
-      If lng.s
-         ProcedureReturn lng.s
-      Else
-         ProcedureReturn key.s
-      EndIf
-   EndProcedure
-   
    Procedure.s AddLng( key.s, lng.s )
       Protected i, count
       count = CountString( lng, "|")
@@ -57,28 +48,6 @@ Module lng
    Procedure.s LngKey( i )
       If lng_STRING
          ProcedureReturn Trim( StringField( lng_STRING, 1+i, "|" ))
-      EndIf
-   EndProcedure
-   
-   Procedure Initlng( lng.s = "" )
-      If lng.s
-         If OpenPreferences( lng.s )
-            ExaminePreferenceGroups( )
-            NextPreferenceGroup( )
-            ExaminePreferenceKeys( )
-            While NextPreferenceKey( )                      
-               lng_STRING = lng_STRING + Trim( Trim( PreferenceKeyName(), Chr( 34 ))) +"|" 
-            Wend
-            lng_STRING = Trim( lng_STRING, "|" )
-            ClosePreferences( )
-         Else
-            lng_STRING = lng.s
-         EndIf
-         If lng_STRING
-            ProcedureReturn #True
-         EndIf
-      Else
-         
       EndIf
    EndProcedure
    
@@ -109,7 +78,7 @@ Module lng
                   Wend
                EndIf
             Wend
-            Debug MapSize(lng_map())
+            ; Debug MapSize(lng_map())
          EndIf
          
          ; Close the preference file
@@ -118,11 +87,44 @@ Module lng
       
    EndProcedure
    
+   Procedure Initlng( lng.s = "" )
+      If lng.s
+         If OpenPreferences( lng.s )
+            ExaminePreferenceGroups( )
+            NextPreferenceGroup( )
+            ExaminePreferenceKeys( )
+            While NextPreferenceKey( )                      
+               lng_STRING = lng_STRING + Trim( Trim( PreferenceKeyName(), Chr( 34 ))) +"|" 
+            Wend
+            lng_STRING = Trim( lng_STRING, "|" )
+            ClosePreferences( )
+         Else
+            lng_STRING = lng.s
+         EndIf
+         If lng_STRING
+            ProcedureReturn #True
+         EndIf
+      Else
+         
+      EndIf
+   EndProcedure
+   
+   Procedure.s Lng( key.s )
+      Protected lng.s = GetLng( lng_TYPE, LCase( key.s ))
+      If lng.s
+         ProcedureReturn lng.s
+      Else
+         ProcedureReturn key.s
+      EndIf
+   EndProcedure
+   
+   ;
    AddLng( "Yes"    ,"Да     |Oui     |Ja" )
    AddLng( "No"     ,"Нет    |Non     |Nein" )
    AddLng( "Cancel" ,"Отмена |Annuler |Abbrechen" )
 EndModule
 
+;-
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    
@@ -248,8 +250,8 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 166
-; FirstLine = 135
+; CursorPosition = 80
+; FirstLine = 59
 ; Folding = -----
 ; EnableXP
 ; DPIAware

@@ -26321,9 +26321,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *message
             If #__type_Button = Type( EventWidget( ) )
                Select GetText( EventWidget( ) )
-                  Case "No"     : SetData( *message, #__message_No )     ; no
-                  Case "Yes"    : SetData( *message, #__message_Yes )    ; yes
-                  Case "Cancel" : SetData( *message, #__message_Cancel ) ; cancel
+                  Case lng("No")     : SetData( *message, #__message_No )     ; no
+                  Case lng("Yes")    : SetData( *message, #__message_Yes )    ; yes
+                  Case lng("Cancel") : SetData( *message, #__message_Cancel ) ; cancel
                EndSelect
                
                ;\\
@@ -28065,9 +28065,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 21760
-; FirstLine = 19036
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 26327
+; FirstLine = 23562
 ; Folding = --------------------------------------------------------------------v--+-084-----------------------------------------------------4v-0------------------------------8------------------XD+-------------------------------------------------------------------------------------------------------------00--e0u-----------f------------------------------------------------------------------------------------------------------------------------------------------------------------------4v---------------------------------------------------8---0-9ff04-+34-----------------------f--bv434---+0---X-044--4---------------------------v+0r0---f----------------8---------------------------------------------------------------------------------------------------C+-----------+-----
 ; EnableXP
 ; DPIAware
