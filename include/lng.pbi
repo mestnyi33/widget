@@ -17,110 +17,110 @@
       GetLng( _TYPE_, LCase( _KEY_ ) ) = _VALUE_
    EndMacro
    
-   Declare.s Lng( str.s )
-   Declare   ChangeLng( lng )
-   Declare.s AddLng( str.s )
+   Declare.s Lng( key.s )
+   Declare   ChangeLng( Type )
+   Declare.s AddLng( key.s, lng.s )
    Declare   LoadLng( file.s )
-   Declare   Initlng( String.s = "" )
-   Declare.s lngString( i )
+   Declare   Initlng( lng.s = "" )
+   Declare.s LngKey( i )
 EndDeclareModule
 
 Module lng
    Global lng_STRING.s
    Global lng_TYPE = #PB_Default
    
-   Procedure ChangeLng( lng )
-      If lng_TYPE <> lng
-         lng_TYPE = lng
+   Procedure ChangeLng( Type )
+      If lng_TYPE <> Type
+         lng_TYPE = Type
          ProcedureReturn #True
       EndIf
    EndProcedure
    
-   Procedure.s Lng( str.s )
-     
-;       Protected *str = @str
-;       Debug ""+PeekS(@str)+" "+*str
-      Protected lng.s = GetLng( lng_TYPE, LCase( str ))
-      If lng
-         ProcedureReturn lng 
+   Procedure.s Lng( key.s )
+      Protected lng.s = GetLng( lng_TYPE, LCase( key.s ))
+      If lng.s
+         ProcedureReturn lng.s
       Else
-         ProcedureReturn str
+         ProcedureReturn key.s
       EndIf
    EndProcedure
    
-   Procedure.s AddLng( str.s )
-      Protected i, count = CountString( str, "|")
-      Protected _KEY_.s = LCase( Trim( StringField( str, 1, "|" )) )
+   Procedure.s AddLng( key.s, lng.s )
+      Protected i, count
+      count = CountString( lng, "|")
+      key.s = LCase( key.s )
       For i = 1 To count
-         SetLng( i, _KEY_, Trim( StringField( str, 1+i, "|" )))
+         SetLng( i, key.s, Trim( StringField( lng, i, "|" )))
       Next
    EndProcedure
    
-   Procedure.s lngString( i )
+   Procedure.s LngKey( i )
       If lng_STRING
          ProcedureReturn Trim( StringField( lng_STRING, 1+i, "|" ))
       EndIf
    EndProcedure
    
-   Procedure Initlng( file.s = "" )
-      If OpenPreferences( file )
-         ExaminePreferenceGroups( )
-         NextPreferenceGroup( )
-         ExaminePreferenceKeys( )
-         While NextPreferenceKey( )                      
-            lng_STRING = lng_STRING + PreferenceKeyValue( ) +"|" 
-         Wend
-         lng_STRING = Trim( lng_STRING, "|" )
-         ClosePreferences( )
+   Procedure Initlng( lng.s = "" )
+      If lng.s
+         If OpenPreferences( lng.s )
+            ExaminePreferenceGroups( )
+            NextPreferenceGroup( )
+            ExaminePreferenceKeys( )
+            While NextPreferenceKey( )                      
+               lng_STRING = lng_STRING + Trim( Trim( PreferenceKeyName(), Chr( 34 ))) +"|" 
+            Wend
+            lng_STRING = Trim( lng_STRING, "|" )
+            ClosePreferences( )
+         Else
+            lng_STRING = lng.s
+         EndIf
          If lng_STRING
             ProcedureReturn #True
          EndIf
       Else
-         lng_STRING = file
+         
       EndIf
    EndProcedure
    
    Procedure LoadLng( file.s )
-      Protected text$, g, i, str.s
+      Protected text$, g, i, keys.s, key.s
       
-      ; Open a preference file
-      OpenPreferences(file)
+      If OpenPreferences(file)
+         If ExaminePreferenceGroups()
+            ; get lng keys
+            NextPreferenceGroup()
+            ExaminePreferenceKeys()
+            While NextPreferenceKey()                      
+               keys.s = keys.s + Trim(Trim(PreferenceKeyName(), Chr(34))) +"|" 
+            Wend
+            keys.s = Trim(keys.s, "|")
+            
+            g = 0
+            While NextPreferenceGroup()
+               g + 1
+               If ExaminePreferenceKeys()
+                  i = 0
+                  While NextPreferenceKey()                      
+                     key.s = Trim( StringField( keys.s, 1+i, "|" ))
+                     If FindString( lng_STRING, key.s )
+                        SetLng( g, key.s, Trim(Trim(PreferenceKeyName(), Chr(34))) )
+                     EndIf
+                     i + 1
+                  Wend
+               EndIf
+            Wend
+            Debug MapSize(lng_map())
+         EndIf
+         
+         ; Close the preference file
+         ClosePreferences()  
+      EndIf
       
-      ; get lng keys
-      ExaminePreferenceGroups()
-      NextPreferenceGroup()
-      ExaminePreferenceKeys()
-      While NextPreferenceKey()                      
-         str = str + Trim(PreferenceKeyValue()) +"|" 
-      Wend
-      str = Trim(str, "|")
-      
-      ; Examine Groups
-      ; ExaminePreferenceGroups()
-      g = 0
-      ; For each group
-      While NextPreferenceGroup()
-         g + 1
-         i = 0
-         ; Examine keys for the current group  
-         ExaminePreferenceKeys()
-         ; For each key  
-         While  NextPreferenceKey()                      
-            SetLng( g, Trim( StringField( str, 1+i, "|" )), Trim(PreferenceKeyValue()) )
-            i + 1
-         Wend
-      Wend
-      
-       Debug MapSize(lng_map())
-      
-      ; Close the preference file
-      ClosePreferences()  
-  
    EndProcedure
    
-   AddLng( "Yes    |Да     |Oui     |Ja" )
-   AddLng( "No     |Нет    |Non     |Nein" )
-   AddLng( "Cancel |Отмена |Annuler |Abbrechen" )
+   AddLng( "Yes"    ,"Да     |Oui     |Ja" )
+   AddLng( "No"     ,"Нет    |Non     |Nein" )
+   AddLng( "Cancel" ,"Отмена |Annuler |Abbrechen" )
 EndModule
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -147,21 +147,23 @@ CompilerIf #PB_Compiler_IsMainFile
       #tb_Save
    EndEnumeration
    
-   InitLng("New|Open|Save")
    
+   InitLng( "New|Open|Save" )
    
-   ;       ;eng = 0             ;rus = 1   ;french = 2  ;german = 3
-   AddLng( lngString(0)+"       |Новый     |Nouveau     |Neu" )
-   AddLng( lngString(1)+"       |Открыть   |Ouvrir      |Öffnen" )
-   AddLng( lngString(2)+"       |Сохранить |Sauvegarder |Speichern" )
+   ; 1 example
+   ;       ;eng = 0   ;rus = 1   ;french = 2  ;german = 3
+   AddLng( LngKey(0), "Новый     |Nouveau     |Neu" )
+   AddLng( LngKey(1), "Открыть   |Ouvrir      |Öffnen" )
+   AddLng( LngKey(2), "Сохранить |Sauvegarder |Speichern" )
    
-;    ;       ;eng = 0    ;rus = 1          ;french = 2          ;german = 3
-;    AddLng( "New        |Новый            |Nouveau             |Neu" )
-;    AddLng( "Open       |Открыть          |Ouvrir              |Öffnen" )
-;    AddLng( "Save       |Сохранить        |Sauvegarder         |Speichern" )
-;    
-;    ;LoadLng( "C:\Users\user\Documents\GitHub\widget\IDE\lng\ENG.lng" )
-;    LoadLng( "C:\Users\user\Documents\GitHub\widget\IDE\lng.ini" )
+   ;    ; 2 example
+   ;    ;       ;eng = 0    ;rus = 1           ;french = 2          ;german = 3
+   ;    AddLng( "New"       ,"Новый            |Nouveau             |Neu" )
+   ;    AddLng( "Open"      ,"Открыть          |Ouvrir              |Öffnen" )
+   ;    AddLng( "Save"      ,"Сохранить        |Sauvegarder         |Speichern" )    
+   
+   ;    ; 3 example 
+   ;    LoadLng( "C:\Users\user\Documents\GitHub\widget\IDE\lng.ini" )
    
    Procedure WINDOW_DEMO_ChangeLng( Lng_TYPE )
       If ChangeLng( Lng_TYPE )
@@ -169,9 +171,9 @@ CompilerIf #PB_Compiler_IsMainFile
          SetText( BUTTON_NO, Lng( "No" ))
          SetText( BUTTON_CANCEL, Lng( "Cancel" ))
          
-         SetBarItemText( *ToolBar, #tb_New, Lng( lngString(0) ))
-         SetBarItemText( *ToolBar, #tb_Open, Lng( lngString(1) ))
-         SetBarItemText( *ToolBar, #tb_Save, Lng( lngString(2) ))
+         SetBarItemText( *ToolBar, #tb_New, Lng( LngKey(0) ))
+         SetBarItemText( *ToolBar, #tb_Open, Lng( LngKey(1) ))
+         SetBarItemText( *ToolBar, #tb_Save, Lng( LngKey(2) ))
          
          Disable( BUTTON_ENG, Bool(Lng_TYPE=#ENG) )
          Disable( BUTTON_RUS, Bool(Lng_TYPE=#RUS) )
@@ -245,9 +247,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 173
-; FirstLine = 136
-; Folding = ----
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 166
+; FirstLine = 135
+; Folding = -----
 ; EnableXP
 ; DPIAware

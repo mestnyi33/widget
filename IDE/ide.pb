@@ -1775,10 +1775,7 @@ EndProcedure
 
 ;-
 ;- LENGUAGE
-
-; #lng_YES$                      = "Yes"
-; #lng_NO$                       = "No"
-; #lng_CANCEL$                   = "Cancel"
+#lng_PATH                      = "../IDE/lng.ini"
 #lng_NEW$                      = "New"
 #lng_OPEN$                     = "Open"
 #lng_SAVE$                     = "Save"
@@ -1795,78 +1792,8 @@ EndProcedure
 #lng_MESSAGE$                  = "Message"
 #lng_MESSAGE_EXIT_QUESTION$    = "Are you sure you want to go out?"
 
-
-;       ;eng = 0                     ;rus = 1          ;french = 2          ;german = 3
-; AddLng( #lng_YES$                  +"|Да               |Oui                 |Ja" )
-; AddLng( #lng_NO$                   +"|Нет              |Non                 |Nein" )
-; AddLng( #lng_CANCEL$               +"|Отмена           |Annuler             |Abbrechen" )
-AddLng( #lng_MENU$                 +"|Меню             |Menu                |Menu" )
-AddLng( #lng_NEW$                  +"|Новый            |Nouveau             |Neu" )
-AddLng( #lng_OPEN$                 +"|Открыть          |Ouvrir              |Offnen" )
-AddLng( #lng_SAVE$                 +"|Сохранить        |Sauvegarder         |Speichern" )
-AddLng( #lng_SAVEAS$               +"|Сохранить как... |Enregistrer sous... |Speichern unter..." )
-AddLng( #lng_RUN$                  +"|Запуск           |Executer            |Ausfuhren" )
-AddLng( #lng_QUIT$                 +"|Выход            |Quitter             |Beenden" )
-AddLng( #lng_FORM$                 +"|Форма            |Forme               |Formular" )
-AddLng( #lng_CODE$                 +"|Код              |Code                |Code" )
-AddLng( #lng_ELEMENTS$             +"|Элементы         |Elements            |Elemente" )
-AddLng( #lng_PROPERTIES$           +"|Свойства         |Proprietes          |Eigenschaften" )
-AddLng( #lng_EVENTS$               +"|События          |Evenements          |Ereignisse" )
-AddLng( #lng_LENGUAGE$             +"|Язык             |Langage             |Sprache" )
-AddLng( #lng_MESSAGE$              +"|Сообщения        |Message             |Nachricht" )
-AddLng( #lng_MESSAGE_EXIT_QUESTION$+"|"+
-        "Ты уверен, что хочешь выйти?|"+
-        "Es-tu sûr de vouloir sortir?|"+
-        "Bist du sicher, dass du nach draußen gehen willst?" )
-
-; Debug MapSize(lng_MAP( ))
-
-; If InitLng( "Yes|No|Cancel|New|Open|Save|Menu|Quit|Save as...|Run|Form|Code|Elements|Properties|Events|Lenguage|Message|Are you sure you want To go out?" )
-;    #lng_YES                      = 0
-;    #lng_NO                       = 1
-;    #lng_CANCEL                   = 2
-;    #lng_NEW                      = 3
-;    #lng_OPEN                     = 4
-;    #lng_SAVE                     = 5
-;    #lng_MENU                     = 6
-;    #lng_QUIT                     = 7
-;    #lng_SAVEAS                   = 8
-;    #lng_RUN                      = 9
-;    #lng_FORM                     = 10
-;    #lng_CODE                     = 11
-;    #lng_ELEMENTS                 = 12
-;    #lng_PROPERTIES               = 13
-;    #lng_EVENTS                   = 14
-;    #lng_LENGUAGE                 = 15
-;    #lng_MESSAGE                  = 16
-;    #lng_MESSAGE_EXIT_QUESTION    = 17
-;    ;
-;    ;       ;eng = 0    ;rus = 1          ;french = 2          ;german = 3
-;    AddLng( lngString(#lng_YES)                  +"|Да               |Oui                 |Ja" )
-;    AddLng( lngString(#lng_NO)                   +"|Нет              |Non                 |Nein" )
-;    AddLng( lngString(#lng_CANCEL)               +"|Отмена           |Annuler             |Abbrechen" )
-;    AddLng( lngString(#lng_NEW)                  +"|Новый            |Nouveau             |Neu" )
-;    AddLng( lngString(#lng_OPEN)                 +"|Открыть          |Ouvrir              |Offnen" )
-;    AddLng( lngString(#lng_SAVE)                 +"|Сохранить        |Sauvegarder         |Speichern" )
-;    AddLng( lngString(#lng_MENU)                 +"|Меню             |Menu                |Menu" )
-;    AddLng( lngString(#lng_QUIT)                 +"|Выход            |Quitter             |Beenden" )
-;    AddLng( lngString(#lng_SAVEAS)               +"|Сохранить как... |Enregistrer sous... |Speichern unter..." )
-;    AddLng( lngString(#lng_RUN)                  +"|Запуск           |Executer            |Ausfuhren" )
-;    AddLng( lngString(#lng_FORM)                 +"|Форма            |Forme               |Formular" )
-;    AddLng( lngString(#lng_CODE)                 +"|Код              |Code                |Code" )
-;    AddLng( lngString(#lng_ELEMENTS)             +"|Элементы         |Elements            |Elemente" )
-;    AddLng( lngString(#lng_PROPERTIES)           +"|Свойства         |Proprietes          |Eigenschaften" )
-;    AddLng( lngString(#lng_EVENTS)               +"|События          |Evenements          |Ereignisse" )
-;    AddLng( lngString(#lng_LENGUAGE)             +"|Язык             |Langage             |Sprache" )
-;    AddLng( lngString(#lng_MESSAGE)              +"|Сообщения        |Message             |Nachricht" )
-;    AddLng( lngString(#lng_MESSAGE_EXIT_QUESTION)+"|"+
-;            "Ты уверен, что хочешь выйти?|"+
-;            "Es-tu sûr de vouloir sortir?|"+
-;            "Bist du sicher, dass du nach draußen gehen willst?" )
-; EndIf
-
-; LoadLng( "../IDE/lng.ini" )
-   
+InitLng( #lng_PATH )
+LoadLng( #lng_PATH )
 
 ;
 Procedure ide_Lng_change( lng_TYPE=0 )
@@ -3084,9 +3011,9 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1865
-; FirstLine = 1433
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 1796
+; FirstLine = 1393
 ; Folding = ---------f----84D-------------+-030v---f-f-----f----+9-
 ; Optimizer
 ; EnableAsm
