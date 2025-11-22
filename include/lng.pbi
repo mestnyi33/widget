@@ -17,12 +17,12 @@
       GetLng( _TYPE_, LCase( _KEY_ ) ) = _VALUE_
    EndMacro
    
-   Declare.s Lng( key.s )
-   Declare   ChangeLng( Type )
-   Declare.s AddLng( key.s, lng.s )
-   Declare   LoadLng( file.s )
-   Declare   Initlng( lng.s = "" )
    Declare.s LngKey( i )
+   Declare.s Lng( key.s )
+   Declare.s AddLng( key.s, lng.s )
+   Declare   Initlng( lng.s = "" )
+   Declare   LoadLng( file.s )
+   Declare   ChangeLng( Type )
 EndDeclareModule
 
 Module lng
@@ -60,9 +60,9 @@ Module lng
             NextPreferenceGroup()
             ExaminePreferenceKeys()
             While NextPreferenceKey()                      
-               keys.s = keys.s + Trim(Trim(PreferenceKeyName(), Chr(34))) +"|" 
+               lng_STRING.s = lng_STRING.s + Trim(Trim(PreferenceKeyName(), Chr(34))) +"|" 
             Wend
-            keys.s = Trim(keys.s, "|")
+            lng_STRING.s = Trim(lng_STRING.s, "|")
             
             g = 0
             While NextPreferenceGroup()
@@ -70,7 +70,7 @@ Module lng
                If ExaminePreferenceKeys()
                   i = 0
                   While NextPreferenceKey()                      
-                     key.s = Trim( StringField( keys.s, 1+i, "|" ))
+                     key.s = Trim( StringField( lng_STRING.s, 1+i, "|" ))
                      If FindString( lng_STRING, key.s )
                         SetLng( g, key.s, Trim(Trim(PreferenceKeyName(), Chr(34))) )
                      EndIf
@@ -85,27 +85,13 @@ Module lng
          ClosePreferences()  
       EndIf
       
+      ProcedureReturn @lng_STRING
    EndProcedure
    
    Procedure Initlng( lng.s = "" )
       If lng.s
-         If OpenPreferences( lng.s )
-            ExaminePreferenceGroups( )
-            NextPreferenceGroup( )
-            ExaminePreferenceKeys( )
-            While NextPreferenceKey( )                      
-               lng_STRING = lng_STRING + Trim( Trim( PreferenceKeyName(), Chr( 34 ))) +"|" 
-            Wend
-            lng_STRING = Trim( lng_STRING, "|" )
-            ClosePreferences( )
-         Else
-            lng_STRING = lng.s
-         EndIf
-         If lng_STRING
-            ProcedureReturn #True
-         EndIf
-      Else
-         
+         lng_STRING = lng.s
+         ProcedureReturn @lng_STRING
       EndIf
    EndProcedure
    
@@ -250,8 +236,8 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 59
+; CursorPosition = 24
+; FirstLine = 9
 ; Folding = -----
 ; EnableXP
 ; DPIAware

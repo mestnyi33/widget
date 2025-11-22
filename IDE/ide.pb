@@ -1775,7 +1775,6 @@ EndProcedure
 
 ;-
 ;- LENGUAGE
-#lng_PATH                      = "../IDE/lng.ini"
 #lng_NEW$                      = "New"
 #lng_OPEN$                     = "Open"
 #lng_SAVE$                     = "Save"
@@ -1792,8 +1791,7 @@ EndProcedure
 #lng_MESSAGE$                  = "Message"
 #lng_MESSAGE_EXIT_QUESTION$    = "Are you sure you want to go out?"
 
-InitLng( #lng_PATH )
-LoadLng( #lng_PATH )
+LoadLng( "../IDE/lng.ini" )
 
 ;
 Procedure ide_Lng_change( lng_TYPE=0 )
@@ -3012,7 +3010,7 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1796
+; CursorPosition = 1793
 ; FirstLine = 1393
 ; Folding = ---------f----84D-------------+-030v---f-f-----f----+9-
 ; Optimizer
