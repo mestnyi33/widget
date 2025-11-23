@@ -60,9 +60,10 @@ Module lng
             NextPreferenceGroup()
             ExaminePreferenceKeys()
             While NextPreferenceKey()                      
-               lng_STRING.s = lng_STRING.s + Trim(Trim(PreferenceKeyName(), Chr(34))) +"|" 
+               lng_STRING.s = lng_STRING.s + Trim(Trim(PreferenceKeyValue(), Chr(34))) +"|" 
             Wend
             lng_STRING.s = Trim(lng_STRING.s, "|")
+            ; Debug lng_STRING
             
             g = 0
             While NextPreferenceGroup()
@@ -72,7 +73,7 @@ Module lng
                   While NextPreferenceKey()                      
                      key.s = Trim( StringField( lng_STRING.s, 1+i, "|" ))
                      If FindString( lng_STRING, key.s )
-                        SetLng( g, key.s, Trim(Trim(PreferenceKeyName(), Chr(34))) )
+                        SetLng( g, key.s, Trim(Trim(PreferenceKeyValue(), Chr(34))) )
                      EndIf
                      i + 1
                   Wend
@@ -136,22 +137,21 @@ CompilerIf #PB_Compiler_IsMainFile
    EndEnumeration
    
    
-   InitLng( "New|Open|Save" )
-   
-   ; 1 example
-   ;       ;eng = 0   ;rus = 1   ;french = 2  ;german = 3
-   AddLng( LngKey(0), "Новый     |Nouveau     |Neu" )
-   AddLng( LngKey(1), "Открыть   |Ouvrir      |Öffnen" )
-   AddLng( LngKey(2), "Сохранить |Sauvegarder |Speichern" )
-   
+   ;    ; 1 example
+   ;    InitLng( "Yes|No|Cancel|New|Open|Save" )
+   ;    ;       ;eng = 0   ;rus = 1   ;french = 2  ;german = 3
+   ;    AddLng( LngKey(3), "Новый     |Nouveau     |Neu" )
+   ;    AddLng( LngKey(4), "Открыть   |Ouvrir      |Öffnen" )
+   ;    AddLng( LngKey(5), "Сохранить |Sauvegarder |Speichern" )
+   ;       
    ;    ; 2 example
    ;    ;       ;eng = 0    ;rus = 1           ;french = 2          ;german = 3
    ;    AddLng( "New"       ,"Новый            |Nouveau             |Neu" )
    ;    AddLng( "Open"      ,"Открыть          |Ouvrir              |Öffnen" )
    ;    AddLng( "Save"      ,"Сохранить        |Sauvegarder         |Speichern" )    
    
-   ;    ; 3 example 
-   ;    LoadLng( "C:\Users\user\Documents\GitHub\widget\IDE\lng.ini" )
+   ; 3 example 
+   LoadLng( "../IDE/lng.ini" )
    
    Procedure WINDOW_DEMO_ChangeLng( Lng_TYPE )
       If ChangeLng( Lng_TYPE )
@@ -159,9 +159,9 @@ CompilerIf #PB_Compiler_IsMainFile
          SetText( BUTTON_NO, Lng( "No" ))
          SetText( BUTTON_CANCEL, Lng( "Cancel" ))
          
-         SetBarItemText( *ToolBar, #tb_New, Lng( LngKey(0) ))
-         SetBarItemText( *ToolBar, #tb_Open, Lng( LngKey(1) ))
-         SetBarItemText( *ToolBar, #tb_Save, Lng( LngKey(2) ))
+         SetBarItemText( *ToolBar, #tb_New, Lng( LngKey(3) ))
+         SetBarItemText( *ToolBar, #tb_Open, Lng( LngKey(4) ))
+         SetBarItemText( *ToolBar, #tb_Save, Lng( LngKey(5) ))
          
          Disable( BUTTON_ENG, Bool(Lng_TYPE=#ENG) )
          Disable( BUTTON_RUS, Bool(Lng_TYPE=#RUS) )
@@ -233,11 +233,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    End
 CompilerEndIf
-
-
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 24
-; FirstLine = 9
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 152
+; FirstLine = 140
 ; Folding = -----
 ; EnableXP
 ; DPIAware

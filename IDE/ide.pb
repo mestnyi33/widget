@@ -3009,12 +3009,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 1793
-; FirstLine = 1393
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 1782
+; FirstLine = 1387
 ; Folding = ---------f----84D-------------+-030v---f-f-----f----+9-
-; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = C:\Users\user\Downloads\Compressed\FormDesignerWindows4.70b2\ide.exe
+; Executable = C:/Users/user/Downloads/Compressed/FormDesignerWindows4.70b2/ide.exe
+; Optimizer
