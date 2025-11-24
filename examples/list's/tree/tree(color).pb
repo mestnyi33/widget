@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   #__s_selected = 2
   
   UseWidgets( )
-  Global *w._S_widget
+  Global *g._S_widget
   Define i
   Define font = LoadFont(#PB_Any, "Helvetica", 15)
   Define font1 = LoadFont(#PB_Any, "Helvetica", 25, #PB_Font_Italic)
@@ -17,11 +17,15 @@ CompilerIf #PB_Compiler_IsMainFile
     TreeGadget(0, 10, 10, 180, 230)
     
     Open(0, 200, 10, 180, 230);, "", #__flag_Borderless)
-    *w = Tree(0, 0, 180, 230)
+    *g = Tree(0, 0, 180, 230)
+    
+    ;*g\padding\x = DPIScaled(20)
+    *g\fs[1] = DPIScaled(20)
+    Resize(*g, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
     
     For i = 1 To 10
       AddGadgetItem(0, -1, "Text_"+Str(i));+Chr(10)+"Text 2")
-      AddItem(*w, -1, "Text_"+Str(i))     ;+Chr(10)+"Text 2")
+      AddItem(*g, -1, "Text_"+Str(i))     ;+Chr(10)+"Text 2")
     Next
     
     SetGadgetFont(0, FontID(font))
@@ -35,43 +39,44 @@ CompilerIf #PB_Compiler_IsMainFile
     
     
     ;\\
-    SetFont(*w, font)
-    SetItemFont(*w, 3, font1)
-    SetItemFont(*w, 4, font1)
-    SetItemFont(*w, 7, font2)
+    SetFont(*g, font)
+    SetItemFont(*g, 3, font1)
+    SetItemFont(*g, 4, font1)
+    SetItemFont(*g, 7, font2)
     
     ;     ; index-3 item default text-color 
-    ;     SetItemColor(*w, 3, #PB_Gadget_FrontColor, $FF00FF00)
+    ;     SetItemColor(*g, 3, #PB_Gadget_FrontColor, $FF00FF00)
     
     ; index-3 item default frame-color
-    SetItemColor(*w, 3, #__FrameColor,  $FF0000f0)
+    SetItemColor(*g, 3, #__FrameColor,  $FF0000f0)
     
     ; index-3 item default frame-color
-    SetItemColor(*w, 3, #PB_Gadget_BackColor,  $FF00FFFF)
+    SetItemColor(*g, 3, #PB_Gadget_BackColor,  $FF00FFFF)
     
     ; index-7 item default back-color
-    SetItemColor(*w, 7, #PB_Gadget_BackColor,  $FFFFFF00)
+    SetItemColor(*g, 7, #PB_Gadget_BackColor,  $FFFFFF00)
     
     ; all default item's text-color 
-    SetItemColor(*w, #PB_All, #PB_Gadget_FrontColor, $FF0000FF)
+    SetItemColor(*g, #PB_All, #PB_Gadget_FrontColor, $FF0000FF)
     
     ; all selected item's text-color 
-    SetItemColor(*w, #PB_All, #PB_Gadget_FrontColor,  $FF00FFFF, 2);#__s_selected)
+    SetItemColor(*g, #PB_All, #PB_Gadget_FrontColor,  $FF00FFFF, 2);#__s_selected)
     
     ; all selected item's back-color 
-    SetItemColor(*w, #PB_All, #PB_Gadget_BackColor,  $FF3F00F0, 2);#__s_selected)
+    SetItemColor(*g, #PB_All, #PB_Gadget_BackColor,  $FF3F00F0, 2);#__s_selected)
     
     ; all entered item's back-color
-    SetItemColor(*w, #PB_All, #PB_Gadget_BackColor,  $FF3Ff0F0, 1);#__s_entered)
+    SetItemColor(*g, #PB_All, #PB_Gadget_BackColor,  $FF3Ff0F0, 1);#__s_entered)
     
     ; vertical and horizontal line back-color
-    SetItemColor(*w, #PB_All, #PB_Gadget_LineColor,  $C03AD55A)
+    SetItemColor(*g, #PB_All, #PB_Gadget_LineColor,  $C03AD55A)
     
     Debug "---"
     WaitClose( )
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 21
+; FirstLine = 3
 ; Folding = -
 ; EnableXP

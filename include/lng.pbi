@@ -137,21 +137,21 @@ CompilerIf #PB_Compiler_IsMainFile
    EndEnumeration
    
    
-   ;    ; 1 example
-   ;    InitLng( "Yes|No|Cancel|New|Open|Save" )
-   ;    ;       ;eng = 0   ;rus = 1   ;french = 2  ;german = 3
-   ;    AddLng( LngKey(3), "Новый     |Nouveau     |Neu" )
-   ;    AddLng( LngKey(4), "Открыть   |Ouvrir      |Öffnen" )
-   ;    AddLng( LngKey(5), "Сохранить |Sauvegarder |Speichern" )
-   ;       
+   ; 1 example
+   InitLng( "Yes|No|Cancel|New|Open|Save" )
+   ;       ;eng = 0   ;rus = 1   ;french = 2  ;german = 3
+   AddLng( LngKey(3), "Новый     |Nouveau     |Neu" )
+   AddLng( LngKey(4), "Открыть   |Ouvrir      |Öffnen" )
+   AddLng( LngKey(5), "Сохранить |Sauvegarder |Speichern" )
+   
    ;    ; 2 example
    ;    ;       ;eng = 0    ;rus = 1           ;french = 2          ;german = 3
    ;    AddLng( "New"       ,"Новый            |Nouveau             |Neu" )
    ;    AddLng( "Open"      ,"Открыть          |Ouvrir              |Öffnen" )
    ;    AddLng( "Save"      ,"Сохранить        |Sauvegarder         |Speichern" )    
-   
-   ; 3 example 
-   LoadLng( "../IDE/lng.ini" )
+   ;    
+   ;    ; 3 example 
+   ;    LoadLng( "../IDE/lng.ini" )
    
    Procedure WINDOW_DEMO_ChangeLng( Lng_TYPE )
       If ChangeLng( Lng_TYPE )
@@ -233,9 +233,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    End
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 152
-; FirstLine = 140
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 137
+; FirstLine = 131
 ; Folding = -----
 ; EnableXP
 ; DPIAware

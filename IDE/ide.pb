@@ -942,21 +942,18 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
       Define color_properties.q = $FFBF9CC3;$BE80817D
       Define fcolor_properties.q = $CA2E2E2E
       
-      ;       ;       If Type > 0
-      ;       ;          SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
-      ;       ;          SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
-      ;       ;       Else
-      ;       ;          ;SetItemFont( *first, item, font_properties)
-      ;       ;          ;SetItemFont( *second, item, font_properties)
-      ;       
-      ;       SetItemColor( *first, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
-      ;       SetItemColor( *second, item, #PB_Gadget_BackColor, color_properties, 0, #PB_All )
-      ;       ; SetItemColor( *first, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
-      ;       ;       SetItemColor( *second, item, #PB_Gadget_BackColor, -1, 0, #PB_All )
-      ;       
-      ;       SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-      ;       SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-      ;       ;       EndIf
+     
+;                      SetItemFont( *first, item, font_properties)
+;                      SetItemFont( *second, item, font_properties)
+      
+      SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+      SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+      
+      SetItemColor( *first, item, #__FrameColor,  $FF00FFFF, 0, #PB_All)
+      SetItemColor( *second, item, #__FrameColor,  $FF00FFFF, 0, #PB_All)   
+      
+      SetItemColor( *first, item, #PB_Gadget_BackColor,  $FF00FFFF, 0, #PB_All)
+      SetItemColor( *second, item, #PB_Gadget_BackColor,  $FF00FFFF, 0, #PB_All)   
    Else
       SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
       SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
@@ -1048,11 +1045,24 @@ EndProcedure
 
 Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    Protected position = 90
-   Protected *first._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_BorderLess)
-   Protected *second._s_WIDGET = Tree(0,0,0,0, #PB_Tree_NoButtons|#PB_Tree_NoLines|#__flag_gridlines|#__flag_Transparent|#__flag_BorderLess)
+   Protected tflag.q = #__flag_BorderLess|#PB_Tree_NoLines|#__flag_Transparent;|#__flag_gridlines
+   Protected *first._s_WIDGET = Tree(0,0,0,0, tflag)
+   Protected *second._s_WIDGET = Tree(0,0,0,0, tflag|#PB_Tree_NoButtons)
    ;    *first\padding\x = 10
    ;    *second\padding\x = 10
-   
+   Protected *g._s_WIDGET
+   *g = *first
+   ;*g\padding\x = DPIScaled(20)
+    *g\fs[1] = DPIScaled(20)
+    ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
+    SetColor(*g, #PB_Gadget_BackColor,  $FF00FFFF)
+    
+    *g = *second
+   ;*g\padding\x = DPIScaled(20)
+    ;*g\fs[1] = DPIScaled(20)
+    ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
+    SetColor(*g, #PB_Gadget_BackColor,  $FF00FFFF)
+    
    Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, flag|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
    SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
    SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
@@ -3009,12 +3019,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 1782
-; FirstLine = 1387
-; Folding = ---------f----84D-------------+-030v---f-f-----f----+9-
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 944
+; FirstLine = 702
+; Folding = ---------f----84j-------------+-030v---f-f-----f----+9-
+; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = C:/Users/user/Downloads/Compressed/FormDesignerWindows4.70b2/ide.exe
-; Optimizer
+; Executable = C:\Users\user\Downloads\Compressed\FormDesignerWindows4.70b2\ide.exe
