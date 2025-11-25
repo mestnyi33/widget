@@ -61,9 +61,8 @@ CompilerIf #PB_Compiler_IsMainFile
          If min
             min_size = min
             SetAttribute(object, #PB_Splitter_FirstMinimumSize, min)
-            SetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
+            ;SetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
          EndIf
-      
       EndIf
    EndProcedure
    
@@ -112,7 +111,7 @@ CompilerIf #PB_Compiler_IsMainFile
          If gadget
             FreeGadget(object)
          Else
-            Free(object)
+            Free(@object)
          EndIf
       EndIf
       
@@ -125,6 +124,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open(0, 0, 0, 420, 280, "press key_(0-1-2) to replace object", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      ; a_init(root())
       ;gadget = 1
       create_test( 0, 30 )
       
@@ -158,9 +158,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 139
-; FirstLine = 72
-; Folding = -vq--
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 63
+; FirstLine = 38
+; Folding = -v7--
 ; EnableXP
 ; DPIAware

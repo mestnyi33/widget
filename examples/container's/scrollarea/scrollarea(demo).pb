@@ -3,7 +3,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
-  Global g,*g._s_widget, b,*b, i, time, Sw = 350, Sh = 300, count;=1000;0
+  Global g,*g._s_widget, b,*b, i, time, ss=50,Sw = 350, Sh = 300, count;=1000;0
   
   Procedure events_gadgets()
     ;Debug ""+EventGadget()+ " - gadget event - " +EventType()
@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    g = ScrollAreaGadget(#PB_Any, 10, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    g = ScrollAreaGadget(#PB_Any, 10, 10, 290, 300, Sw, Sh, ss, #PB_ScrollArea_Flat)
     SetGadgetColor(g, #PB_Gadget_BackColor, $00FFFF)
     
     ButtonGadget  (1,  10,  10, 230, 30,"Button 1")
@@ -25,7 +25,7 @@ CompilerIf #PB_Compiler_IsMainFile
     b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button")
     CloseGadgetList()
     
-    *g = ScrollArea(310, 10, 290, 300, Sw, Sh, 15, #PB_ScrollArea_Flat)
+    *g = ScrollArea(310, 10, 290, 300, Sw, Sh, ss, #PB_ScrollArea_Flat)
     SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     
     Button(10,  10, 230, 30, "Button 1")
@@ -121,9 +121,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 29
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 36
+; FirstLine = 6
 ; Folding = v-
 ; Optimizer
 ; EnableXP

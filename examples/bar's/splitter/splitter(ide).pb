@@ -4,7 +4,7 @@
 CompilerIf #PB_Compiler_IsMainFile ;= 100
   UseWidgets( )
   EnableExplicit
-  #__flag_TextBorder = #__flag_BorderFlat
+  #__flag_BorderFlat = #__flag_BorderFlat
   
   
   Global window_ide, canvas_ide, fixed=1, state=1, minsize=1
@@ -16,12 +16,12 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
   window_ide = widget::GetCanvasWindow(root())
   canvas_ide = widget::GetCanvasGadget(root())
   
-  s_tbar = Text(0,0,0,0,"", #__flag_TextBorder)
-  s_desi = Text(0,0,0,0,"", #__flag_TextBorder)
-  s_view = Text(0,0,0,0,"", #__flag_TextBorder)
-  s_list = Text(0,0,0,0,"", #__flag_TextBorder)
-  s_insp = Text(0,0,0,0,"", #__flag_TextBorder)
-  s_help = Text(0,0,0,0,"", #__flag_TextBorder)
+  s_tbar = Text(0,0,0,0,"", #__flag_BorderFlat)
+  s_desi = Text(0,0,0,0,"", #__flag_BorderFlat)
+  s_view = Text(0,0,0,0,"", #__flag_BorderFlat)
+  s_list = Text(0,0,0,0,"", #__flag_BorderFlat)
+  s_insp = Text(0,0,0,0,"", #__flag_BorderFlat)
+  s_help = Text(0,0,0,0,"", #__flag_BorderFlat)
   
   Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
   Button_0 = Button(0, 0, 0, 0, "Button 0") ; as they will be sized automatically
@@ -90,85 +90,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 100
     event = WaitWindowEvent( )
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; CompilerIf #PB_Compiler_IsMainFile ;= 100
-;   UseWidgets( )
-;   EnableExplicit
-;   
-;   Global window_ide, canvas_ide, fixed=1, state=1, minsize=1
-;   Global Splitter_ide, Splitter_design, splitter_debug, Splitter_inspector, splitter_help
-;   Global mdi_design, toolbar_design, listview_debug, text_help, tree_inspector,panel_inspector
-;   
-;   Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget
-;   window_ide = GetCanvasWindow(Open(OpenWindow(#PB_Any, 100,100,800,600, "ide", flag)))
-;   
-;   toolbar_design = Text(0,0,0,0,"", #__flag_TextBorder)
-;   mdi_design = Text(0,0,0,0,"", #__flag_TextBorder)
-;   listview_debug = Text(0,0,0,0,"", #__flag_TextBorder)
-;   tree_inspector = Text(0,0,0,0,"", #__flag_TextBorder)
-;   panel_inspector = Text(0,0,0,0,"", #__flag_TextBorder)
-;   text_help  = Text(0,0,0,0,"", #__flag_TextBorder)
-;   
-;   Splitter_design = Splitter(0,0,0,0, toolbar_design,mdi_design, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
-;   Splitter_inspector = Splitter(0,0,0,0, tree_inspector,panel_inspector, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
-;   splitter_debug = Splitter(0,0,0,0, Splitter_design,listview_debug, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
-;   splitter_help = Splitter(0,0,0,0, Splitter_inspector,text_help, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
-;   Splitter_ide = Splitter(0,0,0,0, splitter_debug,splitter_help, #__flag_autosize|#PB_Splitter_Separator|#PB_Splitter_Vertical|(Bool(fixed)*#PB_Splitter_SecondFixed))
-; ;   Splitter_design = Splitter(0,0,800,600, toolbar_design,mdi_design, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
-; ;   Splitter_inspector = Splitter(0,0,800,600, tree_inspector,panel_inspector, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
-; ;   splitter_debug = Splitter(0,0,800,600, Splitter_design,listview_debug, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
-; ;   splitter_help = Splitter(0,0,800,600, Splitter_inspector,text_help, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
-; ;   Splitter_ide = Splitter(0,0,800,600, splitter_debug,splitter_help, #__flag_autosize|#PB_Splitter_Separator|#PB_Splitter_Vertical|(Bool(fixed)*#PB_Splitter_SecondFixed))
-;   
-;   If minsize
-; ;         ; set splitter default minimum size
-; ;     SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 20)
-; ;     SetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 10)
-; ;     SetAttribute(splitter_help, #PB_Splitter_FirstMinimumSize, 20)
-; ;     SetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 10)
-; ;     SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 20)
-; ;     SetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 10)
-; ;     SetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 20)
-; ;     SetAttribute(Splitter_inspector, #PB_Splitter_SecondMinimumSize, 10)
-; ;     SetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
-; ;     SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 10)
-;     
-;         ; set splitter default minimum size
-;     SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 500)
-;     SetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 120)
-;     SetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 30)
-;    ; SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 300)
-;     SetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 100)
-;     SetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 100)
-;     SetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
-;     SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 200)
-;     ;SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, $ffffff)
-;   EndIf
-; 
-;   If state
-;     ; set splitters dafault positions
-;     ;SetState(Splitter_ide, -130)
-;     SetState(Splitter_ide, Width(Splitter_ide)-220)
-;     SetState(splitter_help, Height(splitter_help)-80)
-;     SetState(splitter_debug, Height(splitter_debug)-150)
-;     SetState(Splitter_inspector, 200)
-;     SetState(Splitter_design, 30)
-;   EndIf
-;   
-;   ;Resize(Splitter_ide, 0,0,800,600)
-;   
-;   SetText(toolbar_design, "size: ("+Str(Width(toolbar_design))+"x"+Str(Height(toolbar_design))+") - " + Str(Index( GetParent( toolbar_design ))) )
-;   SetText(mdi_design, "size: ("+Str(Width(mdi_design))+"x"+Str(Height(mdi_design))+") - " + Str(Index( GetParent( mdi_design ))))
-;   SetText(listview_debug, "size: ("+Str(Width(listview_debug))+"x"+Str(Height(listview_debug))+") - " + Str(Index( GetParent( listview_debug ))))
-;   SetText(tree_inspector, "size: ("+Str(Width(tree_inspector))+"x"+Str(Height(tree_inspector))+") - " + Str(Index( GetParent( tree_inspector ))))
-;   SetText(panel_inspector, "size: ("+Str(Width(panel_inspector))+"x"+Str(Height(panel_inspector))+") - " + Str(Index( GetParent( panel_inspector ))))
-;   SetText(text_help, "size: ("+Str(Width(text_help))+"x"+Str(Height(text_help))+") - " + Str(Index( GetParent( text_help ))))
-;   
-;   Bind(-1,-1)
-;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
-; CompilerEndIf
+
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 7
-; FirstLine = 7
+; CursorPosition = 92
+; FirstLine = 52
 ; Folding = -
 ; Optimizer
 ; EnableXP

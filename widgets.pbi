@@ -5007,7 +5007,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Height =  *this\container_height( )
          
          Protected resize_v, resize_h, x1 = #PB_Ignore, y1 = #PB_Ignore, iwidth, iheight, w, h
-         ;Protected resize_v, resize_h, x1 = *this\container_x( ), y1 = *this\container_y( ), width1 = *this\container_width( ), height1 = *this\container_height( ), iwidth, iheight, w, h
          
          With *this\scroll
             If Not ( *this\scroll And ( \v Or \h ))
@@ -5047,10 +5046,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             
             iwidth = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( ) )
             If \h\bar\page\len = iwidth
-               bar_Update( \v, #True )
                If \h\bar\thumb\len = \h\bar\area\end
                   bar_Update( \h, #True )
                EndIf
+               bar_Update( \v, #True )
             Else
                \h\bar\AreaChange( ) = \h\bar\page\len - iwidth
                \h\bar\page\len      = iwidth
@@ -5088,14 +5087,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                If \v\bar\max > \v\bar\page\len
                   resize_v     = 1
                   Height = ( \v\bar\page\len + Bool( Not \h\hide[1] And \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
-                  ;                If \v\hide <> #False
-                  ;                   \v\hide = #False
+                  ;
                   If \h\hide
                      If Width <> \h\bar\page\len
                         Width = \h\bar\page\len
                      EndIf
                   EndIf
-                  ;                EndIf
                Else
                   If \v\hide <> #True
                      \v\hide = #True
@@ -5111,14 +5108,12 @@ CompilerIf Not Defined( widget, #PB_Module )
                If \h\bar\max > \h\bar\page\len
                   resize_h    = 1
                   Width = ( \h\bar\page\len + Bool( Not \v\hide[1] And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\frame_width( ) / 4 ))
-                  ;                If \h\hide <> #False
-                  ;                   \h\hide = #False
+                  ;
                   If \v\hide
                      If Height <> \v\bar\page\len
                         Height = \v\bar\page\len
                      EndIf
                   EndIf
-                  ;                EndIf
                Else
                   If \h\hide <> #True
                      \h\hide = #True
@@ -5134,17 +5129,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                Debug "  --- area_resize " + *this\class + " " + *this\inner_width( ) + " " + *this\inner_height( ) + " " + \v\bar\page\len + " " + \h\bar\page\len
             EndIf
             
-            If resize_v And (\v\frame_x( ) <> x1 Or 
-                             \v\frame_y( ) <> *this\inner_y( ) + Y Or
-                             \v\frame_height( ) <> Height)
+            If resize_v And (\v\frame_x( ) <> x1 Or \v\frame_y( ) <> *this\inner_y( ) + Y Or \v\frame_height( ) <> Height)
                If test_resize_area
                   Debug "         v "+\v\frame_x( ) +" "+ x1
                EndIf
                Resize( \v, x1-*this\inner_x( )-*this\fs-*this\fs[1], #PB_Ignore, #PB_Ignore, Height )
             EndIf
-            If resize_h And (\h\frame_y( ) <> y1 Or
-                             \h\frame_x( ) <> *this\inner_x( ) + X Or
-                             \h\frame_width( ) <> Width)
+            If resize_h And (\h\frame_y( ) <> y1 Or \h\frame_x( ) <> *this\inner_x( ) + X Or \h\frame_width( ) <> Width)
                If test_resize_area
                   Debug "         h "+\h\frame_y( ) +" "+ y1
                EndIf
@@ -5721,35 +5712,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *bar\thumb\end < 0
                      *bar\thumb\end = 0
                   EndIf 
-                  
-                  ;                   ;
-                  ;                   *bar\thumb\end = *bar\area\len - *bar\thumb\len - ( *BB2\size + *bar\min[2] )
-                  ;                   If *bar\thumb\end < *bar\area\pos
-                  ;                      *bar\thumb\end = *bar\area\pos
-                  ;                   EndIf
-                  
-                  ;                   ; не работает без него пример splitter(e).pb, а с ним не работает scrollbar(resize).pb
-                  ;                   If *bar\thumb\end > *bar\area\end
-                  ;                      *bar\thumb\end = *bar\area\end
-                  ;                   EndIf
-                  
-                  ;                   ; не для splitter
-                  ;                   If *bar\thumb\end < *bar\thumb\pos
-                  ;                      ; Debug " ??? "+*bar\thumb\end +"-*bar\thumb\end < "+ *bar\thumb\pos +"-*bar\thumb\pos "+ *this\class
-                  ;                      *bar\thumb\end = *bar\thumb\pos
-                  ;                   EndIf
                EndIf
             EndIf
          EndIf
          
          
-;          If *bar\page\end 
-;             ;Define percent = Round(( *bar\thumb\end - *bar\area\pos ) / ( *bar\page\end - *bar\min ), #PB_Round_Nearest )
-;             ;Define percent = Round(( *bar\area\end - *bar\thumb\len ) / ( *bar\page\end - *bar\min ), #PB_Round_Nearest )
-;          EndIf
-;             Debug Round( *bar\percent, #PB_Round_Nearest )
-;          
-;          ;( Round((( _scroll_pos_ ) - *bar\min ) * *bar\percent, #PB_Round_Nearest ) - *bar\min[1] )
          ;\\
          ; Debug ""+*bar\PageChange( ) +" "+ *bar\percent +" "+ *bar\min +" "+ *bar\min[2] +" "+ *bar\page\pos +" "+ *bar\area\end +" "+ *bar\thumb\end +" "+ *bar\page\end
          
@@ -5846,16 +5813,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
                   *bar\thumb\pos = ThumbPos
                EndIf
-               ;
-               If *this\type = #__type_Splitter
-                  If MouseButtonPress( )
-                     If *bar\ThumbChange( )
-                        If *bar\PageChange( ) = 0
-                           *bar\PageChange( ) = 1
-                        EndIf
-                     EndIf
-                  EndIf              
-               EndIf               
+;                ;
+;                If *this\type = #__type_Splitter
+;                   If MouseButtonPress( )
+;                      If *bar\ThumbChange( )
+;                         If *bar\PageChange( ) = 0
+;                            *bar\PageChange( ) = 1
+;                         EndIf
+;                      EndIf
+;                   EndIf              
+;                EndIf               
             EndIf
             ;
          EndIf
@@ -28069,10 +28036,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 4901
-; FirstLine = 4749
-; Folding = --------------------------------------------------------------------v--+--84-----------------------------------------------------f-+4------------------------------v------------------fN5-------------------------------------------------------------------------------------------------------------44--828+-----------0-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-+--------------------------------------------------v---4-z-02f-8bf------------------------0-v0ebf---84---f04ff--f----------------------------74v3----0---------------v---------------------------------------------------------------------------------------------------L58vfv-V8-4--8-----
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 5824
+; FirstLine = 5602
+; Folding = --------------------------------------------------------------------v--+--84-------------------------------------------------------+4--0---------------------------+------------------2g-------------------------------------------------------------------------------------------------------------ff--vXv8-----------4------------------------------------------------------------------------------------------------------------------------------------------------------------------08---------------------------------------------------+--f-P-4X-0vv00-----------------------4--38t00--vf----2f-00--0---------------------------rf-a----4----------------+--------------------------------------------------------------------------------------------------vgv-+0+Xt-f--v-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
