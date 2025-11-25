@@ -39,6 +39,21 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
+   Procedure NextWidget( *this._s_WIDGET )
+      Protected result
+      Static *g
+      
+      If *g <> *this
+         *g = *this
+         If *this\address
+            ChangeCurrentElement( widgets( ), *this\address )
+         EndIf
+      EndIf
+      result = NextElement( widgets( ) )
+      
+      ProcedureReturn result
+   EndProcedure
+   
    Procedure TestAddButton_events()
       Static clk
       Protected size = 40
@@ -46,7 +61,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected *p._s_WIDGET = EventWidget( )\parent
       Protected *g1._s_WIDGET = EventWidget( )\data
       
+      
       If WidgetEvent( ) = #__event_LeftClick
+      While NextWidget( EventWidget( ) )
+         Debug widgets( )\class
+      Wend
+      
+         
          Debug " clk "+ GetText(EventWidget( ))
          clk!1
          Y = clk*size
@@ -54,7 +75,6 @@ CompilerIf #PB_Compiler_IsMainFile
           Protected y1 = Y(EventWidget( )) + Height(EventWidget( ))
          If StartEnum( *p )
             If Y(widgets( )) > y1 And *g1 <> widgets()
-               Debug widgets()\class
                If clk
                   Resize( widgets(), #PB_Ignore, Y(widgets( ))+size, #PB_Ignore, #PB_Ignore)
                Else
@@ -93,13 +113,13 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open(0, 0, 0, 270, 320, "Combo buttons demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       Define *g = TestContainer( 0, 0, 270, 300 )
-      TestAddButton(*g, 10, 10, 250, 50, "ComboBox1", #PB_ComboBox_Editable|#PB_ComboBox_UpperCase)
+      TestAddButton(*g, 10, 10, 250, 50, "ComboBox0", #PB_ComboBox_Editable|#PB_ComboBox_UpperCase)
       SetImage( widget(), 0)
       
-      TestAddButton(*g, 10, 70, 250, 50, "ComboBox2", #PB_ComboBox_LowerCase)
+      TestAddButton(*g, 10, 70, 250, 50, "ComboBox1", #PB_ComboBox_LowerCase)
       SetImage( widget(), 1)
       
-      TestAddButton(*g, 10, 130, 250, 50, "ComboBox3")
+      TestAddButton(*g, 10, 130, 250, 50, "ComboBox2")
       SetImage( widget(), 2)
       
       
@@ -108,8 +128,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 33
+; CursorPosition = 44
+; FirstLine = 30
 ; Folding = ---
 ; EnableXP
 ; DPIAware
