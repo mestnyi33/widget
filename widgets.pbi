@@ -1608,7 +1608,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       
       ;-  
-      ;-\\   DECLARE_globals
+      ;-\\  DECLARE_globals
       ;-  
       Declare.l DropX( )
       Declare.l DropY( )
@@ -4898,20 +4898,24 @@ CompilerIf Not Defined( widget, #PB_Module )
          *SB1 = *bar\button[1]
          *SB2 = *bar\button[2]
          
-         draw_mode_alpha_( #PB_2DDrawing_Default )
-         
-         ; draw the splitter background
-         draw_box_( *SB\x, *SB\y, *SB\width, *SB\height, *this\color\back[*SB\ColorState( )] & $ffffff | 210 << 24 )
-         
-         ; draw the first\second background
-         If Not *SB1\hide : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
-         If Not *SB2\hide : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
+         If Not ( *this\flag & #__flag_Transparent And Not *SB\ColorState( ))
+           draw_mode_alpha_( #PB_2DDrawing_Default )
+           
+           ; draw the splitter background
+           draw_box_( *SB\x, *SB\y, *SB\width, *SB\height, *this\color\back[*SB\ColorState( )] & $ffffff | 210 << 24 )
+           
+           ; draw the first\second background
+           If Not *SB1\hide : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
+           If Not *SB2\hide : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
+         EndIf
          
          draw_mode_( #PB_2DDrawing_Outlined )
          
-         ; draw the frame
-         If Not *SB1\hide : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
-         If Not *SB2\hide : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
+         If Not *this\flag & #__flag_Transparent
+           ; draw the frame
+           If Not *SB1\hide : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
+           If Not *SB2\hide : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
+         EndIf
          
          ;
          If *bar\thumb\len
@@ -16882,7 +16886,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Case #PB_EventType_DragStart        : result.s = "DragStart"
             Case #PB_EventType_TitleChange      : result.s = "TitleChange"
             Case #PB_EventType_CloseItem        : result.s = "CloseItem"
-            Case #PB_Eventtype_SizeItem         : result.s = "SizeItem"
+            Case #PB_EventType_SizeItem         : result.s = "SizeItem"
             Case #PB_EventType_Down             : result.s = "Down"
             Case #PB_EventType_Up               : result.s = "Up"
                ;                
@@ -28065,10 +28069,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 5138
-; FirstLine = 4970
-; Folding = --------------------------------------------------------------------v--+--84-----------------------------------------------------4v-0------------------------------8------------------XD+-------------------------------------------------------------------------------------------------------------00--e0u-----------f------------------------------------------------------------------------------------------------------------------------------------------------------------------4v---------------------------------------------------8---0-9ff04-+34-----------------------f--bv434---+0---X-044--4---------------------------v+0r0---f----------------8---------------------------------------------------------------------------------------------------C++848f2+-0--+-----
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 4901
+; FirstLine = 4749
+; Folding = --------------------------------------------------------------------v--+--84-----------------------------------------------------f-+4------------------------------v------------------fN5-------------------------------------------------------------------------------------------------------------44--828+-----------0-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-+--------------------------------------------------v---4-z-02f-8bf------------------------0-v0ebf---84---f04ff--f----------------------------74v3----0---------------v---------------------------------------------------------------------------------------------------L58vfv-V8-4--8-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -1063,7 +1063,7 @@ Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
     ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
     SetColor(*g, #PB_Gadget_BackColor,  $FF00FFFF)
     
-   Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, flag|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
+   Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, flag|#__flag_Transparent|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
    SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
    SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
    ;
@@ -2746,11 +2746,12 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
    
    ;
    ;\\ main splitter 2 example 
-   ide_inspector_panel_SPLITTER = Splitter( 0,0,0,0, ide_inspector_PANEL, ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_panel_SPLITTER, "ide_inspector_panel_SPLITTER" )
-   ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_inspector_panel_SPLITTER) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
-   ide_design_SPLITTER = Splitter( 0,0,0,0, ide_design_PANEL, ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
-   ide_SPLITTER = Splitter( 0,0,0,0, ide_inspector_SPLITTER, ide_design_SPLITTER, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator ) : SetClass(ide_SPLITTER, "ide_SPLITTER" )
-   ide_main_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
+   Define Transparent ;= #__flag_Transparent
+   ide_inspector_panel_SPLITTER = Splitter( 0,0,0,0, ide_inspector_PANEL, ide_inspector_HELP, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_inspector_panel_SPLITTER, "ide_inspector_panel_SPLITTER" )
+   ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_inspector_panel_SPLITTER, Transparent) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
+   ide_design_SPLITTER = Splitter( 0,0,0,0, ide_design_PANEL, ide_design_DEBUG, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
+   ide_SPLITTER = Splitter( 0,0,0,0, ide_inspector_SPLITTER, ide_design_SPLITTER, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator|Transparent ) : SetClass(ide_SPLITTER, "ide_SPLITTER" )
+   ide_main_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed|Transparent ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
    
    ; set splitters default minimum size
    SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
@@ -3019,12 +3020,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 944
-; FirstLine = 702
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 2748
+; FirstLine = 2176
 ; Folding = ---------f----84j-------------+-030v---f-f-----f----+9-
-; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = C:\Users\user\Downloads\Compressed\FormDesignerWindows4.70b2\ide.exe
+; Executable = C:/Users/user/Downloads/Compressed/FormDesignerWindows4.70b2/ide.exe
+; Optimizer

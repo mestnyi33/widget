@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
       Splitter_2 = Splitter(0, 0, 0, 0, Splitter_1, Button_5)
       Splitter_3 = Splitter(0, 0, 0, 0, Button_2, Splitter_2)
-      Splitter_4 = Splitter(430-GadgetX(GetCanvasGadget(root())), 10-GadgetY(GetCanvasGadget(root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
+      Splitter_4 = Splitter(430-GadgetX(GetCanvasGadget(root())), 10-GadgetY(GetCanvasGadget(root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#__flag_Transparent)
       
       SetText(Splitter_0, "0")
       SetText(Splitter_1, "1")
@@ -83,9 +83,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 43
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 67
+; FirstLine = 56
 ; Folding = -
 ; EnableXP
 ; DPIAware

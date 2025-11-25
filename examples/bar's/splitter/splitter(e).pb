@@ -46,13 +46,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Button_4 = Button(0,0,0,0, "Button 4") ; No need to specify size or coordinates
       Button_5 = Button(0,0,0,0, "Button 5") ; as they will be sized automatically
       
-      Splitter_0 = Splitter(0,0,0,0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-      Splitter_1 = Splitter(0,0,0,0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+      Splitter_0 = Splitter(0,0,0,0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed|#__flag_Transparent)
+      Splitter_1 = Splitter(0,0,0,0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed|#__flag_Transparent)
       SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
       SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
-      Splitter_2 = Splitter(0,0,0,0, Splitter_1, Button_5)
-      Splitter_3 = Splitter(0,0,0,0, Button_2, Splitter_2)
-      Splitter_4 = Splitter(430-GadgetX(GetCanvasGadget(root())), 10-GadgetY(GetCanvasGadget(root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
+      Splitter_2 = Splitter(0,0,0,0, Splitter_1, Button_5, #__flag_Transparent)
+      Splitter_3 = Splitter(0,0,0,0, Button_2, Splitter_2, #__flag_Transparent)
+      Splitter_4 = Splitter(430-GadgetX(GetCanvasGadget(root())), 10-GadgetY(GetCanvasGadget(root())), 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#__flag_Transparent)
       
       SetState(Splitter_1, 20)
       ; SetState(Splitter_1, 410-20)
@@ -69,8 +69,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 57
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 53
 ; FirstLine = 35
 ; Folding = -
 ; EnableXP
