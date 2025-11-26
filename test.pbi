@@ -5618,11 +5618,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                ;
                If *bar\area\len 
-                  ;                   ; fixed min size
-                  ;                   If *bar\area\len < ( *SB\size + *bar\min[1] + *bar\min[2] )
-                  ;                      *bar\area\len = ( *SB\size + *bar\min[1] + *bar\min[2] )
-                  ;                   EndIf
-                  
                   *bar\area\pos  = ( *BB1\size + *bar\min[1] )
                   If *bar\area\pos > *bar\area\len
                      *bar\area\pos = *bar\area\len
@@ -5717,23 +5712,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *bar\thumb\end < 0
                      *bar\thumb\end = 0
                   EndIf 
-                  
-                  ;                   ;
-                  ;                   *bar\thumb\end = *bar\area\len - *bar\thumb\len - ( *BB2\size + *bar\min[2] )
-                  ;                   If *bar\thumb\end < *bar\area\pos
-                  ;                      *bar\thumb\end = *bar\area\pos
-                  ;                   EndIf
-                  
-                  ;                   ; не работает без него пример splitter(e).pb, а с ним не работает scrollbar(resize).pb
-                  ;                   If *bar\thumb\end > *bar\area\end
-                  ;                      *bar\thumb\end = *bar\area\end
-                  ;                   EndIf
-                  
-                  ;                   ; не для splitter
-                  ;                   If *bar\thumb\end < *bar\thumb\pos
-                  ;                      ; Debug " ??? "+*bar\thumb\end +"-*bar\thumb\end < "+ *bar\thumb\pos +"-*bar\thumb\pos "+ *this\class
-                  ;                      *bar\thumb\end = *bar\thumb\pos
-                  ;                   EndIf
                EndIf
             EndIf
          EndIf
@@ -5837,19 +5815,21 @@ CompilerIf Not Defined( widget, #PB_Module )
                ;
                If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
                If ThumbPos > *bar\thumb\end : ThumbPos = *bar\thumb\end : EndIf
-               ;
-               If *bar\thumb\pos <> ThumbPos
-                  *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
-                  *bar\thumb\pos = ThumbPos
-               EndIf
+;                ;
+;                If Not MouseButtonPress( )
+;                  If *bar\thumb\pos <> ThumbPos
+;                   *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
+;                   *bar\thumb\pos = ThumbPos
+;                EndIf
+;                EndIf
                ;
                If *this\type = #__type_Splitter
                   If MouseButtonPress( )
-                     If *bar\ThumbChange( )
-                        If *bar\PageChange( ) = 0
-                           *bar\PageChange( ) = 1
-                        EndIf
-                     EndIf
+;                      If *bar\ThumbChange( )
+;                         If *bar\PageChange( ) = 0
+;                            *bar\PageChange( ) = 1
+;                         EndIf
+;                      EndIf
                   EndIf              
                EndIf               
             EndIf
@@ -6742,7 +6722,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             *bar\thumb\pos = ThumbPos
             ;
             If Not ( *this\type = #__type_Track And constants::BinaryFlag( *this\flag, #PB_TrackBar_Ticks ))
-               *this\BarChange( ) = 1
+              ; *this\BarChange( ) = 1
             EndIf
             ;
             ScrollPos = bar_page_pos_( *bar, ThumbPos  )
@@ -16104,7 +16084,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Case #PB_EventType_DragStart        : result.s = "DragStart"
             Case #PB_EventType_TitleChange      : result.s = "TitleChange"
             Case #PB_EventType_CloseItem        : result.s = "CloseItem"
-            Case #PB_Eventtype_SizeItem         : result.s = "SizeItem"
+            Case #PB_EventType_SizeItem         : result.s = "SizeItem"
             Case #PB_EventType_Down             : result.s = "Down"
             Case #PB_EventType_Up               : result.s = "Up"
                ;                
@@ -25830,8 +25810,104 @@ EndMacro
 
 ;-
 ;-\\ EXAMPLE
-
 CompilerIf #PB_Compiler_IsMainFile
+   UseWidgets( )
+   
+   Global object 
+   Global v_bar, h_bar, gadget, min_size
+   Global  w = 420-40, h = 280-40
+   
+   Procedure events_widgets( )
+      widget( ) = object
+      Debug " - "+ClassFromEvent(WidgetEvent())
+      Debug ""+widget( )\bar\page\pos +" - page\pos"
+      Debug ""+widget( )\bar\page\len +" - page\len"
+      Debug ""+widget( )\bar\page\end +" - page\end"
+      Debug ""+widget( )\bar\page\change +" - page\change"
+      Debug ""+widget( )\bar\percent +" - percent"
+      Debug ""+widget( )\bar\area\len +" - area\len"
+      Debug ""+widget( )\bar\area\end +" - area\end"
+      Debug ""+widget( )\bar\thumb\pos +" - thumb\pos"
+      Debug ""+widget( )\bar\thumb\len +" - thumb\len"
+      Debug ""+widget( )\bar\thumb\end +" - thumb\end"
+      Debug ""+widget( )\bar\thumb\change +" - thumb\change"
+      Debug " - "
+   EndProcedure
+   
+   Procedure create_test( mode = 0, min = 0 )
+      Protected w = 180
+      Protected h = 120
+      
+      If h_bar
+         w = GetState(h_bar)
+      EndIf
+      If v_bar
+         h = GetState(v_bar)
+      EndIf
+      
+      If gadget
+         If mode = 1
+            object = SplitterGadget(-1,10, 10, w, h, TextGadget(-1,0,0,0,0,"fixed"), TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+;             SetGadgetColor(GetGadgetAttribute(object, #PB_Splitter_FirstGadget), #PB_Gadget_BackColor, $FFB3FDFF)
+;             SetGadgetColor(GetGadgetAttribute(object, #PB_Splitter_SecondGadget), #PB_Gadget_BackColor, $FFB3FDFF)
+         ElseIf mode = 2
+            object = SplitterGadget(-1,10, 10, w, h, TextGadget(-1,0,0,0,0,""), TextGadget(-1,0,0,0,0,"fixed"), #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+         Else
+            object = SplitterGadget(-1,10, 10, w, h, TextGadget(-1,0,0,0,0,""), TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator|#PB_Splitter_Vertical)
+         EndIf
+         If min
+            SetGadgetAttribute(object, #PB_Splitter_FirstMinimumSize, min)
+            SetGadgetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
+         EndIf
+      Else
+         If mode = 1
+            object = Splitter(10, 10, w, h, Text(0,0,0,0,"fixed"), -1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+         ElseIf  mode = 2
+            object = Splitter(10, 10, w, h, -1, Text(0,0,0,0,"fixed"), #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+         Else
+            object = Splitter(10, 10, w, h, -1, -1, #PB_Splitter_Vertical)
+         EndIf
+         ;Resize(object, #PB_Ignore, #PB_Ignore, w,h)
+         If min
+            min_size = min
+            SetAttribute(object, #PB_Splitter_FirstMinimumSize, min)
+            ;SetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
+         EndIf
+       EndIf
+       
+       ProcedureReturn object
+   EndProcedure
+   
+   Procedure leave_events( )
+      Resize(object, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+     
+      events_widgets( )
+   EndProcedure
+   
+   
+   If Open(0, 0, 0, 420, 280, "press key_(0-1-2) to replace object", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      object = create_test( 0, 30 )
+      
+      
+      Button(w+10,h+10,20,20,"", #PB_Button_Toggle)
+      ; Bind( widget(), @leave_events( ), #__event_MouseEnter )
+      SetRound( widget(), 10 )
+      
+      ; SetState( object, 141 )
+      Bind( object, @leave_events( ), #__event_MouseLeave )
+      Bind( object, @events_widgets( ), #__event_Change )
+      
+      widget( ) = object
+      widget( )\bar\thumb\change = 30
+      
+      SetActive( root() )
+      SetActiveGadget( GetCanvasGadget() )
+      
+      WaitClose( )
+   EndIf
+   
+CompilerEndIf
+CompilerIf #PB_Compiler_IsMainFile = 99
   #__s_entered = 1
   #__s_selected = 2
   
@@ -25905,9 +25981,9 @@ CompilerIf #PB_Compiler_IsMainFile
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 25853
-; FirstLine = 25242
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------------Xd440+0r0-44----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 5823
+; FirstLine = 5771
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------O--------v5Y--+-----v--+-0-+-9---------------------v-------------q8+u4vft--++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+v-
 ; EnableXP
 ; DPIAware
