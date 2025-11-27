@@ -426,7 +426,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro AreaChange( ): area\change: EndMacro   ; temp
       Macro PageChange( ): page\change: EndMacro   ; temp
       Macro ThumbChange( ): thumb\change: EndMacro ; temp
-      Macro BarChange( ): bar\change: EndMacro     ; temp
       Macro ResizeChange( ): Resize\change: EndMacro      ; temp
       Macro WidgetChange( ): change: EndMacro             ; temp
       
@@ -3791,11 +3790,14 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;       EndMacro
       
       Macro bar_page_pos_( _bar_, _thumb_pos_ )
-         ( _bar_\min + _bar_\min[2] + Round((( _thumb_pos_ ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
+         ;( _bar_\min + _bar_\min[2] + Round((( _thumb_pos_ ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
+         ;( _bar_\min + Round((( _thumb_pos_ ) - _bar_\area\pos ) / _bar_\percent, #PB_Round_Nearest ))
+         ( _bar_\min + Round((( _thumb_pos_ ) - (_bar_\area\pos - _bar_\min[1]) ) / _bar_\percent, #PB_Round_Nearest ))
       EndMacro
       
       Macro bar_thumb_pos_( _bar_, _scroll_pos_ )
-         ( Round((( _scroll_pos_ ) - _bar_\min ) * _bar_\percent, #PB_Round_Nearest ) - _bar_\min[1] )
+         ;( Round((( _scroll_pos_ ) - _bar_\min ) * _bar_\percent, #PB_Round_Nearest ) - _bar_\min[1] )
+         ( Round((( _scroll_pos_ ) - _bar_\min ) * _bar_\percent, #PB_Round_Nearest ))
       EndMacro
       
       Macro bar_invert_page_pos_( _bar_, _scroll_pos_ )
@@ -5508,55 +5510,19 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro ScrollToActive( _state_ )
          _focus =- _state_
       EndMacro
+      
       Procedure.b bar_Update( *this._s_WIDGET, mode.b = 1 )
-         Protected fixed.l, ScrollPos,d, ThumbPos.i, Width, Height
-         
          ;\\
          If Not *this\bar
             ProcedureReturn 0
          EndIf
+         Protected fixed.l, ScrollPos,d, ThumbPos.i, Width, Height
          Protected *bar._s_BAR = *this\bar
          Protected._s_BUTTONS *BB1, *BB2, *SB
+         ;
          *SB  = *bar\button
          *BB1 = *bar\button[1]
          *BB2 = *bar\button[2]
-         
-         
-         ;Debug ""+ mode +" "+ *this\bar\PageChange( )
-         ;mode = 2
-         
-         ;          ; NEW
-         ;          If Not *bar\max 
-         ;             If *this\type = #__type_Splitter
-         ;                Debug ">>>>>>>>>"+Str(*bar)+">>>>>>>>"
-         ;                Debug " ["+ *this\class +"] "+
-         ;                      *bar\percent +" >< "+
-         ;                      *bar\min +" "+
-         ;                      *bar\max +" >< "+
-         ;                      *bar\page\pos +" "+
-         ;                      *bar\page\len +" "+
-         ;                      *bar\page\end +" "+
-         ;                      *bar\page\change +" >< "+
-         ;                      *bar\area\pos +" "+
-         ;                      *bar\area\len +" "+
-         ;                      *bar\thumb\end +" "+
-         ;                      *bar\area\change +" >< "+
-         ;                      *bar\thumb\pos +" "+
-         ;                      *bar\thumb\len +" "+
-         ;                      *bar\area\end +" "+
-         ;                      *bar\thumb\change +""
-         ;                Debug "<<<<<<<<<<<<<<<<<"
-         ;                
-         ;                If *bar\page\pos = *bar\page\end 
-         ;                   ;  ProcedureReturn 0
-         ;                EndIf
-         ;                
-         ;             Else
-         ;                ProcedureReturn 0
-         ;             EndIf
-         ;          EndIf
-         
-         ;Debug "*bar\page\pos "+*bar\page\pos
          
          Width  = *this\frame_width( )
          Height = *this\frame_height( )
@@ -5618,7 +5584,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;                      *bar\area\len = ( *SB\size + *bar\min[1] + *bar\min[2] )
                   ;                   EndIf
                   
-                  *bar\area\pos  = ( *BB1\size + *bar\min[1] )
+                  *bar\area\pos  = *BB1\size + *bar\min[1]
                   If *bar\area\pos > *bar\area\len
                      *bar\area\pos = *bar\area\len
                   EndIf
@@ -5708,7 +5674,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   ;
-                  *bar\thumb\end = *bar\area\len - *bar\thumb\len - *BB2\size - *bar\min[2] 
+                  *bar\thumb\end = *bar\area\len - *bar\thumb\len - *BB2\size - *bar\min[2]
                   If *bar\thumb\end < 0
                      *bar\thumb\end = 0
                   EndIf 
@@ -5792,50 +5758,41 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ; Debug " bar end change - " + *bar\page\pos +" "+ *bar\page\end
                   *bar\PageChange( )  = *bar\page\pos - *bar\page\end
                   *bar\page\pos       = *bar\page\end
-                  *this\BarChange( ) = 0
                EndIf
             EndIf
             
             ;\\ 
-            If Not *this\BarChange( )
-               ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos )
-               ;
-               If *bar\invert
-                  ThumbPos = *bar\thumb\end - ThumbPos
-               Else
-                  ThumbPos = *bar\area\pos + ThumbPos
-               EndIf
-               ;
-               If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
-               If ThumbPos > *bar\thumb\end : ThumbPos = *bar\thumb\end : EndIf
-               ;
-               If *bar\thumb\pos <> ThumbPos
-                  *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
-                  *bar\thumb\pos = ThumbPos
-               EndIf
-;                ;
-;                If *this\type = #__type_Splitter
-;                   If MouseButtonPress( )
-;                      If *bar\ThumbChange( )
-;                         If *bar\PageChange( ) = 0
-;                            *bar\PageChange( ) = 1
-;                         EndIf
-;                      EndIf
-;                   EndIf              
-;                EndIf               
+            If Not *bar\change
+            ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos ) 
+            ;
+            If *bar\invert
+               ThumbPos = *bar\thumb\end - ThumbPos
+            Else
+               ThumbPos = *BB1\size + ThumbPos
             EndIf
             ;
+            If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
+            If ThumbPos > *bar\thumb\end : ThumbPos = *bar\thumb\end : EndIf
+            ;
+            If *bar\thumb\pos <> ThumbPos
+               *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
+               *bar\thumb\pos = ThumbPos
+            EndIf
+            EndIf
          EndIf
          
          ;
          ;\\ splitter fixed size
          If *bar\fixed 
+            Protected ThumbPos2 = *bar\min[1] ; *bar\area\pos ;
+            Protected ThumbEnd2 = *bar\thumb\end + *bar\min[2] ;- *bar\min[1];
+            ;
             If *bar\PageChange( ) 
                If *bar\fixed = 1
                   *bar\fixed[1] = *bar\thumb\pos
                EndIf
                If *bar\fixed = 2
-                  *bar\fixed[2] = ( *bar\thumb\end + *bar\min[2] ) - *bar\thumb\pos 
+                  *bar\fixed[2] = ThumbEnd2 - *bar\thumb\pos 
                EndIf
             Else
                
@@ -5843,16 +5800,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                   If *bar\thumb\end > *bar\fixed[1]
                      ThumbPos = *bar\fixed[1]
                   Else
-                     If *bar\min[1] < *bar\thumb\end
+                     If ThumbPos2 < *bar\thumb\end
                         ThumbPos = *bar\thumb\end
                      Else
-                        If *bar\min[1] > ( *bar\thumb\end + *bar\min[2] )
-                           ThumbPos = ( *bar\thumb\end + *bar\min[2] )
+                        If ThumbPos2 > ThumbEnd2
+                           ThumbPos = ThumbEnd2
                         Else
-                           If *bar\min[1] > *bar\area\len - *bar\thumb\len
+                           If ThumbPos2 > *bar\area\len - *bar\thumb\len
                               ThumbPos = *bar\area\len - *bar\thumb\len
                            Else
-                              ThumbPos = *bar\min[1]
+                              ThumbPos = ThumbPos2
                            EndIf
                         EndIf
                      EndIf
@@ -5860,16 +5817,16 @@ CompilerIf Not Defined( widget, #PB_Module )
                EndIf
                ;
                If *bar\fixed = 2
-                  If *bar\min[1] < ( *bar\thumb\end + *bar\min[2] ) - *bar\fixed[2] 
-                     ThumbPos = ( *bar\thumb\end + *bar\min[2] ) - *bar\fixed[2] 
+                  If ThumbPos2 < ThumbEnd2 - *bar\fixed[2] 
+                     ThumbPos = ThumbEnd2 - *bar\fixed[2] 
                   Else
-                     If *bar\min[1] > ( *bar\thumb\end + *bar\min[2] )
-                        ThumbPos = ( *bar\thumb\end + *bar\min[2] )
+                     If ThumbPos2 > ThumbEnd2
+                        ThumbPos = ThumbEnd2
                      Else
-                        If *bar\min[1] > *bar\area\len - *bar\thumb\len
+                        If ThumbPos2 > *bar\area\len - *bar\thumb\len
                            ThumbPos = *bar\area\len - *bar\thumb\len
                         Else
-                           ThumbPos = *bar\min[1]
+                           ThumbPos = ThumbPos2
                         EndIf
                      EndIf
                   EndIf
@@ -6603,7 +6560,6 @@ CompilerIf Not Defined( widget, #PB_Module )
                
             EndIf
             
-            *this\BarChange( ) = 0
             *bar\PageChange( ) = 0
             *bar\ThumbChange( ) = 0
             ProcedureReturn #True   
@@ -6615,8 +6571,13 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;          If __gui\event\queuesmask
          ;             ;ProcedureReturn 0
          ;          EndIf
-         ; Debug    ""+ ScrollPos +" "+ *this\class
-         
+;          ; Debug    ""+ ScrollPos +" "+ *this\class
+;          If *bar\min[1]
+;             If ScrollPos < *bar\min[1]
+;                ScrollPos = *bar\min[1]
+;             EndIf
+;             ScrollPos - *bar\min[1]
+;          EndIf
          
          If *bar\area\len
             If Not *bar\max
@@ -6673,7 +6634,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;   Debug result
             EndIf
             
-            If *this\BarChange( ) Or result
+            If result
                ; Debug ""+*this +" "+ result +" "+ *bar\PageChange( )
                If bar_Update( *this, mode )
                   If is_scrollbars_( *this )
@@ -6711,10 +6672,9 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *bar\thumb\pos <> ThumbPos
             *bar\ThumbChange( ) = *bar\thumb\pos - ThumbPos
             *bar\thumb\pos = ThumbPos
-            ;
-            If Not ( *this\type = #__type_Track And constants::BinaryFlag( *this\flag, #PB_TrackBar_Ticks ))
-               *this\BarChange( ) = 1
-            EndIf
+            ;If *this\type = #__type_Splitter
+               *bar\change = 1
+            ;EndIf
             ;
             ScrollPos = bar_page_pos_( *bar, ThumbPos  )
             ScrollPos = bar_invert_page_pos_( *bar, ScrollPos )
@@ -10167,7 +10127,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             Else
                state = DPIScaledY( state )
             EndIf
-            result = bar_PageChange( *this, state, 2 ) ; and post change event
+            result = bar_PageChange( *this, state, 2 ) ; and post change event - *this\bar\min[1]
          EndIf
          ;
          If *this\type = #__type_Spin
@@ -10776,6 +10736,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                Select Attribute
                   Case #PB_Splitter_FirstMinimumSize
                      *bar\min[1] = DPIScaled(*value)
+                     ; *bar\page\pos - *bar\min[1]
                      result = Bool( *bar\max )
                      
                   Case #PB_Splitter_SecondMinimumSize
@@ -20479,6 +20440,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If Entered( )\bar 
                            mouse( )\press_x - Entered( )\bar\thumb\pos
                            mouse( )\press_y - Entered( )\bar\thumb\pos
+                           ;                            ;
+;                            If Entered( )\type = #__type_Splitter
+;                               If Entered( )\bar\vertical
+;                                  mouse( )\press_y - Entered( )\bar\min[1]
+;                               Else
+;                                  mouse( )\press_x - Entered( )\bar\min[1]
+;                               EndIf
+;                            EndIf
                         EndIf
                      EndIf
                      
@@ -28037,9 +28006,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 5824
-; FirstLine = 5602
-; Folding = --------------------------------------------------------------------v--+--84-------------------------------------------------------+4--0---------------------------+------------------2g-------------------------------------------------------------------------------------------------------------ff--vXv8-----------4------------------------------------------------------------------------------------------------------------------------------------------------------------------08---------------------------------------------------+--f-P-4X-0vv00-----------------------4--38t00--vf----2f-00--0---------------------------rf-a----4----------------+--------------------------------------------------------------------------------------------------vgv-+0+Xt-f--v-----
+; CursorPosition = 5771
+; FirstLine = 5753
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------+-0---v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

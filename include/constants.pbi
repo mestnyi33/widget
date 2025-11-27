@@ -63,7 +63,7 @@
       ;\\ default values
       ;
       #__bar_toggle_line_size = 2
-      #__bar_splitter_size = 9
+      #__bar_splitter_size = 7;9
       #__ButtonRound  = 7
       #__bar_button_size   = 16
       
@@ -725,8 +725,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 291
-; FirstLine = 275
+; CursorPosition = 65
+; FirstLine = 48
 ; Folding = ----
 ; Optimizer
 ; EnableXP

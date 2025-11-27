@@ -8,6 +8,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Global  w = 420-40, h = 280-40
    
    Procedure events_widgets( )
+      ClearDebugOutput( )
+      
       widget( ) = object
       Debug " - "+ClassFromEvent(WidgetEvent())
       Debug ""+widget( )\bar\page\pos +" - page\pos"
@@ -60,8 +62,8 @@ CompilerIf #PB_Compiler_IsMainFile
          ;Resize(object, #PB_Ignore, #PB_Ignore, w,h)
          If min
             min_size = min
-            SetAttribute(object, #PB_Splitter_FirstMinimumSize, min)
-            ;SetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
+            SetAttribute(object, #PB_Splitter_FirstMinimumSize, min/2)
+            SetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
          EndIf
       EndIf
    EndProcedure
@@ -123,6 +125,12 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
+   Procedure leave_events( )
+      Resize(object, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+     
+      events_widgets( )
+   EndProcedure
+   
    If Open(0, 0, 0, 420, 280, "press key_(0-1-2) to replace object", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ; a_init(root())
       ;gadget = 1
@@ -145,6 +153,10 @@ CompilerIf #PB_Compiler_IsMainFile
       SetRound( widget(), 10 )
       Bind( widget(), @track_vh_events( ), #__event_Down )
       
+      Bind( object, @leave_events( ), #__event_MouseLeave )
+      Bind( object, @events_widgets( ), #__event_Change )
+      SetState(object, 10)
+      
 ;       widget() = object
 ;       Debug  widget()\bar\fixed[1]
       
@@ -159,8 +171,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 38
-; Folding = -v7--
+; CursorPosition = 157
+; FirstLine = 47
+; Folding = 8vq--
 ; EnableXP
 ; DPIAware

@@ -477,12 +477,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_PAGE
          pos.l
          len.l
-         *end
+         StructureUnion
+            *End
+            *end2
+         EndStructureUnion
          change.l
       EndStructure
       ;--     BAR
       Structure _s_BAR
-         change.w
+         change.w;TEMP
          
          max.l
          min.l[3]   ; fixed min[1&2] bar size
@@ -796,8 +799,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 478
-; FirstLine = 438
+; CursorPosition = 487
+; FirstLine = 452
 ; Folding = --8-------
 ; Optimizer
 ; EnableXP
