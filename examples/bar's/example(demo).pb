@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi"
+﻿XIncludeFile "../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -235,7 +235,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SetItemColor(*Tree,  #PB_All, #PB_Gadget_LineColor,  $FF00f000)
     
     AddItem(Button_1, -1, "window_5") 
-    Define *window = widget::Window(0, 0, 330, 0, "form", #__flag_autosize|#PB_Window_titleBar|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget, Button_1) 
+    Define *window = widget::Window(0, 0, 330, 0, "form", #__flag_autosize|#PB_Window_TitleBar|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget, Button_1) 
     widget::Container(10,10,100,100)
     widget::Container(10,10,100,100)
     widget::Container(10,10,100,100)
@@ -319,8 +319,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 234
-; FirstLine = 230
+; IDE Options = PureBasic 6.21 (Windows - x64)
 ; Folding = --
 ; EnableXP
+; DPIAware

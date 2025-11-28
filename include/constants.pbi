@@ -63,7 +63,7 @@
       ;\\ default values
       ;
       #__bar_toggle_line_size = 2
-      #__bar_splitter_size = 7;9
+      #__bar_splitter_size = 9
       #__ButtonRound  = 7
       #__bar_button_size   = 16
       

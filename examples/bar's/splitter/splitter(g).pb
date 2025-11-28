@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Splitter_3 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_2, Splitter_2, #PB_Splitter_Separator)
       Splitter_4 = SplitterGadget(#PB_Any, 10, 10, 410, 210, Splitter_0, Splitter_3, #PB_Splitter_Vertical|#PB_Splitter_Separator)
       
-      ; bug in mac os
+      ; os bug fix
       SetGadgetState(Splitter_0, GadgetWidth(Splitter_0)/2-5)
       SetGadgetState(Splitter_1, GadgetWidth(Splitter_1)/2-5)
       
@@ -70,8 +70,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 19
-; FirstLine = 11
+; CursorPosition = 47
+; FirstLine = 30
 ; Folding = -
 ; EnableXP
 ; DPIAware

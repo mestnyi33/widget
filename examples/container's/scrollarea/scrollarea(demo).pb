@@ -87,12 +87,18 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAttribute(*g, #PB_ScrollArea_Y, sh)
       
       Debug ""
+      Debug *g\scroll\v\bar\percent
+      Debug ""
+      Debug *g\scroll\v\bar\area\pos
+      Debug *g\scroll\v\bar\area\len
+      Debug *g\scroll\v\bar\area\end
+      Debug *g\scroll\v\bar\area\change
+      Debug ""
       Debug *g\scroll\v\bar\page\pos
       Debug *g\scroll\v\bar\page\len
       Debug *g\scroll\v\bar\page\end
       Debug *g\scroll\v\bar\page\change
-      Debug *g\scroll\v\bar\percent
-      Debug *g\scroll\v\bar\area\end
+      Debug ""
       Debug *g\scroll\v\bar\thumb\pos
       Debug *g\scroll\v\bar\thumb\len
       Debug *g\scroll\v\bar\thumb\end
@@ -122,8 +128,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 6
+; CursorPosition = 105
+; FirstLine = 50
 ; Folding = v-
 ; Optimizer
 ; EnableXP
