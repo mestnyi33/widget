@@ -32,7 +32,7 @@ Procedure events_widgets()
 EndProcedure
 
 If Open(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-   SetColor( root(), #pb_gadget_backcolor, $ff00ffff)
+   SetColor( root(), #PB_Gadget_BackColor, $ff00ffff)
    
    progress_0 = Progress(0, 0, 0, 0, 0,100,0, 120) ; as they will be sized automatically
    progress_1 = Progress(0, 0, 0, 0, 0,100,#PB_ProgressBar_Vertical,120) ; as they will be sized automatically
@@ -61,8 +61,9 @@ If Open(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu | #PB_W
    SetState(Splitter_0, 269)
    WaitClose( )
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; IDE Options = PureBasic 6.21 (Windows - x64)
 ; CursorPosition = 34
-; FirstLine = 28
+; FirstLine = 21
 ; Folding = -
 ; EnableXP
+; DPIAware

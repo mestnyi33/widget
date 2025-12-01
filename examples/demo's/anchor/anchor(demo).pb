@@ -128,7 +128,7 @@ Global ColorType
       Text( 10,130+Y,100,18, "anchor pos:");, #PB_Text_Border )
       *position = Spin( 10,150+Y,70,30, 0,59 ) : SetClass(*position,"POSITION" )
       
-      ;test_event_send=1
+      ;test_event_add=1
       ;\\
       Text( 90,10+Y,130,18, "grid type");, #PB_Text_Border )
       *gridType = ComboBox( 90,30+Y,130,30 )
@@ -174,8 +174,8 @@ Global ColorType
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 107
+; CursorPosition = 130
+; FirstLine = 120
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -19,7 +19,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    UseWidgets( )
    
    Global widget, v_bar, h_bar
-   Global  w = 420-40, h = 280-40
+   Global w = 420-40
+   Global h = 280-40
    
    Procedure track_v_events( )
       Resize(widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState(EventWidget()))
@@ -88,7 +89,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
       ;h_bar=Splitter( 10,h+10,w,20, -1, -1 , #PB_Splitter_Vertical)
        h_bar=Track( 10,h+10,w,20, 0, w-10 )
       SetBackColor(widget(), $FF80BE8E)
-      SetState(widget(), 120)
+      SetState(widget(), 213)
       Bind( widget(), @track_h_events( ), #__event_change )
       
       
@@ -101,9 +102,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 52
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 91
+; FirstLine = 62
 ; Folding = --
 ; EnableXP
 ; DPIAware

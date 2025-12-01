@@ -475,13 +475,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     PAGE
       Structure _s_PAGE
+        ; change.l
          pos.l
          len.l
-         StructureUnion
-            *End
-            *end2
-         EndStructureUnion
-         change.l
+         End.l
       EndStructure
       ;--     BAR
       Structure _s_BAR
@@ -799,7 +796,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 487
+; CursorPosition = 477
 ; FirstLine = 452
 ; Folding = --8-------
 ; Optimizer
