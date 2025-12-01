@@ -5011,7 +5011,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                ProcedureReturn 0
             EndIf
             
-            If ( *this\screen_width( ) = 0 And *this\screen_height( ) = 0)
+            If ( *this\screen_width( ) = 0 And *this\screen_height( ) = 0 )
                \v\hide = #True
                \h\hide = #True
                ProcedureReturn 0
@@ -5020,10 +5020,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             w = Bool( *this\scroll_width( ) > Width )
             h = Bool( *this\scroll_height( ) > Height )
             
-            \v\bar\page\len = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\frame_height( ) )
-            \h\bar\page\len = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\frame_width( ) )
+            \v\bar\page\len = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\frame_height( ))
+            \h\bar\page\len = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\frame_width( ))
             
-            iheight = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( ) )
+            iheight = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( ))
             If \v\bar\page\len = iheight
                If \v\bar\thumb\len = \v\bar\area\end
                   bar_update( \v, #True )
@@ -7044,16 +7044,6 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure.b bar_PageChange( *this._s_WIDGET, ScrollPos.l, mode.b = 1 )
          Protected result.l, *bar._s_BAR = *this\bar
-         ;          If __gui\event\queuesmask
-         ;             ;ProcedureReturn 0
-         ;          EndIf
-         ;          ; Debug    ""+ ScrollPos +" "+ *this\class
-         ;          If *bar\min[1]
-         ;             If ScrollPos < *bar\min[1]
-         ;                ScrollPos = *bar\min[1]
-         ;             EndIf
-         ;             ScrollPos - *bar\min[1]
-         ;          EndIf
          
          If *bar\area\len
             If Not *bar\max
@@ -7073,11 +7063,6 @@ CompilerIf Not Defined( widget, #PB_Module )
          EndIf
          
          If Not *bar\button\disable 
-            ;             If *bar\BarChange( ) <> ( *bar\page\pos - ScrollPos )
-            ;                *bar\BarChange( ) = *bar\page\pos - ScrollPos
-            ;                Debug "bar_PageChange "+*bar\page\pos +" "+ ScrollPos +" "+ *this\class +" "+ *bar\button\disable   
-            ;             EndIf
-            
             If ScrollPos < *bar\min
                If *bar\max > *bar\page\len
                   ;*bar\BarChange( ) = *bar\page\pos - ScrollPos
@@ -7107,11 +7092,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                result = *bar\page\pos - ScrollPos
                *bar\BarChange( ) = result
                *bar\page\pos = ScrollPos
-               ;   Debug result
             EndIf
             
             If result
-               ; Debug ""+*this +" "+ result +" "+ *bar\BarChange( )
                If bar_update( *this, mode )
                   If is_scrollbars_( *this )
                      If *this\type = #__type_Scroll
@@ -28439,8 +28422,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 22945
-; FirstLine = 22233
+; CursorPosition = 5023
+; FirstLine = 5006
 ; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------+---Y-fb-0---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-44-08e60------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

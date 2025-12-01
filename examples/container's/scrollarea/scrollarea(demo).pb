@@ -92,17 +92,17 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug *g\scroll\v\bar\area\pos
       Debug *g\scroll\v\bar\area\len
       Debug *g\scroll\v\bar\area\end
-      Debug *g\scroll\v\bar\area\change
+      ;Debug *g\scroll\v\bar\area\change
       Debug ""
       Debug *g\scroll\v\bar\page\pos
       Debug *g\scroll\v\bar\page\len
       Debug *g\scroll\v\bar\page\end
-      Debug *g\scroll\v\bar\page\change
+      ;Debug *g\scroll\v\bar\page\change
       Debug ""
       Debug *g\scroll\v\bar\thumb\pos
       Debug *g\scroll\v\bar\thumb\len
       Debug *g\scroll\v\bar\thumb\end
-      Debug *g\scroll\v\bar\thumb\change
+      ;Debug *g\scroll\v\bar\thumb\change
       Debug ""
     EndIf
     
@@ -128,8 +128,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 105
-; FirstLine = 50
+; CursorPosition = 104
+; FirstLine = 51
 ; Folding = v-
 ; Optimizer
 ; EnableXP
