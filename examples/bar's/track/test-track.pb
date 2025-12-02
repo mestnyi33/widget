@@ -30,6 +30,7 @@ Procedure button_events( )
 EndProcedure
 
 Procedure change_events( )
+   SetWindowTitle( EventWindow(), "stste ["+Str(GetState( *track2 ))+"]" )
    Disable( *g1, *track2\bar\button[1]\disable )
    Disable( *g2, *track2\bar\button[2]\disable )
 EndProcedure
@@ -41,7 +42,7 @@ If vertical
       *track1 = Track(20, 50, 50, 250,  0, 30, #PB_TrackBar_Vertical|#__flag_Invert)
       
       *g1=Button(90, 10, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
-      *track2 = Track(80, 50, 50, 250,  min, 30, #PB_TrackBar_Vertical) : Bind( *track2, @change_events( ), #__event_Change)
+      *track2 = Track(80, 50, 50, 250,  min, 0, #PB_TrackBar_Vertical) : Bind( *track2, @change_events( ), #__event_Change)
       *g2=Button(90, 310, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
       
       *track3 = Track(140, 50, 50, 250,  0, 30, #PB_TrackBar_Vertical, 30)
@@ -75,9 +76,9 @@ Else
    EndIf
 EndIf
 
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 15
-; FirstLine = 12
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 71
+; FirstLine = 36
 ; Folding = --
 ; EnableXP
 ; DPIAware

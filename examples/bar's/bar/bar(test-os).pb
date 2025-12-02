@@ -28,7 +28,7 @@
       *track    = TrackBarGadget(#PB_Any, 15, 10, 350, 30, min, 50, flag)
       *splitter = SplitterGadget(#PB_Any, 15, 10 + 35 * 1, 350, 30, ButtonGadget( - 1, 0, 0, 0, 0, ""), ButtonGadget( - 1, 0, 0, 0, 0, ""), #PB_Splitter_Vertical | flag)
       *progress = ProgressBarGadget(#PB_Any, 15, 10 + 35 * 2 , 350, 30, min, 50, flag)
-      *spin     = SpinGadget(#PB_Any, 15, 10 + 35 * 3, 350, 30, min, 50, flag)
+      *spin     = SpinGadget(#PB_Any, 15, 10 + 35 * 3, 350, 30, min, 50, flag|#PB_Spin_Numeric)
       *scroll   = ScrollBarGadget(#PB_Any, 15, 10 + 35 * 4, 350, 30, min, 50, 8, flag)
       
       
@@ -86,7 +86,7 @@
   Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 35
+; CursorPosition = 30
+; FirstLine = 12
 ; Folding = --
 ; EnableXP

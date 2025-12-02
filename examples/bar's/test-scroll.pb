@@ -5,31 +5,106 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
+   Define vertical = 0, PageLength = 0
+   Global._s_WIDGET *g1, *g2, *scroll1,*scroll2,*scroll3
+   
+   ; scroll( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
+   Define min = - 3
+   Define event = #__event_LeftDown;Up;Click
+   
+   Procedure button_events( )
+      Protected state = GetState( *scroll2 )
+      
+      Select EventWidget( )
+         Case *g1
+            state - 1
+         Case *g2
+            state + 1
+      EndSelect
+      
+      If SetState( *scroll2, state )
+         ;       Debug ""+
+         ;             *scroll2\bar\button[1]\disable +" "+ 
+         ;             *scroll2\bar\button[2]\disable
+      EndIf
+   EndProcedure
+   
+   Procedure change_events( )
+      SetWindowTitle( EventWindow(), "stste ["+Str(GetState( *scroll2 ))+"]" )
+      Disable( *g1, *scroll2\bar\button[1]\disable )
+      Disable( *g2, *scroll2\bar\button[2]\disable )
+   EndProcedure
+   
+   If vertical
+      ;\\ vertical
+      If Open(0, 0, 0, 210, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+         
+         *scroll1 = Scroll(20, 50, 50, 250,  0, 30, PageLength, #PB_ScrollBar_Vertical|#__flag_Invert)
+         
+         *g1=Button(90, 10, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
+         *scroll2 = Scroll(80, 50, 50, 250,  min, 0, PageLength, #PB_ScrollBar_Vertical) : Bind( *scroll2, @change_events( ), #__event_Change)
+         *g2=Button(90, 310, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
+         
+         *scroll3 = Scroll(140, 50, 50, 250,  0, 30, PageLength, #PB_ScrollBar_Vertical, 30)
+         
+         Debug " -setstate- "
+         SetState(*scroll1, 5)
+         SetState(*scroll2, 0)
+         SetState(*scroll3, 5)
+         
+         WaitClose( )
+      EndIf
+   Else
+      
+      ;\\ horizontal
+      If Open(0, 0, 0, 350, 210, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+         
+         *scroll1 = Scroll(50, 20, 250, 50,  0, 30, PageLength)
+         
+         *g1=Button(10, 90, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
+         *scroll2 = Scroll(50, 80, 250, 50,  min, 0, PageLength ) : Bind( *scroll2, @change_events( ), #__event_Change)
+         *g2=Button(310, 90, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
+         
+         *scroll3 = Scroll(50, 140, 250, 50,  0, 30, PageLength, #__flag_Invert)
+         
+         Debug " -setstate- "
+         SetState(*scroll1, 5)
+         ;SetState(*scroll2, 0)
+         SetState(*scroll3, 5)
+         
+         WaitClose( )
+      EndIf
+   EndIf
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile = 99
+   EnableExplicit
+   UseWidgets( )
+   
    Procedure gadget_events()
       Debug "change "+GetGadgetState(EventGadget())
    EndProcedure
    
    Procedure widget_events( )
-      Debug "---------"
-      Debug EventWidget()\bar\percent
+      ;  Debug " - "
+      Debug ""+EventWidget( )\bar\min +" - min"
+      Debug ""+EventWidget( )\bar\max +" - max"
+      Debug ""+EventWidget( )\bar\percent +" - percent"
       Debug ""
-      Debug EventWidget()\bar\area\pos
-      Debug EventWidget()\bar\area\len
-      Debug EventWidget()\bar\area\end
-      Debug EventWidget()\bar\area\change
+      Debug ""+EventWidget( )\bar\page\pos +" - page\pos"
+      Debug ""+EventWidget( )\bar\page\len +" - page\len"
+      Debug ""+EventWidget( )\bar\page\end +" - page\end"
       Debug ""
-      Debug EventWidget()\bar\thumb\pos
-      Debug EventWidget()\bar\thumb\len
-      Debug EventWidget()\bar\thumb\end
-      Debug EventWidget()\bar\thumb\change
+      Debug ""+EventWidget( )\bar\area\pos +" - area\pos"
+      Debug ""+EventWidget( )\bar\area\len +" - area\len"
+      Debug ""+EventWidget( )\bar\area\end +" - area\end"
       Debug ""
-      Debug EventWidget()\bar\page\pos
-      Debug EventWidget()\bar\page\len
-      Debug EventWidget()\bar\page\end
-      Debug EventWidget()\bar\page\change
-      Debug ""
-;       Debug ""+EventWidget()\class+" "+ClassFromEvent( WidgetEvent( )) +" "+ GetState(EventWidget()) +" "+ 
-;             EventWidget()\bar\thumb\pos ;+" "+ EventWidget()\bar\page\pos ;+" "+ EventWidget()\bar\ThumbChange( ) +" "+ EventWidget()\bar\PageChange( ) ; WidgetEventData( )
+      Debug ""+EventWidget( )\bar\thumb\pos +" - thumb\pos"
+      Debug ""+EventWidget( )\bar\thumb\len +" - thumb\len"
+      Debug ""+EventWidget( )\bar\thumb\end +" - thumb\end"
+      Debug " --------------------- "
+      ;       Debug ""+EventWidget()\class+" "+ClassFromEvent( WidgetEvent( )) +" "+ GetState(EventWidget()) +" "+ 
+      ;             EventWidget()\bar\thumb\pos ;+" "+ EventWidget()\bar\page\pos ;+" "+ EventWidget()\bar\ThumbChange( ) +" "+ EventWidget()\bar\PageChange( ) ; WidgetEventData( )
    EndProcedure
    
    If OpenWindow( 0, 0, 0, 400, 260, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
@@ -63,9 +138,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 23
-; Folding = -
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 71
+; FirstLine = 47
+; Folding = ---
 ; EnableXP
 ; DPIAware
