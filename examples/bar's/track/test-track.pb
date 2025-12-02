@@ -47,9 +47,9 @@ If vertical
       
       *track3 = Track(140, 50, 50, 250,  0, 30, #PB_TrackBar_Vertical, 30)
       
-      Debug " -setstate- "
+      Debug " -setstate-v "
       SetState(*track1, 5)
-      SetState(*track2, 0)
+      ;SetState(*track2, 0)
       SetState(*track3, 5)
       
       WaitClose( )
@@ -67,18 +67,17 @@ Else
       
       *track3 = Track(50, 140, 250, 50,  0, 30, #__flag_Invert)
       
-      Debug " -setstate- "
+      Debug " -setstate-h "
       SetState(*track1, 5)
-      SetState(*track2, 0)
+      ;SetState(*track2, 0)
       SetState(*track3, 5)
       
       WaitClose( )
    EndIf
 EndIf
-
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 36
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 69
+; FirstLine = 49
 ; Folding = --
 ; EnableXP
 ; DPIAware

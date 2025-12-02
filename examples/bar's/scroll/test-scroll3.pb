@@ -32,19 +32,18 @@ If Open(0, 500,0, 500);,140)
   Debug widget( )\bar\page\pos
   Debug widget( )\bar\page\len
   Debug widget( )\bar\page\end
-  Debug widget( )\bar\page\change
   Debug widget( )\bar\percent
   Debug widget( )\bar\area\end
   Debug widget( )\bar\thumb\pos
   Debug widget( )\bar\thumb\len
   Debug widget( )\bar\thumb\end
-  Debug widget( )\bar\thumb\change
   Debug ""
  
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 39
+; FirstLine = 14
 ; Folding = -
 ; EnableXP
 ; DPIAware

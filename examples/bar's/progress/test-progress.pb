@@ -47,7 +47,7 @@ If vertical
       
       *progress3 = Progress(140, 50, 50, 250,  0, 30, #PB_ProgressBar_Vertical, 30)
       
-      Debug " -setstate- "
+      Debug " -setstate-v "
       SetState(*progress1, 5)
       SetState(*progress2, 0)
       SetState(*progress3, 5)
@@ -67,7 +67,7 @@ Else
       
       *progress3 = Progress(50, 140, 250, 50,  0, 30, #__flag_Invert)
       
-      Debug " -setstate- "
+      Debug " -setstate-h "
       SetState(*progress1, 5)
       SetState(*progress2, 0)
       SetState(*progress3, 5)
@@ -75,9 +75,8 @@ Else
       WaitClose( )
    EndIf
 EndIf
-
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 39
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 69
+; FirstLine = 47
 ; Folding = --
 ; EnableXP

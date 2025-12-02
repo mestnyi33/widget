@@ -22,14 +22,17 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
   ButtonGadget(#Button1, 0, 0, 0, 0, "Button 1") ; as they will be sized automatically
   SplitterGadget(#Splitter2, 5, 75, 220, 120, #Button0, #Button1, #PB_Splitter_Separator)
   
-  SetGadgetAttribute(#Splitter2, #PB_Splitter_FirstGadget, #Button1)
-  SetGadgetAttribute(#Splitter2, #PB_Splitter_SecondGadget, #Button0)
-  SetGadgetState(#Splitter2, 30)
+  CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+     SetGadgetAttribute(#Splitter2, #PB_Splitter_FirstGadget, #Button1)
+     SetGadgetAttribute(#Splitter2, #PB_Splitter_SecondGadget, #Button0)
+     SetGadgetState(#Splitter2, 30)
+  CompilerEndIf
   
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 14
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 27
+; FirstLine = 3
 ; Folding = -
 ; EnableXP
 ; DPIAware

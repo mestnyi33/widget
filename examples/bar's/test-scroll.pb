@@ -47,9 +47,9 @@ CompilerIf #PB_Compiler_IsMainFile
          
          *scroll3 = Scroll(140, 50, 50, 250,  0, 30, PageLength, #PB_ScrollBar_Vertical, 30)
          
-         Debug " -setstate- "
+         Debug " -setstate-v "
          SetState(*scroll1, 5)
-         SetState(*scroll2, 0)
+         ;SetState(*scroll2, 0)
          SetState(*scroll3, 5)
          
          WaitClose( )
@@ -67,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
          
          *scroll3 = Scroll(50, 140, 250, 50,  0, 30, PageLength, #__flag_Invert)
          
-         Debug " -setstate- "
+         Debug " -setstate-h "
          SetState(*scroll1, 5)
          ;SetState(*scroll2, 0)
          SetState(*scroll3, 5)
@@ -138,8 +138,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 71
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 49
 ; FirstLine = 47
 ; Folding = ---
 ; EnableXP
