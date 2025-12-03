@@ -788,6 +788,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                is_inside_( _address_\y#_mode_, _address_\height#_mode_, _mouse_y_ ) )
       EndMacro
       
+      Macro is_mouse_enter( _address_, _mouse_x_, _mouse_y_, _mode_ = )
+         Bool( Not _address_\hide And is_atpoint_( _address_, _mouse_x_, _mouse_y_, _mode_ ))
+      EndMacro
+      
       
       
       ;       Macro is_interrect_( _address_1_x_, _address_1_y_, _address_1_width_, _address_1_height_,
@@ -829,10 +833,10 @@ CompilerIf Not Defined( widget, #PB_Module )
       
       ;-
       ;       Macro MouseInner( _this_, _mouse_x_, _mouse_y_ )
-      ;          Bool( is_atpoint_( _this_, _mouse_x_, _mouse_y_, [#__c_draw] ) And
-      ;                is_atpoint_( _this_, _mouse_x_, _mouse_y_, [#__c_inner] ) And
-      ;                Not ( _this_\type = #__type_Splitter And is_atpoint_( _this_\bar\button, _mouse_x_, _mouse_y_ ) = 0 ) And
-      ;                Not ( _this_\type = #__type_HyperLink And is_atpoint_( _this_, _mouse_x_ - _this_\frame_x( ), _mouse_y_ - _this_\frame_y( ), [#__c_Required] ) = 0 ))
+      ;          Bool( is_mouse_enter( _this_, _mouse_x_, _mouse_y_, [#__c_draw] ) And
+      ;                is_mouse_enter( _this_, _mouse_x_, _mouse_y_, [#__c_inner] ) And
+      ;                Not ( _this_\type = #__type_Splitter And is_mouse_enter( _this_\bar\button, _mouse_x_, _mouse_y_ ) = 0 ) And
+      ;                Not ( _this_\type = #__type_HyperLink And is_mouse_enter( _this_, _mouse_x_ - _this_\frame_x( ), _mouse_y_ - _this_\frame_y( ), [#__c_Required] ) = 0 ))
       ;       EndMacro
       Macro MouseEnter( _this_, _mode_ = 2 ) : _this_\enter = _mode_ : EndMacro
       Macro MouseButtons( ): mouse( )\buttons: EndMacro                  ; Returns mouse x
@@ -2967,7 +2971,7 @@ CompilerIf Not Defined( widget, #PB_Module )
          
          ; at point index
          If *this\anchors  
-            If is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] )
+            If is_mouse_enter( *this, mouse( )\x, mouse( )\y, [#__c_draw] )
                For i = 1 To #__a_moved  
                   If *this\anchors\id[i] And
                      is_atpoint_( *this\anchors\id[i], mouse( )\x, mouse( )\y )
@@ -3009,8 +3013,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                a_index( ) = 0
                ;
                If MouseEnter( *this, - 1 )
-                  If ( is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_frame] ) And
-                       is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ))
+                  If ( is_mouse_enter( *this, mouse( )\x, mouse( )\y, [#__c_frame] ) And
+                       is_mouse_enter( *this, mouse( )\x, mouse( )\y, [#__c_draw] ))
                      
                      *this\enter = 1
                      DoEvents( *this, #__event_MouseEnter, #PB_All, @"[?+a_enter]" )
@@ -3797,6 +3801,14 @@ CompilerIf Not Defined( widget, #PB_Module )
       Macro bar_invert_page_pos_( _bar_, _scroll_pos_ )
          ( Bool( Not _bar_\invert ) * ( _scroll_pos_ ) +
            Bool( _bar_\invert ) * ( _bar_\page\end - ( _scroll_pos_ - _bar_\min )) )
+      EndMacro
+      
+      Macro bar_max( _bar_, _max_ )
+            If _bar_\min > _max_
+               _bar_\max = _bar_\min + 1
+            Else
+               _bar_\max = _max_
+            EndIf
       EndMacro
       
       ;-
@@ -5030,14 +5042,9 @@ CompilerIf Not Defined( widget, #PB_Module )
                   bar_update( \h, 10 )
                EndIf
             Else
-               \v\bar\page\len      = iheight
-               
+               \v\bar\page\len = iheight
                If Not \v\bar\max
-                  If \v\bar\min > iheight
-                     \v\bar\max = \v\bar\min + 1
-                  Else
-                     \v\bar\max = iheight
-                  EndIf
+                  bar_max( \v\bar, iheight )
                EndIf
             EndIf
             
@@ -5051,17 +5058,13 @@ CompilerIf Not Defined( widget, #PB_Module )
                   bar_update( \v, 11 )
                EndIf
             Else
-               \h\bar\page\len      = iwidth
-               
+               \h\bar\page\len = iwidth
                If Not \h\bar\max
-                  If \h\bar\min > iwidth
-                     \h\bar\max = \h\bar\min + 1
-                  Else
-                     \h\bar\max = iwidth
-                  EndIf
+                  bar_max( \h\bar, iwidth )
                EndIf
             EndIf
             
+            ;
             Width + X
             Height + Y
             
@@ -5095,6 +5098,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                Else
                   If \v\hide <> #True
                      \v\hide = #True
+                     ; Debug "vbar hide 2"
                      ;// reset page pos then hide scrollbar
                      If \v\bar\page\pos > \v\bar\min
                         bar_PageChange( \v, \v\bar\min, #False )
@@ -5109,6 +5113,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Width = ( \h\bar\page\len + Bool( Not \v\hide[1] And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\frame_width( ) / 4 ))
                   ;
                   If \v\hide
+                     ; Debug "vbar hide 1"
                      If Height <> \v\bar\page\len
                         Height = \v\bar\page\len
                      EndIf
@@ -5141,6 +5146,10 @@ CompilerIf Not Defined( widget, #PB_Module )
                Resize( \h, #PB_Ignore, y1-*this\inner_y( )-*this\fs-*this\fs[2], Width, #PB_Ignore )
             EndIf
             
+;             If \v\hide
+;                Debug "vbar hide 3"
+;             EndIf
+                  
             ;\\ update scrollbars parent inner coordinate
             If *this\scroll_inner_width( ) <> \h\bar\page\len
                *this\scroll_inner_width( ) = \h\bar\page\len
@@ -5433,8 +5442,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If \v\height <> \v\bar\page\len + round
                   Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len + round )
-                  *this\scroll\v\hide = Bool( *this\scroll\v\bar\max <= *this\scroll\v\bar\page\len )
-                  result              = 1
+                  result = 1
                EndIf
             EndIf
             
@@ -5449,8 +5457,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                
                If \h\frame_width( ) <> \h\bar\page\len + round
                   Resize( \h, #PB_Ignore, #PB_Ignore, \h\bar\page\len + round, #PB_Ignore )
-                  *this\scroll\h\hide = Bool( *this\scroll\h\bar\max <= *this\scroll\h\bar\page\len )
-                  result              = 1
+                  result = 1
                EndIf
             EndIf
             
@@ -5555,6 +5562,20 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
             
             If *bar\page\len
+               ; If is_integral_( *this )
+               If Not *this\hide[1]
+                  If *this\hide <> Bool( *bar\page\len >= *bar\max  )
+                     *this\hide = Bool( *bar\page\len >= *bar\max )
+                     ;
+                     If *this\hide
+                        If *bar\page\pos <> *bar\min
+                           Debug " ["+ *this\class +"] scroll-hide "+ *bar\page\pos
+                           *bar\page\pos = *bar\min
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+               ; EndIf
                ;
                ; get thumb size
                *bar\thumb\len = Round(( *bar\area\end / ( *bar\max - *bar\min )) * *bar\page\len, #PB_Round_Nearest )
@@ -5645,7 +5666,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                *bar\page\pos       = *bar\page\end
             EndIf
             
-            ;\\ 
+;             ;\\ 
             ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos ) 
             ;
             If *bar\invert
@@ -5710,7 +5731,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                   *BB2\ColorState( ) = #__s_0
                EndIf
             EndIf
-          
+;                
+;             ;\\ 
               ;
          ;\\ update bar coordinates
          If *this\type = #__type_Scroll
@@ -7023,7 +7045,7 @@ CompilerIf Not Defined( widget, #PB_Module )
       ;-
       Procedure.b bar_PageChange( *this._s_WIDGET, ScrollPos.l, mode.b = 1 )
          Protected result.l, *bar._s_BAR = *this\bar
-         
+            
          If *bar\area\len
             If Not *bar\max
                *bar\page\end = *bar\area\len - *bar\thumb\len
@@ -10479,11 +10501,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                      
                   Case #__bar_maximum
                      If *bar\max <> value 
-                        If *bar\min > value 
-                           *bar\max = *bar\min + 1
-                        Else
-                           *bar\max = value
-                        EndIf
+                        bar_max( *bar, value )
                         ;
                         If *bar\page\pos > *bar\max 
                            *bar\page\pos = *bar\max
@@ -10507,11 +10525,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         *bar\page\len = value
                         
                         If Not *bar\max
-                           If *bar\min > value
-                              *bar\max = *bar\min + 1
-                           Else
-                              *bar\max = value
-                           EndIf
+                           bar_max( *bar, value )
                         EndIf
                         
                         result = 1
@@ -16538,8 +16552,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If *list( )\address And
                         *list( )\hide = 0 And
                         *list( )\root = *root And 
-                        is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
-                        is_atpoint_( *list( ), mouse_x, mouse_y, [#__c_draw] )
+                        is_mouse_enter( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
+                        is_mouse_enter( *list( ), mouse_x, mouse_y, [#__c_draw] )
                         
                         ;\\ если переместили виджет то его исключаем
                         If mouse( )\dragstart
@@ -16561,8 +16575,8 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;
             ;\\ root no enumWidget
             If Not *this
-               If is_atpoint_( *root, mouse_x, mouse_y, [#__c_frame] ) And
-                  is_atpoint_( *root, mouse_x, mouse_y, [#__c_draw] )
+               If is_mouse_enter( *root, mouse_x, mouse_y, [#__c_frame] ) And
+                  is_mouse_enter( *root, mouse_x, mouse_y, [#__c_draw] )
                   *this = *root
                EndIf
             EndIf
@@ -16572,32 +16586,32 @@ CompilerIf Not Defined( widget, #PB_Module )
          If *this
             ;\\ is integral string bar
             If *this\stringbar And Not *this\stringbar\hide And
-               is_atpoint_( *this\stringbar, mouse_x, mouse_y, [#__c_frame] ) And
-               is_atpoint_( *this\stringbar, mouse_x, mouse_y, [#__c_draw] )
+               is_mouse_enter( *this\stringbar, mouse_x, mouse_y, [#__c_frame] ) And
+               is_mouse_enter( *this\stringbar, mouse_x, mouse_y, [#__c_draw] )
                *this = *this\stringbar
             EndIf
             ;\\ is integral tab bar
             If *this\tabbar And Not *this\tabbar\hide And
-               is_atpoint_( *this\tabbar, mouse_x, mouse_y, [#__c_frame] ) And
-               is_atpoint_( *this\tabbar, mouse_x, mouse_y, [#__c_draw] )
+               is_mouse_enter( *this\tabbar, mouse_x, mouse_y, [#__c_frame] ) And
+               is_mouse_enter( *this\tabbar, mouse_x, mouse_y, [#__c_draw] )
                *this = *this\tabbar
             EndIf
             ;\\ is integral tab bar
             If *this\menubar And Not *this\menubar\hide And
-               is_atpoint_( *this\menubar, mouse_x, mouse_y, [#__c_frame] ) And
-               is_atpoint_( *this\menubar, mouse_x, mouse_y, [#__c_draw] )
+               is_mouse_enter( *this\menubar, mouse_x, mouse_y, [#__c_frame] ) And
+               is_mouse_enter( *this\menubar, mouse_x, mouse_y, [#__c_draw] )
                *this = *this\menubar
             EndIf
             ;\\ is integral scroll bar's
             If *this\scroll
                If *this\scroll\v And Not *this\scroll\v\hide And
-                  is_atpoint_( *this\scroll\v, mouse_x, mouse_y, [#__c_frame] ) And
-                  is_atpoint_( *this\scroll\v, mouse_x, mouse_y, [#__c_draw] )
+                  is_mouse_enter( *this\scroll\v, mouse_x, mouse_y, [#__c_frame] ) And
+                  is_mouse_enter( *this\scroll\v, mouse_x, mouse_y, [#__c_draw] )
                   *this = *this\scroll\v
                EndIf
                If *this\scroll\h And Not *this\scroll\h\hide And
-                  is_atpoint_( *this\scroll\h, mouse_x, mouse_y, [#__c_frame] ) And
-                  is_atpoint_( *this\scroll\h, mouse_x, mouse_y, [#__c_draw] )
+                  is_mouse_enter( *this\scroll\h, mouse_x, mouse_y, [#__c_frame] ) And
+                  is_mouse_enter( *this\scroll\h, mouse_x, mouse_y, [#__c_draw] )
                   *this = *this\scroll\h
                EndIf
             EndIf
@@ -16702,7 +16716,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            mouse_x = mouse( )\x - *this\inner_x( ) - *this\RowEntered( )\x - *this\scroll_x( )
                            mouse_y = mouse( )\y - *this\inner_y( ) - *this\RowEntered( )\y - *this\scroll_y( )
                            ;                            If*BB1 And *BB2
-                           ;                               Debug ""+""+ is_atpoint_( *BB1, mouse_x, mouse_y ) +" "+ is_atpoint_( *BB2, mouse_x, mouse_y )
+                           ;                               Debug ""+""+ is_mouse_enter( *BB1, mouse_x, mouse_y ) +" "+ is_mouse_enter( *BB2, mouse_x, mouse_y )
                            ;                            EndIf
                         EndIf
                      EndIf
@@ -16717,11 +16731,11 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                   
                   ;\\ get at-point-button address
-                  If *BB1 And *BB1\hide = 0 And is_atpoint_( *BB1, mouse_x, mouse_y )
+                  If *BB1 And *BB1\hide = 0 And is_mouse_enter( *BB1, mouse_x, mouse_y )
                      *EnteredButton = *BB1
-                  ElseIf *BB2 And *BB2\hide = 0 And is_atpoint_( *BB2, mouse_x, mouse_y )
+                  ElseIf *BB2 And *BB2\hide = 0 And is_mouse_enter( *BB2, mouse_x, mouse_y )
                      *EnteredButton = *BB2
-                  ElseIf *BB0 And *BB0\hide = 0 And is_atpoint_( *BB0, mouse_x, mouse_y )
+                  ElseIf *BB0 And *BB0\hide = 0 And is_mouse_enter( *BB0, mouse_x, mouse_y )
                      *EnteredButton = *BB0
                   EndIf
                   
@@ -16763,7 +16777,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   ;\\
                   If Not EnteredButton( )
                      If *this\caption
-                        *this\caption\interact = is_atpoint_( *this\caption, mouse( )\x, mouse( )\y )
+                        *this\caption\interact = is_mouse_enter( *this\caption, mouse( )\x, mouse( )\y )
                      EndIf
                   EndIf
                EndIf
@@ -16787,8 +16801,8 @@ CompilerIf Not Defined( widget, #PB_Module )
                         Leaved( )\parent\enter
                         
                         If Leaved( )\parent = *this
-                           If is_atpoint_( Leaved( )\parent, mouse_x, mouse_y, [#__c_inner] ) And
-                              is_atpoint_( Leaved( )\parent, mouse_x, mouse_y, [#__c_draw] )
+                           If is_mouse_enter( Leaved( )\parent, mouse_x, mouse_y, [#__c_inner] ) And
+                              is_mouse_enter( Leaved( )\parent, mouse_x, mouse_y, [#__c_draw] )
                               MouseEnter( Leaved( )\parent )
                            Else
                               Leaved( )\parent\enter = 1
@@ -17335,7 +17349,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If Not ( *this\LineEntered( ) And
                         *this\LineEntered( )\visible And
                         *this\LineEntered( )\hide = 0 And
-                        ( ( *this\enter And is_atpoint_( *this\LineEntered( ), mouse_x, mouse_y )) Or
+                        ( ( *this\enter And is_mouse_enter( *this\LineEntered( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *this\LineEntered( )\y, *this\LineEntered( )\height, mouse_y )) ))
                   
                   ; search entered item
@@ -17343,7 +17357,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Repeat
                      If *this\RowVisibleList( )\visible And
                         *this\RowVisibleList( )\hide = 0 And
-                        ( ( *this\enter And is_atpoint_( *this\RowVisibleList( ), mouse_x, mouse_y )) Or
+                        ( ( *this\enter And is_mouse_enter( *this\RowVisibleList( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *this\RowVisibleList( )\y, *this\RowVisibleList( )\height, mouse_y )) )
                         *rowLine = *this\RowVisibleList( )
                         Break
@@ -17356,7 +17370,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                If Not ( *this\LineEntered( ) And
                         *this\LineEntered( )\visible And
                         *this\LineEntered( )\hide = 0 And
-                        ( ( *this\enter And is_atpoint_( *this\LineEntered( ), mouse_x, mouse_y )) Or
+                        ( ( *this\enter And is_mouse_enter( *this\LineEntered( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *this\LineEntered( )\y, *this\LineEntered( )\height, mouse_y )) ))
                   
                   ; search entered item
@@ -17364,7 +17378,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                   Repeat
                      If *this\__lines( )\visible And
                         *this\__lines( )\hide = 0 And
-                        ( ( *this\enter And is_atpoint_( *this\__lines( ), mouse_x, mouse_y )) Or
+                        ( ( *this\enter And is_mouse_enter( *this\__lines( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *this\__lines( )\y, *this\__lines( )\height, mouse_y )) )
                         *rowLine = *this\__lines( )
                         Break
@@ -17887,14 +17901,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If *this\RowEntered( ) And
                         *this\RowEntered( )\visible And
                         Not *this\RowEntered( )\hide And
-                        is_atpoint_( *this\RowEntered( ), mouse_x, mouse_y )
+                        is_mouse_enter( *this\RowEntered( ), mouse_x, mouse_y )
                         *row = *this\RowEntered( )
                      Else
                         LastElement( *this\RowVisibleList( ))
                         Repeat
                            If *this\RowVisibleList( )\visible And
                               Not *this\RowVisibleList( )\hide And
-                              is_atpoint_( *this\RowVisibleList( ), mouse_x, mouse_y )
+                              is_mouse_enter( *this\RowVisibleList( ), mouse_x, mouse_y )
                               *row = *this\RowVisibleList( )
                               Break
                            EndIf
@@ -17905,14 +17919,14 @@ CompilerIf Not Defined( widget, #PB_Module )
                      If *this\RowEntered( ) And
                         *this\RowEntered( )\visible And
                         Not *this\RowEntered( )\hide And
-                        is_atpoint_( *this\RowEntered( ), mouse_x, mouse_y )
+                        is_mouse_enter( *this\RowEntered( ), mouse_x, mouse_y )
                         *row = *this\RowEntered( )
                      Else
                         LastElement( *rows( ))
                         Repeat
                            If *rows( )\visible And
                               Not *rows( )\hide And
-                              is_atpoint_( *rows( ), mouse_x, mouse_y )
+                              is_mouse_enter( *rows( ), mouse_x, mouse_y )
                               *row = *rows( )
                               Break
                            EndIf
@@ -18530,7 +18544,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                         If *this\TabEntered( ) And
                            *this\TabEntered( )\visible And
                            *this\TabEntered( )\hide = 0 And
-                           is_atpoint_( *this\TabEntered( ), mouse_bar_x, mouse_bar_y )
+                           is_mouse_enter( *this\TabEntered( ), mouse_bar_x, mouse_bar_y )
                            
                            *tab = *this\TabEntered( )
                         Else
@@ -18539,7 +18553,7 @@ CompilerIf Not Defined( widget, #PB_Module )
                            Repeat
                               If *this\__tabs( )\visible And
                                  *this\__tabs( )\hide = 0 And
-                                 is_atpoint_( *this\__tabs( ), mouse_bar_x, mouse_bar_y )
+                                 is_mouse_enter( *this\__tabs( ), mouse_bar_x, mouse_bar_y )
                                  *tab = *this\__tabs( )
                                  Break
                               EndIf
@@ -18877,7 +18891,7 @@ CompilerIf Not Defined( widget, #PB_Module )
             EndIf
          EndIf
          If *this\combobutton
-            If is_atpoint_( *this\combobutton, mouse( )\x, mouse( )\y )
+            If is_mouse_enter( *this\combobutton, mouse( )\x, mouse( )\y )
                If *this\combobutton\enter = 0
                   *this\combobutton\enter = 1
                   If *this\ColorState( ) = 0
@@ -18899,10 +18913,10 @@ CompilerIf Not Defined( widget, #PB_Module )
          ;
          ;\\ update [entered position and current cursor] state
          If *this\enter > 0
-            If Bool( is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_draw] ) And
-                     is_atpoint_( *this, mouse( )\x, mouse( )\y, [#__c_inner] ) And
-                     Not ( *this\type = #__type_Splitter And is_atpoint_( *this\bar\button, mouse( )\x, mouse( )\y ) = 0 ) And
-                     Not ( *this\type = #__type_HyperLink And is_atpoint_( *this, mouse( )\x - *this\frame_x( ), mouse( )\y - *this\frame_y( ), [#__c_Required] ) = 0 ))
+            If Bool( is_mouse_enter( *this, mouse( )\x, mouse( )\y, [#__c_draw] ) And
+                     is_mouse_enter( *this, mouse( )\x, mouse( )\y, [#__c_inner] ) And
+                     Not ( *this\type = #__type_Splitter And is_mouse_enter( *this\bar\button, mouse( )\x, mouse( )\y ) = 0 ) And
+                     Not ( *this\type = #__type_HyperLink And is_mouse_enter( *this, mouse( )\x - *this\frame_x( ), mouse( )\y - *this\frame_y( ), [#__c_Required] ) = 0 ))
                ;
                If *this\enter = 1
                   *this\enter = 2
@@ -27660,9 +27674,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 422
-; FirstLine = 422
-; Folding = ---------------------------------------------------------------------------------------v-9----------------------------v-4-f-8----ffS4d8uv8----------------+b3zfz3f-f8------f3--+8-------------------M-------------V46-vf-+---v------------------------------------------+--------------Wf-----8+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4------------------------------------------------------------------------------------------------------0-44-t-e60------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 18918
+; FirstLine = 16461
+; Folding = ----------------------------------------------------------------------------------------+z------------------------------4-f------f-n1d-v88e---t-----f-----r-md94s0484+-f----n0--vW------------------Pz------------f2d+-84v----4-----------------------------------------v--------------v24--0-v8----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------------------------------------------------------------------------------------------------------4-ff-4+8l4------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -38,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
       DrawingMode( #PB_2DDrawing_Outlined )
       Box( X, Y, Width, Height, RGB( 0,255,0 ) )
       Box( _this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, RGB( 0,0,255 ) )
-      
+      ;Debug " "+_this_\scroll\v\y +" "+ _this_\scroll\v\bar\page\pos
       ; Box( _this_\scroll_x( ), _this_\scroll_y( ), _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
       Box( _this_\scroll\h\x -_this_\scroll\h\bar\page\pos, _this_\scroll\v\y - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
    EndMacro
@@ -150,8 +150,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected scroll_y ;= *this\scroll\v\bar\Page\Pos
       
       If LastElement( _images_( ) ) And 
-         Not is_atpoint_( *this\scroll\v, mouse_x, mouse_y ) And
-         Not is_atpoint_( *this\scroll\h, mouse_x, mouse_y ) ; And AtBox( *this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len,*this\scroll\v\bar\page\len, mouse_x, mouse_y )
+         Not is_mouse_enter( *this\scroll\v, mouse_x, mouse_y ) And
+         Not is_mouse_enter( *this\scroll\h, mouse_x, mouse_y ) ; And AtBox( *this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len,*this\scroll\v\bar\page\len, mouse_x, mouse_y )
                                                              ; search for hit, starting from end ( z-order )
          Repeat
             If mouse_x >= _images_( )\x - scroll_x And mouse_x < _images_( )\x+ _images_( )\width - scroll_x 
@@ -159,6 +159,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   alpha = 255
                   
                   If _images_( )\alphatest And ImageDepth( _images_( )\img ) > 31
+                     StopDrawing( )
                      If StartDrawing( ImageOutput( _images_( )\img ) )
                         DrawingMode( #PB_2DDrawing_AlphaChannel )
                         alpha = Alpha( Point( mouse_x - _images_( )\x - scroll_x, mouse_y - _images_( )\y - scroll_y ) ) ; get alpha
@@ -397,7 +398,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 86
-; FirstLine = 66
+; CursorPosition = 153
+; FirstLine = 143
 ; Folding = -------8-
 ; EnableXP

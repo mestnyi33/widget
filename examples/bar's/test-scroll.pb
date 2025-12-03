@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
          
          Debug " -setstate-h "
          SetState(*scroll1, 5)
-         ;SetState(*scroll2, 0)
+         ; SetState(*scroll2, 0)
          SetState(*scroll3, 5)
          
          WaitClose( )
@@ -139,7 +139,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 49
+; CursorPosition = 71
 ; FirstLine = 47
 ; Folding = ---
 ; EnableXP
