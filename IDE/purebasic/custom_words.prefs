@@ -27,9 +27,26 @@ GetCanvasGadget
 GetWindow
 GetRoot
 
+DPIScaled
+DPIScaledX
+DPIScaledY
+DPIUnScaled
+DPIUnscaledX
+DPIUnscaledY
+DPIResolution
+DPIResolutionX
+DPIResolutionY
+
 MouseEnter
+MousePress
+MousePressX
+MousePressY
+MouseClick
 MouseButtons
+MouseButtonClick
 MouseButtonPress
+MouseButtonPressX
+MouseButtonPressY
 MouseData
 MouseDirection
 MouseMoveX

@@ -12,11 +12,12 @@ CompilerIf #PB_Compiler_IsMainFile
    Global b_0,b_1,b_2,s_0,b_2,b_3,s_1, s_2
    
    Procedure resize_window_0()
+      Protected Canvas = GetCanvasGadget(root())
       Protected Width = WindowWidth(EventWindow())
       
       ResizeGadget(7, #PB_Ignore, #PB_Ignore, Width - 250, #PB_Ignore)
       
-      ; ResizeGadget(GetCanvasGadget(root()), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore)
+      ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, Width, #PB_Ignore)
       If Resize(s_2, #PB_Ignore, #PB_Ignore, Width - 250, #PB_Ignore)
          Repaint( )
       EndIf
@@ -70,8 +71,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until event = #PB_Event_CloseWindow
    End
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 18
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 15
 ; Folding = -
 ; EnableXP
 ; DPIAware

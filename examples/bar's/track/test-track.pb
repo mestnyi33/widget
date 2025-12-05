@@ -10,10 +10,11 @@ Global._s_WIDGET *g1, *g2, *track1,*track2,*track3
 
 ; track( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0 )
 Define min = - 3
-Define event = #__event_LeftDown;Up;Click
+Define event = #__event_LeftClick
 
 Procedure button_events( )
    Protected state = GetState( *track2 )
+   Debug "click " + WidgetEventData( )
    
    Select EventWidget( )
       Case *g1
@@ -75,9 +76,9 @@ Else
       WaitClose( )
    EndIf
 EndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 69
-; FirstLine = 49
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 18
+; FirstLine = 11
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -13,9 +13,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure resize_window_0()
     Protected Width = WindowWidth(EventWindow())
-    ; ResizeGadget(GetCanvasGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
-    ResizeGadget(15, #PB_Ignore, #PB_Ignore, Width - 250, #PB_Ignore)
-    Resize(w_15, #PB_Ignore, #PB_Ignore, Width - 250, #PB_Ignore)
+;     ; ResizeGadget(GetCanvasGadget(Root()), #PB_Ignore, #PB_Ignore, width, #PB_Ignore)
+;     ResizeGadget(15, #PB_Ignore, #PB_Ignore, Width - 250, #PB_Ignore)
+;     Resize(w_15, #PB_Ignore, #PB_Ignore, Width - 250, #PB_Ignore)
   EndProcedure
   
   OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
@@ -104,10 +104,10 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
   End
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 76
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 17
+; FirstLine = 14
 ; Folding = -
-; Optimizer
 ; EnableXP
 ; DPIAware
+; Optimizer
