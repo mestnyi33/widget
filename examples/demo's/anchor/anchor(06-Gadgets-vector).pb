@@ -47,13 +47,13 @@ CompilerIf #PB_Compiler_IsMainFile
          
          If *Object\press   
             eState | #State_Selected 
-            If MouseButtonPress( ) = #PB_MouseButton_Left
+            If MouseButtons( ) = #PB_MouseButton_Left
                eState | #State_LeftMousePushed
             EndIf
-            If MouseButtonPress( ) = #PB_MouseButton_Right
+            If MouseButtons( ) = #PB_MouseButton_Right
                eState | #State_RightMousePushed
             EndIf
-            If MouseButtonPress( ) = #PB_MouseButton_Middle
+            If MouseButtons( ) = #PB_MouseButton_Middle
                eState | #State_MiddleMousePushed
             EndIf
          EndIf
@@ -226,7 +226,7 @@ CompilerIf #PB_Compiler_IsMainFile
       If ObjectState & (#State_LeftMousePushed|#State_Hovered) = (#State_LeftMousePushed|#State_Hovered)
          VectorSourceGradientColor(HSVA(Hue, 40, $E8), 0.00)
          VectorSourceGradientColor(HSVA(Hue, 10, $FF), 1.00)
-      ElseIf ObjectState & #State_Hovered And MouseButtons( ) & #PB_Canvas_LeftButton = 0
+      ElseIf ObjectState & #State_Hovered And Not CanvasMouseButton( ) & #PB_Canvas_LeftButton
          VectorSourceGradientColor(HSVA(Hue, 20, $E8), 0.00)
          VectorSourceGradientColor(HSVA(Hue, 5, $FF), 1.00)
       Else
@@ -250,7 +250,7 @@ CompilerIf #PB_Compiler_IsMainFile
          AddPathBox(1.5, Y+1.5, 16, 16)
          VectorSourceColor(HSVA(Hue, 50, $FF))
          StrokePath(1)
-      ElseIf ObjectState & #State_Hovered And MouseButtons( ) & #PB_Canvas_LeftButton = 0
+      ElseIf ObjectState & #State_Hovered And Not CanvasMouseButton( ) & #PB_Canvas_LeftButton
          AddPathBox(0.5, Y+0.5, 18, 18)
          VectorSourceColor(HSVA(0, 0, $A0))
          StrokePath(1)
@@ -415,8 +415,9 @@ CompilerIf #PB_Compiler_IsMainFile
    End
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 35
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 55
+; FirstLine = 27
 ; Folding = -------
 ; EnableXP
+; DPIAware

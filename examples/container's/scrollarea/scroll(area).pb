@@ -21,61 +21,61 @@ CompilerIf #PB_Compiler_IsMainFile
    Global Event.i, drag.i, hole.i
    Global X=100,Y=100, Width=420, Height=420 , focus
    
-   Global NewList Images.canvasitem()
+   Global NewList imgs.canvasitem()
    
    
-   Procedure.i HitTest (List Images.canvasitem(), X, Y)
+   Procedure.i HitTest (List imgs.canvasitem(), X, Y)
       Shared currentItemXOffset.i, currentItemYOffset.i
       Protected alpha.i, *current = #False
       Protected scroll_x ; = *this\scroll\h\bar\Page\Pos
       Protected scroll_y ;= *this\scroll\v\bar\Page\Pos
       
-      If LastElement(Images()) ; search for hit, starting from end (z-order)
+      If LastElement(imgs()) ; search for hit, starting from end (z-order)
          Repeat
-            If X >= Images()\x - scroll_x And X < Images()\x+ Images()\width - scroll_x 
-               If Y >= Images()\y - scroll_y And Y < Images()\y + Images()\height - scroll_y
+            If X >= imgs()\x - scroll_x And X < imgs()\x+ imgs()\width - scroll_x 
+               If Y >= imgs()\y - scroll_y And Y < imgs()\y + imgs()\height - scroll_y
                   alpha = 255
                   
-                  If Images()\alphatest And ImageDepth(Images()\img)>31
-                     If StartDrawing(ImageOutput(Images()\img))
+                  If imgs()\alphatest And ImageDepth(imgs()\img)>31
+                     If StartDrawing(ImageOutput(imgs()\img))
                         DrawingMode(#PB_2DDrawing_AlphaChannel)
-                        alpha = Alpha(Point(X-Images()\x - scroll_x, Y-Images()\y - scroll_y)) ; get alpha
+                        alpha = Alpha(Point(X-imgs()\x - scroll_x, Y-imgs()\y - scroll_y)) ; get alpha
                         StopDrawing()
                      EndIf
                   EndIf
                   
                   If alpha
-                     MoveElement(Images(), #PB_List_Last)
-                     *current = @Images()
-                     currentItemXOffset = X - Images()\x - scroll_x
-                     currentItemYOffset = Y - Images()\y - scroll_y
+                     MoveElement(imgs(), #PB_List_Last)
+                     *current = @imgs()
+                     currentItemXOffset = X - imgs()\x - scroll_x
+                     currentItemYOffset = Y - imgs()\y - scroll_y
                      Break
                   EndIf
                EndIf
             EndIf
-         Until PreviousElement(Images()) = 0
+         Until PreviousElement(imgs()) = 0
       EndIf
       
       ProcedureReturn *current
    EndProcedure
    
-   Procedure AddImage (List Images.canvasitem(), X, Y, img, alphatest=0)
-      If AddElement(Images())
-         Images()\img    = img
-         Images()\x          = X
-         Images()\y          = Y
-         Images()\width  = ImageWidth(img)
-         Images()\height = ImageHeight(img)
-         Images()\alphatest = alphatest
+   Procedure AddImage (List imgs.canvasitem(), X, Y, img, alphatest=0)
+      If AddElement(imgs())
+         imgs()\img    = img
+         imgs()\x          = X
+         imgs()\y          = Y
+         imgs()\width  = ImageWidth(img)
+         imgs()\height = ImageHeight(img)
+         imgs()\alphatest = alphatest
       EndIf
    EndProcedure
    
-   AddImage(Images(),  X-80, Y-20, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp"))
-   AddImage(Images(), X+100,Y+100, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp"))
-   ;AddImage(Images(),  x+221,y+200, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
-   ;AddImage(Images(),  x+210,y+321, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
-   ;AddImage(Images(),  x,y-1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
-   AddImage(Images(),  X+310,Y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
+   AddImage(imgs(),  X-80, Y-20, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp"))
+   AddImage(imgs(), X+100,Y+100, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp"))
+   ;AddImage(imgs(),  x+221,y+200, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
+   ;AddImage(imgs(),  x+210,y+321, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
+   ;AddImage(imgs(),  x,y-1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
+   AddImage(imgs(),  X+310,Y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
    
    hole = CreateImage(#PB_Any,100,100,32)
    If StartDrawing(ImageOutput(hole))
@@ -85,7 +85,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Circle(50,50,30,RGBA($00,$00,$00,$00))
       StopDrawing()
    EndIf
-   AddImage(Images(),X+170,Y+70,hole,1)
+   AddImage(imgs(),X+170,Y+70,hole,1)
    
    
    Procedure bar_area_resize_( *this._S_widget, X.l, Y.l, Width.l, Height.l )
@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
          
          iheight = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\height )
          If \v\bar\page\len <> iheight
-            \v\bar\AreaChange( ) = \v\bar\page\len - iheight
+            ;\v\bar\AreaChange( ) = \v\bar\page\len - iheight
             \v\bar\page\len      = iheight
             
             If Not \v\bar\max
@@ -137,7 +137,7 @@ CompilerIf #PB_Compiler_IsMainFile
          
          iwidth = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\width )
          If \h\bar\page\len <> iwidth
-            \h\bar\AreaChange( ) = \h\bar\page\len - iwidth
+            ;\h\bar\AreaChange( ) = \h\bar\page\len - iwidth
             \h\bar\page\len      = iwidth
             
             If Not \h\bar\max
@@ -214,38 +214,38 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
          
          
-         If \v\bar\AreaChange( ) Or
-            \h\bar\AreaChange( )
-            ;           *this\resize | #__resize_change
-            ; Debug ""+*this\width[#__c_inner]  +" "+ \h\bar\page\len
-            ;          ;\\ update inner coordinate
-            ;         *this\width[#__c_inner]  = \h\bar\page\len
-            ;         *this\height[#__c_inner] = \v\bar\page\len
-            ;          
-            ProcedureReturn #True
-         EndIf
+;          If \v\bar\AreaChange( ) Or
+;             \h\bar\AreaChange( )
+;             ;           *this\resize | #__resize_change
+;             ; Debug ""+*this\width[#__c_inner]  +" "+ \h\bar\page\len
+;             ;          ;\\ update inner coordinate
+;             ;         *this\width[#__c_inner]  = \h\bar\page\len
+;             ;         *this\height[#__c_inner] = \v\bar\page\len
+;             ;          
+;             ProcedureReturn #True
+;          EndIf
       EndWith
    EndProcedure
    
    Macro area_update( )
-      *this\x[#__c_required] = Images()\x 
-      *this\y[#__c_required] = Images()\Y
-      *this\width[#__c_required] = Images()\x+Images()\width - *this\x[#__c_required]
-      *this\height[#__c_required] = Images()\Y+Images()\height - *this\y[#__c_required]
+      *this\x[#__c_required] = imgs()\x 
+      *this\y[#__c_required] = imgs()\Y
+      *this\width[#__c_required] = imgs()\x+imgs()\width - *this\x[#__c_required]
+      *this\height[#__c_required] = imgs()\Y+imgs()\height - *this\y[#__c_required]
       
-      PushListPosition(Images())
-      ForEach Images()
-         If *this\x[#__c_required] > Images()\x : *this\x[#__c_required] = Images()\x : EndIf
-         If *this\y[#__c_required] > Images()\y : *this\y[#__c_required] = Images()\y : EndIf
+      PushListPosition(imgs())
+      ForEach imgs()
+         If *this\x[#__c_required] > imgs()\x : *this\x[#__c_required] = imgs()\x : EndIf
+         If *this\y[#__c_required] > imgs()\y : *this\y[#__c_required] = imgs()\y : EndIf
       Next
-      ForEach Images()
-         If *this\width[#__c_required] < Images()\x+Images()\width - *this\x[#__c_required] : *this\width[#__c_required] = Images()\x+Images()\width - *this\x[#__c_required] : EndIf
-         If *this\height[#__c_required] < Images()\Y+Images()\height - *this\y[#__c_required] : *this\height[#__c_required] = Images()\Y+Images()\height - *this\y[#__c_required] : EndIf
+      ForEach imgs()
+         If *this\width[#__c_required] < imgs()\x+imgs()\width - *this\x[#__c_required] : *this\width[#__c_required] = imgs()\x+imgs()\width - *this\x[#__c_required] : EndIf
+         If *this\height[#__c_required] < imgs()\Y+imgs()\height - *this\y[#__c_required] : *this\height[#__c_required] = imgs()\Y+imgs()\height - *this\y[#__c_required] : EndIf
       Next
-      PopListPosition(Images())
+      PopListPosition(imgs())
    EndMacro
    
-   Procedure Canvas_Draw(Canvas.i, List Images.canvasitem())
+   Procedure Canvas_Draw(Canvas.i, List imgs.canvasitem())
       ;If StartDrawing(CanvasOutput(canvas))
          DrawingMode(#PB_2DDrawing_Default)
          Box(0, 0, OutputWidth(), OutputHeight(), RGB(255,255,255))
@@ -253,8 +253,8 @@ CompilerIf #PB_Compiler_IsMainFile
          ;ClipOutput(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len)
          
          DrawingMode(#PB_2DDrawing_AlphaBlend)
-         ForEach Images()
-            DrawImage(ImageID(Images()\img), Images()\x, Images()\y) ; draw all images with z-order
+         ForEach imgs()
+            DrawImage(ImageID(imgs()\img), imgs()\x, imgs()\y) ; draw all imgs with z-order
          Next
          
          widget::Draw(*this\scroll\v)
@@ -282,8 +282,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
       widget::EventHandler( Canvas, Event )
       
-      MouseX = widget::mouse( )\x
-      MouseY = widget::mouse( )\y
+      MouseX = widget::CanvasMouseX( )
+      MouseY = widget::CanvasMouseY( )
       
       Width = GadgetWidth(Canvas) - X*2
       Height = GadgetHeight(Canvas) - Y*2
@@ -293,7 +293,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #PB_EventType_LeftButtonDown
             If Not EnteredButton( ) ; (EventWidget( ) And EventWidget( )\bar\index > 0)
-               Drag = Bool(HitTest(Images(), Mousex, Mousey))
+               Drag = Bool(HitTest(imgs(), Mousex, Mousey))
                If Drag 
                   Repaint = #True 
                EndIf
@@ -301,14 +301,14 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #PB_EventType_MouseMove
             If Drag = #True
-               If LastElement(Images())
-                  If Images()\x <> Mousex - currentItemXOffset
-                     Images()\x = Mousex - currentItemXOffset
+               If LastElement(imgs())
+                  If imgs()\x <> Mousex - currentItemXOffset
+                     imgs()\x = Mousex - currentItemXOffset
                      Repaint = #True
                   EndIf
                   
-                  If Images()\y <> Mousey - currentItemYOffset
-                     Images()\y = Mousey - currentItemYOffset
+                  If imgs()\y <> Mousey - currentItemYOffset
+                     imgs()\y = Mousey - currentItemYOffset
                      Repaint = #True
                   EndIf
                   
@@ -331,11 +331,11 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
       
       If Repaint 
-        ; Canvas_Draw(Canvas, Images()) 
+        ; Canvas_Draw(Canvas, imgs()) 
       EndIf
    EndProcedure
    Procedure events_draw()
-     Canvas_Draw(MyCanvas, Images()) 
+     Canvas_Draw(MyCanvas, imgs()) 
    EndProcedure
    
    
@@ -344,20 +344,20 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( ) ;   WidgetEvent( ) ; 
          Case #__event_Change
             If EventWidget( )\bar\vertical
-               PushListPosition(Images())
-               ForEach Images()
-                  Images()\Y + EventWidget( )\bar\page\change 
+               PushListPosition(imgs())
+               ForEach imgs()
+                  imgs()\Y + EventWidget( )\bar\change 
                Next
-               PopListPosition(Images())
+               PopListPosition(imgs())
                
                *this\y[#__c_required] =- EventWidget( )\bar\page\pos + EventWidget( )\y
             Else
                
-               PushListPosition(Images())
-               ForEach Images()
-                  Images()\X + EventWidget( )\bar\page\change
+               PushListPosition(imgs())
+               ForEach imgs()
+                  imgs()\X + EventWidget( )\bar\change
                Next
-               PopListPosition(Images())
+               PopListPosition(imgs())
                
                *this\x[#__c_required] =- EventWidget( )\bar\page\pos + EventWidget( )\x
             EndIf
@@ -386,8 +386,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 375
-; FirstLine = 174
-; Folding = 8-+----0---
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 357
+; FirstLine = 240
+; Folding = ----------
 ; EnableXP

@@ -10,8 +10,9 @@ Procedure events_gadgets()
       Case #PB_EventType_LeftClick
          Define state = GetGadgetState(EventGadget())
          Debug  "["+ state +"] - gadget change " + EventGadget()
-         SetState(ID(EventGadget()), state)
-         PostRepaint( )
+         If SetState(ID(EventGadget()), state)
+            PostRepaint( )
+         EndIf
    EndSelect
 EndProcedure
 
@@ -36,11 +37,11 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
    Open(0, 230,0, 230,200)
    Button(0, 0, 0, 0, "Button 0") ; No need to specify size or coordinates
    Button(0, 0, 0, 0, "Button 1") ; as they will be sized automatically
-   Splitter(5, 5, 220, 120, ID(#Button0), ID(#Button1));, #PB_Splitter_Separator)
+   Splitter(5, 5, 220, 120, ID(#Button0), ID(#Button1), #__flag_Transparent);, #PB_Splitter_Separator)
    Bind(ID(#Splitter2), @events_widgets())
    
-   Text(5, 135, 220, 60, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#PB_Text_Border|#__flag_TextCenter|#__flag_TextTop )
-   Splitter(5, 5, 220, 190, ID(#Splitter2), ID(3), #PB_Splitter_Separator)
+   Text(5, 135, 220, 60, "Above GUI part shows two automatically resizing buttons inside the 220x120 SplitterGadget area.",#__flag_Transparent|#__flag_TextCenter|#__flag_TextTop )
+   Splitter(5, 5, 220, 190, ID(#Splitter2), ID(3), #PB_Splitter_Separator|#__flag_Transparent)
    ;Bind(ID(#Splitter4), @events_widgets())
    
    
@@ -57,8 +58,9 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
    WaitClose( )
 EndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 12
-; Folding = -
+; CursorPosition = 43
+; FirstLine = 20
+; Folding = --
 ; Optimizer
 ; EnableXP
 ; DPIAware

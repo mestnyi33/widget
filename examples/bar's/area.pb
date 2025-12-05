@@ -168,7 +168,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
                   If alpha 
-                     If MouseButtonPress( )
+                     If MouseButtons( )
                         MoveElement( _images_( ), #PB_List_Last )
                      EndIf
                      *current = @_images_( )
@@ -200,8 +200,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected Event = WidgetEventType( ) ; EventType( )
       Protected Canvas = GetCanvasGadget(root())      ; EventGadget( )
       
-      Protected MouseX = widget::mouse( )\x
-      Protected MouseY = widget::mouse( )\y
+      Protected MouseX = widget::CanvasMouseX( )
+      Protected MouseY = widget::CanvasMouseY( )
       
 ;       Width = widget::root( )\width - X*2
 ;       Height = widget::root( )\height - Y*2
@@ -237,7 +237,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                EndIf
             Else 
-               If Not MouseButtonPress( )
+               If Not MouseButtons( )
                   If Bool( Canvas_HitTest( _images_( ), Mousex, Mousey ) )
                      If ChangeCursor( root( ), #PB_Cursor_Hand )
                         Repaint = 1
@@ -397,8 +397,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 153
-; FirstLine = 143
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 202
+; FirstLine = 198
 ; Folding = -------8-
 ; EnableXP

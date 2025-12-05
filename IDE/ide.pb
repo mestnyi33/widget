@@ -1406,7 +1406,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
             If type$ = "scrollarea"
                Param1 = Width
                Param2 = Height
-               Param3 = DPIUnscaled( mouse( )\steps )
+               Param3 = DPIUnScaled( mouse( )\steps )
             EndIf
          EndIf
          
@@ -1719,7 +1719,7 @@ Procedure new_widget_events( )
          If IsContainer(*g) 
             If MouseEnter( *g )
                If GetState( ide_inspector_ELEMENTS ) > 0 
-                  If MouseButtonPress( )
+                  If MouseButtons( )
                      ; disable drop 
                      If GetState( ide_inspector_ELEMENTS ) = 1
                         If *g = ide_design_MDI  
@@ -3020,12 +3020,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 216
-; FirstLine = 208
-; Folding = ---------f----84j-------------+-030v---f-f-----f----+9-
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 1722
+; FirstLine = 1408
+; Folding = ---------f----84j-------------+-030----f-f-----f----+9-
 ; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = C:/Users/user/Downloads/Compressed/FormDesignerWindows4.70b2/ide.exe
+; Executable = C:\Users\user\Downloads\Compressed\FormDesignerWindows4.70b2\ide.exe

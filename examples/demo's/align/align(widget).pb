@@ -75,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
                ;SetActiveWindow( window )
             EndIf
          Case #__event_MouseLeave
-            If Not is_mouse_enter( *EventWidget\root, mouse( )\x, mouse( )\y )
+            If Not is_mouse_enter( *EventWidget\root, CanvasMouseX( ), CanvasMouseY( ) )
                RemoveWindowTimer(window, 1)
                StickyWindow( window, 0 )
                ResizeWindow(window, #PB_Ignore, #PB_Ignore, defWidth, defHeight)
@@ -536,10 +536,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.21 (Windows - x64)
 ; CursorPosition = 77
 ; FirstLine = 73
 ; Folding = --D5-
+; Optimizer
 ; EnableXP
 ; DPIAware
-; Optimizer

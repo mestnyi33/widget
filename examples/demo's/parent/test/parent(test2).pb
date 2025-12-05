@@ -729,7 +729,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ;       Case #__event_LeftUp
         ;         If GetState( id_elements_tree) <> 0 
-        ;           Debug ""+mouse( )\x+" "+mouse( )\delta\x
+        ;           Debug ""+CanvasMouseX( )+" "+mouse( )\delta\x
         ;           widget_add( EventWidget( ), GetText( id_elements_tree ), mouse( )\delta\x-X(EventWidget( ), #PB_Gadget_ContainerCoordinate), mouse( )\delta\y-Y(EventWidget( ), #PB_Gadget_ContainerCoordinate) )
         ;            SetState( id_elements_tree, 0 )
         ;         EndIf
@@ -844,8 +844,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 787
-; FirstLine = 769
+; CursorPosition = 731
+; FirstLine = 727
 ; Folding = ------------
 ; EnableXP
 ; DPIAware

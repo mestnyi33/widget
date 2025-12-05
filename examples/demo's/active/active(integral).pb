@@ -9,7 +9,6 @@ CompilerIf #PB_Compiler_IsMainFile
    Define Width=500, Height=400
    
    Procedure Active()
-      ;If MouseButtonPress( )
       ;ClearDebugOutput( )
       If EventWidget( )\type < 0
          Debug ""+GetClass( EventWidget( ) ) +" --- "+#PB_Compiler_Procedure +" --- "
@@ -22,7 +21,6 @@ CompilerIf #PB_Compiler_IsMainFile
       ;                  "]  LAST["+ widgets(  )\parent\LastWidget( )\class+"]"
       ;            StopEnum( ) 
       ;         EndIf
-      ;EndIf
    EndProcedure
    
    Procedure Deactive()
@@ -69,7 +67,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End  
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 6
-; Folding = 2-
+; CursorPosition = 23
+; FirstLine = 7
+; Folding = 4-
 ; EnableXP
 ; DPIAware

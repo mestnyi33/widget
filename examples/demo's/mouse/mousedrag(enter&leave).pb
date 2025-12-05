@@ -13,8 +13,8 @@ CompilerIf #PB_Compiler_IsMainFile
       If EventWidget( ) <> root( )
          Select WidgetEvent( )
             Case #__event_down
-               deltax = mouse( )\x-EventWidget( )\x
-               deltay = mouse( )\y-EventWidget( )\y
+               deltax = CanvasMouseX( ) - EventWidget( )\x
+               deltay = CanvasMouseY( ) - EventWidget( )\y
                SetColor(EventWidget( ), #__FrameColor, $ffff0000)
                
             Case #__event_dragstart
@@ -110,9 +110,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 21
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 15
+; FirstLine = 11
 ; Folding = --
 ; EnableXP
 ; DPIAware

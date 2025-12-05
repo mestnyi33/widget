@@ -17,9 +17,6 @@ CompilerIf #PB_Compiler_IsMainFile
       ;   ProcedureReturn 0
       EndIf
       
-      If MouseButtonPress( )
-      ;   Debug " state "+*this\class
-      EndIf
       SetState( *this, state )
    EndProcedure
    
@@ -27,10 +24,6 @@ CompilerIf #PB_Compiler_IsMainFile
       ; 
       If GetState( *this ) = item
          ProcedureReturn 0
-      EndIf
-      
-      If MouseButtonPress( )
-         ;  Debug " status "+*this\class
       EndIf
       
       PushItem(EventWidget( ))
@@ -164,7 +157,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             ; изменять цвета только у выделеных итемов
-            ; If Not MouseButtons( ) : ProcedureReturn : EndIf
+            ; If Not CanvasMouseButton( ) : ProcedureReturn : EndIf
             
             ;
             Select EventWidget( )
@@ -339,9 +332,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 17
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 19
+; FirstLine = 16
 ; Folding = --------
 ; EnableXP
 ; DPIAware
