@@ -74,7 +74,7 @@
       
       #__tracksize = 4
       #__arrow_Size = 4
-      #__arrow_type = - 1 ; ;-1 ;0 ;1
+      #__arrow_type = -1 ; ;-1 ;0 ;1
       
       ; caption bar buttons
       #__wb_Close = 1
@@ -725,8 +725,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 48
+; CursorPosition = 76
+; FirstLine = 60
 ; Folding = ----
 ; Optimizer
 ; EnableXP
