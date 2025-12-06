@@ -851,20 +851,15 @@ CompilerIf Not Defined( widget, #PB_Module )
          ; #PB_Canvas_MiddleButton
          ; #PB_Canvas_RightButton
          mouse( )\buttons
-      EndMacro                       ; Returns mouse button 
+      EndMacro                                                                     ; Returns mouse button 
       ;-
       Macro MouseData( ): mouse( )\data: EndMacro                                  ; Returns mouse data
       Macro MouseDirection( ): mouse( )\wheeldirection: EndMacro                   ; Returns mouse [move/wheel] direction
       Macro MouseEnter( _this_, _mode_ = 2 ) : _this_\enter = _mode_ : EndMacro
-      Macro MouseClick( ): mouse( )\click: EndMacro                                ; Returns mouse button click count
-      Macro MousePress( ): mouse( )\press: EndMacro                                ; Returns mouse buttons state
+      Macro MouseClick( ): mouse( )\click: EndMacro                                ; Returns mouse click count
+      Macro MouseButtons( ): mouse( )\press: EndMacro                              ; Returns mouse buttons state
       Macro MousePressX( ): mouse( )\press_x : EndMacro                            ; Returns mouse buttons press [x]-coordinate
       Macro MousePressY( ): mouse( )\press_y : EndMacro                            ; Returns mouse buttons press [y]-coordinate
-      Macro MouseButtons( ): mouse( )\press: EndMacro                        ; Returns mouse button type
-;       Macro MouseButtonClick( ): MouseClick( ): EndMacro                           ; Returns mouse button click count
-;       Macro MouseButtonPress( ): MousePress( ): EndMacro                           ; Returns mouse buttons state
-;       Macro MouseButtonPressX( ): MousePressX( ) : EndMacro                        ; Returns mouse buttons press [x]-coordinate
-;       Macro MouseButtonPressY( ): MousePressY( ) : EndMacro                        ; Returns mouse buttons press [y]-coordinate
       ;-
       Macro MouseMoveX( ): DPIUnscaledX( CanvasMouseX( ) - MousePressX( )): EndMacro              ; Returns mouse x
       Macro MouseMoveY( ): DPIUnscaledY( CanvasMouseY( ) - MousePressY( )): EndMacro              ; Returns mouse y
@@ -19191,14 +19186,20 @@ CompilerIf Not Defined( widget, #PB_Module )
                   EndIf
                
                Case #__type_Option
-                  If event = #__event_LeftClick
+                  If event = #__event_LeftClick Or
+                     event = #__event_left2Click Or
+                     event = #__event_left3Click
+                     ;
                      If SetState( *this, #True )
                         
                      EndIf
                   EndIf
                   
                Case #__type_checkBox
-                  If event = #__event_LeftClick
+                  If event = #__event_LeftClick Or
+                     event = #__event_left2Click Or
+                     event = #__event_left3Click
+                     ;
                      If SetState( *this, Bool( *this\togglebox\checked ! 1 ) )
                         
                      EndIf
@@ -19648,18 +19649,18 @@ CompilerIf Not Defined( widget, #PB_Module )
             MouseData( ) | #__mouse_press
             ;
             If eventtype = #PB_EventType_LeftButtonDown 
-               event            = #__event_LeftDown
-               MousePress( )   = #PB_MouseButton_Left
+               event           = #__event_LeftDown
+               MouseButtons( )   = #PB_MouseButton_Left
                CanvasMouseButton( ) | #PB_Canvas_LeftButton 
             EndIf
             If eventtype = #PB_EventType_MiddleButtonDown 
-               event            = #__event_MiddleDown 
-               MousePress( )   = #PB_MouseButton_Middle
+               event           = #__event_MiddleDown 
+               MouseButtons( )   = #PB_MouseButton_Middle
                CanvasMouseButton( ) | #PB_Canvas_MiddleButton
             EndIf
             If eventtype = #PB_EventType_RightButtonDown 
-               event            = #__event_RightDown 
-               MousePress( )   = #PB_MouseButton_Right
+               event           = #__event_RightDown 
+               MouseButtons( )   = #PB_MouseButton_Right
                CanvasMouseButton( ) | #PB_Canvas_RightButton
             EndIf
             ;
@@ -19792,10 +19793,10 @@ CompilerIf Not Defined( widget, #PB_Module )
             ;
             If root( ) And
                root( )\canvas\gadget = eventgadget
-               CanvasMouseX( )            = GadgetMouseX( eventgadget )
-               CanvasMouseY( )            = GadgetMouseY( eventgadget )
+               CanvasMouseX( )       = GadgetMouseX( eventgadget )
+               CanvasMouseY( )       = GadgetMouseY( eventgadget )
             EndIf
-            MousePress( ) = 0
+            MouseButtons( ) = 0
          EndIf
          
          If eventtype = #PB_EventType_KeyDown Or
@@ -20398,29 +20399,29 @@ CompilerIf Not Defined( widget, #PB_Module )
                         ;\\ do 1-click
                         If Pressed( ) = Entered( )
                            If event = #__event_LeftUp
-                              DoEvents( Pressed( ), #__event_LeftClick, #PB_All, MouseClick( ) )
+                              DoEvents( Pressed( ), #__event_LeftClick )
                            EndIf
                            If event = #__event_RightUp
-                              DoEvents( Pressed( ), #__event_RightClick, #PB_All, MouseClick( ) )
+                              DoEvents( Pressed( ), #__event_RightClick )
                            EndIf
                         EndIf
                         
                         ;\\ do 2-click
                      ElseIf MouseClick( ) = 2
                         If event = #__event_LeftUp
-                           DoEvents( Pressed( ), #__event_Left2Click, #PB_All, MouseClick( ) )
+                           DoEvents( Pressed( ), #__event_Left2Click )
                         EndIf
                         If event = #__event_RightUp
-                           DoEvents( Pressed( ), #__event_Right2Click, #PB_All, MouseClick( ) )
+                           DoEvents( Pressed( ), #__event_Right2Click )
                         EndIf
                         
                         ;\\ do 3-click
                      ElseIf MouseClick( ) = 3
                         If event = #__event_LeftUp
-                           DoEvents( Pressed( ), #__event_Left3Click, #PB_All, MouseClick( ) )
+                           DoEvents( Pressed( ), #__event_Left3Click )
                         EndIf
                         If event = #__event_RightUp
-                           DoEvents( Pressed( ), #__event_Right3Click, #PB_All, MouseClick( ) )
+                           DoEvents( Pressed( ), #__event_Right3Click )
                         EndIf
                         
                      EndIf
@@ -27702,10 +27703,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 846
-; FirstLine = 834
-; Folding = ----------------------------------------------------------------------------------------f-6------------------------------8-v------v-T7u-40dv---3-----v-----2fzO+b3+80b--v----z+--Xr------------------n6------------v7O--084----8-----------------------------------------4---------------78--+-40--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--4-4ncv----u-40------0-u0+------4---f--ffz-b+----------------------------------------8-vv-8+8l4------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 861
+; FirstLine = 849
+; Folding = ----------------------------------------------------------------------------------------v-9------------------------------0-4------4-Jd4-8+u4--f8-----4-----7vZH-Nb-0+t--4----Z---r2------------------z9------------Xdn--+08----0-----------------------------------------8--------------f00-f--8+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4448+RTu4+v8f4-8+------7f4ev0v----8---v+8nv6-N-4f--------------------------------------0-44-d-0y8------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

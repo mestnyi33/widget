@@ -25,6 +25,7 @@ ResizeRootWindow
 GetCanvasWindow
 GetCanvasGadget
 GetWindow
+GetGadget
 GetRoot
 
 DPIScaled
@@ -67,10 +68,10 @@ Pressed
 Entered
 Opened
 
-widget
-widgets
-root
+Root
+Widget
 roots
+widgets
 address
 
 FirstWidget
@@ -86,6 +87,7 @@ WidgetEventType
 WidgetEventData
 WidgetEventItem
 
+Events
 GetEvent
 GetEventType
 GetEventData

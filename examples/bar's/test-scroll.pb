@@ -10,11 +10,12 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ; scroll( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
    Define min = - 3
-   Define event = #__event_LeftDown;Up;Click
+   Define event = #__event_LeftClick
    
    Procedure button_events( )
       Protected state = GetState( *scroll2 )
-      
+      Debug "click " + MouseClick( )
+   
       Select EventWidget( )
          Case *g1
             state - 1
@@ -138,9 +139,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 71
-; FirstLine = 47
-; Folding = ---
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 16
+; FirstLine = 2
+; Folding = -8-
 ; EnableXP
 ; DPIAware

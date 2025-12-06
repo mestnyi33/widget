@@ -47,13 +47,13 @@ CompilerIf #PB_Compiler_IsMainFile
          
          If *Object\press   
             eState | #State_Selected 
-            If MouseButtons( ) = #PB_MouseButton_Left
+            If CanvasMouseButton( ) & #PB_Canvas_LeftButton
                eState | #State_LeftMousePushed
             EndIf
-            If MouseButtons( ) = #PB_MouseButton_Right
+            If CanvasMouseButton( ) & #PB_Canvas_RightButton
                eState | #State_RightMousePushed
             EndIf
-            If MouseButtons( ) = #PB_MouseButton_Middle
+            If CanvasMouseButton( ) & #PB_Canvas_MiddleButton
                eState | #State_MiddleMousePushed
             EndIf
          EndIf
@@ -415,9 +415,9 @@ CompilerIf #PB_Compiler_IsMainFile
    End
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 55
-; FirstLine = 27
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 47
+; FirstLine = 43
 ; Folding = -------
 ; EnableXP
 ; DPIAware
