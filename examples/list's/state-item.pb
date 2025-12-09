@@ -14,47 +14,50 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure.b Properties_SetState( *this._S_widget, state.f )
       If GetState( *this ) = state
-      ;   ProcedureReturn 0
+         ; ProcedureReturn 0
       EndIf
       
+       Debug "+ [" + state +"] "+ *this\class
       SetState( *this, state )
    EndProcedure
    
    Procedure Properties_StatusChange( *this._s_WIDGET, item )
       ; 
       If GetState( *this ) = item
+         Debug "   - [" + item +"] "+ *this\class
          ProcedureReturn 0
+      Else
+         Debug "[" + item +"] "+ *this\class
       EndIf
       
-      PushItem(EventWidget( ))
-      If SelectItem( EventWidget( ), item)
-         ;
-         If EventWidget( )\__rows( ) 
-            PushItem( *this )
-            If SelectItem( *this, EventWidget( )\__rows( )\index)
-               *this\__rows( )\color = EventWidget( )\__rows( )\color
-               
-               If *this\__rows( )\colorState( ) = #__s_2
-                  If *this\RowFocused( )
-                     *this\RowFocused( )\focus = 0
-                     ;Debug *this\RowFocused( )\index
+      If PushItem(EventWidget( ))
+         If SelectItem( EventWidget( ), item)
+            If PushItem( *this )
+               If SelectItem( *this, item )
+                  SetColors( *this, GetColors( EventWidget( )))
+                  
+                  If *this\__rows( )\colorState( ) = #__s_2
+                     If *this\RowFocused( )
+                        *this\RowFocused( )\focus = 0
+                     EndIf
+                     *this\RowFocused( ) = *this\__rows( )
+                     *this\RowFocused( )\focus = 1
                   EndIf
-                  *this\RowFocused( ) = *this\__rows( )
-                  *this\RowFocused( )\focus = 1
+                  
                EndIf
+               
+               PopItem( *this )
             EndIf
-            
-            PopItem( *this )
          EndIf
+         PopItem(EventWidget( ))
       EndIf
       
-      PopItem(EventWidget( ))
    EndProcedure
    
    ;-
    Procedure Properties_ButtonResize( *this._s_WIDGET )
-      Protected *row._s_ROWS
-      *row = *this\RowFocused( )
+      Protected._s_ROWS *row = *this\RowFocused( )
+      
       If *row
          If *row\data
             If *row\hide
@@ -68,7 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
                ;
                Resize(*row\data,
                       *row\x, ; + *this\scroll_x( )
-                      *row\y, ; + *this\scroll_y( )
+                      *row\y + *this\scroll_y( ),
                       *this\inner_width( )-2, 
                       *row\height, 0 )
             EndIf
@@ -101,7 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile
             GetActive( )\gadget = EventWidget( )
             
          Case #__event_MouseWheel
-            If WidgetEventItem( ) > 0
+            If MouseDirection( ) > 0
                SetState(*this\scroll\v, GetState( *this\scroll\v ) - WidgetEventData( ) )
             EndIf
       EndSelect
@@ -110,6 +113,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;-
    Procedure widget_events()
       Select WidgetEvent( )
+         Case #__event_Focus
+            SetActive( GetParent( EventWidget( )))
+            
          Case #__event_Down
             ; чтобы выбирать сразу
             If Not EnteredButton( )
@@ -150,9 +156,6 @@ CompilerIf #PB_Compiler_IsMainFile
                EndSelect
             EndIf
             
-            ; изменять цвета только у выделеных итемов
-            ; If Not CanvasMouseButton( ) : ProcedureReturn : EndIf
-            
             ;
             Select EventWidget( )
                Case *demo : Properties_StatusChange(*this, WidgetEventItem( ))
@@ -184,9 +187,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;
       Select WidgetEvent( )
-         Case #__event_Resize, ;#__event_Properties_StatusChange,
+         Case #__event_Resize,
               #__event_ScrollChange
-            ;Debug 77
             Properties_ButtonResize( *this )
             
       EndSelect
@@ -349,6 +351,5 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
 ; CursorPosition = 19
-; FirstLine = 16
-; Folding = -----f--
+; Folding = --f---+-
 ; EnableXP
