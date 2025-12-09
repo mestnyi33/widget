@@ -5,11 +5,12 @@ XIncludeFile "../../../widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
-   Procedure Events(event, EventObject, EventType, EventData )
+   Procedure all_events( event, EventObject, EventType, EventData )
       
       Select event
          Case #PB_Event_ActivateWindow
             Debug "active - "+ EventObject
+            
          Case #PB_Event_DeactivateWindow
             Debug "deactive - "+ EventObject
             
@@ -18,9 +19,9 @@ CompilerIf #PB_Compiler_IsMainFile
           Select EventType
                Case #__event_MouseWheel
                   If MouseDirection( ) > 0
-                     Debug "wheel_vertical - "+class +" "+ EventData +" "+ MouseData( )
+                     Debug "wheel_vertical - "+class +" "+ EventData
                   Else
-                     Debug "wheel_horizontal - "+class +" "+ EventData +" "+ MouseData( )
+                     Debug "wheel_horizontal - "+class +" "+ EventData
                   EndIf
                   
                Case #__event_Focus
@@ -62,13 +63,13 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure _events( )
       If is_root_(EventWidget( ))
          If WidgetEvent( ) = #__event_Focus
-            Events( #PB_Event_ActivateWindow, GetCanvasWindow(EventWidget( )), #PB_All, WidgetEventData( ) )
+            all_events( #PB_Event_ActivateWindow, GetCanvasWindow(EventWidget( )), #PB_All, WidgetEventData( ) )
          EndIf
          If WidgetEvent( ) = #__event_LostFocus
-            Events( #PB_Event_DeactivateWindow, GetCanvasWindow(EventWidget( )), #PB_All, WidgetEventData( ) )
+            all_events( #PB_Event_DeactivateWindow, GetCanvasWindow(EventWidget( )), #PB_All, WidgetEventData( ) )
          EndIf
       Else
-         Events( #PB_Event_Gadget, EventWidget( ), WidgetEvent( ), WidgetEventData( ) )
+         all_events( #PB_Event_Gadget, EventWidget( ), WidgetEvent( ), WidgetEventData( ) )
       EndIf
    EndProcedure
    
@@ -78,7 +79,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Button(40,40,200-80,55, "win"+Str(ID)+"-btn1")
       Button( 40,110,200-80,55, "win"+Str(ID)+"-btn2")
       
-      Bind( root(), @_events())
+      Bind( Root(), @_events())
       X + 100
       Y + 100
    EndProcedure
@@ -93,8 +94,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 19
-; FirstLine = 15
+; CursorPosition = 20
+; FirstLine = 16
 ; Folding = --
 ; EnableXP
 ; DPIAware

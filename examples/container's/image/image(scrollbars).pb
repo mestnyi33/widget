@@ -18,8 +18,8 @@ If Open(0, 100, 50, 400, 500, "ListViewGadget", #PB_Window_SystemMenu)
   
   WaitClose()
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 7
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 15
 ; Folding = -
 ; EnableXP
 ; DPIAware

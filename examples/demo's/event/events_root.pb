@@ -28,7 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
          event$ = ClassFromEvent(WidgetEvent( ))
       EndIf
       
-      Debug " ["+GetClass(EventWidget( )) +"] "+ event$ +" "+ WidgetEventData( ) +" "+ MouseData( )
+      Debug " ["+GetClass(EventWidget( )) +"] "+ event$ +" "+ WidgetEventData( )
    EndProcedure
    
    Define flag.q = #PB_Canvas_DrawFocus
@@ -87,8 +87,8 @@ CompilerEndIf
 ; [1] LeftButtonUp
 ; [1] MouseLeave
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 16
-; FirstLine = 4
+; CursorPosition = 21
+; FirstLine = 11
 ; Folding = --
 ; EnableXP
 ; DPIAware

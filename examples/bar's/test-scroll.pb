@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure button_events( )
       Protected state = GetState( *scroll2 )
-      Debug "click " + MouseClick( )
+      Debug "click " + WidgetEventData( )
    
       Select EventWidget( )
          Case *g1
@@ -123,25 +123,24 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       
       If Open( 0, 0, 130, 400, 130 )
          Scroll( 10, 10, 370, 30, 0, 0, 0 ) : 
-         SetState( widget( ), 30 )
-         Bind( widget( ), @widget_events( ), #__event_Change )
+         SetState( Widget( ), 30 )
+         Bind( Widget( ), @widget_events( ), #__event_Change )
          
          Scroll( 10, 45, 370, 30, 20, 1, 1 )
-         SetState( widget( ), 30 )
-         Bind( widget( ), @widget_events( ), #__event_Change )
+         SetState( Widget( ), 30 )
+         Bind( Widget( ), @widget_events( ), #__event_Change )
          
          Scroll( 10, 80, 370, 30, 0, 50, 0 )
-         SetState( widget( ), 30 )
-         Bind( widget( ), @widget_events( ), #__event_Change )
+         SetState( Widget( ), 30 )
+         Bind( Widget( ), @widget_events( ), #__event_Change )
          
          WaitClose( )
       EndIf
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 16
-; FirstLine = 2
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 25
 ; Folding = -8-
 ; EnableXP
 ; DPIAware

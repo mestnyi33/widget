@@ -82,6 +82,11 @@
       #__wb_Mini  = 3
       #__wb_help  = 4
       
+      ;-\\ Direction 
+      #__left = 0
+      #__top = 1
+      #__right = 2
+      #__bottom = 3
       
       #__sOC = SizeOf(Character)
       
@@ -725,8 +730,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 60
+; CursorPosition = 85
+; FirstLine = 66
 ; Folding = ----
 ; Optimizer
 ; EnableXP

@@ -15,13 +15,13 @@ CompilerIf #PB_Compiler_IsMainFile
    Global Event.i, drag.i, hole.i
    Global X=200,Y=150, Width=320, Height=320
    
-   Global *this.allocate( widget )
+   Global *this.allocate( Widget )
    Global NewList _images_.IMAGES( )
    Declare Canvas_Events( )
    Declare Canvas_Draw( Canvas.i, List _images_.IMAGES( ) )
    
    Macro Area_Draw( _this_ )
-      widget::bar_mdi_resize( _this_,
+      Widget::bar_mdi_resize( _this_,
                               _this_\scroll\h\x, 
                               _this_\scroll\v\y, 
                               (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       UnclipOutput( )
       DrawingMode( #PB_2DDrawing_Outlined )
-      Box( X, Y, Width, Height, RGB( 0,255,0 ) )
+      Box( DPIScaledX(X), DPIScaledY(Y), DPIScaledX(Width), DPIScaledY(Height), RGB( 0,255,0 ) )
       Box( _this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, RGB( 0,0,255 ) )
       ;Debug " "+_this_\scroll\v\y +" "+ _this_\scroll\v\bar\page\pos
       ; Box( _this_\scroll_x( ), _this_\scroll_y( ), _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
@@ -45,17 +45,17 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro Area_Use( _canvas_window_, _callback_, _canvas_gadget_ = #PB_Any )
       Open( _canvas_window_, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, "", 0, 0, _canvas_gadget_ )
-      Bind( root( ), _callback_, #__event_Draw )
-      Bind( root( ), _callback_ )
+      Bind( Root( ), _callback_, #__event_Draw )
+      Bind( Root( ), _callback_ )
    EndMacro
    
    Macro Area_Create( _parent_, _x_, _y_, _width_, _height_, _frame_size_, _scrollbar_size_, _flag_=#Null)
-      _parent_\root = root( ) 
+      _parent_\root = Root( ) 
       _parent_\class = "Area"
       _parent_\fs = _frame_size_
       
-      _parent_\scroll\v = widget::Scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__flag_Vertical|_flag_, 11 )
-      _parent_\scroll\h = widget::Scroll( _x_, _y_+_height_-_scrollbar_size_, 0,  _scrollbar_size_, 0, 0, 0, _flag_, 11 )
+      _parent_\scroll\v = Widget::Scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__flag_Vertical|_flag_, 11 )
+      _parent_\scroll\h = Widget::Scroll( _x_, _y_+_height_-_scrollbar_size_, 0,  _scrollbar_size_, 0, 0, 0, _flag_, 11 )
    EndMacro                                                  
    
    Macro Area_Bind( _parent_, _callback_)
@@ -168,7 +168,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
                   If alpha 
-                     If MouseButtons( )
+                     If MousePress( )
                         MoveElement( _images_( ), #PB_List_Last )
                      EndIf
                      *current = @_images_( )
@@ -198,10 +198,10 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Canvas_Events( )
       Protected Repaint
       Protected Event = WidgetEventType( ) ; EventType( )
-      Protected Canvas = GetCanvasGadget(root())      ; EventGadget( )
+      Protected Canvas = GetCanvasGadget(Root())      ; EventGadget( )
       
-      Protected MouseX = widget::CanvasMouseX( )
-      Protected MouseY = widget::CanvasMouseY( )
+      Protected MouseX = Widget::CanvasMouseX( )
+      Protected MouseY = Widget::CanvasMouseY( )
       
 ;       Width = widget::root( )\width - X*2
 ;       Height = widget::root( )\height - Y*2
@@ -212,14 +212,14 @@ CompilerIf #PB_Compiler_IsMainFile
          
          Case #PB_EventType_LeftButtonUp 
             If Drag
-               ChangeCursor( root( ), #PB_Cursor_Hand )
+               ChangeCursor( Root( ), #PB_Cursor_Hand )
                Drag = #False
             EndIf
             
          Case #PB_EventType_LeftButtonDown
             Drag = Bool( Canvas_HitTest( _images_( ), Mousex, Mousey ) )
             If Drag 
-               ChangeCursor( root( ), #PB_Cursor_Arrows )
+               ChangeCursor( Root( ), #PB_Cursor_Arrows )
               ; Repaint = #True 
             EndIf
             
@@ -237,13 +237,13 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                EndIf
             Else 
-               If Not MouseButtons( )
+               If Not MousePress( )
                   If Bool( Canvas_HitTest( _images_( ), Mousex, Mousey ) )
-                     If ChangeCursor( root( ), #PB_Cursor_Hand )
+                     If ChangeCursor( Root( ), #PB_Cursor_Hand )
                         Repaint = 1
                      EndIf
                   Else
-                     If ChangeCursor( root( ), #PB_Cursor_Default )
+                     If ChangeCursor( Root( ), #PB_Cursor_Default )
                         Repaint = 1
                      EndIf
                   EndIf
@@ -377,7 +377,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetAttribute(*this\scroll\h, #__flag_Invert, Bool(GetGadgetState(3)))
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
-                  ReDraw( root( ))
+                  ReDraw( Root( ))
                   
                Case 4
                   If GetGadgetState(2)
@@ -387,10 +387,10 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetAttribute(*this\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
-                  ReDraw( root( ))
+                  ReDraw( Root( ))
                   
                Case 5
-                  ReDraw( root( ))
+                  ReDraw( Root( ))
                   
             EndSelect
       EndSelect
@@ -398,7 +398,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 202
-; FirstLine = 198
+; CursorPosition = 38
+; FirstLine = 16
 ; Folding = -------8-
 ; EnableXP
+; DPIAware

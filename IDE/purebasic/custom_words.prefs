@@ -13,21 +13,6 @@ ClassFromEvent
 SetClass
 GetClass
 
-IsCanvas
-OpenCanvas
-CloseCanvas
-CanvasMouseX
-CanvasMouseY
-CanvasMouseButton
-ChangeCurrentCanvas
-
-ResizeRootWindow
-GetCanvasWindow
-GetCanvasGadget
-GetWindow
-GetGadget
-GetRoot
-
 DPIScaled
 DPIScaledX
 DPIScaledY
@@ -38,16 +23,30 @@ DPIResolution
 DPIResolutionX
 DPIResolutionY
 
+IsCanvas
+OpenCanvas
+CloseCanvas
+CanvasMouseX
+CanvasMouseY
+GetCanvasWindow
+GetCanvasGadget
+CanvasMouseButton
+ChangeCurrentCanvas
+
 MouseEnter
+MouseClick
 MousePress
 MousePressX
 MousePressY
-MouseClick
+
 MouseButtons
 MouseButtonClick
 MouseButtonPress
 MouseButtonPressX
 MouseButtonPressY
+MouseWheelDirection
+MouseWheelData
+
 MouseData
 MouseDirection
 MouseMoveX
@@ -73,6 +72,10 @@ Widget
 roots
 widgets
 address
+GetWindow
+GetGadget
+GetRoot
+
 
 FirstWidget
 LastWidget
@@ -241,6 +244,7 @@ Y
 Width
 Height
 Resize
+ResizeRootWindow
 
 Active
 ActiveBar

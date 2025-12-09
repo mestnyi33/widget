@@ -76,9 +76,9 @@ Else
       WaitClose( )
    EndIf
 EndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 12
-; FirstLine = 4
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 16
+; FirstLine = 12
 ; Folding = --
 ; EnableXP
 ; DPIAware

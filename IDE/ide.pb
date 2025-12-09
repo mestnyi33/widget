@@ -1304,7 +1304,7 @@ Procedure  new_widget_copy( )
    
    ;    If a_focused( )\anchors
    AddElement( *copy( ) ) 
-   *copy.allocate( widget, ( ) )
+   *copy.allocate( Widget, ( ) )
    *copy( ) = a_focused( )
    ;    Else
    ;       
@@ -1716,10 +1716,10 @@ Procedure new_widget_events( )
          EndSelect
          ;
       Case #__event_MouseMove
-         If IsContainer(*g) 
+         If IsContainer( *g ) 
             If MouseEnter( *g )
                If GetState( ide_inspector_ELEMENTS ) > 0 
-                  If MouseButtons( )
+                  If MousePress( )
                      ; disable drop 
                      If GetState( ide_inspector_ELEMENTS ) = 1
                         If *g = ide_design_MDI  
@@ -2839,7 +2839,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;  
    
    
-   AddFont( Str(GetFont( root( ) )), "Courier", 9, 0 )
+   AddFont( Str(GetFont( Root( ) )), "Courier", 9, 0 )
    
    
    
@@ -3020,12 +3020,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 1721
-; FirstLine = 1414
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 1718
+; FirstLine = 1396
 ; Folding = ---------f----84j-------------+-030----f-f-----f----+9-
 ; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = C:/Users/user/Downloads/Compressed/FormDesignerWindows4.70b2/ide.exe
+; Executable = C:\Users\user\Downloads\Compressed\FormDesignerWindows4.70b2\ide.exe

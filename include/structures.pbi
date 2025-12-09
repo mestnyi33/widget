@@ -347,15 +347,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Data.w                  ; mouse moved state
          steps.a
          click.a                 ; mouse clicked count
-         buttons.a               ; mouse clicked button
          press.b                 ; mouse buttons state
          press_x.l
          press_y.l
+         buttons.a               ; canvas mouse clicked button
+         wheeldirection.b
          
          anchors._s_TRANSFORM    ; a_anchors( )
          *selector._s_SELECTOR   ; mouse select frame
          
-         wheeldirection.b
          
          *button._s_BUTTONS[3]   ;
          *widget._s_WIDGET[3]    ;
@@ -795,9 +795,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 484
-; FirstLine = 454
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 353
+; FirstLine = 315
 ; Folding = --8-------
-; EnableXP
 ; Optimizer
+; EnableXP

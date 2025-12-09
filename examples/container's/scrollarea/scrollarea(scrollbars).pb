@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
-   a_init( root() )
+   a_init( Root() )
   
   ; Define *mdi = ScrollArea(0,0,0,0, 308,232,1,#__flag_autosize)
   ; Define *mdi = ScrollArea(x,y,width, height, 288,212,1)
@@ -27,8 +27,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Debug " * "+Width(*mdi, #__c_inner)+" "+Height(*mdi, #__c_inner)
   
   ; add childrens to mdi gadget
-  Define *g0 = Button(20, 20, 288,212, "button", #PB_Button_Left|#__flag_TextTop)
-  Define *g1 = Button(50, 50, 288,212, "button", #PB_Button_Left|#__flag_TextTop)
+  Define *g0 = Button(20, 20, 288,212, "button1", #PB_Button_Left|#__flag_TextTop)
+  Define *g1 = Button(50, 50, 288,212, "button2", #PB_Button_Left|#__flag_TextTop)
   
   ; Debug " - test parent - mdi show and size scroll bars - "
   ; Resize(*mdi,#PB_Ignore,#PB_Ignore,308,232 )
@@ -49,8 +49,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 11
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 30
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
+; DPIAware
