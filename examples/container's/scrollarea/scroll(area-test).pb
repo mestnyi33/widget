@@ -3,13 +3,13 @@
 
 CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
-   test_draw_area = 1
+   ;test_draw_area = 1
    
    Global si = 150
    Global pad = 0
-   Global fr = 0
-   ;Global g,*g._s_widget, b,*b, i, time, ss=50,Sw = 296, Sh = 296, count;=1000;0
-   Global g,*g._s_widget, b,*b, i, time, ss=1,Sw = 300-fr*2, Sh = 300-fr*2, count;=1000;0
+   Global fr.f ;= -50
+   
+   Global g,*g._s_widget, b,*b, i, time, ss=1,Sw = 350-fr, Sh = 300-fr, count;=1000;0
    
    Procedure draw_events( )
       Protected *g._s_widget = EventWidget( )
@@ -18,24 +18,23 @@ CompilerIf #PB_Compiler_IsMainFile
       Box( *g\x,*g\y,*g\width,*g\height, $000000 )
    EndProcedure
    
-   If Open(0, 0, 0, 305+305, 500, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      ;*g = Container(10, 10, 300, 300, #__flag_BorderLess)
+   If Open(0, 0, 0, 305+305+20, 320, "ScrollArea", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       *g = ScrollArea(10, 10, 300, 300, Sw, Sh, ss, #__flag_BorderLess)
-    ;   SetFrame( *g, fr )
-     ; Debug ""+fr+" "+Sw+" "+DPIScaledX(298) +" "+ DPIUnscaledX(DPIScaledX(298)) +" "+ DPIUnscaledX(298)
-      
-      ;SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
-      Button(pad, pad, si, si, "Button1")
-      Button(Sw-si-pad, Sh-si-pad, si, si, "Button2")
+      Container( pad, pad, si, si, #PB_Container_Flat): CloseList()
+      Container( Sw-si-pad, Sh-si-pad, si, si, #PB_Container_Flat): CloseList()
       CloseList()
       
-      Bind(*g, @draw_events( ), #__event_Draw )
+      g = ScrollAreaGadget( #PB_Any, 320, 10, 300, 300, Sw, Sh, ss, #PB_ScrollArea_BorderLess)
+      ContainerGadget( #PB_Any, pad, pad, si, si, #PB_Container_Flat): CloseGadgetList()
+      ContainerGadget( #PB_Any, Sw-si-pad, Sh-si-pad, si, si, #PB_Container_Flat): CloseGadgetList()
+      CloseGadgetList()
+      
+      ; Bind(*g, @draw_events( ), #__event_Draw )
       WaitClose()
-      ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 7
+; CursorPosition = 9
 ; Folding = -
 ; EnableXP
 ; DPIAware
