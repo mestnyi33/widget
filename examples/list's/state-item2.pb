@@ -59,68 +59,42 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure.b Properties_ChangeStatus( *g._S_widget, item )
-      Protected._s_ROWS *item = ItemID( *g, item)
-      
-      If *item 
-         If *g\RowFocused( ) <> *item
-            Debug "+ [" + item +"] "+ *g\class
-            ;
-            If *g\RowFocused( )
-               *g\RowFocused( )\focus = 0
-               ;
-               If *g\RowFocused( )\ColorState( ) <> #__s_0
-                  *g\RowFocused( )\ColorState( ) = #__s_0
-                  DoEvents( *g, #__event_StatusChange, *g\RowFocused( )\rindex, -*g\RowFocused( )\ColorState( ) )
-               EndIf
-            EndIf
-            ;
-            *g\RowFocused( ) = *item
-            *g\RowFocused( )\focus = 1
-            ;
-            If *g\RowFocused( )\ColorState( ) <> #__s_2
-               *g\RowFocused( )\ColorState( ) = #__s_2
-               DoEvents( *g, #__event_StatusChange, *g\RowFocused( )\rindex, -*g\RowFocused( )\ColorState( ) )
-            EndIf
-            ;
-            DoEvents( *g, #__event_Change, *g\RowFocused( )\rindex, -*g\RowFocused( )\ColorState( ) )
-         EndIf
-      EndIf
-      
-      
+      ProcedureReturn SetState( *g, item )
    EndProcedure
    
-   Procedure Properties_ChangeColor( *g._s_WIDGET, item )
-      SetWindowTitle(EventWindow(), GetItemText(*g, item))
-      ; 
-      If GetState( *g ) = item
-         ;Debug "   - [" + item +"] "+ *g\class
-         If Not MousePress( )
-            ProcedureReturn 0
+   Procedure Properties_ChangeColor( *this._s_WIDGET, item )
+      
+      Protected *g._s_WIDGET = EventWidget( )
+      
+      If GetState( *this ) = item
+         ProcedureReturn 0
+      EndIf 
+      
+      ;    If GetState(*g) = item
+      ;       ProcedureReturn 0
+      ;    EndIf 
+      
+      PushListPosition(*g\__rows( ))
+      SelectElement( *g\__rows( ), item )
+      ;
+      If *g\__rows( ) 
+         PushListPosition( *this\__rows( ) )
+         SelectElement( *this\__rows( ), *g\__rows( )\index)
+         ;*this\__rows( )\color = *g\__rows( )\color
+         *this\__rows( )\colorState( ) = *g\__rows( )\colorState( )
+         
+         If *this\__rows( )\colorState( ) = #__s_2
+            If *this\RowFocused( )
+               *this\RowFocused( )\focus = 0
+            EndIf
+            *this\RowFocused( ) = *this\__rows( )
+            *this\RowFocused( )\focus = 1
          EndIf
-      Else
-         ; Debug "[" + item +"] "+ *g\class
+         
+         PopListPosition( *this\__rows( ) )
       EndIf
+      PopListPosition(*g\__rows( ))
       
-      ;       If PushItem( EventWidget( ))
-      ;          If SelectItem( EventWidget( ), item)
-      ;             If PushItem( *g )
-      ;                If SelectItem( *g, item )
-      ;                   SetColors( *g\__rows( ), GetColors( EventWidget( )\__rows( )))
-      ;                EndIf
-      ;                
-      ;                PopItem( *g )
-      ;             EndIf
-      ;          EndIf
-      ;          PopItem( EventWidget( ))
-      ;       EndIf
-      ;       
-      
-      Protected._s_ROWS *titem, *eitem 
-      *titem = ItemID( *g, item)
-      *eitem = ItemID( EventWidget( ), item)
-      If *titem And *eitem
-         SetColors( *titem, GetColors( *eitem ))
-      EndIf
    EndProcedure
    
    Procedure Properties_Events()
@@ -134,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ;             EndIf
             
          Case #__event_Focus
-           ; SetActive( GetParent( EventWidget( )))
+            ; SetActive( GetParent( EventWidget( )))
             
          Case #__event_Down
             ; чтобы выбирать сразу
@@ -359,7 +333,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 27
-; Folding = vf-----
+; CursorPosition = 45
+; FirstLine = 31
+; Folding = -------
 ; EnableXP
+; DPIAware
