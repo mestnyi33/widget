@@ -160,7 +160,8 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_Focus
            ;SetActive( GetParent( EventWidget( )))
-           
+            PropertiesButton_SetActive( *this )
+            
          Case #__event_Down
             ; чтобы выбирать сразу
             If Not EnteredButton( )
@@ -407,8 +408,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 69
-; FirstLine = 48
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 163
+; FirstLine = 156
 ; Folding = --------
 ; EnableXP
