@@ -373,12 +373,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;-
+      Macro GetItemAddress( _this_ )
+         _this_\__rows( )
+      EndMacro
       Macro GetColors( _address_ )
-         _address_\__rows( )\color
+         _address_\color  ;  \__rows( )
       EndMacro
       
       Macro SetColors( _address_, _colors_ )
-         _address_\__rows( )\color = _colors_
+         _address_\color = _colors_   ;   \__rows( )
       EndMacro
       
       Macro SetBounds( _this_, _mode_ = #__bounds_Parentsize )
@@ -1701,6 +1704,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   SetSizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
       
       
+      Declare.i ItemID( *this._s_WIDGET, item.l ) 
       Declare.l CountItems( *this )
       Declare.l ClearItems( *this )
       Declare.b IsItem( *this, Item.l ) 
@@ -12675,15 +12679,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.b IsItem( *this._s_WIDGET, Item.l ) 
-         ProcedureReturn Bool( Item > #PB_Any And Item < *this\countitems ) 
+      Procedure.b IsItem( *this._s_WIDGET, item.l ) 
+         ProcedureReturn Bool( Not 0 > item And *this\countitems > item ) 
       EndProcedure
       
-      Procedure   ItemID( *this._s_WIDGET, Item.l ) 
+      Procedure.i ItemID( *this._s_WIDGET, item.l ) 
          Protected result
-         PushItem( *this )
-         result = SelectItem( *this, Item )
-         PopItem( *this )
+         If PushItem( *this )
+            result = SelectItem( *this, item )
+            PopItem( *this )
+         EndIf
          ProcedureReturn result 
       EndProcedure
       
@@ -12697,19 +12702,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          PopListPosition( *this\__rows( ))
       EndProcedure
       
-      Procedure.i SelectItem( *this._s_WIDGET, Item.l ) 
-         Protected result
-         If Item > #PB_Any And Item < *this\countitems 
-            result = SelectElement( *this\__rows( ), Item )
+      Procedure.i SelectItem( *this._s_WIDGET, item.l ) 
+         If IsItem( *this, item )
+            If SelectElement( *this\__rows( ), item ) 
+               ProcedureReturn *this\__rows( )
+            EndIf
          EndIf
-         ProcedureReturn result 
       EndProcedure
       
       Procedure   RemoveItem( *this._s_WIDGET, Item.l )
          Protected result
          
          If *this\type = #__type_Editor
-            If item >- 1 And Item < *this\countitems
+            If IsItem( *this, item )
                Protected String.s = StringField( *this\text\string, 1 + item, #LF$ )
                If String
                   *this\text\string = RemoveString( *this\text\string, String + #LF$ )
@@ -17967,6 +17972,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *rowleaved\_enter
                      *rowleaved\_enter = 0
                      
+                     
                      If Not EnteredButton( ) And ( *this\press And Not mouse( )\drop ) And Not *this\mode\multiSelect And Not *this\mode\clickSelect
                         ;
                         If *rowleaved\ColorState( ) = #__s_2
@@ -17988,6 +17994,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                      EndIf
+                     
+;                      If *rowleaved\ColorState( ) <> #__s_0
+;                         *rowleaved\ColorState( ) = #__s_0
+;                      EndIf
                      
                      ; Debug " leave-item status change"
                      DoEvents( *this, #__event_StatusChange, *rowleaved\rindex, -*rowleaved\ColorState( ) )
@@ -18035,6 +18045,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *row\_enter = 0
                      *row\_enter = 1
                      
+;                      If MousePress( )
+;                         If *row\ColorState( ) <> #__s_2
+;                            *row\ColorState( ) = #__s_2
+;                         EndIf
+;                      Else
+;                         If *row\ColorState( ) <> #__s_1
+;                            *row\ColorState( ) = #__s_1
+;                         EndIf
+;                      EndIf
+                     
                      If Not EnteredButton( ) And ( *this\press And Not mouse( )\drop ) And ( *this\mode\clickSelect = 0 Or ( *this\mode\clickSelect And *this\mode\multiSelect ))
                         
                         If *row\ColorState( ) <> #__s_2
@@ -18055,6 +18075,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;\\ update non-focus status
                      If Not ( Not *this\press And *row = *this\RowFocused( ) )
+                        ; Debug " enter-item status change"
                         DoEvents( *this, #__event_StatusChange, *row\rindex, -*row\ColorState( ) )
                      EndIf
                   EndIf
@@ -18137,28 +18158,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ ok
             If event = #__event_LostFocus
-               If *this\mode\multiSelect Or *this\mode\clickSelect
-                  PushListPosition( *rows( ) )
-                  ForEach *rows( )
-                     If *rows( ) <> *this\RowFocused( )
-                        If *rows( )\ColorState( ) = #__s_2
-                           *rows( )\ColorState( ) = #__s_3
-                           ;
-                           ; status-lostfocus
-                           DoEvents( *this, #__event_StatusChange, *rows( )\rindex, -*rows( )\ColorState( ))
+               If Not *this\press
+                  If *this\mode\multiSelect Or *this\mode\clickSelect
+                     PushListPosition( *rows( ) )
+                     ForEach *rows( )
+                        If *rows( ) <> *this\RowFocused( )
+                           If *rows( )\ColorState( ) = #__s_2
+                              *rows( )\ColorState( ) = #__s_3
+                              ;
+                              ; status-lostfocus
+                              DoEvents( *this, #__event_StatusChange, *rows( )\rindex, -*rows( )\ColorState( ))
+                           EndIf
                         EndIf
+                     Next
+                     PopListPosition( *rows( ) )
+                  EndIf
+                  
+                  ;\\
+                  If *this\RowFocused( )
+                     If *this\RowFocused( )\ColorState( ) = #__s_2
+                        *this\RowFocused( )\ColorState( ) = #__s_3
+                        ;
+                        ; status-lostfocus
+                        DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                      EndIf
-                  Next
-                  PopListPosition( *rows( ) )
-               EndIf
-               
-               ;\\
-               If *this\RowFocused( )
-                  If *this\RowFocused( )\ColorState( ) = #__s_2
-                     *this\RowFocused( )\ColorState( ) = #__s_3
-                     ;
-                     ; status-lostfocus
-                     DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                   EndIf
                EndIf
             EndIf
@@ -18248,17 +18271,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If *this\RowFocused( )\ColorState( ) = #__s_2
                                     *this\RowFocused( )\ColorState( ) = #__s_3
                                     ;
-                                    ; status-lostfocus
+                                    ; status-press-lostfocus
                                     DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
                                  EndIf
                               EndIf
                               ;
-                              ; status-change
+                              ; status-press-change
                               DoEvents(*this, #__event_StatusChange, *row\rindex, -*row\ColorState( ) )
                            EndIf
                         Else
                            *row\ColorState( ) = #__s_1
-                           ; status-change
+                           ; status-press-change
                            DoEvents(*this, #__event_StatusChange, *row\rindex, -*row\ColorState( ) )
                         EndIf
                      EndIf
@@ -27658,10 +27681,10 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 374
-; FirstLine = 351
-; Folding = ----+----------------------------------8-------------------------------------------------0n--------------B7-0---+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 18273
+; FirstLine = 17643
+; Folding = ----+----------------------------------4-------------------------------------------------8P--------------D1-8---0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-----0+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
