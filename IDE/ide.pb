@@ -753,7 +753,7 @@ Procedure   Properties_ButtonEvents( )
          EndSelect
          
       Case #__event_MouseWheel
-         If MouseDirection > 0
+         If MouseDirection( ) > 0
             If *g\scroll\v
                Debug "Properties_Button_event_MouseWheel "+*g\class
                SetState(*g\scroll\v, GetState( *g\scroll\v ) - __data )
@@ -3021,8 +3021,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 754
-; FirstLine = 654
+; CursorPosition = 755
+; FirstLine = 655
 ; Folding = ---------f----84j-------------+-030----f-f-----f----+9-
 ; Optimizer
 ; EnableAsm
