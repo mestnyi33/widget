@@ -13,23 +13,17 @@ CompilerIf #PB_Compiler_IsMainFile
    Global a, *demo._s_WIDGET, *this._s_widget, *test, *get, *remove, *focus, *reset, *item1, *item2, *item3, *item4, *g1, *g2, CountItems=20;99; количесвто итемов 
    
    ;-
-   Procedure Properties_ButtonEvents( )
-      Select WidgetEvent( )
-         Case #__event_Focus
-            SetActive( GetParent( EventWidget( )))
-            
-         Case #__event_Down
-            GetActive( )\gadget = EventWidget( )
-            
-         Case #__event_MouseWheel
-            If MouseDirection( ) > 0
-               SetState(*this\scroll\v, GetState( *this\scroll\v ) - WidgetEventData( ) )
-            EndIf
-      EndSelect
+   Procedure PropertiesButton_SetActive( *this._s_WIDGET )
+      Protected._s_ROWS *row = *this\RowFocused( )
+      
+      If *row
+         If *row\data
+            ProcedureReturn SetActive( *row\data )
+         EndIf
+      EndIf
    EndProcedure
    
-   ;-
-   Procedure Properties_DisplayButton( *g._s_WIDGET )
+   Procedure PropertiesButton_Display( *g._s_WIDGET )
       Protected._s_ROWS *row = *g\RowFocused( )
       
       If *row
@@ -44,9 +38,9 @@ CompilerIf #PB_Compiler_IsMainFile
                EndIf
                ;
                If Not Resize(*row\data,
-                             *row\x+30, ; + *g\scroll_x( )
+                             *row\x+10, ; + *g\scroll_x( )
                              *row\y + *g\scroll_y( ),
-                             *g\inner_width( )-60, 
+                             *g\inner_width( )-20, 
                              *row\height, 0 )
                   
                   SetText( *row\data, *row\text\string )
@@ -58,7 +52,38 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   Procedure.b Properties_ChangeStatus( *g._S_widget, item )
+   Procedure PropertiesButton_Events( )
+      Select WidgetEvent( )
+         Case #__event_Input
+            Debug "button "+keyboard( )\input
+      
+         Case #__event_LostFocus
+;             Protected._s_ROWS *titem, *eitem 
+;             Protected item = GetState( *this )
+;             
+;             *titem = ItemID( *this, item)
+;             *eitem = ItemID( *demo, item)
+;             
+;             If *titem And *eitem
+;                SetColors( *titem, GetColors( EventWidget( ) ))
+;                SetColors( *eitem, GetColors( EventWidget( ) ))
+;             EndIf
+            
+         Case #__event_Focus
+            ; SetActive( GetParent( EventWidget( )))
+            
+         Case #__event_Down
+            ; GetActive( )\gadget = EventWidget( )
+            
+         Case #__event_MouseWheel
+            If MouseDirection( ) > 0
+               SetState(*this\scroll\v, GetState( *this\scroll\v ) - WidgetEventData( ) )
+            EndIf
+      EndSelect
+   EndProcedure
+   
+   ;-
+   Procedure.b PropertiesItems_ChangeStatus( *g._S_widget, item )
       Protected._s_ROWS *item = ItemID( *g, item)
       
       If *item 
@@ -89,7 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   Procedure Properties_ChangeColor( *g._s_WIDGET, item )
+   Procedure PropertiesItems_ChangeColor( *g._s_WIDGET, item )
       SetWindowTitle(EventWindow(), GetItemText(*g, item))
       ; 
       If GetState( *g ) = item
@@ -123,7 +148,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   Procedure Properties_Events()
+   Procedure PropertiesItems_Events( )
       Select WidgetEvent( )
             ;             ; Case #__event_LostFocus
             ;             If WidgetEventData( ) = 3
@@ -134,21 +159,23 @@ CompilerIf #PB_Compiler_IsMainFile
             ;             EndIf
             
          Case #__event_Focus
-           ; SetActive( GetParent( EventWidget( )))
-            
+           ;SetActive( GetParent( EventWidget( )))
+           
          Case #__event_Down
             ; чтобы выбирать сразу
             If Not EnteredButton( )
-               Properties_ChangeStatus( EventWidget( ), WidgetEventItem( ))
+               PropertiesItems_ChangeStatus( EventWidget( ), WidgetEventItem( ))
             EndIf
             
          Case #__event_Change
             ;
-            If Not Properties_DisplayButton( *this )
+            If Not PropertiesButton_Display( *this )
                Select EventWidget( )
-                  Case *demo : Properties_ChangeStatus(*this, WidgetEventItem( ))
-                  Case *this : Properties_ChangeStatus(*demo, WidgetEventItem( ))
+                  Case *demo : PropertiesItems_ChangeStatus(*this, WidgetEventItem( ))
+                  Case *this : PropertiesItems_ChangeStatus(*demo, WidgetEventItem( ))
                EndSelect
+            Else
+               PropertiesButton_SetActive( *this )
             EndIf
             
          Case #__event_StatusChange
@@ -174,8 +201,8 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;
             Select EventWidget( )
-               Case *demo : Properties_ChangeColor(*this, WidgetEventItem( ))
-               Case *this : Properties_ChangeColor(*demo, WidgetEventItem( ))
+               Case *demo : PropertiesItems_ChangeColor(*this, WidgetEventItem( ))
+               Case *this : PropertiesItems_ChangeColor(*demo, WidgetEventItem( ))
             EndSelect
             
          Case #__event_ScrollChange
@@ -197,14 +224,35 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_Resize,
               #__event_ScrollChange
-            Properties_DisplayButton( *this )
+            PropertiesButton_Display( *this )
             
       EndSelect
       
    EndProcedure
    
    ;-
-   Procedure button_events()
+   Procedure Properties_Events( )
+      Select WidgetEvent( )
+         Case #__event_FOCUS
+           If Not PropertiesButton_SetActive( *this )
+              PropertiesItems_ChangeStatus( *this, 1 )
+           EndIf
+           
+         Case #__event_Input
+            Debug "splitter "+keyboard( )\input
+            
+;             Protected._s_ROWS *row = *this\RowFocused( )
+;             
+;             If *row
+;                If *row\data
+;                   DoEvents( *row\data, #__event_Input )
+;                EndIf
+;             EndIf
+      EndSelect
+   EndProcedure
+   
+   ;-
+   Procedure widgets_events()
       Protected count
       
       Select WidgetEvent( )
@@ -225,7 +273,7 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "-------set-start-------"
             Select EventWidget( )
                Case *get : Debug GetState(*this)
-               Case *focus : SetActive(*this)
+               Case *focus : SetActive(GetParent(*this))
                Case *remove 
                   If *this\RowFocused( )
                      Protected item = *this\RowFocused( )\index
@@ -233,11 +281,11 @@ CompilerIf #PB_Compiler_IsMainFile
                      ; RemoveItem(*demo, item)
                   EndIf
                   
-               Case *reset : Properties_ChangeStatus(*this, - 1)
-               Case *item1 : Properties_ChangeStatus(*this, Val(GetText(EventWidget( ))))
-               Case *item2 : Properties_ChangeStatus(*this, Val(GetText(EventWidget( ))))
-               Case *item3 : Properties_ChangeStatus(*this, Val(GetText(EventWidget( ))))
-               Case *item4 : Properties_ChangeStatus(*this, Val(GetText(EventWidget( ))))
+               Case *reset : PropertiesItems_ChangeStatus(*this, - 1)
+               Case *item1 : PropertiesItems_ChangeStatus(*this, Val(GetText(EventWidget( ))))
+               Case *item2 : PropertiesItems_ChangeStatus(*this, Val(GetText(EventWidget( ))))
+               Case *item3 : PropertiesItems_ChangeStatus(*this, Val(GetText(EventWidget( ))))
+               Case *item4 : PropertiesItems_ChangeStatus(*this, Val(GetText(EventWidget( ))))
             EndSelect
             Debug "-------set-stop-------"
             
@@ -272,15 +320,16 @@ CompilerIf #PB_Compiler_IsMainFile
       Splitter(10,10, 230, 310, *demo, *this, #PB_Splitter_Vertical )
       ;Debug *demo\scroll\v\hide 
       
-      Bind(*demo, @Properties_Events());, #__event_Change)
-      Bind(*this, @Properties_Events());, #__event_Change)
+      Bind(Widget( ), @Properties_Events())
+      Bind(*demo, @PropertiesItems_Events());, #__event_Change)
+      Bind(*this, @PropertiesItems_Events());, #__event_Change)
       
       OpenList( *this )
-      ; *test = String( 0, 0, 0, 0, "test") ; #__flag_TextCenter| bug
+      *test = String( 0, 0, 0, 0, "test") ; #__flag_TextCenter| bug
       ;*test = String( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__flag_TextCenter| bug
-      *test = Button( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__flag_TextCenter| bug
+      ; *test = Button( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__flag_TextCenter| bug
       
-      Bind( *test, @Properties_ButtonEvents( ))                       ;, #__event_Change)
+      Bind( *test, @PropertiesButton_Events( ))                       ;, #__event_Change)
       CloseList( )
       
       For a = 0 To CountItems
@@ -319,19 +368,19 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       
-      Bind(*remove, @button_events(), #__event_Up)
-      Bind(*focus, @button_events(), #__event_Up)
-      Bind(*get, @button_events(), #__event_Up)
+      Bind(*remove, @widgets_events(), #__event_Up)
+      Bind(*focus, @widgets_events(), #__event_Up)
+      Bind(*get, @widgets_events(), #__event_Up)
       
-      Bind(*reset, @button_events(), #__event_Up)
-      Bind(*item1, @button_events(), #__event_Up)
-      Bind(*item2, @button_events(), #__event_Up)
-      Bind(*item3, @button_events(), #__event_Up)
-      Bind(*item4, @button_events(), #__event_Up)
+      Bind(*reset, @widgets_events(), #__event_Up)
+      Bind(*item1, @widgets_events(), #__event_Up)
+      Bind(*item2, @widgets_events(), #__event_Up)
+      Bind(*item3, @widgets_events(), #__event_Up)
+      Bind(*item4, @widgets_events(), #__event_Up)
       
       
       ;       ReDraw(root())
-      ;       ;Unbind(*w2, @Properties_Events())
+      ;       ;Unbind(*w2, @PropertiesItems_Events())
       ;       Free(root())
       ;       
       ;       PushListPosition(widgets( ))
@@ -358,8 +407,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 27
-; Folding = vf-----
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 69
+; FirstLine = 48
+; Folding = --------
 ; EnableXP

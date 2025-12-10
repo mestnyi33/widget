@@ -1726,6 +1726,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;       Declare.b GetFocus( *this )
       ;       Declare.b SetFocus( *this, state.b = #__s_2 )
+      Declare.i SetFocus( *this )
       Declare.i SetActive( *this )
       Declare   SetForeground( *window )
       
@@ -10656,6 +10657,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure.i SetFocus( *this._s_WIDGET )
+         Protected._s_WIDGET *active, *deactive, *deactiveWindow, *deactiveGadget
+         ;
+         If *this
+            If keyboard( )\active
+               If keyboard( )\active\gadget <> *this
+                  If keyboard( )\active\gadget
+                     ;
+                  EndIf
+                  ;
+                  keyboard( )\active\gadget = *this
+                  ;
+               EndIf 
+            EndIf 
+         EndIf
+         
+      EndProcedure
+      
       Procedure.i SetActive( *this._s_WIDGET )
          Macro DoActivate( _this_ )
             If _this_\focus <> #__s_2
@@ -16986,7 +17005,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.l DoKeyEvent_Lines( *this._s_WIDGET, List *lines._s_ROWS( ), event.l )
+      Procedure.l DoEvent_KeyLines( *this._s_WIDGET, List *lines._s_ROWS( ), event.l )
          Static _caret_last_pos_, DoubleClick.i
          Protected i.i, caret.i
          
@@ -17733,14 +17752,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                event = #__event_KeyDown Or
                event = #__event_KeyUp
                
-               DoKeyEvent_Lines( *this, *this\__lines( ), event )
+               DoEvent_KeyLines( *this, *this\__lines( ), event )
             EndIf
          EndIf
          
       EndProcedure
       
       ;-
-      Procedure.l DoKeyEvent_Rows( *this._s_WIDGET, List  *rows._s_ROWS( ), event.l )
+      Procedure.l DoEvent_KeyRows( *this._s_WIDGET, List  *rows._s_ROWS( ), event.l )
          Protected result, from = - 1
          Static cursor_change, Down, *row_selected._s_ROWS
          
@@ -18361,7 +18380,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\type = #__type_Tree Or
                      *this\type = #__type_ListIcon
                      ;
-                     DoKeyEvent_Rows( *this, *this\__rows( ), event )
+                     DoEvent_KeyRows( *this, *this\__rows( ), event )
                   EndIf
                EndIf
             EndIf
@@ -27682,9 +27701,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 18273
-; FirstLine = 17643
-; Folding = ----+----------------------------------4-------------------------------------------------8P--------------D1-8---0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-----0+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---
+; CursorPosition = 1726
+; FirstLine = 1644
+; Folding = ----+----------------------------------4-------------------------------------------------8P--------------D1-8---0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-----e---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8---
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
