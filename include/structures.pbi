@@ -795,9 +795,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 353
-; FirstLine = 315
-; Folding = --8-------
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 185
+; FirstLine = 76
+; Folding = -F5w------
 ; Optimizer
 ; EnableXP

@@ -14,28 +14,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;-
    Declare PropertiesItems_ChangeStatus( item, state )
-   Procedure PropertiesButton_SetActive( *this._s_WIDGET )
-      Protected._s_ROWS *row = *this\RowFocused( )
-      
-      If *row
-         If *row\data
-            Debug " data "+*row\rindex
-            SetData( *row\data, *row\rindex )
-            SetActive( *row\data )
-         EndIf
-      EndIf
-   EndProcedure
-   
    Procedure PropertiesButton_Display( *g._s_WIDGET )
       Protected._s_ROWS *row = *g\RowFocused( )
       
       If *row
          If *row\data
-;             If *this = *g
-;                Debug " data "
-;                SetData( *row\data, *row\rindex )
-;             EndIf
-            ;
             If *row\hide Or *row\childrens
                If Hide( *row\data ) = 0
                   Hide( *row\data, #True )
@@ -138,70 +121,36 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure PropertiesItems_Events()
-      Protected item
-      Protected._s_ROWS *row
-      
       Select WidgetEvent( )
-         Case #__event_Up
-            *row = WidgetEventData( )
-            If *row > 1
-               If *row\childrens
-                  Debug 99
-                  item = GetData( *test )
-                  SetState(*this, item)
-                  SetState(*demo, item)
-               EndIf
-            EndIf
-         
          Case #__event_Focus
-            If EnteredButton( )
-                 item = GetData( *test )
-               SetState(*this, item)
-               SetState(*demo, item)
-             PropertiesButton_SetActive( *this )
-            Else
-               *row = WidgetEventData( )
-            If *row\childrens
-               item = GetData( *test )
-            Else
-               item = WidgetEventItem( )
-            EndIf
-            
             ; Debug "focus item "+EventWidget( )\class +" "+ WidgetEventItem( )
-            Select EventWidget( )
-               Case *this 
-                  SetState(*demo, item)
-                  SetState(*this, item)
-               Case *demo 
-                  SetState(*this, item)
-                  SetState(*demo, item)
-            EndSelect
-            
-            PropertiesButton_SetActive( *this )
-         EndIf
-         
+;             Select EventWidget( )
+;                Case *this 
+;                   SetState(*demo, WidgetEventItem( ))
+;                   SetState(*this, WidgetEventItem( ))
+;                Case *demo 
+                  SetState(*this, WidgetEventItem( ))
+                  SetState(*demo, WidgetEventItem( ))
+;             EndSelect
+;             
+            SetData( *test, WidgetEventItem( ) )
+            SetActive( *test )
+;             
          Case #__event_Down
             ; чтобы выбирать сразу
             If Not EnteredButton( )
-               *row = WidgetEventData( )
-               If *row\childrens
-                  item = GetData( *test )
-               Else
-                  item = WidgetEventItem( )
-               EndIf
-               
                Select EventWidget( )
                   Case *this 
-                     If SetState(*demo, item)
-                        If SetState(*this, item)
-                           PropertiesButton_SetActive( *this )
+                     If SetState(*demo, WidgetEventItem( ))
+                        If SetState(*this, WidgetEventItem( ))
+                           SetActive( *test )
                         EndIf
                      EndIf
                      
                   Case *demo 
-                     If SetState(*this, item)
-                        If SetState(*demo, item)
-                           PropertiesButton_SetActive( *this )
+                     If SetState(*this, WidgetEventItem( ))
+                        If SetState(*demo, WidgetEventItem( ))
+                           SetActive( *test )
                         EndIf
                      EndIf
                EndSelect
@@ -210,7 +159,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_Change
             If *this = EventWidget( )
                If PropertiesButton_Display( *this )
-                  ; PropertiesButton_SetActive( *this )
+                  ; SetActive( *test )
                Else
                   ;                Select EventWidget( )
                   ;                   Case *demo : SetState(*this, WidgetEventItem( ))
@@ -273,7 +222,7 @@ CompilerIf #PB_Compiler_IsMainFile
             If Not *this\RowFocused( )
                SetState( *this, 1 )
             EndIf
-            PropertiesButton_SetActive( *this )
+            SetActive( *test )
             
       EndSelect
    EndProcedure
@@ -435,8 +384,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 157
-; FirstLine = 138
-; Folding = -----X----
+; CursorPosition = 133
+; FirstLine = 122
+; Folding = --------
 ; EnableXP
 ; DPIAware
