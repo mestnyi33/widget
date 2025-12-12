@@ -358,7 +358,7 @@ EndProcedure
 
 ;-
 ;-
-Procedure Properties_ButtonGetItem( *inspector._s_WIDGET, item )
+Procedure   Properties_ButtonGetItem( *inspector._s_WIDGET, item )
    Protected *second._s_WIDGET = GetAttribute(*inspector, #PB_Splitter_SecondGadget)
    ;
    If *second 
@@ -366,7 +366,7 @@ Procedure Properties_ButtonGetItem( *inspector._s_WIDGET, item )
    EndIf
 EndProcedure
 
-Procedure Properties_ButtonAddItems( *inspector._s_WIDGET, item, Text.s )
+Procedure   Properties_ButtonAddItems( *inspector._s_WIDGET, item, Text.s )
    Protected *second._s_WIDGET = GetAttribute(*inspector, #PB_Splitter_SecondGadget)
    ;
    If *second 
@@ -459,15 +459,15 @@ Procedure   Properties_ButtonResize( *second._s_WIDGET )
             Select *row\index
                Case #_pi_FONT, #_pi_COLOR, #_pi_IMAGE
                   Resize(*this,
-                         *row\x + (*second\inner_width( )-*this\width), ; + *second\scroll_x( )
-                         *row\y,                                        ; + *second\scroll_y( ), 
+                         (*row\x + *second\inner_width( )) -*this\width + *second\scroll_x( ),
+                         *row\y + *second\scroll_y( ), 
                          #PB_Ignore, 
                          *row\height, 0 )
                Default
                   Resize(*this,
-                         *row\x,
+                         *row\x + *second\scroll_x( ),
                          *row\y + *second\scroll_y( ),
-                         *second\inner_width( ), ; *row\width,
+                         *second\inner_width( ),
                          *row\height, 0 )
             EndSelect 
             ;             ;*this\WIdgetChange( ) = 1
@@ -3020,12 +3020,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 755
-; FirstLine = 655
-; Folding = ---------f----84j-------------+-030----f-f-----f----+9-
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 469
+; FirstLine = 379
+; Folding = ----74+f-b----84D8-v----------+-030----f-f-----f----+9-
 ; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = C:\Users\user\Downloads\Compressed\FormDesignerWindows4.70b2\ide.exe
+; Executable = C:/Users/user/Downloads/Compressed/FormDesignerWindows4.70b2/ide.exe
