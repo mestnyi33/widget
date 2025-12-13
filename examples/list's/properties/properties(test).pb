@@ -325,9 +325,12 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_Change
             If *this = EventWidget( )
-               item = WidgetEventItem( )
-               PropertiesButton_Create( *this, item )
-               PropertiesButton_Display( *this )
+               *row = WidgetEventData( )
+               If Not *row\childrens
+                  item = WidgetEventItem( )
+                  PropertiesButton_Create( *this, item )
+                  PropertiesButton_Display( *this )
+               EndIf
             EndIf
             
          Case #__event_StatusChange
@@ -684,8 +687,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 328
-; FirstLine = 280
-; Folding = --8--8a04---
+; CursorPosition = 332
+; FirstLine = 281
+; Folding = --8--827v---
 ; EnableXP
 ; DPIAware
