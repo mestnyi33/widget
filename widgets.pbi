@@ -252,7 +252,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Global test_resize_area = 0
       Global test_scrollbars_reclip = 0
       
-      Global test_draw_area = 1
+      Global test_draw_area = 0
       Global test_anchors
       Global test_DoChangeCursor, test_changecursor,test_setcursor
       
@@ -5494,20 +5494,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; get thumb size
             If *bar\page\len
                *bar\thumb\len = Round(( *bar\thumb\end / ( *bar\max - *bar\min )) * *bar\page\len, #PB_Round_Nearest )
-               If *bar\thumb\len > *bar\thumb\end
-                  *bar\thumb\len = *bar\thumb\end
-               ElseIf *bar\thumb\len < *SB\size 
+            Else
+               *bar\thumb\len = *SB\size
+            EndIf
+            If *bar\thumb\len > *bar\thumb\end
+               *bar\thumb\len = *bar\thumb\end
+            Else
+               If *bar\thumb\len < *SB\size 
                   If *bar\thumb\end > *SB\size
                      *bar\thumb\len = *SB\size
                   Else
                      *bar\thumb\len = 0
                      ; Debug ""+*bar\area\len+" "+*bar\thumb\end
                   EndIf
-               EndIf
-            Else
-               *bar\thumb\len = *SB\size
-               If *bar\thumb\len > *bar\area\len
-                  *bar\thumb\len = *bar\area\len
                EndIf
             EndIf
             
@@ -5536,11 +5535,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *bar\page\end = *bar\page\len - *bar\max
             EndIf
             ;
-            ;\\ for the scrollarea children's
+            ; for the scrollarea children's
             If *bar\page\end And *bar\page\pos > *bar\page\end
                ; Debug " scroll-bar end change - " + *bar\page\pos +" "+ *bar\page\end
-               *bar\PageChange( )  = *bar\page\pos - *bar\page\end
-               *bar\page\pos       = *bar\page\end
+               *bar\PageChange( ) = *bar\page\pos - *bar\page\end
+               *bar\page\pos      = *bar\page\end
             EndIf
             ;
             ; get scroll percent
@@ -5550,6 +5549,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / 1 
             EndIf
             ;
+            ; get area end
             *bar\area\end = *bar\area\len - *bar\thumb\len - *BB2\size
             If *bar\area\end < 0
                *bar\area\end = 0
@@ -27519,8 +27519,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 5503
-; FirstLine = 4163
-; Folding = ----+----------------------------------4------------------------------------------------48P---n------4--0D1-8-8-0f--+----8-v------j+--kfG-z---84-6-4-----9--4vb84vbv-f--------------------------------+-4--f0----7+b-908------------------------------------------------------------v37----------------------------------------------------------------0-----------------------------------------------------------------------------------------------------------------------------------------------------------0----48------------------------------------------------------------------------------------------------------------0-v---+v+--f44------------------------------------------------------------------------------------------------------------------f---
+; CursorPosition = 254
+; FirstLine = 251
+; Folding = ----+----------------------------------4------------------------------------------------48P---n------4--0D1-8-8-0f--+----8-v------8ee5kfG-z---84-6-4-----9--4vb84vbv-f--------------------------------+-4--f0----7+b-908------------------------------------------------------------v37----------------------------------------------------------------0-----------------------------------------------------------------------------------------------------------------------------------------------------------0----48------------------------------------------------------------------------------------------------------------0-v---+v+--f44------------------------------------------------------------------------------------------------------------------f---
 ; EnableXP
 ; Executable = widgets-.app.exe
