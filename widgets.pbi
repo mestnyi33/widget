@@ -5466,19 +5466,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *bar\area\len
-            *bar\area\pos  = *BB1\size
-            If *bar\area\pos > *bar\area\len
-               *bar\area\pos = *bar\area\len
-            EndIf
-            ;
-            *bar\thumb\end = *bar\area\len - *BB2\size - *BB1\size
-            If *bar\thumb\end < 0
-               *bar\thumb\end = 0
-            EndIf
-            
-            If *bar\page\len
-               ; If is_integral_( *this )
-               If Not *this\hide[1]
+            If Not *this\hide[1] ; And is_integral_( *this )
+               If *bar\page\len
                   If *this\hide <> Bool( *bar\page\len >= *bar\max  )
                      *this\hide = Bool( *bar\page\len >= *bar\max )
                      ;
@@ -5490,66 +5479,75 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-               ; EndIf
-               ;
-               ; get thumb size
+            EndIf
+            ;
+            *bar\area\pos = *BB1\size
+            If *bar\area\pos > *bar\area\len
+               *bar\area\pos = *bar\area\len
+            EndIf
+            ;
+            *bar\thumb\end = *bar\area\len - *BB2\size - *BB1\size
+            If *bar\thumb\end < 0
+               *bar\thumb\end = 0
+            EndIf
+            ;
+            ; get thumb size
+            If *bar\page\len
                *bar\thumb\len = Round(( *bar\thumb\end / ( *bar\max - *bar\min )) * *bar\page\len, #PB_Round_Nearest )
                If *bar\thumb\len > *bar\thumb\end
                   *bar\thumb\len = *bar\thumb\end
-               Else
-                  If *bar\thumb\len < *SB\size
-                     If *bar\thumb\end > *SB\size
-                        *bar\thumb\len = *SB\size
-                     Else
-                        If *bar\thumb\end > *SB\size/2
-                           *bar\thumb\len = *SB\size/2
-                        Else
-                           *bar\thumb\len = 0
-                        EndIf
-                        
-                     EndIf
+               ElseIf *bar\thumb\len < *SB\size 
+                  If *bar\thumb\end > *SB\size
+                     *bar\thumb\len = *SB\size
+                  Else
+                     *bar\thumb\len = 0
+                     ; Debug ""+*bar\area\len+" "+*bar\thumb\end
                   EndIf
                EndIf
-               ;
-               ; for the scroll-bar
-               If *bar\max > *bar\page\len
-                  *bar\page\end = *bar\max - *bar\page\len
-               Else
-                  *bar\page\end = *bar\page\len - *bar\max
-               EndIf
-               ;
-               If ( *bar\page\end - *bar\min )
-                  *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\page\end - *bar\min ) ;   
-               Else
-                  *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / 1  ;  
-               EndIf
             Else
-               ; get thumb size
                *bar\thumb\len = *SB\size
                If *bar\thumb\len > *bar\area\len
                   *bar\thumb\len = *bar\area\len
                EndIf
-               ;
-               ; get page end
-               If *bar\max
-                  *bar\page\end = *bar\max
-               Else
-                  Debug " "+ *bar\page\end +" "+ *bar\area\len
-                  *bar\page\end = 0 ;*bar\area\len - *bar\thumb\len
-               EndIf
-               ;                ;
-               ;                If ( *bar\max - *bar\min )
-               ;                   *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\max - *bar\min )
-               ;                Else
-               ;                   *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / 1
-               ;                EndIf
-               ;
-               If ( *bar\page\end - *bar\min )
-                  *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\page\end - *bar\min )
-               Else
-                  *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / 1
-               EndIf
-               
+            EndIf
+            
+;             If *bar\thumb\end =< *SB\size
+;                If Not *bar\thumb\len
+;                   If *bar\vertical
+;                      *BB2\size = *this\frame_height( ) / 2
+;                      *BB1\size = *BB2\size - Bool( Not *this\frame_height( ) % 2 )
+;                   Else
+;                      *BB2\size = *this\frame_width( ) / 2
+;                      *BB1\size = *BB2\size - Bool( Not *this\frame_width( ) % 2 )
+;                   EndIf
+;                EndIf
+;                Debug *BB1\size
+;             EndIf
+;             ;                   ;
+;             ;             *bar\thumb\end = *bar\area\len - *BB2\size - *BB1\size
+;             ;             If *bar\thumb\end < 0
+;             ;                *bar\thumb\end = 0
+;             ;             EndIf
+            ;
+            ; for the scroll-bar
+            If *bar\max > *bar\page\len
+               *bar\page\end = *bar\max - *bar\page\len
+            Else
+               *bar\page\end = *bar\page\len - *bar\max
+            EndIf
+            ;
+            ;\\ for the scrollarea children's
+            If *bar\page\end And *bar\page\pos > *bar\page\end
+               ; Debug " scroll-bar end change - " + *bar\page\pos +" "+ *bar\page\end
+               *bar\PageChange( )  = *bar\page\pos - *bar\page\end
+               *bar\page\pos       = *bar\page\end
+            EndIf
+            ;
+            ; get scroll percent
+            If ( *bar\page\end - *bar\min )
+               *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\page\end - *bar\min ) 
+            Else
+               *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / 1 
             EndIf
             ;
             *bar\area\end = *bar\area\len - *bar\thumb\len - *BB2\size
@@ -5558,13 +5556,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf 
          EndIf
          
-         ;
-         ;\\ for the scrollarea children's
-         If *bar\page\end And *bar\page\pos > *bar\page\end
-            ; Debug " scroll-bar end change - " + *bar\page\pos +" "+ *bar\page\end
-            *bar\PageChange( )  = *bar\page\pos - *bar\page\end
-            *bar\page\pos       = *bar\page\end
-         EndIf
          
          ;
          ;\\ get thumb pos
@@ -27527,9 +27518,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 5511
-; FirstLine = 4158
-; Folding = ----+----------------------------------4------------------------------------------------48P---n------4--0D1-8-8-0f--+----8-v------j4--4uz5e+--f-+P--+----n---+db-+d80-8-------------------------------4--+--r----X4f8nvf-------------------------------------------------------------2W----------------------------------------------------------------v-----------------------------------------------------------------------------------------------------------------------------------------------------------v-----e------------------------------------------------------------------------------------------------------------v--0--4-2---8++------------------------------------------------------------------------------------------------------------------8---
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 5503
+; FirstLine = 4163
+; Folding = ----+----------------------------------4------------------------------------------------48P---n------4--0D1-8-8-0f--+----8-v------j+--kfG-z---84-6-4-----9--4vb84vbv-f--------------------------------+-4--f0----7+b-908------------------------------------------------------------v37----------------------------------------------------------------0-----------------------------------------------------------------------------------------------------------------------------------------------------------0----48------------------------------------------------------------------------------------------------------------0-v---+v+--f44------------------------------------------------------------------------------------------------------------------f---
 ; EnableXP
 ; Executable = widgets-.app.exe
