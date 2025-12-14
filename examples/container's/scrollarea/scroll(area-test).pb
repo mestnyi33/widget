@@ -3,7 +3,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
-   ;test_draw_area = 1
+   test_draw_area = 1
    
    Global si = 150
    Global pad = 0
@@ -33,8 +33,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 9
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 6
 ; Folding = -
 ; EnableXP
 ; DPIAware

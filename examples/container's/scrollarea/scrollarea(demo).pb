@@ -3,7 +3,8 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
-  Global g,*g._s_widget, b,*b, i, time, ss=50,Sw = 350, Sh = 300, count;=1000;0
+  test_draw_area = 1
+   Global g,*g._s_widget, b,*b, i, time, ss=50,Sw = 350, Sh = 300, count;=1000;0
   
   Procedure events_gadgets()
     ;Debug ""+EventGadget()+ " - gadget event - " +EventType()
@@ -128,7 +129,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 5
+; CursorPosition = 6
 ; Folding = v-
 ; Optimizer
 ; EnableXP

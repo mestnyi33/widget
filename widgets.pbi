@@ -252,7 +252,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Global test_resize_area = 0
       Global test_scrollbars_reclip = 0
       
-      Global test_draw_area = 0
+      Global test_draw_area = 1
       Global test_anchors
       Global test_DoChangeCursor, test_changecursor,test_setcursor
       
@@ -4959,7 +4959,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
                         
             ;\\
-            If test_draw_area
+            If test_draw_area And Not _this_\hide
                ;If Not _this_\haschildren
                draw_mode_alpha_( #PB_2DDrawing_Outlined )
                
@@ -5465,81 +5465,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ; type = 1
-         If *bar\area\len ;=-111111111111111111
-            ;
-            *bar\area\pos = *BB1\size
-            ;
-            *bar\page\end = *bar\max 
-            
-            ; get thumb size
-            If *bar\page\len
-               ; If is_integral_( *this )
-               If Not *this\hide[1]
-                  If *this\hide <> Bool( *bar\page\len >= *bar\max  )
-                     *this\hide = Bool( *bar\page\len >= *bar\max )
-                     ;
-                     If *this\hide
-                        If *bar\page\pos <> *bar\min
-                           Debug " ["+ *this\class +"] scroll-hide "+ *bar\page\pos
-                           *bar\page\pos = *bar\min
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               ; EndIf
-               ;
-            *bar\thumb\end = *bar\area\len - *BB1\size - *BB2\size
-            If *bar\thumb\end < *bar\area\pos
-               *bar\thumb\end = *bar\area\pos
-            EndIf
-         Else
-            *bar\thumb\len = *SB\size
-               If *bar\thumb\len > *bar\area\len
-                  *bar\thumb\len = *bar\area\len
-               EndIf
-            EndIf
-                ; get thumb size
-               *bar\thumb\len = Round((( *bar\area\len - *BB1\size - *BB2\size ) / ( *bar\max - *bar\min )) * *bar\page\len, #PB_Round_Nearest )
-               If *bar\thumb\len > *bar\thumb\end
-                  *bar\thumb\len = *bar\thumb\end
-               EndIf
-               If *bar\thumb\len < *SB\size
-                  If *bar\thumb\end > *SB\size + *bar\thumb\len
-                     *bar\thumb\len = *SB\size
-                  EndIf
-               EndIf
-               
-            
-            ;
-            If *bar\area\pos > *bar\area\len
-               *bar\area\pos = *bar\area\len
-            EndIf
-            ;
-            If ( *bar\max - *bar\min )
-               *bar\percent = *bar\thumb\end / ( *bar\max - *bar\min )
-            Else
-               *bar\percent = *bar\thumb\end / 1
-            EndIf
-               *bar\thumb\end - *bar\thumb\len
-             
-            ;
-            *bar\area\end = *bar\area\len - *bar\thumb\len - *BB2\size
-            If *bar\area\end < 0
-               *bar\area\end = 0
-            EndIf 
-         EndIf
-         
-         ; type = 2
-         If *bar\area\len =-111111111111111111
+         If *bar\area\len
             *bar\area\pos  = *BB1\size
             If *bar\area\pos > *bar\area\len
                *bar\area\pos = *bar\area\len
             EndIf
             ;
-            *bar\thumb\end = *bar\area\len - *BB1\size - *BB2\size ; - ( *BB1\size + *BB2\size )
-            If *bar\thumb\end < *bar\area\pos
-               *bar\thumb\end = *bar\area\pos
+            *bar\thumb\end = *bar\area\len - *BB2\size - *BB1\size
+            If *bar\thumb\end < 0
+               *bar\thumb\end = 0
             EndIf
             
             If *bar\page\len
@@ -5559,33 +5493,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; EndIf
                ;
                ; get thumb size
-               *bar\thumb\len = Round(( ( *bar\area\len - *BB1\size - *BB2\size ) / ( *bar\max - *bar\min )) * *bar\page\len, #PB_Round_Nearest )
-               ;*bar\thumb\len = Round(( *bar\thumb\end / ( *bar\max - *bar\min )) * *bar\page\len, #PB_Round_Nearest )
+               *bar\thumb\len = Round(( *bar\thumb\end / ( *bar\max - *bar\min )) * *bar\page\len, #PB_Round_Nearest )
                If *bar\thumb\len > *bar\thumb\end
                   *bar\thumb\len = *bar\thumb\end
-               EndIf
-               ;
-               If *bar\thumb\len < *SB\size
-                  If *bar\thumb\end > *SB\size + *bar\thumb\len
-                     *bar\thumb\len = *SB\size
+               Else
+                  If *bar\thumb\len < *SB\size
+                     If *bar\thumb\end > *SB\size
+                        *bar\thumb\len = *SB\size
+                     Else
+                        If *bar\thumb\end > *SB\size/2
+                           *bar\thumb\len = *SB\size/2
+                        Else
+                           *bar\thumb\len = 0
+                        EndIf
+                        
+                     EndIf
                   EndIf
                EndIf
                ;
                ; for the scroll-bar
-               Protected PageEnd
                If *bar\max > *bar\page\len
-                  PageEnd = *bar\max - *bar\page\len
+                  *bar\page\end = *bar\max - *bar\page\len
                Else
-                  PageEnd = *bar\page\len - *bar\max
+                  *bar\page\end = *bar\page\len - *bar\max
                EndIf
-               *bar\page\end = PageEnd
                ;
-;                If *bar\thumb\len = *bar\thumb\end
-;                   *bar\page\end = *bar\min 
-;                EndIf
-               ;
-               If ( PageEnd - *bar\min )
-                  *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( PageEnd - *bar\min ) ;   
+               If ( *bar\page\end - *bar\min )
+                  *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / ( *bar\page\end - *bar\min ) ;   
                Else
                   *bar\percent = ( *bar\thumb\end - *bar\thumb\len ) / 1  ;  
                EndIf
@@ -21721,7 +21655,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\WidgetChange( ) = 1
             *this\TextChange( ) = 1
             
-            *this\padding\x  = dpi_scale_two ;  DPIScaled(4)
+            *this\padding\x  = DPIScaled(4)
             
             If constants::BinaryFlag( Flag, #__flag_nolines )
                flag & ~ #__flag_nolines
@@ -25452,7 +25386,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             
             ;\\ draw scroll area frames
-            If test_draw_area
+            If test_draw_area And Not *this\hide
                draw_mode_alpha_( #PB_2DDrawing_Outlined )
                
                ;\\ Scroll area coordinate
@@ -27593,10 +27527,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 5468
-; FirstLine = 4122
-; Folding = ----+----------------------------------4------------------------------------------------48P---n------4--0D1-8-8-0f--9----8-v------D0-f--vdnx09---+0f+-0----P---083+0838-4-------------------------------v--0--X----vu-3Pf-+------------------------------------------------------------------------------------------------------------------------------f-----------------------------------------------------------------------------------------------------------------------------------------------------------f-----0+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 5511
+; FirstLine = 4158
+; Folding = ----+----------------------------------4------------------------------------------------48P---n------4--0D1-8-8-0f--+----8-v------j4--4uz5e+--f-+P--+----n---+db-+d80-8-------------------------------4--+--r----X4f8nvf-------------------------------------------------------------2W----------------------------------------------------------------v-----------------------------------------------------------------------------------------------------------------------------------------------------------v-----e------------------------------------------------------------------------------------------------------------v--0--4-2---8++------------------------------------------------------------------------------------------------------------------8---
 ; EnableXP
-; DPIAware
 ; Executable = widgets-.app.exe
