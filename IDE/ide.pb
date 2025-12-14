@@ -958,8 +958,9 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
       SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
       SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
    EndIf
+   ;
    *this = Properties_ButtonCreate( Type, *second, item )
-   
+   ;
    ; SetItemData(*first, item, *this)
    SetItemData(*second, item, *this)
 EndProcedure
@@ -3021,9 +3022,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 469
-; FirstLine = 379
-; Folding = ----74+f-b----84D8-v----------+-030----f-f-----f----+9-
+; CursorPosition = 962
+; FirstLine = 441
+; Folding = ----74+f-b----84j8-n----------+-030----f-f-----f----+9-
 ; Optimizer
 ; EnableAsm
 ; EnableXP

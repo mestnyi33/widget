@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
          *scroll1 = Scroll(50, 20, 250, 50,  0, 30, PageLength)
          
          *g1=Button(10, 90, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
-         *scroll2 = Scroll(50, 80, 250, 50,  min, 0, PageLength ) : Bind( *scroll2, @change_events( ), #__event_Change)
+         *scroll2 = Scroll(50, 80, 250, 50,  min, 3, PageLength ) : Bind( *scroll2, @change_events( ), #__event_Change)
          *g2=Button(310, 90, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
          
          *scroll3 = Scroll(50, 140, 250, 50,  0, 30, PageLength, #__flag_Invert)
@@ -139,8 +139,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 25
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 65
+; FirstLine = 52
 ; Folding = -8-
 ; EnableXP
 ; DPIAware

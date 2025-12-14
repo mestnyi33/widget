@@ -5,8 +5,10 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
   
    ;\\ 
-   Define vertical = 1
-   
+   Define vertical = 0
+   Define min = -2147483648
+   Define max = 2147483647
+                  
    ; Spin( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0 )
    
    If vertical
@@ -33,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Define *spin1 = Spin(50, 20, 250, 50,  0, 30, #__flag_Invert)
          SetState(*spin1, 5)
          
-         Define *spin2 = Spin(50, 80, 250, 50,  5, 30, #__flag_Vertical|#__flag_TextCenter)
+         Define *spin2 = Spin(50, 80, 250, 50,  min, max, #__flag_Vertical|#__flag_TextCenter)
          SetState(*spin2, 10)
          
          Define *spin3 = Spin(50, 140, 250, 50,  0, 30, #__flag_TextRight)
@@ -44,9 +46,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 7
-; FirstLine = 7
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 37
+; FirstLine = 18
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -12,8 +12,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\ test 1
    If Open(0, 0, 0, 350, 210, "Spin", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetColor(root( ), #PB_Gadget_BackColor, $FFEFEFEF )
-      a_init(root( ))
+      SetColor(Root( ), #PB_Gadget_BackColor, $FFEFEFEF )
+      a_init(Root( ))
       
       Define *spin1 = Spin(50, 20, 250, 50, 0, 30)
       SetState(*spin1, 0)
@@ -28,8 +28,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 23
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 21
 ; Folding = -
 ; EnableXP
 ; DPIAware

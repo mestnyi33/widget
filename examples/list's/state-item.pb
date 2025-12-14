@@ -90,10 +90,12 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "button "+keyboard( )\input
             
          Case #__event_LostFocus
+            Debug "lostfocus"
             PropertiesItems_ChangeStatus( *this, GetData( EventWidget( )), 3 )
             PropertiesItems_ChangeStatus( *demo, GetData( EventWidget( )), 3 )
             
          Case #__event_Focus
+            Debug "focus"
             PropertiesItems_ChangeStatus( *this, GetData( EventWidget( )), 2 )
             PropertiesItems_ChangeStatus( *demo, GetData( EventWidget( )), 2 )
             
@@ -349,7 +351,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 349
-; FirstLine = 322
+; CursorPosition = 139
+; FirstLine = 117
 ; Folding = ----------
 ; EnableXP

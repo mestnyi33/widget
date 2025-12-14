@@ -10,7 +10,8 @@ Global._s_WIDGET *g1, *g2, *track1,*track2,*track3
 
 ; track( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0 )
 Define min = - 3
-Define event = #__event_Down;Click
+Define event = #__event_Down ; BUG
+Define event = #__event_LeftClick
 
 Procedure button_events( )
    Protected state = GetState( *track2 )
@@ -63,22 +64,22 @@ Else
       *track1 = Track(50, 20, 250, 50,  0, 30)
       
       *g1=Button(10, 90, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
-      *track2 = Track(50, 80, 250, 50,  min, 0) : Bind( *track2, @change_events( ), #__event_Change)
+      *track2 = Track(50, 80, 250, 50,  min, 3) : Bind( *track2, @change_events( ), #__event_Change)
       *g2=Button(310, 90, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
       
       *track3 = Track(50, 140, 250, 50,  0, 30, #__flag_Invert)
       
       Debug " -setstate-h "
       SetState(*track1, 5)
-      ;SetState(*track2, 0)
+      SetState(*track2, 0)
       SetState(*track3, 5)
       
       WaitClose( )
    EndIf
 EndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 16
-; FirstLine = 12
-; Folding = --
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 73
+; FirstLine = 35
+; Folding = f-
 ; EnableXP
 ; DPIAware

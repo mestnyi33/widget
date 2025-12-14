@@ -8,19 +8,17 @@ CompilerIf #PB_Compiler_IsMainFile
    Global  w = 420-40, h = 280-40
    
    Procedure events_widgets( )
-      widget( ) = object
+      Widget( ) = object
       Debug " - "+ClassFromEvent(WidgetEvent())
-      Debug ""+widget( )\bar\page\pos +" - page\pos"
-      Debug ""+widget( )\bar\page\len +" - page\len"
-      Debug ""+widget( )\bar\page\end +" - page\end"
-      Debug ""+widget( )\bar\page\change +" - page\change"
-      Debug ""+widget( )\bar\percent +" - percent"
-      Debug ""+widget( )\bar\area\len +" - area\len"
-      Debug ""+widget( )\bar\area\end +" - area\end"
-      Debug ""+widget( )\bar\thumb\pos +" - thumb\pos"
-      Debug ""+widget( )\bar\thumb\len +" - thumb\len"
-      Debug ""+widget( )\bar\thumb\end +" - thumb\end"
-      Debug ""+widget( )\bar\thumb\change +" - thumb\change"
+      Debug ""+Widget( )\bar\percent +" - percent"
+      Debug ""+Widget( )\bar\page\pos +" - page\pos"
+      Debug ""+Widget( )\bar\page\len +" - page\len"
+      Debug ""+Widget( )\bar\page\end +" - page\end"
+      Debug ""+Widget( )\bar\area\len +" - area\len"
+      Debug ""+Widget( )\bar\area\end +" - area\end"
+      Debug ""+Widget( )\bar\thumb\pos +" - thumb\pos"
+      Debug ""+Widget( )\bar\thumb\len +" - thumb\len"
+      Debug ""+Widget( )\bar\thumb\end +" - thumb\end"
       Debug " - "
    EndProcedure
    
@@ -50,24 +48,24 @@ CompilerIf #PB_Compiler_IsMainFile
             SetGadgetAttribute(object, #PB_Splitter_SecondMinimumSize, min)
          EndIf
       Else
-         Define i,widget = Tree(0, 0, 0, 0, #__flag_Borderless)
+         Define i,Widget = Tree(0, 0, 0, 0, #__flag_Borderless)
          
-         AddItem(widget, -1, Str(i)+"test item ")
+         AddItem(Widget, -1, Str(i)+"test item ")
          For i=1 To 20
             If i%2
-               AddItem(widget, -1, Str(i)+"test item test item test item ", -1, 1)
+               AddItem(Widget, -1, Str(i)+"test item test item test item ", -1, 1)
             Else
-               AddItem(widget, -1, Str(i)+"test item test item test item ")
+               AddItem(Widget, -1, Str(i)+"test item test item test item ")
             EndIf
          Next
-         widget = Splitter(0, 0, 0, 0, -1, widget, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+         Widget = Splitter(0, 0, 0, 0, -1, Widget, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
          
          If mode = 1
             object = Splitter(10, 10, w, h, Text(0,0,0,0,"fixed"), -1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
          ElseIf  mode = 2
             object = Splitter(10, 10, w, h, -1, Text(0,0,0,0,"fixed"), #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
          Else
-            object = Splitter(10, 10, w, h, -1, widget, #PB_Splitter_Vertical)
+            object = Splitter(10, 10, w, h, -1, Widget, #PB_Splitter_Vertical)
          EndIf
          ;Resize(object, #PB_Ignore, #PB_Ignore, w,h)
          If min
@@ -145,19 +143,19 @@ CompilerIf #PB_Compiler_IsMainFile
       ;v
       ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__flag_Invert)
       v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__flag_Invert)
-      SetBackColor(widget(), $FF80BE8E)
-      SetState(widget(), 120)
-      Bind( widget(), @track_v_events( ), #__event_change )
+      SetBackColor(Widget(), $FF80BE8E)
+      SetState(Widget(), 120)
+      Bind( Widget(), @track_v_events( ), #__event_change )
       ;h
       ;h_bar=Splitter( 10,h+10,w,20, -1, -1 , #PB_Splitter_Vertical)
       h_bar=Track( 10,h+10,w,20, 0, w-10 )
-      SetBackColor(widget(), $FF80BE8E)
-      SetState(widget(), 380)
-      Bind( widget(), @track_h_events( ), #__event_change )
+      SetBackColor(Widget(), $FF80BE8E)
+      SetState(Widget(), 380)
+      Bind( Widget(), @track_h_events( ), #__event_change )
       
       Button(w+10,h+10,20,20,"", #PB_Button_Toggle)
-      SetRound( widget(), 10 )
-      Bind( widget(), @track_vh_events( ), #__event_Down )
+      SetRound( Widget(), 10 )
+      Bind( Widget(), @track_vh_events( ), #__event_Down )
       
 ;       widget() = object
 ;       Debug  widget()\bar\fixed[1]
@@ -166,15 +164,15 @@ CompilerIf #PB_Compiler_IsMainFile
       
       SetActive( root() )
       SetActiveGadget( GetCanvasGadget() )
-      Bind( root(), @key_events( ), #__event_KeyDown )
+      Bind( Root(), @key_events( ), #__event_KeyDown )
       
       WaitClose( )
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 153
-; FirstLine = 136
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 164
+; FirstLine = 143
 ; Folding = -----
 ; EnableXP
 ; DPIAware

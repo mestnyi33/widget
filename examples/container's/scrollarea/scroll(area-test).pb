@@ -33,7 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
 ; CursorPosition = 9
 ; Folding = -
 ; EnableXP
