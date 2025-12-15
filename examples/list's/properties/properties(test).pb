@@ -7,7 +7,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   ;test_focus_draw = 1
+   test_focus_draw = 1
    ;test_focus_set = 1
    
    Global ide_inspector_PROPERTIES
@@ -267,12 +267,14 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
       Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
       
-      If mode
-         AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
-      Else
-         AddItem( *first, item, UCase(StringField(Text.s, 1, Chr(10))), -1 )
-      EndIf
-      AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
+;       If mode
+;          AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
+;       Else
+;          AddItem( *first, item, UCase(StringField(Text.s, 1, Chr(10))), -1 )
+;       EndIf
+;       AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
+      AddItem( *first, item, Text.s, -1, mode )
+      AddItem( *second, item, Text.s, -1, mode )
       
       item = CountItems( *first ) - 1
       If mode = 0
@@ -686,9 +688,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 332
-; FirstLine = 281
-; Folding = --8--827v---
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 275
+; FirstLine = 229
+; Folding = --8--0a04---
 ; EnableXP
 ; DPIAware

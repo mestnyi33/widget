@@ -25,12 +25,12 @@
       CompilerEndIf
       
       
-;       ;-\\ Bounds
-;       #__bounds_Parentsize = 0
-;       #__bounds_Children = 1<<0
-;       #__bounds_move = 1<<1
-;       #__bounds_size = 1<<2
-;       
+      ;-\\ Bounds
+      #__bounds_Parentsize = 0
+      #__bounds_Children = 1<<0
+      #__bounds_move = 1<<1
+      #__bounds_size = 1<<2
+      
 ;       Enumeration - 1
 ;          #SelectionStyle_Default
 ;          #SelectionStyle_none
@@ -730,8 +730,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 85
-; FirstLine = 66
+; CursorPosition = 32
+; FirstLine = 24
 ; Folding = ----
 ; Optimizer
 ; EnableXP

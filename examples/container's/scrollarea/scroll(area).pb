@@ -14,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
       alphatest.i
    EndStructure
    
-   Global MyCanvas, *this.allocate( widget ) 
+   Global MyCanvas, *this.allocate( Widget ) 
    
    Global *current=#False
    Global currentItemXOffset.i, currentItemYOffset.i
@@ -257,8 +257,8 @@ CompilerIf #PB_Compiler_IsMainFile
             DrawImage(ImageID(imgs()\img), imgs()\x, imgs()\y) ; draw all imgs with z-order
          Next
          
-         widget::Draw(*this\scroll\v)
-         widget::Draw(*this\scroll\h)
+         Widget::Draw(*this\scroll\v)
+         Widget::Draw(*this\scroll\h)
          
          UnclipOutput()
          DrawingMode(#PB_2DDrawing_Outlined)
@@ -280,10 +280,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected MouseX 
       Protected MouseY
       
-      widget::EventHandler( Canvas, Event )
+      Widget::EventHandler( Canvas, Event )
       
-      MouseX = widget::CanvasMouseX( )
-      MouseY = widget::CanvasMouseY( )
+      MouseX = Widget::CanvasMouseX( )
+      MouseY = Widget::CanvasMouseY( )
       
       Width = GadgetWidth(Canvas) - X*2
       Height = GadgetHeight(Canvas) - Y*2
@@ -371,10 +371,10 @@ CompilerIf #PB_Compiler_IsMainFile
    
    MyCanvas = GetCanvasGadget(Open(0, 10, 10)) 
    BindGadgetEvent(MyCanvas, @Canvas_CallBack())
-   Bind(root( ), @events_draw(), #__event_Draw)
+   Bind(Root( ), @events_draw(), #__event_Draw)
    
-   *this\scroll\v = widget::Scroll(X+Width-20, Y, 20, 0, 0, 0, Width-20, #__flag_Vertical|#__flag_Invert, 11)
-   *this\scroll\h = widget::Scroll(X, Y+Height-20, 0,  20, 0, 0, Height-20, #__flag_Invert, 11)
+   *this\scroll\v = Widget::Scroll(X+Width-20, Y, 20, 0, 0, 0, Width-20, #__flag_Vertical|#__flag_Invert, 11)
+   *this\scroll\h = Widget::Scroll(X, Y+Height-20, 0,  20, 0, 0, Height-20, #__flag_Invert, 11)
    
    bar_mdi_resize( *this, X, Y, Width, Height)
             
@@ -388,6 +388,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
 ; CursorPosition = 357
-; FirstLine = 240
+; FirstLine = 84
 ; Folding = ----------
 ; EnableXP
