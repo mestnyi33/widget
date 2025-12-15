@@ -3813,17 +3813,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ( Round((( _scroll_pos_ ) - _bar_\min ) * _bar_\percent, #PB_Round_Nearest ))
       EndMacro
       
-      Macro bar_invert_page_pos_( _bar_, _scroll_pos_ )
-         ( Bool( Not _bar_\invert ) * ( _scroll_pos_ ) +
-           Bool( _bar_\invert ) * ( _bar_\page\end - ( _scroll_pos_ - _bar_\min )) )
-      EndMacro
-      
       Macro bar_max( _bar_, _max_ )
-            If _bar_\min > _max_
-               _bar_\max = _bar_\min + 1
-            Else
-               _bar_\max = _max_
-            EndIf
+         If _bar_\min > _max_
+            _bar_\max = _bar_\min + 1
+         Else
+            _bar_\max = _max_
+         EndIf
       EndMacro
       
       ;-
@@ -5564,7 +5559,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *bar\invert
             ThumbPos = *bar\area\end - ThumbPos
          Else
-            ThumbPos = *BB1\size + ThumbPos
+            ThumbPos = *bar\area\pos + ThumbPos
          EndIf
          ;
          If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
@@ -6210,7 +6205,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *bar\invert
                ThumbPos = *bar\area\end - ThumbPos
             Else
-               ThumbPos = *BB1\size + ThumbPos
+               ThumbPos = *bar\area\pos + ThumbPos
             EndIf
             ;
             If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
@@ -6296,7 +6291,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *bar\invert
                ThumbPos = *bar\area\end - ThumbPos
             Else
-               ThumbPos = *BB1\size + ThumbPos
+               ThumbPos = *bar\area\pos + ThumbPos
             EndIf
             ;
             If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
@@ -6428,14 +6423,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          ;\\
          *bar\page\end = *bar\max 
-         *bar\area\end = *bar\max 
-         *bar\percent = *bar\max / ( *bar\max - *bar\min )
          ;
-         ;\\ spin-bar
+         *bar\area\end = *bar\max - *bar\min
+         If *bar\area\end < *bar\max
+            ; Debug ""+*bar\min +" "+ *bar\max
+            *bar\area\end = *bar\max
+         EndIf
+         ;
+         *bar\percent = *bar\area\end / ( *bar\page\end - *bar\min ) 
+         
          ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos ) 
+         ;Debug ""+ThumbPos +" "+ *bar\percent ;
          ;
          If *bar\invert
             ThumbPos = *bar\area\end - ThumbPos
+         Else
+            ThumbPos = *bar\area\pos + ThumbPos
          EndIf
          ;
          If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
@@ -6474,7 +6477,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *BB2\ColorState( ) = #__s_0
             EndIf
          EndIf
-         ;
+      ;
          ;\\ update spin-bar coordinates
          If *this\type = #__type_Spin
             ;\\
@@ -6690,7 +6693,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;                   If Not *bar\page\pos
                   ;                      ScrollPos = *bar\max
                   ;                      ScrollPos     = bar_page_pos_( *bar, ScrollPos )
-                  ;                      ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
+                  ;                      If *bar\invert
+                  ;                         ScrollPos = ( *bar\page\end - ( ScrollPos - *bar\min ))           
+                  ;                      EndIf
                   ;                      *bar\page\pos = ScrollPos
                   ;                   EndIf
                EndIf
@@ -6705,8 +6710,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;ScrollPos - *this\TabFocused( )\width                        ; to right
                         ScrollPos - ( *bar\thumb\end + *this\TabFocused( )\width ) / 2 ; to center
                         
-                        ScrollPos     = bar_page_pos_( *bar, ScrollPos )
-                        ScrollPos     = bar_invert_page_pos_( *bar, ScrollPos )
+                        ScrollPos = bar_page_pos_( *bar, ScrollPos )
+                        If *bar\invert
+                           ScrollPos = ( *bar\page\end - ( ScrollPos - *bar\min ))           
+                        EndIf
                         *bar\page\pos = ScrollPos
                      EndIf
                   EndIf
@@ -6937,9 +6944,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *bar\thumb\pos = ThumbPos
             ;
             ScrollPos = bar_page_pos_( *bar, ThumbPos  )
-            ScrollPos = bar_invert_page_pos_( *bar, ScrollPos )
+            If *bar\invert
+               ScrollPos = ( *bar\page\end - ( ScrollPos - *bar\min ))           
+            EndIf
             ;
-            bar_PageChange( *this, ScrollPos, 2 ) ; and post change event 
+            bar_PageChange( *this, ScrollPos )
             ProcedureReturn #True
          EndIf
       EndProcedure
@@ -18218,19 +18227,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *BB1 = *bar\button[1]
             *BB2 = *bar\button[2]
             ;
-            Protected increment
-            increment = Round( *bar\percent, #PB_Round_Nearest )
+            Protected increment = Round( *bar\percent, #PB_Round_Nearest )
             If Not increment
                increment = *this\scroll\increment
             EndIf
-            
             If *this\type = #__type_ToolBar Or
                *this\type = #__type_PopupBar Or
                *this\type = #__type_MenuBar Or
                *this\type = #__type_TabBar
                ;
-               If mouse( )\drag
-                  increment = 0
+               If PressedButton( ) = *SB
+                  If mouse( )\drag
+                     increment = 0
+                  EndIf
+               Else
+                  increment = *this\scroll\increment
                EndIf
             EndIf
             
@@ -18245,21 +18256,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      PressedButton( )       = EnteredButton( )
                      PressedButton( )\press = #True
                      ;
-                     If *this\type = #__type_TabBar
-                        increment = *this\scroll\increment
-                     EndIf
-                     ;
                      If Not ( *this\type = #__type_Track Or
                               ( *this\type = #__type_Splitter And PressedButton( ) <> *SB ))
                         PressedButton( )\ColorState( ) = #__s_2
                      EndIf
-                     
+                     ; Debug "[scroll increment] "+*this\scroll\increment
                      ; left&top button
                      If ( *BB2\press And *bar\invert ) Or
                         ( *BB1\press And Not *bar\invert )
                         
-                        If *this\type = #__type_Spin ;Or *this\type = #__type_Scroll
-                           If bar_PageChange( *this, *bar\page\pos - *this\scroll\increment )
+                        If *this\type = #__type_Spin 
+                           If bar_PageChange( *this, *bar\page\pos - increment )
                               result = #True
                            EndIf
                         Else
@@ -18272,8 +18279,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ElseIf ( *BB1\press And *bar\invert ) Or
                             ( *BB2\press And Not *bar\invert )
                         
-                        If *this\type = #__type_Spin ;Or *this\type = #__type_Scroll
-                           If bar_PageChange( *this, *bar\page\pos + *this\scroll\increment )
+                        If *this\type = #__type_Spin 
+                           If bar_PageChange( *this, *bar\page\pos + increment )
                               result = #True
                            EndIf
                         Else
@@ -27519,8 +27526,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 254
-; FirstLine = 251
-; Folding = ----+----------------------------------4------------------------------------------------48P---n------4--0D1-8-8-0f--+----8-v------8ee5kfG-z---84-6-4-----9--4vb84vbv-f--------------------------------+-4--f0----7+b-908------------------------------------------------------------v37----------------------------------------------------------------0-----------------------------------------------------------------------------------------------------------------------------------------------------------0----48------------------------------------------------------------------------------------------------------------0-v---+v+--f44------------------------------------------------------------------------------------------------------------------f---
+; CursorPosition = 6428
+; FirstLine = 4150
+; Folding = ----+----------------------------------4------------------------------------------------80n---z------8--+B7-0-0-+v-f-----0-4------cPPcyOD46---08-9-z---0e+--z-t08-8m----------------------------------8-f---2----r8v0z4v-------------------------------------------------------------ar----------------------------------------------------------------4-----------------------------------------------------------------------------------------------------------------------------------------------------------4----fv--------0---------------------------------------------------------------------------------------------------4--+--8-7---df-------------------------------------------------------------------------------------------------------------------0---
 ; EnableXP
 ; Executable = widgets-.app.exe

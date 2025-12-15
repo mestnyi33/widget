@@ -35,7 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Define *spin1 = Spin(50, 20, 250, 50,  0, 30, #__flag_Invert)
          SetState(*spin1, 5)
          
-         Define *spin2 = Spin(50, 80, 250, 50,  min, max, #__flag_Vertical|#__flag_TextCenter)
+         Define *spin2 = Spin(50, 80, 250, 50,  min, max, #__spin_plus ) ;#__flag_Vertical|#__flag_TextCenter)
          SetState(*spin2, 10)
          
          Define *spin3 = Spin(50, 140, 250, 50,  0, 30, #__flag_TextRight)
@@ -48,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
 ; CursorPosition = 37
-; FirstLine = 18
+; FirstLine = 20
 ; Folding = -
 ; EnableXP
 ; DPIAware

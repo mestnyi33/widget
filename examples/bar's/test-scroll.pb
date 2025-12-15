@@ -10,11 +10,12 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ; scroll( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
    Define min = - 3
+   Define max = 3
    Define event = #__event_LeftClick
    
    Procedure button_events( )
       Protected state = GetState( *scroll2 )
-      Debug "click " + WidgetEventData( )
+      Debug "click " + MouseClick( )
    
       Select EventWidget( )
          Case *g1
@@ -31,9 +32,11 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure change_events( )
-      SetWindowTitle( EventWindow(), "stste ["+Str(GetState( *scroll2 ))+"]" )
-      Disable( *g1, *scroll2\bar\button[1]\disable )
-      Disable( *g2, *scroll2\bar\button[2]\disable )
+      SetWindowTitle( EventWindow(), "stste ["+Str(GetState( EventWidget( )))+"]" )
+      If *scroll2 = EventWidget( )
+         Disable( *g1, EventWidget( )\bar\button[1]\disable )
+         Disable( *g2, EventWidget( )\bar\button[2]\disable )
+      EndIf
    EndProcedure
    
    If vertical
@@ -43,14 +46,14 @@ CompilerIf #PB_Compiler_IsMainFile
          *scroll1 = Scroll(20, 50, 50, 250,  0, 30, PageLength, #PB_ScrollBar_Vertical|#__flag_Invert)
          
          *g1=Button(90, 10, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
-         *scroll2 = Scroll(80, 50, 50, 250,  min, 0, PageLength, #PB_ScrollBar_Vertical) : Bind( *scroll2, @change_events( ), #__event_Change)
+         *scroll2 = Scroll(80, 50, 50, 250,  min, max, PageLength, #PB_ScrollBar_Vertical) : Bind( *scroll2, @change_events( ), #__event_Change)
          *g2=Button(90, 310, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
          
          *scroll3 = Scroll(140, 50, 50, 250,  0, 30, PageLength, #PB_ScrollBar_Vertical, 30)
          
          Debug " -setstate-v "
          SetState(*scroll1, 5)
-         ;SetState(*scroll2, 0)
+         SetState(*scroll2, 0)
          SetState(*scroll3, 5)
          
          WaitClose( )
@@ -63,10 +66,13 @@ CompilerIf #PB_Compiler_IsMainFile
          *scroll1 = Scroll(50, 20, 250, 50,  0, 30, PageLength)
          
          *g1=Button(10, 90, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
-         *scroll2 = Scroll(50, 80, 250, 50,  min, 3, PageLength ) : Bind( *scroll2, @change_events( ), #__event_Change)
+         *scroll2 = Scroll(50, 80, 250, 50,  min, max, PageLength ) : Bind( *scroll2, @change_events( ), #__event_Change)
          *g2=Button(310, 90, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
          
-         *scroll3 = Scroll(50, 140, 250, 50,  0, 30, PageLength, #__flag_Invert)
+         *scroll3 = Scroll(50, 140, 250, 50,  0, 30, PageLength, #__flag_Invert) 
+         
+         Bind( *scroll1, @change_events( ), #__event_Change)
+         Bind( *scroll3, @change_events( ), #__event_Change)
          
          Debug " -setstate-h "
          SetState(*scroll1, 5)
@@ -140,8 +146,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 65
-; FirstLine = 46
-; Folding = -8-
+; CursorPosition = 35
+; FirstLine = 24
+; Folding = -4-
 ; EnableXP
 ; DPIAware

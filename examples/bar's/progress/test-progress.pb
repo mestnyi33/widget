@@ -10,7 +10,9 @@ Global._s_WIDGET *g1, *g2, *progress1,*progress2,*progress3
 
 ; progress( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0 )
 Define min = - 3
-Define event = #__event_LeftDown;Up;Click
+Define max = 0 ; 3
+Define event = #__event_LeftDown ; BUG
+; Define event = #__event_LeftClick
 
 Procedure button_events( )
    Protected state = GetState( *progress2 )
@@ -42,7 +44,7 @@ If vertical
       *progress1 = Progress(20, 50, 50, 250,  0, 30, #PB_ProgressBar_Vertical|#__flag_Invert)
       
       *g1=Button(90, 10, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
-      *progress2 = Progress(80, 50, 50, 250,  min, 0, #PB_ProgressBar_Vertical) : Bind( *progress2, @change_events( ), #__event_Change)
+      *progress2 = Progress(80, 50, 50, 250,  min, max, #PB_ProgressBar_Vertical) : Bind( *progress2, @change_events( ), #__event_Change)
       *g2=Button(90, 310, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
       
       *progress3 = Progress(140, 50, 50, 250,  0, 30, #PB_ProgressBar_Vertical, 30)
@@ -62,7 +64,7 @@ Else
       *progress1 = Progress(50, 20, 250, 50,  0, 30)
       
       *g1=Button(10, 90, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
-      *progress2 = Progress(50, 80, 250, 50,  min, 0) : Bind( *progress2, @change_events( ), #__event_Change)
+      *progress2 = Progress(50, 80, 250, 50,  min, max) : Bind( *progress2, @change_events( ), #__event_Change)
       *g2=Button(310, 90, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
       
       *progress3 = Progress(50, 140, 250, 50,  0, 30, #__flag_Invert)
@@ -75,8 +77,8 @@ Else
       WaitClose( )
    EndIf
 EndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 69
-; FirstLine = 47
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 13
+; FirstLine = 4
 ; Folding = --
 ; EnableXP

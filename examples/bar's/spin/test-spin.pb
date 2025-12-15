@@ -1,35 +1,87 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
 
+;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   Define min = 25 ; bug fixed
+   Define vertical = 0
+   Global._s_WIDGET *g1, *g2, *Spin1,*Spin2,*Spin3
    
-   Procedure spin_events( )
-      Debug "*g "+GetState(EventWidget()) +" "+ WidgetEventItem( ) +" "+ WidgetEventData( )
+   ; Spin( x.l, y.l, width.l, height.l, Min.l, Max.l.l, flag.q = 0, round.l = 0 )
+   Define min = - 3
+   Define max = 3
+   Define event = #__event_LeftClick
+   
+   Procedure button_events( )
+      Protected state = GetState( *Spin2 )
+      Debug "click " + MouseClick( )
+   
+      Select EventWidget( )
+         Case *g1
+            state - 1
+         Case *g2
+            state + 1
+      EndSelect
+      
+      If SetState( *Spin2, state )
+         ;       Debug ""+
+         ;             *Spin2\bar\button[1]\disable +" "+ 
+         ;             *Spin2\bar\button[2]\disable
+      EndIf
    EndProcedure
    
-   ;\\ test 1
-   If Open(0, 0, 0, 350, 210, "Spin", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetColor(Root( ), #PB_Gadget_BackColor, $FFEFEFEF )
-      a_init(Root( ))
+   Procedure change_events( )
+      SetWindowTitle( EventWindow(), "stste ["+Str(GetState( *Spin2 ))+"]" )
+      Disable( *g1, *Spin2\bar\button[1]\disable )
+      Disable( *g2, *Spin2\bar\button[2]\disable )
+   EndProcedure
+   
+   If vertical
+      ;\\ vertical
+      If Open(0, 0, 0, 210, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+         
+         *Spin1 = Spin(20, 50, 50, 250,  0, 30, #__flag_Vertical|#__flag_Invert)
+         
+         *g1=Button(90, 10, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
+         *Spin2 = Spin(80, 50, 50, 250,  min, max, #__flag_Vertical) : Bind( *Spin2, @change_events( ), #__event_Change)
+         *g2=Button(90, 310, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
+         
+         *Spin3 = Spin(140, 50, 50, 250,  0, 30, #__flag_Vertical, 30)
+         
+         Debug " -setstate-v "
+         SetState(*Spin1, 5)
+         ;SetState(*Spin2, 0)
+         SetState(*Spin3, 5)
+         
+         WaitClose( )
+      EndIf
+   Else
       
-      Define *spin1 = Spin(50, 20, 250, 50, 0, 30)
-      SetState(*spin1, 0)
-      
-      Define *spin2 = Spin(50, 80, 250, 50, min, 30, #__flag_vertical|#__flag_TextCenter|#__flag_Invert)
-      SetState(*spin2, 15)
-      
-      Define *spin3 = Spin(50, 140, 250, 50, 0, 30, #__flag_TextRight|#__flag_Invert)
-      SetState(*spin3, 30)
-      
-      Bind( #PB_All, @spin_events(), #__event_Change )
-      WaitClose( )
+      ;\\ horizontal
+      If Open(0, 0, 0, 350, 210, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+         
+         *Spin1 = Spin(50, 20, 250, 50,  0, 30)
+         
+         *g1=Button(10, 90, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
+         *Spin2 = Spin(50, 80, 250, 50,  min, max ) : Bind( *Spin2, @change_events( ), #__event_Change)
+         *g2=Button(310, 90, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
+         
+         *Spin3 = Spin(50, 140, 250, 50,  0, 30, #__flag_Invert)
+         
+         Debug " -setstate-h "
+         SetState(*Spin1, 5)
+         ; SetState(*Spin2, 0)
+         SetState(*Spin3, 5)
+         
+         WaitClose( )
+      EndIf
    EndIf
 CompilerEndIf
+
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 21
-; Folding = -
+; CursorPosition = 12
+; FirstLine = 53
+; Folding = --
 ; EnableXP
 ; DPIAware

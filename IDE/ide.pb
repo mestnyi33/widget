@@ -792,6 +792,9 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
          EndSelect
          
          *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag, min, max, 0, #__bar_button_size, 0, steps )
+;          OpenList( *parent )
+;          *this = Spin( 0,0,0,0, min,max,flag, 0, steps )
+;          CloseList( )
          
       Case #__type_String
          *this = Create( *parent, "String", Type, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
@@ -3022,9 +3025,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 962
-; FirstLine = 441
-; Folding = ----74+f-b----84j8-n----------+-030----f-f-----f----+9-
+; CursorPosition = 796
+; FirstLine = 416
+; Folding = ----74+f-b-----4j8-n----------+-030----f-f-----f----+9-
 ; Optimizer
 ; EnableAsm
 ; EnableXP

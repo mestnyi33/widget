@@ -10,6 +10,7 @@ Global._s_WIDGET *g1, *g2, *track1,*track2,*track3
 
 ; track( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0 )
 Define min = - 3
+Define max = 0 ; 3
 Define event = #__event_Down ; BUG
 Define event = #__event_LeftClick
 
@@ -78,8 +79,7 @@ Else
    EndIf
 EndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 73
-; FirstLine = 35
+; CursorPosition = 13
 ; Folding = f-
 ; EnableXP
 ; DPIAware
