@@ -227,7 +227,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-  -----------------
       ;-   GLOBALS
       ;-  -----------------
-      Global display_mode_linux = 1
+      Global display_mode_linux = 0
       Global test_align = 0
       Global test_atpoint
       Global test_display
@@ -15318,12 +15318,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\
                   If constants::BinaryFlag( Flag, #__flag_gridLines ) 
                      If state 
-                        *this\mode\gridlines = DPIScaled(1)
-                        *this\mode\gridlines + Bool( *this\mode\gridlines % 2 )
-                        *this\lineColor = $FFC0C0C0
+                        *this\mode\gridlines = 1;DPIScaled(1)
+                        ;*this\mode\gridlines + Bool( *this\mode\gridlines % 2 )
                      Else
                         *this\mode\gridlines = 0
-                        *this\lineColor = 0
                      EndIf
                   EndIf
                   If constants::BinaryFlag( Flag, #__flag_collapsed ) 
@@ -21546,6 +21544,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\edit_caret_2( ) = - 1
             *this\LineFocusedIndex( ) = - 1
             
+            *this\lineColor = $FFC0C0C0
             
             ;\\ - Create String
             If *this\type = #__type_String
@@ -21642,6 +21641,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;*this\fs[4] = 50
             *this\color\fore    = 0
             *this\color\back[0] = $FFFFFFFF
+            *this\lineColor = $FFC0C0C0
             
             *this\row.allocate( ROW )
             ;
@@ -24191,12 +24191,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\__rows( )\sublevel Or  *this\__rows( )\childrens
                         Xs - *this\row\sublevelsize
                      EndIf
+                  Else
+                     Xs + 1
                   EndIf
                   
                   ; for the tree vertical line
                   If *this\__rows( )\_last And Not *this\__rows( )\_last\hide And *this\__rows( )\_last\sublevel
                      Define iy = (Ys + *this\__rows( )\height / 2 )
-                     Define iheight = (*this\__rows( )\_last\y - *this\__rows( )\y) ; - display_mode_linux * *this\__rows( )\_last\height / 2
+                     Define iheight = (*this\__rows( )\_last\y - *this\__rows( )\y) 
+                     If Not display_mode_linux
+                        iy + *this\__rows( )\_last\height / 2
+                        iheight - *this\__rows( )\_last\height / 2
+                     EndIf
                      
                      If iy < *this\inner_y( )
                         iheight + ( iy - *this\inner_y( ) )
@@ -24221,19 +24227,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                         EndIf
                      
                      If *buttonBox
-                        Line((xs + *buttonBox\x + *buttonBox\width / 2), iy, 1, iheight, *this\LineColor )
+                        Line((xs + *buttonBox\x + *buttonBox\width / 2), iy, 1, iheight, $FF000000 ) ; *this\LineColor )
                      EndIf
                   EndIf
                   
                   ; for the tree horizontal line
                   If *this\__rows( )\visible And Not *this\__rows( )\hide And Not ( *this\__rows( )\childrens And Not *this\__rows( )\sublevel)
-                     Line((xs + *this\__rows( )\buttonbox\x + *this\__rows( )\buttonbox\width / 2), (ys + *this\__rows( )\height / 2), DPIScaled(7), 1, *this\LineColor )
+                     Line((xs + *this\__rows( )\buttonbox\x + *this\__rows( )\buttonbox\width / 2), (ys + *this\__rows( )\height / 2), DPIScaled(7), 1, $FF000000 ) ;*this\LineColor )
                   EndIf
                Next
                
                ; for the tree item first vertical line
-               If *this\RowFirstLevelFirst( ) And *this\RowFirstLevelLast( ) And *this\RowFirstLevelFirst( )\buttonbox
-                  Line((*this\inner_x( ) + *this\padding\x + *this\RowFirstLevelFirst( )\buttonbox\x + *this\RowFirstLevelFirst( )\buttonbox\width / 2) - _scroll_x_, (row_y_( *this, *this\RowFirstLevelFirst( ) ) + *this\RowFirstLevelFirst( )\height / 2) - _scroll_y_, 1, (*this\RowFirstLevelLast( )\y - *this\RowFirstLevelFirst( )\y), *this\LineColor )
+               If Not display_mode_linux
+                  If *this\RowFirstLevelFirst( ) And *this\RowFirstLevelLast( ) And *this\RowFirstLevelFirst( )\buttonbox
+                     Line((*this\inner_x( ) + *this\padding\x + *this\RowFirstLevelFirst( )\buttonbox\x) - _scroll_x_, (row_y_( *this, *this\RowFirstLevelFirst( ) ) + *this\RowFirstLevelFirst( )\height / 2) - _scroll_y_, 1, (*this\RowFirstLevelLast( )\y - *this\RowFirstLevelFirst( )\y), $FF000000 ) ; *this\LineColor )
+                  EndIf
                EndIf
             EndIf
             
@@ -27537,9 +27545,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 21747
-; FirstLine = 18336
-; Folding = ----+----------------------------------4------------------------------------------------80n---z------8--+B7-0-0-+v-f-----0-4------cPPcyOD46---08-9-z---0e+--z-t0848m-f--------------------------------v--0--X----vu-3Pf-+------------------------------------------------------------rt+---------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------------------+----80-------v--------------------------------------------------------------------------------------------------v-GOz-ff-f---v88------------------------------------------------------------------------------------------------------------------v---
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 23294
+; FirstLine = 19828
+; Folding = ----+----------------------------------4------------------------------------------------80n---z------8--+B7-0-0-+v-f-----0-4------dPfcyOD46---08-9-z---0e+--z-t0848m-f--------------------------------v--0--X----vu-3Pf-+------------------------------------------------------------rt+---------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------------------+----80-------v--------------------------------------------------------------------------------------------------v-GO8--f-f---v88-------------------------------------------------------------------------------------------------------------------+---
 ; EnableXP
 ; Executable = widgets-.app.exe

@@ -5,12 +5,13 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   Define vertical = 0, PageLength = 0
+   Define vertical = 0
    Global._s_WIDGET *g1, *g2, *scroll1,*scroll2,*scroll3
    
    ; scroll( x.l, y.l, width.l, height.l, Min.l, Max.l, PageLength.l, flag.q = 0, round.l = 0 )
    Define min = - 3
    Define max = 3
+   Define PageLength = 4
    Define event = #__event_LeftClick
    
    Procedure button_events( )
@@ -145,9 +146,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 35
-; FirstLine = 24
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 13
 ; Folding = -4-
 ; EnableXP
 ; DPIAware

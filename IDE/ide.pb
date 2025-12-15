@@ -952,14 +952,14 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
       SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
       SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
       
-      SetItemColor( *first, item, #__FrameColor,  $FF00FFFF, 0, #PB_All)
-      SetItemColor( *second, item, #__FrameColor,  $FF00FFFF, 0, #PB_All)   
+      SetItemColor( *first, item, #__FrameColor,  $D4C8C8C8, 0, #PB_All)
+      SetItemColor( *second, item, #__FrameColor,  $D4C8C8C8, 0, #PB_All)   
       
-      SetItemColor( *first, item, #PB_Gadget_BackColor,  $FF00FFFF, 0, #PB_All)
-      SetItemColor( *second, item, #PB_Gadget_BackColor,  $FF00FFFF, 0, #PB_All)   
+      SetItemColor( *first, item, #PB_Gadget_BackColor,  $D4C8C8C8, 0, #PB_All)
+      SetItemColor( *second, item, #PB_Gadget_BackColor,  $D4C8C8C8, 0, #PB_All)   
    Else
-      SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
-      SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
+      SetItemColor( *first, item, #PB_Gadget_BackColor, $D4EFEFEF)
+      SetItemColor( *second, item, #PB_Gadget_BackColor, $D4EFEFEF )
    EndIf
    ;
    *this = Properties_ButtonCreate( Type, *second, item )
@@ -1057,15 +1057,15 @@ Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    Protected *g._s_WIDGET
    *g = *first
    ;*g\padding\x = DPIScaled(20)
-    *g\fs[1] = DPIScaled(20)
+    ;*g\fs[1] = DPIScaled(20)
     ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
-    SetColor(*g, #PB_Gadget_BackColor,  $FF00FFFF)
+    SetColor(*g, #PB_Gadget_BackColor,  $D4C8C8C8)
     
     *g = *second
    ;*g\padding\x = DPIScaled(20)
     ;*g\fs[1] = DPIScaled(20)
     ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
-    SetColor(*g, #PB_Gadget_BackColor,  $FF00FFFF)
+    SetColor(*g, #PB_Gadget_BackColor,  $D4C8C8C8)
     
    Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, flag|#__flag_Transparent|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
    SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
@@ -1074,6 +1074,7 @@ Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
    *splitter\bar\button\size = DPIScaled(1)
    *splitter\bar\button\size + Bool( *splitter\bar\button\size % 2 )
    *Splitter\bar\button\round = 0;  DPIScaled(1)
+   ;*splitter\bar\button\color\back = $D4C8C8C8
    SetState(*splitter, DPIScaled(position) ) ; похоже ошибка DPI
    
    ;
@@ -2648,7 +2649,7 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
    EndIf
    
    ;\\\ open inspector gadgets 
-   ide_inspector_VIEW = Tree( 0,0,0,0, #__flag_gridlines ) : SetClass(ide_inspector_VIEW, "ide_inspector_VIEW" ) ;, #__flag_gridlines )
+   ide_inspector_VIEW = Tree( 0,0,0,0 ) : SetClass(ide_inspector_VIEW, "ide_inspector_VIEW" ) ;, #__flag_gridlines )
    EnableDrop( ide_inspector_VIEW, #PB_Drop_Text, #PB_Drag_Link )
    
    ; ide_inspector_PANEL_open
@@ -3024,12 +3025,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 788
-; FirstLine = 417
-; Folding = ----74+f-b-----4j8-n----------+-030----f-f-----f----+9-
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 1059
+; FirstLine = 576
+; Folding = ----74+f-b-----4j8-v----------+-030----f-f-----f----+9-
 ; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = C:/Users/user/Downloads/Compressed/FormDesignerWindows4.70b2/ide.exe
+; Executable = ..\..\2.exe
