@@ -6426,14 +6426,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          *bar\area\end = *bar\max - *bar\min
          If *bar\area\end < *bar\max
-            ; Debug ""+*bar\min +" "+ *bar\max
             *bar\area\end = *bar\max
          EndIf
          ;
          *bar\percent = *bar\area\end / ( *bar\page\end - *bar\min ) 
          
          ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos ) 
-         ;Debug ""+ThumbPos +" "+ *bar\percent ;
          ;
          If *bar\invert
             ThumbPos = *bar\area\end - ThumbPos
@@ -6856,39 +6854,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
          If *bar\area\len
             If Not *bar\max
-               *bar\page\end = *bar\area\len - *bar\thumb\len
+               ; example ide.pb
+               If *this\type = #__type_Splitter
+                  If *bar\page\end
+                     *bar\page\end = *bar\area\len - *bar\thumb\len
+                  EndIf
+               EndIf
             EndIf
             
             ;????
             If *bar\thumb\len
                If *bar\thumb\len = *bar\thumb\end 
-                  ScrollPos = *bar\min
+                 ; ScrollPos = *bar\min
                EndIf
             EndIf
-            
+            ;????
             If ScrollPos > *bar\page\end 
-               ScrollPos = *bar\page\end
+              ; ScrollPos = *bar\page\end
             EndIf
          EndIf
          
          If Not *bar\button\disable 
             If ScrollPos < *bar\min
                If *bar\max > *bar\page\len
-                  ;*bar\PageChange( ) = *bar\page\pos - ScrollPos
                   ScrollPos = *bar\min
-                  ;result = 1
                EndIf
             EndIf
             If ScrollPos > *bar\page\end
                If *bar\page\end
                   ScrollPos = *bar\page\end
                Else
+                  ;????
                   If *bar\area\end ; TODO - ? example-splitter(3)
-                     ScrollPos = bar_page_pos_( *bar, *bar\area\end ) - ScrollPos
+                    ; ScrollPos = bar_page_pos_( *bar, *bar\area\end ) - ScrollPos
                   EndIf
                EndIf
             EndIf
-            
+           
             ; 
             If *bar\page\pos <> ScrollPos
                If *bar\page\pos > ScrollPos
@@ -15018,6 +15020,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                ;
             Case #__type_ComboBox ; ok
+               If constants::BinaryFlag( Flag, #PB_ComboBox_Editable )
+                  flags & ~ #PB_ComboBox_Editable
+                  flags & ~ #__flag_Textreadonly
+               Else
+                  flags | #__flag_Textreadonly
+               EndIf
                If constants::BinaryFlag( Flag, #PB_ComboBox_LowerCase )
                   flags & ~ #PB_ComboBox_LowerCase
                   flags | #__flag_Textlowercase
@@ -18243,6 +18251,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Else
                   increment = *this\scroll\increment
                EndIf
+                  
+            ElseIf *this\type = #__type_Spin
+               increment = *this\scroll\increment
             EndIf
             
             ;
@@ -21733,7 +21744,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\combobutton\arrow\direction = #__right
             
             ;\\
-            If constants::BinaryFlag( *this\flag, #PB_ComboBox_Editable )
+            ; If constants::BinaryFlag( *this\flag, #PB_ComboBox_Editable )
+            If constants::BinaryFlag( *this\flag, #__flag_Textreadonly, 0 )
                *this\stringbar = Create( *this, "ComboString", #__type_String,
                                          0, 0, 0, 0, #Null$, #__flag_child | #__flag_Borderless|*this\flag )
             Else
@@ -27526,8 +27538,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 6428
-; FirstLine = 4150
-; Folding = ----+----------------------------------4------------------------------------------------80n---z------8--+B7-0-0-+v-f-----0-4------cPPcyOD46---08-9-z---0e+--z-t08-8m----------------------------------8-f---2----r8v0z4v-------------------------------------------------------------ar----------------------------------------------------------------4-----------------------------------------------------------------------------------------------------------------------------------------------------------4----fv--------0---------------------------------------------------------------------------------------------------4--+--8-7---df-------------------------------------------------------------------------------------------------------------------0---
+; CursorPosition = 21747
+; FirstLine = 18336
+; Folding = ----+----------------------------------4------------------------------------------------80n---z------8--+B7-0-0-+v-f-----0-4------cPPcyOD46---08-9-z---0e+--z-t0848m-f--------------------------------v--0--X----vu-3Pf-+------------------------------------------------------------rt+---------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------------------+----80-------v--------------------------------------------------------------------------------------------------v-GOz-ff-f---v88------------------------------------------------------------------------------------------------------------------v---
 ; EnableXP
 ; Executable = widgets-.app.exe

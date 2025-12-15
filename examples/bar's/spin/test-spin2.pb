@@ -8,7 +8,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Define vertical = 0
    Define min = -2147483648
    Define max = 2147483647
-                  
+   Define scrollstep = 10
+   
    ; Spin( x.l, y.l, width.l, height.l, Min.l, Max.l, flag.q = 0, round.l = 0 )
    
    If vertical
@@ -35,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Define *spin1 = Spin(50, 20, 250, 50,  0, 30, #__flag_Invert)
          SetState(*spin1, 5)
          
-         Define *spin2 = Spin(50, 80, 250, 50,  min, max, #__spin_plus ) ;#__flag_Vertical|#__flag_TextCenter)
+         Define *spin2 = Spin(50, 80, 250, 50,  min, max, #__spin_plus,0,scrollstep ) ;#__flag_Vertical|#__flag_TextCenter)
          SetState(*spin2, 10)
          
          Define *spin3 = Spin(50, 140, 250, 50,  0, 30, #__flag_TextRight)
@@ -47,8 +48,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 37
-; FirstLine = 20
-; Folding = -
+; CursorPosition = 10
+; FirstLine = 7
+; Folding = 8
 ; EnableXP
 ; DPIAware

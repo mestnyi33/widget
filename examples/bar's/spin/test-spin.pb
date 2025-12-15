@@ -61,18 +61,18 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\ horizontal
       If Open(0, 0, 0, 350, 210, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
          
-         *Spin1 = Spin(50, 20, 250, 50,  0, 30)
+         *Spin1 = Spin(50, 20, 250, 50,  1, 3)
          
          *g1=Button(10, 90, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
          *Spin2 = Spin(50, 80, 250, 50,  min, max ) : Bind( *Spin2, @change_events( ), #__event_Change)
          *g2=Button(310, 90, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
          
-         *Spin3 = Spin(50, 140, 250, 50,  0, 30, #__flag_Invert)
+         *Spin3 = Spin(50, 140, 250, 50,  1, 3, #__flag_Invert)
          
          Debug " -setstate-h "
-         SetState(*Spin1, 5)
+         SetState(*Spin1, 2)
          ; SetState(*Spin2, 0)
-         SetState(*Spin3, 5)
+         SetState(*Spin3, 2)
          
          WaitClose( )
       EndIf
@@ -80,8 +80,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 12
-; FirstLine = 53
-; Folding = --
+; CursorPosition = 11
+; FirstLine = 8
+; Folding = -+
 ; EnableXP
 ; DPIAware
