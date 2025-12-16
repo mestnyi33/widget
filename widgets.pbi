@@ -23290,18 +23290,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      If *rows( )\columnindex = 0
                         ;\\ sublevel position
-                        *this\row\sublevelpos = *rows( )\sublevel * *this\row\sublevelsize 
+                        *this\row\sublevelpos = *rows( )\sublevel * *this\row\sublevelsize + *this\row\sublevelsize / 2
                         
                         ;\\ expanded & collapsed box coordinate
-                        If *this\mode\Buttons
                            If *rows( )\buttonbox 
-                              *this\row\sublevelpos + (buttonpos+buttonsize) 
+                              ;If *this\mode\Buttons
+                                 *this\row\sublevelpos + (buttonpos+buttonsize) 
+                              ;EndIf
                               *rows( )\buttonbox\width  = buttonsize
                               *rows( )\buttonbox\height = buttonsize
-                              *rows( )\buttonbox\x = *this\row\sublevelpos - *rows( )\buttonbox\width - 5
+                              *rows( )\buttonbox\x = *this\row\sublevelpos - *rows( )\buttonbox\width - DPIScaled(5)
                               *rows( )\buttonbox\y = *rows( )\height - ( *rows( )\height + *rows( )\buttonbox\height ) / 2
                            EndIf
-                        EndIf
                         
                         ;\\ check & option box position & size
                         If *this\mode\CheckBoxes Or *this\mode\OptionBoxes
@@ -23309,14 +23309,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *this\row\sublevelpos + (boxpos+boxsize)
                               *rows( )\checkbox\width  = boxsize
                               *rows( )\checkbox\height = boxsize
-                              *rows( )\checkbox\x = *this\row\sublevelpos - *rows( )\checkbox\width - 2
+                              *rows( )\checkbox\x = *this\row\sublevelpos - *rows( )\checkbox\width - DPIScaled(4)
+                              If Not *this\mode\Buttons
+                                 *rows( )\checkbox\x + *this\padding\x
+                              EndIf
                               *rows( )\checkbox\y = *rows( )\height - ( *rows( )\height + *rows( )\checkbox\height ) / 2
                            EndIf
                         EndIf
                         
                         ;\\ img position
                         If *rows( )\picture\imageID
-                           *rows( )\picture\x = *this\row\sublevelpos + *this\padding\x
+                           *rows( )\picture\x = *this\row\sublevelpos 
+                           If Not *this\mode\Buttons
+                              *rows( )\picture\x + *this\padding\x
+                           EndIf
                            *rows( )\picture\y = ( *rows( )\height - *rows( )\picture\height ) / 2
                         EndIf
                      EndIf
@@ -23330,7 +23336,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *rows( )\text\x + *this\row\sublevelpos
                            ;
                            If *this\picturesize
-                              *rows( )\text\x + *this\picturesize + *this\padding\x 
+                              *rows( )\text\x + *this\padding\x + *this\picturesize 
                            EndIf
                         EndIf
                      EndIf
@@ -23357,20 +23363,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\scroll_width( ) < scroll_width 
                         *this\scroll_width( ) = scroll_width
                      EndIf
-                     
-                     ;                      If *rows( )\columnindex = 0
-                     ;                         If *this\columns( )\width
-                     ;                            *rows( )\width = *this\columns( )\width + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
-                     ;                         Else
-                     ;                            If *this\scroll_width( ) > *this\inner_width( )
-                     ;                               *rows( )\width = *this\inner_width( )
-                     ;                            Else
-                     ;                               *rows( )\width = *this\scroll_width( )
-                     ;                            EndIf
-                     ;                         EndIf
-                     ;                      Else
-                     ;                         *rows( )\width = *this\columns( )\width
-                     ;                      EndIf
                   Next
                   PopListPosition( *rows( ))
                   
@@ -23378,12 +23370,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If bar_PageChange( *this\scroll\v, 0 )
                         Update_DrawRows( *this, *rows( ) )
                      EndIf
-                  EndIf
-                  
-                  ; Debug  ""+*this\scroll_height( ) +" "+  *this\height
-                  ;\\
-                  If *this\mode\gridlines
-                     ; *this\scroll_height( ) - *this\mode\gridlines
                   EndIf
                EndIf
             EndIf
@@ -23441,28 +23427,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *rows( )\width = *this\columns( )\width
                   EndIf
                EndIf
-               
-               ;                If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
-               ;                   If *this\scroll_width( ) > *this\inner_width( )
-               ;                      *rows( )\width = *this\inner_width( )
-               ;                   Else
-               ;                      *rows( )\width = *this\scroll_width( )
-               ;                   EndIf
-               ;                Else
-               ;                   If *rows( )\columnindex = 0
-               ;                      If *this\columns( )\width
-               ;                         *rows( )\width = *this\columns( )\width + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
-               ;                      Else
-               ;                         If *this\scroll_width( ) > *this\inner_width( )
-               ;                            *rows( )\width = *this\inner_width( )
-               ;                         Else
-               ;                            *rows( )\width = *this\scroll_width( )
-               ;                         EndIf
-               ;                      EndIf
-               ;                   Else
-               ;                      *rows( )\width = *this\columns( )\width
-               ;                   EndIf
-               ;                EndIf
                
                ;\\
                If Not *this\RowFirstVisible( )
@@ -24162,8 +24126,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;          draw_box_( *this\inner_x( ), *this\inner_y( ), *this\row\sublevelsize, *this\inner_height( ), *this\__rows( )\RowParent( )\color\back )
          
          If ListIndex( *this\columns( )) = 0
-            ;         SelectElement( *this\columns( ), 0 )
-            ;         *rows( ) = *this\__rows( )
             Protected *buttonBox._s_buttons
             
             ; - Draw plots line
@@ -24175,11 +24137,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Not *this\__rows( )\buttonbox
                      Break 
                   EndIf
-                  ; Debug " 9999 "+*this\__rows( )\columnindex+" "+ListIndex( *this\columns( ))+" "+*this\__rows( )\text\string
                   If *this\__rows( )\columnindex <> ListIndex( *this\columns( ))
                      Continue
                   EndIf
-                  
                   If *this\__rows( )\_last
                      *buttonBox = *this\__rows( )\_last\buttonbox
                   EndIf
@@ -24191,19 +24151,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\__rows( )\sublevel Or  *this\__rows( )\childrens
                         Xs - *this\row\sublevelsize
                      EndIf
-                  Else
-                     Xs + 1
                   EndIf
                   
                   ; for the tree vertical line
                   If *this\__rows( )\_last And Not *this\__rows( )\_last\hide And *this\__rows( )\_last\sublevel
                      Define iy = (Ys + *this\__rows( )\height / 2 )
                      Define iheight = (*this\__rows( )\_last\y - *this\__rows( )\y) 
+                     ;
                      If Not display_mode_linux
                         iy + *this\__rows( )\_last\height / 2
                         iheight - *this\__rows( )\_last\height / 2
                      EndIf
-                     
                      If iy < *this\inner_y( )
                         iheight + ( iy - *this\inner_y( ) )
                         iy = *this\inner_y( )
@@ -24214,18 +24172,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If iheight < 0 
                         iheight = 0
                      EndIf
-                     
-                     ;                         If *this\__rows( )\_last\text\string = "text_7"
-                     ;                            Debug "text_7 "+iheight
-                     ;                         EndIf
-                     ;                         If *this\__rows( )\_last\text\string = "text_3"
-                     ;                            Debug iy
-                     ;                            Debug "text_3 "+iheight
-                     ;                         EndIf
-                     ;                         If *this\__rows( )\_last\text\string = "panel_0"
-                     ;                            Debug "panel_0 "+iheight
-                     ;                         EndIf
-                     
+                     ;
                      If *buttonBox
                         Line((xs + *buttonBox\x + *buttonBox\width / 2), iy, 1, iheight, $FF000000 ) ; *this\LineColor )
                      EndIf
@@ -27545,9 +27492,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 23294
-; FirstLine = 19828
-; Folding = ----+----------------------------------4------------------------------------------------80n---z------8--+B7-0-0-+v-f-----0-4------dPfcyOD46---08-9-z---0e+--z-t0848m-f--------------------------------v--0--X----vu-3Pf-+------------------------------------------------------------rt+---------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------------------+----80-------v--------------------------------------------------------------------------------------------------v-GO8--f-f---v88-------------------------------------------------------------------------------------------------------------------+---
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 24189
+; FirstLine = 20484
+; Folding = ----+----------------------------------4------------------------------------------------80n---z------8--+B7-0-0-+v-f-----0-4------dPfcyOD46---08-9-z---0e+--z-t0848m-f--------------------------------v--0--X----vu-3Pf-+------------------------------------------------------------rt+---------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------------------+----80-------v--------------------------------------------------------------------------------------------------v-GO8--f-f---v88------------------------------z--8-6----0--------------------------------------------------------------------------+---
 ; EnableXP
 ; Executable = widgets-.app.exe
