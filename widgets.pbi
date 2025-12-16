@@ -23245,15 +23245,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\scroll_height( ) = 0
                   EndIf
                   
-                  ; reset item z - order
-                  If *this\mode\Buttons Or (*this\mode\CheckBoxes Or *this\mode\OptionBoxes)
-                     Protected buttonpos = DPIScaled(6)
-                     Protected buttonsize = DPIScaled(9)
-                  EndIf
-                  Protected boxpos = DPIScaled(4)
-                  Protected boxsize = DPIScaled(13)
+                  ;*this\padding\x = 0
+                  Protected padding_size = *this\padding\x
+                  Protected button_size = DPIScaled(9)
+                  Protected box_size = DPIScaled(13)
                   Protected bs = Bool( *this\fs )
                   Protected scroll_width
+                  Protected button_pos = ( *this\row\sublevelsize - DPIScaled(11))
                   
                   ;\\
                   PushListPosition( *rows( ))
@@ -23290,63 +23288,91 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      If *rows( )\columnindex = 0
                         ;\\ sublevel position
-                        *this\row\sublevelpos = *rows( )\sublevel * *this\row\sublevelsize + *this\row\sublevelsize / 2
-                        
-                        ;\\ expanded & collapsed box coordinate
-                           If *rows( )\buttonbox 
-                              ;If *this\mode\Buttons
-                                 *this\row\sublevelpos + (buttonpos+buttonsize) 
-                              ;EndIf
-                              *rows( )\buttonbox\width  = buttonsize
-                              *rows( )\buttonbox\height = buttonsize
-                              *rows( )\buttonbox\x = *this\row\sublevelpos - *rows( )\buttonbox\width - DPIScaled(5)
-                              *rows( )\buttonbox\y = *rows( )\height - ( *rows( )\height + *rows( )\buttonbox\height ) / 2
+                        If *this\row\sublevelsize
+                           If *this\mode\OptionBoxes
+                              *this\row\sublevelpos = padding_size + ( *rows( )\sublevel * *this\row\sublevelsize )
+                           Else
+                              *this\row\sublevelpos = ( *rows( )\sublevel * *this\row\sublevelsize ) + ( *this\row\sublevelsize / 2 )
                            EndIf
+                        Else
+                           *this\row\sublevelpos = padding_size
+                        EndIf
                         
-                        ;\\ check & option box position & size
-                        If *this\mode\CheckBoxes Or *this\mode\OptionBoxes
-                           If *rows( )\checkbox
-                              *this\row\sublevelpos + (boxpos+boxsize)
-                              *rows( )\checkbox\width  = boxsize
-                              *rows( )\checkbox\height = boxsize
-                              *rows( )\checkbox\x = *this\row\sublevelpos - *rows( )\checkbox\width - DPIScaled(4)
-                              If Not *this\mode\Buttons
-                                 *rows( )\checkbox\x + *this\padding\x
+                        
+                        If *this\mode\OptionBoxes 
+                           ;\\ expanded & collapsed box coordinate
+                           ;\\ check & option box position & size
+                           If *this\mode\CheckBoxes Or *this\mode\OptionBoxes
+                              If *rows( )\checkbox
+                                 *rows( )\checkbox\width = box_size
+                                 *rows( )\checkbox\height = box_size
+                                 *rows( )\checkbox\x = *this\row\sublevelpos 
+;                                  If *rows( )\RowParent( )
+;                                     *rows( )\checkbox\x + padding_size/2 
+;                                  EndIf
+                                 *rows( )\checkbox\y = *rows( )\height - ( *rows( )\height + *rows( )\checkbox\height ) / 2
+                                 *this\row\sublevelpos + ( padding_size + box_size )
                               EndIf
-                              *rows( )\checkbox\y = *rows( )\height - ( *rows( )\height + *rows( )\checkbox\height ) / 2
+                           EndIf
+                           
+                           ;If *this\mode\Buttons
+                           If *rows( )\buttonbox 
+                              *rows( )\buttonbox\width = button_size
+                              *rows( )\buttonbox\height = button_size
+                              *rows( )\buttonbox\x = *this\row\sublevelpos ; + padding_size/2
+                              *rows( )\buttonbox\y = *rows( )\height - ( *rows( )\height + *rows( )\buttonbox\height ) / 2
+                              *this\row\sublevelpos + (button_pos+button_size) 
+                           EndIf
+                           ;EndIf
+                           *this\row\sublevelpos - padding_size
+                        Else
+                           ;\\ expanded & collapsed box coordinate
+                           If *rows( )\buttonbox 
+                              *rows( )\buttonbox\width = button_size
+                              *rows( )\buttonbox\height = button_size
+                              *rows( )\buttonbox\x = *this\row\sublevelpos
+                              *rows( )\buttonbox\y = *rows( )\height - ( *rows( )\height + *rows( )\buttonbox\height ) / 2
+                              *this\row\sublevelpos + ( button_pos+button_size ) 
+                           EndIf
+                           
+                           ;\\ check & option box position & size
+                           If *this\mode\CheckBoxes Or *this\mode\OptionBoxes
+                              If *rows( )\checkbox
+                                 *rows( )\checkbox\width = box_size
+                                 *rows( )\checkbox\height = box_size
+                                 *rows( )\checkbox\x = *this\row\sublevelpos
+                                 *rows( )\checkbox\y = *rows( )\height - ( *rows( )\height + *rows( )\checkbox\height ) / 2
+                                 *this\row\sublevelpos + ( padding_size + box_size )
+                              EndIf
                            EndIf
                         EndIf
                         
                         ;\\ img position
                         If *rows( )\picture\imageID
                            *rows( )\picture\x = *this\row\sublevelpos 
-                           If Not *this\mode\Buttons
-                              *rows( )\picture\x + *this\padding\x
-                           EndIf
                            *rows( )\picture\y = ( *rows( )\height - *rows( )\picture\height ) / 2
                         EndIf
+                        ;
+                        ;\\ 
+                        *rows( )\x = 0   
+                     Else
+                        *rows( )\x = *this\columns( )\x + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
                      EndIf
-                     
+                     ;
                      ;\\ text position
                      If *rows( )\text\string
-                        *rows( )\text\x = *this\padding\x
-                        *rows( )\text\y = (*rows( )\height - *rows( )\text\height) / 2
+                        *rows( )\text\x = padding_size
+                        *rows( )\text\y = ( *rows( )\height - *rows( )\text\height ) / 2
                         ;
                         If *rows( )\columnindex = 0
                            *rows( )\text\x + *this\row\sublevelpos
                            ;
                            If *this\picturesize
-                              *rows( )\text\x + *this\padding\x + *this\picturesize 
+                              *rows( )\text\x + *this\picturesize 
                            EndIf
                         EndIf
                      EndIf
-                     
-                     If *rows( )\columnindex = 0
-                        *rows( )\x = 0   
-                     Else
-                        *rows( )\x = *this\columns( )\x + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
-                     EndIf
-                     
+                     ;
                      ;\\ vertical scroll max value
                      *this\scroll_height( ) + *rows( )\height + Bool(*this\__rows( )\rindex <> *this\countitems - 1) * *this\mode\GridLines
                      
@@ -23354,7 +23380,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\type = #__type_ListIcon
                         *rows( )\picture\x - DPIScaled(8)
                         If *rows( )\checkbox
-                           *rows( )\checkbox\x - boxsize
+                           *rows( )\checkbox\x - box_size
                         EndIf
                         scroll_width = ( *this\columns( )\x + *this\columns( )\width + *this\row\sublevelpos + *this\padding\x + *this\MarginLine( )\width )
                      Else
@@ -24180,7 +24206,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ; for the tree horizontal line
                   If *this\__rows( )\visible And Not *this\__rows( )\hide And Not ( *this\__rows( )\childrens And Not *this\__rows( )\sublevel)
-                     Line((xs + *this\__rows( )\buttonbox\x + *this\__rows( )\buttonbox\width / 2), (ys + *this\__rows( )\height / 2), DPIScaled(7), 1, $FF000000 ) ;*this\LineColor )
+                     Line((xs + *this\__rows( )\buttonbox\x + *this\__rows( )\buttonbox\width / 2), (ys + *this\__rows( )\height / 2), *this\row\sublevelsize/2-DPIScaled(2), 1, $FF000000 ) ;*this\LineColor )
                   EndIf
                Next
                
@@ -27493,8 +27519,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 24189
-; FirstLine = 20484
-; Folding = ----+----------------------------------4------------------------------------------------80n---z------8--+B7-0-0-+v-f-----0-4------dPfcyOD46---08-9-z---0e+--z-t0848m-f--------------------------------v--0--X----vu-3Pf-+------------------------------------------------------------rt+---------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------------------+----80-------v--------------------------------------------------------------------------------------------------v-GO8--f-f---v88------------------------------z--8-6----0--------------------------------------------------------------------------+---
+; CursorPosition = 23249
+; FirstLine = 19626
+; Folding = ----+----------------------------------4------------------------------------------------80n---z------8--+B7-0-0-+v-f-----0-4------dPfcyOD46---08-9-z---0e+--z-t0848m-f--------------------------------v--0--X----vu-3Pf-+------------------------------------------------------------8t+---------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------------------+-----0-------v--------------------------------------------------------------------------------------------------v-GO8--f-f---v88-----------------------+------6--v-n----4--------------------------------------------------------------------------8---
 ; EnableXP
 ; Executable = widgets-.app.exe

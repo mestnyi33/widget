@@ -2659,6 +2659,8 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
    AddItem( ide_inspector_PANEL, -1, "elements", 0, 0 ) 
    ide_inspector_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_Borderless ) : SetClass(ide_inspector_ELEMENTS, "ide_inspector_ELEMENTS" )
    If ide_inspector_ELEMENTS
+      Define *g._s_WIDGET = ide_inspector_ELEMENTS
+      ;*g\padding\x = DPIScaled(4)
       ide_inspector_ELEMENTS_ADD_ITEMS( ide_inspector_ELEMENTS, GetCurrentDirectory( )+"Themes/" )
    EndIf
    
@@ -3025,12 +3027,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1059
-; FirstLine = 576
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 2662
+; FirstLine = 1734
 ; Folding = ----74+f-b-----4j8-v----------+-030----f-f-----f----+9-
 ; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2.exe
+; Executable = ../../2.exe
