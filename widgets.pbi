@@ -24256,24 +24256,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            X + *rows( )\buttonbox\x
                            Y + *rows( )\buttonbox\y
                            
-                           If Bool(DPIResolution( ) > 1)
+;                            If Bool(DPIResolution( ) > 1)
                               If *rows( )\ColorState( ) = 1
-                                 Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X-1-Bool(*rows( )\buttonbox\checked), Y-1-Bool(*rows( )\buttonbox\checked=0), DPIScaled(10), 1 )
+                                 Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X-DPIScaled(1), Y-Bool(*rows( )\buttonbox\checked=0)*DPIScaled(2), DPIScaled(10), 1 )
                               ElseIf *rows( )\ColorState( ) = 2
-                                 Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X-Bool(*rows( )\buttonbox\checked=0)*DPIScaled(1), Y-DPIScaled(1), DPIScaled(11), 1, 2 )
-                                 ;   Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), x-1-Bool(*rows( )\buttonbox\checked), y-1-Bool(*rows( )\buttonbox\checked=0), DPIScaled(10), 1, 0, $ffffffff )
+                                 ; Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X-Bool(*rows( )\buttonbox\checked=0)*DPIScaled(2), Y-DPIScaled(1), DPIScaled(11), 1, 2 )
+                                 Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X+Bool(*rows( )\buttonbox\checked)*DPIScaled(2), Y+DPIScaled(Bool(*rows( )\buttonbox\checked=0)), DPIScaled(8), 1, 2 )
                               Else
-                                 Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X+DPIScaled(1), Y+DPIScaled(1), DPIScaled(6)+DPIScaled(Bool(DPIResolution( )>1)), 1)
+                                 Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X+DPIScaled(1), Y+DPIScaled(1), DPIScaled(6), 1)
                               EndIf
-                           Else
-                              If *rows( )\ColorState( ) = 1
-                                 Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X, Y-Bool(*rows( )\buttonbox\checked=0), 8, 1 )
-                              ElseIf *rows( )\ColorState( ) = 2
-                                 Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X+Bool(*rows( )\buttonbox\checked)*2, Y+Bool(*rows( )\buttonbox\checked=0), 8, 1, 2 )
-                              Else
-                                 Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X+2, Y+2, 4, 1)
-                              EndIf
-                           EndIf
+;                            Else
+;                               If *rows( )\ColorState( ) = 1
+;                                  Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X-1, Y-Bool(*rows( )\buttonbox\checked=0)*2, 10, 1 )
+;                               ElseIf *rows( )\ColorState( ) = 2
+;                                  ; Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X-Bool(*rows( )\buttonbox\checked=0)*2, Y-1, 11, 1, 2 )
+;                                  Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X+Bool(*rows( )\buttonbox\checked)*2, Y+Bool(*rows( )\buttonbox\checked=0), 8, 1, 2 )
+;                               Else
+;                                  Draw_Arrow(#__bottom - Bool(*rows( )\buttonbox\checked), X+1, Y+1, 6, 1)
+;                               EndIf
+;                            EndIf
                         EndIf
                         
                         ;EndIf
@@ -27518,9 +27519,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 23249
-; FirstLine = 19626
-; Folding = ----+----------------------------------4------------------------------------------------80n---z------8--+B7-0-0-+v-f-----0-4------dPfcyOD46---08-9-z---0e+--z-t0848m-f--------------------------------v--0--X----vu-3Pf-+------------------------------------------------------------8t+---------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------------------+-----0-------v--------------------------------------------------------------------------------------------------v-GO8--f-f---v88-----------------------+------6--v-n----4--------------------------------------------------------------------------8---
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 24258
+; FirstLine = 20397
+; Folding = ----+----------------------------------4------------------------------------------------80n---z------8--+B7-0-0-+v-f-----0-4------dPfcyOD46---08-9-z---0e+--z-t0848m-f--------------------------------v--0--X----vu-3Pf-+------------------------------------------------------------8t+---------------------------------------------------------------f------------------------------------------------------------------------------------------------------------------------------------------------------------+-----0-------v--------------------------------------------------------------------------------------------------v-GO8--f-f---v88-----------------------+------6--v-n----4--------------------------------------------------------------------------+---
 ; EnableXP
 ; Executable = widgets-.app.exe
