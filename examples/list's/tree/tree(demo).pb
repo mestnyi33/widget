@@ -108,7 +108,7 @@ EndProcedure
   LoadFont(5, "Arial", 16)
     LoadFont(6, "Arial", 25)
     
-  Procedure LoadControls(widget, Directory$)
+  Procedure LoadControls(Widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
     
     If FileSize(ZipFile$) < 1
@@ -164,39 +164,39 @@ EndProcedure
                       Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
                       PackEntryName.S = " "+Left.S+Right.S
                       
-                      If IsGadget(widget)
+                      If IsGadget(Widget)
                         If FindString(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
-                          AddGadgetItem(widget, 0, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(widget, 0, ImageID(Image))
+                          AddGadgetItem(Widget, 0, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(Widget, 0, ImageID(Image))
                           
                         ElseIf FindString(LCase(PackEntryName.S), "window")
                           
                           ;Debug "add gadget window"
-                          AddGadgetItem(widget, 1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(widget, 1, ImageID(Image))
+                          AddGadgetItem(Widget, 1, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(Widget, 1, ImageID(Image))
                           
                         Else
-                          AddGadgetItem(widget, -1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(widget, CountGadgetItems(widget)-1, ImageID(Image))
+                          AddGadgetItem(Widget, -1, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(Widget, CountGadgetItems(Widget)-1, ImageID(Image))
                         EndIf
                         
                       Else
                         If FindString(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
-                          AddItem(widget, 0, PackEntryName.S, Image)
+                          AddItem(Widget, 0, PackEntryName.S, Image)
                           ;SetItemData(Widget, 0, Image)
                           
                         ElseIf FindString(LCase(PackEntryName.S), "window")
                           
                           Debug "add window"
-                          AddItem(widget, 1, PackEntryName.S, Image)
+                          AddItem(Widget, 1, PackEntryName.S, Image)
                           ;SetItemData(Widget, 1, Image)
                           
                         Else
-                          AddItem(widget, -1, PackEntryName.S, Image)
+                          AddItem(Widget, -1, PackEntryName.S, Image)
                           ;SetItemData(Widget, CountItems(Widget)-1, Image)
                         EndIf
                       EndIf
@@ -404,7 +404,7 @@ EndProcedure
     ;}
     
     Open(0, 0, 225, 1110, 425)
-    g_Canvas = GetCanvasGadget(root())
+    g_Canvas = GetCanvasGadget(Root())
     g = 10
     
 ; ;     *g = Tree(10, 100, 210, 210, #__flag_CheckBoxes)                                         
@@ -545,7 +545,7 @@ EndProcedure
     ;}                                                    ;
     
     ;{  3_example
-    *g = Tree(890, 100, 210, 210, #__flag_CheckBoxes|#__flag_nolines|#__flag_NoButtons | #__flag_ThreeState | #__flag_optionboxes)   ;  |#__flag_GridLines                       
+    *g = Tree(890, 100, 210, 210, #__flag_CheckBoxes|#__flag_optionboxes|#__flag_nolines|#__flag_NoButtons | #__flag_ThreeState)   ;  |#__flag_GridLines                       
     AddItem (*g, 0, "Tree_0 (NoLines | NoButtons | NoSublavel)", 0)                                    
     For i=1 To 20
       If i=5 Or i=6 Or i=7
@@ -585,10 +585,10 @@ EndProcedure
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 576
-; FirstLine = 394
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 547
+; FirstLine = 381
 ; Folding = f-b------
 ; EnableXP
 ; DPIAware
-; Executable = C:\Users\user\Documents\GitHub\1.exe
+; Executable = C:/Users/user/Documents/GitHub/1.exe

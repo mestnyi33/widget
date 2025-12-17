@@ -1,3 +1,5 @@
+#__flag_nobuttons
+
 
 SetTextXY
 GetCaret
@@ -9,6 +11,7 @@ Sticked
 TypeFromClass
 ClassFromType
 ClassFromEvent
+ClassFromFlag
 
 SetClass
 GetClass
@@ -243,6 +246,7 @@ X
 Y
 Width
 Height
+Flag
 Resize
 ResizeRootWindow
 

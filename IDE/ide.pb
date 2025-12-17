@@ -155,8 +155,8 @@ Declare.s Properties_GetItemText( *splitter, item )
 Declare   Properties_Updates( *object, type$ )
 ;
 Declare   new_widget_events( )
-Declare   new_widget_create( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
-Declare   new_widget_add( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
+Declare   new_widget_create( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, Flag.q = 0 )
+Declare   new_widget_add( *parent, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Flag = 0 )
 Declare   ide_inspector_VIEW_ADD_ITEMS( *new )
 ;
 Declare.s Generate_Code( *parent )
@@ -357,6 +357,10 @@ Procedure   ReplaceArg( *object._s_WIDGET, argument, replace$ )
 EndProcedure
 
 ;-
+Procedure   SetFlag( *this._s_WIDGET, flags.q )
+   Flag( *this, flags, 1 )
+EndProcedure
+
 ;-
 Procedure   Properties_ButtonGetItem( *inspector._s_WIDGET, item )
    Protected *second._s_WIDGET = GetAttribute(*inspector, #PB_Splitter_SecondGadget)
@@ -373,8 +377,8 @@ Procedure   Properties_ButtonAddItems( *inspector._s_WIDGET, item, Text.s )
       Protected *this._s_WIDGET = GetItemData( *second, item )
       
       If *this
-         Select Type( *this )
-            Case #__type_ComboBox 
+         Select item
+            Case #_pi_flag 
                Static lasttext.s
                
                If lasttext <> Text
@@ -770,11 +774,11 @@ EndProcedure
 
 Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
    Protected *this._s_WIDGET
-   Protected min, max, steps, flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
+   Protected min, max, steps, Flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
    
    Select Type
       Case #__type_Spin
-         flag = #__spin_Plus
+         Flag = #__spin_Plus
          steps = 1 
          ;
          Select item
@@ -791,16 +795,16 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                steps = 7 
          EndSelect
          
-         *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", flag, min, max, 0, #__bar_button_size, 0, steps )
+         *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", Flag, min, max, 0, #__bar_button_size, 0, steps )
 ;          OpenList( *parent )
 ;          *this = Spin( 0,0,0,0, min,max,flag, 0, steps )
 ;          CloseList( )
          
       Case #__type_String
-         *this = Create( *parent, "String", Type, 0, 0, 0, 0, "", flag, 0, 0, 0, 0, 0, 0 )
+         *this = Create( *parent, "String", Type, 0, 0, 0, 0, "", Flag, 0, 0, 0, 0, 0, 0 )
          
       Case #__type_CheckBox
-         *this = Create( *parent, "CheckBox", Type, 0, 0, 0, 0, "#PB_Any", flag, 0, 0, 0, 0, 0, 0 )
+         *this = Create( *parent, "CheckBox", Type, 0, 0, 0, 0, "#PB_Any", Flag, 0, 0, 0, 0, 0, 0 )
          
       Case #__type_Button
          Select item
@@ -808,15 +812,16 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                *this = AnchorBox::Create( *parent, 0,0,0,20 )
                
             Case #_pi_FONT, #_pi_COLOR, #_pi_IMAGE
-               *this = Create( *parent, "Button", Type, 0, 0, #__bar_button_size+1, 0, "...", flag, 0, 0, 0, 0, 0, 0 )
+               *this = Create( *parent, "Button", Type, 0, 0, #__bar_button_size+1, 0, "...", Flag, 0, 0, 0, 0, 0, 0 )
                
          EndSelect
          
       Case #__type_ComboBox
-         *this = Create( *parent, "ComboBox", Type, 0, 0, 0, 0, "", flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
+         *this = Create( *parent, "ComboBox", Type, 0, 0, 0, 0, "", Flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
          ;
          Select item
             Case #_pi_flag
+               SetFlag( *this, #__flag_CheckBoxes|#__flag_optionboxes )
                
             Case #_pi_fontstyle
                AddItem(*this, -1, "None")         
@@ -1047,7 +1052,7 @@ Procedure   Properties_Events( )
    ProcedureReturn #PB_Ignore
 EndProcedure
 
-Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
+Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    Protected position = 90
    Protected tflag.q = #__flag_BorderLess|#PB_Tree_NoLines|#__flag_Transparent;|#__flag_gridlines
    Protected *first._s_WIDGET = Tree(0,0,0,0, tflag)
@@ -1067,7 +1072,7 @@ Procedure   Properties_Create( X,Y,Width,Height, flag=0 )
 ;     ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
 ;     SetColor(*g, #PB_Gadget_BackColor,  $D4C8C8C8)
     
-   Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, flag|#__flag_Transparent|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
+   Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, Flag|#__flag_Transparent|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
    SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
    SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
    ;
@@ -1353,13 +1358,13 @@ Procedure new_widget_delete( *this._s_WIDGET  )
    EndIf
 EndProcedure
 
-Procedure new_widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, flag = 0 )
+Procedure new_widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Flag = 0 )
    Protected *new._s_widget
    ; flag.i | #__flag_NoFocus
    
    If *parent 
       ; OpenList( *parent, CountItems( *parent ) - 1 )
-      *new = new_widget_create( *parent, type$, X,Y, Width, Height, "", 0,100,0, flag )
+      *new = new_widget_create( *parent, type$, X,Y, Width, Height, "", 0,100,0, Flag )
       
       If *new
          If LCase(type$) = "panel"
@@ -1368,7 +1373,7 @@ Procedure new_widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore,
          
          ide_inspector_VIEW_ADD_ITEMS( *new )
          
-         If Not flag & #__flag_NoFocus 
+         If Not Flag & #__flag_NoFocus 
             If IsContainer( *new )
                If is_window_( *new )
                   a_set(*new, #__a_full, (14))
@@ -1386,7 +1391,7 @@ Procedure new_widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore,
    ProcedureReturn *new
 EndProcedure
 
-Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
+Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, Flag.q = 0 )
    Protected *new._s_widget
    ; flag.i | #__flag_NoFocus
    Protected newtype$
@@ -1428,51 +1433,51 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
       Select type$
          Case "window"   
             If Type( *parent ) = #__Type_MDI
-               *new = AddItem( *parent, #PB_Any, text$, - 1, flag | #PB_Window_NoActivate )
+               *new = AddItem( *parent, #PB_Any, text$, - 1, Flag | #PB_Window_NoActivate )
                Resize( *new, X, Y, Width, Height )
             Else
-               flag | #PB_Window_SystemMenu | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget | #PB_Window_NoActivate
-               *new = Window( X,Y,Width,Height, text$, flag, *parent )
+               Flag | #PB_Window_SystemMenu | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget | #PB_Window_NoActivate
+               *new = Window( X,Y,Width,Height, text$, Flag, *parent )
             EndIf
             ; SetFrame( *new, 0)
             
-         Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, Param1, Param2, Param3, flag ) : CloseList( ) ; 1 
+         Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, Param1, Param2, Param3, Flag ) : CloseList( ) ; 1 
                                                                                                                  ; SetFrame( *new, 30)
             SetBackgroundColor( *new, $74F6FE )
-         Case "container"   : *new = Container( X,Y,Width,Height, flag ) : CloseList( )
-         Case "panel"       : *new = Panel( X,Y,Width,Height, flag ) : CloseList( )
+         Case "container"   : *new = Container( X,Y,Width,Height, Flag ) : CloseList( )
+         Case "panel"       : *new = Panel( X,Y,Width,Height, Flag ) : CloseList( )
             ; SetFrame( *new, 0)
             
-         Case "button"        : *new = Button(       X, Y, Width, Height, text$, flag ) 
-         Case "string"        : *new = String(       X, Y, Width, Height, text$, flag )
-         Case "text"          : *new = Text(         X, Y, Width, Height, text$, flag )
-         Case "checkbox"      : *new = CheckBox(     X, Y, Width, Height, text$, flag ) 
+         Case "button"        : *new = Button(       X, Y, Width, Height, text$, Flag ) 
+         Case "string"        : *new = String(       X, Y, Width, Height, text$, Flag )
+         Case "text"          : *new = Text(         X, Y, Width, Height, text$, Flag )
+         Case "checkbox"      : *new = CheckBox(     X, Y, Width, Height, text$, Flag ) 
             ; Case "web"           : *new = Web(          X, Y, Width, Height, text$, flag )
-         Case "explorerlist"  : *new = ExplorerList( X, Y, Width, Height, text$, flag )                                                                           
+         Case "explorerlist"  : *new = ExplorerList( X, Y, Width, Height, text$, Flag )                                                                           
             ; Case "explorertree"  : *new = ExplorerTree( X, Y, Width, Height, text$, flag )                                                                           
             ; Case "explorercombo" : *new = ExplorerCombo(X, Y, Width, Height, text$, flag )                                                                          
-         Case "frame"         : *new = Frame(        X, Y, Width, Height, text$, flag )                                                                                  
+         Case "frame"         : *new = Frame(        X, Y, Width, Height, text$, Flag )                                                                                  
             
             ; Case "date"          : *new = Date(         X, Y, Width, Height, text$, Param1, flag )         ; 2            
-         Case "hyperlink"     : *new = HyperLink(    X, Y, Width, Height, text$, Param1, flag )                                                          
-         Case "listicon"      : *new = ListIcon(     X, Y, Width, Height, text$, Param1, flag )                                                       
+         Case "hyperlink"     : *new = HyperLink(    X, Y, Width, Height, text$, Param1, Flag )                                                          
+         Case "listicon"      : *new = ListIcon(     X, Y, Width, Height, text$, Param1, Flag )                                                       
             
-         Case "scroll"        : *new = Scroll(       X, Y, Width, Height, Param1, Param2, Param3, flag )  ; bar                                                             
+         Case "scroll"        : *new = Scroll(       X, Y, Width, Height, Param1, Param2, Param3, Flag )  ; bar                                                             
             
-         Case "progress"      : *new = Progress(     X, Y, Width, Height, Param1, Param2, flag )          ; bar                                                           
-         Case "track"         : *new = Track(        X, Y, Width, Height, Param1, Param2, flag )          ; bar                                                                           
-         Case "spin"          : *new = Spin(         X, Y, Width, Height, Param1, Param2, flag )                                                                             
-         Case "splitter"      : *new = Splitter(     X, Y, Width, Height, Param1, Param2, flag )                                                                         
-         Case "mdi"           : *new = MDI(          X, Y, Width, Height, flag )  ;  , Param1, Param2                                                                          
-         Case "image"         : *new = Image(        X, Y, Width, Height, Param1, flag )                                                                                                     
-         Case "buttonimage"   : *new = ButtonImage(  X, Y, Width, Height, Param1, flag )                                                                                                 
+         Case "progress"      : *new = Progress(     X, Y, Width, Height, Param1, Param2, Flag )          ; bar                                                           
+         Case "track"         : *new = Track(        X, Y, Width, Height, Param1, Param2, Flag )          ; bar                                                                           
+         Case "spin"          : *new = Spin(         X, Y, Width, Height, Param1, Param2, Flag )                                                                             
+         Case "splitter"      : *new = Splitter(     X, Y, Width, Height, Param1, Param2, Flag )                                                                         
+         Case "mdi"           : *new = MDI(          X, Y, Width, Height, Flag )  ;  , Param1, Param2                                                                          
+         Case "image"         : *new = Image(        X, Y, Width, Height, Param1, Flag )                                                                                                     
+         Case "buttonimage"   : *new = ButtonImage(  X, Y, Width, Height, Param1, Flag )                                                                                                 
             
             ; Case "calendar"      : *new = Calendar(     X, Y, Width, Height, Param1, flag )                 ; 1                                                 
             
-         Case "listview"      : *new = ListView(     X, Y, Width, Height, flag )                                                                                                                       
-         Case "combobox"      : *new = ComboBox(     X, Y, Width, Height, flag ) 
-         Case "editor"        : *new = Editor(       X, Y, Width, Height, flag )                                                                                                                          
-         Case "tree"          : *new = Tree(         X, Y, Width, Height, flag )                                                                                                                            
+         Case "listview"      : *new = ListView(     X, Y, Width, Height, Flag )                                                                                                                       
+         Case "combobox"      : *new = ComboBox(     X, Y, Width, Height, Flag ) 
+         Case "editor"        : *new = Editor(       X, Y, Width, Height, Flag )                                                                                                                          
+         Case "tree"          : *new = Tree(         X, Y, Width, Height, Flag )                                                                                                                            
             ; Case "canvas"        : *new = Canvas(       X, Y, Width, Height, flag )                                                                                                                          
             
          Case "option"        : *new = Option(       X, Y, Width, Height, text$ )
@@ -2548,8 +2553,8 @@ Procedure   ide_events( )
 EndProcedure
 
 Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
-   Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget | #PB_Window_Invisible
-   ide_root = Open( 1, X,Y,Width,Height, "ide", flag ) 
+   Define Flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget | #PB_Window_Invisible
+   ide_root = Open( 1, X,Y,Width,Height, "ide", Flag ) 
    ide_window = GetCanvasWindow( ide_root )
    ide_g_canvas = GetCanvasGadget( ide_root )
    
@@ -3027,12 +3032,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1067
-; FirstLine = 576
-; Folding = ----74+f-b-----4j8-v----------+-030----f-f-----f----+9-
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 380
+; FirstLine = 378
+; Folding = ----0vd-+4+----uH4------------0-8t8-----+-+-----+---06-
 ; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2.exe
+; Executable = ../../2.exe
