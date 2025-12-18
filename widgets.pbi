@@ -7907,14 +7907,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          
          If ( Change_x Or Change_y Or Change_width Or Change_height ) ; TEST
-         ; 
-         ;          If *this\resize\clip <> 0
-         ;             *this\resize\clip = 0
-         Reclip( *this )
-         ;          EndIf
+            *this\root\repaint = 1
+            If *this\picture\imageID
+               *this\picture\change = #True
+            EndIf
+            
+            ; похоже тепер у кнопки нет проблем
+            ; оказалось не только у кнопки еще у полеввода
+            ; *this\TextChange( ) = 1 ; без нее у кнопки проблемы перерисовкой текста
+            
+            ; 
+            ;          If *this\resize\clip <> 0
+            ;             *this\resize\clip = 0
+            Reclip( *this )
+            ;          EndIf
          
-         ;
-         ;\\
          ;
          If *this\anchors 
             a_size( *this\anchors\id,
@@ -7933,16 +7940,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\stringbar
             Resize( *this\stringbar, 0, 0, *this\inner_width( ), *this\inner_height( ) )
          EndIf
-         
-         ; If ( Change_x Or Change_y Or Change_width Or Change_height ) ; TEST
-            If *this\picture\imageID
-               *this\picture\change = #True
-            EndIf
-            
-            ; похоже тепер у кнопки нет проблем
-            ; оказалось не только у кнопки еще у полеввода
-            ; *this\TextChange( ) = 1 ; без нее у кнопки проблемы перерисовкой текста
-            
+          
             ;\\ resize child vertical&horizontal scrollbars
             If *this\scroll And
                *this\scroll\v And
@@ -7997,7 +7995,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-         ; EndIf ; TEST
          
          ; if the integral menu bar
          If *this\menubar
@@ -8188,9 +8185,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ;\\
-         ; If ( Change_x Or Change_y Or Change_width Or Change_height ) ; TEST
-            *this\root\repaint = 1
             
             ;\\
             If *this\type = #__type_ScrollArea
@@ -27655,8 +27649,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 3868
-; FirstLine = 3777
+; CursorPosition = 7918
+; FirstLine = 5811
 ; Folding = ----+----------------------------------4--------------------------------------------------4---8---------+B7-0-0-+v-f-----0-4------dPfcyOD46---08-9-z---0e+--z-t0848m-------------------------1----h-X-O-8v--fwt8-fAf6znP04----------------------------------------------------------f-2----------------------------------------------------------------8---------------------------------------------------------------------------------------------------------v+------------------------------------------------------4-----v--------0------------------------------------------------------------------------------------------------------9fn-0----rDy-4------------------------------n---8-6----0XZb----------------------------------------------------------------------f---
 ; EnableXP
 ; Executable = widgets-.app.exe
