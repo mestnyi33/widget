@@ -358,7 +358,12 @@ EndProcedure
 
 ;-
 Procedure   SetFlag( *this._s_WIDGET, flags.q )
-   Flag( *this, flags, 1 )
+   If *this\type = #__type_ComboBox
+;       If *this\PopupCombo( )
+;          Flag( *this\PopupCombo( ), flags, 1 )
+;       EndIf
+      Flag( *this, flags, 1 )
+   EndIf
 EndProcedure
 
 ;-
@@ -3033,9 +3038,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 380
-; FirstLine = 378
-; Folding = ----0vd-+4+----uH4------------0-8t8-----+-+-----+---06-
+; CursorPosition = 365
+; FirstLine = 348
+; Folding = ----8f8+0v0----dPu------------8-4b4-----0-0-----0---8z-
 ; Optimizer
 ; EnableAsm
 ; EnableXP

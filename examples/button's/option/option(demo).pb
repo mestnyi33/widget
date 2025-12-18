@@ -49,16 +49,17 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;
       Open(0, 140, 0, 140, 200,"",#__flag_transparent)
+      ;a_init( Root( ))
       ;SetBackColor( root(), $00FFFFF0 );$0FDFE9)
       ;SetBackColor( root(), $0FDFE9)
        
-      Option(10, 20, 115, 20, "Option 1") : SetClass( widget( ), "Option 1" )
-      Option(10, 45, 115, 20, "Option 2") : SetClass( widget( ), "Option 2" )
-      Option(10, 70, 115, 20, "Option 3") : SetClass( widget( ), "Option 3" )
+      Option(10, 20, 115, 20, "Option 1", #__flag_transparent) : SetClass( Widget( ), "Option 1" )
+      Option(10, 45, 115, 20, "Option 2", #__flag_transparent) : SetClass( Widget( ), "Option 2" )
+      Option(10, 70, 115, 20, "Option 3", #__flag_transparent) : SetClass( Widget( ), "Option 3" )
       
-      CheckBox(10, 95, 115, 20, "CheckBox", #PB_CheckBox_ThreeState ) : SetClass( widget( ), "CheckBox" )
-      Option(10, 120, 115, 20, "Option 4") : SetClass( widget( ), "Option 4" )
-      Option(10, 145, 115, 20, "Option 5") : SetClass( widget( ), "Option 5" )
+      CheckBox(10, 95, 115, 20, "CheckBox", #PB_CheckBox_ThreeState ) : SetClass( Widget( ), "CheckBox" )
+      Option(10, 120, 115, 20, "Option 4") : SetClass( Widget( ), "Option 4" )
+      Option(10, 145, 115, 20, "Option 5") : SetClass( Widget( ), "Option 5" )
       
       SetState(ID(1), 1)   ; set second option as active one
       SetState(ID(3), #PB_Checkbox_Inbetween)  
@@ -71,8 +72,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 37
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 51
+; FirstLine = 36
 ; Folding = --
 ; EnableXP

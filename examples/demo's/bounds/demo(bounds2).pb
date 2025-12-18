@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-   a_init(root(), 4)
+   a_init(Root(), 4)
    
    ;\\
    ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
@@ -19,11 +19,11 @@ CompilerIf #PB_Compiler_IsMainFile
    parent = Container(50, 50, 500, 500)
    
    ;\\
-   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
-   ; object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
-   ; object = Container(100, 100, 250, 250) : CloseList()
-object = ScrollArea(100, 100, 250, 250, 350,350, 1) : CloseList()
-;  object = ScrollArea(100, 100, 250, 250, 150,150, 1) : CloseList()
+   ; object = Window(0, 0, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
+   ; object = Window(0, 0, 250, 220, "Resize me !", #PB_Window_BorderLess | #PB_Window_SizeGadget, parent)
+   ; object = Container(0, 0, 250, 250) : CloseList()
+object = ScrollArea(0, 0, 250, 250, 350,350, 1) : CloseList()
+;  object = ScrollArea(0, 0, 250, 250, 150,150, 1) : CloseList()
 
 ;\\
 Define fs = 20
@@ -36,7 +36,7 @@ SetSizeBounds(object, 200, 200, 501-fs*2-fs*2, 501-fs*2-fs*2)
 SetMoveBounds(object, fs, fs, 501-fs*2-fs, 501-fs*2-fs)
 
 ;\\
-Bind( widget( ), @CustomEvents(), #__event_Draw )
+Bind( Widget( ), @CustomEvents(), #__event_Draw )
 WaitClose( )
 
 ;\\
@@ -84,8 +84,8 @@ Procedure CustomEvents( )
    
 EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 34
-; FirstLine = 9
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 24
+; FirstLine = 7
 ; Folding = -
 ; EnableXP

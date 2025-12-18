@@ -1440,9 +1440,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro __draw_text( _this_, _color_ = $ff000000 )
          If _this_\text 
             If _this_\text\string 
-               If _this_\TextChange( ) Or 
-                  _this_\ResizeChange( )
-                  ;
+               If (_this_\TextChange( ) Or _this_\ResizeChange( ))
                   If _this_\text\vertical
                      change_align_horizontal( _this_\text, _this_\inner_width( ), _this_\text\height, _this_\text\rotate, _this_\text\align, _this_\padding\x )
                      change_align_vertical( _this_\text, _this_\inner_height( ), _this_\text\width, _this_\text\rotate, _this_\text\align, _this_\padding\y )
@@ -3248,6 +3246,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\anchors\group\show
                            a_group_show( *this, #__event_Focus )
                         EndIf
+                        ;
+                        ; это нужен чтобы обновить показ линий
+                        a_move( *this,
+                                *this\anchors\id,
+                                *this\screen_x( ),
+                                *this\screen_y( ),
+                                *this\screen_width( ),
+                                *this\screen_height( ) )
+                        ;
                         DoEvents( *this, #__event_Focus )
                      EndIf
                      ;
@@ -3854,7 +3861,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected childrens.b, qqq = DPIScaled(40)
             ;
             If Not *this\hide 
-               If *this\TabChange( ) Or *this\ResizeChange( )
+               If (*this\ResizeChange( ) Or *this\TabChange( ))
                   *bar\max = 0
                   *this\scroll_width( ) = 0
                   *this\scroll_height( ) = 0
@@ -6874,9 +6881,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                  ; ScrollPos = *bar\min
                EndIf
             EndIf
-            ;????
+            ;
             If ScrollPos > *bar\page\end 
-              ; ScrollPos = *bar\page\end
+               ScrollPos = *bar\page\end
             EndIf
          EndIf
          
@@ -7640,14 +7647,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ move boundaries
             If *this\bounds\move
                If X <> #PB_Ignore
-                  If *this\bounds\move\min\x <> #PB_Ignore And
-                     X < *this\bounds\move\min\x
-                     If Width <> #PB_Ignore
-                        Width - ( *this\bounds\move\min\x - X )
+                  If *this\bounds\move\min\x <> #PB_Ignore
+                     If X < *this\bounds\move\min\x
+                        If Width <> #PB_Ignore
+                           Width - ( *this\bounds\move\min\x - X )
+                        EndIf
+                        X = *this\bounds\move\min\x
                      EndIf
-                     X = *this\bounds\move\min\x
                   EndIf
-                  If *this\bounds\move\max\x <> #PB_Ignore
+                  If *this\bounds\move\max\x <> #PB_Ignore 
                      If Width = #PB_Ignore
                         If X > *this\bounds\move\max\x - *this\frame_width( )
                            X = *this\bounds\move\max\x - *this\frame_width( )
@@ -7660,12 +7668,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                If Y <> #PB_Ignore
-                  If *this\bounds\move\min\y <> #PB_Ignore And
-                     Y < *this\bounds\move\min\y
-                     If Height <> #PB_Ignore
-                        Height - ( *this\bounds\move\min\y - Y )
+                  If *this\bounds\move\min\y <> #PB_Ignore 
+                     If Y < *this\bounds\move\min\y
+                        If Height <> #PB_Ignore
+                           Height - ( *this\bounds\move\min\y - Y )
+                        EndIf
+                        Y = *this\bounds\move\min\y
                      EndIf
-                     Y = *this\bounds\move\min\y
                   EndIf
                   If *this\bounds\move\max\y <> #PB_Ignore
                      If Height = #PB_Ignore
@@ -7864,11 +7873,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          If Change_width
-            If *this\bounds\move And Not Change_x
-               If *this\bounds\move\max\x = ( *this\bounds\move\min\x + *this\frame_width( ) )
-                  *this\bounds\move\max\x = *this\bounds\move\min\x + Width
-               EndIf
-            EndIf
+;             ;1 BUG с ним если увеличить до макс потом уменьшить до мин то уже не перемещается 
+;             If *this\bounds\move And Not Change_x
+;                If *this\bounds\move\max\x = ( *this\bounds\move\min\x + *this\frame_width( ) )
+;                   *this\bounds\move\max\x = *this\bounds\move\min\x + Width
+;                EndIf
+;             EndIf
             *this\resize\width = Change_width
             *this\container_width( ) = iwidth
             *this\frame_width( )     = Width
@@ -7879,11 +7889,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\inner_width( ) = *this\container_width( )
          EndIf
          If Change_height
-            If *this\bounds\move And Not Change_y
-               If *this\bounds\move\max\y = ( *this\bounds\move\min\y + *this\frame_height( ) )
-                  *this\bounds\move\max\y = *this\bounds\move\min\y + Height
-               EndIf
-            EndIf
+;             ;1 BUG с ним если увеличить до макс потом уменьшить до мин то уже не перемещается 
+;             If *this\bounds\move And Not Change_y
+;                If *this\bounds\move\max\y = ( *this\bounds\move\min\y + *this\frame_height( ) )
+;                   *this\bounds\move\max\y = *this\bounds\move\min\y + Height
+;                EndIf
+;             EndIf
             *this\resize\height = Change_height
             *this\container_height( ) = iheight
             *this\frame_height( )     = Height
@@ -7895,6 +7906,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          
+         If ( Change_x Or Change_y Or Change_width Or Change_height ) ; TEST
          ; 
          ;          If *this\resize\clip <> 0
          ;             *this\resize\clip = 0
@@ -7922,12 +7934,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Resize( *this\stringbar, 0, 0, *this\inner_width( ), *this\inner_height( ) )
          EndIf
          
-         If ( Change_x Or Change_y Or Change_width Or Change_height )
+         ; If ( Change_x Or Change_y Or Change_width Or Change_height ) ; TEST
             If *this\picture\imageID
                *this\picture\change = #True
             EndIf
             
-            *this\TextChange( ) = 1 ; без нее у кнопки проблемы перерисовкой текста
+            ; похоже тепер у кнопки нет проблем
+            ; оказалось не только у кнопки еще у полеввода
+            ; *this\TextChange( ) = 1 ; без нее у кнопки проблемы перерисовкой текста
             
             ;\\ resize child vertical&horizontal scrollbars
             If *this\scroll And
@@ -7983,7 +7997,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-         EndIf
+         ; EndIf ; TEST
          
          ; if the integral menu bar
          If *this\menubar
@@ -8175,7 +8189,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         If ( Change_x Or Change_y Or Change_width Or Change_height )
+         ; If ( Change_x Or Change_y Or Change_width Or Change_height ) ; TEST
             *this\root\repaint = 1
             
             ;\\
@@ -12427,7 +12441,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\type = #__type_combobox
             If Not *this\PopupCombo( )
                *this\PopupCombo( ) = Create( *this, "ComboListView", #__type_tree, 0,0,0,0,"",
-                                             #__flag_child | #__flag_nobuttons | #__flag_nolines ) 
+                                             #__flag_child | #__flag_nobuttons | #__flag_nolines|*this\flag ) 
                
                *this\PopupCombo( )\fs = 2
                Hide( *this\PopupCombo( ), #True )
@@ -19485,7 +19499,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ElseIf eventdata > 0
                   MouseData( ) | #__mouse_right
                EndIf
-               If is_integral_( Entered( ) )
+               If is_scrollbars_( Entered( ) )
                   DoEvents( Entered( )\parent, #__event_MouseWheel, #PB_All, eventdata )
                Else
                   DoEvents( Entered( ), #__event_MouseWheel, #PB_All, eventdata )
@@ -19504,7 +19518,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ElseIf eventdata > 0
                   MouseData( ) | #__mouse_bottom
                EndIf
-               If is_integral_( Entered( ) )
+               If is_scrollbars_( Entered( ) )
                   DoEvents( Entered( )\parent, #__event_MouseWheel, #PB_All, eventdata )
                Else
                   DoEvents( Entered( ), #__event_MouseWheel, #PB_All, eventdata )
@@ -23851,7 +23865,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
             EndIf
             
-            If *this\TextChange( )
+            If *this\TextChange( ) 
                If *this\text\vertical
                   change_align_horizontal( *this\text, *this\inner_width( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\x )
                   change_align_vertical( *this\text, *this\inner_height( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\y )
@@ -24413,8 +24427,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected state.b, X.l, Y.l, scroll_x, scroll_y
          
          If Not *this\hide
-            If *this\WidgetChange( ) Or *this\ResizeChange( )
-               Update_DrawRows( *this, *this\__rows( ), *this\WidgetChange( ) )
+            If (*this\ResizeChange( ) Or *this\WidgetChange( ))
+               Update_DrawRows( *this, *this\__rows( ), *this\WidgetChange( ))
                
                bar_area_update( *this )
                
@@ -24628,9 +24642,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             With *this
                ; Make output multi line text
-               If *this\TextChange( ) Or ( *this\ResizeChange( ) And *this\text\multiline = - 1 )
-                  ;
-                  Update_DrawText( *this, *this\TextChange( ) )
+               If (*this\ResizeChange( ) Or *this\TextChange( ))
+                  Update_DrawText( *this, *this\TextChange(  ) )
                   ;
                   ;;;;;;;;;;;;;;;;;;;;
                   If *this\create = 1
@@ -24719,7 +24732,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; Draw margin back color
                If *this\MarginLine( )\width > 0
-                  If *this\TextChange( ) Or *this\ResizeChange( )
+                  If (*this\ResizeChange( ) Or *this\TextChange( ))
                      *this\MarginLine( )\x      = *this\inner_x( )
                      *this\MarginLine( )\y      = *this\inner_y( )
                      *this\MarginLine( )\height = *this\inner_height( )
@@ -24771,7 +24784,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected state.b, X.l, Y.l, scroll_x, scroll_y
          
          If Not *this\hide
-            If *this\WidgetChange( ) Or *this\ResizeChange( )
+            If (*this\ResizeChange( ) Or *this\WidgetChange( ))
                ForEach *this\columns( )
                   Update_DrawRows( *this, *this\__rows( ), *this\WidgetChange( ) )
                Next
@@ -24875,8 +24888,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ; update text
-            If *this\WidgetChange( ) Or *this\ResizeChange( )
-               Update_DrawText( *this, *this\TextChange( ) )
+            If (*this\ResizeChange( ) Or *this\TextChange( ))
+               Update_DrawText( *this, *this\TextChange( ))
             EndIf
             
             ;             ;\\
@@ -24944,26 +24957,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ draw box
             Protected _box_type_, _box_x_, _box_y_
             ; update widget ( option&checkbox ) position
-            If *this\togglebox And *this\togglebox\width And *this\WidgetChange( ) 
-               *this\togglebox\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\togglebox\height ) / 2
-               
-               If *this\text\align\right
-                  *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\height - 3 )
-               ElseIf Not *this\text\align\left
-                  *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\width ) / 2
+            If *this\ResizeChange( ) 
+               If *this\togglebox And *this\togglebox\width
+                  *this\togglebox\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\togglebox\height ) / 2
                   
-                  If Not *this\text\align\top
-                     If *this\text\rotate = 0
-                        *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) - *this\togglebox\height
-                     Else
-                        *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
+                  If *this\text\align\right
+                     *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\height - 3 )
+                  ElseIf Not *this\text\align\left
+                     *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\width ) / 2
+                     
+                     If Not *this\text\align\top
+                        If *this\text\rotate = 0
+                           *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) - *this\togglebox\height
+                        Else
+                           *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
+                        EndIf
                      EndIf
+                  Else
+                     *this\togglebox\x = *this\inner_x( ) + 3
                   EndIf
-               Else
-                  *this\togglebox\x = *this\inner_x( ) + 3
                EndIf
             EndIf
-            
             
             If #__type_Option = *this\type
                _box_type_ = 1
@@ -24972,6 +24986,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                _box_type_ = 3
             EndIf
             If _box_type_
+            ;   __draw_checkbox( _box_type_, *this\togglebox, *this\x,*this\y, *this\togglebox\round )
                __draw_checkbox( _box_type_, *this\togglebox, 0,0, *this\togglebox\round )
             EndIf
             
@@ -27294,7 +27309,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
    HyperLink( 10, 10, 80, 30, "HyperLink", RGB(105, 245, 44) )
    String( 60, 20, 60, 30, "String" )
-   *w = ComboBox( 108, 30, 152, 30, #PB_ComboBox_Editable )
+   *w = ComboBox( 108, 30, 152, 30, #PB_ComboBox_Editable ) ;: Flag( *w, #__flag_optionboxes, 1 )
    For i = 1 To 100;0000
       AddItem(*w, i, "text-" + Str(i))
    Next
@@ -27639,8 +27654,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 9
-; Folding = ----+----------------------------------4--------------------------------------------------4---8---------+B7-0-0-+v-f-----0-4------dPfcyOD46---08-9-z---0e+--z-t0848m-f--------------------------------v--0--X----vu-3Pf-+------------------------------------------------------------8t+---------------------------------------------------------------f---------------------------------------------------------------------------------8------------------------2-------------------------------------------------------+-----0-------v------------------------------------------------------------------------------------------------------n-89t-z--fdQ+-+------------------------------9--f-P----v--------------------------------------------------------------------------0---
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 3868
+; FirstLine = 3777
+; Folding = ----+----------------------------------4--------------------------------------------------4---8---------+B7-0-0-+v-f-----0-4------dPfcyOD46---08-9-z---0e+--z-t0848m-------------------------1----h-X-O-8v--fwt8-fAf6znP04----------------------------------------------------------f-2----------------------------------------------------------------8---------------------------------------------------------------------------------------------------------v+------------------------------------------------------4-----v--------0------------------------------------------------------------------------------------------------------9fn-0----rDy-4------------------------------n---8-6----0XZb----------------------------------------------------------------------f---
 ; EnableXP
 ; Executable = widgets-.app.exe
