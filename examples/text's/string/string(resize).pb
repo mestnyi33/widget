@@ -4,7 +4,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
-  Define h = 185, bh = 26, *g1, *g2, *g3, *g4, *g5, *g6
+  Define h = 100, bh = 26, *g1, *g2, *g3, *g4, *g5, *g6
   If Open( #PB_Any, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
     
     *g1 = String(     30, 30, 200, h, "left 00000000000000000000000000000000000" )
@@ -17,12 +17,12 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetState( *g4, 200 )
     SetState( *g5, 200*2+#__bar_splitter_size )
-    ;SetState( *g6, h )
+    SetState( *g6, h )
     
     Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 10
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 6
 ; Folding = -
 ; EnableXP
