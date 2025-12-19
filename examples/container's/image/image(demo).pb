@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    EndIf
    
    
-   Procedure Window_0_widget_events( )
+   Procedure Window_0_events( )
       Select EventWidget( )
          Case *Button
             If GetState( *Button )
@@ -57,25 +57,27 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case *ComboBox
-            SetAttribute( *Image, #__DisplayMode, GetState( *ComboBox ) )
+            If SetAttribute( *Image, #__DisplayMode, GetState( *ComboBox ) )
+            EndIf 
+            PostRepaint( )
             
       EndSelect
    EndProcedure
    
    Procedure Window_0( )
-      If Open(0, 0, 0, 250, 310, "Demo show&hide scrollbar buttons", #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-         *Image = Image(10, 10, 230,  225, (1))
+      If Open(0, 0, 0, 225+100, 310, "Demo show&hide scrollbar buttons", #PB_Window_Invisible | #PB_Window_SystemMenu | #PB_Window_ScreenCentered );| #PB_Window_SizeGadget)
+         *Image = Image(10, 10, 200, 200, (1))
          ;*Image = ButtonImage(10, 10, 230,  225, (1))
-         *Button = Button( 5, 245, 240,  25, "change image", #PB_Button_Toggle)
-         *ComboBox = ComboBox( 5,   245+30, 240,  30) ; Container(5, 230, 240,  75) ; 
+         *ComboBox = ListView( 215, 10, 100, 200) ; Container(5, 230, 240,  75) ; 
+         *Button = Button( 10, 215, 305, 25, "change image", #PB_Button_Toggle)
          
          CloseList( )
          
          SetBackColor( *Image, $FFB3FDFF )
          ;
-         SetAlign(*Image, 0, 1,1,1,1 )
-         SetAlign(*Button, 0, 1,0,1,1 )
-         SetAlign(*ComboBox, 0, 1,0,1,1 )
+         ;SetAlign(*Image, 0, 1,1,1,1 )
+         ;SetAlign(*Button, 0, 1,0,1,1 )
+         ;SetAlign(*ComboBox, 0, 1,0,1,1 )
          
          ;
          AddItem(*ComboBox, 0, "Default")
@@ -86,8 +88,8 @@ CompilerIf #PB_Compiler_IsMainFile
          SetState(*ComboBox, 0)
          
          ;
-         Bind( *Button, @Window_0_widget_events( ), #__event_LeftClick )
-         Bind( *ComboBox, @Window_0_widget_events( ), #__event_Change )
+         Bind( *Button, @Window_0_events( ), #__event_LeftClick )
+         Bind( *ComboBox, @Window_0_events( ), #__event_Change )
          
          HideWindow(0,0)
          ResizeWindow(0, #PB_Ignore, #PB_Ignore, #PB_Ignore, 250)
@@ -106,9 +108,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 55
-; Folding = 0-
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 62
+; FirstLine = 40
+; Folding = ---
 ; EnableXP
 ; DPIAware

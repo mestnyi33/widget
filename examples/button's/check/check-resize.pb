@@ -20,9 +20,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open(#PB_Any, 0, 0, 680, 60+h, "content position then resized", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
-      *g1 = Button(    30, 30, 200, h, "butt" + word$ + "left", #PB_Button_Left|#PB_Button_MultiLine)
-      *g2 = Button(30+210, 30, 200, h, "butt" + word$ + "center" + word$ + "multi", #PB_Button_MultiLine)
-      *g3 = Button(30+420, 30, 200, h, "right" + word$ + "butt", #PB_Button_Right|#PB_Button_MultiLine)
+      *g1 = CheckBox(    30, 30, 200, h, "butt" + word$ + "left", #__flag_Left|#__flag_TextMultiLine)
+      *g2 = CheckBox(30+210, 30, 200, h, "butt" + word$ + "center" + word$ + "multi", #__flag_TextMultiLine)
+      *g3 = CheckBox(30+420, 30, 200, h, "right" + word$ + "butt", #__flag_Right|#__flag_TextMultiLine)
       
       SetImage(*g1, img)
       SetImage(*g2, img)
@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 18
+; CursorPosition = 24
 ; FirstLine = 13
 ; Folding = -
 ; EnableXP
