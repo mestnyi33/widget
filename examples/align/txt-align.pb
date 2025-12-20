@@ -1,4 +1,4 @@
-﻿IncludePath "../../../" : XIncludeFile "widgets.pbi"
+﻿IncludePath "../../" : XIncludeFile "widgets.pbi"
 
 ;- 
 ;- example
@@ -38,8 +38,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    If Open(0, 0, 0, X+(Width+space)*3 + 15, Y+(Height+space)*3 + 15, "vertical text", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetColor( widget( ), #PB_Gadget_BackColor, $FFffffff )
-      a_init( widget() )
+      SetColor( Widget( ), #PB_Gadget_BackColor, $FFffffff )
+      a_init( Widget() )
       
       ; horizontal
       GadgeCreate(0, 10, 10,                      Width, Height, text_h,                      #__flag_TextLeft|#__flag_TextTop);
@@ -73,8 +73,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 21
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP
 ; DPIAware

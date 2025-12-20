@@ -28,8 +28,8 @@ CompilerIf #PB_Compiler_IsMainFile
       SetImage(*g2, img)
       SetImage(*g3, img)
       
-      *g4 = Splitter(0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-      *g5 = Splitter(30,30,620,h, *g4,*g3, #PB_Splitter_Vertical)
+      *g4 = Splitter(0,0,0,0, *g3,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+      *g5 = Splitter(30,30,620,h, *g4,*g1, #PB_Splitter_Vertical)
       *g6 = Splitter(30,30,620,h, *g5, -1)
       
       SetState(*g4, 200)
@@ -40,7 +40,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 24
+; CursorPosition = 30
 ; FirstLine = 13
 ; Folding = -
 ; EnableXP

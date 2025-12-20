@@ -1,5 +1,5 @@
 ﻿
-IncludePath "../../../"
+IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure Window_0()
     If OpenWindow(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
       Open( 0, 10,10, 580,580 )
-      Canvas_0 = GetCanvasGadget(root())
+      Canvas_0 = GetCanvasGadget(Root())
       ButtonGadget   (0,    5,   600-35, 590,  30, "resize", #PB_Button_Toggle)
       
       
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #PB_Event_Timer
         If Width = 480
           direction = 1
-        ElseIf Width = Width(root())-100
+        ElseIf Width = Width(Root())-100
           direction =- 1
         EndIf
         ;         
@@ -102,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Height + direction
         
         Resize(widget_id(Hex(0)), #PB_Ignore, #PB_Ignore, Width, Height)
-        ReDraw(root()) 
+        ReDraw(Root()) 
         
       Case #PB_Event_Gadget
         
@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = +-
 ; EnableXP

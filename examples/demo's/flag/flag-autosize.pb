@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
   OpenWindow(0, 0, 0, 600, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   
   If Open(0, 30, 30, 540, 340)
-    SetColor(root(), #PB_Gadget_BackColor, RGBA(244, 245, 233, 255))
+    SetColor(Root(), #PB_Gadget_BackColor, RGBA(244, 245, 233, 255))
     ;a_init(root(), 20 )
     
     Define hfs = #__window_FrameSize*2
@@ -29,13 +29,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ;MDI(0,0,0,0, #__flag_autosize)
     ;SetColor(widget( ), #pb_gadget_backcolor, -1 )
     
-    Debug ""+ Width(widget()) +" "+ Height(widget())
+    Debug ""+ Width(Widget()) +" "+ Height(Widget())
     
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 13
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP
 ; DPIAware

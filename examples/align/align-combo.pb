@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define Width = 250
    Global.s word$ = "&"
-   word$ = #LF$ ; BUG
+   ; word$ = #LF$ ; BUG
    
    Procedure Combo( X,Y,Width,Height, Text.s, flags=0 )
       Protected._s_WIDGET *g = ComboBox( X,Y,Width,Height, flags)
@@ -40,7 +40,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
 ; CursorPosition = 19
-; FirstLine = 11
 ; Folding = -
 ; EnableXP
 ; DPIAware
