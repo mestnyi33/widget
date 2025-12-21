@@ -23,7 +23,7 @@ ImportC ""
    GetCurrentProcess(*psn)
 EndImport
 
-DeclareC eventTapFunction(proxy, , event, refcon)
+DeclareC eventTapFunction(proxy, eType, event, refcon)
 
 Global psn.q, mask, eventTap, key.s
 
@@ -71,7 +71,7 @@ ProcedureC eventTapFunction(proxy, Type, event, refcon)
                gadget = #PB_Any
             EndIf
          Else
-            If Typetype = 10
+            If Type = 10
                key.s = PeekS(CocoaMessage(0, CocoaMessage(0, NSEvent, "charactersIgnoringModifiers"), "UTF8String"), 1, #PB_UTF8)
                Debug "Key " + key + " pressed (key code : " + Str(CocoaMessage(0, NSEvent, "keyCode")) + ")"
             EndIf
@@ -214,8 +214,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ; ;   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    ; ; CompilerEndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 68
-; FirstLine = 44
+; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
+; CursorPosition = 69
+; FirstLine = 50
 ; Folding = ---
 ; EnableXP

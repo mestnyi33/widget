@@ -1,7 +1,9 @@
 ﻿;-\\ MAC OS
-XIncludeFile "../events.pbi"
+CompilerIf #PB_Compiler_IsMainFile
+   XIncludeFile "../events.pbi"
+CompilerEndIf
 
-Module events
+Module Events
    ;   #NSLeftMouseDown      = 1
    ;   #NSLeftMouseUp        = 2
    ;   #NSRightMouseDown     = 3
@@ -150,7 +152,7 @@ EndModule
 
 CompilerIf #PB_Compiler_IsMainFile
    
-   Procedure events(event, EventGadget, EventType, EventData )
+   Procedure Events(event, EventGadget, EventType, EventData )
       ;ProcedureReturn 1
       Select event
          Case #PB_Event_ActivateWindow
@@ -202,9 +204,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   Procedure Open( ID, flag=0 )
+   Procedure Open( ID, Flag=0 )
       Static X,Y
-      OpenWindow( ID, X,Y,200,200,"window_"+Str(ID), #PB_Window_SystemMenu|flag)
+      OpenWindow( ID, X,Y,200,200,"window_"+Str(ID), #PB_Window_SystemMenu|Flag)
       CanvasGadget( ID, 40,40,200-80,55, #PB_Canvas_Keyboard );| #PB_Canvas_Container) : CloseGadgetList()
       CanvasGadget( 10+ID, 40,110,200-80,55, #PB_Canvas_Keyboard)
       X + 100
@@ -212,7 +214,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    
-   events::setCallBack( @events())
+   Events::setCallBack( @events())
    
    Open(1, #PB_Window_NoActivate)
    Open(2, #PB_Window_NoActivate)
@@ -256,8 +258,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 110
-; FirstLine = 9
-; Folding = ----
+; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
+; CursorPosition = 2
+; Folding = 6--0-
 ; EnableXP

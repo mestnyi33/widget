@@ -1,5 +1,10 @@
 ﻿;-\\  WINDOWS
-XIncludeFile "../cursors.pbi"
+CompilerIf #PB_Compiler_IsMainFile
+   IncludePath "../"
+   XIncludeFile "mac/id.pbi"
+   XIncludeFile "mac/mouse.pbi"
+   XIncludeFile "cursors.pbi"
+CompilerEndIf
 
 Module Cursor 
    #test_cursor = 0
@@ -500,10 +505,9 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule   
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 77
-; FirstLine = 68
+; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
+; CursorPosition = 7
 ; Folding = ------------
-; Optimizer
 ; EnableXP
 ; DPIAware
+; Optimizer

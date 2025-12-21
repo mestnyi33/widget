@@ -1,5 +1,9 @@
 ﻿CompilerIf Not Defined( constants, #PB_Module )
    DeclareModule constants
+      CompilerIf #PB_Compiler_Version =< 546
+      #PB_MessageRequester_Error = 1<<5
+      #PB_EventType_Resize = 6
+      CompilerEndIf
       Enumeration #PB_EventType_FirstCustomValue
          #PB_EventType_Drop
          #PB_EventType_CursorChange
@@ -242,21 +246,18 @@ DeclareModule Cursor
    
 EndDeclareModule
 
-;\\
-CompilerSelect #PB_Compiler_OS 
-   CompilerCase #PB_OS_MacOS   : IncludePath "mac"
-   CompilerCase #PB_OS_Windows : IncludePath "win"
-   CompilerCase #PB_OS_Linux   : IncludePath "lin"
-CompilerEndSelect
-XIncludeFile "id.pbi"
-XIncludeFile "mouse.pbi"
-; XIncludeFile "parent.pbi"
-
-;-\\ MODULE
-XIncludeFile "cursor.pbi"
-
-;-\\ example
 CompilerIf #PB_Compiler_IsMainFile
+;-\\ example
+   CompilerSelect #PB_Compiler_OS 
+      CompilerCase #PB_OS_MacOS   : IncludePath "mac"
+      CompilerCase #PB_OS_Windows : IncludePath "win"
+      CompilerCase #PB_OS_Linux   : IncludePath "lin"
+   CompilerEndSelect
+   
+   XIncludeFile "id.pbi"
+   XIncludeFile "mouse.pbi"
+   XIncludeFile "cursor.pbi"
+   
    EnableExplicit
    
    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -318,7 +319,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure EventHandler(eventobject, eventtype, eventdata)
       Protected window = EventWindow()
-      Protected dropx, dropy
+      Protected DropX, DropY
       Static deltax, deltay
       
       Select eventtype
@@ -334,9 +335,9 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug ""+eventobject + " #PB_EventType_DragStart " + "x="+ deltax +" y="+ deltay
             
          Case #PB_EventType_Drop
-            dropx = GadgetMouseX(eventobject, #PB_Gadget_ScreenCoordinate)
-            dropy = GadgetMouseY(eventobject, #PB_Gadget_ScreenCoordinate)
-            Debug ""+eventobject + " #PB_EventType_Drop " + "x="+ dropx +" y="+ dropy
+            DropX = GadgetMouseX(eventobject, #PB_Gadget_ScreenCoordinate)
+            DropY = GadgetMouseY(eventobject, #PB_Gadget_ScreenCoordinate)
+            Debug ""+eventobject + " #PB_EventType_Drop " + "x="+ DropX +" y="+ DropY
             
          Case #PB_EventType_Focus
             Debug ""+eventobject + " #PB_EventType_Focus " 
@@ -382,9 +383,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   Procedure OpenWindow_(window, X,Y,Width,Height, title.s, flag=0)
+   Procedure OpenWindow_(window, X,Y,Width,Height, title.s, Flag=0)
       Protected WindowID
-      Protected result = OpenWindow(window, X,Y,Width,Height, title.s, flag|#PB_Window_SizeGadget)
+      Protected result = OpenWindow(window, X,Y,Width,Height, title.s, Flag|#PB_Window_SizeGadget)
       If window >= 0
          WindowID = WindowID(window)
       Else
@@ -395,8 +396,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn result
    EndProcedure
    
-   Macro OpenWindow(window, X,Y,Width,Height, title, flag=0)
-      OpenWindow_(window, X,Y,Width,Height, title, flag)
+   Macro OpenWindow(window, X,Y,Width,Height, title, Flag=0)
+      OpenWindow_(window, X,Y,Width,Height, title, Flag)
    EndMacro
    
    ;events::SetCallback(@EventHandler())
@@ -845,10 +846,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 96
-; Folding = -------------
-; Optimizer
+; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
+; CursorPosition = 258
+; FirstLine = 19
+; Folding = v------------
 ; EnableXP
+; Optimizer
 ; DPIAware

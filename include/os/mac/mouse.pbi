@@ -3,6 +3,17 @@
 CompilerEndIf
 
 DeclareModule mouse
+  Macro GadgetMouseX( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
+     ;GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
+     ;WindowMouseX( ID::Window(ID::GetWindowID(GadgetID(_canvas_))) ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )
+     DesktopMouseX( ) - DesktopScaledX(GadgetX( _canvas_, _mode_ ))
+  EndMacro
+  Macro GadgetMouseY( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
+     ;GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
+     ;WindowMouseY(  ID::Window(ID::GetWindowID(GadgetID(_canvas_)))  ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
+     DesktopMouseY( ) - DesktopScaledY(GadgetY( _canvas_, _mode_ ))
+  EndMacro
+  
   Declare.i Window( )
   Declare.i Gadget( WindowID )
   Declare.i Buttons( )
@@ -247,8 +258,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Until eventID = #PB_Event_CloseWindow
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 223
-; FirstLine = 115
-; Folding = fu---
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 16
+; Folding = -6+--
 ; EnableXP

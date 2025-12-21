@@ -1,29 +1,16 @@
 ﻿XIncludeFile "../../constants.pbi"
 
 ;-\\ DECLARE
-DeclareModule events
+DeclareModule Events
   EnableExplicit
   UseModule constants
-  
-  Macro GadgetMouseX( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
-     ;GetGadgetAttribute( _canvas_, #PB_Canvas_MouseX )
-     ;WindowMouseX( ID::Window(ID::GetWindowID(GadgetID(_canvas_))) ) - GadgetX( _canvas_, #PB_Gadget_WindowCoordinate )
-     DesktopMouseX( ) - DesktopScaledX(GadgetX( _canvas_, _mode_ ))
-  EndMacro
-  Macro GadgetMouseY( _canvas_, _mode_ = #PB_Gadget_ScreenCoordinate )
-     ;GetGadgetAttribute( _canvas_, #PB_Canvas_MouseY )
-     ;WindowMouseY(  ID::Window(ID::GetWindowID(GadgetID(_canvas_)))  ) - GadgetY( _canvas_, #PB_Gadget_WindowCoordinate )
-     DesktopMouseY( ) - DesktopScaledY(GadgetY( _canvas_, _mode_ ))
-  EndMacro
-      
-      
   ;-
   Global *dragged=-1, *entered=-1, *focused=-1, *pressed=-1, *setcallback
   
-  Macro DraggedGadget() : events::*dragged : EndMacro
-  Macro EnteredGadget() : events::*entered : EndMacro
-  Macro FocusedGadget() : events::*focused : EndMacro
-  Macro PressedGadget() : events::*pressed : EndMacro
+  Macro DraggedGadget() : Events::*dragged : EndMacro
+  Macro EnteredGadget() : Events::*entered : EndMacro
+  Macro FocusedGadget() : Events::*focused : EndMacro
+  Macro PressedGadget() : Events::*pressed : EndMacro
   
   DraggedGadget() =- 1 
   EnteredGadget() =- 1 
@@ -38,20 +25,32 @@ DeclareModule events
 EndDeclareModule
 
 
-;\\
-XIncludeFile "../../os/modules.pbi"
-CompilerSelect #PB_Compiler_OS 
-  CompilerCase #PB_OS_MacOS   : IncludePath "mac"
-  CompilerCase #PB_OS_Windows : IncludePath "win"
-  CompilerCase #PB_OS_Linux   : IncludePath "lin"
-CompilerEndSelect
-
-;-\\ MODULE
-XIncludeFile "event.pbi"
-
-
 ;-\\ example
 CompilerIf #PB_Compiler_IsMainFile
+;\\
+;XIncludeFile "../../os/modules.pbi"
+XIncludeFile "../cursors.pbi"
+
+;-\\ MODULE
+CompilerSelect #PB_Compiler_OS 
+   CompilerCase #PB_OS_MacOS   
+      XIncludeFile "../mac/id.pbi"
+      XIncludeFile "../mac/mouse.pbi"
+      XIncludeFile "../mac/cursor.pbi"
+      XIncludeFile "mac/event.pbi"
+   CompilerCase #PB_OS_Windows 
+      XIncludeFile "../mac/id.pbi"
+      XIncludeFile "../mac/mouse.pbi"
+      XIncludeFile "../win/cursor.pbi"
+      XIncludeFile "win/event.pbi"
+   CompilerCase #PB_OS_Linux   
+      XIncludeFile "../mac/id.pbi"
+      XIncludeFile "../mac/mouse.pbi"
+      XIncludeFile "../lin/cursor.pbi"
+      XIncludeFile "lin/event.pbi"
+CompilerEndSelect
+
+
   UseModule constants
   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
     XIncludeFile "../../win/id.pbi"
@@ -112,13 +111,13 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug ""+eventobject + " #PB_EventType_MouseWheelY " +eventdata
         
       Case #PB_EventType_DragStart
-        deltax = events::GadgetMouseX(eventobject, #PB_Gadget_WindowCoordinate)
-        deltay = events::GadgetMouseY(eventobject, #PB_Gadget_WindowCoordinate)
+        deltax = mouse::GadgetMouseX(eventobject, #PB_Gadget_WindowCoordinate)
+        deltay = mouse::GadgetMouseY(eventobject, #PB_Gadget_WindowCoordinate)
         Debug ""+eventobject + " #PB_EventType_DragStart " + "x="+ deltax +" y="+ deltay
         
       Case #PB_EventType_Drop
-        DropX = events::GadgetMouseX(eventobject, #PB_Gadget_ScreenCoordinate)
-        DropY = events::GadgetMouseY(eventobject, #PB_Gadget_ScreenCoordinate)
+        DropX = mouse::GadgetMouseX(eventobject, #PB_Gadget_ScreenCoordinate)
+        DropY = mouse::GadgetMouseY(eventobject, #PB_Gadget_ScreenCoordinate)
         Debug ""+eventobject + " #PB_EventType_Drop " + "x="+ DropX +" y="+ DropY
         
       Case #PB_EventType_Focus
@@ -154,9 +153,9 @@ CompilerIf #PB_Compiler_IsMainFile
         Debug ""+eventobject + " #PB_EventType_Resize " 
         
       Case #PB_EventType_MouseMove
-        If events::PressedGadget() = 0
+        If Events::PressedGadget() = 0
           ;Debug ""+eventobject + " #PB_EventType_MouseMove " 
-          ResizeGadget(events::PressedGadget(), DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
+          ResizeGadget(Events::PressedGadget(), DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
         EndIf
         ;         If events::DraggedGadget() = 0
         ;           ResizeGadget(events::DraggedGadget(), DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
@@ -165,8 +164,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  Procedure OpenWindow_(window, X,Y,Width,Height, title.s, flag=0)
-    Protected result = OpenWindow(window, X,Y,Width,Height, title.s, flag)
+  Procedure OpenWindow_(window, X,Y,Width,Height, title.s, Flag=0)
+    Protected result = OpenWindow(window, X,Y,Width,Height, title.s, Flag)
     If window >= 0
       WindowID = WindowID(window)
     Else
@@ -177,8 +176,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn result
   EndProcedure
   
-  Macro OpenWindow(window, X,Y,Width,Height, title, flag=0)
-    OpenWindow_(window, X,Y,Width,Height, title, flag)
+  Macro OpenWindow(window, X,Y,Width,Height, title, Flag=0)
+    OpenWindow_(window, X,Y,Width,Height, title, Flag)
   EndMacro
   
   ;/// first
@@ -261,7 +260,7 @@ CompilerIf #PB_Compiler_IsMainFile
   CompilerEndIf
   
   ; fixed events
-  events::SetCallBack( 0 )
+  Events::SetCallBack( 0 )
   
   Repeat 
     event = WaitWindowEvent()
@@ -272,8 +271,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 3
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 6
+; FirstLine = 1
 ; Folding = -------
 ; EnableXP

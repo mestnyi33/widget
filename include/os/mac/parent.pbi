@@ -1,4 +1,6 @@
-﻿XIncludeFile "id.pbi"
+﻿CompilerIf #PB_Compiler_IsMainFile
+   XIncludeFile "id.pbi"
+CompilerEndIf
 
 DeclareModule Parent
   EnableExplicit
@@ -416,8 +418,7 @@ EndProcedure
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 141
-; FirstLine = 128
+; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
+; CursorPosition = 2
 ; Folding = --------
 ; EnableXP

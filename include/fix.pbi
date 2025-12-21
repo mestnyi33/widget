@@ -1,7 +1,7 @@
 ﻿XIncludeFile "os/fix/events.pbi"
 
 CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-   ;XIncludeFile "os/fix/mac/events.pbi"
+   XIncludeFile "os/fix/mac/event.pbi"
    XIncludeFile "os/fix/mac/draw.pbi"
    
 CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
@@ -20,9 +20,9 @@ DeclareModule fix
    EndMacro
    
    ;- mac
-   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Defined( draw, #PB_Module )
+   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Defined( Draw, #PB_Module )
       Macro PB_(Function)
-         draw::mac_#Function
+         Draw::mac_#Function
       EndMacro
       
       Macro TextHeight(Text)
@@ -42,9 +42,9 @@ DeclareModule fix
          PB_(DrawingFont)(FontID)
       EndMacro
       
-      Macro ClipOutput(x, y, width, height)
-         PB(ClipOutput)(x, y, width, height)
-         PB_(ClipOutput)(x, y, width, height)
+      Macro ClipOutput(X, Y, Width, Height)
+         PB(ClipOutput)(X, Y, Width, Height)
+         PB_(ClipOutput)(X, Y, Width, Height)
       EndMacro
       
       Macro UnclipOutput()
@@ -52,12 +52,12 @@ DeclareModule fix
          PB_(ClipOutput)(0, 0, OutputWidth(), OutputHeight())
       EndMacro
       
-      Macro DrawText(x, y, Text, FrontColor=$ffffff, BackColor=0)
-         PB_(DrawRotatedText)(x, y, Text, 0, FrontColor, BackColor)
+      Macro DrawText(X, Y, Text, FrontColor=$ffffff, BackColor=0)
+         PB_(DrawRotatedText)(X, Y, Text, 0, FrontColor, BackColor)
       EndMacro
       
-      Macro DrawRotatedText(x, y, Text, Angle, FrontColor=$ffffff, BackColor=0)
-         PB_(DrawRotatedText)(x, y, Text, Angle, FrontColor, BackColor)
+      Macro DrawRotatedText(X, Y, Text, Angle, FrontColor=$ffffff, BackColor=0)
+         PB_(DrawRotatedText)(X, Y, Text, Angle, FrontColor, BackColor)
       EndMacro
       
       ;     ;- lin
@@ -80,8 +80,6 @@ Module fix
 EndModule 
 
 UseModule fix
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 53
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
 ; Folding = ---
 ; EnableXP

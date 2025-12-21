@@ -131,8 +131,8 @@ CompilerEndSelect
 IncludePath #path
 
 CompilerIf #PB_Compiler_Version < 520
-   #PB_Module = 10
-   #PB_Compiler_IsMainFile = 88888
+   #PB_Module = 58 ; mac
+   #PB_Compiler_IsMainFile = 1 ; mac
    Macro Defined( _name_, _type_ )
       1
    EndMacro
@@ -158,11 +158,37 @@ CompilerIf Not Defined( colors, #PB_Module )
    XIncludeFile "include/colors.pbi"
 CompilerEndIf
 
+;XIncludeFile "include/os/modules.pbi"
+; DECLAREMODULE 
+XIncludeFile "include/os/cursors.pbi"
+
+; MODULE
+CompilerSelect #PB_Compiler_OS 
+   CompilerCase #PB_OS_MacOS   
+      XIncludeFile "include/os/mac/id.pbi"
+      XIncludeFile "include/os/mac/mouse.pbi"
+      XIncludeFile "include/os/mac/parent.pbi"
+      XIncludeFile "include/os/mac/cursor.pbi"
+      
+   CompilerCase #PB_OS_Windows 
+      XIncludeFile "include/os/win/id.pbi"
+      XIncludeFile "include/os/win/mouse.pbi"
+      XIncludeFile "include/os/win/parent.pbi"
+      XIncludeFile "include/os/win/cursor.pbi"
+      
+   CompilerCase #PB_OS_Linux   
+      XIncludeFile "include/os/lin/id.pbi"
+      XIncludeFile "include/os/lin/mouse.pbi"
+      XIncludeFile "include/os/lin/parent.pbi"
+      XIncludeFile "include/os/lin/cursor.pbi"
+      
+CompilerEndSelect
+
+
 ; fix all pb bug's
 CompilerIf Not Defined( fix, #PB_Module )
    XIncludeFile "include/fix.pbi"
 CompilerEndIf
-
 
 ;-  >>>
 CompilerIf Not Defined( Widget, #PB_Module )
@@ -181,7 +207,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       EnableExplicit
       UseModule lng
-      UseModule Events
       UseModule constants
       UseModule structures
       
@@ -876,8 +901,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          FindMapElement( Widget::roots( ), Str( _canvasID_ ) )
          If _change_root_ = 1
             Widget::Root( ) = Widget::roots( )
-            ;             CanvasMouseX( ) = GadgetMouseX( widget::root( )\canvas\gadget )
-            ;             CanvasMouseY( ) = GadgetMouseY( widget::root( )\canvas\gadget )
+            ;             CanvasMouseX( ) = mouse::GadgetMouseX( widget::root( )\canvas\gadget )
+            ;             CanvasMouseY( ) = mouse::GadgetMouseY( widget::root( )\canvas\gadget )
          EndIf
          ;Debug ""+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::root( )\class
       EndMacro
@@ -16811,8 +16836,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *this
             If *this\root <> Root( )
-               CanvasMouseX( ) = GadgetMouseX( *this\root\canvas\gadget )
-               CanvasMouseY( ) = GadgetMouseY( *this\root\canvas\gadget )
+               CanvasMouseX( ) = mouse::GadgetMouseX( *this\root\canvas\gadget )
+               CanvasMouseY( ) = mouse::GadgetMouseY( *this\root\canvas\gadget )
             EndIf
             
             If Not is_inside_( *this\inner_y( ), *this\inner_height( ), CanvasMouseY( ) ) And *this\scroll\v
@@ -19417,8 +19442,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ;                               ; Debug "deactive keyboard( ) "+keyboard( )\deactive\class +" "+ roots( )\active\class
                            ;                            EndIf
                            ChangeCurrentCanvas( GadgetID(eventgadget) )
-                           CanvasMouseX( ) = GadgetMouseX( eventgadget )
-                           CanvasMouseY( ) = GadgetMouseY( eventgadget )
+                           CanvasMouseX( ) = mouse::GadgetMouseX( eventgadget )
+                           CanvasMouseY( ) = mouse::GadgetMouseY( eventgadget )
                            SetActive( roots( )\active )
                            ; ReDraw( GetActive( )\root )
                         EndIf
@@ -19511,8 +19536,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             MouseData( ) = #__mouse_enter | #__mouse_update
             ;
-            CanvasMouseX( ) = GadgetMouseX( eventgadget )
-            CanvasMouseY( ) = GadgetMouseY( eventgadget )
+            CanvasMouseX( ) = mouse::GadgetMouseX( eventgadget )
+            CanvasMouseY( ) = mouse::GadgetMouseY( eventgadget )
          EndIf
          
          If eventtype = #PB_EventType_MouseLeave
@@ -19575,8 +19600,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If Root( ) And 
                Root( )\canvas\gadget = eventgadget
-               mouse_x               = GadgetMouseX( eventgadget )
-               mouse_y               = GadgetMouseY( eventgadget )
+               mouse_x               = mouse::GadgetMouseX( eventgadget )
+               mouse_y               = mouse::GadgetMouseY( eventgadget )
                ;
                If MousePress( )
                   If Pressed( ) And Pressed( )\anchors
@@ -19686,8 +19711,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If Root( ) And
                Root( )\canvas\gadget = eventgadget
-               CanvasMouseX( )       = GadgetMouseX( eventgadget )
-               CanvasMouseY( )       = GadgetMouseY( eventgadget )
+               CanvasMouseX( )       = mouse::GadgetMouseX( eventgadget )
+               CanvasMouseY( )       = mouse::GadgetMouseY( eventgadget )
             EndIf
             MousePress( ) = 0
          EndIf
@@ -19990,8 +20015,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Pressed( ) <> Entered( )
                ;
                If Root( ) <> Pressed( )\root
-                  CanvasMouseX( ) = GadgetMouseX( Pressed( )\root\canvas\gadget )
-                  CanvasMouseY( ) = GadgetMouseY( Pressed( )\root\canvas\gadget )
+                  CanvasMouseX( ) = mouse::GadgetMouseX( Pressed( )\root\canvas\gadget )
+                  CanvasMouseY( ) = mouse::GadgetMouseY( Pressed( )\root\canvas\gadget )
                EndIf
                DoEvents( Pressed( ), event )
             EndIf
@@ -20002,8 +20027,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                If Pressed( ) And
                   Pressed( )\root <> Root( )
-                  CanvasMouseX( ) = GadgetMouseX( Root( )\canvas\gadget )
-                  CanvasMouseY( ) = GadgetMouseY( Root( )\canvas\gadget )
+                  CanvasMouseX( ) = mouse::GadgetMouseX( Root( )\canvas\gadget )
+                  CanvasMouseY( ) = mouse::GadgetMouseY( Root( )\canvas\gadget )
                EndIf
                DoEvents( Entered( ), event )
             EndIf
@@ -25935,8 +25960,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *message\parent = *root
          ;
          ;\\
-         CanvasMouseX( ) = GadgetMouseX( *message\canvas\gadget )
-         CanvasMouseY( ) = GadgetMouseY( *message\canvas\gadget )
+         CanvasMouseX( ) = mouse::GadgetMouseX( *message\canvas\gadget )
+         CanvasMouseY( ) = mouse::GadgetMouseY( *message\canvas\gadget )
          GetAtPoint( *message, CanvasMouseX( ), CanvasMouseY( ), widgets( ))
          ;
          ;\\
@@ -26132,8 +26157,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;          ;\\
          ;     SetActive( *root )  
          ;          ChangeCurrentCanvas( *root\canvas\gadgetID )
-         ;          CanvasMouseX( ) = GadgetMouseX( *root\canvas\gadget )
-         ;          CanvasMouseY( ) = GadgetMouseY( *root\canvas\gadget )
+         ;          CanvasMouseX( ) = mouse::GadgetMouseX( *root\canvas\gadget )
+         ;          CanvasMouseY( ) = mouse::GadgetMouseY( *root\canvas\gadget )
          ;          GetAtPoint( *root, CanvasMouseX( ), CanvasMouseY( ), widgets( ))
          ;          ; 
          EventWidget( ) = *widget
@@ -27609,8 +27634,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 8944
-; FirstLine = 2517
-; Folding = AMAA9PA+-----------DAw------PAs+PAAAAABwhDAAgAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQGAAAAAAAAAAAAAAAAAAAAAAAAsBAAAAAAAAAAAAAAAAAgBAAAAAAAAAADAAAAAAAAADAAGAAAMAAACAAAYAAAAAAAD-------------------------DAAQIAAAAAAAAUVVgAAAAAAAAAAAA9-DwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw--PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg-B9PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg------BAvefAw----fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAA9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+
+; CursorPosition = 22574
+; FirstLine = 3374
+; Folding = j+xA9PA+-----------DAw------PAs+vAAAAABwhDAAgAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQGAAAAAAAAAAAAAAAAAAAAAAAAsBAAAAAAAAAAAAAAAAAgBAAAAAAAAAADAAAAAAAAADAAGAAAMAAACAAAYAAAAAAAD-------------------------DAAQIAAAAAAAAUVVgAAAAAAAAAAAA9-DwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw--PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg-B9PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg------BAvefAw----fAAAAAAAAAAAAAAAAAAwBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAINDAAEAMAAguAAAAAAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDQADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAwAEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAA9AAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA+
 ; EnableXP
 ; Executable = widgets-.app.exe

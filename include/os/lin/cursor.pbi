@@ -1,5 +1,10 @@
 ﻿;-\\ LINUX
-XIncludeFile "../cursors.pbi"
+CompilerIf #PB_Compiler_IsMainFile
+   IncludePath "../"
+   XIncludeFile "mac/id.pbi"
+   XIncludeFile "mac/mouse.pbi"
+   XIncludeFile "cursors.pbi"
+CompilerEndIf
 
 Module Cursor 
   ; https://www.manpagez.com/html/gdk/gdk-3.12.0/gdk3-Cursors.php#GdkCursorType
@@ -114,129 +119,129 @@ Module Cursor
   Global NewMap images.i( )
   
   ;-\\
-  Procedure   Draw( type.a )
-    Protected image
-    Protected x = 0
-    Protected y = 0
+  Procedure   Draw( Type.a )
+    Protected Image
+    Protected X = 0
+    Protected Y = 0
     Protected size = 16
-    Protected width = size
-    Protected height = size
+    Protected Width = size
+    Protected Height = size
     Protected fcolor = $ffFFFFFF
     Protected bcolor = $ff000000
     
     ;\\
-    image = CreateImage(#PB_Any, width, height, 32, #PB_Image_Transparent)
+    Image = CreateImage(#PB_Any, Width, Height, 32, #PB_Image_Transparent)
     
     ;\\
-    If StartDrawing(ImageOutput(image))
+    If StartDrawing(ImageOutput(Image))
       DrawingMode(#PB_2DDrawing_AlphaBlend)
       Box(0,0,OutputWidth( ),OutputHeight( ), $A9B7B6)
       
-      If type = #__cursor_Arrows
-        x = 8
-        y = 8
+      If Type = #__cursor_Arrows
+        X = 8
+        Y = 8
         Box(6,6,4,4, fcolor)
-        DrawImageCursorUp(0,-1,height, bcolor, fcolor )
-        DrawImageCursorDown(0,7,height, bcolor, fcolor )
+        DrawImageCursorUp(0,-1,Height, bcolor, fcolor )
+        DrawImageCursorDown(0,7,Height, bcolor, fcolor )
         ;         
-        DrawImageCursorLeft(-1,0,width, bcolor, fcolor )
-        DrawImageCursorRight(7,0,width, bcolor, fcolor )
+        DrawImageCursorLeft(-1,0,Width, bcolor, fcolor )
+        DrawImageCursorRight(7,0,Width, bcolor, fcolor )
         Box(7,7,2,2, bcolor)
       EndIf
       
       ;\\
-      If type = #__cursor_LeftUp Or
-         type = #__cursor_RightDown Or
-         type = #__cursor_Diagonal1 
-        x = 7
-        y = 7
+      If Type = #__cursor_LeftUp Or
+         Type = #__cursor_RightDown Or
+         Type = #__cursor_Diagonal1 
+        X = 7
+        Y = 7
         DrawImageCursorDiagonal1(0,0, size, bcolor, fcolor )
       EndIf
-      If type = #__cursor_LeftDown Or
-         type = #__cursor_RightUp Or
-         type = #__cursor_Diagonal2 
-        x = 7
-        y = 7
+      If Type = #__cursor_LeftDown Or
+         Type = #__cursor_RightUp Or
+         Type = #__cursor_Diagonal2 
+        X = 7
+        Y = 7
         DrawImageCursorDiagonal2(0,0, size, bcolor, fcolor )
       EndIf
       
       ;\\
-      If type = #__cursor_SplitUp
-        x = 8
-        y = 6
-        DrawImageUp(0,-1,height, bcolor, fcolor )
-        DrawImageCursorSplitUp(0,-1,height, bcolor, fcolor )
-        Plot(0, 7, fcolor ) : Line(1, 7, width-2, 1, bcolor) : Plot(width-1, 7, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
-        Line(0, 8, width , 1, fcolor)                                                                             ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      If Type = #__cursor_SplitUp
+        X = 8
+        Y = 6
+        DrawImageUp(0,-1,Height, bcolor, fcolor )
+        DrawImageCursorSplitUp(0,-1,Height, bcolor, fcolor )
+        Plot(0, 7, fcolor ) : Line(1, 7, Width-2, 1, bcolor) : Plot(Width-1, 7, fcolor )                          ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        Line(0, 8, Width , 1, fcolor)                                                                             ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
       EndIf
-      If type = #__cursor_UpDown
-        x = 8
-        y = 6
-        DrawImageCursorUp(0,-1,height, bcolor, fcolor )
-        DrawImageCursorDown(0,5,height, bcolor, fcolor )
+      If Type = #__cursor_UpDown
+        X = 8
+        Y = 6
+        DrawImageCursorUp(0,-1,Height, bcolor, fcolor )
+        DrawImageCursorDown(0,5,Height, bcolor, fcolor )
       EndIf
-      If type = #__cursor_SplitUpDown
-        x = 8
-        y = 6
-        DrawImageCursorSplitUp(0,-1,height, bcolor, fcolor )
-        DrawImageCursorSplitDown(0,5,height, bcolor, fcolor )
+      If Type = #__cursor_SplitUpDown
+        X = 8
+        Y = 6
+        DrawImageCursorSplitUp(0,-1,Height, bcolor, fcolor )
+        DrawImageCursorSplitDown(0,5,Height, bcolor, fcolor )
       EndIf
-      If type = #__cursor_SplitDown
-        x = 8
-        y = 6
-        Line(0, 0, width, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-        Plot(0, 1, fcolor ) : Line(1, 1, width-2, 1, bcolor) : Plot(width-1, 1, fcolor )                                     ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
-        DrawImageCursorSplitDown(0,0,height, bcolor, fcolor )
-        DrawImageDown(0,0,height, bcolor, fcolor )
+      If Type = #__cursor_SplitDown
+        X = 8
+        Y = 6
+        Line(0, 0, Width, 1, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        Plot(0, 1, fcolor ) : Line(1, 1, Width-2, 1, bcolor) : Plot(Width-1, 1, fcolor )                                     ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        DrawImageCursorSplitDown(0,0,Height, bcolor, fcolor )
+        DrawImageDown(0,0,Height, bcolor, fcolor )
       EndIf
       
       ;\\
-      If type = #__cursor_SplitLeft
-        x = 6
-        y = 8
-        DrawImageLeft(-1,0,width, bcolor, fcolor )
-        DrawImageCursorSplitLeft(-1,0,width, bcolor, fcolor )
-        Plot(7, 0, fcolor ) : Line(7, 1, 1, height-2, bcolor) : Plot(7, height-1, fcolor )                        ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
-        Line(8, 0, 1, height, fcolor)                                                                             ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      If Type = #__cursor_SplitLeft
+        X = 6
+        Y = 8
+        DrawImageLeft(-1,0,Width, bcolor, fcolor )
+        DrawImageCursorSplitLeft(-1,0,Width, bcolor, fcolor )
+        Plot(7, 0, fcolor ) : Line(7, 1, 1, Height-2, bcolor) : Plot(7, Height-1, fcolor )                        ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        Line(8, 0, 1, Height, fcolor)                                                                             ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
       EndIf
-      If type = #__cursor_LeftRight
-        x = 6
-        y = 8
-        DrawImageCursorLeft(-1,0,width, bcolor, fcolor )
-        DrawImageCursorRight(5,0,width, bcolor, fcolor )
+      If Type = #__cursor_LeftRight
+        X = 6
+        Y = 8
+        DrawImageCursorLeft(-1,0,Width, bcolor, fcolor )
+        DrawImageCursorRight(5,0,Width, bcolor, fcolor )
       EndIf
-      If type = #__cursor_SplitLeftRight
-        x = 6
-        y = 8
-        DrawImageCursorSplitLeft(-1,0,width, bcolor, fcolor )
-        DrawImageCursorSplitRight(5,0,width, bcolor, fcolor )
+      If Type = #__cursor_SplitLeftRight
+        X = 6
+        Y = 8
+        DrawImageCursorSplitLeft(-1,0,Width, bcolor, fcolor )
+        DrawImageCursorSplitRight(5,0,Width, bcolor, fcolor )
       EndIf
-      If type = #__cursor_SplitRight
-        x = 6
-        y = 8
-        Line(0, 0, 1, width, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-        Plot(1, 0, fcolor ) : Line(1, 1, 1, width-2, bcolor) : Plot(1, width-1, fcolor )                                     ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
-        DrawImageCursorSplitRight(0,0,width, bcolor, fcolor )
-        DrawImageRight(0,0,width, bcolor, fcolor )
+      If Type = #__cursor_SplitRight
+        X = 6
+        Y = 8
+        Line(0, 0, 1, Width, fcolor)                                                                                         ; 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        Plot(1, 0, fcolor ) : Line(1, 1, 1, Width-2, bcolor) : Plot(1, Width-1, fcolor )                                     ; 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+        DrawImageCursorSplitRight(0,0,Width, bcolor, fcolor )
+        DrawImageRight(0,0,Width, bcolor, fcolor )
       EndIf
       
       StopDrawing( )
     EndIf
     
-    ProcedureReturn Create( ImageID( image ), x, y )
+    ProcedureReturn Create( ImageID( Image ), X, Y )
   EndProcedure
   
-  Procedure Image( type.a = 0 )
-    Protected image
+  Procedure Image( Type.a = 0 )
+    Protected Image
     
-    If type = #__cursor_Drop
-      image = CatchImage( #PB_Any, ?add, 601 )
-    ElseIf type = #__cursor_Drag
-      image = CatchImage( #PB_Any, ?copy, 530 )
+    If Type = #__cursor_Drop
+      Image = CatchImage( #PB_Any, ?add, 601 )
+    ElseIf Type = #__cursor_Drag
+      Image = CatchImage( #PB_Any, ?copy, 530 )
     EndIf
     
-    If Not image
-      image = CreateImage( #PB_Any, 16, 16, 32, #PB_Image_Transparent )
+    If Not Image
+      Image = CreateImage( #PB_Any, 16, 16, 32, #PB_Image_Transparent )
     EndIf
     
     DataSection
@@ -275,12 +280,12 @@ Module Cursor
       copy_end:
     EndDataSection
     
-    ProcedureReturn image
+    ProcedureReturn Image
   EndProcedure
   
-  Procedure New( type.a, ImageID.i )
-    If Not FindMapElement(images( ), Str(type))
-      AddMapElement(images( ), Str(type))
+  Procedure New( Type.a, ImageID.i )
+    If Not FindMapElement(images( ), Str(Type))
+      AddMapElement(images( ), Str(Type))
       images( ) = ImageID
     EndIf
     
@@ -321,8 +326,8 @@ Module Cursor
      EndIf
   EndProcedure
   
-  Procedure.i Create( ImageID.i, x.l = 0, y.l = 0 )
-    ProcedureReturn gdk_cursor_new_from_pixbuf_( gdk_display_get_default_( ), ImageID, x, y)
+  Procedure.i Create( ImageID.i, X.l = 0, Y.l = 0 )
+    ProcedureReturn gdk_cursor_new_from_pixbuf_( gdk_display_get_default_( ), ImageID, X, Y)
   EndProcedure
   
   Procedure Change( GadgetID.i, state.b )
@@ -470,8 +475,7 @@ Module Cursor
     ProcedureReturn result
   EndProcedure
 EndModule  
-; IDE Options = PureBasic 6.12 LTS (Linux - x64)
-; CursorPosition = 342
-; FirstLine = 323
+; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
+; CursorPosition = 7
 ; Folding = --------
 ; EnableXP
