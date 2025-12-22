@@ -366,7 +366,6 @@
       
       ;
       ;-\\ create-flags
-      ; #__flag_ = 1<<0
       #__flag_button_Default   = 1<<0
       ; #__flag_ = 1<<1
       ; #__flag_ = 1<<2
@@ -445,32 +444,14 @@
       #__align_image          = 1<<62
       #__align_none           = 0
       ; #__flag_Limit         = 1<<63
-      ;
       
+      ;
       #__flag_Left             = #__align_Left
       #__flag_Top              = #__align_Top
       #__flag_Right            = #__align_Right
       #__flag_Bottom           = #__align_Bottom
       #__flag_Center           = #__align_Center
       #__flag_AutoSize         = #__align_Auto
-      ;
-      
-;       ;
-;       #__window_Normal         = #PB_Window_Normal
-;       #__window_Maximize       = #PB_Window_Maximize       ; Opens the window maximized. (Note ; on Linux, Not all Windowmanagers sUpport this)
-;       #__window_Minimize       = #PB_Window_Minimize       ; Opens the window minimized.
-;       #__window_SystemMenu     = #PB_Window_SystemMenu     ; Enables the system menu on the window title bar (Default).
-;       #__window_MinimizeGadget = #PB_Window_MinimizeGadget ; Adds the minimize gadget To the window title bar. #PB_window_SystemMenu is automatically added.
-;       #__window_MaximizeGadget = #PB_Window_MaximizeGadget ; Adds the maximize gadget To the window title bar. #PB_window_SystemMenu is automatically added.
-;       #__window_SizeGadget     = #PB_Window_SizeGadget     ; Adds the sizeable feature To a window.
-;       #__window_Invisible      = #PB_Window_Invisible      ; Creates the window but don't display.
-;       #__window_TitleBar       = #PB_Window_TitleBar       ; Creates a window with a titlebar.
-;       #__window_Tool           = #PB_Window_Tool           ; Creates a window with a smaller titlebar And no taskbar entry.
-;       #__window_BorderLess     = #PB_Window_BorderLess        ; Creates a window without any borders.
-;       #__window_ScreenCentered = #PB_Window_ScreenCentered ; Centers the window in the middle of the screen. x,y parameters are ignored.
-;       #__window_WindowCentered = #PB_Window_WindowCentered ; Centers the window in the middle of the parent window ('ParentWindowID' must be specified). x,y parameters are ignored.
-;       #__window_NoGadgets      = #PB_Window_NoButtons         ; Prevents the creation of a GadgetList. UseGadgetList() can be used To do this later.
-;       #__window_NoActivate     = #PB_Window_NoActivate     ; Don't activate the window after opening.
       
       ;
       ;-\\ Window
@@ -729,10 +710,10 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
-; CursorPosition = 14
-; FirstLine = 1
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 447
+; FirstLine = 457
 ; Folding = ----
+; Optimizer
 ; EnableXP
 ; DPIAware
-; Optimizer

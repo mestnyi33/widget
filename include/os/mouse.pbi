@@ -34,6 +34,7 @@ Module mouse
       
       If press <> MouseButtons
          press = MouseButtons
+         ;
          If MouseButtons
             ElapsedMilliseconds.q = ElapsedMilliseconds( ) 
             
@@ -538,7 +539,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf   
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 51
-; FirstLine = 33
+; CursorPosition = 38
+; FirstLine = 31
 ; Folding = -v-v---8-------
 ; EnableXP

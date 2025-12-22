@@ -1,5 +1,5 @@
 ﻿
-IncludePath "../../../"
+IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 
@@ -14,6 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global NewMap wlist.i()
    Global.i Canvas_0, gEvent, gQuit, X=10,Y=10
    Global state, direction = 1, Width, Height, window, defWidth, defHeight
+   
    
    Procedure all_events()
       Protected *eventWidget._s_widget = EventWidget()
@@ -65,8 +66,8 @@ CompilerIf #PB_Compiler_IsMainFile
             
             If window <> *eventWidget\root\canvas\window
                window = *eventWidget\root\canvas\window
-               defWidth = Width(root())
-               defHeight = Height(root())
+               defWidth = Width(Root())
+               defHeight = Height(Root())
                Width = defWidth
                Height = defHeight
                
@@ -536,10 +537,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 77
-; FirstLine = 73
-; Folding = --D5-
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 18
+; FirstLine = 14
+; Folding = --L5-
 ; Optimizer
 ; EnableXP
 ; DPIAware

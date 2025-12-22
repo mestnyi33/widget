@@ -16,23 +16,28 @@ CompilerIf #PB_Compiler_IsMainFile
    Define Image = 1
    Define i, Width = 250
    
+   Procedure TestAlign( X,Y,Width,Height, txt$, flags=0, align.q=0 )
+      Protected._s_WIDGET *g = Button( X,Y,Width,Height, txt$, flags )
+      Alignment( *g, align )
+   EndProcedure
+   
    If Open(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      Button(10,  10, Width/2-5, 65, "left&top"                     , #__flag_BorderFlat|#__flag_Left |#__flag_Top   )
-      Button(10+Width/2+5,  10, Width/2-5, 65, "right&top"          , #__flag_BorderFlat|#__flag_Right|#__flag_Top   )
-      Button(10,  10+65+10, Width/2-5, 65, "left&bottom"            , #__flag_BorderFlat|#__flag_Left |#__flag_Bottom)
-      Button(10+Width/2+5,  10+65+10, Width/2-5, 65, "right&bottom" , #__flag_BorderFlat|#__flag_Right|#__flag_Bottom)
+      TestAlign(10,  10, Width/2-5, 65, "left&top"                     , #__flag_Left |#__flag_Top, #__align_proportional|#__align_left   )
+      TestAlign(10+Width/2+5,  10, Width/2-5, 65, "right&top"          , #__flag_Right|#__flag_Top  , #__align_proportional|#__align_right )
+      TestAlign(10,  10+65+10, Width/2-5, 65, "left&bottom"            , #__flag_Left |#__flag_Bottom, #__align_proportional|#__align_left)
+      TestAlign(10+Width/2+5,  10+65+10, Width/2-5, 65, "right&bottom" , #__flag_Right|#__flag_Bottom, #__align_proportional|#__align_right)
       
-      Button(10, 160, Width/2-5, 65, "left"                         , #__flag_BorderFlat|#__flag_Left  )
-      Button(10+Width/2+5, 160, Width/2-5, 65, "right"              , #__flag_BorderFlat|#__flag_Right )
-      Button(10, 160+65+10, Width/2-5, 65, "top"                    , #__flag_BorderFlat|#__flag_Top   )
-      Button(10+Width/2+5, 160+65+10, Width/2-5, 65, "bottom"       , #__flag_BorderFlat|#__flag_Bottom)
+      TestAlign(10, 160, Width/2-5, 65, "left"                         , #__flag_Left, #__align_proportional|#__align_left  )
+      TestAlign(10+Width/2+5, 160, Width/2-5, 65, "right"              , #__flag_Right, #__align_proportional|#__align_right )
+      TestAlign(10, 160+65+10, Width/2-5, 65, "top"                    , #__flag_Top, #__align_proportional|#__align_left   )
+      TestAlign(10+Width/2+5, 160+65+10, Width/2-5, 65, "bottom"       , #__flag_Bottom, #__align_proportional|#__align_right)
       
-      Button(10, 310, Width, 65, "left&center"                      , #__flag_BorderFlat|#__flag_TextLeft  )
-      Button(10, 310+65+10, Width, 65, "right&center"               , #__flag_BorderFlat|#__flag_TextRight )
-      Button(10, 460, Width, 65, "top&center"                       , #__flag_BorderFlat|#__flag_TextTop   )
-      Button(10, 460+65+10, Width, 65, "bottom&center"              , #__flag_BorderFlat|#__flag_TextBottom)
+      TestAlign(10, 310, Width, 65, "left&center"                      , #__flag_TextLeft, #__align_left|#__align_right  )
+      TestAlign(10, 310+65+10, Width, 65, "right&center"               , #__flag_TextRight, #__align_left|#__align_right )
+      TestAlign(10, 460, Width, 65, "top&center"                       , #__flag_TextTop, #__align_left|#__align_right   )
+      TestAlign(10, 460+65+10, Width, 65, "bottom&center"              , #__flag_TextBottom, #__align_left|#__align_right)
       
-      Button(10, 610, Width, 140, "default"                          , #__flag_BorderFlat);|#__flag_ImageCenter)
+      TestAlign(10, 610, Width, 140, "default"                         ,0, #__align_left|#__align_right);, #__flag_ImageCenter)
       
       
       Repeat
@@ -40,7 +45,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 39
+; FirstLine = 15
 ; Folding = -
 ; EnableXP
 ; DPIAware

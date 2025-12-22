@@ -158,16 +158,17 @@ CompilerIf Not Defined( colors, #PB_Module )
    XIncludeFile "include/colors.pbi"
 CompilerEndIf
 
+;
 CompilerIf Not Defined( ID, #PB_Module )
-   XIncludeFile "include/id.pbi"
+   XIncludeFile "include/os/id.pbi"
 CompilerEndIf
 
 CompilerIf Not Defined( mouse, #PB_Module )
-   XIncludeFile "include/mouse.pbi"
+   XIncludeFile "include/os/mouse.pbi"
 CompilerEndIf
 
 CompilerIf Not Defined( cursor, #PB_Module )
-   XIncludeFile "include/cursor.pbi"
+   XIncludeFile "include/os/cursor.pbi"
 CompilerEndIf
 
 
@@ -175,15 +176,12 @@ CompilerEndIf
 CompilerSelect #PB_Compiler_OS 
    CompilerCase #PB_OS_MacOS   
       XIncludeFile "include/os/mac/parent.pbi"
-      XIncludeFile "include/os/mac/cursor.pbi"
       
    CompilerCase #PB_OS_Windows 
       XIncludeFile "include/os/win/parent.pbi"
-      XIncludeFile "include/os/win/cursor.pbi"
-      
+     
    CompilerCase #PB_OS_Linux   
       XIncludeFile "include/os/lin/parent.pbi"
-      XIncludeFile "include/os/lin/cursor.pbi"
       
 CompilerEndSelect
 
@@ -1728,6 +1726,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Declare   ResizeRootWindow( *this, X.l, Y.l, Width.l, Height.l )
       Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l, scale.b = 1 )
+      Declare   Alignment( *this, align.q, mode.q = 0 )
       Declare.i SetAlign( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
       Declare.i SetAttach( *this, *parent, mode.a )
       Declare   SetChildrenBounds( *this, state.b )
@@ -6560,6 +6559,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Next
                EndIf
                
+               ;
+               Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
                *bar\PageChange( ) = 0
                ProcedureReturn #True   
             EndIf
@@ -6916,21 +6917,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If result
                If bar_update( *this, mode )
-                  If *this\type = #__type_Scroll
+                  If *this\type = #__type_Scroll Or 
+                     *this\type = #__type_Spin
+                     
                   Else
-                     If is_scrollbars_( *this )
-                        If *this\type = #__type_Scroll
-                           If *this\parent\type = #__type_tree Or 
-                              *this\parent\type = #__type_listicon Or 
-                              *this\parent\type = #__type_listview
-                              *this\parent\WidgetChange( ) = 1
-                           EndIf
-                           Post( *this\parent, #__event_ScrollChange, *this, *bar\page\pos ) 
-                        EndIf
-                     Else
-                        ; Debug "bar update AddPost" + EnteredButton( )
-                        Post( *this, #__event_Change, *this\stringbar, result )
-                     EndIf   
+                     Post( *this, #__event_Change, *this\stringbar, result )
                   EndIf   
                EndIf
             EndIf
@@ -13160,6 +13151,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure   Alignment( *this._s_WIDGET, align.q, mode.q = 0 )
+         If align & #__align_proportional
+            If align & #__align_left
+               SetAlign( *this, mode, 1,0,#__align_proportional,0)
+            EndIf
+            If align & #__align_top
+               SetAlign( *this, mode, 0,1,0,#__align_proportional)
+            EndIf
+            If align & #__align_right 
+               SetAlign( *this, mode, #__align_proportional,0,1,0)
+            EndIf
+            If align & #__align_bottom
+               SetAlign( *this, mode, 0,#__align_proportional,0,1)
+            EndIf
+         Else
+            SetAlign( *this, mode, 
+                      Bool(align & #__align_left),
+                                 Bool(align & #__align_top),
+                                            Bool(align & #__align_right),
+                                                       Bool(align & #__align_bottom))
+         EndIf
+      EndProcedure
+      
       Procedure   SetMoveBounds( *this._s_WIDGET, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
          ; If the value is set to #PB_Ignore, the current value is not changed.
          ; If the value is set to #PB_Default, the value is reset to the system default (as it was before this command was invoked).
@@ -15326,7 +15340,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      constants::BinaryFlag( Flag, #__flag_checkboxes ) Or
                      constants::BinaryFlag( Flag, #__flag_nobuttons ) Or
                      constants::BinaryFlag( Flag, #__flag_nolines ) 
-                     Debug "change flag items "
+                     
+                     Debug "["+*this\class+"] change Flag items"
                      
                      If *this\countitems
                         PushListPosition( *this\__rows( ))
@@ -27637,8 +27652,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 172
-; FirstLine = 150
-; Folding = DwPGg-Bw-----------fAA+------Bg2-FAAAAIAOcAAAEAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAAAAAAAAAAgNAAAAAAAAAAAAAAAAAAMAAAAAAAAAAYAAAAAAAAAYAAwAAAgBAAQAAAADAAAAAAY5------------------------fAAACBAAAAAAAgqqCEAAAAAAAAAAAg-fAeAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+--BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9Pg-BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9-----PA528DA+----DAAAAAAAAAAAAAAAAAAOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAApZAAgAgBAA1FAAAAA5DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcACYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcAAGgAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAgHAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAw
+; CursorPosition = 13168
+; FirstLine = 2853
+; Folding = D+PGg-Bw-----------fAA+------Bg2-FAAAAIAOcAAAEAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAAAAAAAAAAgNAAAAAAAAAAAAAAgAAAMgAAABAAYAAYAAAAAAAAAYAAwAAAgBEAGAAAADAAIgAOD-------------------------DAAQIAAAAAAAAUVVgAAAAAAAAAAAA9-DwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw--PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg-B9PAAAAAAAAAAg-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAAAABYAAAAAAg------BAvefAw----fAAAAAAAAAAAAAAAAAAwBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAINDAAEAMAAguAAAAAAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDQADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAwAEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAA9AAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA+
 ; EnableXP
 ; Executable = widgets-.app.exe

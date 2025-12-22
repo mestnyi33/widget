@@ -207,6 +207,7 @@ SelectItem
 PushItem
 PopItem
 
+Alignment
 SetAttach
 SetAlign
 SetBounds

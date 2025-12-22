@@ -1,9 +1,10 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   test_align = 1
+   ;test_align = 1
+   test_draw_area = 1
    
    If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
       End
@@ -15,31 +16,33 @@ CompilerIf #PB_Compiler_IsMainFile
    Define Image = 1
    Define i, Width = 200
    
+   Procedure TestAlign( X,Y,Width,Height, img, flags=0 )
+      Protected._s_WIDGET *g = Image( X,Y,Width,Height, img, #__flag_BorderFlat|flags|#__align_image)
+      Alignment( *g, #__align_left|#__align_right)
+   EndProcedure
+   
+   
    If Open(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      Image(10,  10,       Width, 65, Image, #__flag_BorderFlat);, #__flag_ImageLeft)
-      Image(10,  10+65+10, Width, 65, Image, #__flag_BorderFlat|#__flag_ImageTop)
-      Image(10, 160,       Width, 65, Image, #__flag_BorderFlat|#__flag_ImageRight)
-      Image(10, 160+65+10, Width, 65, Image, #__flag_BorderFlat|#__flag_ImageBottom)
+      TestAlign(10,  10,       Width, 65, Image, #__flag_Left)
+      TestAlign(10,  10+65+10, Width, 65, Image, #__flag_Top)
+      TestAlign(10, 160,       Width, 65, Image, #__flag_Right)
+      TestAlign(10, 160+65+10, Width, 65, Image, #__flag_Bottom)
       
-      Image(10, 310,       Width, 65, Image, #__flag_BorderFlat|#__flag_ImageCenter|#__flag_ImageLeft)
-      Image(10, 310+65+10, Width, 65, Image, #__flag_BorderFlat|#__flag_ImageCenter|#__flag_ImageTop)
-      Image(10, 460,       Width, 65, Image, #__flag_BorderFlat|#__flag_ImageCenter|#__flag_ImageRight)
-      Image(10, 460+65+10, Width, 65, Image, #__flag_BorderFlat|#__flag_ImageCenter|#__flag_ImageBottom)
+      TestAlign(10, 310,       Width, 65, Image, #__flag_Center|#__flag_Left)
+      TestAlign(10, 310+65+10, Width, 65, Image, #__flag_Center|#__flag_Top)
+      TestAlign(10, 460,       Width, 65, Image, #__flag_Center|#__flag_Right)
+      TestAlign(10, 460+65+10, Width, 65, Image, #__flag_Center|#__flag_Bottom)
       
-      Image(10, 610, Width, 140, Image, #__flag_BorderFlat|#__flag_ImageCenter)
-      
-      For i=0 To 8
-         SetAlign(ID(i), 0, 1,0,1,0)
-      Next
+      TestAlign(10, 610, Width, 140, Image, #__flag_Center)
       
       Repeat
          Define Event = WaitWindowEvent()
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 1
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 37
+; FirstLine = 14
 ; Folding = -
 ; EnableXP
 ; DPIAware
