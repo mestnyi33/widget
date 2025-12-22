@@ -1,4 +1,4 @@
-﻿XIncludeFile "id.pbi"
+﻿XIncludeFile "../id.pbi"
 
 DeclareModule Parent
   Declare Window( gadget.i )
@@ -284,7 +284,8 @@ CompilerIf #PB_Compiler_IsMainFile
                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                     Select GetGadgetState( #COMBO )
                       Case 30: MDIGadget( #CHILD,30,10,150,70,0,0 )
-                      Case 31: InitScintilla( ): ScintillaGadget( #CHILD,30,10,150,70,0 )
+                      Case 31 ;: InitScintilla( )
+                         ScintillaGadget( #CHILD,30,10,150,70,0 )
                       Case 32: ShortcutGadget( #CHILD,30,10,150,70,0 )
                       Case 33: CanvasGadget( #CHILD,30,10,150,70 ) 
                     EndSelect
@@ -318,8 +319,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.72 (Windows - x86)
-; CursorPosition = 63
-; FirstLine = 53
-; Folding = ------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 286
+; FirstLine = 278
+; Folding = -------
 ; EnableXP

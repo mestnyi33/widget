@@ -1,5 +1,13 @@
 ﻿XIncludeFile "../../constants.pbi"
 
+CompilerIf #PB_Compiler_IsMainFile
+   ;\\
+   XIncludeFile "../id.pbi"
+   XIncludeFile "../mouse.pbi"
+   XIncludeFile "../cursor.pbi"
+   
+ CompilerEndIf
+ 
 ;-\\ DECLARE
 DeclareModule Events
    EnableExplicit
@@ -24,15 +32,7 @@ DeclareModule Events
    Declare SetCallBack(*callback)
 EndDeclareModule
 
-
-;-\\ example
-CompilerIf #PB_Compiler_IsMainFile
-   ;\\
-   XIncludeFile "../id.pbi"
-   XIncludeFile "../mouse.pbi"
-   XIncludeFile "../cursor.pbi"
-   
-   ;-\\ MODULE
+ ;-\\ MODULE
    CompilerSelect #PB_Compiler_OS 
       CompilerCase #PB_OS_MacOS   
          XIncludeFile "mac/event.pbi"
@@ -41,11 +41,12 @@ CompilerIf #PB_Compiler_IsMainFile
       CompilerCase #PB_OS_Linux   
          XIncludeFile "lin/event.pbi"
    CompilerEndSelect
-   
-   
+
+;-\\ example
+CompilerIf #PB_Compiler_IsMainFile
    UseModule constants
    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      XIncludeFile "../../win/ClipGadgets.pbi"
+      XIncludeFile "../../os/win/ClipGadgets.pbi"
    CompilerEndIf
    
    ; UseModule events
@@ -262,8 +263,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 20
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 9
 ; Folding = -------
 ; EnableXP
