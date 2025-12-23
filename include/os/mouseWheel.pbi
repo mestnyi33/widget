@@ -2,6 +2,7 @@
 Enumeration
    #WINDOW
    #OBJECT
+   #OBJECT2
 EndEnumeration
 
 
@@ -199,14 +200,11 @@ CompilerSelect #PB_Compiler_OS
          Shared DefaultObjectCallback.I
          
          If Msg = #WM_MOUSEWHEEL
-            If (WParam >> 16) & $8000
-               Debug ""+Str(WParam >> 16) 
-            Else         
-               Debug ""+Str(WParam >> 16) 
-            EndIf
+               Debug ""+Str(HIWORD(wparam)) 
             
          ElseIf Msg = #WM_MOUSEHWHEEL
-            
+             Debug ""+Str(-HIWORD(wparam)) 
+              
          EndIf
          
          ProcedureReturn CallWindowProc_(DefaultObjectCallback, Handle, Msg, WParam, LParam)
@@ -256,9 +254,11 @@ EndProcedure
 ; Open a Window
 If OpenWindow(#WINDOW,0,0,600,400,"mouse wheel demo",#PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_ScreenCentered)
    SetWindowColor( #WINDOW, $ffff00)
-   CanvasGadget(#OBJECT,10,10,580,380)
+   CanvasGadget(#OBJECT,10,10,285,380)
+   CanvasGadget(#OBJECT2,305,10,285,380)
    
    SetEventCallback( GadgetID(#OBJECT) )
+   SetEventCallback( GadgetID(#OBJECT2) )
    
    SetActiveGadget(#OBJECT)    
    
@@ -272,8 +272,8 @@ If OpenWindow(#WINDOW,0,0,600,400,"mouse wheel demo",#PB_Window_SystemMenu | #PB
    ForEver
    End
 EndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 247
-; FirstLine = 65
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 260
+; FirstLine = 84
 ; Folding = 7--
 ; EnableXP

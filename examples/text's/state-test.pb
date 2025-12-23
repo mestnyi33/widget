@@ -1,5 +1,5 @@
 ﻿; 
-; demo state
+; second state
 
 IncludePath "../../"
 XIncludeFile "widgets.pbi"
@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
    test_focus_draw = 1
    ;test_focus_set = 1
    
-   Global a, *demo._s_WIDGET, *test, *get, *remove, *focus, *reset, *item1, *item2, *item3, *item4, *this._s_widget, *g1, *g2, CountItems=20;99; количесвто итемов 
+   Global a, *second._s_WIDGET, *test, *get, *remove, *focus, *reset, *item1, *item2, *item3, *item4, *this._s_widget, *g1, *g2, CountItems=20;99; количесвто итемов 
    
    Procedure.b Properties_SetState( *this._S_widget, state.f )
       If GetState( *this ) = state
@@ -130,8 +130,8 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ; Debug "-------change-start-------"
             Select EventWidget( )
-               Case *demo : Properties_SetState(*this, WidgetEventItem( ))
-               Case *this : Properties_SetState(*demo, WidgetEventItem( ))
+               Case *second : Properties_SetState(*this, WidgetEventItem( ))
+               Case *this : Properties_SetState(*second, WidgetEventItem( ))
             EndSelect
             ; Debug "-------change-stop-------"
             
@@ -151,8 +151,8 @@ CompilerIf #PB_Compiler_IsMainFile
                
                ;
                Select EventWidget( )
-                  Case *demo : SetItemState(*this, WidgetEventItem( ), WidgetEventData( ))
-                  Case *this : SetItemState(*demo, WidgetEventItem( ), WidgetEventData( ))
+                  Case *second : SetItemState(*this, WidgetEventItem( ), WidgetEventData( ))
+                  Case *this : SetItemState(*second, WidgetEventItem( ), WidgetEventData( ))
                EndSelect
             EndIf
             
@@ -161,8 +161,8 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;
             Select EventWidget( )
-               Case *demo : Properties_StatusChange(*this, WidgetEventItem( ))
-               Case *this : Properties_StatusChange(*demo, WidgetEventItem( ))
+               Case *second : Properties_StatusChange(*this, WidgetEventItem( ))
+               Case *this : Properties_StatusChange(*second, WidgetEventItem( ))
             EndSelect
             
             ;             ; Case #__event_LostFocus
@@ -175,13 +175,13 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_ScrollChange
             Select EventWidget( )
-               Case *demo 
+               Case *second 
                   If GetState( *this\scroll\v ) <> WidgetEventData( )
                      SetState(*this\scroll\v, WidgetEventData( ) )
                   EndIf
                Case *this 
-                  If GetState( *demo\scroll\v ) <> WidgetEventData( )
-                     SetState(*demo\scroll\v, WidgetEventData( ) )
+                  If GetState( *second\scroll\v ) <> WidgetEventData( )
+                     SetState(*second\scroll\v, WidgetEventData( ) )
                   EndIf
             EndSelect
             
@@ -225,7 +225,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   If *this\RowFocused( )
                      Protected item = *this\RowFocused( )\index
                      RemoveItem(*this, item)
-                     ; RemoveItem(*demo, item)
+                     ; RemoveItem(*second, item)
                   EndIf
                   
                Case *reset : Properties_SetState(*this, - 1)
@@ -251,23 +251,23 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   If Open(1, 100, 50, 370, 330, "demo ListView state", #PB_Window_SystemMenu)
+   If Open(1, 100, 50, 370, 330, "second ListView state", #PB_Window_SystemMenu)
       ;       ;Container(0, 0, 240, 330)
-      *demo = Editor(10, 10, 220/2, 310) : SetClass(*demo, "demo")
+      *second = Editor(10, 10, 220/2, 310) : SetClass(*second, "second")
       *this = Editor(110, 10, 220/2, 310, #__flag_nolines) : SetClass(*this, "this")
       ;
-      ;Hide( *demo\scroll\v, 1 )
-      Hide( HBar(*demo), #True )
+      ;Hide( *second\scroll\v, 1 )
+      Hide( HBar(*second), #True )
       Hide( HBar(*this), #True )
       
       
       ;*this = ListView(10, 10, 220, 310)
       ;*this = Panel(10, 10, 230, 310) 
-      ;Debug *demo\scroll\v\hide 
-      Splitter(10,10, 230, 310, *demo, *this, #PB_Splitter_Vertical )
-      ;Debug *demo\scroll\v\hide 
+      ;Debug *second\scroll\v\hide 
+      Splitter(10,10, 230, 310, *second, *this, #PB_Splitter_Vertical )
+      ;Debug *second\scroll\v\hide 
       
-      Bind(*demo, @widget_events());, #__event_Change)
+      Bind(*second, @widget_events());, #__event_Change)
       Bind(*this, @widget_events());, #__event_Change)
       
       OpenList( *this )
@@ -280,9 +280,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       For a = 0 To CountItems
          If a % 10 = 0
-            AddItem(*demo, -1, "collaps "+Str(a), -1, 0)
+            AddItem(*second, -1, "collaps "+Str(a), -1, 0)
          Else
-            AddItem(*demo, -1, "Item "+Str(a), -1, 1)
+            AddItem(*second, -1, "Item "+Str(a), -1, 1)
          EndIf
       Next
       For a = 0 To CountItems
@@ -326,15 +326,15 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       ;        ReDraw( root( ))
-      ;       ;*demo\scroll\v\hide = 1
-      ;       Debug *demo\scroll\v\hide 
+      ;       ;*second\scroll\v\hide = 1
+      ;       Debug *second\scroll\v\hide 
       
       WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 19
-; FirstLine = 16
+; CursorPosition = 255
+; FirstLine = 214
 ; Folding = --------
 ; EnableXP
 ; DPIAware

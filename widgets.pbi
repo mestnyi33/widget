@@ -1897,8 +1897,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i CloseList( )
       Declare.i OpenList( *this, item.l = 0 )
       ;
-      Declare   ResetPost( *this._s_WIDGET )
-      Declare   AddPost( *this._s_root, event.l, *button = #PB_All, *data = #Null )
+      Declare   ResetEvents( *this )
+      Declare   AddEvents( *this, event.l, *button = #PB_All, *data = #Null )
+      ;
+      Declare   ResetPost( *this )
+      Declare   AddPost( *this, event.l, *button = #PB_All, *data = #Null )
       Declare.i Post( *this, event.l, *button = #PB_All, *data = #Null )
       Declare.i Bind( *this, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
       Declare.i Unbind( *this, *callback, event.l = #PB_All, item.l = #PB_All )
@@ -5215,7 +5218,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                         EndIf 
                      ;                      EndIf 
                   Else
-                     DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                     AddEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                     ;DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                      If result2  
                         DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                      EndIf 
@@ -6559,8 +6563,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Next
                EndIf
                
+              ; Debug "["+*this\class+"] update post "
                ;
-               ; Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
+                Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
                *bar\PageChange( ) = 0
                ProcedureReturn #True   
             EndIf
@@ -6917,7 +6922,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If result
                If bar_update( *this, mode )
-                  If *this\type = #__type_Scroll ;Or *this\type = #__type_Spin
+                  If *this\type = #__type_Scroll Or *this\type = #__type_Spin
                      
                   Else
                      Post( *this, #__event_Change, *this\stringbar, result )
@@ -20636,6 +20641,94 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure   ResetEvents( *this._s_WIDGET )
+         If ListSize( __gui\event\queues( ) )
+            ForEach __gui\event\queues( )
+               Define __widget = __gui\event\queues( )\widget
+               Define __event  = __gui\event\queues( )\type
+               Define __item   = __gui\event\queues( )\item
+               Define __data   = __gui\event\queues( )\data
+               
+               If GetRoot( __widget ) = *this
+                  If __gui\event\queuesmask Or 
+                     __gui\event\mask & 1<<__event
+                     ;
+                     DeleteElement( __gui\event\queues( ) )
+                     ;
+                     If __event = #__event_Free
+                        If IsContainer( __widget )
+                           Free( @__widget )
+                        EndIf
+                     ElseIf __event = #__event_Change
+                        If Type(__widget) = #__type_Spin
+                          ; Post( __widget, __event, __item, __data )
+                        Else
+                           Post( __widget, __event, __item, __data )
+                        EndIf
+                     Else
+                        Post( __widget, __event, __item, __data )
+                     EndIf
+                  EndIf
+               Else
+                  If GetClass( __widget ) = GetClass( *this)
+                     DeleteElement( __gui\event\queues( ) )
+                     Debug "ERRORS event reset ["+GetClass( __widget ) +" "+ GetClass( *this) +"]"
+                     Break
+                  EndIf
+               EndIf
+            Next
+            ;
+            ProcedureReturn #True
+         EndIf
+      EndProcedure
+      
+      Procedure   AddEvents( *this._s_root, event.l, *button = #PB_All, *data = #Null )
+         If *this > 0
+            If event = #__event_free
+               If *this\haschildren
+                  If StartEnum( *this )
+                     AddPost( widgets( ), #__event_free  ) 
+                     StopEnum( )
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;   
+            If test_event_add
+               Static test
+               Debug ""+*this\class + " - Put event queues( test "+test +" ) "+ ClassFromEvent(event)
+               test + 1
+            EndIf
+            
+            ;
+            ; Если такое событие уже есть пропускаем
+            If ListSize(__gui\event\queues( ))  
+               If ListIndex( __gui\event\queues( ) ) >= 0 
+                  If __gui\event\queues( )\widget = *this
+                     If __gui\event\queues( )\type = event
+                        ProcedureReturn __gui\event\queues( )
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;
+            ; 
+            If AddElement( __gui\event\queues( ) )
+               __gui\event\queues.allocate( EVENTDATA, ( ) )
+               __gui\event\queues( )\widget = *this
+               __gui\event\queues( )\type   = event
+               __gui\event\queues( )\item   = *button
+               __gui\event\queues( )\data   = *data
+               
+               ;                If event = #__event_focus
+               ;                   Debug  "ADD events "+ClassFromEvent( event ) +" "+ *this\class 
+               ;                EndIf
+               ProcedureReturn __gui\event\queues( )
+            EndIf
+         EndIf
+      EndProcedure
+      
       Procedure   ResetPost( *this._s_WIDGET )
          If ListSize( __gui\event\queues( ) )
             ForEach __gui\event\queues( )
@@ -20647,26 +20740,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If GetRoot( __widget ) = *this
                   If __gui\event\queuesmask Or 
                      __gui\event\mask & 1<<__event
-                     
+                     ;
                      DeleteElement( __gui\event\queues( ) )
-                     ;                      If __event = #__event_focus
-                     ;                         Debug "SET events "+GetClass(__widget) +" "+ classFromEvent(__event) +" "+ Str(__gui\event\mask & 1<<__event)
-                     ;                      EndIf
-                     
+                     ;
                      If __event = #__event_Free
                         If IsContainer( __widget )
                            Free( @__widget )
                         EndIf
-                        ;                      ElseIf __event = #__event_Create
-                        ;                         DoEvents( __widget, __event )
-                        
                      ElseIf __event = #__event_Change
                         If Type(__widget) = #__type_Spin
-                           Static spin_change = #PB_Ignore
-                           If spin_change <> GetState(__widget)
-                              spin_change = GetState(__widget)
-                              Post( __widget, __event, __item, __data )
-                           EndIf
+                          ; Post( __widget, __event, __item, __data )
                         Else
                            Post( __widget, __event, __item, __data )
                         EndIf
@@ -25875,6 +25958,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Widget::Drawing( )
          Widget::StopDraw( )
          
+         If ResetEvents( *this )
+          EndIf
+         
          ;\\ if not is root refresh widget
          If Not is_root_( *this )
             Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
@@ -27651,8 +27737,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 6562
-; FirstLine = 1445
-; Folding = D+PGg-Bw-----------fAA+------Bg2-FAAAAIAOcAAAEAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAAAAAAAAAAgNAAAAAAAAAAAAAAgAAAMgAAABAAYAAYAAAAAAAAAYAAwAAAkBEAGAAAADAAIgAOD-------------------------DAAQIAAAAAAAAUVVgAAAAAAAAAAAA9-DwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw--PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg-B9PAAAAAAAAAAg-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAAAABYAAAAAAg------BAvefAw----fAAAAAAAAAAAAAAAAAAwBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAINDAAEAMAAguAAAAAAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDQADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAwAEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAA9AAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA+
+; CursorPosition = 25961
+; FirstLine = 3992
+; Folding = D+PGg-Bw-----------fAM+------Bg2-FAAAAIAOcAAAEAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAAAAAAAAAAgNABAAAAx-DAAAAAgAAAMgAAABAAYAAYAAAAAAAAAYAAwAAAkBEAGAAAADAAIgAOD-------------------------DAAQIAAAAAAAAUVVgAAAAAAAAAAAA9-DwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw--PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg-B9PAAAAAAAAAAg-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAAAABYAAAAAAg------BAvefAw----fAAAAAAAAAAAAAAAAAAwBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAINDAAEAMAAguAAAAAAfAAAAAAAAAAAAAAAAAA5f-v-AAAAAAAAAAAgDQADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAwAEwAAAAACAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsEAAAAAAA9AAAAAAAAAAAAAAAAAAAAFgAAAAAAAAAAAAAAAAAA9
 ; EnableXP
 ; Executable = widgets-.app.exe

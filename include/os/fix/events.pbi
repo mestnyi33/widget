@@ -1,30 +1,18 @@
-﻿XIncludeFile "../../constants.pbi"
-
-CompilerIf #PB_Compiler_IsMainFile
+﻿CompilerIf #PB_Compiler_IsMainFile
+   XIncludeFile "../../constants.pbi"
+   
    ;\\
    XIncludeFile "../id.pbi"
    XIncludeFile "../mouse.pbi"
    XIncludeFile "../cursor.pbi"
    
- CompilerEndIf
- 
+CompilerEndIf
+
 ;-\\ DECLARE
 DeclareModule Events
    EnableExplicit
    UseModule constants
-   ;-
-   Global *dragged=-1, *entered=-1, *focused=-1, *pressed=-1, *setcallback
-   
-   Macro DraggedGadget() : Events::*dragged : EndMacro
-   Macro EnteredGadget() : Events::*entered : EndMacro
-   Macro FocusedGadget() : Events::*focused : EndMacro
-   Macro PressedGadget() : Events::*pressed : EndMacro
-   
-   DraggedGadget() =- 1 
-   EnteredGadget() =- 1 
-   PressedGadget() =- 1 
-   FocusedGadget() =- 1 
-   
+    
    ;Declare.i WaitEvent(event.i, second.i=0)
    CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
       Declare BindGadget( gadget, *callBack, eventtype = #PB_All )
@@ -32,15 +20,15 @@ DeclareModule Events
    Declare SetCallBack(*callback)
 EndDeclareModule
 
- ;-\\ MODULE
-   CompilerSelect #PB_Compiler_OS 
-      CompilerCase #PB_OS_MacOS   
-         XIncludeFile "mac/event.pbi"
-      CompilerCase #PB_OS_Windows 
-         XIncludeFile "win/event.pbi"
-      CompilerCase #PB_OS_Linux   
-         XIncludeFile "lin/event.pbi"
-   CompilerEndSelect
+;-\\ MODULE
+CompilerSelect #PB_Compiler_OS 
+   CompilerCase #PB_OS_MacOS   
+      XIncludeFile "mac/event.pbi"
+   CompilerCase #PB_OS_Windows 
+      XIncludeFile "win/event.pbi"
+   CompilerCase #PB_OS_Linux   
+      XIncludeFile "lin/event.pbi"
+CompilerEndSelect
 
 ;-\\ example
 CompilerIf #PB_Compiler_IsMainFile
@@ -93,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure EventHandler( event, eventobject, eventtype, eventdata )
       Protected window = EventWindow()
       Protected DropX, DropY
-      Static deltax, deltay
+      Static deltax, deltay, PressedGadget
       
       Select eventtype
          Case #PB_EventType_MouseWheelX
@@ -103,6 +91,7 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug ""+eventobject + " #PB_EventType_MouseWheelY " +eventdata
             
          Case #PB_EventType_DragStart
+            PressedGadget = eventobject
             deltax = mouse::GadgetMouseX(eventobject, #PB_Gadget_WindowCoordinate)
             deltay = mouse::GadgetMouseY(eventobject, #PB_Gadget_WindowCoordinate)
             Debug ""+eventobject + " #PB_EventType_DragStart " + "x="+ deltax +" y="+ deltay
@@ -126,6 +115,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #PB_EventType_LeftButtonUp
             Debug ""+eventobject + " #PB_EventType_LeftButtonUp " 
+            PressedGadget = 0
             
          Case #PB_EventType_LeftClick
             Debug ""+eventobject + " #PB_EventType_LeftClick " 
@@ -145,9 +135,9 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug ""+eventobject + " #PB_EventType_Resize " 
             
          Case #PB_EventType_MouseMove
-            If Events::PressedGadget() = 0
+            If PressedGadget
                ;Debug ""+eventobject + " #PB_EventType_MouseMove " 
-               ResizeGadget(Events::PressedGadget(), DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
+               ResizeGadget(PressedGadget, DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
             EndIf
             ;         If events::DraggedGadget() = 0
             ;           ResizeGadget(events::DraggedGadget(), DesktopMouseX()-deltax, DesktopMouseY()-deltay, #PB_Ignore, #PB_Ignore)
@@ -264,6 +254,6 @@ CompilerIf #PB_Compiler_IsMainFile
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 9
-; Folding = -------
+; CursorPosition = 18
+; Folding = ------
 ; EnableXP

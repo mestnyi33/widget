@@ -665,6 +665,8 @@ Procedure   Properties_ButtonEvents( )
                EndSelect
                
             Case #__type_Spin
+               ; Debug ""+*g\class
+               
                Select GetData(*g) 
                   Case #_pi_x      : Resize( a_focused( ), GetState(*g), #PB_Ignore, #PB_Ignore, #PB_Ignore ) 
                   Case #_pi_y      : Resize( a_focused( ), #PB_Ignore, GetState(*g), #PB_Ignore, #PB_Ignore )
@@ -3037,12 +3039,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 365
-; FirstLine = 348
-; Folding = ----8f8+0v0----dPu------------8-4b4-----0-0-----0---8z-
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 667
+; FirstLine = 462
+; Folding = ----8f-+0-0----dPu------------8-4b4-----0-0-----0---8z-
 ; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = ../../2.exe
+; Executable = ..\..\2.exe

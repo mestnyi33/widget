@@ -1,5 +1,5 @@
 ﻿; 
-; demo state
+; second state
 
 IncludePath "../../"
 XIncludeFile "widgets.pbi"
@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
    test_focus_draw = 1
    ;test_focus_set = 1
    
-   Global a, *demo._s_WIDGET, *this._s_widget, *test, *get, *remove, *focus, *reset, *item1, *item2, *item3, *item4, *g1, *g2, CountItems=20;99; количесвто итемов 
+   Global a, *second._s_WIDGET, *this._s_widget, *test, *get, *remove, *focus, *reset, *item1, *item2, *item3, *item4, *g1, *g2, CountItems=20;99; количесвто итемов 
    
    ;- DECLARE
    Declare PropertiesItems_ChangeStatus( *this._s_WIDGET, item, state )
@@ -74,7 +74,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
       Protected *this._s_WIDGET
-      Protected min, max, steps, flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
+      Protected min, max, steps, Flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
       Protected Type = GetItemData( *parent, item )
       
       PropertiesButton_Free( )
@@ -100,11 +100,11 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_LostFocus
             PropertiesItems_ChangeStatus( *this, GetData( EventWidget( )), 3 )
-            PropertiesItems_ChangeStatus( *demo, GetData( EventWidget( )), 3 )
+            PropertiesItems_ChangeStatus( *second, GetData( EventWidget( )), 3 )
             
          Case #__event_Focus
             PropertiesItems_ChangeStatus( *this, GetData( EventWidget( )), 2 )
-            PropertiesItems_ChangeStatus( *demo, GetData( EventWidget( )), 2 )
+            PropertiesItems_ChangeStatus( *second, GetData( EventWidget( )), 2 )
             
          Case #__event_MouseWheel
             If MouseDirection( ) > 0
@@ -137,11 +137,11 @@ CompilerIf #PB_Compiler_IsMainFile
                   ;
                   Select EventWidget( )
                      Case *this 
-                        SetState(*demo, item)
+                        SetState(*second, item)
                         SetState(*this, item)
-                     Case *demo 
+                     Case *second 
                         SetState(*this, item)
-                        SetState(*demo, item)
+                        SetState(*second, item)
                   EndSelect
                EndIf
             EndIf
@@ -162,8 +162,8 @@ CompilerIf #PB_Compiler_IsMainFile
                WidgetEventData( ) = #PB_Tree_Collapsed
                ;
                Select EventWidget( )
-                  Case *demo : SetItemState(*this, WidgetEventItem( ), WidgetEventData( ))
-                  Case *this : SetItemState(*demo, WidgetEventItem( ), WidgetEventData( ))
+                  Case *second : SetItemState(*this, WidgetEventItem( ), WidgetEventData( ))
+                  Case *this : SetItemState(*second, WidgetEventItem( ), WidgetEventData( ))
                EndSelect
             EndIf
             
@@ -179,7 +179,7 @@ CompilerIf #PB_Compiler_IsMainFile
                *row\ColorState( ) = #__s_0
                
                ;
-               If *demo = EventWidget( )
+               If *second = EventWidget( )
                   If *this\RowFocused( )
                      item = *this\RowFocused( )\index 
                      state = *this\RowFocused( )\ColorState( )
@@ -187,9 +187,9 @@ CompilerIf #PB_Compiler_IsMainFile
                EndIf
                
                If *this = EventWidget( )
-                  If *demo\RowFocused( )
-                     item = *demo\RowFocused( )\index 
-                     state = *demo\RowFocused( )\ColorState( )
+                  If *second\RowFocused( )
+                     item = *second\RowFocused( )\index 
+                     state = *second\RowFocused( )\ColorState( )
                   EndIf
                EndIf
                
@@ -208,10 +208,10 @@ CompilerIf #PB_Compiler_IsMainFile
             Else
                Select EventWidget( )
                   Case *this 
-                     If GetState( *demo ) <> *row\index
-                        PropertiesItems_ChangeStatus( *demo, *row\index, *row\ColorState( ) )
+                     If GetState( *second ) <> *row\index
+                        PropertiesItems_ChangeStatus( *second, *row\index, *row\ColorState( ) )
                      EndIf
-                  Case *demo 
+                  Case *second 
                      If GetState( *this ) <> *row\index
                         PropertiesItems_ChangeStatus( *this, *row\index, *row\ColorState( ) )
                      EndIf   
@@ -220,15 +220,15 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_ScrollChange
             Select EventWidget( )
-               Case *demo 
+               Case *second 
                   If GetState( *this\scroll\v ) <> WidgetEventData( )
                      If SetState(*this\scroll\v, WidgetEventData( ) )
                      EndIf
                   EndIf
                   ;
                Case *this 
-                  If GetState( *demo\scroll\v ) <> WidgetEventData( )
-                     If SetState(*demo\scroll\v, WidgetEventData( ) )
+                  If GetState( *second\scroll\v ) <> WidgetEventData( )
+                     If SetState(*second\scroll\v, WidgetEventData( ) )
                      EndIf
                   EndIf
                   ;
@@ -273,7 +273,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   If *this\RowFocused( )
                      Protected item = *this\RowFocused( )\index
                      RemoveItem(*this, item)
-                     ; RemoveItem(*demo, item)
+                     ; RemoveItem(*second, item)
                   EndIf
                   
                Case *reset : SetState(*this, - 1)
@@ -287,33 +287,33 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;-
-   If Open(1, 100, 50, 370, 330, "demo ListView state", #PB_Window_SystemMenu)
+   If Open(1, 100, 50, 370, 330, "second ListView state", #PB_Window_SystemMenu)
       ;       ;Container(0, 0, 240, 330)
-      *demo = Tree(10, 10, 220/2, 310) : SetClass(*demo, "demo")
+      *second = Tree(10, 10, 220/2, 310) : SetClass(*second, "second")
       *this = Tree(110, 10, 220/2, 310, #__flag_nolines) : SetClass(*this, "this")
       ;
-      ;Hide( *demo\scroll\v, 1 )
-      Hide( HBar(*demo), #True )
+      ;Hide( *second\scroll\v, 1 )
+      Hide( HBar(*second), #True )
       Hide( HBar(*this), #True )
       
       
       ;*this = ListView(10, 10, 220, 310)
       ;*this = Panel(10, 10, 230, 310) 
-      ;Debug *demo\scroll\v\hide 
-      Splitter(10,10, 230, 310, *demo, *this, #PB_Splitter_Vertical )
-      ;Debug *demo\scroll\v\hide 
+      ;Debug *second\scroll\v\hide 
+      Splitter(10,10, 230, 310, *second, *this, #PB_Splitter_Vertical )
+      ;Debug *second\scroll\v\hide 
       
       Bind(Widget( ), @Properties_Events())
-      Bind(*demo, @PropertiesItems_Events());, #__event_Change)
+      Bind(*second, @PropertiesItems_Events());, #__event_Change)
       Bind(*this, @PropertiesItems_Events());, #__event_Change)
       
       ; *test = PropertiesButton_Create( *this, 2 )
       
       For a = 0 To CountItems
          If a % 10 = 0
-            AddItem(*demo, -1, "collaps "+Str(a), -1, 0)
+            AddItem(*second, -1, "collaps "+Str(a), -1, 0)
          Else
-            AddItem(*demo, -1, "Item "+Str(a), -1, 1)
+            AddItem(*second, -1, "Item "+Str(a), -1, 1)
          EndIf
       Next
       For a = 0 To CountItems
@@ -363,9 +363,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 155
-; FirstLine = 123
-; Folding = ---z0e0----
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 291
+; FirstLine = 242
+; Folding = ---z-------
 ; EnableXP
 ; DPIAware
