@@ -1,5 +1,5 @@
 ﻿
-IncludePath "../../../"
+IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 
@@ -36,7 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Window_0( )
       If Open(0, 0, 0, 480, 180, "Демонстрация очередь привязки событий", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
          
-         *butt = Button(50, 50, 380, 70, "введите курсор мыши") 
+         *butt = Button(50, 50, 380, 70, "Наведите курсор мыши, чтобы увидеть") 
          
          Bind( *butt, @events_1( ), #__event_MouseEnter )
          Bind( *butt, @events_1( ), #__event_MouseLeave )
@@ -64,9 +64,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 35
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 38
+; FirstLine = 11
 ; Folding = --
 ; EnableXP
 ; DPIAware

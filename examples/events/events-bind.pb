@@ -1,5 +1,5 @@
 ﻿
-IncludePath "../../../"
+IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 
@@ -28,10 +28,10 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Window_0( )
       If Open(0, 0, 0, 480, 180, "Demo binded events for the test-button", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
          
-         *butt0 = Button(50, 50, 280, 35, "bind-button-events") 
+         *butt0 = Button(50, 50, 280, 35, "bind-button-all-events") 
          Bind( *butt0, @events_roots( ) )
          
-         *butt1 = Button(50, 50+45, 280, 35, "binds-button-events") 
+         *butt1 = Button(50, 50+45, 280, 35, "bind-button-alls-events") 
          Bind( *butt1, @events_roots( ), #__event_Change )
          Bind( *butt1, @events_roots( ), #__event_Down )
          Bind( *butt1, @events_roots( ), #__event_DragStart )
@@ -76,9 +76,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 15
-; FirstLine = 6
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 61
+; FirstLine = 49
 ; Folding = --
 ; EnableXP
 ; DPIAware
