@@ -246,6 +246,9 @@
          #__event_StatusChange
          #__event_ScrollChange
          ;
+         #__event_PageDown
+         #__event_PageUp
+         ;
          #__event_KeyDown
          #__event_Input
          #__event_Return
@@ -711,8 +714,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 447
-; FirstLine = 457
+; CursorPosition = 251
+; FirstLine = 237
 ; Folding = ----
 ; Optimizer
 ; EnableXP
