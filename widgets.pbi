@@ -706,10 +706,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; PostReDraw( _root_ )
       EndMacro
       Macro PostFree( _this_ )
-         AddPost( _this_, #__event_free  ) 
+         AddEvents( _this_, #__event_free  ) 
       EndMacro
       Macro PostClose( _this_ )
-         AddPost( _this_, #__event_Close  ) 
+         AddEvents( _this_, #__event_Close  ) 
       EndMacro
       ;-
       Macro MidF(_string_, _start_pos_, _length_ = -1)
@@ -1897,11 +1897,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.i CloseList( )
       Declare.i OpenList( *this, item.l = 0 )
       ;
+      ;
       Declare   ResetEvents( *this )
       Declare   AddEvents( *this, event.l, *button = #PB_All, *data = #Null )
-      ;
-      Declare   ResetPost( *this )
-      Declare   AddPost( *this, event.l, *button = #PB_All, *data = #Null )
       Declare.i Post( *this, event.l, *button = #PB_All, *data = #Null )
       Declare.i Bind( *this, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
       Declare.i Unbind( *this, *callback, event.l = #PB_All, item.l = #PB_All )
@@ -5218,8 +5216,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                         EndIf 
                      ;                      EndIf 
                   Else
-                     AddEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                     ;DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                     ;AddEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                     DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                      If result2  
                         DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                      EndIf 
@@ -5827,7 +5825,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Post( *this\parent, #__event_ScrollChange, *this, *bar\page\pos ) 
                   EndIf
                Else
-                  ; Debug "bar update AddPost" + EnteredButton( )
+                  ; Debug "bar update AddEvents" + EnteredButton( )
                   Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
                EndIf  
                
@@ -10741,7 +10739,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\type = #__type_Spin
             result = bar_PageChange( *this, state, 2 ) ; and post change event
             If Not result
-               AddPost( *this, #__event_Change, *this\stringbar, *this\bar\page\pos ) ; *bar\PageChange( ) )
+               AddEvents( *this, #__event_Change, *this\stringbar, *this\bar\page\pos ) ; *bar\PageChange( ) )
             EndIf
          EndIf
          ;
@@ -20687,93 +20685,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If event = #__event_free
                If *this\haschildren
                   If StartEnum( *this )
-                     AddPost( widgets( ), #__event_free  ) 
-                     StopEnum( )
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;   
-            If test_event_add
-               Static test
-               Debug ""+*this\class + " - Put event queues( test "+test +" ) "+ ClassFromEvent(event)
-               test + 1
-            EndIf
-            
-            ;
-            ; Если такое событие уже есть пропускаем
-            If ListSize(__gui\event\queues( ))  
-               If ListIndex( __gui\event\queues( ) ) >= 0 
-                  If __gui\event\queues( )\widget = *this
-                     If __gui\event\queues( )\type = event
-                        ProcedureReturn __gui\event\queues( )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;
-            ; 
-            If AddElement( __gui\event\queues( ) )
-               __gui\event\queues.allocate( EVENTDATA, ( ) )
-               __gui\event\queues( )\widget = *this
-               __gui\event\queues( )\type   = event
-               __gui\event\queues( )\item   = *button
-               __gui\event\queues( )\data   = *data
-               
-               ;                If event = #__event_focus
-               ;                   Debug  "ADD events "+ClassFromEvent( event ) +" "+ *this\class 
-               ;                EndIf
-               ProcedureReturn __gui\event\queues( )
-            EndIf
-         EndIf
-      EndProcedure
-      
-      Procedure   ResetPost( *this._s_WIDGET )
-         If ListSize( __gui\event\queues( ) )
-            ForEach __gui\event\queues( )
-               Define __widget = __gui\event\queues( )\widget
-               Define __event  = __gui\event\queues( )\type
-               Define __item   = __gui\event\queues( )\item
-               Define __data   = __gui\event\queues( )\data
-               
-               If GetRoot( __widget ) = *this
-                  If __gui\event\queuesmask Or 
-                     __gui\event\mask & 1<<__event
-                     ;
-                     DeleteElement( __gui\event\queues( ) )
-                     ;
-                     If __event = #__event_Free
-                        If IsContainer( __widget )
-                           Free( @__widget )
-                        EndIf
-                     ElseIf __event = #__event_Change
-                        If Type(__widget) = #__type_Spin
-                          ; Post( __widget, __event, __item, __data )
-                        Else
-                           Post( __widget, __event, __item, __data )
-                        EndIf
-                     Else
-                        Post( __widget, __event, __item, __data )
-                     EndIf
-                  EndIf
-               Else
-                  If GetClass( __widget ) = GetClass( *this)
-                     DeleteElement( __gui\event\queues( ) )
-                     Debug "ERRORS event reset ["+GetClass( __widget ) +" "+ GetClass( *this) +"]"
-                     Break
-                  EndIf
-               EndIf
-            Next
-         EndIf
-      EndProcedure
-      
-      Procedure   AddPost( *this._s_root, event.l, *button = #PB_All, *data = #Null )
-         If *this > 0
-            If event = #__event_free
-               If *this\haschildren
-                  If StartEnum( *this )
-                     AddPost( widgets( ), #__event_free  ) 
+                     AddEvents( widgets( ), #__event_free  ) 
                      StopEnum( )
                   EndIf
                EndIf
@@ -20825,7 +20737,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;                If *this\type <> #__type_Scroll
                ;                   Debug ""+ *this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
                ;                EndIf
-               ProcedureReturn AddPost( *this, event, *button, *data )
+               ProcedureReturn AddEvents( *this, event, *button, *data )
             Else
                ;                If event = #__event_focus
                ;                   Debug  " POST events "+ClassFromEvent( event ) +" "+ *this\class 
@@ -22415,7 +22327,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             SetAttribute( *this, #PB_ScrollArea_ScrollStep, *param_3 )
          EndIf
          
-         ;          AddPost( *this, #__event_Create )
+         ;          AddEvents( *this, #__event_Create )
          Widget( ) = *this
          ProcedureReturn *this
       EndProcedure
@@ -25948,7 +25860,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          __gui\event\queuesmask = 1
          
          ;\\ reset events
-         ;ResetPost( *this )
+         ;ResetEvents( *this )
          
          ;\\
          If Not IsGadget( *this\canvas\gadget )
@@ -25958,8 +25870,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Widget::Drawing( )
          Widget::StopDraw( )
          
-         If ResetEvents( *this )
-         EndIf
+         ResetEvents( *this )
          
          ;\\ if not is root refresh widget
          If Not is_root_( *this )
@@ -27737,8 +27648,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 25950
-; FirstLine = 3992
-; Folding = D+PGg-Bw-----------fAM+------Bg2-FAAAAIAOcAAAEAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAAAAAAAAAAgNABAAAAx-DAAAAAgAAAMgAAABAAYAAYAAAAAAAAAYAAwAAAkBEAGAAAADAAIgAOD-------------------------DAAQIAAAAAAAAUVVgAAAAAAAAAAAA9-DwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw--PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg-B9PAAAAAAAAAAg-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAAAABYAAAAAAg------BAvefAw----fAAAAAAAAAAAAAAAAAAwBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAINDAAEAMAAguAAAAAAfAAAAAAAAAAAAAAAAAA5f-v-AAAAAAAAAAAgDQADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAwAEwAAAAACAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsEAAAAAAA9AAAAAAAAAAAAAAAAAAAAFgAAAAAAAAAAAAAAAAAA9
+; CursorPosition = 25872
+; FirstLine = 4417
+; Folding = D+PGg-Bw-----------fAM+------Bg2-FAAAAIAOcAAAEAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAAAAAAABQAgNABAAAAx-DAAAAAgAAAMgAAABAAYAAYAAAAAAAAAYAAwAAAkBEAGAAAADAAIgAOD-------------------------DAAYICAAAAAAAUVVgAAAAAAAAAAAA9-DwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAGQAAAAAAAAAAAAYAAAAAAw--PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg-B9PAAAAAAAAAAg-AAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAAAABYAAAAAAg------BAvefAw----fAAAAAAAAAAAAAAAAAAwBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAINDAAEAMAAguAAAAAAfAAAAAAAAAAAAAAAAAA5-PwBAAAAAAAAwBIgBAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwBAYACYAAAAABAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWCAAAAAAAeAAAAAAAAAAAAAAAAAAAgAIAAAAAAAAAAAAAAAAAA-
 ; EnableXP
 ; Executable = widgets-.app.exe

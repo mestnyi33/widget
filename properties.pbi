@@ -359,15 +359,20 @@ Procedure   ReplaceArg( *object._s_WIDGET, argument, replace$ )
 EndProcedure
 
 ;-
-Global *display._s_WIDGET
-Declare PropertiesButton_Status( *this._s_WIDGET, item, state )
-
+Global *PropertiesButton._s_WIDGET
+Declare   PropertiesButton_Events( )
+Declare   PropertiesItems_StatusChange( *this._s_WIDGET, item, state )
+Declare   Properties_StatusChange( *splitter._s_WIDGET, *this._s_WIDGET, item )
 ;-
-Procedure   PropertiesButton_Status( *this._s_WIDGET, item, state )
-   Protected._s_ROWS *item = ItemID( *this, item )
-   If *item 
-      *item\ColorState( ) = state
-      ProcedureReturn *item
+Procedure   PropertiesButton_Get( )
+   ProcedureReturn *PropertiesButton
+EndProcedure
+
+Procedure   PropertiesButton_Free( *this._s_WIDGET )
+   If *this
+      Unbind( *this, @PropertiesButton_Events( ))
+      Free( @*this )
+      *PropertiesButton = 0
    EndIf
 EndProcedure
 
@@ -387,7 +392,7 @@ Procedure   PropertiesButton_Change( *splitter._s_WIDGET )
    EndIf
 EndProcedure
 
-Procedure PropertiesButton_GetItem( *splitter._s_WIDGET, item )
+Procedure   PropertiesButton_GetItem( *splitter._s_WIDGET, item )
    Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
    ;
    If *second 
@@ -395,7 +400,7 @@ Procedure PropertiesButton_GetItem( *splitter._s_WIDGET, item )
    EndIf
 EndProcedure
 
-Procedure PropertiesButton_AddItem( *splitter._s_WIDGET, item, Text.s )
+Procedure   PropertiesButton_AddItem( *splitter._s_WIDGET, item, Text.s )
    Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
    ;
    If *second 
@@ -442,7 +447,7 @@ Procedure   PropertiesButton_Resize( *second._s_WIDGET )
    
    *row = *second\RowFocused( )
    If *row
-      *this = *row\data
+      *this = PropertiesButton_Get( )
       ;
       If *this
          If *row\hide
@@ -483,38 +488,28 @@ Procedure   PropertiesButton_Display( *second._s_WIDGET )
    
    *row = *second\RowFocused( )
    If *row
-      *display = *row\data
-      
-      If *last 
-         If *last = *display
-            Hide( *display, #False )
-         Else
-            Hide( *last, #True )
-         EndIf
-      EndIf
-      
-      ;  
-      If *display 
-         If *last <> *display
-            *last = *display
+      *this = *PropertiesButton
+      If *this 
+         If *last <> *this
+            *last = *this
             
             ;
-            Select Type( *display )
+            Select Type( *this )
                Case #__type_String
-                  If GetData( *display ) = #_pi_class
-                     *display\text\upper = 1
+                  If GetData( *this ) = #_pi_class
+                     *this\text\upper = 1
                   Else
-                     *display\text\upper = 0
+                     *this\text\upper = 0
                   EndIf
-                  SetText( *display, *row\text\string )
+                  SetText( *this, *row\text\string )
                   
                Case #__type_Spin
-                  SetState( *display, Val(*row\text\string) )
+                  SetState( *this, Val(*row\text\string) )
                   
                Case #__type_ComboBox
                   Select LCase(*row\text\string)
-                     Case "false" : SetState( *display, 0)
-                     Case "true"  : SetState( *display, 1)
+                     Case "false" : SetState( *this, 0)
+                     Case "true"  : SetState( *this, 1)
                   EndSelect
                   
             EndSelect
@@ -522,7 +517,7 @@ Procedure   PropertiesButton_Display( *second._s_WIDGET )
             ;
             PropertiesButton_Resize( *second )
             
-            ; SetActive( *display )
+            ; SetActive( *this )
             
          EndIf
       EndIf
@@ -556,13 +551,13 @@ Procedure   PropertiesButton_Events( )
    Select __event
          ;       Case #__event_LostFocus
          ;             __item = GetData( EventWidget( ))
-         ;             PropertiesButton_Status( *first, __item, 3 )
-         ;             PropertiesButton_Status( *second, __item, 3 )
+         ;             PropertiesItems_StatusChange( *first, __item, 3 )
+         ;             PropertiesItems_StatusChange( *second, __item, 3 )
          ;             
          ;          Case #__event_Focus
          ;             __item = GetData( EventWidget( ))
-         ;             PropertiesButton_Status( *first, __item, 2 )
-         ;             PropertiesButton_Status( *second, __item, 2 )
+         ;             PropertiesItems_StatusChange( *first, __item, 2 )
+         ;             PropertiesItems_StatusChange( *second, __item, 2 )
          
       Case #__event_Down
          GetActive( )\gadget = *g
@@ -612,13 +607,40 @@ Procedure   PropertiesButton_Events( )
          
    EndSelect
    
+   Protected item
+   
+   Select WidgetEvent( )
+      Case #__event_Input
+         Debug "button "+keyboard( )\input
+         
+      Case #__event_LostFocus
+         item = GetData( EventWidget( ))
+         PropertiesItems_StatusChange( *first, item, 3 )
+         PropertiesItems_StatusChange( *second, item, 3 )
+         
+      Case #__event_Focus
+         item = GetData( EventWidget( ))
+         PropertiesItems_StatusChange( *first, item, 2 )
+         PropertiesItems_StatusChange( *second, item, 2 )
+         ;
+         SetText( EventWidget( ), *first\RowFocused( )\text\string )
+         
+      Case #__event_MouseWheel
+         If MouseDirection( ) > 0
+            SetState(*first\scroll\v, GetState( *first\scroll\v ) - WidgetEventData( ) )
+         EndIf
+         
+   EndSelect
    ProcedureReturn #PB_Ignore
 EndProcedure
 
-Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
+Procedure   PropertiesButton_Create( *second._s_WIDGET, item )
    Protected *this._s_WIDGET
    Protected min, max, steps, Flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
-   Protected Type = GetItemData( *parent, item )
+   Protected Type = GetItemData( *second, item )
+   Debug "create "+item +" "+ Type
+   
+   PropertiesButton_Free( PropertiesButton_Get( ))
    
    Select Type
       Case #__type_Spin
@@ -639,26 +661,26 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
                steps = 7 
          EndSelect
          
-         *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", Flag, min, max, 0, #__bar_button_size, 0, steps )
+         *this = Create( *second, "Spin", Type, 0, 0, 0, 0, "", Flag, min, max, 0, #__bar_button_size, 0, steps )
          
       Case #__type_String
-         *this = Create( *parent, "String", Type, 0, 0, 0, 0, "", Flag, 0, 0, 0, 0, 0, 0 )
+         *this = Create( *second, "String", Type, 0, 0, 0, 0, "", Flag, 0, 0, 0, 0, 0, 0 )
          
       Case #__type_CheckBox
-         *this = Create( *parent, "CheckBox", Type, 0, 0, 0, 0, "#PB_Any", Flag, 0, 0, 0, 0, 0, 0 )
+         *this = Create( *second, "CheckBox", Type, 0, 0, 0, 0, "#PB_Any", Flag, 0, 0, 0, 0, 0, 0 )
          
       Case #__type_Button
          Select item
             Case #_pi_align
-               ; *this = AnchorBox::Create( *parent, 0,0,0,20 )
+               ; *this = AnchorBox::Create( *second, 0,0,0,20 )
                
             Case #_pi_FONT, #_pi_COLOR, #_pi_IMAGE
-               *this = Create( *parent, "Button", Type, 0, 0, #__bar_button_size+1, 0, "...", Flag, 0, 0, 0, 0, 0, 0 )
+               *this = Create( *second, "Button", Type, 0, 0, #__bar_button_size+1, 0, "...", Flag, 0, 0, 0, 0, 0, 0 )
                
          EndSelect
          
       Case #__type_ComboBox
-         *this = Create( *parent, "ComboBox", Type, 0, 0, 0, 0, "", Flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
+         *this = Create( *second, "ComboBox", Type, 0, 0, 0, 0, "", Flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
          ;
          Select item
             Case #_pi_flag
@@ -719,102 +741,27 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
    EndSelect
    
    If *this
-      SetData(*this, item)
-      Bind(*this, @PropertiesButton_Events( ))
+      *PropertiesButton = *this
+      SetData( *this, item )
+      Bind( *this, @PropertiesButton_Events( ))
+      PropertiesButton_Display( *second )
    EndIf
    
    ProcedureReturn *this
 EndProcedure
 
 ;-
-Procedure   PropertiesItems_Status( *splitter._s_WIDGET, *this._s_WIDGET )
-   Protected item, state
-   Protected._s_ROWS *row
-   Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-   Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
-   ;
-   If PushItem( *this)
-      If SelectItem( *this, WidgetEventItem( ))
-         *row = *this\__rows( )
-      EndIf
-      PopItem( *this)
-   EndIf
-   
-   If *row\childrens
-      *row\ColorState( ) = #__s_0
-      
-      ;
-      If *second = *this
-         If *first\RowFocused( )
-            item = *first\RowFocused( )\index 
-            state = *first\RowFocused( )\ColorState( )
-         EndIf
-      EndIf
-      
-      If *first = *this
-         If *second\RowFocused( )
-            item = *second\RowFocused( )\index 
-            state = *second\RowFocused( )\ColorState( )
-         EndIf
-      EndIf
-      
-      If PushItem( *this)
-         If SelectItem( *this, item)
-            *this\__rows( )\ColorState( ) = state
-            If *row\focus 
-               *this\__rows( )\focus = *row\focus
-               *this\RowFocused( ) = *this\__rows( )
-               *row\focus = 0
-            EndIf
-         EndIf
-         PopItem( *this )
-      EndIf
-      
-   Else
-      Select *this
-         Case *first 
-            If GetState( *second ) <> *row\index
-               PropertiesButton_Status( *second, *row\index, *row\ColorState( ) )
-            EndIf
-         Case *second 
-            If GetState( *first ) <> *row\index
-               PropertiesButton_Status( *first, *row\index, *row\ColorState( ) )
-            EndIf   
-      EndSelect
-   EndIf
+Procedure   PropertiesItems_Hide( *splitter._s_WIDGET, item, state )
+   HideItem( GetAttribute(*splitter, #PB_Splitter_FirstGadget), item, state )
+   HideItem( GetAttribute(*splitter, #PB_Splitter_SecondGadget), item, state )
 EndProcedure
 
-Procedure   PropertiesItems_StatusChange( *this._s_WIDGET, item )
-   Protected *g._s_WIDGET = EventWidget( )
-   
-   If GetState( *this ) = item
-      ProcedureReturn 0
-   EndIf 
-   
-   ;    If GetState(*g) = item
-   ;       ProcedureReturn 0
-   ;    EndIf 
-   
-   PushListPosition(*g\__rows( ))
-   SelectElement( *g\__rows( ), item )
-   ;
-   If *g\__rows( ) 
-      PushListPosition( *this\__rows( ) )
-      SelectElement( *this\__rows( ), *g\__rows( )\index)
-      ;*this\__rows( )\color = *g\__rows( )\color
-      *this\__rows( )\colorState( ) = *g\__rows( )\colorState( )
-      
-      If *this\__rows( )\colorState( ) = #__s_2
-         If *this\RowFocused( )
-            *this\RowFocused( )\focus = 0
-         EndIf
-         *this\RowFocused( ) = *this\__rows( )
-         *this\RowFocused( )\focus = 1
-      EndIf
-      
-      PopListPosition( *this\__rows( ) )
+Procedure   PropertiesItems_StatusChange( *this._s_WIDGET, item, state )
+   Protected._s_ROWS *item = ItemID( *this, item )
+   If *item 
+      *item\ColorState( ) = state
+      ProcedureReturn *item
    EndIf
-   PopListPosition(*g\__rows( ))
 EndProcedure
 
 Procedure.s PropertiesItems_GetText( *splitter._s_WIDGET, item )
@@ -825,46 +772,29 @@ Procedure   PropertiesItems_SetText( *splitter._s_WIDGET, item, Text.s )
    ProcedureReturn SetItemText( GetAttribute(*splitter, #PB_Splitter_SecondGadget), item, Text.s )
 EndProcedure
 
-Procedure   PropertiesItems_Hide( *splitter._s_WIDGET, item, state )
-   HideItem( GetAttribute(*splitter, #PB_Splitter_FirstGadget), item, state )
-   HideItem( GetAttribute(*splitter, #PB_Splitter_SecondGadget), item, state )
-EndProcedure
-
 Procedure   PropertiesItems_Events( )
    Protected *g._s_WIDGET = EventWidget( )
    Protected __event = WidgetEvent( )
    Protected __item = WidgetEventItem( )
    Protected __data = WidgetEventData( )
    
+   Protected item, state
+   Protected._s_ROWS *row
+   
    Protected *first._s_WIDGET = GetAttribute( *g\parent, #PB_Splitter_FirstGadget)
    Protected *second._s_WIDGET = GetAttribute( *g\parent, #PB_Splitter_SecondGadget)
    ;  
    Select __event
       Case #__event_Focus
-         Protected item, state
-         Protected._s_ROWS *row
-         ;          If Not EnteredButton( )
-         ;             *row = WidgetEventData( )
-         ;             ;
-         ;             If Not *row\childrens
-         ;                item = WidgetEventItem( )
-         ;                ;
-         ;                Select EventWidget( )
-         ;                   Case *first 
-         ;                      SetState(*second, item)
-         ;                      SetState(*first, item)
-         ;                   Case *second 
-         ;                      SetState(*first, item)
-         ;                      SetState(*second, item)
-         ;                EndSelect
-         ;             EndIf
-         ;          EndIf
-         ;SetActive( GetParent( EventWidget( )))
          
       Case #__event_Down
          If Not EnteredButton( )
             If SetState( *g, __item)
+               PropertiesButton_Create( *second, __item )
             EndIf
+            
+            ;
+            SetActive( PropertiesButton_Get( ) ) 
          EndIf
          
       Case #__event_Draw
@@ -880,38 +810,18 @@ Procedure   PropertiesItems_Events( )
             Case *second : SetState(*first, GetState(*g))
          EndSelect
          
-         ; create PropertiesButton
          PropertiesButton_Display( *second )
-         If *display
-            Debug 55
-            SetActive( *display ) ;GetParent( EventWidget( )))
-         EndIf
-         
-         ;                 If *first = EventWidget( )
-         ;             *row = WidgetEventData( )
-         ;             If *row
-         ;                If Not *row\childrens
-         ;                   item = WidgetEventItem( )
-         ;                   PropertiesButton_Create( *first, item )
-         ;                   PropertiesButton_Display( *first )
-         ;                EndIf
-         ;             EndIf
-         ;          EndIf
          
       Case #__event_StatusChange
-         If *g = *first
-            If __data = #PB_Tree_Expanded Or
-               __data = #PB_Tree_Collapsed
-               ;
+         If __data = #PB_Tree_Expanded Or
+            __data = #PB_Tree_Collapsed
+            ;
+            If *g = *first
                SetItemState( *second, __item, __data)
             EndIf
          EndIf
          
-         Select*g
-            Case *first : PropertiesItems_StatusChange( *second, __item )
-            Case *second : PropertiesItems_StatusChange( *first, __item )
-         EndSelect
-         
+         Properties_StatusChange( GetParent(*g), *g, __item )
          
       Case #__event_ScrollChange
          If *g = *first 
@@ -945,6 +855,55 @@ Procedure   PropertiesItems_Events( )
 EndProcedure
 
 ;-
+Procedure   Properties_StatusChange( *splitter._s_WIDGET, *this._s_WIDGET, item )
+   Protected._s_WIDGET *first = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+   Protected._s_WIDGET *second = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+   Protected._s_ROWS *row
+   ;
+   If PushItem( *this )
+      If SelectItem( *this, Item)
+         *row = *this\__rows( )
+      EndIf
+      PopItem( *this)
+   EndIf
+   
+   If *this <> *first And Not ( *first\RowFocused( ) And *first\RowFocused( )\index = *row\index ) ; And GetState( *first ) <> *row\index
+      If ListSize( *first\__rows( ))
+         PushListPosition( *first\__rows( ) )
+         If SelectElement( *first\__rows( ), *row\index)
+            If *row\ColorState( ) = #__s_2
+               If *first\RowFocused( )
+                  *first\RowFocused( )\focus = 0
+               EndIf
+               *first\RowFocused( ) = *first\__rows( )
+               *first\RowFocused( )\focus = 1
+            EndIf
+            
+            *first\__rows( )\ColorState( ) = *row\ColorState( )
+         EndIf
+         PopListPosition( *first\__rows( ) )
+      EndIf
+   EndIf 
+   
+   If *this <> *second And Not ( *second\RowFocused( ) And *second\RowFocused( )\index = *row\index ) ; And GetState( *second ) <> *row\index
+      If ListSize( *second\__rows( ))
+         PushListPosition( *second\__rows( ) )
+         If SelectElement( *second\__rows( ), *row\index)
+            If *row\ColorState( ) = #__s_2
+               If *second\RowFocused( )
+                  *second\RowFocused( )\focus = 0
+               EndIf
+               *second\RowFocused( ) = *second\__rows( )
+               *second\RowFocused( )\focus = 1
+            EndIf
+            
+            *second\__rows( )\ColorState( ) = *row\ColorState( )
+         EndIf
+         PopListPosition( *second\__rows( ) )
+      EndIf
+   EndIf 
+EndProcedure
+
 Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 )
    Protected *this._s_WIDGET
    Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
@@ -978,10 +937,10 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
       SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
       SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
    EndIf
-   *this = PropertiesButton_Create( *second, item )
+   ;*this = PropertiesButton_Create( *second, item )
    
    ; SetItemData(*first, item, *this)
-   SetItemData(*second, item, *this)
+   SetItemData(*second, item, Type)
 EndProcedure
 
 Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
@@ -1126,8 +1085,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 861
-; FirstLine = 852
-; Folding = -----------------q--
+; CursorPosition = 642
+; FirstLine = 532
+; Folding = --------f--------4-
 ; EnableXP
 ; DPIAware

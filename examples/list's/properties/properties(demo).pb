@@ -92,6 +92,34 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn result
    EndProcedure
    
+   Procedure   PropertiesButton_Display( *second._s_WIDGET )
+      Protected._s_ROWS *row = *second\RowFocused( )
+      Protected._s_WIDGET *this
+      
+      If *row
+         *this = *display
+         ;
+         If *this 
+            If Not *row\childrens
+               If *row\hide
+                  If Hide( *this ) = 0
+                     Hide( *this, #True )
+                  EndIf
+               Else
+                  If Hide( *this )
+                     Hide( *this, #False )
+                  EndIf
+                  
+                  ;
+                  If PropertiesButton_Resize( *second )
+                     ProcedureReturn *this
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+      EndIf
+   EndProcedure
+   
    Procedure   PropertiesButton_Create( *second._s_WIDGET, item )
       Protected Type = GetItemData( *second, item )
       Protected min, max, steps, Flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
@@ -209,34 +237,6 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       ProcedureReturn *this
-   EndProcedure
-   
-   Procedure   PropertiesButton_Display( *second._s_WIDGET )
-      Protected._s_ROWS *row = *second\RowFocused( )
-      Protected._s_WIDGET *this
-      
-      If *row
-         *this = *display
-         ;
-         If *this 
-            If Not *row\childrens
-               If *row\hide
-                  If Hide( *this ) = 0
-                     Hide( *this, #True )
-                  EndIf
-               Else
-                  If Hide( *this )
-                     Hide( *this, #False )
-                  EndIf
-                  
-                  ;
-                  If PropertiesButton_Resize( *second )
-                     ProcedureReturn *this
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-      EndIf
    EndProcedure
    
    Procedure   PropertiesButton_Events( )
@@ -447,6 +447,16 @@ CompilerIf #PB_Compiler_IsMainFile
       SetItemData( *second, item, Type )
    EndProcedure
    
+   Procedure   Properties_Events( )
+      Select WidgetEvent( )
+         Case #__event_FOCUS
+            If *display
+               SetActive( *display )
+            EndIf
+            
+      EndSelect
+   EndProcedure
+   
    Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
       Protected position = 80
       Protected tflag.q = #__flag_BorderLess|#PB_Tree_NoLines|#__flag_Transparent;|#__flag_gridlines
@@ -502,16 +512,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*second, @PropertiesItems_Events( ), #__event_Resize)
       ;Bind(*second, @PropertiesItems_Events( ), #__event_Draw)
       ProcedureReturn *splitter
-   EndProcedure
-   
-   Procedure   Properties_Events( )
-      Select WidgetEvent( )
-         Case #__event_FOCUS
-            If *display
-               SetActive( *display )
-            EndIf
-            
-      EndSelect
    EndProcedure
    
    
@@ -592,7 +592,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ide_inspector_PROPERTIES = Properties_Create( 10,10, 230, 310 )
       *first = GetAttribute( ide_inspector_PROPERTIES, #PB_Splitter_FirstGadget)
       *second = GetAttribute( ide_inspector_PROPERTIES, #PB_Splitter_SecondGadget)
-       
+      
       If ide_inspector_PROPERTIES
          Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_COMMON, "COMMON" )
          Properties_AddItem( ide_inspector_PROPERTIES, #_pi_ID,             "#ID",      #__Type_ComboBox, 1 )
@@ -655,9 +655,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 134
-; FirstLine = 120
-; Folding = -----L------
+; CursorPosition = 459
+; FirstLine = 459
+; Folding = ---------f--
 ; Optimizer
 ; EnableXP
 ; DPIAware

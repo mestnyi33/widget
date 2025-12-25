@@ -214,7 +214,7 @@ UsePNGImageDecoder( )
 ; test_changecursor = 1
 ; test_setcursor = 1
 ; test_delete = 1
-; test_focus_draw = 1
+ test_focus_draw = 1
 ; test_focus_set = 1
 ; test_changecursor = 1
 
@@ -779,7 +779,7 @@ Procedure   Properties_ButtonEvents( )
    ProcedureReturn #PB_Ignore
 EndProcedure
 
-Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
+Procedure   Properties_ButtonCreate( Type, *second._s_WIDGET, item )
    Protected *this._s_WIDGET
    Protected min, max, steps, Flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
    
@@ -802,29 +802,29 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
                steps = 7 
          EndSelect
          
-         *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", Flag, min, max, 0, #__bar_button_size, 0, steps )
-;          OpenList( *parent )
+         *this = Create( *second, "Spin", Type, 0, 0, 0, 0, "", Flag, min, max, 0, #__bar_button_size, 0, steps )
+;          OpenList( *second )
 ;          *this = Spin( 0,0,0,0, min,max,flag, 0, steps )
 ;          CloseList( )
          
       Case #__type_String
-         *this = Create( *parent, "String", Type, 0, 0, 0, 0, "", Flag, 0, 0, 0, 0, 0, 0 )
+         *this = Create( *second, "String", Type, 0, 0, 0, 0, "", Flag, 0, 0, 0, 0, 0, 0 )
          
       Case #__type_CheckBox
-         *this = Create( *parent, "CheckBox", Type, 0, 0, 0, 0, "#PB_Any", Flag, 0, 0, 0, 0, 0, 0 )
+         *this = Create( *second, "CheckBox", Type, 0, 0, 0, 0, "#PB_Any", Flag, 0, 0, 0, 0, 0, 0 )
          
       Case #__type_Button
          Select item
             Case #_pi_align
-               *this = AnchorBox::Create( *parent, 0,0,0,20 )
+               *this = AnchorBox::Create( *second, 0,0,0,20 )
                
             Case #_pi_FONT, #_pi_COLOR, #_pi_IMAGE
-               *this = Create( *parent, "Button", Type, 0, 0, #__bar_button_size+1, 0, "...", Flag, 0, 0, 0, 0, 0, 0 )
+               *this = Create( *second, "Button", Type, 0, 0, #__bar_button_size+1, 0, "...", Flag, 0, 0, 0, 0, 0, 0 )
                
          EndSelect
          
       Case #__type_ComboBox
-         *this = Create( *parent, "ComboBox", Type, 0, 0, 0, 0, "", Flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
+         *this = Create( *second, "ComboBox", Type, 0, 0, 0, 0, "", Flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
          ;
          Select item
             Case #_pi_flag
@@ -894,37 +894,53 @@ Procedure   Properties_ButtonCreate( Type, *parent._s_WIDGET, item )
 EndProcedure
 
 ;-
-Procedure   Properties_StatusChange( *this._s_WIDGET, item )
-   Protected *g._s_WIDGET = EventWidget( )
+Procedure   Properties_StatusChange( *splitter._s_WIDGET, *this._s_WIDGET, item )
+   Protected._s_WIDGET *first = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+   Protected._s_WIDGET *second = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+   Protected._s_ROWS *row
+   ;
+   If PushItem( *this )
+      If SelectItem( *this, Item)
+         *row = *this\__rows( )
+      EndIf
+      PopItem( *this)
+   EndIf
    
-   If GetState( *this ) = item
-      ProcedureReturn 0
+   If *this <> *first And Not ( *first\RowFocused( ) And *first\RowFocused( )\index = *row\index ) ; And GetState( *first ) <> *row\index
+      If ListSize( *first\__rows( ))
+         PushListPosition( *first\__rows( ) )
+         If SelectElement( *first\__rows( ), *row\index)
+            If *row\ColorState( ) = #__s_2
+               If *first\RowFocused( )
+                  *first\RowFocused( )\focus = 0
+               EndIf
+               *first\RowFocused( ) = *first\__rows( )
+               *first\RowFocused( )\focus = 1
+            EndIf
+            
+            *first\__rows( )\ColorState( ) = *row\ColorState( )
+         EndIf
+         PopListPosition( *first\__rows( ) )
+      EndIf
    EndIf 
    
-   ;    If GetState(*g) = item
-   ;       ProcedureReturn 0
-   ;    EndIf 
-   
-   PushListPosition(*g\__rows( ))
-   SelectElement( *g\__rows( ), item )
-   ;
-   If *g\__rows( ) 
-      PushListPosition( *this\__rows( ) )
-      SelectElement( *this\__rows( ), *g\__rows( )\index)
-      ;*this\__rows( )\color = *g\__rows( )\color
-      *this\__rows( )\colorState( ) = *g\__rows( )\colorState( )
-      
-      If *this\__rows( )\colorState( ) = #__s_2
-         If *this\RowFocused( )
-            *this\RowFocused( )\focus = 0
+   If *this <> *second And Not ( *second\RowFocused( ) And *second\RowFocused( )\index = *row\index ) ; And GetState( *second ) <> *row\index
+      If ListSize( *second\__rows( ))
+         PushListPosition( *second\__rows( ) )
+         If SelectElement( *second\__rows( ), *row\index)
+            If *row\ColorState( ) = #__s_2
+               If *second\RowFocused( )
+                  *second\RowFocused( )\focus = 0
+               EndIf
+               *second\RowFocused( ) = *second\__rows( )
+               *second\RowFocused( )\focus = 1
+            EndIf
+            
+            *second\__rows( )\ColorState( ) = *row\ColorState( )
          EndIf
-         *this\RowFocused( ) = *this\__rows( )
-         *this\RowFocused( )\focus = 1
+         PopListPosition( *second\__rows( ) )
       EndIf
-      
-      PopListPosition( *this\__rows( ) )
-   EndIf
-   PopListPosition(*g\__rows( ))
+   EndIf 
 EndProcedure
 
 Procedure.s Properties_GetItemText( *splitter._s_WIDGET, item )
@@ -998,11 +1014,14 @@ Procedure   Properties_Events( )
          Box( *g\parent\bar\button\x+(*g\parent\bar\button\width-*g\mode\GridLines)/2, *g\parent\bar\button\y, *g\mode\GridLines, *g\scroll_height( ) + *g\mode\GridLines, $FFBF9CC3 )
          
       Case #__event_Down
-         If is_parent_item( *g, __item )
-            ; Properties_ButtonHide( *second, #True)
-         EndIf
          If Not EnteredButton( )
-            SetState( *g, __item)
+            If SetState( *g, __item)
+               ; PropertiesButton_Create( *second, __item )
+            EndIf
+            
+            If *second\FocusedRow( ) 
+               SetActive( *second\FocusedRow( )\data ) 
+            EndIf
          EndIf
          
       Case #__event_Change
@@ -1023,10 +1042,7 @@ Procedure   Properties_Events( )
             EndIf
          EndIf
          
-         Select*g
-            Case *first : Properties_StatusChange( *second, __item )
-            Case *second : Properties_StatusChange( *first, __item )
-         EndSelect
+         Properties_StatusChange( GetParent(*g), *g, __item )
          
       Case #__event_ScrollChange
          If *g = *first 
@@ -1292,7 +1308,6 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
 EndProcedure
 
 
-;-
 ;-
 Procedure HideBarButtons( *this._s_WIDGET, state )
    ;    HideItem( *this, #_tb_group_left, state )
@@ -3039,12 +3054,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 667
-; FirstLine = 462
-; Folding = ----8f-+0-0----dPu------------8-4b4-----0-0-----0---8z-
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 1022
+; FirstLine = 967
+; Folding = ------------------w--8----------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2.exe
+; Executable = ../../2.exe
