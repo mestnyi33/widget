@@ -1,71 +1,117 @@
-﻿
-IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
-
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   Declare CallBack( )
+   test_focus_draw = 1
+   
+   Global testbutton
+   Global._s_WIDGET *first, *second, *focus
+   
+   Procedure   TestEvents( )
+      Protected item 
+      
+      If WidgetEvent( ) = #__event_Focus  
+         Debug ""
+         Debug "focus "+EventWidget( )\class
+         item = GetData( EventWidget( ))
+         ChangeitemState( *first, item, 2 )
+         ChangeitemState( *second, item, 2 )
+      EndIf
+      If WidgetEvent( ) = #__event_LostFocus  
+         Debug "lostfocus "+EventWidget( )\class
+         item = GetData( EventWidget( ))
+         ChangeitemState( *first, item, 3 )
+         ChangeitemState( *second, item, 3 )
+      EndIf
+      
+      ProcedureReturn #PB_Ignore
+   EndProcedure
+   
+   Procedure   TestCreate( Text$, item )
+      If testbutton
+         Unbind( testbutton, @TestEvents( ))
+         Free( @testbutton )
+      EndIf
+      
+      testbutton = Button(10,10,140,40,"["+Text$+"] "+Str(Item) ) 
+      SetClass(testbutton, GetText(testbutton) )
+      
+      SetData( testbutton, item )
+      Bind( testbutton, @TestEvents( ) )
+   EndProcedure
+   
+   Procedure CallBack( )
+      Protected._s_ROWS *row
+      Protected._s_WIDGET *g
+      
+      *g = EventWidget( )
+      If *g = *focus
+         ProcedureReturn
+      EndIf
+      
+      If WidgetEvent( ) = #__event_Focus  
+         ; Debug "all focus "+EventWidget( )\class
+      EndIf
+      If WidgetEvent( ) = #__event_LostFocus  
+         *row = WidgetEventData( )
+         
+         Debug "   all lostfocus "+*g\class +" "+ *row\ColorState( )
+      EndIf
+      
+      If WidgetEvent( ) = #__event_Down 
+         ; Debug "all down "+EventWidget( )\class
+         If Not EnteredButton( )
+            If SetState( *g, WidgetEventItem( ))
+               TestCreate( *g\class, WidgetEventItem( ))
+               
+               If *first = *g
+                  SetState(*second, WidgetEventItem( ))
+               Else
+                  SetState(*first, WidgetEventItem( ))
+               EndIf
+            EndIf
+            
+            ;
+            If SetActive( testbutton) 
+               Debug "  after [SetActive()]"
+            EndIf
+         EndIf
+      EndIf
+      
+      If WidgetEvent( ) = #__event_Change
+         Debug "all change "+*g\class
+         ;          Select *g
+         ;             Case *first : SetState(*second, GetState(*g))
+         ;             Case *second : SetState(*first, GetState(*g))
+         ;          EndSelect
+      EndIf
+   EndProcedure
    
    ;\\
-   Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu | ;#PB_Window_NoActivate |
-                                       #PB_Window_SizeGadget |
+   Open(0, 0, 0, 310, 210, "window_0", #PB_Window_SystemMenu | ;#PB_Window_NoActivate |
+                                       #PB_Window_ScreenCentered |
                                        #PB_Window_MinimizeGadget |
                                        #PB_Window_MaximizeGadget )
    
-   SetClass(root( ), "window_0_root" )
-   Container( 10,10,240,140 ) : SetClass(widget( ), "window_0_root_container" )
-   Button(10,10,200,50,"window_0_root_butt_1")
-   SetClass(widget( ), "window_0_root_butt_1" )
-   Button(10,65,200,50,"window_0_root_butt_2")
-   SetClass(widget( ), "window_0_root_butt_2" )
+   SetClass(Root( ), "window_0_root" )
+   ;Container( 10,10,240,140 ) : SetClass(Widget( ), "window_0_root_container" )
+   *focus = Button( 160, 10, 140, 40, "reset") 
+   *first = Tree( 10,60,140,140 )
+   *second = Tree( 160,60,140,140 )
    
-   ;\\
-   Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu | ;#PB_Window_NoActivate |
-                                           #PB_Window_SizeGadget |
-                                           #PB_Window_MinimizeGadget |
-                                           #PB_Window_MaximizeGadget )
+   Define i
+   For i=0 To 5
+      AddItem(*first, -1, "["+Str(i)+"]item")
+      AddItem(*second, -1, "["+Str(i)+"]item")
+   Next
    
-   SetClass(root( ), "window_1_root" )
-   Container( 10,10,240,140 ) : SetClass(widget( ), "window_1_root_container" )
-   Button(10,10,200,50,"window_1_root_butt_1")
-   SetClass(widget( ), "window_1_root_butt_1" )
-   Button(10,65,200,50,"window_1_root_butt_2")
-   SetClass(widget( ), "window_1_root_butt_2" )
+   Bind( #PB_All, @CallBack( ))
    
-   ;\\
-   Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu | ;#PB_Window_NoActivate |
-                                           #PB_Window_SizeGadget |
-                                           #PB_Window_MinimizeGadget |
-                                           #PB_Window_MaximizeGadget )
-   
-   SetClass(root( ), "window_2_root" )
-   Container( 10,10,240,140 ) : SetClass(widget( ), "window_2_root_container" )
-   Button(10,10,200,50,"window_2_root_butt_1")
-   SetClass(widget( ), "window_2_root_butt_1" )
-   Button(10,65,200,50,"window_2_root_butt_2")
-   SetClass(widget( ), "window_2_root_butt_2" )
-   
-      
-   ;\\
-  Bind( #PB_All, @CallBack( ) )
-  ; Message( "message", "test", #__message_ScreenCentered )
-  
-  ;\\
-  ;WaitQuit( )
-  WaitClose( )
-  
-  ;
-   ;\\
-   Procedure CallBack( )
-     If WidgetEvent( ) <> #__event_draw
-       Debug ""+RemoveString(ClassFromEvent(WidgetEvent( )), "#__event_") +" - " + EventWidget( )\class +" - ("+ Bool(root( ) = EventWidget( )\root) +")";+" "+ WidgetEvent( )
-     EndIf
-   EndProcedure
- CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 28
-; Folding = -
+   WaitClose( )
+CompilerEndIf
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 11
+; Folding = ---
 ; EnableXP

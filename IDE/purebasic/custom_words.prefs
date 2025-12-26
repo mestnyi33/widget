@@ -231,6 +231,7 @@ CountItems
 CountType
 RemoveColumn
 RemoveItem
+ChangeItemState
 
 Is
 ItemID

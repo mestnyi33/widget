@@ -1794,6 +1794,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.b SetState( *this, state.i )
       Declare.l GetItemState( *this, Item.l )
       Declare.b SetItemState( *this, Item.l, State.b )
+      Declare   ChangeItemState( *this, Item.l, State.b )
       
       Declare   SetBackgroundColor( *this, color.i )
       Declare.i GetColor( *this, ColorType.l, ColorState.a = 0 )
@@ -10874,6 +10875,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ProcedureReturn result
+      EndProcedure
+      
+      Procedure   ChangeItemState( *this._s_WIDGET, Item.l, State.b )
+         If item < 0 Or item > ListSize( *this\__rows( ))
+            ProcedureReturn 0
+         EndIf
+         If ListSize( *this\__rows( ))
+            PushListPosition( *this\__rows( ))
+            If SelectElement( *this\__rows( ), item )
+               If *this\__rows( )\ColorState( ) <> state
+                  If state = #__s_2
+                     If *this\RowFocused( )
+                        *this\RowFocused( )\focus = 0
+                     EndIf
+                     *this\RowFocused( ) = *this\__rows( )
+                     *this\RowFocused( )\focus = 1
+                  EndIf
+                  
+                  *this\__rows( )\ColorState( ) = state
+               EndIf
+            EndIf
+            PopListPosition( *this\__rows( ) )
+         EndIf
       EndProcedure
       
       ;-
@@ -27648,8 +27672,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 25872
-; FirstLine = 4417
-; Folding = D+PGg-Bw-----------fAM+------Bg2-FAAAAIAOcAAAEAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAAAAAAABQAgNABAAAAx-DAAAAAgAAAMgAAABAAYAAYAAAAAAAAAYAAwAAAkBEAGAAAADAAIgAOD-------------------------DAAYICAAAAAAAUVVgAAAAAAAAAAAA9-DwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAGQAAAAAAAAAAAAYAAAAAAw--PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg-B9PAAAAAAAAAAg-AAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAAAABYAAAAAAg------BAvefAw----fAAAAAAAAAAAAAAAAAAwBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAINDAAEAMAAguAAAAAAfAAAAAAAAAAAAAAAAAA5-PwBAAAAAAAAwBIgBAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwBAYACYAAAAABAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWCAAAAAAAeAAAAAAAAAAAAAAAAAAAgAIAAAAAAAAAAAAAAAAAA-
+; CursorPosition = 1796
+; FirstLine = 911
+; Folding = D+PGg-Bw-----------fAM+------Bg2-FAAAAIAOcAAAEAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAAAAAAABQAgNABAAAAx-DAAAAAgAAAMgAAABAAYAAYAAAAAAAAAYAAwAAAkBEAGAAAADAAIgAOD-------------------------DAAYICAAAAAAAUVVgAAAAAAAAAAAA9-DwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAGQAAAAAAAAAAAAYAAAA9HAg--fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-D5fAAAAAAAAAAA-BAAAAAAAAAAAACAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAAAACwAAAAAAA------DAe0+Ag-----AAAAAAAAAAAAAAAAAAgDAAAAAAAAAAAAAAAAAAAAAAAAAgBAAAAAA3CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQaGAAIAYAAAdBAAAAA+AAAAAAAAAAAAAAAAAAw-fgDAAAAAAAAgDQADAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAwAEwAAAAACAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsEAAAAAAA9AAAAAAAAAAAAAAAAAAAABQAAAAAAAAAAEAAAAAAA+
 ; EnableXP
 ; Executable = widgets-.app.exe

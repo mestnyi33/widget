@@ -248,13 +248,13 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_LostFocus
             item = GetData( EventWidget( ))
-            PropertiesItems_StatusChange( *first, item, 3 )
-            PropertiesItems_StatusChange( *second, item, 3 )
+            PropertiesItems_StatusChange( *first, item, #__s_3 )
+            PropertiesItems_StatusChange( *second, item, #__s_3 )
             
          Case #__event_Focus
             item = GetData( EventWidget( ))
-            PropertiesItems_StatusChange( *first, item, 2 )
-            PropertiesItems_StatusChange( *second, item, 2 )
+            PropertiesItems_StatusChange( *first, item, #__s_2 )
+            PropertiesItems_StatusChange( *second, item, #__s_2 )
             
             ;
             SetText( EventWidget( ), *first\RowFocused( )\text\string )
@@ -268,10 +268,41 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;-
+   Procedure   PropertiesItems_StatusChange2( *this._s_WIDGET, item, state )
+      If item < 0 Or item > ListSize( *this\__rows( ))
+         ProcedureReturn 0
+      EndIf
+      If ListSize( *this\__rows( ))
+         PushListPosition( *this\__rows( ))
+         If SelectElement( *this\__rows( ), item )
+            If state = #__s_2
+               If *this\RowFocused( )
+                  *this\RowFocused( )\focus = 0
+               EndIf
+               *this\RowFocused( ) = *this\__rows( )
+               *this\RowFocused( )\focus = 1
+            EndIf
+            
+            *this\__rows( )\ColorState( ) = state
+         EndIf
+         PopListPosition( *this\__rows( ) )
+      EndIf
+   EndProcedure
+   
    Procedure   PropertiesItems_StatusChange( *this._s_WIDGET, item, state )
+      ;ProcedureReturn PropertiesItems_StatusChange2( *this, item, state )
+      
       Protected._s_ROWS *row = ItemID( *this, item )
       If *row 
-         *row\ColorState( ) = state
+         If state = #__s_2
+               If *this\RowFocused( )
+                  *this\RowFocused( )\focus = 0
+               EndIf
+               *this\RowFocused( ) = *this\__rows( )
+               *this\RowFocused( )\focus = 1
+            EndIf
+            
+            *row\ColorState( ) = state
          ProcedureReturn *row
       EndIf
    EndProcedure
@@ -655,9 +686,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 459
-; FirstLine = 459
-; Folding = ---------f--
+; CursorPosition = 304
+; FirstLine = 273
+; Folding = -----------0-
 ; Optimizer
 ; EnableXP
 ; DPIAware
