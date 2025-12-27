@@ -878,6 +878,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          mouse( )\buttons
       EndMacro                                                                     ; Returns mouse button 
                                                                                    ;-
+      Macro MouseDrag( ): mouse( )\dragstart: EndMacro                                  ; Returns mouse data
       Macro MouseData( ): mouse( )\data: EndMacro                                  ; Returns mouse data
       Macro MouseDirection( )
          (Bool(MouseData( ) & #__mouse_left) * - 1) + (Bool(MouseData( ) & #__mouse_top) * 1) + (Bool(MouseData( ) & #__mouse_right) * - 2) + (Bool(MouseData( ) & #__mouse_bottom) * 2)
@@ -2555,7 +2556,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                draw_mode_alpha_( #PB_2DDrawing_Default )
                If *this\drop And MouseEnter( *this )
                   If MouseEnter( *this )
-                     If mouse( )\dragstart = #PB_Drag_Enter
+                     If MouseDrag( ) = #PB_Drag_Enter
                         draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $1000ff00 )
                         
                         If *this\row
@@ -2579,7 +2580,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                draw_mode_( #PB_2DDrawing_Outlined )
                If *this\drop And MouseEnter( *this )
                   If MouseEnter( *this )
-                     If mouse( )\dragstart = #PB_Drag_Enter
+                     If MouseDrag( ) = #PB_Drag_Enter
                         draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff00ff00 )
                         
                         If *this\row
@@ -3595,7 +3596,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;                  
-                  If mouse( )\dragstart
+                  If MouseDrag( )
                      If a_anchors( )\grid_image
                         If *this\parent And 
                            *this\parent\anchors
@@ -9640,8 +9641,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ( *this\drop\private = mouse( )\drop\private Or
                        *this\drop\private & mouse( )\drop\private )
                      ;
-                     If mouse( )\dragstart <> #PB_Drag_Enter
-                        mouse( )\dragstart = #PB_Drag_Enter
+                     If MouseDrag( ) <> #PB_Drag_Enter
+                        MouseDrag( ) = #PB_Drag_Enter
                         ; Debug "#PB_Drag_Enter"
                         
                         If GetCursor( ) = cursor::#__cursor_Drag
@@ -9651,8 +9652,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Else
                      If *this\press
                         If *this\enter
-                           If mouse( )\dragstart <> #PB_Drag_Leave
-                              mouse( )\dragstart = #PB_Drag_Leave
+                           If MouseDrag( ) <> #PB_Drag_Leave
+                              MouseDrag( ) = #PB_Drag_Leave
                               ; Debug "press #PB_Drag_Leave"
                               
                               ;                               Debug *this\RowPressed( )\rindex
@@ -9668,8 +9669,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                      Else
-                        If mouse( )\dragstart = #PB_Drag_Enter
-                           mouse( )\dragstart = #PB_Drag_Leave
+                        If MouseDrag( ) = #PB_Drag_Enter
+                           MouseDrag( ) = #PB_Drag_Leave
                            ; Debug "#PB_Drag_Leave"
                            
                            If GetCursor( ) = cursor::#__cursor_Drop
@@ -10538,7 +10539,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\WidgetChange( ) = 1
                      
                      ;\\ example file "D&D-items"
-                     If *this\drop And mouse( )\dragstart
+                     If *this\drop And MouseDrag( )
                         If *this\RowPressed( )
                            *this\__rows( )\rindex = State
                            
@@ -16510,7 +16511,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         is_mouse_enter( *list( ), mouse_x, mouse_y, [#__c_draw] )
                         
                         ;\\ если переместили виджет то его исключаем
-                        If mouse( )\dragstart
+                        If MouseDrag( )
                            If is_drag_move( )
                               If Pressed( ) = *list( )
                                  Continue
@@ -16582,7 +16583,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                a_entered( )\anchors\id[a_index( )] And
                a_entered( )\anchors\state
                ;
-               If Not mouse( )\dragstart
+               If Not MouseDrag( )
                   If *this <> a_entered( ) And 
                      *this\root = a_entered( )\root 
                      ;
@@ -17291,7 +17292,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
          
          If *this\press
-            dragged = mouse( )\dragstart
+            dragged = MouseDrag( )
          EndIf
          
          ;
@@ -17837,7 +17838,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   DoEvent_Rows( *this._s_WIDGET, List *rows._s_ROWS( ), event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-         Protected dragged = Bool( mouse( )\dragstart And *this\press )
+         Protected dragged = Bool( MouseDrag( ) And *this\press )
          Protected Repaint, *row._s_ROWS
          mouse_x - *this\inner_x( ) ; - *this\scroll_x( )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
@@ -17928,7 +17929,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ change enter/leave state
             If *this\RowEntered( ) <> *row
-               If mouse( )\dragstart And *this\RowFocused( ) And  *this\RowFocused( )\press
+               If MouseDrag( ) And *this\RowFocused( ) And  *this\RowFocused( )\press
                   If Not MousePress( )
                      *this\RowFocused( )\press = 0
                   EndIf
@@ -20014,10 +20015,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If event = #__event_MouseMove
             If Pressed( ) And 
                Pressed( )\press And 
-               mouse( )\drag = 0
+               Not mouse( )\drag
                ;
                mouse( )\drag = 1 ; ._s_DROP = AllocateStructure( _s_DROP);RAG )
-               mouse( )\dragstart = #PB_Drag_Update
+               MouseDrag( ) = #PB_Drag_Update
                DoEvents( Pressed( ), #__event_DragStart )
             EndIf
          EndIf
@@ -20056,7 +20057,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; mouse move event start
          If event = #__event_MouseMove
             ;\\ mouse-pressed-widget move event
-            If mouse( )\dragstart And 
+            If MouseDrag( ) And 
                Pressed( ) And 
                Pressed( ) <> Entered( )
                ;
@@ -20293,8 +20294,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ;\\ do drop events
                   If mouse( )\drop
-                     If mouse( )\dragstart = #PB_Drag_Enter
-                        mouse( )\dragstart = #PB_Drag_Finish
+                     If MouseDrag( ) = #PB_Drag_Enter
+                        MouseDrag( ) = #PB_Drag_Finish
                      EndIf
                      ;
                      If is_drag_move( )
@@ -20317,7 +20318,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                         ElseIf Entered( )\drop
-                           If mouse( )\dragstart = #PB_Drag_Finish
+                           If MouseDrag( ) = #PB_Drag_Finish
                               mouse( )\drop\x = DPIUnscaledX( CanvasMouseX( ) - Entered( )\inner_x( ) - Entered( )\scroll_x( ) )
                               mouse( )\drop\y = DPIUnscaledY( CanvasMouseY( ) - Entered( )\inner_y( ) - Entered( )\scroll_y( ) )
                               
@@ -20335,7 +20336,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\ do enter&leave events
-                  If mouse( )\dragstart
+                  If MouseDrag( )
                      If Entered( ) <> Pressed( )
                         GetAtPoint( Root( ), CanvasMouseX( ), CanvasMouseY( ), widgets( ) )
                         
@@ -20344,7 +20345,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            GetAtPoint( Pressed( )\root, CanvasMouseX( ), CanvasMouseY( ), widgets( ) )
                         EndIf
                      EndIf
-                     mouse( )\dragstart = 0
+                     MouseDrag( ) = 0
                   EndIf
                   
                   ;
@@ -27674,8 +27675,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 5165
-; FirstLine = 1476
-; Folding = D+PGg-Bw-----------fAM+------Bg2-FAAAAIAOcAAAEAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAAAAAAABQAgNABAAA10-DgAAAA5AAAMgAAABAAYAAYAAAAAAAAAYAAwAAAkBEAGAAAADAAIgAOD-------------------------DAAYICAAAAAAAUVVgAAAAAAAAAAAA9-DwzmDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAGQAAAAAAzEYXCAYAAAA9HAg--fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-D5fAAAAAAAAAAA-BAAAAAAAAAAAACAAAAECBAIDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAAAACwAAAAAAA------DAe0+As-----AAAAAAAAAAAAAAAAAAgDAAAAAAAAAAAAAAAAAAAAAAAAAgBAGICC98-PAA-wPAAAAAAAAAAAAAAAAAAIAAAAwAAAAAAAAAAwPAAAAAIMDwHEAMAAguAAAAAAfAAAAAAAAAAAAAAAAAA5-PwBAAAAAAAAwBIgBAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwBAYACYAAAAABAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWCAAAAAAAeAAAAAAAAAAAAAAAAAAAgAIAAAAAAAAAACAAAAAAA-
+; CursorPosition = 20412
+; FirstLine = 4732
+; Folding = D+PGg-Bw-----------fAM+------Bg0-LAAAAQAc5AAAIAAAYPHAAAAQAAAAAAAAAAAAAAAAAhBAgDAQAAAAAAAkBAAAAAAAAAAAAAAAAAAAACgAAbACAAAo8-HABAAAwBAAYABAACAAwAAwAAAAAAAAAwAAgBAAIDIAMAAAAGAAQABcG+------------------------HAAwQEAAAAAAAoqqABAAAAAAAAAAA5-HgnNHAAAAAAAAAAAAAAAAAAA-OCAAAAAAAAAAAABMgAAAAAAmZwuEAwAAAA5PAA---AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+Hw-AAAAAAAAAAA+DAAAAAAAAAAAAEAAAAIECAQGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcAAAAEgBAAAAAA+-----HA970BY-----BAAA5NAwBAAAAAAAAAAHAAAAAAAAADAAAAAAAAAAAAAAAADwMQEE54-fAA+hfsDAAAAAAAAAAAAAAAAQAAAAgBAAAAAAAAAgfAAAAAQYGAPAAQAAAcBAAAYB+AAAAAgf6EAAAAAAAAAw-fgDAAAAAAAAgDQADAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAwAEwAAAAACAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAsEAAAAAAA9AAAAAAAAAAAAAAAAAAAABQAAAAAAAAAAEAAAAAAA+
 ; EnableXP
 ; Executable = widgets-.app.exe

@@ -80,7 +80,7 @@ CompilerIf #PB_Compiler_IsMainFile
             Debug "test "+keyboard( )\input
             
          Case #__event_Focus
-           ; Debug "test focus"
+            ; Debug "test focus"
             ChangeItemState( *first, GetData( EventWidget( )), 2 )
             ChangeItemState( *second, GetData( EventWidget( )), 2 )
             
@@ -96,35 +96,83 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;-
+   Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
+      Protected._s_WIDGET *first = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+      Protected._s_WIDGET *second = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+      Protected._s_ROWS *row
+      Protected state
+      
+      ;
+      If PushItem( *this )
+         If SelectItem( *this, Item)
+            *row = *this\__rows( )
+         EndIf
+         PopItem( *this)
+      EndIf
+      
+      If *row\childrens
+         Select *this
+            Case *first 
+               If *second\RowFocused( )
+                  item = *second\RowFocused( )\index
+                  state = *second\RowFocused( )\ColorState( ) 
+               EndIf
+               
+            Case *second 
+               If *first\RowFocused( )
+                  item = *first\RowFocused( )\index
+                  state = *first\RowFocused( )\ColorState( ) 
+               EndIf
+         EndSelect
+         
+         If GetState( *this ) <> item
+            ChangeItemState( *this, item, state )
+         EndIf
+         
+         *row\focus = 0
+         *row\ColorState( ) = #__s_0
+         
+      Else
+         Select *this
+            Case *first 
+               If GetState( *second ) <> *row\index
+                  ChangeItemState( *second, *row\index, *row\ColorState( ))
+               EndIf
+            Case *second 
+               If GetState( *first ) <> *row\index
+                  ChangeItemState( *first, *row\index, *row\ColorState( ))
+               EndIf   
+         EndSelect
+      EndIf
+      
+   EndProcedure
+   
    Procedure   Properties_Events( )
       Static *test  
-      Protected item, state
       Protected._s_ROWS *row
       Protected._s_WIDGET *g
       *g = EventWidget( )
       
       Select WidgetEvent( )
          Case #__event_LostFocus
-            Debug "lost " + *g\class
+           ; Debug "lost " + *g\class
             
          Case #__event_FOCUS
             If Not IsContainer(*g)
                If Not EnteredButton( )
                   *row = WidgetEventData( )
-                  If *row
-                     If Not *row\childrens
-                        If SetState( *g, *row\index )
-                           If *first <> *g
-                              ChangeItemState( *first, *row\index, 2 )
-                           EndIf
-                           If *second <> *g
-                              ChangeItemState( *second, *row\index, 2 )
-                           EndIf
-                           ;
-                           PropertiesButton_Free( *test )
-                           *test = PropertiesButton_Create( *second, *row\index )
-                           PropertiesButton_Resize( *test )
+                  If *row And Not *row\childrens
+                     If SetState( *g, *row\index )
+                        If *first <> *g
+                           ChangeItemState( *first, *row\index, 2 )
                         EndIf
+                        If *second <> *g
+                           ChangeItemState( *second, *row\index, 2 )
+                        EndIf
+                        ;
+                        PropertiesButton_Free( *test )
+                        *test = PropertiesButton_Create( *second, *row\index )
+                        PropertiesButton_Resize( *test )
                      EndIf
                   EndIf
                EndIf
@@ -132,60 +180,46 @@ CompilerIf #PB_Compiler_IsMainFile
             
             SetActive( *test )
             
+         Case #__event_Change
+            If Not MousePress( ) 
+               *row = WidgetEventData( )
+               If *row
+                  If *row\childrens
+                     If *row\focus
+                        Properties_Status( GetParent(*g), *g, WidgetEventItem( ))
+                     EndIf
+                  Else
+                     Debug 7888
+                     ;  ChangeItemState( *g, *row\index, 2 )
+                     ;  Properties_Status( GetParent(*g), *g, WidgetEventItem( ))
+                     
+                  EndIf
+               EndIf
+            EndIf
+            
+         Case #__event_Up
+            If Not EnteredButton( )
+               *row = WidgetEventData( )
+               If *row And Not *row\childrens
+                  If SetState( *g, *row\index )
+                     ; ChangeItemState( *g, *row\index, 2 )
+                     Debug "up " + *row\focus +" "+ *row\ColorState( )
+                  EndIf 
+               EndIf
+            EndIf
+            
          Case #__event_StatusChange
-            If WidgetEventData( ) = #PB_Tree_Expanded Or
-               WidgetEventData( ) = #PB_Tree_Collapsed
-               ;
-               If *first = *g
+            If *first = *g
+               If WidgetEventData( ) = #PB_Tree_Expanded Or
+                  WidgetEventData( ) = #PB_Tree_Collapsed
+                  ;
                   If SetItemState(*second, WidgetEventItem( ), WidgetEventData( ))
                      PropertiesButton_Hide( *test )
                   EndIf
                EndIf
             EndIf
-            
             ;
-            If Not EnteredButton( )
-               If PushItem( *g)
-                  If SelectItem( *g, WidgetEventItem( ))
-                     *row = *g\__rows( )
-                  EndIf
-                  PopItem( *g)
-               EndIf
-               
-               If *row\childrens
-                  If *second = *g
-                     If *first\RowFocused( )
-                        item = *first\RowFocused( )\index 
-                        state = *first\RowFocused( )\ColorState( )
-                     EndIf
-                  EndIf
-                  
-                  If *first = *g
-                     If *second\RowFocused( )
-                        item = *second\RowFocused( )\index 
-                        state = *second\RowFocused( )\ColorState( )
-                     EndIf
-                  EndIf
-                  
-                  ChangeItemState( *first, item, state )
-                  ChangeItemState( *second, item, state )
-                  
-                  *row\ColorState( ) = #__s_0
-                  *g\EnteredRow( ) = 0
-                  
-               Else
-                  Select *g
-                     Case *first 
-                        If GetState( *second ) <> *row\index
-                           ChangeItemState( *second, *row\index, *row\ColorState( ))
-                        EndIf
-                     Case *second 
-                        If GetState( *first ) <> *row\index
-                           ChangeItemState( *first, *row\index, *row\ColorState( ))
-                        EndIf   
-                  EndSelect
-               EndIf
-            EndIf
+            Properties_Status( GetParent(*g), *g, WidgetEventItem( ))
             
          Case #__event_ScrollChange
             Select *g
@@ -311,7 +345,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 84
-; FirstLine = 108
-; Folding = ---------
+; CursorPosition = 220
+; FirstLine = 182
+; Folding = ---0---b--
 ; EnableXP
