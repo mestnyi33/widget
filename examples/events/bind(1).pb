@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -11,8 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
 	
 	Procedure events_widgets( )
 		If WidgetEvent() <> #__event_MouseMove And 
-		   WidgetEvent() <> #__event_Draw And 
-		   WidgetEvent() <> #__event_StatusChange
+		   WidgetEvent() <> #__event_Draw 
 			
 			If Type( EventWidget( ) ) = #PB_GadgetType_Button
 				; ClearDebugOutput()
@@ -33,8 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
 	
 	Procedure events_windows( )
 		If WidgetEvent() <> #__event_MouseMove And 
-		   WidgetEvent() <> #__event_Draw And
-		   WidgetEvent() <> #__event_StatusChange
+		   WidgetEvent() <> #__event_Draw 
 			
 			If Type( EventWidget( ) ) = #PB_GadgetType_Button
 				Debug "  "+Index(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
@@ -48,8 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile
 	
 	Procedure events_roots( )
 		If WidgetEvent() <> #__event_MouseMove And 
-		   WidgetEvent() <> #__event_Draw And
-		   WidgetEvent() <> #__event_StatusChange
+		   WidgetEvent() <> #__event_Draw 
 			
 			If Type( EventWidget( ) ) = #PB_GadgetType_Button
 				Debug "    "+Index(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
@@ -153,9 +150,9 @@ CompilerEndIf
 ;   EndIf
 ; CompilerEndIf
 ; End  
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 120
-; FirstLine = 105
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 48
+; FirstLine = 46
 ; Folding = ----
 ; EnableXP
 ; DPIAware

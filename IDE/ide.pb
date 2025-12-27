@@ -542,29 +542,31 @@ Procedure   Properties_ButtonDisplay( *second._s_WIDGET )
 EndProcedure
 
 Procedure   Properties_ButtonEvents( )
-   Protected *g._s_WIDGET = EventWidget( )
+   Protected._s_WIDGET *g = EventWidget( )
+   Protected._s_WIDGET *second = *g\parent
+   Protected._s_WIDGET *splitter = *second\parent
+   Protected._s_WIDGET *first = *second\data
+;    Protected._s_WIDGET *splitter = GetParent( GetParent( *g ) )
+;    Protected._s_WIDGET *first = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+;    Protected._s_WIDGET *second = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+   
    Protected __event = WidgetEvent( )
-   Protected __item = WidgetEventItem( )
-   Protected __data = WidgetEventData( )
-   
-   ; Debug ""+widget::ClassFromEvent(__event) +" "+ widget::GetClass( *g) +" "+ GetData(*g)
-   
-   ;    If __event = #__event_Change
-   ;       Debug 4444
-   ;       If GetData(*g) = #_ei_leftclick
-   ;          Debug 333
-   ;       EndIf
-   ;    EndIf
-   If Not a_focused( )
-      ProcedureReturn 0
-   EndIf
+   Protected __item 
    
    Select __event
-      Case #__event_Down
-         GetActive( )\gadget = *g
+      Case #__event_LostFocus
+         __item = GetData(*g) 
+         ChangeItemState( *first, __item, 3 )
+         ChangeItemState( *second, __item, 3 )
+         
+      Case #__event_Focus
+         __item = GetData(*g) 
+         ChangeItemState( *first, __item, 2 )
+         ChangeItemState( *second, __item, 2 )
          
       Case #__event_LeftClick
-         Select GetData(*g)
+         __item = GetData(*g) 
+         Select __item
             Case #_pi_IMAGE
                Protected StandardFile$, Pattern$, File$
                StandardFile$ = "open_example.pb" 
@@ -649,9 +651,10 @@ Procedure   Properties_ButtonEvents( )
          EndSelect
          
       Case #__event_Change
+         __item = GetData(*g) 
          Select Type(*g)
             Case #__type_String
-               Select GetData(*g) 
+               Select __item 
                   Case #_pi_class  
                      If SetClass( a_focused( ), UCase( GetText(*g)))
                         Properties_Updates( a_focused( ), "Class" ) 
@@ -665,9 +668,7 @@ Procedure   Properties_ButtonEvents( )
                EndSelect
                
             Case #__type_Spin
-               ; Debug ""+*g\class
-               
-               Select GetData(*g) 
+               Select __item 
                   Case #_pi_x      : Resize( a_focused( ), GetState(*g), #PB_Ignore, #PB_Ignore, #PB_Ignore ) 
                   Case #_pi_y      : Resize( a_focused( ), #PB_Ignore, GetState(*g), #PB_Ignore, #PB_Ignore )
                   Case #_pi_width  : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, GetState(*g), #PB_Ignore )
@@ -713,18 +714,18 @@ Procedure   Properties_ButtonEvents( )
                EndSelect
                
             Case #__type_ComboBox
-               Select GetData(*g) 
+               Select __item 
                   Case #_pi_cursor
-                     Properties_SetItemText( ide_inspector_PROPERTIES, GetData(*g), GetItemText( *g, GetState( *g)))
+                     Properties_SetItemText( ide_inspector_PROPERTIES, __item, GetItemText( *g, GetState( *g)))
                      
                   Case #_pi_colorstate
                      ColorState = GetState(*g)
-                     Properties_SetItemText( ide_inspector_PROPERTIES, GetData(*g), GetItemText( *g, GetState( *g)))
+                     Properties_SetItemText( ide_inspector_PROPERTIES, __item, GetItemText( *g, GetState( *g)))
                      Properties_Updates( a_focused( ), "Color" ) 
                      
                   Case #_pi_colortype
                      ColorType = MakeConstants("#PB_Gadget_" + GetItemText( *g, GetState( *g)))
-                     Properties_SetItemText( ide_inspector_PROPERTIES, GetData(*g), GetItemText( *g, GetState( *g)))
+                     Properties_SetItemText( ide_inspector_PROPERTIES, __item, GetItemText( *g, GetState( *g)))
                      Properties_Updates( a_focused( ), "Color" ) 
                      
                   Case #_pi_FLAG
@@ -765,9 +766,9 @@ Procedure   Properties_ButtonEvents( )
          
       Case #__event_MouseWheel
          If MouseDirection( ) > 0
-            If *g\scroll\v
+            If Type(*g) = #__type_Spin
                Debug "Properties_Button_event_MouseWheel "+*g\class
-               SetState(*g\scroll\v, GetState( *g\scroll\v ) - __data )
+               SetState(*g, GetState( *g ) - WidgetEventData( ))
             EndIf
          EndIf
          
@@ -906,39 +907,15 @@ Procedure   Properties_StatusChange( *splitter._s_WIDGET, *this._s_WIDGET, item 
       PopItem( *this)
    EndIf
    
-   If *this <> *first And Not ( *first\RowFocused( ) And *first\RowFocused( )\index = *row\index ) ; And GetState( *first ) <> *row\index
-      If ListSize( *first\__rows( ))
-         PushListPosition( *first\__rows( ) )
-         If SelectElement( *first\__rows( ), *row\index)
-            If *row\ColorState( ) = #__s_2
-               If *first\RowFocused( )
-                  *first\RowFocused( )\focus = 0
-               EndIf
-               *first\RowFocused( ) = *first\__rows( )
-               *first\RowFocused( )\focus = 1
-            EndIf
-            
-            *first\__rows( )\ColorState( ) = *row\ColorState( )
-         EndIf
-         PopListPosition( *first\__rows( ) )
+   If *this <> *first   
+      If Not ( *first\RowFocused( ) And *first\RowFocused( )\index = *row\index ) ; GetState( *first ) <> *row\index
+         ChangeItemState( *first, *row\index, *row\ColorState( ) )
       EndIf
    EndIf 
    
-   If *this <> *second And Not ( *second\RowFocused( ) And *second\RowFocused( )\index = *row\index ) ; And GetState( *second ) <> *row\index
-      If ListSize( *second\__rows( ))
-         PushListPosition( *second\__rows( ) )
-         If SelectElement( *second\__rows( ), *row\index)
-            If *row\ColorState( ) = #__s_2
-               If *second\RowFocused( )
-                  *second\RowFocused( )\focus = 0
-               EndIf
-               *second\RowFocused( ) = *second\__rows( )
-               *second\RowFocused( )\focus = 1
-            EndIf
-            
-            *second\__rows( )\ColorState( ) = *row\ColorState( )
-         EndIf
-         PopListPosition( *second\__rows( ) )
+   If *this <> *second
+      If Not ( *second\RowFocused( ) And *second\RowFocused( )\index = *row\index ) ; GetState( *second ) <> *row\index
+         ChangeItemState( *second, *row\index, *row\ColorState( ) )
       EndIf
    EndIf 
 EndProcedure
@@ -1056,7 +1033,7 @@ Procedure   Properties_Events( )
                SetState(*first\scroll\v, __data )
             EndIf
             
-            Properties_ButtonResize( *second )
+            ;Properties_ButtonResize( *second )
          EndIf
          
       Case #__event_resize
@@ -1121,6 +1098,10 @@ Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    SetColor( *splitter, #PB_Gadget_BackColor, -1, #PB_All )
    SetColor( *first, #PB_Gadget_LineColor, $FFBF9CC3)
    SetColor( *second, #PB_Gadget_LineColor, $FFBF9CC3)
+   
+   ;
+   SetData( *first, *second )
+   SetData( *second, *first )
    
    ;
    Bind(*first, @Properties_Events( ))
@@ -1578,10 +1559,9 @@ EndProcedure
 
 Procedure new_widget_events( )
    Protected *new
+   Protected __item
    Protected *g._s_WIDGET = EventWidget( )
    Protected __event = WidgetEvent( )
-   Protected __item = WidgetEventItem( )
-   Protected __data = WidgetEventData( )
    Static anchors_group_show
    
    Select __event 
@@ -1593,7 +1573,7 @@ Procedure new_widget_events( )
          If Not ( ide_design_MDI = *g )
             ; Debug "  do free "+item
             ; remove items 
-            RemoveItem( ide_inspector_VIEW, GetData( *g )) 
+            RemoveItem( ide_inspector_VIEW, GetData(*g)) 
             
             ; after remove items 
             If *g = a_focused( )
@@ -1615,17 +1595,18 @@ Procedure new_widget_events( )
          EndIf
          ;
       Case #__event_Focus
+         __item = GetData(*g)
          If Not ( ide_design_MDI = *g )
-            ; Debug  ""+GetFocus( *g )  +" "+ GetClass(*g)
+            ; Debug  ""+GetFocus(*g)  +" "+ GetClass(*g)
             If a_focused( ) = *g
-               If GetState( ide_inspector_VIEW ) = GetData(*g)
-                  ;Debug "FOCUS "+ GetData(*g)  +" "+ GetClass(*g)
+               If GetState( ide_inspector_VIEW ) = __item
+                  ;Debug "FOCUS "+ __item  +" "+ GetClass(*g)
                Else
-                  ;Debug "CHANGE "+ GetData(*g)  +" "+ GetClass(*g)
+                  ;Debug "CHANGE "+ __item  +" "+ GetClass(*g)
                   If IsGadget( ide_g_inspector_VIEW )
-                     SetGadgetState( ide_g_inspector_VIEW, GetData(*g) )
+                     SetGadgetState( ide_g_inspector_VIEW, __item )
                   EndIf
-                  SetState( ide_inspector_VIEW, GetData(*g) )
+                  SetState( ide_inspector_VIEW, __item )
                EndIf
                
                Properties_Updates( *g, "Focus" )
@@ -1659,7 +1640,7 @@ Procedure new_widget_events( )
                   ;
                   Define i, state
                   For i = 0 To CountItems( ide_inspector_VIEW )
-                     If i <> GetData( *g )
+                     If i <> GetData(*g)
                         state = GetItemState( ide_inspector_VIEW, i )
                         If state & #PB_Tree_Selected
                            SetItemState( ide_inspector_VIEW, i, state &~ #PB_Tree_Selected )
@@ -1674,7 +1655,7 @@ Procedure new_widget_events( )
          If IsContainer(*g)
             If Not mouse( )\drag
                If GetState( ide_inspector_ELEMENTS) > 0
-                  new_widget_add( *g, GetText( ide_inspector_ELEMENTS ), GetMouseX( *g ), GetMouseY( *g ))
+                  new_widget_add( *g, GetText( ide_inspector_ELEMENTS ), GetMouseX(*g), GetMouseY(*g))
                EndIf
             EndIf
          EndIf
@@ -1685,7 +1666,7 @@ Procedure new_widget_events( )
                Debug "group show"
                HideBarButtons( ide_toolbar, #False )
                ;
-               If StartEnum( *g )
+               If StartEnum(*g)
                   If widgets( )\anchors\group\show
                      SetItemState( ide_inspector_VIEW, GetData( widgets( )), #PB_Tree_Selected )
                   EndIf
@@ -1748,8 +1729,8 @@ Procedure new_widget_events( )
          EndSelect
          ;
       Case #__event_MouseMove
-         If IsContainer( *g ) 
-            If MouseEnter( *g )
+         If IsContainer(*g) 
+            If MouseEnter(*g)
                If GetState( ide_inspector_ELEMENTS ) > 0 
                   If MousePress( )
                      ; disable drop 
@@ -1772,7 +1753,7 @@ Procedure new_widget_events( )
                      If GetCursor( ) < 255
                         Debug " mouse enter to change cursor " 
                         ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_inspector_ELEMENTS, GetState( ide_inspector_ELEMENTS ) ) ) ))
-                        a_set( *g )
+                        a_set(*g)
                      EndIf
                   EndIf
                EndIf
@@ -1780,7 +1761,7 @@ Procedure new_widget_events( )
          EndIf
          ;
       Case #__event_Resize
-         ; Debug  ""+GetFocus( *g )  +" "+ GetClass(*g)
+         ; Debug  ""+GetFocus(*g)  +" "+ GetClass(*g)
          If a_focused( ) = *g
             Properties_Updates( *g, "Resize" )
          EndIf
@@ -1801,9 +1782,9 @@ Procedure new_widget_events( )
       ; end new create
       If Not keyboard( )\key[1]
          If GetState( ide_inspector_ELEMENTS ) > 0 
-            If GetCursor( ) <> GetCursor( *g ) 
+            If GetCursor( ) <> GetCursor(*g) 
                Debug " reset cursor " 
-               ChangeCursor( *g, GetCursor( *g ))
+               ChangeCursor( *g, GetCursor(*g))
             EndIf
             SetState( ide_inspector_ELEMENTS, 0 )
          EndIf
@@ -2461,13 +2442,12 @@ Procedure   ide_events( )
          If __item = - 1
             SetText( ide_inspector_HELP, "help for the inspector" )
          Else
-            If __data < 0
-               If *g = ide_inspector_VIEW
-                  ; Debug ""+__data+" i "+__item
-                  SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
-               EndIf
+           If __data < 0
                If *g = ide_inspector_ELEMENTS
                   SetText( ide_inspector_HELP, ide_help_elements(GetItemText( *g, __item )) )
+               EndIf
+               If *g = ide_inspector_VIEW
+                  SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
                EndIf
                If *g = ide_inspector_PROPERTIES
                   SetText( ide_inspector_HELP, GetItemText( *g, __item ) )
@@ -3055,9 +3035,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 1022
-; FirstLine = 967
-; Folding = ------------------w--8----------------------------------
+; CursorPosition = 1035
+; FirstLine = 760
+; Folding = ----------56---vf5--0----P2v---------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

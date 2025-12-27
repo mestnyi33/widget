@@ -11,14 +11,14 @@
   
   ;\\
   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-  a_init(root(), 4)
+  a_init(Root(), 4)
   Define i,fs = 10
   ;\\
   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
   parent = Container(50, 50, 500, 500)
-  widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
-  SetColor(parent, #pb_gadget_backcolor, $FFE9E9E9)
+  Widget()\fs = fs : Resize(Widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+  SetColor(parent, #PB_Gadget_BackColor, $FFE9E9E9)
   
   ;\\
   object = Window(100, 100, 250, 220, "Resize me !", #PB_Window_SystemMenu | #PB_Window_SizeGadget, parent)
@@ -29,7 +29,7 @@
   ;object = Tree(100, 100, 250, 250) : For i=0 To 10 : additem(object,-1,""+Str(i)) : Next
    
 ;   ;\\
-   widget()\fs = 50 : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+   Widget()\fs = 50 : Resize(root(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
   
   ;\\
   Define anchor_size = 30
@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
   ;\\
   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-  a_init(root(), 4)
+  a_init(Root(), 4)
   
   ;\\
   ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
@@ -108,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
   
   ;\\
-  Bind( widget( ), @CustomEvents(), #__event_draw )
+  Bind( Widget( ), @CustomEvents(), #__event_draw )
   WaitClose( )
   
   ;\\
@@ -150,9 +150,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
     
   EndProcedure
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 20
-; FirstLine = 16
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 31
+; FirstLine = 25
 ; Folding = --
 ; EnableXP
 ; DPIAware

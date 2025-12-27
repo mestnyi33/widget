@@ -361,7 +361,6 @@ EndProcedure
 ;-
 Global *PropertiesButton._s_WIDGET
 Declare   PropertiesButton_Events( )
-Declare   PropertiesItems_StatusChange( *this._s_WIDGET, item, state )
 Declare   Properties_StatusChange( *splitter._s_WIDGET, *this._s_WIDGET, item )
 ;-
 Procedure   PropertiesButton_Get( )
@@ -536,10 +535,10 @@ Procedure   PropertiesButton_Events( )
    Protected __item = WidgetEventItem( )
    Protected __data = WidgetEventData( )
    
-   Protected *splitter._s_WIDGET = GetParent( GetParent( *g ) )
-   Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-   Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
-   
+   Protected._s_WIDGET *second = *g\parent
+   Protected._s_WIDGET *splitter = *second\parent
+   Protected._s_WIDGET *first = *second\data
+
    ; Debug ""+widget::ClassFromEvent(__event) +" "+ widget::GetClass( *g) +" "+ GetData(*g)
    
    If Not a_focused( )
@@ -552,15 +551,16 @@ Procedure   PropertiesButton_Events( )
          
       Case #__event_LostFocus
          __item = GetData( EventWidget( ))
-         PropertiesItems_StatusChange( *first, __item, 3 )
-         PropertiesItems_StatusChange( *second, __item, 3 )
+         ChangeItemState( *first, __item, 3 )
+         ChangeItemState( *second, __item, 3 )
          
       Case #__event_Focus
          __item = GetData( EventWidget( ))
-         PropertiesItems_StatusChange( *first, __item, 2 )
-         PropertiesItems_StatusChange( *second, __item, 2 )
+         ChangeItemState( *first, __item, 2 )
+         ChangeItemState( *second, __item, 2 )
          ;
          SetText( EventWidget( ), *first\RowFocused( )\text\string )
+         Debug ">>>>>> "+*first\RowFocused( )\ColorState( )
          
       Case #__event_LeftClick
          Select GetData(*g)
@@ -596,9 +596,8 @@ Procedure   PropertiesButton_Events( )
          
       Case #__event_MouseWheel
          If MouseDirection( ) > 0
-            If *g\scroll\v
-               Debug "PropertiesButton__event_MouseWheel "+*g\class
-               SetState(*g\scroll\v, GetState( *g\scroll\v ) - __data )
+            If *second\scroll\v
+               SetState(*second\scroll\v, GetState( *second\scroll\v ) - __data )
             EndIf
          EndIf
          
@@ -733,49 +732,6 @@ Procedure   PropertiesItems_Hide( *splitter._s_WIDGET, item, state )
    HideItem( GetAttribute(*splitter, #PB_Splitter_SecondGadget), item, state )
 EndProcedure
 
-Procedure   PropertiesItems_StatusChange( *this._s_WIDGET, item, state )
-   Protected._s_ROWS *row = ItemID( *this, item )
-   If *row 
-      If *row\ColorState( ) <> state
-         If state = #__s_2
-            If *this\RowFocused( )
-               *this\RowFocused( )\focus = 0
-            EndIf
-            *this\RowFocused( ) = *row
-            *this\RowFocused( )\focus = 1
-         EndIf
-         
-         *row\ColorState( ) = state
-         ProcedureReturn *row
-      EndIf
-   EndIf
-EndProcedure
-
-Procedure   ChangeState2( *this._s_WIDGET, item, state )
-   ProcedureReturn PropertiesItems_StatusChange( *this, item, state )
-   
-   If item < 0 Or item > ListSize( *this\__rows( ))
-      ProcedureReturn 0
-   EndIf
-   If ListSize( *this\__rows( ))
-      PushListPosition( *this\__rows( ))
-      If SelectElement( *this\__rows( ), item )
-         If state = #__s_2
-            If *this\RowFocused( )
-               *this\RowFocused( )\focus = 0
-            EndIf
-            *this\RowFocused( ) = *this\__rows( )
-            *this\RowFocused( )\focus = 1
-         EndIf
-         
-         *this\__rows( )\ColorState( ) = state
-      EndIf
-      PopListPosition( *this\__rows( ) )
-   EndIf
-EndProcedure
-
-
-
 Procedure.s PropertiesItems_GetText( *splitter._s_WIDGET, item )
    ProcedureReturn GetItemText( GetAttribute(*splitter, #PB_Splitter_SecondGadget), item )
 EndProcedure
@@ -807,20 +763,35 @@ Procedure   PropertiesItems_Events( )
             Debug "почему state = 2 "+ __item +" "+ *row\ColorState( )
 ;             __item = GetData(GetActive( ))
 ;             
-;             PropertiesItems_StatusChange( *first, __item, 2 )
-;             PropertiesItems_StatusChange( *second, __item, 2 )
+;             ChangeItemState( *first, __item, 2 )
+;             ChangeItemState( *second, __item, 2 )
          EndIf
          
       Case #__event_Down
          If Not EnteredButton( )
-            If SetState( *g, __item)
-               PropertiesButton_Create( *second, __item )
+            *row = WidgetEventData( )
+            If Not *row\childrens
+               If SetState( *g, __item)
+                  PropertiesButton_Create( *second, __item )
+               EndIf
             EndIf
             
             ;
             If SetActive( PropertiesButton_Get( ) ) 
             EndIf
          EndIf
+         
+      Case #__event_Up
+;          If Not EnteredButton( )
+;             *row = WidgetEventData( )
+;             
+;             If *row\childrens
+;                __item = *second\FocusedRow( )\index
+;                Debug *first\FocusedRow( )\colorstate()
+;                ChangeItemState( *first, __item, 2 )
+;                ChangeItemState( *second, __item, 2 )
+;             EndIf
+;          EndIf
          
       Case #__event_Change
          Select *g
@@ -838,6 +809,7 @@ Procedure   PropertiesItems_Events( )
          EndIf
          
          Properties_StatusChange( GetParent(*g), *g, __item )
+         Debug "status "+__item +" "+ __data
          
       Case #__event_ScrollChange
          If *g = *first 
@@ -885,13 +857,13 @@ EndProcedure
    
    If *this <> *first   
       If Not ( *first\RowFocused( ) And *first\RowFocused( )\index = *row\index ) ; GetState( *first ) <> *row\index
-         ChangeState2( *first, *row\index, *row\ColorState( ) )
+         ChangeItemState( *first, *row\index, *row\ColorState( ) )
       EndIf
    EndIf 
    
    If *this <> *second
       If Not ( *second\RowFocused( ) And *second\RowFocused( )\index = *row\index ) ; GetState( *second ) <> *row\index
-         ChangeState2( *second, *row\index, *row\ColorState( ) )
+         ChangeItemState( *second, *row\index, *row\ColorState( ) )
       EndIf
    EndIf 
 EndProcedure
@@ -980,6 +952,10 @@ Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    SetColor( *splitter, #PB_Gadget_BackColor, -1, #PB_All )
    SetColor( *first, #PB_Gadget_LineColor, $FFBF9CC3)
    SetColor( *second, #PB_Gadget_LineColor, $FFBF9CC3)
+   
+   ;
+   SetData( *first, *second )
+   SetData( *second, *first )
    
    ;
    Bind(*first, @PropertiesItems_Events( ))
@@ -1077,8 +1053,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 744
-; FirstLine = 601
-; Folding = ---------nb----v7-0-
+; CursorPosition = 599
+; FirstLine = 559
+; Folding = ---------nPf9-q---
 ; EnableXP
 ; DPIAware

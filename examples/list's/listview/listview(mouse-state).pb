@@ -53,8 +53,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;\\
-  Procedure ListViewGadget_(gadget, X,Y,Width,Height,flag=0)
-    Protected g = PB(ListViewGadget)(gadget, X,Y,Width,Height,flag)
+  Procedure ListViewGadget_(gadget, X,Y,Width,Height,Flag=0)
+    Protected g = PB(ListViewGadget)(gadget, X,Y,Width,Height,Flag)
     ;Protected g = PB(TreeGadget)(gadget, x,y,width,height,flag)
     ;Protected g = PB(ListIconGadget)(gadget, x,y,width,height,"title",width, flag)
     If gadget =- 1 : gadget = g : EndIf
@@ -128,7 +128,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Case #__event_Drop
         If *w3 = EventWidget()
           Debug  ""+Index(EventWidget())+" - widget Drop "+GetState(EventWidget()) +" "+ WidgetEventItem() +" "+ EventDropText( )
-          AddItem( *w3, EventWidget( )\RowEntered( )\_index + 1, EventDropText( ) )
+          AddItem( *w3, EventWidget( )\RowEntered( )\rindex + 1, EventDropText( ) )
           SetActive( *w3 )
         EndIf
       
@@ -194,42 +194,42 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     SetGadgetState_(*g7, countitems-1) 
     
     ;\\ demo widget
-    *w1 = widget::ListView(265, 10, 120, 180 )
-    *w2 = widget::ListView(265+125, 10, 120, 180 )
+    *w1 = Widget::ListView(265, 10, 120, 180 )
+    *w2 = Widget::ListView(265+125, 10, 120, 180 )
     
     ;\\
-    *w3 = widget::ListView(265, 195, 120, 180, #PB_ListView_ClickSelect )
-    *w4 = widget::ListView(265+125, 195, 120, 180, #PB_ListView_ClickSelect )
+    *w3 = Widget::ListView(265, 195, 120, 180, #PB_ListView_ClickSelect )
+    *w4 = Widget::ListView(265+125, 195, 120, 180, #PB_ListView_ClickSelect )
     
     ;\\
-    *w5 = widget::ListView(265, 380, 120, 180, #PB_ListView_MultiSelect )
-    *w6 = widget::ListView(265+125, 380, 120, 180, #PB_ListView_MultiSelect )
+    *w5 = Widget::ListView(265, 380, 120, 180, #PB_ListView_MultiSelect )
+    *w6 = Widget::ListView(265+125, 380, 120, 180, #PB_ListView_MultiSelect )
     
     ;\\
-    *w7 = widget::ListView(265, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect )
-    *w8 = widget::ListView(265+125, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect )
+    *w7 = Widget::ListView(265, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect )
+    *w8 = Widget::ListView(265+125, 565, 120, 180, #PB_ListView_MultiSelect|#PB_ListView_ClickSelect )
     
     ;\\
     a = 0 
     For a = 0 To CountItems
-      widget::AddItem(*w1, -1, "D&D item "+Str(a), 0)
-      widget::AddItem(*w3, -1, "Drop item "+Str(a), 0)
-      widget::AddItem(*w5, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w7, -1, "Item "+Str(a), 0)
+      Widget::AddItem(*w1, -1, "D&D item "+Str(a), 0)
+      Widget::AddItem(*w3, -1, "Drop item "+Str(a), 0)
+      Widget::AddItem(*w5, -1, "Item "+Str(a), 0)
+      Widget::AddItem(*w7, -1, "Item "+Str(a), 0)
     Next
     a = 0 
     For a = 0 To CountItems*10
-      widget::AddItem(*w2, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w4, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w6, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w8, -1, "Item "+Str(a), 0)
+      Widget::AddItem(*w2, -1, "Item "+Str(a), 0)
+      Widget::AddItem(*w4, -1, "Item "+Str(a), 0)
+      Widget::AddItem(*w6, -1, "Item "+Str(a), 0)
+      Widget::AddItem(*w8, -1, "Item "+Str(a), 0)
     Next
     a = 0 
     For a = 0 To CountItems
-      widget::SetState(*w1, a)
-      widget::SetState(*w3, a)
-      widget::SetState(*w5, a)
-      widget::SetState(*w7, a)
+      Widget::SetState(*w1, a)
+      Widget::SetState(*w3, a)
+      Widget::SetState(*w5, a)
+      Widget::SetState(*w7, a)
     Next
     
 ;     ;\\
@@ -261,12 +261,12 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(*w5, @events_widgets())
     Bind(*w6, @events_widgets())
     
-    widget::WaitClose()
+    Widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 241
-; FirstLine = 175
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 130
+; FirstLine = 77
 ; Folding = V--
 ; EnableXP
 ; DPIAware

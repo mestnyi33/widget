@@ -85,6 +85,7 @@ BeforeWidget
 
 UseWidgets
 
+DoEvents
 EventWidget
 WidgetEvent
 WidgetEventType

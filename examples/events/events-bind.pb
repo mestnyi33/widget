@@ -9,76 +9,44 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
    Global.i gEvent, gQuit
-   Global *butt0, *butt1
+   Global *bind_active, *bind_deactive
    
-   Procedure events_roots( )
-      If WidgetEvent( ) <> #__event_MouseMove
-         Debug "  "+ EventWidget( )\index +" - "+ ClassFromEvent( WidgetEvent( ) )
+   Procedure all_events( )
+      If WidgetEvent( ) = #__event_MouseMove 
+         ProcedureReturn 1
       EndIf
+      Debug "  "+ EventWidget( )\index +" - "+ ClassFromEvent( WidgetEvent( ) )
    EndProcedure
    
-   Procedure events_deactive( )
-      Unbind(*butt0, @events_roots())
-      SetText(*butt0, "un-bind-button-events" )
-      
-      Unbind(*butt1, @events_roots())
-      SetText(*butt1, "un-binds-button-events" )
-   EndProcedure
-   
-   Procedure Window_0( )
-      If Open(0, 0, 0, 480, 180, "Demo binded events for the test-button", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-         
-         *butt0 = Button(50, 50, 280, 35, "bind-button-all-events") 
-         Bind( *butt0, @events_roots( ) )
-         
-         *butt1 = Button(50, 50+45, 280, 35, "bind-button-alls-events") 
-         Bind( *butt1, @events_roots( ), #__event_Change )
-         Bind( *butt1, @events_roots( ), #__event_Down )
-         Bind( *butt1, @events_roots( ), #__event_DragStart )
-         Bind( *butt1, @events_roots( ), #__event_Focus )
-         Bind( *butt1, @events_roots( ), #__event_Input )
-         Bind( *butt1, @events_roots( ), #__event_KeyDown )
-         Bind( *butt1, @events_roots( ), #__event_KeyUp )
-         Bind( *butt1, @events_roots( ), #__event_LeftDown )
-         Bind( *butt1, @events_roots( ), #__event_LeftUp )
-         Bind( *butt1, @events_roots( ), #__event_LeftClick )
-         Bind( *butt1, @events_roots( ), #__event_Left2Click )
-         Bind( *butt1, @events_roots( ), #__event_LostFocus )
-         Bind( *butt1, @events_roots( ), #__event_MiddleDown )
-         Bind( *butt1, @events_roots( ), #__event_MiddleUp )
-         Bind( *butt1, @events_roots( ), #__event_MouseEnter )
-         Bind( *butt1, @events_roots( ), #__event_MouseLeave )
-         Bind( *butt1, @events_roots( ), #__event_MouseMove )
-         Bind( *butt1, @events_roots( ), #__event_MouseWheel )
-         Bind( *butt1, @events_roots( ), #__event_Resize )
-         Bind( *butt1, @events_roots( ), #__event_RightDown )
-         Bind( *butt1, @events_roots( ), #__event_RightUp )
-         Bind( *butt1, @events_roots( ), #__event_RightClick )
-         Bind( *butt1, @events_roots( ), #__event_Right2Click )
-         Bind( *butt1, @events_roots( ), #__event_StatusChange )
-         Bind( *butt1, @events_roots( ), #__event_Up )
-         
-         Define *butt = Button(350, 50, 80, 80, "un-bind")
-         Bind( *butt, @events_deactive( ), #__event_LeftClick )
-         
-      EndIf
-   EndProcedure
-   
-   Window_0( )
-   
-   Repeat
-      gEvent = WaitWindowEvent( )
-      
-      Select gEvent
-         Case #PB_Event_CloseWindow
-            gQuit = #True
+   Procedure click_events( )
+      Select EventWidget( ) 
+         Case *bind_active
+            Debug "left click"
+            
+         Case *bind_deactive
+            If GetState(*bind_deactive)
+               Unbind(*bind_active, @all_events())
+               SetText(*bind_deactive, "bind-all-events" )
+            Else
+               Bind(*bind_active, @all_events())
+               SetText(*bind_deactive, "un-bind-all-events" )
+            EndIf
       EndSelect
+   EndProcedure
+   
+   If Open(0, 0, 0, 480, 180, "Demo binded events for the test-button", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+      *bind_active = Button(50, 50, 80, 80, "") 
+      Bind( *bind_active, @click_events( ), #__event_LeftClick )
       
-   Until gQuit
+      *bind_deactive = Button(150, 50, 280, 80, "bind-all-events", #PB_Button_Toggle )
+      Bind( *bind_deactive, @click_events( ), #__event_LeftClick )
+      
+      WaitClose( )
+   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 61
-; FirstLine = 49
+; CursorPosition = 26
+; FirstLine = 17
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -5220,7 +5220,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;AddEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                      DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                      If result2  
-                        DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                        ;DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                      EndIf 
                   EndIf
                   
@@ -10888,6 +10888,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If state = #__s_2
                      If *this\RowFocused( )
                         *this\RowFocused( )\focus = 0
+                        *this\RowFocused( )\ColorState( ) = 0
                      EndIf
                      *this\RowFocused( ) = *this\__rows( )
                      *this\RowFocused( )\focus = 1
@@ -18136,7 +18137,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ ok
             If event = #__event_LostFocus
-               If Not *this\press
+               ;If Not *this\press
                   If *this\mode\multiSelect Or *this\mode\clickSelect
                      PushListPosition( *rows( ) )
                      ForEach *rows( )
@@ -18158,11 +18159,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\RowFocused( )\ColorState( ) = #__s_3
                         ;
                         ; status-lostfocus
-                        DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                        ; Debug 77777 
+                        DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, - *this\RowFocused( )\ColorState( ))
                      EndIf
                   EndIf
-               EndIf
-            EndIf
+               ;EndIf
+                
+             EndIf
             
             ;\\
             If event = #__event_Down
@@ -18250,17 +18253,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     *this\RowFocused( )\ColorState( ) = #__s_3
                                     ;
                                     ; status-press-lostfocus
-                                    DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
+                                    DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, - *this\RowFocused( )\ColorState( ) )
                                  EndIf
                               EndIf
                               ;
                               ; status-press-change
-                              DoEvents(*this, #__event_StatusChange, *row\rindex, -*row\ColorState( ) )
+                              DoEvents(*this, #__event_StatusChange, *row\rindex, - *row\ColorState( ) )
                            EndIf
                         Else
                            *row\ColorState( ) = #__s_1
                            ; status-press-change
-                           DoEvents(*this, #__event_StatusChange, *row\rindex, -*row\ColorState( ) )
+                           DoEvents(*this, #__event_StatusChange, *row\rindex, - *row\ColorState( ) )
                         EndIf
                      EndIf
                   EndIf
@@ -19255,7 +19258,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If MouseDirection( ) > 0
                   ; Debug "wheelY " + *data
                   If Not *this\hide
-                     If *this\scroll And *this\scroll\v And Not *this\scroll\v\hide And 
+                     If *this\scroll And *this\scroll\v And 
                         bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
                         *this\root\repaint = 1
                      ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
@@ -19266,7 +19269,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Else
                   ; Debug "wheelX " + *data
                   If Not *this\hide
-                     If *this\scroll And *this\scroll\h And Not *this\scroll\h\hide And
+                     If *this\scroll And *this\scroll\h And
                         bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - *data, 2 )
                         *this\root\repaint = 1
                      ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
@@ -27672,8 +27675,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 1796
-; FirstLine = 911
-; Folding = D+PGg-Bw-----------fAM+------Bg2-FAAAAIAOcAAAEAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAAAAAAABQAgNABAAAAx-DAAAAAgAAAMgAAABAAYAAYAAAAAAAAAYAAwAAAkBEAGAAAADAAIgAOD-------------------------DAAYICAAAAAAAUVVgAAAAAAAAAAAA9-DwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAGQAAAAAAAAAAAAYAAAA9HAg--fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-D5fAAAAAAAAAAA-BAAAAAAAAAAAACAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAAAACwAAAAAAA------DAe0+Ag-----AAAAAAAAAAAAAAAAAAgDAAAAAAAAAAAAAAAAAAAAAAAAAgBAAAAAA3CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQaGAAIAYAAAdBAAAAA+AAAAAAAAAAAAAAAAAAw-fgDAAAAAAAAgDQADAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAwAEwAAAAACAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsEAAAAAAA9AAAAAAAAAAAAAAAAAAAABQAAAAAAAAAAEAAAAAAA+
+; CursorPosition = 10891
+; FirstLine = 3288
+; Folding = D+PGg-Bw-----------fAM+------Bg2-FAAAAIAOcAAAEAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAAAAAAABQAgNABAAAA6-DAAAAAgAAAMgAAABAAYAAYAAAAAAAAAYAAwAAAkBEAGAAAADAAIgAOD-------------------------DAAYICAAAAAAAUVVgAAAAAAAAAAAA9-DwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAGQAAAAAAzEYXCAYAAAA9HAg--fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-D5fAAAAAAAAAAA-BAAAAAAAAAAAACAAAAECBAIDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAAAACwAAAAAAA------DAe0+Ag-----AAAAAAAAAAAAAAAAAAgDAAAAAAAAAAAAAAAAAAAAAAAAAgBAGICC98-HAA-wPAAAAAAAAAAAAAAAAAAIAAAAwAAAAAAAAAAwPAAAAAIMDwHEAMAAguAAAAAAfAAAAAAAAAAAAAAAAAA5-PwBAAAAAAAAwBIgBAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwBAYACYAAAAABAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWCAAAAAAAeAAAAAAAAAAAAAAAAAAAgAIAAAAAAAAAACAAAAAAA-
 ; EnableXP
 ; Executable = widgets-.app.exe
