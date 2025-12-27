@@ -5134,9 +5134,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ update scrollbars parent inner coordinate
             If *this\scroll_inner_width( ) <> \h\bar\page\len
                *this\scroll_inner_width( ) = \h\bar\page\len
+               Post( *this, #__event_Resize )
             EndIf
             If *this\scroll_inner_height( ) <> \v\bar\page\len
                *this\scroll_inner_height( ) = \v\bar\page\len
+               Post( *this, #__event_Resize )
             EndIf
          EndWith
       EndProcedure
@@ -5156,14 +5158,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             result = 1
          EndIf
          
-         
-         
+         ;\\
          If result
             bar_area_resize( *this )
-            
-            ; example state-item.pb
-            ; Post( *this, #__event_Resize )
-            Post( *this, #__event_ScrollChange )
          EndIf
          
          ; авто скроллим чтобы был виден выбранный итем
@@ -5438,9 +5435,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ update scrollbars parent inner coordinate
             If *this\scroll_inner_width( ) <> \h\bar\page\len
                *this\scroll_inner_width( ) = \h\bar\page\len
+               Post( *this, #__event_Resize )
             EndIf
             If *this\scroll_inner_height( ) <> \v\bar\page\len
                *this\scroll_inner_height( ) = \v\bar\page\len
+               Post( *this, #__event_Resize )
             EndIf
             
             ProcedureReturn result
@@ -18179,13 +18178,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  ; развернул список
                                  If SetItemState( *this, *row\rindex, (GetItemState(*this, *row\rindex) &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded )
                                     Post( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Expanded )
-                                    Post( *this, #__event_ScrollChange )
+                                    ;Post( *this, #__event_ScrollChange )
                                  EndIf
                               Else
                                  ; свернул список
                                  If SetItemState( *this, *row\rindex, (GetItemState(*this, *row\rindex) &~ #PB_Tree_Expanded) | #PB_Tree_Collapsed )
                                     Post( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Collapsed )
-                                    Post( *this, #__event_ScrollChange )
+                                    ;Post( *this, #__event_ScrollChange )
                                  EndIf
                               EndIf
                            EndIf
@@ -27675,8 +27674,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 10891
-; FirstLine = 3288
-; Folding = D+PGg-Bw-----------fAM+------Bg2-FAAAAIAOcAAAEAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAAAAAAABQAgNABAAAA6-DAAAAAgAAAMgAAABAAYAAYAAAAAAAAAYAAwAAAkBEAGAAAADAAIgAOD-------------------------DAAYICAAAAAAAUVVgAAAAAAAAAAAA9-DwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAGQAAAAAAzEYXCAYAAAA9HAg--fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-D5fAAAAAAAAAAA-BAAAAAAAAAAAACAAAAECBAIDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAAAACwAAAAAAA------DAe0+Ag-----AAAAAAAAAAAAAAAAAAgDAAAAAAAAAAAAAAAAAAAAAAAAAgBAGICC98-HAA-wPAAAAAAAAAAAAAAAAAAIAAAAwAAAAAAAAAAwPAAAAAIMDwHEAMAAguAAAAAAfAAAAAAAAAAAAAAAAAA5-PwBAAAAAAAAwBIgBAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwBAYACYAAAAABAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWCAAAAAAAeAAAAAAAAAAAAAAAAAAAgAIAAAAAAAAAACAAAAAAA-
+; CursorPosition = 5165
+; FirstLine = 1476
+; Folding = D+PGg-Bw-----------fAM+------Bg2-FAAAAIAOcAAAEAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAAAAAAABQAgNABAAA10-DgAAAA5AAAMgAAABAAYAAYAAAAAAAAAYAAwAAAkBEAGAAAADAAIgAOD-------------------------DAAYICAAAAAAAUVVgAAAAAAAAAAAA9-DwzmDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAGQAAAAAAzEYXCAYAAAA9HAg--fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-D5fAAAAAAAAAAA-BAAAAAAAAAAAACAAAAECBAIDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAAAACwAAAAAAA------DAe0+As-----AAAAAAAAAAAAAAAAAAgDAAAAAAAAAAAAAAAAAAAAAAAAAgBAGICC98-PAA-wPAAAAAAAAAAAAAAAAAAIAAAAwAAAAAAAAAAwPAAAAAIMDwHEAMAAguAAAAAAfAAAAAAAAAAAAAAAAAA5-PwBAAAAAAAAwBIgBAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwBAYACYAAAAABAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWCAAAAAAAeAAAAAAAAAAAAAAAAAAAgAIAAAAAAAAAACAAAAAAA-
 ; EnableXP
 ; Executable = widgets-.app.exe

@@ -367,7 +367,21 @@ Procedure   SetFlag( *this._s_WIDGET, flags.q )
 EndProcedure
 
 ;-
-Procedure   Properties_ButtonGetItem( *inspector._s_WIDGET, item )
+Procedure   PropertiesButton_Hide( *second._s_WIDGET, state )
+   Protected *this._s_WIDGET
+   Protected *row._s_ROWS
+   
+   *row = *second\RowFocused( )
+   If *row
+      *this = *row\data
+      ;
+      If *this
+         Hide( *this, state )
+      EndIf
+   EndIf
+EndProcedure
+
+Procedure   PropertiesButton_GetItem( *inspector._s_WIDGET, item )
    Protected *second._s_WIDGET = GetAttribute(*inspector, #PB_Splitter_SecondGadget)
    ;
    If *second 
@@ -375,7 +389,7 @@ Procedure   Properties_ButtonGetItem( *inspector._s_WIDGET, item )
    EndIf
 EndProcedure
 
-Procedure   Properties_ButtonAddItems( *inspector._s_WIDGET, item, Text.s )
+Procedure   PropertiesButton_AddItems( *inspector._s_WIDGET, item, Text.s )
    Protected *second._s_WIDGET = GetAttribute(*inspector, #PB_Splitter_SecondGadget)
    ;
    If *second 
@@ -388,7 +402,7 @@ Procedure   Properties_ButtonAddItems( *inspector._s_WIDGET, item, Text.s )
                
                If lasttext <> Text
                   lasttext = Text
-                  ; Debug "Properties_ButtonAddItems " +Text
+                  ; Debug "PropertiesButton_AddItems " +Text
                   ClearItems(*this)
                   
                   If Text
@@ -416,21 +430,7 @@ Procedure   Properties_ButtonAddItems( *inspector._s_WIDGET, item, Text.s )
    EndIf
 EndProcedure
 
-Procedure   Properties_ButtonHide( *second._s_WIDGET, state )
-   Protected *this._s_WIDGET
-   Protected *row._s_ROWS
-   
-   *row = *second\RowFocused( )
-   If *row
-      *this = *row\data
-      ;
-      If *this
-         Hide( *this, state )
-      EndIf
-   EndIf
-EndProcedure
-
-Procedure   Properties_ButtonChange( *inspector._s_WIDGET )
+Procedure   PropertiesButton_Change( *inspector._s_WIDGET )
    Protected *second._s_WIDGET = GetAttribute(*inspector, #PB_Splitter_SecondGadget)
    ;
    If *second And *second\RowFocused( )
@@ -446,7 +446,7 @@ Procedure   Properties_ButtonChange( *inspector._s_WIDGET )
    EndIf
 EndProcedure
 
-Procedure   Properties_ButtonResize( *second._s_WIDGET )
+Procedure   PropertiesButton_Resize( *second._s_WIDGET )
    Protected *this._s_WIDGET
    Protected *row._s_ROWS
    
@@ -486,7 +486,7 @@ Procedure   Properties_ButtonResize( *second._s_WIDGET )
    EndIf
 EndProcedure
 
-Procedure   Properties_ButtonDisplay( *second._s_WIDGET )
+Procedure   PropertiesButton_Display( *second._s_WIDGET )
    Protected *this._s_WIDGET
    Protected *row._s_ROWS
    Static *last._s_WIDGET
@@ -530,7 +530,7 @@ Procedure   Properties_ButtonDisplay( *second._s_WIDGET )
             EndSelect
             
             ;
-            Properties_ButtonResize( *second )
+            PropertiesButton_Resize( *second )
             
             ; SetActive( *this )
             
@@ -541,7 +541,7 @@ Procedure   Properties_ButtonDisplay( *second._s_WIDGET )
    ProcedureReturn *last
 EndProcedure
 
-Procedure   Properties_ButtonEvents( )
+Procedure   PropertiesButton_Events( )
    Protected._s_WIDGET *g = EventWidget( )
    Protected._s_WIDGET *second = *g\parent
    Protected._s_WIDGET *splitter = *second\parent
@@ -767,7 +767,7 @@ Procedure   Properties_ButtonEvents( )
       Case #__event_MouseWheel
          If MouseDirection( ) > 0
             If Type(*g) = #__type_Spin
-               Debug "Properties_Button_event_MouseWheel "+*g\class
+               Debug "PropertiesButton__event_MouseWheel "+*g\class
                SetState(*g, GetState( *g ) - WidgetEventData( ))
             EndIf
          EndIf
@@ -780,7 +780,7 @@ Procedure   Properties_ButtonEvents( )
    ProcedureReturn #PB_Ignore
 EndProcedure
 
-Procedure   Properties_ButtonCreate( Type, *second._s_WIDGET, item )
+Procedure   PropertiesButton_Create( Type, *second._s_WIDGET, item )
    Protected *this._s_WIDGET
    Protected min, max, steps, Flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
    
@@ -888,7 +888,7 @@ Procedure   Properties_ButtonCreate( Type, *second._s_WIDGET, item )
    
    If *this
       SetData(*this, item)
-      Bind(*this, @Properties_ButtonEvents( ))
+      Bind(*this, @PropertiesButton_Events( ))
    EndIf
    
    ProcedureReturn *this
@@ -967,7 +967,7 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode
 ;       SetItemColor( *second, item, #PB_Gadget_BackColor, $D4EFEFEF )
    EndIf
    ;
-   *this = Properties_ButtonCreate( Type, *second, item )
+   *this = PropertiesButton_Create( Type, *second, item )
    ;
    ; SetItemData(*first, item, *this)
    SetItemData(*second, item, *this)
@@ -1008,7 +1008,7 @@ Procedure   Properties_Events( )
          EndSelect
          
          ; create PropertiesButton
-         Properties_ButtonDisplay( *second )
+         PropertiesButton_Display( *second )
          
       Case #__event_StatusChange
          If *g = *first
@@ -1033,12 +1033,12 @@ Procedure   Properties_Events( )
                SetState(*first\scroll\v, __data )
             EndIf
             
-            ;Properties_ButtonResize( *second )
+            PropertiesButton_Resize( *second )
          EndIf
          
       Case #__event_resize
          If *g = *second
-            Properties_ButtonResize( *second )
+            PropertiesButton_Resize( *second )
          EndIf
          
       Case #__event_Up
@@ -1167,7 +1167,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
          Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_height, height$ )
          
          ;
-         Properties_ButtonChange( ide_inspector_PROPERTIES )
+         PropertiesButton_Change( ide_inspector_PROPERTIES )
       EndIf
       
       If type$ = "Focus" Or type$ = "Flag"
@@ -1204,7 +1204,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       ;\\
       If type$ = "Focus"
          If a_focused( )
-            Properties_ButtonAddItems( ide_inspector_PROPERTIES, #_pi_flag, MakeFlagsString( Type( a_focused( ))))
+            PropertiesButton_AddItems( ide_inspector_PROPERTIES, #_pi_flag, MakeFlagsString( Type( a_focused( ))))
          EndIf
          
       Else
@@ -3035,9 +3035,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 1035
-; FirstLine = 760
-; Folding = ----------56---vf5--0----P2v---------------------------
+; CursorPosition = 488
+; FirstLine = 438
+; Folding = -----0---v56---vf9-------P2v---------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
