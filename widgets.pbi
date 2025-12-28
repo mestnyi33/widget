@@ -18173,19 +18173,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *row 
                      If EnteredButton( )
                         ; change collapsed/expanded button state
-                        If *row\buttonbox
-                           If *row\buttonbox\_enter
-                              If *row\buttonbox\checked
-                                 ; развернул список
-                                 If SetItemState( *this, *row\rindex, (GetItemState(*this, *row\rindex) &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded )
-                                    Post( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Expanded )
-                                    ;Post( *this, #__event_ScrollChange )
-                                 EndIf
-                              Else
-                                 ; свернул список
-                                 If SetItemState( *this, *row\rindex, (GetItemState(*this, *row\rindex) &~ #PB_Tree_Expanded) | #PB_Tree_Collapsed )
-                                    Post( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Collapsed )
-                                    ;Post( *this, #__event_ScrollChange )
+                        If *this\mode\buttons
+                           If *row\buttonbox
+                              If *row\buttonbox\_enter
+                                 If *row\buttonbox\checked
+                                    ; развернул список
+                                    If SetItemState( *this, *row\rindex, (GetItemState(*this, *row\rindex) &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded )
+                                       Post( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Expanded )
+                                    EndIf
+                                 Else
+                                    ; свернул список
+                                    If SetItemState( *this, *row\rindex, (GetItemState(*this, *row\rindex) &~ #PB_Tree_Expanded) | #PB_Tree_Collapsed )
+                                       Post( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Collapsed )
+                                    EndIf
                                  EndIf
                               EndIf
                            EndIf
@@ -27675,8 +27675,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 20412
-; FirstLine = 4732
-; Folding = D+PGg-Bw-----------fAM+------Bg0-LAAAAQAc5AAAIAAAYPHAAAAQAAAAAAAAAAAAAAAAAhBAgDAQAAAAAAAkBAAAAAAAAAAAAAAAAAAAACgAAbACAAAo8-HABAAAwBAAYABAACAAwAAwAAAAAAAAAwAAgBAAIDIAMAAAAGAAQABcG+------------------------HAAwQEAAAAAAAoqqABAAAAAAAAAAA5-HgnNHAAAAAAAAAAAAAAAAAAA-OCAAAAAAAAAAAABMgAAAAAAmZwuEAwAAAA5PAA---AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+Hw-AAAAAAAAAAA+DAAAAAAAAAAAAEAAAAIECAQGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcAAAAEgBAAAAAA+-----HA970BY-----BAAA5NAwBAAAAAAAAAAHAAAAAAAAADAAAAAAAAAAAAAAAADwMQEE54-fAA+hfsDAAAAAAAAAAAAAAAAQAAAAgBAAAAAAAAAgfAAAAAQYGAPAAQAAAcBAAAYB+AAAAAgf6EAAAAAAAAAw-fgDAAAAAAAAgDQADAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAwAEwAAAAACAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAsEAAAAAAA9AAAAAAAAAAAAAAAAAAAABQAAAAAAAAAAEAAAAAAA+
+; CursorPosition = 10879
+; FirstLine = 3667
+; Folding = D+PGg-Bw-----------fAM+------Bg0-LAAAAQAc5AAAIAAAYPHAAAAQAAAAAAAAAAAAAAAAAhBAgDAQAAAAAAAkBAAAAAAAAAAAAAAAAAAAACgAAbACAAAo8-HABAAAwBAAYABAACAAwAAwAAAAAAAAAwAAgBAAIDIAMAAAAGAAQABcG+------------------------HAAwQEAAAAAAAoqqABAAAAAAAAAAA5-HgnNHAAAAAAAAAAAAAAAAAAA-OCEAA+BAAAAAAABMgAAAAAAmZwuEAwLuBE5PAA---AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+Hw-AAAAAAAAAAA+DAAAAAAAAAAAAEAAAAIECAQGIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcAAAAkhBAAAAAA+-----HA970BY-----BAAA5NAwBAAAAAAAAAAHAAAAAAAAADAAAAAAAAAAAAAAAADwMQEE54--BA9D-YHAAAAAAAAAAAAAAAAgAAAAADAAAAAAAAAA-AAAAAgwMAeAAgAAA5CAAAwC9BAAAAA-yJAAAAAAAAAg--AHAAAAAAAAAHgAGAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAgBIgBAAAAEAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAYJAAAAAAA5BAAAAAAAAAAAAAAAAAAACgAAAAAAAAAAIAAAAAAA9
 ; EnableXP
 ; Executable = widgets-.app.exe

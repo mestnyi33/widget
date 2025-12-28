@@ -10,6 +10,39 @@ CompilerIf #PB_Compiler_IsMainFile
    test_focus_draw = 1
    ;test_focus_set = 1
    
+   Enumeration Properties
+   #_pi_group_COMMON 
+   #_pi_ID 
+   #_pi_class
+   #_pi_text
+   #_pi_IMAGE
+   ;
+   #_pi_group_LAYOUT 
+   #_pi_align
+   #_pi_x
+   #_pi_y
+   #_pi_width
+   #_pi_height
+   ;
+   #_pi_group_VIEW 
+   #_pi_cursor
+   #_pi_hide
+   #_pi_disable
+   #_pi_FLAG
+   ;
+   #_pi_FONT
+   #_pi_fontsize
+   #_pi_fontstyle
+   ;
+   #_pi_COLOR
+   #_pi_colortype
+   #_pi_colorstate
+   #_pi_coloralpha
+   #_pi_colorblue
+   #_pi_colorgreen
+   #_pi_colorred
+EndEnumeration
+
    Global._s_widget *splitter, *second, *first
    Global a, *get, *remove, *focus, *reset, *item1, *item2, *item3, *item4, *g1, *g2, CountItems=20;99; количесвто итемов 
    
@@ -55,11 +88,115 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected min, max, steps, Flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
       Protected._s_WIDGET *this
       
-      OpenList( *parent )
-      *this = String( 0, 0, 0, 0, "test") 
-      ; Debug GetClass(EventWidget( )) ; BUG
-      CloseList( )
-      
+; ;       OpenList( *parent )
+; ;       *this = String( 0, 0, 0, 0, "test") 
+; ;       ; Debug GetClass(EventWidget( )) ; BUG
+; ;       CloseList( )
+;       max = 200
+;       *this = Create( *parent, Str(Type), Type, 0, 0, 0, 0, "", Flag, 0, max, 0, #__bar_button_size, 0, 0 )
+        Select Type
+      Case #__type_Spin
+         Flag = #__spin_Plus
+         steps = 1 
+         ;
+         Select item
+            Case #_pi_fontsize
+               min = 1
+               max = 50
+            Case #_pi_coloralpha, #_pi_colorblue, #_pi_colorgreen, #_pi_colorred
+               min = 0
+               max = 255
+            Default
+               ; flag = #__flag_invert ; #__spin_Plus
+               min = -2147483648
+               max = 2147483647
+               steps = 7 
+         EndSelect
+         
+         *this = Create( *parent, "Spin", Type, 0, 0, 0, 0, "", Flag, min, max, 0, #__bar_button_size, 0, steps )
+;          OpenList( *parent )
+;          *this = Spin( 0,0,0,0, min,max,flag, 0, steps )
+;          CloseList( )
+         
+      Case #__type_String
+         *this = Create( *parent, "String", Type, 0, 0, 0, 0, "", Flag, 0, 0, 0, 0, 0, 0 )
+         
+      Case #__type_CheckBox
+         *this = Create( *parent, "CheckBox", Type, 0, 0, 0, 0, "#PB_Any", Flag, 0, 0, 0, 0, 0, 0 )
+         
+      Case #__type_Button
+         Select item
+            Case #_pi_align
+               ; *this = AnchorBox::Create( *parent, 0,0,0,20 )
+               *this = Create( *parent, Str(Type), Type, 0, 0, 0, 0, "", Flag, 0, max, 0, #__bar_button_size, 0, 0 )
+       
+            Case #_pi_FONT, #_pi_COLOR, #_pi_IMAGE
+               *this = Create( *parent, "Button", Type, 0, 0, #__bar_button_size+1, 0, "...", Flag, 0, 0, 0, 0, 0, 0 )
+               
+         EndSelect
+         
+      Case #__type_ComboBox
+         *this = Create( *parent, "ComboBox", Type, 0, 0, 0, 0, "", Flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
+         ;
+         Select item
+            Case #_pi_flag
+               Flag( *this, #__flag_CheckBoxes|#__flag_optionboxes )
+               
+            Case #_pi_fontstyle
+               AddItem(*this, -1, "None")         
+               If *this\PopupCombo( )
+                  *this\PopupCombo( )\mode\Checkboxes = 1
+                  *this\PopupCombo( )\mode\optionboxes = 1
+                  ;    Flag( *this\PopupCombo( ), #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
+               EndIf
+               AddItem(*this, -1, "Bold")        ; Шрифт будет выделен жирным
+               AddItem(*this, -1, "Italic")      ; Шрифт будет набран курсивом
+               AddItem(*this, -1, "Underline")   ; Шрифт будет подчеркнут (только для Windows)
+               AddItem(*this, -1, "StrikeOut")   ; Шрифт будет зачеркнут (только для Windows)
+               AddItem(*this, -1, "HighQuality") ; Шрифт будет в высококачественном режиме (медленнее) (только для Windows)
+               
+            Case #_pi_colorstate
+               AddItem(*this, -1, "Default")
+               AddItem(*this, -1, "Entered")
+               AddItem(*this, -1, "Selected")
+               AddItem(*this, -1, "Disabled")
+               ;                ColorState = 0
+               ;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
+               
+            Case #_pi_colortype
+               AddItem(*this, -1, "BackColor")
+               AddItem(*this, -1, "FrontColor")
+               AddItem(*this, -1, "LineColor")
+               AddItem(*this, -1, "FrameColor")
+               AddItem(*this, -1, "ForeColor")
+               ;                ColorType = MakeConstants("#PB_Gadget_" + GetItemText( *this, 0))
+               ;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
+               
+            Case #_pi_cursor
+               AddItem(*this, -1, "Default")
+               AddItem(*this, -1, "Arrows")
+               AddItem(*this, -1, "Busy")
+               AddItem(*this, -1, "Cross")
+               AddItem(*this, -1, "Denied")
+               AddItem(*this, -1, "Hand")
+               AddItem(*this, -1, "IBeam")
+               AddItem(*this, -1, "Invisible")
+               AddItem(*this, -1, "LeftDownRightUp")
+               AddItem(*this, -1, "LeftRight")
+               AddItem(*this, -1, "LeftUpRightDown")
+               AddItem(*this, -1, "UpDown")
+               ;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
+               
+            Default
+               AddItem(*this, -1, "False")
+               AddItem(*this, -1, "True")
+               
+         EndSelect
+         ;
+         SetState(*this, 0)
+         
+   EndSelect
+    
       If *this
          SetData( *this, item )
          Bind( *this, @PropertiesButton_Events( ))
@@ -124,7 +261,19 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       ;
-      If *row\childrens 
+      If *row\data
+         Select *this
+            Case *first 
+               If GetState( *second ) <> *row\index
+                  ChangeItemState( *second, *row\index, *row\ColorState( ))
+               EndIf
+            Case *second 
+               If GetState( *first ) <> *row\index
+                  ChangeItemState( *first, *row\index, *row\ColorState( ))
+               EndIf   
+         EndSelect
+         
+      Else
          Select *this
             Case *first 
                If *second\RowFocused( )
@@ -145,57 +294,40 @@ CompilerIf #PB_Compiler_IsMainFile
          
          *row\focus = 0
          *row\ColorState( ) = #__s_0
-         
-      Else
-         Select *this
-            Case *first 
-               If GetState( *second ) <> *row\index
-                  ChangeItemState( *second, *row\index, *row\ColorState( ))
-               EndIf
-            Case *second 
-               If GetState( *first ) <> *row\index
-                  ChangeItemState( *first, *row\index, *row\ColorState( ))
-               EndIf   
-         EndSelect
       EndIf
       
    EndProcedure
    
-   Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 )
-      Protected *this._s_WIDGET
+   Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=0 )
       Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
       Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+      Protected *this._s_WIDGET
+      Protected._s_ROWS *row
       
       If mode
-         AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
+         *row = AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
       Else
-         AddItem( *first, item, UCase(StringField(Text.s, 1, Chr(10))), -1 )
-      EndIf
-      AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
-      
-      item = CountItems( *first ) - 1
-      If mode = 0
-         Define color_properties.q = $FFBF9CC3;$BE80817D
-         Define fcolor_properties.q = $CA2E2E2E
-         
-         
-         ;                      SetItemFont( *first, item, font_properties)
-         ;                      SetItemFont( *second, item, font_properties)
-         
-         SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-         SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-         
-         SetItemColor( *first, item, #__FrameColor,  $D4C8C8C8, 0, #PB_All)
-         SetItemColor( *second, item, #__FrameColor,  $D4C8C8C8, 0, #PB_All)   
-         
-         SetItemColor( *first, item, #PB_Gadget_BackColor,  $D4C8C8C8, 0, #PB_All)
-         SetItemColor( *second, item, #PB_Gadget_BackColor,  $D4C8C8C8, 0, #PB_All)   
-      Else
-         ;       SetItemColor( *first, item, #PB_Gadget_BackColor, $D4EFEFEF)
-         ;       SetItemColor( *second, item, #PB_Gadget_BackColor, $D4EFEFEF )
+         *row = AddItem( *first, item, UCase(StringField(Text.s, 1, Chr(10))), -1 )
       EndIf
       ;
-      SetItemData(*second, item, Type)
+      If *row\parent
+         *row\color\back = - 1
+         *row\parent\color\back = $D4C8C8C8
+      Else
+         *row\color\back = $D4C8C8C8
+      EndIf
+      *row\data = Type
+      
+      *row = AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
+      ;
+      If *row\parent
+         *row\color\back = - 1
+         *row\parent\color\back = $D4C8C8C8
+      Else
+         *row\color\back = $D4C8C8C8
+      EndIf
+      *row\data = Type
+      
    EndProcedure
    
    Procedure   Properties_Events( )
@@ -212,9 +344,9 @@ CompilerIf #PB_Compiler_IsMainFile
             If Not IsContainer(*g)
                If Not EnteredButton( )
                   *row = WidgetEventData( )
-                  If *row ;And Not *row\childrens
+                  If *row
                      If SetState( *g, *row\index )
-                        If  Not *row\childrens
+                        If *row\data
                            If *first <> *g
                               ChangeItemState( *first, *row\index, 2 )
                            EndIf
@@ -236,7 +368,7 @@ CompilerIf #PB_Compiler_IsMainFile
             If Not MousePress( ) 
                *row = WidgetEventData( )
                If *row
-                  If *row\childrens
+                  If Not *row\data
                      If *row\focus
                         Properties_Status( GetParent(*g), *g, WidgetEventItem( ))
                      EndIf
@@ -260,7 +392,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   ;                   EndIf
                   *row = *g\EnteredRow( )
                   If *row
-                     If  Not *row\childrens
+                     If  *row\data
                         If *first <> *g
                            ChangeItemState( *first, *row\index, 2 )
                         EndIf
@@ -339,10 +471,11 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;-
-   If Open(1, 100, 50, 370, 330, "second ListView state", #PB_Window_SystemMenu)
-      ;       ;Container(0, 0, 240, 330)
-      *first = Tree(10, 10, 220/2, 310) : SetClass(*first, "first")
-      *second = Tree(110, 10, 220/2, 310, #__flag_nolines|#__flag_nobuttons) : SetClass(*second, "second")
+   Define h = 418
+   If Open(1, 100, 50, 370, h, "second ListView state", #PB_Window_SystemMenu)
+      ;       ;Container(0, 0, 240, h)
+      *first = Tree(0,0,0,0) : SetClass(*first, "first")
+      *second = Tree(0,0,0,0, #__flag_nolines|#__flag_nobuttons) : SetClass(*second, "second")
       ;
       Hide( HBar(*second), #True )
       Hide( HBar(*first), #True )
@@ -352,7 +485,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;*first = ListView(10, 10, 220, 310)
       ;*first = Panel(10, 10, 230, 310) 
       ;Debug *second\scroll\v\hide 
-      *splitter = Splitter(10,10, 230, 310, *first, *second, #PB_Splitter_Vertical )
+      *splitter = Splitter(10,10, 230, h-20, *first, *second, #PB_Splitter_Vertical )
       ;Debug *second\scroll\v\hide 
       
       Bind(*splitter, @Properties_Events(), #__event_Focus)
@@ -360,14 +493,57 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*second, @Properties_Events())
       Bind(*first, @Properties_Events())
       
-      For a = 0 To CountItems
-         If a % 10 = 0
-            Properties_AddItem(*splitter, -1, "collaps "+Str(a), -1, 0)
-         Else
-            Properties_AddItem(*splitter, -1, "Item "+Str(a), -1, 1)
+;          Properties_AddItem(*splitter, -1, "collaps "+Str(0), -1, 0)
+;          Properties_AddItem(*splitter, -1, "Item "+Str(1), -1, 1)
+;          Properties_AddItem(*splitter, -1, "Item collaps"+Str(2), -1, 1)
+;          Properties_AddItem(*splitter, -1, "Item "+Str(21), -1, 2)
+;          Properties_AddItem(*splitter, -1, "Item "+Str(22), -1, 2)
+;          Properties_AddItem(*splitter, -1, "Item "+Str(23), -1, 2)
+;          Properties_AddItem(*splitter, -1, "Item "+Str(3), -1, 1)
+;          Properties_AddItem(*splitter, -1, "collaps "+Str(4), -1, 0)
+;          
+;       For a = 0 To CountItems
+;          If a % 10 = 0
+;             Properties_AddItem(*splitter, -1, "collaps "+Str(a), -1, 0)
+;          Else
+;             Properties_AddItem(*splitter, -1, "Item "+Str(a), -1, 1)
+;          EndIf
+;       Next
+         If *splitter
+            Properties_AddItem( *splitter, #_pi_group_COMMON, "COMMON" )
+            Properties_AddItem( *splitter, #_pi_ID,             "#ID",      #__Type_ComboBox, 1 )
+            Properties_AddItem( *splitter, #_pi_class,          "Class",    #__Type_String, 1 )
+            Properties_AddItem( *splitter, #_pi_text,           "Text",     #__Type_String, 1 )
+            Properties_AddItem( *splitter, #_pi_IMAGE,          "Image",    #__Type_Button, 1 )
+            ;
+            Properties_AddItem( *splitter, #_pi_group_LAYOUT, "LAYOUT" )
+            Properties_AddItem( *splitter, #_pi_align,          "Align"+Chr(10)+"LEFT|TOP", #__Type_Button, 1 )
+            Properties_AddItem( *splitter, #_pi_x,              "X",        #__Type_Spin, 1 )
+            Properties_AddItem( *splitter, #_pi_y,              "Y",        #__Type_Spin, 1 )
+            Properties_AddItem( *splitter, #_pi_width,          "Width",    #__Type_Spin, 1 )
+            Properties_AddItem( *splitter, #_pi_height,         "Height",   #__Type_Spin, 1 )
+            ;
+            Properties_AddItem( *splitter, #_pi_group_VIEW,   "VIEW" )
+            Properties_AddItem( *splitter, #_pi_cursor,         "Cursor",   #__Type_ComboBox, 1 )
+            Properties_AddItem( *splitter, #_pi_hide,           "Hide",     #__Type_ComboBox, 1 )
+            Properties_AddItem( *splitter, #_pi_disable,        "Disable",  #__Type_ComboBox, 1 )
+            ;
+            Properties_AddItem( *splitter, #_pi_flag,          "Flag",      #__Type_ComboBox, 1 )
+            ;
+            Properties_AddItem( *splitter, #_pi_FONT,           "Font",     #__Type_Button, 1 )
+            Properties_AddItem( *splitter, #_pi_fontsize,       "size",     #__Type_Spin, 2 )
+            Properties_AddItem( *splitter, #_pi_fontstyle,      "style",    #__Type_ComboBox, 2 )
+            ;
+            Properties_AddItem( *splitter, #_pi_COLOR,           "Color",   #__Type_Button, 1 )
+            Properties_AddItem( *splitter, #_pi_colortype,       "type",    #__Type_ComboBox, 2 )
+            Properties_AddItem( *splitter, #_pi_colorstate,      "state",    #__Type_ComboBox, 2 )
+            Properties_AddItem( *splitter, #_pi_coloralpha,      "alpha",   #__Type_Spin, 2 )
+            Properties_AddItem( *splitter, #_pi_colorblue,       "blue",    #__Type_Spin, 2 )
+            Properties_AddItem( *splitter, #_pi_colorgreen,      "green",   #__Type_Spin, 2 )
+            Properties_AddItem( *splitter, #_pi_colorred,        "red",     #__Type_Spin, 2 )
+            Properties_AddItem( *splitter, -1,        "others" )
          EndIf
-      Next
-       
+   
       
       If IsContainer(*second)
          CloseList( ) 
@@ -406,8 +582,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 357
-; FirstLine = 343
-; Folding = ------------
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 142
+; FirstLine = 107
+; Folding = t+P----------
 ; EnableXP
