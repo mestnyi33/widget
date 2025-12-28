@@ -370,7 +370,6 @@ EndProcedure
 Declare   Properties_Events( )
 Declare   PropertiesButton_Events( )
 Declare   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
-Declare   PropertiesButton_Change( *this._s_WIDGET )
 
 ;-
 Procedure   PropertiesButton_Free( *this._s_WIDGET )
@@ -768,33 +767,43 @@ Procedure   PropertiesButton_Events( )
 EndProcedure
 
 ;-
-Procedure   PropertiesButton_Change( *this._s_WIDGET )
+Procedure   Properties_AddFlags( *splitter._s_WIDGET, item, Text.s )
+   ProcedureReturn 0
+   Protected._s_WIDGET *this
+   Protected._s_WIDGET *second = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
+   ;
+   *this = GetData( *second )
    If *this
-      Protected *row._s_ROWS
-      Protected *second._s_WIDGET = *this\parent
-      
-      *row = *second\RowFocused( )
-      If *row
-         Select Type( *this )
-            Case #__type_String
-               If GetData( *this ) = #_pi_class
-                  *this\text\upper = 1
-               Else
-                  *this\text\upper = 0
-               EndIf
-               SetText( *this, *row\text\string )
+      Select item
+         Case #_pi_flag 
+            Static lasttext.s
+            
+            If lasttext <> Text
+               lasttext = Text
+               ; Debug "Properties_AddFlags " +Text
+               ClearItems(*this)
                
-            Case #__type_Spin
-               SetState( *this, Val(*row\text\string) )
-               
-            Case #__type_ComboBox
-               Select LCase(*row\text\string)
-                  Case "false" : SetState( *this, 0)
-                  Case "true"  : SetState( *this, 1)
-               EndSelect
-               
-         EndSelect
-      EndIf
+               If Text
+                  Protected i, sublevel, String.s, count = CountString(Text,"|")
+                  
+                  For I = 0 To count
+                     String = Trim(StringField(Text,(I+1),"|"))
+                     
+                     Select LCase(Trim(StringField(String,(3),"_")))
+                        Case "left" : sublevel = 1
+                        Case "right" : sublevel = 1
+                        Case "center" : sublevel = 1
+                        Default
+                           sublevel = 0
+                     EndSelect
+                     
+                     AddItem(*this, -1, String, -1, sublevel)
+                     
+                  Next
+               EndIf 
+            EndIf 
+            
+      EndSelect
    EndIf
 EndProcedure
 
@@ -809,9 +818,25 @@ Procedure   Properties_Change( *splitter._s_WIDGET )
          text$ = *second\RowFocused( )\text\string
          ;
          Select Type( *this )
-            Case #__type_Spin     : SetState(*this, Val(text$) )
-            Case #__type_String   : SetText(*this, text$ )
-            Case #__type_ComboBox : SetState(*this, StrToBool(text$) )
+            Case #__type_Spin     
+               If GetData( *this ) = #_pi_class
+                  *this\text\upper = 1
+               Else
+                  *this\text\upper = 0
+               EndIf
+               SetState(*this, Val(text$) )
+               
+            Case #__type_String   
+               SetText(*this, text$ )
+               
+            Case #__type_ComboBox 
+               SetState(*this, StrToBool(text$) )
+               
+;                Select LCase(text$)
+;                   Case "false" : SetState( *this, 0)
+;                   Case "true"  : SetState( *this, 1)
+;                EndSelect
+               
          EndSelect
       EndIf
    EndIf
@@ -881,6 +906,25 @@ Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
    
 EndProcedure
 
+Procedure   Properties_Display( *splitter._s_WIDGET, *this._s_WIDGET, item )
+   Protected *first._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
+   Protected *second._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
+   
+   If *first <> *this
+      ChangeItemState( *first, item, 2 )
+   EndIf
+   If *second <> *this
+      ChangeItemState( *second, item, 2 )
+   EndIf
+   ;
+   PropertiesButton_Free( *second\data )  
+   *this = PropertiesButton_Create( *second, item )
+   PropertiesButton_Resize( *this )
+   Properties_Change( *splitter )
+   
+   ProcedureReturn *this
+EndProcedure
+
 Procedure   Properties_HideItem( *splitter._s_WIDGET, item, state )
    HideItem( GetAttribute( *splitter, #PB_Splitter_FirstGadget ), item, state )
    HideItem( GetAttribute( *splitter, #PB_Splitter_SecondGadget ), item, state )
@@ -892,46 +936,6 @@ EndProcedure
 
 Procedure   Properties_SetItemText( *splitter._s_WIDGET, item, Text.s )
    ProcedureReturn SetItemText( GetAttribute( *splitter, #PB_Splitter_SecondGadget ), item, Text.s )
-EndProcedure
-
-Procedure   Properties_AddFlags( *splitter._s_WIDGET, item, Text.s )
-   ProcedureReturn 0
-   Protected._s_WIDGET *this
-   Protected._s_WIDGET *second = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
-   ;
-   *this = GetData( *second )
-   If *this
-      Select item
-         Case #_pi_flag 
-            Static lasttext.s
-            
-            If lasttext <> Text
-               lasttext = Text
-               ; Debug "Properties_AddFlags " +Text
-               ClearItems(*this)
-               
-               If Text
-                  Protected i, sublevel, String.s, count = CountString(Text,"|")
-                  
-                  For I = 0 To count
-                     String = Trim(StringField(Text,(I+1),"|"))
-                     
-                     Select LCase(Trim(StringField(String,(3),"_")))
-                        Case "left" : sublevel = 1
-                        Case "right" : sublevel = 1
-                        Case "center" : sublevel = 1
-                        Default
-                           sublevel = 0
-                     EndSelect
-                     
-                     AddItem(*this, -1, String, -1, sublevel)
-                     
-                  Next
-               EndIf 
-            EndIf 
-            
-      EndSelect
-   EndIf
 EndProcedure
 
 Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=0 )
@@ -962,22 +966,6 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=
    EndIf
    *row\data = Type  
    
-EndProcedure
-
-Procedure   Properties_Display( *splitter._s_WIDGET, *this._s_WIDGET, item )
-   Protected *first._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
-   Protected *second._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
-   
-   If *first <> *this
-      ChangeItemState( *first, item, 2 )
-   EndIf
-   If *second <> *this
-      ChangeItemState( *second, item, 2 )
-   EndIf
-   PropertiesButton_Free( *second\data )  
-   *this = PropertiesButton_Create( *second, item )
-   PropertiesButton_Resize( *this )
-   ProcedureReturn *this
 EndProcedure
 
 Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
@@ -1056,16 +1044,7 @@ Procedure   Properties_Events( )
                If *row
                   If SetState( *g, *row\index )
                      If *row\data
-                        If *first <> *g
-                           ChangeItemState( *first, *row\index, 2 )
-                        EndIf
-                        If *second <> *g
-                           ChangeItemState( *second, *row\index, 2 )
-                        EndIf
-                        ;
-                        PropertiesButton_Free( *test )    
-                        *test = PropertiesButton_Create( *second, *row\index )
-                        PropertiesButton_Resize( *test )
+                        *test = Properties_Display( *g\parent, *g, *row\index )
                      EndIf
                   EndIf
                EndIf
@@ -1092,28 +1071,15 @@ Procedure   Properties_Events( )
             EndIf
          EndIf
          
-         PropertiesButton_Change( *test )
+         Properties_Change( *g\parent )
          
       Case #__event_Up
          If Not EnteredButton( )
-            *row = WidgetEventData( )
-            If *row 
-               ;                   If *test
-               ;                      SetState( *g, GetData( *test ))
-               ;                   Else
-               ;                   EndIf
+            If MouseDrag( ) 
                *row = *g\EnteredRow( )
-               If *row
-                  If  *row\data
-                     If *first <> *g
-                        ChangeItemState( *first, *row\index, 2 )
-                     EndIf
-                     If *second <> *g
-                        ChangeItemState( *second, *row\index, 2 )
-                     EndIf
-                     PropertiesButton_Free( *test )  
-                     *test = PropertiesButton_Create( *second, *row\index )
-                     PropertiesButton_Resize( *test )
+               If *row 
+                  If *row\data
+                     *test = Properties_Display( *g\parent, *g, *row\index )
                      SetActive( *test )
                   EndIf
                EndIf
@@ -1131,7 +1097,7 @@ Procedure   Properties_Events( )
             EndIf
          EndIf
          ;
-         Properties_Status( GetParent(*g), *g, WidgetEventItem( ))
+         Properties_Status( *g\parent, *g, WidgetEventItem( ))
          
       Case #__event_ScrollChange
          Select *g
@@ -1704,7 +1670,7 @@ Procedure new_widget_events( )
          ;
       Case #__event_LeftUp
          If IsContainer(*g)
-            If Not mouse( )\drag
+            If Not MouseDrag( )
                If GetState( ide_inspector_ELEMENTS) > 0
                   new_widget_add( *g, GetText( ide_inspector_ELEMENTS ), GetMouseX(*g), GetMouseY(*g))
                EndIf
@@ -1788,14 +1754,14 @@ Procedure new_widget_events( )
                      If GetState( ide_inspector_ELEMENTS ) = 1
                         If *g = ide_design_MDI  
                         Else
-                           If mouse( )\dragstart = #PB_Drag_Enter
-                              mouse( )\dragstart = #PB_Drag_Leave
+                           If MouseDragStart( ) = #PB_Drag_Enter
+                              MouseDragStart( ) = #PB_Drag_Leave
                            EndIf
                         EndIf
                      Else
                         If *g = ide_design_MDI  
-                           If mouse( )\dragstart = #PB_Drag_Enter
-                              mouse( )\dragstart = #PB_Drag_Leave
+                           If MouseDragStart( ) = #PB_Drag_Enter
+                              MouseDragStart( ) = #PB_Drag_Leave
                            EndIf
                         Else
                         EndIf
@@ -3086,9 +3052,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 537
-; FirstLine = 519
-; Folding = ----r--8-----4-P1d-P+-------------------------------------
+; CursorPosition = 837
+; FirstLine = 681
+; Folding = ----r--8---f----44f-43-----------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP

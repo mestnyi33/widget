@@ -1669,7 +1669,7 @@ Procedure new_widget_events( )
          ;
       Case #__event_LeftUp
          If IsContainer(*g)
-            If Not mouse( )\drag
+            If Not MouseDrag( )
                If GetState( ide_inspector_ELEMENTS) > 0
                   new_widget_add( *g, GetText( ide_inspector_ELEMENTS ), GetMouseX(*g), GetMouseY(*g))
                EndIf
@@ -1753,14 +1753,14 @@ Procedure new_widget_events( )
                      If GetState( ide_inspector_ELEMENTS ) = 1
                         If *g = ide_design_MDI  
                         Else
-                           If mouse( )\dragstart = #PB_Drag_Enter
-                              mouse( )\dragstart = #PB_Drag_Leave
+                           If MouseDragStart( ) = #PB_Drag_Enter
+                              MouseDragStart( ) = #PB_Drag_Leave
                            EndIf
                         EndIf
                      Else
                         If *g = ide_design_MDI  
-                           If mouse( )\dragstart = #PB_Drag_Enter
-                              mouse( )\dragstart = #PB_Drag_Leave
+                           If MouseDragStart( ) = #PB_Drag_Enter
+                              MouseDragStart( ) = #PB_Drag_Leave
                            EndIf
                         Else
                         EndIf
@@ -3051,8 +3051,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 452
-; FirstLine = 448
-; Folding = ------f-------------------------------------------------
+; CursorPosition = 1671
+; FirstLine = 1586
+; Folding = ------ff------------------------------------------------
 ; EnableXP
 ; DPIAware
