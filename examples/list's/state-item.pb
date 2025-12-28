@@ -10,7 +10,8 @@ CompilerIf #PB_Compiler_IsMainFile
    test_focus_draw = 1
    ;test_focus_set = 1
    
-   Global a, *second._s_WIDGET, *first._s_widget, *get, *remove, *focus, *reset, *item1, *item2, *item3, *item4, *g1, *g2, CountItems=20;99; количесвто итемов 
+   Global._s_widget *splitter, *second, *first
+   Global a, *get, *remove, *focus, *reset, *item1, *item2, *item3, *item4, *g1, *g2, CountItems=20;99; количесвто итемов 
    
    ;- DECLARE
    Declare PropertiesButton_Events( )
@@ -160,6 +161,43 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
+   Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 )
+      Protected *this._s_WIDGET
+      Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+      Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+      
+      If mode
+         AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
+      Else
+         AddItem( *first, item, UCase(StringField(Text.s, 1, Chr(10))), -1 )
+      EndIf
+      AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
+      
+      item = CountItems( *first ) - 1
+      If mode = 0
+         Define color_properties.q = $FFBF9CC3;$BE80817D
+         Define fcolor_properties.q = $CA2E2E2E
+         
+         
+         ;                      SetItemFont( *first, item, font_properties)
+         ;                      SetItemFont( *second, item, font_properties)
+         
+         SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+         SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+         
+         SetItemColor( *first, item, #__FrameColor,  $D4C8C8C8, 0, #PB_All)
+         SetItemColor( *second, item, #__FrameColor,  $D4C8C8C8, 0, #PB_All)   
+         
+         SetItemColor( *first, item, #PB_Gadget_BackColor,  $D4C8C8C8, 0, #PB_All)
+         SetItemColor( *second, item, #PB_Gadget_BackColor,  $D4C8C8C8, 0, #PB_All)   
+      Else
+         ;       SetItemColor( *first, item, #PB_Gadget_BackColor, $D4EFEFEF)
+         ;       SetItemColor( *second, item, #PB_Gadget_BackColor, $D4EFEFEF )
+      EndIf
+      ;
+      SetItemData(*second, item, Type)
+   EndProcedure
+   
    Procedure   Properties_Events( )
       Static *test  
       Protected._s_ROWS *row
@@ -168,7 +206,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEvent( )
          Case #__event_LostFocus
-           ; Debug "lost " + *g\class
+            ; Debug "lost " + *g\class
             
          Case #__event_FOCUS
             If Not IsContainer(*g)
@@ -216,25 +254,25 @@ CompilerIf #PB_Compiler_IsMainFile
             If Not EnteredButton( )
                *row = WidgetEventData( )
                If *row 
-;                   If *test
-;                      SetState( *g, GetData( *test ))
-;                   Else
-;                   EndIf
-                     *row = *g\EnteredRow( )
-                     If *row
-                        If  Not *row\childrens
-                           If *first <> *g
-                              ChangeItemState( *first, *row\index, 2 )
-                           EndIf
-                           If *second <> *g
-                              ChangeItemState( *second, *row\index, 2 )
-                           EndIf
-                           PropertiesButton_Free( *test )
-                           *test = PropertiesButton_Create( *second, *row\index )
-                           PropertiesButton_Resize( *test )
-                           SetActive( *test )
+                  ;                   If *test
+                  ;                      SetState( *g, GetData( *test ))
+                  ;                   Else
+                  ;                   EndIf
+                  *row = *g\EnteredRow( )
+                  If *row
+                     If  Not *row\childrens
+                        If *first <> *g
+                           ChangeItemState( *first, *row\index, 2 )
                         EndIf
+                        If *second <> *g
+                           ChangeItemState( *second, *row\index, 2 )
+                        EndIf
+                        PropertiesButton_Free( *test )
+                        *test = PropertiesButton_Create( *second, *row\index )
+                        PropertiesButton_Resize( *test )
+                        SetActive( *test )
                      EndIf
+                  EndIf
                   
                EndIf
             EndIf
@@ -314,29 +352,22 @@ CompilerIf #PB_Compiler_IsMainFile
       ;*first = ListView(10, 10, 220, 310)
       ;*first = Panel(10, 10, 230, 310) 
       ;Debug *second\scroll\v\hide 
-      Splitter(10,10, 230, 310, *first, *second, #PB_Splitter_Vertical )
+      *splitter = Splitter(10,10, 230, 310, *first, *second, #PB_Splitter_Vertical )
       ;Debug *second\scroll\v\hide 
       
-      Bind(Widget( ), @Properties_Events(), #__event_Focus)
+      Bind(*splitter, @Properties_Events(), #__event_Focus)
       Bind(*second, @Properties_Events(), #__event_Resize)
       Bind(*second, @Properties_Events())
       Bind(*first, @Properties_Events())
       
       For a = 0 To CountItems
          If a % 10 = 0
-            AddItem(*first, -1, "collaps "+Str(a), -1, 0)
+            Properties_AddItem(*splitter, -1, "collaps "+Str(a), -1, 0)
          Else
-            AddItem(*first, -1, "Item "+Str(a), -1, 1)
+            Properties_AddItem(*splitter, -1, "Item "+Str(a), -1, 1)
          EndIf
       Next
-      For a = 0 To CountItems
-         If a % 10 = 0
-            AddItem(*second, -1, "collaps "+Str(a), -1, 0)
-         Else
-            AddItem(*second, -1, "Item "+Str(a), -1, 1)
-         EndIf
-      Next
-      
+       
       
       If IsContainer(*second)
          CloseList( ) 
@@ -375,8 +406,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 221
-; FirstLine = 214
-; Folding = --------t0-
+; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; CursorPosition = 357
+; FirstLine = 343
+; Folding = ------------
 ; EnableXP
