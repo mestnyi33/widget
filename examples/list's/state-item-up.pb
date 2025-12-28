@@ -110,20 +110,7 @@ CompilerIf #PB_Compiler_IsMainFile
          PopItem( *this)
       EndIf
       
-      ; чтобы не виделялся
-      If MouseDrag( )
-         If *this\RowFocused( ) = *row 
-            *row\focus = 1
-            *row\ColorState( ) = #__s_2
-         Else
-            *row\focus = 0
-            *row\ColorState( ) = #__s_0
-         EndIf
-         ProcedureReturn
-      EndIf
-      
-      ;
-      If *row\childrens 
+      If *row\childrens
          Select *this
             Case *first 
                If *second\RowFocused( )
@@ -175,19 +162,19 @@ CompilerIf #PB_Compiler_IsMainFile
                If Not EnteredButton( )
                   *row = WidgetEventData( )
                   If *row ;And Not *row\childrens
-                     If SetState( *g, *row\index )
-                        If  Not *row\childrens
-                           If *first <> *g
-                              ChangeItemState( *first, *row\index, 2 )
-                           EndIf
-                           If *second <> *g
-                              ChangeItemState( *second, *row\index, 2 )
-                           EndIf
-                           PropertiesButton_Free( *test )
-                           *test = PropertiesButton_Create( *second, *row\index )
-                           PropertiesButton_Resize( *test )
-                        EndIf
-                     EndIf
+;                      If SetState( *g, *row\index )
+;                         If  Not *row\childrens
+;                            If *first <> *g
+;                               ChangeItemState( *first, *row\index, 2 )
+;                            EndIf
+;                            If *second <> *g
+;                               ChangeItemState( *second, *row\index, 2 )
+;                            EndIf
+;                            PropertiesButton_Free( *test )
+;                            *test = PropertiesButton_Create( *second, *row\index )
+;                            PropertiesButton_Resize( *test )
+;                         EndIf
+;                      EndIf
                   EndIf
                EndIf
             EndIf
@@ -215,28 +202,26 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_Up
             If Not EnteredButton( )
                *row = WidgetEventData( )
-               If *row 
-;                   If *test
-;                      SetState( *g, GetData( *test ))
-;                   Else
-;                   EndIf
-                     *row = *g\EnteredRow( )
-                     If *row
-                        If  Not *row\childrens
-                           If *first <> *g
-                              ChangeItemState( *first, *row\index, 2 )
-                           EndIf
-                           If *second <> *g
-                              ChangeItemState( *second, *row\index, 2 )
-                           EndIf
-                           PropertiesButton_Free( *test )
-                           *test = PropertiesButton_Create( *second, *row\index )
-                           PropertiesButton_Resize( *test )
-                           SetActive( *test )
+               If *row ;And Not *row\childrens
+                  ;If SetState( *g, *row\index )
+                     Debug 888 ; ChangeItemState( *g, *row\index, 2 )
+                     ;Debug "up " + *row\focus +" "+ *row\ColorState( )
+                  ;EndIf 
+                     
+                     
+                     If  Not *row\childrens
+                        If *first <> *g
+                           ChangeItemState( *first, *row\index, 2 )
                         EndIf
+                        If *second <> *g
+                           ChangeItemState( *second, *row\index, 2 )
+                        EndIf
+                        PropertiesButton_Free( *test )
+                        *test = PropertiesButton_Create( *second, *row\index )
+                        PropertiesButton_Resize( *test )
+                      SetActive( *test )
+           EndIf
                      EndIf
-                  
-               EndIf
             EndIf
             
          Case #__event_StatusChange
@@ -376,7 +361,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 221
-; FirstLine = 214
-; Folding = --------t0-
+; CursorPosition = 145
+; FirstLine = 119
+; Folding = ----------
 ; EnableXP
+; DPIAware
