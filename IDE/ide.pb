@@ -1058,7 +1058,7 @@ Procedure   Properties_Events( )
             *row = WidgetEventData( )
             If *row
                If Not *row\data
-                  If *row\focus
+                 If *row\focus
                      Properties_Status( GetParent(*g), *g, WidgetEventItem( ))
                   EndIf
                EndIf
@@ -1071,7 +1071,6 @@ Procedure   Properties_Events( )
             EndIf
          EndIf
          
-         Properties_Change( *g\parent )
          
       Case #__event_Up
          If Not EnteredButton( )
@@ -3051,12 +3050,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 837
-; FirstLine = 681
-; Folding = ----r--8---f----44f-43-----------------------------------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 1071
+; FirstLine = 856
+; Folding = ----r--8---f----44--43-----------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = ../../2.exe
+; Executable = ..\..\2.exe
