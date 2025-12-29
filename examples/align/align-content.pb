@@ -6,6 +6,47 @@ CompilerIf #PB_Compiler_IsMainFile
    ;test_align = 1
    test_draw_area = 1
    
+   Macro add_image( _address_, _img_, _size_ = 0 )
+      ;
+      If IsImage( _img_ )
+         If _size_
+            _address_\width  = _size_
+            _address_\height = _size_
+            ResizeImage( _img_, _size_, _size_, #PB_Image_Raw )
+         Else
+            _address_\width  = ImageWidth( _img_ )
+            _address_\height = ImageHeight( _img_ )
+         EndIf
+         
+         _address_\change  = 1
+         _address_\image   = _img_
+         _address_\imageID = ImageID( _img_ )
+      Else
+         _address_\change  = - 1
+         _address_\image   = - 1
+         _address_\imageID = 0
+         _address_\width   = 0
+         _address_\height  = 0
+      EndIf
+   EndMacro
+   
+   Procedure _SetImage( *this._s_WIDGET, img )
+      If *this = #PB_All
+         PushMapPosition( roots( ))
+         ForEach roots( ) 
+            If StartEnum( roots( ) )
+               If widgets( )\picture\image = img
+                  ; Debug widgets( )\class
+                  ; widgets( )\picturesize = ImageWidth(img)
+                  add_image( widgets( )\picture, img )
+               EndIf
+               StopEnum( )
+            EndIf    
+         Next 
+         PopMapPosition( roots( ))
+      EndIf
+   EndProcedure
+   
    Define Image = 1
    Define i, Width = 250
    
@@ -16,18 +57,28 @@ CompilerIf #PB_Compiler_IsMainFile
       ResizeImage(Image, DesktopScaledX(ImageWidth(Image)),DesktopScaledY(ImageHeight(Image)))
    EndIf
    
-   Global test, str
+   Global test, change_text, change_img
+   
+   Procedure Click_Events( )
+      If GetState( change_img )
+         ResizeImage(1, 16,16, #PB_Image_Raw)
+      Else
+         ResizeImage(1, 32,32, #PB_Image_Raw)
+      EndIf
+      _SetImage( #PB_All, 1 )
+   EndProcedure
+   
    Procedure Change_Events( )
       If test
-         SetText( test, GetText( str))
+         SetText( test, GetText( change_text))
       EndIf
    EndProcedure
    
    Procedure Test_Events( )
       test = EventWidget( )
-      SetText( str, GetText( test))
+      SetText( change_text, GetText( test))
    EndProcedure
-   
+  
    Procedure TestAlign( X,Y,Width,Height, txt$, img, flags=0, align.q=0 )
       Protected._s_WIDGET *g
       If flags & #__flag_Center
@@ -63,8 +114,14 @@ CompilerIf #PB_Compiler_IsMainFile
       TestAlign(10, 610, Width, 65, "default"                         , Image,0,                             #__align_left|#__align_right)
       
       ;  
-      str = String(10, 685, Width, 65, "")
-      Bind(str, @Change_Events( ), #__event_Change)
+      ;  
+      change_text = Editor(10, 685, Width, 40)
+      Alignment( change_text, #__align_left|#__align_right)
+      Bind(change_text, @Change_Events( ), #__event_Change)
+      
+      change_img = Button(10, 725, Width, 25, "change image size", #PB_Button_Toggle )
+      Alignment( change_img, #__align_left|#__align_right)
+      Bind(change_img, @Click_Events( ), #__event_LeftClick)
       
       Repeat
          Define Event = WaitWindowEvent()
@@ -81,8 +138,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 54
-; FirstLine = 40
-; Folding = --
+; CursorPosition = 124
+; FirstLine = 104
+; Folding = ---
 ; EnableXP
 ; DPIAware

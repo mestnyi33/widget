@@ -8978,6 +8978,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ( *this\parent And *this\parent\ResizeChange( ))
             ;
             Reclip( *this )
+            
+            ; for the image widget
+            If *this\type = #__type_image ; Not *this\container
+               ; make horizontal scroll x
+               make_scrollarea_x( *this, *this\scroll_width( ), *this\picture\align )
+               
+               ; make vertical scroll y
+               make_scrollarea_y( *this, *this\scroll_height( ), *this\picture\align )
+            EndIf
          EndIf
          
          ;
@@ -10637,6 +10646,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               Else
                                  If *this\parent\type = #__type_ComboBox
                                     SetText( *this\parent, *this\RowFocused( )\text\string )
+;                                     CopyStructure( *this\RowFocused( )\picture, *this\parent\picture, _s_PICTURE ) 
+;                                     
+;                                     If IsImage( *this\parent\picture\image )
+;                                        *this\parent\picture\x   = *this\parent\padding\x
+;                                        *this\parent\picture\y  = *this\parent\padding\y
+;                                        
+;                                        ; make horizontal scroll max
+;                                        If *this\parent\scroll_width( ) <> *this\parent\picture\width + *this\parent\padding\x * 2
+;                                           *this\parent\scroll_width( ) = *this\parent\picture\width + *this\parent\padding\x * 2
+;                                        EndIf
+;                                        
+;                                        ; make vertical scroll max
+;                                        If *this\parent\scroll_height( ) <> *this\parent\picture\height + *this\parent\padding\y * 2
+;                                           *this\parent\scroll_height( ) = *this\parent\picture\height + *this\parent\padding\y * 2
+;                                        EndIf
+;                                        
+;                                        ; updatate scrollarea size
+;                                        bar_area_update( *this\parent )
+;                                     EndIf
+                                    
                                     If *this\RowFocused( )\picture\image > - 1
                                        SetImage( *this\parent, *this\RowFocused( )\picture\image )
                                     EndIf
@@ -11007,6 +11036,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *This\text\string.s <> Text.s
                *This\text\string.s = Text.s
+               *This\TextChange( ) = 1
                ;
                If *this\text\pass
                   *this\text\pass$ = Text.s
@@ -22263,12 +22293,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ; set content ALIGNMENT
-         If *this\type = #__type_Image Or
-            *this\type = #__type_Button Or 
-            *this\type = #__type_ButtonImage
-            ;
-            set_align_content( *this\picture, *this\flag )
-         EndIf
          If *this\type = #__type_ComboBox
             ;If constants::BinaryFlag( *this\flag, #__align_image )
             set_align_content( *this\picture, *this\flag )
@@ -22285,7 +22309,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                set_align_content( *this\text, *this\flag )
             EndIf
          EndIf
-         ;
+         If *this\type = #__type_Image Or
+            *this\type = #__type_Button Or 
+            *this\type = #__type_ButtonImage
+            ;
+            set_align_content( *this\picture, *this\flag )
+         EndIf
          If *this\type = #__type_Text Or
             *this\type = #__type_Editor Or
             *this\type = #__type_String Or
@@ -23647,13 +23676,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
-                  
-                  ;
-                  ;                   If *this\__lines( )\TextChange( ) <> 0
-                  ;                      ; edit_sel_update_( *this )
-                  ;                      
-                  ;                      *this\__lines( )\TextChange( ) = 0
-                  ;                   EndIf
                Next
             EndIf
             
@@ -23684,6 +23706,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; make vertical scroll y
             make_scrollarea_y( *this, *this\scroll_height( ), *this\text\align )
+            
+            
+            If *this\picture
+               change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, 0, *this\picture\align, *this\padding\y )
+               change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, 0, *this\picture\align, *this\padding\y )
+            EndIf
             
          EndWith
       EndProcedure
@@ -24111,152 +24139,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure   Draw_Container( *this._s_WIDGET )
-         Protected i,X,Y
-         
-         With *this
-            If *this\fs
-               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               If constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or 
-                  constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
-                  draw_roundbox_(*this\frame_x( ), *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
-                  draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
-                  draw_roundbox_(*this\frame_x( ), *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
-                  draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
-               EndIf
-               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
-                  draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
-                  draw_roundbox_(*this\frame_x( )+1+*this\frame_width( )-*this\round*2, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
-                  draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )-1+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
-                  draw_roundbox_(*this\frame_x( )-1+*this\frame_width( )-*this\round*2, *this\frame_y( )-1+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
-               EndIf
-               
-               ;                If *this\type <> #__type_panel And *this\type <> #__type_Frame
-               ;                   draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               ;                   For i = 0 To *this\fs - 1
-               ;                      draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
-               ;                      If *this\round
-               ;                         draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i + 1, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2 - 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
-               ;                      EndIf
-               ;                   Next
-               ;                EndIf
-            EndIf
-            
-            ; backcolor
-            If *this\color\back <> - 1
-               draw_mode_alpha_( #PB_2DDrawing_Default )
-               ;                If *this\fs
-               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
-                                                                                                                                                           ;                Else
-                                                                                                                                                           ;                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
-                                                                                                                                                           ;                EndIf
-            EndIf
-            
-            ;
-            If *this\picture\change
-               ; change_align_image( *this  )
-               
-               ; make horizontal scroll x
-               make_scrollarea_x( *this, *this\scroll_width( ), *this\picture\align )
-               
-               ; make vertical scroll y
-               make_scrollarea_y( *this, *this\scroll_height( ), *this\picture\align )
-            EndIf
-            
-            ; origin position
-            X = *this\inner_x( ) + *this\scroll_x( )
-            Y = *this\inner_y( ) + *this\scroll_y( )
-            
-            ;
-            If *this\picture\imageID Or
-               *this\picture[#__image_BackGround]\imageID
-               
-               draw_mode_alpha_( #PB_2DDrawing_Default )
-            EndIf
-            
-            ; background img draw
-            If *this\picture[#__image_BackGround]\imageID
-               draw_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_BackGround] )
-            EndIf
-            
-            ; scroll img draw
-            If *this\picture\imageID 
-               DrawAlphaImage( *this\picture\imageID, X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
-            EndIf
-            
-            ;
-            If *this\text\string
-               draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawText( X + *this\text\x, Y + *this\text\y, *this\text\string, *this\color\front[*this\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
-            EndIf
-            
-            If *this\fs
-               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               ;                Debug " - "+ *this\inner_x( ) +" "+ *this\inner_y( ) +" "+ *this\inner_width( ) +" "+ *this\inner_height( ) ;+ 
-               ;                Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
-               
-               ;draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
-               ;               If *this\fs[1] Or
-               ;                  *this\fs[2] Or
-               ;                  *this\fs[3] Or
-               ;                  *this\fs[4] 
-               ;                  ;
-               ;                 If *this\inner_width( ) And 
-               ;                    *this\inner_height( ) 
-               ;                   draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, *this\color\frame )
-               ;                 EndIf
-               ;               EndIf
-               
-               If constants::BinaryFlag( *this\flag, #__flag_BorderFlat )
-                  ;                   If *this\inner_width( ) And 
-                  ;                      *this\inner_height( ) 
-                  ;                      ;If *this\type <> #__type_Panel
-                  ;                         draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, $fff00fff);*this\color\frame )
-                  ;                      ;EndIf
-                  ;                   EndIf
-                  ;                   If *this\type = #__type_Container
-                  If Not ( *this\fs[1] Or *this\fs[2] Or *this\fs[3] Or *this\fs[4] )
-                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
-                  EndIf
-                  ;                   EndIf
-                  
-               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or
-                      constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
-                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFAAAAAA)
-                  Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFAAAAAA)
-                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFFFFFFF)
-                  Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFFFFFFF)
-                  ;                 draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
-                  ;                 draw_roundbox_(*this\inner_x( ) - 2, *this\inner_y( ) - 2, *this\inner_width( ) + 3, *this\inner_height( ) + 3, *this\round, *this\round, $FFFFFFFF )
-                  
-               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
-                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
-                  Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
-                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
-                  Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
-                  
-                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
-                  Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
-                  Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFAAAAAA)
-                  Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFAAAAAA)
-               EndIf
-               
-               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
-                  ;                 Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
-                  ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
-                  ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFE7E7E7)
-                  ;                 Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFE7E7E7)
-                  
-                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+1+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FF838383)
-                  Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FF838383)
-                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFE7E7E7)
-                  Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFE7E7E7)
-               EndIf
-               
-            EndIf
-         EndWith
-      EndProcedure
-      
       Procedure   Draw_Frames( *this._s_WIDGET, state )
          If *this\type = #__type_Window
             ; чтобы закруглять только у окна с титлебаром
@@ -24522,45 +24404,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure   Draw_Content( *this._s_WIDGET, state )
          Protected test = 0
          Protected img_indent_x, img_indent_y 
-         Protected text_change = 1;*this\TextChange( )
+         Protected text_change = *this\TextChange( )
          
-         If *this\text\multiLine
-            If *this\picture\change Or *this\ResizeChange( )
-               Update_DrawText( *this, text_change)
-               
-               If *this\text\string = ""
-                  make_scrollarea_x( *this, *this\scroll_width( ), *this\picture\align )
-                  make_scrollarea_y( *this, *this\scroll_height( ), *this\picture\align )
-               Else
-                  change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, 0, *this\picture\align, *this\padding\y )
-                  change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, 0, *this\picture\align, *this\padding\y )
-               EndIf
-            EndIf
-            
-            If text_change Or *this\ResizeChange( ) 
-               Update_DrawText( *this, text_change )
+         ;
+         If *this\picture And *this\picture\imageID 
+            If *this\text And *this\text\string 
+               img_indent_x = img_indent
+               img_indent_y = img_indent
             EndIf
          EndIf
          
-         ; make_scrollarea
-         If Not *this\text\multiLine
-            If text_change Or
-               *this\ResizeChange( ) Or 
-               *this\picture\change
-               ;
-               If test_align = 1
-                  Debug "content "+*this\picture\align\left +" "+ *this\text\align\left +"  "+ *this\picture\align\top +" "+ *this\text\align\top +"  "+ *this\picture\align\right +" "+ *this\text\align\right +"  "+ *this\picture\align\bottom +" "+ *this\text\align\bottom +" "+ *this\text\string
-               EndIf
-               ;
-               If *this\picture And *this\picture\imageID 
-                  If *this\text And *this\text\string 
-                     img_indent_x = img_indent ; DPIScaled(6)
-                     img_indent_y = img_indent ; DPIScaled(3)
-                  EndIf
-               EndIf
-               
-               If *this\ResizeChange( ) ; temp
-                  ; make_scrollarea_size
+         ;     
+         If text_change Or
+            *this\ResizeChange( ) Or 
+            *this\picture\change
+            
+            If *this\text\multiLine
+               Update_DrawText( *this, text_change )
+            Else
+            ;
+            ; make_scrollarea
+               ; make_scrollarea_size
                If *this\text\vertical
                   If *this\text\string
                      *this\scroll_width( ) = *this\text\height + *this\padding\x * 2
@@ -24600,103 +24464,64 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-            EndIf
-            ;
+               ;
                ; make_scrollarea_pos
                make_scrollarea_x( *this, *this\scroll_width( ), *this\text\align )
                make_scrollarea_y( *this, *this\scroll_height( ), *this\text\align )
-            
-               ;If *this\picture\change Or *this\ResizeChange( )
-                  If test
-                     change_align_horizontal( *this\picture, *this\inner_width( ), *this\picture\width, *this\picture\rotate, *this\picture\align, *this\padding\x )
-                     change_align_vertical( *this\picture, *this\inner_height( ), *this\picture\height, *this\picture\rotate, *this\picture\align, *this\padding\y )
-                  Else
-                     change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, *this\picture\rotate, *this\picture\align, *this\padding\x )
-                     change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\picture\align, *this\padding\y )
-                  EndIf
-                  
-;                   If *this\picture\align\left
-;                      If Not *this\text\align\left
-;                         *this\picture\x + *this\scroll_x( ) ;+ *this\padding\x
-;                      EndIf
-;                   EndIf
-;                   If *this\picture\align\top
-;                      If Not *this\text\align\top
-;                         *this\picture\y + *this\scroll_y( ) ;+ *this\padding\y
-;                      EndIf
-;                   EndIf
-;                   If *this\picture\align\right
-;                      If Not *this\text\align\right
-;                         *this\picture\x - *this\scroll_x( ) ;+ *this\scroll_width( ) - *this\picture\width - *this\padding\x
-;                      EndIf
-;                   EndIf
-;                   If *this\picture\align\bottom
-;                      If Not *this\text\align\bottom
-;                         *this\picture\y - *this\scroll_y( ) ;+ *this\scroll_height( ) - *this\picture\height - *this\padding\y
-;                      EndIf
-;                   EndIf
-                ;EndIf
                
-               If text_change Or *this\ResizeChange( ) 
-                  If test
-                     If *this\text\vertical
-                        change_align_horizontal( *this\text, *this\inner_width( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\x )
-                        change_align_vertical( *this\text, *this\inner_height( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\y )
-                     Else
-                        change_align_horizontal( *this\text, *this\inner_width( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\x )
-                        change_align_vertical( *this\text, *this\inner_height( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\y )
-                     EndIf
-                  Else
-                     If *this\text\vertical
-                        change_align_horizontal( *this\text, *this\scroll_width( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\x )
-                        change_align_vertical( *this\text, *this\scroll_height( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\y )
-                     Else
-                        change_align_horizontal( *this\text, *this\scroll_width( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\x )
-                        change_align_vertical( *this\text, *this\scroll_height( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\y )
-                     EndIf
-                  EndIf
-                  
-                  ; align img left & top
-                  If *this\picture\align
-                     If *this\picture\width
-                        If *this\picture\align\left
-                           If *this\text\align\left
-                              *this\text\x + ( *this\picture\width + img_indent_x )
-                           Else
-                              *this\text\x + ( *this\picture\width + img_indent_x ) / 2
-                           EndIf
-                        EndIf
-                        If *this\picture\align\right
-                           If *this\text\align\right
-                              *this\text\x - ( *this\picture\width + img_indent_x )
-                           Else
-                              *this\text\x - ( *this\picture\width + img_indent_x ) / 2
-                           EndIf
-                        EndIf
-                     EndIf
-                     If *this\picture\height
-                        If *this\picture\align\top
-                           If *this\picture\align\top
-                              If *this\text\align\top
-                                 *this\text\y + ( *this\picture\height + img_indent_y )
-                              Else
-                                 *this\text\y + ( *this\picture\height + img_indent_y ) / 2
-                              EndIf
-                           EndIf
-                        EndIf
-                        If *this\picture\align\bottom
-                           If *this\picture\align\bottom
-                              If *this\text\align\bottom
-                                 *this\text\y - ( *this\picture\height + img_indent_y )
-                              Else
-                                 *this\text\y - ( *this\picture\height + img_indent_y ) / 2
-                              EndIf
-                           EndIf
-                        EndIf
-                     EndIf
-                  EndIf
-                  
+               ; aligin text
+               If *this\text\vertical
+                  change_align_horizontal( *this\text, *this\scroll_width( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\x )
+                  change_align_vertical( *this\text, *this\scroll_height( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\y )
+               Else
+                  change_align_horizontal( *this\text, *this\scroll_width( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\x )
+                  change_align_vertical( *this\text, *this\scroll_height( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\y )
                EndIf
+               
+               ; align image
+               change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, *this\picture\rotate, *this\picture\align, *this\padding\x )
+               change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\picture\align, *this\padding\y )
+               
+               ; align img left & top
+               If *this\picture\align
+                  If *this\picture\width
+                     If *this\picture\align\left
+                        If *this\text\align\left
+                           *this\text\x + ( *this\picture\width + img_indent_x )
+                        Else
+                           *this\text\x + ( *this\picture\width + img_indent_x ) / 2
+                        EndIf
+                     EndIf
+                     If *this\picture\align\right
+                        If *this\text\align\right
+                           *this\text\x - ( *this\picture\width + img_indent_x )
+                        Else
+                           *this\text\x - ( *this\picture\width + img_indent_x ) / 2
+                        EndIf
+                     EndIf
+                  EndIf
+                  If *this\picture\height
+                     If *this\picture\align\top
+                        If *this\picture\align\top
+                           If *this\text\align\top
+                              *this\text\y + ( *this\picture\height + img_indent_y )
+                           Else
+                              *this\text\y + ( *this\picture\height + img_indent_y ) / 2
+                           EndIf
+                        EndIf
+                     EndIf
+                     If *this\picture\align\bottom
+                        If *this\picture\align\bottom
+                           If *this\text\align\bottom
+                              *this\text\y - ( *this\picture\height + img_indent_y )
+                           Else
+                              *this\text\y - ( *this\picture\height + img_indent_y ) / 2
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+               
             EndIf
          EndIf
          
@@ -24719,6 +24544,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\picture And *this\picture\imageID 
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawAlphaImage( *this\picture\imageID, X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
+            ; DrawAlphaImage( ImageID(*this\picture\image), X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
          EndIf
          
          ;\\ draw text
@@ -24795,6 +24621,140 @@ CompilerIf Not Defined( Widget, #PB_Module )
                __draw_checkbox( _box_type_, *this\togglebox, 0,0, *this\togglebox\round )
             EndIf
          EndIf
+         
+      EndProcedure
+      
+      Procedure   Draw_Container( *this._s_WIDGET )
+         Protected i,X,Y
+         
+         With *this
+            If *this\fs
+               draw_mode_alpha_( #PB_2DDrawing_Outlined )
+               If constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or 
+                  constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+                  draw_roundbox_(*this\frame_x( ), *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
+                  draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( ), *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
+                  draw_roundbox_(*this\frame_x( ), *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
+                  draw_roundbox_(*this\frame_x( )+*this\frame_width( )-*this\round*2, *this\frame_y( )+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
+               EndIf
+               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+                  draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
+                  draw_roundbox_(*this\frame_x( )+1+*this\frame_width( )-*this\round*2, *this\frame_y( )+1, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
+                  draw_roundbox_(*this\frame_x( )+1, *this\frame_y( )-1+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFAAAAAA )
+                  draw_roundbox_(*this\frame_x( )-1+*this\frame_width( )-*this\round*2, *this\frame_y( )-1+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
+               EndIf
+               
+               ;                If *this\type <> #__type_panel And *this\type <> #__type_Frame
+               ;                   draw_mode_alpha_( #PB_2DDrawing_Outlined )
+               ;                   For i = 0 To *this\fs - 1
+               ;                      draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
+               ;                      If *this\round
+               ;                         draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i + 1, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2 - 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
+               ;                      EndIf
+               ;                   Next
+               ;                EndIf
+            EndIf
+            
+            ; backcolor
+            If *this\color\back <> - 1
+               draw_mode_alpha_( #PB_2DDrawing_Default )
+               ;                If *this\fs
+               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
+            EndIf
+                        
+            ; origin position
+            X = *this\inner_x( ) + *this\scroll_x( )
+            Y = *this\inner_y( ) + *this\scroll_y( )
+            
+            ;
+            If *this\picture\imageID Or
+               *this\picture[#__image_BackGround]\imageID
+               
+               draw_mode_alpha_( #PB_2DDrawing_Default )
+            EndIf
+            
+            ; background img draw
+            If *this\picture[#__image_BackGround]\imageID
+               draw_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_BackGround] )
+            EndIf
+            
+            ; scroll img draw
+            If *this\picture\imageID 
+               DrawAlphaImage( *this\picture\imageID, X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
+               ; DrawAlphaImage( ImageID(*this\picture\image), X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
+            EndIf
+            
+            ;
+            If *this\text\string
+               draw_mode_alpha_( #PB_2DDrawing_Transparent )
+               DrawText( X + *this\text\x, Y + *this\text\y, *this\text\string, *this\color\front[*this\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+            EndIf
+            
+            If *this\fs
+               draw_mode_alpha_( #PB_2DDrawing_Outlined )
+               ;                Debug " - "+ *this\inner_x( ) +" "+ *this\inner_y( ) +" "+ *this\inner_width( ) +" "+ *this\inner_height( ) ;+ 
+               ;                Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
+               
+               ;draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+               ;               If *this\fs[1] Or
+               ;                  *this\fs[2] Or
+               ;                  *this\fs[3] Or
+               ;                  *this\fs[4] 
+               ;                  ;
+               ;                 If *this\inner_width( ) And 
+               ;                    *this\inner_height( ) 
+               ;                   draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, *this\color\frame )
+               ;                 EndIf
+               ;               EndIf
+               
+               If constants::BinaryFlag( *this\flag, #__flag_BorderFlat )
+                  ;                   If *this\inner_width( ) And 
+                  ;                      *this\inner_height( ) 
+                  ;                      ;If *this\type <> #__type_Panel
+                  ;                         draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, $fff00fff);*this\color\frame )
+                  ;                      ;EndIf
+                  ;                   EndIf
+                  ;                   If *this\type = #__type_Container
+                  If Not ( *this\fs[1] Or *this\fs[2] Or *this\fs[3] Or *this\fs[4] )
+                     draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
+                  EndIf
+                  ;                   EndIf
+                  
+               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderSingle ) Or
+                      constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFAAAAAA)
+                  Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFAAAAAA)
+                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFFFFFFF)
+                  Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFFFFFFF)
+                  ;                 draw_roundbox_(*this\inner_x( ) - 1, *this\inner_y( ) - 1, *this\inner_width( ) + 2, *this\inner_height( ) + 2, *this\round, *this\round, $FFAAAAAA )
+                  ;                 draw_roundbox_(*this\inner_x( ) - 2, *this\inner_y( ) - 2, *this\inner_width( ) + 3, *this\inner_height( ) + 3, *this\round, *this\round, $FFFFFFFF )
+                  
+               ElseIf constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
+                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
+                  Line(*this\frame_x( ), *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
+                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\frame_height( )-1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
+                  Line(*this\frame_x( )+*this\frame_width( )-1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
+                  
+                  Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FFFFFFFF)
+                  Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FFFFFFFF)
+                  Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFAAAAAA)
+                  Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFAAAAAA)
+               EndIf
+               
+               If constants::BinaryFlag( *this\flag, #__flag_BorderDouble )
+                  ;                 Line(*this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2]+1, *this\frame_width( )-*this\fs[1]-*this\fs[3], 1, $FF838383)
+                  ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\fs[2], 1, *this\frame_height( )-*this\fs[2]-*this\fs[4], $FF838383)
+                  ;                 Line(*this\frame_x( )+*this\fs[1]+1, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-2, 1, $FFE7E7E7)
+                  ;                 Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+1, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-2, $FFE7E7E7)
+                  
+                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+1+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FF838383)
+                  Line(*this\frame_x( )+1, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FF838383)
+                  Line(*this\frame_x( )+*this\fs[1]+*this\round, *this\frame_y( )+*this\frame_height( )-2, *this\frame_width( )-*this\fs[1]-*this\fs[3]-*this\round*2, 1, $FFE7E7E7)
+                  Line(*this\frame_x( )+*this\frame_width( )-2, *this\frame_y( )+*this\fs[2]+*this\round, 1, *this\frame_height( )-*this\fs[2]-*this\fs[4]-*this\round*2, $FFE7E7E7)
+               EndIf
+               
+            EndIf
+         EndWith
       EndProcedure
       
       Procedure   Draw_Button( *this._s_WIDGET )
@@ -25634,10 +25594,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Case #__type_ListView   : Draw_Tree( *this )
                         Case #__type_ListIcon   : Draw_ListIcon( *this )
                            
-                        Case #__type_Text       : Draw_Button( *this )
-                           ;Case #__type_String : Draw_Button( *this )
                         Case #__type_String     : Draw_Editor( *this )
                         Case #__type_Editor     : Draw_Editor( *this )
+                           
+                        Case #__type_Text       : Draw_Button( *this )
                            
                         Case #__type_Button     : Draw_Button( *this )
                         Case #__type_Option     : Draw_Button( *this )
@@ -26238,6 +26198,138 @@ EndMacro
 ;-
 ;-\\ EXAMPLE
 ;-
+CompilerIf #PB_Compiler_IsMainFile
+   EnableExplicit
+   UseWidgets( )
+   ;test_align = 1
+   test_draw_area = 1
+   
+   Macro add_image( _address_, _img_, _size_ = 0 )
+      ;
+      If IsImage( _img_ )
+         If _size_
+            _address_\width  = _size_
+            _address_\height = _size_
+            ResizeImage( _img_, _size_, _size_, #PB_Image_Raw )
+         Else
+            _address_\width  = ImageWidth( _img_ )
+            _address_\height = ImageHeight( _img_ )
+         EndIf
+         
+         _address_\change  = 1
+         _address_\image   = _img_
+         _address_\imageID = ImageID( _img_ )
+      Else
+         _address_\change  = - 1
+         _address_\image   = - 1
+         _address_\imageID = 0
+         _address_\width   = 0
+         _address_\height  = 0
+      EndIf
+   EndMacro
+   
+   Procedure _SetImage( *this._s_WIDGET, img )
+      If *this = #PB_All
+         PushMapPosition( roots( ))
+         ForEach roots( ) 
+            If StartEnum( roots( ) )
+               If widgets( )\picture\image = img
+                  ; Debug widgets( )\class
+                  ; widgets( )\picturesize = ImageWidth(img)
+                  add_image( widgets( )\picture, img )
+               EndIf
+               StopEnum( )
+            EndIf    
+         Next 
+         PopMapPosition( roots( ))
+      EndIf
+   EndProcedure
+   
+   ;-
+   If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+      End
+   EndIf
+   If DesktopResolutionX() > 1
+      ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
+   EndIf
+   
+   Define i, Width = 200
+   
+   Global test, change_text, change_img
+   
+   Procedure Click_Events( )
+      If GetState( change_img )
+         ResizeImage(1, 16,16, #PB_Image_Raw)
+      Else
+         ResizeImage(1, 32,32, #PB_Image_Raw)
+      EndIf
+      _SetImage( #PB_All, 1 )
+   EndProcedure
+   
+   Procedure Change_Events( )
+      If test
+         SetText( test, GetText( change_text))
+      EndIf
+   EndProcedure
+   
+   Procedure Test_Events( )
+      test = EventWidget( )
+      SetText( change_text, GetText( test))
+   EndProcedure
+   
+   Procedure TestAlign( X,Y,Width,Height, flags=0 )
+      Protected._s_WIDGET *g  
+      Protected img = 1
+      Protected txt$ = "text"
+      Protected multiline = 1
+      
+      If multiline
+         txt$+#LF$+"line"
+         flags|#__flag_TextMultiLine
+      EndIf
+      
+      ;txt$ = ""
+      ;img =- 1
+      
+      *g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
+      ;*g = Text( X,Y,Width,Height, txt$, #__flag_BorderFlat|flags) : SetImage( *g, img )
+      
+      ;*g = ButtonImage( X,Y,Width,Height, img, flags) : SetText( *g, txt$ )
+      ;*g = Image( X,Y,Width,Height, img, #__flag_BorderFlat|flags) : SetText( *g, txt$ )
+      
+      Alignment( *g, #__align_left|#__align_right)
+      Bind(*g, @Test_Events( ), #__event_LeftClick)
+      ProcedureReturn *g
+   EndProcedure
+   
+   
+   If Open(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      TestAlign(10,  10,       Width, 65, #__flag_Left)
+      TestAlign(10,  10+65+10, Width, 65, #__flag_Top)
+      TestAlign(10, 160,       Width, 65, #__flag_Right)
+      TestAlign(10, 160+65+10, Width, 65, #__flag_Bottom)
+      
+      TestAlign(10, 310,       Width, 65, #__flag_Center|#__flag_Left)
+      TestAlign(10, 310+65+10, Width, 65, #__flag_Center|#__flag_Top)
+      TestAlign(10, 460,       Width, 65, #__flag_Center|#__flag_Right)
+      TestAlign(10, 460+65+10, Width, 65, #__flag_Center|#__flag_Bottom)
+      
+      TestAlign(10, 610, Width, 65, #__flag_Center)
+      ;  
+      change_text = Editor(10, 685, Width, 40)
+      Alignment( change_text, #__align_left|#__align_right)
+      Bind(change_text, @Change_Events( ), #__event_Change)
+      
+      change_img = Button(10, 725, Width, 25, "change image size", #PB_Button_Toggle )
+      Alignment( change_img, #__align_left|#__align_right)
+      Bind(change_img, @Click_Events( ), #__event_LeftClick)
+      
+      Repeat
+         Define Event = WaitWindowEvent()
+      Until Event = #PB_Event_CloseWindow
+   EndIf
+CompilerEndIf
+
 CompilerIf #PB_Compiler_IsMainFile = 99
    EnableExplicit
    UseWidgets( )
@@ -26845,7 +26937,7 @@ CompilerEndIf
 
 
 ;- DEMO
-CompilerIf #PB_Compiler_IsMainFile ;= 99
+CompilerIf #PB_Compiler_IsMainFile = 99
    
    EnableExplicit
    UseWidgets( )
@@ -27693,8 +27785,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 24656
-; FirstLine = 5574
-; Folding = D+PGg-Bw-----------fAM+------Bg0-XAAAAgA5wBAAQAAAweOAAAAgAAAAAAAAAAAAAAAAACHAAHAgAAAAAAAIDAAAAAAAAAAAAAAAAAAAAEABA3AEAAAQ4-PACAAAgDAAwACAAEAAgBAgBAAAAAAAAgBAADAAQGQAYAAAAMAAgAC5M9------------------------PAAghIAAAAAAAQVVBCAAAAAAAAAAAw-PAPbOAAAAAAAAAAAAAAAAAAA+dEIAA9DAAAAAAACYABAAAAAMzgdJAgXcDIwfAA+--BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9Pg-BAAAAAAAAAA9HAAAAAAAAAAAAIAAAAQIEAgMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5AAAAIDDAAAAAA9-----PA528Dw+----DAAAwbAgDAAAAAAAAAAOAAAAAAAAAGAAAAAAAAAAAAAAAAGgZgIIwv--DA5H+xOAAAAAAAAAAAAAAAAABAAAAGAAAAAAAAAA+BAAAAAhZA9AAABAAwFAAAgF5DAAAAA+lTAAAAAAAAAA--BOAAAAAAAAAOABMAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAgBAYACYAAAAA+4-4v--BAKAAAAAAAAAAAAAAAAAAAAAAAAA0Zbf0-HHACAEAAAAAsEAAAAAAA9AAAAAAAAAAAAAAAAAAAAJAAAAAAAgAAAAAAAw
+; CursorPosition = 25578
+; FirstLine = 24559
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-v8dz3-hr8vFImn+v+2-----------------------b0Ze-4--------------------fb---------------------4-------------------------------------------
 ; EnableXP
 ; Executable = widgets-.app.exe

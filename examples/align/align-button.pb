@@ -30,6 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure TestAlign( X,Y,Width,Height, txt$, flags=0, align.q=0 )
       Protected._s_WIDGET *g = Button( X,Y,Width,Height, txt$, flags);|#__flag_TextMultiLine )
+      
       Alignment( *g, align )
       Bind(*g, @Test_Events( ), #__event_LeftClick)
    EndProcedure
@@ -53,7 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
       TestAlign(10, 610, Width, 65, "default"                         ,0, #__align_left|#__align_right);, #__flag_ImageCenter)
       
       ;  
-      str = String(10, 685, Width, 65, "")
+      str = Editor(10, 685, Width, 65)
       Bind(str, @Change_Events( ), #__event_Change)
       
       Repeat
@@ -62,8 +63,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 31
-; FirstLine = 13
+; CursorPosition = 56
+; FirstLine = 37
 ; Folding = --
 ; EnableXP
 ; DPIAware

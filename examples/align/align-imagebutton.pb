@@ -17,12 +17,18 @@ CompilerIf #PB_Compiler_IsMainFile
    Define i, Width = 200
    
    Procedure TestAlign( X,Y,Width,Height, img, flags=0 )
+      Protected._s_WIDGET *g
+      Protected txt$ = "text"
+      
       If flags & #__flag_Center
          flags &~ #__flag_Center
          flags | #__align_image
       EndIf
       
-      Protected._s_WIDGET *g = ButtonImage( X,Y,Width,Height, img, flags)
+      *g = Button( X,Y,Width,Height, txt$, flags) : Setimage( *g, img )
+      ;*g = ButtonImage( X,Y,Width,Height, img, flags) : SetText( *g, txt$ )
+      ;*g = Image( X,Y,Width,Height, img, flags) : SetText( *g, txt$ )
+      
       Alignment( *g, #__align_left|#__align_right)
    EndProcedure
    
@@ -45,8 +51,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 39
-; FirstLine = 18
+; CursorPosition = 27
+; FirstLine = 20
 ; Folding = --
 ; EnableXP
 ; DPIAware
