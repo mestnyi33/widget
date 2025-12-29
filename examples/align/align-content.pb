@@ -29,13 +29,17 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure TestAlign( X,Y,Width,Height, txt$, img, flags=0, align.q=0 )
+      Protected._s_WIDGET *g
       If flags & #__flag_Center
          flags &~ #__flag_Center
          flags | #__align_image
       EndIf
+      ;
+      ; flags|#__flag_TextMultiLine
       
-      Protected._s_WIDGET *g = ButtonImage( X,Y,Width,Height, img, flags);|#__flag_TextMultiLine)
-      SetText( *g, txt$ )
+      *g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img )
+      ;*g = ButtonImage( X,Y,Width,Height, img, flags) : SetText( *g, txt$ )
+      
       Alignment( *g, align )
       Bind(*g, @Test_Events( ), #__event_LeftClick)
    EndProcedure
@@ -48,7 +52,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       TestAlign(10, 160, Width/2-5, 65, "left"                         , Image, #__flag_Left,                 #__align_proportional|#__align_left )
       TestAlign(10+Width/2+5, 160, Width/2-5, 65, "right"              , Image, #__flag_Right,                #__align_proportional|#__align_right )
-      TestAlign(10, 160+65+10, Width/2-5, 65, "top"                    , Image, #__flag_Top,                  #__align_proportional|#__align_left )
+      TestAlign(10, 160+65+10, Width/2-5, 65, "  top  "                    , Image, #__flag_Top,                  #__align_proportional|#__align_left )
       TestAlign(10+Width/2+5, 160+65+10, Width/2-5, 65, "bottom"       , Image, #__flag_Bottom,               #__align_proportional|#__align_right )
       
       TestAlign(10, 310, Width, 65, "left&center"                      , Image, #__flag_TextLeft,             #__align_left|#__align_right )
@@ -77,8 +81,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 36
-; FirstLine = 16
+; CursorPosition = 54
+; FirstLine = 40
 ; Folding = --
 ; EnableXP
 ; DPIAware

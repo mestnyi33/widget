@@ -24522,7 +24522,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure   Draw_Content( *this._s_WIDGET, state )
          Protected test = 0
          Protected img_indent_x, img_indent_y 
-         Protected text_change = *this\TextChange( )
+         Protected text_change = 1;*this\TextChange( )
          
          If *this\text\multiLine
             If *this\picture\change Or *this\ResizeChange( )
@@ -24559,7 +24559,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               ; make_scrollarea_size
+               If *this\ResizeChange( ) ; temp
+                  ; make_scrollarea_size
                If *this\text\vertical
                   If *this\text\string
                      *this\scroll_width( ) = *this\text\height + *this\padding\x * 2
@@ -24578,7 +24579,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                ; make_scrollarea_width
                If *this\picture\width
-                  If *this\picture\align\left Or *this\picture\align\right 
+                  If *this\picture\align\left Or
+                     *this\picture\align\right 
                      *this\scroll_width( ) + *this\picture\width + img_indent_x
                   Else
                      If *this\scroll_width( ) < *this\picture\width + *this\padding\x * 2
@@ -24589,7 +24591,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                ; make_scrollarea_height
                If *this\picture\height
-                  If *this\picture\align\top Or *this\picture\align\bottom 
+                  If *this\picture\align\top Or
+                     *this\picture\align\bottom 
                      *this\scroll_height( ) + *this\picture\height + img_indent_y
                   Else
                      If *this\scroll_height( ) < *this\picture\height + *this\padding\y * 2
@@ -24597,12 +24600,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-               ;
+            EndIf
+            ;
                ; make_scrollarea_pos
                make_scrollarea_x( *this, *this\scroll_width( ), *this\text\align )
                make_scrollarea_y( *this, *this\scroll_height( ), *this\text\align )
             
-               If *this\picture\change Or *this\ResizeChange( )
+               ;If *this\picture\change Or *this\ResizeChange( )
                   If test
                      change_align_horizontal( *this\picture, *this\inner_width( ), *this\picture\width, *this\picture\rotate, *this\picture\align, *this\padding\x )
                      change_align_vertical( *this\picture, *this\inner_height( ), *this\picture\height, *this\picture\rotate, *this\picture\align, *this\padding\y )
@@ -24611,27 +24615,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\picture\align, *this\padding\y )
                   EndIf
                   
-                  If *this\picture\align\left
-                     If Not *this\text\align\left
-                        *this\picture\x + *this\scroll_x( ) ;+ *this\padding\x
-                     EndIf
-                  EndIf
-                  If *this\picture\align\top
-                     If Not *this\text\align\top
-                        *this\picture\y + *this\scroll_y( ) ;+ *this\padding\y
-                     EndIf
-                  EndIf
-                  If *this\picture\align\right
-                     If Not *this\text\align\right
-                        *this\picture\x - *this\scroll_x( ) ;+ *this\scroll_width( ) - *this\picture\width - *this\padding\x
-                     EndIf
-                  EndIf
-                  If *this\picture\align\bottom
-                     If Not *this\text\align\bottom
-                        *this\picture\y - *this\scroll_y( ) ;+ *this\scroll_height( ) - *this\picture\height - *this\padding\y
-                     EndIf
-                  EndIf
-               EndIf
+;                   If *this\picture\align\left
+;                      If Not *this\text\align\left
+;                         *this\picture\x + *this\scroll_x( ) ;+ *this\padding\x
+;                      EndIf
+;                   EndIf
+;                   If *this\picture\align\top
+;                      If Not *this\text\align\top
+;                         *this\picture\y + *this\scroll_y( ) ;+ *this\padding\y
+;                      EndIf
+;                   EndIf
+;                   If *this\picture\align\right
+;                      If Not *this\text\align\right
+;                         *this\picture\x - *this\scroll_x( ) ;+ *this\scroll_width( ) - *this\picture\width - *this\padding\x
+;                      EndIf
+;                   EndIf
+;                   If *this\picture\align\bottom
+;                      If Not *this\text\align\bottom
+;                         *this\picture\y - *this\scroll_y( ) ;+ *this\scroll_height( ) - *this\picture\height - *this\padding\y
+;                      EndIf
+;                   EndIf
+                ;EndIf
                
                If text_change Or *this\ResizeChange( ) 
                   If test
@@ -24691,6 +24695,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
+                  
                EndIf
             EndIf
          EndIf
@@ -27688,8 +27693,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 24636
-; FirstLine = 5520
-; Folding = D+PGg-Bw-----------fAM+------Bg0-XAAAAgA5wBAAQAAAweOAAAAgAAAAAAAAAAAAAAAAACHAAHAgAAAAAAAIDAAAAAAAAAAAAAAAAAAAAEABA3AEAAAQ4-PACAAAgDAAwACAAEAAgBAgBAAAAAAAAgBAADAAQGQAYAAAAMAAgAC5M9------------------------PAAghIAAAAAAAQVVBCAAAAAAAAAAAw-PAPbOAAAAAAAAAAAAAAAAAAA+dEIAA9DAAAAAAACYABAAAAAMzgdJAgXcDIwfAA+--BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9Pg-BAAAAAAAAAA9HAAAAAAAAAAAAIAAAAQIEAgMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5AAAAIDDAAAAAA9-----PA528Dw+----DAAAwbAgDAAAAAAAAAAOAAAAAAAAAGAAAAAAAAAAAAAAAAGgZgIIwv--DA5H+xOAAAAAAAAAAAAAAAAABAAAAGAAAAAAAAAA+BAAAAAhZA9AAABAAwFAAAgF5DAAAAA+lTAAAAAAAAAA--BOAAAAAAAAAOABMAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAgBAYACYAAAAA+4-4v--BAKAAAAAAAAAAAAAAAAAAAAAAAAA-BAW22-fcAIAQAAAAAwSAAAAAAAwDAAAAAAAAAAAAAAAAAAAkAAAAAAAACAAAAAAA-
+; CursorPosition = 24656
+; FirstLine = 5574
+; Folding = D+PGg-Bw-----------fAM+------Bg0-XAAAAgA5wBAAQAAAweOAAAAgAAAAAAAAAAAAAAAAACHAAHAgAAAAAAAIDAAAAAAAAAAAAAAAAAAAAEABA3AEAAAQ4-PACAAAgDAAwACAAEAAgBAgBAAAAAAAAgBAADAAQGQAYAAAAMAAgAC5M9------------------------PAAghIAAAAAAAQVVBCAAAAAAAAAAAw-PAPbOAAAAAAAAAAAAAAAAAAA+dEIAA9DAAAAAAACYABAAAAAMzgdJAgXcDIwfAA+--BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9Pg-BAAAAAAAAAA9HAAAAAAAAAAAAIAAAAQIEAgMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5AAAAIDDAAAAAA9-----PA528Dw+----DAAAwbAgDAAAAAAAAAAOAAAAAAAAAGAAAAAAAAAAAAAAAAGgZgIIwv--DA5H+xOAAAAAAAAAAAAAAAAABAAAAGAAAAAAAAAA+BAAAAAhZA9AAABAAwFAAAgF5DAAAAA+lTAAAAAAAAAA--BOAAAAAAAAAOABMAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAgBAYACYAAAAA+4-4v--BAKAAAAAAAAAAAAAAAAAAAAAAAAA0Zbf0-HHACAEAAAAAsEAAAAAAA9AAAAAAAAAAAAAAAAAAAAJAAAAAAAgAAAAAAAw
 ; EnableXP
 ; Executable = widgets-.app.exe

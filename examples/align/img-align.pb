@@ -1,4 +1,4 @@
-﻿IncludePath "../../../" : XIncludeFile "widgets.pbi"
+﻿IncludePath "../../" : XIncludeFile "widgets.pbi"
 ;XIncludeFile "../empty5.pb"
 
 ;- 
@@ -93,9 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 10
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
 ; Folding = -
 ; EnableXP
 ; DPIAware
