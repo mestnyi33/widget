@@ -24420,10 +24420,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\picture\change
             
             If *this\text\multiLine
-               Update_DrawText( *this, text_change )
+               Update_DrawText( *this, 1 )
             Else
-            ;
-            ; make_scrollarea
                ; make_scrollarea_size
                If *this\text\vertical
                   If *this\text\string
@@ -24527,47 +24525,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ origin position
          Protected X, Y
-         If test
-            If *this\text\multiLine
-               X = *this\inner_x( ) + *this\scroll_x( )
-               Y = *this\inner_y( ) + *this\scroll_y( )
-            Else
-               X = *this\inner_x( ) 
-               Y = *this\inner_y( ) 
-            EndIf
-         Else
-            X = *this\inner_x( ) + *this\scroll_x( )
-            Y = *this\inner_y( ) + *this\scroll_y( )
-         EndIf
+         X = *this\inner_x( ) + *this\scroll_x( )
+         Y = *this\inner_y( ) + *this\scroll_y( )
          
          ;\\ draw picture
          If *this\picture And *this\picture\imageID 
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
             DrawAlphaImage( *this\picture\imageID, X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
-            ; DrawAlphaImage( ImageID(*this\picture\image), X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
          EndIf
          
          ;\\ draw text
          If *this\text And *this\text\string 
-            draw_mode_alpha_( #PB_2DDrawing_Transparent )
-            ;\\ draw text items
-            If *this\text\multiLine
-               ; draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               ForEach *this\__lines( )
-                  DrawRotatedText( X + *this\__lines( )\x + *this\__lines( )\text\x, Y + *this\__lines( )\y + *this\__lines( )\text\y,
-                                   *this\__lines( )\text\String.s, *this\text\rotate, *this\color\front[state] ) ; *this\__lines( )\color\font )
-                  
-                  If *this\mode\Lines
-                     Protected i, count = Bool( func::GetFontSize( GetFontID( *this\__lines( ) ) ) > 13 )
-                     For i = 0 To count
-                        Line( X + *this\__lines( )\x + *this\__lines( )\text\x, Y + *this\__lines( )\y + *this\__lines( )\text\y + *this\__lines( )\text\height - count + i - 1, *this\__lines( )\text\width, 1, *this\color\front[state] )
-                     Next
-                  EndIf
-               Next
-            Else
-               ;\\ draw text
-               If *this\inner_height( ) > *this\text\height / 2
-                  DrawRotatedText( X + *this\text\x, Y + *this\text\y, *this\text\string, *this\text\rotate, *this\color\front[state] )
+            If *this\inner_height( ) > *this\text\height / 2
+               draw_mode_alpha_( #PB_2DDrawing_Transparent )
+               ;\\ draw items text
+               If *this\text\multiLine
+                  ; draw_mode_alpha_( #PB_2DDrawing_Transparent )
+                  ForEach *this\__lines( )
+                     DrawRotatedText( X + *this\__lines( )\x + *this\__lines( )\text\x, 
+                                      Y + *this\__lines( )\y + *this\__lines( )\text\y,
+                                      *this\__lines( )\text\String.s, *this\text\rotate, *this\color\front[state] ) 
+                     
+                     ; under line
+                     If *this\mode\Lines
+                        Protected i, count = Bool( func::GetFontSize( GetFontID( *this\__lines( ) ) ) > 13 )
+                        For i = 0 To count
+                           Line( X + *this\__lines( )\x + *this\__lines( )\text\x, 
+                                 Y + *this\__lines( )\y + *this\__lines( )\text\y + *this\__lines( )\text\height,;- count + i - 1, 
+                                 *this\__lines( )\text\width, DPIScaled(1), *this\color\front[state] )
+                        Next
+                     EndIf
+                  Next
+               Else
+                  ;\\ draw text
+                  DrawRotatedText( X + *this\text\x, 
+                                   Y + *this\text\y, 
+                                   *this\text\string, *this\text\rotate, *this\color\front[state] )
                EndIf
             EndIf
          EndIf
@@ -27785,8 +27778,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 25578
-; FirstLine = 24559
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-v8dz3-hr8vFImn+v+2-----------------------b0Ze-4--------------------fb---------------------4-------------------------------------------
+; CursorPosition = 24422
+; FirstLine = 23577
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-v8dz3-hr8vFImn+v+2-----------------------b0Ze-4--------------------fb---l-----------------0-------------------------------------------
 ; EnableXP
 ; Executable = widgets-.app.exe

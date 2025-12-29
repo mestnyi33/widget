@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    ;test_align = 1
    test_draw_area = 1
-   
+      
    Macro add_image( _address_, _img_, _size_ = 0 )
       ;
       If IsImage( _img_ )
@@ -47,99 +47,136 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   Define Image = 1
-   Define i, Width = 250
+   Procedure _SetText( *this._s_WIDGET, txt$ )
+      If *this = #PB_All
+         PushMapPosition( roots( ))
+         ForEach roots( ) 
+            If StartEnum( roots( ) )
+               If widgets( )\picture\image = 1
+                  SetText( widgets( ), txt$ )
+               EndIf
+               StopEnum( )
+            EndIf    
+         Next 
+         PopMapPosition( roots( ))
+      EndIf
+   EndProcedure
    
-   If Not LoadImage(Image, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+   ;-
+   If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
       End
    EndIf
    If DesktopResolutionX() > 1
-      ResizeImage(Image, DesktopScaledX(ImageWidth(Image)),DesktopScaledY(ImageHeight(Image)))
+      ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
    EndIf
    
-   Global test, change_text, change_img
+   Define i, h=74, Width = 200
+   
+   Global multiline = 1
+   Global test, change_line, change_txt, change_img
    
    Procedure Click_Events( )
-      If GetState( change_img )
-         ResizeImage(1, 16,16, #PB_Image_Raw)
-      Else
-         ResizeImage(1, 32,32, #PB_Image_Raw)
-      EndIf
-      _SetImage( #PB_All, 1 )
+      Select EventWidget( )
+         Case change_img
+            If GetState( change_img )
+               ResizeImage(1, 16,16, #PB_Image_Raw)
+            Else
+               ResizeImage(1, 32,32, #PB_Image_Raw)
+            EndIf
+            _SetImage( #PB_All, 1 )
+            
+         Case change_txt
+            If multiline
+               If GetState( change_txt )
+                  _SetText( #PB_All, "text"+#LF$+"line" )
+               Else
+                  _SetText( #PB_All, "change"+#LF$+"line" )
+               EndIf
+            Else
+               If GetState( change_txt )
+                  _SetText( #PB_All, "text" )
+               Else
+                  _SetText( #PB_All, "change" )
+               EndIf
+            EndIf
+            
+      EndSelect
    EndProcedure
    
    Procedure Change_Events( )
       If test
-         SetText( test, GetText( change_text))
+         SetText( test, GetText( change_line))
       EndIf
    EndProcedure
    
    Procedure Test_Events( )
       test = EventWidget( )
-      SetText( change_text, GetText( test))
+      SetText( change_line, GetText( test))
    EndProcedure
-  
-   Procedure TestAlign( X,Y,Width,Height, txt$, img, flags=0, align.q=0 )
-      Protected._s_WIDGET *g
+   
+   Procedure TestAlign( X,Y,Width,Height, flags.q=0 )
+      Protected._s_WIDGET *g  
+      Protected img = 1
+      Protected txt$ = "text"
+      
       If flags & #__flag_Center
          flags &~ #__flag_Center
          flags | #__align_image
       EndIf
-      ;
-      ; flags|#__flag_TextMultiLine
       
-      *g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img )
+      If multiline
+         txt$+#LF$+"line"
+         flags|#__flag_TextMultiLine
+      EndIf
+      
+      ;txt$ = ""
+      ;img =- 1
+      
+      *g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
+      ;*g = Text( X,Y,Width,Height, txt$, #__flag_BorderFlat|flags) : SetImage( *g, img )
+      
       ;*g = ButtonImage( X,Y,Width,Height, img, flags) : SetText( *g, txt$ )
+      ;*g = Image( X,Y,Width,Height, img, #__flag_BorderFlat|flags) : SetText( *g, txt$ )
       
-      Alignment( *g, align )
+      Alignment( *g, #__align_left|#__align_right)
       Bind(*g, @Test_Events( ), #__event_LeftClick)
+      ProcedureReturn *g
    EndProcedure
    
-   If Open(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      TestAlign(10,  10, Width/2-5, 65, "left&top"                     , Image, #__flag_Left |#__flag_Top,    #__align_proportional|#__align_left )
-      TestAlign(10+Width/2+5,  10, Width/2-5, 65, "right&top"          , Image, #__flag_Right|#__flag_Top,    #__align_proportional|#__align_right )
-      TestAlign(10,  10+65+10, Width/2-5, 65, "left&bottom"            , Image, #__flag_Left |#__flag_Bottom, #__align_proportional|#__align_left )
-      TestAlign(10+Width/2+5,  10+65+10, Width/2-5, 65, "right&bottom" , Image, #__flag_Right|#__flag_Bottom, #__align_proportional|#__align_right )
+   
+   If Open(0, 0, 0, Width+20, 760, "test content alignment", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      TestAlign(10,  10,       Width, h, #__flag_Left)
+      TestAlign(10,  10+65+10, Width, h, #__flag_Top)
+      TestAlign(10, 160,       Width, h, #__flag_Right)
+      TestAlign(10, 160+65+10, Width, h, #__flag_Bottom)
       
-      TestAlign(10, 160, Width/2-5, 65, "left"                         , Image, #__flag_Left,                 #__align_proportional|#__align_left )
-      TestAlign(10+Width/2+5, 160, Width/2-5, 65, "right"              , Image, #__flag_Right,                #__align_proportional|#__align_right )
-      TestAlign(10, 160+65+10, Width/2-5, 65, "  top  "                    , Image, #__flag_Top,                  #__align_proportional|#__align_left )
-      TestAlign(10+Width/2+5, 160+65+10, Width/2-5, 65, "bottom"       , Image, #__flag_Bottom,               #__align_proportional|#__align_right )
+      TestAlign(10, 310,       Width, h, #__flag_Center|#__flag_Left)
+      TestAlign(10, 310+65+10, Width, h, #__flag_Center|#__flag_Top)
+      TestAlign(10, 460,       Width, h, #__flag_Center|#__flag_Right)
+      TestAlign(10, 460+65+10, Width, h, #__flag_Center|#__flag_Bottom)
       
-      TestAlign(10, 310, Width, 65, "left&center"                      , Image, #__flag_TextLeft,             #__align_left|#__align_right )
-      TestAlign(10, 310+65+10, Width, 65, "right&center"               , Image, #__flag_TextRight,            #__align_left|#__align_right )
-      TestAlign(10, 460, Width, 65, "top&center"                       , Image, #__flag_TextTop,              #__align_left|#__align_right )
-      TestAlign(10, 460+65+10, Width, 65, "bottom&center"              , Image, #__flag_TextBottom,           #__align_left|#__align_right )
-      
-      TestAlign(10, 610, Width, 65, "default"                         , Image,0,                             #__align_left|#__align_right)
-      
+      TestAlign(10, 610, Width, h, #__flag_Center)
       ;  
-      ;  
-      change_text = Editor(10, 685, Width, 40)
-      Alignment( change_text, #__align_left|#__align_right)
-      Bind(change_text, @Change_Events( ), #__event_Change)
+      change_line = Editor(10, 685, Width, 40)
+      Alignment( change_line, #__align_left|#__align_right)
+      Bind(change_line, @Change_Events( ), #__event_Change)
       
-      change_img = Button(10, 725, Width, 25, "change image size", #PB_Button_Toggle )
+      change_txt = Button(10, 725, Width/2, 25, "change txt", #PB_Button_Toggle )
+      Alignment( change_txt, #__align_left|#__align_right)
+      Bind(change_txt, @Click_Events( ), #__event_LeftClick)
+      
+      change_img = Button(10+Width/2, 725, Width/2, 25, "change img", #PB_Button_Toggle )
       Alignment( change_img, #__align_left|#__align_right)
       Bind(change_img, @Click_Events( ), #__event_LeftClick)
       
       Repeat
          Define Event = WaitWindowEvent()
       Until Event = #PB_Event_CloseWindow
-      
-;       Button 1 1  0 0  0 0  0 0 left
-;       Button 0 0  0 0  1 1  0 0 right
-;       Button 0 0  1 1  0 0  0 0 top
-;       Button 0 0  0 0  0 0  1 1 bottom
-;       Button 1 0  0 0  0 0  0 0 left&center
-;       Button 0 0  0 0  1 0  0 0 right&center
-;       Button 0 0  1 0  0 0  0 0 top&center
-;       Button 0 0  0 0  0 0  1 0 bottom&center
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 124
-; FirstLine = 104
-; Folding = ---
+; CursorPosition = 74
+; FirstLine = 12
+; Folding = 6+---
 ; EnableXP
 ; DPIAware
