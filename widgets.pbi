@@ -26191,138 +26191,6 @@ EndMacro
 ;-
 ;-\\ EXAMPLE
 ;-
-CompilerIf #PB_Compiler_IsMainFile
-   EnableExplicit
-   UseWidgets( )
-   ;test_align = 1
-   test_draw_area = 1
-   
-   Macro add_image( _address_, _img_, _size_ = 0 )
-      ;
-      If IsImage( _img_ )
-         If _size_
-            _address_\width  = _size_
-            _address_\height = _size_
-            ResizeImage( _img_, _size_, _size_, #PB_Image_Raw )
-         Else
-            _address_\width  = ImageWidth( _img_ )
-            _address_\height = ImageHeight( _img_ )
-         EndIf
-         
-         _address_\change  = 1
-         _address_\image   = _img_
-         _address_\imageID = ImageID( _img_ )
-      Else
-         _address_\change  = - 1
-         _address_\image   = - 1
-         _address_\imageID = 0
-         _address_\width   = 0
-         _address_\height  = 0
-      EndIf
-   EndMacro
-   
-   Procedure _SetImage( *this._s_WIDGET, img )
-      If *this = #PB_All
-         PushMapPosition( roots( ))
-         ForEach roots( ) 
-            If StartEnum( roots( ) )
-               If widgets( )\picture\image = img
-                  ; Debug widgets( )\class
-                  ; widgets( )\picturesize = ImageWidth(img)
-                  add_image( widgets( )\picture, img )
-               EndIf
-               StopEnum( )
-            EndIf    
-         Next 
-         PopMapPosition( roots( ))
-      EndIf
-   EndProcedure
-   
-   ;-
-   If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
-      End
-   EndIf
-   If DesktopResolutionX() > 1
-      ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
-   EndIf
-   
-   Define i, Width = 200
-   
-   Global test, change_text, change_img
-   
-   Procedure Click_Events( )
-      If GetState( change_img )
-         ResizeImage(1, 16,16, #PB_Image_Raw)
-      Else
-         ResizeImage(1, 32,32, #PB_Image_Raw)
-      EndIf
-      _SetImage( #PB_All, 1 )
-   EndProcedure
-   
-   Procedure Change_Events( )
-      If test
-         SetText( test, GetText( change_text))
-      EndIf
-   EndProcedure
-   
-   Procedure Test_Events( )
-      test = EventWidget( )
-      SetText( change_text, GetText( test))
-   EndProcedure
-   
-   Procedure TestAlign( X,Y,Width,Height, flags=0 )
-      Protected._s_WIDGET *g  
-      Protected img = 1
-      Protected txt$ = "text"
-      Protected multiline = 1
-      
-      If multiline
-         txt$+#LF$+"line"
-         flags|#__flag_TextMultiLine
-      EndIf
-      
-      ;txt$ = ""
-      ;img =- 1
-      
-      *g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
-      ;*g = Text( X,Y,Width,Height, txt$, #__flag_BorderFlat|flags) : SetImage( *g, img )
-      
-      ;*g = ButtonImage( X,Y,Width,Height, img, flags) : SetText( *g, txt$ )
-      ;*g = Image( X,Y,Width,Height, img, #__flag_BorderFlat|flags) : SetText( *g, txt$ )
-      
-      Alignment( *g, #__align_left|#__align_right)
-      Bind(*g, @Test_Events( ), #__event_LeftClick)
-      ProcedureReturn *g
-   EndProcedure
-   
-   
-   If Open(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      TestAlign(10,  10,       Width, 65, #__flag_Left)
-      TestAlign(10,  10+65+10, Width, 65, #__flag_Top)
-      TestAlign(10, 160,       Width, 65, #__flag_Right)
-      TestAlign(10, 160+65+10, Width, 65, #__flag_Bottom)
-      
-      TestAlign(10, 310,       Width, 65, #__flag_Center|#__flag_Left)
-      TestAlign(10, 310+65+10, Width, 65, #__flag_Center|#__flag_Top)
-      TestAlign(10, 460,       Width, 65, #__flag_Center|#__flag_Right)
-      TestAlign(10, 460+65+10, Width, 65, #__flag_Center|#__flag_Bottom)
-      
-      TestAlign(10, 610, Width, 65, #__flag_Center)
-      ;  
-      change_text = Editor(10, 685, Width, 40)
-      Alignment( change_text, #__align_left|#__align_right)
-      Bind(change_text, @Change_Events( ), #__event_Change)
-      
-      change_img = Button(10, 725, Width, 25, "change image size", #PB_Button_Toggle )
-      Alignment( change_img, #__align_left|#__align_right)
-      Bind(change_img, @Click_Events( ), #__event_LeftClick)
-      
-      Repeat
-         Define Event = WaitWindowEvent()
-      Until Event = #PB_Event_CloseWindow
-   EndIf
-CompilerEndIf
-
 CompilerIf #PB_Compiler_IsMainFile = 99
    EnableExplicit
    UseWidgets( )
@@ -26386,7 +26254,6 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    EndIf
    
 CompilerEndIf
-
 CompilerIf #PB_Compiler_IsMainFile = 99
    EnableExplicit
    UseWidgets( )
@@ -26436,56 +26303,6 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       WaitClose( )
    EndIf
    
-CompilerEndIf
-
-CompilerIf #PB_Compiler_IsMainFile = 99
-   EnableExplicit
-   UseWidgets( )
-   test_align = 1
-   test_draw_area = 1
-   
-   If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
-      End
-   EndIf
-   If DesktopResolutionX() > 1
-      ResizeImage(1, DPIScaledX(ImageWidth(1)),DPIScaledY(ImageHeight(1)))
-   EndIf
-   
-   Define Image = 1
-   Define i, Width = 250
-   
-   Procedure ComboButton( X,Y,Width,Height, Text.s, flags)
-      Protected *g._s_WIDGET
-      *g = ComboBox( X,Y,Width,Height, flags)
-      AddItem( *g, -1, Text,1 )
-      SetState( *g, 0 )
-   EndProcedure
-   
-   
-   
-   If Open(0, 0, 0, Width+20, 760, "test alignment Image", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      ComboButton(10,  10, Width/2-5, 65, "left&top"                    , #__flag_BorderFlat|#__flag_Left |#__flag_Top   )
-      ComboButton(10+Width/2+5,  10, Width/2-5, 65, "right&top"         , #__flag_BorderFlat|#__flag_Right|#__flag_Top   )
-      ComboButton(10,  10+65+10, Width/2-5, 65, "left&bottom"           , #__flag_BorderFlat|#__flag_Left |#__flag_Bottom)
-      ComboButton(10+Width/2+5,  10+65+10, Width/2-5, 65, "right&bottom", #__flag_BorderFlat|#__flag_Right|#__flag_Bottom)
-      
-      ComboButton(10, 160, Width/2-5, 65, "left"                        , #__flag_BorderFlat|#__flag_Left  )
-      ComboButton(10+Width/2+5, 160, Width/2-5, 65, "right"             , #__flag_BorderFlat|#__flag_Right )
-      ComboButton(10, 160+65+10, Width/2-5, 65, "top"                   , #__flag_BorderFlat|#__flag_Top   )
-      ComboButton(10+Width/2+5, 160+65+10, Width/2-5, 65, "bottom"      , #__flag_BorderFlat|#__flag_Bottom)
-      
-      ComboButton(10, 310, Width, 65, "left&center"                     , #__flag_BorderFlat|#__flag_ImageLeft  )
-      ComboButton(10, 310+65+10, Width, 65, "right&center"              , #__flag_BorderFlat|#__flag_ImageRight )
-      ComboButton(10, 460, Width, 65, "top&center"                      , #__flag_BorderFlat|#__flag_ImageTop   )
-      ComboButton(10, 460+65+10, Width, 65, "bottom&center"             , #__flag_BorderFlat|#__flag_ImageBottom)
-      
-      ComboButton(10, 610, Width, 140, "default"                         , #__flag_BorderFlat);|#__flag_ImageCenter)
-      
-      
-      Repeat
-         Define Event = WaitWindowEvent()
-      Until Event = #PB_Event_CloseWindow
-   EndIf
 CompilerEndIf
 
 CompilerIf #PB_Compiler_IsMainFile = 99
@@ -26568,7 +26385,6 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       WaitClose( ) 
    EndIf
 CompilerEndIf
-
 CompilerIf #PB_Compiler_IsMainFile = 99
    UseWidgets( )
    
@@ -26930,7 +26746,7 @@ CompilerEndIf
 
 
 ;- DEMO
-CompilerIf #PB_Compiler_IsMainFile = 99
+CompilerIf #PB_Compiler_IsMainFile ;= 99
    
    EnableExplicit
    UseWidgets( )
@@ -27778,8 +27594,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 24422
-; FirstLine = 23577
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-v8dz3-hr8vFImn+v+2-----------------------b0Ze-4--------------------fb---l-----------------0-------------------------------------------
+; CursorPosition = 26748
+; FirstLine = 25130
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-v8dz3-hr8vFImn+v+2-----------------------b0Ze-4--------------------fb---l-----------------0-----------------------f-08f2+----------
 ; EnableXP
 ; Executable = widgets-.app.exe
