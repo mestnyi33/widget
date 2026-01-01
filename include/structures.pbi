@@ -590,6 +590,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; transporent.b
          ; dragged.b              ;
          ;
+         clip.b
          *errors
          notify.l                   ; оповестить об изменении
          
@@ -692,7 +693,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          bounds._s_BOUNDS
          
          ;
-         flag.q
+         Flag.q
          *root._s_ROOT
          *window._s_WIDGET
          *parent._s_WIDGET
@@ -796,8 +797,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 185
-; FirstLine = 76
+; CursorPosition = 592
+; FirstLine = 430
 ; Folding = -F5w------
 ; Optimizer
 ; EnableXP
