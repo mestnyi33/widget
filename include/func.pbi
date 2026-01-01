@@ -447,7 +447,7 @@ EndProcedure
       ;
       Protected pointSize.CGFloat = 0.0
       If FontID
-        CocoaMessage(@pointSize,FontID,"pointSize")
+        CocoaMessage(@pointSize, FontID,"pointSize")
       EndIf
       ProcedureReturn pointSize
     EndProcedure
@@ -605,7 +605,7 @@ Procedure.i GetImageHeight( ImageID.i )
       #GDK_BLANK_CURSOR = -2
       
       ImportC ""
-        gtk_widget_is_visible(widget)
+        gtk_widget_is_visible(Widget)
         gtk_widget_get_window(*Widget.GtkWidget)
         gtk_entry_set_placeholder_text(*entry, Text.p-utf8)
         gtk_entry_get_placeholder_text(*entry)
@@ -1010,8 +1010,8 @@ CompilerEndIf
 ;     gtk_main_()
 ;   EndIf
 ; EndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 959
-; FirstLine = 834
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 449
+; FirstLine = 436
 ; Folding = --------------4--
 ; EnableXP

@@ -132,6 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;txt$ = ""
       ;img =- 1
       
+      ;*g = CheckBox( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
       *g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
       ;*g = Text( X,Y,Width,Height, txt$, #__flag_BorderFlat|flags) : SetImage( *g, img )
       
@@ -176,7 +177,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
 ; CursorPosition = 74
-; FirstLine = 12
+; FirstLine = 1
 ; Folding = 6+---
 ; EnableXP
 ; DPIAware

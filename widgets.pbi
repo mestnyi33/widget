@@ -1465,29 +1465,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
          draw_roundbox_( (_x_+_address_\x), (_y_+_address_\y), _address_\width, _address_\height, _round_, _round_, _color_frame_ & $FFFFFF | _alpha_ << 24 )
       EndMacro
       
-      Macro __draw_text( _this_, _color_ = $ff000000 )
-         If _this_\text 
-            If _this_\text\string 
-               If _this_\TextChange( ) Or _this_\ResizeChange( )
-                  If _this_\text\vertical
-                     change_align_horizontal( _this_\text, _this_\inner_width( ), _this_\text\height, _this_\text\rotate, _this_\text\align, _this_\padding\x )
-                     change_align_vertical( _this_\text, _this_\inner_height( ), _this_\text\width, _this_\text\rotate, _this_\text\align, _this_\padding\y )
-                  Else
-                     change_align_horizontal( _this_\text, _this_\inner_width( ), _this_\text\width, _this_\text\rotate, _this_\text\align, _this_\padding\x )
-                     change_align_vertical( _this_\text, _this_\inner_height( ), _this_\text\height, _this_\text\rotate, _this_\text\align, _this_\padding\y )
-                  EndIf
-               EndIf
-               
-               ;
-               If _this_\screen_height( ) > _this_\text\height
-                  draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawRotatedText( _this_\inner_x( ) + _this_\text\x, _this_\inner_y( ) + _this_\text\y, _this_\text\string, _this_\text\rotate, _color_ )
-               EndIf
-            EndIf
-         EndIf
-      EndMacro
       
       ;-
+      Macro __draw_rotatedtext( _address_, _x_,_y_, _rotate_, _color_, _under_line_size_ = 0 )
+         ; under line
+         If _under_line_size_
+            Box( _x_ + _address_\text\x, 
+                 _y_ + _address_\text\y + _address_\text\height - _under_line_size_ - 1, _address_\text\width, _under_line_size_, _color_ )
+         EndIf
+         
+         DrawRotatedText( _x_ + _address_\text\x, 
+                          _y_ + _address_\text\y, _address_\text\String.s, _rotate_, _color_ ) 
+         
+      EndMacro
+      
       Macro __draw_box( _address_, _color_type_, _mode_ = )
          draw_roundbox_( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_,
                          _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
@@ -4755,7 +4746,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ; Draw string
          If *this\text\string
-            ;__draw_text( *this )
             Draw_Content( *this, 0 )
          EndIf
       EndProcedure
@@ -19257,8 +19247,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   Else
                      If *this\root\parent And
-                        ( *this\root\parent\type = #__type_ComboBox Or
-                          *this\root\parent\type = #__type_MenuBar )
+                        ( *this\root\parent\type = #__type_MenuBar ) ; *this\root\parent\type = #__type_ComboBox Or
+                          
                         ;
                         If IsWindow( *this\root\parent\root\canvas\window )
                            DisableWindow( *this\root\canvas\window, #True )
@@ -19270,8 +19260,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             If event = #__event_up
-               If *this <> *this\root\parent
-                  If *this\root\parent 
+               If *this\root\parent 
+                  If *this <> *this\root\parent
                      If *this\root\parent\type = #__type_ComboBox 
                         SetText( *this\root\parent, GetItemText( *this, GetState( *this ) ) )
                         DisplayPopupBar( *this, *this\root\parent )
@@ -20317,7 +20307,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             event = #__event_MiddleUp Or
             event = #__event_RightUp
             
-            ;\\
+             ;\\
             If Pressed( )
                ;\\ do up&click events
                If Pressed( )\press
@@ -22293,40 +22283,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ; set content ALIGNMENT
-         If *this\type = #__type_ComboBox
-            ;If constants::BinaryFlag( *this\flag, #__align_image )
-            set_align_content( *this\picture, *this\flag )
-            ;EndIf
-            If constants::BinaryFlag( *this\flag, #__align_Text )
-               set_align_content( *this\text, *this\flag )
-            EndIf
-         EndIf
-         If *this\type = #__type_Progress
-            ;If constants::BinaryFlag( *this\flag, #__align_image )
-            set_align_content( *this\picture, *this\flag )
-            ;EndIf
-            If constants::BinaryFlag( *this\flag, #__align_Text )
-               set_align_content( *this\text, *this\flag )
-            EndIf
-         EndIf
-         If *this\type = #__type_Image Or
-            *this\type = #__type_Button Or 
-            *this\type = #__type_ButtonImage
-            ;
-            set_align_content( *this\picture, *this\flag )
-         EndIf
          If *this\type = #__type_Text Or
             *this\type = #__type_Editor Or
             *this\type = #__type_String Or
-            *this\type = #__type_ButtonImage Or
+            *this\type = #__type_Image Or
             *this\type = #__type_Button Or 
+            *this\type = #__type_ButtonImage Or
             *this\type = #__type_Option Or
             *this\type = #__type_CheckBox Or
-            *this\type = #__type_HyperLink
+            *this\type = #__type_ComboBox Or
+            *this\type = #__type_HyperLink Or
+            *this\type = #__type_Progress
+               
+            set_align_content( *this\picture, *this\flag )
             
-            If Not ( constants::BinaryFlag( *this\flag, #__align_image ) And 
-                     constants::BinaryFlag( *this\flag, #__align_Text ))
-               set_align_content( *this\text, *this\flag )
+            If *this\type = #__type_ComboBox Or
+               *this\type = #__type_Progress
+               
+               If constants::BinaryFlag( *this\flag, #__align_Text )
+                  set_align_content( *this\text, *this\flag )
+               EndIf
+            Else
+               If Not ( constants::BinaryFlag( *this\flag, #__align_image ) And 
+                        constants::BinaryFlag( *this\flag, #__align_Text ))
+                  set_align_content( *this\text, *this\flag )
+               EndIf
             EndIf
          EndIf
          ;
@@ -24524,7 +24505,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ origin position
-         Protected X, Y
+         Protected i, X, Y, FontID, UnderLineSize
          X = *this\inner_x( ) + *this\scroll_x( )
          Y = *this\inner_y( ) + *this\scroll_y( )
          
@@ -24538,29 +24519,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\text And *this\text\string 
             If *this\inner_height( ) > *this\text\height / 2
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               ;\\ draw items text
+               ;
+               If *this\mode\Lines
+                  FontID = CurrentFontID( ) ; GetFontID( *this\__lines( ) )
+                  If FontID
+                     UnderLineSize = DPIScaled( 1+Bool( func::GetFontSize( FontID ) > 13 ))
+                     ; Debug ""+UnderLineSize+" "+FontID
+                  EndIf
+               EndIf
+               ;
                If *this\text\multiLine
-                  ; draw_mode_alpha_( #PB_2DDrawing_Transparent )
+                  ;\\ draw items text
                   ForEach *this\__lines( )
-                     DrawRotatedText( X + *this\__lines( )\x + *this\__lines( )\text\x, 
-                                      Y + *this\__lines( )\y + *this\__lines( )\text\y,
-                                      *this\__lines( )\text\String.s, *this\text\rotate, *this\color\front[state] ) 
-                     
-                     ; under line
-                     If *this\mode\Lines
-                        Protected i, count = Bool( func::GetFontSize( GetFontID( *this\__lines( ) ) ) > 13 )
-                        For i = 0 To count
-                           Line( X + *this\__lines( )\x + *this\__lines( )\text\x, 
-                                 Y + *this\__lines( )\y + *this\__lines( )\text\y + *this\__lines( )\text\height,;- count + i - 1, 
-                                 *this\__lines( )\text\width, DPIScaled(1), *this\color\front[state] )
-                        Next
-                     EndIf
+                     __draw_rotatedtext( *this\__lines( ), X + *this\__lines( )\x, Y + *this\__lines( )\y, *this\text\rotate, *this\color\front[state], UnderLineSize )
                   Next
                Else
                   ;\\ draw text
-                  DrawRotatedText( X + *this\text\x, 
-                                   Y + *this\text\y, 
-                                   *this\text\string, *this\text\rotate, *this\color\front[state] )
+                  __draw_rotatedtext( *this, X, Y, *this\text\rotate, *this\color\front[state], UnderLineSize )
                EndIf
             EndIf
          EndIf
@@ -24756,14 +24731,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;          Draw_Frames( *this, *this\ColorState( ) )
          ;          ProcedureReturn
          
-         Protected X, Y
+         Protected X, Y, state
+         state = *this\ColorState( )
          ;\\ origin position
          X = *this\inner_x( ) + *this\scroll_x( )
          Y = *this\inner_y( ) + *this\scroll_y( )
          
-         Protected state
          If *this\type = #__type_Button 
-            state = *this\ColorState( )
             If *this\togglebox And *this\togglebox\checked
                state = #__s_2
             EndIf
@@ -24882,9 +24856,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *rows( )\text\string.s
                draw_mode_( #PB_2DDrawing_Transparent )
                If *rows( )\text\x > *this\row\sublevelsize
-                  DrawRotatedText( xs + *rows( )\text\x - property, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
+                  ; DrawRotatedText( xs + *rows( )\text\x - property, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
+                  __draw_rotatedtext( *rows( ), xs - property, ys, *this\text\rotate, *rows( )\color\front[state] )
                Else
-                  DrawRotatedText( xs + *rows( )\text\x, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
+                  ; DrawRotatedText( xs + *rows( )\text\x, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
+                  __draw_rotatedtext( *rows( ), xs, ys, *this\text\rotate, *rows( )\color\front[state] )
                EndIf
             EndIf
             
@@ -25478,7 +25454,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ Draw items text
                If *this\columns( )\text\string.s
                   draw_mode_( #PB_2DDrawing_Transparent )
-                  DrawRotatedText( X + *this\columns( )\text\x, Y + *this\columns( )\text\y, *this\columns( )\text\string.s, *this\text\rotate, *this\color\front )
+                  ; DrawRotatedText( X + *this\columns( )\text\x, Y + *this\columns( )\text\y, *this\columns( )\text\string.s, *this\text\rotate, *this\color\front )
+                  __draw_rotatedtext( *this\columns( ), X, Y, *this\text\rotate, *this\color\front )
                EndIf
                
                If *this\mode\GridLines
@@ -25801,23 +25778,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf   
-            EndIf
             
-            
-            ;\\ draw scroll area frames
-            If test_draw_area And Not *this\hide
-               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               
-               ;\\ Scroll area coordinate
-               draw_box_( *this\inner_x( ) + *this\scroll_x( ), *this\inner_y( ) + *this\scroll_y( ), *this\scroll_width( ), *this\scroll_height( ), $FF0000FF )
-               draw_box_( *this\inner_x( ) + *this\scroll_x( ) + *this\padding\x, *this\inner_y( ) + *this\scroll_y( ) + *this\padding\y, *this\scroll_width( ) - *this\padding\x * 2, *this\scroll_height( ) - *this\padding\y * 2, $FFFF0000 )
-               
-               If *this\scroll\v And *this\scroll\h
-                  ;\\ page coordinate
-                  draw_box_( *this\scroll\h\frame_x( ), *this\scroll\v\frame_y( ), *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, $FF00FF00 )
+               ;\\ draw scroll area frames
+               If test_draw_area
+                  draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                  
+                  ;\\ Scroll area coordinate
+                  draw_box_( *this\inner_x( ) + *this\scroll_x( ), *this\inner_y( ) + *this\scroll_y( ), *this\scroll_width( ), *this\scroll_height( ), $FF0000FF )
+                  draw_box_( *this\inner_x( ) + *this\scroll_x( ) + *this\padding\x, *this\inner_y( ) + *this\scroll_y( ) + *this\padding\y, *this\scroll_width( ) - *this\padding\x * 2, *this\scroll_height( ) - *this\padding\y * 2, $FFFF0000 )
+                  
+                  If *this\scroll\v And *this\scroll\h
+                     ;\\ page coordinate
+                     draw_box_( *this\scroll\h\frame_x( ), *this\scroll\v\frame_y( ), *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, $FF00FF00 )
+                  EndIf
                EndIf
             EndIf
-            
+             
             ;\\ reset values
             If *this\WidgetChange( ) <> 0
                If Not *this\hide
@@ -25902,137 +25878,141 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If StartEnum( *root )
-                  ;
-                  If test_focus_draw = 1
-                     ;\\ draw active containers frame
-                     If GetActive( )
-                        If GetActive( )\focus = 2 And 
-                           GetActive( )\haschildren 
-                           ;
-                           If GetActive( )\AfterWidget( ) = widgets( )  
-                              clip_output_( GetActive( ), [#__c_draw] )
-                              draw_mode_(#PB_2DDrawing_Outlined)
-                              draw_focus_frame( GetActive( ), $ff0000ff) ; $ffff0000)
-                           EndIf
-                        EndIf
+                  If widgets( )\parent And Not widgets( )\parent\hide 
+                     If Not ( widgets( )\parent\tabbar And widgets( )\parent\tabbar\TabState( ) <> widgets( )\TabIndex( ))
                         ;
-                        ;\\ draw active parent frame
-                        If ActiveWindow( )  
-                           If ActiveWindow( )\focus = 2 And 
-                              ActiveWindow( )\haschildren And  
-                              ActiveWindow( ) <> GetActive( )
-                              ;
-                              If ActiveWindow( )\AfterWidget( ) = widgets( )  
-                                 clip_output_( ActiveWindow( ), [#__c_draw] )
-                                 draw_mode_(#PB_2DDrawing_Outlined)
-                                 draw_focus_frame( ActiveWindow( ), $ff00ff00)
-                              EndIf
-                           EndIf
-                           ;
-                           ;\\ draw active child frame
-                           If ActiveGadget( ) And
-                              ActiveGadget( )\focus = 2 And 
-                              ActiveGadget( )\haschildren And  
-                              ActiveGadget( ) <> GetActive( ) 
-                              
-                              If ActiveGadget( )\AfterWidget( ) = widgets( )  
-                                 clip_output_( ActiveGadget( ), [#__c_draw] )
-                                 draw_mode_(#PB_2DDrawing_Outlined)
-                                 draw_focus_frame( ActiveGadget( ), $ff00ff00)
-                              EndIf
-                           EndIf
-                        EndIf
-                     EndIf
-                  EndIf
-                  ;
-                  ;
-                  ;\\ draw entered widget anchors
-                  If Not MousePress( )
-                     If a_entered( ) And
-                        a_entered( )\enter And 
-                        a_entered( )\haschildren And
-                        a_entered( ) <> a_focused( ) ; Not ( a_anchors( ) And a_focused( ) = a_entered( ) )
-                                                     ;
-                        If a_entered( )\AfterWidget( ) = widgets( )  
-                           clip_output_( a_entered( ), [#__c_draw] )
-                           a_draw( a_entered( ), a_entered( )\anchors\state )
-                        EndIf
-                     EndIf
-                  EndIf
-                  ;
-                  Draw( widgets( ))
-                  
-                  ; 
-                  If test_focus_draw = 1
-                     ;\\ draw active containers frame
-                     If GetActive( ) 
-                        If GetActive( )\focus = 2 And 
-                           GetActive( )\haschildren 
-                           ;
-                           If Not GetActive( )\AfterWidget( ) 
-                              If widgets( ) = GetLast( GetActive( ) )
-                                 clip_output_( GetActive( ), [#__c_draw] )
-                                 draw_mode_(#PB_2DDrawing_Outlined)
-                                 draw_focus_frame( GetActive( ), $ff0000ff) ; $ffff0000)
-                              EndIf
-                           EndIf
-                        EndIf
-                        ;
-                        ;\\ draw active parent frame
-                        If ActiveWindow( )  
-                           If ActiveWindow( )\focus = 2 And 
-                              ActiveWindow( )\haschildren And  
-                              ActiveWindow( ) <> GetActive( ) 
-                              ;
-                              If Not ActiveWindow( )\AfterWidget( ) 
-                                 If widgets( ) = GetLast( ActiveWindow( ) )
-                                    clip_output_( ActiveWindow( ), [#__c_draw] )
+                        If test_focus_draw = 1
+                           ;\\ draw active containers frame
+                           If GetActive( )
+                              If GetActive( )\focus = 2 And 
+                                 GetActive( )\haschildren 
+                                 ;
+                                 If GetActive( )\AfterWidget( ) = widgets( )  
+                                    clip_output_( GetActive( ), [#__c_draw] )
                                     draw_mode_(#PB_2DDrawing_Outlined)
-                                    draw_focus_frame( ActiveWindow( ), $ff00ff00)
+                                    draw_focus_frame( GetActive( ), $ff0000ff) ; $ffff0000)
                                  EndIf
                               EndIf
-                           EndIf
-                           ; 
-                           ;\\ draw active child frame
-                           If ActiveGadget( ) And
-                              ActiveGadget( )\focus = 2 And 
-                              ActiveGadget( )\haschildren And  
-                              ActiveGadget( ) <> GetActive( ) 
-                              
-                              If Not ActiveGadget( )\AfterWidget( ) 
-                                 If widgets( ) = GetLast( ActiveGadget( ) )
-                                    clip_output_( ActiveGadget( ), [#__c_draw] )
-                                    draw_mode_(#PB_2DDrawing_Outlined)
-                                    draw_focus_frame( ActiveGadget( ), $ff00ff00)
+                              ;
+                              ;\\ draw active parent frame
+                              If ActiveWindow( )  
+                                 If ActiveWindow( )\focus = 2 And 
+                                    ActiveWindow( )\haschildren And  
+                                    ActiveWindow( ) <> GetActive( )
+                                    ;
+                                    If ActiveWindow( )\AfterWidget( ) = widgets( )  
+                                       clip_output_( ActiveWindow( ), [#__c_draw] )
+                                       draw_mode_(#PB_2DDrawing_Outlined)
+                                       draw_focus_frame( ActiveWindow( ), $ff00ff00)
+                                    EndIf
+                                 EndIf
+                                 ;
+                                 ;\\ draw active child frame
+                                 If ActiveGadget( ) And
+                                    ActiveGadget( )\focus = 2 And 
+                                    ActiveGadget( )\haschildren And  
+                                    ActiveGadget( ) <> GetActive( ) 
+                                    
+                                    If ActiveGadget( )\AfterWidget( ) = widgets( )  
+                                       clip_output_( ActiveGadget( ), [#__c_draw] )
+                                       draw_mode_(#PB_2DDrawing_Outlined)
+                                       draw_focus_frame( ActiveGadget( ), $ff00ff00)
+                                    EndIf
                                  EndIf
                               EndIf
                            EndIf
                         EndIf
-                     EndIf
-                  EndIf
-                  ;
-                  ;
-                  ;\\ draw entered parent anchors
-                  If Not MousePress( )
-                     If a_entered( ) And 
-                        a_entered( )\enter And 
-                        a_entered( )\haschildren And
-                        a_entered( ) <> a_focused( ) ; Not ( a_anchors( ) And a_focused( ) = a_entered( ) )
+                        ;
+                        ;
+                        ;\\ draw entered widget anchors   widgets( )\parent\tabbar And 
+                        If Not MousePress( )
+                           If a_entered( ) And
+                              a_entered( )\enter And 
+                              a_entered( )\haschildren And
+                              a_entered( ) <> a_focused( ) ; Not ( a_anchors( ) And a_focused( ) = a_entered( ) )
+                                                           ;
+                              If a_entered( )\AfterWidget( ) = widgets( )  
+                                 clip_output_( a_entered( ), [#__c_draw] )
+                                 a_draw( a_entered( ), a_entered( )\anchors\state )
+                              EndIf
+                           EndIf
+                        EndIf
                         
-                        If Not a_entered( )\AfterWidget( ) 
-                           If widgets( ) = GetLast( a_entered( ) )
-                              ; Debug ""+widgets( )\parent\class +" "+ widgets( )\class +" "+ a_entered( )\class +" ("+ widgets( )\text\string +") "+ IsChild( widgets( ), a_entered( ) )
-                              
-                              ; If IsChild( widgets( ), a_entered( ) )
-                              clip_output_( a_entered( ), [#__c_draw] )
-                              a_draw( a_entered( ), a_entered( )\anchors\state )
-                              ; EndIf
+                        Draw( widgets( ))
+                        ;
+                        
+                        ; 
+                        If test_focus_draw = 1
+                           ;\\ draw active containers frame
+                           If GetActive( ) 
+                              If GetActive( )\focus = 2 And 
+                                 GetActive( )\haschildren 
+                                 ;
+                                 If Not GetActive( )\AfterWidget( ) 
+                                    If widgets( ) = GetLast( GetActive( ) )
+                                       clip_output_( GetActive( ), [#__c_draw] )
+                                       draw_mode_(#PB_2DDrawing_Outlined)
+                                       draw_focus_frame( GetActive( ), $ff0000ff) ; $ffff0000)
+                                    EndIf
+                                 EndIf
+                              EndIf
+                              ;
+                              ;\\ draw active parent frame
+                              If ActiveWindow( )  
+                                 If ActiveWindow( )\focus = 2 And 
+                                    ActiveWindow( )\haschildren And  
+                                    ActiveWindow( ) <> GetActive( ) 
+                                    ;
+                                    If Not ActiveWindow( )\AfterWidget( ) 
+                                       If widgets( ) = GetLast( ActiveWindow( ) )
+                                          clip_output_( ActiveWindow( ), [#__c_draw] )
+                                          draw_mode_(#PB_2DDrawing_Outlined)
+                                          draw_focus_frame( ActiveWindow( ), $ff00ff00)
+                                       EndIf
+                                    EndIf
+                                 EndIf
+                                 ; 
+                                 ;\\ draw active child frame
+                                 If ActiveGadget( ) And
+                                    ActiveGadget( )\focus = 2 And 
+                                    ActiveGadget( )\haschildren And  
+                                    ActiveGadget( ) <> GetActive( ) 
+                                    
+                                    If Not ActiveGadget( )\AfterWidget( ) 
+                                       If widgets( ) = GetLast( ActiveGadget( ) )
+                                          clip_output_( ActiveGadget( ), [#__c_draw] )
+                                          draw_mode_(#PB_2DDrawing_Outlined)
+                                          draw_focus_frame( ActiveGadget( ), $ff00ff00)
+                                       EndIf
+                                    EndIf
+                                 EndIf
+                              EndIf
                            EndIf
                         EndIf
+                        ;
+                        ;
+                        ;\\ draw entered parent anchors
+                        If Not MousePress( )
+                           If a_entered( ) And 
+                              a_entered( )\enter And 
+                              a_entered( )\haschildren And
+                              a_entered( ) <> a_focused( ) ; Not ( a_anchors( ) And a_focused( ) = a_entered( ) )
+                              
+                              If Not a_entered( )\AfterWidget( ) 
+                                 If widgets( ) = GetLast( a_entered( ) )
+                                    ; Debug ""+widgets( )\parent\class +" "+ widgets( )\class +" "+ a_entered( )\class +" ("+ widgets( )\text\string +") "+ IsChild( widgets( ), a_entered( ) )
+                                    
+                                    ; If IsChild( widgets( ), a_entered( ) )
+                                    clip_output_( a_entered( ), [#__c_draw] )
+                                    a_draw( a_entered( ), a_entered( )\anchors\state )
+                                    ; EndIf
+                                 EndIf
+                              EndIf
+                           EndIf
+                        EndIf
+                        
                      EndIf
                   EndIf
-                  
-                  
                   ;                       
                   StopEnum( )
                EndIf
@@ -26191,16 +26171,20 @@ EndMacro
 ;-
 ;-\\ EXAMPLE
 ;-
-CompilerIf #PB_Compiler_IsMainFile = 99
+CompilerIf #PB_Compiler_IsMainFile ;= 99
    EnableExplicit
    UseWidgets( )
    
    ; test_focus_set = 2
-   
+   Global *menu._s_WIDGET
    Procedure all_events( )
       Protected event$
       If WidgetEvent( ) = #__event_MouseMove
          ProcedureReturn 0
+      EndIf
+      
+      If WidgetEvent( ) = #__event_LeftUp
+        ; DisplayPopupBar( *menu, EventWidget( ))
       EndIf
       ;
       If WidgetEvent( ) = #__event_MouseWheel
@@ -26224,6 +26208,21 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       SetBackColor(*g, RGB( Random(255), Random(255), Random(255) ))
       SetText(*g, Str(gadget))
       SetClass(*g, Str(gadget))
+      
+;       *menu = CreatePopupBar( )
+;       BarItem( 1, "item 1") 
+;       BarItem( 2, "item 2") 
+      ;Bind( *menu, @all_events( ))
+      
+      *menu = ComboBox(50, 50, 250, 50)
+      AddItem(*menu, -1, "ComboBox item 1")
+      AddItem(*menu, -1, "ComboBox item 2")
+      AddItem(*menu, -1, "ComboBox item 3")
+      
+      
+      ;Bind( *g, @all_events( ))
+      Bind( *menu\PopupCombo( ), @all_events( ))
+      
    EndProcedure
    
    Procedure TestWindow( ID )
@@ -26249,7 +26248,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       ;       TestRoot(40, 210, 210, 150, 150,flag) 
       
       
-      Bind( #PB_All, @all_events( ))
+      ;Bind( #PB_All, @all_events( ))
       WaitClose( )
    EndIf
    
@@ -27594,8 +27593,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 26748
-; FirstLine = 25130
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-v8dz3-hr8vFImn+v+2-----------------------b0Ze-4--------------------fb---l-----------------0-----------------------f-08f2+----------
+; CursorPosition = 25780
+; FirstLine = 23454
+; Folding = --------------------------------------v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fffv8XNpe8-uqd--84-----r-d803++--------7v4-------------------------------------------v-v8dz4-hr8vFImn+-j+----------------------frvz8-+--------------------b8+--6f---------------f------f0-----0-jv-t-v-----84-q0----------
 ; EnableXP
 ; Executable = widgets-.app.exe
