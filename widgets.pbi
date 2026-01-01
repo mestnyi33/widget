@@ -8948,35 +8948,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If ( Change_x Or Change_y Or Change_width Or Change_height ) 
-              
-         ;             If *this\picture\imageID
-            ;                *this\picture\change = #True
-            ;             EndIf
-            
-            ; похоже тепер у кнопки нет проблем
-            ; оказалось не только у кнопки еще у полеввода
-            ; *this\TextChange( ) = 1 ; без нее у кнопки проблемы перерисовкой текста
-            
-            
-             If *this\ResizeChange( ) <> #True
+            If *this\ResizeChange( ) <> #True
                *this\ResizeChange( ) = #True
             EndIf
          EndIf
-      
-         ; 
-         If ( Change_x Or Change_y Or Change_width Or Change_height ) Or 
-            ( *this\parent And *this\parent\ResizeChange( ))
+         
+         ; change clip output coordinate
+         If Change_x Or Change_y Or Change_width Or Change_height 
             ;
-            Reclip( *this )
-            
-            ; for the image widget
-            If *this\type = #__type_image ; Not *this\container
-               ; make horizontal scroll x
-               make_scrollarea_x( *this, *this\scroll_width( ), *this\picture\align )
-               
-               ; make vertical scroll y
-               make_scrollarea_y( *this, *this\scroll_height( ), *this\picture\align )
+             Reclip( *this )
+         ElseIf *this\parent And *this\parent\ResizeChange( )
+            ;
+            If is_integral_( *this )
+               ; Debug " reclip parent integral change "+*this\class
+            Else
+               Reclip( *this )
+               ; Debug " reclip parent change "+*this\class
             EndIf
+         Else
+            ; Debug " resize no change "+*this\class
          EndIf
          
          ;
@@ -9245,7 +9235,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            
             ;\\
             If *this\type = #__type_ScrollArea
                If IsGadget(*this\scroll\gadget[1])
@@ -9255,7 +9244,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   CompilerEndIf
                EndIf
             EndIf
-            
             
             ;
             ;\\ update option&checkbox position
@@ -9287,10 +9275,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; Debug "   "+X +" "+ Y +" "+ Width +" "+ Height
                Post( *this, #__event_resize )
             EndIf
+         Else
+            
          EndIf
          
          ;Debug "resize "+*this\class +" "+  *this\Width ;*this\scroll_width()
-         
+                  ;
+                  
          ;\\ then move and size parent
          ;\\ resize all children's
          If *this\type <> #__type_Splitter
@@ -9300,6 +9291,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Protected piw, pih
                
                If StartEnum( *this )
+                  ;
                   If Widget( )\parent <> *this
                      ; widget( )\resize\clip = #True
                      Continue
@@ -27593,8 +27585,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 25780
-; FirstLine = 23454
-; Folding = --------------------------------------v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fffv8XNpe8-uqd--84-----r-d803++--------7v4-------------------------------------------v-v8dz4-hr8vFImn+-j+----------------------frvz8-+--------------------b8+--6f---------------f------f0-----0-jv-t-v-----84-q0----------
+; CursorPosition = 8962
+; FirstLine = 8674
+; Folding = --------------------------------------v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fv--4--fF30-PAfsf-+2f--3-0-------------------------------------------------f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fffv8XNpe8-uqd--84-----r-d803++--------7v4-------------------------------------------v-v8dz4-hr8vFImn+-j+----------------------frvz8-+--------------------b8+--6f---------------f------f0-----0-jv-t-v-----84-q0----------
 ; EnableXP
 ; Executable = widgets-.app.exe

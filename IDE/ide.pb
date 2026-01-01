@@ -944,23 +944,37 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=
    Protected *this._s_WIDGET
    Protected._s_ROWS *row
    
-   If mode
-      *row = AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
-   Else
-      *row = AddItem( *first, item, UCase(StringField(Text.s, 1, Chr(10))), -1 )
-   EndIf
+   Protected first_text$ = StringField(Text.s, 1, Chr(10))
+   Protected second_text$ = StringField(Text.s, 2, Chr(10))
+   If Not mode
+     ; first_text$ = UCase(first_text$)
+   EndIf  
+   ;
+   *row = AddItem( *first, item, first_text$, -1, mode )
    If *row\parent
       *row\color\back = - 1
-      *row\parent\color\back = $D4C8C8C8
+      If *row\parent\data
+         *row\parent\color\back = $D4C8C8C8
+      Else
+         If *row\parent\sublevel
+            *row\parent\color\back = $D4E4E4E4
+         EndIf
+      EndIf
    Else
       *row\color\back = $D4C8C8C8
    EndIf
    *row\data = Type  
-   
-   *row = AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
+   ;
+   *row = AddItem( *second, item, second_text$, -1, mode )
    If *row\parent
       *row\color\back = - 1
-      *row\parent\color\back = $D4C8C8C8
+      If *row\parent\data
+         *row\parent\color\back = $D4C8C8C8
+      Else
+         If *row\parent\sublevel
+            *row\parent\color\back = $D4E4E4E4
+         EndIf
+      EndIf
    Else
       *row\color\back = $D4C8C8C8
    EndIf
@@ -1021,7 +1035,8 @@ Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    
    ; draw и resize отдельно надо включать пока поэтому вот так
    Bind(*second, @Properties_Events( ), #__event_Resize)
-   Bind(*second, @Properties_Events( ), #__event_Draw)
+;  Bind(*second, @Properties_Events( ), #__event_Draw)
+         
    ProcedureReturn *splitter
 EndProcedure
 
@@ -1116,13 +1131,6 @@ Procedure   Properties_Events( )
          If *second = *g
             PropertiesButton_Resize( *test )
          EndIf
-         
-      Case #__event_Draw
-         UnclipOutput( )
-         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_AlphaBlend )
-         ;          Define Image = GrabDrawingImage( #PB_Any, *g\parent\bar\button\x-*g\parent\bar\button\width,*g\parent\bar\button\y, *g\parent\bar\button\width, *g\scroll_height( ) + *g\mode\GridLines )
-         ;          DrawImage( ImageID(Image), *g\parent\bar\button\x, *g\parent\bar\button\y )
-         Box( *g\parent\bar\button\x+(*g\parent\bar\button\width-*g\mode\GridLines)/2, *g\parent\bar\button\y, *g\mode\GridLines, *g\scroll_height( ) + *g\mode\GridLines, $FFBF9CC3 )
          
    EndSelect
    
@@ -1451,7 +1459,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
       ; create elements
       Select type$
          Case "window"   
-            If Type( *parent ) = #__Type_MDI
+            If Type( *parent ) = #__type_MDI
                *new = AddItem( *parent, #PB_Any, text$, - 1, Flag | #PB_Window_NoActivate )
                Resize( *new, X, Y, Width, Height )
             Else
@@ -2671,14 +2679,53 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
       ide_design_CODE = ide_design_DEBUG
    EndIf
    
+   Define Transparent ;= #__flag_Transparent
    ;\\\ open inspector gadgets 
-   ide_inspector_VIEW = Tree( 0,0,0,0 ) : SetClass(ide_inspector_VIEW, "ide_inspector_VIEW" ) ;, #__flag_gridlines )
-   EnableDrop( ide_inspector_VIEW, #PB_Drop_Text, #PB_Drag_Link )
-   
    ; ide_inspector_PANEL_open
    ide_inspector_PANEL = Panel( 0,0,0,0 ) : SetClass(ide_inspector_PANEL, "ide_inspector_PANEL" )
    
-   ; ide_inspector_PANEL_item_1 
+   ; ide_inspector_PANEL_item_1
+   AddItem( ide_inspector_PANEL, -1, "properties", 0, 0 )  
+   ide_inspector_VIEW = Tree( 0,0,0,0 ) : SetClass(ide_inspector_VIEW, "ide_inspector_VIEW" ) ;, #__flag_gridlines )
+   EnableDrop( ide_inspector_VIEW, #PB_Drop_Text, #PB_Drag_Link )
+   
+   ide_inspector_PROPERTIES = Properties_Create( 0,0,0,0, #__flag_gridlines | #__flag_Borderless ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
+   If ide_inspector_PROPERTIES
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_COMMON, "COMMON" )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_ID,             "#ID",      #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_class,          "Class",    #__type_String, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_text,           "Text",     #__type_String, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_IMAGE,          "Image",    #__type_Button, 1 )
+      ;
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_LAYOUT, "LAYOUT" )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_align,          "Align"+Chr(10)+"LEFT|TOP", #__type_Button, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_x,              "X",        #__type_Spin, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_y,              "Y",        #__type_Spin, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_width,          "Width",    #__type_Spin, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_height,         "Height",   #__type_Spin, 1 )
+      ;
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_VIEW,   "VIEW" )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_cursor,         "Cursor",   #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_hide,           "Hide",     #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_disable,        "Disable",  #__type_ComboBox, 1 )
+      ;
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_flag,          "Flag",      #__type_ComboBox, 1 )
+      ;
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_FONT,           "FONT",     #__type_Button, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_fontsize,       "size",     #__type_Spin, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_fontstyle,      "style",    #__type_ComboBox, 2 )
+      ;
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_COLOR,           "COLOR",   #__type_Button, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colortype,       "type",    #__type_ComboBox, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorstate,      "state",   #__type_ComboBox, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_coloralpha,      "alpha",   #__type_Spin, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorblue,       "blue",    #__type_Spin, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorgreen,      "green",   #__type_Spin, 2 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorred,        "red",     #__type_Spin, 2 )
+   EndIf
+   ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_inspector_PROPERTIES, #__flag_autosize) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
+   
+   ; ide_inspector_PANEL_item_2 
    AddItem( ide_inspector_PANEL, -1, "elements", 0, 0 ) 
    ide_inspector_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_Borderless ) : SetClass(ide_inspector_ELEMENTS, "ide_inspector_ELEMENTS" )
    If ide_inspector_ELEMENTS
@@ -2687,100 +2734,75 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
       ide_inspector_ELEMENTS_ADD_ITEMS( ide_inspector_ELEMENTS, GetCurrentDirectory( )+"Themes/" )
    EndIf
    
-   ; ide_inspector_PANEL_item_2
-   AddItem( ide_inspector_PANEL, -1, "properties", 0, 0 )  
-   ide_inspector_PROPERTIES = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_Borderless ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
-   If ide_inspector_PROPERTIES
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_COMMON, "COMMON" )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_ID,             "#ID",      #__Type_ComboBox, 1 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_class,          "Class",    #__Type_String, 1 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_text,           "Text",     #__Type_String, 1 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_IMAGE,          "Image",    #__Type_Button, 1 )
-      ;
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_LAYOUT, "LAYOUT" )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_align,          "Align"+Chr(10)+"LEFT|TOP", #__Type_Button, 1 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_x,              "X",        #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_y,              "Y",        #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_width,          "Width",    #__Type_Spin, 1 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_height,         "Height",   #__Type_Spin, 1 )
-      ;
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_VIEW,   "VIEW" )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_cursor,         "Cursor",   #__Type_ComboBox, 1 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_hide,           "Hide",     #__Type_ComboBox, 1 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_disable,        "Disable",  #__Type_ComboBox, 1 )
-      ;
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_flag,          "Flag",      #__Type_ComboBox, 1 )
-      ;
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_FONT,           "Font",     #__Type_Button, 1 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_fontsize,       "size",     #__Type_Spin, 2 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_fontstyle,      "style",    #__Type_ComboBox, 2 )
-      ;
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_COLOR,           "Color",   #__Type_Button, 1 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colortype,       "type",    #__Type_ComboBox, 2 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorstate,      "state",    #__Type_ComboBox, 2 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_coloralpha,      "alpha",   #__Type_Spin, 2 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorblue,       "blue",    #__Type_Spin, 2 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorgreen,      "green",   #__Type_Spin, 2 )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorred,        "red",     #__Type_Spin, 2 )
-   EndIf
-   
    ; ide_inspector_PANEL_item_3 
    AddItem( ide_inspector_PANEL, -1, "events", 0, 0 )  
-   ;ide_inspector_EVENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_Borderless ) : SetClass(ide_inspector_EVENTS, "ide_inspector_EVENTS" ) 
    ide_inspector_EVENTS = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_Borderless ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
    If ide_inspector_EVENTS
-      Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "Click", #__Type_ComboBox )
-      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Change", #__Type_ComboBox )
-      Properties_AddItem( ide_inspector_EVENTS, #_ei_enter,  "Enter", #__Type_ComboBox )
-      Properties_AddItem( ide_inspector_EVENTS, #_ei_leave,  "Leave", #__Type_ComboBox )
+      Properties_AddItem( ide_inspector_EVENTS, -1,  "MOUSE" )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_enter,  "Enter", #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leave,  "Move", #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leave,  "Leave", #__type_ComboBox, 1 )
+      ;
+      Properties_AddItem( ide_inspector_EVENTS, -1,  "BUTTON" )
+;       Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "LeftDown", #__type_ComboBox, 1 )
+;       Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "MiddleDown", #__type_ComboBox, 1 )
+;       Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "RightDown", #__type_ComboBox, 1 )
+;       Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "LeftUp", #__type_ComboBox, 1 )
+;       Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "MiddleUp", #__type_ComboBox, 1 )
+;       Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "RightUp", #__type_ComboBox, 1 )
+;       Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "LeftClick", #__type_ComboBox, 1 )
+;       Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "MiddleClick", #__type_ComboBox, 1 )
+;       Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "RightClick", #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, -1,  "DOWN", 0, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "Left", #__type_ComboBox, 2 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "Middle", #__type_ComboBox, 2 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "Right", #__type_ComboBox, 2 )
+      ;
+      Properties_AddItem( ide_inspector_EVENTS, -1,  "UP", 0, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "Left", #__type_ComboBox, 2 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "Middle", #__type_ComboBox, 2 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "Right", #__type_ComboBox, 2 )
+      ;
+      Properties_AddItem( ide_inspector_EVENTS, -1,  "CLICK", 0, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "Left", #__type_ComboBox, 2 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "Middle", #__type_ComboBox, 2 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_leftclick,  "Right", #__type_ComboBox, 2 )
+      ;
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "CHANGE", #__type_ComboBox )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Status", #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Scroll", #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Cursor", #__type_ComboBox, 1 )
+      ;
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "OTHERS" )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Resize", #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Free", #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Drop", #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "DragStart", #__type_ComboBox, 1 )
+      ;
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "WINDOWS" )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Close", #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Maximize", #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Minimize", #__type_ComboBox, 1 )
+      Properties_AddItem( ide_inspector_EVENTS, #_ei_change,  "Restore", #__type_ComboBox, 1 )
    EndIf
    
    ; ide_inspector_PANEL_close
    CloseList( )
-   SetState( ide_inspector_PANEL, 1 )
+   ; SetState( ide_inspector_PANEL, 1 )
    
    ; ide_inspector_ide_inspector_SPLITTER_text
    ide_inspector_HELP  = Text( 0,0,0,0, "help for the inspector", #PB_Text_Border ) : SetClass(ide_inspector_HELP, "ide_inspector_HELP" )
    ;\\\ close inspector gadgets 
    
-   ;
-   ;\\\ ide splitters
-   ;       ;
-   ;          ; main splitter 1 example
-   ;          ide_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container,ide_design_g_canvas, #PB_Splitter_FirstFixed | #PB_Splitter_Separator ) : SetClass(ide_SPLITTER, "ide_SPLITTER" )
-   ;          ide_inspector_panel_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW,ide_inspector_PANEL, #PB_Splitter_FirstFixed ) : SetClass(ide_inspector_panel_SPLITTER, "ide_inspector_panel_SPLITTER" )
-   ;          ide_design_SPLITTER = Splitter( 0,0,0,0, ide_SPLITTER,ide_design_DEBUG, #PB_Splitter_SecondFixed ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
-   ;          ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_panel_SPLITTER,ide_inspector_HELP, #PB_Splitter_SecondFixed ) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
-   ;          ide_main_SPLITTER = Splitter( 0,0,0,0, ide_design_SPLITTER,ide_inspector_SPLITTER, #__flag_autosize | #PB_Splitter_Vertical | #PB_Splitter_SecondFixed ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
-   ;          
-   ;          ; set splitters default minimum size
-   ;          SetAttribute( ide_main_SPLITTER, #PB_Splitter_FirstMinimumSize, 500 )
-   ;          SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 120 )
-   ;          SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_FirstMinimumSize, 230 )
-   ;          SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_SecondMinimumSize, 30 )
-   ;          SetAttribute( ide_design_SPLITTER, #PB_Splitter_FirstMinimumSize, 300 )
-   ;          SetAttribute( ide_design_SPLITTER, #PB_Splitter_SecondMinimumSize, 100 )
-   ;          SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
-   ;          SetAttribute( ide_inspector_panel_SPLITTER, #PB_Splitter_SecondMinimumSize, 130 )
-   ;          SetAttribute( ide_SPLITTER, #PB_Splitter_FirstMinimumSize, 20 )
-   ;          SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, 200 )
-   ;          ; SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, $ffffff )
-   ;          
-   ;          ; set splitters dafault positions
-   ;          SetState( ide_main_SPLITTER, Width( ide_main_SPLITTER )-200 )
-   ;          SetState( ide_inspector_SPLITTER, Height( ide_inspector_SPLITTER )-80 )
-   ;          SetState( ide_design_SPLITTER, Height( ide_design_SPLITTER )-150 )
-   ;          SetState( ide_inspector_panel_SPLITTER, 200 )
-   ;          SetState( ide_SPLITTER, Height( ide_toolbar ) - 1 + 2 )
-   ;       
-   
+;    ;
+;    ;\\\ ide splitters
+;    ;
+
    ;
    ;\\ main splitter 2 example 
-   Define Transparent ;= #__flag_Transparent
    ide_inspector_panel_SPLITTER = Splitter( 0,0,0,0, ide_inspector_PANEL, ide_inspector_HELP, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_inspector_panel_SPLITTER, "ide_inspector_panel_SPLITTER" )
-   ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_inspector_panel_SPLITTER, Transparent) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
    ide_design_SPLITTER = Splitter( 0,0,0,0, ide_design_PANEL, ide_design_DEBUG, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
-   ide_SPLITTER = Splitter( 0,0,0,0, ide_inspector_SPLITTER, ide_design_SPLITTER, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator|Transparent ) : SetClass(ide_SPLITTER, "ide_SPLITTER" )
+   ide_SPLITTER = Splitter( 0,0,0,0, ide_inspector_panel_SPLITTER, ide_design_SPLITTER, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical | #PB_Splitter_Separator|Transparent ) : SetClass(ide_SPLITTER, "ide_SPLITTER" )
    ide_main_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed|Transparent ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
    
    ; set splitters default minimum size
@@ -2800,6 +2822,7 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
    SetState( ide_SPLITTER, 250 )
    SetState( ide_design_SPLITTER, Height( ide_design_SPLITTER )-180 )
    SetState( ide_inspector_SPLITTER, 150 )
+   SetState( ide_inspector_panel_SPLITTER, Height( ide_inspector_panel_SPLITTER ) - 100 )
    
    ;
    ;-\\ ide binds events
@@ -3050,12 +3073,12 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1071
-; FirstLine = 856
-; Folding = ----r--8---f----44--43-----------------------------------
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 3074
+; FirstLine = 3048
+; Folding = ---------------------------------------------------------
 ; Optimizer
 ; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2.exe
+; Executable = ../../2.exe
