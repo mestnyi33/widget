@@ -269,7 +269,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Global test_focus_set = 0
       Global test_focus_draw = 0
       
+      Global test_canvas_focus_draw = 0
       Global test_canvas_events = 0 
+      
       Global test_event_repost
       Global test_event_entered
       Global test_event_add = 0
@@ -14904,6 +14906,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure   ChangePopupBar( *this._s_WIDGET, *tab._s_ROWS )
+         ;
+         ; hide popup bar
+         If PopupBar( ) And PopupBar( ) <> *this And PopupBar( ) <> *tab\popupbar
+            If IsPopupChild( PopupBar( ), *this )
+               ; Debug " Hide PopupMenuBar - " + PopupBar( )\class +" "+ *this\class
+               
+               If test_display
+                  Debug "1?   " + HidePopupBar( PopupBar( ) )
+               Else
+                  HidePopupBar( PopupBar( ) )
+               EndIf
+               
+            ElseIf *Tab\childrens And ( *tab\_focus Or *tab\checked )
+               If test_display
+                  Debug "2?   "+HidePopupBar( PopupBar( ) )
+               Else
+                  HidePopupBar( PopupBar( ) )
+               EndIf
+               PostReDraw( PopupBar( )\root )
+            EndIf
+         EndIf
+         ;
+         ; show popup bar
+         If *tab\popupbar And *tab\popupbar\hide
+            If *this\bar\vertical
+               ; Debug "  show POPUPMENUBARS "+ClassFromEvent(event)
+               DisplayPopupBar( *tab\popupbar, *this )
+            ElseIf ( *tab\_focus Or *tab\checked )
+               ; Debug "  show TOOLBAR "+ClassFromEvent(event)
+               DisplayPopupBar( *tab\popupbar, *this )
+            EndIf
+         EndIf
+         ;
+      EndProcedure
+      
       Procedure   BindBarEvent( *this._s_WIDGET, _baritem_, *callback )
          ProcedureReturn Bind( *this, *callback, -1, _baritem_ )
       EndProcedure
@@ -18479,6 +18517,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected *tab._s_ROWS, mode_type = 0
          Static *lasttab._s_ROWS
          
+         Static ToolBar
+         
          
          If *bar
             *SB  = *bar\button
@@ -18557,10 +18597,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               ;
                               ;\\ show popup bar
                               If is_bar_( *this ) 
-                                 ;
-                                 ;\\ change focused tab
+                                 ;\\ change focused Tab
                                  If *this\TabFocused( ) <> *tab
-                                    If *this\type = #__type_MenuBar 
+                                    If *this\type = #__type_MenuBar ;Or Not ToolBar
                                        If *this\TabFocused( )
                                           *this\TabFocused( )\_focus = 0
                                           *this\TabFocused( ) = *tab
@@ -18568,7 +18607,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                           *this\TabFocused( )\_focus = 1
                                        EndIf
                                     EndIf
-                                    If *this\type = #__type_ToolBar 
+                                    If ToolBar > 0
                                        If *this\TabFocused( )
                                           ; *this\TabFocused( )\_focus = 0
                                           *this\TabFocused( )\checked = 0
@@ -18600,38 +18639,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     EndIf
                                  EndIf
                                  ;
-                                 If PopupBar( ) 
-                                    If PopupBar( ) <> *this
-                                       If PopupBar( ) <> *tab\popupbar
-                                          If IsPopupChild( PopupBar( ), *this )
-                                             ; Debug " Hide PopupMenuBar - " + PopupBar( )\class +" "+ *this\class
-                                             
-                                             If test_display
-                                                Debug "1?   " + HidePopupBar( PopupBar( ) )
-                                             Else
-                                                HidePopupBar( PopupBar( ) )
-                                             EndIf
-                                          ElseIf *Tab\childrens And ( *tab\_focus Or *tab\checked )
-                                             If test_display
-                                                Debug "2?   "+HidePopupBar( PopupBar( ) )
-                                             Else
-                                                HidePopupBar( PopupBar( ) )
-                                             EndIf
-                                             PostReDraw( PopupBar( )\root )
-                                          EndIf
-                                       EndIf
-                                    EndIf
-                                 EndIf
-                                 ; 
-                                 If *tab\popupbar And *tab\popupbar\hide
-                                    If *bar\vertical
-                                       ; Debug "  show POPUPMENUBARS "+ClassFromEvent(event)
-                                       DisplayPopupBar( *tab\popupbar, *this )
-                                    ElseIf ( *tab\_focus Or *tab\checked )
-                                       ; Debug "  show TOOLBAR "+ClassFromEvent(event)
-                                       DisplayPopupBar( *tab\popupbar, *this )
-                                    EndIf
-                                 EndIf
+                                 ;
+                                 ChangePopupBar( *this, *tab )
                                  ;
                               EndIf
                            EndIf
@@ -18639,7 +18648,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;
                      Else
                         ; 
-                        If *this\type = #__type_ToolBar 
+                        If ToolBar 
                            If PopupBar( )
                               If *this\TabFocused( )
                                  If *this\TabFocused( )\childrens 
@@ -18667,13 +18676,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
+         Else
+            If *this\type = #__type_ToolBar
+               If event = #__event_Down
+                  *tab = *this\TabEntered( )
+                  ToolBar ! 1
+                  If ToolBar
+                     If *Tab
+                        If *tab\childrens  
+                           ; Debug " toolbar focus change "
+                           ; *tab\_focus = 1
+                           *this\TabFocused( ) = *tab
+                           *this\TabFocused( )\checked = 1
+                           
+                           ChangePopupBar( *this, *tab )
+                        EndIf
+                     EndIf
+                  Else
+                     If *this\TabFocused( )
+                        *this\TabFocused( )\checked = 0
+                        *this\TabFocused( ) = 0
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;
          EndIf
          
          ;
          If event = #__event_MouseLeave
             If *this\TabFocused( )
                If *this\TabFocused( )\childrens 
-                  If *this\type = #__type_ToolBar
+                  If ToolBar
                      Protected GadgetY1 = DPIScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
                      Protected GadgetX1 = DPIScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
                      If PopupBar( )
@@ -18732,7 +18767,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *tab = *this\TabEntered( )
                   
                   If PopupBar( ) 
-                     If PopupBar( )\menu\display And Not (*this\type = #__type_ToolBar And *tab And *tab\childrens)
+                     If PopupBar( )\menu\display And Not (ToolBar And *tab And *tab\childrens)
                         ;                         If Not IsPopupChild( PopupBar( ), *this )
                         ;                            If PopupBar( )\menu\parent And 
                         ;                               PopupBar( )\menu\parent\TabFocused( )
@@ -18752,7 +18787,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  If *this\type = #__type_MenuBar
+                  If *this\type = #__type_MenuBar ;Or Not ToolBar
                      If *tab And Not *tab\disable 
                         If Not *this\TabFocused( )
                            If *this\TabFocused( ) <> *tab
@@ -21439,1944 +21474,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
-      ;-  CREATEs
-      ;-
-      Procedure.i Create( *parent._s_WIDGET, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
-         Protected *root._s_root
-         If *parent
-            *root = *parent\root
-         EndIf
-         ;
-         size = DPIScaled( size )
-         
-         Protected.b align_image = constants::BinaryFlag( Flag, #__align_image )
-         Protected.b flag_autosize = constants::BinaryFlag( Flag, #__flag_autosize )
-         Protected.b flag_center = constants::BinaryFlag( Flag, #__flag_Center )
-         Protected.b flag_TextRight = constants::BinaryFlag( Flag, #__flag_TextRight )
-         Protected.b flag_TextInLine = constants::BinaryFlag( Flag, #__flag_TextInLine )
-         Protected.b flag_TextCenter = constants::BinaryFlag( Flag, #__flag_TextCenter )
-         
-         ;
-         Protected color, img                 ;, *this.allocate( Widget )
-         
-         Protected *this._s_WIDGET
-         If *root And flag_autosize And
-            Not ListSize( widgets( ) )
-            X              = 0
-            Y              = 0
-            Width          = *root\width
-            Height         = *root\height
-            *root\autosize = #True
-            *this          = *root
-         Else
-            *this.allocate( Widget )
-         EndIf
-         
-         If Type = #__type_MenuBar Or
-            Type = #__type_PopupBar Or
-            Type = #__type_ToolBar Or
-            Type = #__type_TabBar Or
-            Type = #__type_Scroll Or
-            Type = #__type_Progress Or
-            Type = #__type_Track Or
-            Type = #__type_Splitter Or
-            Type = #__type_Spin
-            
-            *this\bar.allocate( BAR )
-         EndIf
-         
-         *this\child  = constants::BinaryFlag( Flag, #__flag_child )
-         If constants::BinaryFlag( Flag, #__flag_NoFocus )
-            *this\focus = #__s_nofocus
-         EndIf
-         If Type = #__type_CheckBox
-            *this\mode\threestate = constants::BinaryFlag( Flag, #PB_CheckBox_ThreeState )
-         EndIf
-         If Type = #__type_HyperLink
-            *this\mode\Lines = constants::BinaryFlag( Flag, #PB_HyperLink_Underline )
-         EndIf
-         If Type = #__type_Editor
-            *this\mode\fullselection = constants::BinaryFlag( Flag, #__flag_RowFullSelect, #False ) * DPIScaled(7)
-         EndIf
-         If Type = #__type_Splitter
-            *this\bar\vertical = Bool( Not constants::BinaryFlag( Flag, #__flag_Vertical ) And 
-                                       Not constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
-            *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
-         EndIf
-         
-         If Type = #__type_Progress
-            *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or
-                                       constants::BinaryFlag( Flag, #PB_ProgressBar_Vertical ))
-            *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert )
-         EndIf
-         
-         If Type = #__type_Scroll
-            *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or 
-                                       constants::BinaryFlag( Flag, #PB_ScrollBar_Vertical ))
-            *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
-         EndIf
-         
-         If Type = #__type_Spin
-            If Flag & #__spin_Plus
-               *this\bar\vertical = constants::BinaryFlag( Flag, #__flag_Vertical )
-            Else
-               *this\bar\vertical = constants::BinaryFlag( Flag, #__flag_Vertical, #False )
-            EndIf
-            
-            *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert )
-            *this\bar\mirror = constants::BinaryFlag( Flag, #__spin_mirror )
-         EndIf
-         
-         If Type = #__type_Track
-            *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or
-                                       constants::BinaryFlag( Flag, #PB_TrackBar_Vertical ))
-            
-            If *this\bar\vertical
-               *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert, #False )
-            Else
-               *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert )
-            EndIf
-         EndIf
-         
-         If Type = #__type_MenuBar Or
-            Type = #__type_PopupBar Or
-            Type = #__type_ToolBar Or
-            Type = #__type_TabBar 
-            ;
-            *this\bar\vertical = constants::BinaryFlag( Flag, #__flag_Vertical )
-            *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
-         EndIf
-         
-         
-         
-         ;
-         ; replace pb flag
-         Flag = FromPBFlag( Type, Flag )
-         *this\flag = Flag
-         ;
-         ; change flags
-         If Type = #__type_Button Or
-            Type = #__type_ButtonImage Or
-            Type = #__type_HyperLink
-            
-            *this\flag | #__flag_TextCenter
-            
-         ElseIf Type = #__type_ComboBox 
-            
-            If Not flag_center
-               If Not (*this\flag & #__flag_Left Or
-                       *this\flag & #__flag_Right Or
-                       *this\flag & #__flag_Top Or
-                       *this\flag & #__flag_Bottom)
-                  *this\flag | #__flag_TextLeft
-               EndIf
-            EndIf
-            If align_image
-               *this\flag | #__flag_Center 
-            Else
-               *this\flag | #__flag_TextCenter 
-            EndIf
-            
-            If flag_TextRight
-               *this\flag & ~ #__flag_TextLeft
-               *this\flag | #__flag_TextRight
-            EndIf
-         ElseIf Type = #__type_Spin Or
-                Type = #__type_String Or
-                Type = #__type_Option Or
-                Type = #__type_CheckBox
-            
-            If Not flag_TextCenter
-               *this\flag | #__flag_TextCenter | #__flag_TextLeft
-            EndIf
-            
-            If flag_TextRight
-               *this\flag & ~ #__flag_TextLeft
-               *this\flag | #__flag_TextRight
-            EndIf
-            
-         ElseIf Type = #__type_Text
-            If Not flag_TextInLine 
-               *this\flag | #__flag_Textwordwrap
-            EndIf
-         EndIf
-         
-         ;
-         ;\\
-         *this\font   = - 1
-         *this\create = #True
-         *this\color  = _get_colors_( )
-         *this\type   = Type
-         *this\class  = class
-         *this\round  = DPIScaled( round )
-         
-         
-         ;\\
-         If *this\type = #__type_ButtonImage Or
-            *this\type = #__type_Button 
-            If constants::BinaryFlag( Flag, #PB_Button_Toggle )
-               Flag &~ #PB_Button_Toggle
-               If Not *this\togglebox
-                  *this\togglebox.allocate( BOX )
-               EndIf
-            EndIf
-            *this\deffocus = Bool( Flag & #PB_Button_Default )
-         EndIf
-         If *this\type = #__type_CheckBox 
-            *this\togglebox.allocate( BOX )
-            *this\togglebox\round  = dpi_scale_two
-            *this\togglebox\width = size
-            *this\togglebox\width  - Bool( Not *this\togglebox\width % 2)
-            *this\togglebox\height = *this\togglebox\width
-         EndIf
-         If *this\type = #__type_Option
-            *this\togglebox.allocate( BOX )
-            *this\togglebox\round  = size/2
-            *this\togglebox\width  = size
-            *this\togglebox\width  - Bool( Not *this\togglebox\width % 2)
-            *this\togglebox\height = *this\togglebox\width
-         EndIf
-         
-         
-         ;\\ Border & Frame size
-         If is_integral_( *this )
-            If *this\type = #__type_Scroll
-               *this\fs = 0;10
-            Else
-               *this\fs = 0
-            EndIf
-         Else
-            If constants::BinaryFlag( *this\flag, #__flag_BorderDouble ) Or
-               constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
-               *this\fs = 2
-            ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderLess )
-               *this\fs = 0
-            ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderFlat ) Or
-                   constants::BinaryFlag( *this\Flag, #__flag_BorderSingle ) Or
-                   *this\type = #__type_Panel Or
-                   *this\type = #__type_Spin Or
-                   *this\type = #__type_ButtonImage Or
-                   *this\type = #__type_Button Or
-                   *this\type = #__type_ComboBox Or
-                   *this\type = #__type_ExplorerList 
-               *this\fs = 1
-            Else
-               If *this\type = #__type_Editor Or
-                  *this\type = #__type_String Or
-                  *this\type = #__type_ScrollArea Or
-                  *this\type = #__type_ListView Or
-                  *this\type = #__type_ListIcon Or
-                  *this\type = #__type_Tree 
-                  *this\fs = 2
-               EndIf
-            EndIf
-         EndIf
-         *this\bs = *this\fs
-         
-         ;\\
-         If *parent
-            ;\\
-            If flag_autosize
-               If *parent <> *this
-                  If *parent\type <> #__type_Splitter
-                     *this\autosize = 1
-                     ; set transparent parent
-                     *parent\color\back   = - 1
-                     *parent\color\_alpha = 0
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\
-            If is_integral_( *this )
-               *this\createindex   =- 1
-               *this\address = *parent\address
-               ReParent( *this, *parent )
-            Else
-               ;*this\text\string = Text
-               SetParent( *this, *parent, #PB_Default )
-            EndIf
-         EndIf
-         
-         ;
-         ;\\ add count types
-         CountType( *this, 1 )
-         
-         ;\\ - Create Texts
-         If *this\type = #__type_Text Or
-            *this\type = #__type_Editor Or
-            *this\type = #__type_String Or
-            *this\type = #__type_ButtonImage Or
-            *this\type = #__type_Button Or
-            *this\type = #__type_Option Or
-            *this\type = #__type_CheckBox Or
-            *this\type = #__type_HyperLink
-            
-            *this\row.allocate( ROW )
-            
-            *this\edit_caret_0( ) = - 1
-            *this\edit_caret_1( ) = - 1
-            *this\edit_caret_2( ) = - 1
-            *this\LineState( ) = - 1
-            
-            *this\lineColor = $FFC0C0C0
-            
-            If *this\type = #__type_Text
-               *this\color\fore  = - 1
-               *this\color\back  = _get_colors_( )\fore
-               *this\color\front = _get_colors_( )\front
-               If *this\fs
-                  *this\color\frame = _get_colors_( )\frame
-               EndIf
-            EndIf
-            ;
-            If *this\type = #__type_Editor
-               *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flag, #__flag_TextNumeric, #False )
-               *this\MarginLine( )\color\front = $C8000000 ; *this\color\back[0]
-               *this\MarginLine( )\color\back  = $C8F0F0F0 ; *this\color\back[0]
-            EndIf
-            
-            If *this\type = #__type_Option
-               ;\\
-               If *this\BeforeWidget( )
-                  If *this\BeforeWidget( )\type = #__type_Option
-                     *this\groupbar = *this\BeforeWidget( )\groupbar
-                  Else
-                     *this\groupbar = *this\BeforeWidget( )
-                  EndIf
-               Else
-                  *this\groupbar = *parent
-               EndIf
-               
-               *this\color\fore  = - 1
-               *this\color\back  = _get_colors_( )\fore
-               *this\color\front = _get_colors_( )\front
-            EndIf
-            
-            If *this\type = #__type_CheckBox
-               *this\color\fore  = - 1
-               *this\color\back  = _get_colors_( )\fore
-               *this\color\front = _get_colors_( )\front
-            EndIf
-            
-            If *this\type = #__type_HyperLink
-               *this\color\fore[#__s_0]  = - 1
-               *this\color\back[#__s_0]  = _get_colors_( )\fore
-               *this\color\front[#__s_0] = _get_colors_( )\front
-               
-               Color = *param_1
-               If Color
-                  If Not Alpha( Color )
-                     Color = Color & $FFFFFF | 255 << 24
-                  EndIf
-                  *this\color\front[#__s_1] = Color
-               EndIf
-            EndIf
-            
-         EndIf
-         
-         ;\\ - Create Lists
-         If *this\type = #__type_Tree Or
-            *this\type = #__type_ListView Or
-            *this\type = #__type_ListIcon Or
-            *this\type = #__type_ExplorerList Or
-            *this\type = #__type_Properties
-            ;
-            *this\row.allocate( ROW )
-            ;
-            *this\TabState( )         = - 1
-            *this\RowState( )         = - 1
-            *this\LineState( ) = - 1
-            *this\WidgetChange( ) = 1
-            *this\TextChange( ) = 1
-            
-            If Type = #__type_Properties
-               If *this\bar
-                  *this\bar\page\pos = 60
-               EndIf
-            EndIf
-            
-            *this\lineColor = $FFC0C0C0
-            *this\color\_alpha = 255
-            *this\color\fore[#__s_0] = - 1
-            *this\color\back[#__s_0] = $ffffffff ; _get_colors_( )\fore
-            *this\color\front[#__s_0] = _get_colors_( )\front
-            *this\color\frame[#__s_0] = _get_colors_( )\frame
-         EndIf
-         
-         ;\\ - Create Containers
-         If *this\type = #__type_Container Or
-            *this\type = #__type_ScrollArea Or
-            *this\type = #__type_Panel Or
-            *this\type = #__type_MDI Or
-            *this\type = #__type_Frame
-            
-            If *this\type = #__type_Frame
-               *this\container = - 1
-            ElseIf *this\type = #__type_Panel
-               *this\container = 3
-            ElseIf *this\type = #__type_MDI
-               *this\container = 4
-            Else
-               *this\container = 5
-               *this\bindresize = 1
-            EndIf
-            *this\color\back = $FFF9F9F9
-            
-            ;
-            ;\\
-            If *this\type = #__type_Frame
-               *this\color\back = $96D8D8D8
-               
-               If Text
-                  *this\fs[2] = 8
-               EndIf
-            EndIf
-            
-            ;\\
-            If *this\type = #__type_Panel
-               CreateBar( *this, #__flag_BarSmall, #__type_TabBar ) 
-               If constants::BinaryFlag( *this\Flag, #__flag_Vertical ) 
-                  BarPosition(*this\tabbar, 1);, 100 )
-               EndIf
-               If constants::BinaryFlag( *this\Flag, #__flag_nobuttons ) 
-                  If constants::BinaryFlag( *this\Flag, #__flag_Vertical ) 
-                     *this\fs[1] = 0
-                  Else
-                     *this\fs[2] = 0
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\ Open gadget list
-            If *this\container > 0 
-               If constants::BinaryFlag( *this\flag, #__flag_NoGadgets, #False )
-                  OpenList( *this )
-               EndIf
-            EndIf
-         EndIf
-         
-         ;\\ - Create ComboBox
-         If *this\type = #__type_ComboBox
-            *this\combobutton.allocate( BUTTONS )
-            *this\combobutton\color           = _get_colors_( )
-            *this\combobutton\arrow\type      = #__arrow_type
-            *this\combobutton\arrow\size      = DPIScaled( #__arrow_size )
-            *this\combobutton\arrow\direction = #__right
-            
-            *this\fs[3] = size
-            *this\fs[3] + Bool( Not *this\fs[3] % 2)
-         EndIf
-         
-         ;\\ - Create Bars
-         If *this\bar
-            *this\bar\button.allocate( BUTTONS )
-            *this\bar\button.allocate( BUTTONS, [1] )
-            *this\bar\button.allocate( BUTTONS, [2] )
-            
-            *this\scroll\increment  = ScrollStep
-            Protected._s_BUTTONS *BB1, *BB2, *SB
-            *SB  = *this\bar\button
-            *BB1 = *this\bar\button[1]
-            *BB2 = *this\bar\button[2]
-            
-            If *this\type = #__type_Splitter Or
-               *this\type = #__type_Scroll Or
-               *this\type = #__type_Progress Or
-               *this\type = #__type_Track Or
-               *this\type = #__type_Spin
-               *this\bar\PageChange( ) = 1
-            EndIf
-            
-            ; - Create Scroll
-            If *this\type = #__type_Scroll
-               *this\color\back  = $FFF9F9F9 ; - 1
-               *this\color\front = $FFFFFFFF
-               
-               If is_integral_( *this )
-                  If *this\bar\vertical
-                     *this\class = class + "-v"
-                  Else
-                     *this\class = class + "-h"
-                  EndIf
-               EndIf
-               
-               *BB1\color = _get_colors_( )
-               *BB2\color = _get_colors_( )
-               *SB\color  = _get_colors_( )
-               
-               ;
-               If Not constants::BinaryFlag( *this\Flag, #__flag_nobuttons ) 
-                  *BB1\size = - 1
-                  *BB2\size = - 1
-               EndIf
-               *SB\size = size
-               
-               *BB1\round = *this\round
-               *BB2\round = *this\round
-               *SB\round  = *this\round
-               
-               *BB1\arrow\type = #__arrow_type 
-               *BB2\arrow\type = *BB1\arrow\type 
-               
-               *BB1\arrow\size = DPIScaled( #__arrow_size )
-               *BB2\arrow\size = DPIScaled( #__arrow_size )
-               *SB\arrow\size  = DPIScaled( 3 )
-            EndIf
-            
-            ; Create Spin
-            If *this\type = #__type_Spin
-               *this\color\back   = - 1
-               *this\color\_alpha = 255
-               *this\color\back   = $FFFFFFFF
-               
-               *BB1\color = _get_colors_( )
-               *BB2\color = _get_colors_( )
-               
-               If *this\flag & #__spin_Plus
-                  *this\flag = Flag | #__flag_TextCenter
-               Else
-                  *BB1\arrow\size = DPIScaled( #__arrow_size )
-                  *BB2\arrow\size = DPIScaled( #__arrow_size )
-                  
-                  *BB1\arrow\type = #__arrow_type
-                  *BB2\arrow\type = *BB1\arrow\type
-               EndIf
-            EndIf
-            
-            ; - Create Track
-            If *this\type = #__type_Track
-               *this\color\back = - 1
-               *BB1\color       = _get_colors_( )
-               *BB2\color       = *BB1\color
-               *SB\color        = *BB1\color
-               
-               *SB\arrow\size = DPIScaled( #__arrow_size )
-               *SB\arrow\type = #__arrow_type
-               
-               *BB1\round = dpi_scale_two
-               *BB2\round = *BB1\round
-               *SB\round  = *this\round
-               
-               If *this\round < DPIScaled(7)
-                  *SB\size = DPIScaled(9)
-               Else
-                  *SB\size = size
-                  *SB\size - Bool( Not *SB\size % 2)
-               EndIf
-               
-               ; button draw color
-               *SB\ColorState( ) = #__s_2
-               
-               If Not constants::BinaryFlag( *this\flag, #PB_TrackBar_Ticks )
-                  If *this\bar\invert
-                     *BB2\ColorState( ) = #__s_2
-                  Else
-                     *BB1\ColorState( ) = #__s_2
-                  EndIf
-               EndIf
-            EndIf
-            
-            ; - Create Tab
-            If *this\type = #__type_MenuBar Or
-               *this\type = #__type_PopupBar Or
-               *this\type = #__type_ToolBar Or
-               *this\type = #__type_TabBar 
-               ;
-               ;;*this\TextChange( ) = 1
-               *this\color\back = - 1
-               *BB1\color       = _get_colors_( )
-               *BB2\color       = _get_colors_( )
-               ;*SB\color = _get_colors_( )
-               
-               If constants::BinaryFlag( *this\Flag, #__bar_buttonsize, #False )
-                  *SB\size  = size
-                  *BB1\size = DPIScaled( #__bar_button_size )
-                  *BB1\size - Bool( Not *BB1\size % 2) 
-                  *BB2\size = *BB1\size
-               EndIf
-               
-               *BB1\round = *BB1\size/2
-               *BB2\round = *BB1\round
-               *SB\round  = *this\round
-               
-               *BB1\arrow\type = 2 ; #__arrow_type 
-               *BB2\arrow\type = 2 ; #__arrow_type 
-               
-               *BB1\arrow\size = DPIScaled( #__arrow_size )
-               *BB2\arrow\size = DPIScaled( #__arrow_size )
-               ;*SB\arrow\size = DPIScaled( 3 )
-            EndIf
-            
-            ; - Create Progress
-            If *this\type = #__type_Progress
-               *this\color         = _get_colors_( )
-               *this\TextChange( ) = #True
-               *this\text\invert = *this\bar\invert
-               *this\text\vertical = *this\bar\vertical
-            EndIf
-            
-            ; - Create Splitter
-            If *this\type = #__type_Splitter
-               *this\container  = - 1
-               *this\color\back = - 1
-               ;
-               *SB\round = dpi_scale_two
-               *SB\size = bar_splitter_size 
-               ;
-               If constants::BinaryFlag( *this\Flag, #PB_Splitter_FirstFixed )
-                  *this\bar\fixed = 1
-               ElseIf constants::BinaryFlag( *this\Flag, #PB_Splitter_SecondFixed )
-                  *this\bar\fixed = 2
-               EndIf
-               ;
-               *this\split_1( ) = *param_1
-               *this\split_2( ) = *param_2
-               ;
-               *this\bar\button[1]\hide = Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
-               *this\bar\button[2]\hide = Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
-               ;
-               If IsGadget( *this\split_1( ) )
-                  Debug "bar_is_first_gadget_ " + IsGadget( *this\split_1( ) )
-                  parent::set( *this\split_1( ), *this\root\canvas\GadgetID )
-               ElseIf *this\split_1( ) > 65535
-                  SetParent( *this\split_1( ), *this )
-               EndIf
-               ;
-               If IsGadget( *this\split_2( ) )
-                  Debug "bar_is_second_gadget_ " + IsGadget( *this\split_2( ) )
-                  parent::set( *this\split_2( ), *this\root\canvas\GadgetID )
-               ElseIf *this\split_2( ) > 65535
-                  SetParent( *this\split_2( ), *this )
-               EndIf
-            EndIf
-            ;
-         EndIf
-         
-         
-         ; COLOR
-         If constants::BinaryFlag( *this\flag, #__flag_Transparent )
-            *this\color\back =- 1
-         EndIf
-         
-         ;-\\ CURSOR init
-         If *this\type = #__type_Splitter
-            If *this\bar\vertical
-               *this\cursor[1] = cursor::#__cursor_SplitUpDown
-               *this\cursor[2] = cursor::#__cursor_SplitUp
-               *this\cursor[3] = cursor::#__cursor_SplitDown
-            Else
-               *this\cursor[1] = cursor::#__cursor_SplitLeftRight
-               *this\cursor[2] = cursor::#__cursor_SplitLeft
-               *this\cursor[3] = cursor::#__cursor_SplitRight
-            EndIf
-         ElseIf *this\type = #__type_HyperLink
-            *this\cursor[1] = cursor::#__cursor_Hand
-            *this\cursor[2] = cursor::#__cursor_IBeam
-         ElseIf *this\type = #__type_Editor Or
-                *this\type = #__type_String
-            *this\cursor[1] = cursor::#__cursor_IBeam
-         EndIf
-         If *this\cursor[1]
-            *this\cursor[0] = *this\cursor[1]
-         EndIf
-         
-         ; create integrall childrens   
-         If *this\type = #__type_ComboBox
-            ; If constants::BinaryFlag( *this\flag, #PB_ComboBox_Editable )
-            If constants::BinaryFlag( *this\flag, #__flag_Textreadonly, 0 )
-               *this\stringbar = Create( *this, "ComboString", #__type_String,
-                                         0, 0, 0, 0, #Null$, #__flag_child | #__flag_Borderless|*this\flag )
-            EndIf
-         EndIf
-         If *this\type = #__type_Spin
-            SetAttribute( *this, #__bar_buttonsize, Size + 5 )
-            *this\stringbar = Create( *this, *this\class + "_STRING",
-                                      #__type_String, 0, 0, 0, 0, "", ;Str(*param_1),
-                                      #__flag_child | #__flag_Textnumeric | #__flag_Borderless | *this\flag&~(#__flag_invert|#__flag_vertical) )
-         EndIf
-         
-         ; set PADDING
-         If *this\type = #__type_Tree Or
-            *this\type = #__type_ListView Or
-            *this\type = #__type_ListIcon Or
-            *this\type = #__type_ExplorerList Or
-            *this\type = #__type_Properties
-            ;
-            *this\padding\x  = DPIScaled(4)
-         EndIf
-         If *this\type = #__type_Editor
-            *this\padding\x = DPIScaled(1)
-         EndIf
-         If *this\type = #__type_Text
-            *this\padding\x = DPIScaled(2)
-         EndIf
-         If *this\type = #__type_ButtonImage Or
-            *this\type = #__type_Button
-            *this\padding\x = DPIScaled(4)
-            *this\padding\y = DPIScaled(4)
-         EndIf
-         If *this\type = #__type_ComboBox
-            If Not *this\stringbar
-               *this\padding\x = DPIScaled(4)
-               *this\padding\y = DPIScaled(4)
-            EndIf
-         EndIf
-         If *this\type = #__type_String
-            *this\padding\x = DPIScaled(3)
-            *this\text\caret\x = *this\padding\x
-         EndIf
-         If *this\togglebox And
-            *this\togglebox\width
-            *this\padding\x = *this\togglebox\width + DPIScaled(8)
-         EndIf
-         
-         ; set FLAG
-         If *this\type = #__type_Tree Or
-            *this\type = #__type_ListView Or
-            *this\type = #__type_ListIcon Or
-            *this\type = #__type_ExplorerList Or
-            *this\type = #__type_Properties
-            ;
-            If constants::BinaryFlag( *this\Flag, #__flag_nolines )
-               *this\flag & ~ #__flag_nolines
-            Else
-               *this\Flag | #__flag_nolines
-            EndIf
-            
-            If constants::BinaryFlag( *this\Flag, #__flag_NoButtons ) 
-               *this\flag & ~ #__flag_NoButtons
-            Else
-               *this\Flag | #__flag_NoButtons
-            EndIf
-         EndIf
-         If *this\Flag
-            Flag( *this, *this\Flag, #True )
-         EndIf
-         
-         ; set ATTRIBUTE
-         If *this\type = #__type_MenuBar Or
-            *this\type = #__type_PopupBar Or
-            *this\type = #__type_ToolBar Or
-            *this\type = #__type_TabBar Or
-            *this\type = #__type_Progress Or
-            *this\type = #__type_Scroll Or
-            *this\type = #__type_Track Or
-            *this\type = #__type_Spin
-            ;
-            If *param_1 ; > 0 ; в окнах работает так
-                        ; track;progress
-               If *this\type = #__type_Progress Or
-                  *this\type = #__type_Scroll Or
-                  *this\type = #__type_Track Or 
-                  *this\type = #__type_Spin
-                  ;
-                  *this\bar\page\pos = *param_1
-               EndIf
-               SetAttribute( *this, #__bar_minimum, *param_1 )
-            EndIf
-            If *param_2
-               SetAttribute( *this, #__bar_maximum, *param_2 )
-            EndIf
-            If *param_3
-               SetAttribute( *this, #__bar_pageLength, *param_3 )
-            EndIf
-         EndIf
-         If *this\type = #__type_ButtonImage Or 
-            *this\type = #__type_Button
-            ;
-            SetAttribute( *this, #PB_Button_Image, *param_1 )
-         EndIf
-         If *this\type = #__type_image
-            SetState( *this, *param_1 )
-         EndIf
-         
-         ; COLUMN
-         If *this\row
-            ;  If *this\type = #__type_ListIcon
-            AddColumn( *this, 0, Text, *param_1 )
-            ; EndIf
-         EndIf
-         
-         ; RESIZE
-         If is_integral_( *this )
-            If *this\type = #__type_Scroll
-               If *this\parent
-                  If *this\bar\vertical
-                     *this\parent\scroll\v = *this
-                     If *this\parent\type <> #__type_String
-                        Resize( *this, *this\parent\container_width( ) - Width, Y, Width, *this\parent\container_height( ) - Width + Bool(*this\Round) * (Width / 4) )
-                     EndIf
-                  Else
-                     *this\parent\scroll\h = *this
-                     If *this\parent\type <> #__type_String
-                        Resize( *this, X, *this\parent\container_height( ) - Height, *this\parent\container_width( ) - Height + Bool(*this\Round) * (Height / 4), Height )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-         Else
-            If *this\root And 
-               Width And Height And 
-               Not *this\root\width And 
-               Not *this\root\height
-               *this\autosize = 1
-               Debug " canvas gadget resize"
-               ResizeGadget( *this\root\canvas\gadget, X, Y, Width, Height )
-            Else
-               If Not ( *this\autosize And is_root_( *this ))
-                  *this\frame_x( )      = #PB_Ignore
-                  *this\frame_y( )      = #PB_Ignore
-                  *this\frame_width( )  = #PB_Ignore
-                  *this\frame_height( ) = #PB_Ignore
-               EndIf
-               
-               If Not ( *this\autosize And is_root_( *this ))
-                  Resize( *this, X, Y, Width, Height )
-               Else
-                  If *this\type = #__type_Splitter
-                     bar_update( *this )
-                  EndIf
-               EndIf
-               
-            EndIf
-         EndIf
-         
-         ; set content ALIGNMENT
-         If *this\type = #__type_Text Or
-            *this\type = #__type_Editor Or
-            *this\type = #__type_String Or
-            *this\type = #__type_Image Or
-            *this\type = #__type_Button Or 
-            *this\type = #__type_ButtonImage Or
-            *this\type = #__type_Option Or
-            *this\type = #__type_CheckBox Or
-            *this\type = #__type_ComboBox Or
-            *this\type = #__type_HyperLink Or
-            *this\type = #__type_Progress
-               
-            set_align_content( *this\picture, *this\flag )
-            
-            If *this\type = #__type_ComboBox Or
-               *this\type = #__type_Progress
-               
-               If constants::BinaryFlag( *this\flag, #__align_Text )
-                  set_align_content( *this\text, *this\flag )
-               EndIf
-            Else
-               If Not ( constants::BinaryFlag( *this\flag, #__align_image ) And 
-                        constants::BinaryFlag( *this\flag, #__align_Text ))
-                  set_align_content( *this\text, *this\flag )
-               EndIf
-            EndIf
-         EndIf
-         ;
-         ; set text flag
-         If *this\type = #__type_ComboBox Or 
-            *this\type = #__type_Progress Or
-            *this\type = #__type_Text Or
-            *this\type = #__type_Editor Or
-            *this\type = #__type_String Or
-            *this\type = #__type_ButtonImage Or
-            *this\type = #__type_Button Or 
-            *this\type = #__type_Option Or
-            *this\type = #__type_CheckBox Or
-            *this\type = #__type_HyperLink
-            
-            set_text_flag( *this, Text, *this\flag )
-         EndIf
-         If *this\type = #__type_Frame
-            set_text_flag( *this, Text, *this\flag, 12, - *this\fs[2] - 1 )
-         EndIf
-         
-         ;\\ Scroll bars
-         If constants::BinaryFlag( *this\Flag, #__flag_NoScrollBars, #False )
-            If *this\type = #__type_String
-               
-               bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__bar_button_size, 0)
-               
-               *this\scroll\v\hide  = 1
-               *this\scroll\h\hide  = 1
-               *this\scroll\v\width = 0
-               *this\scroll\h\height = 0
-               
-            ElseIf *this\type = #__type_Editor Or
-                   *this\type = #__type_Tree Or
-                   *this\type = #__type_ListView Or
-                   *this\type = #__type_ListIcon Or
-                   *this\type = #__type_ExplorerList Or
-                   *this\type = #__type_Properties
-               
-               bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
-            ElseIf *this\type = #__type_MDI Or
-                   *this\type = #__type_ScrollArea
-               
-               bar_area_create( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
-            ElseIf *this\type = #__type_image
-               
-               bar_area_create( *this, 1, *this\picture\width, *this\picture\height, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
-            EndIf
-         EndIf
-         
-         ;          *this\text\multiLine = 1
-         ;          Debug *this\text\multiLine
-         If *this\type = #__type_ScrollArea
-            SetAttribute( *this, #PB_ScrollArea_ScrollStep, *param_3 )
-         EndIf
-         
-         ;          AddEvents( *this, #__event_Create )
-         Widget( ) = *this
-         ProcedureReturn *this
-      EndProcedure
-      
-      Procedure.i Scroll( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, PageLength.l, Flag.q = 0, round.l = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Scroll, X, Y, Width, Height, #Null$, Flag, min, max, pagelength, #__bar_button_size, round, 1 )
-      EndProcedure
-      
-      Procedure.i Track( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, Flag.q = 0, scrollstep.d = 1.0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Track, X, Y, Width, Height, #Null$, Flag, min, max, 0, #__bar_button_size, #__ButtonRound, scrollstep )
-      EndProcedure
-      
-      Procedure.i Progress( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, Flag.q = 0, round.l = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Progress, X, Y, Width, Height, #Null$, Flag, min, max, 0, 0, round, 1 )
-      EndProcedure
-      
-      Procedure.i Splitter( X.l, Y.l, Width.l, Height.l, First.i, Second.i, Flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Splitter, X, Y, Width, Height, #Null$, Flag, First, Second, 0, 0, 0, 1 )
-      EndProcedure
-      
-      Procedure.i Spin( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, Flag.q = 0, round.l = 0, Increment.d = 1.0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Spin, X, Y, Width, Height, #Null$, Flag, min, max, 0, #__bar_button_size, round, Increment )
-      EndProcedure
-      
-      Procedure.i Tab( X.l, Y.l, Width.l, Height.l, Flag.q = 0, round.l = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_TabBar, X, Y, Width, Height, #Null$, Flag, 0, 0, 0, 40, round, 40 )
-      EndProcedure
-      
-      Procedure.i Tree( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Tree, X, Y, Width, Height, "", Flag )
-      EndProcedure
-      
-      Procedure.i ListView( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ListView, X, Y, Width, Height, "", Flag | #__flag_nobuttons | #__flag_nolines )
-      EndProcedure
-      
-      Procedure.i ListIcon( X.l, Y.l, Width.l, Height.l, ColumnTitle.s, ColumnWidth.i, Flag.q = 0 )
-         ;  ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_tree, x, y, width, height, "", Flag ); #__type_ListIcon
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ListIcon, X, Y, Width, Height, ColumnTitle, Flag, ColumnWidth ); #__type_ListIcon
-      EndProcedure
-      
-      Procedure.i ExplorerList( X.l, Y.l, Width.l, Height.l, Directory.s, Flag.q = 0 )
-         ;Protected *this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, #__type_ExplorerList, x, y, width, height, "", Flag | #__flag_nobuttons | #__flag_nolines )
-         Protected *this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, #__type_ListIcon, X, Y, Width, Height, "", Flag | #__flag_nobuttons | #__flag_nolines )
-         
-         ;\\
-         AddColumn(*this, 0, "Name", 200)
-         AddColumn(*this, 0, "Size", 100)
-         AddColumn(*this, 0, "Type", 100)
-         AddColumn(*this, 0, "Modified", 100)
-         
-         ;\\
-         If Directory.s = ""
-            Directory.s = GetHomeDirectory() ; Lists all files and folder in the home directory
-         EndIf
-         Protected Size$, Type$, Modified$
-         
-         If ExamineDirectory(0, Directory.s, "*.*")  
-            
-            While NextDirectoryEntry(0)
-               If DirectoryEntryType(0) = #PB_DirectoryEntry_Directory
-                  Type$ = "[Directory] "
-                  Size$ = "" ; A directory doesn't have a size
-                  Modified$ = FormatDate("%mm/%dd/%yyyy", DirectoryEntryDate(0, #PB_Date_Modified))
-                  AddItem(*this, -1, DirectoryEntryName(0) +#LF$+ Size$ +#LF$+ Type$ +#LF$+ Modified$)
-               EndIf
-            Wend
-            FinishDirectory(0)
-         EndIf
-         
-         If ExamineDirectory(0, Directory.s, "*.*")  
-            While NextDirectoryEntry(0)
-               If DirectoryEntryType(0) = #PB_DirectoryEntry_File
-                  Type$ = "[File] "
-                  Size$ = " (Size: " + DirectoryEntrySize(0) + ")"
-                  Modified$ = FormatDate("%mm/%dd/%yyyy", DirectoryEntryDate(0, #PB_Date_Modified))
-                  AddItem(*this, -1, DirectoryEntryName(0) +#LF$+ Size$ +#LF$+ Type$ +#LF$+ Modified$)
-               EndIf
-            Wend
-            
-            FinishDirectory(0)
-         EndIf
-         ProcedureReturn *this
-      EndProcedure
-      
-      Procedure.i Properties( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Properties, X, Y, Width, Height, "", Flag )
-      EndProcedure
-      
-      Procedure.i Editor( X.l, Y.l, Width.l, Height.l, Flag.q = 0, round.i = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Editor, X, Y, Width, Height, "", Flag, 0, 0, 0, 0, round, 0 )
-      EndProcedure
-      
-      Procedure.i String( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, round.l = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_String, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, round, 0 )
-      EndProcedure
-      
-      Procedure.i Text( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, round.l = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Text, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, round, 0 )
-      EndProcedure
-      
-      Procedure.i Button( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, round.l = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Button, X, Y, Width, Height, Text, Flag, (-1), 0, 0, 0, round )
-      EndProcedure
-      
-      Procedure.i ButtonImage( X.l, Y.l, Width.l, Height.l, img.i = -1 , Flag.q = 0, round.l = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ButtonImage, X, Y, Width, Height, "", Flag, (img), 0, 0, 0, round )
-      EndProcedure
-      
-      Procedure.i HyperLink( X.l, Y.l, Width.l, Height.l, Text.s, Color.i, Flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_HyperLink, X, Y, Width, Height, Text, Flag, Color, 0, 0, 0, 0, 0 )
-      EndProcedure
-      
-      Procedure.i Option( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Option, X, Y, Width, Height, Text, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
-      EndProcedure
-      
-      Procedure.i CheckBox( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_CheckBox, X, Y, Width, Height, Text, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
-      EndProcedure
-      
-      Procedure.i ComboBox( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ComboBox, X, Y, Width, Height, "", Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
-      EndProcedure
-      
-      Procedure.i MDI( X.l, Y.l, Width.l, Height.l, Flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_MDI, X, Y, Width, Height, #Null$, Flag | #__flag_nogadgets, 0, 0, 0, #__bar_button_size, 0, 1 )
-      EndProcedure
-      
-      Procedure.i Panel( X.l, Y.l, Width.l, Height.l, Flag.q = #__flag_BorderFlat )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Panel, X, Y, Width, Height, #Null$, Flag | #__flag_noscrollbars, 0, 0, 0, #__bar_button_size, 0, 0 )
-      EndProcedure
-      
-      Procedure.i Container( X.l, Y.l, Width.l, Height.l, Flag.q = #__flag_BorderFlat )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Container, X, Y, Width, Height, #Null$, Flag | #__flag_noscrollbars, 0, 0, 0, #__bar_button_size, 0, 0 )
-      EndProcedure
-      
-      Procedure.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, Flag.q = #__flag_BorderFlat )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ScrollArea, X, Y, Width, Height, #Null$, Flag, ScrollAreaWidth, ScrollAreaHeight, ScrollStep, #__bar_button_size, 0, ScrollStep )
-      EndProcedure
-      
-      Procedure.i Frame( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = #__flag_nogadgets )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Frame, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, 7 )
-      EndProcedure
-      
-      Procedure.i Image( X.l, Y.l, Width.l, Height.l, img.i, Flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_image, X, Y, Width, Height, #Null$, Flag, img, 0, 0, #__bar_button_size, 0, 1 )
-      EndProcedure
-      
-      
-      ;-
-      Procedure   Open( window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, Flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
-         Protected result, w, g, canvasflag = #PB_Canvas_Keyboard, UseGadgetList, *root._s_root 
-         
-         ; init
-         If Not MapSize( roots( ) )
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-               Events::SetCallback( @EventHandler( ) )
-            CompilerEndIf
-         EndIf
-         
-         If PB(IsWindow)( Window )
-            w = WindowID( Window )
-            ;
-            ;             If constants::BinaryFlag( Flag, #PB_window_NoGadgets )
-            ;                flag &~ #PB_window_NoGadgets
-            ;             EndIf
-            If constants::BinaryFlag( Flag, #PB_Canvas_Container ) 
-               Flag &~ #PB_Canvas_Container
-               canvasflag | #PB_Canvas_Container
-            EndIf
-            If Width = #PB_Ignore And 
-               Height = #PB_Ignore
-               canvasflag | #PB_Canvas_Container
-            EndIf
-            
-            Protected IsWindow
-            If Not constants::BinaryFlag( Flag, #PB_Window_BorderLess ) 
-               If Width = #PB_Ignore
-               Else
-                  ;Width + #__window_FrameSize*2
-                  IsWindow = 1
-               EndIf
-               If Height = #PB_Ignore
-               Else
-                  ; пример align(autosize).pb
-                  ;Height + #__window_FrameSize*2 + #__window_CaptionHeight
-                  IsWindow = 1
-               EndIf
-            EndIf
-         Else
-            If constants::BinaryFlag( Flag, #PB_Window_NoGadgets ) 
-               Flag &~ #PB_Window_NoGadgets
-            Else
-               canvasflag | #PB_Canvas_Container
-            EndIf
-            ;
-            ; then bug in windows
-            If Window = #PB_Any
-               Window = 300 + MapSize( roots( ) )
-            EndIf
-            ;
-            w = OpenWindow( Window, X, Y, Width, Height, title$, Flag, *parentID )
-            If Window = #PB_Any 
-               Window = w 
-               w = WindowID( Window ) 
-            EndIf
-            ;
-            If constants::BinaryFlag( Flag, #PB_Window_BorderLess )
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  If CocoaMessage(0, w, "hasShadow") = 0
-                     CocoaMessage(0, w, "setHasShadow:", 1)
-                  EndIf
-                  ; https://www.purebasic.fr/english/viewtopic.php?p=393084#p393084
-                  CocoaMessage(0, w, "setStyleMask:", CocoaMessage(0, w, "styleMask")&~#NSTitledWindowMask)
-               CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-                  If GetClassLongPtr_( w, #GCL_STYLE ) & #CS_DROPSHADOW = 0
-                     SetClassLongPtr_( w, #GCL_STYLE, #CS_DROPSHADOW )
-                  EndIf
-                  SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_BORDER) 
-                  SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
-                  SetWindowLongPtr_(w,#GWL_EXSTYLE,GetWindowLongPtr_(w,#GWL_EXSTYLE)|#WS_EX_NOPARENTNOTIFY) 
-               CompilerElse
-                  ;  
-               CompilerEndIf
-            EndIf
-            ;
-            X = 0
-            Y = 0
-         EndIf
-         
-         ;\\ get a handle from the previous usage list
-         If w
-            UseGadgetList = UseGadgetList( w )
-         EndIf
-         ;
-         If X = #PB_Ignore : X = 0 : EndIf
-         If Y = #PB_Ignore : Y = 0 : EndIf
-         ;
-         If Width = #PB_Ignore
-            Width = WindowWidth( Window, #PB_Window_InnerCoordinate )
-            If X <> #PB_Ignore
-               If X > 0 And X < 50 
-                  Width - X * 2
-               EndIf
-            EndIf
-         EndIf
-         ;
-         If Height = #PB_Ignore
-            Height = WindowHeight( Window, #PB_Window_InnerCoordinate )
-            If Y <> #PB_Ignore
-               If Y > 0 And Y < 50 
-                  Height - Y * 2
-               EndIf
-            EndIf
-         EndIf
-         ;
-         If PB(IsGadget)(Canvas)
-            g = GadgetID( Canvas )
-            
-            ; UnbindEvent( #PB_Event_SizeWindow, @EventResize( ), window )
-         Else
-            If test_focus_draw = 1
-               canvasflag|#PB_Canvas_DrawFocus
-            EndIf
-            
-            g = CanvasGadget( Canvas, X, Y, Width, Height, canvasflag);|#PB_Canvas_Container ) : CloseGadgetList()
-            If Canvas = - 1 : Canvas = g : g = PB(GadgetID)(Canvas) : EndIf
-            
-            If constants::BinaryFlag( canvasflag, #PB_Canvas_Container )
-               ; BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
-            EndIf
-         EndIf
-         ;
-         If UseGadgetList And w <> UseGadgetList
-            UseGadgetList( UseGadgetList )
-         EndIf
-         
-         ;
-         If Not FindMapElement( roots( ), Str( g ) ) ; ChangeCurrentCanvas(g)
-            result     = AddMapElement( roots( ), Str( g ) )
-            roots( )   = AllocateStructure( _s_root )
-            Root( )    = roots( )
-            *root      = roots( )
-            
-            ;
-            ;*root\address   = result
-            *root\type      = #__type_Root
-            *root\container = 1
-            *root\class     = "root"
-            ;
-            ; *root\parent   = Opened( )
-            *root\root      = *root
-            *root\window    = *root ; если это убрать то функцию set active надо изменить
-                                    ;
-            *root\canvas\GadgetID = g
-            *root\canvas\window   = Window
-            *root\canvas\gadget   = Canvas
-            
-            ;
-            *root\color       = _get_colors_( )
-            If constants::BinaryFlag( Flag, #__flag_Transparent )
-               *root\color\back  = - 1
-            EndIf
-            ;
-            SetFont( *root, #PB_Default )
-            ; Setimage( *root, #PB_Default )
-            *root\picture\image = - 1
-            
-            ;\\
-            If Width Or Height
-               *root\bindresize = 1
-               Resize( *root, #PB_Ignore, #PB_Ignore, Width, Height )
-            EndIf
-            
-            ;\\
-            If Not constants::BinaryFlag( Flag, #PB_Window_NoGadgets ) 
-               *root\Beforeroot( ) = Opened( )
-               If *root\Beforeroot( )
-                  *root\Beforeroot( )\Afterroot( ) = *root
-               EndIf
-               Opened( ) = *root
-               ;
-               ; OpenList( *root)
-            EndIf
-         EndIf
-         
-         ;
-         If g
-            SetWindowData( Window, Canvas )
-            
-            ;
-            BindGadgetEvent( Canvas, @CanvasEvents( ))
-            CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-               Events::BindGadget( Canvas, @EventHandler( ))
-            CompilerEndIf
-            ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
-            ;
-            BindEvent( #PB_Event_CloseWindow, @EventClose( ), Window )
-            BindEvent( #PB_Event_RestoreWindow, @EventRestore( ), Window )
-            BindEvent( #PB_Event_MaximizeWindow, @EventMaximize( ), Window )
-            BindEvent( #PB_Event_MinimizeWindow, @EventMinimize( ), Window )
-            BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
-            If constants::BinaryFlag( Flag, #PB_Window_SizeGadget )
-               BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
-            EndIf
-            
-            ;\\ z - order
-            CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-               ;SetWindowLongPtr_( g, #GWL_STYLE, GetWindowLongPtr_( g, #GWL_STYLE ) | #WS_CLIPCHILDREN )
-               SetWindowLongPtr_( g, #GWL_STYLE, GetWindowLongPtr_( g, #GWL_STYLE ) | #WS_CLIPSIBLINGS )
-               SetWindowPos_( g, #GW_HWNDFIRST, 0, 0, 0, 0, #SWP_NOMOVE | #SWP_NOSIZE )
-               
-               ; RedrawWindow_(WindowID(a), 0, 0, #RDW_ERASE | #RDW_FRAME | #RDW_INVALIDATE | #RDW_ALLCHILDREN)
-               
-               RemoveKeyboardShortcut( Window, #PB_Shortcut_Tab )
-               
-               ;                ; transparent canvas
-               ;                SetWindowLongPtr_(g, #GWL_EXSTYLE, #WS_EX_LAYERED) 
-               ;                SetLayeredWindowAttributes_(g, RGB( Red(#White), Green(#White), Blue(#White)), 0, #LWA_COLORKEY)
-               ;                ; SetLayeredWindowAttributes_(g, RGB( Red(#Black), Green(#Black), Blue(#Black)), 0, #LWA_COLORKEY)
-            CompilerEndIf
-            
-            ;\\
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-               ; CocoaMessage(0, g, "setBoxType:", #NSBoxCustom)
-               ; CocoaMessage(0, g, "setBorderType:", #NSLineBorder)
-               ; CocoaMessage(0, g, "setBorderType:", #NSGrooveBorder)
-               ; CocoaMessage(0, g, "setBorderType:", #NSBezelBorder)
-               ; CocoaMessage(0, g, "setBorderType:", #NSNoBorder)
-               
-               ;;;CocoaMessage(0, w, "makeFirstResponder:", g)
-               
-               ; CocoaMessage(0, GadgetID(0), "setFillColor:", CocoaMessage(0, 0, "NSColor colorWithPatternimg:", imageiD(0)))
-               ; CocoaMessage(0, WindowID(w), "setBackgroundColor:", CocoaMessage(0, 0, "NSColor colorWithPatternimg:", imageiD(0)))
-               ; CocoaMessage(0, g,"setFocusRingType:",1)
-            CompilerEndIf
-            
-            
-            
-            ;\\ 
-            If *root
-               If constants::BinaryFlag( Flag, #PB_Window_NoActivate )
-                  *root\focus = #__s_nofocus
-               Else
-                  If SetActive( *root )
-                     ; Post( *root, #__event_Focus )
-                  EndIf
-                  SetActiveGadget( *root\canvas\gadget )
-               EndIf
-               ;
-               PostEvent( #PB_Event_SizeWindow, window, Canvas ) ; Bug PB
-               PostReDraw( *root )
-            EndIf
-         EndIf
-         
-         Widget( ) = *root
-         ProcedureReturn *root
-      EndProcedure
-      
-      Procedure.i Window( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, *parent._s_WIDGET = 0 )
-         Protected fs = (#__window_FrameSize)
-         Protected barHeight = ( #__window_CaptionHeight )
-         Protected fs1 = DPIScaled(fs)
-         Protected barHeight1 = DPIScaled( barHeight )
-         
-         ;Protected *this.allocate( Widget )
-         If Opened( )
-            Protected *root._s_root = Opened( )\root
-         EndIf
-         
-         Protected *this._s_WIDGET
-         If MapSize( roots( ) )
-            If Not ListSize( widgets( ) ) And
-               constants::BinaryFlag( Flag, #__flag_autosize ) 
-               
-               X              = 0
-               Y              = 0
-               Width          = *root\width
-               Height         = *root\height
-               *root\autosize = #True
-               *this          = *root
-               
-               ;                   Protected w = WindowID(*root\canvas\window )
-               ;                   
-               ;                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-               ;                   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-               ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_BORDER) 
-               ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
-               ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_SIZEBOX) 
-               ;                      SetWindowLongPtr_(w,#GWL_EXSTYLE,GetWindowLongPtr_(w,#GWL_EXSTYLE) | #WS_EX_TOOLWINDOW)
-               ;                   CompilerElse
-               ;                      ;  
-               ;                   CompilerEndIf
-            Else
-               *this.allocate( Widget )
-            EndIf
-            ;\\ open root list
-         Else
-            *this = Open( #PB_Any, X, Y, Width + fs * 2, Height + fs * 2 + barHeight, Text,  #PB_Window_BorderLess, *parent )
-            X     = 0
-            Y     = 0
-            Protected autosize = #True
-         EndIf
-         
-         ;\\
-         If X = #PB_Ignore
-            X = window_pos_x + mouse( )\steps
-         EndIf
-         If Y = #PB_Ignore
-            Y = window_pos_y + mouse( )\steps
-         EndIf
-         window_pos_x = X + fs
-         window_pos_y = Y + fs + barHeight
-         
-         ;\\
-         If constants::BinaryFlag( Flag, #__flag_child )
-            If *parent And *parent\type = #__type_MDI
-               *this\child =- 1
-            Else
-               *this\child = 1
-            EndIf
-         EndIf
-         
-         If *parent
-            If *root = *parent
-               *root\parent = *this
-            EndIf
-            
-         Else
-            *parent = *root
-         EndIf
-         
-         
-         ;\\
-         *this\font     = - 1
-         *this\type            = #__type_window
-         *this\frame_x( )      = #PB_Ignore
-         *this\frame_y( )      = #PB_Ignore
-         *this\frame_width( )  = #PB_Ignore
-         *this\frame_height( ) = #PB_Ignore
-         
-         ;\\ replace pb flag
-         Flag = FromPBFlag( *this\type, Flag )
-         
-         Static count
-         *this\flag      = Flag
-         *this\create    = #True
-         *this\class     = #PB_Compiler_Procedure ;+""+ count
-         *this\container = 2
-         count + 1
-         
-         ;
-         ;       *this\round = round
-         ;
-         *this\color      = _get_colors_( )
-         *this\color\back = $FFF9F9F9
-         If constants::BinaryFlag( Flag, #__flag_Transparent ) 
-            *this\color\back = - 1
-         EndIf
-         
-         *this\caption\_padding = 4
-         *this\caption\color    = _get_colors_( )
-         
-         ; border frame size
-         *this\fs = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * fs1
-         
-         
-         ;
-         *this\CloseButton( )\hide    = constants::BinaryFlag( *this\flag, #PB_Window_SystemMenu, #False )
-         *this\MaximizeButton( )\hide = constants::BinaryFlag( *this\flag, #PB_Window_MaximizeGadget, #False )
-         *this\MinimizeButton( )\hide = constants::BinaryFlag( *this\flag, #PB_Window_MinimizeGadget, #False )
-         *this\HelpButton( )\hide     = 1
-         
-         
-         If *this\MaximizeButton( )\hide = 0 Or
-            *this\MinimizeButton( )\hide = 0 Or
-            *this\CloseButton( )\hide = 0
-            *this\caption\hide = 0
-         Else
-            *this\caption\hide = constants::BinaryFlag( *this\flag, #PB_Window_TitleBar, #False )
-         EndIf
-         
-         If *this\caption\hide
-            *this\TitleBarHeight = 0
-            *this\fs[2] = 0
-         Else
-            *this\fs[2] = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * barHeight1
-            *this\TitleBarHeight = *this\fs[2]
-            
-            *this\padding\x = DPIScaled(5)
-            *this\TitleText( )\string    = Text
-         EndIf
-         
-         *this\CloseButton( )\color    = colors::*this\red
-         *this\MaximizeButton( )\color = colors::*this\blue
-         *this\MinimizeButton( )\color = colors::*this\green
-         
-         *this\CloseButton( )\ColorState( )    = 1
-         *this\MaximizeButton( )\ColorState( ) = 1
-         *this\MinimizeButton( )\ColorState( ) = 1
-         
-         
-         *this\CloseButton( )\width    = DPIScaled( #__bar_button_size - 2 )
-         *this\CloseButton( )\height   = *this\CloseButton( )\width
-         *this\CloseButton( )\round    = *this\CloseButton( )\width / 2
-         
-         *this\MaximizeButton( )\width  = *this\CloseButton( )\width
-         *this\MaximizeButton( )\height = *this\CloseButton( )\height
-         *this\MaximizeButton( )\round = *this\CloseButton( )\round
-         
-         *this\MinimizeButton( )\width  = *this\CloseButton( )\width
-         *this\MinimizeButton( )\height = *this\CloseButton( )\height
-         *this\MinimizeButton( )\round = *this\CloseButton( )\round
-         
-         *this\HelpButton( )\width  = *this\CloseButton( )\width * 2
-         *this\HelpButton( )\height = *this\CloseButton( )\height
-         *this\HelpButton( )\round     = *this\CloseButton( )\round
-         
-         
-         
-         
-         ; Background img
-         *this\picture\image = - 1
-         
-         ;
-         *this\bs = *this\fs
-         
-         
-         ;\\
-         If *parent
-            If constants::BinaryFlag( *this\flag, #PB_Window_WindowCentered )
-               X = *parent\inner_x( ) + ( *parent\inner_width( ) - Width - *this\fs * 2 - *this\fs[1] - *this\fs[3] ) / 2
-               Y = *parent\inner_y( ) + ( *parent\inner_height( ) - Height - *this\fs * 2 - *this\fs[2] - *this\fs[4] ) / 2
-            EndIf
-            
-            If is_integral_( *this ) Or *parent\type <> #__type_window
-               SetParent( *this, *parent, #PB_Default )
-            Else
-               
-               If Not *parent\autosize And SetAttach( *this, *parent, 0 )
-                  X - DPIUnScaled(*parent\container_x( )) - DPIUnScaled((*parent\fs + (*parent\fs[1] + *parent\fs[3])))
-                  Y - DPIUnScaled(*parent\container_y( )) - DPIUnScaled((*parent\fs + (*parent\fs[2] + *parent\fs[4])))
-                  
-               Else
-                  ; Debug "888888 "+ *parent +" "+ root( )+" "+Opened( )
-                  SetParent( *this, *parent, #PB_Default )
-               EndIf
-            EndIf
-         EndIf
-         
-         ;
-         ;\\ add count types
-         CountType( *this, 1 )
-         
-         ;\\
-         If constants::BinaryFlag( *this\flag, #PB_Window_SizeGadget&~#PB_Window_TitleBar )
-            If Not *this\anchors
-               a_create( *this, #__a_full | #__a_nodraw | #__a_zoom )
-            EndIf
-         EndIf
-         
-         If Not constants::BinaryFlag( *this\flag, #PB_Window_NoGadgets )
-            OpenList( *this )
-         EndIf
-         
-         If constants::BinaryFlag( *this\flag, #PB_Window_NoActivate )
-            *this\focus = #__s_nofocus
-         Else
-            If Not ( *this\parent And *this\parent\anchors )
-               SetActive( *this )
-            EndIf
-         EndIf
-         
-         ;\\
-         Resize( *this, X, Y, Width, Height )
-         
-         Widget( ) = *this
-         ProcedureReturn *this
-      EndProcedure
-      
-      Procedure.i Gadget( Type.w, Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, Flag.q = #Null )
-         Protected *this, g
-         Protected Window = ID::Window( UseGadgetList(0))
-         Open( Window, X, Y, Width, Height, "", #PB_Canvas_Container|#PB_Window_BorderLess, #Null, Gadget )
-         ;
-         Flag = FromPBFlag( Type, Flag ) | #__flag_autosize
-         Select Type
-            Case #__type_Tree      : *this = Tree( 0, 0, Width, Height, Flag )
-            Case #__type_Text      : *this = Text( 0, 0, Width, Height, Text, Flag )
-            Case #__type_Button    : *this = Button( 0, 0, Width, Height, Text, Flag )
-            Case #__type_Option    : *this = Option( 0, 0, Width, Height, Text, Flag )
-            Case #__type_CheckBox  : *this = CheckBox( 0, 0, Width, Height, Text, Flag )
-            Case #__type_HyperLink : *this = HyperLink( 0, 0, Width, Height, Text, *param1, Flag )
-            Case #__type_Splitter  : *this = Splitter( 0, 0, Width, Height, *param1, *param2, Flag )
-         EndSelect
-         ;
-         CloseGadgetList( )
-         ;
-         If Gadget = - 1
-            Gadget = GetCanvasGadget( Root( ))
-            g      = Gadget
-         Else
-            g      = GadgetID( Gadget )
-         EndIf
-         
-         ; SetGadgetData( Gadget, *this )
-         Widget::gadgets(Str(Gadget)) = *this
-         
-         ProcedureReturn g
-      EndProcedure
-         
-      ;-
-      Procedure.i CloseList( )
-         Protected *open._s_WIDGET
-         
-         ;\\ 1-test splitter
-         If Opened( ) And
-            Opened( )\type = #__type_Splitter
-            
-            Opened( )\split_1( ) = Opened( )\FirstWidget( )
-            Opened( )\split_2( ) = Opened( )\LastWidget( )
-            
-            bar_update( Opened( ), #True )
-         EndIf
-         
-         If Opened( ) And
-            Opened( )\parent
-            
-            If Opened( )\parent\type = #__type_MDI
-               *open = Opened( )\parent\parent
-            Else
-               If Opened( )\Lastroot( )
-                  *open                 = Opened( )\Lastroot( )
-                  Opened( )\Lastroot( ) = #Null
-               Else
-                  If Opened( ) = Opened( )\root
-                     *open = Opened( )\root\Beforeroot( )
-                  Else
-                     *open = Opened( )\parent
-                  EndIf
-               EndIf
-            EndIf
-         Else
-            *open = Root( )
-         EndIf
-         
-         If *open = Opened( )
-            If *open\root\Beforeroot( )
-               UseGadgetList( WindowID(*open\root\Beforeroot( )\canvas\window))
-               ; Debug ""+*open\root\Beforeroot( )\canvas\window +" "+Opened( )\root\canvas\window
-               *open = *open\root\Beforeroot( )
-            EndIf
-         EndIf
-         
-         If *open And
-            Opened( ) <> *open
-            Opened( ) = *open
-            ; OpenList( *open )
-         EndIf
-      EndProcedure
-      
-      Procedure.i OpenList( *this._s_WIDGET, item.l = 0 )
-         Protected result.i = Opened( )
-         
-         If *this And *this\type = #__type_Unknown
-            *this = Opened( )
-         EndIf
-         
-         ; Debug "OpenList "+*this\class +" - "+ Opened( )\class
-         
-         If *this = Opened( )
-            If Not( *this\tabbar And *this\tabbar\type = #__type_TabBar And *this\tabbar\TabIndex( ) <> item )
-               ProcedureReturn result
-            EndIf
-         EndIf
-         
-         If *this
-            If *this\parent <> Opened( )
-               *this\Lastroot( ) = Opened( )
-            EndIf
-            
-            If *this\root
-               If *this\root <> Root( )
-                  If Opened( )\root
-                     Opened( )\root\Afterroot( ) = *this\root
-                  EndIf
-                  *this\root\Beforeroot( ) = Opened( )\root
-                  
-                  If is_root_( *this )
-                     ChangeCurrentCanvas( GadgetID( *this\root\canvas\gadget ) )
-                  EndIf
-               EndIf
-            EndIf
-            
-            ; add 
-            If *this\tabbar And 
-               *this\tabbar\type = #__type_TabBar
-               
-               ; tab\index.c так как не принимает минусавое значение
-               If Item < 0
-                  Item = 0
-               EndIf
-               *this\tabbar\TabIndex( ) = Item
-            EndIf
-            
-            Opened( ) = *this
-         EndIf
-         
-         ProcedureReturn result
-      EndProcedure
-      
-      ;-
-      Procedure   MessageEvents( )
-         Protected *message._s_ROOT
-         
-         Select WidgetEvent( )
-            Case #__event_Free
-               ; Debug " do free " + EventWidget( )\class
-               If EventWidget( ) = *message
-                  StickyWindow( *message\canvas\window, #False )
-                  Unbind( *message, @MessageEvents( ))
-               EndIf
-               
-            Case #__event_KeyDown
-               If keyboard( )\key = #PB_Shortcut_Return
-                  ; Debug "key - message"
-                  *message = GetWindow( EventWidget( ))
-               EndIf
-               
-            Case #__event_LeftClick
-               *message = GetWindow( EventWidget( ))
-               
-         EndSelect
-         
-         If *message
-            If #__type_Button = GetType( EventWidget( ))
-               Select GetText( EventWidget( ))
-                  Case lng("No")     : SetData( *message, #__message_No )     ; no
-                  Case lng("Yes")    : SetData( *message, #__message_Yes )    ; yes
-                  Case lng("Cancel") : SetData( *message, #__message_Cancel ) ; cancel
-               EndSelect
-               
-               ;\\
-               PostQuit( *message )
-            EndIf
-         EndIf
-         
-         ProcedureReturn #PB_Ignore
-      EndProcedure
-      
-      Procedure   Message( Title.s, Text.s, Flag.q = #Null, ParentID = #Null )
-         ; -1 стандартный динамик 
-         ; MB_ICONASTERISK 
-         ; MB_ICONEXCLAMATION  
-         ; MB_ICONHAND 
-         ; MB_ICONQUESTION 
-         ; MB_OK 
-         ; MessageBeep_(#MB_ICONHAND)
-         ;
-         
-         ;          ; Так как мы отрезали событие
-         ;          If GetActive( )
-         ;             If Not GetActive( )\focus
-         ;                SetActive( GetActive( ))
-         ;             EndIf
-         ;          EndIf
-         ;
-         Protected result, X, Y, Width = 400, Height = 120
-         Protected img = - 1, f1 = - 1, f2 = 8
-         Protected bw = 85, bh = 25, iw = Height - bh - f1 - f2 * 4 - 2 - 1
-         
-         Protected._s_root *root, *message
-         Protected._s_WIDGET *ok, *no, *cancel, *widget
-         
-         *widget = EventWidget( )
-         
-         ;\\
-         If *widget
-            *root = *widget\root
-         Else
-            *root = Root( )
-         EndIf
-         
-         
-         ;          ;\\ 1)
-         ;          x = ( *root\width - width )/2
-         ;          y = ( *root\height - height )/2 - #__window_CaptionHeight
-         ;          *message = Window( x, y, width, height, Title, #PB_window_TitleBar, *root)
-         ; ;
-         ; ; ;          ;\\ 2)
-         ; ; ;          ; *message = Window( x, y, width, height, Title, #PB_window_TitleBar | #PB_window_WindowCentered, *root)
-         ;
-         ;\\ 3)
-         Define newflag = #PB_Window_TitleBar | #PB_Window_Invisible | #PB_Window_NoActivate
-         If constants::BinaryFlag( Flag, #__message_ScreenCentered )
-            newflag | #PB_Window_ScreenCentered
-         Else
-            newflag | #PB_Window_WindowCentered
-         EndIf
-         ;newflag = #PB_Window_ScreenCentered |#PB_Window_BorderLess
-         *message = Open( #PB_Any, X, Y, Width, Height, Title, newflag, WindowID( *root\canvas\window ))
-         SetClass( *message, #PB_Compiler_Procedure+"_"+Str( *Message\canvas\window )) 
-         *message\parent = *root
-         ;
-         ;\\
-         CanvasMouseX( ) = mouse::GadgetMouseX( *message\canvas\gadget )
-         CanvasMouseY( ) = mouse::GadgetMouseY( *message\canvas\gadget )
-         GetAtPoint( *message, CanvasMouseX( ), CanvasMouseY( ), widgets( ))
-         ;
-         ;\\
-         If constants::BinaryFlag( Flag, #__message_Info )
-            img = CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info )
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-               ;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'APPL'")
-               ;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'caut'")
-               ;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'note'")
-               ;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'stop'")
-            CompilerEndIf
-            DataSection
-               img_info: ; size : 1404 bytes
-               Data.q $0A1A0A0D474E5089, $524448490D000000, $2800000028000000, $B8FE8C0000000608, $474B62060000006D
-               Data.q $A0FF00FF00FF0044, $493105000093A7BD, $5F98CD8558544144, $3B3BBFC71C47144C, $54C0F03D7F7BB707
-               Data.q $14DA0D5AD0348C10, $7C1A6360A90B6D6D, $6D03CAADF49898D3, $D1A87D7AD262545F, $B69B5F469AA9349A
-               Data.q $680D82AB6C37D269, $A6220B47FA51A890, $DECFEE38E105102A, $053FB87D333B772E, $CCDD3CF850EE114A
-               Data.q $0766FDFE767ECCDC, $F476DC569948E258, $5BCA94AD89227ADA, $3C10B9638C15E085, $7A59504C89240017
-               Data.q $8055B371E2774802, $2E678FEAA9A17AFC, $06961711C3AC7F58, $EF905DD4CA91A322, $A159B0EAD38F5EA2
-               Data.q $4D30000CA9417358, $1A3033484098DD06, $2C671601A343EB08, $EDD3F547A138B820, $DAFB560A82C89ABE
-               Data.q $2E1D2C863E5562A8, $3CD50AAB359173CC, $8D8C00262FCE6397, $83FB0DA43FD7D187, $DDAAFF5D74F85C02
-               Data.q $B3A477582D666357, $45754E5D9B42C73C, $16732AAEDD894565, $41FBABA3A6B0899B, $3FAB16311F45A424
-               Data.q $8FDB82C66F4B707F, $1595D6EF9001DD5F, $69B32B24BD2B2529, $EA0DEEB7E6181FDC, $9D9F369A5BBB6326
-               Data.q $A94FBDAEC7BBE0B7, $A732EAE5951BF5F4, $5C114204D2DD216D, $6B9C344C651BD9B9, $5F8FDB82CE66FAAA
-               Data.q $5F57EDFEF90841DD, $8469F486ECB61D52, $C2634777AE971D35, $2A9E9FF5E072D5DC, $8DE85A9CB3A47758
-               Data.q $4DCF559EDB963737, $0D1DD74741182C67, $C9DDD550E5F86C71, $E68DAFB555E65365, $79E522B2BAF36858
-               Data.q $B2DAC765C78001C9, $8DAFB573522C2B62, $8F9455C8929B2E4E, $77B1059330B54E5C, $D579F26E672AD4E3
-               Data.q $AC8D0E0F2BD2BD5F, $9F9532F8021F1304, $C910838758FEB56E, $816E0DF732515957, $DAAF81036D5F2CA9
-               Data.q $C2E305A5E54F66D7, $73EED922E79850D2, $88B9E6F02BB0E0D9, $2241697952FB2AA2, $B51C5D50B8ACB1A3
-               Data.q $69322368555B297F, $A654FC089009A54C, $1E34DD1B45EE65EE, $5F9F7579224403B7, $416D440905240B59
-               Data.q $244059B47C668BBE, $56F2A644DDF22B00, $1EBC77E473482920, $E3DCB126CD5175A7, $E720A4816B952854
-               Data.q $AA1C1F8C97DBB0A8, $3CE0A0A481CA0015, $2829A74C5DCDCD5F, $0F5481799C981CD6, $9356B8BCB2A56E0A
-               Data.q $0B4C0AC3821950B0, $6188962AC4914B75, $8326E2692ED8B632, $32112C58C9006044, $ECE858E5B0989D1A
-               Data.q $743677B1BE616735, $07BA4027E44A0623, $6C80F60B188E13D1, $829201DC00066B09, $8C96858E8E2EC9A6
-               Data.q $805AC633A82068E1, $371FE43AD04336D4, $3E017C48017AE2C5, $292045C9C672091A, $FE17193FA6FF7E78
-               Data.q $24BB170DC670F1B1, $228215E7B04759EC, $8381081FD341E657, $105A57F6BD342FFB, $B487FAFAA7631800
-               Data.q $02CD8258AB7E1B4C, $7FAFA533BF1272D8, $0B4E95227E4D3348, $C2283FB0F4FD51EA, $448A12D9E3719E9A
-               Data.q $A9D39441710FE231, $C02226AFBB60B4BC, $BE71A320F3D6FF0F, $B80C4880C5A02FD4, $EAE80059B3FE70FC
-               Data.q $BFD96D3E2109AFBE, $33433E3653923D3E, $6181FDEF7925044E, $40CCA2BCC151695B, $BFB32F995BDBE050
-               Data.q $4BD80C6A38598607, $EED1229FCE4E4FFB, $37BADFD58B1931AB, $9AC9DFBE734207A8, $31180DF76E30F1B1
-               Data.q $484A73B9DC7FEBCE, $D7A5B83F9D2F4FFB, $F3E8DECDC7776C64, $77EFE7474D218F98, $BEA6C0F5ABB1CE75
-               Data.q $E6D34B630E33E5E9, $D1DDEBF686899CB3, $30F1B1C9EBB3E0B1, $707F829A8EE8DF2E, $EB33FE99E7EAA9A1
-               Data.q $92547BE745F7507E, $CF3D5948A6BB587F, $BB773989021B3939, $EE4FFEBB1CE0C06F, $17B5C8FDB00082A9
-               Data.q $0D85E5765D9A9161, $D2CFBB3D8776A515, $B091079EAE8A2450, $58699FAF38C60FA6, $AAAC44AE240825E7
-               Data.q $524EF9BCCF8048DA, $7CE63B71E6C2BC56, $B1F0FBBCC0BA9B3D, $B389F106710FE236, $E0B19105F4D4FFA4
-               Data.q $4964FB2AA2BB5124, $96EF9053D965946A, $5542B5438A9C7B97, $AA218C9B953A9172, $F504091819AC204F
-               Data.q $19C68C085CE323C7, $0AFC1667EBA1393B, $9132FEBD1DB62678, $0A88495AE54CAD78, $974C713C10AF0B93
-               Data.q $C7A92409E9132188, $DA1DCE5A182B5934, $00FF3496B3E99DD4, $C5E52BD0901E71B2, $444E454900000000
-               Data.b $AE, $42, $60, $82
-               end_img_info:
-            EndDataSection
-         EndIf
-         If constants::BinaryFlag( Flag, #__message_Error )
-            img = CatchImage( #PB_Any, ?img_error, ?end_img_error - ?img_error )
-            
-            DataSection
-               img_error: ; size : 1642 bytes
-               Data.q $0A1A0A0D474E5089, $524448490D000000, $3000000030000000, $F902570000000608, $474B620600000087
-               Data.q $A0FF00FF00FF0044, $491F06000093A7BD, $41D9ED8168544144, $CCEFF1C71DC7546C, $F6A06C4218C6ED7A
-               Data.q $E448A410E515497A, $2070C40BB121A4E0, $46DC512B241A4E54, $124BD29004AB2039, $5150F4DA060B2630
-               Data.q $52894889E9734815, $42B01552AB888955, $0A9535535581A8E4, $A69B1B838C151352, $0F5F9BEDFAF1DAF1
-               Data.q $1B16F7DEBB3635DE, $DBF3D5DEB2E7A873, $8599BCFFBCCDEFCF, $8B999BBFFED0B685, $D94DFC3235B5A893
-               Data.q $2AD241A8331E9177, $A24A50090AA21D50, $F4E23494382E38DF, $CDC2449B1FD5A692, $67C9F4601567BBF6
-               Data.q $EA910FC176C73A56, $FB3E2C820C026811, $90FA231C4D0CFD92, $77E7A6B4722EFB8E, $3975B5B8601AF37D
-               Data.q $E795079E6401C8E9, $718909C7B3E02570, $139E92E751637E23, $67B6C9EA403CB783, $16621CEA8257EE71
-               Data.q $51DA72431163C9F8, $ED40125BADFBB67D, $B69198EA40D4D1ED, $E1CFD7F08E620A6A, $649A76066FAEE378
-               Data.q $1CAF696A00B39BD2, $F8A5BF1E82DFA931, $B68B1E9F7E92E7EC, $10366C83462792C6, $9B483C679D1EDEDF
-               Data.q $E5ADFDD3DFC7CA2B, $679B1D481A900EB3, $FD5FC5A1C6FDEE7C, $789EA5087457C832, $DF27E036FC740DB6
-               Data.q $2EDEA7739A99E91B, $7D63573D4FD7C039, $091E176ECB121FEF, $3D92C5F7739E6BA1, $E3F8C8438CEC4B05
-               Data.q $E338639DC7E0C287, $93E731F8D0BBE631, $A883C20B9CF064CA, $C03059C99BECC32E, $8A2A927678B696E8
-               Data.q $6773962BC31DF31F, $5E32A40D35BC1ED7, $61AE34C8F7C47E20, $B482B75C33F7CFE9, $BD6DC8C3B3E18BF3
-               Data.q $F3CE00E87774D0D6, $C8C73B8EC3301077, $1EAA53FC3F1397B7, $A3ED685DBED88879, $889BEB3C515EF88C
-               Data.q $FBB987C6E2C3DC1F, $4F437B575A305FF5, $D8C99E55CF67C74C, $B432B0912802A16D, $0BD967DF31F98D05
-               Data.q $2244C006A9AB295B, $95211F6B425F3AC4, $131BB7DFAF88CCC9, $17F2C3565D100089, $60D9F045FBE631B7
-               Data.q $0C030246B6B523F0, $1BA0F14E30F0BF9F, $EF9127DDBFE58A36, $7DED884489AFFE4F, $0078CCC4F5CBAD05
-               Data.q $A1A89BAF79FF3EF9, $AF17ABFAEFE27E38, $B54C2C7A40060436, $9FD33FDED83596F9, $D82EC4FA885E59F8
-               Data.q $D0F7C463C6548EB0, $7ABDF473BC7CC6DA, $3F0026054BD3D308, $C1803039A9C479F1, $CC32DA5654B6183D
-               Data.q $843D34389FD11F87, $875C6CC25F3AC4B5, $EFC7C8EAEF1236D6, $86D6458670FE883D, $6F207AF2E72123C2
-               Data.q $EE229FADFBFAF81E, $E35C19F88FCEA52F, $89B8CABF4FF7EA1A, $F8B374EBF5EC6161, $5A3FDFED5BFB10EC
-               Data.q $524EA5751007B45D, $7B2B97B0FD822695, $BC3B99AC09EB4E0F, $A8050B7237754E04, $6194D2B63B9F052A
-               Data.q $FCB800F3AFA5E83E, $D12A27E1D9A4A295, $FA6EE7C74A0110E2, $3343761C4CC77B89, $A4788CCDAA213002
-               Data.q $66EA532260530BFC, $3698EAEF136AB9F0, $377FBE21937FAE6C, $F026FF1923335366, $598BE240181C3102
-               Data.q $3270DA691B56A7E1, $666A6EC0EAEF12D6, $08BE902F11299324, $7D1CEF04E7174011, $C4AF2272F4B8079D
-               Data.q $9181BE3CC1EC0FC6, $C085D20F121D8CEC, $B0DECF8273F38800, $621F92BD2E59CCE6, $A6A48DE6EC4EC1E5
-               Data.q $181F3A4E3C00A70C, $F4D5891F61D388C0, $FF7BBCB9F7DE3E68, $9675385AC3B9B564, $5373410C15F6BBCB
-               Data.q $ECEB025E38B489F6, $8C7F569A4B00C0E9, $4B1CE3220F0C5CB8, $4FE0BA3BE3E5365B, $7F45AC8B952B4C1F
-               Data.q $2DEA844889EFC9EC, $AA5D23C40BBE782D, $091207B8325CECFD, $630A823C3166F487, $4543837863E1F7F9
-               Data.q $19E4E8B5A54439F1, $CBEF0864EAFCBD2E, $4131B94C3B5E0641, $2D1D5E40D37B9078, $4D6E25BF5A1CA4B8
-               Data.q $EEB9F085E5489FE6, $FC565ABAD19F3B4E, $A7A63EFBBDAE05E4, $6E687C654A927037, $E61DAF030B4B7AA2
-               Data.q $3330F5B7215D7F8E, $DF6577BFDC7F695E, $FAD5F0000A84AF5F, $73E133C7EE175E27, $6A27DF318E73D6A5
-               Data.q $EF9E3E769954FD08, $47491E3068863728, $99CE42CECBFF3FEA, $D060C40EE915C4D7, $1E3436B2A80CBC02
-               Data.q $1F8B0DAC8B0C0A89, $CEE0189ADA5B5132, $7C316769C9AF2793, $336A9850616065F1, $19C98BB16DA138F5
-               Data.q $ED9F556C6E8B7D37, $3A0F0BB71BC70B7E, $03198A7793FCFF1A, $E71DB45BAAEEE677, $EFB1DD41BC6F9DDE
-               Data.q $B7736A17C8317D2C, $077E9A22B2A5A1BF, $E37DE9DE572F3CD8, $B9BF6727F58E9E45, $86F6AD189E4B100B
-               Data.q $B13618F9EBF4207E, $F1370F06153E967B, $E8769E1B43D0C703, $DA14BFE31CD96208, $607AA16C6FE6341E
-               Data.q $630AEDEA7739AB6A, $7C039E94863A4956, $152AAF8DE711D25A, $E681F06F91FCB30F, $65624DA80766477A
-               Data.q $DDC7F71DC8CBF889, $35C804BCEC3342D1, $388C1EF7C0FABD81, $AA70FBA106B9CB35, $887D7214F8B2AA07
-               Data.q $FB5D3D9D6F3A4E8B, $B6859B67A164B9D9, $FEEC7FED695A16D0, $00006B709A860323, $42AE444E45490000
-               Data.b $60, $82
-               end_img_error:
-            EndDataSection
-         EndIf
-         If constants::BinaryFlag( Flag, #__message_Warning )
-            img = CatchImage( #PB_Any, ?img_warning, ?end_img_warning - ?img_warning )
-            
-            DataSection
-               img_warning: ; size : 1015 bytes
-               Data.q $0A1A0A0D474E5089, $524448490D000000, $2800000028000000, $B8FE8C0000000608, $474B62060000006D
-               Data.q $A0FF00FF00FF0044, $49AC03000093A7BD, $DD98ED8558544144, $67339F8718551C6B, $6BA934DBB3B3B267
-               Data.q $60255624DDDB3493, $785E2A42F0458295, $068C4AF69BDA17E3, $030B4150FDBB362A, $D9AC514B49409622
-               Data.q $86FF825726F0546E, $2968A4290537B482, $7B79EF7CD1F26F42, $CCECECDD9B68DDB1, $3DE7337B07E4DE84
-               Data.q $CE73DE666FECFBEF, $BE4895C549A28EC0, $D18003BEE526913D, $1BC8E3E7C60FAABF, $9FECC2827EF8A00B
-               Data.q $A661997980015464, $5B7351EBFBE505F3, $47813B9850001351, $53C3D570C7AAE19E, $B23A91C71FB3F205
-               Data.q $DEADAC5DE7CBF283, $8B8B83D4866AB9E2, $A3501A8AC0BD75C0, $F5C1DD1FC946EE17, $A401C06F62B271D5
-               Data.q $FA6A26F924D8AC80, $7E5A30F4E54A0E48, $5560C8F125D550E7, $EF525E4622D61FC1, $09839A235B0F5C4F
-               Data.q $6801C1363A672499, $22528E5162499C81, $1C849B7E9D4CA034, $9B0B11E8E79A47A4, $D4275B0ADE94A961
-               Data.q $86766961DF69962D, $ACF075B2DD97A5A7, $D5E5ADCCBFD61B82, $E0E70AD6ED2BCBC9, $01C25A643259C2E2
-               Data.q $267D976692740A74, $BDB1C9941DB6A94C, $00648F1BCF26FAD8, $B2C7BE9AE0658040, $5EA769DE2F46A039
-               Data.q $1126BD12FA3A0EFB, $4936293C09200E18, $A54A016D72DDA26B, $768E93EC9BC50878, $2E521BC80E33910B
-               Data.q $141140605A676E1D, $A093744937932ADA, $8281A48D7ED62F67, $15A3F82459547171, $403871C753A9C1DC
-               Data.q $06470A2CF737C256, $804094E82C78A9F8, $D268304CD1725D32, $92EA1CB5051ED691, $7565900D8BC67CFC
-               Data.q $D18BC6D5D9712E8E, $117CC62E3760194C, $10E54E54A025BC24, $2A40E3FD026F2319, $6858AA64C64A1498
-               Data.q $61F477CD41DADA15, $27D00E40F641C4E3, $8096E855B9759636, $67D2AF1465F163F2, $8B1B13EAEAE0D8EC
-               Data.q $535855B2BD295223, $321995650B7DF140, $C60B95CDEEFB4C6E, $B8D66D1F4CB2AB43, $D29243E17FBD28B6
-               Data.q $084F4AD2B684774F, $4859A46E52C3D2B8, $3D5D0669FAB94043, $435D5C1B6F49A0CF, $B3ACF95CB8C88D26
-               Data.q $D9AFD513076370D1, $EC1E3B578FDB0E23, $4DE1A355F6B926C1, $FEC232053D2E5280, $8171BCABDB194E87
-               Data.q $9B43A3CCF63AB911, $1D8D8BF4930EEB37, $1B03C18628DF29A2, $2381EFADB70E37E8, $5E94A941C87A1FFF
-               Data.q $4653A34D7B30E2C3, $57BCFD90E834E96B, $37AF4AA6517A9634, $506499A04FDF1404, $4BE860F68ADAA152
-               Data.q $7B4EB6B20E173A18, $DF46D1F2B907EA58, $CA9492773F250FFD, $BBF30895BD7115D2, $BF527F49C6E93C04
-               Data.q $2DC126EA5CA400A4, $73BAB8046E349A0E, $A6B8292C73E17BD5, $BB85E8D406B15816, $05103AFB551D0735
-               Data.q $DA95C00E05160EAE, $1B16FD43CE570957, $DA5DBF1B621FD38E, $EA54075063860747, $5917BB61884A7336
-               Data.q $FBD40FF52823CC02, $FE37EB4DCBBCBAE0, $9BF9A436D938F722, $8ED1D8C6E3DEF555, $2EE409553D03EE00
-               Data.q $4900000000FAB21F
-               Data.b $45, $4E, $44, $AE, $42, $60, $82
-               end_img_warning:
-            EndDataSection
-         EndIf
-         ;
-         ;\\
-         Container( f1, f1, Width - f1 * 2, Height - bh - f1 - f2 * 2 - 1 )
-         SetClass( Widget( ), "message_CONT" )
-         If IsImage( img )
-            Image( f2, f2, iw, iw, img, #__flag_ImageCenter | #__flag_Borderflat | #__flag_transparent )
-            SetClass( Widget( ), "message_IMAGE" )
-            Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__flag_TextCenter | #__flag_TextLeft | #__flag_transparent );| #__flag_Borderless )
-         Else
-            Text( f2, f2, Width - f2 * 2, iw, Text, #__flag_TextCenter | #__flag_TextLeft | #__flag_transparent );| #__flag_Borderless )
-         EndIf
-         SetClass( Widget( ), "message_INFO" )
-         CloseList( )
-         
-         ;\\
-         *ok = Button( Width - bw - f2, Height - bh - f2, bw, bh, lng( "Ok" ), #PB_Button_Default )
-         SetClass( *ok, "message_YES" )
-         If constants::BinaryFlag( Flag, #__message_YesNo ) Or
-            constants::BinaryFlag( Flag, #__message_YesNoCancel )
-            *no = Button( Width - ( bw + f2 ) * 2 - f2, Height - bh - f2, bw, bh, lng( "No" ))
-            SetClass( *no, "message_NO" )
-            SetText( *ok, lng( "Yes" ))
-         EndIf
-         If constants::BinaryFlag( Flag, #__message_YesNoCancel )
-            *cancel = Button( Width - ( bw + f2 ) * 3 - f2 * 2, Height - bh - f2, bw, bh, lng( "Cancel" ))
-            SetClass( *cancel, "message_CANCEL" )
-         EndIf
-         
-         ;\\
-         HideWindow( *message\canvas\window, #False )
-         StickyWindow( *message\canvas\window, #True )
-         SetActiveGadget( *Message\canvas\gadget )
-         Bind( *message, @MessageEvents( ))
-         SetActive( *ok )
-         
-         ;\\
-         ;          SetLayeredWindow( *message\canvas\window, igOpaque )
-         ;          ;          If StartDrawing( CanvasOutput( *message\canvas\gadget ))
-         ;          ;             Box( 0, 0, OutputWidth( ), OutputHeight( ), igOpaque )
-         ;          ;             StopDrawing( )
-         ;          ;          EndIf
-         ;          SetBackgroundColor( *message, igOpaque )
-         
-         ;\\
-         DisableWindow( *root\canvas\window, #True )
-         WaitQuit( )
-         DisableWindow( *root\canvas\window, #False )
-         
-         ;\\
-         result = GetData( *message )
-         Free( @*message )
-         If IsImage( img )
-            FreeImage( img )
-         EndIf
-         
-         ;          ;\\
-         ;     SetActive( *root )  
-         ;          ChangeCurrentCanvas( *root\canvas\gadgetID )
-         ;          CanvasMouseX( ) = mouse::GadgetMouseX( *root\canvas\gadget )
-         ;          CanvasMouseY( ) = mouse::GadgetMouseY( *root\canvas\gadget )
-         ;          GetAtPoint( *root, CanvasMouseX( ), CanvasMouseY( ), widgets( ))
-         ;          ; 
-         EventWidget( ) = *widget
-         ProcedureReturn result
-      EndProcedure
-      
-      ;-
       ;- UPDATEs
       ;-
       Procedure   UpdateDraw_Content( *this._s_WIDGET )
@@ -25697,7 +23794,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   If *this\root\drawmode & 1<<2
                      ;\\
-                     If test_focus_draw = 1
+                     If test_focus_draw = 1 Or test_focus_draw = 3
                         If *this\focus = 2
                            draw_mode_(#PB_2DDrawing_Outlined)
                            If Not *this\haschildren 
@@ -25707,7 +23804,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  draw_focus_frame( *this, $ff00ff00)
                               EndIf
                            EndIf
-                        ElseIf *this\focus = 3
+                        ElseIf *this\focus = 3 And test_focus_draw <> 3
                            draw_mode_(#PB_2DDrawing_Outlined)
                            draw_focus_frame( *this, $FFBFBFC3)
                         EndIf
@@ -26127,6 +24224,1946 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
          EndIf
       EndProcedure
+      
+      
+      ;-
+      ;-  CREATEs
+      ;-
+      Procedure.i Create( *parent._s_WIDGET, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
+         Protected *root._s_root
+         If *parent
+            *root = *parent\root
+         EndIf
+         ;
+         size = DPIScaled( size )
+         
+         Protected.b align_image = constants::BinaryFlag( Flag, #__align_image )
+         Protected.b flag_autosize = constants::BinaryFlag( Flag, #__flag_autosize )
+         Protected.b flag_center = constants::BinaryFlag( Flag, #__flag_Center )
+         Protected.b flag_TextRight = constants::BinaryFlag( Flag, #__flag_TextRight )
+         Protected.b flag_TextInLine = constants::BinaryFlag( Flag, #__flag_TextInLine )
+         Protected.b flag_TextCenter = constants::BinaryFlag( Flag, #__flag_TextCenter )
+         
+         ;
+         Protected color, img                 ;, *this.allocate( Widget )
+         
+         Protected *this._s_WIDGET
+         If *root And flag_autosize And
+            Not ListSize( widgets( ) )
+            X              = 0
+            Y              = 0
+            Width          = *root\width
+            Height         = *root\height
+            *root\autosize = #True
+            *this          = *root
+         Else
+            *this.allocate( Widget )
+         EndIf
+         
+         If Type = #__type_MenuBar Or
+            Type = #__type_PopupBar Or
+            Type = #__type_ToolBar Or
+            Type = #__type_TabBar Or
+            Type = #__type_Scroll Or
+            Type = #__type_Progress Or
+            Type = #__type_Track Or
+            Type = #__type_Splitter Or
+            Type = #__type_Spin
+            
+            *this\bar.allocate( BAR )
+         EndIf
+         
+         *this\child  = constants::BinaryFlag( Flag, #__flag_child )
+         If constants::BinaryFlag( Flag, #__flag_NoFocus )
+            *this\focus = #__s_nofocus
+         EndIf
+         If Type = #__type_CheckBox
+            *this\mode\threestate = constants::BinaryFlag( Flag, #PB_CheckBox_ThreeState )
+         EndIf
+         If Type = #__type_HyperLink
+            *this\mode\Lines = constants::BinaryFlag( Flag, #PB_HyperLink_Underline )
+         EndIf
+         If Type = #__type_Editor
+            *this\mode\fullselection = constants::BinaryFlag( Flag, #__flag_RowFullSelect, #False ) * DPIScaled(7)
+         EndIf
+         If Type = #__type_Splitter
+            *this\bar\vertical = Bool( Not constants::BinaryFlag( Flag, #__flag_Vertical ) And 
+                                       Not constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
+            *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
+         EndIf
+         
+         If Type = #__type_Progress
+            *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or
+                                       constants::BinaryFlag( Flag, #PB_ProgressBar_Vertical ))
+            *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert )
+         EndIf
+         
+         If Type = #__type_Scroll
+            *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or 
+                                       constants::BinaryFlag( Flag, #PB_ScrollBar_Vertical ))
+            *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
+         EndIf
+         
+         If Type = #__type_Spin
+            If Flag & #__spin_Plus
+               *this\bar\vertical = constants::BinaryFlag( Flag, #__flag_Vertical )
+            Else
+               *this\bar\vertical = constants::BinaryFlag( Flag, #__flag_Vertical, #False )
+            EndIf
+            
+            *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert )
+            *this\bar\mirror = constants::BinaryFlag( Flag, #__spin_mirror )
+         EndIf
+         
+         If Type = #__type_Track
+            *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or
+                                       constants::BinaryFlag( Flag, #PB_TrackBar_Vertical ))
+            
+            If *this\bar\vertical
+               *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert, #False )
+            Else
+               *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert )
+            EndIf
+         EndIf
+         
+         If Type = #__type_MenuBar Or
+            Type = #__type_PopupBar Or
+            Type = #__type_ToolBar Or
+            Type = #__type_TabBar 
+            ;
+            *this\bar\vertical = constants::BinaryFlag( Flag, #__flag_Vertical )
+            *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
+         EndIf
+         
+         
+         
+         ;
+         ; replace pb flag
+         Flag = FromPBFlag( Type, Flag )
+         *this\flag = Flag
+         ;
+         ; change flags
+         If Type = #__type_Button Or
+            Type = #__type_ButtonImage Or
+            Type = #__type_HyperLink
+            
+            *this\flag | #__flag_TextCenter
+            
+         ElseIf Type = #__type_ComboBox 
+            
+            If Not flag_center
+               If Not (*this\flag & #__flag_Left Or
+                       *this\flag & #__flag_Right Or
+                       *this\flag & #__flag_Top Or
+                       *this\flag & #__flag_Bottom)
+                  *this\flag | #__flag_TextLeft
+               EndIf
+            EndIf
+            If align_image
+               *this\flag | #__flag_Center 
+            Else
+               *this\flag | #__flag_TextCenter 
+            EndIf
+            
+            If flag_TextRight
+               *this\flag & ~ #__flag_TextLeft
+               *this\flag | #__flag_TextRight
+            EndIf
+         ElseIf Type = #__type_Spin Or
+                Type = #__type_String Or
+                Type = #__type_Option Or
+                Type = #__type_CheckBox
+            
+            If Not flag_TextCenter
+               *this\flag | #__flag_TextCenter | #__flag_TextLeft
+            EndIf
+            
+            If flag_TextRight
+               *this\flag & ~ #__flag_TextLeft
+               *this\flag | #__flag_TextRight
+            EndIf
+            
+         ElseIf Type = #__type_Text
+            If Not flag_TextInLine 
+               *this\flag | #__flag_Textwordwrap
+            EndIf
+         EndIf
+         
+         ;
+         ;\\
+         *this\font   = - 1
+         *this\create = #True
+         *this\color  = _get_colors_( )
+         *this\type   = Type
+         *this\class  = class
+         *this\round  = DPIScaled( round )
+         
+         
+         ;\\
+         If *this\type = #__type_ButtonImage Or
+            *this\type = #__type_Button 
+            If constants::BinaryFlag( Flag, #PB_Button_Toggle )
+               Flag &~ #PB_Button_Toggle
+               If Not *this\togglebox
+                  *this\togglebox.allocate( BOX )
+               EndIf
+            EndIf
+            *this\deffocus = Bool( Flag & #PB_Button_Default )
+         EndIf
+         If *this\type = #__type_CheckBox 
+            *this\togglebox.allocate( BOX )
+            *this\togglebox\round  = dpi_scale_two
+            *this\togglebox\width = size
+            *this\togglebox\width  - Bool( Not *this\togglebox\width % 2)
+            *this\togglebox\height = *this\togglebox\width
+         EndIf
+         If *this\type = #__type_Option
+            *this\togglebox.allocate( BOX )
+            *this\togglebox\round  = size/2
+            *this\togglebox\width  = size
+            *this\togglebox\width  - Bool( Not *this\togglebox\width % 2)
+            *this\togglebox\height = *this\togglebox\width
+         EndIf
+         
+         
+         ;\\ Border & Frame size
+         If is_integral_( *this )
+            If *this\type = #__type_Scroll
+               *this\fs = 0;10
+            Else
+               *this\fs = 0
+            EndIf
+         Else
+            If constants::BinaryFlag( *this\flag, #__flag_BorderDouble ) Or
+               constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
+               *this\fs = 2
+            ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderLess )
+               *this\fs = 0
+            ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderFlat ) Or
+                   constants::BinaryFlag( *this\Flag, #__flag_BorderSingle ) Or
+                   *this\type = #__type_Panel Or
+                   *this\type = #__type_Spin Or
+                   *this\type = #__type_ButtonImage Or
+                   *this\type = #__type_Button Or
+                   *this\type = #__type_ComboBox Or
+                   *this\type = #__type_ExplorerList 
+               *this\fs = 1
+            Else
+               If *this\type = #__type_Editor Or
+                  *this\type = #__type_String Or
+                  *this\type = #__type_ScrollArea Or
+                  *this\type = #__type_ListView Or
+                  *this\type = #__type_ListIcon Or
+                  *this\type = #__type_Tree 
+                  *this\fs = 2
+               EndIf
+            EndIf
+         EndIf
+         *this\bs = *this\fs
+         
+         ;\\
+         If *parent
+            ;\\
+            If flag_autosize
+               If *parent <> *this
+                  If *parent\type <> #__type_Splitter
+                     *this\autosize = 1
+                     ; set transparent parent
+                     *parent\color\back   = - 1
+                     *parent\color\_alpha = 0
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\
+            If is_integral_( *this )
+               *this\createindex   =- 1
+               *this\address = *parent\address
+               ReParent( *this, *parent )
+            Else
+               ;*this\text\string = Text
+               SetParent( *this, *parent, #PB_Default )
+            EndIf
+         EndIf
+         
+         ;
+         ;\\ add count types
+         CountType( *this, 1 )
+         
+         ;\\ - Create Texts
+         If *this\type = #__type_Text Or
+            *this\type = #__type_Editor Or
+            *this\type = #__type_String Or
+            *this\type = #__type_ButtonImage Or
+            *this\type = #__type_Button Or
+            *this\type = #__type_Option Or
+            *this\type = #__type_CheckBox Or
+            *this\type = #__type_HyperLink
+            
+            *this\row.allocate( ROW )
+            
+            *this\edit_caret_0( ) = - 1
+            *this\edit_caret_1( ) = - 1
+            *this\edit_caret_2( ) = - 1
+            *this\LineState( ) = - 1
+            
+            *this\lineColor = $FFC0C0C0
+            
+            If *this\type = #__type_Text
+               *this\color\fore  = - 1
+               *this\color\back  = _get_colors_( )\fore
+               *this\color\front = _get_colors_( )\front
+               If *this\fs
+                  *this\color\frame = _get_colors_( )\frame
+               EndIf
+            EndIf
+            ;
+            If *this\type = #__type_Editor
+               *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flag, #__flag_TextNumeric, #False )
+               *this\MarginLine( )\color\front = $C8000000 ; *this\color\back[0]
+               *this\MarginLine( )\color\back  = $C8F0F0F0 ; *this\color\back[0]
+            EndIf
+            
+            If *this\type = #__type_Option
+               ;\\
+               If *this\BeforeWidget( )
+                  If *this\BeforeWidget( )\type = #__type_Option
+                     *this\groupbar = *this\BeforeWidget( )\groupbar
+                  Else
+                     *this\groupbar = *this\BeforeWidget( )
+                  EndIf
+               Else
+                  *this\groupbar = *parent
+               EndIf
+               
+               *this\color\fore  = - 1
+               *this\color\back  = _get_colors_( )\fore
+               *this\color\front = _get_colors_( )\front
+            EndIf
+            
+            If *this\type = #__type_CheckBox
+               *this\color\fore  = - 1
+               *this\color\back  = _get_colors_( )\fore
+               *this\color\front = _get_colors_( )\front
+            EndIf
+            
+            If *this\type = #__type_HyperLink
+               *this\color\fore[#__s_0]  = - 1
+               *this\color\back[#__s_0]  = _get_colors_( )\fore
+               *this\color\front[#__s_0] = _get_colors_( )\front
+               
+               Color = *param_1
+               If Color
+                  If Not Alpha( Color )
+                     Color = Color & $FFFFFF | 255 << 24
+                  EndIf
+                  *this\color\front[#__s_1] = Color
+               EndIf
+            EndIf
+            
+         EndIf
+         
+         ;\\ - Create Lists
+         If *this\type = #__type_Tree Or
+            *this\type = #__type_ListView Or
+            *this\type = #__type_ListIcon Or
+            *this\type = #__type_ExplorerList Or
+            *this\type = #__type_Properties
+            ;
+            *this\row.allocate( ROW )
+            ;
+            *this\TabState( )         = - 1
+            *this\RowState( )         = - 1
+            *this\LineState( ) = - 1
+            *this\WidgetChange( ) = 1
+            *this\TextChange( ) = 1
+            
+            If Type = #__type_Properties
+               If *this\bar
+                  *this\bar\page\pos = 60
+               EndIf
+            EndIf
+            
+            *this\lineColor = $FFC0C0C0
+            *this\color\_alpha = 255
+            *this\color\fore[#__s_0] = - 1
+            *this\color\back[#__s_0] = $ffffffff ; _get_colors_( )\fore
+            *this\color\front[#__s_0] = _get_colors_( )\front
+            *this\color\frame[#__s_0] = _get_colors_( )\frame
+         EndIf
+         
+         ;\\ - Create Containers
+         If *this\type = #__type_Container Or
+            *this\type = #__type_ScrollArea Or
+            *this\type = #__type_Panel Or
+            *this\type = #__type_MDI Or
+            *this\type = #__type_Frame
+            
+            If *this\type = #__type_Frame
+               *this\container = - 1
+            ElseIf *this\type = #__type_Panel
+               *this\container = 3
+            ElseIf *this\type = #__type_MDI
+               *this\container = 4
+            Else
+               *this\container = 5
+               *this\bindresize = 1
+            EndIf
+            *this\color\back = $FFF9F9F9
+            
+            ;
+            ;\\
+            If *this\type = #__type_Frame
+               *this\color\back = $96D8D8D8
+               
+               If Text
+                  *this\fs[2] = 8
+               EndIf
+            EndIf
+            
+            ;\\
+            If *this\type = #__type_Panel
+               CreateBar( *this, #__flag_BarSmall, #__type_TabBar ) 
+               If constants::BinaryFlag( *this\Flag, #__flag_Vertical ) 
+                  BarPosition(*this\tabbar, 1);, 100 )
+               EndIf
+               If constants::BinaryFlag( *this\Flag, #__flag_nobuttons ) 
+                  If constants::BinaryFlag( *this\Flag, #__flag_Vertical ) 
+                     *this\fs[1] = 0
+                  Else
+                     *this\fs[2] = 0
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\ Open gadget list
+            If *this\container > 0 
+               If constants::BinaryFlag( *this\flag, #__flag_NoGadgets, #False )
+                  OpenList( *this )
+               EndIf
+            EndIf
+         EndIf
+         
+         ;\\ - Create ComboBox
+         If *this\type = #__type_ComboBox
+            *this\combobutton.allocate( BUTTONS )
+            *this\combobutton\color           = _get_colors_( )
+            *this\combobutton\arrow\type      = #__arrow_type
+            *this\combobutton\arrow\size      = DPIScaled( #__arrow_size )
+            *this\combobutton\arrow\direction = #__right
+            
+            *this\fs[3] = size
+            *this\fs[3] + Bool( Not *this\fs[3] % 2)
+         EndIf
+         
+         ;\\ - Create Bars
+         If *this\bar
+            *this\bar\button.allocate( BUTTONS )
+            *this\bar\button.allocate( BUTTONS, [1] )
+            *this\bar\button.allocate( BUTTONS, [2] )
+            
+            *this\scroll\increment  = ScrollStep
+            Protected._s_BUTTONS *BB1, *BB2, *SB
+            *SB  = *this\bar\button
+            *BB1 = *this\bar\button[1]
+            *BB2 = *this\bar\button[2]
+            
+            If *this\type = #__type_Splitter Or
+               *this\type = #__type_Scroll Or
+               *this\type = #__type_Progress Or
+               *this\type = #__type_Track Or
+               *this\type = #__type_Spin
+               *this\bar\PageChange( ) = 1
+            EndIf
+            
+            ; - Create Scroll
+            If *this\type = #__type_Scroll
+               *this\color\back  = $FFF9F9F9 ; - 1
+               *this\color\front = $FFFFFFFF
+               
+               If is_integral_( *this )
+                  If *this\bar\vertical
+                     *this\class = class + "-v"
+                  Else
+                     *this\class = class + "-h"
+                  EndIf
+               EndIf
+               
+               *BB1\color = _get_colors_( )
+               *BB2\color = _get_colors_( )
+               *SB\color  = _get_colors_( )
+               
+               ;
+               If Not constants::BinaryFlag( *this\Flag, #__flag_nobuttons ) 
+                  *BB1\size = - 1
+                  *BB2\size = - 1
+               EndIf
+               *SB\size = size
+               
+               *BB1\round = *this\round
+               *BB2\round = *this\round
+               *SB\round  = *this\round
+               
+               *BB1\arrow\type = #__arrow_type 
+               *BB2\arrow\type = *BB1\arrow\type 
+               
+               *BB1\arrow\size = DPIScaled( #__arrow_size )
+               *BB2\arrow\size = DPIScaled( #__arrow_size )
+               *SB\arrow\size  = DPIScaled( 3 )
+            EndIf
+            
+            ; Create Spin
+            If *this\type = #__type_Spin
+               *this\color\back   = - 1
+               *this\color\_alpha = 255
+               *this\color\back   = $FFFFFFFF
+               
+               *BB1\color = _get_colors_( )
+               *BB2\color = _get_colors_( )
+               
+               If *this\flag & #__spin_Plus
+                  *this\flag = Flag | #__flag_TextCenter
+               Else
+                  *BB1\arrow\size = DPIScaled( #__arrow_size )
+                  *BB2\arrow\size = DPIScaled( #__arrow_size )
+                  
+                  *BB1\arrow\type = #__arrow_type
+                  *BB2\arrow\type = *BB1\arrow\type
+               EndIf
+            EndIf
+            
+            ; - Create Track
+            If *this\type = #__type_Track
+               *this\color\back = - 1
+               *BB1\color       = _get_colors_( )
+               *BB2\color       = *BB1\color
+               *SB\color        = *BB1\color
+               
+               *SB\arrow\size = DPIScaled( #__arrow_size )
+               *SB\arrow\type = #__arrow_type
+               
+               *BB1\round = dpi_scale_two
+               *BB2\round = *BB1\round
+               *SB\round  = *this\round
+               
+               If *this\round < DPIScaled(7)
+                  *SB\size = DPIScaled(9)
+               Else
+                  *SB\size = size
+                  *SB\size - Bool( Not *SB\size % 2)
+               EndIf
+               
+               ; button draw color
+               *SB\ColorState( ) = #__s_2
+               
+               If Not constants::BinaryFlag( *this\flag, #PB_TrackBar_Ticks )
+                  If *this\bar\invert
+                     *BB2\ColorState( ) = #__s_2
+                  Else
+                     *BB1\ColorState( ) = #__s_2
+                  EndIf
+               EndIf
+            EndIf
+            
+            ; - Create Tab
+            If *this\type = #__type_MenuBar Or
+               *this\type = #__type_PopupBar Or
+               *this\type = #__type_ToolBar Or
+               *this\type = #__type_TabBar 
+               ;
+               ;;*this\TextChange( ) = 1
+               *this\color\back = - 1
+               *BB1\color       = _get_colors_( )
+               *BB2\color       = _get_colors_( )
+               ;*SB\color = _get_colors_( )
+               
+               If constants::BinaryFlag( *this\Flag, #__bar_buttonsize, #False )
+                  *SB\size  = size
+                  *BB1\size = DPIScaled( #__bar_button_size )
+                  *BB1\size - Bool( Not *BB1\size % 2) 
+                  *BB2\size = *BB1\size
+               EndIf
+               
+               *BB1\round = *BB1\size/2
+               *BB2\round = *BB1\round
+               *SB\round  = *this\round
+               
+               *BB1\arrow\type = 2 ; #__arrow_type 
+               *BB2\arrow\type = 2 ; #__arrow_type 
+               
+               *BB1\arrow\size = DPIScaled( #__arrow_size )
+               *BB2\arrow\size = DPIScaled( #__arrow_size )
+               ;*SB\arrow\size = DPIScaled( 3 )
+            EndIf
+            
+            ; - Create Progress
+            If *this\type = #__type_Progress
+               *this\color         = _get_colors_( )
+               *this\TextChange( ) = #True
+               *this\text\invert = *this\bar\invert
+               *this\text\vertical = *this\bar\vertical
+            EndIf
+            
+            ; - Create Splitter
+            If *this\type = #__type_Splitter
+               *this\container  = - 1
+               *this\color\back = - 1
+               ;
+               *SB\round = dpi_scale_two
+               *SB\size = bar_splitter_size 
+               ;
+               If constants::BinaryFlag( *this\Flag, #PB_Splitter_FirstFixed )
+                  *this\bar\fixed = 1
+               ElseIf constants::BinaryFlag( *this\Flag, #PB_Splitter_SecondFixed )
+                  *this\bar\fixed = 2
+               EndIf
+               ;
+               *this\split_1( ) = *param_1
+               *this\split_2( ) = *param_2
+               ;
+               *this\bar\button[1]\hide = Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
+               *this\bar\button[2]\hide = Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
+               ;
+               If IsGadget( *this\split_1( ) )
+                  Debug "bar_is_first_gadget_ " + IsGadget( *this\split_1( ) )
+                  parent::set( *this\split_1( ), *this\root\canvas\GadgetID )
+               ElseIf *this\split_1( ) > 65535
+                  SetParent( *this\split_1( ), *this )
+               EndIf
+               ;
+               If IsGadget( *this\split_2( ) )
+                  Debug "bar_is_second_gadget_ " + IsGadget( *this\split_2( ) )
+                  parent::set( *this\split_2( ), *this\root\canvas\GadgetID )
+               ElseIf *this\split_2( ) > 65535
+                  SetParent( *this\split_2( ), *this )
+               EndIf
+            EndIf
+            ;
+         EndIf
+         
+         
+         ; COLOR
+         If constants::BinaryFlag( *this\flag, #__flag_Transparent )
+            *this\color\back =- 1
+         EndIf
+         
+         ;-\\ CURSOR init
+         If *this\type = #__type_Splitter
+            If *this\bar\vertical
+               *this\cursor[1] = cursor::#__cursor_SplitUpDown
+               *this\cursor[2] = cursor::#__cursor_SplitUp
+               *this\cursor[3] = cursor::#__cursor_SplitDown
+            Else
+               *this\cursor[1] = cursor::#__cursor_SplitLeftRight
+               *this\cursor[2] = cursor::#__cursor_SplitLeft
+               *this\cursor[3] = cursor::#__cursor_SplitRight
+            EndIf
+         ElseIf *this\type = #__type_HyperLink
+            *this\cursor[1] = cursor::#__cursor_Hand
+            *this\cursor[2] = cursor::#__cursor_IBeam
+         ElseIf *this\type = #__type_Editor Or
+                *this\type = #__type_String
+            *this\cursor[1] = cursor::#__cursor_IBeam
+         EndIf
+         If *this\cursor[1]
+            *this\cursor[0] = *this\cursor[1]
+         EndIf
+         
+         ; create integrall childrens   
+         If *this\type = #__type_ComboBox
+            ; If constants::BinaryFlag( *this\flag, #PB_ComboBox_Editable )
+            If constants::BinaryFlag( *this\flag, #__flag_Textreadonly, 0 )
+               *this\stringbar = Create( *this, "ComboString", #__type_String,
+                                         0, 0, 0, 0, #Null$, #__flag_child | #__flag_Borderless|*this\flag )
+            EndIf
+         EndIf
+         If *this\type = #__type_Spin
+            SetAttribute( *this, #__bar_buttonsize, Size + 5 )
+            *this\stringbar = Create( *this, *this\class + "_STRING",
+                                      #__type_String, 0, 0, 0, 0, "", ;Str(*param_1),
+                                      #__flag_child | #__flag_Textnumeric | #__flag_Borderless | *this\flag&~(#__flag_invert|#__flag_vertical) )
+         EndIf
+         
+         ; set PADDING
+         If *this\type = #__type_Tree Or
+            *this\type = #__type_ListView Or
+            *this\type = #__type_ListIcon Or
+            *this\type = #__type_ExplorerList Or
+            *this\type = #__type_Properties
+            ;
+            *this\padding\x  = DPIScaled(4)
+         EndIf
+         If *this\type = #__type_Editor
+            *this\padding\x = DPIScaled(1)
+         EndIf
+         If *this\type = #__type_Text
+            *this\padding\x = DPIScaled(2)
+         EndIf
+         If *this\type = #__type_ButtonImage Or
+            *this\type = #__type_Button
+            *this\padding\x = DPIScaled(4)
+            *this\padding\y = DPIScaled(4)
+         EndIf
+         If *this\type = #__type_ComboBox
+            If Not *this\stringbar
+               *this\padding\x = DPIScaled(4)
+               *this\padding\y = DPIScaled(4)
+            EndIf
+         EndIf
+         If *this\type = #__type_String
+            *this\padding\x = DPIScaled(3)
+            *this\text\caret\x = *this\padding\x
+         EndIf
+         If *this\togglebox And
+            *this\togglebox\width
+            *this\padding\x = *this\togglebox\width + DPIScaled(8)
+         EndIf
+         
+         ; set FLAG
+         If *this\type = #__type_Tree Or
+            *this\type = #__type_ListView Or
+            *this\type = #__type_ListIcon Or
+            *this\type = #__type_ExplorerList Or
+            *this\type = #__type_Properties
+            ;
+            If constants::BinaryFlag( *this\Flag, #__flag_nolines )
+               *this\flag & ~ #__flag_nolines
+            Else
+               *this\Flag | #__flag_nolines
+            EndIf
+            
+            If constants::BinaryFlag( *this\Flag, #__flag_NoButtons ) 
+               *this\flag & ~ #__flag_NoButtons
+            Else
+               *this\Flag | #__flag_NoButtons
+            EndIf
+         EndIf
+         If *this\Flag
+            Flag( *this, *this\Flag, #True )
+         EndIf
+         
+         ; set ATTRIBUTE
+         If *this\type = #__type_MenuBar Or
+            *this\type = #__type_PopupBar Or
+            *this\type = #__type_ToolBar Or
+            *this\type = #__type_TabBar Or
+            *this\type = #__type_Progress Or
+            *this\type = #__type_Scroll Or
+            *this\type = #__type_Track Or
+            *this\type = #__type_Spin
+            ;
+            If *param_1 ; > 0 ; в окнах работает так
+                        ; track;progress
+               If *this\type = #__type_Progress Or
+                  *this\type = #__type_Scroll Or
+                  *this\type = #__type_Track Or 
+                  *this\type = #__type_Spin
+                  ;
+                  *this\bar\page\pos = *param_1
+               EndIf
+               SetAttribute( *this, #__bar_minimum, *param_1 )
+            EndIf
+            If *param_2
+               SetAttribute( *this, #__bar_maximum, *param_2 )
+            EndIf
+            If *param_3
+               SetAttribute( *this, #__bar_pageLength, *param_3 )
+            EndIf
+         EndIf
+         If *this\type = #__type_ButtonImage Or 
+            *this\type = #__type_Button
+            ;
+            SetAttribute( *this, #PB_Button_Image, *param_1 )
+         EndIf
+         If *this\type = #__type_image
+            SetState( *this, *param_1 )
+         EndIf
+         
+         ; COLUMN
+         If *this\row
+            ;  If *this\type = #__type_ListIcon
+            AddColumn( *this, 0, Text, *param_1 )
+            ; EndIf
+         EndIf
+         
+         ; RESIZE
+         If is_integral_( *this )
+            If *this\type = #__type_Scroll
+               If *this\parent
+                  If *this\bar\vertical
+                     *this\parent\scroll\v = *this
+                     If *this\parent\type <> #__type_String
+                        Resize( *this, *this\parent\container_width( ) - Width, Y, Width, *this\parent\container_height( ) - Width + Bool(*this\Round) * (Width / 4) )
+                     EndIf
+                  Else
+                     *this\parent\scroll\h = *this
+                     If *this\parent\type <> #__type_String
+                        Resize( *this, X, *this\parent\container_height( ) - Height, *this\parent\container_width( ) - Height + Bool(*this\Round) * (Height / 4), Height )
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         Else
+            If *this\root And 
+               Width And Height And 
+               Not *this\root\width And 
+               Not *this\root\height
+               *this\autosize = 1
+               Debug " canvas gadget resize"
+               ResizeGadget( *this\root\canvas\gadget, X, Y, Width, Height )
+            Else
+               If Not ( *this\autosize And is_root_( *this ))
+                  *this\frame_x( )      = #PB_Ignore
+                  *this\frame_y( )      = #PB_Ignore
+                  *this\frame_width( )  = #PB_Ignore
+                  *this\frame_height( ) = #PB_Ignore
+               EndIf
+               
+               If Not ( *this\autosize And is_root_( *this ))
+                  Resize( *this, X, Y, Width, Height )
+               Else
+                  If *this\type = #__type_Splitter
+                     bar_update( *this )
+                  EndIf
+               EndIf
+               
+            EndIf
+         EndIf
+         
+         ; set content ALIGNMENT
+         If *this\type = #__type_Text Or
+            *this\type = #__type_Editor Or
+            *this\type = #__type_String Or
+            *this\type = #__type_Image Or
+            *this\type = #__type_Button Or 
+            *this\type = #__type_ButtonImage Or
+            *this\type = #__type_Option Or
+            *this\type = #__type_CheckBox Or
+            *this\type = #__type_ComboBox Or
+            *this\type = #__type_HyperLink Or
+            *this\type = #__type_Progress
+               
+            set_align_content( *this\picture, *this\flag )
+            
+            If *this\type = #__type_ComboBox Or
+               *this\type = #__type_Progress
+               
+               If constants::BinaryFlag( *this\flag, #__align_Text )
+                  set_align_content( *this\text, *this\flag )
+               EndIf
+            Else
+               If Not ( constants::BinaryFlag( *this\flag, #__align_image ) And 
+                        constants::BinaryFlag( *this\flag, #__align_Text ))
+                  set_align_content( *this\text, *this\flag )
+               EndIf
+            EndIf
+         EndIf
+         ;
+         ; set text flag
+         If *this\type = #__type_ComboBox Or 
+            *this\type = #__type_Progress Or
+            *this\type = #__type_Text Or
+            *this\type = #__type_Editor Or
+            *this\type = #__type_String Or
+            *this\type = #__type_ButtonImage Or
+            *this\type = #__type_Button Or 
+            *this\type = #__type_Option Or
+            *this\type = #__type_CheckBox Or
+            *this\type = #__type_HyperLink
+            
+            set_text_flag( *this, Text, *this\flag )
+         EndIf
+         If *this\type = #__type_Frame
+            set_text_flag( *this, Text, *this\flag, 12, - *this\fs[2] - 1 )
+         EndIf
+         
+         ;\\ Scroll bars
+         If constants::BinaryFlag( *this\Flag, #__flag_NoScrollBars, #False )
+            If *this\type = #__type_String
+               
+               bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__bar_button_size, 0)
+               
+               *this\scroll\v\hide  = 1
+               *this\scroll\h\hide  = 1
+               *this\scroll\v\width = 0
+               *this\scroll\h\height = 0
+               
+            ElseIf *this\type = #__type_Editor Or
+                   *this\type = #__type_Tree Or
+                   *this\type = #__type_ListView Or
+                   *this\type = #__type_ListIcon Or
+                   *this\type = #__type_ExplorerList Or
+                   *this\type = #__type_Properties
+               
+               bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
+            ElseIf *this\type = #__type_MDI Or
+                   *this\type = #__type_ScrollArea
+               
+               bar_area_create( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
+            ElseIf *this\type = #__type_image
+               
+               bar_area_create( *this, 1, *this\picture\width, *this\picture\height, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
+            EndIf
+         EndIf
+         
+         ;          *this\text\multiLine = 1
+         ;          Debug *this\text\multiLine
+         If *this\type = #__type_ScrollArea
+            SetAttribute( *this, #PB_ScrollArea_ScrollStep, *param_3 )
+         EndIf
+         
+         ;          AddEvents( *this, #__event_Create )
+         Widget( ) = *this
+         ProcedureReturn *this
+      EndProcedure
+      
+      Procedure.i Scroll( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, PageLength.l, Flag.q = 0, round.l = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Scroll, X, Y, Width, Height, #Null$, Flag, min, max, pagelength, #__bar_button_size, round, 1 )
+      EndProcedure
+      
+      Procedure.i Track( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, Flag.q = 0, scrollstep.d = 1.0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Track, X, Y, Width, Height, #Null$, Flag, min, max, 0, #__bar_button_size, #__ButtonRound, scrollstep )
+      EndProcedure
+      
+      Procedure.i Progress( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, Flag.q = 0, round.l = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Progress, X, Y, Width, Height, #Null$, Flag, min, max, 0, 0, round, 1 )
+      EndProcedure
+      
+      Procedure.i Splitter( X.l, Y.l, Width.l, Height.l, First.i, Second.i, Flag.q = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Splitter, X, Y, Width, Height, #Null$, Flag, First, Second, 0, 0, 0, 1 )
+      EndProcedure
+      
+      Procedure.i Spin( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, Flag.q = 0, round.l = 0, Increment.d = 1.0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Spin, X, Y, Width, Height, #Null$, Flag, min, max, 0, #__bar_button_size, round, Increment )
+      EndProcedure
+      
+      Procedure.i Tab( X.l, Y.l, Width.l, Height.l, Flag.q = 0, round.l = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_TabBar, X, Y, Width, Height, #Null$, Flag, 0, 0, 0, 40, round, 40 )
+      EndProcedure
+      
+      Procedure.i Tree( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Tree, X, Y, Width, Height, "", Flag )
+      EndProcedure
+      
+      Procedure.i ListView( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ListView, X, Y, Width, Height, "", Flag | #__flag_nobuttons | #__flag_nolines )
+      EndProcedure
+      
+      Procedure.i ListIcon( X.l, Y.l, Width.l, Height.l, ColumnTitle.s, ColumnWidth.i, Flag.q = 0 )
+         ;  ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_tree, x, y, width, height, "", Flag ); #__type_ListIcon
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ListIcon, X, Y, Width, Height, ColumnTitle, Flag, ColumnWidth ); #__type_ListIcon
+      EndProcedure
+      
+      Procedure.i ExplorerList( X.l, Y.l, Width.l, Height.l, Directory.s, Flag.q = 0 )
+         ;Protected *this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, #__type_ExplorerList, x, y, width, height, "", Flag | #__flag_nobuttons | #__flag_nolines )
+         Protected *this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, #__type_ListIcon, X, Y, Width, Height, "", Flag | #__flag_nobuttons | #__flag_nolines )
+         
+         ;\\
+         AddColumn(*this, 0, "Name", 200)
+         AddColumn(*this, 0, "Size", 100)
+         AddColumn(*this, 0, "Type", 100)
+         AddColumn(*this, 0, "Modified", 100)
+         
+         ;\\
+         If Directory.s = ""
+            Directory.s = GetHomeDirectory() ; Lists all files and folder in the home directory
+         EndIf
+         Protected Size$, Type$, Modified$
+         
+         If ExamineDirectory(0, Directory.s, "*.*")  
+            
+            While NextDirectoryEntry(0)
+               If DirectoryEntryType(0) = #PB_DirectoryEntry_Directory
+                  Type$ = "[Directory] "
+                  Size$ = "" ; A directory doesn't have a size
+                  Modified$ = FormatDate("%mm/%dd/%yyyy", DirectoryEntryDate(0, #PB_Date_Modified))
+                  AddItem(*this, -1, DirectoryEntryName(0) +#LF$+ Size$ +#LF$+ Type$ +#LF$+ Modified$)
+               EndIf
+            Wend
+            FinishDirectory(0)
+         EndIf
+         
+         If ExamineDirectory(0, Directory.s, "*.*")  
+            While NextDirectoryEntry(0)
+               If DirectoryEntryType(0) = #PB_DirectoryEntry_File
+                  Type$ = "[File] "
+                  Size$ = " (Size: " + DirectoryEntrySize(0) + ")"
+                  Modified$ = FormatDate("%mm/%dd/%yyyy", DirectoryEntryDate(0, #PB_Date_Modified))
+                  AddItem(*this, -1, DirectoryEntryName(0) +#LF$+ Size$ +#LF$+ Type$ +#LF$+ Modified$)
+               EndIf
+            Wend
+            
+            FinishDirectory(0)
+         EndIf
+         ProcedureReturn *this
+      EndProcedure
+      
+      Procedure.i Properties( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Properties, X, Y, Width, Height, "", Flag )
+      EndProcedure
+      
+      Procedure.i Editor( X.l, Y.l, Width.l, Height.l, Flag.q = 0, round.i = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Editor, X, Y, Width, Height, "", Flag, 0, 0, 0, 0, round, 0 )
+      EndProcedure
+      
+      Procedure.i String( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, round.l = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_String, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, round, 0 )
+      EndProcedure
+      
+      Procedure.i Text( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, round.l = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Text, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, round, 0 )
+      EndProcedure
+      
+      Procedure.i Button( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, round.l = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Button, X, Y, Width, Height, Text, Flag, (-1), 0, 0, 0, round )
+      EndProcedure
+      
+      Procedure.i ButtonImage( X.l, Y.l, Width.l, Height.l, img.i = -1 , Flag.q = 0, round.l = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ButtonImage, X, Y, Width, Height, "", Flag, (img), 0, 0, 0, round )
+      EndProcedure
+      
+      Procedure.i HyperLink( X.l, Y.l, Width.l, Height.l, Text.s, Color.i, Flag.q = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_HyperLink, X, Y, Width, Height, Text, Flag, Color, 0, 0, 0, 0, 0 )
+      EndProcedure
+      
+      Procedure.i Option( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Option, X, Y, Width, Height, Text, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
+      EndProcedure
+      
+      Procedure.i CheckBox( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_CheckBox, X, Y, Width, Height, Text, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
+      EndProcedure
+      
+      Procedure.i ComboBox( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ComboBox, X, Y, Width, Height, "", Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
+      EndProcedure
+      
+      Procedure.i MDI( X.l, Y.l, Width.l, Height.l, Flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_MDI, X, Y, Width, Height, #Null$, Flag | #__flag_nogadgets, 0, 0, 0, #__bar_button_size, 0, 1 )
+      EndProcedure
+      
+      Procedure.i Panel( X.l, Y.l, Width.l, Height.l, Flag.q = #__flag_BorderFlat )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Panel, X, Y, Width, Height, #Null$, Flag | #__flag_noscrollbars, 0, 0, 0, #__bar_button_size, 0, 0 )
+      EndProcedure
+      
+      Procedure.i Container( X.l, Y.l, Width.l, Height.l, Flag.q = #__flag_BorderFlat )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Container, X, Y, Width, Height, #Null$, Flag | #__flag_noscrollbars, 0, 0, 0, #__bar_button_size, 0, 0 )
+      EndProcedure
+      
+      Procedure.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, Flag.q = #__flag_BorderFlat )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ScrollArea, X, Y, Width, Height, #Null$, Flag, ScrollAreaWidth, ScrollAreaHeight, ScrollStep, #__bar_button_size, 0, ScrollStep )
+      EndProcedure
+      
+      Procedure.i Frame( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = #__flag_nogadgets )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Frame, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, 7 )
+      EndProcedure
+      
+      Procedure.i Image( X.l, Y.l, Width.l, Height.l, img.i, Flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_image, X, Y, Width, Height, #Null$, Flag, img, 0, 0, #__bar_button_size, 0, 1 )
+      EndProcedure
+      
+      
+      ;-
+      Procedure   Open( window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, Flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
+         Protected result, w, g, canvasflag = #PB_Canvas_Keyboard, UseGadgetList, *root._s_root 
+         
+         ; init
+         If Not MapSize( roots( ) )
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+               Events::SetCallback( @EventHandler( ) )
+            CompilerEndIf
+         EndIf
+         
+         If PB(IsWindow)( Window )
+            w = WindowID( Window )
+            ;
+            ;             If constants::BinaryFlag( Flag, #PB_window_NoGadgets )
+            ;                flag &~ #PB_window_NoGadgets
+            ;             EndIf
+            If constants::BinaryFlag( Flag, #PB_Canvas_Container ) 
+               Flag &~ #PB_Canvas_Container
+               canvasflag | #PB_Canvas_Container
+            EndIf
+            If Width = #PB_Ignore And 
+               Height = #PB_Ignore
+               canvasflag | #PB_Canvas_Container
+            EndIf
+            
+            Protected IsWindow
+            If Not constants::BinaryFlag( Flag, #PB_Window_BorderLess ) 
+               If Width = #PB_Ignore
+               Else
+                  ;Width + #__window_FrameSize*2
+                  IsWindow = 1
+               EndIf
+               If Height = #PB_Ignore
+               Else
+                  ; пример align(autosize).pb
+                  ;Height + #__window_FrameSize*2 + #__window_CaptionHeight
+                  IsWindow = 1
+               EndIf
+            EndIf
+         Else
+            If constants::BinaryFlag( Flag, #PB_Window_NoGadgets ) 
+               Flag &~ #PB_Window_NoGadgets
+            Else
+               canvasflag | #PB_Canvas_Container
+            EndIf
+            ;
+            ; then bug in windows
+            If Window = #PB_Any
+               Window = 300 + MapSize( roots( ) )
+            EndIf
+            ;
+            w = OpenWindow( Window, X, Y, Width, Height, title$, Flag, *parentID )
+            If Window = #PB_Any 
+               Window = w 
+               w = WindowID( Window ) 
+            EndIf
+            ;
+            If constants::BinaryFlag( Flag, #PB_Window_BorderLess )
+               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  If CocoaMessage(0, w, "hasShadow") = 0
+                     CocoaMessage(0, w, "setHasShadow:", 1)
+                  EndIf
+                  ; https://www.purebasic.fr/english/viewtopic.php?p=393084#p393084
+                  CocoaMessage(0, w, "setStyleMask:", CocoaMessage(0, w, "styleMask")&~#NSTitledWindowMask)
+               CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+                  If GetClassLongPtr_( w, #GCL_STYLE ) & #CS_DROPSHADOW = 0
+                     SetClassLongPtr_( w, #GCL_STYLE, #CS_DROPSHADOW )
+                  EndIf
+                  SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_BORDER) 
+                  SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
+                  SetWindowLongPtr_(w,#GWL_EXSTYLE,GetWindowLongPtr_(w,#GWL_EXSTYLE)|#WS_EX_NOPARENTNOTIFY) 
+               CompilerElse
+                  ;  
+               CompilerEndIf
+            EndIf
+            ;
+            X = 0
+            Y = 0
+         EndIf
+         
+         ;\\ get a handle from the previous usage list
+         If w
+            UseGadgetList = UseGadgetList( w )
+         EndIf
+         ;
+         If X = #PB_Ignore : X = 0 : EndIf
+         If Y = #PB_Ignore : Y = 0 : EndIf
+         ;
+         If Width = #PB_Ignore
+            Width = WindowWidth( Window, #PB_Window_InnerCoordinate )
+            If X <> #PB_Ignore
+               If X > 0 And X < 50 
+                  Width - X * 2
+               EndIf
+            EndIf
+         EndIf
+         ;
+         If Height = #PB_Ignore
+            Height = WindowHeight( Window, #PB_Window_InnerCoordinate )
+            If Y <> #PB_Ignore
+               If Y > 0 And Y < 50 
+                  Height - Y * 2
+               EndIf
+            EndIf
+         EndIf
+         ;
+         If PB(IsGadget)(Canvas)
+            g = GadgetID( Canvas )
+            
+            ; UnbindEvent( #PB_Event_SizeWindow, @EventResize( ), window )
+         Else
+            If test_canvas_focus_draw = 1
+               canvasflag|#PB_Canvas_DrawFocus
+            EndIf
+            
+            g = CanvasGadget( Canvas, X, Y, Width, Height, canvasflag);|#PB_Canvas_Container ) : CloseGadgetList()
+            If Canvas = - 1 : Canvas = g : g = PB(GadgetID)(Canvas) : EndIf
+            
+            If constants::BinaryFlag( canvasflag, #PB_Canvas_Container )
+               ; BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
+            EndIf
+         EndIf
+         ;
+         If UseGadgetList And w <> UseGadgetList
+            UseGadgetList( UseGadgetList )
+         EndIf
+         
+         ;
+         If Not FindMapElement( roots( ), Str( g ) ) ; ChangeCurrentCanvas(g)
+            result     = AddMapElement( roots( ), Str( g ) )
+            roots( )   = AllocateStructure( _s_root )
+            Root( )    = roots( )
+            *root      = roots( )
+            
+            ;
+            ;*root\address   = result
+            *root\type      = #__type_Root
+            *root\container = 1
+            *root\class     = "root"
+            ;
+            ; *root\parent   = Opened( )
+            *root\root      = *root
+            *root\window    = *root ; если это убрать то функцию set active надо изменить
+                                    ;
+            *root\canvas\GadgetID = g
+            *root\canvas\window   = Window
+            *root\canvas\gadget   = Canvas
+            
+            ;
+            *root\color       = _get_colors_( )
+            If constants::BinaryFlag( Flag, #__flag_Transparent )
+               *root\color\back  = - 1
+            EndIf
+            ;
+            SetFont( *root, #PB_Default )
+            ; Setimage( *root, #PB_Default )
+            *root\picture\image = - 1
+            
+            ;\\
+            If Width Or Height
+               *root\bindresize = 1
+               Resize( *root, #PB_Ignore, #PB_Ignore, Width, Height )
+            EndIf
+            
+            ;\\
+            If Not constants::BinaryFlag( Flag, #PB_Window_NoGadgets ) 
+               *root\Beforeroot( ) = Opened( )
+               If *root\Beforeroot( )
+                  *root\Beforeroot( )\Afterroot( ) = *root
+               EndIf
+               Opened( ) = *root
+               ;
+               ; OpenList( *root)
+            EndIf
+         EndIf
+         
+         ;
+         If g
+            SetWindowData( Window, Canvas )
+            
+            ;
+            BindGadgetEvent( Canvas, @CanvasEvents( ))
+            CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+               Events::BindGadget( Canvas, @EventHandler( ))
+            CompilerEndIf
+            ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
+            ;
+            BindEvent( #PB_Event_CloseWindow, @EventClose( ), Window )
+            BindEvent( #PB_Event_RestoreWindow, @EventRestore( ), Window )
+            BindEvent( #PB_Event_MaximizeWindow, @EventMaximize( ), Window )
+            BindEvent( #PB_Event_MinimizeWindow, @EventMinimize( ), Window )
+            BindEvent( #PB_Event_Repaint, @EventRepaint( ), Window )
+            If constants::BinaryFlag( Flag, #PB_Window_SizeGadget )
+               BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
+            EndIf
+            
+            ;\\ z - order
+            CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+               ;SetWindowLongPtr_( g, #GWL_STYLE, GetWindowLongPtr_( g, #GWL_STYLE ) | #WS_CLIPCHILDREN )
+               SetWindowLongPtr_( g, #GWL_STYLE, GetWindowLongPtr_( g, #GWL_STYLE ) | #WS_CLIPSIBLINGS )
+               SetWindowPos_( g, #GW_HWNDFIRST, 0, 0, 0, 0, #SWP_NOMOVE | #SWP_NOSIZE )
+               
+               ; RedrawWindow_(WindowID(a), 0, 0, #RDW_ERASE | #RDW_FRAME | #RDW_INVALIDATE | #RDW_ALLCHILDREN)
+               
+               RemoveKeyboardShortcut( Window, #PB_Shortcut_Tab )
+               
+               ;                ; transparent canvas
+               ;                SetWindowLongPtr_(g, #GWL_EXSTYLE, #WS_EX_LAYERED) 
+               ;                SetLayeredWindowAttributes_(g, RGB( Red(#White), Green(#White), Blue(#White)), 0, #LWA_COLORKEY)
+               ;                ; SetLayeredWindowAttributes_(g, RGB( Red(#Black), Green(#Black), Blue(#Black)), 0, #LWA_COLORKEY)
+            CompilerEndIf
+            
+            ;\\
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+               ; CocoaMessage(0, g, "setBoxType:", #NSBoxCustom)
+               ; CocoaMessage(0, g, "setBorderType:", #NSLineBorder)
+               ; CocoaMessage(0, g, "setBorderType:", #NSGrooveBorder)
+               ; CocoaMessage(0, g, "setBorderType:", #NSBezelBorder)
+               ; CocoaMessage(0, g, "setBorderType:", #NSNoBorder)
+               
+               ;;;CocoaMessage(0, w, "makeFirstResponder:", g)
+               
+               ; CocoaMessage(0, GadgetID(0), "setFillColor:", CocoaMessage(0, 0, "NSColor colorWithPatternimg:", imageiD(0)))
+               ; CocoaMessage(0, WindowID(w), "setBackgroundColor:", CocoaMessage(0, 0, "NSColor colorWithPatternimg:", imageiD(0)))
+               ; CocoaMessage(0, g,"setFocusRingType:",1)
+            CompilerEndIf
+            
+            
+            
+            ;\\ 
+            If *root
+               If constants::BinaryFlag( Flag, #PB_Window_NoActivate )
+                  *root\focus = #__s_nofocus
+               Else
+                  If SetActive( *root )
+                     ; Post( *root, #__event_Focus )
+                  EndIf
+                  SetActiveGadget( *root\canvas\gadget )
+               EndIf
+               ;
+               PostEvent( #PB_Event_SizeWindow, window, Canvas ) ; Bug PB
+               PostReDraw( *root )
+            EndIf
+         EndIf
+         
+         Widget( ) = *root
+         ProcedureReturn *root
+      EndProcedure
+      
+      Procedure.i Window( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, *parent._s_WIDGET = 0 )
+         Protected fs = (#__window_FrameSize)
+         Protected barHeight = ( #__window_CaptionHeight )
+         Protected fs1 = DPIScaled(fs)
+         Protected barHeight1 = DPIScaled( barHeight )
+         
+         ;Protected *this.allocate( Widget )
+         If Opened( )
+            Protected *root._s_root = Opened( )\root
+         EndIf
+         
+         Protected *this._s_WIDGET
+         If MapSize( roots( ) )
+            If Not ListSize( widgets( ) ) And
+               constants::BinaryFlag( Flag, #__flag_autosize ) 
+               
+               X              = 0
+               Y              = 0
+               Width          = *root\width
+               Height         = *root\height
+               *root\autosize = #True
+               *this          = *root
+               
+               ;                   Protected w = WindowID(*root\canvas\window )
+               ;                   
+               ;                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+               ;                   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+               ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_BORDER) 
+               ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
+               ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_SIZEBOX) 
+               ;                      SetWindowLongPtr_(w,#GWL_EXSTYLE,GetWindowLongPtr_(w,#GWL_EXSTYLE) | #WS_EX_TOOLWINDOW)
+               ;                   CompilerElse
+               ;                      ;  
+               ;                   CompilerEndIf
+            Else
+               *this.allocate( Widget )
+            EndIf
+            ;\\ open root list
+         Else
+            *this = Open( #PB_Any, X, Y, Width + fs * 2, Height + fs * 2 + barHeight, Text,  #PB_Window_BorderLess, *parent )
+            X     = 0
+            Y     = 0
+            Protected autosize = #True
+         EndIf
+         
+         ;\\
+         If X = #PB_Ignore
+            X = window_pos_x + mouse( )\steps
+         EndIf
+         If Y = #PB_Ignore
+            Y = window_pos_y + mouse( )\steps
+         EndIf
+         window_pos_x = X + fs
+         window_pos_y = Y + fs + barHeight
+         
+         ;\\
+         If constants::BinaryFlag( Flag, #__flag_child )
+            If *parent And *parent\type = #__type_MDI
+               *this\child =- 1
+            Else
+               *this\child = 1
+            EndIf
+         EndIf
+         
+         If *parent
+            If *root = *parent
+               *root\parent = *this
+            EndIf
+            
+         Else
+            *parent = *root
+         EndIf
+         
+         
+         ;\\
+         *this\font     = - 1
+         *this\type            = #__type_window
+         *this\frame_x( )      = #PB_Ignore
+         *this\frame_y( )      = #PB_Ignore
+         *this\frame_width( )  = #PB_Ignore
+         *this\frame_height( ) = #PB_Ignore
+         
+         ;\\ replace pb flag
+         Flag = FromPBFlag( *this\type, Flag )
+         
+         Static count
+         *this\flag      = Flag
+         *this\create    = #True
+         *this\class     = #PB_Compiler_Procedure ;+""+ count
+         *this\container = 2
+         count + 1
+         
+         ;
+         ;       *this\round = round
+         ;
+         *this\color      = _get_colors_( )
+         *this\color\back = $FFF9F9F9
+         If constants::BinaryFlag( Flag, #__flag_Transparent ) 
+            *this\color\back = - 1
+         EndIf
+         
+         *this\caption\_padding = 4
+         *this\caption\color    = _get_colors_( )
+         
+         ; border frame size
+         *this\fs = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * fs1
+         
+         
+         ;
+         *this\CloseButton( )\hide    = constants::BinaryFlag( *this\flag, #PB_Window_SystemMenu, #False )
+         *this\MaximizeButton( )\hide = constants::BinaryFlag( *this\flag, #PB_Window_MaximizeGadget, #False )
+         *this\MinimizeButton( )\hide = constants::BinaryFlag( *this\flag, #PB_Window_MinimizeGadget, #False )
+         *this\HelpButton( )\hide     = 1
+         
+         
+         If *this\MaximizeButton( )\hide = 0 Or
+            *this\MinimizeButton( )\hide = 0 Or
+            *this\CloseButton( )\hide = 0
+            *this\caption\hide = 0
+         Else
+            *this\caption\hide = constants::BinaryFlag( *this\flag, #PB_Window_TitleBar, #False )
+         EndIf
+         
+         If *this\caption\hide
+            *this\TitleBarHeight = 0
+            *this\fs[2] = 0
+         Else
+            *this\fs[2] = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * barHeight1
+            *this\TitleBarHeight = *this\fs[2]
+            
+            *this\padding\x = DPIScaled(5)
+            *this\TitleText( )\string    = Text
+         EndIf
+         
+         *this\CloseButton( )\color    = colors::*this\red
+         *this\MaximizeButton( )\color = colors::*this\blue
+         *this\MinimizeButton( )\color = colors::*this\green
+         
+         *this\CloseButton( )\ColorState( )    = 1
+         *this\MaximizeButton( )\ColorState( ) = 1
+         *this\MinimizeButton( )\ColorState( ) = 1
+         
+         
+         *this\CloseButton( )\width    = DPIScaled( #__bar_button_size - 2 )
+         *this\CloseButton( )\height   = *this\CloseButton( )\width
+         *this\CloseButton( )\round    = *this\CloseButton( )\width / 2
+         
+         *this\MaximizeButton( )\width  = *this\CloseButton( )\width
+         *this\MaximizeButton( )\height = *this\CloseButton( )\height
+         *this\MaximizeButton( )\round = *this\CloseButton( )\round
+         
+         *this\MinimizeButton( )\width  = *this\CloseButton( )\width
+         *this\MinimizeButton( )\height = *this\CloseButton( )\height
+         *this\MinimizeButton( )\round = *this\CloseButton( )\round
+         
+         *this\HelpButton( )\width  = *this\CloseButton( )\width * 2
+         *this\HelpButton( )\height = *this\CloseButton( )\height
+         *this\HelpButton( )\round     = *this\CloseButton( )\round
+         
+         
+         
+         
+         ; Background img
+         *this\picture\image = - 1
+         
+         ;
+         *this\bs = *this\fs
+         
+         
+         ;\\
+         If *parent
+            If constants::BinaryFlag( *this\flag, #PB_Window_WindowCentered )
+               X = *parent\inner_x( ) + ( *parent\inner_width( ) - Width - *this\fs * 2 - *this\fs[1] - *this\fs[3] ) / 2
+               Y = *parent\inner_y( ) + ( *parent\inner_height( ) - Height - *this\fs * 2 - *this\fs[2] - *this\fs[4] ) / 2
+            EndIf
+            
+            If is_integral_( *this ) Or *parent\type <> #__type_window
+               SetParent( *this, *parent, #PB_Default )
+            Else
+               
+               If Not *parent\autosize And SetAttach( *this, *parent, 0 )
+                  X - DPIUnScaled(*parent\container_x( )) - DPIUnScaled((*parent\fs + (*parent\fs[1] + *parent\fs[3])))
+                  Y - DPIUnScaled(*parent\container_y( )) - DPIUnScaled((*parent\fs + (*parent\fs[2] + *parent\fs[4])))
+                  
+               Else
+                  ; Debug "888888 "+ *parent +" "+ root( )+" "+Opened( )
+                  SetParent( *this, *parent, #PB_Default )
+               EndIf
+            EndIf
+         EndIf
+         
+         ;
+         ;\\ add count types
+         CountType( *this, 1 )
+         
+         ;\\
+         If constants::BinaryFlag( *this\flag, #PB_Window_SizeGadget&~#PB_Window_TitleBar )
+            If Not *this\anchors
+               a_create( *this, #__a_full | #__a_nodraw | #__a_zoom )
+            EndIf
+         EndIf
+         
+         If Not constants::BinaryFlag( *this\flag, #PB_Window_NoGadgets )
+            OpenList( *this )
+         EndIf
+         
+         If constants::BinaryFlag( *this\flag, #PB_Window_NoActivate )
+            *this\focus = #__s_nofocus
+         Else
+            If Not ( *this\parent And *this\parent\anchors )
+               SetActive( *this )
+            EndIf
+         EndIf
+         
+         ;\\
+         Resize( *this, X, Y, Width, Height )
+         
+         Widget( ) = *this
+         ProcedureReturn *this
+      EndProcedure
+      
+      Procedure.i Gadget( Type.w, Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, Flag.q = #Null )
+         Protected *this, g
+         Protected Window = ID::Window( UseGadgetList(0))
+         Open( Window, X, Y, Width, Height, "", #PB_Canvas_Container|#PB_Window_BorderLess, #Null, Gadget )
+         ;
+         Flag = FromPBFlag( Type, Flag ) | #__flag_autosize
+         Select Type
+            Case #__type_Tree      : *this = Tree( 0, 0, Width, Height, Flag )
+            Case #__type_Text      : *this = Text( 0, 0, Width, Height, Text, Flag )
+            Case #__type_Button    : *this = Button( 0, 0, Width, Height, Text, Flag )
+            Case #__type_Option    : *this = Option( 0, 0, Width, Height, Text, Flag )
+            Case #__type_CheckBox  : *this = CheckBox( 0, 0, Width, Height, Text, Flag )
+            Case #__type_HyperLink : *this = HyperLink( 0, 0, Width, Height, Text, *param1, Flag )
+            Case #__type_Splitter  : *this = Splitter( 0, 0, Width, Height, *param1, *param2, Flag )
+         EndSelect
+         ;
+         CloseGadgetList( )
+         ;
+         If Gadget = - 1
+            Gadget = GetCanvasGadget( Root( ))
+            g      = Gadget
+         Else
+            g      = GadgetID( Gadget )
+         EndIf
+         
+         ; SetGadgetData( Gadget, *this )
+         Widget::gadgets(Str(Gadget)) = *this
+         
+         ProcedureReturn g
+      EndProcedure
+         
+      ;-
+      Procedure.i CloseList( )
+         Protected *open._s_WIDGET
+         
+         ;\\ 1-test splitter
+         If Opened( ) And
+            Opened( )\type = #__type_Splitter
+            
+            Opened( )\split_1( ) = Opened( )\FirstWidget( )
+            Opened( )\split_2( ) = Opened( )\LastWidget( )
+            
+            bar_update( Opened( ), #True )
+         EndIf
+         
+         If Opened( ) And
+            Opened( )\parent
+            
+            If Opened( )\parent\type = #__type_MDI
+               *open = Opened( )\parent\parent
+            Else
+               If Opened( )\Lastroot( )
+                  *open                 = Opened( )\Lastroot( )
+                  Opened( )\Lastroot( ) = #Null
+               Else
+                  If Opened( ) = Opened( )\root
+                     *open = Opened( )\root\Beforeroot( )
+                  Else
+                     *open = Opened( )\parent
+                  EndIf
+               EndIf
+            EndIf
+         Else
+            *open = Root( )
+         EndIf
+         
+         If *open = Opened( )
+            If *open\root\Beforeroot( )
+               UseGadgetList( WindowID(*open\root\Beforeroot( )\canvas\window))
+               ; Debug ""+*open\root\Beforeroot( )\canvas\window +" "+Opened( )\root\canvas\window
+               *open = *open\root\Beforeroot( )
+            EndIf
+         EndIf
+         
+         If *open And
+            Opened( ) <> *open
+            Opened( ) = *open
+            ; OpenList( *open )
+         EndIf
+      EndProcedure
+      
+      Procedure.i OpenList( *this._s_WIDGET, item.l = 0 )
+         Protected result.i = Opened( )
+         
+         If *this And *this\type = #__type_Unknown
+            *this = Opened( )
+         EndIf
+         
+         ; Debug "OpenList "+*this\class +" - "+ Opened( )\class
+         
+         If *this = Opened( )
+            If Not( *this\tabbar And *this\tabbar\type = #__type_TabBar And *this\tabbar\TabIndex( ) <> item )
+               ProcedureReturn result
+            EndIf
+         EndIf
+         
+         If *this
+            If *this\parent <> Opened( )
+               *this\Lastroot( ) = Opened( )
+            EndIf
+            
+            If *this\root
+               If *this\root <> Root( )
+                  If Opened( )\root
+                     Opened( )\root\Afterroot( ) = *this\root
+                  EndIf
+                  *this\root\Beforeroot( ) = Opened( )\root
+                  
+                  If is_root_( *this )
+                     ChangeCurrentCanvas( GadgetID( *this\root\canvas\gadget ) )
+                  EndIf
+               EndIf
+            EndIf
+            
+            ; add 
+            If *this\tabbar And 
+               *this\tabbar\type = #__type_TabBar
+               
+               ; tab\index.c так как не принимает минусавое значение
+               If Item < 0
+                  Item = 0
+               EndIf
+               *this\tabbar\TabIndex( ) = Item
+            EndIf
+            
+            Opened( ) = *this
+         EndIf
+         
+         ProcedureReturn result
+      EndProcedure
+      
+      ;-
+      Procedure   MessageEvents( )
+         Protected *message._s_ROOT
+         
+         Select WidgetEvent( )
+            Case #__event_Free
+               ; Debug " do free " + EventWidget( )\class
+               If EventWidget( ) = *message
+                  StickyWindow( *message\canvas\window, #False )
+                  Unbind( *message, @MessageEvents( ))
+               EndIf
+               
+            Case #__event_KeyDown
+               If keyboard( )\key = #PB_Shortcut_Return
+                  ; Debug "key - message"
+                  *message = GetWindow( EventWidget( ))
+               EndIf
+               
+            Case #__event_LeftClick
+               *message = GetWindow( EventWidget( ))
+               
+         EndSelect
+         
+         If *message
+            If #__type_Button = GetType( EventWidget( ))
+               Select GetText( EventWidget( ))
+                  Case lng("No")     : SetData( *message, #__message_No )     ; no
+                  Case lng("Yes")    : SetData( *message, #__message_Yes )    ; yes
+                  Case lng("Cancel") : SetData( *message, #__message_Cancel ) ; cancel
+               EndSelect
+               
+               ;\\
+               PostQuit( *message )
+            EndIf
+         EndIf
+         
+         ProcedureReturn #PB_Ignore
+      EndProcedure
+      
+      Procedure   Message( Title.s, Text.s, Flag.q = #Null, ParentID = #Null )
+         ; -1 стандартный динамик 
+         ; MB_ICONASTERISK 
+         ; MB_ICONEXCLAMATION  
+         ; MB_ICONHAND 
+         ; MB_ICONQUESTION 
+         ; MB_OK 
+         ; MessageBeep_(#MB_ICONHAND)
+         ;
+         
+         ;          ; Так как мы отрезали событие
+         ;          If GetActive( )
+         ;             If Not GetActive( )\focus
+         ;                SetActive( GetActive( ))
+         ;             EndIf
+         ;          EndIf
+         ;
+         Protected result, X, Y, Width = 400, Height = 120
+         Protected img = - 1, f1 = - 1, f2 = 8
+         Protected bw = 85, bh = 25, iw = Height - bh - f1 - f2 * 4 - 2 - 1
+         
+         Protected._s_root *root, *message
+         Protected._s_WIDGET *ok, *no, *cancel, *widget
+         
+         *widget = EventWidget( )
+         
+         ;\\
+         If *widget
+            *root = *widget\root
+         Else
+            *root = Root( )
+         EndIf
+         
+         
+         ;          ;\\ 1)
+         ;          x = ( *root\width - width )/2
+         ;          y = ( *root\height - height )/2 - #__window_CaptionHeight
+         ;          *message = Window( x, y, width, height, Title, #PB_window_TitleBar, *root)
+         ; ;
+         ; ; ;          ;\\ 2)
+         ; ; ;          ; *message = Window( x, y, width, height, Title, #PB_window_TitleBar | #PB_window_WindowCentered, *root)
+         ;
+         ;\\ 3)
+         Define newflag = #PB_Window_TitleBar | #PB_Window_Invisible | #PB_Window_NoActivate
+         If constants::BinaryFlag( Flag, #__message_ScreenCentered )
+            newflag | #PB_Window_ScreenCentered
+         Else
+            newflag | #PB_Window_WindowCentered
+         EndIf
+         ;newflag = #PB_Window_ScreenCentered |#PB_Window_BorderLess
+         *message = Open( #PB_Any, X, Y, Width, Height, Title, newflag, WindowID( *root\canvas\window ))
+         SetClass( *message, #PB_Compiler_Procedure+"_"+Str( *Message\canvas\window )) 
+         *message\parent = *root
+         ;
+         ;\\
+         CanvasMouseX( ) = mouse::GadgetMouseX( *message\canvas\gadget )
+         CanvasMouseY( ) = mouse::GadgetMouseY( *message\canvas\gadget )
+         GetAtPoint( *message, CanvasMouseX( ), CanvasMouseY( ), widgets( ))
+         ;
+         ;\\
+         If constants::BinaryFlag( Flag, #__message_Info )
+            img = CatchImage( #PB_Any, ?img_info, ?end_img_info - ?img_info )
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+               ;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'APPL'")
+               ;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'caut'")
+               ;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'note'")
+               ;            img = CocoaMessage(0, Workspace, "iconForFileType:$", @"'stop'")
+            CompilerEndIf
+            DataSection
+               img_info: ; size : 1404 bytes
+               Data.q $0A1A0A0D474E5089, $524448490D000000, $2800000028000000, $B8FE8C0000000608, $474B62060000006D
+               Data.q $A0FF00FF00FF0044, $493105000093A7BD, $5F98CD8558544144, $3B3BBFC71C47144C, $54C0F03D7F7BB707
+               Data.q $14DA0D5AD0348C10, $7C1A6360A90B6D6D, $6D03CAADF49898D3, $D1A87D7AD262545F, $B69B5F469AA9349A
+               Data.q $680D82AB6C37D269, $A6220B47FA51A890, $DECFEE38E105102A, $053FB87D333B772E, $CCDD3CF850EE114A
+               Data.q $0766FDFE767ECCDC, $F476DC569948E258, $5BCA94AD89227ADA, $3C10B9638C15E085, $7A59504C89240017
+               Data.q $8055B371E2774802, $2E678FEAA9A17AFC, $06961711C3AC7F58, $EF905DD4CA91A322, $A159B0EAD38F5EA2
+               Data.q $4D30000CA9417358, $1A3033484098DD06, $2C671601A343EB08, $EDD3F547A138B820, $DAFB560A82C89ABE
+               Data.q $2E1D2C863E5562A8, $3CD50AAB359173CC, $8D8C00262FCE6397, $83FB0DA43FD7D187, $DDAAFF5D74F85C02
+               Data.q $B3A477582D666357, $45754E5D9B42C73C, $16732AAEDD894565, $41FBABA3A6B0899B, $3FAB16311F45A424
+               Data.q $8FDB82C66F4B707F, $1595D6EF9001DD5F, $69B32B24BD2B2529, $EA0DEEB7E6181FDC, $9D9F369A5BBB6326
+               Data.q $A94FBDAEC7BBE0B7, $A732EAE5951BF5F4, $5C114204D2DD216D, $6B9C344C651BD9B9, $5F8FDB82CE66FAAA
+               Data.q $5F57EDFEF90841DD, $8469F486ECB61D52, $C2634777AE971D35, $2A9E9FF5E072D5DC, $8DE85A9CB3A47758
+               Data.q $4DCF559EDB963737, $0D1DD74741182C67, $C9DDD550E5F86C71, $E68DAFB555E65365, $79E522B2BAF36858
+               Data.q $B2DAC765C78001C9, $8DAFB573522C2B62, $8F9455C8929B2E4E, $77B1059330B54E5C, $D579F26E672AD4E3
+               Data.q $AC8D0E0F2BD2BD5F, $9F9532F8021F1304, $C910838758FEB56E, $816E0DF732515957, $DAAF81036D5F2CA9
+               Data.q $C2E305A5E54F66D7, $73EED922E79850D2, $88B9E6F02BB0E0D9, $2241697952FB2AA2, $B51C5D50B8ACB1A3
+               Data.q $69322368555B297F, $A654FC089009A54C, $1E34DD1B45EE65EE, $5F9F7579224403B7, $416D440905240B59
+               Data.q $244059B47C668BBE, $56F2A644DDF22B00, $1EBC77E473482920, $E3DCB126CD5175A7, $E720A4816B952854
+               Data.q $AA1C1F8C97DBB0A8, $3CE0A0A481CA0015, $2829A74C5DCDCD5F, $0F5481799C981CD6, $9356B8BCB2A56E0A
+               Data.q $0B4C0AC3821950B0, $6188962AC4914B75, $8326E2692ED8B632, $32112C58C9006044, $ECE858E5B0989D1A
+               Data.q $743677B1BE616735, $07BA4027E44A0623, $6C80F60B188E13D1, $829201DC00066B09, $8C96858E8E2EC9A6
+               Data.q $805AC633A82068E1, $371FE43AD04336D4, $3E017C48017AE2C5, $292045C9C672091A, $FE17193FA6FF7E78
+               Data.q $24BB170DC670F1B1, $228215E7B04759EC, $8381081FD341E657, $105A57F6BD342FFB, $B487FAFAA7631800
+               Data.q $02CD8258AB7E1B4C, $7FAFA533BF1272D8, $0B4E95227E4D3348, $C2283FB0F4FD51EA, $448A12D9E3719E9A
+               Data.q $A9D39441710FE231, $C02226AFBB60B4BC, $BE71A320F3D6FF0F, $B80C4880C5A02FD4, $EAE80059B3FE70FC
+               Data.q $BFD96D3E2109AFBE, $33433E3653923D3E, $6181FDEF7925044E, $40CCA2BCC151695B, $BFB32F995BDBE050
+               Data.q $4BD80C6A38598607, $EED1229FCE4E4FFB, $37BADFD58B1931AB, $9AC9DFBE734207A8, $31180DF76E30F1B1
+               Data.q $484A73B9DC7FEBCE, $D7A5B83F9D2F4FFB, $F3E8DECDC7776C64, $77EFE7474D218F98, $BEA6C0F5ABB1CE75
+               Data.q $E6D34B630E33E5E9, $D1DDEBF686899CB3, $30F1B1C9EBB3E0B1, $707F829A8EE8DF2E, $EB33FE99E7EAA9A1
+               Data.q $92547BE745F7507E, $CF3D5948A6BB587F, $BB773989021B3939, $EE4FFEBB1CE0C06F, $17B5C8FDB00082A9
+               Data.q $0D85E5765D9A9161, $D2CFBB3D8776A515, $B091079EAE8A2450, $58699FAF38C60FA6, $AAAC44AE240825E7
+               Data.q $524EF9BCCF8048DA, $7CE63B71E6C2BC56, $B1F0FBBCC0BA9B3D, $B389F106710FE236, $E0B19105F4D4FFA4
+               Data.q $4964FB2AA2BB5124, $96EF9053D965946A, $5542B5438A9C7B97, $AA218C9B953A9172, $F504091819AC204F
+               Data.q $19C68C085CE323C7, $0AFC1667EBA1393B, $9132FEBD1DB62678, $0A88495AE54CAD78, $974C713C10AF0B93
+               Data.q $C7A92409E9132188, $DA1DCE5A182B5934, $00FF3496B3E99DD4, $C5E52BD0901E71B2, $444E454900000000
+               Data.b $AE, $42, $60, $82
+               end_img_info:
+            EndDataSection
+         EndIf
+         If constants::BinaryFlag( Flag, #__message_Error )
+            img = CatchImage( #PB_Any, ?img_error, ?end_img_error - ?img_error )
+            
+            DataSection
+               img_error: ; size : 1642 bytes
+               Data.q $0A1A0A0D474E5089, $524448490D000000, $3000000030000000, $F902570000000608, $474B620600000087
+               Data.q $A0FF00FF00FF0044, $491F06000093A7BD, $41D9ED8168544144, $CCEFF1C71DC7546C, $F6A06C4218C6ED7A
+               Data.q $E448A410E515497A, $2070C40BB121A4E0, $46DC512B241A4E54, $124BD29004AB2039, $5150F4DA060B2630
+               Data.q $52894889E9734815, $42B01552AB888955, $0A9535535581A8E4, $A69B1B838C151352, $0F5F9BEDFAF1DAF1
+               Data.q $1B16F7DEBB3635DE, $DBF3D5DEB2E7A873, $8599BCFFBCCDEFCF, $8B999BBFFED0B685, $D94DFC3235B5A893
+               Data.q $2AD241A8331E9177, $A24A50090AA21D50, $F4E23494382E38DF, $CDC2449B1FD5A692, $67C9F4601567BBF6
+               Data.q $EA910FC176C73A56, $FB3E2C820C026811, $90FA231C4D0CFD92, $77E7A6B4722EFB8E, $3975B5B8601AF37D
+               Data.q $E795079E6401C8E9, $718909C7B3E02570, $139E92E751637E23, $67B6C9EA403CB783, $16621CEA8257EE71
+               Data.q $51DA72431163C9F8, $ED40125BADFBB67D, $B69198EA40D4D1ED, $E1CFD7F08E620A6A, $649A76066FAEE378
+               Data.q $1CAF696A00B39BD2, $F8A5BF1E82DFA931, $B68B1E9F7E92E7EC, $10366C83462792C6, $9B483C679D1EDEDF
+               Data.q $E5ADFDD3DFC7CA2B, $679B1D481A900EB3, $FD5FC5A1C6FDEE7C, $789EA5087457C832, $DF27E036FC740DB6
+               Data.q $2EDEA7739A99E91B, $7D63573D4FD7C039, $091E176ECB121FEF, $3D92C5F7739E6BA1, $E3F8C8438CEC4B05
+               Data.q $E338639DC7E0C287, $93E731F8D0BBE631, $A883C20B9CF064CA, $C03059C99BECC32E, $8A2A927678B696E8
+               Data.q $6773962BC31DF31F, $5E32A40D35BC1ED7, $61AE34C8F7C47E20, $B482B75C33F7CFE9, $BD6DC8C3B3E18BF3
+               Data.q $F3CE00E87774D0D6, $C8C73B8EC3301077, $1EAA53FC3F1397B7, $A3ED685DBED88879, $889BEB3C515EF88C
+               Data.q $FBB987C6E2C3DC1F, $4F437B575A305FF5, $D8C99E55CF67C74C, $B432B0912802A16D, $0BD967DF31F98D05
+               Data.q $2244C006A9AB295B, $95211F6B425F3AC4, $131BB7DFAF88CCC9, $17F2C3565D100089, $60D9F045FBE631B7
+               Data.q $0C030246B6B523F0, $1BA0F14E30F0BF9F, $EF9127DDBFE58A36, $7DED884489AFFE4F, $0078CCC4F5CBAD05
+               Data.q $A1A89BAF79FF3EF9, $AF17ABFAEFE27E38, $B54C2C7A40060436, $9FD33FDED83596F9, $D82EC4FA885E59F8
+               Data.q $D0F7C463C6548EB0, $7ABDF473BC7CC6DA, $3F0026054BD3D308, $C1803039A9C479F1, $CC32DA5654B6183D
+               Data.q $843D34389FD11F87, $875C6CC25F3AC4B5, $EFC7C8EAEF1236D6, $86D6458670FE883D, $6F207AF2E72123C2
+               Data.q $EE229FADFBFAF81E, $E35C19F88FCEA52F, $89B8CABF4FF7EA1A, $F8B374EBF5EC6161, $5A3FDFED5BFB10EC
+               Data.q $524EA5751007B45D, $7B2B97B0FD822695, $BC3B99AC09EB4E0F, $A8050B7237754E04, $6194D2B63B9F052A
+               Data.q $FCB800F3AFA5E83E, $D12A27E1D9A4A295, $FA6EE7C74A0110E2, $3343761C4CC77B89, $A4788CCDAA213002
+               Data.q $66EA532260530BFC, $3698EAEF136AB9F0, $377FBE21937FAE6C, $F026FF1923335366, $598BE240181C3102
+               Data.q $3270DA691B56A7E1, $666A6EC0EAEF12D6, $08BE902F11299324, $7D1CEF04E7174011, $C4AF2272F4B8079D
+               Data.q $9181BE3CC1EC0FC6, $C085D20F121D8CEC, $B0DECF8273F38800, $621F92BD2E59CCE6, $A6A48DE6EC4EC1E5
+               Data.q $181F3A4E3C00A70C, $F4D5891F61D388C0, $FF7BBCB9F7DE3E68, $9675385AC3B9B564, $5373410C15F6BBCB
+               Data.q $ECEB025E38B489F6, $8C7F569A4B00C0E9, $4B1CE3220F0C5CB8, $4FE0BA3BE3E5365B, $7F45AC8B952B4C1F
+               Data.q $2DEA844889EFC9EC, $AA5D23C40BBE782D, $091207B8325CECFD, $630A823C3166F487, $4543837863E1F7F9
+               Data.q $19E4E8B5A54439F1, $CBEF0864EAFCBD2E, $4131B94C3B5E0641, $2D1D5E40D37B9078, $4D6E25BF5A1CA4B8
+               Data.q $EEB9F085E5489FE6, $FC565ABAD19F3B4E, $A7A63EFBBDAE05E4, $6E687C654A927037, $E61DAF030B4B7AA2
+               Data.q $3330F5B7215D7F8E, $DF6577BFDC7F695E, $FAD5F0000A84AF5F, $73E133C7EE175E27, $6A27DF318E73D6A5
+               Data.q $EF9E3E769954FD08, $47491E3068863728, $99CE42CECBFF3FEA, $D060C40EE915C4D7, $1E3436B2A80CBC02
+               Data.q $1F8B0DAC8B0C0A89, $CEE0189ADA5B5132, $7C316769C9AF2793, $336A9850616065F1, $19C98BB16DA138F5
+               Data.q $ED9F556C6E8B7D37, $3A0F0BB71BC70B7E, $03198A7793FCFF1A, $E71DB45BAAEEE677, $EFB1DD41BC6F9DDE
+               Data.q $B7736A17C8317D2C, $077E9A22B2A5A1BF, $E37DE9DE572F3CD8, $B9BF6727F58E9E45, $86F6AD189E4B100B
+               Data.q $B13618F9EBF4207E, $F1370F06153E967B, $E8769E1B43D0C703, $DA14BFE31CD96208, $607AA16C6FE6341E
+               Data.q $630AEDEA7739AB6A, $7C039E94863A4956, $152AAF8DE711D25A, $E681F06F91FCB30F, $65624DA80766477A
+               Data.q $DDC7F71DC8CBF889, $35C804BCEC3342D1, $388C1EF7C0FABD81, $AA70FBA106B9CB35, $887D7214F8B2AA07
+               Data.q $FB5D3D9D6F3A4E8B, $B6859B67A164B9D9, $FEEC7FED695A16D0, $00006B709A860323, $42AE444E45490000
+               Data.b $60, $82
+               end_img_error:
+            EndDataSection
+         EndIf
+         If constants::BinaryFlag( Flag, #__message_Warning )
+            img = CatchImage( #PB_Any, ?img_warning, ?end_img_warning - ?img_warning )
+            
+            DataSection
+               img_warning: ; size : 1015 bytes
+               Data.q $0A1A0A0D474E5089, $524448490D000000, $2800000028000000, $B8FE8C0000000608, $474B62060000006D
+               Data.q $A0FF00FF00FF0044, $49AC03000093A7BD, $DD98ED8558544144, $67339F8718551C6B, $6BA934DBB3B3B267
+               Data.q $60255624DDDB3493, $785E2A42F0458295, $068C4AF69BDA17E3, $030B4150FDBB362A, $D9AC514B49409622
+               Data.q $86FF825726F0546E, $2968A4290537B482, $7B79EF7CD1F26F42, $CCECECDD9B68DDB1, $3DE7337B07E4DE84
+               Data.q $CE73DE666FECFBEF, $BE4895C549A28EC0, $D18003BEE526913D, $1BC8E3E7C60FAABF, $9FECC2827EF8A00B
+               Data.q $A661997980015464, $5B7351EBFBE505F3, $47813B9850001351, $53C3D570C7AAE19E, $B23A91C71FB3F205
+               Data.q $DEADAC5DE7CBF283, $8B8B83D4866AB9E2, $A3501A8AC0BD75C0, $F5C1DD1FC946EE17, $A401C06F62B271D5
+               Data.q $FA6A26F924D8AC80, $7E5A30F4E54A0E48, $5560C8F125D550E7, $EF525E4622D61FC1, $09839A235B0F5C4F
+               Data.q $6801C1363A672499, $22528E5162499C81, $1C849B7E9D4CA034, $9B0B11E8E79A47A4, $D4275B0ADE94A961
+               Data.q $86766961DF69962D, $ACF075B2DD97A5A7, $D5E5ADCCBFD61B82, $E0E70AD6ED2BCBC9, $01C25A643259C2E2
+               Data.q $267D976692740A74, $BDB1C9941DB6A94C, $00648F1BCF26FAD8, $B2C7BE9AE0658040, $5EA769DE2F46A039
+               Data.q $1126BD12FA3A0EFB, $4936293C09200E18, $A54A016D72DDA26B, $768E93EC9BC50878, $2E521BC80E33910B
+               Data.q $141140605A676E1D, $A093744937932ADA, $8281A48D7ED62F67, $15A3F82459547171, $403871C753A9C1DC
+               Data.q $06470A2CF737C256, $804094E82C78A9F8, $D268304CD1725D32, $92EA1CB5051ED691, $7565900D8BC67CFC
+               Data.q $D18BC6D5D9712E8E, $117CC62E3760194C, $10E54E54A025BC24, $2A40E3FD026F2319, $6858AA64C64A1498
+               Data.q $61F477CD41DADA15, $27D00E40F641C4E3, $8096E855B9759636, $67D2AF1465F163F2, $8B1B13EAEAE0D8EC
+               Data.q $535855B2BD295223, $321995650B7DF140, $C60B95CDEEFB4C6E, $B8D66D1F4CB2AB43, $D29243E17FBD28B6
+               Data.q $084F4AD2B684774F, $4859A46E52C3D2B8, $3D5D0669FAB94043, $435D5C1B6F49A0CF, $B3ACF95CB8C88D26
+               Data.q $D9AFD513076370D1, $EC1E3B578FDB0E23, $4DE1A355F6B926C1, $FEC232053D2E5280, $8171BCABDB194E87
+               Data.q $9B43A3CCF63AB911, $1D8D8BF4930EEB37, $1B03C18628DF29A2, $2381EFADB70E37E8, $5E94A941C87A1FFF
+               Data.q $4653A34D7B30E2C3, $57BCFD90E834E96B, $37AF4AA6517A9634, $506499A04FDF1404, $4BE860F68ADAA152
+               Data.q $7B4EB6B20E173A18, $DF46D1F2B907EA58, $CA9492773F250FFD, $BBF30895BD7115D2, $BF527F49C6E93C04
+               Data.q $2DC126EA5CA400A4, $73BAB8046E349A0E, $A6B8292C73E17BD5, $BB85E8D406B15816, $05103AFB551D0735
+               Data.q $DA95C00E05160EAE, $1B16FD43CE570957, $DA5DBF1B621FD38E, $EA54075063860747, $5917BB61884A7336
+               Data.q $FBD40FF52823CC02, $FE37EB4DCBBCBAE0, $9BF9A436D938F722, $8ED1D8C6E3DEF555, $2EE409553D03EE00
+               Data.q $4900000000FAB21F
+               Data.b $45, $4E, $44, $AE, $42, $60, $82
+               end_img_warning:
+            EndDataSection
+         EndIf
+         ;
+         ;\\
+         Container( f1, f1, Width - f1 * 2, Height - bh - f1 - f2 * 2 - 1 )
+         SetClass( Widget( ), "message_CONT" )
+         If IsImage( img )
+            Image( f2, f2, iw, iw, img, #__flag_ImageCenter | #__flag_Borderflat | #__flag_transparent )
+            SetClass( Widget( ), "message_IMAGE" )
+            Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__flag_TextCenter | #__flag_TextLeft | #__flag_transparent );| #__flag_Borderless )
+         Else
+            Text( f2, f2, Width - f2 * 2, iw, Text, #__flag_TextCenter | #__flag_TextLeft | #__flag_transparent );| #__flag_Borderless )
+         EndIf
+         SetClass( Widget( ), "message_INFO" )
+         CloseList( )
+         
+         ;\\
+         *ok = Button( Width - bw - f2, Height - bh - f2, bw, bh, lng( "Ok" ), #PB_Button_Default )
+         SetClass( *ok, "message_YES" )
+         If constants::BinaryFlag( Flag, #__message_YesNo ) Or
+            constants::BinaryFlag( Flag, #__message_YesNoCancel )
+            *no = Button( Width - ( bw + f2 ) * 2 - f2, Height - bh - f2, bw, bh, lng( "No" ))
+            SetClass( *no, "message_NO" )
+            SetText( *ok, lng( "Yes" ))
+         EndIf
+         If constants::BinaryFlag( Flag, #__message_YesNoCancel )
+            *cancel = Button( Width - ( bw + f2 ) * 3 - f2 * 2, Height - bh - f2, bw, bh, lng( "Cancel" ))
+            SetClass( *cancel, "message_CANCEL" )
+         EndIf
+         
+         ;\\
+         HideWindow( *message\canvas\window, #False )
+         StickyWindow( *message\canvas\window, #True )
+         SetActiveGadget( *Message\canvas\gadget )
+         Bind( *message, @MessageEvents( ))
+         SetActive( *ok )
+         
+         ;\\
+         ;          SetLayeredWindow( *message\canvas\window, igOpaque )
+         ;          ;          If StartDrawing( CanvasOutput( *message\canvas\gadget ))
+         ;          ;             Box( 0, 0, OutputWidth( ), OutputHeight( ), igOpaque )
+         ;          ;             StopDrawing( )
+         ;          ;          EndIf
+         ;          SetBackgroundColor( *message, igOpaque )
+         
+         ;\\
+         DisableWindow( *root\canvas\window, #True )
+         WaitQuit( )
+         DisableWindow( *root\canvas\window, #False )
+         
+         ;\\
+         result = GetData( *message )
+         Free( @*message )
+         If IsImage( img )
+            FreeImage( img )
+         EndIf
+         
+         ;          ;\\
+         ;     SetActive( *root )  
+         ;          ChangeCurrentCanvas( *root\canvas\gadgetID )
+         ;          CanvasMouseX( ) = mouse::GadgetMouseX( *root\canvas\gadget )
+         ;          CanvasMouseY( ) = mouse::GadgetMouseY( *root\canvas\gadget )
+         ;          GetAtPoint( *root, CanvasMouseX( ), CanvasMouseY( ), widgets( ))
+         ;          ; 
+         EventWidget( ) = *widget
+         ProcedureReturn result
+      EndProcedure
+       
    EndModule
 CompilerEndIf
 
@@ -26140,7 +26177,7 @@ EndMacro
 ;-
 ;-\\ EXAMPLE
 ;-
-CompilerIf #PB_Compiler_IsMainFile ;= 99
+CompilerIf #PB_Compiler_IsMainFile = 99
    EnableExplicit
    UseWidgets( )
    
@@ -27561,9 +27598,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 505
-; FirstLine = 489
-; Folding = ------------------P9--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-------------Vd---------f------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 26179
+; FirstLine = 24913
+; Folding = ------------------P9--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-------------Vd---------f------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------80+-8-f-8--t----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8f-+Xt-f--------
 ; EnableXP
 ; Executable = widgets-.app.exe
