@@ -643,25 +643,25 @@ DeclareModule Gadget
       
       ;- GADGETs
       Macro TreeGadget(_gadget_, _x_,_y_,_width_,_height_, Flags=0)
-         widget::Gadget(#PB_GadgetType_Tree, _gadget_, _x_,_y_,_width_,_height_, "", 0,0,0, Flags)
+         Widget::Gadget(#PB_GadgetType_Tree, _gadget_, _x_,_y_,_width_,_height_, "", 0,0,0, Flags)
       EndMacro
       Macro ButtonGadget(_gadget_, _x_,_y_,_width_,_height_, Text, Flags=0)
-         widget::Gadget(#PB_GadgetType_Button, _gadget_, _x_,_y_,_width_,_height_, Text, 0,0,0, Flags)
+         Widget::Gadget(#PB_GadgetType_Button, _gadget_, _x_,_y_,_width_,_height_, Text, 0,0,0, Flags)
       EndMacro
       Macro TextGadget(_gadget_, _x_,_y_,_width_,_height_, Text, Flags=0)
-         widget::Gadget(#PB_GadgetType_Text, _gadget_, _x_,_y_,_width_,_height_, Text, 0,0,0, Flags)
+         Widget::Gadget(#PB_GadgetType_Text, _gadget_, _x_,_y_,_width_,_height_, Text, 0,0,0, Flags)
       EndMacro
       Macro CheckBoxGadget(_gadget_, _x_,_y_,_width_,_height_, Text, Flags=0)
-         widget::Gadget(#PB_GadgetType_CheckBox, _gadget_, _x_,_y_,_width_,_height_, Text, 0,0,0, Flags)
+         Widget::Gadget(#PB_GadgetType_CheckBox, _gadget_, _x_,_y_,_width_,_height_, Text, 0,0,0, Flags)
       EndMacro
       Macro OptionGadget(_gadget_, _x_,_y_,_width_,_height_, Text, Flags=0)
-         widget::Gadget(#PB_GadgetType_Option, _gadget_, _x_,_y_,_width_,_height_, Text, 0,0,0, Flags)
+         Widget::Gadget(#PB_GadgetType_Option, _gadget_, _x_,_y_,_width_,_height_, Text, 0,0,0, Flags)
       EndMacro
       Macro HyperLinkGadget(_gadget_, _x_,_y_,_width_,_height_, Text, Color, Flags=0)
-         widget::Gadget(#PB_GadgetType_HyperLink, _gadget_, _x_,_y_,_width_,_height_, Text, Color,0,0, Flags)
+         Widget::Gadget(#PB_GadgetType_HyperLink, _gadget_, _x_,_y_,_width_,_height_, Text, Color,0,0, Flags)
       EndMacro
       Macro SplitterGadget(_gadget_, _x_,_y_,_width_,_height_, gadget1, gadget2, Flags=0)
-         widget::Gadget(#PB_GadgetType_Splitter, _gadget_, _x_,_y_,_width_,_height_, "", gadget1,gadget2,0, Flags)
+         Widget::Gadget(#PB_GadgetType_Splitter, _gadget_, _x_,_y_,_width_,_height_, "", gadget1,gadget2,0, Flags)
       EndMacro
       
       Declare SetGadgetAttribute_(Gadget, Attribute, Value)
@@ -729,25 +729,25 @@ DeclareModule Gadget
       
       
       Procedure EventData_()
-         If widget::EventWidget( ) And widget::EventWidget( )\data
-            ProcedureReturn widget::EventWidget( )\data
+         If Widget::EventWidget( ) And Widget::EventWidget( )\data
+            ProcedureReturn Widget::EventWidget( )\data
          Else
             ProcedureReturn PB(EventData)()
          EndIf
       EndProcedure
       
       Procedure EventType_()
-         If widget::EventWidget( ) And widget::EventWidget( )\enter
-            ProcedureReturn widget::EventWidget( )\type
+         If Widget::EventWidget( ) And Widget::EventWidget( )\enter
+            ProcedureReturn Widget::EventWidget( )\type
          Else
             ProcedureReturn PB(EventType)()
          EndIf
       EndProcedure
       
       Procedure EventGadget_()
-         If widget::EventWidget( ) And
-            widget::EventWidget( )\root
-            ProcedureReturn widget::EventWidget( )\root\canvas\gadget
+         If Widget::EventWidget( ) And
+            Widget::EventWidget( )\root
+            ProcedureReturn Widget::EventWidget( )\root\canvas\gadget
          Else
             ProcedureReturn PB(EventGadget)()
          EndIf
@@ -755,111 +755,111 @@ DeclareModule Gadget
       
       Procedure  FreeGadget_(Gadget)
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget))
-               ProcedureReturn widget::Free(widget::gadgets())
+            If Widget::gadgets(Str(Gadget))
+               ProcedureReturn Widget::Free(Widget::gadgets())
             Else
                ProcedureReturn PB(FreeGadget)(Gadget)
             EndIf
          ElseIf Gadget
-            ProcedureReturn widget::Free(Gadget)
+            ProcedureReturn Widget::Free(Gadget)
          EndIf
       EndProcedure
       
       Procedure GadgetWidth_(Gadget, mode)
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget)) 
-               ProcedureReturn widget::Width(widget::gadgets(), mode)
+            If Widget::gadgets(Str(Gadget)) 
+               ProcedureReturn Widget::Width(Widget::gadgets(), mode)
             Else
                ProcedureReturn PB(GadgetWidth)(Gadget, mode)
             EndIf
          ElseIf Gadget
-            ProcedureReturn widget::Width(Gadget, mode)
+            ProcedureReturn Widget::Width(Gadget, mode)
          EndIf
       EndProcedure
       
       Procedure GadgetHeight_(Gadget, mode)
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget))
-               ProcedureReturn widget::Height(widget::gadgets(), mode)
+            If Widget::gadgets(Str(Gadget))
+               ProcedureReturn Widget::Height(Widget::gadgets(), mode)
             Else
                ProcedureReturn PB(GadgetHeight)(Gadget, mode)
             EndIf
          ElseIf Gadget
-            ProcedureReturn widget::Height(Gadget, mode)
+            ProcedureReturn Widget::Height(Gadget, mode)
          EndIf
       EndProcedure
       
       Procedure GadgetType_(Gadget)
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget))
-               ProcedureReturn widget::Type(widget::gadgets())
+            If Widget::gadgets(Str(Gadget))
+               ProcedureReturn Widget::GetType(Widget::gadgets())
             Else
                ProcedureReturn PB(GadgetType)(Gadget)
             EndIf
          ElseIf Gadget
-            ProcedureReturn widget::Type(Gadget)
+            ProcedureReturn Widget::GetType(Gadget)
          EndIf
       EndProcedure
       
       Procedure BindGadgetEvent_(Gadget, *Callback, EventType=#PB_All)
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget))
-               ProcedureReturn widget::Bind(widget::gadgets(), *Callback, EventType)
+            If Widget::gadgets(Str(Gadget))
+               ProcedureReturn Widget::Bind(Widget::gadgets(), *Callback, EventType)
             Else
                ProcedureReturn PB(BindGadgetEvent)(Gadget, *Callback, EventType)
             EndIf
          ElseIf Gadget
-            ProcedureReturn widget::Bind(Gadget, *Callback, EventType)
+            ProcedureReturn Widget::Bind(Gadget, *Callback, EventType)
          EndIf
       EndProcedure
       
       ;-
       Procedure CountGadgetItems_(Gadget)
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget))
-               ProcedureReturn widget::CountItems(widget::gadgets())
+            If Widget::gadgets(Str(Gadget))
+               ProcedureReturn Widget::CountItems(Widget::gadgets())
             Else
                ProcedureReturn PB(CountGadgetItems)(Gadget)
             EndIf
          ElseIf Gadget
-            ProcedureReturn widget::CountItems(Gadget)
+            ProcedureReturn Widget::CountItems(Gadget)
          EndIf
       EndProcedure
       
       Procedure ClearGadgetItems_(Gadget)
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget))
-               ProcedureReturn widget::ClearItems(widget::gadgets())
+            If Widget::gadgets(Str(Gadget))
+               ProcedureReturn Widget::ClearItems(Widget::gadgets())
             Else
                ProcedureReturn PB(ClearGadgetItems)(Gadget)
             EndIf
          ElseIf Gadget
-            ProcedureReturn widget::ClearItems(Gadget)
+            ProcedureReturn Widget::ClearItems(Gadget)
          EndIf
       EndProcedure
       
       Procedure RemoveGadgetItem_(Gadget, Position)
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget))
-               ProcedureReturn widget::RemoveItem(widget::gadgets(), Position)
+            If Widget::gadgets(Str(Gadget))
+               ProcedureReturn Widget::RemoveItem(Widget::gadgets(), Position)
             Else
                ProcedureReturn PB(RemoveGadgetItem)(Gadget, Position)
             EndIf
          ElseIf Gadget
-            ProcedureReturn widget::RemoveItem(Gadget, Position)
+            ProcedureReturn Widget::RemoveItem(Gadget, Position)
          EndIf
       EndProcedure
       
       
       Procedure AddGadgetItem_(Gadget, Position, Text$, ImageID=0, Flag=0)
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget))
-               ProcedureReturn widget::AddItem(widget::gadgets(), Position, Text$, IDImage(ImageID), Flag)
+            If Widget::gadgets(Str(Gadget))
+               ProcedureReturn Widget::AddItem(Widget::gadgets(), Position, Text$, IDImage(ImageID), Flag)
             Else
                ProcedureReturn PB(AddGadgetItem)(Gadget, Position, Text$, ImageID, Flag)
             EndIf
          ElseIf Gadget
-            ProcedureReturn widget::AddItem(Gadget, Position, Text$, IDImage(ImageID), Flag)
+            ProcedureReturn Widget::AddItem(Gadget, Position, Text$, IDImage(ImageID), Flag)
          EndIf
       EndProcedure
       
@@ -869,44 +869,44 @@ DeclareModule Gadget
       
       Procedure ResizeGadget_(Gadget, X,Y,Width,Height)
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget))
-               ProcedureReturn widget::Resize(widget::gadgets(), X,Y,Width,Height)
+            If Widget::gadgets(Str(Gadget))
+               ProcedureReturn Widget::Resize(Widget::gadgets(), X,Y,Width,Height)
             Else
                ProcedureReturn PB(ResizeGadget)(Gadget, X,Y,Width,Height)
             EndIf
          ElseIf Gadget
-            ProcedureReturn widget::Resize(Gadget, X,Y,Width,Height)
+            ProcedureReturn Widget::Resize(Gadget, X,Y,Width,Height)
          EndIf
       EndProcedure
       
       ;-
       Procedure SetGadgetAttribute_(Gadget, Attribute, Value)
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget))
-               ProcedureReturn widget::SetAttribute(widget::gadgets(), Attribute, Value)
+            If Widget::gadgets(Str(Gadget))
+               ProcedureReturn Widget::SetAttribute(Widget::gadgets(), Attribute, Value)
             Else
                ProcedureReturn PB(SetGadgetAttribute)(Gadget, Attribute, Value)
             EndIf
          ElseIf Gadget
-            ProcedureReturn widget::SetAttribute(Gadget, Attribute, Value)
+            ProcedureReturn Widget::SetAttribute(Gadget, Attribute, Value)
          EndIf
       EndProcedure
       
       Procedure SetGadgetColor_(Gadget, ColorType, Color) ; no
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget))
-               ProcedureReturn widget::SetColor(widget::gadgets(), ColorType, Color)
+            If Widget::gadgets(Str(Gadget))
+               ProcedureReturn Widget::SetColor(Widget::gadgets(), ColorType, Color)
             Else
                ProcedureReturn PB(SetGadgetColor)(Gadget, ColorType, Color)
             EndIf
          ElseIf Gadget
-            ProcedureReturn widget::SetColor(Gadget, ColorType, Color)
+            ProcedureReturn Widget::SetColor(Gadget, ColorType, Color)
          EndIf
       EndProcedure
       
       Procedure SetGadgetData_(Gadget, Value) ; no
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget))
+            If Widget::gadgets(Str(Gadget))
                ;         ProcedureReturn widget::SetData(widget::gadgets(), Value)
             Else
                ProcedureReturn PB(SetGadgetData)(Gadget, Value)
@@ -918,13 +918,13 @@ DeclareModule Gadget
       
       Procedure SetGadgetFont_(Gadget, FontID)
          If PB(IsGadget)(Gadget)
-            If widget::gadgets(Str(Gadget))
-               ProcedureReturn widget::SetFont(widget::gadgets(), FontID)
+            If Widget::gadgets(Str(Gadget))
+               ProcedureReturn Widget::SetFont(Widget::gadgets(), FontID)
             Else
                ProcedureReturn PB(SetGadgetFont)(Gadget, FontID)
             EndIf
          ElseIf Gadget
-            ProcedureReturn widget::SetFont(Gadget, FontID)
+            ProcedureReturn Widget::SetFont(Gadget, FontID)
          EndIf
       EndProcedure
       
@@ -1345,8 +1345,8 @@ DeclareModule Gadget
       EndIf
    CompilerEndIf
    
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 872
-; FirstLine = 856
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 799
+; FirstLine = 786
 ; Folding = -------------------------------
 ; EnableXP

@@ -482,8 +482,8 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf  
   Until Event=#PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Linux - x64)
-; CursorPosition = 319
-; FirstLine = 309
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 331
+; FirstLine = 328
 ; Folding = --------
 ; EnableXP

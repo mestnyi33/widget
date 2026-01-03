@@ -61,6 +61,9 @@ GetMouseY
 
 mouse
 keyboard
+roots
+widgets
+address
 
 PressedButton
 EnteredButton
@@ -70,35 +73,31 @@ Pressed
 Entered
 Opened
 
-Root
-Widget
-roots
-widgets
-address
-GetWindow
-GetGadget
-GetRoot
-
-
 FirstWidget
 LastWidget
 AfterWidget
 BeforeWidget
 
-UseWidgets
-
 DoEvents
+UseWidgets
+Root
+Widget
+
 EventWidget
 WidgetEvent
-WidgetEventType
 WidgetEventData
 WidgetEventItem
 
-Events
-GetEvent
+GetEvent 
+GetEventWidget
 GetEventType
 GetEventData
 GetEventItem
+           
+GetWindow
+GetGadget
+GetRoot
+
 
 Draw
 ReDraw
@@ -236,12 +235,14 @@ RemoveColumn
 RemoveItem
 ChangeItemState
 
+Type
+GetType
+
 Is
 ItemID
 ToolTip
 Hide
 Disable
-Type
 Index
 Level
 ID

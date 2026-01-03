@@ -80,17 +80,17 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_tree_widget()
     ;Debug " widget - "+*event\widget+" "+*event\type
-    Protected EventGadget ;= eventwidget()
-    Protected EventType ;= widgetEventType()
-    Protected EventData ;= widgetEventData()
-    Protected EventItem ;;= GetState(EventGadget)
+    Protected EventGadget = Widget( )
+    Protected EventType = Type( )
+    Protected EventData = Data( )
+    Protected EventItem = Item( )
     
     Select EventType
-      Case #PB_EventType_ScrollChange : Debug "widget scroll change data "+ EventData
-      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
+      Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
+      Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
+      Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
+      Case #__event_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
+      Case #__event_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
     EndSelect
   EndProcedure
   
@@ -149,8 +149,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 30
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 84
+; FirstLine = 25
 ; Folding = 0----
 ; EnableXP

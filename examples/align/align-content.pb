@@ -70,7 +70,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
    EndIf
    
-   Define i, h=74, Width = 200
+   Define i, h=65, Width = 200
    
    Global multiline = 1
    Global test, change_line, change_txt, change_img
@@ -176,8 +176,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 74
-; FirstLine = 1
+; CursorPosition = 83
+; FirstLine = 23
 ; Folding = 6+---
 ; EnableXP
 ; DPIAware

@@ -26,14 +26,14 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
        
       Case #__Event_Focus   
-        If Type(*g) > 0
+        If GetType(*g) > 0
           Debug "Focus "+ GetData(*g)
         Else
           Debug "Active "+ GetData(*g)
         EndIf
         
       Case #__Event_LostFocus 
-        If Type(*g) > 0
+        If GetType(*g) > 0
           Debug " LostFocus "+ GetData(*g) 
         Else
           Debug " DeActive "+ GetData(*g)
@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
   ;-
   Procedure Window_0()
     w_list(Hex(110)) = Open(0, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
-    SetWindowTitle(GetCanvasWindow(root()), "Window_110") 
+    SetWindowTitle(GetCanvasWindow(Root()), "Window_110") 
     ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
     ;       w_list(Hex(110)) = Window(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
     w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
@@ -152,7 +152,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       w_list(Hex(210)) = Open(23, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(210)), 210)
-      SetWindowTitle(GetCanvasWindow(root()), "Window_210") 
+      SetWindowTitle(GetCanvasWindow(Root()), "Window_210") 
       ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
       ;       w_list(Hex(210)) = Window(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(210)), 110)
       w_list(Hex(211)) = String(10, 10, 180, 85, "String_211") : SetData(w_list(Hex(211)), 211)
@@ -220,7 +220,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug "-----"
       
       w_list(Hex(110)) = Open(32, 100, 100, 200, 200, "", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
-      SetWindowTitle(GetCanvasWindow(root()), "Window_110") 
+      SetWindowTitle(GetCanvasWindow(Root()), "Window_110") 
       ;       Open(OpenWindow(-1, 100, 100, 200, 200, "", #PB_Window_BorderLess), 0, 0, 200, 200, "")
       ;       w_list(Hex(110)) = Window(0, 0, 200, 200, "Window_110", #PB_Window_SystemMenu) : SetData(w_list(Hex(110)), 110)
       w_list(Hex(111)) = String(10, 10, 180, 85, "String_111") : SetData(w_list(Hex(111)), 111)
@@ -303,16 +303,16 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
     EndSelect
     
-    If root()\repaint
-      PostEventRepaint( root( ) )
+    If Root()\repaint
+      PostEventRepaint( Root( ) )
     EndIf
     
     ;Repaint()
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 78
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 36
+; FirstLine = 25
 ; Folding = -40-
 ; EnableXP
 ; DPIAware

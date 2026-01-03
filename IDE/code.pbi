@@ -123,7 +123,7 @@ Procedure   ChangeFont( font, name.s, size.a, style.q )
          FreeFont( font )
          key$ = fonts( )\key$
          DeleteMapElement( fonts( ), Str(font))
-         StartDraw( root( ))
+         StartDraw( Root( ))
       EndIf
    EndIf
    If key$
@@ -560,8 +560,8 @@ Procedure   MakeID( class$, *rootParent._s_WIDGET )
    Protected result
    
    If StartEnum( *rootParent )
-      If Trim(UCase(GetClass( widget( ))), "#") = Trim(UCase(class$), "#")
-         result = widget( )
+      If Trim(UCase(GetClass( Widget( ))), "#") = Trim(UCase(class$), "#")
+         result = Widget( )
          Break
       EndIf
       StopEnum( )
@@ -1285,7 +1285,7 @@ EndProcedure
 
 Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
    Protected result$, function$, x$, y$, width$, height$, text$, param1$, param2$, param3$, flag$, quotetext$
-   Protected type$ = ClassFromType( Type(*g) )
+   Protected type$ = ClassFromType( GetType(*g) )
    Protected id$ = GetClass(*g)
    
    ; coordinate
@@ -1430,7 +1430,7 @@ Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
    
    ;
    ;\\ add splitter children
-   If Type(*g) = #__type_Splitter
+   If GetType(*g) = #__type_Splitter
       Define first = GetAttribute( *g, #PB_Splitter_FirstGadget )
       Define Second = GetAttribute( *g, #PB_Splitter_SecondGadget )
       ; result$ + #LF$
@@ -1827,7 +1827,7 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
             
             If StartEnum( *w )
                *g = widgets( )
-               If Type(GetParent(*g)) = #__type_Splitter
+               If GetType( GetParent(*g)) = #__type_Splitter
                Else
                   result$ + Generate_CodeObject( *mdi, *g, Space(( Level(*g) - parentlevel ) * codeindent ))
                EndIf
@@ -1872,7 +1872,7 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
                      result$ + Space$ + "Open_" + Trim( GetClass( *g ), "#" ) + "( )" + #LF$
                   Else
                      If Not win
-                        If Type(GetParent(*g)) = #__type_Splitter
+                        If GetType( GetParent(*g)) = #__type_Splitter
                         Else
                            result$ + Generate_CodeObject( *mdi, *g, Space(( Level(*g) - parentlevel ) * codeindent ))
                         EndIf
@@ -1994,7 +1994,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    XIncludeFile "test\code\windows.pb"
    
    If Open(0, 0, 0, 400, 400, "read", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-      SetClass(root(), "read")
+      SetClass(Root(), "read")
       ;Path$ = "test\code\AddFont.pb"
       ;Path$ = "test\code\AddFont2.pb"
       ;Path$ = "test\code\addimage.pb"
@@ -2015,7 +2015,7 @@ CompilerIf #PB_Compiler_IsMainFile
             String$ = ReadString( #File ) ; Построчный просмотр содержимого файла
             String$ = RemoveString( String$, "?" ) ; https://www.purebasic.fr/english/viewtopic.php?t=86467
             
-            MakeLine( root( ), String$, Text$ )
+            MakeLine( Root( ), String$, Text$ )
          Wend
          
          ;          
@@ -2032,7 +2032,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
    ;
-   Define *root = root( )
+   Define *root = Root( )
    If *root
       Define Width = Width( *root )
       Define TEST = GetCanvasWindow( *root )
@@ -2050,9 +2050,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1545
-; FirstLine = 1345
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 1872
+; FirstLine = 1566
 ; Folding = -f-----f------------------f9-4-----4r3f------ePA5--0--
 ; EnableXP
 ; DPIAware

@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global  i, vert=100, horiz=100, Width=400, Height=400
    Global cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
    
-   Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, flag.q = 0 )
+   Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, Flag.q = 0 )
       Protected *new._s_widget
       ; flag.i | #__flag_NoFocus
       Protected newtype$
@@ -50,48 +50,48 @@ CompilerIf #PB_Compiler_IsMainFile
          ; create elements
          Select type$
             Case "window"    
-               If Type( *parent ) = #__Type_MDI
-                  *new = AddItem( *parent, #PB_Any, text$, - 1, flag | #PB_Window_NoActivate )
+               If GetType( *parent ) = #__Type_MDI
+                  *new = AddItem( *parent, #PB_Any, text$, - 1, Flag | #PB_Window_NoActivate )
                   Resize( *new, X, Y, Width, Height )
                Else
-                  flag | #PB_Window_SystemMenu | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget | #PB_Window_NoActivate
-                  *new = Window( X,Y,Width,Height, text$, flag, *parent )
+                  Flag | #PB_Window_SystemMenu | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget | #PB_Window_NoActivate
+                  *new = Window( X,Y,Width,Height, text$, Flag, *parent )
                EndIf
                
-            Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, Param1, Param2, Param3, flag ) : CloseList( ) ; 1 
-            Case "container"   : *new = Container( X,Y,Width,Height, flag ) : CloseList( )
-            Case "panel"       : *new = Panel( X,Y,Width,Height, flag ) : CloseList( )
+            Case "scrollarea"  : *new = ScrollArea( X,Y,Width,Height, Param1, Param2, Param3, Flag ) : CloseList( ) ; 1 
+            Case "container"   : *new = Container( X,Y,Width,Height, Flag ) : CloseList( )
+            Case "panel"       : *new = Panel( X,Y,Width,Height, Flag ) : CloseList( )
                
-            Case "button"      : *new = Button(       X, Y, Width, Height, text$, flag ) 
-            Case "string"        : *new = String(       X, Y, Width, Height, text$, flag )
-            Case "text"          : *new = Text(         X, Y, Width, Height, text$, flag )
-            Case "checkbox"      : *new = CheckBox(     X, Y, Width, Height, text$, flag ) 
+            Case "button"      : *new = Button(       X, Y, Width, Height, text$, Flag ) 
+            Case "string"        : *new = String(       X, Y, Width, Height, text$, Flag )
+            Case "text"          : *new = Text(         X, Y, Width, Height, text$, Flag )
+            Case "checkbox"      : *new = CheckBox(     X, Y, Width, Height, text$, Flag ) 
                ; Case "web"           : *new = Web(          X, Y, Width, Height, text$, flag )
-            Case "explorerlist"  : *new = ExplorerList( X, Y, Width, Height, text$, flag )                                                                           
+            Case "explorerlist"  : *new = ExplorerList( X, Y, Width, Height, text$, Flag )                                                                           
                ; Case "explorertree"  : *new = ExplorerTree( X, Y, Width, Height, text$, flag )                                                                           
                ; Case "explorercombo" : *new = ExplorerCombo(X, Y, Width, Height, text$, flag )                                                                          
-            Case "frame"         : *new = Frame(        X, Y, Width, Height, text$, flag )                                                                                  
+            Case "frame"         : *new = Frame(        X, Y, Width, Height, text$, Flag )                                                                                  
                
                ; Case "date"          : *new = Date(         X, Y, Width, Height, text$, Param1, flag )         ; 2            
-            Case "hyperlink"     : *new = HyperLink(    X, Y, Width, Height, text$, Param1, flag )                                                          
-            Case "listicon"      : *new = ListIcon(     X, Y, Width, Height, text$, Param1, flag )                                                       
+            Case "hyperlink"     : *new = HyperLink(    X, Y, Width, Height, text$, Param1, Flag )                                                          
+            Case "listicon"      : *new = ListIcon(     X, Y, Width, Height, text$, Param1, Flag )                                                       
                
-            Case "scroll"        : *new = Scroll(       X, Y, Width, Height, Param1, Param2, Param3, flag )  ; bar                                                             
+            Case "scroll"        : *new = Scroll(       X, Y, Width, Height, Param1, Param2, Param3, Flag )  ; bar                                                             
                
-            Case "progress"      : *new = Progress(     X, Y, Width, Height, Param1, Param2, flag )          ; bar                                                           
-            Case "track"         : *new = Track(        X, Y, Width, Height, Param1, Param2, flag )          ; bar                                                                           
-            Case "spin"          : *new = Spin(         X, Y, Width, Height, Param1, Param2, flag )                                                                             
-            Case "splitter"      : *new = Splitter(     X, Y, Width, Height, Param1, Param2, flag )                ; :Debug ""+Param1 +" "+ Param2 ;                                                          
-            Case "mdi"           : *new = MDI(          X, Y, Width, Height, flag )                                ;  , Param1, Param2                                                                          
-            Case "image"         : *new = Image(        X, Y, Width, Height, Param1, flag )                                                                                                     
-            Case "buttonimage"   : *new = ButtonImage(  X, Y, Width, Height, Param1, flag )                                                                                                 
+            Case "progress"      : *new = Progress(     X, Y, Width, Height, Param1, Param2, Flag )          ; bar                                                           
+            Case "track"         : *new = Track(        X, Y, Width, Height, Param1, Param2, Flag )          ; bar                                                                           
+            Case "spin"          : *new = Spin(         X, Y, Width, Height, Param1, Param2, Flag )                                                                             
+            Case "splitter"      : *new = Splitter(     X, Y, Width, Height, Param1, Param2, Flag )                ; :Debug ""+Param1 +" "+ Param2 ;                                                          
+            Case "mdi"           : *new = MDI(          X, Y, Width, Height, Flag )                                ;  , Param1, Param2                                                                          
+            Case "image"         : *new = Image(        X, Y, Width, Height, Param1, Flag )                                                                                                     
+            Case "buttonimage"   : *new = ButtonImage(  X, Y, Width, Height, Param1, Flag )                                                                                                 
                
                ; Case "calendar"      : *new = Calendar(     X, Y, Width, Height, Param1, flag )                 ; 1                                                 
                
-            Case "listview"      : *new = ListView(     X, Y, Width, Height, flag )                                                                                                                       
-            Case "combobox"      : *new = ComboBox(     X, Y, Width, Height, flag ) 
-            Case "editor"        : *new = Editor(       X, Y, Width, Height, flag )                                                                                                                          
-            Case "tree"          : *new = Tree(         X, Y, Width, Height, flag )                                                                                                                            
+            Case "listview"      : *new = ListView(     X, Y, Width, Height, Flag )                                                                                                                       
+            Case "combobox"      : *new = ComboBox(     X, Y, Width, Height, Flag ) 
+            Case "editor"        : *new = Editor(       X, Y, Width, Height, Flag )                                                                                                                          
+            Case "tree"          : *new = Tree(         X, Y, Width, Height, Flag )                                                                                                                            
                ; Case "canvas"        : *new = Canvas(       X, Y, Width, Height, flag )                                                                                                                          
                
             Case "option"        : *new = Option(       X, Y, Width, Height, text$ )
@@ -137,7 +137,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   ;                
                   ;                SetImage( *new, *imagelogo )
                   
-                  If Not flag & #__flag_NoFocus 
+                  If Not Flag & #__flag_NoFocus 
                      a_set(*new, #__a_full, (14))
                   EndIf
                   SetBackColor( *new, $FFECECEC )
@@ -145,7 +145,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   ;Properties_Updates( *new, "Resize" )
                   ;Bind( *new, @widget_events( ) )
                Else
-                  If Not flag & #__flag_NoFocus 
+                  If Not Flag & #__flag_NoFocus 
                      a_set(*new, #__a_full, (10))
                   EndIf
                   SetBackColor( *new, $FFF1F1F1 )
@@ -154,7 +154,7 @@ CompilerIf #PB_Compiler_IsMainFile
                ; 
                *new\ChangeColor = 0
             Else
-               If Not flag & #__flag_NoFocus 
+               If Not Flag & #__flag_NoFocus 
                   a_set(*new, #__a_full)
                EndIf
             EndIf
@@ -219,7 +219,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure Set(Gadget, Object)
-      Protected i, state, flag.q, flag$, count
+      Protected i, state, Flag.q, flag$, count
       ;i = WidgetEventItem( ) ; GetState(Gadget)
       count = CountItems(gadget)
 ;       ;
@@ -233,15 +233,15 @@ CompilerIf #PB_Compiler_IsMainFile
       
       i = WidgetEventItem( ) 
       flag$ = GetItemText( Gadget, i )
-      flag = MakeConstants( flag$ )
+      Flag = MakeConstants( flag$ )
       state = Bool( GetItemState( Gadget, i ) & #PB_Tree_Checked )
       Debug ""+state +" "+ flag$
-      Flag( Object, flag, state )
+      Flag( Object, Flag, state )
    EndProcedure
    
    
    Procedure events_widgets()
-      Protected flag, Type, flag$
+      Protected Flag, Type, flag$
       
       Select WidgetEvent( )
          Case #__event_Free
@@ -255,17 +255,17 @@ CompilerIf #PB_Compiler_IsMainFile
                      Free( @*g_OBJECT )
                   EndIf
                   
-                  *g_OBJECT = widget_create(root(), GetItemText( *g_TYPE, GetState( *g_TYPE)), 100, 100, 250, 200, Text, 0,0,0, #PB_Button_Toggle|#__flag_Textmultiline) 
+                  *g_OBJECT = widget_create(Root(), GetItemText( *g_TYPE, GetState( *g_TYPE)), 100, 100, 250, 200, Text, 0,0,0, #PB_Button_Toggle|#__flag_Textmultiline) 
                   ;Debug  ""+GetText( *g_TYPE)+" "+GetItemText( *g_TYPE, GetState( *g_TYPE))
                   
                   If *g_OBJECT
-                     flag = Flag(*g_OBJECT)
-                     Type = Type(*g_OBJECT)
+                     Flag = Flag(*g_OBJECT)
+                     Type = GetType(*g_OBJECT)
                   EndIf
                   
                   Add( MakeFlagsString( GetState(*g_TYPE)))
                   
-                  flag$ = MakeConstantsString( ClassFromType(Type), flag)
+                  flag$ = MakeConstantsString( ClassFromType(Type), Flag)
                   Debug "flag["+Flag$+"]"
                   SetCheckedText(*g_FLAG, flag$ )
                   
@@ -286,29 +286,29 @@ CompilerIf #PB_Compiler_IsMainFile
             EndSelect
       EndSelect
       
-      If flag
+      If Flag
          Debug EventWidget( )\class
-         Flag( *g_OBJECT, flag, GetState(EventWidget( )))
+         Flag( *g_OBJECT, Flag, GetState(EventWidget( )))
       EndIf
       
    EndProcedure
    
    If Open( 0, 0, 0, Width+205, Height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      *g_TYPE = widget::ListView(Width+45, 10, 150, 200) 
+      *g_TYPE = Widget::ListView(Width+45, 10, 150, 200) 
       For i=0 To 33
          AddItem(*g_TYPE, -1, ClassFromType(i))
       Next
       SetState(*g_TYPE, 1)
       
-      *g_FLAG2 = widget::ComboBox(Width+45, 215, 150, 25, #__flag_CheckBoxes|#__flag_optionboxes|#__flag_nobuttons|#__flag_nolines) 
-      *g_FLAG = widget::Tree(Width+45, 245, 150, 200-25, #__flag_CheckBoxes|#__flag_optionboxes|#__flag_nobuttons|#__flag_nolines) 
+      *g_FLAG2 = Widget::ComboBox(Width+45, 215, 150, 25, #__flag_CheckBoxes|#__flag_optionboxes|#__flag_nobuttons|#__flag_nolines) 
+      *g_FLAG = Widget::Tree(Width+45, 245, 150, 200-25, #__flag_CheckBoxes|#__flag_optionboxes|#__flag_nobuttons|#__flag_nolines) 
       
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 112
-; FirstLine = 100
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 93
+; FirstLine = 84
 ; Folding = ------
 ; EnableXP
 ; DPIAware

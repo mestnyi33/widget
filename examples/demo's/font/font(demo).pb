@@ -185,9 +185,9 @@ If Open(0, 322+50, 0, 322+50, 220)
 	;*g = Panel(10, 10, 334, 130)
 	*g = Tree(10, 10, 334, 130, #__flag_CheckBoxes|#__flag_NoLines|#__flag_NoButtons|#__flag_GridLines | #__flag_ThreeState | #__flag_OptionBoxes)                            
 	
-	If Type(*g) = #PB_GadgetType_Panel
+	If GetType(*g) = #PB_GadgetType_Panel
 		Text = "Sub"
-	ElseIf Type(*g) = #PB_GadgetType_Tree
+	ElseIf GetType(*g) = #PB_GadgetType_Tree
 		Text = "Tree"
 	EndIf
 	
@@ -201,7 +201,7 @@ If Open(0, 322+50, 0, 322+50, 220)
 	Next 
 	
 	SetState(*g, 2)
-	If Type(*g) = #PB_GadgetType_Panel
+	If GetType(*g) = #PB_GadgetType_Panel
 		CloseList()
 	EndIf
 	
@@ -230,11 +230,11 @@ If Open(0, 322+50, 0, 322+50, 220)
 	; set auto font size
 	Define iw = 2 + (*b\bs+*b\text\x)*4 
 	
-	Macro Repaint( )
-		Drawing( root( ) )
-	EndMacro
+; 	Macro Repaint( )
+; 		Drawing( Root( ) )
+; 	EndMacro
 	
-	ReDraw(root( ))
+	ReDraw(Root( ))
 	;Debug Width(*b, #__c_required)
 	
 	Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\Width[#__c_required] +" "+ *b\Height[#__c_required] ; mac = 121 29 ; win 70 16
@@ -265,9 +265,9 @@ If Open(0, 322+50, 0, 322+50, 220)
 	
 	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 239
-; FirstLine = 228
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 234
+; FirstLine = 224
 ; Folding = ----
 ; EnableXP
 ; DPIAware

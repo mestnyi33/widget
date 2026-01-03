@@ -412,7 +412,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *checkBox._s_BOX  ;  checkbox\
          
          ;*_first._s_rows
-         ;          ; если их убрать то при клике в примере tree(demo) в чек бокс происходит збой
+         ; если их убрать то при клике в примере tree(demo) в чек бокс происходит збой
          ; когда переместил margin._s_EDIT выше *_last._s_rows то снова заработало
          ;          *first._s_rows           ;TEMP first elemnt in the list
          ;          *after._s_rows           ;TEMP first elemnt in the list
@@ -437,22 +437,22 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROW
       Structure _s_ROW
-         autoscroll.b
+         state.i
+         Index.i
          
-         ID.i[4]
+         autoscroll.b
          sublevelpos.a
          sublevelsize.a
-         ;
-         ;;highlighted.w
+         
          ;
          *focused._s_rows         ; focused item
-         *pressed._s_rows         ; pushed item
-         *entered._s_rows         ; entered item
-         *leaved._s_rows          ; leaved item
+         *pressed._s_rows         ; mouse button pushed item
+         *entered._s_rows         ; mouse entered item
+         *leaved._s_rows          ; mouse leaved item
          
          *first._s_rows           ; first elemnt in the list
          *last._s_rows            ; last elemnt in the list
-         *added._s_rows           ; last added last element
+         *new._s_rows             ; new added last element
          
          visible._s_VISIBLEITEMS
          
@@ -470,6 +470,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *entered._s_ITEMS
          *pressed._s_ITEMS
          *focused._s_ITEMS
+         
          List *_s._s_ITEMS( )
       EndStructure
       
@@ -797,8 +798,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 592
-; FirstLine = 430
+; CursorPosition = 440
+; FirstLine = 276
 ; Folding = -F5w------
 ; Optimizer
 ; EnableXP

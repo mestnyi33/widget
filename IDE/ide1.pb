@@ -512,7 +512,7 @@ Procedure   PropertiesButton_Display( *second._s_WIDGET )
             *last = *this
             
             ;
-            Select Type( *this )
+            Select GetType( *this )
                Case #__type_String
                   If GetData( *this ) = #_pi_class
                      *this\text\upper = 1
@@ -655,7 +655,7 @@ Procedure   PropertiesButton_Events( )
          
       Case #__event_Change
          __item = GetData(*g) 
-         Select Type(*g)
+         Select GetType(*g)
             Case #__type_String
                Select __item 
                   Case #_pi_class  
@@ -769,7 +769,7 @@ Procedure   PropertiesButton_Events( )
          
       Case #__event_MouseWheel
          If MouseDirection( ) > 0
-            If Type(*g) = #__type_Spin
+            If GetType(*g) = #__type_Spin
                Debug "PropertiesButton__event_MouseWheel "+*g\class
                SetState(*g, GetState( *g ) - WidgetEventData( ))
             EndIf
@@ -906,7 +906,7 @@ Procedure   Properties_Change( *inspector._s_WIDGET )
       Protected *this._s_WIDGET = *second\RowFocused( )\data
       
       If *this
-         Select Type( *this )
+         Select GetType( *this )
             Case #__type_Spin     : SetState(*this, Val(*second\RowFocused( )\text\string) )
             Case #__type_String   : SetText(*this, *second\RowFocused( )\text\string )
             Case #__type_ComboBox : SetState(*this, StrToBool(*second\RowFocused( )\text\string) )
@@ -1024,8 +1024,8 @@ Procedure   Properties_Events( )
                ; PropertiesButton_Create( *second, __item )
             EndIf
             
-            If *second\FocusedRow( ) 
-               SetActive( *second\FocusedRow( )\data ) 
+            If *second\RowFocused( ) 
+               SetActive( *second\RowFocused( )\data ) 
             EndIf
          EndIf
          
@@ -1232,7 +1232,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       ;\\
       If type$ = "Focus"
          If a_focused( )
-            PropertiesButton_AddItems( ide_inspector_PROPERTIES, #_pi_flag, MakeFlagsString( Type( a_focused( ))))
+            PropertiesButton_AddItems( ide_inspector_PROPERTIES, #_pi_flag, MakeFlagsString( GetType( a_focused( ))))
          EndIf
          
       Else
@@ -1463,7 +1463,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
       ; create elements
       Select type$
          Case "window"   
-            If Type( *parent ) = #__Type_MDI
+            If GetType( *parent ) = #__Type_MDI
                *new = AddItem( *parent, #PB_Any, text$, - 1, Flag | #PB_Window_NoActivate )
                Resize( *new, X, Y, Width, Height )
             Else
@@ -1619,7 +1619,7 @@ Procedure new_widget_events( )
             EndIf
             
             ;
-            DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType(Type(*g))+"_" ))
+            DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType( GetType(*g))+"_" ))
          EndIf
          ;
       Case #__event_Focus
@@ -2115,7 +2115,7 @@ Procedure   ide_inspector_VIEW_ADD_ITEMS( *new._s_widget )
          Protected img =- 1
          count = CountItems( ide_inspector_ELEMENTS )
          For i = 0 To count - 1
-            If LCase(ClassFromType(Type(*new))) = LCase(GetItemText( ide_inspector_ELEMENTS, i ))
+            If LCase(ClassFromType( GetType(*new))) = LCase(GetItemText( ide_inspector_ELEMENTS, i ))
                img = GetItemData( ide_inspector_ELEMENTS, i )
                Break
             EndIf
@@ -2325,7 +2325,7 @@ Procedure   ide_menu_events(  )
          
          
       Case #_tb_group_select
-         If Type(*g) = #__type_ToolBar
+         If GetType(*g) = #__type_ToolBar
             If GetItemState( *g, BarButton )  
                ; group
                group_select = *g
@@ -2537,7 +2537,7 @@ Procedure   ide_events( )
                      EndIf
                   EndIf
                   If argument
-                     If name$ = ClassFromType( Type( object ))
+                     If name$ = ClassFromType( GetType( object ))
                         argument + 1
                      EndIf
                      If name$ = GetClass( object )
@@ -2816,7 +2816,7 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
    ;
    ;-\\ ide binds events
    ;
-   If Type( ide_toolbar ) = #__type_ToolBar
+   If GetType( ide_toolbar ) = #__type_ToolBar
       Bind( ide_menu, @ide_menu_events( ) )
       Bind( ide_toolbar, @ide_menu_events( ) )
       Bind( ide_popup_lenguage, @ide_menu_events( ) )
@@ -3063,8 +3063,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 993
-; FirstLine = 886
-; Folding = ------ff------------------------------------------------
+; CursorPosition = 1027
+; FirstLine = 985
+; Folding = ------f-------------------------------------------------
 ; EnableXP
 ; DPIAware

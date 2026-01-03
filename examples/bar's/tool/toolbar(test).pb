@@ -71,8 +71,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open( 1, 300, 200, 650, 200, "ToolBar example", #PB_Window_SizeGadget )
-      a_init(root( ))
-      ide_toolbar = CreateBar( root( ), #PB_ToolBar_Small )
+      a_init(Root( ))
+      ide_toolbar = CreateBar( Root( ), #PB_ToolBar_Small )
       SetClass( ide_toolbar, "ide_toolbar")
       
       If ide_toolbar
@@ -139,7 +139,7 @@ CompilerIf #PB_Compiler_IsMainFile
          CloseList( ) 
       EndIf
       
-      If Type( ide_toolbar ) = #__type_ToolBar
+      If GetType( ide_toolbar ) = #__type_ToolBar
          ;       BindBarEvent( ide_menu, -1, @ide_events( ) )
          ;       BindBarEvent( ide_toolbar, -1, @ide_events( ) )
          ;       BindBarEvent( ide_popup_lenguage, -1, @ide_events( ) )
@@ -192,9 +192,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 59
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 141
+; FirstLine = 138
 ; Folding = --
 ; EnableXP
 ; DPIAware

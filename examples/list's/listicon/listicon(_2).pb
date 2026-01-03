@@ -66,7 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   Procedure AddItem_( *this._s_WIDGET, Item.l, Text.s, Image.i = - 1, flag.q = 0 )
+   Procedure AddItem_( *this._s_WIDGET, Item.l, Text.s, Image.i = - 1, Flag.q = 0 )
       Protected *g1 = GetAttribute(*this, #PB_Splitter_FirstGadget)
       Protected *g2 = GetAttribute(*this, #PB_Splitter_SecondGadget)
       Protected i, count = CountString(Text.s, #LF$)
@@ -74,10 +74,10 @@ CompilerIf #PB_Compiler_IsMainFile
       ;          AddItem( *g1, Item, StringField(Text.s, i, #LF$), Image, flag )
       ;       Next
       
-      If Type(*g1) = #__type_tree
-         AddItem( *g1, Item, StringField(Text.s, GetData(*g1), #LF$), Image, flag )
+      If GetType(*g1) = #__type_tree
+         AddItem( *g1, Item, StringField(Text.s, GetData(*g1), #LF$), Image, Flag )
       EndIf
-      If Type(*g2) = #__type_tree
+      If GetType(*g2) = #__type_tree
          AddItem( *g2, Item, StringField(Text.s, GetData(*g2), #LF$), -1, 0 )
       Else
          ;*g2 = GetAttribute(*g2, #PB_Splitter_FirstGadget)
@@ -205,9 +205,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 150
-; FirstLine = 148
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 76
+; FirstLine = 73
 ; Folding = ---
 ; EnableXP
 ; DPIAware

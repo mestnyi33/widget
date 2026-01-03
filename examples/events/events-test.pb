@@ -220,7 +220,7 @@ Procedure   PropertiesButton_Display( *second._s_WIDGET )
             *last = *this
             
             ;
-            Select Type( *this )
+            Select GetType( *this )
                Case #__type_String
                   If GetData( *this ) = #_pi_class
                      *this\text\upper = 1
@@ -584,10 +584,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\ 
    WaitClose( )
 CompilerEndIf
-
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 267
-; FirstLine = 256
+; CursorPosition = 222
+; FirstLine = 219
 ; Folding = ----------
 ; EnableXP
 ; DPIAware

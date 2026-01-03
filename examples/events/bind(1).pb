@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
 		If WidgetEvent() <> #__event_MouseMove And 
 		   WidgetEvent() <> #__event_Draw 
 			
-			If Type( EventWidget( ) ) = #PB_GadgetType_Button
+			If GetType( EventWidget( ) ) = #PB_GadgetType_Button
 				; ClearDebugOutput()
 				Debug ""+Index(EventWidget())+ " - widget  event - " +WidgetEvent() +" ("+ ClassFromEvent( WidgetEvent())+ ")  item - " +WidgetEventItem() +" (gadget)"
 			EndIf
@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
 		If WidgetEvent() <> #__event_MouseMove And 
 		   WidgetEvent() <> #__event_Draw 
 			
-			If Type( EventWidget( ) ) = #PB_GadgetType_Button
+			If GetType( EventWidget( ) ) = #PB_GadgetType_Button
 				Debug "  "+Index(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (window)"
 			EndIf
 			
@@ -48,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
 		If WidgetEvent() <> #__event_MouseMove And 
 		   WidgetEvent() <> #__event_Draw 
 			
-			If Type( EventWidget( ) ) = #PB_GadgetType_Button
+			If GetType( EventWidget( ) ) = #PB_GadgetType_Button
 				Debug "    "+Index(EventWidget())+ " - widget  event - " +WidgetEvent()+ "  item - " +WidgetEventItem() +" (root)"
 			EndIf
 		EndIf
@@ -151,8 +151,8 @@ CompilerEndIf
 ; CompilerEndIf
 ; End  
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 48
-; FirstLine = 46
+; CursorPosition = 50
+; FirstLine = 47
 ; Folding = ----
 ; EnableXP
 ; DPIAware

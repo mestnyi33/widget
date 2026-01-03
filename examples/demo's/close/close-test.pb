@@ -37,8 +37,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug ""
       
       
-      ReDraw(root())
-      Free(root())
+      ReDraw(Root())
+      Free(Root())
       
       Debug "------"
       PushListPosition(widgets( ))
@@ -47,8 +47,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       PopListPosition(widgets( ))
       
-      If root( )\FirstWidget( )
-         Debug "  f "+ root( )\FirstWidget( )\class +" "+ root( )\FirstWidget( )\address
+      If Root( )\FirstWidget( )
+         Debug "  f "+ Root( )\FirstWidget( )\class +" "+ Root( )\FirstWidget( )\address
       EndIf
       
       WaitClose()
@@ -443,7 +443,7 @@ CompilerEndIf
 ;       Protected *this._s_WIDGET = GetItemData( *second, item )
 ;       
 ;       If *this
-;          Select Type( *this )
+;          Select GetType( *this )
 ;             Case #__type_ComboBox 
 ;                Static lasttext.s
 ;                
@@ -498,7 +498,7 @@ CompilerEndIf
 ;       Protected *this._s_WIDGET = *second\RowFocused( )\data
 ;       
 ;       If *this
-;          Select Type( *this )
+;          Select GetType( *this )
 ;             Case #__type_Spin     : SetState(*this, Val(*second\RowFocused( )\text\string) )
 ;             Case #__type_String   : SetText(*this, *second\RowFocused( )\text\string )
 ;             Case #__type_ComboBox : SetState(*this, StrToBool(*second\RowFocused( )\text\string) )
@@ -570,7 +570,7 @@ CompilerEndIf
 ;             *last = *this
 ;             
 ;             ;
-;             Select Type( *this )
+;             Select GetType( *this )
 ;                Case #__type_String
 ;                   If GetData( *this ) = #_pi_class
 ;                      *this\text\upper = 1
@@ -704,7 +704,7 @@ CompilerEndIf
 ;          EndSelect
 ;          
 ;       Case #__event_Change
-;          Select Type(*g)
+;          Select GetType(*g)
 ;             Case #__type_String
 ;                Select GetData(*g) 
 ;                   Case #_pi_class  
@@ -1295,9 +1295,9 @@ CompilerEndIf
 ;    image_group_width:      : IncludeBinary "group/group_width.png"
 ;    image_group_height:     : IncludeBinary "group/group_height.png"
 ; EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1098
-; FirstLine = 1080
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 445
+; FirstLine = 442
 ; Folding = -
 ; EnableXP
 ; DPIAware
