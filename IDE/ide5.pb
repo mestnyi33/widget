@@ -2679,13 +2679,17 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ;
    ; gadgets
    ;
+   ide_inspector_VIEW = Tree( 0,0,0,0 ) : SetClass(ide_inspector_VIEW, "ide_inspector_VIEW" ) ;, #__flag_gridlines )
+   EnableDrop( ide_inspector_VIEW, #PB_Drop_Text, #PB_Drag_Link )
+   
    ide_design_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines ) : SetClass(ide_design_ELEMENTS, "ide_design_ELEMENTS" )
    If ide_design_ELEMENTS
       Define *g._s_WIDGET = ide_design_ELEMENTS
       ;*g\padding\x = DPIScaled(4)
       ide_design_ELEMENTS_ADD_ITEMS( ide_design_ELEMENTS, GetCurrentDirectory( )+"Themes/" )
    EndIf
-   
+   ide_properties_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_design_ELEMENTS, #__flag_autosize) : SetClass(ide_properties_SPLITTER, "ide_properties_SPLITTER" )
+
    ;\\\ 
    ide_design_PANEL = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_PANEL, "ide_design_PANEL" ) ; , #__flag_Vertical ) : OpenList( ide_design_PANEL )
    AddItem( ide_design_PANEL, -1, lng(#lng_FORM$) )
@@ -2716,10 +2720,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    
    ; ide_inspector_PANEL_item_2
    AddItem( ide_inspector_PANEL, -1, "properties", 0, 0 )  
-   ide_inspector_VIEW = Tree( 0,0,0,0, #__flag_Borderless ) : SetClass(ide_inspector_VIEW, "ide_inspector_VIEW" ) ;, #__flag_gridlines )
-   EnableDrop( ide_inspector_VIEW, #PB_Drop_Text, #PB_Drag_Link )
-   
-   ide_inspector_PROPERTIES = Properties_Create( 0,0,0,0 ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
+   ide_inspector_PROPERTIES = Properties_Create( 0,0,0,0, #__flag_autosize ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
    If ide_inspector_PROPERTIES
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_COMMON, "COMMON" )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_ID,             "#ID",      #__type_ComboBox, 1 )
@@ -2753,8 +2754,6 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorgreen,      "green",   #__type_Spin, 1 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorred,        "red",     #__type_Spin, 1 )
       EndIf
-   ide_properties_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_inspector_PROPERTIES, #__flag_autosize) : SetClass(ide_properties_SPLITTER, "ide_properties_SPLITTER" )
-   ; ide_properties_SPLITTER = Splitter( 0,0,0,0, ide_inspector_PROPERTIES, ide_inspector_VIEW, #__flag_autosize) : SetClass(ide_properties_SPLITTER, "ide_properties_SPLITTER" )
    
    ; ide_inspector_PANEL_item_3 
    AddItem( ide_inspector_PANEL, -1, "events", 0, 0 )  
@@ -2810,10 +2809,11 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    
    ; ide_inspector_PANEL_close
    CloseList( )
-   ;SetState( ide_inspector_PANEL, 1 )
+   ; SetState( ide_inspector_PANEL, 1 )
+   ; BarPosition( ide_inspector_PANEL, 4 )
    
    ; ide_inspector_ide_properties_SPLITTER_text
-   ide_help_VIEW  = Text( 0,0,0,0, "help for the inspector", #PB_Text_Border ) : SetClass(ide_help_VIEW, "ide_help_VIEW" )
+   ide_help_VIEW  = Text( 0,0,0,0, "help for the inspector", #__flag_BorderFlat ) : SetClass(ide_help_VIEW, "ide_help_VIEW" )
    ;\\\ close inspector gadgets 
    
 ;    ;
@@ -2822,7 +2822,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
 Global ide_SPLITTER =- 1
    ;
    ;\\ main splitter 2 example 
-   ide_design_SPLITTER = Splitter( 0,0,0,0, ide_design_ELEMENTS, ide_design_PANEL, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
+   ide_design_SPLITTER = Splitter( 0,0,0,0, ide_properties_SPLITTER, ide_design_PANEL, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
    ide_help_SPLITTER = Splitter( 0,0,0,0, ide_help_VIEW, ide_help_DEBUG, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_help_SPLITTER, "ide_help_SPLITTER" )
    ide_debug_SPLITTER = Splitter( 0,0,0,0, ide_design_SPLITTER, ide_help_SPLITTER, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_debug_SPLITTER, "ide_debug_SPLITTER" )
    ide_SPLITTER = Splitter( 0,0,0,0, ide_debug_SPLITTER, ide_inspector_PANEL, #PB_Splitter_SecondFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_debug_SPLITTER, "ide_debug_SPLITTER" )
@@ -2851,8 +2851,8 @@ Global ide_SPLITTER =- 1
    
    ;SetState( ide_properties_SPLITTER, Height(ide_properties_SPLITTER) - 150 )
    SetState( ide_properties_SPLITTER, 150 )
-   SetState( ide_design_SPLITTER, 120 )
-   SetState( ide_help_SPLITTER, 120 )
+   SetState( ide_design_SPLITTER, 180 )
+   SetState( ide_help_SPLITTER, 180 )
    
    ;
    ;-\\ ide binds events
@@ -3104,11 +3104,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 2718
-; FirstLine = 2705
+; CursorPosition = 3104
+; FirstLine = 3078
 ; Folding = ---------------------------------------------------------
-; Optimizer
-; EnableAsm
 ; EnableXP
 ; DPIAware
-; Executable = ../../2.exe
