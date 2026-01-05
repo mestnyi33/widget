@@ -18,14 +18,14 @@ CompilerIf #PB_Compiler_IsMainFile
         ProcedureReturn 0
      EndIf
      
-    ; Debug "" + Index( EventWidget()) +" "+ ClassFromEvent( WidgetEvent()) 
+    ; Debug "" + Index( EventWidget()) +" "+ EventString( WidgetEvent()) 
   EndProcedure
   
   If Open(0, 0, 0, 800, 450, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    SetColor(root( ), #PB_Gadget_BackColor, RGBA(245, 245, 245, 255))
+    SetColor(Root( ), #PB_Gadget_BackColor, RGBA(245, 245, 245, 255))
     ;
     ;\\
-    a_init(root( ))
+    a_init(Root( ))
     ;a_init(Window(40,40,720,370,"window", #PB_Window_systemmenu))
     ;a_init(MDI(40,40,720,370)) : OpenList(widget())
     ;a_init(Container(40,40,720,370))
@@ -39,13 +39,13 @@ CompilerIf #PB_Compiler_IsMainFile
     a_object(300, 200, 200, 100, "Layer = 4", RGBA(192, 164, 128, 125))
     ;
     ;\\
-    Bind( root( ), @_events( ))
+    Bind( Root( ), @_events( ))
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 13
-; FirstLine = 6
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 20
+; FirstLine = 5
 ; Folding = --
 ; EnableXP
 ; DPIAware

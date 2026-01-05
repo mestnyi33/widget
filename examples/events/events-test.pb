@@ -262,7 +262,7 @@ Procedure   PropertiesButton_Events( )
    Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
    Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
    
-   ; Debug ""+widget::ClassFromEvent(__event) +" "+ widget::GetClass( *g) +" "+ GetData(*g)
+   ; Debug ""+widget::EventString(__event) +" "+ widget::GetClass( *g) +" "+ GetData(*g)
    
    If Not a_focused( )
     ;  ProcedureReturn 0
@@ -584,9 +584,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\ 
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 222
-; FirstLine = 219
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 264
+; FirstLine = 260
 ; Folding = ----------
 ; EnableXP
 ; DPIAware

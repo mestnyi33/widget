@@ -108,9 +108,9 @@ CompilerIf #PB_Compiler_IsMainFile
             ;Debug ""+*parent +" "+ newtype$
             ;\\ второй метод формирования названия переменной
             ;          If *parent = ide_design_panel_MDI
-            ;             newtype$ = ClassFromType( *new\type )+"_"+CountType( *new , 2 )
+            ;             newtype$ = TypeString( *new\type )+"_"+CountType( *new , 2 )
             ;          Else
-            ;             newtype$ = ClassFromType( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
+            ;             newtype$ = TypeString( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
             ;          EndIf
             ;\\
             SetClass( *new, UCase(newtype$) )
@@ -200,7 +200,7 @@ CompilerIf #PB_Compiler_IsMainFile
       count = CountItems(gadget)
       ;       ;
       ;       For i = 0 To count
-      ;          flag = MakeConstants( GetItemText( Gadget, i ))
+      ;          flag = MakeValue( GetItemText( Gadget, i ))
       ;          state = Bool( GetItemState( Gadget, i ) & #PB_Tree_Checked )
       ;          Flag( Object, flag, state )
       ;       Next
@@ -209,7 +209,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       i = WidgetEventItem( ) 
       flag$ = GetItemText( Gadget, i )
-      Flag = MakeConstants( flag$ )
+      Flag = MakeValue( flag$ )
       state = Bool( GetItemState( Gadget, i ) & #PB_Tree_Checked )
       Debug ""+state +" "+ flag$
       Flag( Object, Flag, state )
@@ -246,6 +246,7 @@ CompilerIf #PB_Compiler_IsMainFile
          ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderLess )
             *this\fs = 0
          Else
+            ; default border
             If *this\type = #__type_Editor Or
                *this\type = #__type_String Or
                *this\type = #__type_ScrollArea Or
@@ -255,6 +256,7 @@ CompilerIf #PB_Compiler_IsMainFile
                *this\fs = 2
             EndIf
             If *this\type = #__type_Panel Or
+               *this\type = #__type_Container Or
                *this\type = #__type_Spin Or
                *this\type = #__type_ButtonImage Or
                *this\type = #__type_Button Or
@@ -289,10 +291,10 @@ CompilerIf #PB_Compiler_IsMainFile
                
                Define Type = GetType(*g_OBJECT)
                Define Flag = Flag(*g_OBJECT)
-               Define type$ = ClassFromType(Type)
-               Define flag$ = MakeConstantsString( type$, Flag)
+               Define type$ = TypeString(Type)
+               Define flag$ = MakeString( type$, Flag)
                ; Define flag$ = GetCheckedText(*g_FLAG)
-               ; Define Flag = MakeConstants( flag$ )
+               ; Define Flag = MakeValue( flag$ )
                Debug "make["+flag$+"] "+ Flag +" "+ type$
 ;                If GetState(*g_FLAG)
 ;                   SetFlag( *g_OBJECT, Flag )
@@ -304,7 +306,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_LeftClick
             If *g_FLAG = EventWidget( )  
                Define flag$ = GetCheckedText(*g_FLAG)
-               Define Flag = MakeConstants( flag$ )
+               Define Flag = MakeValue( flag$ )
                Debug "checked["+flag$+"] "+ Flag
                If GetState(*g_FLAG)
                   SetFlag( *g_OBJECT, Flag )
@@ -318,7 +320,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open( 0, 0, 0, Width+205, Height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       *g_TYPE = Widget::ListView(Width, 10, 195, 250) 
       For i=0 To 33
-         AddItem(*g_TYPE, -1, ClassFromType(i))
+         AddItem(*g_TYPE, -1, TypeString(i))
       Next
       SetState(*g_TYPE, 1)
       
@@ -333,9 +335,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 295
-; FirstLine = 284
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 112
+; FirstLine = 108
 ; Folding = -------
 ; EnableXP
 ; DPIAware

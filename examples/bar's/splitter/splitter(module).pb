@@ -6,19 +6,19 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    Global Splitter_1, Splitter_2
   
    Procedure events_widgets( )
-      widget( ) = Splitter_1
-      Debug " - "+ClassFromEvent(WidgetEvent())
-      Debug ""+widget( )\bar\page\pos +" - page\pos"
-      Debug ""+widget( )\bar\page\len +" - page\len"
-      Debug ""+widget( )\bar\page\end +" - page\end"
-      Debug ""+widget( )\bar\page\change +" - page\change"
-      Debug ""+widget( )\bar\percent +" - percent"
-      Debug ""+widget( )\bar\area\len +" - area\len"
-      Debug ""+widget( )\bar\area\end +" - area\end"
-      Debug ""+widget( )\bar\thumb\pos +" - thumb\pos"
-      Debug ""+widget( )\bar\thumb\len +" - thumb\len"
-      Debug ""+widget( )\bar\thumb\end +" - thumb\end"
-      Debug ""+widget( )\bar\thumb\change +" - thumb\change"
+      Widget( ) = Splitter_1
+      Debug " - "+EventString(WidgetEvent())
+      Debug ""+Widget( )\bar\page\pos +" - page\pos"
+      Debug ""+Widget( )\bar\page\len +" - page\len"
+      Debug ""+Widget( )\bar\page\end +" - page\end"
+      Debug ""+Widget( )\bar\page\change +" - page\change"
+      Debug ""+Widget( )\bar\percent +" - percent"
+      Debug ""+Widget( )\bar\area\len +" - area\len"
+      Debug ""+Widget( )\bar\area\end +" - area\end"
+      Debug ""+Widget( )\bar\thumb\pos +" - thumb\pos"
+      Debug ""+Widget( )\bar\thumb\len +" - thumb\len"
+      Debug ""+Widget( )\bar\thumb\end +" - thumb\end"
+      Debug ""+Widget( )\bar\thumb\change +" - thumb\change"
       Debug " - "
    EndProcedure
    
@@ -37,8 +37,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 60)
       Splitter_2 = Splitter(10, 10, 180, 120, Splitter_1, -1)
       
-      widget( ) = Splitter_1
-      Debug widget( )\bar\page\pos
+      Widget( ) = Splitter_1
+      Debug Widget( )\bar\page\pos
       
       Bind( #PB_All, @events_widgets( ), #__event_down )
       Bind( #PB_All, @events_widgets( ), #__event_up )
@@ -67,47 +67,47 @@ CompilerIf #PB_Compiler_IsMainFile
       EndDeclareModule
       
       Module Splitter
-         widget::test_draw_repaint = 1
+         Widget::test_draw_repaint = 1
          
          ;- PUBLIC
          Procedure GetState(Gadget.i)
-            If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-               ProcedureReturn widget::GetState( widget::root( ) )
+            If Widget::ChangeCurrentCanvas( GadgetID(gadget) )
+               ProcedureReturn Widget::GetState( Widget::Root( ) )
             EndIf
          EndProcedure
          
          Procedure GetAttribute(Gadget.i, Attribute.i)
-            If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-               ProcedureReturn widget::GetAttribute( widget::root( ), Attribute )
+            If Widget::ChangeCurrentCanvas( GadgetID(gadget) )
+               ProcedureReturn Widget::GetAttribute( Widget::Root( ), Attribute )
             EndIf
          EndProcedure
          
          Procedure SetState(Gadget.i, State.i)
-            If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-               If widget::SetState( widget::root( ), State) 
-                  widget::PostEventRepaint( widget::root( ) )
+            If Widget::ChangeCurrentCanvas( GadgetID(gadget) )
+               If Widget::SetState( Widget::Root( ), State) 
+                  Widget::PostEventRepaint( Widget::Root( ) )
                EndIf
             EndIf
          EndProcedure
          
          Procedure SetAttribute(Gadget.i, Attribute.i, Value.i)
-            If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-               If widget::SetAttribute( widget::root( ), Attribute, Value)
-                  widget::PostEventRepaint( widget::root( ) )
+            If Widget::ChangeCurrentCanvas( GadgetID(gadget) )
+               If Widget::SetAttribute( Widget::Root( ), Attribute, Value)
+                  Widget::PostEventRepaint( Widget::Root( ) )
                EndIf
             EndIf
          EndProcedure
          
          Procedure Bind(Gadget.i, *callBack, eventtype.i)
-            If widget::ChangeCurrentCanvas( GadgetID(gadget) )
-               If widget::Bind( widget::root( ), *callBack, eventtype)
-                  widget::PostEventRepaint( widget::root( ) )
+            If Widget::ChangeCurrentCanvas( GadgetID(gadget) )
+               If Widget::Bind( Widget::Root( ), *callBack, eventtype)
+                  Widget::PostEventRepaint( Widget::Root( ) )
                EndIf
             EndIf
          EndProcedure
          
          Procedure Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, First.i, Second.i, Flag.i=0)
-            ProcedureReturn widget::Gadget(#PB_GadgetType_Splitter, Gadget, X, Y, Width, Height, "", First, Second, #Null, Flag)
+            ProcedureReturn Widget::Gadget(#PB_GadgetType_Splitter, Gadget, X, Y, Width, Height, "", First, Second, #Null, Flag)
          EndProcedure
       EndModule
    CompilerEndIf
@@ -180,9 +180,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 165
-; FirstLine = 96
-; Folding = +----
+; CursorPosition = 9
+; FirstLine = 5
+; Folding = -----
 ; Optimizer
 ; EnableXP
 ; DPIAware

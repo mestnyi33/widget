@@ -523,7 +523,7 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
                AddItem(*this, -1, "LineColor")
                AddItem(*this, -1, "FrameColor")
                AddItem(*this, -1, "ForeColor")
-               ;                ColorType = MakeConstants("#PB_Gadget_" + GetItemText( *this, 0))
+               ;                ColorType = MakeValue("#PB_Gadget_" + GetItemText( *this, 0))
                ;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
                
             Case #_pi_cursor
@@ -739,16 +739,16 @@ Procedure   PropertiesButton_Events( )
                      Properties_Updates( a_focused( ), "Color" ) 
                      
                   Case #_pi_colortype
-                     ColorType = MakeConstants("#PB_Gadget_" + GetItemText( *g, GetState( *g)))
+                     ColorType = MakeValue("#PB_Gadget_" + GetItemText( *g, GetState( *g)))
                      Properties_SetItemText( ide_inspector_PROPERTIES, __item, GetItemText( *g, GetState( *g)))
                      Properties_Updates( a_focused( ), "Color" ) 
                      
                   Case #_pi_FLAG
-                     Flag( a_focused( ), MakeConstants( GetItemText( *g, GetState( *g))), #True )
+                     Flag( a_focused( ), MakeValue( GetItemText( *g, GetState( *g))), #True )
                      Properties_Updates( a_focused( ), "Flag" ) 
                      
                   Case #_pi_fontstyle
-                     If ChangeFontStyle( a_focused( ), MakeConstants( "#PB_Font_"+GetItemText( *g, GetState(*g))))
+                     If ChangeFontStyle( a_focused( ), MakeValue( "#PB_Font_"+GetItemText( *g, GetState(*g))))
                         Properties_Updates( a_focused( ), "Font" )
                      EndIf
                      
@@ -1224,7 +1224,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       EndIf
       
       If type$ = "Focus" Or type$ = "Flag"
-         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, MakeString( ClassFromType(*object\type), *object\flag ))
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, MakeString( TypeString(*object\type), *object\flag ))
       EndIf
       If type$ = "Focus" Or type$ = "Color" 
          Define color.l = GetColor( *object, ColorType, ColorState ) ;& $FFFFFF | *object\color\_alpha << 24
@@ -1257,7 +1257,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       ;\\
       If type$ = "Focus"
          If a_focused( )
-            Properties_AddFlags( ide_inspector_PROPERTIES, #_pi_flag, MakePBFlags( GetType( a_focused( ))))
+            Properties_AddFlags( ide_inspector_PROPERTIES, #_pi_flag, PBFlagString( GetType( a_focused( ))))
          EndIf
          
       Else
@@ -1394,7 +1394,7 @@ Procedure  new_widget_paste( )
          
          
          new_widget_add( *copy( )\parent, 
-                         ClassFromType(*copy( )\type), 
+                         TypeString(*copy( )\type), 
                          X(*copy( ), #__c_container)+copy_x,
                          Y(*copy( ), #__c_container)+copy_y, 
                          Width(*copy( ), #__c_frame),
@@ -1550,9 +1550,9 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
          ;Debug ""+*parent +" "+ newtype$
          ;\\ второй метод формирования названия переменной
          ;          If *parent = ide_design_MDI
-         ;             newtype$ = ClassFromType( *new\type )+"_"+CountType( *new , 2 )
+         ;             newtype$ = TypeString( *new\type )+"_"+CountType( *new , 2 )
          ;          Else
-         ;             newtype$ = ClassFromType( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
+         ;             newtype$ = TypeString( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
          ;          EndIf
          ;\\
          SetClass( *new, UCase(newtype$) )
@@ -1644,7 +1644,7 @@ Procedure new_widget_events( )
             EndIf
             
             ;
-            DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType( GetType(*g))+"_" ))
+            DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+TypeString( GetType(*g))+"_" ))
          EndIf
          ;
       Case #__event_Focus
@@ -2140,7 +2140,7 @@ Procedure   ide_inspector_VIEW_ADD_ITEMS( *new._s_widget )
          Protected img =- 1
          count = CountItems( ide_design_ELEMENTS )
          For i = 0 To count - 1
-            If LCase( ClassFromType( GetType(*new))) = LCase( GetItemText( ide_design_ELEMENTS, i ))
+            If LCase( TypeString( GetType(*new))) = LCase( GetItemText( ide_design_ELEMENTS, i ))
                img = GetItemData( ide_design_ELEMENTS, i )
                Break
             EndIf
@@ -2425,7 +2425,7 @@ Procedure   ide_events( )
    Protected __event = WidgetEvent( )
    Protected __item = WidgetEventItem( )
    Protected __data = WidgetEventData( )
-   ; Debug ""+ClassFromEvent(__event) +" "+ GetClass(*g)
+   ; Debug ""+EventString(__event) +" "+ GetClass(*g)
    
    Select __event
       Case #__event_Focus
@@ -2562,7 +2562,7 @@ Procedure   ide_events( )
                      EndIf
                   EndIf
                   If argument
-                     If name$ = ClassFromType( GetType( object ))
+                     If name$ = TypeString( GetType( object ))
                         argument + 1
                      EndIf
                      If name$ = GetClass( object )
@@ -3102,9 +3102,9 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 1249
-; FirstLine = 1245
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 2427
+; FirstLine = 2423
 ; Folding = -------------------------------------------------------n-
 ; EnableXP
 ; DPIAware

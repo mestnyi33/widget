@@ -162,8 +162,8 @@ Procedure   AddImage( key$, file$, flags=0 )
       Protected load$ = file$
       file$ = RemoveString( file$, " " )
       file$ = RemoveString( file$, Chr('"') )
-      file$ = MakeConstantsString( StringField( file$, 1, "+" )) + StringField( file$, 2, "+" )
-      ; file$ = MakeConstantsString( StringField( file$, 1, "+" )) + Trim( Trim( StringField( file$, 2, "+" )), Chr('"') )
+      file$ = MakeCompiler( StringField( file$, 1, "+" )) + StringField( file$, 2, "+" )
+      ; file$ = MakeCompiler( StringField( file$, 1, "+" )) + Trim( Trim( StringField( file$, 2, "+" )), Chr('"') )
       Image = LoadImage( #PB_Any, file$ )
       file$ = load$ + Chr('"')
    Else
@@ -1020,7 +1020,7 @@ Procedure   MakeLine( *mdi, string$, findtext$ )
                   
                   ; flag
                   If flag$
-                     flags = MakeConstants(Flag$)
+                     flags = MakeValue(Flag$)
                   EndIf
                   
                   ; window parent ID
@@ -1091,7 +1091,7 @@ Procedure   MakeLine( *mdi, string$, findtext$ )
                      Case "LoadFont"
                         text$ = Trim( param1$, Chr('"'))
                         param2 = Val( param2$ )
-                        param3 = MakeConstants( param3$ )
+                        param3 = MakeValue( param3$ )
                         
                         AddFont( id$, text$, param2, param3 )
                         
@@ -1117,7 +1117,7 @@ Procedure   MakeLine( *mdi, string$, findtext$ )
                         *g = MakeID( id$, *mdi ) 
                         If *g
                            *g\ChangeColor = 1
-                           SetColor( *g, MakeConstants( param1$ ), MakeFunc( arg$, 3 ))
+                           SetColor( *g, MakeValue( param1$ ), MakeFunc( arg$, 3 ))
                         EndIf
                         
                      Case "SetWindowColor"
@@ -1139,7 +1139,7 @@ Procedure   MakeLine( *mdi, string$, findtext$ )
                            EndIf
                            text$ = Trim( param2$, Chr('"'))
                            param3 = Val( param3$ )
-                           flags = MakeConstants( param4$ )
+                           flags = MakeValue( param4$ )
                            ;
                            AddItem( *g, param1, text$, param3, flags )
                            If IsContainer( *g ) > 0
@@ -1285,7 +1285,7 @@ EndProcedure
 
 Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
    Protected result$, function$, x$, y$, width$, height$, text$, param1$, param2$, param3$, flag$, quotetext$
-   Protected type$ = ClassFromType( GetType(*g) )
+   Protected type$ = TypeString( GetType(*g) )
    Protected id$ = GetClass(*g)
    
    ; coordinate
@@ -2047,9 +2047,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 165
-; FirstLine = 153
-; Folding = -f-----f------------------f9-4-----4r3f------+HA9--+--
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 1287
+; FirstLine = 1229
+; Folding = -f-----f------------------f9-------4r3f------+HA9--+--
 ; EnableXP
 ; DPIAware

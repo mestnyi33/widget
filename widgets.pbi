@@ -1668,19 +1668,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   GetAtPoint( *root._s_root, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
       Declare.i Sticky( *window = #PB_Default, state.b = #PB_Default )
       
+      Declare$  PBEventString( event.i )
+      Declare$  PBFlagString( Type )
+      Declare.i PBEventType( event.i )
+      ;
       Declare.q ToPBFlag( Type, Flag.q )
       Declare.q FromPBFlag( Type, Flag.q )
       Declare.q Flag( *this, Flag.q = #Null, state.b = #PB_Default )
-      Declare.s MakePBFlags( Type )
-      Declare.q MakeConstants( string$ )
-      Declare$  MakeConstantsString( string$ )
-      Declare$  MakeString( Class$, Constant.q ) 
       
-      Declare.i PBEventType( event.i )
+      Declare$  FlagString( flags.q )
+      Declare$  MakeCompiler( string$ )
+      Declare$  MakeString( Class$, Constant.q ) 
+      Declare.q MakeValue( string$ )
+      
       Declare.i TypeFromClass( class.s )
-      Declare.s ClassFromType( Type )
-      Declare.s ClassFromEvent( event.i )
-      Declare.s MakeFlag( flags.q )
+      Declare.s TypeString( Type )
+      Declare.s EventString( event.i )
       
       Declare.b Draw_Arrow( direction.a, X.l, Y.l, size.a, mode.b = 1, framesize.a = 0, Color.i = $ff000000 )
       Declare.b Draw( *this )
@@ -9557,7 +9560,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\class = class
             ;
             If *this\tabbar
-               *this\tabbar\class = ClassFromType( *this\tabbar\type ) +"-"+ *this\class
+               *this\tabbar\class = TypeString( *this\tabbar\type ) +"-"+ *this\class
             EndIf
             ProcedureReturn *this
          EndIf
@@ -14196,7 +14199,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;
-            *this = Create( *parent, "["+*parent\class +"]-"+ ClassFromType( Type ), Type,
+            *this = Create( *parent, "["+*parent\class +"]-"+ TypeString( Type ), Type,
                             0, 0, 0, 0, #Null$, Flag | #__flag_child, 0, 0, 0, 0, 0, 30 )
             
             If *parent\type = #__type_Panel Or Type = #__type_ToolBar
@@ -14923,10 +14926,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; show popup bar
          If *tab\popupbar And *tab\popupbar\hide
             If *this\bar\vertical
-               ; Debug "  show POPUPMENUBARS "+ClassFromEvent(event)
+               ; Debug "  show POPUPMENUBARS "+EventString(event)
                DisplayPopupBar( *tab\popupbar, *this )
             ElseIf ( *tab\_focus Or *tab\checked )
-               ; Debug "  show TOOLBAR "+ClassFromEvent(event)
+               ; Debug "  show TOOLBAR "+EventString(event)
                DisplayPopupBar( *tab\popupbar, *this )
             EndIf
          EndIf
@@ -14970,396 +14973,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure   tt_close( *tt._s_tt )
       EndProcedure
       
-      
       ;-
-      Procedure.i PBEventType( wEvent.i )
-         If wEvent = #__event_MouseEnter
-            ProcedureReturn #PB_EventType_MouseEnter
-         EndIf
-         If wEvent = #__event_MouseLeave
-            ProcedureReturn #PB_EventType_MouseLeave
-         EndIf
-         If wEvent = #__event_MouseMove
-            ProcedureReturn #PB_EventType_MouseMove
-         EndIf
-         If wEvent = #__event_Focus
-            ProcedureReturn #PB_EventType_Focus
-         EndIf
-         If wEvent = #__event_LostFocus
-            ProcedureReturn #PB_EventType_LostFocus
-         EndIf
-         
-         If wEvent = #__event_Resize
-            ProcedureReturn #PB_EventType_Resize
-         EndIf
-         If wEvent = #__event_Change
-            ProcedureReturn #PB_EventType_Change
-         EndIf
-         If wEvent = #__event_StatusChange
-            ProcedureReturn #PB_EventType_StatusChange
-         EndIf
-         If wEvent = #__event_Down
-            ProcedureReturn #PB_EventType_Down
-         EndIf
-         If wEvent = #__event_Up
-            ProcedureReturn #PB_EventType_Up
-         EndIf
-         
-         If wEvent = #__event_DragStart
-            ProcedureReturn #PB_EventType_DragStart
-         EndIf
-         If wEvent = #__event_Input
-            ProcedureReturn #PB_EventType_Input
-         EndIf
-         If wEvent = #__event_KeyDown
-            ProcedureReturn #PB_EventType_KeyDown
-         EndIf
-         If wEvent = #__event_KeyUp
-            ProcedureReturn #PB_EventType_KeyUp
-         EndIf
-         
-         If wEvent = #__event_LeftDown
-            ProcedureReturn #PB_EventType_LeftButtonDown
-         EndIf
-         If wEvent = #__event_LeftUp
-            ProcedureReturn #PB_EventType_LeftButtonUp
-         EndIf
-         If wEvent = #__event_LeftClick
-            ProcedureReturn #PB_EventType_LeftClick
-         EndIf
-         If wEvent = #__event_Left2Click
-            ProcedureReturn #PB_EventType_LeftDoubleClick
-         EndIf
-         
-         If wEvent = #__event_RightDown
-            ProcedureReturn #PB_EventType_RightButtonDown
-         EndIf
-         If wEvent = #__event_RightUp
-            ProcedureReturn #PB_EventType_RightButtonUp
-         EndIf
-         If wEvent = #__event_RightClick
-            ProcedureReturn #PB_EventType_RightClick
-         EndIf
-         If wEvent = #__event_Right2Click
-            ProcedureReturn #PB_EventType_RightDoubleClick
-         EndIf
-         
-         If wEvent = #__event_Draw
-            ProcedureReturn #PB_EventType_Repaint
-         EndIf
-      EndProcedure
-      
-      Procedure.s ClassFromPBEvent( event.i )
-         Protected result.s
-         
-         Select event
-            Case #PB_EventType_MouseEnter       : result.s = "MouseEnter"           ; The mouse cursor entered the gadget
-            Case #PB_EventType_MouseLeave       : result.s = "MouseLeave"           ; The mouse cursor left the gadget
-            Case #PB_EventType_MouseMove        : result.s = "MouseMove"            ; The mouse cursor moved
-            Case #PB_EventType_MouseWheel       : result.s = "MouseWheel"           ; The mouse wheel was moved
-            Case #PB_EventType_MouseWheelX      : result.s = "MouseWheelHorizontal" ; The mouse wheel was moved
-            Case #PB_EventType_MouseWheelY      : result.s = "MouseWheelVertical"   ; The mouse wheel was moved
-               
-            Case #PB_EventType_LeftButtonDown   : result.s = "LeftButtonDown"   ; The left mouse button was pressed
-            Case #PB_EventType_LeftButtonUp     : result.s = "LeftButtonUp"     ; The left mouse button was released
-            Case #PB_EventType_LeftClick        : result.s = "LeftClick"        ; A click With the left mouse button
-            Case #PB_EventType_LeftDoubleClick  : result.s = "LeftDoubleClick"  ; A double-click With the left mouse button
-               
-            Case #PB_EventType_RightButtonDown  : result.s = "RightButtonDown" ; The right mouse button was pressed
-            Case #PB_EventType_RightButtonUp    : result.s = "RightButtonUp"   ; The right mouse button was released
-            Case #PB_EventType_RightClick       : result.s = "RightClick"      ; A click With the right mouse button
-            Case #PB_EventType_RightDoubleClick : result.s = "RightDoubleClick"; A double-click With the right mouse button
-               
-            Case #PB_EventType_MiddleButtonDown : result.s = "MiddleButtonDown" ; The middle mouse button was pressed
-            Case #PB_EventType_MiddleButtonUp   : result.s = "MiddleButtonUp"   ; The middle mouse button was released
-            Case #PB_EventType_Focus            : result.s = "Focus"            ; The gadget gained keyboard focus
-            Case #PB_EventType_LostFocus        : result.s = "LostFocus"        ; The gadget lost keyboard focus
-            Case #PB_EventType_KeyDown          : result.s = "KeyDown"          ; A key was pressed
-            Case #PB_EventType_KeyUp            : result.s = "KeyUp"            ; A key was released
-            Case #PB_EventType_Input            : result.s = "Input"            ; Text input was generated
-            Case #PB_EventType_Resize           : result.s = "Resize"           ; The gadget has been resized
-            Case #PB_EventType_StatusChange     : result.s = "StatusChange"
-            Case #PB_EventType_Change           : result.s = "Change"
-            Case #PB_EventType_DragStart        : result.s = "DragStart"
-            Case #PB_EventType_TitleChange      : result.s = "TitleChange"
-            Case #PB_EventType_CloseItem        : result.s = "CloseItem"
-            Case #PB_EventType_SizeItem         : result.s = "SizeItem"
-            Case #PB_EventType_Down             : result.s = "Down"
-            Case #PB_EventType_Up               : result.s = "Up"
-               ;                
-               ;             Case #PB_eventtype_cursor : result.s = "Cursor"
-               ;             Case #PB_eventtype_free : result.s = "Free"
-               ;             Case #PB_eventtype_drop : result.s = "Drop"
-               ;             Case #PB_eventtype_create : result.s = "Create"
-               ;             Case #PB_eventtype_Draw : result.s = "Draw"
-               ;                
-               ;             Case #PB_eventtype_repaint : result.s = "Repaint"
-               ;             Case #PB_eventtype_resizeend : result.s = "ResizeEnd"
-               ;             Case #PB_eventtype_Scrollchange : result.s = "ScrollChange"
-               ;                
-               ;             Case #PB_eventtype_close : result.s = "CloseWindow"
-               ;             Case #PB_eventtype_maximize : result.s = "MaximizeWindow"
-               ;             Case #PB_eventtype_minimize : result.s = "MinimizeWindow"
-               ;             Case #PB_eventtype_restore : result.s = "RestoreWindow"
-               ;             Case #PB_eventtype_ReturnKey : result.s = "returnKey"
-               ;             Case #PB_eventtype_mousewheelX : result.s = "MouseWheelX"
-               ;             Case #PB_eventtype_mousewheelY : result.s = "MouseWheelY"
-         EndSelect
-         
-         ProcedureReturn result.s
-      EndProcedure
-      
-      
-      ;-
-      Procedure.i TypeFromClass( class.s )
-         Protected result.i
-         
-         Select Trim( LCase( class.s ))
-            Case "status"        : result = #__type_StatusBar
-            Case "popupmenu"     : result = #__type_PopupBar
-            Case "tool"          : result = #__type_ToolBar
-            Case "tab"           : result = #__type_TabBar
-            Case "menu"          : result = #__type_MenuBar
-            Case "window"        : result = #__type_window
-               
-            Case "unknown"       : result = #__type_Unknown
-               
-            Case "button"        : result = #__type_Button
-            Case "buttonimage"   : result = #__Type_ButtonImage
-            Case "calendar"      : result = #__type_Calendar
-            Case "checkbox"      : result = #__type_CheckBox
-            Case "combobox"      : result = #__type_ComboBox
-            Case "container"     : result = #__type_Container
-            Case "date"          : result = #__type_Date
-            Case "editor"        : result = #__type_Editor
-            Case "explorercombo" : result = #__type_ExplorerCombo
-            Case "explorerlist"  : result = #__type_ExplorerList
-            Case "explorertree"  : result = #__type_ExplorerTree
-            Case "frame"         : result = #__type_Frame
-            Case "hyperlink"     : result = #__type_HyperLink
-            Case "image"         : result = #__type_image
-            Case "ipaddress"     : result = #__type_IPAddress
-            Case "listicon"      : result = #__type_ListIcon
-            Case "listview"      : result = #__type_ListView
-            Case "mdi"           : result = #__type_MDI
-            Case "option"        : result = #__type_Option
-            Case "panel"         : result = #__type_Panel
-            Case "progress"      : result = #__type_Progress
-            Case "scintilla"     : result = #__type_Scintilla
-            Case "scrollarea"    : result = #__type_ScrollArea
-            Case "scroll"        : result = #__type_Scroll
-            Case "spin"          : result = #__type_Spin
-            Case "splitter"      : result = #__type_Splitter
-            Case "string"        : result = #__type_String
-            Case "text"          : result = #__type_Text
-            Case "track"         : result = #__type_Track
-            Case "tree"          : result = #__type_Tree
-            Case "web"           : result = #__type_Web
-               ;case "property"       : result = #__type_Properties
-               ;Case "canvas" : result = #__type_Canvas
-               ;Case "opengl"    : result = #__type_OpenGL
-               ;Case "shortcut" : result = #__type_Shortcut
-         EndSelect
-         
-         ProcedureReturn result
-      EndProcedure
-      
-      Procedure.s ClassFromType( Type )
-         Protected result$
-         
-         Select Type
-            Case #__type_StatusBar     : result$ = "Status"
-            Case #__type_PopupBar      : result$ = "PopupMenu"
-            Case #__type_ToolBar       : result$ = "ToolBar"
-            Case #__type_TabBar        : result$ = "Tab"
-            Case #__type_MenuBar       : result$ = "Menu"
-            Case #__type_Window        : result$ = "Window"
-               
-            Case #__type_Unknown       : result$ = "Create"
-               
-            Case #__type_Button        : result$ = "Button"
-            Case #__Type_ButtonImage   : result$ = "ButtonImage"
-            Case #__type_String        : result$ = "String"
-            Case #__type_Text          : result$ = "Text"
-            Case #__type_CheckBox      : result$ = "CheckBox"
-            Case #__type_Option        : result$ = "Option"
-            Case #__type_ListView      : result$ = "ListView"
-            Case #__type_Frame         : result$ = "Frame"
-            Case #__type_ComboBox      : result$ = "ComboBox"
-            Case #__type_Image         : result$ = "Image"
-            Case #__type_HyperLink     : result$ = "HyperLink"
-            Case #__type_Container     : result$ = "Container"
-            Case #__type_ListIcon      : result$ = "ListIcon"
-            Case #__type_IPAddress     : result$ = "IPAddress"
-            Case #__type_Progress      : result$ = "Progress"
-            Case #__type_Scroll        : result$ = "Scroll"
-            Case #__type_ScrollArea    : result$ = "ScrollArea"
-            Case #__type_Track         : result$ = "Track"
-            Case #__type_Web           : result$ = "Web"
-            Case #__type_Calendar      : result$ = "Calendar"
-            Case #__type_Date          : result$ = "Date"
-            Case #__type_Editor        : result$ = "Editor"
-            Case #__type_ExplorerList  : result$ = "ExplorerList"
-            Case #__type_ExplorerTree  : result$ = "ExplorerTree"
-            Case #__type_ExplorerCombo : result$ = "ExplorerCombo"
-            Case #__type_Spin          : result$ = "Spin"
-            Case #__type_Tree          : result$ = "Tree"
-            Case #__type_Panel         : result$ = "Panel"
-            Case #__type_Splitter      : result$ = "Splitter"
-            Case #__type_MDI           : result$ = "Mdi"
-            Case #__type_Scintilla     : result$ = "Scintilla"
-         EndSelect
-         
-         ProcedureReturn result$
-      EndProcedure
-      
-      Procedure.s ClassFromEvent( event.i )
-         Protected result$
-         
-         Select event
-            Case #__event_CursorChange    : result$ = "CursorChange"
-            Case #__event_free            : result$ = "Free"
-            Case #__event_Drop            : result$ = "Drop"
-            Case #__event_Draw            : result$ = "Draw"
-               ;Case #__event_SizeItem    : result$ = "SizeItem"
-               
-            Case #__event_ScrollChange    : result$ = "ScrollChange"
-               
-            Case #__event_close           : result$ = "CloseWindow"
-            Case #__event_maximize        : result$ = "MaximizeWindow"
-            Case #__event_minimize        : result$ = "MinimizeWindow"
-            Case #__event_restore         : result$ = "RestoreWindow"
-               
-            Case #__event_MouseEnter      : result$ = "MouseEnter"       ; The mouse cursor entered the gadget
-            Case #__event_MouseLeave      : result$ = "MouseLeave"       ; The mouse cursor left the gadget
-            Case #__event_MouseMove       : result$ = "MouseMove"        ; The mouse cursor moved
-            Case #__event_MouseWheel      : result$ = "MouseWheel"       ; The mouse wheel was moved
-            Case #__event_LeftDown        : result$ = "LeftButtonDown"   ; The left mouse button was pressed
-            Case #__event_LeftUp          : result$ = "LeftButtonUp"     ; The left mouse button was released
-            Case #__event_LeftClick       : result$ = "LeftClick"        ; A click With the left mouse button
-            Case #__event_Left2Click      : result$ = "Left2Click"       ; A double-click With the left mouse button
-            Case #__event_Left3Click      : result$ = "Left3Click"       ; A 3-click With the left mouse button
-            Case #__event_RightDown       : result$ = "RightButtonDown"  ; The right mouse button was pressed
-            Case #__event_RightUp         : result$ = "RightButtonUp"    ; The right mouse button was released
-            Case #__event_RightClick      : result$ = "RightClick"       ; A click With the right mouse button
-            Case #__event_Right2Click     : result$ = "Right2Click"      ; A double-click With the right mouse button
-            Case #__event_Right3Click     : result$ = "Right3Click"      ; A 3-click With the right mouse button
-            Case #__event_MiddleDown      : result$ = "MiddleButtonDown" ; The middle mouse button was pressed
-            Case #__event_MiddleUp        : result$ = "MiddleButtonUp"   ; The middle mouse button was released
-            Case #__event_Focus           : result$ = "Focus"            ; The gadget gained keyboard focus
-            Case #__event_LostFocus       : result$ = "LostFocus"        ; The gadget lost keyboard focus
-            Case #__event_KeyDown         : result$ = "KeyDown"          ; A key was pressed
-            Case #__event_Input           : result$ = "Input"            ; Text input was generated
-            Case #__event_Return          : result$ = "ReturnKey"
-            Case #__event_KeyUp           : result$ = "KeyUp"            ; A key was released
-            Case #__event_ResizeBegin     : result$ = "ResizeBegin"
-            Case #__event_Resize          : result$ = "Resize"           ; The gadget has been resized
-            Case #__event_ResizeEnd       : result$ = "ResizeEnd"
-            Case #__event_StatusChange    : result$ = "StatusChange"
-               ;Case #__event_TitleChange : result$ = "TitleChange"
-            Case #__event_Change          : result$ = "Change"
-            Case #__event_DragStart       : result$ = "DragStart"
-               
-            Case #__event_Down            : result$ = "Down"
-            Case #__event_Up              : result$ = "Up"
-         EndSelect
-         
-         ProcedureReturn result$
-      EndProcedure
-      
-      Procedure.s MakeFlag( flags.q )
-         Protected result$
-         
-         If flags & #PB_Window_SystemMenu
-            flags &~ #PB_Window_SystemMenu
-            result$ + " #__flag_SystemMenu |"
-         EndIf
-         If flags & #PB_Window_SizeGadget
-            ;flags &~ #PB_Window_SizeGadget
-            result$ + " #__flag_SizeGadget |"
-         EndIf
-         If flags & #PB_Window_ScreenCentered
-            result$ + " #__flag_ScreenCentered |"
-         EndIf
-         If flags & #PB_Window_Invisible
-            result$ + " #__flag_Invisible |"
-         EndIf
-         If flags & #PB_Window_MaximizeGadget
-            ;flags &~ #PB_Window_MaximizeGadget
-            result$ + " #__flag_MaximizeGadget |"
-         EndIf
-         If flags & #PB_Window_MinimizeGadget
-            ;flags &~ #PB_Window_MinimizeGadget
-            result$ + " #__flag_MinimizeGadget |"
-         EndIf
-         If flags & #PB_Window_NoActivate = #PB_Window_NoActivate
-            result$ + " #__flag_NoActivate |"
-         EndIf
-         If flags & #PB_Window_BorderLess
-            result$ + " #__flag_BorderLess |"
-         EndIf
-         If flags & #PB_Window_NoGadgets
-            result$ + " #__flag_NoGadgets |"
-         EndIf
-         If flags & #PB_Window_TitleBar = #PB_Window_TitleBar
-            result$ + " #__flag_TitleBar |"
-         EndIf
-         If flags & #PB_Window_Tool 
-            result$ + " #__flag_Tool |" 
-         EndIf
-         If flags & #PB_Window_WindowCentered 
-            result$ + " #__flag_WindowCentered |" 
-         EndIf
-         
-         ;\\ create-flags
-         If flags & #__flag_button_Default : result$ +" #__flag_button_Default |": EndIf  
-         If flags & #__flag_Collapsed      : result$ +" #__flag_Collapsed |": EndIf     
-         If flags & #__flag_OptionBoxes    : result$ +" #__flag_OptionBoxes |": EndIf    
-         If flags & #__flag_CheckBoxes     : result$ +" #__flag_CheckBoxes |": EndIf     
-         If flags & #__flag_ThreeState     : result$ +" #__flag_ThreeState |": EndIf      
-         If flags & #__flag_RowClickSelect : result$ +" #__flag_RowClickSelect |": EndIf   
-         If flags & #__flag_RowMultiSelect : result$ +" #__flag_RowMultiSelect |": EndIf  
-         If flags & #__flag_RowFullSelect  : result$ +" #__flag_RowFullSelect |": EndIf   
-         If flags & #__flag_GridLines      : result$ +" #__flag_GridLines |": EndIf       
-         
-         If flags & #__flag_BorderRaised   : result$ +" #__flag_BorderRaised |": EndIf   
-         If flags & #__flag_BorderDouble   : result$ +" #__flag_BorderDouble |": EndIf    
-         If flags & #__flag_BorderSingle   : result$ +" #__flag_BorderSingle |": EndIf      
-         If flags & #__flag_Borderless     : result$ +" #__flag_Borderless |": EndIf      
-         If flags & #__flag_BorderFlat     : result$ +" #__flag_BorderFlat |": EndIf     
-         ;
-         If flags & #__flag_Child          : result$ +" #__flag_Child |": EndIf          
-         If flags & #__flag_Invert         : result$ +" #__flag_Invert |": EndIf        
-         If flags & #__flag_Vertical       : result$ +" #__flag_Vertical |": EndIf       
-         If flags & #__flag_Transparent    : result$ +" #__flag_Transparent |": EndIf    
-         ;
-         If flags & #__flag_NoFocus        : result$ +" #__flag_NoFocus |": EndIf        
-         If flags & #__flag_NoLines        : result$ +" #__flag_NoLines |": EndIf       
-         If flags & #__flag_NoButtons      : result$ +" #__flag_NoButtons |": EndIf
-         If flags & #__flag_NoGadgets      : result$ +" #__flag_NoGadgets |": EndIf      
-         ;If flags & #__flag_NoScrollBars   : result$ +" #__flag_NoScrollBars |": EndIf    
-         ;
-         If flags & #__flag_TextPassword   : result$ +" #__flag_TextPassword |": EndIf    
-         If flags & #__flag_TextWordWrap   : result$ +" #__flag_TextWordWrap |": EndIf   
-         If flags & #__flag_TextMultiLine  : result$ +" #__flag_TextMultiLine |": EndIf  
-         If flags & #__flag_TextInLine     : result$ +" #__flag_TextInLine |": EndIf    
-         If flags & #__flag_TextNumeric    : result$ +" #__flag_TextNumeric |": EndIf   
-         If flags & #__flag_TextReadonly   : result$ +" #__flag_TextReadonly |": EndIf  
-         If flags & #__flag_TextLowerCase  : result$ +" #__flag_TextLowerCase |": EndIf   
-         If flags & #__flag_TextUpperCase  : result$ +" #__flag_TextUpperCase |": EndIf  
-         
-         If flags & #__flag_Left           : result$ +" #__flag_Left |": EndIf    
-         If flags & #__flag_Top            : result$ +" #__flag_Top |": EndIf   
-         If flags & #__flag_Right          : result$ +" #__flag_Right |": EndIf  
-         If flags & #__flag_Bottom         : result$ +" #__flag_Bottom |": EndIf   
-         If flags & #__flag_Center         : result$ +" #__flag_Center |": EndIf  
-         
-         ProcedureReturn Trim( Trim(result$), "|" )
-      EndProcedure
-      
-      
-      ;-
-      Procedure$  MakePBFlags( Type ) ; 
+      Procedure$  PBFlagString( Type ) ; 
          Protected result$
          
          Select Type
@@ -15560,27 +15175,389 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result$
       EndProcedure
       
-      Procedure$  MakeConstantsString( string$ )
-         Protected i, result$, count, str$
-         
-         If string$
-            count = CountString(string$,"|")
-            For I = 0 To count
-               str$ = Trim(StringField(string$,(I+1),"|"))
-               
-               Select str$
-                  Case "#PB_Compiler_File"      : result$ = #PB_Compiler_File  
-                  Case "#PB_Compiler_FilePath"  : result$ = #PB_Compiler_FilePath  
-                  Case "#PB_Compiler_Filename"  : result$ = #PB_Compiler_Filename  
-                  Case "#PB_Compiler_Home"      : result$ = ReplaceString( #PB_Compiler_Home, "\", "/")   
-                  Case "#PB_Compiler_Module"    : result$ = #PB_Compiler_Module  
-                  Case "#PB_Compiler_Procedure" : result$ = #PB_Compiler_Procedure  
-               EndSelect
-               
-            Next
+      Procedure.i PBEventType( event.i )
+         If event = #__event_MouseEnter
+            ProcedureReturn #PB_EventType_MouseEnter
+         EndIf
+         If event = #__event_MouseLeave
+            ProcedureReturn #PB_EventType_MouseLeave
+         EndIf
+         If event = #__event_MouseMove
+            ProcedureReturn #PB_EventType_MouseMove
+         EndIf
+         If event = #__event_Focus
+            ProcedureReturn #PB_EventType_Focus
+         EndIf
+         If event = #__event_LostFocus
+            ProcedureReturn #PB_EventType_LostFocus
          EndIf
          
+         If event = #__event_Resize
+            ProcedureReturn #PB_EventType_Resize
+         EndIf
+         If event = #__event_Change
+            ProcedureReturn #PB_EventType_Change
+         EndIf
+         If event = #__event_StatusChange
+            ProcedureReturn #PB_EventType_StatusChange
+         EndIf
+         If event = #__event_Down
+            ProcedureReturn #PB_EventType_Down
+         EndIf
+         If event = #__event_Up
+            ProcedureReturn #PB_EventType_Up
+         EndIf
+         
+         If event = #__event_DragStart
+            ProcedureReturn #PB_EventType_DragStart
+         EndIf
+         If event = #__event_Input
+            ProcedureReturn #PB_EventType_Input
+         EndIf
+         If event = #__event_KeyDown
+            ProcedureReturn #PB_EventType_KeyDown
+         EndIf
+         If event = #__event_KeyUp
+            ProcedureReturn #PB_EventType_KeyUp
+         EndIf
+         
+         If event = #__event_LeftDown
+            ProcedureReturn #PB_EventType_LeftButtonDown
+         EndIf
+         If event = #__event_LeftUp
+            ProcedureReturn #PB_EventType_LeftButtonUp
+         EndIf
+         If event = #__event_LeftClick
+            ProcedureReturn #PB_EventType_LeftClick
+         EndIf
+         If event = #__event_Left2Click
+            ProcedureReturn #PB_EventType_LeftDoubleClick
+         EndIf
+         
+         If event = #__event_RightDown
+            ProcedureReturn #PB_EventType_RightButtonDown
+         EndIf
+         If event = #__event_RightUp
+            ProcedureReturn #PB_EventType_RightButtonUp
+         EndIf
+         If event = #__event_RightClick
+            ProcedureReturn #PB_EventType_RightClick
+         EndIf
+         If event = #__event_Right2Click
+            ProcedureReturn #PB_EventType_RightDoubleClick
+         EndIf
+         
+         If event = #__event_Draw
+            ProcedureReturn #PB_EventType_Repaint
+         EndIf
+      EndProcedure
+      
+      Procedure.s PBEventString( eventtype.i )
+         Protected result.s
+         
+         Select eventtype
+            Case #PB_EventType_MouseEnter       : result.s = "MouseEnter"           ; The mouse cursor entered the gadget
+            Case #PB_EventType_MouseLeave       : result.s = "MouseLeave"           ; The mouse cursor left the gadget
+            Case #PB_EventType_MouseMove        : result.s = "MouseMove"            ; The mouse cursor moved
+            Case #PB_EventType_MouseWheel       : result.s = "MouseWheel"           ; The mouse wheel was moved
+            Case #PB_EventType_MouseWheelX      : result.s = "MouseWheelHorizontal" ; The mouse wheel was moved
+            Case #PB_EventType_MouseWheelY      : result.s = "MouseWheelVertical"   ; The mouse wheel was moved
+               
+            Case #PB_EventType_LeftButtonDown   : result.s = "LeftButtonDown"   ; The left mouse button was pressed
+            Case #PB_EventType_LeftButtonUp     : result.s = "LeftButtonUp"     ; The left mouse button was released
+            Case #PB_EventType_LeftClick        : result.s = "LeftClick"        ; A click With the left mouse button
+            Case #PB_EventType_LeftDoubleClick  : result.s = "LeftDoubleClick"  ; A double-click With the left mouse button
+               
+            Case #PB_EventType_RightButtonDown  : result.s = "RightButtonDown" ; The right mouse button was pressed
+            Case #PB_EventType_RightButtonUp    : result.s = "RightButtonUp"   ; The right mouse button was released
+            Case #PB_EventType_RightClick       : result.s = "RightClick"      ; A click With the right mouse button
+            Case #PB_EventType_RightDoubleClick : result.s = "RightDoubleClick"; A double-click With the right mouse button
+               
+            Case #PB_EventType_MiddleButtonDown : result.s = "MiddleButtonDown" ; The middle mouse button was pressed
+            Case #PB_EventType_MiddleButtonUp   : result.s = "MiddleButtonUp"   ; The middle mouse button was released
+            Case #PB_EventType_Focus            : result.s = "Focus"            ; The gadget gained keyboard focus
+            Case #PB_EventType_LostFocus        : result.s = "LostFocus"        ; The gadget lost keyboard focus
+            Case #PB_EventType_KeyDown          : result.s = "KeyDown"          ; A key was pressed
+            Case #PB_EventType_KeyUp            : result.s = "KeyUp"            ; A key was released
+            Case #PB_EventType_Input            : result.s = "Input"            ; Text input was generated
+            Case #PB_EventType_Resize           : result.s = "Resize"           ; The gadget has been resized
+            Case #PB_EventType_StatusChange     : result.s = "StatusChange"
+            Case #PB_EventType_Change           : result.s = "Change"
+            Case #PB_EventType_DragStart        : result.s = "DragStart"
+            Case #PB_EventType_TitleChange      : result.s = "TitleChange"
+            Case #PB_EventType_CloseItem        : result.s = "CloseItem"
+            Case #PB_EventType_SizeItem         : result.s = "SizeItem"
+            Case #PB_EventType_Down             : result.s = "Down"
+            Case #PB_EventType_Up               : result.s = "Up"
+               ;                
+               ;             Case #PB_eventtype_cursor : result.s = "Cursor"
+               ;             Case #PB_eventtype_free : result.s = "Free"
+               ;             Case #PB_eventtype_drop : result.s = "Drop"
+               ;             Case #PB_eventtype_create : result.s = "Create"
+               ;             Case #PB_eventtype_Draw : result.s = "Draw"
+               ;                
+               ;             Case #PB_eventtype_repaint : result.s = "Repaint"
+               ;             Case #PB_eventtype_resizeend : result.s = "ResizeEnd"
+               ;             Case #PB_eventtype_Scrollchange : result.s = "ScrollChange"
+               ;                
+               ;             Case #PB_eventtype_close : result.s = "CloseWindow"
+               ;             Case #PB_eventtype_maximize : result.s = "MaximizeWindow"
+               ;             Case #PB_eventtype_minimize : result.s = "MinimizeWindow"
+               ;             Case #PB_eventtype_restore : result.s = "RestoreWindow"
+               ;             Case #PB_eventtype_ReturnKey : result.s = "returnKey"
+               ;             Case #PB_eventtype_mousewheelX : result.s = "MouseWheelX"
+               ;             Case #PB_eventtype_mousewheelY : result.s = "MouseWheelY"
+         EndSelect
+         
+         ProcedureReturn result.s
+      EndProcedure
+      
+      ;-
+      Procedure.i TypeFromClass( class.s )
+         Protected result.i
+         
+         Select Trim( LCase( class.s ))
+            Case "status"        : result = #__type_StatusBar
+            Case "popupmenu"     : result = #__type_PopupBar
+            Case "tool"          : result = #__type_ToolBar
+            Case "tab"           : result = #__type_TabBar
+            Case "menu"          : result = #__type_MenuBar
+            Case "window"        : result = #__type_window
+               
+            Case "unknown"       : result = #__type_Unknown
+               
+            Case "button"        : result = #__type_Button
+            Case "buttonimage"   : result = #__Type_ButtonImage
+            Case "calendar"      : result = #__type_Calendar
+            Case "checkbox"      : result = #__type_CheckBox
+            Case "combobox"      : result = #__type_ComboBox
+            Case "container"     : result = #__type_Container
+            Case "date"          : result = #__type_Date
+            Case "editor"        : result = #__type_Editor
+            Case "explorercombo" : result = #__type_ExplorerCombo
+            Case "explorerlist"  : result = #__type_ExplorerList
+            Case "explorertree"  : result = #__type_ExplorerTree
+            Case "frame"         : result = #__type_Frame
+            Case "hyperlink"     : result = #__type_HyperLink
+            Case "image"         : result = #__type_image
+            Case "ipaddress"     : result = #__type_IPAddress
+            Case "listicon"      : result = #__type_ListIcon
+            Case "listview"      : result = #__type_ListView
+            Case "mdi"           : result = #__type_MDI
+            Case "option"        : result = #__type_Option
+            Case "panel"         : result = #__type_Panel
+            Case "progress"      : result = #__type_Progress
+            Case "scintilla"     : result = #__type_Scintilla
+            Case "scrollarea"    : result = #__type_ScrollArea
+            Case "scroll"        : result = #__type_Scroll
+            Case "spin"          : result = #__type_Spin
+            Case "splitter"      : result = #__type_Splitter
+            Case "string"        : result = #__type_String
+            Case "text"          : result = #__type_Text
+            Case "track"         : result = #__type_Track
+            Case "tree"          : result = #__type_Tree
+            Case "web"           : result = #__type_Web
+               ;case "property"       : result = #__type_Properties
+               ;Case "canvas" : result = #__type_Canvas
+               ;Case "opengl"    : result = #__type_OpenGL
+               ;Case "shortcut" : result = #__type_Shortcut
+         EndSelect
+         
+         ProcedureReturn result
+      EndProcedure
+      
+      Procedure.s TypeString( Type )
+         Protected result$
+         
+         Select Type
+            Case #__type_StatusBar     : result$ = "Status"
+            Case #__type_PopupBar      : result$ = "PopupMenu"
+            Case #__type_ToolBar       : result$ = "ToolBar"
+            Case #__type_TabBar        : result$ = "Tab"
+            Case #__type_MenuBar       : result$ = "Menu"
+            Case #__type_Window        : result$ = "Window"
+               
+            Case #__type_Unknown       : result$ = "Create"
+               
+            Case #__type_Button        : result$ = "Button"
+            Case #__Type_ButtonImage   : result$ = "ButtonImage"
+            Case #__type_String        : result$ = "String"
+            Case #__type_Text          : result$ = "Text"
+            Case #__type_CheckBox      : result$ = "CheckBox"
+            Case #__type_Option        : result$ = "Option"
+            Case #__type_ListView      : result$ = "ListView"
+            Case #__type_Frame         : result$ = "Frame"
+            Case #__type_ComboBox      : result$ = "ComboBox"
+            Case #__type_Image         : result$ = "Image"
+            Case #__type_HyperLink     : result$ = "HyperLink"
+            Case #__type_Container     : result$ = "Container"
+            Case #__type_ListIcon      : result$ = "ListIcon"
+            Case #__type_IPAddress     : result$ = "IPAddress"
+            Case #__type_Progress      : result$ = "Progress"
+            Case #__type_Scroll        : result$ = "Scroll"
+            Case #__type_ScrollArea    : result$ = "ScrollArea"
+            Case #__type_Track         : result$ = "Track"
+            Case #__type_Web           : result$ = "Web"
+            Case #__type_Calendar      : result$ = "Calendar"
+            Case #__type_Date          : result$ = "Date"
+            Case #__type_Editor        : result$ = "Editor"
+            Case #__type_ExplorerList  : result$ = "ExplorerList"
+            Case #__type_ExplorerTree  : result$ = "ExplorerTree"
+            Case #__type_ExplorerCombo : result$ = "ExplorerCombo"
+            Case #__type_Spin          : result$ = "Spin"
+            Case #__type_Tree          : result$ = "Tree"
+            Case #__type_Panel         : result$ = "Panel"
+            Case #__type_Splitter      : result$ = "Splitter"
+            Case #__type_MDI           : result$ = "Mdi"
+            Case #__type_Scintilla     : result$ = "Scintilla"
+         EndSelect
+         
          ProcedureReturn result$
+      EndProcedure
+      
+      Procedure.s EventString( event.i )
+         Protected result$
+         
+         Select event
+            Case #__event_CursorChange    : result$ = "CursorChange"
+            Case #__event_free            : result$ = "Free"
+            Case #__event_Drop            : result$ = "Drop"
+            Case #__event_Draw            : result$ = "Draw"
+               ;Case #__event_SizeItem    : result$ = "SizeItem"
+               
+            Case #__event_ScrollChange    : result$ = "ScrollChange"
+               
+            Case #__event_close           : result$ = "CloseWindow"
+            Case #__event_maximize        : result$ = "MaximizeWindow"
+            Case #__event_minimize        : result$ = "MinimizeWindow"
+            Case #__event_restore         : result$ = "RestoreWindow"
+               
+            Case #__event_MouseEnter      : result$ = "MouseEnter"       ; The mouse cursor entered the gadget
+            Case #__event_MouseLeave      : result$ = "MouseLeave"       ; The mouse cursor left the gadget
+            Case #__event_MouseMove       : result$ = "MouseMove"        ; The mouse cursor moved
+            Case #__event_MouseWheel      : result$ = "MouseWheel"       ; The mouse wheel was moved
+            Case #__event_LeftDown        : result$ = "LeftButtonDown"   ; The left mouse button was pressed
+            Case #__event_LeftUp          : result$ = "LeftButtonUp"     ; The left mouse button was released
+            Case #__event_LeftClick       : result$ = "LeftClick"        ; A click With the left mouse button
+            Case #__event_Left2Click      : result$ = "Left2Click"       ; A double-click With the left mouse button
+            Case #__event_Left3Click      : result$ = "Left3Click"       ; A 3-click With the left mouse button
+            Case #__event_RightDown       : result$ = "RightButtonDown"  ; The right mouse button was pressed
+            Case #__event_RightUp         : result$ = "RightButtonUp"    ; The right mouse button was released
+            Case #__event_RightClick      : result$ = "RightClick"       ; A click With the right mouse button
+            Case #__event_Right2Click     : result$ = "Right2Click"      ; A double-click With the right mouse button
+            Case #__event_Right3Click     : result$ = "Right3Click"      ; A 3-click With the right mouse button
+            Case #__event_MiddleDown      : result$ = "MiddleButtonDown" ; The middle mouse button was pressed
+            Case #__event_MiddleUp        : result$ = "MiddleButtonUp"   ; The middle mouse button was released
+            Case #__event_Focus           : result$ = "Focus"            ; The gadget gained keyboard focus
+            Case #__event_LostFocus       : result$ = "LostFocus"        ; The gadget lost keyboard focus
+            Case #__event_KeyDown         : result$ = "KeyDown"          ; A key was pressed
+            Case #__event_Input           : result$ = "Input"            ; Text input was generated
+            Case #__event_Return          : result$ = "ReturnKey"
+            Case #__event_KeyUp           : result$ = "KeyUp"            ; A key was released
+            Case #__event_ResizeBegin     : result$ = "ResizeBegin"
+            Case #__event_Resize          : result$ = "Resize"           ; The gadget has been resized
+            Case #__event_ResizeEnd       : result$ = "ResizeEnd"
+            Case #__event_StatusChange    : result$ = "StatusChange"
+               ;Case #__event_TitleChange : result$ = "TitleChange"
+            Case #__event_Change          : result$ = "Change"
+            Case #__event_DragStart       : result$ = "DragStart"
+               
+            Case #__event_Down            : result$ = "Down"
+            Case #__event_Up              : result$ = "Up"
+         EndSelect
+         
+         ProcedureReturn result$
+      EndProcedure
+      
+      ;-
+      Procedure$  FlagString( flags.q )
+         Protected result$
+         
+         If flags & #PB_Window_SystemMenu
+            flags &~ #PB_Window_SystemMenu
+            result$ + " #__flag_SystemMenu |"
+         EndIf
+         If flags & #PB_Window_SizeGadget
+            ;flags &~ #PB_Window_SizeGadget
+            result$ + " #__flag_SizeGadget |"
+         EndIf
+         If flags & #PB_Window_ScreenCentered
+            result$ + " #__flag_ScreenCentered |"
+         EndIf
+         If flags & #PB_Window_Invisible
+            result$ + " #__flag_Invisible |"
+         EndIf
+         If flags & #PB_Window_MaximizeGadget
+            ;flags &~ #PB_Window_MaximizeGadget
+            result$ + " #__flag_MaximizeGadget |"
+         EndIf
+         If flags & #PB_Window_MinimizeGadget
+            ;flags &~ #PB_Window_MinimizeGadget
+            result$ + " #__flag_MinimizeGadget |"
+         EndIf
+         If flags & #PB_Window_NoActivate = #PB_Window_NoActivate
+            result$ + " #__flag_NoActivate |"
+         EndIf
+         If flags & #PB_Window_BorderLess
+            result$ + " #__flag_BorderLess |"
+         EndIf
+         If flags & #PB_Window_NoGadgets
+            result$ + " #__flag_NoGadgets |"
+         EndIf
+         If flags & #PB_Window_TitleBar = #PB_Window_TitleBar
+            result$ + " #__flag_TitleBar |"
+         EndIf
+         If flags & #PB_Window_Tool 
+            result$ + " #__flag_Tool |" 
+         EndIf
+         If flags & #PB_Window_WindowCentered 
+            result$ + " #__flag_WindowCentered |" 
+         EndIf
+         
+         ;\\ create-flags
+         If flags & #__flag_button_Default : result$ +" #__flag_button_Default |": EndIf  
+         If flags & #__flag_Collapsed      : result$ +" #__flag_Collapsed |": EndIf     
+         If flags & #__flag_OptionBoxes    : result$ +" #__flag_OptionBoxes |": EndIf    
+         If flags & #__flag_CheckBoxes     : result$ +" #__flag_CheckBoxes |": EndIf     
+         If flags & #__flag_ThreeState     : result$ +" #__flag_ThreeState |": EndIf      
+         If flags & #__flag_RowClickSelect : result$ +" #__flag_RowClickSelect |": EndIf   
+         If flags & #__flag_RowMultiSelect : result$ +" #__flag_RowMultiSelect |": EndIf  
+         If flags & #__flag_RowFullSelect  : result$ +" #__flag_RowFullSelect |": EndIf   
+         If flags & #__flag_GridLines      : result$ +" #__flag_GridLines |": EndIf       
+         
+         If flags & #__flag_BorderRaised   : result$ +" #__flag_BorderRaised |": EndIf   
+         If flags & #__flag_BorderDouble   : result$ +" #__flag_BorderDouble |": EndIf    
+         If flags & #__flag_BorderSingle   : result$ +" #__flag_BorderSingle |": EndIf      
+         If flags & #__flag_Borderless     : result$ +" #__flag_Borderless |": EndIf      
+         If flags & #__flag_BorderFlat     : result$ +" #__flag_BorderFlat |": EndIf     
+         ;
+         If flags & #__flag_Child          : result$ +" #__flag_Child |": EndIf          
+         If flags & #__flag_Invert         : result$ +" #__flag_Invert |": EndIf        
+         If flags & #__flag_Vertical       : result$ +" #__flag_Vertical |": EndIf       
+         If flags & #__flag_Transparent    : result$ +" #__flag_Transparent |": EndIf    
+         ;
+         If flags & #__flag_NoFocus        : result$ +" #__flag_NoFocus |": EndIf        
+         If flags & #__flag_NoLines        : result$ +" #__flag_NoLines |": EndIf       
+         If flags & #__flag_NoButtons      : result$ +" #__flag_NoButtons |": EndIf
+         If flags & #__flag_NoGadgets      : result$ +" #__flag_NoGadgets |": EndIf      
+         ;If flags & #__flag_NoScrollBars   : result$ +" #__flag_NoScrollBars |": EndIf    
+         ;
+         If flags & #__flag_TextPassword   : result$ +" #__flag_TextPassword |": EndIf    
+         If flags & #__flag_TextWordWrap   : result$ +" #__flag_TextWordWrap |": EndIf   
+         If flags & #__flag_TextMultiLine  : result$ +" #__flag_TextMultiLine |": EndIf  
+         If flags & #__flag_TextInLine     : result$ +" #__flag_TextInLine |": EndIf    
+         If flags & #__flag_TextNumeric    : result$ +" #__flag_TextNumeric |": EndIf   
+         If flags & #__flag_TextReadonly   : result$ +" #__flag_TextReadonly |": EndIf  
+         If flags & #__flag_TextLowerCase  : result$ +" #__flag_TextLowerCase |": EndIf   
+         If flags & #__flag_TextUpperCase  : result$ +" #__flag_TextUpperCase |": EndIf  
+         
+         If flags & #__flag_Left           : result$ +" #__flag_Left |": EndIf    
+         If flags & #__flag_Top            : result$ +" #__flag_Top |": EndIf   
+         If flags & #__flag_Right          : result$ +" #__flag_Right |": EndIf  
+         If flags & #__flag_Bottom         : result$ +" #__flag_Bottom |": EndIf   
+         If flags & #__flag_Center         : result$ +" #__flag_Center |": EndIf  
+         
+         ProcedureReturn Trim( Trim(result$), "|" )
       EndProcedure
       
       Procedure$  MakeString( Class$, Constant.q ) ; 
@@ -15812,7 +15789,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     "listicon","listview","mdi","option","panel","progress","text","track","tree",
                     "scintilla","scrollarea","scroll","spin","splitter","string"
                   
-                  result$ + MakeFlag( Constant )
+                  result$ + FlagString( Constant )
             EndSelect
          EndIf
          
@@ -15821,7 +15798,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn Trim( Trim(result$), "|" )
       EndProcedure
       
-      Procedure.q MakeConstants( string$ ) ; MakeConstantVal
+      Procedure.q MakeValue( string$ )
          Protected i, Flag.q, count, str$
          
          If string$
@@ -16102,6 +16079,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn Flag
       EndProcedure
       
+      Procedure$  MakeCompiler( string$ )
+         Protected i, result$, count, str$
+         
+         If string$
+            count = CountString(string$,"|")
+            For I = 0 To count
+               str$ = Trim(StringField(string$,(I+1),"|"))
+               
+               Select str$
+                  Case "#PB_Compiler_File"      : result$ = #PB_Compiler_File  
+                  Case "#PB_Compiler_FilePath"  : result$ = #PB_Compiler_FilePath  
+                  Case "#PB_Compiler_Filename"  : result$ = #PB_Compiler_Filename  
+                  Case "#PB_Compiler_Home"      : result$ = ReplaceString( #PB_Compiler_Home, "\", "/")   
+                  Case "#PB_Compiler_Module"    : result$ = #PB_Compiler_Module  
+                  Case "#PB_Compiler_Procedure" : result$ = #PB_Compiler_Procedure  
+               EndSelect
+               
+            Next
+         EndIf
+         
+         ProcedureReturn result$
+      EndProcedure
+      
       ;-
       Procedure.q ToPBFlag( Type, Flag.q )
          Protected result.q ;= Flag
@@ -16180,10 +16180,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                ;
             Case #__type_Container
-               If constants::BinaryFlag( Flag, #PB_Container_BorderLess ) 
-                  flags & ~ #PB_Container_BorderLess
-                  flags = #__flag_BorderLess
-               EndIf
+;                If constants::BinaryFlag( Flag, #PB_Container_BorderLess ) ; BUG ;#PB_Container_BorderLess = 0
+;                   flags & ~ #PB_Container_BorderLess
+;                   flags = #__flag_BorderLess
+;                EndIf
                If constants::BinaryFlag( Flag, #PB_Container_Flat )
                   flags & ~ #PB_Container_Flat
                   flags | #__flag_BorderFlat
@@ -18003,7 +18003,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          If *this\row
-            ;Debug ""+*this\class +" "+ classFromEvent(event)
+            ;Debug ""+*this\class +" "+ EventString(event)
             
             ;\\ search at point entered items
             If Not mouse( )\drop Or *this\drop
@@ -19063,7 +19063,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;          ; TEMP
          ;          If event = #__event_leftup
-         ;              Debug " "+ Bool(*this = a_entered( )) +" "+ ClassFromEvent(event) +" "+ *this\class +" "+ a_index( ) +" "+ *this\press
+         ;              Debug " "+ Bool(*this = a_entered( )) +" "+ EventString(event) +" "+ *this\class +" "+ a_index( ) +" "+ *this\press
          ;          EndIf
          
          ;\\ TEMP [before post-widget-events drop]
@@ -19421,7 +19421,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ post repaint canvas
          If Not (*this\disable And Not *this\anchors)
             If *this\root And *this\root\repaint > 0 
-               ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ classFromEvent(event)
+               ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ EventString(event)
                If ( MousePress( ) And
                     ( event = #__event_Focus Or
                       event = #__event_Drop Or
@@ -19429,7 +19429,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   ReDraw( *this\root )
                Else
-                  ; Debug "post redraw "+ *this\class +" "+ classFromEvent(event) +" "+ classFromEvent(*data)
+                  ; Debug "post redraw "+ *this\class +" "+ EventString(event) +" "+ EventString(*data)
                   PostReDraw( *this\root )
                EndIf
                ;
@@ -19591,13 +19591,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             eventtype = #PB_EventType_LeftClick Or
             eventtype = #PB_EventType_LeftDoubleClick
             If test_canvas_events
-               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
+               Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
          EndIf
          
          If eventtype = #PB_EventType_Focus
             If test_canvas_events
-               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
+               Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
             If GetActive( ) And GetActive( )\focus <> #__s_2
                If Entered( ) And Entered( )\press
@@ -19634,7 +19634,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If eventtype = #PB_EventType_LostFocus
             If test_canvas_events
-               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
+               Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
             If GetActive( ) And GetActive( )\root And GetActive( )\root\canvas\gadget = eventgadget
                ; Debug IsWindow(GetActive( )\root\canvas\window)
@@ -19649,7 +19649,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If eventtype = #PB_EventType_Resize 
             If test_canvas_events
-               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
+               Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
             ; PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
             PushMapPosition( roots( ) )
@@ -19664,7 +19664,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If eventtype = #PB_EventType_MouseWheelX
             If test_canvas_events
-               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget +" "+ eventdata
+               Debug " " + PBEventString(eventtype) +" "+ eventgadget +" "+ eventdata
             EndIf
             If Entered( )
                If eventdata < 0
@@ -19683,7 +19683,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If eventtype = #PB_EventType_MouseWheelY
             If test_canvas_events
-               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget +" "+ eventdata
+               Debug " " + PBEventString(eventtype) +" "+ eventgadget +" "+ eventdata
             EndIf
             If Entered( )
                If eventdata < 0
@@ -19702,7 +19702,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If eventtype = #PB_EventType_MouseEnter
             If test_canvas_events
-               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
+               Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
             ;Debug " #PB_EventType_MouseEnter "+eventgadget
             If Not ( Root( ) And Root( )\canvas\gadget = eventgadget )
@@ -19719,7 +19719,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If eventtype = #PB_EventType_MouseLeave
             If test_canvas_events
-               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
+               Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
             ;Debug " #PB_EventType_MouseLeave "+eventgadget
             If Pressed( ) And
@@ -19738,7 +19738,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             eventtype = #PB_EventType_MiddleButtonDown Or
             eventtype = #PB_EventType_RightButtonDown
             If test_canvas_events
-               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
+               Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
             ;
             MouseData( ) | #__mouse_press
@@ -19874,7 +19874,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             eventtype = #PB_EventType_MiddleButtonUp Or
             eventtype = #PB_EventType_RightButtonUp
             If test_canvas_events
-               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
+               Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
             ;
             If eventtype = #PB_EventType_LeftButtonUp : event = #__event_LeftUp : EndIf
@@ -19898,7 +19898,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             eventtype = #PB_EventType_Input Or
             eventtype = #PB_EventType_KeyUp
             If test_canvas_events
-               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
+               Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
             Protected *keywidget._s_WIDGET
             
@@ -20850,7 +20850,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;   
             If test_event_add
                Static test
-               Debug ""+*this\class + " - Put event queues( test "+test +" ) "+ ClassFromEvent(event)
+               Debug ""+*this\class + " - Put event queues( test "+test +" ) "+ EventString(event)
                test + 1
             EndIf
             
@@ -20876,7 +20876,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                __gui\event\queues( )\data   = *data
                
                ;                If event = #__event_focus
-               ;                   Debug  "ADD events "+ClassFromEvent( event ) +" "+ *this\class 
+               ;                   Debug  "ADD events "+EventString( event ) +" "+ *this\class 
                ;                EndIf
                ProcedureReturn __gui\event\queues( )
             EndIf
@@ -20891,12 +20891,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Not __gui\event\mask & 1<<event
                
                ;                If *this\type <> #__type_Scroll
-               ;                   Debug ""+ *this\class +" "+ ClassFromEvent(event) +" "+ *button +" "+ *data
+               ;                   Debug ""+ *this\class +" "+ EventString(event) +" "+ *button +" "+ *data
                ;                EndIf
                ProcedureReturn AddEvents( *this, event, *button, *data )
             Else
                ;                If event = #__event_focus
-               ;                   Debug  " POST events "+ClassFromEvent( event ) +" "+ *this\class 
+               ;                   Debug  " POST events "+EventString( event ) +" "+ *this\class 
                ;                EndIf
                If is_bar_( *this )
                   ;
@@ -20905,7 +20905,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\TabEntered( )
                         *button = *this\TabEntered( )\tindex
                      EndIf
-                     ; Debug ""+ClassFromEvent(event)+" "+*this\TabEntered( ) +" "+ *Button
+                     ; Debug ""+EventString(event)+" "+*this\TabEntered( ) +" "+ *Button
                   EndIf
                   ;
                   If *button < 0
@@ -20942,7 +20942,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; Debug ""+ *button +" "+ *this\class +" POSTMENU "
                EndIf
                
-               ; Debug "send - "+*this\class +" "+ classFromEvent(event) +" "+ *button +" "+ *data
+               ; Debug "send - "+*this\class +" "+ EventString(event) +" "+ *button +" "+ *data
                result = #True
                
                ; examples bars area
@@ -22838,7 +22838,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                DrawText( X + *this\text\x, Y + *this\text\y, *this\text\string, *this\color\front[*this\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
             EndIf
             
-            If *this\fs
+            Draw_Frames( *this, *this\ColorState( ) )
+            If *this\fs = 99999
                draw_mode_alpha_( #PB_2DDrawing_Outlined )
                ;                Debug " - "+ *this\inner_x( ) +" "+ *this\inner_y( ) +" "+ *this\inner_width( ) +" "+ *this\inner_height( ) ;+ 
                ;                Debug "   - "+ *this\frame_x( ) +" "+ *this\frame_y( ) +" "+ *this\frame_width( ) +" "+ *this\frame_height( )
@@ -24455,9 +24456,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          ; replace pb flag
-         Flag = FromPBFlag( Type, Flag )
+          Flag = FromPBFlag( Type, Flag )
          *this\flag = Flag
-         ;
+            ;
          ; change flags
          If Type = #__type_Button Or
             Type = #__type_ButtonImage Or
@@ -24542,41 +24543,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          
-         ;\\ Border & Frame size
-         If is_integral_( *this )
-            If *this\type = #__type_Scroll
-               *this\fs = 0;10
-            Else
-               *this\fs = 0
-            EndIf
-         Else
-            If constants::BinaryFlag( *this\flag, #__flag_BorderDouble ) Or
-               constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
-               *this\fs = 2
-            ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderLess )
-               *this\fs = 0
-            ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderFlat ) Or
-                   constants::BinaryFlag( *this\Flag, #__flag_BorderSingle ) Or
-                   *this\type = #__type_Panel Or
-                   *this\type = #__type_Spin Or
-                   *this\type = #__type_ButtonImage Or
-                   *this\type = #__type_Button Or
-                   *this\type = #__type_ComboBox Or
-                   *this\type = #__type_ExplorerList 
-               *this\fs = 1
-            Else
-               If *this\type = #__type_Editor Or
-                  *this\type = #__type_String Or
-                  *this\type = #__type_ScrollArea Or
-                  *this\type = #__type_ListView Or
-                  *this\type = #__type_ListIcon Or
-                  *this\type = #__type_Tree 
-                  *this\fs = 2
-               EndIf
-            EndIf
-         EndIf
-         *this\bs = *this\fs
-         
          ;\\
          If *parent
             ;\\
@@ -24629,9 +24595,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\color\fore  = - 1
                *this\color\back  = _get_colors_( )\fore
                *this\color\front = _get_colors_( )\front
-               If *this\fs
-                  *this\color\frame = _get_colors_( )\frame
-               EndIf
+               *this\color\frame = _get_colors_( )\frame
             EndIf
             ;
             If *this\type = #__type_Editor
@@ -25057,6 +25021,45 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\Flag
             Flag( *this, *this\Flag, #True )
          EndIf
+         ;\\ Border & Frame size
+         If is_integral_( *this )
+            If *this\type = #__type_Scroll
+               *this\fs = 0
+            Else
+               *this\fs = 0
+            EndIf
+         Else
+            If constants::BinaryFlag( *this\flag, #__flag_BorderDouble ) Or
+               constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
+               *this\fs = 2
+            ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderFlat ) Or
+                   constants::BinaryFlag( *this\Flag, #__flag_BorderSingle ) 
+               *this\fs = 1
+            ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderLess )
+               *this\fs = 0
+            Else
+               ; default border
+               If *this\type = #__type_Editor Or
+                  *this\type = #__type_String Or
+                  *this\type = #__type_ScrollArea Or
+                  *this\type = #__type_ListView Or
+                  *this\type = #__type_ListIcon Or
+                  *this\type = #__type_Tree 
+                  *this\fs = 2
+               EndIf
+               If *this\type = #__type_Panel Or
+                  *this\type = #__type_Container Or
+                  *this\type = #__type_Spin Or
+                  *this\type = #__type_ButtonImage Or
+                  *this\type = #__type_Button Or
+                  *this\type = #__type_ComboBox Or
+                  *this\type = #__type_ExplorerList 
+                  *this\fs = 1
+               EndIf
+            EndIf
+         EndIf
+         *this\bs = *this\fs
+         
          
          ; set ATTRIBUTE
          If *this\type = #__type_MenuBar Or
@@ -26316,7 +26319,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
             event$ = "MouseWheelHorizontal"
          EndIf
       Else
-         event$ = ClassFromEvent(WidgetEvent( ))
+         event$ = EventString(WidgetEvent( ))
       EndIf
       
       Debug " ["+GetClass(EventWidget( )) +"] "+ event$ +" "+ WidgetEventData( )
@@ -26394,7 +26397,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
             event$ = "MouseWheelHorizontal"
          EndIf
       Else
-         event$ = ClassFromEvent(WidgetEvent( ))
+         event$ = EventString(WidgetEvent( ))
       EndIf
       
       Debug " ["+GetClass(EventWidget( )) +"] "+ event$ +" "+ WidgetEventData( )
@@ -26744,7 +26747,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
             DisableBarButtons( ide_toolbar, 1 )
          EndIf
       Else
-         Debug ""+#PB_Compiler_Procedure +" "+ ClassFromEvent( WidgetEvent( )) +" "+ *g\class
+         Debug ""+#PB_Compiler_Procedure +" "+ EventString( WidgetEvent( )) +" "+ *g\class
       EndIf
    EndProcedure
    
@@ -27714,9 +27717,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 25365
-; FirstLine = 23405
-; Folding = ------------------P9--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-------------Vd---------f------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------f---fV-------------------------Dw-------------------4--------------------------------------------------------------80+-8-f-8--t------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------+4v-V8-4--------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 15254
+; FirstLine = 13824
+; Folding = ------------------P9--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-------------Vd---------f------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------f0---V2-------4---------------PAc8------------------8--------------------------------------------------------------0e--0-v-0--3----------------------------------------------------------------------------------------------------------------------7----------------------------------------v-G--8-v---+g5fP9f---------------------------4-7--8--------
 ; EnableXP
 ; Executable = widgets-.app.exe

@@ -169,8 +169,7 @@ EndEnumeration
                AddItem(*this, -1, "LineColor")
                AddItem(*this, -1, "FrameColor")
                AddItem(*this, -1, "ForeColor")
-               ;                ColorType = MakeConstants("#PB_Gadget_" + GetItemText( *this, 0))
-               ;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
+              ;                Properties_SetItemText( ide_inspector_PROPERTIES, item, GetItemText( *this, 0) )
                
             Case #_pi_cursor
                AddItem(*this, -1, "Default")
@@ -582,8 +581,8 @@ EndEnumeration
       
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 142
-; FirstLine = 107
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 171
+; FirstLine = 144
 ; Folding = t+P----------
 ; EnableXP

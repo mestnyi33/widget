@@ -6,10 +6,24 @@ SetCaret
 Sticky
 Sticked
 
+PBFlagString
+PBEventType
+PBEventString
+ToPBFlag
+FromPBFlag
+
 TypeFromClass
-ClassFromType
-ClassFromEvent
-ClassFromFlag
+TypeString
+EventString
+FlagString
+MakeString
+MakeValue
+MakeCompiler
+
+Flag
+SetFlag
+GetFlag
+RemoveFlag
 
 SetClass
 GetClass
@@ -250,7 +264,6 @@ X
 Y
 Width
 Height
-Flag
 Resize
 ResizeRootWindow
 

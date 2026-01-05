@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure draw_events( )
       Protected *g._s_widget = EventWidget( )
-      Debug " - "+ClassFromEvent(WidgetEvent( ))
+      Debug " - "+EventString(WidgetEvent( ))
       DrawingMode(#PB_2DDrawing_Outlined)
       Box( *g\x,*g\y,*g\width,*g\height, $000000 )
    EndProcedure
@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 6
+; CursorPosition = 15
 ; Folding = -
 ; EnableXP
 ; DPIAware

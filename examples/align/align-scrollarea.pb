@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_widgets()
      If WidgetEvent() <> #__Event_MouseMove
-        Debug ""+EventWidget()+ " - widget event - " +ClassFromEvent(WidgetEvent())
+        Debug ""+EventWidget()+ " - widget event - " +EventString(WidgetEvent())
   ;  Debug ""+Str(Index(EventWidget( )))+ " - widget event - " +WidgetEvent( )+ " bar - " +this()\item+ " direction - " +this()\data 
      EndIf
   EndProcedure
@@ -113,7 +113,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 11
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = --
 ; Optimizer
 ; EnableXP

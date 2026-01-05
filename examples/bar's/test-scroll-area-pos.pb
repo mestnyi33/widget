@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure events_widgets( )
       Widget( ) = object
-      Debug " - "+ClassFromEvent(WidgetEvent())
+      Debug " - "+EventString(WidgetEvent())
       Debug ""+Widget( )\bar\percent +" - percent"
       Debug ""+Widget( )\bar\page\pos +" - page\pos"
       Debug ""+Widget( )\bar\page\len +" - page\len"
@@ -167,9 +167,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 145
-; FirstLine = 141
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 11
+; FirstLine = 7
 ; Folding = -----
 ; EnableXP
 ; DPIAware

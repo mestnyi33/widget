@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Else
       Space.s = "       "
     EndIf
-    ;Debug ClassFromEvent( WidgetEvent( ) )
+    ;Debug EventString( WidgetEvent( ) )
     Select WidgetEvent( )
       Case #__event_MouseEnter      : AddItem(*view, -1, Space + "enter <<" + Trim(GetText(*eventWidget)) + ">>")
       Case #__event_MouseLeave      : AddItem(*view, -1, Space + "leave <<" + Trim(GetText(*eventWidget)) + ">>")
@@ -41,9 +41,9 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If *eventWidget = *dropbutton And Not *eventWidget\press
            Button( X(*eventWidget)+5, Y(*eventWidget)+5, 30, 30, "new" )
-           Bind(widget( ), @events_widgets(), #__event_MouseEnter)
-           Bind(widget( ), @events_widgets(), #__event_LeftDown)
-           Bind(widget( ), @events_widgets(), #__event_MouseLeave)
+           Bind(Widget( ), @events_widgets(), #__event_MouseEnter)
+           Bind(Widget( ), @events_widgets(), #__event_LeftDown)
+           Bind(Widget( ), @events_widgets(), #__event_MouseLeave)
         EndIf
       
       Case #__event_LeftDown
@@ -109,8 +109,8 @@ CompilerEndIf
 ;   leave <<drop>>
 ; enter <<drag>>
 ; leave <<drag>>
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 14
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 21
+; FirstLine = 17
 ; Folding = --
 ; EnableXP

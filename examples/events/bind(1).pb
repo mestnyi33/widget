@@ -15,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
 			
 			If GetType( EventWidget( ) ) = #PB_GadgetType_Button
 				; ClearDebugOutput()
-				Debug ""+Index(EventWidget())+ " - widget  event - " +WidgetEvent() +" ("+ ClassFromEvent( WidgetEvent())+ ")  item - " +WidgetEventItem() +" (gadget)"
+				Debug ""+Index(EventWidget())+ " - widget  event - " +WidgetEvent() +" ("+ EventString( WidgetEvent())+ ")  item - " +WidgetEventItem() +" (gadget)"
 			EndIf
 			
 			If Index(EventWidget()) = 1
@@ -150,9 +150,9 @@ CompilerEndIf
 ;   EndIf
 ; CompilerEndIf
 ; End  
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 50
-; FirstLine = 47
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 17
+; FirstLine = 13
 ; Folding = ----
 ; EnableXP
 ; DPIAware

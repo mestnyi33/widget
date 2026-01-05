@@ -517,7 +517,7 @@
   CompilerEndIf
   
   ;-
-  Procedure.s ClassFromPBEvent( event.i )
+  Procedure.s PBEventString( event.i )
     Protected result.s
     
     Select event
@@ -580,7 +580,7 @@
        ProcedureReturn 0
     EndIf
     ;
-    Debug " ["+gadget+"] "+ ClassFromPBEvent(event) 
+    Debug " ["+gadget+"] "+ PBEventString(event) 
   EndProcedure
   
   Procedure windows_events( )
@@ -827,9 +827,9 @@ CompilerEndIf
 ; [20] MouseLeave
 ; [20] LeftButtonUp
 ; [20] LostFocus
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.21 (Windows - x64)
 ; CursorPosition = 582
-; FirstLine = 558
+; FirstLine = 541
 ; Folding = -------------------------
 ; EnableXP
 ; DPIAware

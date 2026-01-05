@@ -7,7 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    test_focus_draw = 1
    
    Procedure DoFocus( *this._s_WIDGET, event.i )
-      Debug ""+*this\class +" "+ ClassFromEvent(event)
+      Debug ""+*this\class +" "+ EventString(event)
    EndProcedure
       
    Procedure all_events()
@@ -35,8 +35,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure CanvasButton( gadget, X,Y,Width,Height,Text.s )
       Button( X,Y,Width,Height, Text )
-      SetClass(widget(), Text+"["+Str(gadget)+"]")
-      Bind(widget(), @all_events())
+      SetClass(Widget(), Text+"["+Str(gadget)+"]")
+      Bind(Widget(), @all_events())
    EndProcedure
    
    Procedure CanvasButtonGadget( gadget, X,Y,Width,Height,Text.s )
@@ -77,9 +77,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 23
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 9
+; FirstLine = 5
 ; Folding = ---
 ; EnableXP
 ; DPIAware

@@ -44,7 +44,7 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
     w_type = ListView(10, 10, 150, 200) 
     Define i
     For i=0 To 33
-      AddItem(w_type, -1, ClassFromType(i))
+      AddItem(w_type, -1, TypeString(i))
     Next
     
     Splitter_0 = Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
@@ -72,9 +72,9 @@ If OpenWindow(0, 0, 0, 450+20, 290+20, "SplitterGadget", #PB_Window_SystemMenu |
   SetState(Splitter_0, 189)
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; IDE Options = PureBasic 6.21 (Windows - x64)
 ; CursorPosition = 46
-; FirstLine = 33
+; FirstLine = 32
 ; Folding = --
 ; EnableXP
 ; DPIAware

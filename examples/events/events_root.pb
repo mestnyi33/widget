@@ -25,20 +25,20 @@ CompilerIf #PB_Compiler_IsMainFile
             event$ = "MouseWheelHorizontal"
          EndIf
       Else
-         event$ = ClassFromEvent(WidgetEvent( ))
+         event$ = EventString(WidgetEvent( ))
       EndIf
       
       Debug " ["+GetClass(EventWidget( )) +"] "+ event$ +" "+ WidgetEventData( )
    EndProcedure
    
-   Define flag.q = #PB_Canvas_DrawFocus
+   Define Flag.q = #PB_Canvas_DrawFocus
    
-   Procedure TestRoot( gadget, X,Y,Width,Height, flag=0 )
+   Procedure TestRoot( gadget, X,Y,Width,Height, Flag=0 )
      Protected *g
      CanvasGadget(gadget, X,Y,Width,Height, #PB_Canvas_Container ) : CloseGadgetList( )
      ; CanvasGadget(0, 0, 0, 420, 420)
 
-      *g = Open(gadget, X,Y,Width,Height,"", flag, 0, gadget) 
+      *g = Open(gadget, X,Y,Width,Height,"", Flag, 0, gadget) 
       SetBackColor(*g, RGB( Random(255), Random(255), Random(255) ))
       SetText(*g, Str(gadget))
       SetClass(*g, Str(gadget))
@@ -87,8 +87,8 @@ CompilerEndIf
 ; [1] LeftButtonUp
 ; [1] MouseLeave
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 21
-; FirstLine = 11
+; CursorPosition = 27
+; FirstLine = 23
 ; Folding = --
 ; EnableXP
 ; DPIAware

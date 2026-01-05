@@ -97,7 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile
             DisableBarButtons( ide_toolbar, 1 )
          EndIf
       Else
-         Debug ""+#PB_Compiler_Procedure +" "+ ClassFromEvent( WidgetEvent( )) +" "+ *g\class
+         Debug ""+#PB_Compiler_Procedure +" "+ EventString( WidgetEvent( )) +" "+ *g\class
       EndIf
    EndProcedure
    
@@ -155,9 +155,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 104
-; FirstLine = 101
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 99
+; FirstLine = 95
 ; Folding = --
 ; EnableXP
 ; DPIAware

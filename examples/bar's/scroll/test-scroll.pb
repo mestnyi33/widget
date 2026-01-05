@@ -111,7 +111,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       Debug ""+EventWidget( )\bar\thumb\len +" - thumb\len"
       Debug ""+EventWidget( )\bar\thumb\end +" - thumb\end"
       Debug " --------------------- "
-      ;       Debug ""+EventWidget()\class+" "+ClassFromEvent( WidgetEvent( )) +" "+ GetState(EventWidget()) +" "+ 
+      ;       Debug ""+EventWidget()\class+" "+EventString( WidgetEvent( )) +" "+ GetState(EventWidget()) +" "+ 
       ;             EventWidget()\bar\thumb\pos ;+" "+ EventWidget()\bar\page\pos ;+" "+ EventWidget()\bar\ThumbChange( ) +" "+ EventWidget()\bar\PageChange( ) ; WidgetEventData( )
    EndProcedure
    
@@ -147,5 +147,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 113
+; FirstLine = 108
 ; Folding = ---
 ; EnableXP

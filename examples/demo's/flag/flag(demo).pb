@@ -108,9 +108,9 @@ CompilerIf #PB_Compiler_IsMainFile
             ;Debug ""+*parent +" "+ newtype$
             ;\\ второй метод формирования названия переменной
             ;          If *parent = ide_design_panel_MDI
-            ;             newtype$ = ClassFromType( *new\type )+"_"+CountType( *new , 2 )
+            ;             newtype$ = TypeString( *new\type )+"_"+CountType( *new , 2 )
             ;          Else
-            ;             newtype$ = ClassFromType( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
+            ;             newtype$ = TypeString( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
             ;          EndIf
             ;\\
             SetClass( *new, UCase(newtype$) )
@@ -224,7 +224,7 @@ CompilerIf #PB_Compiler_IsMainFile
       count = CountItems(gadget)
 ;       ;
 ;       For i = 0 To count
-;          flag = MakeConstants( GetItemText( Gadget, i ))
+;          flag = MakeValue( GetItemText( Gadget, i ))
 ;          state = Bool( GetItemState( Gadget, i ) & #PB_Tree_Checked )
 ;          Flag( Object, flag, state )
 ;       Next
@@ -233,7 +233,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       i = WidgetEventItem( ) 
       flag$ = GetItemText( Gadget, i )
-      Flag = MakeConstants( flag$ )
+      Flag = MakeValue( flag$ )
       state = Bool( GetItemState( Gadget, i ) & #PB_Tree_Checked )
       Debug ""+state +" "+ flag$
       Flag( Object, Flag, state )
@@ -263,9 +263,9 @@ CompilerIf #PB_Compiler_IsMainFile
                      Type = GetType(*g_OBJECT)
                   EndIf
                   
-                  Add( MakeFlagsString( GetState(*g_TYPE)))
+                  Add( PBFlagString( GetState(*g_TYPE)))
                   
-                  flag$ = MakeConstantsString( ClassFromType(Type), Flag)
+                  flag$ = MakeString( TypeString(Type), Flag)
                   Debug "flag["+Flag$+"]"
                   SetCheckedText(*g_FLAG, flag$ )
                   
@@ -296,7 +296,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open( 0, 0, 0, Width+205, Height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       *g_TYPE = Widget::ListView(Width+45, 10, 150, 200) 
       For i=0 To 33
-         AddItem(*g_TYPE, -1, ClassFromType(i))
+         AddItem(*g_TYPE, -1, TypeString(i))
       Next
       SetState(*g_TYPE, 1)
       
@@ -306,9 +306,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 93
-; FirstLine = 84
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 298
+; FirstLine = 258
 ; Folding = ------
 ; EnableXP
 ; DPIAware

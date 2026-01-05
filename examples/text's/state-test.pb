@@ -111,7 +111,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure widget_events()
       If WidgetEvent( ) <> #__event_mousemove
          ;If WidgetEventData( ) = 1
-         ;  Debug ""+ WidgetEventData( ) +" "+ classfromevent(WidgetEvent( )) +" "+ WidgetEventItem( ) +" "+ GetClass(EventWidget( ))
+         ;  Debug ""+ WidgetEventData( ) +" "+ EventString(WidgetEvent( )) +" "+ WidgetEventItem( ) +" "+ GetClass(EventWidget( ))
          ;EndIf
       EndIf
       
@@ -333,8 +333,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 255
-; FirstLine = 214
+; CursorPosition = 113
+; FirstLine = 109
 ; Folding = --------
 ; EnableXP
 ; DPIAware

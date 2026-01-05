@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ;\\
   Procedure CallBack( )
-    ; Debug ""+classfromevent(WidgetEvent( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEvent( )
+    ; Debug ""+EventString(WidgetEvent( )) +" "+ Root( )\class +" "+ EventWidget( )\root\class +" "+ WidgetEvent( )
     
     Select WidgetEvent( )
       Case #__event_LeftClick
@@ -91,7 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile
   ;\\
   WaitClose( @CallBack( ) )
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = -
 ; EnableXP
