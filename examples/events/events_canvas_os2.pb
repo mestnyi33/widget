@@ -517,7 +517,7 @@
   CompilerEndIf
   
   ;-
-  Procedure.s PBClassFromEvent( event.i )
+  Procedure.s ClassFromPBEvent( event.i )
     Protected result.s
     
     Select event
@@ -580,7 +580,7 @@
        ProcedureReturn 0
     EndIf
     ;
-    Debug " ["+gadget+"] "+ PBClassFromEvent(event) 
+    Debug " ["+gadget+"] "+ ClassFromPBEvent(event) 
   EndProcedure
   
   Procedure windows_events( )
@@ -776,9 +776,9 @@
     CompilerEndIf
   EndProcedure
   
-  Define flag.q = #PB_Canvas_DrawFocus
+  Define Flag.q = #PB_Canvas_DrawFocus
   
-  Procedure TestRoot( gadget, X,Y,Width,Height, flag )
+  Procedure TestRoot( gadget, X,Y,Width,Height, Flag )
     CanvasGadget(gadget, X,Y,Width,Height, #PB_Canvas_Keyboard ) 
     StartDrawing(CanvasOutput(gadget))
     DrawText(10,10,Str(gadget))
@@ -791,13 +791,13 @@
   If OpenWindow(0, 0, 0, 370, 370, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     BindEvent( #PB_Event_Gadget, @all_events( ))
     
-    TestRoot(10, 10, 10, 150, 150,flag) 
+    TestRoot(10, 10, 10, 150, 150,Flag) 
     
-    TestRoot(20, 210, 10, 150, 150,flag) 
+    TestRoot(20, 210, 10, 150, 150,Flag) 
     
-    TestRoot(30, 10, 210, 150, 150,flag) 
+    TestRoot(30, 10, 210, 150, 150,Flag) 
     
-    TestRoot(40, 210, 210, 150, 150,flag) 
+    TestRoot(40, 210, 210, 150, 150,Flag) 
     
     Define gEvent, gQuit
     Repeat
@@ -827,9 +827,9 @@ CompilerEndIf
 ; [20] MouseLeave
 ; [20] LeftButtonUp
 ; [20] LostFocus
-; IDE Options = PureBasic 6.12 LTS (Linux - x64)
-; CursorPosition = 793
-; FirstLine = 789
+; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; CursorPosition = 582
+; FirstLine = 558
 ; Folding = -------------------------
 ; EnableXP
 ; DPIAware

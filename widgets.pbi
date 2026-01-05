@@ -1671,10 +1671,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.q ToPBFlag( Type, Flag.q )
       Declare.q FromPBFlag( Type, Flag.q )
       Declare.q Flag( *this, Flag.q = #Null, state.b = #PB_Default )
-      Declare.s MakeFlagsString( Type )
+      Declare.s MakePBFlags( Type )
       Declare.q MakeConstants( string$ )
-      Declare$  MakeStringConstants( string$ )
-      Declare$  MakeConstantsString( type$, Flag.q ) 
+      Declare$  MakeConstantsString( string$ )
+      Declare$  MakeString( Class$, Constant.q ) 
       
       Declare.i PBEventType( event.i )
       Declare.i TypeFromClass( class.s )
@@ -15474,13 +15474,354 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
+      
       ;-
-      Procedure.s MakeFlagsString( Type ) ; 
+      Procedure.i PBEventType( wEvent.i )
+         If wEvent = #__event_MouseEnter
+            ProcedureReturn #PB_EventType_MouseEnter
+         EndIf
+         If wEvent = #__event_MouseLeave
+            ProcedureReturn #PB_EventType_MouseLeave
+         EndIf
+         If wEvent = #__event_MouseMove
+            ProcedureReturn #PB_EventType_MouseMove
+         EndIf
+         If wEvent = #__event_Focus
+            ProcedureReturn #PB_EventType_Focus
+         EndIf
+         If wEvent = #__event_LostFocus
+            ProcedureReturn #PB_EventType_LostFocus
+         EndIf
+         
+         If wEvent = #__event_Resize
+            ProcedureReturn #PB_EventType_Resize
+         EndIf
+         If wEvent = #__event_Change
+            ProcedureReturn #PB_EventType_Change
+         EndIf
+         If wEvent = #__event_StatusChange
+            ProcedureReturn #PB_EventType_StatusChange
+         EndIf
+         If wEvent = #__event_Down
+            ProcedureReturn #PB_EventType_Down
+         EndIf
+         If wEvent = #__event_Up
+            ProcedureReturn #PB_EventType_Up
+         EndIf
+         
+         If wEvent = #__event_DragStart
+            ProcedureReturn #PB_EventType_DragStart
+         EndIf
+         If wEvent = #__event_Input
+            ProcedureReturn #PB_EventType_Input
+         EndIf
+         If wEvent = #__event_KeyDown
+            ProcedureReturn #PB_EventType_KeyDown
+         EndIf
+         If wEvent = #__event_KeyUp
+            ProcedureReturn #PB_EventType_KeyUp
+         EndIf
+         
+         If wEvent = #__event_LeftDown
+            ProcedureReturn #PB_EventType_LeftButtonDown
+         EndIf
+         If wEvent = #__event_LeftUp
+            ProcedureReturn #PB_EventType_LeftButtonUp
+         EndIf
+         If wEvent = #__event_LeftClick
+            ProcedureReturn #PB_EventType_LeftClick
+         EndIf
+         If wEvent = #__event_Left2Click
+            ProcedureReturn #PB_EventType_LeftDoubleClick
+         EndIf
+         
+         If wEvent = #__event_RightDown
+            ProcedureReturn #PB_EventType_RightButtonDown
+         EndIf
+         If wEvent = #__event_RightUp
+            ProcedureReturn #PB_EventType_RightButtonUp
+         EndIf
+         If wEvent = #__event_RightClick
+            ProcedureReturn #PB_EventType_RightClick
+         EndIf
+         If wEvent = #__event_Right2Click
+            ProcedureReturn #PB_EventType_RightDoubleClick
+         EndIf
+         
+         If wEvent = #__event_Draw
+            ProcedureReturn #PB_EventType_Repaint
+         EndIf
+      EndProcedure
+      
+      Procedure.s ClassFromPBEvent( event.i )
+         Protected result.s
+         
+         Select event
+            Case #PB_EventType_MouseEnter       : result.s = "MouseEnter"           ; The mouse cursor entered the gadget
+            Case #PB_EventType_MouseLeave       : result.s = "MouseLeave"           ; The mouse cursor left the gadget
+            Case #PB_EventType_MouseMove        : result.s = "MouseMove"            ; The mouse cursor moved
+            Case #PB_EventType_MouseWheel       : result.s = "MouseWheel"           ; The mouse wheel was moved
+            Case #PB_EventType_MouseWheelX      : result.s = "MouseWheelHorizontal" ; The mouse wheel was moved
+            Case #PB_EventType_MouseWheelY      : result.s = "MouseWheelVertical"   ; The mouse wheel was moved
+               
+            Case #PB_EventType_LeftButtonDown   : result.s = "LeftButtonDown"   ; The left mouse button was pressed
+            Case #PB_EventType_LeftButtonUp     : result.s = "LeftButtonUp"     ; The left mouse button was released
+            Case #PB_EventType_LeftClick        : result.s = "LeftClick"        ; A click With the left mouse button
+            Case #PB_EventType_LeftDoubleClick  : result.s = "LeftDoubleClick"  ; A double-click With the left mouse button
+               
+            Case #PB_EventType_RightButtonDown  : result.s = "RightButtonDown" ; The right mouse button was pressed
+            Case #PB_EventType_RightButtonUp    : result.s = "RightButtonUp"   ; The right mouse button was released
+            Case #PB_EventType_RightClick       : result.s = "RightClick"      ; A click With the right mouse button
+            Case #PB_EventType_RightDoubleClick : result.s = "RightDoubleClick"; A double-click With the right mouse button
+               
+            Case #PB_EventType_MiddleButtonDown : result.s = "MiddleButtonDown" ; The middle mouse button was pressed
+            Case #PB_EventType_MiddleButtonUp   : result.s = "MiddleButtonUp"   ; The middle mouse button was released
+            Case #PB_EventType_Focus            : result.s = "Focus"            ; The gadget gained keyboard focus
+            Case #PB_EventType_LostFocus        : result.s = "LostFocus"        ; The gadget lost keyboard focus
+            Case #PB_EventType_KeyDown          : result.s = "KeyDown"          ; A key was pressed
+            Case #PB_EventType_KeyUp            : result.s = "KeyUp"            ; A key was released
+            Case #PB_EventType_Input            : result.s = "Input"            ; Text input was generated
+            Case #PB_EventType_Resize           : result.s = "Resize"           ; The gadget has been resized
+            Case #PB_EventType_StatusChange     : result.s = "StatusChange"
+            Case #PB_EventType_Change           : result.s = "Change"
+            Case #PB_EventType_DragStart        : result.s = "DragStart"
+            Case #PB_EventType_TitleChange      : result.s = "TitleChange"
+            Case #PB_EventType_CloseItem        : result.s = "CloseItem"
+            Case #PB_EventType_SizeItem         : result.s = "SizeItem"
+            Case #PB_EventType_Down             : result.s = "Down"
+            Case #PB_EventType_Up               : result.s = "Up"
+               ;                
+               ;             Case #PB_eventtype_cursor : result.s = "Cursor"
+               ;             Case #PB_eventtype_free : result.s = "Free"
+               ;             Case #PB_eventtype_drop : result.s = "Drop"
+               ;             Case #PB_eventtype_create : result.s = "Create"
+               ;             Case #PB_eventtype_Draw : result.s = "Draw"
+               ;                
+               ;             Case #PB_eventtype_repaint : result.s = "Repaint"
+               ;             Case #PB_eventtype_resizeend : result.s = "ResizeEnd"
+               ;             Case #PB_eventtype_Scrollchange : result.s = "ScrollChange"
+               ;                
+               ;             Case #PB_eventtype_close : result.s = "CloseWindow"
+               ;             Case #PB_eventtype_maximize : result.s = "MaximizeWindow"
+               ;             Case #PB_eventtype_minimize : result.s = "MinimizeWindow"
+               ;             Case #PB_eventtype_restore : result.s = "RestoreWindow"
+               ;             Case #PB_eventtype_ReturnKey : result.s = "returnKey"
+               ;             Case #PB_eventtype_mousewheelX : result.s = "MouseWheelX"
+               ;             Case #PB_eventtype_mousewheelY : result.s = "MouseWheelY"
+         EndSelect
+         
+         ProcedureReturn result.s
+      EndProcedure
+      
+      
+      ;-
+      Procedure.i TypeFromClass( class.s )
+         Protected result.i
+         
+         Select Trim( LCase( class.s ))
+            Case "status"        : result = #__type_StatusBar
+            Case "popupmenu"     : result = #__type_PopupBar
+            Case "tool"          : result = #__type_ToolBar
+            Case "tab"           : result = #__type_TabBar
+            Case "menu"          : result = #__type_MenuBar
+            Case "window"        : result = #__type_window
+               
+            Case "unknown"       : result = #__type_Unknown
+               
+            Case "button"        : result = #__type_Button
+            Case "buttonimage"   : result = #__Type_ButtonImage
+            Case "calendar"      : result = #__type_Calendar
+            Case "checkbox"      : result = #__type_CheckBox
+            Case "combobox"      : result = #__type_ComboBox
+            Case "container"     : result = #__type_Container
+            Case "date"          : result = #__type_Date
+            Case "editor"        : result = #__type_Editor
+            Case "explorercombo" : result = #__type_ExplorerCombo
+            Case "explorerlist"  : result = #__type_ExplorerList
+            Case "explorertree"  : result = #__type_ExplorerTree
+            Case "frame"         : result = #__type_Frame
+            Case "hyperlink"     : result = #__type_HyperLink
+            Case "image"         : result = #__type_image
+            Case "ipaddress"     : result = #__type_IPAddress
+            Case "listicon"      : result = #__type_ListIcon
+            Case "listview"      : result = #__type_ListView
+            Case "mdi"           : result = #__type_MDI
+            Case "option"        : result = #__type_Option
+            Case "panel"         : result = #__type_Panel
+            Case "progress"      : result = #__type_Progress
+            Case "scintilla"     : result = #__type_Scintilla
+            Case "scrollarea"    : result = #__type_ScrollArea
+            Case "scroll"        : result = #__type_Scroll
+            Case "spin"          : result = #__type_Spin
+            Case "splitter"      : result = #__type_Splitter
+            Case "string"        : result = #__type_String
+            Case "text"          : result = #__type_Text
+            Case "track"         : result = #__type_Track
+            Case "tree"          : result = #__type_Tree
+            Case "web"           : result = #__type_Web
+               ;case "property"       : result = #__type_Properties
+               ;Case "canvas" : result = #__type_Canvas
+               ;Case "opengl"    : result = #__type_OpenGL
+               ;Case "shortcut" : result = #__type_Shortcut
+         EndSelect
+         
+         ProcedureReturn result
+      EndProcedure
+      
+      Procedure.s ClassFromType( Type )
+         Protected result$
+         
+         Select Type
+            Case #__type_StatusBar     : result$ = "Status"
+            Case #__type_PopupBar      : result$ = "PopupMenu"
+            Case #__type_ToolBar       : result$ = "ToolBar"
+            Case #__type_TabBar        : result$ = "Tab"
+            Case #__type_MenuBar       : result$ = "Menu"
+            Case #__type_Window        : result$ = "Window"
+               
+            Case #__type_Unknown       : result$ = "Create"
+               
+            Case #__type_Button        : result$ = "Button"
+            Case #__Type_ButtonImage   : result$ = "ButtonImage"
+            Case #__type_String        : result$ = "String"
+            Case #__type_Text          : result$ = "Text"
+            Case #__type_CheckBox      : result$ = "CheckBox"
+            Case #__type_Option        : result$ = "Option"
+            Case #__type_ListView      : result$ = "ListView"
+            Case #__type_Frame         : result$ = "Frame"
+            Case #__type_ComboBox      : result$ = "ComboBox"
+            Case #__type_Image         : result$ = "Image"
+            Case #__type_HyperLink     : result$ = "HyperLink"
+            Case #__type_Container     : result$ = "Container"
+            Case #__type_ListIcon      : result$ = "ListIcon"
+            Case #__type_IPAddress     : result$ = "IPAddress"
+            Case #__type_Progress      : result$ = "Progress"
+            Case #__type_Scroll        : result$ = "Scroll"
+            Case #__type_ScrollArea    : result$ = "ScrollArea"
+            Case #__type_Track         : result$ = "Track"
+            Case #__type_Web           : result$ = "Web"
+            Case #__type_Calendar      : result$ = "Calendar"
+            Case #__type_Date          : result$ = "Date"
+            Case #__type_Editor        : result$ = "Editor"
+            Case #__type_ExplorerList  : result$ = "ExplorerList"
+            Case #__type_ExplorerTree  : result$ = "ExplorerTree"
+            Case #__type_ExplorerCombo : result$ = "ExplorerCombo"
+            Case #__type_Spin          : result$ = "Spin"
+            Case #__type_Tree          : result$ = "Tree"
+            Case #__type_Panel         : result$ = "Panel"
+            Case #__type_Splitter      : result$ = "Splitter"
+            Case #__type_MDI           : result$ = "Mdi"
+            Case #__type_Scintilla     : result$ = "Scintilla"
+         EndSelect
+         
+         ProcedureReturn result$
+      EndProcedure
+      
+      Procedure.s ClassFromEvent( event.i )
+         Protected result$
+         
+         Select event
+            Case #__event_CursorChange    : result$ = "CursorChange"
+            Case #__event_free            : result$ = "Free"
+            Case #__event_Drop            : result$ = "Drop"
+            Case #__event_Draw            : result$ = "Draw"
+               ;Case #__event_SizeItem    : result$ = "SizeItem"
+               
+            Case #__event_ScrollChange    : result$ = "ScrollChange"
+               
+            Case #__event_close           : result$ = "CloseWindow"
+            Case #__event_maximize        : result$ = "MaximizeWindow"
+            Case #__event_minimize        : result$ = "MinimizeWindow"
+            Case #__event_restore         : result$ = "RestoreWindow"
+               
+            Case #__event_MouseEnter      : result$ = "MouseEnter"       ; The mouse cursor entered the gadget
+            Case #__event_MouseLeave      : result$ = "MouseLeave"       ; The mouse cursor left the gadget
+            Case #__event_MouseMove       : result$ = "MouseMove"        ; The mouse cursor moved
+            Case #__event_MouseWheel      : result$ = "MouseWheel"       ; The mouse wheel was moved
+            Case #__event_LeftDown        : result$ = "LeftButtonDown"   ; The left mouse button was pressed
+            Case #__event_LeftUp          : result$ = "LeftButtonUp"     ; The left mouse button was released
+            Case #__event_LeftClick       : result$ = "LeftClick"        ; A click With the left mouse button
+            Case #__event_Left2Click      : result$ = "Left2Click"       ; A double-click With the left mouse button
+            Case #__event_Left3Click      : result$ = "Left3Click"       ; A 3-click With the left mouse button
+            Case #__event_RightDown       : result$ = "RightButtonDown"  ; The right mouse button was pressed
+            Case #__event_RightUp         : result$ = "RightButtonUp"    ; The right mouse button was released
+            Case #__event_RightClick      : result$ = "RightClick"       ; A click With the right mouse button
+            Case #__event_Right2Click     : result$ = "Right2Click"      ; A double-click With the right mouse button
+            Case #__event_Right3Click     : result$ = "Right3Click"      ; A 3-click With the right mouse button
+            Case #__event_MiddleDown      : result$ = "MiddleButtonDown" ; The middle mouse button was pressed
+            Case #__event_MiddleUp        : result$ = "MiddleButtonUp"   ; The middle mouse button was released
+            Case #__event_Focus           : result$ = "Focus"            ; The gadget gained keyboard focus
+            Case #__event_LostFocus       : result$ = "LostFocus"        ; The gadget lost keyboard focus
+            Case #__event_KeyDown         : result$ = "KeyDown"          ; A key was pressed
+            Case #__event_Input           : result$ = "Input"            ; Text input was generated
+            Case #__event_Return          : result$ = "ReturnKey"
+            Case #__event_KeyUp           : result$ = "KeyUp"            ; A key was released
+            Case #__event_ResizeBegin     : result$ = "ResizeBegin"
+            Case #__event_Resize          : result$ = "Resize"           ; The gadget has been resized
+            Case #__event_ResizeEnd       : result$ = "ResizeEnd"
+            Case #__event_StatusChange    : result$ = "StatusChange"
+               ;Case #__event_TitleChange : result$ = "TitleChange"
+            Case #__event_Change          : result$ = "Change"
+            Case #__event_DragStart       : result$ = "DragStart"
+               
+            Case #__event_Down            : result$ = "Down"
+            Case #__event_Up              : result$ = "Up"
+         EndSelect
+         
+         ProcedureReturn result$
+      EndProcedure
+      
+      Procedure.s ClassFromFlag( flags.q )
+         Protected result$
+         
+         ;\\ create-flags
+         If flags & #__flag_button_Default : result$ +" #__flag_button_Default |": EndIf  
+         If flags & #__flag_Collapsed      : result$ +" #__flag_Collapsed |": EndIf     
+         If flags & #__flag_OptionBoxes    : result$ +" #__flag_OptionBoxes |": EndIf    
+         If flags & #__flag_CheckBoxes     : result$ +" #__flag_CheckBoxes |": EndIf     
+         If flags & #__flag_ThreeState     : result$ +" #__flag_ThreeState |": EndIf      
+         If flags & #__flag_RowClickSelect : result$ +" #__flag_RowClickSelect |": EndIf   
+         If flags & #__flag_RowMultiSelect : result$ +" #__flag_RowMultiSelect |": EndIf  
+         If flags & #__flag_RowFullSelect  : result$ +" #__flag_RowFullSelect |": EndIf   
+         If flags & #__flag_GridLines      : result$ +" #__flag_GridLines |": EndIf       
+         
+         If flags & #__flag_BorderRaised   : result$ +" #__flag_BorderRaised |": EndIf   
+         If flags & #__flag_BorderDouble   : result$ +" #__flag_BorderDouble |": EndIf    
+         If flags & #__flag_BorderSingle   : result$ +" #__flag_BorderSingle |": EndIf      
+         If flags & #__flag_Borderless     : result$ +" #__flag_Borderless |": EndIf      
+         If flags & #__flag_BorderFlat     : result$ +" #__flag_BorderFlat |": EndIf     
+         ;
+         If flags & #__flag_Child          : result$ +" #__flag_Child |": EndIf          
+         If flags & #__flag_Invert         : result$ +" #__flag_Invert |": EndIf        
+         If flags & #__flag_Vertical       : result$ +" #__flag_Vertical |": EndIf       
+         If flags & #__flag_Transparent    : result$ +" #__flag_Transparent |": EndIf    
+         ;
+         If flags & #__flag_NoFocus        : result$ +" #__flag_NoFocus |": EndIf        
+         If flags & #__flag_NoLines        : result$ +" #__flag_NoLines |": EndIf       
+         If flags & #__flag_NoButtons      : result$ +" #__flag_NoButtons |": EndIf
+         If flags & #__flag_NoGadgets      : result$ +" #__flag_NoGadgets |": EndIf      
+         If flags & #__flag_NoScrollBars   : result$ +" #__flag_NoScrollBars |": EndIf    
+         ;
+         If flags & #__flag_TextPassword   : result$ +" #__flag_TextPassword |": EndIf    
+         If flags & #__flag_TextWordWrap   : result$ +" #__flag_TextWordWrap |": EndIf   
+         If flags & #__flag_TextMultiLine  : result$ +" #__flag_TextMultiLine |": EndIf  
+         If flags & #__flag_TextInLine     : result$ +" #__flag_TextInLine |": EndIf    
+         If flags & #__flag_TextNumeric    : result$ +" #__flag_TextNumeric |": EndIf   
+         If flags & #__flag_TextReadonly   : result$ +" #__flag_TextReadonly |": EndIf  
+         If flags & #__flag_TextLowerCase  : result$ +" #__flag_TextLowerCase |": EndIf   
+         If flags & #__flag_TextUpperCase  : result$ +" #__flag_TextUpperCase |": EndIf  
+         
+         
+         ProcedureReturn Trim( Trim(result$), "|" )
+      EndProcedure
+      
+      
+      ;-
+      Procedure$  MakePBFlags( Type ) ; 
          Protected result$
          
          Select Type
             Case #__Type_Window        
-               ;{- Ok
                result$ = "#PB_Window_NoGadgets|"+
                          "#PB_Window_NoActivate|"+
                          "#PB_Window_ScreenCentered|"+
@@ -15497,10 +15838,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                          "#PB_Window_Maximize|"+
                          "#PB_Window_Invisible"
                
-               ;}
-               
             Case #__Type_Button         
-               ;{- Ok
                result$ = "#PB_Button_Default|"+
                          "#PB_Button_Toggle|"+
                          "#PB_Button_MultiLine|"+
@@ -15508,11 +15846,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                          "#PB_Button_Center|"+
                          "#PB_Button_Right"
                
-               
-               ;}
-               
             Case #__type_String         
-               ;{- Ok
                result$ = "#PB_String_BorderLess|"+
                          "#PB_String_Numeric|"+
                          "#PB_String_Password|"+
@@ -15520,71 +15854,52 @@ CompilerIf Not Defined( Widget, #PB_Module )
                          "#PB_String_LowerCase|"+
                          "#PB_String_UpperCase"
                
-               ;}
-               
             Case #__Type_Text           
-               ;{- Ok
                result$ = "#PB_Text_Border|"+
                          "#PB_Text_Left|"+
                          "#PB_Text_Center|"+
                          "#PB_Text_Right"
                
-               ;}
-               
             Case #__Type_CheckBox       
-               ;{- Ok
                result$ = "#PB_CheckBox_ThreeState|"+
                          "#PB_CheckBox_Center|"+
                          "#PB_CheckBox_Right"
-               
-               ;}
                
             Case #__Type_Option         
                result$ = ""
                
             Case #__Type_ListView       
-               ;{- Ok
                result$ = "#PB_ListView_Multiselect|"+
                          "#PB_ListView_ClickSelect"
-               ;}
+               
                
             Case #__Type_Frame          
-               ;{- Ok
                result$ = "#PB_Frame_Single|"+
                          "#PB_Frame_Double|"+
                          "#PB_Frame_Flat"
-               ;}
+               
                
             Case #__Type_ComboBox       
-               ;{- Ok
                result$ = "#PB_ComboBox_Editable|"+
                          "#PB_ComboBox_LowerCase|"+
                          "#PB_ComboBox_UpperCase|"+
                          "#PB_ComboBox_Image"
-               ;}
                
             Case #__type_image          
-               ;{- Ok
                result$ = "#PB_image_Border|"+
                          "#PB_image_Raised"
-               ;}
                
             Case #__Type_HyperLink      
-               ;{- Ok
                result$ = "#PB_Hyperlink_Underline"
-               ;}
                
             Case #__Type_Container      
-               ;{- Ok
                result$ = "#PB_Container_BorderLess|"+
                          "#PB_Container_Flat|"+
                          "#PB_Container_Raised|"+
                          "#PB_Container_Single|"+
                          "#PB_Container_Double"
-               ;}
                
             Case #__Type_ListIcon       
-               ;{- Ok
                result$ = "#PB_ListIcon_CheckBoxes|"+
                          "#PB_ListIcon_ThreeState|"+
                          "#PB_ListIcon_MultiSelect|"+
@@ -15592,60 +15907,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
                          "#PB_ListIcon_FullRowSelect|"+
                          "#PB_ListIcon_HeaderDragDrop|"+
                          "#PB_ListIcon_AlwaysShowSelection"
-               ;}
                
             Case #__Type_IPAddress      
                result$ = ""
                
             Case #__type_Progress    
-               ;{- Ok
                result$ = "#PB_ProgressBar_Smooth|"+
                          "#PB_ProgressBar_Vertical"
-               ;}
                
             Case #__type_Scroll      
-               ;{- Ok
                result$ = "#PB_ScrollBar_Vertical"
-               ;}
                
             Case #__type_ScrollArea     
-               ;{- Ok
                result$ = "#PB_ScrollArea_Flat|"+
                          "#PB_ScrollArea_Raised|"+
                          "#PB_ScrollArea_Single|"+
                          "#PB_ScrollArea_BorderLess|"+
                          "#PB_ScrollArea_Center"
-               ;}
                
             Case #__type_Track       
-               ;{- Ok
                result$ = "#PB_TrackBar_Ticks|"+
                          "#PB_TrackBar_Vertical"
-               ;}
                
             Case #__Type_Web            
                result$ = ""
                
             Case #__Type_ButtonImage    
-               ;{- Ok
                result$ = "#PB_Button_Toggle"
-               ;}
                
             Case #__Type_Calendar       
-               ;{- Ok
                result$ = "#PB_Calendar_Borderless"
-               ;}
                
             Case #__Type_Date           
-               ;{- Ok
                result$ = "#PB_Date_UpDown"
-               ;}
                
             Case #__Type_Editor         
-               ;{- Ok
                result$ = "#PB_Editor_ReadOnly|"+
                          "#PB_Editor_WordWrap"
-               ;}
                
             Case #__Type_ExplorerList   
                result$ = "#PB_Explorer_BorderLess|"+          ; Создать Гаджет без границ.
@@ -15683,29 +15981,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                result$ = ""
                
             Case #__Type_Tree           
-               ;{- Ok
                result$ = "#PB_Tree_AlwaysShowSelection|"+
                          "#PB_Tree_NoLines|"+
                          "#PB_Tree_NoButtons|"+
                          "#PB_Tree_CheckBoxes|"+
                          "#PB_Tree_ThreeState"
-               ;}
                
             Case #__Type_Panel          
                result$ = ""
                
             Case #__type_Splitter       
-               ;{- Ok
                result$ = "#PB_Splitter_Vertical|"+
                          "#PB_Splitter_Separator|"+
                          "#PB_Splitter_FirstFixed|"+
                          "#PB_Splitter_SecondFixed" 
-               ;}
                
-               CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-               Case #__Type_MDI           
-                  result$ = ""
-               CompilerEndIf
+            Case #__Type_MDI      
+               result$ = ""
                
             Case #__type_Scintilla      
                result$ = ""
@@ -15714,20 +16006,255 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;         result$ = ""
                ;         
                ;       Case #__Type_Canvas 
-               ;         ;{- Ok
+               ;         
                ;         result$ = "#PB_Canvas_Border|"+
                ;                   "#PB_Canvas_Container|"+
                ;                   "#PB_Canvas_ClipMouse|"+
                ;                   "#PB_Canvas_Keyboard|"+
                ;                   "#PB_Canvas_DrawFocus"
                
-               
          EndSelect
-         
+
          ProcedureReturn result$
       EndProcedure
       
-      Procedure$  MakeStringConstants( string$ )
+      Procedure$  MakeString( Class$, Constant.q ) ; 
+         Protected result$
+         
+         If Constant
+            Select LCase(Class$)
+               Case "font"
+                  If Constant & #PB_Font_Bold             : result$ + " #PB_Font_Bold |" : EndIf
+                  If Constant & #PB_Font_Italic           : result$ + " #PB_Font_Italic |" : EndIf
+                  If Constant & #PB_Font_Underline        : result$ + " #PB_Font_Underline |" : EndIf
+                  If Constant & #PB_Font_StrikeOut        : result$ + " #PB_Font_StrikeOut |" : EndIf
+                  If Constant & #PB_Font_HighQuality      : result$ + " #PB_Font_HighQuality |" : EndIf
+                  
+               Case "stringgadget"
+                  If Constant & #PB_String_Password       : result$ + " #PB_String_Password |" : EndIf
+                  If Constant & #PB_String_Numeric        : result$ + " #PB_String_Numeric |" : EndIf
+                  If Constant & #PB_String_LowerCase      : result$ + " #PB_String_LowerCase |" : EndIf
+                  If Constant & #PB_String_UpperCase      : result$ + " #PB_String_UpperCase |" : EndIf
+                  If Constant & #PB_String_ReadOnly       : result$ + " #PB_String_ReadOnly |" : EndIf
+                  If Constant & #PB_String_BorderLess     : result$ + " #PB_String_BorderLess |" : EndIf
+                  
+               Case "textgadget"
+                  If Constant & #PB_Text_Center           : result$ + " #PB_Text_Center |" : EndIf
+                  If Constant & #PB_Text_Right            : result$ + " #PB_Text_Right |" : EndIf
+                  If Constant & #PB_Text_Border           : result$ + " #PB_Text_Border |" : EndIf
+                  
+               Case "buttongadget"
+                  If Constant & #PB_Button_Left           : result$ + " #PB_Button_Left |" : EndIf
+                  If Constant & #PB_Button_Right          : result$ + " #PB_Button_Right |" : EndIf
+                  If Constant & #PB_Button_Toggle         : result$ + " #PB_Button_Toggle |" : EndIf
+                  If Constant & #PB_Button_Default        : result$ + " #PB_Button_Default |" : EndIf
+                  If Constant & #PB_Button_MultiLine      : result$ + " #PB_Button_MultiLine |" : EndIf
+                  
+               Case "checkboxgadget"
+                  If Constant & #PB_CheckBox_Center       : result$ + " #PB_CheckBox_Center |" : EndIf
+                  If Constant & #PB_CheckBox_Right        : result$ + " #PB_CheckBox_Right |" : EndIf
+                  
+               Case "comboboxgadget"
+                  If Constant & #PB_ComboBox_Image        : result$ + " #PB_ComboBox_Image |" : EndIf
+                  If Constant & #PB_ComboBox_Editable     : result$ + " #PB_ComboBox_Editable |" : EndIf
+                  If Constant & #PB_ComboBox_LowerCase    : result$ + " #PB_ComboBox_LowerCase |" : EndIf
+                  If Constant & #PB_ComboBox_UpperCase    : result$ + " #PB_ComboBox_UpperCase |" : EndIf
+                  
+               Case "containergadget"
+                  If Constant & #PB_Container_Flat        : result$ + " #PB_Container_Flat |" : EndIf
+                  If Constant & #PB_Container_Raised      : result$ + " #PB_Container_Raised |" : EndIf
+                  If Constant & #PB_Container_Single      : result$ + " #PB_Container_Single |" : EndIf
+                  If Constant & #PB_Container_BorderLess  : result$ + " #PB_Container_BorderLess |" : EndIf
+                  
+               Case "scrollareagadget"
+                  If Constant & #PB_ScrollArea_Flat       : result$ + " #PB_ScrollArea_Flat |" : EndIf
+                  If Constant & #PB_ScrollArea_Raised     : result$ + " #PB_ScrollArea_Raised |" : EndIf
+                  If Constant & #PB_ScrollArea_Single     : result$ + " #PB_ScrollArea_Single |" : EndIf
+                  If Constant & #PB_ScrollArea_BorderLess : result$ + " #PB_ScrollArea_BorderLess |" : EndIf
+                  If Constant & #PB_ScrollArea_Center     : result$ + " #PB_ScrollArea_Center |" : EndIf
+                  
+               Case "splittergadget"
+                  If Constant & #PB_Splitter_Vertical     : result$ + " #PB_Splitter_Vertical |" : EndIf
+                  If Constant & #PB_Splitter_Separator    : result$ + " #PB_Splitter_Separator |" : EndIf
+                  If Constant & #PB_Splitter_FirstFixed   : result$ + " #PB_Splitter_FirstFixed |" : EndIf
+                  If Constant & #PB_Splitter_SecondFixed  : result$ + " #PB_Splitter_SecondFixed |" : EndIf
+                  
+               Case "optiongadget"         
+                  result$ = ""
+                  
+               Case "listviewgadget"       
+                  If Constant & #PB_ListView_MultiSelect  : result$ + " #PB_ListView_Multiselect |" : EndIf
+                  If Constant & #PB_ListView_ClickSelect  : result$ + " #PB_ListView_ClickSelect |" : EndIf
+                  
+               Case "framegadget"          
+                  If Constant & #PB_Frame_Single          : result$ + " #PB_Frame_Single |" : EndIf
+                  If Constant & #PB_Frame_Double          : result$ + " #PB_Frame_Double |" : EndIf
+                  If Constant & #PB_Frame_Flat            : result$ + " #PB_Frame_Flat |" : EndIf
+                  
+               Case "imagegadget"          
+                  If Constant & #PB_Image_Border          : result$ + " #PB_image_Border |" : EndIf
+                  If Constant & #PB_Image_Raised          : result$ + " #PB_image_Raised |" : EndIf
+                  
+               Case "hyperlinkgadget"      
+                  If Constant & #PB_HyperLink_Underline   : result$ + " #PB_Hyperlink_Underline |" : EndIf
+                  
+               Case "listicongadget"       
+                  If Constant & #PB_ListIcon_CheckBoxes          : result$ + " #PB_ListIcon_CheckBoxes |" : EndIf
+                  If Constant & #PB_ListIcon_ThreeState          : result$ + " #PB_ListIcon_ThreeState |" : EndIf
+                  If Constant & #PB_ListIcon_MultiSelect         : result$ + " #PB_ListIcon_MultiSelect |" : EndIf
+                  If Constant & #PB_ListIcon_GridLines           : result$ + " #PB_ListIcon_GridLines |" : EndIf
+                  If Constant & #PB_ListIcon_FullRowSelect       : result$ + " #PB_ListIcon_FullRowSelect |" : EndIf
+                  If Constant & #PB_ListIcon_HeaderDragDrop      : result$ + " #PB_ListIcon_HeaderDragDrop |" : EndIf
+                  If Constant & #PB_ListIcon_AlwaysShowSelection : result$ + " #PB_ListIcon_AlwaysShowSelection |" : EndIf
+                  
+               Case "ipaddressgadget"      
+                  result$ = ""
+                  
+               Case "progressbargadget"    
+                  If Constant & #PB_ProgressBar_Smooth           : result$ + " #PB_ProgressBar_Smooth |" : EndIf
+                  If Constant & #PB_ProgressBar_Vertical         : result$ + " #PB_ProgressBar_Vertical |" : EndIf
+                  
+               Case "scrollbargadget"      
+                  If Constant & #PB_ScrollBar_Vertical           : result$ + " #PB_ScrollBar_Vertical |" : EndIf
+                  
+               Case "trackbargadget"       
+                  If Constant & #PB_TrackBar_Ticks               : result$ + " #PB_TrackBar_Ticks |" : EndIf
+                  If Constant & #PB_TrackBar_Vertical            : result$ + " #PB_TrackBar_Vertical |" : EndIf
+                  
+               Case "webgadget"            
+                  result$ = ""
+                  
+               Case "buttonimagegadget"    
+                  If Constant & #PB_Button_Toggle                : result$ + " #PB_Button_Toggle |" : EndIf
+                  
+               Case "calendargadget"       
+                  If Constant & #PB_Calendar_Borderless          : result$ + " #PB_Calendar_Borderless |" : EndIf
+                  
+               Case "dategadget"           
+                  If Constant & #PB_Date_UpDown                  : result$ + " #PB_Date_UpDown |" : EndIf
+                  
+               Case "editorgadget"         
+                  If Constant & #PB_Editor_ReadOnly              : result$ + " #PB_Editor_ReadOnly |" : EndIf
+                  If Constant & #PB_Editor_WordWrap              : result$ + " #PB_Editor_WordWrap |" : EndIf
+                    
+               Case "explorerlistgadget"   
+                  If Constant & #PB_Explorer_BorderLess          : result$ + " #PB_Explorer_BorderLess |" : EndIf
+                  If Constant & #PB_Explorer_AlwaysShowSelection : result$ + " #PB_Explorer_AlwaysShowSelection |" : EndIf
+                  If Constant & #PB_Explorer_MultiSelect         : result$ + " #PB_Explorer_MultiSelect |" : EndIf
+                  If Constant & #PB_Explorer_GridLines           : result$ + " #PB_Explorer_GridLines |" : EndIf
+                  If Constant & #PB_Explorer_HeaderDragDrop      : result$ + " #PB_Explorer_HeaderDragDrop |" : EndIf
+                  If Constant & #PB_Explorer_FullRowSelect       : result$ + " #PB_Explorer_FullRowSelect |" : EndIf
+                  If Constant & #PB_Explorer_NoFiles             : result$ + " #PB_Explorer_NoFiles |" : EndIf
+                  If Constant & #PB_Explorer_NoFolders           : result$ + " #PB_Explorer_NoFolders |" : EndIf
+                  If Constant & #PB_Explorer_NoParentFolder      : result$ + " #PB_Explorer_NoParentFolder |" : EndIf
+                  If Constant & #PB_Explorer_NoDirectoryChange   : result$ + " #PB_Explorer_NoDirectoryChange |" : EndIf
+                  If Constant & #PB_Explorer_NoDriveRequester    : result$ + " #PB_Explorer_NoDriveRequester |" : EndIf
+                  If Constant & #PB_Explorer_NoSort              : result$ + " #PB_Explorer_NoSort |" : EndIf
+                  If Constant & #PB_Explorer_NoMyDocuments       : result$ + " #PB_Explorer_NoMyDocuments |" : EndIf
+                  If Constant & #PB_Explorer_AutoSort            : result$ + " #PB_Explorer_AutoSort |" : EndIf
+                  If Constant & #PB_Explorer_HiddenFiles         : result$ + " #PB_Explorer_HiddenFiles |" : EndIf
+                  
+               Case "explorertreegadget"   
+                  If Constant & #PB_Explorer_BorderLess          : result$ + " #PB_Explorer_BorderLess |" : EndIf
+                  If Constant & #PB_Explorer_AlwaysShowSelection : result$ + " #PB_Explorer_AlwaysShowSelection |" : EndIf
+                  If Constant & #PB_Explorer_NoLines             : result$ + " #PB_Explorer_NoLines |" : EndIf
+                  If Constant & #PB_Explorer_NoButtons           : result$ + " #PB_Explorer_NoButtons |" : EndIf
+                  If Constant & #PB_Explorer_NoFiles             : result$ + " #PB_Explorer_NoFiles |" : EndIf
+                  If Constant & #PB_Explorer_NoDriveRequester    : result$ + " #PB_Explorer_NoDriveRequester |" : EndIf
+                  If Constant & #PB_Explorer_NoMyDocuments       : result$ + " #PB_Explorer_NoMyDocuments |" : EndIf
+                  If Constant & #PB_Explorer_AutoSort            : result$ + " #PB_Explorer_AutoSort |" : EndIf
+                  
+               Case "explorercombogadget"  
+                  If Constant & #PB_Explorer_DrivesOnly          : result$ + " #PB_Explorer_DrivesOnly |" : EndIf
+                  If Constant & #PB_Explorer_Editable            : result$ + " #PB_Explorer_Editable |" : EndIf
+                  If Constant & #PB_Explorer_NoMyDocuments       : result$ + " #PB_Explorer_NoMyDocuments |" : EndIf
+                  
+               Case "spingadget"           
+                  result$ = ""
+                  
+               Case "treegadget"           
+                  If Constant & #PB_Tree_AlwaysShowSelection     : result$ + " #PB_Tree_AlwaysShowSelection |" : EndIf
+                  If Constant & #PB_Tree_NoLines                 : result$ + " #PB_Tree_NoLines |" : EndIf
+                  If Constant & #PB_Tree_NoButtons               : result$ + " #PB_Tree_NoButtons |" : EndIf
+                  If Constant & #PB_Tree_CheckBoxes              : result$ + " #PB_Tree_CheckBoxes |" : EndIf
+                  If Constant & #PB_Tree_ThreeState              : result$ + " #PB_Tree_ThreeState |" : EndIf
+                  
+               Case "panelgadget"          
+                  result$ = ""
+                  
+               Case "mdigadget"      
+                  result$ = ""
+                  
+               Case "scintillagadget"      
+                  result$ = ""
+                  
+                  ;       Case "shortcutgadget       
+                  ;         result$ = ""
+                  ;         
+                  ;       Case "canvasgadget" 
+                  ;         
+                  ;         result$ = "#PB_Canvas_Border|"+
+                  ;                   "#PB_Canvas_Container|"+
+                  ;                   "#PB_Canvas_ClipMouse|"+
+                  ;                   "#PB_Canvas_Keyboard|"+
+                  ;                   "#PB_Canvas_DrawFocus"
+                  
+               Case "window"
+                  If Constant & #PB_Window_SystemMenu
+                     Constant &~ #PB_Window_SystemMenu
+                     result$ + " #PB_Window_SystemMenu |"
+                  EndIf
+                  If Constant & #PB_Window_SizeGadget
+                     ;Constant &~ #PB_Window_SizeGadget
+                     result$ + " #PB_Window_SizeGadget |"
+                  EndIf
+                  If Constant & #PB_Window_ScreenCentered
+                     result$ + " #PB_Window_ScreenCentered |"
+                  EndIf
+                  If Constant & #PB_Window_Invisible
+                     result$ + " #PB_Window_Invisible |"
+                  EndIf
+                  ;          If Constant & #PB_Window_MaximizeGadget
+                  ;             ;Constant &~ #PB_Window_MaximizeGadget
+                  ;             result$ + " #PB_Window_MaximizeGadget |"
+                  ;          EndIf
+                  ;          If Constant & #PB_Window_MinimizeGadget
+                  ;             ;Constant &~ #PB_Window_MinimizeGadget
+                  ;             result$ + " #PB_Window_MinimizeGadget |"
+                  ;          EndIf
+                  ;          If Constant & #PB_Window_NoActivate = #PB_Window_NoActivate
+                  ;             result$ + " #PB_Window_NoActivate |"
+                  ;          EndIf
+                  If Constant & #PB_Window_BorderLess
+                     result$ + " #PB_Window_BorderLess |"
+                  EndIf
+                  If Constant & #PB_Window_NoGadgets
+                     result$ + " #PB_Window_NoGadgets |"
+                  EndIf
+                  If Constant & #PB_Window_TitleBar = #PB_Window_TitleBar
+                     result$ + " #PB_Window_TitleBar |"
+                  EndIf
+                  If Constant & #PB_Window_Tool 
+                     result$ + " #PB_Window_Tool |" 
+                  EndIf
+                  If Constant & #PB_Window_WindowCentered 
+                     result$ + " #PB_Window_WindowCentered |" 
+                  EndIf
+                  
+               Case "status","popupmenu","tool","tab","menu","window",
+                    "unknown","button","buttonimage","calendar","checkbox","combobox","container","date",
+                    "editor","explorercombo","explorerlist","explorertree","frame","hyperlink","image","ipaddress",
+                    "listicon","listview","mdi","option","panel","progress","text","track","tree",
+                    "scintilla","scrollarea","scroll","spin","splitter","string"
+                  
+                  result$ + ClassFromFlag( Constant )
+            EndSelect
+         EndIf
+         
+         ProcedureReturn Trim( Trim(result$), "|" )
+      EndProcedure
+      
+      Procedure$  MakeConstantsString( string$ )
          Protected i, result$, count, str$
          
          If string$
@@ -15750,150 +16277,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result$
       EndProcedure
       
-      Procedure$  MakeConstantsString( type$, Flag.q ) ; 
-         Protected result$
-         
-         If Flag
-            Select type$
-               Case "Font"
-                  If Flag & #PB_Font_Bold        : result$ + " #PB_Font_Bold |" : EndIf
-                  If Flag & #PB_Font_Italic      : result$ + " #PB_Font_Italic |" : EndIf
-                  If Flag & #PB_Font_Underline   : result$ + " #PB_Font_Underline |" : EndIf
-                  If Flag & #PB_Font_StrikeOut   : result$ + " #PB_Font_StrikeOut |" : EndIf
-                  If Flag & #PB_Font_HighQuality : result$ + " #PB_Font_HighQuality |" : EndIf
-                  
-               Case "String"
-                  If Flag & #PB_String_Password     : result$ + " #PB_String_Password |" : EndIf
-                  If Flag & #PB_String_Numeric      : result$ + " #PB_String_Numeric |" : EndIf
-                  If Flag & #PB_String_LowerCase    : result$ + " #PB_String_LowerCase |" : EndIf
-                  If Flag & #PB_String_UpperCase    : result$ + " #PB_String_UpperCase |" : EndIf
-                  If Flag & #PB_String_ReadOnly     : result$ + " #PB_String_ReadOnly |" : EndIf
-                  If Flag & #PB_String_BorderLess   : result$ + " #PB_String_BorderLess |" : EndIf
-                  
-               Case "Text"
-                  If Flag & #PB_Text_Center     : result$ + " #PB_Text_Center |" : EndIf
-                  If Flag & #PB_Text_Right      : result$ + " #PB_Text_Right |" : EndIf
-                  If Flag & #PB_Text_Border     : result$ + " #PB_Text_Border |" : EndIf
-                  
-               Case "Button"
-                  If Flag & #PB_Button_Left      : result$ + " #PB_Button_Left |" : EndIf
-                  If Flag & #PB_Button_Right     : result$ + " #PB_Button_Right |" : EndIf
-                  If Flag & #PB_Button_Toggle    : result$ + " #PB_Button_Toggle |" : EndIf
-                  If Flag & #PB_Button_Default   : result$ + " #PB_Button_Default |" : EndIf
-                  If Flag & #PB_Button_MultiLine : result$ + " #PB_Button_MultiLine |" : EndIf
-                  
-               Case "CheckBox"
-                  If Flag & #PB_CheckBox_Center    : result$ + " #PB_CheckBox_Center |" : EndIf
-                  If Flag & #PB_CheckBox_Right     : result$ + " #PB_CheckBox_Right |" : EndIf
-                  
-               Case "Container"
-                  If Flag & #PB_Container_Flat       : result$ + " #PB_Container_Flat |" : EndIf
-                  If Flag & #PB_Container_Raised     : result$ + " #PB_Container_Raised |" : EndIf
-                  If Flag & #PB_Container_Single     : result$ + " #PB_Container_Single |" : EndIf
-                  If Flag & #PB_Container_BorderLess : result$ + " #PB_Container_BorderLess |" : EndIf
-                  
-               Case "ScrollArea"
-                  If Flag & #PB_ScrollArea_Flat       : result$ + " #PB_ScrollArea_Flat |" : EndIf
-                  If Flag & #PB_ScrollArea_Raised     : result$ + " #PB_ScrollArea_Raised |" : EndIf
-                  If Flag & #PB_ScrollArea_Single     : result$ + " #PB_ScrollArea_Single |" : EndIf
-                  If Flag & #PB_ScrollArea_BorderLess : result$ + " #PB_ScrollArea_BorderLess |" : EndIf
-                  If Flag & #PB_ScrollArea_Center     : result$ + " #PB_ScrollArea_Center |" : EndIf
-                  
-               Case "Splitter"
-                  If Flag & #PB_Splitter_Vertical    : result$ + " #PB_Splitter_Vertical |" : EndIf
-                  If Flag & #PB_Splitter_Separator   : result$ + " #PB_Splitter_Separator |" : EndIf
-                  If Flag & #PB_Splitter_FirstFixed  : result$ + " #PB_Splitter_FirstFixed |" : EndIf
-                  If Flag & #PB_Splitter_SecondFixed : result$ + " #PB_Splitter_SecondFixed |" : EndIf
-                  
-               Case "ComboBox"
-                  If Flag & #PB_ComboBox_Image       : result$ + " #PB_ComboBox_Image |" : EndIf
-                  If Flag & #PB_ComboBox_Editable    : result$ + " #PB_ComboBox_Editable |" : EndIf
-                  If Flag & #PB_ComboBox_LowerCase   : result$ + " #PB_ComboBox_LowerCase |" : EndIf
-                  If Flag & #PB_ComboBox_UpperCase   : result$ + " #PB_ComboBox_UpperCase |" : EndIf
-                  
-               Case "Window"
-                  If Flag & #PB_Window_SystemMenu
-                     Flag &~ #PB_Window_SystemMenu
-                     result$ + " #PB_Window_SystemMenu |"
-                  EndIf
-                  If Flag & #PB_Window_SizeGadget
-                     ;flag &~ #PB_Window_SizeGadget
-                     result$ + " #PB_Window_SizeGadget |"
-                  EndIf
-                  If Flag & #PB_Window_ScreenCentered
-                     result$ + " #PB_Window_ScreenCentered |"
-                  EndIf
-                  If Flag & #PB_Window_Invisible
-                     result$ + " #PB_Window_Invisible |"
-                  EndIf
-                  ;          If flag & #PB_Window_MaximizeGadget
-                  ;             ;flag &~ #PB_Window_MaximizeGadget
-                  ;             result$ + " #PB_Window_MaximizeGadget |"
-                  ;          EndIf
-                  ;          If flag & #PB_Window_MinimizeGadget
-                  ;             ;flag &~ #PB_Window_MinimizeGadget
-                  ;             result$ + " #PB_Window_MinimizeGadget |"
-                  ;          EndIf
-                  ;          If flag & #PB_Window_NoActivate = #PB_Window_NoActivate
-                  ;             result$ + " #PB_Window_NoActivate |"
-                  ;          EndIf
-                  If Flag & #PB_Window_BorderLess
-                     result$ + " #PB_Window_BorderLess |"
-                  EndIf
-                  If Flag & #PB_Window_NoGadgets
-                     result$ + " #PB_Window_NoGadgets |"
-                  EndIf
-                  If Flag & #PB_Window_TitleBar = #PB_Window_TitleBar
-                     result$ + " #PB_Window_TitleBar |"
-                  EndIf
-                  If Flag & #PB_Window_Tool 
-                     result$ + " #PB_Window_Tool |" 
-                  EndIf
-                  If Flag & #PB_Window_WindowCentered 
-                     result$ + " #PB_Window_WindowCentered |" 
-                  EndIf
-                  
-            EndSelect
-            
-            If constants::BinaryFlag( Flag, #__flag_Transparent )          
-               result$ + " #__flag_Transparent |" 
-            EndIf
-            
-            Select type$
-               Case "Container", "ScrollArea"
-                  If Flag & #__flag_BorderFlat = #__flag_BorderFlat     : result$ + " #PB_" + type$ + "_Flat |" : EndIf
-                  If Flag & #__flag_BorderRaised = #__flag_BorderRaised : result$ + " #PB_" + type$ + "_Raised |" : EndIf
-                  If Flag & #__flag_BorderSingle = #__flag_BorderSingle : result$ + " #PB_" + type$ + "_Single |" : EndIf
-                  If Flag & #__flag_BorderLess = #__flag_BorderLess     : result$ + " #PB_" + type$ + "_BorderLess |" : EndIf
-                  
-                  If type$ = "ScrollArea"
-                     If Flag & #__flag_Center = #__flag_Center            : result$ + " #PB_" + type$ + "_Center |" : EndIf
-                  EndIf
-                  
-               Case "Button", "Text", "CheckBox"
-                  If Flag & #__align_image = #__align_image
-                     If Flag & #__flag_ImageLeft = #__flag_ImageLeft           : result$ + " #__flag_ImageLeft |" : EndIf
-                     If Flag & #__flag_ImageTop = #__flag_ImageTop             : result$ + " #__flag_ImageTop |" : EndIf
-                     If Flag & #__flag_ImageRight = #__flag_ImageRight         : result$ + " #__flag_ImageRight |" : EndIf
-                     If Flag & #__flag_ImageBottom = #__flag_ImageBottom       : result$ + " #__flag_ImageBottom |" : EndIf
-                  Else
-                     If Flag & #__align_text 
-                        If Flag & #__flag_TextLeft = #__flag_TextLeft           : result$ + " #__flag_TextLeft |" : EndIf
-                        If Flag & #__flag_TextRight = #__flag_TextRight         : result$ + " #__flag_TextRight |" : EndIf
-                        If Flag & #__flag_TextWordWrap = #__flag_TextWordWrap   : result$ + " #__flag_TextWordWrap |" : EndIf
-                        If Flag & #__flag_TextMultiLine = #__flag_TextMultiLine : result$ + " #__flag_TextMultiLine |" : EndIf
-                        If Flag & #__flag_button_Default = #__flag_button_Default : result$ + " #__flag_button_Default |" : EndIf
-                     EndIf
-                  EndIf
-                  
-                  
-            EndSelect
-            
-         EndIf
-         
-         ProcedureReturn Trim( Trim(result$), "|" )
-      EndProcedure
-      
       Procedure.q MakeConstants( string$ )
          Protected i, Flag.q, count, str$
          
@@ -15903,13 +16286,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                str$ = Trim(StringField(string$,(I+1),"|"))
                
                Select str$
-                     ;
-                     ;                   Case "PB_" : result$ = #PB_Compiler_File  
-                     ;                   Case "PB_" : result$ = #PB_Compiler_FilePath  
-                     ;                   Case "PB_" : result$ = #PB_Compiler_Filename  
-                     ;                   Case "PB_" : result$ = #PB_Compiler_Home  
-                     ;                   Case "PB_" : result$ = #PB_Compiler_Module  
-                     ;                   Case "PB_" : result$ = #PB_Compiler_Procedure  
                   Case "#PB_Compiler_DLL"                   : Flag = Flag | #PB_Compiler_DLL  
                   Case "#PB_Compiler_Date"                  : Flag = Flag | #PB_Compiler_Date  
                   Case "#PB_Compiler_Debugger"              : Flag = Flag | #PB_Compiler_Debugger  
@@ -16105,68 +16481,68 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Default
                      ; widgets
                      Select LCase(str$)
-                        Case "#__flag_button_default"              : Flag = Flag | #__flag_button_Default
-                        Case "#__flag_collapsed"                   : Flag = Flag | #__flag_Collapsed          
-                        Case "#__flag_optionboxes"                 : Flag = Flag | #__flag_OptionBoxes      
-                        Case "#__flag_checkboxes"                  : Flag = Flag | #__flag_CheckBoxes         
-                        Case "#__flag_threestate"                  : Flag = Flag | #__flag_ThreeState         
-                        Case "#__flag_rowclickselect"              : Flag = Flag | #__flag_RowClickSelect  
-                        Case "#__flag_rowmultiselect"              : Flag = Flag | #__flag_RowMultiSelect 
-                        Case "#__flag_rowfullselect"               : Flag = Flag | #__flag_RowFullSelect   
-                        Case "#__flag_gridlines"                   : Flag = Flag | #__flag_GridLines           
-                        Case "#__flag_borderraised"               : Flag = Flag | #__flag_BorderRaised   
-                        Case "#__flag_borderdouble"               : Flag = Flag | #__flag_BorderDouble   
-                        Case "#__flag_bordersingle"               : Flag = Flag | #__flag_BorderSingle   
-                        Case "#__flag_borderless"                 : Flag = Flag | #__flag_Borderless       
-                        Case "#__flag_borderflat"                 : Flag = Flag | #__flag_BorderFlat       
-                        Case "#__flag_child"                       : Flag = Flag | #__flag_Child                   
-                        Case "#__flag_invert"                      : Flag = Flag | #__flag_Invert                 
-                        Case "#__flag_vertical"                    : Flag = Flag | #__flag_Vertical             
-                        Case "#__flag_transparent"                 : Flag = Flag | #__flag_Transparent       
-                        Case "#__flag_nofocus"                     : Flag = Flag | #__flag_NoFocus               
-                        Case "#__flag_nolines"                     : Flag = Flag | #__flag_NoLines               
-                        Case "#__flag_nobuttons"                   : Flag = Flag | #__flag_NoButtons           
-                        Case "#__flag_noscrollbars"                : Flag = Flag | #__flag_NoScrollBars     
-                        Case "#__flag_textpassword"               : Flag = Flag | #__flag_TextPassword   
-                        Case "#__flag_textwordwrap"               : Flag = Flag | #__flag_TextWordWrap   
-                        Case "#__flag_textmultiline"              : Flag = Flag | #__flag_TextMultiLine 
-                        Case "#__flag_textinline"                 : Flag = Flag | #__flag_TextInLine       
-                        Case "#__flag_textnumeric"                : Flag = Flag | #__flag_TextNumeric     
-                        Case "#__flag_textreadonly"               : Flag = Flag | #__flag_TextReadonly   
-                        Case "#__flag_textlowercase"              : Flag = Flag | #__flag_TextLowerCase 
-                        Case "#__flag_textuppercase"              : Flag = Flag | #__flag_TextUpperCase 
-                           ; Case "#__flag_modal"                       : Flag = Flag | #__flag_Modal                  
-                        Case "#__flag_left"                        : Flag = Flag | #__flag_Left                    
-                        Case "#__flag_top"                         : Flag = Flag | #__flag_Top                      
-                        Case "#__flag_right"                       : Flag = Flag | #__flag_Right                  
-                        Case "#__flag_bottom"                      : Flag = Flag | #__flag_Bottom                
-                        Case "#__flag_center"                      : Flag = Flag | #__flag_Center                
-                        Case "#__flag_autosize"                    : Flag = Flag | #__flag_AutoSize            
-                        Case "#__flag_nogadgets"                   : Flag = Flag | #__flag_NoGadgets      
+                        Case "#__flag_button_default"       : Flag = Flag | #__flag_button_Default
+                        Case "#__flag_collapsed"            : Flag = Flag | #__flag_Collapsed          
+                        Case "#__flag_optionboxes"          : Flag = Flag | #__flag_OptionBoxes      
+                        Case "#__flag_checkboxes"           : Flag = Flag | #__flag_CheckBoxes         
+                        Case "#__flag_threestate"           : Flag = Flag | #__flag_ThreeState         
+                        Case "#__flag_rowclickselect"       : Flag = Flag | #__flag_RowClickSelect  
+                        Case "#__flag_rowmultiselect"       : Flag = Flag | #__flag_RowMultiSelect 
+                        Case "#__flag_rowfullselect"        : Flag = Flag | #__flag_RowFullSelect   
+                        Case "#__flag_gridlines"            : Flag = Flag | #__flag_GridLines           
+                        Case "#__flag_borderraised"         : Flag = Flag | #__flag_BorderRaised   
+                        Case "#__flag_borderdouble"         : Flag = Flag | #__flag_BorderDouble   
+                        Case "#__flag_bordersingle"         : Flag = Flag | #__flag_BorderSingle   
+                        Case "#__flag_borderless"           : Flag = Flag | #__flag_Borderless       
+                        Case "#__flag_borderflat"           : Flag = Flag | #__flag_BorderFlat       
+                        Case "#__flag_child"                : Flag = Flag | #__flag_Child                   
+                        Case "#__flag_invert"               : Flag = Flag | #__flag_Invert                 
+                        Case "#__flag_vertical"             : Flag = Flag | #__flag_Vertical             
+                        Case "#__flag_transparent"          : Flag = Flag | #__flag_Transparent       
+                        Case "#__flag_nofocus"              : Flag = Flag | #__flag_NoFocus               
+                        Case "#__flag_nolines"              : Flag = Flag | #__flag_NoLines               
+                        Case "#__flag_nobuttons"            : Flag = Flag | #__flag_NoButtons           
+                        Case "#__flag_noscrollbars"         : Flag = Flag | #__flag_NoScrollBars     
+                        Case "#__flag_textpassword"         : Flag = Flag | #__flag_TextPassword   
+                        Case "#__flag_textwordwrap"         : Flag = Flag | #__flag_TextWordWrap   
+                        Case "#__flag_textmultiline"        : Flag = Flag | #__flag_TextMultiLine 
+                        Case "#__flag_textinline"           : Flag = Flag | #__flag_TextInLine       
+                        Case "#__flag_textnumeric"          : Flag = Flag | #__flag_TextNumeric     
+                        Case "#__flag_textreadonly"         : Flag = Flag | #__flag_TextReadonly   
+                        Case "#__flag_textlowercase"        : Flag = Flag | #__flag_TextLowerCase 
+                        Case "#__flag_textuppercase"        : Flag = Flag | #__flag_TextUpperCase 
+                           ; Case "#__flag_modal"                : Flag = Flag | #__flag_Modal                  
+                        Case "#__flag_left"                 : Flag = Flag | #__flag_Left                    
+                        Case "#__flag_top"                  : Flag = Flag | #__flag_Top                      
+                        Case "#__flag_right"                : Flag = Flag | #__flag_Right                  
+                        Case "#__flag_bottom"               : Flag = Flag | #__flag_Bottom                
+                        Case "#__flag_center"               : Flag = Flag | #__flag_Center                
+                        Case "#__flag_autosize"             : Flag = Flag | #__flag_AutoSize            
+                        Case "#__flag_nogadgets"            : Flag = Flag | #__flag_NoGadgets      
                            
-                        Case "#__align_text"                       : Flag = Flag | #__align_text 
-                        Case "#__align_image"                      : Flag = Flag | #__align_image
-                        Case "#__align_full"                       : Flag = Flag | #__align_Full   
-                        Case "#__align_proportional"               : Flag = Flag | #__align_proportional 
-                        Case "#__align_auto"                       : Flag = Flag | #__align_auto         
+                        Case "#__align_text"                : Flag = Flag | #__align_text 
+                        Case "#__align_image"               : Flag = Flag | #__align_image
+                        Case "#__align_full"                : Flag = Flag | #__align_Full   
+                        Case "#__align_proportional"        : Flag = Flag | #__align_proportional 
+                        Case "#__align_auto"                : Flag = Flag | #__align_auto         
                            
-                        Case "#__flag_top"                        : Flag = Flag | #__flag_Top  
-                        Case "#__flag_bottom"                     : Flag = Flag | #__flag_Bottom 
-                        Case "#__flag_left"                       : Flag = Flag | #__flag_Left   
-                        Case "#__flag_right"                      : Flag = Flag | #__flag_Right  
-                        Case "#__flag_center"                     : Flag = Flag | #__flag_Center 
+                        Case "#__flag_top"                  : Flag = Flag | #__flag_Top  
+                        Case "#__flag_bottom"               : Flag = Flag | #__flag_Bottom 
+                        Case "#__flag_left"                 : Flag = Flag | #__flag_Left   
+                        Case "#__flag_right"                : Flag = Flag | #__flag_Right  
+                        Case "#__flag_center"               : Flag = Flag | #__flag_Center 
                            
-                        Case "#__flag_imageleft"                  : Flag = Flag | #__flag_ImageLeft          
-                        Case "#__flag_imagetop"                   : Flag = Flag | #__flag_ImageTop            
-                        Case "#__flag_imageright"                 : Flag = Flag | #__flag_ImageRight        
-                        Case "#__flag_imagebottom"                : Flag = Flag | #__flag_ImageBottom      
-                        Case "#__flag_imagecenter"                : Flag = Flag | #__flag_ImageCenter      
+                        Case "#__flag_imageleft"            : Flag = Flag | #__flag_ImageLeft          
+                        Case "#__flag_imagetop"             : Flag = Flag | #__flag_ImageTop            
+                        Case "#__flag_imageright"           : Flag = Flag | #__flag_ImageRight        
+                        Case "#__flag_imagebottom"          : Flag = Flag | #__flag_ImageBottom      
+                        Case "#__flag_imagecenter"          : Flag = Flag | #__flag_ImageCenter      
                            
-                        Case "#__flag_textleft"                   : Flag = Flag | #__flag_TextLeft          
-                        Case "#__flag_texttop"                    : Flag = Flag | #__flag_TextTop            
-                        Case "#__flag_textright"                  : Flag = Flag | #__flag_TextRight        
-                        Case "#__flag_textbottom"                 : Flag = Flag | #__flag_TextBottom      
-                        Case "#__flag_textcenter"                 : Flag = Flag | #__flag_TextCenter      
+                        Case "#__flag_textleft"             : Flag = Flag | #__flag_TextLeft          
+                        Case "#__flag_texttop"              : Flag = Flag | #__flag_TextTop            
+                        Case "#__flag_textright"            : Flag = Flag | #__flag_TextRight        
+                        Case "#__flag_textbottom"           : Flag = Flag | #__flag_TextBottom      
+                        Case "#__flag_textcenter"           : Flag = Flag | #__flag_TextCenter      
                            
                         Default
                            ;             Select Asc(String$)
@@ -16181,347 +16557,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ProcedureReturn Flag
       EndProcedure
-      
-      ;-
-      Procedure.i TypeFromClass( class.s )
-         Protected result.i
-         
-         Select Trim( LCase( class.s ))
-            Case "status"        : result = #__type_StatusBar
-            Case "popupmenu"     : result = #__type_PopupBar
-            Case "tool"          : result = #__type_ToolBar
-            Case "tab"           : result = #__type_TabBar
-            Case "menu"          : result = #__type_MenuBar
-            Case "window"        : result = #__type_window
-               
-            Case "unknown"       : result = #__type_Unknown
-               
-            Case "button"        : result = #__type_Button
-            Case "buttonimage"   : result = #__Type_ButtonImage
-            Case "calendar"      : result = #__type_Calendar
-            Case "checkbox"      : result = #__type_CheckBox
-            Case "combobox"      : result = #__type_ComboBox
-            Case "container"     : result = #__type_Container
-            Case "date"          : result = #__type_Date
-            Case "editor"        : result = #__type_Editor
-            Case "explorercombo" : result = #__type_ExplorerCombo
-            Case "explorerlist"  : result = #__type_ExplorerList
-            Case "explorertree"  : result = #__type_ExplorerTree
-            Case "frame"         : result = #__type_Frame
-            Case "hyperlink"     : result = #__type_HyperLink
-            Case "image"         : result = #__type_image
-            Case "ipaddress"     : result = #__type_IPAddress
-            Case "listicon"      : result = #__type_ListIcon
-            Case "listview"      : result = #__type_ListView
-            Case "mdi"           : result = #__type_MDI
-            Case "option"        : result = #__type_Option
-            Case "panel"         : result = #__type_Panel
-            Case "progress"      : result = #__type_Progress
-            Case "scintilla"     : result = #__type_Scintilla
-            Case "scrollarea"    : result = #__type_ScrollArea
-            Case "scroll"        : result = #__type_Scroll
-            Case "spin"          : result = #__type_Spin
-            Case "splitter"      : result = #__type_Splitter
-            Case "string"        : result = #__type_String
-            Case "text"          : result = #__type_Text
-            Case "track"         : result = #__type_Track
-            Case "tree"          : result = #__type_Tree
-            Case "web"           : result = #__type_Web
-               ;case "property"       : result = #__type_Properties
-               ;Case "canvas" : result = #__type_Canvas
-               ;Case "opengl"    : result = #__type_OpenGL
-               ;Case "shortcut" : result = #__type_Shortcut
-         EndSelect
-         
-         ProcedureReturn result
-      EndProcedure
-      
-      Procedure.s ClassFromType( Type )
-         Protected result$
-         
-         Select Type
-            Case #__type_StatusBar     : result$ = "Status"
-            Case #__type_PopupBar      : result$ = "PopupMenu"
-            Case #__type_ToolBar       : result$ = "ToolBar"
-            Case #__type_TabBar        : result$ = "Tab"
-            Case #__type_MenuBar       : result$ = "Menu"
-            Case #__type_Window        : result$ = "Window"
-               
-            Case #__type_Unknown       : result$ = "Create"
-               
-            Case #__type_Button        : result$ = "Button"
-            Case #__Type_ButtonImage   : result$ = "ButtonImage"
-            Case #__type_String        : result$ = "String"
-            Case #__type_Text          : result$ = "Text"
-            Case #__type_CheckBox      : result$ = "CheckBox"
-            Case #__type_Option        : result$ = "Option"
-            Case #__type_ListView      : result$ = "ListView"
-            Case #__type_Frame         : result$ = "Frame"
-            Case #__type_ComboBox      : result$ = "ComboBox"
-            Case #__type_Image         : result$ = "Image"
-            Case #__type_HyperLink     : result$ = "HyperLink"
-            Case #__type_Container     : result$ = "Container"
-            Case #__type_ListIcon      : result$ = "ListIcon"
-            Case #__type_IPAddress     : result$ = "IPAddress"
-            Case #__type_Progress      : result$ = "Progress"
-            Case #__type_Scroll        : result$ = "Scroll"
-            Case #__type_ScrollArea    : result$ = "ScrollArea"
-            Case #__type_Track         : result$ = "Track"
-            Case #__type_Web           : result$ = "Web"
-            Case #__type_Calendar      : result$ = "Calendar"
-            Case #__type_Date          : result$ = "Date"
-            Case #__type_Editor        : result$ = "Editor"
-            Case #__type_ExplorerList  : result$ = "ExplorerList"
-            Case #__type_ExplorerTree  : result$ = "ExplorerTree"
-            Case #__type_ExplorerCombo : result$ = "ExplorerCombo"
-            Case #__type_Spin          : result$ = "Spin"
-            Case #__type_Tree          : result$ = "Tree"
-            Case #__type_Panel         : result$ = "Panel"
-            Case #__type_Splitter      : result$ = "Splitter"
-            Case #__type_MDI           : result$ = "Mdi"
-            Case #__type_Scintilla     : result$ = "Scintilla"
-         EndSelect
-         
-         ProcedureReturn result$
-      EndProcedure
-      
-      Procedure.s ClassFromEvent( event.i )
-         Protected result$
-         
-         Select event
-            Case #__event_CursorChange    : result$ = "CursorChange"
-            Case #__event_free            : result$ = "Free"
-            Case #__event_Drop            : result$ = "Drop"
-            Case #__event_Draw            : result$ = "Draw"
-               ;Case #__event_SizeItem    : result$ = "SizeItem"
-               
-            Case #__event_ScrollChange    : result$ = "ScrollChange"
-               
-            Case #__event_close           : result$ = "CloseWindow"
-            Case #__event_maximize        : result$ = "MaximizeWindow"
-            Case #__event_minimize        : result$ = "MinimizeWindow"
-            Case #__event_restore         : result$ = "RestoreWindow"
-               
-            Case #__event_MouseEnter      : result$ = "MouseEnter"       ; The mouse cursor entered the gadget
-            Case #__event_MouseLeave      : result$ = "MouseLeave"       ; The mouse cursor left the gadget
-            Case #__event_MouseMove       : result$ = "MouseMove"        ; The mouse cursor moved
-            Case #__event_MouseWheel      : result$ = "MouseWheel"       ; The mouse wheel was moved
-            Case #__event_LeftDown        : result$ = "LeftButtonDown"   ; The left mouse button was pressed
-            Case #__event_LeftUp          : result$ = "LeftButtonUp"     ; The left mouse button was released
-            Case #__event_LeftClick       : result$ = "LeftClick"        ; A click With the left mouse button
-            Case #__event_Left2Click      : result$ = "Left2Click"       ; A double-click With the left mouse button
-            Case #__event_Left3Click      : result$ = "Left3Click"       ; A 3-click With the left mouse button
-            Case #__event_RightDown       : result$ = "RightButtonDown"  ; The right mouse button was pressed
-            Case #__event_RightUp         : result$ = "RightButtonUp"    ; The right mouse button was released
-            Case #__event_RightClick      : result$ = "RightClick"       ; A click With the right mouse button
-            Case #__event_Right2Click     : result$ = "Right2Click"      ; A double-click With the right mouse button
-            Case #__event_Right3Click     : result$ = "Right3Click"      ; A 3-click With the right mouse button
-            Case #__event_MiddleDown      : result$ = "MiddleButtonDown" ; The middle mouse button was pressed
-            Case #__event_MiddleUp        : result$ = "MiddleButtonUp"   ; The middle mouse button was released
-            Case #__event_Focus           : result$ = "Focus"            ; The gadget gained keyboard focus
-            Case #__event_LostFocus       : result$ = "LostFocus"        ; The gadget lost keyboard focus
-            Case #__event_KeyDown         : result$ = "KeyDown"          ; A key was pressed
-            Case #__event_Input           : result$ = "Input"            ; Text input was generated
-            Case #__event_Return          : result$ = "ReturnKey"
-            Case #__event_KeyUp           : result$ = "KeyUp"            ; A key was released
-            Case #__event_ResizeBegin     : result$ = "ResizeBegin"
-            Case #__event_Resize          : result$ = "Resize"           ; The gadget has been resized
-            Case #__event_ResizeEnd       : result$ = "ResizeEnd"
-            Case #__event_StatusChange    : result$ = "StatusChange"
-               ;Case #__event_TitleChange : result$ = "TitleChange"
-            Case #__event_Change          : result$ = "Change"
-            Case #__event_DragStart       : result$ = "DragStart"
-               
-            Case #__event_Down            : result$ = "Down"
-            Case #__event_Up              : result$ = "Up"
-         EndSelect
-         
-         ProcedureReturn result$
-      EndProcedure
-      
-      Procedure.s ClassFromFlag( flags.q )
-         Protected result$
-         
-         ;\\ create-flags
-         If flags & #__flag_button_Default: result$ +" #__flag_button_Default |": EndIf  
-         If flags & #__flag_Collapsed: result$ +" #__flag_Collapsed |": EndIf     
-         If flags & #__flag_OptionBoxes: result$ +" #__flag_OptionBoxes |": EndIf    
-         If flags & #__flag_CheckBoxes: result$ +" #__flag_CheckBoxes |": EndIf     
-         If flags & #__flag_ThreeState: result$ +" #__flag_ThreeState |": EndIf      
-         If flags & #__flag_RowClickSelect: result$ +" #__flag_RowClickSelect |": EndIf   
-         If flags & #__flag_RowMultiSelect: result$ +" #__flag_RowMultiSelect |": EndIf  
-         If flags & #__flag_RowFullSelect: result$ +" #__flag_RowFullSelect |": EndIf   
-         If flags & #__flag_GridLines: result$ +" #__flag_GridLines |": EndIf       
-         
-         If flags & #__flag_BorderRaised: result$ +" #__flag_BorderRaised |": EndIf   
-         If flags & #__flag_BorderDouble: result$ +" #__flag_BorderDouble |": EndIf    
-         If flags & #__flag_BorderSingle: result$ +" #__flag_BorderSingle |": EndIf      
-         If flags & #__flag_Borderless: result$ +" #__flag_Borderless |": EndIf      
-         If flags & #__flag_BorderFlat: result$ +" #__flag_BorderFlat |": EndIf     
-         ;
-         If flags & #__flag_Child: result$ +" #__flag_Child |": EndIf          
-         If flags & #__flag_Invert: result$ +" #__flag_Invert |": EndIf        
-         If flags & #__flag_Vertical: result$ +" #__flag_Vertical |": EndIf       
-         If flags & #__flag_Transparent: result$ +" #__flag_Transparent |": EndIf    
-         ;
-         If flags & #__flag_NoFocus: result$ +" #__flag_NoFocus |": EndIf        
-         If flags & #__flag_NoLines: result$ +" #__flag_NoLines |": EndIf       
-         If flags & #__flag_NoButtons: result$ +" #__flag_NoButtons |": EndIf
-         If flags & #__flag_NoGadgets: result$ +" #__flag_NoGadgets |": EndIf      
-         If flags & #__flag_NoScrollBars: result$ +" #__flag_NoScrollBars |": EndIf    
-         ;
-         If flags & #__flag_TextPassword: result$ +" #__flag_TextPassword |": EndIf    
-         If flags & #__flag_TextWordWrap: result$ +" #__flag_TextWordWrap |": EndIf   
-         If flags & #__flag_TextMultiLine: result$ +" #__flag_TextMultiLine |": EndIf  
-         If flags & #__flag_TextInLine: result$ +" #__flag_TextInLine |": EndIf    
-         If flags & #__flag_TextNumeric: result$ +" #__flag_TextNumeric |": EndIf   
-         If flags & #__flag_TextReadonly: result$ +" #__flag_TextReadonly |": EndIf  
-         If flags & #__flag_TextLowerCase: result$ +" #__flag_TextLowerCase |": EndIf   
-         If flags & #__flag_TextUpperCase: result$ +" #__flag_TextUpperCase |": EndIf  
-         
-         
-         ProcedureReturn Trim( Trim(result$), "|" )
-      EndProcedure
-      
-      
-      ;-
-      Procedure.i PBEventType( wEvent.i )
-         If wEvent = #__event_MouseEnter
-            ProcedureReturn #PB_EventType_MouseEnter
-         EndIf
-         If wEvent = #__event_MouseLeave
-            ProcedureReturn #PB_EventType_MouseLeave
-         EndIf
-         If wEvent = #__event_MouseMove
-            ProcedureReturn #PB_EventType_MouseMove
-         EndIf
-         If wEvent = #__event_Focus
-            ProcedureReturn #PB_EventType_Focus
-         EndIf
-         If wEvent = #__event_LostFocus
-            ProcedureReturn #PB_EventType_LostFocus
-         EndIf
-         
-         If wEvent = #__event_Resize
-            ProcedureReturn #PB_EventType_Resize
-         EndIf
-         If wEvent = #__event_Change
-            ProcedureReturn #PB_EventType_Change
-         EndIf
-         If wEvent = #__event_StatusChange
-            ProcedureReturn #PB_EventType_StatusChange
-         EndIf
-         If wEvent = #__event_Down
-            ProcedureReturn #PB_EventType_Down
-         EndIf
-         If wEvent = #__event_Up
-            ProcedureReturn #PB_EventType_Up
-         EndIf
-         
-         If wEvent = #__event_DragStart
-            ProcedureReturn #PB_EventType_DragStart
-         EndIf
-         If wEvent = #__event_Input
-            ProcedureReturn #PB_EventType_Input
-         EndIf
-         If wEvent = #__event_KeyDown
-            ProcedureReturn #PB_EventType_KeyDown
-         EndIf
-         If wEvent = #__event_KeyUp
-            ProcedureReturn #PB_EventType_KeyUp
-         EndIf
-         
-         If wEvent = #__event_LeftDown
-            ProcedureReturn #PB_EventType_LeftButtonDown
-         EndIf
-         If wEvent = #__event_LeftUp
-            ProcedureReturn #PB_EventType_LeftButtonUp
-         EndIf
-         If wEvent = #__event_LeftClick
-            ProcedureReturn #PB_EventType_LeftClick
-         EndIf
-         If wEvent = #__event_Left2Click
-            ProcedureReturn #PB_EventType_LeftDoubleClick
-         EndIf
-         
-         If wEvent = #__event_RightDown
-            ProcedureReturn #PB_EventType_RightButtonDown
-         EndIf
-         If wEvent = #__event_RightUp
-            ProcedureReturn #PB_EventType_RightButtonUp
-         EndIf
-         If wEvent = #__event_RightClick
-            ProcedureReturn #PB_EventType_RightClick
-         EndIf
-         If wEvent = #__event_Right2Click
-            ProcedureReturn #PB_EventType_RightDoubleClick
-         EndIf
-         
-         If wEvent = #__event_Draw
-            ProcedureReturn #PB_EventType_Repaint
-         EndIf
-      EndProcedure
-      
-      Procedure.s PBClassFromEvent( event.i )
-         Protected result.s
-         
-         Select event
-            Case #PB_EventType_MouseEnter       : result.s = "MouseEnter"           ; The mouse cursor entered the gadget
-            Case #PB_EventType_MouseLeave       : result.s = "MouseLeave"           ; The mouse cursor left the gadget
-            Case #PB_EventType_MouseMove        : result.s = "MouseMove"            ; The mouse cursor moved
-            Case #PB_EventType_MouseWheel       : result.s = "MouseWheel"           ; The mouse wheel was moved
-            Case #PB_EventType_MouseWheelX      : result.s = "MouseWheelHorizontal" ; The mouse wheel was moved
-            Case #PB_EventType_MouseWheelY      : result.s = "MouseWheelVertical"   ; The mouse wheel was moved
-               
-            Case #PB_EventType_LeftButtonDown   : result.s = "LeftButtonDown"   ; The left mouse button was pressed
-            Case #PB_EventType_LeftButtonUp     : result.s = "LeftButtonUp"     ; The left mouse button was released
-            Case #PB_EventType_LeftClick        : result.s = "LeftClick"        ; A click With the left mouse button
-            Case #PB_EventType_LeftDoubleClick  : result.s = "LeftDoubleClick"  ; A double-click With the left mouse button
-               
-            Case #PB_EventType_RightButtonDown  : result.s = "RightButtonDown" ; The right mouse button was pressed
-            Case #PB_EventType_RightButtonUp    : result.s = "RightButtonUp"   ; The right mouse button was released
-            Case #PB_EventType_RightClick       : result.s = "RightClick"      ; A click With the right mouse button
-            Case #PB_EventType_RightDoubleClick : result.s = "RightDoubleClick"; A double-click With the right mouse button
-               
-            Case #PB_EventType_MiddleButtonDown : result.s = "MiddleButtonDown" ; The middle mouse button was pressed
-            Case #PB_EventType_MiddleButtonUp   : result.s = "MiddleButtonUp"   ; The middle mouse button was released
-            Case #PB_EventType_Focus            : result.s = "Focus"            ; The gadget gained keyboard focus
-            Case #PB_EventType_LostFocus        : result.s = "LostFocus"        ; The gadget lost keyboard focus
-            Case #PB_EventType_KeyDown          : result.s = "KeyDown"          ; A key was pressed
-            Case #PB_EventType_KeyUp            : result.s = "KeyUp"            ; A key was released
-            Case #PB_EventType_Input            : result.s = "Input"            ; Text input was generated
-            Case #PB_EventType_Resize           : result.s = "Resize"           ; The gadget has been resized
-            Case #PB_EventType_StatusChange     : result.s = "StatusChange"
-            Case #PB_EventType_Change           : result.s = "Change"
-            Case #PB_EventType_DragStart        : result.s = "DragStart"
-            Case #PB_EventType_TitleChange      : result.s = "TitleChange"
-            Case #PB_EventType_CloseItem        : result.s = "CloseItem"
-            Case #PB_EventType_SizeItem         : result.s = "SizeItem"
-            Case #PB_EventType_Down             : result.s = "Down"
-            Case #PB_EventType_Up               : result.s = "Up"
-               ;                
-               ;             Case #PB_eventtype_cursor : result.s = "Cursor"
-               ;             Case #PB_eventtype_free : result.s = "Free"
-               ;             Case #PB_eventtype_drop : result.s = "Drop"
-               ;             Case #PB_eventtype_create : result.s = "Create"
-               ;             Case #PB_eventtype_Draw : result.s = "Draw"
-               ;                
-               ;             Case #PB_eventtype_repaint : result.s = "Repaint"
-               ;             Case #PB_eventtype_resizeend : result.s = "ResizeEnd"
-               ;             Case #PB_eventtype_Scrollchange : result.s = "ScrollChange"
-               ;                
-               ;             Case #PB_eventtype_close : result.s = "CloseWindow"
-               ;             Case #PB_eventtype_maximize : result.s = "MaximizeWindow"
-               ;             Case #PB_eventtype_minimize : result.s = "MinimizeWindow"
-               ;             Case #PB_eventtype_restore : result.s = "RestoreWindow"
-               ;             Case #PB_eventtype_ReturnKey : result.s = "returnKey"
-               ;             Case #PB_eventtype_mousewheelX : result.s = "MouseWheelX"
-               ;             Case #PB_eventtype_mousewheelY : result.s = "MouseWheelY"
-         EndSelect
-         
-         ProcedureReturn result.s
-      EndProcedure
-      
       
       ;-
       Procedure   GetAtPoint( *root._s_root, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
@@ -19468,13 +19503,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             eventtype = #PB_EventType_LeftClick Or
             eventtype = #PB_EventType_LeftDoubleClick
             If test_canvas_events
-               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
             EndIf
          EndIf
          
          If eventtype = #PB_EventType_Focus
             If test_canvas_events
-               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
             EndIf
             If GetActive( ) And GetActive( )\focus <> #__s_2
                If Entered( ) And Entered( )\press
@@ -19511,7 +19546,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If eventtype = #PB_EventType_LostFocus
             If test_canvas_events
-               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
             EndIf
             If GetActive( ) And GetActive( )\root And GetActive( )\root\canvas\gadget = eventgadget
                ; Debug IsWindow(GetActive( )\root\canvas\window)
@@ -19526,7 +19561,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If eventtype = #PB_EventType_Resize 
             If test_canvas_events
-               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
             EndIf
             ; PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
             PushMapPosition( roots( ) )
@@ -19541,7 +19576,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If eventtype = #PB_EventType_MouseWheelX
             If test_canvas_events
-               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget +" "+ eventdata
+               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget +" "+ eventdata
             EndIf
             If Entered( )
                If eventdata < 0
@@ -19560,7 +19595,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If eventtype = #PB_EventType_MouseWheelY
             If test_canvas_events
-               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget +" "+ eventdata
+               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget +" "+ eventdata
             EndIf
             If Entered( )
                If eventdata < 0
@@ -19579,7 +19614,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If eventtype = #PB_EventType_MouseEnter
             If test_canvas_events
-               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
             EndIf
             ;Debug " #PB_EventType_MouseEnter "+eventgadget
             If Not ( Root( ) And Root( )\canvas\gadget = eventgadget )
@@ -19596,7 +19631,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If eventtype = #PB_EventType_MouseLeave
             If test_canvas_events
-               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
             EndIf
             ;Debug " #PB_EventType_MouseLeave "+eventgadget
             If Pressed( ) And
@@ -19615,7 +19650,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             eventtype = #PB_EventType_MiddleButtonDown Or
             eventtype = #PB_EventType_RightButtonDown
             If test_canvas_events
-               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
             EndIf
             ;
             MouseData( ) | #__mouse_press
@@ -19751,7 +19786,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             eventtype = #PB_EventType_MiddleButtonUp Or
             eventtype = #PB_EventType_RightButtonUp
             If test_canvas_events
-               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
             EndIf
             ;
             If eventtype = #PB_EventType_LeftButtonUp : event = #__event_LeftUp : EndIf
@@ -19775,7 +19810,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             eventtype = #PB_EventType_Input Or
             eventtype = #PB_EventType_KeyUp
             If test_canvas_events
-               Debug " " + PBClassFromEvent(eventtype) +" "+ eventgadget
+               Debug " " + ClassFromPBEvent(eventtype) +" "+ eventgadget
             EndIf
             Protected *keywidget._s_WIDGET
             
@@ -22833,11 +22868,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Draw_Content( *this, state )
          
          ;\\ Draw frames
-         If *this\fs
-            draw_mode_( #PB_2DDrawing_Outlined )
-            draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ),
-                            *this\round, *this\round, *this\color\frame[state] & $FFFFFF | *this\AlphaState24( ) )
-         EndIf
+;          If *this\fs
+;             draw_mode_( #PB_2DDrawing_Outlined )
+;             draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ),
+;                             *this\round, *this\round, *this\color\frame[state] & $FFFFFF | *this\AlphaState24( ) )
+;          EndIf
          
          ;\\ draw frame defaul focus widget
          If *this\type = #__type_Button
@@ -22853,6 +22888,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
             EndIf
          EndIf
+         
+         Draw_Frames( *this, state )
       EndProcedure
       
       Procedure   Draw_TreeRows( *this._s_WIDGET, List *rows._s_ROWS( ) )
@@ -27590,8 +27627,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 13596
-; FirstLine = 12755
-; Folding = ------------------P9--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-------------Vd---------f------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------80+-8-f-8--t----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8f-+Xt-f--------
+; CursorPosition = 15819
+; FirstLine = 14102
+; Folding = ------------------P9--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-------------Vd---------f------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------8--------+---q7----v+---------------Bgd--------------------------------------------------------------v48-v--0v--4+-----------------------------------------------------------------------------------------------------------------------------------------------------------------8---------------------------------------4-+0va--+-------
 ; EnableXP
 ; Executable = widgets-.app.exe

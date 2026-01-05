@@ -1228,7 +1228,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       ;\\
       If type$ = "Focus"
          If a_focused( )
-            Properties_AddFlags( ide_inspector_PROPERTIES, #_pi_flag, MakeFlagsString( GetType( a_focused( ))))
+            Properties_AddFlags( ide_inspector_PROPERTIES, #_pi_flag, MakePBFlags( GetType( a_focused( ))))
          EndIf
          
       Else
@@ -3071,8 +3071,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 1092
-; FirstLine = 1081
+; CursorPosition = 1230
+; FirstLine = 1204
 ; Folding = ---------------------------------------------------------
 ; EnableXP
 ; DPIAware

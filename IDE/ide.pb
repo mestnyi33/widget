@@ -1224,7 +1224,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       EndIf
       
       If type$ = "Focus" Or type$ = "Flag"
-         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, MakeConstantsString( ClassFromType(*object\type), *object\flag ))
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, MakeString( ClassFromType(*object\type), *object\flag ))
       EndIf
       If type$ = "Focus" Or type$ = "Color" 
          Define color.l = GetColor( *object, ColorType, ColorState ) ;& $FFFFFF | *object\color\_alpha << 24
@@ -1247,7 +1247,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
          Else
             Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_fontsize, "" )
          EndIf
-         Define style$ = RemoveString( MakeConstantsString( "Font", GetFontStyle( font ) ), "#PB_Font_")
+         Define style$ = RemoveString( MakeString( "Font", GetFontStyle( font ) ), "#PB_Font_")
          If style$ = ""
             style$ = "None"
          EndIf
@@ -1257,7 +1257,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       ;\\
       If type$ = "Focus"
          If a_focused( )
-            Properties_AddFlags( ide_inspector_PROPERTIES, #_pi_flag, MakeFlagsString( GetType( a_focused( ))))
+            Properties_AddFlags( ide_inspector_PROPERTIES, #_pi_flag, MakePBFlags( GetType( a_focused( ))))
          EndIf
          
       Else
@@ -3104,8 +3104,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 2718
-; FirstLine = 2705
+; CursorPosition = 1249
+; FirstLine = 1225
 ; Folding = ---------------------------------------------------------
 ; Optimizer
 ; EnableAsm

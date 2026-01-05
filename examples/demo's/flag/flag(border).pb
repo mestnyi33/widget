@@ -216,11 +216,23 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure SetFlag( *this._s_widget, Flag.q )
-      *this\flag = Flag
+      ;
+      *this\Flag &~ #__flag_BorderLess 
+      *this\Flag &~ #__flag_BorderFlat 
+      *this\Flag &~ #__flag_BorderSingle 
+      *this\flag &~ #__flag_BorderRaised 
+      *this\flag &~ #__flag_BorderDouble 
+      ;
+      *this\flag | Flag
+      ;
+      If *this\fs
+         *this\fs = 0
+      EndIf
+      ;
       ;
       If is_integral_( *this )
          If *this\type = #__type_Scroll
-            *this\fs = 0;10
+            *this\fs = 0
          Else
             *this\fs = 0
          EndIf
@@ -228,17 +240,11 @@ CompilerIf #PB_Compiler_IsMainFile
          If constants::BinaryFlag( *this\flag, #__flag_BorderDouble ) Or
             constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
             *this\fs = 2
+         ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderFlat ) Or
+                constants::BinaryFlag( *this\Flag, #__flag_BorderSingle ) 
+            *this\fs = 1
          ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderLess )
             *this\fs = 0
-         ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderFlat ) Or
-                constants::BinaryFlag( *this\Flag, #__flag_BorderSingle ) Or
-                *this\type = #__type_Panel Or
-                *this\type = #__type_Spin Or
-                *this\type = #__type_ButtonImage Or
-                *this\type = #__type_Button Or
-                *this\type = #__type_ComboBox Or
-                *this\type = #__type_ExplorerList 
-            *this\fs = 1
          Else
             If *this\type = #__type_Editor Or
                *this\type = #__type_String Or
@@ -248,7 +254,19 @@ CompilerIf #PB_Compiler_IsMainFile
                *this\type = #__type_Tree 
                *this\fs = 2
             EndIf
+            If *this\type = #__type_Panel Or
+               *this\type = #__type_Spin Or
+               *this\type = #__type_ButtonImage Or
+               *this\type = #__type_Button Or
+               *this\type = #__type_ComboBox Or
+               *this\type = #__type_ExplorerList 
+               *this\fs = 1
+            EndIf
          EndIf
+      EndIf
+      
+      If *this\bs <> *this\fs
+         *this\bs = *this\fs
       EndIf
       
    EndProcedure
@@ -268,6 +286,19 @@ CompilerIf #PB_Compiler_IsMainFile
                EndIf
                
                *g_OBJECT = widget_create(Root(), GetItemText( *g_TYPE, GetState( *g_TYPE)), 100, 100, 250, 200, Text, 0,0,0, #PB_Button_Toggle|#__flag_Textmultiline) 
+               
+               Define Type = GetType(*g_OBJECT)
+               Define Flag = Flag(*g_OBJECT)
+               Define type$ = ClassFromType(Type)
+               Define flag$ = MakeConstantsString( type$, Flag)
+               ; Define flag$ = GetCheckedText(*g_FLAG)
+               ; Define Flag = MakeConstants( flag$ )
+               Debug "make["+flag$+"] "+ Flag +" "+ type$
+;                If GetState(*g_FLAG)
+;                   SetFlag( *g_OBJECT, Flag )
+;                EndIf
+               SetCheckedText(*g_FLAG, flag$ )
+                  
             EndIf
             
          Case #__event_LeftClick
@@ -303,8 +334,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 219
-; FirstLine = 240
-; Folding = ------
+; CursorPosition = 295
+; FirstLine = 284
+; Folding = -------
 ; EnableXP
 ; DPIAware

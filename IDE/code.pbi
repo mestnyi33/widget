@@ -35,7 +35,7 @@ Procedure   AddFont( key$, name$, size, style )
       If IsFont( font )
          key$ = Trim( key$ )
          
-         Define style$ = MakeConstantsString( "Font", style )
+         Define style$ = MakeString( "Font", style )
          style$ = RemoveString( style$, "#PB_Font_" )
          style$ = ReplaceString( style$, " | ", "_" )
          If style$
@@ -162,8 +162,8 @@ Procedure   AddImage( key$, file$, flags=0 )
       Protected load$ = file$
       file$ = RemoveString( file$, " " )
       file$ = RemoveString( file$, Chr('"') )
-      file$ = MakeStringConstants( StringField( file$, 1, "+" )) + StringField( file$, 2, "+" )
-      ;     file$ = MakeStringConstants( StringField( file$, 1, "+" )) + Trim( Trim( StringField( file$, 2, "+" )), Chr('"') )
+      file$ = MakeConstantsString( StringField( file$, 1, "+" )) + StringField( file$, 2, "+" )
+      ; file$ = MakeConstantsString( StringField( file$, 1, "+" )) + Trim( Trim( StringField( file$, 2, "+" )), Chr('"') )
       Image = LoadImage( #PB_Any, file$ )
       file$ = load$ + Chr('"')
    Else
@@ -1383,7 +1383,7 @@ Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
    Select type$
       Case "Panel", "Web", "IPAddress", "Option", "Scintilla", "Shortcut"
       Default
-         Flag$ = MakeConstantsString( type$, *g\flag )
+         Flag$ = MakeString( type$, *g\flag )
          ; Debug type$ +" "+ Flag$ +" "+ *g\flag
    EndSelect
    
@@ -1578,7 +1578,7 @@ EndProcedure
 
 Procedure.s Generate_Code( *mdi._s_WIDGET ) ; 
    Protected Type, Count, Image, Parent
-   Protected imageScale$
+   Protected imageScale$, style$
    Protected Space$, id$, Class$, result$, Gadgets$, Windows$, Events$, Functions$
    Protected JPEGPlugin$, JPEG2000Plugin$, PNGPlugin$, TGAPlugin$, TIFFPlugin$
    Protected GlobalWindow$, EnumWindow$,
@@ -1712,20 +1712,17 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
             id$ = fonts( )\id$
             
             If id$ ; Not NumericString( id$ )
+               If fonts( )\style
+                  style$ = ", " + MakeString( "Font", fonts( )\style)
+               Else
+                  style$ = ""
+               EndIf
+               
                If Trim( id$, "#") = id$
-                  If fonts( )\style
-                     GloballoadFont$ + "Global " + id$ + " = " + "LoadFont( " + "#PB_Any" + ", " + Chr('"') + fonts( )\name + Chr('"') + ", " + fonts( )\size + ", " + MakeConstantsString( "Font", fonts( )\style) + " )" + #LF$
-                  Else
-                     GloballoadFont$ + "Global " + id$ + " = " + "LoadFont( " + "#PB_Any" + ", " + Chr('"') + fonts( )\name + Chr('"') + ", " + fonts( )\size + " )" + #LF$
-                  EndIf
+                  GloballoadFont$ + "Global " + id$ + " = " + "LoadFont( " + "#PB_Any" + ", " + Chr('"') + fonts( )\name + Chr('"') + ", " + fonts( )\size + style$ + " )" + #LF$
                Else
                   EnumFont$ + Space$ + id$ + #LF$
-                  ;
-                  If fonts( )\style
-                     Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + fonts( )\name + Chr('"') + ", " + fonts( )\size + ", " + MakeConstantsString( "Font", fonts( )\style) + " )" + #LF$
-                  Else
-                     Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + fonts( )\name + Chr('"') + ", " + fonts( )\size + " )" + #LF$
-                  EndIf
+                  Enumloadfont$ + "LoadFont( " + id$ + ", " + Chr('"') + fonts( )\name + Chr('"') + ", " + fonts( )\size + style$ + " )" + #LF$
                EndIf
             EndIf
          Next
@@ -2051,8 +2048,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 1872
-; FirstLine = 1566
-; Folding = -f-----f------------------f9-4-----4r3f------ePA5--0--
+; CursorPosition = 165
+; FirstLine = 153
+; Folding = -f-----f------------------f9-4-----4r3f------+HA9--+--
 ; EnableXP
 ; DPIAware
