@@ -1013,9 +1013,9 @@ EndProcedure
 
 Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    Protected position = 90
-   Protected tflag.q = #PB_Tree_NoLines|#__flag_Transparent|#__flag_BorderLess;|#__flag_gridlines
+   Protected tflag.q = #__flag_NoLines|#__flag_Transparent|#__flag_BorderLess;|#__flag_gridlines
    Protected *first._s_WIDGET = Tree(0,0,0,0, tflag)
-   Protected *second._s_WIDGET = Tree(0,0,0,0, tflag|#PB_Tree_NoButtons)
+   Protected *second._s_WIDGET = Tree(0,0,0,0, tflag|#__flag_NoButtons)
    ;    *first\padding\x = 10
    ;    *second\padding\x = 10
    Protected *g._s_WIDGET
@@ -1224,7 +1224,11 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       EndIf
       
       If type$ = "Focus" Or type$ = "Flag"
-         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, MakeString( ClassFromType(*object\type), *object\flag ))
+         class$ = ClassFromType(*object\type)
+         Define flag$ = Trim(RemoveString( MakeString( class$, ToPBFlag( *object\type, *object\flag ) ), "#PB_"+class$+"_"))
+         Debug ""+class$ +" - ["+ flag$ +"] [" + RemoveString(makeflag( *object\flag ), "#__flag_") +"]"
+         flag$ = RemoveString(makeflag( *object\flag ), "#__flag_") 
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, flag$)
       EndIf
       If type$ = "Focus" Or type$ = "Color" 
          Define color.l = GetColor( *object, ColorType, ColorState ) ;& $FFFFFF | *object\color\_alpha << 24
@@ -2846,7 +2850,7 @@ Global ide_SPLITTER =- 1
    
    ; set splitters dafault positions
    SetState( ide_main_SPLITTER, Height( ide_toolbar )) 
-   SetState( ide_SPLITTER, Width( ide_SPLITTER ) - 250 )
+   SetState( ide_SPLITTER, Width( ide_SPLITTER ) - 320 )
    SetState( ide_debug_SPLITTER, Height( ide_debug_SPLITTER ) - 150 )
    
    ;SetState( ide_properties_SPLITTER, Height(ide_properties_SPLITTER) - 150 )
@@ -3004,9 +3008,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ;new_widget_add(*form, "button", 45, 65+40*2, 50, 30)
       
       Define *scrollarea = new_widget_add(*form, "scrollarea", 120, 25, 165, 175, #PB_ScrollArea_Flat )
-      new_widget_add(*scrollarea, "button", 15, 25, 30, 30)
+      new_widget_add(*scrollarea, "button", 15, 25, 120, 30, #PB_Button_Left)
       new_widget_add(*scrollarea, "text", 25, 65, 50, 30)
-      new_widget_add(*scrollarea, "button", 35, 65+40, 80, 30)
+      new_widget_add(*scrollarea, "button", 35, 65+40, 100, 30, #PB_Button_Right)
       new_widget_add(*scrollarea, "text", 45, 65+40*2, 50, 30)
       
       Define *panel = new_widget_add(*form, "panel", 320, 25, 165, 175)
@@ -3103,12 +3107,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 1249
-; FirstLine = 1225
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 1016
+; FirstLine = 1004
 ; Folding = ---------------------------------------------------------
-; Optimizer
-; EnableAsm
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2.exe

@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         If Flag
-          Debug  "change " +" "+ ClassFromFlag( Flag )
+          Debug  "change " +" "+ MakeFlag( Flag )
           Flag(*this, Flag, GetState(EventWidget)!Bool(EventWidget=nobuttons Or EventWidget=nolines ))
         EndIf
         
@@ -178,8 +178,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 44
+; CursorPosition = 65
+; FirstLine = 56
 ; Folding = --
 ; EnableXP
 ; DPIAware

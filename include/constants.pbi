@@ -415,10 +415,10 @@
       #__flag_Transparent     = 1<<36
       ;
       #__flag_NoFocus         = 1<<37
-      #__flag_NoLines         = 1<<38 ; 50 BUG
-      #__flag_NoButtons       = 1<<39 ; 50 BUG
+      #__flag_NoLines         = 1<<38
+      #__flag_NoButtons       = 1<<39
       #__flag_NoGadgets       = 1<<40
-      #__flag_NoScrollBars    = 1<<41
+      ;#__flag_NoScrollBars    = 1<<41
       ;
       #__flag_TextPassword    = 1<<42
       #__flag_TextWordWrap    = 1<<43
@@ -434,12 +434,12 @@
       ; #__flag_              = 1<<52
       
       ;- \\ align-flag
-      #__align_top            = 1<<53
-      #__align_Bottom         = 1<<54
-      #__align_Left           = 1<<55
-      #__align_Right          = 1<<56
-      #__align_Center         = 1<<57 
-      #__align_auto           = 1<<58
+      #__flag_Left            = 1<<53
+      #__flag_Top             = 1<<54
+      #__flag_Right           = 1<<55
+      #__flag_Bottom          = 1<<56
+      #__flag_Center          = 1<<57 
+      #__flag_AutoSize        = 1<<58
       ;
       #__align_Full           = 1<<59
       #__align_proportional   = 1<<60
@@ -449,12 +449,12 @@
       ; #__flag_Limit         = 1<<63
       
       ;
-      #__flag_Left             = #__align_Left
-      #__flag_Top              = #__align_Top
-      #__flag_Right            = #__align_Right
-      #__flag_Bottom           = #__align_Bottom
-      #__flag_Center           = #__align_Center
-      #__flag_AutoSize         = #__align_Auto
+      #__align_Left           = #__flag_Left
+      #__align_Top            = #__flag_Top 
+      #__align_Right          = #__flag_Right 
+      #__align_Bottom         = #__flag_Bottom 
+      #__align_Center         = #__flag_Center
+      #__align_Auto           = #__flag_AutoSize
       
       ;
       ;-\\ Window
@@ -713,9 +713,9 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 251
-; FirstLine = 237
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 420
+; FirstLine = 408
 ; Folding = ----
 ; Optimizer
 ; EnableXP
