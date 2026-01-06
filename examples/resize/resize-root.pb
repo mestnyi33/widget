@@ -1,5 +1,5 @@
 ﻿
-IncludePath "../../../"
+IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -17,11 +17,11 @@ CompilerIf #PB_Compiler_IsMainFile
                                             #PB_Window_MinimizeGadget |
                                             #PB_Window_MaximizeGadget | 
                                             #PB_Window_ScreenCentered )
-      SetBackColor( widget( ), $fff000f0)
+      SetBackColor( Widget( ), $fff000f0)
       
-      Button(0,0,50,50,"auto-resize-root-size" ) : widget( )\bindresize = 1
+      Button(0,0,50,50,"auto-resize-root-size" ) : Widget( )\bindresize = 1
       ;SetAlign( widget( ), #__align_Right ) ; BUG
-      SetAlign( widget( ), #__align_Auto|#__align_Right )
+      SetAlign( Widget( ), #__align_Auto|#__align_Right )
       ;SetAlign( widget( ), #__align_Center|#__align_Right )
       ; Bind( widget( ), @resize_events( ), #__event_resize )
       
@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( ) ; @resize_events( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 25
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP

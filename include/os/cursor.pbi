@@ -1672,6 +1672,11 @@ Module Cursor
             EndIf
             ;     ; Используйте g_object_unref( )
             ;     ProcedureReturn gdk_cursor_unref_(*cursor)
+            
+;             CompilerIf Subsystem("gtk3")
+;                g_object_unref_( *cursor )
+;             CompilerEndIf
+         
          EndIf
       EndProcedure
       
@@ -1680,7 +1685,8 @@ Module Cursor
       EndProcedure
       
       Procedure   Hide( state.b )
-         ; Чтобы сделать курсор невидимым, используйте GDK_BLANK_CURSOR.
+         ; CompilerIf Subsystem("gtk3")
+            ; Чтобы сделать курсор невидимым, используйте GDK_BLANK_CURSOR.
          If state
             gdk_cursor_new_for_display_(gdk_display_get_default_( ),gdk_cursor_new_(#GDK_BLANK_CURSOR)) ; #GDK_BLANK_CURSOR = -2
                                                                                                         ;gdk_cursor_new_from_name("none")
@@ -1690,7 +1696,10 @@ Module Cursor
       EndProcedure
       
       Procedure.i Create( ImageID.i, X.l = 0, Y.l = 0 )
+         ;             CompilerIf Subsystem("gtk3")
+         ;                Protected *ic.GdkCursor
          ProcedureReturn gdk_cursor_new_from_pixbuf_( gdk_display_get_default_( ), ImageID, X, Y)
+         ;             CompilerEndIf
       EndProcedure
       
       Procedure Change( GadgetID.i, state.b )
@@ -2438,9 +2447,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 1031
-; FirstLine = 844
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 1687
+; FirstLine = 1534
 ; Folding = ---f----------------------------------------
 ; Optimizer
 ; EnableXP

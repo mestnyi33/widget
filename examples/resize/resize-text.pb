@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -37,8 +37,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;        MessageRequester("Information","Couldn't open the file!")
 ;      EndIf
    
-   If OpenWindow(0, 0, 0, 800, 600, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
-      Open(0, 10,10)
+   If Open(0, 0, 0, 800, 600, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+      ; Open(0, 10, 10)
       
       g = Editor( 0, 0, 0, 0 , #__flag_Textwordwrap) : Hide(HBar(g), #True )
       *g = Editor(0, 0, 0, 0) 
@@ -72,15 +72,15 @@ CompilerIf #PB_Compiler_IsMainFile
       Splitter(8, 35, 800-16, 600-16-35,g,*g, #PB_Splitter_Vertical|#__flag_autosize)
       
       If Not g
-         SetState(widget(), 0)
+         SetState(Widget(), 0)
       EndIf
       
       If Not *g
-         SetState(widget(), 800)
+         SetState(Widget(), 800)
       EndIf
       
       ResizeWindow( 0, #PB_Ignore, #PB_Ignore, 200, #PB_Ignore )
-      ReDraw( root( ))
+      ReDraw( Root( ))
       
       Debug ""+CountItems( g ) +" - count wrap items"
       Debug ""+CountItems( *g ) +" - count multi items"
@@ -90,9 +90,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 59
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 40
+; FirstLine = 35
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
@@ -91,7 +91,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
             If Resize(cont, #PB_Ignore, #PB_Ignore, Width, Height)
                SetText(butt, Str(Width) +"x"+ Str(Height) )
-               PostReDraw( root() )
+               PostReDraw( Root() )
             EndIf
             
          Case #PB_Event_Gadget
@@ -113,8 +113,6 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 68
-; FirstLine = 60
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
 ; Folding = ----
 ; EnableXP

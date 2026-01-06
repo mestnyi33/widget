@@ -1,5 +1,5 @@
 ﻿
-IncludePath "../../../"
+IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -28,7 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
       BindEvent( #PB_Event_SizeWindow, @ResizeCallBack())
       ;
       g = GetCanvasGadget(Open(0, 20,20 ))
-      SetColor(root(), #PB_Gadget_BackColor, $ff00ff00)
+      SetColor(Root(), #PB_Gadget_BackColor, $ff00ff00)
       CloseGadgetList( )
       ; g = SplitterGadget(#PB_Any,20,20,260,260,g, TextGadget(-1,0,0,0,0,""), #PB_Splitter_Separator)
       
@@ -47,8 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 10
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP

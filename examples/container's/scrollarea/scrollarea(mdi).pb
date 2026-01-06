@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
     
     ;bug bug bugbugbugbugbugbugbugbugbugbug
-    *b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #PB_Window_systemmenu, *g) :CloseList( )
+    *b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #PB_Window_SystemMenu, *g) :CloseList( )
     ;*b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #PB_Window_systemmenu, *g) : OpenList(*g)
     ;*b = Window(Sw-130-8, Sh-30-8-24, 130, 30,"Window", #PB_Window_systemmenu|#__flag_child, *g) : OpenList(*g)
     ;*b = Button(Sw-130, Sh-30, 130, 30,"Window") : OpenList(*g)
@@ -152,7 +152,7 @@ CompilerIf #PB_Compiler_IsMainFile = 333
     ;*b = Button(Sw-130, Sh-130, 130, 30,"Window") : OpenList(*g)
     ;*b = Container(Sw-130, Sh-130, 130, 31) : OpenList(*g)
     
-    *b = Window(Sw-130, Sh-130, 130, 30,"Window", #PB_Window_systemmenu, *g) : CloseList()
+    *b = Window(Sw-130, Sh-130, 130, 30,"Window", #PB_Window_SystemMenu, *g) : CloseList()
     ;*b = Window(Sw-130, Sh-130, 130, 30,"Window", #PB_Window_systemmenu|#__flag_child, *g) : CloseList()
     ;*b = Button(Sw-130, Sh-130, 130, 30,"Window") : CloseList()
     ;*b = Container(Sw-130, Sh-130, 130, 31) : CloseList()
@@ -230,10 +230,9 @@ CompilerIf #PB_Compiler_IsMainFile = 333
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
 ; CursorPosition = 145
 ; FirstLine = 141
 ; Folding = --0
-; Optimizer
 ; EnableXP
 ; DPIAware

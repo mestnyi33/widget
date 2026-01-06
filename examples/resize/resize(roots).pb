@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 
@@ -54,8 +54,6 @@ CompilerIf #PB_Compiler_IsMainFile
   Debug " --- wait --- "
   WaitClose( @HandlerEvents( ) )
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 16
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
 ; Folding = -
 ; EnableXP

@@ -594,16 +594,13 @@ CompilerIf Not Defined(Structures, #PB_Module)
          clip.b
          *errors
          notify.l                   ; оповестить об изменении
-         
          state.l
-         Create.b
-         
          lineColor.l
          ChangeColor.b
+         deffocus.b ; button default focus
          
          padding._s_point
          
-         deffocus.b ; button default focus
          
          List *columns._s_column( )
          List __lines._s_rows( )
@@ -797,9 +794,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 440
-; FirstLine = 276
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 600
+; FirstLine = 437
 ; Folding = -F5w------
 ; Optimizer
 ; EnableXP

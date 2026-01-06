@@ -1,4 +1,4 @@
-﻿IncludePath "../../../" : XIncludeFile "widgets.pbi"
+﻿IncludePath "../../" : XIncludeFile "widgets.pbi"
 ;XIncludeFile "../empty5.pb"
 
 ;- 
@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Macro gadget(_id_, _x_,_y_,_width_,_height_,_text_,_flag_)
      Button(_x_,_y_,_width_,_height_,_text_, _flag_|#__flag_Textmultiline )
-     SetImage( widget(), (0))
+     SetImage( Widget(), (0))
   EndMacro
   
   Define m.s = #LF$
@@ -90,8 +90,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
 ; Folding = -
 ; EnableXP
 ; DPIAware

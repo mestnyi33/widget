@@ -1,5 +1,5 @@
 ﻿
-XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
@@ -69,13 +69,13 @@ CompilerIf #PB_Compiler_IsMainFile
          Case  9: result = Image(X,Y,Width,Height,0,#PB_Image_Border|flags) 
          Case 10: result = HyperLink(X,Y,Width,Height,"HyperLink",0, flags) 
          Case 11: result = Container(X,Y,Width,Height,#PB_Container_Flat|flags)
-            Button(0,0,80,Y,"Button1"):SetClass(widget(),GetText(widget()))
+            Button(0,0,80,Y,"Button1"):SetClass(Widget(),GetText(Widget()))
             ;Button(10,50,80,Y,"Button2"):SetClass(widget(),GetText(widget()))
             Tree(10,50,80,Y)
             Define i
-            AddItem(widget(), -1, Str(i)+"test item ")
+            AddItem(Widget(), -1, Str(i)+"test item ")
             For i=1 To 20
-               AddItem(widget(), -1, Str(i)+"test item test item test item ")
+               AddItem(Widget(), -1, Str(i)+"test item test item test item ")
             Next
             
             CloseList() ; Container
@@ -110,8 +110,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open(10, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetColor(root(), #PB_Gadget_BackColor, RGBA(244, 245, 233, 255))
-      SetClass(root( ), "[main-root]" )
+      SetColor(Root(), #PB_Gadget_BackColor, RGBA(244, 245, 233, 255))
+      SetClass(Root( ), "[main-root]" )
       ;a_init( root())
       
 ; ;       ;\\
@@ -172,7 +172,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;          CloseSubBar( )
 ;       EndIf
 ;       
-      Define widget = CreateWidget( #PB_GadgetType_Container )
+      Define Widget = CreateWidget( #PB_GadgetType_Container )
       ;     ; CreateWidget( #PB_GadgetType_Editor )
       ;     Resize(Root(), 50,50,50,50)
       ;     Resize(Root(), 60,50,50,50)
@@ -189,9 +189,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 25
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = -+
 ; EnableXP
 ; DPIAware

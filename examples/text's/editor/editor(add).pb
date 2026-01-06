@@ -45,8 +45,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Define gLN=5000      ;0; количесвто итемов 
   Define LN=5000;0
   
-   Procedure event_repaint()
-    Debug "#PB_Event_Repaint"
+   Procedure event_repaint( )
+    Debug "#PB_Event_Repaint "+ EventGadget( )
     
    ; Repaints( ) 
     
@@ -65,15 +65,15 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
     
-    ReDraw( root( ) )
+    ReDraw( Root( ) )
     
-    EditorGadget(0, 10, 10, 250, 680)
+    EditorGadget(10, 10, 10, 250, 680)
     ; HideGadget(0, 1)
     Define time = ElapsedMilliseconds()
     For a = 0 To gLN
-      AddGadgetItem (0, -1, "Item "+Str(a), 0, Random(5)+1)
+      AddGadgetItem (10, -1, "Item "+Str(a), 0, Random(5)+1)
     Next
-    Debug Str(ElapsedMilliseconds()-time) + " - add gadget items time count - " + CountGadgetItems(0)
+    Debug Str(ElapsedMilliseconds()-time) + " - add gadget items time count - " + CountGadgetItems(10)
     ; HideGadget(0, 0)
     
     ;     ;   If Not *w\Repaint : *w\Repaint = 1
@@ -92,9 +92,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 54
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 75
+; FirstLine = 60
 ; Folding = -
 ; EnableXP
 ; DPIAware

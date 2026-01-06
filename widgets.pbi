@@ -138,22 +138,19 @@ CompilerIf #PB_Compiler_Version < 520
    EndMacro
 CompilerEndIf
 
+;
 CompilerIf Not Defined( lng, #PB_Module )
    XIncludeFile "include/lng.pbi"
 CompilerEndIf
-
 CompilerIf Not Defined( constants, #PB_Module )
    XIncludeFile "include/constants.pbi"
 CompilerEndIf
-
 CompilerIf Not Defined( structures, #PB_Module )
    XIncludeFile "include/structures.pbi"
 CompilerEndIf
-
 CompilerIf Not Defined( func, #PB_Module )
    XIncludeFile "include/func.pbi"
 CompilerEndIf
-
 CompilerIf Not Defined( colors, #PB_Module )
    XIncludeFile "include/colors.pbi"
 CompilerEndIf
@@ -162,17 +159,18 @@ CompilerEndIf
 CompilerIf Not Defined( ID, #PB_Module )
    XIncludeFile "include/os/id.pbi"
 CompilerEndIf
-
 CompilerIf Not Defined( mouse, #PB_Module )
    XIncludeFile "include/os/mouse.pbi"
 CompilerEndIf
-
 CompilerIf Not Defined( cursor, #PB_Module )
    XIncludeFile "include/os/cursor.pbi"
 CompilerEndIf
-
-
-; MODULE
+CompilerIf Not Defined( Image, #PB_Module )
+   XIncludeFile "include/os/image.pbi"
+CompilerEndIf
+CompilerIf Not Defined( font, #PB_Module )
+   XIncludeFile "include/os/font.pbi"
+CompilerEndIf
 CompilerSelect #PB_Compiler_OS 
    CompilerCase #PB_OS_MacOS   
       XIncludeFile "include/os/mac/parent.pbi"
@@ -22705,7 +22703,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\mode\Lines
                   FontID = CurrentFontID( ) ; GetFontID( *this\__lines( ) )
                   If FontID
-                     UnderLineSize = DPIScaled( 1+Bool( func::GetFontSize( FontID ) > 13 ))
+                     UnderLineSize = DPIScaled( 1+Bool( Font::GetSize( FontID ) > 13 ))
                      ; Debug ""+UnderLineSize+" "+FontID
                   EndIf
                EndIf
@@ -23435,12 +23433,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; Make output multi line text
                If update
                   UpdateDraw_Text( *this, update )
-                  ;
-                  ;;;;;;;;;;;;;;;;;;;;
-                  If *this\create = 1
-                     *this\create = - 1
-                     edit_make_text_position( *this )
-                  EndIf
                EndIf
                
                ;
@@ -24511,7 +24503,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          ;\\
          *this\font   = - 1
-         *this\create = #True
          *this\color  = _get_colors_( )
          *this\type   = Type
          *this\class  = class
@@ -25539,9 +25530,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *root\color\back  = - 1
             EndIf
             ;
+            *root\picture\image = - 1
+            *root\font          = - 1
             SetFont( *root, #PB_Default )
             ; Setimage( *root, #PB_Default )
-            *root\picture\image = - 1
             
             ;\\
             If Width Or Height
@@ -25688,26 +25680,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          window_pos_y = Y + fs + barHeight
          
          ;\\
-         If constants::BinaryFlag( Flag, #__flag_child )
-            If *parent And *parent\type = #__type_MDI
-               *this\child =- 1
-            Else
-               *this\child = 1
-            EndIf
-         EndIf
-         
-         If *parent
-            If *root = *parent
-               *root\parent = *this
-            EndIf
-         Else
-            *parent = *root
-         EndIf
-         
-         
          ;\\
-         *this\font     = - 1
          *this\type            = #__type_window
+         *this\class           = #PB_Compiler_Procedure ;+""+ count : count + 1
+         *this\container       = 2
+         *this\picture\image   = - 1 ; Background img
          *this\frame_x( )      = #PB_Ignore
          *this\frame_y( )      = #PB_Ignore
          *this\frame_width( )  = #PB_Ignore
@@ -25718,9 +25695,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;Static count
          *this\flag      = Flag
-         *this\create    = #True
-         *this\class     = #PB_Compiler_Procedure ;+""+ count : count + 1
-         *this\container = 2
          
          
          ;
@@ -25736,17 +25710,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ; border frame size
          *this\fs = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * fs
-         
+         *this\bs = *this\fs
          
          ;
+         *this\caption\color    = _get_colors_( )
+         *this\caption\_padding = DPIScaled(4)
+         
          *this\CloseButton( )\hide    = constants::BinaryFlag( *this\flag, #PB_Window_SystemMenu, #False )
          *this\MaximizeButton( )\hide = constants::BinaryFlag( *this\flag, #PB_Window_MaximizeGadget, #False )
          *this\MinimizeButton( )\hide = constants::BinaryFlag( *this\flag, #PB_Window_MinimizeGadget, #False )
          *this\HelpButton( )\hide     = 1
-         
-         
-         *this\caption\color    = _get_colors_( )
-         *this\caption\_padding = DPIScaled(4)
          
          If *this\MaximizeButton( )\hide = 0 Or
             *this\MinimizeButton( )\hide = 0 Or
@@ -25771,11 +25744,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\MaximizeButton( )\color = colors::*this\blue
          *this\MinimizeButton( )\color = colors::*this\green
          
-         *this\CloseButton( )\ColorState( )    = 1
-         *this\MaximizeButton( )\ColorState( ) = 1
-         *this\MinimizeButton( )\ColorState( ) = 1
-         
-         
          *this\CloseButton( )\width    = DPIScaled( #__bar_button_size - 2 )
          *this\CloseButton( )\height   = *this\CloseButton( )\width
          *this\CloseButton( )\round    = *this\CloseButton( )\width / 2
@@ -25793,16 +25761,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\HelpButton( )\round     = *this\CloseButton( )\round
          
          
-         
-         
-         ; Background img
-         *this\picture\image = - 1
-         
-         ;
-         *this\bs = *this\fs
-         
-         
          ;\\
+         If constants::BinaryFlag( Flag, #__flag_child )
+            If *parent And *parent\type = #__type_MDI
+               *this\child =- 1
+            Else
+               *this\child = 1
+            EndIf
+         EndIf
+         
+         If *parent
+            If *root = *parent
+               *root\parent = *this
+            EndIf
+         Else
+            *parent = *root
+         EndIf
+         
+         
          If *parent
             If constants::BinaryFlag( *this\flag, #PB_Window_WindowCentered )
                X = *parent\inner_x( ) + ( *parent\inner_width( ) - Width - *this\fs * 2 - *this\fs[1] - *this\fs[3] ) / 2
@@ -27719,8 +27695,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 25750
-; FirstLine = 22452
-; Folding = ------------------P9--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-------------Vd---------f------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------f0---V2-------4---------------PAc8------------------8--------------------------------------------------------------0e--0-v-0--3----------------------------------------------------------------------------------------------------------------------7----------------------------------------v-G--8-v---+g5fP9f---------------------------8f0--0--------
+; CursorPosition = 25533
+; FirstLine = 22269
+; Folding = -------------------w--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------X20---------0-----------------------------------------------------------------------------------------------------------------------------------------------------------------4-----------2---XV-------f----------------Awt------------------v--------------------------------------------------------------480-4--+4--b----------------------------------------------------------------------------------------------------------------------r------------------------------------------N+-4-f---0Bx-e5-+--------------------------4-7--8--------
 ; EnableXP
 ; Executable = widgets-.app.exe

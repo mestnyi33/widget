@@ -1,5 +1,5 @@
 ﻿
-IncludePath "../../../"
+IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -22,8 +22,8 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(0, 0, 0, 400, 400, "autosize", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
     ;SetWindowColor( 0, $ff00ff)
   
-    SetColor(root(), #PB_Gadget_BackColor, $ff00ff00)
-    a_init( root())
+    SetColor(Root(), #PB_Gadget_BackColor, $ff00ff00)
+    a_init( Root())
     ScrollArea(50,50,300,300, 800,800,0)
     
     
@@ -53,8 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 17
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP
