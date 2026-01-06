@@ -216,61 +216,33 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure SetFlag( *this._s_widget, Flag.q )
+      Protected fs
       ;
-      *this\Flag &~ #__flag_BorderLess 
-      *this\Flag &~ #__flag_BorderFlat 
-      *this\Flag &~ #__flag_BorderSingle 
-      *this\flag &~ #__flag_BorderRaised 
-      *this\flag &~ #__flag_BorderDouble 
-      ;
-      *this\flag | Flag
-      ;
-      If *this\fs
-         *this\fs = 0
+      If constants::BinaryFlag( Flag, #__flag_BorderDouble ) Or
+         constants::BinaryFlag( Flag, #__flag_BorderRaised )
+         fs = 3
+      ElseIf constants::BinaryFlag( Flag, #__flag_BorderFlat ) Or
+             constants::BinaryFlag( Flag, #__flag_BorderSingle ) 
+         fs = 2
+      ElseIf constants::BinaryFlag( Flag, #__flag_BorderLess )
+         fs = 1
       EndIf
       ;
-      ;
-      If is_integral_( *this )
-         If *this\type = #__type_Scroll
-            *this\fs = 0
-         Else
-            *this\fs = 0
-         EndIf
-      Else
-         If constants::BinaryFlag( *this\flag, #__flag_BorderDouble ) Or
-            constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
-            *this\fs = 2
-         ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderFlat ) Or
-                constants::BinaryFlag( *this\Flag, #__flag_BorderSingle ) 
-            *this\fs = 1
-         ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderLess )
-            *this\fs = 0
-         Else
-            ; default border
-            If *this\type = #__type_Editor Or
-               *this\type = #__type_String Or
-               *this\type = #__type_ScrollArea Or
-               *this\type = #__type_ListView Or
-               *this\type = #__type_ListIcon Or
-               *this\type = #__type_Tree 
-               *this\fs = 2
-            EndIf
-            If *this\type = #__type_Panel Or
-               *this\type = #__type_Container Or
-               *this\type = #__type_Spin Or
-               *this\type = #__type_ButtonImage Or
-               *this\type = #__type_Button Or
-               *this\type = #__type_ComboBox Or
-               *this\type = #__type_ExplorerList 
-               *this\fs = 1
-            EndIf
+      If fs
+         *this\Flag &~ #__flag_BorderLess 
+         *this\Flag &~ #__flag_BorderFlat 
+         *this\Flag &~ #__flag_BorderSingle 
+         *this\flag &~ #__flag_BorderRaised 
+         *this\flag &~ #__flag_BorderDouble 
+         ;
+         *this\flag | Flag
+         ;
+         *this\fs = fs - 1
+         If *this\bs <> *this\fs
+            *this\bs = *this\fs
+            ProcedureReturn 1
          EndIf
       EndIf
-      
-      If *this\bs <> *this\fs
-         *this\bs = *this\fs
-      EndIf
-      
    EndProcedure
    
    Procedure events_widgets()
@@ -335,9 +307,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 112
-; FirstLine = 108
-; Folding = -------
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 241
+; FirstLine = 212
+; Folding = ------
 ; EnableXP
 ; DPIAware

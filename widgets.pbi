@@ -16170,6 +16170,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.q FromPBFlag( Type, Flag.q )
+         ; ProcedureReturn Flag
+         ; ProcedureReturn MakeValue( MakeString( TypeString( Type ), Flag ))
          Protected flags.q = Flag
          
          Select Type
@@ -25633,48 +25635,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.i Window( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, *parent._s_WIDGET = 0 )
-         Protected fs = (#__window_FrameSize)
-         Protected barHeight = ( #__window_CaptionHeight )
-         Protected fs1 = DPIScaled(fs)
-         Protected barHeight1 = DPIScaled( barHeight )
+         Protected fs = DPIScaled(#__window_FrameSize)
+         Protected barHeight = DPIScaled( #__window_CaptionHeight )
+         Protected *this._s_WIDGET
          
          ;Protected *this.allocate( Widget )
          If Opened( )
             Protected *root._s_root = Opened( )\root
          EndIf
          
-         Protected *this._s_WIDGET
+         
          If MapSize( roots( ) )
-            If Not ListSize( widgets( ) ) And
-               constants::BinaryFlag( Flag, #__flag_autosize ) 
-               
-               X              = 0
-               Y              = 0
-               Width          = *root\width
-               Height         = *root\height
-               *root\autosize = #True
-               *this          = *root
-               
-               ;                   Protected w = WindowID(*root\canvas\window )
-               ;                   
-               ;                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-               ;                   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-               ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_BORDER) 
-               ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
-               ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_SIZEBOX) 
-               ;                      SetWindowLongPtr_(w,#GWL_EXSTYLE,GetWindowLongPtr_(w,#GWL_EXSTYLE) | #WS_EX_TOOLWINDOW)
-               ;                   CompilerElse
-               ;                      ;  
-               ;                   CompilerEndIf
-            Else
-               *this.allocate( Widget )
-            EndIf
-            ;\\ open root list
+;             If Not ListSize( widgets( ) ) And
+;                constants::BinaryFlag( Flag, #__flag_autosize ) 
+;                
+;                X              = 0
+;                Y              = 0
+;                Width          = *root\width
+;                Height         = *root\height
+;                *root\autosize = #True
+;                *this          = *root
+;                
+;                ;                   Protected w = WindowID(*root\canvas\window )
+;                ;                   
+;                ;                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;                ;                   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+;                ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_BORDER) 
+;                ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
+;                ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_SIZEBOX) 
+;                ;                      SetWindowLongPtr_(w,#GWL_EXSTYLE,GetWindowLongPtr_(w,#GWL_EXSTYLE) | #WS_EX_TOOLWINDOW)
+;                ;                   CompilerElse
+;                ;                      ;  
+;                ;                   CompilerEndIf
+;             Else
+                *this.allocate( Widget )
+;             EndIf
+;             ;\\ open root list
          Else
             *this = Open( #PB_Any, X, Y, Width + fs * 2, Height + fs * 2 + barHeight, Text,  #PB_Window_BorderLess, *parent )
             X     = 0
             Y     = 0
-            Protected autosize = #True
          EndIf
          
          ;\\
@@ -25700,7 +25700,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *root = *parent
                *root\parent = *this
             EndIf
-            
          Else
             *parent = *root
          EndIf
@@ -25717,27 +25716,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ replace pb flag
          Flag = FromPBFlag( *this\type, Flag )
          
-         Static count
+         ;Static count
          *this\flag      = Flag
          *this\create    = #True
-         *this\class     = #PB_Compiler_Procedure ;+""+ count
+         *this\class     = #PB_Compiler_Procedure ;+""+ count : count + 1
          *this\container = 2
-         count + 1
+         
          
          ;
          ;       *this\round = round
          ;
          *this\color      = _get_colors_( )
-         *this\color\back = $FFF9F9F9
+         
          If constants::BinaryFlag( Flag, #__flag_Transparent ) 
             *this\color\back = - 1
+         Else
+            *this\color\back = $FFF9F9F9
          EndIf
          
-         *this\caption\_padding = 4
-         *this\caption\color    = _get_colors_( )
-         
          ; border frame size
-         *this\fs = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * fs1
+         *this\fs = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * fs
          
          
          ;
@@ -25746,6 +25744,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\MinimizeButton( )\hide = constants::BinaryFlag( *this\flag, #PB_Window_MinimizeGadget, #False )
          *this\HelpButton( )\hide     = 1
          
+         
+         *this\caption\color    = _get_colors_( )
+         *this\caption\_padding = DPIScaled(4)
          
          If *this\MaximizeButton( )\hide = 0 Or
             *this\MinimizeButton( )\hide = 0 Or
@@ -25759,7 +25760,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\TitleBarHeight = 0
             *this\fs[2] = 0
          Else
-            *this\fs[2] = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * barHeight1
+            *this\fs[2] = constants::BinaryFlag( *this\flag, #__flag_Borderless, #False ) * barHeight
             *this\TitleBarHeight = *this\fs[2]
             
             *this\padding\x = DPIScaled(5)
@@ -27717,9 +27718,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 15254
-; FirstLine = 13824
-; Folding = ------------------P9--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-------------Vd---------f------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------f0---V2-------4---------------PAc8------------------8--------------------------------------------------------------0e--0-v-0--3----------------------------------------------------------------------------------------------------------------------7----------------------------------------v-G--8-v---+g5fP9f---------------------------4-7--8--------
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 25750
+; FirstLine = 22452
+; Folding = ------------------P9--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-------------Vd---------f------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------f0---V2-------4---------------PAc8------------------8--------------------------------------------------------------0e--0-v-0--3----------------------------------------------------------------------------------------------------------------------7----------------------------------------v-G--8-v---+g5fP9f---------------------------8f0--0--------
 ; EnableXP
 ; Executable = widgets-.app.exe

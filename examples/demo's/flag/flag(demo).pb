@@ -168,6 +168,223 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn *new
    EndProcedure
    
+   Procedure.q _FromPBFlag( Type, Flag.q )
+      ProcedureReturn MakeValue( MakeString( TypeString( Type ), Flag ))
+      
+      
+      
+          Protected flags.q ;= Flag
+         
+         Select Type
+            Case #__type_window
+               If constants::BinaryFlag( Flag, #PB_Window_BorderLess )
+                  flags | #__flag_BorderLess
+               EndIf
+               ;
+            Case #__type_Container
+;                If constants::BinaryFlag( Flag, #PB_Container_BorderLess ) 
+;                   flags | #__flag_BorderLess
+;                EndIf
+               If constants::BinaryFlag( Flag, #PB_Container_Flat )
+                  flags | #__flag_BorderFlat
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Container_Single )
+                  flags | #__flag_BorderSingle
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Container_Raised ) 
+                  flags | #__flag_BorderRaised
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Container_Double )
+                  flags | #__flag_BorderDouble
+               EndIf
+               ;
+            Case #__type_ScrollArea
+               If constants::BinaryFlag( Flag, #PB_ScrollArea_BorderLess ) 
+                  flags = #__flag_BorderLess
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ScrollArea_Flat )
+                  flags | #__flag_BorderFlat
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ScrollArea_Single )
+                  flags | #__flag_BorderSingle
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ScrollArea_Raised ) 
+                  flags | #__flag_BorderRaised
+               EndIf
+               ;
+            Case #__type_Frame
+               ;                If constants::BinaryFlag( Flag, #PB_Frame_BorderLess ) 
+               ;                   flags | #__flag_BorderLess
+               ;                EndIf
+               If constants::BinaryFlag( Flag, #PB_Frame_Flat )
+                  flags | #__flag_BorderFlat
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Frame_Single )
+                  flags | #__flag_BorderSingle
+               EndIf
+               ;                If constants::BinaryFlag( Flag, #PB_Frame_Raised ) 
+               ;                   flags | #__flag_BorderRaised
+               ;                EndIf
+               If constants::BinaryFlag( Flag, #PB_Frame_Double )
+                  flags | #__flag_BorderDouble
+               EndIf
+               ;
+            Case #__type_MDI
+               If constants::BinaryFlag( Flag, #PB_MDI_AutoSize ) 
+                  flags | #__flag_AutoSize
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_MDI_BorderLess )
+                  flags | #__flag_BorderLess
+               EndIf
+               ;
+            Case #__type_CheckBox
+               If constants::BinaryFlag( Flag, #PB_CheckBox_Right )
+                  flags | #__flag_TextRight
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_CheckBox_Center )
+                  flags | #__flag_TextCenter
+               EndIf
+               ;
+            Case #__type_Text
+               If constants::BinaryFlag( Flag, #PB_Text_Border ) 
+                  flags | #__flag_BorderFlat
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Text_Center )
+                  flags | #__flag_TextCenter
+                  ;flags & ~ #__flag_TextLeft
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Text_Right )
+                  flags | #__flag_TextRight
+               EndIf
+               ;
+            Case #__type_Button ; ok
+               If constants::BinaryFlag( Flag, #PB_Button_MultiLine ) 
+                  flags | #__flag_TextMultiLine
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Button_Left ) 
+                  flags | #__flag_TextLeft
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Button_Right ) 
+                  flags | #__flag_TextRight
+               EndIf
+               ;
+            Case #__type_ComboBox ; ok
+               If constants::BinaryFlag( Flag, #PB_ComboBox_Editable )
+                  flags & ~ #__flag_Textreadonly
+               Else
+                  flags | #__flag_Textreadonly
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ComboBox_LowerCase )
+                  flags | #__flag_Textlowercase
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ComboBox_UpperCase ) 
+                  flags | #__flag_Textuppercase
+               EndIf
+               ;
+            Case #__type_String ; ok
+               If constants::BinaryFlag( Flag, #PB_String_Password ) 
+                  flags | #__flag_Textpassword
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_String_LowerCase )
+                  flags | #__flag_Textlowercase
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_String_UpperCase ) 
+                  flags | #__flag_Textuppercase
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_String_BorderLess )
+                  flags | #__flag_BorderLess
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_String_Numeric ) 
+                  flags | #__flag_Textnumeric
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_String_ReadOnly )
+                  flags | #__flag_Textreadonly
+               EndIf
+               ;
+            Case #__type_Editor
+               If constants::BinaryFlag( Flag, #PB_Editor_ReadOnly ) 
+                  flags | #__flag_Textreadonly
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Editor_WordWrap ) 
+                  flags | #__flag_Textwordwrap
+               EndIf
+               ;
+            Case #__type_Tree
+               If constants::BinaryFlag( Flag, #PB_Tree_AlwaysShowSelection ) 
+                  flags & ~ #PB_Tree_AlwaysShowSelection
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Tree_CheckBoxes ) 
+                  flags | #__flag_checkboxes
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Tree_ThreeState ) 
+                  flags | #__flag_threestate
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Tree_NoButtons )
+                  flags | #__flag_nobuttons
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Tree_NoLines ) 
+                  flags | #__flag_nolines
+               EndIf
+               ;   
+            Case #__type_ListView ; Ok
+               If constants::BinaryFlag( Flag, #PB_ListView_ClickSelect ) 
+                  flags | #__flag_RowClickSelect
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ListView_MultiSelect ) 
+                  flags | #__flag_RowMultiSelect
+               EndIf
+               ;  
+            Case #__type_listicon
+               If constants::BinaryFlag( Flag, #PB_ListIcon_AlwaysShowSelection ) 
+                  flags & ~ #PB_ListIcon_AlwaysShowSelection
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ListIcon_CheckBoxes )
+                  flags | #__flag_checkboxes
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ListIcon_ThreeState )
+                  flags | #__flag_threestate
+               EndIf
+               
+         EndSelect
+         
+         ProcedureReturn flags
+      EndProcedure
+      
+      
+      Define Flag.q = #PB_Container_Flat | #PB_Container_Raised | #PB_Container_Double | #PB_Container_Single 
+      Debug FlagString(_FromPBFlag( #__type_Container, Flag.q ))
+      
+      
+      Procedure SetFlag( *this._s_widget, Flag.q )
+      Protected fs
+      ;
+      If constants::BinaryFlag( Flag, #__flag_BorderDouble ) Or
+         constants::BinaryFlag( Flag, #__flag_BorderRaised )
+         fs = 3
+      ElseIf constants::BinaryFlag( Flag, #__flag_BorderFlat ) Or
+             constants::BinaryFlag( Flag, #__flag_BorderSingle ) 
+         fs = 2
+      ElseIf constants::BinaryFlag( Flag, #__flag_BorderLess )
+         fs = 1
+      EndIf
+      ;
+      If fs
+         *this\Flag &~ #__flag_BorderLess 
+         *this\Flag &~ #__flag_BorderFlat 
+         *this\Flag &~ #__flag_BorderSingle 
+         *this\flag &~ #__flag_BorderRaised 
+         *this\flag &~ #__flag_BorderDouble 
+         ;
+         *this\flag | Flag
+         ;
+         *this\fs = fs - 1
+         If *this\bs <> *this\fs
+            *this\bs = *this\fs
+            ProcedureReturn 1
+         EndIf
+      EndIf
+   EndProcedure
+   
    Procedure Add(Text.s)
       ClearItems(*g_FLAG)
       ClearItems(*g_FLAG2)
@@ -288,7 +505,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If Flag
          Debug EventWidget( )\class
-         Flag( *g_OBJECT, Flag, GetState(EventWidget( )))
+         SetFlag( *g_OBJECT, Flag )
+         ; Flag( *g_OBJECT, Flag, GetState(EventWidget( )))
       EndIf
       
    EndProcedure
@@ -306,9 +524,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 298
-; FirstLine = 258
-; Folding = ------
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 171
+; FirstLine = 163
+; Folding = -----------t7-
 ; EnableXP
 ; DPIAware
