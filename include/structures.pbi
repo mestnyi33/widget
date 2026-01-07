@@ -591,7 +591,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; transporent.b
          ; dragged.b              ;
          ;
-         clip.b
          *errors
          notify.l                   ; оповестить об изменении
          state.l
@@ -794,8 +793,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 600
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 593
 ; FirstLine = 437
 ; Folding = -F5w------
 ; Optimizer

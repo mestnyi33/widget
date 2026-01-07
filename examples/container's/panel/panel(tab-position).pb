@@ -1,6 +1,6 @@
 ﻿IncludePath "../../../"
 CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-   XIncludeFile "include/os/win/id.pbi"
+   XIncludeFile "include/os/id.pbi"
    XIncludeFile "include/os/win/ClipGadgets.pbi"
 CompilerEndIf
 XIncludeFile "widgets.pbi"
@@ -68,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
    CloseList() ; *panel
    
    Frame(30, 200, 300 - 60, 100, "Tab location")
-   Option(130, 220, 80, 20, "Top", #__flag_Transparent) : SetState(widget(), #True)
+   Option(130, 220, 80, 20, "Top", #__flag_Transparent) : SetState(Widget(), #True)
    Option(50, 245, 80, 20, "Left", #__flag_Transparent)
    Option(130, 245, 80, 20, "Hide", #__flag_Transparent)
    Option(130, 270, 80, 20, "Bottom", #__flag_Transparent)
@@ -87,9 +87,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ForEver
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 38
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 2
 ; Folding = --
 ; EnableXP
 ; DPIAware

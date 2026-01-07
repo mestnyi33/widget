@@ -32,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Container( 220,10,200,100, #PB_Container_BorderLess ) 
     SetColor( Widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
-    Container( 220,120,200,100 );, #PB_Container_Flat ) 
+    Container( 220,120,200,100, #PB_Container_Flat ) 
     SetColor( Widget( ), #PB_Gadget_BackColor, $FF95E3F6 )
     CloseList( )
     Container( 220,230,200,100, #PB_Container_Single ) 
@@ -68,8 +68,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 27
+; CursorPosition = 34
+; FirstLine = 15
 ; Folding = -
 ; Optimizer
 ; EnableXP
