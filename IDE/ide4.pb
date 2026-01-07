@@ -143,6 +143,8 @@ Global ide_properties_SPLITTER,
        ide_inspector_EVENTS,
        ide_inspector_HELP
 
+Global ide_element_PANEL
+
 Global group_select
 Global group_drag
 
@@ -1223,7 +1225,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       EndIf
       
       If type$ = "Focus" Or type$ = "Flag"
-         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, MakeConstantsString( TypeString(*object\type), *object\flag ))
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, MakeString( TypeString(*object\type), *object\flag ))
       EndIf
       If type$ = "Focus" Or type$ = "Color" 
          Define color.l = GetColor( *object, ColorType, ColorState ) ;& $FFFFFF | *object\color\_alpha << 24
@@ -1246,7 +1248,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
          Else
             Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_fontsize, "" )
          EndIf
-         Define style$ = RemoveString( MakeConstantsString( "Font", GetFontStyle( font ) ), "#PB_Font_")
+         Define style$ = RemoveString( MakeString( "Font", GetFontStyle( font ) ), "#PB_Font_")
          If style$ = ""
             style$ = "None"
          EndIf
@@ -2704,12 +2706,21 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
    
    ; ide_inspector_PANEL_item_1 
    AddItem( ide_inspector_PANEL, -1, "elements", 0, 0 ) 
+   ;
+   ide_element_PANEL = Panel( 0,0,0,0, #__flag_autosize|#__flag_BorderLess ) : SetClass(ide_element_PANEL, "ide_element_PANEL" ) 
+   AddItem( ide_element_PANEL, -1, "Container")
    ide_inspector_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_Borderless ) : SetClass(ide_inspector_ELEMENTS, "ide_inspector_ELEMENTS" )
    If ide_inspector_ELEMENTS
       Define *g._s_WIDGET = ide_inspector_ELEMENTS
       ;*g\padding\x = DPIScaled(4)
       ide_inspector_ELEMENTS_ADD_ITEMS( ide_inspector_ELEMENTS, GetCurrentDirectory( )+"Themes/" )
    EndIf
+   
+   AddItem( ide_element_PANEL, -1, "Elements" )
+   
+   CloseList( )
+   BarPosition( ide_element_PANEL, 1 )
+   
    
    ; ide_inspector_PANEL_item_2
    AddItem( ide_inspector_PANEL, -1, "properties", 0, 0 )  
@@ -3101,9 +3112,9 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2426
-; FirstLine = 2422
-; Folding = ---------------------------------------------------------
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 2718
+; FirstLine = 2703
+; Folding = -------------------------------------------------------n-
 ; EnableXP
 ; DPIAware

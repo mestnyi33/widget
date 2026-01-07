@@ -8955,15 +8955,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; change clip output coordinate
          If Change_x Or Change_y Or Change_width Or Change_height 
             Reclip( *this )
-         Else
-            If *this\parent And *this\parent\clip
-               Reclip( *this )
-               ; Debug " resize no change "+*this\parent\class
-            EndIf
+         ElseIf *this\parent And *this\parent\clip
+            Reclip( *this )
          EndIf
          
          ;
          If ( Change_x Or Change_y Or Change_width Or Change_height ) 
+            ; Reclip( *this )
             If *this\ResizeChange( ) <> #True
                *this\ResizeChange( ) = #True
             EndIf
@@ -9272,8 +9270,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; Debug "   "+X +" "+ Y +" "+ Width +" "+ Height
                Post( *this, #__event_resize )
             EndIf
-         Else
-            
          EndIf
          
          ;Debug "resize "+*this\class +" "+  *this\Width ;*this\scroll_width()
@@ -9419,6 +9415,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Resize( Widget( ), (X), (Y), (Width), (Height), 0 )
                      Else
                         Resize( Widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                        ; Reclip( Widget( ) )
                      EndIf
                   EndIf
                   ;
@@ -9433,7 +9430,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\clip = 0 
          EndIf
          ;
-         ProcedureReturn *this\root\repaint
+         ProcedureReturn Bool( Change_x Or Change_y Or Change_width Or Change_height )
       EndProcedure
       
       Procedure ResizeRootWindow( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
@@ -27695,8 +27692,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 25533
-; FirstLine = 22269
-; Folding = -------------------w--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------X20---------0-----------------------------------------------------------------------------------------------------------------------------------------------------------------4-----------2---XV-------f----------------Awt------------------v--------------------------------------------------------------480-4--+4--b----------------------------------------------------------------------------------------------------------------------r------------------------------------------N+-4-f---0Bx-e5-+--------------------------4-7--8--------
+; CursorPosition = 8903
+; FirstLine = 8572
+; Folding = -------------------w--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------------X2h084v+8-4e-tt33-------------------------------------------------------------------------------------------------------------------------------------------------------------8-----------7---rq-------v---------------fA53------------------4--------------------------------------------------------------80+-8-f-8--t----------------------------------------------------------------------------------------------------------------------2------------------------------------------G--8-v---+g5fP9f---------------------------8f0--0--------
 ; EnableXP
 ; Executable = widgets-.app.exe

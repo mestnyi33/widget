@@ -1195,7 +1195,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       EndIf
       
       If type$ = "Focus" Or type$ = "Flag"
-         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, MakeConstantsString( TypeString(*object\type), *object\flag ))
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, MakeString( TypeString(*object\type), *object\flag ))
       EndIf
       If type$ = "Focus" Or type$ = "Color" 
          Define color.l = GetColor( *object, ColorType, ColorState ) ;& $FFFFFF | *object\color\_alpha << 24
@@ -1218,7 +1218,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
          Else
             Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_fontsize, "" )
          EndIf
-         Define style$ = RemoveString( MakeConstantsString( "Font", GetFontStyle( font ) ), "#PB_Font_")
+         Define style$ = RemoveString( MakeString( "Font", GetFontStyle( font ) ), "#PB_Font_")
          If style$ = ""
             style$ = "None"
          EndIf
@@ -3070,9 +3070,9 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2398
-; FirstLine = 2394
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 1230
+; FirstLine = 1216
 ; Folding = ---------------------------------------------------------
 ; EnableXP
 ; DPIAware
