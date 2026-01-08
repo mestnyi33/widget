@@ -2708,7 +2708,7 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
    AddItem( ide_inspector_PANEL, -1, "elements", 0, 0 ) 
    ;
    ide_element_PANEL = Panel( 0,0,0,0, #__flag_autosize|#__flag_BorderLess ) : SetClass(ide_element_PANEL, "ide_element_PANEL" ) 
-   AddItem( ide_element_PANEL, -1, "Container")
+   AddItem( ide_element_PANEL, -1, "All")
    ide_inspector_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines | #__flag_Borderless ) : SetClass(ide_inspector_ELEMENTS, "ide_inspector_ELEMENTS" )
    If ide_inspector_ELEMENTS
       Define *g._s_WIDGET = ide_inspector_ELEMENTS
@@ -2716,10 +2716,13 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
       ide_inspector_ELEMENTS_ADD_ITEMS( ide_inspector_ELEMENTS, GetCurrentDirectory( )+"Themes/" )
    EndIf
    
-   AddItem( ide_element_PANEL, -1, "Elements" )
+   AddItem( ide_element_PANEL, -1, "Containers" )
+   AddItem( ide_element_PANEL, -1, "Buttons" )
+   AddItem( ide_element_PANEL, -1, "Texts" )
+   AddItem( ide_element_PANEL, -1, "Lists" )
    
    CloseList( )
-   BarPosition( ide_element_PANEL, 1 )
+   BarPosition( ide_element_PANEL, 4 )
    
    
    ; ide_inspector_PANEL_item_2
@@ -3113,8 +3116,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2718
-; FirstLine = 2703
+; CursorPosition = 2721
+; FirstLine = 2699
 ; Folding = -------------------------------------------------------n-
 ; EnableXP
 ; DPIAware

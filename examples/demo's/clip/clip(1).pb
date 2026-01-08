@@ -3,6 +3,7 @@
 
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
+  test_clip = 1
   
   EnableExplicit
   Global Event.i, MyCanvas
@@ -14,7 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
-  a_init(root())
+  a_init(Root())
   
   
   Define *g = window(10,10,200,200, "window", #PB_Window_SystemMenu|#__flag_autosize) : SetClass(*g, "window")
@@ -25,14 +26,14 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   Button(10,90,100,30,"button_0_2") : SetClass(widget(), GetText(widget()))
   
   Define *g1 = window(30,10,200,200, "form_1-form_0", #PB_Window_SystemMenu|#__flag_child, *g0) : SetClass(*g1, "form_1")
-  Button(10,10,100,30,"button_1_0") : SetClass(widget(), GetText(widget()))
-  Button(10,50,100,30,"button_1_1") : SetClass(widget(), GetText(widget()))
-  Button(10,90,100,30,"button_1_2") : SetClass(widget(), GetText(widget()))
+  Button(10,10,100,30,"button_1_0") : SetClass(Widget(), GetText(Widget()))
+  Button(10,50,100,30,"button_1_1") : SetClass(Widget(), GetText(Widget()))
+  Button(10,90,100,30,"button_1_2") : SetClass(Widget(), GetText(Widget()))
    
   Define *g2 = window(50,10,200,200, "form_2-form_1", #PB_Window_SystemMenu|#__flag_child, *g1) : SetClass(*g2, "form_2")
-  Button(10,10,100,30,"button_2_0") : SetClass(widget(), GetText(widget()))
-  Button(10,50,100,30,"button_2_1") : SetClass(widget(), GetText(widget()))
-  Button(10,90,100,30,"button_2_2") : SetClass(widget(), GetText(widget()))
+  Button(10,10,100,30,"button_2_0") : SetClass(Widget(), GetText(Widget()))
+  Button(10,50,100,30,"button_2_1") : SetClass(Widget(), GetText(Widget()))
+  Button(10,90,100,30,"button_2_2") : SetClass(Widget(), GetText(Widget()))
   
 ;   window(120,40,200,200, "window_0", #PB_Window_SystemMenu|#__flag_child, *g) : SetClass(widget(), "window_0")
 ;   Button(10,10,80,30,"button_0") : SetClass(widget(), GetText(widget()))
@@ -42,9 +43,9 @@ CompilerIf #PB_Compiler_IsMainFile
   
   ; "form_0"
   OpenList(*g0)
-  Button(10,10,130,30,"button_0_0") : SetClass(widget(), GetText(widget()))
-  Button(10,50,130,30,"button_0_1") : SetClass(widget(), GetText(widget()))
-  Button(10,90,130,30,"button_0_2") : SetClass(widget(), GetText(widget()))
+  Button(10,10,130,30,"button_0_0") : SetClass(Widget(), GetText(Widget()))
+  Button(10,50,130,30,"button_0_1") : SetClass(Widget(), GetText(Widget()))
+  Button(10,90,130,30,"button_0_2") : SetClass(Widget(), GetText(Widget()))
   CloseList()
   
   ;SortStructuredList(widget(), #PB_Sort_Ascending, OffsetOf(_s_count\index), TypeOf(_s_count\index))
@@ -63,8 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 21
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 5
 ; Folding = -
 ; EnableXP
