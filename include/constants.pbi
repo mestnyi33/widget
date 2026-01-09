@@ -62,7 +62,7 @@
       ;
       ;\\ default values
       ;
-      #__bar_toggle_line_size = 2
+      #__bar_toggle_line_size = 1
       #__bar_splitter_size = 9
       #__ButtonRound  = 7
       #__bar_button_size   = 16
@@ -714,8 +714,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 420
-; FirstLine = 408
+; CursorPosition = 67
+; FirstLine = 32
 ; Folding = ----
 ; Optimizer
 ; EnableXP

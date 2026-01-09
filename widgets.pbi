@@ -1241,6 +1241,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;-
+      Macro clip_output_( _address_, _mode_ = [#__c_draw] )
+         CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( Draw, #PB_Module ))
+            ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
+         CompilerEndIf
+      EndMacro
+      
       Macro draw_mode_alpha_( _mode_ )
          draw_mode_( _mode_ | #PB_2DDrawing_AlphaBlend )
       EndMacro
@@ -3890,18 +3896,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *tabs( )\y = *bar\max + pos
                         
                         If *this\type = #__type_TabBar
-                           If *this\TabState( ) = Index
-                              *tabs( )\x        = - Bool( *this\parent\fs[3] )
-                              *tabs( )\width    = *this\screen_width( )
+                           If *this\TabState( ) = Index 
+;                               *tabs( )\x        = 0
+;                               *tabs( )\width    = *this\screen_width( )
+                              If *this\parent\fs[1]
+                                 *tabs( )\x     = bar_toggle_line_size
+                              Else
+                                 *tabs( )\x     = 0
+                              EndIf
+                              *tabs( )\width    = *this\inner_width( ) - bar_toggle_line_size
                            Else
-                              *tabs( )\x       = Bool( *this\parent\fs[3] ) + Bool( *this\parent\fs[1] ) * bar_toggle_line_size
-                              *tabs( )\width  = *this\screen_width( ) - bar_toggle_line_size - DPIScaled(1) - 1
+                              If *this\parent\fs[1]
+                                 *tabs( )\x     = bar_toggle_line_size
+                              Else
+                                 *tabs( )\x     = DPIScaled(2)
+                              EndIf
+                              *tabs( )\width    = *this\inner_width( ) - bar_toggle_line_size - DPIScaled(2)
                            EndIf
                            
                         Else
-                           *tabs( )\x             = pos
-                           If *tabs( )\tindex  = #PB_Ignore
-                              *tabs( )\x          + 3
+                           *tabs( )\x           = pos
+                           If *tabs( )\tindex   = #PB_Ignore
+                              *tabs( )\x        + 3
                            EndIf
                            
                            *tabs( )\width  = *this\scroll_width( ) - *tabs( )\x * 2
@@ -3965,18 +3981,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *tabs( )\x = *bar\max + pos
                         ;
                         If *this\type = #__type_TabBar
-                           If *this\TabState( ) = Index
-                              *tabs( )\y       = - (Bool( *this\parent\fs[4] ))
-                              *tabs( )\height  = *this\screen_height( )
-                           Else
-                              *tabs( )\y       = Bool( *this\parent\fs[4] ) + Bool( *this\parent\fs[2] ) * bar_toggle_line_size
-                              *tabs( )\height  = *this\screen_height( ) - bar_toggle_line_size - DPIScaled(1) - 1
-                           EndIf
+;                            If *this\TabState( ) = Index
+; ;                               *tabs( )\y        = 0
+; ;                               *tabs( )\height   = *this\screen_height( )
+;                                If *this\parent\fs[1]
+;                                  *tabs( )\y     = bar_toggle_line_size
+;                               Else
+;                                  *tabs( )\y     = 0
+;                               EndIf
+;                               *tabs( )\height    = *this\inner_height( ) - bar_toggle_line_size
+;                            Else
+                              If *this\parent\fs[2]
+                                 *tabs( )\y     = bar_toggle_line_size
+                              Else
+                                 *tabs( )\y     = DPIScaled(2)
+                              EndIf
+                              *tabs( )\height   = *this\screen_height( ) - bar_toggle_line_size - DPIScaled(2)
+;                            EndIf
                            
                         Else
-                           *tabs( )\y       = pos
-                           If *tabs( )\tindex  = #PB_Ignore
-                              *tabs( )\y      + 3
+                           *tabs( )\y           = pos
+                           If *tabs( )\tindex   = #PB_Ignore
+                              *tabs( )\y        + 3
                            EndIf
                            
                            *tabs( )\height  = *this\scroll_height( ) - *tabs( )\y * 2
@@ -4160,6 +4186,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
          Next
+;          draw_mode_(#PB_2DDrawing_Outlined)
+;          draw_box_( *this\x,*this\y,*this\width,*this\height,0)
+;          ProcedureReturn
          ;
          ; draw mouse-enter visible item
          If *this\TabEntered( )
@@ -4185,22 +4214,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                draw_font( *activeTAB, GetFontID( *this ), *activeTAB\TextChange( ))
                ;
                If is_integral_( *this )
-                  If *this\parent
-                     If Not *activeTAB\press
-                        draw_mode_alpha_( #PB_2DDrawing_Default )
-                        draw_roundbox_( X + *activeTAB\x,
-                                        Y + *activeTAB\y,
-                                        *activeTAB\width,
-                                        *activeTAB\height,
-                                        *this\round, *this\round,
-                                        *this\parent\color\back )
-                     EndIf
-                  EndIf
-                  
-                  bar_draw_item_( *this\bar\vertical, *activeTAB, X, Y, 0, round, 0 )
+;                   If *this\parent
+;                      If Not *activeTAB\press
+;                         draw_mode_alpha_( #PB_2DDrawing_Default )
+;                         draw_roundbox_( X + *activeTAB\x,
+;                                         Y + *activeTAB\y,
+;                                         *activeTAB\width,
+;                                         *activeTAB\height,
+;                                         *this\round, *this\round,
+;                                         *this\parent\color\back )
+;                      EndIf
+;                   EndIf
+;                   
+;                   bar_draw_item_( *this\bar\vertical, *activeTAB, X, Y, 0, round, 0 )
+                  bar_draw_item_( *this\bar\vertical, *activeTAB, X, Y, 0, round )
                   
                Else
-                  ;
+                  
                   bar_draw_item_( *this\bar\vertical, *activeTAB, X, Y, 2, round )
                EndIf
             EndIf
@@ -4209,122 +4239,56 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If is_integral_( *this )
                If *this\parent
                   Protected color = *this\parent\color\frame
+                  Protected color2 = *this\parent\color\frame
                   If *this\parent\focus = 2
-                     color = *this\parent\color\frame[2]
+                     color2 = *this\parent\color\frame[2] 
                   EndIf
+                     color2 = $ff0000ff & $FFFFFF | *tabs( )\AlphaState24( )
                   
-                  If *bar\vertical
-                     ;                   If *activeTAB And *activeTAB\_focus And 
-                     ;                      *activeTAB\visible
-                     If *this\parent\fs
-                        Line( X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, color )
-                        Line( X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width - *activeTAB\x - Bool(*this\parent\fs[3]), 1, color )
-                     EndIf
-                     ; line on the selected item
-                     If *this\parent\fs[1]
-                        Box(X + *activeTAB\x, Y + *activeTAB\y, bar_toggle_line_size, *activeTAB\height, *this\parent\color\frame[2])
-                     ElseIf *this\parent\fs[3]
-                        Box(X + *activeTAB\x + *activeTAB\width-bar_toggle_line_size, Y + *activeTAB\y, bar_toggle_line_size, *activeTAB\height, *this\parent\color\frame[2])
-                     EndIf
-                     ;
-                     If is_menu_( *this )
-                        Line( X + *activeTAB\x + *activeTAB\width - 1, Y + *activeTAB\y, 1, *activeTAB\height, color )
-                     EndIf
-                     ;                   EndIf
-                     ;
                      If *this\type = #__type_TabBar 
-                        If *this\parent\fs
-                           ;
-                           If *this\parent\fs[1]
-                              If *activeTAB
-                                 ; horizontal tab bottom line
-                                 Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
-                                 Line( *this\frame_x( ) + *this\frame_width( ) - 1, Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
+                        If *activeTAB 
+                           If *this\parent\fs
+                              If *bar\vertical
+                                 If *this\parent\fs[1]
+                                    Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
+                                    Line( *this\frame_x( ) + *this\frame_width( ) - 1, Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
+                                 EndIf
+                                 If *this\parent\fs[3]
+                                    Line( *this\frame_x( ), *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
+                                    Line( *this\frame_x( ), Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
+                                 EndIf
                               Else
-                                 Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
+                                 If *this\parent\fs[2]
+                                    Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( X + *activeTAB\x ) - *this\frame_x( ), DPIScaled(1), color ) 
+                                    Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), DPIScaled(1), color )
+                                 EndIf
+                                 If *this\parent\fs[4]
+                                    Line( *this\frame_x( ), *this\frame_y( ), ( X + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
+                                    Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ), *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), 1, color )
+                                 EndIf
                               EndIf
-                           Else
-                              Line( *this\parent\frame_x( ), *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
                            EndIf
-                           
                            ;
-                           Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ), *this\parent\inner_width( ) + 2, 1, color )
-                           Line( *this\parent\inner_x( ) - 1, *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\inner_width( ) + 2, 1, color )
-                           
-                           If *this\parent\fs[3]
-                              If *activeTAB 
-                                 ; horizontal tab bottom line
-                                 Line( *this\frame_x( ) - 1, *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
-                                 Line( *this\frame_x( ) - 1, Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
-                              Else
-                                 Line( *this\frame_x( ) - 1, *this\frame_y( ), 1, *this\frame_height( ), color )
+                           DrawingMode( #PB_2DDrawing_Default)
+                           ;
+                           If *bar\vertical
+                              If *this\parent\fs[1]
+                                 Box( *this\frame_x( ) + *this\frame_width( ) - DPIScaled(3), Y + *activeTAB\y, DPIScaled(3), *activeTAB\height, color2 )
+                              EndIf
+                              If *this\parent\fs[3]
+                                 Box( *this\frame_x( ), Y + *activeTAB\y, DPIScaled(3), *activeTAB\height, color2  )
                               EndIf
                            Else
-                              Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ), 1, *this\parent\frame_height( ), color )
+                              If *this\parent\fs[2]
+                                 Box( X + *activeTAB\x, *this\frame_y( ) + *this\frame_height( ) - DPIScaled(3), *activeTAB\width, DPIScaled(3), color2 )
+                              EndIf
+                              If *this\parent\fs[4]
+                                 Box( X + *activeTAB\x, *this\frame_y( ), *activeTAB\width, DPIScaled(3), color2  )
+                              EndIf
                            EndIf
                         EndIf
                      EndIf
-                     
-                  Else
-                     ;                   If *activeTAB And *activeTAB\_focus And 
-                     ;                      *activeTAB\visible
-                     If *this\parent\fs
-                        Line( X + *activeTAB\x, Y + *activeTAB\y, 1, (*activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4])), color )
-                        Line( X + *activeTAB\x + *activeTAB\width - 1, Y + *activeTAB\y, 1, (*activeTAB\height - *activeTAB\y - Bool(*this\parent\fs[4])), color )
-                     EndIf
-                     ; line on the selected item
-                     If *this\parent\fs[2]
-                        Box(X + *activeTAB\x, Y + *activeTAB\y, *activeTAB\width, bar_toggle_line_size, *this\parent\color\frame[2])
-                     ElseIf *this\parent\fs[4]
-                        Box(X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height-bar_toggle_line_size, *activeTAB\width, bar_toggle_line_size, *this\parent\color\frame[2])
-                     EndIf
-                     ;
-                     If is_menu_( *this )
-                        Line( X + *activeTAB\x, Y + *activeTAB\y + *activeTAB\height - 1, *activeTAB\width, 1, color )
-                     EndIf
-                     ;                   EndIf
-                     ;
-                     If *this\type = #__type_TabBar
-                        If *this\parent\fs
-                           ;
-                           ; Line( *this\parent\frame_x( ), *this\parent\frame_y( ), *this\parent\frame_width( ), 1, color )
-                           If *this\parent\fs[2]
-                              If *activeTAB 
-                                 ; horizontal tab bottom line
-                                 Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( X + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
-                                 Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), 1, color )
-                              Else
-                                 Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_width( ), 1, color )
-                              EndIf
-                           Else
-                              Line( *this\parent\inner_x( ), *this\parent\inner_y( ), *this\parent\inner_width( ), 1, color )
-                           EndIf
-                           
-                           ;
-                           Line( *this\parent\inner_x( ) - 1, *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
-                           ; Line( *this\parent\frame_x( ), *this\parent\frame_y( ) - 1, 1, *this\parent\frame_height( ) + 2, color )
-                           
-                           Line( *this\parent\inner_x( ) + *this\parent\inner_width( ), *this\parent\inner_y( ) - 1, 1, *this\parent\inner_height( ) + 2, color )
-                           ; Line( *this\parent\frame_x( ) + *this\parent\frame_width( ) - 1, *this\parent\frame_y( ) - 1, 1, *this\parent\frame_height( ) + 2, color )
-                           
-                           ;
-                           If *this\parent\fs[4]
-                              If *activeTAB 
-                                 ; horizontal tab bottom line
-                                 Line( *this\frame_x( ), *this\frame_y( ) - 1, ( X + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
-                                 Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), 1, color )
-                              Else
-                                 Line( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), 1, color )
-                              EndIf
-                           Else
-                              Line( *this\parent\inner_x( ), *this\parent\inner_y( ) + *this\parent\inner_height( ), *this\parent\inner_width( ), 1, color )
-                           EndIf
-                           ; Line( *this\parent\frame_x( ), *this\parent\frame_y( ) + *this\parent\frame_height( ) - 1, *this\parent\frame_width( ), 1, color )
-                        EndIf
-                     EndIf
-                     
                   EndIf
-               EndIf
             EndIf
          EndIf
          
@@ -4354,43 +4318,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               If *this\color\back <> - 1
-                  ; Draw scroll bar background
-                  draw_mode_alpha_( #PB_2DDrawing_Default )
-                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back & $FFFFFF | *this\AlphaState24( ) )
-               EndIf
-               ; ;                ;
-               ; ;                If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
-               ; ;                            *this\picture\width = 32 - 4
-               ; ;                   draw_mode_alpha_( #PB_2DDrawing_Default )
-               ; ;                   If *this\bar\vertical
-               ; ;                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\picture\width, *this\screen_height( ), *SB\round, *SB\round, *this\color\frame & $FFFFFF | *this\AlphaState24( ) )
-               ; ;                   Else
-               ; ;                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\screen_width( ), *this\picture\height, *SB\round, *SB\round, *this\color\frame & $FFFFFF | *this\AlphaState24( ) )
-               ; ;                   EndIf
-               ; ;                EndIf
-               ;
-               ;\\
-               bar_UpdateDraw_TabItems( *this, *this\__tabs( ) )
-               ;
-               X = *SB\x
-               Y = *SB\y 
-               
-               bar_draw_tabitems( *this, *this\bar\vertical, X,Y, *SB\round, *this\__tabs( ) )
-               
-               ;
-               ;\\
-               Protected State_3, Color_frame
-               color = $FF909090
-               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               
-               ; draw lines
                If *this\type = #__type_TabBar
                   
                   ; TODO Navigation
                   Protected pf
                   If is_integral_( *this )
-                     pf = *this\parent\bs
+                    ; pf = *this\parent\bs
                      If *this\parent\parent
                         ;                         If is_root_( *this\parent\parent )
                         ;                            backcolor = $FFf0f0f0
@@ -4410,10 +4343,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         backcolor = *this\parent\color\back[\parent\ColorState( )]
                      EndIf
                   EndIf
-                  
-                  Protected fabe_pos, round = 0, button_size = 20, Size = 60+pf, fabe_out = Size - button_size
+               EndIf
+               
+               If *this\color\back <> - 1
+                  draw_mode_alpha_( #PB_2DDrawing_Default )
+                  draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back & $FFFFFF | *this\AlphaState24( ) )
+               EndIf
+
+               ;\\
+               bar_UpdateDraw_TabItems( *this, *this\__tabs( ) )
+               ;
+               X = *this\inner_x( );*SB\x
+               Y = *this\inner_y( );*SB\y 
+               
+               bar_draw_tabitems( *this, *this\bar\vertical, X,Y, *SB\round, *this\__tabs( ) )
+               ;
+               ;\\
+               Protected State_3, Color_frame
+               color = $FF909090
+               draw_mode_alpha_( #PB_2DDrawing_Outlined )
+               
+               ; draw lines
+               If *this\type = #__type_TabBar
+                  Protected fabe_pos, round = 0, button_size = 20, fabe_len = 40+pf, fabe_out = fabe_len - button_size
                   ;;backcolor = RGBA(64, 128, 192, 64)
                   ;backcolor = backcolor & $FFFFFF | 160 << 24 ;$ff00ff00
+                  Protected size2 = *this\frame_height( )-DPIScaled(2) ; *this\frame_height( ) + pf - 1
                   
                   draw_mode_alpha_( #PB_2DDrawing_Gradient )
                   ResetGradientColors( )
@@ -4425,30 +4380,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *bar\vertical
                      ; to top
                      If Not *BB2\hide
-                        fabe_pos = *this\frame_y( ) + ( size ) - pf
+                        fabe_pos = *this\frame_y( ) + ( fabe_len ) - pf
                         LinearGradient( *this\frame_x( ) - pf, fabe_pos, *this\frame_x( ) - pf, fabe_pos - fabe_out )
-                        draw_roundbox_( *this\frame_x( ) - pf, fabe_pos, *this\frame_width( ) + pf - 1, - Size, round, round )
+                        draw_roundbox_( *this\frame_x( ) - pf, fabe_pos, size2, - fabe_len, round, round )
                      EndIf
                      
                      ; to bottom
                      If Not *BB1\hide
-                        fabe_pos = *this\frame_y( ) + *this\frame_height( ) - ( size ) + pf
+                        fabe_pos = *this\frame_y( ) + *this\frame_height( ) - ( fabe_len ) + pf
                         LinearGradient( *this\frame_x( ) - pf, fabe_pos, *this\frame_x( ) - pf, fabe_pos + fabe_out )
-                        draw_roundbox_( *this\frame_x( ) - pf, fabe_pos, *this\frame_width( ) + pf - 1 , Size, round, round )
+                        draw_roundbox_( *this\frame_x( ) - pf, fabe_pos, size2, fabe_len, round, round )
                      EndIf
                   Else
                      ; to left
                      If Not *BB2\hide
-                        fabe_pos = *this\frame_x( ) + ( size ) - pf
+                        fabe_pos = *this\frame_x( ) + ( fabe_len ) - pf
                         LinearGradient( fabe_pos, *this\frame_y( ) - pf, fabe_pos - fabe_out, *this\frame_y( ) - pf )
-                        draw_roundbox_( fabe_pos, *this\frame_y( ) - pf, - Size, *this\frame_height( ) + pf - 1, round, round )
+                        draw_roundbox_( fabe_pos, *this\frame_y( ) - pf, - fabe_len, size2, round, round )
                      EndIf
                      
                      ; to right
                      If Not *BB1\hide
-                        fabe_pos = *this\frame_x( ) + *this\frame_width( ) - ( size ) + pf
+                        fabe_pos = *this\frame_x( ) + *this\frame_width( ) - ( fabe_len ) + pf
                         LinearGradient( fabe_pos, *this\frame_y( ) - pf, fabe_pos + fabe_out, *this\frame_y( ) - pf )
-                        draw_roundbox_( fabe_pos, *this\frame_y( ) - pf, Size, *this\frame_height( ) + pf - 1 , round, round )
+                        draw_roundbox_( fabe_pos, *this\frame_y( ) - pf, fabe_len, size2, round, round )
                      EndIf
                   EndIf
                   
@@ -8364,1047 +8319,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       
-      
-      
-      ;-
-      Macro clip_output_( _address_, _mode_ = [#__c_draw] )
-         CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( Draw, #PB_Module ))
-            ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
-         CompilerEndIf
-      EndMacro
-      
-      Procedure.b Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, scale.b = 1 )
-         Protected.b result
-         Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
-         ;\\
-         ; *this\resize\clip = #True
-         
-         ;\\
-         If *this\anchors
-            If *this\bs < *this\fs + *this\anchors\pos
-               *this\bs = *this\fs + *this\anchors\pos
-            EndIf
-         Else
-            If *this\bs < *this\fs
-               *this\bs = *this\fs
-            EndIf
-         EndIf
-         ;
-         If *this\autosize And *this\parent And *this\parent\type = #__type_Splitter
-            *this\autosize = 0
-         EndIf
-         
-         ;\\
-         If *this\autosize  ;And not is_root_( *this )
-            If *this\parent And *this\parent <> *this 
-               X      = (*this\parent\inner_x( ))
-               Y      = (*this\parent\inner_y( ))
-               Width  = (*this\parent\inner_width( ))
-               Height = (*this\parent\inner_height( ))
-            EndIf
-            ; Debug "auto resize "+X+" "+Y ; combobox bug fixed
-         Else
-            ;
-            ;CompilerIf #PB_Compiler_DPIAware
-            If scale = 1
-               If ( *this\parent And *this\parent\type = #__type_Splitter )
-                  Debug "resize no scale "+*this\class
-               EndIf
-            EndIf
-            If scale = 1 
-               If Not is_integral_( *this )
-                  If Not( *this\parent And *this\parent\type = #__type_Splitter ) 
-                     If X And X <> #PB_Ignore
-                        X = DPIScaledX( X ); + Bool( Not *this\parent\scroll_width( ) % 2 )-1
-                     EndIf
-                     If Width And Width <> #PB_Ignore
-                        Width = DPIScaledX( Width ) ; - 1
-                     EndIf
-                     If Y And Y <> #PB_Ignore
-                        Y = DPIScaledY( Y ); + Bool( Not *this\parent\scroll_height( ) % 2 )-1
-                     EndIf
-                     If Height And Height <> #PB_Ignore
-                        Height = DPIScaledY( Height ) ; - 1 
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            ;CompilerEndIf
-            
-            ;\\ move & size steps
-            If *this\anchors And *this\anchors\mode And mouse( )\steps > 1
-               If X <> #PB_Ignore
-                  X + ( X % mouse( )\steps )
-                  X = ( X / mouse( )\steps ) * mouse( )\steps
-               EndIf
-               If Y <> #PB_Ignore
-                  Y + ( Y % mouse( )\steps )
-                  Y = ( Y / mouse( )\steps ) * mouse( )\steps
-               EndIf
-               If Width <> #PB_Ignore
-                  Width + ( Width % mouse( )\steps )
-                  Width = (( Width / mouse( )\steps ) * mouse( )\steps ) + DPIScaled(1)
-               EndIf
-               If Height <> #PB_Ignore
-                  Height + ( Height % mouse( )\steps )
-                  Height = (( Height / mouse( )\steps ) * mouse( )\steps ) + DPIScaled(1)
-               EndIf
-            EndIf
-            
-            ;\\ move boundaries
-            If *this\bounds\move
-               If X <> #PB_Ignore
-                  If *this\bounds\move\min\x <> #PB_Ignore
-                     If X < *this\bounds\move\min\x
-                        If Width <> #PB_Ignore
-                           Width - ( *this\bounds\move\min\x - X )
-                        EndIf
-                        X = *this\bounds\move\min\x
-                     EndIf
-                  EndIf
-                  If *this\bounds\move\max\x <> #PB_Ignore 
-                     If Width = #PB_Ignore
-                        If X > *this\bounds\move\max\x - *this\frame_width( )
-                           X = *this\bounds\move\max\x - *this\frame_width( )
-                        EndIf
-                     Else
-                        If X > *this\bounds\move\max\x - Width
-                           X = *this\bounds\move\max\x - Width
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               If Y <> #PB_Ignore
-                  If *this\bounds\move\min\y <> #PB_Ignore 
-                     If Y < *this\bounds\move\min\y
-                        If Height <> #PB_Ignore
-                           Height - ( *this\bounds\move\min\y - Y )
-                        EndIf
-                        Y = *this\bounds\move\min\y
-                     EndIf
-                  EndIf
-                  If *this\bounds\move\max\y <> #PB_Ignore
-                     If Height = #PB_Ignore
-                        If Y > *this\bounds\move\max\y - *this\frame_height( )
-                           Y = *this\bounds\move\max\y - *this\frame_height( )
-                        EndIf
-                     Else
-                        If Y > *this\bounds\move\max\y - Height
-                           Y = *this\bounds\move\max\y - Height
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\ size boundaries
-            If *this\bounds\size
-               If *this\type = #__type_window
-                  Protected h_frame = *this\fs * 2 + *this\fs[1] + *this\fs[3]
-                  Protected v_frame = *this\fs * 2 + *this\fs[2] + *this\fs[4]
-               EndIf
-               
-               If Width <> #PB_Ignore
-                  If #PB_Ignore <> *this\bounds\size\min\width And
-                     Width < *this\bounds\size\min\width - h_frame
-                     If X <> #PB_Ignore
-                        X + ( Width - *this\bounds\size\min\width ) + h_frame
-                     EndIf
-                     Width = *this\bounds\size\min\width - h_frame
-                  EndIf
-                  If #PB_Ignore <> *this\bounds\size\max\width And
-                     Width > *this\bounds\size\max\width - h_frame
-                     If X <> #PB_Ignore
-                        X + ( Width - *this\bounds\size\max\width ) + h_frame
-                     EndIf
-                     Width = *this\bounds\size\max\width - h_frame
-                  EndIf
-                  
-                  ;\\
-                  If *this\bounds\move
-                     If X = #PB_Ignore
-                        If Width > *this\bounds\size\max\width - ( *this\container_x( ) - *this\bounds\move\min\x ) - h_frame
-                           Width = *this\bounds\size\max\width - ( *this\container_x( ) - *this\bounds\move\min\x ) - h_frame
-                        EndIf
-                     Else
-                        If Width > *this\bounds\size\max\width - ( X - *this\bounds\move\min\x ) - h_frame
-                           Width = *this\bounds\size\max\width - ( X - *this\bounds\move\min\x ) - h_frame
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               If Height <> #PB_Ignore
-                  If #PB_Ignore <> *this\bounds\size\min\height And
-                     Height < *this\bounds\size\min\height - v_frame
-                     If Y <> #PB_Ignore
-                        Y + ( Height - *this\bounds\size\min\height ) + v_frame
-                     EndIf
-                     Height = *this\bounds\size\min\height - v_frame
-                  EndIf
-                  If #PB_Ignore <> *this\bounds\size\max\height And
-                     Height > *this\bounds\size\max\height - v_frame
-                     If Y <> #PB_Ignore
-                        Y + ( Height - *this\bounds\size\max\height ) + v_frame
-                     EndIf
-                     Height = *this\bounds\size\max\height - v_frame
-                  EndIf
-                  
-                  ;\\
-                  If *this\bounds\move
-                     If Y = #PB_Ignore
-                        If Height > *this\bounds\size\max\height - ( *this\container_y( ) - *this\bounds\move\min\y ) - v_frame
-                           Height = *this\bounds\size\max\height - ( *this\container_y( ) - *this\bounds\move\min\y ) - v_frame
-                        EndIf
-                     Else
-                        If Height > *this\bounds\size\max\height - ( Y - *this\bounds\move\min\y ) - v_frame
-                           Height = *this\bounds\size\max\height - ( Y - *this\bounds\move\min\y ) - v_frame
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-            
-            ;\\
-            If Width = #PB_Ignore
-               If is_window_( *this )
-                  Width = *this\container_width( )
-               Else
-                  Width = *this\frame_width( )
-               EndIf
-            EndIf
-            If Height = #PB_Ignore
-               If is_window_( *this )
-                  Height = *this\container_height( )
-               Else
-                  Height = *this\frame_height( )
-               EndIf
-            EndIf
-            
-            ;\\
-            If Width < 0
-               Width = 0
-            EndIf
-            If Height < 0
-               Height = 0
-            EndIf
-            
-            ;\\ потому что окну задаются внутренные размеры
-            If is_window_( *this )
-               Width + ( *this\fs * 2 + *this\fs[1] + *this\fs[3] )
-               Height + ( *this\fs * 2 + *this\fs[2] + *this\fs[4] )
-            EndIf
-            
-            ;\\
-            If X = #PB_Ignore
-               X = *this\container_x( )
-            ElseIf *this\parent  
-               If Not *this\child And *this\parent\haschildren
-                  If *this\parent\container ; combobox bug fixed
-                     X + *this\parent\scroll_x( )
-                  EndIf
-               EndIf
-               *this\container_x( ) = X
-            EndIf
-            If Y = #PB_Ignore
-               Y = *this\container_y( )
-            ElseIf *this\parent 
-               If Not *this\child And *this\parent\haschildren 
-                  If *this\parent\container ; combobox bug fixed
-                     Y + *this\parent\scroll_y( )
-                  EndIf
-               EndIf
-               *this\container_y( ) = Y
-            EndIf
-            
-            ; container coordinate
-            If test_resize
-               Debug "resize - "+*this\class +" ("+ X +" "+ Y +" "+ Width +" "+ Height +")"
-            EndIf
-            
-            
-            ; frame coordinate
-            If *this\parent And *this <> *this\parent And Not is_root_( *this )
-               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
-                  X + *this\parent\inner_x( )
-               EndIf
-               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
-                  Y + *this\parent\inner_y( )
-               EndIf
-            EndIf
-         EndIf
-         
-         
-         ;\\ inner x&y position
-         ix      = X + ( *this\fs + *this\fs[1] )
-         iy      = Y + ( *this\fs + *this\fs[2] )
-         iwidth  = Width - ( *this\fs * 2 + *this\fs[1] + *this\fs[3] )
-         iheight = Height - ( *this\fs * 2 + *this\fs[2] + *this\fs[4] )
-         
-;          ;\\
-;          If Not Change_x And *this\screen_x( ) <> X - ( *this\bs - *this\fs ) : Change_x = ( X - ( *this\bs - *this\fs )) - *this\screen_x( ) : EndIf
-;          If Not Change_y And *this\screen_y( ) <> Y - ( *this\bs - *this\fs ) : Change_y = ( Y - ( *this\bs - *this\fs )) - *this\screen_y( ) : EndIf
-;          If Not Change_width And *this\screen_width( ) <> Width + ( *this\bs * 2 - *this\fs * 2 ) : Change_width = ( Width + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_width( ) : EndIf
-;          If Not Change_height And *this\screen_height( ) <> Height + ( *this\bs * 2 - *this\fs * 2 ) : Change_height = ( Height + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_height( ) : EndIf
-;          
-         ; для сплиттера
-         If Not Change_x And *this\frame_x( ) <> X : Change_x = X - *this\frame_x( ) : EndIf
-         If Not Change_y And *this\frame_y( ) <> Y : Change_y = Y - *this\frame_y( ) : EndIf
-         If Not Change_width And *this\frame_width( ) <> Width : Change_width = Width - *this\frame_width( ) : EndIf
-         If Not Change_height And *this\frame_height( ) <> Height : Change_height = Height - *this\frame_height( ) : EndIf
-         
-         ; для меню 
-         If Not Change_x And *this\inner_x( ) <> ix : Change_x = ix - *this\inner_x( ) : EndIf
-         If Not Change_y And *this\inner_y( ) <> iy : Change_y = iy - *this\inner_y( ) : EndIf
-;          If Not Change_width And *this\container_width( ) <> iwidth : Change_width = iwidth - *this\container_width( ) : EndIf
-;          If Not Change_height And *this\container_height( ) <> iheight : Change_height = iheight - *this\container_height( ) : EndIf
-                  If Not Change_width And *this\inner_width( ) <> iwidth : Change_width = iwidth - *this\inner_width( ) : EndIf
-                  If Not Change_height And *this\inner_height( ) <> iheight : Change_height = iheight - *this\inner_height( ) : EndIf
-         
-         
-         ;\\
-         If Change_x
-            *this\resize\x = Change_x
-            *this\frame_x( )  = X
-            *this\inner_x( )  = ix
-            *this\screen_x( ) = X - ( *this\bs - *this\fs )
-            If *this\window
-               *this\x[#__c_window] = X - *this\window\inner_x( )
-            EndIf
-         EndIf
-         If Change_y
-            *this\resize\y = Change_y
-            *this\frame_y( )  = Y
-            *this\inner_y( )  = iy
-            *this\screen_y( ) = Y - ( *this\bs - *this\fs )
-            If *this\window
-               *this\y[#__c_window] = Y - *this\window\inner_y( )
-            EndIf
-         EndIf
-         If Change_width
-            ;             ;1 BUG с ним если увеличить до макс потом уменьшить до мин то уже не перемещается 
-            ;             If *this\bounds\move And Not Change_x
-            ;                If *this\bounds\move\max\x = ( *this\bounds\move\min\x + *this\frame_width( ) )
-            ;                   *this\bounds\move\max\x = *this\bounds\move\min\x + Width
-            ;                EndIf
-            ;             EndIf
-            *this\resize\width = Change_width
-            *this\container_width( ) = iwidth
-            *this\frame_width( )     = Width
-            *this\screen_width( )    = Width + ( *this\bs * 2 - *this\fs * 2 )
-            If *this\container_width( ) < 0
-               *this\container_width( ) = 0
-            EndIf
-            *this\inner_width( ) = *this\container_width( )
-         EndIf
-         If Change_height
-            ;             ;1 BUG с ним если увеличить до макс потом уменьшить до мин то уже не перемещается 
-            ;             If *this\bounds\move And Not Change_y
-            ;                If *this\bounds\move\max\y = ( *this\bounds\move\min\y + *this\frame_height( ) )
-            ;                   *this\bounds\move\max\y = *this\bounds\move\min\y + Height
-            ;                EndIf
-            ;             EndIf
-            *this\resize\height = Change_height
-            *this\container_height( ) = iheight
-            *this\frame_height( )     = Height
-            *this\screen_height( )    = Height + ( *this\bs * 2 - *this\fs * 2 )
-            If *this\container_height( ) < 0
-               *this\container_height( ) = 0
-            EndIf
-            *this\inner_height( ) = *this\container_height( )
-         EndIf
-         
-         ;\\ change clip output coordinate
-         Protected _p_x2_
-         Protected _p_y2_
-         Protected clip_x, clip_y, clip_width, clip_height
-         Protected *parent._s_WIDGET
-         
-         If *this\bounds\attach
-            *parent = *this\bounds\attach\parent
-         Else
-            *parent = *this\parent
-         EndIf
-         
-         If is_root_( *this )
-            If *this\clip_width( ) <> *this\screen_width( )
-               *this\clip_width( )  = *this\screen_width( )
-               *this\clip_iwidth( ) = *this\screen_width( )
-            EndIf
-            If *this\clip_height( ) <> *this\screen_height( )
-               *this\clip_height( )  = *this\screen_height( )
-               *this\clip_iheight( ) = *this\screen_height( )
-            EndIf
-         Else
-            If *parent
-               _p_x2_ = *parent\inner_x( ) + *parent\inner_width( )
-               _p_y2_ = *parent\inner_y( ) + *parent\inner_height( )
-               
-               If *this\type = #__type_Scroll
-                  _p_x2_ = *parent\inner_x( ) + *parent\container_width( )
-                  _p_y2_ = *parent\inner_y( ) + *parent\container_height( )
-               EndIf
-               
-;                
-;                ; for the splitter children's
-;                If *parent\type = #__type_Splitter
-;                   If *parent\split_1( ) = *this
-;                      _p_x2_ = *parent\bar\button[1]\x + *parent\bar\button[1]\width
-;                      _p_y2_ = *parent\bar\button[1]\y + *parent\bar\button[1]\height
-;                   EndIf
-;                   If *parent\split_2( ) = *this
-;                      _p_x2_ = *parent\bar\button[2]\x + *parent\bar\button[2]\width
-;                      _p_y2_ = *parent\bar\button[2]\y + *parent\bar\button[2]\height
-;                   EndIf
-;                EndIf
-;                
-;                If is_integral_( *this ) And Not *this\bounds\attach
-;                   ;
-;                   If *this\type = #__type_MenuBar Or
-;                      *this\type = #__type_PopupBar Or
-;                      *this\type = #__type_ToolBar Or
-;                      *this\type = #__type_TabBar Or
-;                      *this\type = #__type_Scroll
-;                      ;
-;                      _p_x2_ = *parent\inner_x( ) + *parent\container_width( )
-;                      _p_y2_ = *parent\inner_y( ) + *parent\container_height( )
-;                   EndIf
-;                Else
-;                   ; for the scrollarea&MDI children's except scrollbars
-;                   If *parent\container
-;                      If *parent\scroll_width( ) And
-;                         _p_x2_ > *parent\inner_x( ) + *parent\scroll_x( ) + *parent\scroll_width( )
-;                         _p_x2_ = *parent\inner_x( ) + *parent\scroll_x( ) + *parent\scroll_width( )
-;                      EndIf
-;                      If *parent\scroll_height( ) And
-;                         _p_y2_ > *parent\inner_y( ) + *parent\scroll_y( ) + *parent\scroll_height( )
-;                         _p_y2_ = *parent\inner_y( ) + *parent\scroll_y( ) + *parent\scroll_height( )
-;                      EndIf
-;                   EndIf
-;                EndIf
-            EndIf
-            ;
-            ; x&y clip frame coordinate
-            If *parent And
-               *parent\inner_x( ) > *this\screen_x( ) And
-               *parent\inner_x( ) > *parent\clip_x( )
-               clip_x = *parent\inner_x( )
-            ElseIf *parent And *parent\clip_x( ) > *this\screen_x( )
-               clip_x = *parent\clip_x( )
-            Else
-               clip_x = *this\screen_x( )
-            EndIf
-            If clip_x < 0 : clip_x = 0 : EndIf
-            ;
-            If *parent And
-               *parent\inner_y( ) > *this\screen_y( ) And
-               *parent\inner_y( ) > *parent\clip_y( )
-               clip_y = *parent\inner_y( )
-            ElseIf *parent And *parent\clip_y( ) > *this\screen_y( )
-               clip_y = *parent\clip_y( )
-            Else
-               clip_y = *this\screen_y( )
-            EndIf
-            If clip_y < 0 : clip_y = 0 : EndIf
-            ;
-            ; width&height clip frame coordinate
-            If *parent And
-               (*parent\clip_x( ) + *parent\clip_width( )) > 0 And
-               (*parent\clip_x( ) + *parent\clip_width( )) < (*this\screen_x( ) + *this\screen_width( )) And
-               (_p_x2_) > (*parent\clip_x( ) + *parent\clip_width( ))
-               
-               clip_width = (*parent\clip_x( ) + *parent\clip_width( )) - clip_x
-            ElseIf *parent And (_p_x2_) > 0 And (_p_x2_) < (*this\screen_x( ) + *this\screen_width( ))
-               clip_width = (_p_x2_) - clip_x
-            Else
-               clip_width = (*this\screen_x( ) + *this\screen_width( )) - clip_x
-            EndIf
-            If clip_width < 0 : clip_width = 0 : EndIf
-            ;
-            If *parent And
-               (*parent\clip_y( ) + *parent\clip_height( )) > 0 And
-               (*parent\clip_y( ) + *parent\clip_height( )) < (*this\screen_y( ) + *this\screen_height( )) And
-               (_p_y2_) > (*parent\clip_y( ) + *parent\clip_height( ))
-               
-               clip_height = (*parent\clip_y( ) + *parent\clip_height( )) - clip_y
-            ElseIf *parent And (_p_y2_) > 0 And (_p_y2_) < (*this\screen_y( ) + *this\screen_height( ))
-               
-               clip_height = (_p_y2_) - clip_y
-            Else
-               clip_height = (*this\screen_y( ) + *this\screen_height( )) - clip_y
-            EndIf
-            If clip_height < 0 : clip_height = 0 : EndIf
-            ;
-            If *this\clip_x( ) <> clip_x
-               *this\clip_x( ) = clip_x
-            EndIf
-            If *this\clip_y( ) <> clip_y
-               *this\clip_y( ) = clip_y
-            EndIf
-            If *this\clip_width( ) <> clip_width
-               *this\clip_width( ) = clip_width
-            EndIf
-            If *this\clip_height( ) <> clip_height
-               *this\clip_height( ) = clip_height
-            EndIf
-         EndIf
-         ;
-         If clip_x Or clip_y Or clip_width Or clip_height
-            
-            ;
-            ;\\ x&y clip inner coordinate
-            If *parent And
-               *parent\inner_x( ) > *this\inner_x( ) And
-               *parent\inner_x( ) > *parent\clip_ix( )
-               *this\clip_ix( ) = *parent\inner_x( )
-            ElseIf *parent And *parent\clip_ix( ) > *this\inner_x( )
-               *this\clip_ix( ) = *parent\clip_ix( )
-            Else
-               *this\clip_ix( ) = *this\inner_x( )
-            EndIf
-            If *this\clip_ix( ) < 0 : *this\clip_ix( ) = 0 : EndIf
-            ;
-            If *parent And
-               *parent\inner_y( ) > *this\inner_y( ) And
-               *parent\inner_y( ) > *parent\clip_iy( )
-               *this\clip_iy( ) = *parent\inner_y( )
-            ElseIf *parent And *parent\clip_iy( ) > *this\inner_y( )
-               *this\clip_iy( ) = *parent\clip_iy( )
-            Else
-               *this\clip_iy( ) = *this\inner_y( )
-            EndIf
-            If *this\clip_iy( ) < 0 : *this\clip_iy( ) = 0 : EndIf
-            
-            ;\\ width&height clip inner coordinate
-            If *parent And
-               (*parent\clip_ix( ) + *parent\clip_iwidth( )) > 0 And
-               (*parent\clip_ix( ) + *parent\clip_iwidth( )) < (*this\inner_x( ) + *this\inner_width( )) And
-               (_p_x2_) > (*parent\clip_ix( ) + *parent\clip_iwidth( ))
-               
-               *this\clip_iwidth( ) = (*parent\clip_ix( ) + *parent\clip_iwidth( )) - *this\clip_ix( )
-            ElseIf *parent And (_p_x2_) > 0 And (_p_x2_) < (*this\inner_x( ) + *this\inner_width( ))
-               
-               *this\clip_iwidth( ) = (_p_x2_) - *this\clip_ix( )
-            Else
-               *this\clip_iwidth( ) = (*this\inner_x( ) + *this\inner_width( )) - *this\clip_ix( )
-            EndIf
-            If *this\clip_iwidth( ) < 0 : *this\clip_iwidth( ) = 0 : EndIf
-            ;
-            If *parent And
-               (*parent\clip_iy( ) + *parent\clip_iheight( )) > 0 And
-               (*parent\clip_iy( ) + *parent\clip_iheight( )) < (*this\inner_y( ) + *this\inner_height( )) And
-               (_p_y2_) > (*parent\clip_iy( ) + *parent\clip_iheight( ))
-               
-               *this\clip_iheight( ) = (*parent\clip_iy( ) + *parent\clip_iheight( )) - *this\clip_iy( )
-            ElseIf *parent And (_p_y2_) > 0 And (_p_y2_) < (*this\inner_y( ) + *this\inner_height( ))
-               
-               *this\clip_iheight( ) = (_p_y2_) - *this\clip_iy( )
-            Else
-               *this\clip_iheight( ) = (*this\inner_y( ) + *this\inner_height( )) - *this\clip_iy( )
-            EndIf
-            If *this\clip_iheight( ) < 0 : *this\clip_iheight( ) = 0 : EndIf
-         EndIf
-        
-         
-         ;
-         If ( Change_x Or Change_y Or Change_width Or Change_height ) 
-            ; Reclip( *this )
-            If *this\ResizeChange( ) <> #True
-               *this\ResizeChange( ) = #True
-            EndIf
-            
-            *this\root\repaint = 1
-            ;
-            If *this\anchors 
-               a_size( *this\anchors\id,
-                       *this\anchors\size,
-                       *this\anchors\mode ) 
-               
-               a_move( *this,
-                       *this\anchors\id,
-                       *this\screen_x( ),
-                       *this\screen_y( ),
-                       *this\screen_width( ),
-                       *this\screen_height( ) )
-            EndIf
-            
-            ;\\ if the widgets is composite
-            If *this\stringbar
-               Resize( *this\stringbar, 0, 0, *this\inner_width( ), *this\inner_height( ) )
-            EndIf
-            
-            ;\\ resize child vertical&horizontal scrollbars
-            If *this\scroll And
-               *this\scroll\v And
-               *this\scroll\h
-               
-               ;\\
-               If *this\type = #__type_MDI
-                  Resize( *this\scroll\v, *this\container_width( ) - *this\scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  Resize( *this\scroll\h, #PB_Ignore, *this\container_height( ) - *this\scroll\h\height, #PB_Ignore, #PB_Ignore )
-                  
-                  If Change_width Or Change_height
-                     bar_mdi_update( *this, 0, 0, 0, 0 )
-                     bar_mdi_resize( *this, 0, 0, *this\container_width( ), *this\container_height( ) )
-                  EndIf
-                  ;\\ if the integral scroll bars
-               Else
-                  bar_area_resize( *this )
-               EndIf
-            EndIf
-            
-            ;\\ resize parent vertical&horizontal scrollbars
-            If *this\parent And
-               *this\parent\scroll And
-               *this\parent\scroll\v And
-               *this\parent\scroll\h
-               ;
-               ;\\ parent mdi
-               If *this\parent\type = #__type_MDI
-                  If *this\child =- 1
-                     If *this\parent\scroll\v <> *this And
-                        *this\parent\scroll\h <> *this And
-                        *this\parent\scroll\v\bar\PageChange( ) = 0 And
-                        *this\parent\scroll\h\bar\PageChange( ) = 0
-                        
-                        bar_mdi_update( *this\parent, *this\container_x( ), *this\container_y( ), *this\frame_width( ), *this\frame_height( ) )
-                        bar_mdi_resize( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
-                     EndIf
-                  EndIf
-                  ;
-               Else
-                  If is_integral_( *this )
-                     If *this\parent\container_width( ) = *this\parent\inner_width( ) And
-                        *this\parent\container_height( ) = *this\parent\inner_height( )
-                        ; Debug ""+*this\parent\scroll\v\bar\max +" "+ *this\parent\scroll\v\bar\page\len +" "+ *this\parent\scroll\h\bar\max +" "+ *this\parent\scroll\h\bar\page\len
-                        
-                        If *this\parent\scroll\v\bar\max > *this\parent\scroll\v\bar\page\len Or
-                           *this\parent\scroll\h\bar\max > *this\parent\scroll\h\bar\page\len
-                           
-                           bar_area_resize( *this\parent )
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-            ; if the integral menu bar
-            If *this\menubar
-               ix = *this\inner_x( )
-               iy = *this\inner_y( )
-               iwidth = *this\inner_width( )
-               iheight = *this\inner_height( )
-               
-               *this\inner_x( ) = X
-               *this\inner_y( ) = Y
-               *this\inner_width( ) = Width
-               *this\inner_height( ) = Height
-               
-               ;\\
-               If *this\menubar\autosize
-                  Resize( *this\menubar, 0, 0, *this\inner_width( ), *this\inner_height( ) )
-               Else
-                  If *this\menubar\bar\vertical
-                     If *this\fs[1]
-                        Resize( *this\menubar, *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
-                     EndIf
-                     If *this\fs[3]
-                        Resize( *this\menubar, *this\frame_width( ) - *this\fs[3], *this\fs, *this\fs[3], *this\inner_height( ) )
-                     EndIf
-                  Else
-                     If *this\fs[2]
-                        Resize( *this\menubar, *this\fs, *this\fs + *this\TitleBarHeight, *this\inner_width( ), *this\MenuBarHeight )
-                     EndIf
-                     If *this\fs[4]
-                        Resize( *this\menubar, *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
-                     EndIf
-                  EndIf
-               EndIf
-               
-               *this\inner_x( ) = iX
-               *this\inner_y( ) = iY
-               *this\inner_width( ) = iWidth
-               *this\inner_height( ) = iHeight
-            EndIf
-            
-            ;\\ if the integral tab bar
-            If *this\tabbar
-               ix = *this\inner_x( )
-               iy = *this\inner_y( )
-               iwidth = *this\inner_width( )
-               iheight = *this\inner_height( )
-               
-               *this\inner_x( ) = X
-               *this\inner_y( ) = Y
-               *this\inner_width( ) = Width
-               *this\inner_height( ) = Height
-               
-               ;\\
-               If *this\tabbar\autosize
-                  Resize( *this\tabbar, 0, 0, *this\inner_width( ), *this\inner_height( ) )
-               Else
-                  If *this\tabbar\bar\vertical
-                     If *this\fs[1]
-                        Resize( *this\tabbar, *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
-                     EndIf
-                     If *this\fs[3]
-                        Resize( *this\tabbar, *this\frame_width( ) - *this\fs[3], *this\fs, *this\fs[3], *this\inner_height( ) )
-                     EndIf
-                  Else
-                     If *this\fs[2]
-                        Resize( *this\tabbar, *this\fs, *this\fs + *this\TitleBarHeight + *this\MenuBarHeight, *this\inner_width( ), *this\ToolBarHeight ) ;, *this\fs[2] - *this\TitleBarHeight - *this\MenuBarHeight ) ; 
-                     EndIf
-                     If *this\fs[4]
-                        Resize( *this\tabbar, *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
-                     EndIf
-                  EndIf
-               EndIf
-               
-               *this\inner_x( ) = iX
-               *this\inner_y( ) = iY
-               *this\inner_width( ) = iWidth
-               *this\inner_height( ) = iHeight
-            EndIf
-            ;
-            ;\\
-            If *this\type = #__type_ComboBox
-               If *this\stringbar
-                  *this\combobutton\width = *this\fs[3]
-                  *this\combobutton\x     = ( *this\screen_x( )+ *this\screen_width( ) ) - *this\fs[3]
-               Else
-                  *this\combobutton\width = *this\frame_width( ) - *this\fs * 2 ; *this\inner_width( )
-                  *this\combobutton\x     = *this\frame_x( ) + *this\fs
-               EndIf
-               
-               *this\combobutton\y      = *this\inner_y( )
-               *this\combobutton\height = *this\inner_height( )
-            EndIf
-            
-            ;\\ after resize update 
-            If *this\bar    
-               If *this\type = #__type_ToolBar Or
-                  *this\type = #__type_PopupBar Or
-                  *this\type = #__type_MenuBar Or
-                  *this\type = #__type_TabBar
-                  ;
-                  If *this\bar\max
-                     bar_update( *this, 2 )
-                  EndIf
-               Else
-                  If *this\bar\vertical
-                     If Change_width Or 
-                        *this\bar\area\len <> *this\frame_height( )
-                        *this\bar\area\len = *this\frame_height( )
-                        bar_update( *this, 23 )
-                     EndIf
-                  Else
-                     If Change_height Or
-                        *this\bar\area\len <> *this\frame_width( )
-                        *this\bar\area\len = *this\frame_width( )
-                        bar_update( *this, 22 )
-                     EndIf
-                  EndIf
-                  If Change_x Or Change_y
-                     If *this\bar\area\len
-                        bar_update( *this, 21 )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\
-            If *this\type = #__type_Window
-               ; чтобы закруглять только у окна с титлебаром
-               If *this\fs[2]
-                  If *this\round
-                     *this\caption\round = *this\round
-                     *this\round         = 0
-                  EndIf
-               EndIf
-               
-               ; caption title bar
-               If Not *this\caption\hide
-                  *this\caption\x      = *this\frame_x( ) + *this\fs
-                  *this\caption\y      = *this\frame_y( ) + *this\fs
-                  *this\caption\width  = *this\frame_width( ) - *this\fs * 2
-                  
-                  *this\caption\height = *this\TitleBarHeight + *this\fs - 1
-                  If *this\caption\height > *this\frame_height( ) - *this\fs 
-                     *this\caption\height = *this\frame_height( ) - *this\fs 
-                  EndIf
-                  
-                  ; caption close button
-                  If Not *this\CloseButton( )\hide
-                     *this\CloseButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\CloseButton( )\width + *this\caption\_padding )
-                     *this\CloseButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\CloseButton( )\height ) / 2
-                  EndIf
-                  
-                  ; caption maximize button
-                  If Not *this\MaximizeButton( )\hide
-                     If *this\CloseButton( )\hide
-                        *this\MaximizeButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\MaximizeButton( )\width + *this\caption\_padding )
-                     Else
-                        *this\MaximizeButton( )\x = *this\CloseButton( )\x - ( *this\MaximizeButton( )\width + *this\caption\_padding )
-                     EndIf
-                     *this\MaximizeButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\MaximizeButton( )\height ) / 2
-                  EndIf
-                  
-                  ; caption minimize button
-                  If Not *this\MinimizeButton( )\hide
-                     If *this\MaximizeButton( )\hide
-                        *this\MinimizeButton( )\x = *this\CloseButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
-                     Else
-                        *this\MinimizeButton( )\x = *this\MaximizeButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
-                     EndIf
-                     *this\MinimizeButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\MinimizeButton( )\height ) / 2
-                  EndIf
-                  
-                  ; caption help button
-                  If Not *this\HelpButton( )\hide
-                     If Not *this\MinimizeButton( )\hide
-                        *this\HelpButton( )\x = *this\MinimizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
-                     ElseIf Not *this\MaximizeButton( )\hide
-                        *this\HelpButton( )\x = *this\MaximizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
-                     Else
-                        *this\HelpButton( )\x = *this\CloseButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
-                     EndIf
-                     *this\HelpButton( )\y = *this\CloseButton( )\y
-                  EndIf
-                  
-                  ; title bar width
-                  If Not *this\HelpButton( )\hide
-                     *this\caption\width = *this\HelpButton( )\x - *this\caption\x - *this\caption\_padding
-                  ElseIf Not *this\MinimizeButton( )\hide
-                     *this\caption\width = *this\MinimizeButton( )\x - *this\caption\x - *this\caption\_padding
-                  ElseIf Not *this\MaximizeButton( )\hide
-                     *this\caption\width = *this\MaximizeButton( )\x - *this\caption\x - *this\caption\_padding
-                  ElseIf Not *this\CloseButton( )\hide
-                     *this\caption\width = *this\CloseButton( )\x - *this\caption\x - *this\caption\_padding
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\
-            If *this\type = #__type_ScrollArea
-               If IsGadget(*this\scroll\gadget[1])
-                  ResizeGadget(*this\scroll\gadget[1], DPIUnscaledX(*this\inner_x( )), DPIUnscaledY(*this\inner_y( )), DPIUnscaledX(*this\inner_width( )), DPIUnscaledY(*this\inner_height( )))
-                  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                     UpdateWindow_(GadgetID(*this\scroll\gadget[1]))
-                  CompilerEndIf
-               EndIf
-            EndIf
-            
-            ;
-            ;\\ update option&checkbox position
-            If *this\togglebox 
-               If ( *this\togglebox\width Or *this\togglebox\height )
-                  *this\togglebox\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\togglebox\height ) / 2
-                  
-                  If *this\text\align\right
-                     *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\height - DPIScaled(3) )
-                  ElseIf Not *this\text\align\left
-                     *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\width ) / 2
-                     
-                     If Not *this\text\align\top
-                        If *this\text\rotate = 0
-                           *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) - *this\togglebox\height
-                        Else
-                           *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
-                        EndIf
-                     EndIf
-                  Else
-                     *this\togglebox\x = *this\inner_x( ) + DPIScaled(3)
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\ Post Event
-            If *this\bindresize
-               ; Debug ""+Change_x +" "+ Change_y +" "+ Change_width +" "+ Change_height
-               ; Debug "   "+X +" "+ Y +" "+ Width +" "+ Height
-               Post( *this, #__event_resize )
-            EndIf
-         EndIf
-         
-         
-         ;\\ then move and size parent
-         ;\\ resize all children's
-         If *this\type <> #__type_Splitter
-            If *this\haschildren 
-               ;Debug *this\class
-               Protected pw, ph
-               Protected piw, pih
-               
-               If StartEnum( *this )
-                  If Widget( )\parent <> *this
-                     Continue
-                  EndIf
-                  ;
-                  If Not is_scrollbars_( Widget( ))
-                     If Widget( )\align
-                        ;                            If is_root_( widget( )\parent )
-                        ;                               piw = DPIUnScaledX(widget( )\parent\inner_width( ))
-                        ;                               pih = DPIUnScaledY(widget( )\parent\inner_height( ))
-                        ;                            Else
-                        piw = (Widget( )\parent\inner_width( ))
-                        pih = (Widget( )\parent\inner_height( ))
-                        ;                            EndIf
-                        
-                        ;\\
-                        If Widget( )\parent\align
-                           pw = ( piw - Widget( )\parent\align\width )
-                           ph = ( pih - Widget( )\parent\align\height )
-                        EndIf
-                        
-                        ;\\
-                        ;\\ horizontal
-                        ;\\
-                        If Widget( )\align\left > 0
-                           X = Widget( )\align\x
-                           If Widget( )\align\right < 0
-                              If Widget( )\align\left = 0
-                                 X + pw / 2
-                              EndIf
-                              Width = (( Widget( )\align\x + Widget( )\align\width ) + pw / 2 ) - X
-                           EndIf
-                        EndIf
-                        If Not Widget( )\align\right
-                           Width = Widget( )\align\width
-                           
-                           If Not Widget( )\align\left
-                              X = Widget( )\align\x
-                              If Widget( )\align\left = 0
-                                 X + pw / 2
-                              EndIf
-                              Width = (( Widget( )\align\x + Widget( )\align\width ) + pw / 2 ) - X
-                           EndIf
-                        EndIf
-                        If Widget( )\align\right > 0
-                           X = Widget( )\align\x
-                           If Widget( )\align\left < 0
-                              ;\\ ( left = proportional & right = 1 )
-                              X     = Widget( )\align\x + pw / 2
-                              Width = (( Widget( )\align\x + Widget( )\align\width ) + pw ) - X
-                           Else
-                              If Widget( )\align\left = 0
-                                 X + pw
-                              EndIf
-                              Width = (( Widget( )\align\x + Widget( )\align\width ) + pw ) - X
-                           EndIf
-                        EndIf
-                        ;\\ horizontal proportional
-                        If ( Widget( )\align\left < 0 And Widget( )\align\right <= 0 ) Or
-                           ( Widget( )\align\right < 0 And Widget( )\align\left <= 0 )
-                           Protected ScaleX.d = piw / Widget( )\parent\align\width
-                           Width = ScaleX * Widget( )\align\width
-                           ;\\ center proportional
-                           If Widget( )\align\left < 0 And Widget( )\align\right < 0
-                              X = ( piw - Width ) / 2
-                           ElseIf Widget( )\align\left < 0 And Widget( )\align\right = 0
-                              ;\\ right proportional
-                              X = piw - ( Widget( )\parent\align\width - Widget( )\align\x - Widget( )\align\width ) - Width
-                           ElseIf ( Widget( )\align\right < 0 And Widget( )\align\left = 0 )
-                              ;\\ left proportional
-                              X = Widget( )\align\x
-                           EndIf
-                        EndIf
-                        
-                        ;\\
-                        ;\\ vertical
-                        ;\\
-                        If Widget( )\align\top > 0
-                           Y = Widget( )\align\y
-                           If Widget( )\align\bottom < 0
-                              If Widget( )\align\top = 0
-                                 Y + ph / 2
-                              EndIf
-                              Height = (( Widget( )\align\y + Widget( )\align\height ) + ph / 2 ) - Y
-                           EndIf
-                        EndIf
-                        If Not Widget( )\align\bottom
-                           Height = Widget( )\align\height
-                           
-                           If Not Widget( )\align\top
-                              Y = Widget( )\align\y
-                              If Widget( )\align\top = 0
-                                 Y + ph / 2
-                              EndIf
-                              Height = (( Widget( )\align\y + Widget( )\align\height ) + ph / 2 ) - Y
-                           EndIf
-                        EndIf
-                        If Widget( )\align\bottom > 0
-                           Y = Widget( )\align\y
-                           If Widget( )\align\top < 0
-                              ;\\ ( top = proportional & bottom = 1 )
-                              Y      = Widget( )\align\y + ph / 2
-                              Height = (( Widget( )\align\y + Widget( )\align\height ) + ph ) - Y
-                           Else
-                              If Widget( )\align\top = 0
-                                 Y + ph
-                              EndIf
-                              Height = (( Widget( )\align\y + Widget( )\align\height ) + ph ) - Y
-                           EndIf
-                        EndIf
-                        ;\\ vertical proportional
-                        If ( Widget( )\align\top < 0 And Widget( )\align\bottom <= 0 ) Or
-                           ( Widget( )\align\bottom < 0 And Widget( )\align\top <= 0 )
-                           Protected ScaleY.d = pih / Widget( )\parent\align\height
-                           Height = ScaleY * Widget( )\align\height
-                           ;\\ center proportional
-                           If Widget( )\align\top < 0 And Widget( )\align\bottom < 0
-                              Y = ( pih - Height ) / 2
-                           ElseIf Widget( )\align\top < 0 And Widget( )\align\bottom = 0
-                              ;\\ bottom proportional
-                              Y = pih - ( Widget( )\parent\align\height - Widget( )\align\y - Widget( )\align\height ) - Height
-                           ElseIf ( Widget( )\align\bottom < 0 And Widget( )\align\top = 0 )
-                              ;\\ top proportional
-                              Y = Widget( )\align\y
-                           EndIf
-                        EndIf
-                        
-                        ;
-                        Resize( Widget( ), (X), (Y), (Width), (Height), 0 )
-                     Else
-                        Resize( Widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                     EndIf
-                  EndIf
-                  ;
-                  StopEnum( )
-               EndIf
-               
-            EndIf
-         EndIf
-         
-         ;
-         ProcedureReturn Bool( Change_x Or Change_y Or Change_width Or Change_height )
-      EndProcedure
-      
-      Procedure ResizeRootWindow( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
-         If X = #PB_Ignore
-            X = WindowX( *this\root\canvas\window )
-         Else
-            X = DPIUnScaled( X )
-         EndIf
-         If Y = #PB_Ignore
-            Y = WindowY( *this\root\canvas\window )
-         Else
-            Y = DPIUnScaled( Y )
-         EndIf
-         If Width = #PB_Ignore
-            Width = WindowWidth( *this\root\canvas\window )
-         Else
-            Width = DPIUnScaled( Width )
-         EndIf
-         If Height = #PB_Ignore
-            Height = WindowHeight( *this\root\canvas\window )
-         Else
-            Height = DPIUnScaled( Height )
-         EndIf
-         ;
-         ResizeWindow( *this\root\canvas\window, X, Y, Width, Height )
-         ResizeGadget( *this\root\canvas\gadget, #PB_Ignore, #PB_Ignore, Width, Height )
-         ; Resize( *this, #PB_Ignore, #PB_Ignore, Width, Height )
-      EndProcedure
       
       
       ;-
@@ -14192,7 +13106,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If size = #PB_Default
                If constants::BinaryFlag( *box\flag, #__flag_BarSmall )
                   If *box\type = #__type_TabBar
-                     size = 21 + bar_toggle_line_size
+                     size = 23 + bar_toggle_line_size*2 
                   Else
                      size = 24
                   EndIf
@@ -14253,8 +13167,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\fs[4] = size + fs ; #__panel_height
             EndIf
             
-            If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-               PostEventRepaint( *this\root )
+            If *this\inner_width( ) And *this\inner_height( )
+               If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                  PostEventRepaint( *this\root )
+               EndIf
             EndIf
          EndIf
       EndProcedure
@@ -16970,6 +15886,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ProcedureReturn *this
       EndProcedure
+      
       
       ;-
       ;- EVENTs
@@ -22846,6 +21763,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
             EndIf
+            
+            
+            
          EndWith
       EndProcedure
       
@@ -23915,6 +22835,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
+            
+;             If *this\parent ; And *this\parent\LastWidget( ) = *this
+;                If *this\parent\tabbar
+;                   Protected._s_ITEMS *activeTAB = *this\parent\tabbar\TabFocused( )
+;                   
+;                   If *activeTAB
+;                      draw_mode_alpha_( #PB_2DDrawing_Default )
+;                      Box( *this\parent\inner_x( ) + *activeTAB\x, *this\parent\inner_y( ) - 3, *activeTAB\width, DPIScaled(5), $ff0000ff )
+;                   EndIf                 
+;                EndIf
+;             EndIf
             
             ;\\ reset values
             If *this\WidgetChange( ) <> 0
@@ -25816,6 +24747,1056 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn g
       EndProcedure
       
+      Procedure.b Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, scale.b = 1 )
+         Protected.b result
+         Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
+         ;\\
+         ; *this\resize\clip = #True
+         
+         ;\\
+         If *this\anchors
+            If *this\bs < *this\fs + *this\anchors\pos
+               *this\bs = *this\fs + *this\anchors\pos
+            EndIf
+         Else
+            If *this\bs < *this\fs
+               *this\bs = *this\fs
+            EndIf
+         EndIf
+         ;
+         If *this\autosize And *this\parent And *this\parent\type = #__type_Splitter
+            *this\autosize = 0
+         EndIf
+         
+         ;\\
+         If *this\autosize  ;And not is_root_( *this )
+            If *this\parent And *this\parent <> *this 
+               X      = (*this\parent\inner_x( ))
+               Y      = (*this\parent\inner_y( ))
+               Width  = (*this\parent\inner_width( ))
+               Height = (*this\parent\inner_height( ))
+            EndIf
+            ; Debug "auto resize "+X+" "+Y ; combobox bug fixed
+         Else
+            ;
+            ;CompilerIf #PB_Compiler_DPIAware
+            If scale = 1
+               If ( *this\parent And *this\parent\type = #__type_Splitter )
+                  Debug "resize no scale "+*this\class
+               EndIf
+            EndIf
+            If scale = 1 
+               If Not is_integral_( *this )
+                  If Not( *this\parent And *this\parent\type = #__type_Splitter ) 
+                     If X And X <> #PB_Ignore
+                        X = DPIScaledX( X ); + Bool( Not *this\parent\scroll_width( ) % 2 )-1
+                     EndIf
+                     If Width And Width <> #PB_Ignore
+                        Width = DPIScaledX( Width ) ; - 1
+                     EndIf
+                     If Y And Y <> #PB_Ignore
+                        Y = DPIScaledY( Y ); + Bool( Not *this\parent\scroll_height( ) % 2 )-1
+                     EndIf
+                     If Height And Height <> #PB_Ignore
+                        Height = DPIScaledY( Height ) ; - 1 
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            ;CompilerEndIf
+            
+            ;\\ move & size steps
+            If *this\anchors And *this\anchors\mode And mouse( )\steps > 1
+               If X <> #PB_Ignore
+                  X + ( X % mouse( )\steps )
+                  X = ( X / mouse( )\steps ) * mouse( )\steps
+               EndIf
+               If Y <> #PB_Ignore
+                  Y + ( Y % mouse( )\steps )
+                  Y = ( Y / mouse( )\steps ) * mouse( )\steps
+               EndIf
+               If Width <> #PB_Ignore
+                  Width + ( Width % mouse( )\steps )
+                  Width = (( Width / mouse( )\steps ) * mouse( )\steps ) + DPIScaled(1)
+               EndIf
+               If Height <> #PB_Ignore
+                  Height + ( Height % mouse( )\steps )
+                  Height = (( Height / mouse( )\steps ) * mouse( )\steps ) + DPIScaled(1)
+               EndIf
+            EndIf
+            
+            ;\\ move boundaries
+            If *this\bounds\move
+               If X <> #PB_Ignore
+                  If *this\bounds\move\min\x <> #PB_Ignore
+                     If X < *this\bounds\move\min\x
+                        If Width <> #PB_Ignore
+                           Width - ( *this\bounds\move\min\x - X )
+                        EndIf
+                        X = *this\bounds\move\min\x
+                     EndIf
+                  EndIf
+                  If *this\bounds\move\max\x <> #PB_Ignore 
+                     If Width = #PB_Ignore
+                        If X > *this\bounds\move\max\x - *this\frame_width( )
+                           X = *this\bounds\move\max\x - *this\frame_width( )
+                        EndIf
+                     Else
+                        If X > *this\bounds\move\max\x - Width
+                           X = *this\bounds\move\max\x - Width
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+               If Y <> #PB_Ignore
+                  If *this\bounds\move\min\y <> #PB_Ignore 
+                     If Y < *this\bounds\move\min\y
+                        If Height <> #PB_Ignore
+                           Height - ( *this\bounds\move\min\y - Y )
+                        EndIf
+                        Y = *this\bounds\move\min\y
+                     EndIf
+                  EndIf
+                  If *this\bounds\move\max\y <> #PB_Ignore
+                     If Height = #PB_Ignore
+                        If Y > *this\bounds\move\max\y - *this\frame_height( )
+                           Y = *this\bounds\move\max\y - *this\frame_height( )
+                        EndIf
+                     Else
+                        If Y > *this\bounds\move\max\y - Height
+                           Y = *this\bounds\move\max\y - Height
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\ size boundaries
+            If *this\bounds\size
+               If *this\type = #__type_window
+                  Protected h_frame = *this\fs * 2 + *this\fs[1] + *this\fs[3]
+                  Protected v_frame = *this\fs * 2 + *this\fs[2] + *this\fs[4]
+               EndIf
+               
+               If Width <> #PB_Ignore
+                  If #PB_Ignore <> *this\bounds\size\min\width And
+                     Width < *this\bounds\size\min\width - h_frame
+                     If X <> #PB_Ignore
+                        X + ( Width - *this\bounds\size\min\width ) + h_frame
+                     EndIf
+                     Width = *this\bounds\size\min\width - h_frame
+                  EndIf
+                  If #PB_Ignore <> *this\bounds\size\max\width And
+                     Width > *this\bounds\size\max\width - h_frame
+                     If X <> #PB_Ignore
+                        X + ( Width - *this\bounds\size\max\width ) + h_frame
+                     EndIf
+                     Width = *this\bounds\size\max\width - h_frame
+                  EndIf
+                  
+                  ;\\
+                  If *this\bounds\move
+                     If X = #PB_Ignore
+                        If Width > *this\bounds\size\max\width - ( *this\container_x( ) - *this\bounds\move\min\x ) - h_frame
+                           Width = *this\bounds\size\max\width - ( *this\container_x( ) - *this\bounds\move\min\x ) - h_frame
+                        EndIf
+                     Else
+                        If Width > *this\bounds\size\max\width - ( X - *this\bounds\move\min\x ) - h_frame
+                           Width = *this\bounds\size\max\width - ( X - *this\bounds\move\min\x ) - h_frame
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+               If Height <> #PB_Ignore
+                  If #PB_Ignore <> *this\bounds\size\min\height And
+                     Height < *this\bounds\size\min\height - v_frame
+                     If Y <> #PB_Ignore
+                        Y + ( Height - *this\bounds\size\min\height ) + v_frame
+                     EndIf
+                     Height = *this\bounds\size\min\height - v_frame
+                  EndIf
+                  If #PB_Ignore <> *this\bounds\size\max\height And
+                     Height > *this\bounds\size\max\height - v_frame
+                     If Y <> #PB_Ignore
+                        Y + ( Height - *this\bounds\size\max\height ) + v_frame
+                     EndIf
+                     Height = *this\bounds\size\max\height - v_frame
+                  EndIf
+                  
+                  ;\\
+                  If *this\bounds\move
+                     If Y = #PB_Ignore
+                        If Height > *this\bounds\size\max\height - ( *this\container_y( ) - *this\bounds\move\min\y ) - v_frame
+                           Height = *this\bounds\size\max\height - ( *this\container_y( ) - *this\bounds\move\min\y ) - v_frame
+                        EndIf
+                     Else
+                        If Height > *this\bounds\size\max\height - ( Y - *this\bounds\move\min\y ) - v_frame
+                           Height = *this\bounds\size\max\height - ( Y - *this\bounds\move\min\y ) - v_frame
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            
+            ;\\
+            If Width = #PB_Ignore
+               If is_window_( *this )
+                  Width = *this\container_width( )
+               Else
+                  Width = *this\frame_width( )
+               EndIf
+            EndIf
+            If Height = #PB_Ignore
+               If is_window_( *this )
+                  Height = *this\container_height( )
+               Else
+                  Height = *this\frame_height( )
+               EndIf
+            EndIf
+            
+            ;\\
+            If Width < 0
+               Width = 0
+            EndIf
+            If Height < 0
+               Height = 0
+            EndIf
+            
+            ;\\ потому что окну задаются внутренные размеры
+            If is_window_( *this )
+               Width + ( *this\fs * 2 + *this\fs[1] + *this\fs[3] )
+               Height + ( *this\fs * 2 + *this\fs[2] + *this\fs[4] )
+            EndIf
+            
+            ;\\
+            If X = #PB_Ignore
+               X = *this\container_x( )
+            ElseIf *this\parent  
+               If Not *this\child And *this\parent\haschildren
+                  If *this\parent\container ; combobox bug fixed
+                     X + *this\parent\scroll_x( )
+                  EndIf
+               EndIf
+               *this\container_x( ) = X
+            EndIf
+            If Y = #PB_Ignore
+               Y = *this\container_y( )
+            ElseIf *this\parent 
+               If Not *this\child And *this\parent\haschildren 
+                  If *this\parent\container ; combobox bug fixed
+                     Y + *this\parent\scroll_y( )
+                  EndIf
+               EndIf
+               *this\container_y( ) = Y
+            EndIf
+            
+            ; container coordinate
+            If test_resize
+               Debug "resize - "+*this\class +" ("+ X +" "+ Y +" "+ Width +" "+ Height +")"
+            EndIf
+            
+            
+            ; frame coordinate
+            If *this\parent And *this <> *this\parent And Not is_root_( *this )
+               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
+                  X + *this\parent\inner_x( )
+               EndIf
+               If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
+                  Y + *this\parent\inner_y( )
+               EndIf
+            EndIf
+         EndIf
+         
+         
+         ;\\ inner x&y position
+         ix      = X + ( *this\fs + *this\fs[1] )
+         iy      = Y + ( *this\fs + *this\fs[2] )
+         iwidth  = Width - ( *this\fs * 2 + *this\fs[1] + *this\fs[3] )
+         iheight = Height - ( *this\fs * 2 + *this\fs[2] + *this\fs[4] )
+         
+;          ;\\
+;          If Not Change_x And *this\screen_x( ) <> X - ( *this\bs - *this\fs ) : Change_x = ( X - ( *this\bs - *this\fs )) - *this\screen_x( ) : EndIf
+;          If Not Change_y And *this\screen_y( ) <> Y - ( *this\bs - *this\fs ) : Change_y = ( Y - ( *this\bs - *this\fs )) - *this\screen_y( ) : EndIf
+;          If Not Change_width And *this\screen_width( ) <> Width + ( *this\bs * 2 - *this\fs * 2 ) : Change_width = ( Width + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_width( ) : EndIf
+;          If Not Change_height And *this\screen_height( ) <> Height + ( *this\bs * 2 - *this\fs * 2 ) : Change_height = ( Height + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_height( ) : EndIf
+;          
+         ; для сплиттера
+         If Not Change_x And *this\frame_x( ) <> X : Change_x = X - *this\frame_x( ) : EndIf
+         If Not Change_y And *this\frame_y( ) <> Y : Change_y = Y - *this\frame_y( ) : EndIf
+         If Not Change_width And *this\frame_width( ) <> Width : Change_width = Width - *this\frame_width( ) : EndIf
+         If Not Change_height And *this\frame_height( ) <> Height : Change_height = Height - *this\frame_height( ) : EndIf
+         
+         ; для меню 
+         If Not Change_x And *this\inner_x( ) <> ix : Change_x = ix - *this\inner_x( ) : EndIf
+         If Not Change_y And *this\inner_y( ) <> iy : Change_y = iy - *this\inner_y( ) : EndIf
+;          If Not Change_width And *this\container_width( ) <> iwidth : Change_width = iwidth - *this\container_width( ) : EndIf
+;          If Not Change_height And *this\container_height( ) <> iheight : Change_height = iheight - *this\container_height( ) : EndIf
+                  If Not Change_width And *this\inner_width( ) <> iwidth : Change_width = iwidth - *this\inner_width( ) : EndIf
+                  If Not Change_height And *this\inner_height( ) <> iheight : Change_height = iheight - *this\inner_height( ) : EndIf
+         
+         
+         ;\\
+         If Change_x
+            *this\resize\x = Change_x
+            *this\frame_x( )  = X
+            *this\inner_x( )  = ix
+            *this\screen_x( ) = X - ( *this\bs - *this\fs )
+            If *this\window
+               *this\x[#__c_window] = X - *this\window\inner_x( )
+            EndIf
+         EndIf
+         If Change_y
+            *this\resize\y = Change_y
+            *this\frame_y( )  = Y
+            *this\inner_y( )  = iy
+            *this\screen_y( ) = Y - ( *this\bs - *this\fs )
+            If *this\window
+               *this\y[#__c_window] = Y - *this\window\inner_y( )
+            EndIf
+         EndIf
+         If Change_width
+            ;             ;1 BUG с ним если увеличить до макс потом уменьшить до мин то уже не перемещается 
+            ;             If *this\bounds\move And Not Change_x
+            ;                If *this\bounds\move\max\x = ( *this\bounds\move\min\x + *this\frame_width( ) )
+            ;                   *this\bounds\move\max\x = *this\bounds\move\min\x + Width
+            ;                EndIf
+            ;             EndIf
+            *this\resize\width = Change_width
+            *this\container_width( ) = iwidth
+            *this\frame_width( )     = Width
+            *this\screen_width( )    = Width + ( *this\bs * 2 - *this\fs * 2 )
+            If *this\container_width( ) < 0
+               *this\container_width( ) = 0
+            EndIf
+            *this\inner_width( ) = *this\container_width( )
+         EndIf
+         If Change_height
+            ;             ;1 BUG с ним если увеличить до макс потом уменьшить до мин то уже не перемещается 
+            ;             If *this\bounds\move And Not Change_y
+            ;                If *this\bounds\move\max\y = ( *this\bounds\move\min\y + *this\frame_height( ) )
+            ;                   *this\bounds\move\max\y = *this\bounds\move\min\y + Height
+            ;                EndIf
+            ;             EndIf
+            *this\resize\height = Change_height
+            *this\container_height( ) = iheight
+            *this\frame_height( )     = Height
+            *this\screen_height( )    = Height + ( *this\bs * 2 - *this\fs * 2 )
+            If *this\container_height( ) < 0
+               *this\container_height( ) = 0
+            EndIf
+            *this\inner_height( ) = *this\container_height( )
+         EndIf
+         
+         ;\\ change clip output coordinate
+         Protected _p_x1_
+         Protected _p_y1_
+         Protected _p_x2_
+         Protected _p_y2_
+         Protected clip_x, clip_y, clip_width, clip_height
+         Protected *parent._s_WIDGET
+         
+         If *this\bounds\attach
+            *parent = *this\bounds\attach\parent
+         Else
+            *parent = *this\parent
+         EndIf
+         
+         If is_root_( *this )
+            If *this\clip_width( ) <> *this\screen_width( )
+               *this\clip_width( )  = *this\screen_width( )
+               *this\clip_iwidth( ) = *this\screen_width( )
+            EndIf
+            If *this\clip_height( ) <> *this\screen_height( )
+               *this\clip_height( )  = *this\screen_height( )
+               *this\clip_iheight( ) = *this\screen_height( )
+            EndIf
+         Else
+            If *parent
+              _p_x1_ = *parent\inner_x( ) 
+               _p_y1_ = *parent\inner_y( )
+               _p_x2_ = _p_x1_ + *parent\inner_width( )
+               _p_y2_ = _p_y1_ + *parent\inner_height( )
+               
+               If *this\type = #__type_Scroll
+                  _p_x2_ = *parent\inner_x( ) + *parent\container_width( )
+                  _p_y2_ = *parent\inner_y( ) + *parent\container_height( )
+               EndIf
+               
+               If *this\type = #__type_MenuBar Or
+                  *this\type = #__type_PopupBar Or
+                  *this\type = #__type_ToolBar Or
+                  *this\type = #__type_TabBar
+                  ;
+                  _p_x1_ = *parent\screen_x( ) 
+                  _p_y1_ = *parent\screen_y( ) 
+                  _p_x2_ = _p_x1_ + *parent\screen_width( )
+                  _p_y2_ = _p_y1_ + *parent\screen_height( )
+               EndIf
+            
+               
+               ;;If _p_x1_ >= 0 And _p_y1_ >= 0 And _p_x2_ > 0 And _p_y2_ > 0
+               If is_integral_(*this)
+                  Debug ""+ *this\class +" "+ _p_x1_ +" "+ _p_y1_ +" "+ _p_x2_ +" "+ _p_y2_
+               EndIf
+               
+;                
+;                ; for the splitter children's
+;                If *parent\type = #__type_Splitter
+;                   If *parent\split_1( ) = *this
+;                      _p_x2_ = *parent\bar\button[1]\x + *parent\bar\button[1]\width
+;                      _p_y2_ = *parent\bar\button[1]\y + *parent\bar\button[1]\height
+;                   EndIf
+;                   If *parent\split_2( ) = *this
+;                      _p_x2_ = *parent\bar\button[2]\x + *parent\bar\button[2]\width
+;                      _p_y2_ = *parent\bar\button[2]\y + *parent\bar\button[2]\height
+;                   EndIf
+;                EndIf
+;                
+;                If is_integral_( *this ) And Not *this\bounds\attach
+;                   ;
+;                   If *this\type = #__type_MenuBar Or
+;                      *this\type = #__type_PopupBar Or
+;                      *this\type = #__type_ToolBar Or
+;                      *this\type = #__type_TabBar Or
+;                      *this\type = #__type_Scroll
+;                      ;
+;                      _p_x2_ = *parent\inner_x( ) + *parent\container_width( )
+;                      _p_y2_ = *parent\inner_y( ) + *parent\container_height( )
+;                   EndIf
+;                Else
+;                   ; for the scrollarea&MDI children's except scrollbars
+;                   If *parent\container
+;                      If *parent\scroll_width( ) And
+;                         _p_x2_ > *parent\inner_x( ) + *parent\scroll_x( ) + *parent\scroll_width( )
+;                         _p_x2_ = *parent\inner_x( ) + *parent\scroll_x( ) + *parent\scroll_width( )
+;                      EndIf
+;                      If *parent\scroll_height( ) And
+;                         _p_y2_ > *parent\inner_y( ) + *parent\scroll_y( ) + *parent\scroll_height( )
+;                         _p_y2_ = *parent\inner_y( ) + *parent\scroll_y( ) + *parent\scroll_height( )
+;                      EndIf
+;                   EndIf
+;                EndIf
+            ;
+            ; x&y clip frame coordinate
+            If _p_x1_ > *this\screen_x( ) And _p_x1_ > *parent\clip_x( )
+               *this\clip_x( ) = _p_x1_
+            ElseIf *parent\clip_x( ) > *this\screen_x( )
+               *this\clip_x( ) = *parent\clip_x( )
+            Else
+               *this\clip_x( ) = *this\screen_x( )
+            EndIf
+            If *this\clip_x( ) < 0 : *this\clip_x( ) = 0 : EndIf
+            ;
+            If _p_y1_ > *this\screen_y( ) And _p_y1_ > *parent\clip_y( )
+               *this\clip_y( ) = _p_y1_
+            ElseIf *parent\clip_y( ) > *this\screen_y( )
+               *this\clip_y( ) = *parent\clip_y( )
+            Else
+               *this\clip_y( ) = *this\screen_y( )
+            EndIf
+            If *this\clip_y( ) < 0 : *this\clip_y( ) = 0 : EndIf
+            ;
+            ; width&height clip frame coordinate
+            If (*parent\clip_x( ) + *parent\clip_width( )) > 0 And
+               (*parent\clip_x( ) + *parent\clip_width( )) < (*this\screen_x( ) + *this\screen_width( )) And
+               (_p_x2_) > (*parent\clip_x( ) + *parent\clip_width( ))
+               
+               *this\clip_width( ) = (*parent\clip_x( ) + *parent\clip_width( )) - *this\clip_x( )
+            ElseIf (_p_x2_) > 0 And (_p_x2_) < (*this\screen_x( ) + *this\screen_width( ))
+               *this\clip_width( ) = (_p_x2_) - *this\clip_x( )
+            Else
+               *this\clip_width( ) = (*this\screen_x( ) + *this\screen_width( )) - *this\clip_x( )
+            EndIf
+            If *this\clip_width( ) < 0 : *this\clip_width( ) = 0 : EndIf
+            ;
+            If (*parent\clip_y( ) + *parent\clip_height( )) > 0 And
+               (*parent\clip_y( ) + *parent\clip_height( )) < (*this\screen_y( ) + *this\screen_height( )) And
+               (_p_y2_) > (*parent\clip_y( ) + *parent\clip_height( ))
+               
+               *this\clip_height( ) = (*parent\clip_y( ) + *parent\clip_height( )) - *this\clip_y( )
+            ElseIf (_p_y2_) > 0 And (_p_y2_) < (*this\screen_y( ) + *this\screen_height( ))
+               *this\clip_height( ) = (_p_y2_) - *this\clip_y( )
+            Else
+               *this\clip_height( ) = (*this\screen_y( ) + *this\screen_height( )) - *this\clip_y( )
+            EndIf
+            If *this\clip_height( ) < 0 : *this\clip_height( ) = 0 : EndIf
+            
+            
+            ;\\
+            If *this\clip_x( ) < *this\inner_x( )
+               *this\clip_ix( ) = *this\inner_x( )
+            Else
+               *this\clip_ix( ) = *this\clip_x( )
+            EndIf
+            If *this\clip_y( ) < *this\inner_y( )
+               *this\clip_iy( ) = *this\inner_y( )
+            Else
+               *this\clip_iy( ) = *this\clip_y( )
+            EndIf
+            If *this\clip_ix( ) + *this\clip_width( ) > *this\inner_x( ) + *this\inner_width( )
+               *this\clip_iwidth( ) = (*this\inner_x( ) + *this\inner_width( )) - *this\clip_ix( )
+            Else
+               *this\clip_iwidth( ) = *this\clip_width( )
+            EndIf
+            If *this\clip_iy( ) + *this\clip_height( ) > *this\inner_y( ) + *this\inner_height( )
+               *this\clip_iheight( ) = (*this\inner_y( ) + *this\inner_height( )) - *this\clip_iy( )
+            Else
+               *this\clip_iheight( ) = *this\clip_height( )
+            EndIf
+            
+;             ;
+;             ;\\ x&y clip inner coordinate
+;             If _p_x1_ > *this\inner_x( ) And _p_x1_ > *parent\clip_ix( )
+;                *this\clip_ix( ) = _p_x1_
+;             ElseIf *parent\clip_ix( ) > *this\inner_x( )
+;                *this\clip_ix( ) = *parent\clip_ix( )
+;             Else
+;                *this\clip_ix( ) = *this\inner_x( )
+;             EndIf
+;             If *this\clip_ix( ) < 0 : *this\clip_ix( ) = 0 : EndIf
+;             ;
+;             If _p_y1_ > *this\inner_y( ) And _p_y1_ > *parent\clip_iy( )
+;                *this\clip_iy( ) = _p_y1_
+;             ElseIf *parent\clip_iy( ) > *this\inner_y( )
+;                *this\clip_iy( ) = *parent\clip_iy( )
+;             Else
+;                *this\clip_iy( ) = *this\inner_y( )
+;             EndIf
+;             If *this\clip_iy( ) < 0 : *this\clip_iy( ) = 0 : EndIf
+;             ;
+;             ;\\ width&height clip inner coordinate
+;             If (*parent\clip_ix( ) + *parent\clip_iwidth( )) > 0 And
+;                (*parent\clip_ix( ) + *parent\clip_iwidth( )) < (*this\inner_x( ) + *this\inner_width( )) And
+;                (_p_x2_) > (*parent\clip_ix( ) + *parent\clip_iwidth( ))
+;                
+;                *this\clip_iwidth( ) = (*parent\clip_ix( ) + *parent\clip_iwidth( )) - *this\clip_ix( )
+;             ElseIf *parent And (_p_x2_) > 0 And (_p_x2_) < (*this\inner_x( ) + *this\inner_width( ))
+;                
+;                *this\clip_iwidth( ) = (_p_x2_) - *this\clip_ix( )
+;             Else
+;                *this\clip_iwidth( ) = (*this\inner_x( ) + *this\inner_width( )) - *this\clip_ix( )
+;             EndIf
+;             If *this\clip_iwidth( ) < 0 : *this\clip_iwidth( ) = 0 : EndIf
+;             ;
+;             If (*parent\clip_iy( ) + *parent\clip_iheight( )) > 0 And
+;                (*parent\clip_iy( ) + *parent\clip_iheight( )) < (*this\inner_y( ) + *this\inner_height( )) And
+;                (_p_y2_) > (*parent\clip_iy( ) + *parent\clip_iheight( ))
+;                
+;                *this\clip_iheight( ) = (*parent\clip_iy( ) + *parent\clip_iheight( )) - *this\clip_iy( )
+;             ElseIf *parent And (_p_y2_) > 0 And (_p_y2_) < (*this\inner_y( ) + *this\inner_height( ))
+;                
+;                *this\clip_iheight( ) = (_p_y2_) - *this\clip_iy( )
+;             Else
+;                *this\clip_iheight( ) = (*this\inner_y( ) + *this\inner_height( )) - *this\clip_iy( )
+;             EndIf
+;             If *this\clip_iheight( ) < 0 : *this\clip_iheight( ) = 0 : EndIf
+;             ;
+           ;; EndIf
+            EndIf
+         EndIf
+        
+         
+         ;
+         If ( Change_x Or Change_y Or Change_width Or Change_height ) 
+            ; Reclip( *this )
+            If *this\ResizeChange( ) <> #True
+               *this\ResizeChange( ) = #True
+            EndIf
+            
+            *this\root\repaint = 1
+            ;
+            If *this\anchors 
+               a_size( *this\anchors\id,
+                       *this\anchors\size,
+                       *this\anchors\mode ) 
+               
+               a_move( *this,
+                       *this\anchors\id,
+                       *this\screen_x( ),
+                       *this\screen_y( ),
+                       *this\screen_width( ),
+                       *this\screen_height( ) )
+            EndIf
+            
+            ;\\ if the widgets is composite
+            If *this\stringbar
+               Resize( *this\stringbar, 0, 0, *this\inner_width( ), *this\inner_height( ) )
+            EndIf
+            
+            ;\\ resize child vertical&horizontal scrollbars
+            If *this\scroll And
+               *this\scroll\v And
+               *this\scroll\h
+               
+               ;\\
+               If *this\type = #__type_MDI
+                  Resize( *this\scroll\v, *this\container_width( ) - *this\scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                  Resize( *this\scroll\h, #PB_Ignore, *this\container_height( ) - *this\scroll\h\height, #PB_Ignore, #PB_Ignore )
+                  
+                  If Change_width Or Change_height
+                     bar_mdi_update( *this, 0, 0, 0, 0 )
+                     bar_mdi_resize( *this, 0, 0, *this\container_width( ), *this\container_height( ) )
+                  EndIf
+                  ;\\ if the integral scroll bars
+               Else
+                  bar_area_resize( *this )
+               EndIf
+            EndIf
+            
+            ;\\ resize parent vertical&horizontal scrollbars
+            If *this\parent And
+               *this\parent\scroll And
+               *this\parent\scroll\v And
+               *this\parent\scroll\h
+               ;
+               ;\\ parent mdi
+               If *this\parent\type = #__type_MDI
+                  If *this\child =- 1
+                     If *this\parent\scroll\v <> *this And
+                        *this\parent\scroll\h <> *this And
+                        *this\parent\scroll\v\bar\PageChange( ) = 0 And
+                        *this\parent\scroll\h\bar\PageChange( ) = 0
+                        
+                        bar_mdi_update( *this\parent, *this\container_x( ), *this\container_y( ), *this\frame_width( ), *this\frame_height( ) )
+                        bar_mdi_resize( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
+                     EndIf
+                  EndIf
+                  ;
+               Else
+                  If is_integral_( *this )
+                     If *this\parent\container_width( ) = *this\parent\inner_width( ) And
+                        *this\parent\container_height( ) = *this\parent\inner_height( )
+                        ; Debug ""+*this\parent\scroll\v\bar\max +" "+ *this\parent\scroll\v\bar\page\len +" "+ *this\parent\scroll\h\bar\max +" "+ *this\parent\scroll\h\bar\page\len
+                        
+                        If *this\parent\scroll\v\bar\max > *this\parent\scroll\v\bar\page\len Or
+                           *this\parent\scroll\h\bar\max > *this\parent\scroll\h\bar\page\len
+                           
+                           bar_area_resize( *this\parent )
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            ; if the integral menu bar
+            If *this\menubar
+               ix = *this\inner_x( )
+               iy = *this\inner_y( )
+               iwidth = *this\inner_width( )
+               iheight = *this\inner_height( )
+               
+               *this\inner_x( ) = X
+               *this\inner_y( ) = Y
+               *this\inner_width( ) = Width
+               *this\inner_height( ) = Height
+               
+               ;\\
+               If *this\menubar\autosize
+                  Resize( *this\menubar, 0, 0, *this\inner_width( ), *this\inner_height( ) )
+               Else
+                  If *this\menubar\bar\vertical
+                     If *this\fs[1]
+                        Resize( *this\menubar, *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
+                     EndIf
+                     If *this\fs[3]
+                        Resize( *this\menubar, *this\frame_width( ) - *this\fs[3], *this\fs, *this\fs[3], *this\inner_height( ) )
+                     EndIf
+                  Else
+                     If *this\fs[2]
+                        Resize( *this\menubar, *this\fs, *this\fs + *this\TitleBarHeight, *this\inner_width( ), *this\MenuBarHeight )
+                     EndIf
+                     If *this\fs[4]
+                        Resize( *this\menubar, *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
+                     EndIf
+                  EndIf
+               EndIf
+               
+               *this\inner_x( ) = iX
+               *this\inner_y( ) = iY
+               *this\inner_width( ) = iWidth
+               *this\inner_height( ) = iHeight
+            EndIf
+            
+            ;\\ if the integral tab bar
+            If *this\tabbar
+               ix = *this\inner_x( )
+               iy = *this\inner_y( )
+               iwidth = *this\inner_width( )
+               iheight = *this\inner_height( )
+               
+               *this\inner_x( ) = X
+               *this\inner_y( ) = Y
+               *this\inner_width( ) = Width
+               *this\inner_height( ) = Height
+               
+               ;\\
+               If *this\tabbar\autosize
+                  Resize( *this\tabbar, *this\fs, *this\fs, iwidth, iheight )
+               Else
+                  If *this\tabbar\bar\vertical
+                     If *this\fs[1]
+                        Resize( *this\tabbar, *this\fs, *this\fs, *this\fs[1], iheight )
+                     EndIf
+                     If *this\fs[3]
+                        Resize( *this\tabbar, *this\fs + iwidth, *this\fs, *this\fs[3], iheight )
+                     EndIf
+                  Else
+                     If *this\fs[2]
+                        Resize( *this\tabbar, *this\fs, *this\fs + *this\TitleBarHeight + *this\MenuBarHeight, iwidth, *this\ToolBarHeight )
+                     EndIf
+                     If *this\fs[4]
+                        Resize( *this\tabbar, *this\fs, *this\fs + iheight, iwidth, *this\fs[4] )
+                     EndIf
+                  EndIf
+               EndIf
+               
+               *this\inner_x( ) = ix
+               *this\inner_y( ) = iy
+               *this\inner_width( ) = iwidth
+               *this\inner_height( ) = iheight
+            EndIf
+            ;
+            ;\\
+            If *this\type = #__type_ComboBox
+               If *this\stringbar
+                  *this\combobutton\width = *this\fs[3]
+                  *this\combobutton\x     = ( *this\screen_x( )+ *this\screen_width( ) ) - *this\fs[3]
+               Else
+                  *this\combobutton\width = *this\frame_width( ) - *this\fs * 2 ; *this\inner_width( )
+                  *this\combobutton\x     = *this\frame_x( ) + *this\fs
+               EndIf
+               
+               *this\combobutton\y      = *this\inner_y( )
+               *this\combobutton\height = *this\inner_height( )
+            EndIf
+            
+            ;\\ after resize update 
+            If *this\bar    
+               If *this\type = #__type_ToolBar Or
+                  *this\type = #__type_PopupBar Or
+                  *this\type = #__type_MenuBar Or
+                  *this\type = #__type_TabBar
+                  ;
+                  If *this\bar\max
+                     bar_update( *this, 2 )
+                  EndIf
+               Else
+                  If *this\bar\vertical
+                     If Change_width Or 
+                        *this\bar\area\len <> *this\frame_height( )
+                        *this\bar\area\len = *this\frame_height( )
+                        bar_update( *this, 23 )
+                     EndIf
+                  Else
+                     If Change_height Or
+                        *this\bar\area\len <> *this\frame_width( )
+                        *this\bar\area\len = *this\frame_width( )
+                        bar_update( *this, 22 )
+                     EndIf
+                  EndIf
+                  If Change_x Or Change_y
+                     If *this\bar\area\len
+                        bar_update( *this, 21 )
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\
+            If *this\type = #__type_Window
+               ; чтобы закруглять только у окна с титлебаром
+               If *this\fs[2]
+                  If *this\round
+                     *this\caption\round = *this\round
+                     *this\round         = 0
+                  EndIf
+               EndIf
+               
+               ; caption title bar
+               If Not *this\caption\hide
+                  *this\caption\x      = *this\frame_x( ) + *this\fs
+                  *this\caption\y      = *this\frame_y( ) + *this\fs
+                  *this\caption\width  = *this\frame_width( ) - *this\fs * 2
+                  
+                  *this\caption\height = *this\TitleBarHeight + *this\fs - 1
+                  If *this\caption\height > *this\frame_height( ) - *this\fs 
+                     *this\caption\height = *this\frame_height( ) - *this\fs 
+                  EndIf
+                  
+                  ; caption close button
+                  If Not *this\CloseButton( )\hide
+                     *this\CloseButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\CloseButton( )\width + *this\caption\_padding )
+                     *this\CloseButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\CloseButton( )\height ) / 2
+                  EndIf
+                  
+                  ; caption maximize button
+                  If Not *this\MaximizeButton( )\hide
+                     If *this\CloseButton( )\hide
+                        *this\MaximizeButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\MaximizeButton( )\width + *this\caption\_padding )
+                     Else
+                        *this\MaximizeButton( )\x = *this\CloseButton( )\x - ( *this\MaximizeButton( )\width + *this\caption\_padding )
+                     EndIf
+                     *this\MaximizeButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\MaximizeButton( )\height ) / 2
+                  EndIf
+                  
+                  ; caption minimize button
+                  If Not *this\MinimizeButton( )\hide
+                     If *this\MaximizeButton( )\hide
+                        *this\MinimizeButton( )\x = *this\CloseButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
+                     Else
+                        *this\MinimizeButton( )\x = *this\MaximizeButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
+                     EndIf
+                     *this\MinimizeButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\MinimizeButton( )\height ) / 2
+                  EndIf
+                  
+                  ; caption help button
+                  If Not *this\HelpButton( )\hide
+                     If Not *this\MinimizeButton( )\hide
+                        *this\HelpButton( )\x = *this\MinimizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
+                     ElseIf Not *this\MaximizeButton( )\hide
+                        *this\HelpButton( )\x = *this\MaximizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
+                     Else
+                        *this\HelpButton( )\x = *this\CloseButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
+                     EndIf
+                     *this\HelpButton( )\y = *this\CloseButton( )\y
+                  EndIf
+                  
+                  ; title bar width
+                  If Not *this\HelpButton( )\hide
+                     *this\caption\width = *this\HelpButton( )\x - *this\caption\x - *this\caption\_padding
+                  ElseIf Not *this\MinimizeButton( )\hide
+                     *this\caption\width = *this\MinimizeButton( )\x - *this\caption\x - *this\caption\_padding
+                  ElseIf Not *this\MaximizeButton( )\hide
+                     *this\caption\width = *this\MaximizeButton( )\x - *this\caption\x - *this\caption\_padding
+                  ElseIf Not *this\CloseButton( )\hide
+                     *this\caption\width = *this\CloseButton( )\x - *this\caption\x - *this\caption\_padding
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\
+            If *this\type = #__type_ScrollArea
+               If IsGadget(*this\scroll\gadget[1])
+                  ResizeGadget(*this\scroll\gadget[1], DPIUnscaledX(*this\inner_x( )), DPIUnscaledY(*this\inner_y( )), DPIUnscaledX(*this\inner_width( )), DPIUnscaledY(*this\inner_height( )))
+                  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                     UpdateWindow_(GadgetID(*this\scroll\gadget[1]))
+                  CompilerEndIf
+               EndIf
+            EndIf
+            
+            ;
+            ;\\ update option&checkbox position
+            If *this\togglebox 
+               If ( *this\togglebox\width Or *this\togglebox\height )
+                  *this\togglebox\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\togglebox\height ) / 2
+                  
+                  If *this\text\align\right
+                     *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\height - DPIScaled(3) )
+                  ElseIf Not *this\text\align\left
+                     *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\width ) / 2
+                     
+                     If Not *this\text\align\top
+                        If *this\text\rotate = 0
+                           *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) - *this\togglebox\height
+                        Else
+                           *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
+                        EndIf
+                     EndIf
+                  Else
+                     *this\togglebox\x = *this\inner_x( ) + DPIScaled(3)
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\ Post Event
+            If *this\bindresize ; (*this\haschildren Or *this\anchors) ; 
+               ; Debug ""+Change_x +" "+ Change_y +" "+ Change_width +" "+ Change_height
+               ; Debug "   "+X +" "+ Y +" "+ Width +" "+ Height
+               Post( *this, #__event_resize )
+            EndIf
+         EndIf
+         
+         
+         ;\\ then move and size parent
+         ;\\ resize all children's
+         If *this\type <> #__type_Splitter
+            If *this\haschildren 
+               ;Debug *this\class
+               Protected pw, ph
+               Protected piw, pih
+               
+               If StartEnum( *this )
+                  If Widget( )\parent <> *this
+                     Continue
+                  EndIf
+                  ;
+                  If Not is_scrollbars_( Widget( ))
+                     If Widget( )\align
+                        ;                            If is_root_( widget( )\parent )
+                        ;                               piw = DPIUnScaledX(widget( )\parent\inner_width( ))
+                        ;                               pih = DPIUnScaledY(widget( )\parent\inner_height( ))
+                        ;                            Else
+                        piw = (Widget( )\parent\inner_width( ))
+                        pih = (Widget( )\parent\inner_height( ))
+                        ;                            EndIf
+                        
+                        ;\\
+                        If Widget( )\parent\align
+                           pw = ( piw - Widget( )\parent\align\width )
+                           ph = ( pih - Widget( )\parent\align\height )
+                        EndIf
+                        
+                        ;\\
+                        ;\\ horizontal
+                        ;\\
+                        If Widget( )\align\left > 0
+                           X = Widget( )\align\x
+                           If Widget( )\align\right < 0
+                              If Widget( )\align\left = 0
+                                 X + pw / 2
+                              EndIf
+                              Width = (( Widget( )\align\x + Widget( )\align\width ) + pw / 2 ) - X
+                           EndIf
+                        EndIf
+                        If Not Widget( )\align\right
+                           Width = Widget( )\align\width
+                           
+                           If Not Widget( )\align\left
+                              X = Widget( )\align\x
+                              If Widget( )\align\left = 0
+                                 X + pw / 2
+                              EndIf
+                              Width = (( Widget( )\align\x + Widget( )\align\width ) + pw / 2 ) - X
+                           EndIf
+                        EndIf
+                        If Widget( )\align\right > 0
+                           X = Widget( )\align\x
+                           If Widget( )\align\left < 0
+                              ;\\ ( left = proportional & right = 1 )
+                              X     = Widget( )\align\x + pw / 2
+                              Width = (( Widget( )\align\x + Widget( )\align\width ) + pw ) - X
+                           Else
+                              If Widget( )\align\left = 0
+                                 X + pw
+                              EndIf
+                              Width = (( Widget( )\align\x + Widget( )\align\width ) + pw ) - X
+                           EndIf
+                        EndIf
+                        ;\\ horizontal proportional
+                        If ( Widget( )\align\left < 0 And Widget( )\align\right <= 0 ) Or
+                           ( Widget( )\align\right < 0 And Widget( )\align\left <= 0 )
+                           Protected ScaleX.d = piw / Widget( )\parent\align\width
+                           Width = ScaleX * Widget( )\align\width
+                           ;\\ center proportional
+                           If Widget( )\align\left < 0 And Widget( )\align\right < 0
+                              X = ( piw - Width ) / 2
+                           ElseIf Widget( )\align\left < 0 And Widget( )\align\right = 0
+                              ;\\ right proportional
+                              X = piw - ( Widget( )\parent\align\width - Widget( )\align\x - Widget( )\align\width ) - Width
+                           ElseIf ( Widget( )\align\right < 0 And Widget( )\align\left = 0 )
+                              ;\\ left proportional
+                              X = Widget( )\align\x
+                           EndIf
+                        EndIf
+                        
+                        ;\\
+                        ;\\ vertical
+                        ;\\
+                        If Widget( )\align\top > 0
+                           Y = Widget( )\align\y
+                           If Widget( )\align\bottom < 0
+                              If Widget( )\align\top = 0
+                                 Y + ph / 2
+                              EndIf
+                              Height = (( Widget( )\align\y + Widget( )\align\height ) + ph / 2 ) - Y
+                           EndIf
+                        EndIf
+                        If Not Widget( )\align\bottom
+                           Height = Widget( )\align\height
+                           
+                           If Not Widget( )\align\top
+                              Y = Widget( )\align\y
+                              If Widget( )\align\top = 0
+                                 Y + ph / 2
+                              EndIf
+                              Height = (( Widget( )\align\y + Widget( )\align\height ) + ph / 2 ) - Y
+                           EndIf
+                        EndIf
+                        If Widget( )\align\bottom > 0
+                           Y = Widget( )\align\y
+                           If Widget( )\align\top < 0
+                              ;\\ ( top = proportional & bottom = 1 )
+                              Y      = Widget( )\align\y + ph / 2
+                              Height = (( Widget( )\align\y + Widget( )\align\height ) + ph ) - Y
+                           Else
+                              If Widget( )\align\top = 0
+                                 Y + ph
+                              EndIf
+                              Height = (( Widget( )\align\y + Widget( )\align\height ) + ph ) - Y
+                           EndIf
+                        EndIf
+                        ;\\ vertical proportional
+                        If ( Widget( )\align\top < 0 And Widget( )\align\bottom <= 0 ) Or
+                           ( Widget( )\align\bottom < 0 And Widget( )\align\top <= 0 )
+                           Protected ScaleY.d = pih / Widget( )\parent\align\height
+                           Height = ScaleY * Widget( )\align\height
+                           ;\\ center proportional
+                           If Widget( )\align\top < 0 And Widget( )\align\bottom < 0
+                              Y = ( pih - Height ) / 2
+                           ElseIf Widget( )\align\top < 0 And Widget( )\align\bottom = 0
+                              ;\\ bottom proportional
+                              Y = pih - ( Widget( )\parent\align\height - Widget( )\align\y - Widget( )\align\height ) - Height
+                           ElseIf ( Widget( )\align\bottom < 0 And Widget( )\align\top = 0 )
+                              ;\\ top proportional
+                              Y = Widget( )\align\y
+                           EndIf
+                        EndIf
+                        
+                        ;
+                        Resize( Widget( ), (X), (Y), (Width), (Height), 0 )
+                     Else
+                        Resize( Widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                     EndIf
+                  EndIf
+                  ;
+                  StopEnum( )
+               EndIf
+               
+            EndIf
+         EndIf
+         
+         ;
+         ProcedureReturn Bool( Change_x Or Change_y Or Change_width Or Change_height )
+      EndProcedure
+      
+      Procedure   ResizeRootWindow( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
+         If X = #PB_Ignore
+            X = WindowX( *this\root\canvas\window )
+         Else
+            X = DPIUnScaled( X )
+         EndIf
+         If Y = #PB_Ignore
+            Y = WindowY( *this\root\canvas\window )
+         Else
+            Y = DPIUnScaled( Y )
+         EndIf
+         If Width = #PB_Ignore
+            Width = WindowWidth( *this\root\canvas\window )
+         Else
+            Width = DPIUnScaled( Width )
+         EndIf
+         If Height = #PB_Ignore
+            Height = WindowHeight( *this\root\canvas\window )
+         Else
+            Height = DPIUnScaled( Height )
+         EndIf
+         ;
+         ResizeWindow( *this\root\canvas\window, X, Y, Width, Height )
+         ResizeGadget( *this\root\canvas\gadget, #PB_Ignore, #PB_Ignore, Width, Height )
+         ; Resize( *this, #PB_Ignore, #PB_Ignore, Width, Height )
+      EndProcedure
+      
       ;-
       Procedure.i CloseList( )
          Protected *open._s_WIDGET
@@ -27649,8 +27630,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 8720
-; FirstLine = 8411
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------m------------vqz--V2---------4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 25297
+; FirstLine = 24211
+; Folding = -------------------------------------------------------------------------8--------------4--+0v+++ff--f+------------------------------------------------------------------bf+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------b9+v-----------0PD-----------------0------------VV+--w+0------f----v-------v-08f2+-0--------
 ; EnableXP
 ; Executable = widgets-.app.exe
