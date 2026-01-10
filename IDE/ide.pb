@@ -246,7 +246,8 @@ test_focus_draw = 3
 ; test_canvas_focus_draw = 1
 ; test_focus_set = 1
 ; test_changecursor = 1
-
+test_iclip = 1
+   
 
 Global PreviewRunning, PreviewProgramName$
 
@@ -3106,10 +3107,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2430
-; FirstLine = 2426
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 248
+; FirstLine = 231
 ; Folding = ---------------------------------------------------------
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2.exe
+; Executable = ../../2.exe
