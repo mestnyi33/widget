@@ -22641,6 +22641,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Case #__type_Progress   : bar_draw_progress( *this )
                         Case #__type_Spin       : bar_draw_spin( *this )
                            
+                        Case #__type_MenuBar,
+                             #__type_PopupBar,
+                             #__type_ToolBar,
+                             #__type_TabBar     : bar_draw_tab( *this )
+                           
                            ; Draw frames
                         Case #__type_Frame
                            ;                         If *this\fs
@@ -22687,57 +22692,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                      EndSelect
                      
-                     If *this\type = #__type_MenuBar Or
-                        *this\type = #__type_PopupBar Or
-                        *this\type = #__type_ToolBar Or
-                        *this\type = #__type_TabBar
-                        ;
-                        ; Debug *this\class
-                        bar_draw_tab( *this )
-                     EndIf
-                     
-                     ;\\
-                     ;               If *this\tabbar And
-                     ;                  *this\tabbar\countitems
-                     ;                 bar_draw_tab( *this\tabbar )
-                     ;                 ; clip_output_( *this, [#__c_draw] )
-                     ;               EndIf
-                     If *this\tabbar And *this\tabbar\countitems
-                        If *this\type = #__type_MenuBar Or
-                           *this\type = #__type_PopupBar Or
-                           *this\type = #__type_ToolBar Or
-                           *this\type = #__type_TabBar
-                           ;
-                           bar_draw_tab( *this\tabbar )
-                        Else 
-                           Draw( *this\tabbar ) 
-                        EndIf
-                     EndIf
-                     
-                     If *this\menubar And
-                        *this\menubar\countitems
-                        ;
-                        If *this\type = #__type_MenuBar Or
-                           *this\type = #__type_PopupBar Or
-                           *this\type = #__type_ToolBar Or
-                           *this\type = #__type_TabBar
-                           ;
-                           bar_draw_tab( *this\menubar )
-                        Else 
-                           Draw( *this\menubar ) ; clip_output_( *this, [#__c_draw] )
-                        EndIf
-                     EndIf
-                     
-                     ;\\
-                     If *this\stringbar
-                        Draw( *this\stringbar )
-                        clip_output_( *this, [#__c_draw] )
-                     EndIf
-                     
                      ;\\ draw area scrollbars
                      If *this\scroll And ( *this\scroll\v Or *this\scroll\h )
                         bar_area_draw( *this )
                         ; clip_output_( *this, [#__c_draw] )
+                     EndIf
+                     
+                     ;\\ draw integral childrens
+                     If *this\stringbar
+                        Draw( *this\stringbar ) : clip_output_( *this, [#__c_draw] )
+                     EndIf
+                     If *this\tabbar And *this\tabbar\countitems
+                        Draw( *this\tabbar ) : clip_output_( *this, [#__c_draw] )
+                     EndIf
+                     If *this\menubar And *this\menubar\countitems
+                        Draw( *this\menubar ) : clip_output_( *this, [#__c_draw] )
                      EndIf
                      
                      ;\\ draw disable state
@@ -22761,8 +22730,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  If *this\root\drawmode & 1<<1 
-                  EndIf
                   ;
                   ; post event re draw
                   If *this\binddraw
@@ -22835,11 +22802,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            draw_box_( *this\clip_x( ), *this\clip_y( ), *this\clip_width( ), *this\clip_height( ), $ff000000 )
                         EndIf
                      EndIf
+                     ;
                      If test_iclip 
-                        If *this\parent
+                        If *this\parent 
                            draw_mode_alpha_( #PB_2DDrawing_Outlined )
-                           ;   draw_box_( *this\parent\clip_x( ), *this\parent\clip_y( ), *this\parent\clip_width( ), *this\parent\clip_height( ), $ff000000 )
-                           draw_box_( *this\clip_ix( ), *this\clip_iy( ), *this\clip_iwidth( ), *this\clip_iheight( ), $ff00ff00 )
+                           If is_integral_( *this )
+                              draw_box_( *this\clip_ix( ), *this\clip_iy( ), *this\clip_iwidth( ), *this\clip_iheight( ), $ffff00ff )
+                           Else
+                              draw_box_( *this\clip_ix( ), *this\clip_iy( ), *this\clip_iwidth( ), *this\clip_iheight( ), $ff00ff00 )
+                           EndIf
                         EndIf
                      EndIf
                   EndIf
@@ -22859,17 +22830,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-            
-;             If *this\parent ; And *this\parent\LastWidget( ) = *this
-;                If *this\parent\tabbar
-;                   Protected._s_ITEMS *activeTAB = *this\parent\tabbar\TabFocused( )
-;                   
-;                   If *activeTAB
-;                      draw_mode_alpha_( #PB_2DDrawing_Default )
-;                      Box( *this\parent\inner_x( ) + *activeTAB\x, *this\parent\inner_y( ) - 3, *activeTAB\width, DPIScaled(5), $ff0000ff )
-;                   EndIf                 
-;                EndIf
-;             EndIf
             
             ;\\ reset values
             If *this\WidgetChange( ) <> 0
@@ -25139,16 +25099,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Protected _p_x2_
                Protected _p_y2_
                
-               _p_x1_ = *parent\inner_x( ) 
+               _p_x1_ = *parent\inner_x( )
                _p_y1_ = *parent\inner_y( )
                
-               If *this\type = #__type_Scroll
+;                If *this\type = #__type_Scroll
                   _p_x2_ = _p_x1_ + *parent\container_width( )
                   _p_y2_ = _p_y1_ + *parent\container_height( )
-               Else
-                  _p_x2_ = _p_x1_ + *parent\inner_width( )
-                  _p_y2_ = _p_y1_ + *parent\inner_height( )
-               EndIf
+;                Else
+;                   _p_x2_ = _p_x1_ + *parent\inner_width( )
+;                   _p_y2_ = _p_y1_ + *parent\inner_height( )
+;                EndIf
                
                ;\\ clip out draw X&Y coordinates
                If _p_x1_ > *parent\clip_x( ) And 
@@ -25195,9 +25155,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         
          ;\\
          If ( Change_x Or Change_y Or Change_width Or Change_height ) 
+            *this\root\repaint = 1
+            
+            If *this\ResizeChange( ) <> #True
+               *this\ResizeChange( ) = #True
+            EndIf
+            
             ;\\ resize child vertical&horizontal scrollbars
             If *this\scroll And
                *this\scroll\v And
@@ -25267,7 +25232,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
                *this\clip_iy( ) = *this\inner_y( )
             EndIf
-            ;
+            
             ;\\ clip inner draw Width&Height coordinates
             If (*this\inner_x( ) + *this\inner_width( )) > (*this\clip_x( ) + *this\clip_width( ))
                *this\clip_iwidth( ) = (*this\clip_x( ) + *this\clip_width( )) - *this\clip_ix( )
@@ -25284,12 +25249,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          If ( Change_x Or Change_y Or Change_width Or Change_height ) 
-            ; Reclip( *this )
-            If *this\ResizeChange( ) <> #True
-               *this\ResizeChange( ) = #True
-            EndIf
-            
-            *this\root\repaint = 1
             ;
             If *this\anchors 
                a_size( *this\anchors\id,
@@ -25304,6 +25263,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                        *this\screen_height( ) )
             EndIf
             
+            ;
+            If *this\menubar Or
+               *this\tabbar 
+               ix = *this\inner_x( )
+               iy = *this\inner_y( )
+               *this\inner_x( ) = X
+               *this\inner_y( ) = Y
+               
+               iwidth = *this\container_width( )
+               iheight = *this\container_height( )
+               *this\container_width( ) = Width
+               *this\container_height( ) = Height
+               
+;                iwidth = *this\inner_width( )
+;                iheight = *this\inner_height( )
+;                *this\inner_width( ) = Width
+;                *this\inner_height( ) = Height
+            EndIf
+            
             ;\\ if the widgets is composite
             If *this\stringbar
                Resize( *this\stringbar, 0, 0, *this\inner_width( ), *this\inner_height( ) )
@@ -25311,56 +25289,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; if the integral menu bar
             If *this\menubar
-               ix = *this\inner_x( )
-               iy = *this\inner_y( )
-               iwidth = *this\inner_width( )
-               iheight = *this\inner_height( )
-               
-               *this\inner_x( ) = X
-               *this\inner_y( ) = Y
-               *this\inner_width( ) = Width
-               *this\inner_height( ) = Height
-               
-               ;\\
                If *this\menubar\autosize
-                  Resize( *this\menubar, 0, 0, *this\inner_width( ), *this\inner_height( ) )
+                  Resize( *this\menubar, 0, 0, iwidth, iheight )
                Else
                   If *this\menubar\bar\vertical
                      If *this\fs[1]
-                        Resize( *this\menubar, *this\fs, *this\fs, *this\fs[1], *this\inner_height( ) )
+                        Resize( *this\menubar, *this\fs, *this\fs, *this\fs[1], iheight )
                      EndIf
                      If *this\fs[3]
-                        Resize( *this\menubar, *this\frame_width( ) - *this\fs[3], *this\fs, *this\fs[3], *this\inner_height( ) )
+                        Resize( *this\menubar, *this\frame_width( ) - *this\fs[3], *this\fs, *this\fs[3], iheight )
                      EndIf
                   Else
                      If *this\fs[2]
-                        Resize( *this\menubar, *this\fs, *this\fs + *this\TitleBarHeight, *this\inner_width( ), *this\MenuBarHeight )
+                        Resize( *this\menubar, *this\fs, *this\fs + *this\TitleBarHeight, iwidth, *this\MenuBarHeight )
                      EndIf
                      If *this\fs[4]
-                        Resize( *this\menubar, *this\fs, *this\frame_height( ) - *this\fs[4], *this\inner_width( ), *this\fs[4] )
+                        Resize( *this\menubar, *this\fs, *this\frame_height( ) - *this\fs[4], iwidth, *this\fs[4] )
                      EndIf
                   EndIf
                EndIf
-               
-               *this\inner_x( ) = iX
-               *this\inner_y( ) = iY
-               *this\inner_width( ) = iWidth
-               *this\inner_height( ) = iHeight
             EndIf
             
             ;\\ if the integral tab bar
             If *this\tabbar
-               ix = *this\inner_x( )
-               iy = *this\inner_y( )
-               iwidth = *this\inner_width( )
-               iheight = *this\inner_height( )
-               
-               *this\inner_x( ) = X
-               *this\inner_y( ) = Y
-               *this\inner_width( ) = Width
-               *this\inner_height( ) = Height
-               
-               ;\\
                If *this\tabbar\autosize
                   Resize( *this\tabbar, *this\fs, *this\fs, iwidth, iheight )
                Else
@@ -25368,37 +25319,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\fs[1]
                         Resize( *this\tabbar, *this\fs, *this\fs, *this\fs[1], iheight )
                      EndIf
-                     If *this\fs[3]
+                     If *this\fs[3]   
                         Resize( *this\tabbar, *this\fs + iwidth, *this\fs, *this\fs[3], iheight )
                      EndIf
                   Else
                      If *this\fs[2]
                         Resize( *this\tabbar, *this\fs, *this\fs + *this\TitleBarHeight + *this\MenuBarHeight, iwidth, *this\ToolBarHeight )
                      EndIf
-                     If *this\fs[4]
+                     If *this\fs[4] 
                         Resize( *this\tabbar, *this\fs, *this\fs + iheight, iwidth, *this\fs[4] )
                      EndIf
                   EndIf
                EndIf
-               
-               *this\inner_x( ) = ix
-               *this\inner_y( ) = iy
-               *this\inner_width( ) = iwidth
-               *this\inner_height( ) = iheight
             EndIf
+            
             ;
-            ;\\
-            If *this\type = #__type_ComboBox
-               If *this\stringbar
-                  *this\combobutton\width = *this\fs[3]
-                  *this\combobutton\x     = ( *this\screen_x( )+ *this\screen_width( ) ) - *this\fs[3]
-               Else
-                  *this\combobutton\width = *this\frame_width( ) - *this\fs * 2 ; *this\inner_width( )
-                  *this\combobutton\x     = *this\frame_x( ) + *this\fs
-               EndIf
+            If *this\menubar Or 
+               *this\tabbar 
+               *this\inner_x( ) = iX
+               *this\inner_y( ) = iY
                
-               *this\combobutton\y      = *this\inner_y( )
-               *this\combobutton\height = *this\inner_height( )
+;                *this\inner_width( ) = iWidth
+;                *this\inner_height( ) = iHeight
+               *this\container_width( ) = iWidth
+               *this\container_height( ) = iHeight
             EndIf
             
             ;\\ after resize update 
@@ -25431,6 +25375,45 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
+            EndIf
+            
+            ;
+            ;\\ update option&checkbox position
+            If *this\togglebox 
+               If ( *this\togglebox\width Or *this\togglebox\height )
+                  *this\togglebox\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\togglebox\height ) / 2
+                  
+                  If *this\text\align\right
+                     *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\height - DPIScaled(3) )
+                  ElseIf Not *this\text\align\left
+                     *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\width ) / 2
+                     
+                     If Not *this\text\align\top
+                        If *this\text\rotate = 0
+                           *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) - *this\togglebox\height
+                        Else
+                           *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
+                        EndIf
+                     EndIf
+                  Else
+                     *this\togglebox\x = *this\inner_x( ) + DPIScaled(3)
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;
+            ;\\
+            If *this\type = #__type_ComboBox
+               If *this\stringbar
+                  *this\combobutton\width = *this\fs[3]
+                  *this\combobutton\x     = ( *this\screen_x( )+ *this\screen_width( ) ) - *this\fs[3]
+               Else
+                  *this\combobutton\width = *this\frame_width( ) - *this\fs * 2 ; *this\inner_width( )
+                  *this\combobutton\x     = *this\frame_x( ) + *this\fs
+               EndIf
+               
+               *this\combobutton\y      = *this\inner_y( )
+               *this\combobutton\height = *this\inner_height( )
             EndIf
             
             ;\\
@@ -25507,39 +25490,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *this\type = #__type_ScrollArea
-               If IsGadget(*this\scroll\gadget[1])
-                  ResizeGadget(*this\scroll\gadget[1], DPIUnscaledX(*this\inner_x( )), DPIUnscaledY(*this\inner_y( )), DPIUnscaledX(*this\inner_width( )), DPIUnscaledY(*this\inner_height( )))
+               If IsGadget( *this\scroll\gadget[1] )
+                  ResizeGadget( *this\scroll\gadget[1], DPIUnscaledX(*this\inner_x( )), DPIUnscaledY(*this\inner_y( )), DPIUnscaledX(*this\inner_width( )), DPIUnscaledY(*this\inner_height( )))
                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                     UpdateWindow_(GadgetID(*this\scroll\gadget[1]))
+                     UpdateWindow_( GadgetID( *this\scroll\gadget[1] ))
                   CompilerEndIf
                EndIf
             EndIf
-            
-            ;
-            ;\\ update option&checkbox position
-            If *this\togglebox 
-               If ( *this\togglebox\width Or *this\togglebox\height )
-                  *this\togglebox\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\togglebox\height ) / 2
-                  
-                  If *this\text\align\right
-                     *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\height - DPIScaled(3) )
-                  ElseIf Not *this\text\align\left
-                     *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\width ) / 2
-                     
-                     If Not *this\text\align\top
-                        If *this\text\rotate = 0
-                           *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) - *this\togglebox\height
-                        Else
-                           *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
-                        EndIf
-                     EndIf
-                  Else
-                     *this\togglebox\x = *this\inner_x( ) + DPIScaled(3)
-                  EndIf
-               EndIf
-            EndIf
-            
-            
             
             ;\\ Post Event
             If *this\bindresize ; (*this\haschildren Or *this\anchors) ; 
@@ -27562,8 +27519,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 25151
-; FirstLine = 24056
-; Folding = -------------------------------------------------------------------------8--------------4--+0v+++ff--f+------------------------------------------------------------------v06----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Gv-8----------f-zw----------------N------------fV-Z+0Dp--7v-f88------------0v--r3-v--------
+; CursorPosition = 22710
+; FirstLine = 22603
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ff7872+------------------------------------------------v6------------ram6t-v08v--t-------------------------------
 ; EnableXP
 ; Executable = widgets-.app.exe

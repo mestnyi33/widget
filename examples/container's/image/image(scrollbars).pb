@@ -59,8 +59,49 @@ If Open(0, 100, 50, 490, 400, "ListViewGadget", #PB_Window_SystemMenu)
    
    WaitClose()
 EndIf
+
+
+; If *this\tabbar
+;                ix = *this\inner_x( )
+;                iy = *this\inner_y( )
+;                iwidth = *this\inner_width( )
+;                iheight = *this\inner_height( )
+;                
+;                *this\inner_x( ) = X
+;                *this\inner_y( ) = Y
+;                *this\inner_width( ) = Width
+;                *this\inner_height( ) = Height
+;                
+;                ;\\
+;                If *this\tabbar\autosize
+;                   Resize( *this\tabbar, *this\fs, *this\fs, iwidth, iheight )
+;                Else
+;                   If *this\tabbar\bar\vertical
+;                      If *this\fs[1]
+;                         Resize( *this\tabbar, *this\fs, *this\fs, *this\fs[1], iheight )
+;                      EndIf
+;                      If *this\fs[3]
+;                         Resize( *this\tabbar, *this\fs + iwidth, *this\fs, *this\fs[3], iheight )
+;                      EndIf
+;                   Else
+;                      If *this\fs[2]
+;                         Resize( *this\tabbar, *this\fs, *this\fs + *this\TitleBarHeight + *this\MenuBarHeight, iwidth, *this\ToolBarHeight )
+;                      EndIf
+;                      If *this\fs[4]
+;                         Resize( *this\tabbar, *this\fs, *this\fs + iheight, iwidth, *this\fs[4] )
+;                      EndIf
+;                   EndIf
+;                EndIf
+;                
+;                *this\inner_x( ) = ix
+;                *this\inner_y( ) = iy
+;                *this\inner_width( ) = iwidth
+;                *this\inner_height( ) = iheight
+;             EndIf
+            
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 6
+; CursorPosition = 99
+; FirstLine = 75
 ; Folding = -
 ; EnableXP
 ; DPIAware

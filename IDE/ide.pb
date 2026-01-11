@@ -2621,7 +2621,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ;    Debug "create window - "+WindowID(ide_window)
    ;    Debug "create canvas - "+GadgetID(ide_g_canvas)
    
-   ide_toolbar_container = Container( 0,0,0,0, #__flag_BorderFlat ) 
+   ide_toolbar_container = Container( 0,0,0,0 ) 
    ide_toolbar = CreateBar( ide_toolbar_container, #PB_ToolBar_Small );|#PB_ToolBar_Large|#PB_ToolBar_Buttons);| #PB_ToolBar_InlineText )
    SetColor(ide_toolbar, #PB_Gadget_BackColor, $fffefefe )
    
@@ -2849,7 +2849,7 @@ Global ide_SPLITTER =- 1
    SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 350 )
    
    ; set splitters dafault positions
-   SetState( ide_main_SPLITTER, Height( ide_toolbar )) 
+   SetState( ide_main_SPLITTER, Height( ide_toolbar)+1) ; bug
    SetState( ide_SPLITTER, Width( ide_SPLITTER ) - 280 )
    SetState( ide_debug_SPLITTER, Height( ide_debug_SPLITTER ) - 150 )
    
@@ -3108,9 +3108,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 248
-; FirstLine = 231
-; Folding = ---------------------------------------------------------
+; CursorPosition = 2851
+; FirstLine = 2757
+; Folding = -------------------------------------------------------n-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2.exe
