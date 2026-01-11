@@ -24771,6 +24771,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn g
       EndProcedure
       
+      ;-
       Procedure.b Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, scale.b = 1 )
          Protected.b result
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
@@ -25137,66 +25138,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Protected _p_y1_
                Protected _p_x2_
                Protected _p_y2_
+               
                _p_x1_ = *parent\inner_x( ) 
                _p_y1_ = *parent\inner_y( )
-               _p_x2_ = _p_x1_ + *parent\inner_width( )
-               _p_y2_ = _p_y1_ + *parent\inner_height( )
                
                If *this\type = #__type_Scroll
-                  _p_x2_ = *parent\inner_x( ) + *parent\container_width( )
-                  _p_y2_ = *parent\inner_y( ) + *parent\container_height( )
+                  _p_x2_ = _p_x1_ + *parent\container_width( )
+                  _p_y2_ = _p_y1_ + *parent\container_height( )
+               Else
+                  _p_x2_ = _p_x1_ + *parent\inner_width( )
+                  _p_y2_ = _p_y1_ + *parent\inner_height( )
                EndIf
-               
-;                If *this\type = #__type_MenuBar Or
-;                   *this\type = #__type_PopupBar Or
-;                   *this\type = #__type_ToolBar Or
-;                   *this\type = #__type_TabBar
-;                   ;
-;                   _p_x1_ = *parent\screen_x( ) 
-;                   _p_y1_ = *parent\screen_y( ) 
-;                   _p_x2_ = _p_x1_ + *parent\screen_width( )
-;                   _p_y2_ = _p_y1_ + *parent\screen_height( )
-;                EndIf
-               
-               
-               ;                
-               ;                ; for the splitter children's
-               ;                If *parent\type = #__type_Splitter
-               ;                   If *parent\split_1( ) = *this
-               ;                      _p_x2_ = *parent\bar\button[1]\x + *parent\bar\button[1]\width
-               ;                      _p_y2_ = *parent\bar\button[1]\y + *parent\bar\button[1]\height
-               ;                   EndIf
-               ;                   If *parent\split_2( ) = *this
-               ;                      _p_x2_ = *parent\bar\button[2]\x + *parent\bar\button[2]\width
-               ;                      _p_y2_ = *parent\bar\button[2]\y + *parent\bar\button[2]\height
-               ;                   EndIf
-               ;                EndIf
-               ;                
-               ;                If is_integral_( *this ) And Not *this\bounds\attach
-               ;                   ;
-               ;                   If *this\type = #__type_MenuBar Or
-               ;                      *this\type = #__type_PopupBar Or
-               ;                      *this\type = #__type_ToolBar Or
-               ;                      *this\type = #__type_TabBar Or
-               ;                      *this\type = #__type_Scroll
-               ;                      ;
-               ;                      _p_x2_ = *parent\inner_x( ) + *parent\container_width( )
-               ;                      _p_y2_ = *parent\inner_y( ) + *parent\container_height( )
-               ;                   EndIf
-               ;                Else
-               ;                   ; for the scrollarea&MDI children's except scrollbars
-               ;                   If *parent\container
-               ;                      If *parent\scroll_width( ) And
-               ;                         _p_x2_ > *parent\inner_x( ) + *parent\scroll_x( ) + *parent\scroll_width( )
-               ;                         _p_x2_ = *parent\inner_x( ) + *parent\scroll_x( ) + *parent\scroll_width( )
-               ;                      EndIf
-               ;                      If *parent\scroll_height( ) And
-               ;                         _p_y2_ > *parent\inner_y( ) + *parent\scroll_y( ) + *parent\scroll_height( )
-               ;                         _p_y2_ = *parent\inner_y( ) + *parent\scroll_y( ) + *parent\scroll_height( )
-               ;                      EndIf
-               ;                   EndIf
-               ;                EndIf
-               
                
                ;\\ clip out draw X&Y coordinates
                If _p_x1_ > *parent\clip_x( ) And 
@@ -27610,8 +27562,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 25315
-; FirstLine = 24133
-; Folding = -------------------------------------------------------------------------8--------------4--+0v+++ff--f+------------------------------------------------------------------v06----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Gv-8----------f-zw----------------N------------fV-Zu0Dpf-7v-f88------------0v--r3-v--------
+; CursorPosition = 25151
+; FirstLine = 24056
+; Folding = -------------------------------------------------------------------------8--------------4--+0v+++ff--f+------------------------------------------------------------------v06----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Gv-8----------f-zw----------------N------------fV-Z+0Dp--7v-f88------------0v--r3-v--------
 ; EnableXP
 ; Executable = widgets-.app.exe
