@@ -279,6 +279,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Global test_buttons_draw = 0
       Global test_startdrawing = 0
       Global test_clip         = 0
+      Global test_iclip         = 0
       
       Global test_resize_area = 0
       Global test_scrollbars_reclip = 0
@@ -22892,6 +22893,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            draw_box_( *this\clip_x( ), *this\clip_y( ), *this\clip_width( ), *this\clip_height( ), $ff000000 )
                         EndIf
                      EndIf
+                     
+                        ;
+                     If test_iclip 
+                        If *this\parent 
+                           draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                           If is_integral_( *this )
+                              draw_box_( *this\clip_ix( ), *this\clip_iy( ), *this\clip_iwidth( ), *this\clip_iheight( ), $ffff00ff )
+                           Else
+                              draw_box_( *this\clip_ix( ), *this\clip_iy( ), *this\clip_iwidth( ), *this\clip_iheight( ), $ff00ff00 )
+                           EndIf
+                        EndIf
+                     EndIf
+                  
                   EndIf
                EndIf   
                
@@ -27661,8 +27675,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 6810
-; FirstLine = 6795
+; CursorPosition = 281
+; FirstLine = 277
 ; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

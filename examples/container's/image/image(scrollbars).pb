@@ -9,27 +9,28 @@ Global._S_widget *g, *s1, *s2
 Global size = 370
 
 Procedure all_events( )
-   ClearDebugOutput( )
-   
-   Resize(*g,#PB_Ignore,#PB_Ignore, size, size )
-   Debug " ------- test show and size scroll bars ------- "
-   
-   Select GetText( EventWidget())
-      Case "1"
-         Resize(*g,#PB_Ignore,#PB_Ignore,256,256 )
-      Case "2"
-         Resize(*g,#PB_Ignore,#PB_Ignore,#PB_Ignore,255 )
-      Case "3"
-         Resize(*g,#PB_Ignore,#PB_Ignore,255,#PB_Ignore )
-      Case "4"
-         Resize(*g,#PB_Ignore,#PB_Ignore,255,255 )
-   EndSelect
-   
-   
-   Debug "----CLIPOUT----"
-   Debug ""+*g\clip_x() +" "+*g\clip_y() +" "+*g\clip_width() +" "+*g\clip_height()
-   Debug ""+*g\clip_ix() +" "+*g\clip_iy() +" "+*g\clip_iwidth() +" "+*g\clip_iheight()
-   
+   If EventWidget()\type = #__type_Button
+      ClearDebugOutput( )
+      
+      Resize(*g,#PB_Ignore,#PB_Ignore, size, size )
+      Debug " ------- test show and size scroll bars ------- "
+      
+      Select GetText( EventWidget())
+         Case "1"
+            Resize(*g,#PB_Ignore,#PB_Ignore,256,256 )
+         Case "2"
+            Resize(*g,#PB_Ignore,#PB_Ignore,#PB_Ignore,255 )
+         Case "3"
+            Resize(*g,#PB_Ignore,#PB_Ignore,255,#PB_Ignore )
+         Case "4"
+            Resize(*g,#PB_Ignore,#PB_Ignore,255,255 )
+      EndSelect
+      
+      
+      Debug "----CLIPOUT----"
+      Debug ""+*g\clip_x() +" "+*g\clip_y() +" "+*g\clip_width() +" "+*g\clip_height()
+      Debug ""+*g\clip_ix() +" "+*g\clip_iy() +" "+*g\clip_iwidth() +" "+*g\clip_iheight()
+   EndIf
 EndProcedure
 
 
@@ -100,8 +101,8 @@ EndIf
 ;             EndIf
             
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 99
-; FirstLine = 75
+; CursorPosition = 33
+; FirstLine = 7
 ; Folding = -
 ; EnableXP
 ; DPIAware
