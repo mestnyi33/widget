@@ -4313,6 +4313,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *BB2 = *bar\button[2]
             
             ;\\
+            If is_integral_( *this )
+               clip_output_( *this, [#__c_draw] )
+            EndIf               
+            
+            ;\\
             If Not *this\hide And *this\AlphaState( )
                If is_integral_( *this )
                   If ChangeFontID( *this, CurrentFontID( ))
@@ -4416,6 +4421,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
             EndIf
             
+            ;\\
+            If is_integral_( *this )
+               clip_output_( *this\parent, [#__c_draw] )
+            EndIf               
+            
          EndWith
       EndProcedure
       
@@ -4430,6 +4440,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected size3.l = DPIScaled(3)
          Protected color.l = *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( )
          
+         ;\\
+         If is_integral_( *this )
+            clip_output_( *this, [#__c_draw] )
+         EndIf
+         
+         ;\\
          If *this\AlphaState( )
             ; Draw scroll bar background
             If *this\color\back <> - 1
@@ -4471,6 +4487,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
+         ;\\
+         If is_integral_( *this )
+            clip_output_( *this\parent, [#__c_draw] )
+         EndIf               
       EndProcedure
       
       Procedure.b bar_draw_progress( *this._s_WIDGET )
@@ -4877,45 +4897,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _parent_\scroll\bars = 1
             _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\createindex + "]", #__type_Scroll, 0, 0, DPIScaled( _scrollbar_size_), _height_, #Null$, #__flag_child | #__flag_Vertical, 0, _area_height_, _height_, ( _scrollbar_size_), _scrollbar_size_/2, _scroll_step_ )
             _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\createindex + "]", #__type_Scroll, 0, 0, _width_, DPIScaled( _scrollbar_size_), #Null$, #__flag_child, 0, _area_width_, _width_, Bool( _mode_ ) * ( _scrollbar_size_),  _scrollbar_size_/2, _scroll_step_ )
-         EndIf
-      EndMacro
-      
-      Macro bar_area_draw( _this_ )
-         If _this_\scroll And ( _this_\scroll\v Or _this_\scroll\h )
-            ;clip_output_( _this_, [#__c_draw] )
-            
-            If _this_\scroll\v And Not _this_\scroll\v\hide And _this_\scroll\v\frame_width( ) And
-               ( _this_\scroll\v\clip_width( ) > 0 And _this_\scroll\v\clip_height( ) > 0 )
-               bar_draw_scroll( _this_\scroll\v )
-            EndIf
-            If _this_\scroll\h And Not _this_\scroll\h\hide And _this_\scroll\h\frame_height( ) And
-               ( _this_\scroll\h\clip_width( ) > 0 And _this_\scroll\h\clip_height( ) > 0 )
-               bar_draw_scroll( _this_\scroll\h )
-            EndIf
-            
-            ;\\
-            If test_draw_area And Not _this_\hide
-               ;If Not _this_\haschildren
-               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               
-               ; ;                ; Box( _this_\scroll_x( ), _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), RGB( 255,0,0 ) )
-               ; ;                Box( _this_\scroll\h\bar\page\pos, _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
-               
-               ;\\ Scroll area coordinate
-               draw_box_( _this_\inner_x( ) + _this_\scroll_x( ) + _this_\padding\x, _this_\inner_y( ) + _this_\scroll_y( ) + _this_\padding\y, _this_\scroll_width( ) - _this_\padding\x * 2, _this_\scroll_height( ) - _this_\padding\y * 2, $FFFF0000 )
-               draw_box_( _this_\inner_x( ) + _this_\scroll_x( ), _this_\inner_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
-               
-               If _this_\scroll\v And _this_\scroll\h
-                  draw_box_( _this_\scroll\h\frame_x( ) + _this_\scroll_x( ), _this_\scroll\v\frame_y( ) + _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), $FF0000FF )
-                  
-                  ; Debug "" +  _this_\scroll_x( )  + " " +  _this_\scroll_y( )  + " " +  _this_\scroll_width( )  + " " +  _this_\scroll_height( )
-                  ;draw_box_( _this_\scroll\h\frame_x( ) - _this_\scroll\h\bar\page\pos, _this_\scroll\v\frame_y( ) - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, $FF0000FF )
-                  
-                  ;\\ page coordinate
-                  draw_box_( _this_\scroll\h\frame_x( ), _this_\scroll\v\frame_y( ), _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, $FF00FF00 )
-               EndIf
-               ; EndIf
-            EndIf
          EndIf
       EndMacro
       
@@ -22312,6 +22293,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected update = Bool(*this\TextChange( ) Or *this\ResizeChange( ))
          
          If Not *this\hide
+            ;\\
+            If is_integral_( *this )
+               clip_output_( *this, [#__c_draw] )
+            EndIf               
             
             With *this
                ; Make output multi line text
@@ -22442,6 +22427,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\TextChange( ) : *this\TextChange( ) = 0 : EndIf
                If *this\WidgetChange( ) : *this\WidgetChange( ) = 0 : EndIf
             EndWith
+            
+            ;\\
+            If is_integral_( *this )
+               clip_output_( *this\parent, [#__c_draw] )
+            EndIf               
          EndIf
          
       EndProcedure
@@ -22692,21 +22682,50 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                      EndSelect
                      
-                     ;\\ draw area scrollbars
-                     If *this\scroll And ( *this\scroll\v Or *this\scroll\h )
-                        bar_area_draw( *this )
-                        ; clip_output_( *this, [#__c_draw] )
-                     EndIf
-                     
                      ;\\ draw integral childrens
                      If *this\stringbar
-                        Draw( *this\stringbar ) : clip_output_( *this, [#__c_draw] )
-                     EndIf
-                     If *this\tabbar And *this\tabbar\countitems
-                        Draw( *this\tabbar ) : clip_output_( *this, [#__c_draw] )
+                        Draw_Editor( *this\menubar )
                      EndIf
                      If *this\menubar And *this\menubar\countitems
-                        Draw( *this\menubar ) : clip_output_( *this, [#__c_draw] )
+                        bar_draw_tab( *this\menubar )
+                     EndIf
+                     If *this\tabbar And *this\tabbar\countitems
+                        bar_draw_tab( *this\tabbar )
+                     EndIf
+                     If *this\scroll 
+                        ;\\ draw area scrollbars
+                        If *this\scroll\v And Not *this\scroll\v\hide And
+                           ( *this\scroll\v\clip_width( ) > 0 And *this\scroll\v\clip_height( ) > 0 )
+                           bar_draw_scroll( *this\scroll\v )
+                        EndIf
+                        If *this\scroll\h And Not *this\scroll\h\hide And
+                           ( *this\scroll\h\clip_width( ) > 0 And *this\scroll\h\clip_height( ) > 0 )
+                           bar_draw_scroll( *this\scroll\h )
+                        EndIf
+                        
+                        ;\\
+                        If test_draw_area And Not *this\hide
+                           ;If Not *this\haschildren
+                           draw_mode_alpha_( #PB_2DDrawing_Outlined )
+                           
+                           ; ;                ; Box( *this\scroll_x( ), *this\scroll_y( ), *this\scroll_width( ), *this\scroll_height( ), RGB( 255,0,0 ) )
+                           ; ;                Box( *this\scroll\h\bar\page\pos, *this\scroll\v\bar\page\pos, *this\scroll\h\bar\max, *this\scroll\v\bar\max, RGB( 255,0,0 ) )
+                           
+                           ;\\ Scroll area coordinate
+                           draw_box_( *this\inner_x( ) + *this\scroll_x( ) + *this\padding\x, *this\inner_y( ) + *this\scroll_y( ) + *this\padding\y, *this\scroll_width( ) - *this\padding\x * 2, *this\scroll_height( ) - *this\padding\y * 2, $FFFF0000 )
+                           draw_box_( *this\inner_x( ) + *this\scroll_x( ), *this\inner_y( ) + *this\scroll_y( ), *this\scroll_width( ), *this\scroll_height( ), $FF0000FF )
+                           
+                           If *this\scroll\v And *this\scroll\h
+                              draw_box_( *this\scroll\h\frame_x( ) + *this\scroll_x( ), *this\scroll\v\frame_y( ) + *this\scroll_y( ), *this\scroll_width( ), *this\scroll_height( ), $FF0000FF )
+                              
+                              ; Debug "" +  *this\scroll_x( )  + " " +  *this\scroll_y( )  + " " +  *this\scroll_width( )  + " " +  *this\scroll_height( )
+                              ;draw_box_( *this\scroll\h\frame_x( ) - *this\scroll\h\bar\page\pos, *this\scroll\v\frame_y( ) - *this\scroll\v\bar\page\pos, *this\scroll\h\bar\max, *this\scroll\v\bar\max, $FF0000FF )
+                              
+                              ;\\ page coordinate
+                              draw_box_( *this\scroll\h\frame_x( ), *this\scroll\v\frame_y( ), *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, $FF00FF00 )
+                           EndIf
+                           ; EndIf
+                        EndIf
                      EndIf
                      
                      ;\\ draw disable state
@@ -27519,8 +27538,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 22710
-; FirstLine = 22603
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ff7872+------------------------------------------------v6------------ram6t-v08v--t-------------------------------
+; CursorPosition = 22694
+; FirstLine = 22376
+; Folding = ----------------------------------------------------------------------------------------------------0--0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------9-i----v-QfXv3-------------------------------------------------N------------fVzMv0-tf-0-v0------------------------------
 ; EnableXP
 ; Executable = widgets-.app.exe

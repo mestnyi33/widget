@@ -2849,7 +2849,7 @@ Global ide_SPLITTER =- 1
    SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 350 )
    
    ; set splitters dafault positions
-   SetState( ide_main_SPLITTER, Height( ide_toolbar)+1) ; bug
+   SetState( ide_main_SPLITTER, Height( ide_toolbar)+3) ; bug
    SetState( ide_SPLITTER, Width( ide_SPLITTER ) - 280 )
    SetState( ide_debug_SPLITTER, Height( ide_debug_SPLITTER ) - 150 )
    

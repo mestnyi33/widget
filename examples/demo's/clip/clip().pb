@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   test_clip = 1
+   ;test_clip = 1
    test_iclip = 1
    
    Global._s_WIDGEt *g, *g1, *g2, *g3, *g4,  *s1, *s2
@@ -109,8 +109,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 109
-; FirstLine = 85
+; CursorPosition = 8
 ; Folding = --
 ; EnableXP
 ; DPIAware
