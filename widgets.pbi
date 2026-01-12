@@ -22684,7 +22684,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;\\ draw integral childrens
                      If *this\stringbar
-                        Draw_Editor( *this\menubar )
+                        Draw_Editor( *this\stringbar )
                      EndIf
                      If *this\menubar And *this\menubar\countitems
                         bar_draw_tab( *this\menubar )
@@ -27537,9 +27537,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 22694
-; FirstLine = 22376
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 22686
+; FirstLine = 22342
 ; Folding = ----------------------------------------------------------------------------------------------------0--0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------9-i----v-QfXv3-------------------------------------------------N------------fVzMv0-tf-0-v0------------------------------
 ; EnableXP
 ; Executable = widgets-.app.exe
