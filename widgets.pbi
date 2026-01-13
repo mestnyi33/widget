@@ -540,6 +540,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro EventWidget( ): Widget::Widget( ): EndMacro
       ;Macro EventWidget( ): widget::__gui\event\widget: EndMacro
       Macro WidgetEvent( ): Widget::__gui\event\type: EndMacro
+      Macro WidgetEventType( ): PBEventType( WidgetEvent( ) ): EndMacro
       Macro WidgetEventData( ): Widget::__gui\event\data: EndMacro
       Macro WidgetEventItem( ): Widget::__gui\event\item: EndMacro
       
@@ -3809,7 +3810,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If _bar_\min > _max_
             _bar_\max = _bar_\min + 1
          Else
-            _bar_\max = _max_
+            _bar_\max = _max_ - Bool(_max_%2)
          EndIf
       EndMacro
       
@@ -10282,7 +10283,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;  is_scrollbars_( *this )
          If *this\type = #__type_ScrollArea Or
             *this\type = #__type_MDI
-            
+             
             Select Attribute
                Case #PB_ScrollArea_X
                   If bar_PageChange( *this\scroll\h, DPIScaledX(value), 2 ) ; and post event
@@ -10427,6 +10428,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Case #__bar_maximum
                      If *bar\max <> value 
                         bar_max( *bar, value )
+                        ; Debug ""+*this\class +" "+ value
+                        ;*bar\max = value - Bool(value%2)
                         ;
                         If *bar\page\pos > *bar\max 
                            *bar\page\pos = *bar\max
@@ -27549,9 +27552,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 5044
-; FirstLine = 4894
-; Folding = ----------------------------------------------------------------------------------------------------0--0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------P-v5----4P142r0------------------------------------------------fz------------X2------------------------------------------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 10154
+; FirstLine = 9981
+; Folding = ----------------------------------------------------------------------------------------------------8--8---------------------------------------------------------------------------------------------------------------------------------------------------------------------47---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f+fx----vfovrX8-------------------------------------------------m------------vq------------------------------------------
 ; EnableXP
+; DPIAware
 ; Executable = widgets-.app.exe

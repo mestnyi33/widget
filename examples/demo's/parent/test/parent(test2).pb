@@ -232,7 +232,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure widget_add( *parent._s_widget, Class.s, X.l,Y.l, Width.l=0, Height.l=0 )
     Protected *new._s_widget, *param1, *param2, *param3
-    Protected flag.i
+    Protected Flag.i
     
     If *parent 
       Class.s = LCase( Trim( Class ) )
@@ -270,18 +270,18 @@ CompilerIf #PB_Compiler_IsMainFile
       ; create elements
       Select Class
          Case "window"    
-            *new = AddItem( *parent, #PB_Any, "", - 1, flag )
+            *new = AddItem( *parent, #PB_Any, "", - 1, Flag )
             Resize( *new, #PB_Ignore, #PB_Ignore, Width,Height )
             SetColor( *new, #PB_Gadget_BackColor, $FFECECEC )
             SetImage( *new, CatchImage( #PB_Any,?group_bottom ) )
             Bind( *new, @widget_events( ) )
             
          Case "container"   
-            *new = Container( X,Y,Width,Height, flag )                             : CloseList( )
+            *new = Container( X,Y,Width,Height, Flag )                             : CloseList( )
             SetColor( *new, #PB_Gadget_BackColor, $FFF1F1F1 )
             
          Case "button"      
-            *new = Button( X,Y,Width,Height, "", flag ) 
+            *new = Button( X,Y,Width,Height, "", Flag ) 
             
       EndSelect
       
@@ -476,15 +476,15 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         If sublevel > *this\__rows( )\sublevel
 ;           PushListPosition( *this\__rows( ))
 ;           If PreviousElement( *this\__rows( ))
-;             *this\row\added = *this\__rows( )
+;             *this\row\new = *this\__rows( )
 ;             ;;NextElement( *this\__rows( ))
 ;           Else
-;             last = *this\row\added
+;             last = *this\row\new
 ;             sublevel = *this\__rows( )\sublevel
 ;           EndIf
 ;           PopListPosition( *this\__rows( ))
 ;         Else
-;           last = *this\row\added
+;           last = *this\row\new
 ;           sublevel = *this\__rows( )\sublevel
 ;         EndIf
         
@@ -500,18 +500,18 @@ CompilerIf #PB_Compiler_IsMainFile
          ; sublevel = position
         EndIf
         
-;         If *this\row\added 
-;           If sublevel > *this\row\added\sublevel
-;             sublevel = *this\row\added\sublevel + 1
-;             *parent_row = *this\row\added
+;         If *this\row\new 
+;           If sublevel > *this\row\new\sublevel
+;             sublevel = *this\row\new\sublevel + 1
+;             *parent_row = *this\row\new
 ;             
-;           ElseIf *this\row\added\RowParent( ) 
-;             If sublevel > *this\row\added\RowParent( )\sublevel 
-;               *parent_row = *this\row\added\RowParent( )
+;           ElseIf *this\row\new\RowParent( ) 
+;             If sublevel > *this\row\new\RowParent( )\sublevel 
+;               *parent_row = *this\row\new\RowParent( )
 ;               
-;             ElseIf sublevel < *this\row\added\sublevel 
-;               If *this\row\added\RowParent( )\RowParent( )
-;                 *parent_row = *this\row\added\RowParent( )\RowParent( )
+;             ElseIf sublevel < *this\row\new\sublevel 
+;               If *this\row\new\RowParent( )\RowParent( )
+;                 *parent_row = *this\row\new\RowParent( )\RowParent( )
 ;                 
 ;                 While *parent_row 
 ;                   If sublevel >= *parent_row\sublevel 
@@ -526,15 +526,15 @@ CompilerIf #PB_Compiler_IsMainFile
 ;               EndIf
 ;               
 ;               ; for the editor( )
-;               If *this\row\added\RowParent( ) 
-;                 If *this\row\added\RowParent( )\sublevel = sublevel 
-;                   ;                     *rows\before = *this\row\added\RowParent( )
-;                   ;                     *this\row\added\RowParent( )\after = *rows
+;               If *this\row\new\RowParent( ) 
+;                 If *this\row\new\RowParent( )\sublevel = sublevel 
+;                   ;                     *rows\before = *this\row\new\RowParent( )
+;                   ;                     *this\row\new\RowParent( )\after = *rows
 ;                   
 ;                   If *this\type = #__type_Editor
-;                     *parent_row = *this\row\added\RowParent( )
+;                     *parent_row = *this\row\new\RowParent( )
 ;                     *parent_row\_last = *rows
-;                     *this\row\added = *parent_row
+;                     *this\row\new = *parent_row
 ;                     last = *parent_row
 ;                   EndIf
 ;                   
@@ -554,19 +554,19 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
         
         If last
-          ; *this\row\added = last
+          ; *this\row\new = last
         Else
-          *this\row\added = *rows
+          *this\row\new = *rows
         EndIf
         
         ; for the tree( )
-        If *this\row\added\RowParent( ) And
-           *this\row\added\RowParent( )\sublevel < sublevel
-          *this\row\added\RowParent( )\_last = *this\row\added
+        If *this\row\new\RowParent( ) And
+           *this\row\new\RowParent( )\sublevel < sublevel
+          *this\row\new\RowParent( )\_last = *this\row\new
         EndIf
         
-        If *this\row\added\sublevel = 0
-          *this\row\last = *this\row\added
+        If *this\row\new\sublevel = 0
+          *this\row\last = *this\row\new
         EndIf
         
         If position = 0
@@ -779,10 +779,10 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure ide_open( X=100,Y=100,Width=800,Height=530 )
-    Define flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
-    Define root = widget::Open( 0, X,Y,Width,Height, "ide", flag ) 
-    window_ide = widget::GetCanvasWindow( root )
-    canvas_ide = widget::GetCanvasGadget( root )
+    Define Flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
+    Define Root = Widget::Open( 0, X,Y,Width,Height, "ide", Flag ) 
+    window_ide = Widget::GetCanvasWindow( Root )
+    canvas_ide = Widget::GetCanvasGadget( Root )
     
     id_design_form = MDI( 10,10,410,510 ) : a_init( id_design_form )
     id_elements_tree = Tree( 430,10,150,510, #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_Borderless )
@@ -844,8 +844,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 731
-; FirstLine = 727
+; CursorPosition = 568
+; FirstLine = 525
 ; Folding = ------------
 ; EnableXP
 ; DPIAware
