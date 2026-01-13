@@ -4315,7 +4315,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If is_integral_( *this )
-               clip_output_( *this, [#__c_draw] )
+            ;   clip_output_( *this, [#__c_draw] )
             EndIf               
             
             ;\\
@@ -4424,7 +4424,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If is_integral_( *this )
-               clip_output_( *this\parent, [#__c_draw] )
+            ;   clip_output_( *this\parent, [#__c_draw] )
             EndIf               
             
          EndWith
@@ -8838,17 +8838,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *this\type <> #__type_window
             If IsImage( img )
-               *this\picture\x   = *this\padding\x
+               *this\picture\x  = *this\padding\x
                *this\picture\y  = *this\padding\y
                
                ; make horizontal scroll max
-               If *this\scroll_width( ) <> *this\picture\width + *this\padding\x * 2
-                  *this\scroll_width( ) = *this\picture\width + *this\padding\x * 2
+               If *this\scroll_width( ) <> *this\picture\width + *this\picture\x * 2
+                  *this\scroll_width( ) = *this\picture\width + *this\picture\x * 2
                EndIf
                
                ; make vertical scroll max
-               If *this\scroll_height( ) <> *this\picture\height + *this\padding\y * 2
-                  *this\scroll_height( ) = *this\picture\height + *this\padding\y * 2
+               If *this\scroll_height( ) <> *this\picture\height + *this\picture\y * 2
+                  *this\scroll_height( ) = *this\picture\height + *this\picture\y * 2
                EndIf
                
                ; updatate scrollarea size
@@ -9210,20 +9210,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          If *this\type = #__type_image
-            add_image( *this\picture, state )
-            
-            ; make horizontal scroll max
-            If *this\scroll_width( ) <> *this\picture\width + *this\padding\x * 2
-               *this\scroll_width( ) = *this\picture\width + *this\padding\x * 2
-            EndIf
-            
-            ; make vertical scroll max
-            If *this\scroll_height( ) <> *this\picture\height + *this\padding\y * 2
-               *this\scroll_height( ) = *this\picture\height + *this\padding\y * 2
-            EndIf
-            
-            ; updatate scrollarea size
-            bar_area_update( *this )
+            SetImage( *this, state )
          EndIf
          
          ;\\ - widget::IPaddress_SetState( )
@@ -9492,25 +9479,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               Else
                                  If *this\parent\type = #__type_ComboBox
                                     SetText( *this\parent, *this\RowFocused( )\text\string )
-                                    ;                                     CopyStructure( *this\RowFocused( )\picture, *this\parent\picture, _s_PICTURE ) 
-                                    ;                                     
-                                    ;                                     If IsImage( *this\parent\picture\image )
-                                    ;                                        *this\parent\picture\x   = *this\parent\padding\x
-                                    ;                                        *this\parent\picture\y  = *this\parent\padding\y
-                                    ;                                        
-                                    ;                                        ; make horizontal scroll max
-                                    ;                                        If *this\parent\scroll_width( ) <> *this\parent\picture\width + *this\parent\padding\x * 2
-                                    ;                                           *this\parent\scroll_width( ) = *this\parent\picture\width + *this\parent\padding\x * 2
-                                    ;                                        EndIf
-                                    ;                                        
-                                    ;                                        ; make vertical scroll max
-                                    ;                                        If *this\parent\scroll_height( ) <> *this\parent\picture\height + *this\parent\padding\y * 2
-                                    ;                                           *this\parent\scroll_height( ) = *this\parent\picture\height + *this\parent\padding\y * 2
-                                    ;                                        EndIf
-                                    ;                                        
-                                    ;                                        ; updatate scrollarea size
-                                    ;                                        bar_area_update( *this\parent )
-                                    ;                                     EndIf
                                     
                                     If *this\RowFocused( )\picture\image > - 1
                                        SetImage( *this\parent, *this\RowFocused( )\picture\image )
@@ -21270,7 +21238,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\round
                         draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back[state * *this\ColorState( )] )
                      Else
-                        draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back[state * *this\ColorState( )] )
+                        ;draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back[state * *this\ColorState( )] )
+                        draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\container_width( ), *this\container_height( ), *this\round, *this\round, *this\color\back[state * *this\ColorState( )] )
                      EndIf
                   EndIf
                EndIf
@@ -21686,7 +21655,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\color\back <> - 1
                draw_mode_alpha_( #PB_2DDrawing_Default )
                ;                If *this\fs
-               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
+               ;draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
+               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\container_width( ), *this\container_height( ), *this\round, *this\round, *this\color\back);[*this\ColorState( )] )
             EndIf
             
             ; origin position
@@ -22707,13 +22677,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;\\ draw integral childrens
                      If *this\stringbar
-                        Draw_Editor( *this\stringbar )
+                        Draw( *this\stringbar )
+                        clip_output_( *this, [#__c_draw] )
                      EndIf
                      If *this\menubar And *this\menubar\countitems
-                        bar_draw_tab( *this\menubar )
+                        Draw( *this\menubar )
+                        clip_output_( *this, [#__c_draw] )
                      EndIf
                      If *this\tabbar And *this\tabbar\countitems
-                        bar_draw_tab( *this\tabbar )
+                        Draw( *this\tabbar )
+                        clip_output_( *this, [#__c_draw] )
                      EndIf
                      If *this\scroll 
                         ;\\ draw area scrollbars
@@ -23874,30 +23847,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_ListView Or
             *this\type = #__type_ListIcon Or
             *this\type = #__type_ExplorerList Or
-            *this\type = #__type_Properties
-            ;
-            *this\padding\x  = DPIScaled(4)
-         EndIf
-         If *this\type = #__type_Editor
-            *this\padding\x = DPIScaled(1)
-         EndIf
-         If *this\type = #__type_Text
-            *this\padding\x = DPIScaled(2)
-         EndIf
-         If *this\type = #__type_ButtonImage Or
+            *this\type = #__type_ButtonImage Or
             *this\type = #__type_Button
+            
             *this\padding\x = DPIScaled(4)
-            *this\padding\y = DPIScaled(4)
+            *this\padding\y = *this\padding\x
          EndIf
          If *this\type = #__type_ComboBox
             If Not *this\stringbar
                *this\padding\x = DPIScaled(4)
-               *this\padding\y = DPIScaled(4)
+               *this\padding\y = *this\padding\x
             EndIf
          EndIf
          If *this\type = #__type_String
             *this\padding\x = DPIScaled(3)
             *this\text\caret\x = *this\padding\x
+         EndIf
+         If *this\type = #__type_Editor
+            *this\padding\x = DPIScaled(1)
+            ; *this\padding\y = *this\padding\x
+         EndIf
+         If *this\type = #__type_Text
+            *this\padding\x = DPIScaled(2)
+            ; *this\padding\y = *this\padding\x
          EndIf
          If *this\togglebox And
             *this\togglebox\width
@@ -27443,7 +27415,7 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
    
    Button_2 = ComboBox( 20, 20, 150, 40)
-   For i = 1 To 100;0000
+   For i = 1 To 5;100;0000
       AddItem(Button_2, i, "text-" + Str(i))
    Next
    SetState( Button_2, 3 )
@@ -27552,10 +27524,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 10154
-; FirstLine = 9981
-; Folding = ----------------------------------------------------------------------------------------------------8--8---------------------------------------------------------------------------------------------------------------------------------------------------------------------47---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f+fx----vfovrX8-------------------------------------------------m------------vq------------------------------------------
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 21658
+; FirstLine = 21194
+; Folding = ----------------------------------------------------------------------------------------------------8--8--------------------------------------------------------------------------------------------------------------------------------------+------------------------------t+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------n---------------n-X9----8P7872Kg-----------------------------------------------8---------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
