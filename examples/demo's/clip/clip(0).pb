@@ -56,7 +56,7 @@ CompilerIf #PB_Compiler_IsMainFile
         For i = 0 To 15 
            AddItem(*g, -1,Str(i)+ "_item") 
         Next 
-        AddItem(*g, -1,Str(i)+ "_item ertgryeratserysrtysrtyrttretrxvcsdfgdsfgdfgsdfghsfghdfgdfrfasdfsadfasdfgadfgadfsadfddsf")
+        ;AddItem(*g, -1,Str(i)+ "_item ertgryeratserysrtysrtyrttretrxvcsdfgdsfgdfgsdfghsfghdfgdfrfasdfsadfasdfgadfgadfsadfddsf")
      EndIf
      
      If Type = #__type_ScrollArea
@@ -72,9 +72,9 @@ CompilerIf #PB_Compiler_IsMainFile
     scrollstep = 1;mouse( )\steps
     SetColor(Root( ), #PB_Gadget_BackColor, $C0FDA2AE)
     
-    *parent = ScrollArea(30,30,450-2,250-2, 200,750, scrollstep) : CloseList( )
+    ;*parent = ScrollArea(30,30,450-2,250-2, 200,750, scrollstep) : CloseList( )
     ;*parent = ScrollAreaGadget(#PB_Any, 30,30,450-2,250-2, 200,750, scrollstep ) : CloseGadgetList( )
-    ;*parent = Test(#__type_Tree)
+    *parent = Test(#__type_Tree)
     
     ReDraw(Root())
     
@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 75
-; FirstLine = 48
+; CursorPosition = 58
+; FirstLine = 35
 ; Folding = V--
 ; EnableXP
