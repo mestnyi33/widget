@@ -44,10 +44,10 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   If Open(0, 270, 100, 470, 470, "Change tab location")
+   If Open(0, 270, 100, 470, 450, "Change tab location")
       
       ;*g = Container(10, 10, 450, 450) 
-      *g = ScrollArea(10, 10, 450, 450, 480,480,1) 
+      *g = ScrollArea(10, 10, 450, 430, 480,480,1) 
       SetFrame( *g, 10 )
       ;a_init(*g)
       
@@ -111,7 +111,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 1
+; CursorPosition = 49
+; FirstLine = 37
 ; Folding = --
 ; EnableXP
 ; DPIAware

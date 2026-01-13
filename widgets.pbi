@@ -5057,7 +5057,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
                *this\clip_iheight( ) = (_p_y2_) - *this\clip_iy( )
             EndIf
-;             
+            ;             
+            
             ;\\ update scrollbars parent inner coordinate
             If *this\scroll_inner_width( ) <> \h\bar\page\len
                *this\scroll_inner_width( ) = \h\bar\page\len
@@ -25100,6 +25101,83 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\inner_height( ) = *this\container_height( )
          EndIf
          
+         ;\\
+         If ( Change_x Or Change_y Or Change_width Or Change_height ) 
+            *this\root\repaint = 1
+            
+            If *this\ResizeChange( ) <> #True
+               *this\ResizeChange( ) = #True
+            EndIf
+            
+            ;\\ resize child vertical&horizontal scrollbars
+            If *this\scroll And
+               *this\scroll\v And
+               *this\scroll\h
+               
+               ;\\
+               If *this\type = #__type_MDI
+                  Resize( *this\scroll\v, *this\container_width( ) - *this\scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                  Resize( *this\scroll\h, #PB_Ignore, *this\container_height( ) - *this\scroll\h\height, #PB_Ignore, #PB_Ignore )
+                  
+                  If Change_width Or Change_height
+                     bar_mdi_update( *this, 0, 0, 0, 0 )
+                     bar_mdi_resize( *this, 0, 0, *this\container_width( ), *this\container_height( ) )
+                  EndIf
+                  ;\\ if the integral scroll bars
+               Else
+                 ; bar_area_resize( *this )
+                  
+               EndIf
+            EndIf
+            
+            ;
+            ;\\ resize parent vertical&horizontal scrollbars
+            If *this\parent And
+               *this\parent\scroll And
+               *this\parent\scroll\v And
+               *this\parent\scroll\h
+               ;
+               ;\\ parent mdi
+               If *this\parent\type = #__type_MDI
+                  If *this\child =- 1
+                     If *this\parent\scroll\v <> *this And
+                        *this\parent\scroll\h <> *this And
+                        *this\parent\scroll\v\bar\PageChange( ) = 0 And
+                        *this\parent\scroll\h\bar\PageChange( ) = 0
+                        
+                        bar_mdi_update( *this\parent, *this\container_x( ), *this\container_y( ), *this\frame_width( ), *this\frame_height( ) )
+                        bar_mdi_resize( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
+                     EndIf
+                  EndIf
+                  ;
+               Else
+                  If is_integral_( *this )
+                     If *this\parent\container_width( ) = *this\parent\inner_width( ) And
+                        *this\parent\container_height( ) = *this\parent\inner_height( )
+                        ; Debug ""+*this\parent\scroll\v\bar\max +" "+ *this\parent\scroll\v\bar\page\len +" "+ *this\parent\scroll\h\bar\max +" "+ *this\parent\scroll\h\bar\page\len
+                        
+                        If *this\parent\scroll\v\bar\max > *this\parent\scroll\v\bar\page\len Or
+                           *this\parent\scroll\h\bar\max > *this\parent\scroll\h\bar\page\len
+                           
+                           bar_area_resize( *this\parent )
+                           
+                           If *this\parent\type = #__type_ScrollArea
+                              If *this\parent\scroll\v\bar\page\len > *this\parent\scroll\v\bar\max
+                                 *this\parent\scroll\v\bar\page\len = *this\parent\scroll\v\bar\max
+                              EndIf
+                              If *this\parent\scroll\h\bar\page\len > *this\parent\scroll\h\bar\max
+                                ; Debug ""+*this\parent\scroll\h\bar\page\len +" "+ *this\parent\scroll\h\bar\max
+                                 *this\parent\scroll\h\bar\page\len = *this\parent\scroll\h\bar\max
+                              EndIf
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+         EndIf   
+         
          ;
          ;\\ change clip output coordinate
          If is_root_( *this )
@@ -25179,100 +25257,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\clip_width( ) < 0 : *this\clip_width( ) = 0 : EndIf
                If *this\clip_height( ) < 0 : *this\clip_height( ) = 0 : EndIf
                ;
+               ;
+               ;\\ clip inner draw X&Y coordinates             
+               If *this\inner_x( ) < *this\clip_x( )
+                  *this\clip_ix( ) = *this\clip_x( )
+               Else
+                  *this\clip_ix( ) = *this\inner_x( )
+               EndIf
+               If *this\inner_y( ) < *this\clip_y( )
+                  *this\clip_iy( ) = *this\clip_y( )
+               Else
+                  *this\clip_iy( ) = *this\inner_y( )
+               EndIf
+               
+               ;\\ clip inner draw Width&Height coordinates
+               If (*this\inner_x( ) + *this\inner_width( )) > (*this\clip_x( ) + *this\clip_width( ))
+                  *this\clip_iwidth( ) = (*this\clip_x( ) + *this\clip_width( )) - *this\clip_ix( )
+               Else
+                  *this\clip_iwidth( ) = (*this\inner_x( ) + *this\inner_width( )) - *this\clip_ix( )
+               EndIf
+               If (*this\inner_y( ) + *this\inner_height( )) > (*this\clip_y( ) + *this\clip_height( ))
+                  *this\clip_iheight( ) = (*this\clip_y( ) + *this\clip_height( )) - *this\clip_iy( )
+               Else
+                  *this\clip_iheight( ) = (*this\inner_y( ) + *this\inner_height( )) - *this\clip_iy( )
+               EndIf
+               ;
             EndIf
          EndIf
          
-         ;\\
-         If ( Change_x Or Change_y Or Change_width Or Change_height ) 
-            *this\root\repaint = 1
-            
-            If *this\ResizeChange( ) <> #True
-               *this\ResizeChange( ) = #True
-            EndIf
-            
-            ;\\ resize child vertical&horizontal scrollbars
-            If *this\scroll And
-               *this\scroll\v And
-               *this\scroll\h
-               
-               ;\\
-               If *this\type = #__type_MDI
-                  Resize( *this\scroll\v, *this\container_width( ) - *this\scroll\v\width, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  Resize( *this\scroll\h, #PB_Ignore, *this\container_height( ) - *this\scroll\h\height, #PB_Ignore, #PB_Ignore )
-                  
-                  If Change_width Or Change_height
-                     bar_mdi_update( *this, 0, 0, 0, 0 )
-                     bar_mdi_resize( *this, 0, 0, *this\container_width( ), *this\container_height( ) )
-                  EndIf
-                  ;\\ if the integral scroll bars
-               Else
-                  bar_area_resize( *this )
-               EndIf
-            EndIf
-            
-            ;
-            ;\\ resize parent vertical&horizontal scrollbars
-            If *this\parent And
-               *this\parent\scroll And
-               *this\parent\scroll\v And
-               *this\parent\scroll\h
-               ;
-               ;\\ parent mdi
-               If *this\parent\type = #__type_MDI
-                  If *this\child =- 1
-                     If *this\parent\scroll\v <> *this And
-                        *this\parent\scroll\h <> *this And
-                        *this\parent\scroll\v\bar\PageChange( ) = 0 And
-                        *this\parent\scroll\h\bar\PageChange( ) = 0
-                        
-                        bar_mdi_update( *this\parent, *this\container_x( ), *this\container_y( ), *this\frame_width( ), *this\frame_height( ) )
-                        bar_mdi_resize( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
-                     EndIf
-                  EndIf
-                  ;
-               Else
-                  If is_integral_( *this )
-                     If *this\parent\container_width( ) = *this\parent\inner_width( ) And
-                        *this\parent\container_height( ) = *this\parent\inner_height( )
-                        ; Debug ""+*this\parent\scroll\v\bar\max +" "+ *this\parent\scroll\v\bar\page\len +" "+ *this\parent\scroll\h\bar\max +" "+ *this\parent\scroll\h\bar\page\len
-                        
-                        If *this\parent\scroll\v\bar\max > *this\parent\scroll\v\bar\page\len Or
-                           *this\parent\scroll\h\bar\max > *this\parent\scroll\h\bar\page\len
-                           
-                           bar_area_resize( *this\parent )
-                      
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;
-            ;\\ clip inner draw X&Y coordinates             
-            If *this\inner_x( ) < *this\clip_x( )
-               *this\clip_ix( ) = *this\clip_x( )
-            Else
-               *this\clip_ix( ) = *this\inner_x( )
-            EndIf
-            If *this\inner_y( ) < *this\clip_y( )
-               *this\clip_iy( ) = *this\clip_y( )
-            Else
-               *this\clip_iy( ) = *this\inner_y( )
-            EndIf
-            
-            ;\\ clip inner draw Width&Height coordinates
-            If (*this\inner_x( ) + *this\inner_width( )) > (*this\clip_x( ) + *this\clip_width( ))
-               *this\clip_iwidth( ) = (*this\clip_x( ) + *this\clip_width( )) - *this\clip_ix( )
-            Else
-               *this\clip_iwidth( ) = (*this\inner_x( ) + *this\inner_width( )) - *this\clip_ix( )
-            EndIf
-            If (*this\inner_y( ) + *this\inner_height( )) > (*this\clip_y( ) + *this\clip_height( ))
-               *this\clip_iheight( ) = (*this\clip_y( ) + *this\clip_height( )) - *this\clip_iy( )
-            Else
-               *this\clip_iheight( ) = (*this\inner_y( ) + *this\inner_height( )) - *this\clip_iy( )
-            EndIf
-            ;
-         EndIf   
          
          ;
          If ( Change_x Or Change_y Or Change_width Or Change_height ) 
@@ -27538,8 +27550,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 24761
-; FirstLine = 24382
-; Folding = ----------------------------------------------------------------------------------------------------0--0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6-F-----+h+uet-----------------------------------------------------------------------------------------------------------
+; CursorPosition = 25168
+; FirstLine = 24493
+; Folding = ----------------------------------------------------------------------------------------------------0--0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6-F-----+h+uet-------------------------------------------------b+------------q+--9-h-------------------------------------
 ; EnableXP
 ; Executable = widgets-.app.exe
