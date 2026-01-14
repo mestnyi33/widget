@@ -4958,6 +4958,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
+            
+            ; no auto size scroll inner size
+            If *this\type = #__type_ScrollArea
+               If \v\bar\page\len > \v\bar\max
+                  \v\bar\page\len = \v\bar\max
+               EndIf
+               If \h\bar\page\len > \h\bar\max
+                  \h\bar\page\len = \h\bar\max
+               EndIf
+            EndIf
+            
             ;             
             If Not \v\hide[1]
                If \v\bar\max > \v\bar\page\len
@@ -4996,6 +5007,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
+            ;
             If Not \h\hide[1]
                If \h\bar\max > \h\bar\page\len
                   Width = ( \h\bar\page\len + Bool( Not \v\hide[1] And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\frame_width( ) / 4 ))
@@ -5028,16 +5040,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         bar_PageChange( \h, \h\bar\min, #False )
                      EndIf
                   EndIf
-               EndIf
-            EndIf
-            
-            ; no auto size scroll inner size
-            If *this\type = #__type_ScrollArea
-               If \v\bar\page\len > \v\bar\max
-                  \v\bar\page\len = \v\bar\max
-               EndIf
-               If \h\bar\page\len > \h\bar\max
-                  \h\bar\page\len = \h\bar\max
                EndIf
             EndIf
             
@@ -27847,8 +27849,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 5007
-; FirstLine = 4903
+; CursorPosition = 5009
+; FirstLine = 4829
 ; Folding = ----------------------------------------------------------------------------------------------------8---0-------------------------++--------------vtv8---------------------------------------------------------------------------------------------------f-------------------------------W-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------z---------------z-L+----dL0d0aFw-----------------------------------------------8+------------qGxM90D-+6vX--+----------------------------
 ; EnableXP
 ; DPIAware
