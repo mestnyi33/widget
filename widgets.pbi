@@ -3810,7 +3810,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If _bar_\min > _max_
             _bar_\max = _bar_\min + 1
          Else
-            _bar_\max = _max_ - Bool(_max_%2)
+            _bar_\max = _max_ ; - Bool(_max_%2)
          EndIf
       EndMacro
       
@@ -14957,7 +14957,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndSelect
          EndIf
          
-         result$ = RemoveString( result$, "#PB_"+Class$+"_")
+         ;result$ = RemoveString( result$, "#PB_"+Class$+"_")
          
          ProcedureReturn Trim( Trim(result$), "|" )
       EndProcedure
@@ -27848,9 +27848,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 5009
-; FirstLine = 4829
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 3812
+; FirstLine = 3808
 ; Folding = ----------------------------------------------------------------------------------------------------8---0-------------------------++--------------vtv8---------------------------------------------------------------------------------------------------f-------------------------------W-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------z---------------z-L+----dL0d0aFw-----------------------------------------------8+------------qGxM90D-+6vX--+----------------------------
 ; EnableXP
 ; DPIAware
