@@ -12,34 +12,34 @@ EnableExplicit
 Enumeration Properties
    #_pi_group_COMMON 
    #_pi_ID 
-   #_pi_class
-   #_pi_text
+   #_pi_CLASS
+   #_pi_TEXT
    #_pi_IMAGE
-  #_pi_FLAG
-  ;
+   #_pi_FLAG
+   ;
    #_pi_group_LAYOUT 
-   #_pi_align
-   #_pi_x
-   #_pi_y
-   #_pi_width
-   #_pi_height
+   #_pi_ALIGN
+   #_pi_X
+   #_pi_Y
+   #_pi_WIDTH
+   #_pi_HEIGHT
    ;
    #_pi_group_VIEW 
-   #_pi_cursor
-   #_pi_hide
-   #_pi_disable
+   #_pi_CURSOR
+   #_pi_HIDE
+   #_pi_DISABLE
    ;
    #_pi_FONT
-   #_pi_fontsize
-   #_pi_fontstyle
+   #_pi_FONTSIZE
+   #_pi_FONTSTYLE
    ;
    #_pi_COLOR
-   #_pi_colortype
-   #_pi_colorstate
-   #_pi_coloralpha
-   #_pi_colorblue
-   #_pi_colorgreen
-   #_pi_colorred
+   #_pi_COLORTYPE
+   #_pi_COLORSTATE
+   #_pi_COLORALPHA
+   #_pi_COLORBLUE
+   #_pi_COLORGREEN
+   #_pi_COLORRED
   EndEnumeration
 
 ; events items
@@ -396,8 +396,9 @@ Procedure   SetFlag( *this._s_WIDGET, flags.q )
       ;       If *this\PopupCombo( )
       ;          Flag( *this\PopupCombo( ), flags, 1 )
       ;       EndIf
-      Flag( *this, flags, 1 )
    EndIf
+   
+   Flag( *this, flags, 1 )
 EndProcedure
 
 ;-
@@ -406,6 +407,96 @@ Declare   PropertiesButton_Events( )
 Declare   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
 
 ;-
+Procedure$  PropertiesButton_GetText( *this._s_WIDGET )
+   Protected i, Result$, CountItems = CountItems(*this)
+   
+   For i = 0 To CountItems - 1
+      If GetItemState(*this, i) & #PB_Tree_Checked  
+         Result$ + GetItemText(*this, i) + "|"  ; "#__Flag_"+ 
+      EndIf
+   Next
+   
+   ProcedureReturn Trim(Result$, "|")
+EndProcedure
+
+Procedure   PropertiesButton_SetText( *this._s_WIDGET, Text$)
+   If *this
+      Protected i,ii
+      Protected CountItems = CountItems( *this )
+      Protected CountString = CountString(Text$, "|")
+      ;
+      For i = 0 To CountString
+         For ii = 0 To CountItems - 1
+            If GetItemText( *this, ii) = Trim( StringField( Text$, (i + (1)), "|"))
+               SetItemState( *this, ii, #PB_Tree_Checked ) 
+            EndIf
+         Next
+      Next
+   EndIf
+EndProcedure
+  
+Procedure   PropertiesButton_AddItem( *this._s_WIDGET, item, Text.s )
+   ;
+;    Static lasttext.s
+;    
+;    If lasttext <> Text
+;       lasttext = Text
+      
+      If *this
+         Select item
+            Case #_pi_flag 
+               ClearItems(*this)
+               
+               If Text
+                  Protected i, sublevel, String.s, count = CountString(Text,"|")
+                  
+                  For I = 0 To count
+                     String = Trim(StringField(Text,(I+1),"|"))
+                     
+;                      Select String ; LCase(Trim(StringField(String,(3),"_")))
+;                         Case "Left" : sublevel = 1
+;                         Case "Right" : sublevel = 1
+;                         Case "Center" : sublevel = 1
+;                         Default
+;                            sublevel = 0
+;                      EndSelect
+;                      
+                     AddItem(*this, -1, String, -1, sublevel)
+                  Next
+               EndIf 
+               
+         EndSelect
+      EndIf 
+   ; EndIf
+EndProcedure
+
+Procedure   PropertiesButton_Change( *this._s_WIDGET, item )
+   Define._s_WIDGET *object = a_focused( )
+   If item = #_pi_flag
+      Define class$ = ClassFromType( *object\type ) 
+      Define flag$ = FlagString( *object\flag )
+      Define flag$ = RemoveString( flag$, "#__flag_Text") 
+      Define flag$ = RemoveString( flag$, "#__flag_") 
+      Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, flag$)
+      
+      ;Debug flag$
+      
+      ;                Define class$ = ClassFromType( *object\type )
+      ;                Define text$ = PBFlagString( *object\type )
+      ;                Define text$ = RemoveString(text$, "#PB_"+class$+"_")
+      ;                PropertiesButton_AddItem( *this, #_pi_flag, text$ )
+      
+      Define text$ = PBFlagString( *object\type )
+      Define text$ = RemoveString(text$, "#PB_" +class$+ "_")
+      
+      PropertiesButton_AddItem( *this, #_pi_flag, text$ )
+      PropertiesButton_SetText( *this, flag$ )
+      If *this
+         DisplayPopupBar( *this\PopupCombo( ), *this )
+      EndIf
+   EndIf
+EndProcedure
+
 Procedure   PropertiesButton_Free( *this._s_WIDGET )
    If *this
       Unbind( *this, @PropertiesButton_Events( ))
@@ -499,6 +590,7 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
          ;
          Select item
             Case #_pi_flag
+               Hide(*this\stringbar, 1)
                SetFlag( *this, #__flag_CheckBoxes|#__flag_optionboxes )
                
             Case #_pi_fontstyle
@@ -506,7 +598,7 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
                If *this\PopupCombo( )
                   *this\PopupCombo( )\mode\Checkboxes = 1
                   *this\PopupCombo( )\mode\optionboxes = 1
-                  ;    Flag( *this\PopupCombo( ), #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
+                  ;    SetFlag( *this\PopupCombo( ), #__flag_CheckBoxes|#__flag_OptionBoxes )
                EndIf
                AddItem(*this, -1, "Bold")        ; Шрифт будет выделен жирным
                AddItem(*this, -1, "Italic")      ; Шрифт будет набран курсивом
@@ -571,7 +663,8 @@ Procedure   PropertiesButton_Events( )
    Protected._s_WIDGET *second = *g\parent
    Protected._s_WIDGET *splitter = *second\parent
    Protected._s_WIDGET *first = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
-   
+   Protected._s_WIDGET *object = a_focused( )
+                     
    Select __event
       Case #__event_LostFocus
          __item = GetData(*g) 
@@ -585,6 +678,7 @@ Procedure   PropertiesButton_Events( )
          
       Case #__event_LeftClick
          __item = GetData(*g) 
+         ;
          Select __item
             Case #_pi_IMAGE
                Protected StandardFile$, Pattern$, File$
@@ -594,25 +688,26 @@ Procedure   PropertiesButton_Events( )
                Define img = open_EditorImages( *g\root )
                
                If IsImage( img )
-                  SetImage( a_focused( ), img )
-                  Debug "a_focused( ) "+ img +""+ GetImageKey( img )
+                  SetImage( *object, img )
+                  Debug "*object "+ img +""+ GetImageKey( img )
                EndIf
                
                ;                File$ = OpenFileRequester("Пожалуйста выберите файл для загрузки", StandardFile$, Pattern$, 0)
                ;                
                ;                If File$
                ;                   Debug File$ 
-               ;                   SetImage( a_focused( ), AddImage( Str(ListSize(images( ))), File$ ))
+               ;                   SetImage( *object, AddImage( Str(ListSize(images( ))), File$ ))
                ;                   
                ;                EndIf
-               Properties_Updates( a_focused( ), "Image" )
+               Properties_Updates( *object, "Image" )
                
             Case #_pi_FONT
-               Define font = GetFont( a_focused( ) )
+               Define font = GetFont( *object )
                Define FontName$ = GetFontName( font ) ; установить начальный шрифт (также может быть пустым)
                Define FontSize  = GetFontSize( font ) ; установить начальный размер (также может быть 0)
                Define FontStyle = GetFontStyle( font )
-               Define FontColor = GetFontColor( a_focused( ) ) & $FFFFFF ;| a_focused( )\color\_alpha << 24
+               Define FontColor = GetFontColor( *object ) & $FFFFFF ;| *object\color\_alpha << 24
+               ;
                Define Result = FontRequester( FontName$, FontSize, #PB_FontRequester_Effects, FontColor, FontStyle )
                If Result
                   Define Message$ = "Вы выбрали следующий шрифт:"  + #LF$
@@ -629,19 +724,19 @@ Procedure   PropertiesButton_Events( )
                      Message$ + "Подчеркнутый" + #LF$
                   EndIf
                   
-                  If a_focused( )
+                  If *object
                      font = AddFont( Str( MapSize(fonts( ))), 
                                      SelectedFontName( ),
                                      SelectedFontSize( ),
                                      SelectedFontStyle( ))
                      
-                     SetFont( a_focused( ), font )
+                     SetFont( *object, font )
                      
-                     Define Color.l = SelectedFontColor( ) & $FFFFFF | a_focused( )\color\_alpha << 24
-                     ; SetFontColor( a_focused( ), RGB( Red(Color), Green(Color), Blue(Color) ))
-                     SetFontColor( a_focused( ), RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color) ))
+                     Define Color.l = SelectedFontColor( ) & $FFFFFF | *object\color\_alpha << 24
+                     ; SetFontColor( *object, RGB( Red(Color), Green(Color), Blue(Color) ))
+                     SetFontColor( *object, RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color) ))
                      
-                     Properties_Updates( a_focused( ), "Font" )
+                     Properties_Updates( *object, "Font" )
                   EndIf
                Else
                   Message$ = "Запрос был отменён."
@@ -649,8 +744,7 @@ Procedure   PropertiesButton_Events( )
                ;MessageRequester("Инфо", Message$, #PB_MessageRequester_Ok)
                
             Case #_pi_COLOR
-               Define Color.l = ColorRequester( GetColor( a_focused( ), ColorType, ColorState ) & $FFFFFF )
-               
+               Define Color.l = ColorRequester( GetColor( *object, ColorType, ColorState ) & $FFFFFF )
                If Color > - 1
                   Message$ = "Вы выбрали следующее значение цвета:"   + #LF$
                   Message$ + "32 Bit value: " + Str(Color)            + #LF$
@@ -659,8 +753,8 @@ Procedure   PropertiesButton_Events( )
                   Message$ + "Blue значение:  " + Str(Blue(Color))  + #LF$
                   Message$ + "Alpha значение:  " + Str(Alpha(Color))
                   
-                  SetColor( a_focused( ), ColorType, RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color) ), ColorState )
-                  Properties_Updates( a_focused( ), "Color" )
+                  SetColor( *object, ColorType, RGBA( Red(Color), Green(Color), Blue(Color), Alpha(Color) ), ColorState )
+                  Properties_Updates( *object, "Color" )
                Else
                   Message$ = "Запрос был отменён."
                EndIf
@@ -671,112 +765,121 @@ Procedure   PropertiesButton_Events( )
          
       Case #__event_Change
          __item = GetData(*g) 
+         ;
          Select GetType(*g)
             Case #__type_String
                Select __item 
-                  Case #_pi_class  
-                     If SetClass( a_focused( ), UCase( GetText(*g)))
-                        Properties_Updates( a_focused( ), "Class" ) 
+                  Case #_pi_CLASS  
+                     If SetClass( *object, UCase( GetText(*g)))
+                        Properties_Updates( *object, "Class" ) 
                      EndIf
                      
-                  Case #_pi_text   
-                     If SetText( a_focused( ), GetText(*g) )  
-                        Properties_Updates( a_focused( ), "Text" ) 
+                  Case #_pi_TEXT  
+                     If SetText( *object, GetText(*g) )  
+                        Properties_Updates( *object, "Text" ) 
                      EndIf
                      
                EndSelect
                
             Case #__type_Spin
                Select __item 
-                  Case #_pi_x      : Resize( a_focused( ), GetState(*g), #PB_Ignore, #PB_Ignore, #PB_Ignore ) 
-                  Case #_pi_y      : Resize( a_focused( ), #PB_Ignore, GetState(*g), #PB_Ignore, #PB_Ignore )
-                  Case #_pi_width  : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, GetState(*g), #PB_Ignore )
-                  Case #_pi_height : Resize( a_focused( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState(*g) )
+                  Case #_pi_x      : Resize( *object, GetState(*g), #PB_Ignore, #PB_Ignore, #PB_Ignore ) 
+                  Case #_pi_y      : Resize( *object, #PB_Ignore, GetState(*g), #PB_Ignore, #PB_Ignore )
+                  Case #_pi_width  : Resize( *object, #PB_Ignore, #PB_Ignore, GetState(*g), #PB_Ignore )
+                  Case #_pi_height : Resize( *object, #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState(*g) )
                      
                   Case #_pi_fontsize
-                     If ChangeFontSize( a_focused( ), GetState( *g))
-                        Properties_Updates( a_focused( ), "Font" )
+                     If ChangeFontSize( *object, GetState( *g))
+                        Properties_Updates( *object, "Font" )
                      EndIf
                      
                   Case #_pi_coloralpha
-                     If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
+                     If SetBackColor( *object, RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
                                                           (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
                                                           (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
                                                           (GetState(*g)) ))
-                        Properties_Updates( a_focused( ), "Color" )
+                        Properties_Updates( *object, "Color" )
                      EndIf
                      
                   Case #_pi_colorblue
-                     If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
+                     If SetBackColor( *object, RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
                                                           (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
                                                           (GetState(*g)),
                                                           (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
-                        Properties_Updates( a_focused( ), "Color" )
+                        Properties_Updates( *object, "Color" )
                      EndIf
                      
                   Case #_pi_colorgreen
-                     If SetBackColor( a_focused( ), RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
+                     If SetBackColor( *object, RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
                                                           (GetState(*g)),
                                                           (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
                                                           (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
-                        Properties_Updates( a_focused( ), "Color" )
+                        Properties_Updates( *object, "Color" )
                      EndIf
                      
                   Case #_pi_colorred
-                     If SetBackColor( a_focused( ), RGBA( (GetState(*g)),
+                     If SetBackColor( *object, RGBA( (GetState(*g)),
                                                           (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
                                                           (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
                                                           (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
-                        Properties_Updates( a_focused( ), "Color" )
+                        Properties_Updates( *object, "Color" )
                      EndIf
                      
                EndSelect
                
             Case #__type_ComboBox
                Select __item 
+                  Case #_pi_FLAG     
+                     Define flag$ = PropertiesButton_GetText( *g )
+                     Define Flag.q = MakeValue( flag$ )
+                     SetFlag( *object, Flag)
+                     Define class$ = ClassFromType( *object\type ) 
+;                      Define flag$ = FlagString( Flag )
+;                      Define flag$ = RemoveString( flag$, "#__flag_Text") 
+;                      Define flag$ = RemoveString( flag$, "#__flag_") 
+                     Debug "----"+flag$
+                     Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, flag$)
+                     Properties_Updates( *object, "Flag" ) 
+                     
+                  Case #_pi_fontstyle
+                     If ChangeFontStyle( *object, MakeValue( "#PB_Font_"+GetItemText( *g, GetState(*g))))
+                        Properties_Updates( *object, "Font" )
+                     EndIf
+                     
                   Case #_pi_cursor
                      Properties_SetItemText( ide_inspector_PROPERTIES, __item, GetItemText( *g, GetState( *g)))
                      
                   Case #_pi_colorstate
                      ColorState = GetState(*g)
                      Properties_SetItemText( ide_inspector_PROPERTIES, __item, GetItemText( *g, GetState( *g)))
-                     Properties_Updates( a_focused( ), "Color" ) 
+                     Properties_Updates( *object, "Color" ) 
                      
                   Case #_pi_colortype
                      ColorType = MakeValue("#PB_Gadget_" + GetItemText( *g, GetState( *g)))
                      Properties_SetItemText( ide_inspector_PROPERTIES, __item, GetItemText( *g, GetState( *g)))
-                     Properties_Updates( a_focused( ), "Color" ) 
-                     
-                  Case #_pi_FLAG
-                     Flag( a_focused( ), MakeValue( GetItemText( *g, GetState( *g))), #True )
-                     Properties_Updates( a_focused( ), "Flag" ) 
-                     
-                  Case #_pi_fontstyle
-                     If ChangeFontStyle( a_focused( ), MakeValue( "#PB_Font_"+GetItemText( *g, GetState(*g))))
-                        Properties_Updates( a_focused( ), "Font" )
-                     EndIf
+                     Properties_Updates( *object, "Color" ) 
                      
                   Case #_pi_id
                      If GetState(*g) 
-                        If SetClass( a_focused( ), "#"+Trim( GetClass( a_focused( ) ), "#" ))
-                           Properties_Updates( a_focused( ), "ID" ) 
-                           Properties_Updates( a_focused( ), "Class" ) 
+                        If SetClass( *object, "#"+Trim( GetClass( *object ), "#" ))
+                           Properties_Updates( *object, "ID" ) 
+                           Properties_Updates( *object, "Class" ) 
                         EndIf
                      Else
-                        If SetClass( a_focused( ), Trim( GetClass( a_focused( ) ), "#" ))
-                           Properties_Updates( a_focused( ), "ID" ) 
-                           Properties_Updates( a_focused( ), "Class" ) 
+                        If SetClass( *object, Trim( GetClass( *object ), "#" ))
+                           Properties_Updates( *object, "ID" ) 
+                           Properties_Updates( *object, "Class" ) 
                         EndIf
                      EndIf
                      
                   Case #_pi_disable 
-                     If Disable( a_focused( ), GetState(*g) )
-                        Properties_Updates( a_focused( ), "Disable" ) 
+                     If Disable( *object, GetState(*g) )
+                        Properties_Updates( *object, "Disable" ) 
                      EndIf
                      
                   Case #_pi_hide    
-                     If Hide( a_focused( ), GetState(*g) )
-                        Properties_Updates( a_focused( ), "Hide" ) 
+                     If Hide( *object, GetState(*g) )
+                        Properties_Updates( *object, "Hide" ) 
                      EndIf
                      
                EndSelect
@@ -800,46 +903,6 @@ Procedure   PropertiesButton_Events( )
 EndProcedure
 
 ;-
-Procedure   Properties_AddFlags( *splitter._s_WIDGET, item, Text.s )
-   ProcedureReturn 0
-   Protected._s_WIDGET *this
-   Protected._s_WIDGET *second = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
-   ;
-   *this = GetData( *second )
-   If *this
-      Select item
-         Case #_pi_flag 
-            Static lasttext.s
-            
-            If lasttext <> Text
-               lasttext = Text
-               ; Debug "Properties_AddFlags " +Text
-               ClearItems(*this)
-               
-               If Text
-                  Protected i, sublevel, String.s, count = CountString(Text,"|")
-                  
-                  For I = 0 To count
-                     String = Trim(StringField(Text,(I+1),"|"))
-                     
-                     Select LCase(Trim(StringField(String,(3),"_")))
-                        Case "left" : sublevel = 1
-                        Case "right" : sublevel = 1
-                        Case "center" : sublevel = 1
-                        Default
-                           sublevel = 0
-                     EndSelect
-                     
-                     AddItem(*this, -1, String, -1, sublevel)
-                     
-                  Next
-               EndIf 
-            EndIf 
-            
-      EndSelect
-   EndIf
-EndProcedure
-
 Procedure   Properties_Change( *splitter._s_WIDGET )
    Protected._s_WIDGET *second = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
    Protected._s_WIDGET *this
@@ -953,6 +1016,7 @@ Procedure   Properties_Display( *splitter._s_WIDGET, *this._s_WIDGET, item )
    PropertiesButton_Free( *second\data )  
    *this = PropertiesButton_Create( *second, item )
    PropertiesButton_Resize( *this )
+   PropertiesButton_Change( *this, item )
    Properties_Change( *splitter )
    
    ProcedureReturn *this
@@ -1175,30 +1239,30 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
    ; class$ = Properties_GetItemText( ide_inspector_PROPERTIES, #_pi_class )
    
    If ide_inspector_PROPERTIES
-      If type$ = "Focus" Or type$ = "Align"
-         Properties_HideItem( ide_inspector_PROPERTIES, #_pi_align, Bool( a_focused( )\parent = ide_design_MDI )) 
+      If "Align"   = type$ Or type$ = "Focus"
+         Properties_HideItem( ide_inspector_PROPERTIES, #_pi_align, Bool( *object\parent = ide_design_MDI )) 
       EndIf
-      If type$ = "Focus" Or type$ = "ID"
+      If "ID"      = type$ Or type$ = "Focus"
          Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_id, BoolToStr( Bool( GetClass( *object ) <> Trim( GetClass( *object ), "#" ) )))
       EndIf
-      If type$ = "Focus" Or type$ = "Hide"
+      If "Hide"    = type$ Or type$ = "Focus"
          Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_hide, BoolToStr( Hide( *object )))
       EndIf
-      If type$ = "Focus" Or type$ = "Disable"
+      If "Disable" = type$ Or type$ = "Focus" 
          Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_disable, BoolToStr( Disable( *object )))
       EndIf
-      
-      If type$ = "Focus" Or type$ = "Class"
+      ;
+      If "Class"   = type$ Or type$ = "Focus"
          find$ = Properties_GetItemText( ide_inspector_PROPERTIES, #_pi_class )
          replace$ = GetClass( *object )
          Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_class, replace$ )
       EndIf
-      If type$ = "Focus" Or type$ = "Text"
+      If "Text"    = type$ Or type$ = "Focus" 
          find$ = Properties_GetItemText( ide_inspector_PROPERTIES, #_pi_text )
          replace$ = GetText( *object )
          Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_text, replace$ )
       EndIf
-      If type$ = "Focus" Or type$ = "Resize"
+      If "Resize"  = type$ Or type$ = "Focus" 
          ; Debug "---- "+type$
          If is_window_( *object )
             x$ = Str( X( *object, #__c_container ))
@@ -1226,15 +1290,11 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
          ;
          Properties_Change( ide_inspector_PROPERTIES )
       EndIf
-      
-      If type$ = "Focus" Or type$ = "Flag"
-         class$ = TypeString(*object\type)
-         Define flag$ = Trim(RemoveString( MakeString( class$, ToPBFlag( *object\type, *object\flag ) ), "#PB_"+class$+"_"))
-         Debug ""+class$ +" - ["+ flag$ +"] [" + RemoveString(FlagString( *object\flag ), "#__flag_") +"]"
-         flag$ = RemoveString( FlagString( *object\flag ), "#__flag_") 
-         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, flag$)
+      ;
+      If "Flag"    = type$ Or type$ = "Focus"
+         PropertiesButton_Change( GetData( GetAttribute( ide_inspector_PROPERTIES, #PB_Splitter_SecondGadget )), #_pi_flag )
       EndIf
-      If type$ = "Focus" Or type$ = "Color" 
+      If "Color"   = type$ Or type$ = "Focus" 
          Define color.l = GetColor( *object, ColorType, ColorState ) ;& $FFFFFF | *object\color\_alpha << 24
          Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_COLOR, "$"+Hex(Color, #PB_Long))
          Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_coloralpha, Str(Alpha(color)) )
@@ -1242,10 +1302,10 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
          Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_colorgreen, Str(Green(color)) )
          Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_colorred, Str(Red(color)) )
       EndIf
-      If type$ = "Focus" Or type$ = "Image"
+      If "Image"   = type$ Or type$ = "Focus"
          Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_IMAGE, GetImageFile( GetImage( *object )))
       EndIf
-      If type$ = "Focus" Or type$ = "Font"
+      If "Font"    = type$ Or type$ = "Focus"
          Define font = GetFont( *object )
          ; Debug ""+font +" "+ GetClass(*object)
          Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FONT, GetFontName( font ) )
@@ -1264,9 +1324,6 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       
       ;\\
       If type$ = "Focus"
-         If a_focused( )
-            Properties_AddFlags( ide_inspector_PROPERTIES, #_pi_flag, PBFlagString( GetType( a_focused( ))))
-         EndIf
          
       Else
          Protected NbOccurrences
@@ -1402,7 +1459,7 @@ Procedure  new_widget_paste( )
          
          
          new_widget_add( *copy( )\parent, 
-                         TypeString(*copy( )\type), 
+                         ClassFromType(*copy( )\type), 
                          X(*copy( ), #__c_container)+copy_x,
                          Y(*copy( ), #__c_container)+copy_y, 
                          Width(*copy( ), #__c_frame),
@@ -1558,9 +1615,9 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
          ;Debug ""+*parent +" "+ newtype$
          ;\\ второй метод формирования названия переменной
          ;          If *parent = ide_design_MDI
-         ;             newtype$ = TypeString( *new\type )+"_"+CountType( *new , 2 )
+         ;             newtype$ = ClassFromType( *new\type )+"_"+CountType( *new , 2 )
          ;          Else
-         ;             newtype$ = TypeString( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
+         ;             newtype$ = ClassFromType( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
          ;          EndIf
          ;\\
          SetClass( *new, UCase(newtype$) )
@@ -1652,7 +1709,7 @@ Procedure new_widget_events( )
             EndIf
             
             ;
-            DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+TypeString( GetType(*g))+"_" ))
+            DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType( GetType(*g))+"_" ))
          EndIf
          ;
       Case #__event_Focus
@@ -2148,7 +2205,7 @@ Procedure   ide_inspector_VIEW_ADD_ITEMS( *new._s_widget )
          Protected img =- 1
          count = CountItems( ide_design_ELEMENTS )
          For i = 0 To count - 1
-            If LCase( TypeString( GetType(*new))) = LCase( GetItemText( ide_design_ELEMENTS, i ))
+            If LCase( ClassFromType( GetType(*new))) = LCase( GetItemText( ide_design_ELEMENTS, i ))
                img = GetItemData( ide_design_ELEMENTS, i )
                Break
             EndIf
@@ -2570,7 +2627,7 @@ Procedure   ide_events( )
                      EndIf
                   EndIf
                   If argument
-                     If name$ = TypeString( GetType( object ))
+                     If name$ = ClassFromType( GetType( object ))
                         argument + 1
                      EndIf
                      If name$ = GetClass( object )
@@ -3112,9 +3169,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 277
-; FirstLine = 255
-; Folding = -4-----------------------------------------------------P-
+; CursorPosition = 494
+; FirstLine = 446
+; Folding = -4--4---8l-3v-----------Aj8-----------------------------n-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2.exe

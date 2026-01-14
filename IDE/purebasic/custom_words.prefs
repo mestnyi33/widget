@@ -13,7 +13,8 @@ ToPBFlag
 FromPBFlag
 
 TypeFromClass
-TypeString
+ClassFromType
+
 EventString
 FlagString
 MakeString

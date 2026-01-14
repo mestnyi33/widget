@@ -1285,7 +1285,7 @@ EndProcedure
 
 Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
    Protected result$, function$, x$, y$, width$, height$, text$, param1$, param2$, param3$, flag$, quotetext$
-   Protected type$ = TypeString( GetType(*g) )
+   Protected type$ = ClassFromType( GetType(*g) )
    Protected id$ = GetClass(*g)
    
    ; coordinate
@@ -2047,9 +2047,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
 ; CursorPosition = 1287
-; FirstLine = 1229
+; FirstLine = 1230
 ; Folding = -f-----f------------------f9-------4r3f------+HA9--+--
 ; EnableXP
 ; DPIAware

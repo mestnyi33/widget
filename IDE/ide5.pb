@@ -1224,7 +1224,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
       EndIf
       
       If type$ = "Focus" Or type$ = "Flag"
-         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, MakeString( TypeString(*object\type), *object\flag ))
+         Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, MakeString( ClassFromType(*object\type), *object\flag ))
       EndIf
       If type$ = "Focus" Or type$ = "Color" 
          Define color.l = GetColor( *object, ColorType, ColorState ) ;& $FFFFFF | *object\color\_alpha << 24
@@ -1394,7 +1394,7 @@ Procedure  new_widget_paste( )
          
          
          new_widget_add( *copy( )\parent, 
-                         TypeString(*copy( )\type), 
+                         ClassFromType(*copy( )\type), 
                          X(*copy( ), #__c_container)+copy_x,
                          Y(*copy( ), #__c_container)+copy_y, 
                          Width(*copy( ), #__c_frame),
@@ -1550,9 +1550,9 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
          ;Debug ""+*parent +" "+ newtype$
          ;\\ второй метод формирования названия переменной
          ;          If *parent = ide_design_MDI
-         ;             newtype$ = TypeString( *new\type )+"_"+CountType( *new , 2 )
+         ;             newtype$ = ClassFromType( *new\type )+"_"+CountType( *new , 2 )
          ;          Else
-         ;             newtype$ = TypeString( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
+         ;             newtype$ = ClassFromType( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
          ;          EndIf
          ;\\
          SetClass( *new, UCase(newtype$) )
@@ -1644,7 +1644,7 @@ Procedure new_widget_events( )
             EndIf
             
             ;
-            DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+TypeString( GetType(*g))+"_" ))
+            DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType( GetType(*g))+"_" ))
          EndIf
          ;
       Case #__event_Focus
@@ -2140,7 +2140,7 @@ Procedure   ide_inspector_VIEW_ADD_ITEMS( *new._s_widget )
          Protected img =- 1
          count = CountItems( ide_design_ELEMENTS )
          For i = 0 To count - 1
-            If LCase( TypeString( GetType(*new))) = LCase( GetItemText( ide_design_ELEMENTS, i ))
+            If LCase( ClassFromType( GetType(*new))) = LCase( GetItemText( ide_design_ELEMENTS, i ))
                img = GetItemData( ide_design_ELEMENTS, i )
                Break
             EndIf
@@ -2562,7 +2562,7 @@ Procedure   ide_events( )
                      EndIf
                   EndIf
                   If argument
-                     If name$ = TypeString( GetType( object ))
+                     If name$ = ClassFromType( GetType( object ))
                         argument + 1
                      EndIf
                      If name$ = GetClass( object )
@@ -3104,8 +3104,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 1249
-; FirstLine = 1245
+; CursorPosition = 2564
+; FirstLine = 2540
 ; Folding = ---------------------------------------------------------
 ; EnableXP
 ; DPIAware

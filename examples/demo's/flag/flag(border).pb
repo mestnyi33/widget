@@ -108,9 +108,9 @@ CompilerIf #PB_Compiler_IsMainFile
             ;Debug ""+*parent +" "+ newtype$
             ;\\ второй метод формирования названия переменной
             ;          If *parent = ide_design_panel_MDI
-            ;             newtype$ = TypeString( *new\type )+"_"+CountType( *new , 2 )
+            ;             newtype$ = ClassFromType( *new\type )+"_"+CountType( *new , 2 )
             ;          Else
-            ;             newtype$ = TypeString( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
+            ;             newtype$ = ClassFromType( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
             ;          EndIf
             ;\\
             SetClass( *new, UCase(newtype$) )
@@ -263,7 +263,7 @@ CompilerIf #PB_Compiler_IsMainFile
                
                Define Type = GetType(*g_OBJECT)
                Define Flag = Flag(*g_OBJECT)
-               Define type$ = TypeString(Type)
+               Define type$ = ClassFromType(Type)
                Define flag$ = MakeString( type$, Flag)
                ; Define flag$ = GetCheckedText(*g_FLAG)
                ; Define Flag = MakeValue( flag$ )
@@ -292,7 +292,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open( 0, 0, 0, Width+205, Height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       *g_TYPE = Widget::ListView(Width, 10, 195, 250) 
       For i=0 To 33
-         AddItem(*g_TYPE, -1, TypeString(i))
+         AddItem(*g_TYPE, -1, ClassFromType(i))
       Next
       SetState(*g_TYPE, 1)
       
@@ -308,8 +308,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 241
-; FirstLine = 212
+; CursorPosition = 294
+; FirstLine = 270
 ; Folding = ------
 ; EnableXP
 ; DPIAware

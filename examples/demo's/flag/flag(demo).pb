@@ -108,9 +108,9 @@ CompilerIf #PB_Compiler_IsMainFile
             ;Debug ""+*parent +" "+ newtype$
             ;\\ второй метод формирования названия переменной
             ;          If *parent = ide_design_panel_MDI
-            ;             newtype$ = TypeString( *new\type )+"_"+CountType( *new , 2 )
+            ;             newtype$ = ClassFromType( *new\type )+"_"+CountType( *new , 2 )
             ;          Else
-            ;             newtype$ = TypeString( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
+            ;             newtype$ = ClassFromType( *parent\type )+"_"+CountType( *parent, 2 )+"_"+Class( *new )+"_"+CountType( *new , 2 )
             ;          EndIf
             ;\\
             SetClass( *new, UCase(newtype$) )
@@ -169,7 +169,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure.q _FromPBFlag( Type, Flag.q )
-      ProcedureReturn MakeValue( MakeString( TypeString( Type ), Flag ))
+      ProcedureReturn MakeValue( MakeString( ClassFromType( Type ), Flag ))
       
       
       
@@ -482,7 +482,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                   Add( PBFlagString( GetState(*g_TYPE)))
                   
-                  flag$ = MakeString( TypeString(Type), Flag)
+                  flag$ = MakeString( ClassFromType(Type), Flag)
                   Debug "flag["+Flag$+"]"
                   SetCheckedText(*g_FLAG, flag$ )
                   
@@ -514,7 +514,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open( 0, 0, 0, Width+205, Height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       *g_TYPE = Widget::ListView(Width+45, 10, 150, 200) 
       For i=0 To 33
-         AddItem(*g_TYPE, -1, TypeString(i))
+         AddItem(*g_TYPE, -1, ClassFromType(i))
       Next
       SetState(*g_TYPE, 1)
       
@@ -525,8 +525,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 171
-; FirstLine = 163
+; CursorPosition = 516
+; FirstLine = 429
 ; Folding = -----------t7-
 ; EnableXP
 ; DPIAware
