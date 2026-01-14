@@ -1,11 +1,15 @@
 ﻿
 XIncludeFile "../../widgets.pbi" 
+;XIncludeFile "../../test.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    test_resize = 1
-  ; test_draw_repaint = 1
+  test_resize_area = 2
+   ; test_draw_repaint = 1
+   ;test_clip = 1
+   test_iclip = 1
    
    Global *menu
    
@@ -69,15 +73,20 @@ CompilerIf #PB_Compiler_IsMainFile
          Case  9: result = Image(X,Y,Width,Height,0,#PB_Image_Border|flags) 
          Case 10: result = HyperLink(X,Y,Width,Height,"HyperLink",0, flags) 
          Case 11: result = Container(X,Y,Width,Height,#PB_Container_Flat|flags)
-            Button(0,0,80,Y,"Button1"):SetClass(Widget(),GetText(Widget()))
+            Button(0,0,80,60,"Button1"):SetClass(Widget(),GetText(Widget()))
             ;Button(10,50,80,Y,"Button2"):SetClass(widget(),GetText(widget()))
-            Tree(10,50,80,Y)
+            ;Tree(110,50,80,60)
+            Tree(0,0,0,0)
             Define i
             AddItem(Widget(), -1, Str(i)+"test item ")
-            For i=1 To 20
+            For i=1 To 5
                AddItem(Widget(), -1, Str(i)+"test item test item test item ")
             Next
+            Debug "------"
+            Resize(Widget(),110,50,80,60)
             
+;             ScrollArea(200,50,80,60,150,150,1)
+;             CloseList() ; ScrollArea
             CloseList() ; Container
             
          Case 12: result = ListIcon(X,Y,Width,Height,"",88, flags) 
@@ -112,7 +121,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open(10, 0, 0, 500, 400, "Example 1: Creation of a basic objects.", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       SetColor(Root(), #PB_Gadget_BackColor, RGBA(244, 245, 233, 255))
       SetClass(Root( ), "[main-root]" )
-      ;a_init( root())
+      a_init( Root())
       
 ; ;       ;\\
 ;       *menu = CreateBar( root( ) ) : SetClass(widget( ), "root_MenuBar" )
@@ -183,14 +192,16 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;Resize(widget, 50,50,150,150)
       
-      ;Bind( widget, @Callback())
-      Bind( #PB_All, @Callback())
+;       Debug "-----"
+;       ;Bind( widget, @Callback())
+;       Bind( #PB_All, @Callback())
       
       WaitClose( )
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 1
-; Folding = -+
+; CursorPosition = 84
+; FirstLine = 69
+; Folding = --
 ; EnableXP
 ; DPIAware
