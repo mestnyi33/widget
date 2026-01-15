@@ -502,8 +502,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro widgets( ): __gui\__widgets( ): EndMacro
       
       ;-
-      ; Macro PopupCombo( ): menu\parent: EndMacro
-      Macro PopupCombo( ): combobar: EndMacro
+      ; Macro ComboBar( ): menu\parent: EndMacro
+      Macro ComboBar( ): combobar: EndMacro
       Macro PopupBar( ): __GUI\popup: EndMacro
       
       
@@ -9031,8 +9031,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          If *this\type = #__type_ComboBox
-            If *this\PopupCombo( )
-               ProcedureReturn GetState( *this\PopupCombo( ) )
+            If *this\ComboBar( )
+               ProcedureReturn GetState( *this\ComboBar( ) )
             EndIf
          EndIf
          
@@ -9317,8 +9317,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If *this\type = #__type_ComboBox
-            If *this\PopupCombo( )
-               SetState( *this\PopupCombo( ), state )
+            If *this\ComboBar( )
+               SetState( *this\ComboBar( ), state )
             EndIf
          EndIf
          
@@ -9619,8 +9619,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn *this\bar\page\pos
          EndIf
          ;
-         If *this\PopupCombo( )
-            result = GetItemState( *this\PopupCombo( ), Item )
+         If *this\ComboBar( )
+            result = GetItemState( *this\ComboBar( ), Item )
          EndIf
          ProcedureReturn result
       EndProcedure
@@ -9706,8 +9706,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         If *this\PopupCombo( )
-            SetItemState( *this\PopupCombo( ), Item, State )
+         If *this\ComboBar( )
+            SetItemState( *this\ComboBar( ), Item, State )
          EndIf
          ProcedureReturn result
       EndProcedure
@@ -9903,12 +9903,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.s
          
          If *this\type = #__type_combobox
-            If *this\PopupCombo( )
-               If is_no_select_item_( *this\PopupCombo( )\__rows( ), Item )
+            If *this\ComboBar( )
+               If is_no_select_item_( *this\ComboBar( )\__rows( ), Item )
                   ProcedureReturn ""
                EndIf
                
-               result = *this\PopupCombo( )\__rows( )\text\string
+               result = *this\ComboBar( )\__rows( )\text\string
             EndIf
          EndIf
          
@@ -12515,17 +12515,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *this\type = #__type_combobox
-            If Not *this\PopupCombo( )
-               *this\PopupCombo( ) = Create( *this, "ComboListView", #__type_tree, 0,0,0,0,"",
+            If Not *this\ComboBar( )
+               *this\ComboBar( ) = Create( *this, "ComboListView", #__type_tree, 0,0,0,0,"",
                                              #__flag_child | #__flag_nobuttons | #__flag_nolines|*this\flag ) 
                
-               *this\PopupCombo( )\fs = 2
-               Hide( *this\PopupCombo( ), #True )
+               *this\ComboBar( )\fs = 2
+               Hide( *this\ComboBar( ), #True )
                Widget( ) = *this
             EndIf
             ;
-            If *this\PopupCombo( )
-               ProcedureReturn AddItem( *this\PopupCombo( ), Item, Text, img, Flag )
+            If *this\ComboBar( )
+               ProcedureReturn AddItem( *this\ComboBar( ), Item, Text, img, Flag )
             EndIf
          EndIf
          
@@ -12880,22 +12880,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; - widget::tree_clear_items( )
          If *this\type = #__type_ComboBox
             
-            If *this\PopupCombo( )
+            If *this\ComboBar( )
                If *this\stringbar
                   SetText( *this\stringbar, "" )
                EndIf
-               If *this\PopupCombo( )\countitems <> 0
-                  *this\PopupCombo( )\WidgetChange( ) = 1
-                  *this\PopupCombo( )\countitems     = 0
+               If *this\ComboBar( )\countitems <> 0
+                  *this\ComboBar( )\WidgetChange( ) = 1
+                  *this\ComboBar( )\countitems     = 0
                   
-                  If *this\PopupCombo( )\RowFocused( )
-                     *this\PopupCombo( )\RowFocused( )\ColorState( ) = 0
-                     ClearStructure(*this\PopupCombo( )\RowFocused( ), _s_ROWS)
-                     *this\PopupCombo( )\RowFocused( ) = 0
+                  If *this\ComboBar( )\RowFocused( )
+                     *this\ComboBar( )\RowFocused( )\ColorState( ) = 0
+                     ClearStructure(*this\ComboBar( )\RowFocused( ), _s_ROWS)
+                     *this\ComboBar( )\RowFocused( ) = 0
                   EndIf
                   
-                  ClearList( *this\PopupCombo( )\__rows( ))
-                  PostEventReDraw( *this\PopupCombo( )\root )
+                  ClearList( *this\ComboBar( )\__rows( ))
+                  PostEventReDraw( *this\ComboBar( )\root )
                EndIf
             EndIf
          EndIf
@@ -12947,8 +12947,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.l CountItems( *this._s_WIDGET )
          If *this\tabbar
             ProcedureReturn *this\tabbar\countitems
-         ElseIf *this\PopupCombo( )
-            ProcedureReturn *this\PopupCombo( )\countitems
+         ElseIf *this\ComboBar( )
+            ProcedureReturn *this\ComboBar( )\countitems
          Else
             ProcedureReturn *this\countitems
          EndIf
@@ -13264,13 +13264,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   UpdateBar( *this._s_WIDGET )
-;          If *this And *this\PopupCombo( )
-;             ;DisplayPopupBar( *this\PopupCombo( ), )
+;          If *this And *this\ComboBar( )
+;             ;DisplayPopupBar( *this\ComboBar( ), )
 ;             
-;             Protected Height = UpdateBarHeight( *this\PopupCombo( ))
-;             Protected Width = *this\PopupCombo( )\scroll_width( ) + 20
-;             Debug ""+*this\PopupCombo( )\class +" "+ Width +" "+ Height
-;             ResizeRootWindow( *this\PopupCombo( ), #PB_Ignore, #PB_Ignore, Width, Height)
+;             Protected Height = UpdateBarHeight( *this\ComboBar( ))
+;             Protected Width = *this\ComboBar( )\scroll_width( ) + 20
+;             Debug ""+*this\ComboBar( )\class +" "+ Width +" "+ Height
+;             ResizeRootWindow( *this\ComboBar( ), #PB_Ignore, #PB_Ignore, Width, Height)
 ;          Else
             If PopupBar( )
                If *this\menu\display
@@ -18198,8 +18198,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If event = #__event_Down
                If CanvasMouseButton( ) & #PB_Canvas_LeftButton
                   If *this\type = #__type_combobox
-                     If *this\PopupCombo( )
-                        DisplayPopupBar( *this\PopupCombo( ), *this )
+                     If *this\ComboBar( )
+                        DisplayPopupBar( *this\ComboBar( ), *this )
                      EndIf
                   Else
                      If *this\root\parent And
@@ -26158,7 +26158,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       
       
       ;Bind( *g, @all_events( ))
-      Bind( *menu\PopupCombo( ), @all_events( ))
+      Bind( *menu\ComboBar( ), @all_events( ))
       
    EndProcedure
    
@@ -27529,8 +27529,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 13281
-; FirstLine = 12807
+; CursorPosition = 26160
+; FirstLine = 24271
 ; Folding = ----------------------------------------------------------------------------------------------------8---0-----------------+-----------vtv8----------------------------------------------------------------------------------------------------0------------0f-----------------W-------------------------------------------------------------------------------------------------43---+-0-vv--------d---------------------------------------------------------------------------------------------------------------------------v40rGUv0f---------------------------------------------------------------------------------------------------------P---------------P-v5----4t142rVA-----------------------------------------------f4------------X2Imh-f54P-07-4-----------------------------
 ; EnableXP
 ; DPIAware

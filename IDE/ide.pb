@@ -393,8 +393,8 @@ EndProcedure
 ;-
 Procedure   SetFlag( *this._s_WIDGET, flags.q )
    If *this\type = #__type_ComboBox
-      ;       If *this\PopupCombo( )
-      ;          Flag( *this\PopupCombo( ), flags, 1 )
+      ;       If *this\ComboBar( )
+      ;          Flag( *this\ComboBar( ), flags, 1 )
       ;       EndIf
    EndIf
    
@@ -492,7 +492,7 @@ Procedure   PropertiesButton_Change( *this._s_WIDGET, item )
       PropertiesButton_AddItem( *this, #_pi_flag, text$ )
       PropertiesButton_SetText( *this, flag$ )
       If *this
-         DisplayPopupBar( *this\PopupCombo( ), *this )
+         DisplayPopupBar( *this\ComboBar( ), *this )
       EndIf
    EndIf
 EndProcedure
@@ -595,10 +595,10 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
                
             Case #_pi_fontstyle
                AddItem(*this, -1, "None")         
-               If *this\PopupCombo( )
-                  *this\PopupCombo( )\mode\Checkboxes = 1
-                  *this\PopupCombo( )\mode\optionboxes = 1
-                  ;    SetFlag( *this\PopupCombo( ), #__flag_CheckBoxes|#__flag_OptionBoxes )
+               If *this\ComboBar( )
+                  *this\ComboBar( )\mode\Checkboxes = 1
+                  *this\ComboBar( )\mode\optionboxes = 1
+                  ;    SetFlag( *this\ComboBar( ), #__flag_CheckBoxes|#__flag_OptionBoxes )
                EndIf
                AddItem(*this, -1, "Bold")        ; Шрифт будет выделен жирным
                AddItem(*this, -1, "Italic")      ; Шрифт будет набран курсивом
@@ -3169,8 +3169,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 494
-; FirstLine = 446
+; CursorPosition = 600
+; FirstLine = 530
 ; Folding = -4--4---8l-3v-----------Aj8-----------------------------n-
 ; EnableXP
 ; DPIAware

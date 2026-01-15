@@ -144,10 +144,10 @@ EndEnumeration
                
             Case #_pi_fontstyle
                AddItem(*this, -1, "None")         
-               If *this\PopupCombo( )
-                  *this\PopupCombo( )\mode\Checkboxes = 1
-                  *this\PopupCombo( )\mode\optionboxes = 1
-                  ;    Flag( *this\PopupCombo( ), #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
+               If *this\ComboBar( )
+                  *this\ComboBar( )\mode\Checkboxes = 1
+                  *this\ComboBar( )\mode\optionboxes = 1
+                  ;    Flag( *this\ComboBar( ), #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
                EndIf
                AddItem(*this, -1, "Bold")        ; Шрифт будет выделен жирным
                AddItem(*this, -1, "Italic")      ; Шрифт будет набран курсивом
@@ -581,8 +581,8 @@ EndEnumeration
       
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 171
-; FirstLine = 144
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 149
+; FirstLine = 122
 ; Folding = t+P----------
 ; EnableXP
