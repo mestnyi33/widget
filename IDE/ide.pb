@@ -121,13 +121,13 @@ Global ide_window,
 
 Global ide_root,
        ide_main_SPLITTER,
-       ide_debug_SPLITTER, 
+       ide_designer_SPLITTER, 
        ide_toolbar_container, 
        ide_toolbar, 
        ide_popup_lenguage,
        ide_menu
 
-Global ide_design_SPLITTER,
+Global ide_debug_Splitter,
        ide_design_PANEL, 
        ide_design_MDI,
        ide_design_CODE, 
@@ -2888,20 +2888,20 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
 Global ide_SPLITTER =- 1
    ;
    ;\\ main splitter 2 example 
-   ide_design_SPLITTER = Splitter( 0,0,0,0, ide_design_ELEMENTS, ide_design_PANEL, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
-   ide_help_SPLITTER = Splitter( 0,0,0,0, ide_help_VIEW, ide_help_DEBUG, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_help_SPLITTER, "ide_help_SPLITTER" )
-   ide_debug_SPLITTER = Splitter( 0,0,0,0, ide_design_SPLITTER, ide_help_SPLITTER, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_debug_SPLITTER, "ide_debug_SPLITTER" )
-   ide_SPLITTER = Splitter( 0,0,0,0, ide_debug_SPLITTER, ide_inspector_PANEL, #PB_Splitter_SecondFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_debug_SPLITTER, "ide_debug_SPLITTER" )
+   ide_help_SPLITTER = Splitter( 0,0,0,0, ide_design_ELEMENTS, ide_help_VIEW, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_help_SPLITTER, "ide_help_SPLITTER" )
+   ide_debug_Splitter = Splitter( 0,0,0,0, ide_design_PANEL, ide_help_DEBUG, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_debug_Splitter, "ide_debug_Splitter" )
+   ide_designer_SPLITTER = Splitter( 0,0,0,0, ide_help_SPLITTER, ide_debug_Splitter, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_designer_SPLITTER, "ide_designer_SPLITTER" )
+   ide_SPLITTER = Splitter( 0,0,0,0, ide_designer_SPLITTER, ide_inspector_PANEL, #PB_Splitter_SecondFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_designer_SPLITTER, "ide_designer_SPLITTER" )
    ide_main_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed|Transparent ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
    
    ; set splitters default minimum size
-   SetAttribute( ide_design_SPLITTER, #PB_Splitter_FirstMinimumSize, 80 )
-   SetAttribute( ide_design_SPLITTER, #PB_Splitter_SecondMinimumSize, 350 )
-   SetAttribute( ide_help_SPLITTER, #PB_Splitter_FirstMinimumSize, 80 )
-   SetAttribute( ide_help_SPLITTER, #PB_Splitter_SecondMinimumSize, 350 )
+   SetAttribute( ide_debug_Splitter, #PB_Splitter_FirstMinimumSize, 350 )
+   SetAttribute( ide_debug_Splitter, #PB_Splitter_SecondMinimumSize, 80 )
+   SetAttribute( ide_help_SPLITTER, #PB_Splitter_FirstMinimumSize, 350 )
+   SetAttribute( ide_help_SPLITTER, #PB_Splitter_SecondMinimumSize, 80 )
    ;
-   SetAttribute( ide_debug_SPLITTER, #PB_Splitter_FirstMinimumSize, 350 )
-   SetAttribute( ide_debug_SPLITTER, #PB_Splitter_SecondMinimumSize, 80 )
+   SetAttribute( ide_designer_SPLITTER, #PB_Splitter_FirstMinimumSize, 80 )
+   SetAttribute( ide_designer_SPLITTER, #PB_Splitter_SecondMinimumSize, 350 )
    SetAttribute( ide_SPLITTER, #PB_Splitter_FirstMinimumSize, 450 )
    SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, 120 )
    ;
@@ -2913,12 +2913,12 @@ Global ide_SPLITTER =- 1
    ; set splitters dafault positions
    SetState( ide_main_SPLITTER, Height( ide_toolbar)+3) ; bug
    SetState( ide_SPLITTER, Width( ide_SPLITTER ) - 280 )
-   SetState( ide_debug_SPLITTER, Height( ide_debug_SPLITTER ) - 150 )
+   SetState( ide_designer_SPLITTER, 105 )
    
    ;SetState( ide_properties_SPLITTER, Height(ide_properties_SPLITTER) - 150 )
    SetState( ide_properties_SPLITTER, 150 )
-   SetState( ide_design_SPLITTER, 110 )
-   SetState( ide_help_SPLITTER, 110 )
+   SetState( ide_debug_Splitter, Height( ide_help_SPLITTER ) - 110 )
+   SetState( ide_help_SPLITTER, Height( ide_help_SPLITTER ) - 110 )
    
    ;
    ;-\\ ide binds events
@@ -3170,8 +3170,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2756
-; FirstLine = 2314
+; CursorPosition = 2892
+; FirstLine = 2360
 ; Folding = -4--4---8l-3v-----------Aj8-----------------------------n-
 ; EnableXP
 ; DPIAware

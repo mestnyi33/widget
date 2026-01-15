@@ -2823,7 +2823,7 @@ Global ide_SPLITTER =- 1
    ide_properties_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_design_ELEMENTS) : SetClass(ide_properties_SPLITTER, "ide_properties_SPLITTER" )
    ide_design_SPLITTER = Splitter( 0,0,0,0, ide_design_PANEL, ide_help_DEBUG, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_design_SPLITTER, "ide_design_SPLITTER" )
    ide_help_SPLITTER = Splitter( 0,0,0,0, ide_properties_SPLITTER, ide_help_VIEW, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_help_SPLITTER, "ide_help_SPLITTER" )
-   ide_debug_SPLITTER = Splitter( 0,0,0,0, ide_help_SPLITTER, ide_design_SPLITTER, #PB_Splitter_SecondFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_debug_SPLITTER, "ide_debug_SPLITTER" )
+   ide_debug_SPLITTER = Splitter( 0,0,0,0, ide_help_SPLITTER, ide_design_SPLITTER, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_debug_SPLITTER, "ide_debug_SPLITTER" )
    ide_SPLITTER = Splitter( 0,0,0,0, ide_debug_SPLITTER, ide_inspector_PANEL, #PB_Splitter_SecondFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_debug_SPLITTER, "ide_debug_SPLITTER" )
    ide_main_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed|Transparent ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
    
@@ -3102,9 +3102,9 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 503
-; FirstLine = 479
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 2825
+; FirstLine = 2712
 ; Folding = -------------------------------------------------------n-
 ; EnableXP
 ; DPIAware
