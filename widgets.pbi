@@ -1834,7 +1834,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   GetBarItemState( *this, _baritem_ )
       Declare   BindBarEvent( *this, _baritem_, *callback )
       Declare   UnbindBarEvent( *this, _baritem_, *callback )
-      Declare   UpdateBarHeight( *this )
       Declare   UpdateBar( *this )
       
       Declare.i VBar( *this )
@@ -13285,67 +13284,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;          EndIf
       EndProcedure
       
-      Procedure   UpdateBarHeight( *this._S_WIDGET )
-         Protected pheight, Height
-         
-         If StartDraw( *this\root )
-            ;\\ init drawing font
-            draw_font( *this, GetFontID( *this\root ), *this\TextChange( ))
-            ;
-            CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-               If CurrentFontID( )
-                  DrawingFont( CurrentFontID( ) )
-               EndIf
-            CompilerEndIf
-            ;
-            If *this\type = #__type_MenuBar Or
-               *this\type = #__type_PopupBar Or
-               *this\type = #__type_ToolBar Or
-               *this\type = #__type_TabBar
-               ;
-               bar_UpdateDraw_TabItems( *this, *this\__tabs( ) )
-            ElseIf *this\row
-               UpdateDraw_Rows( *this, *this\__rows( ) )
-            EndIf
-            ;
-            StopDraw()
-         EndIf
-         
-         If *this\type = #__type_MenuBar Or
-            *this\type = #__type_PopupBar Or
-            *this\type = #__type_ToolBar 
-            
-            If ListSize( *this\__tabs( ) )
-               pheight = 16
-               Height = 1
-               PushListPosition( *this\__tabs( ) ) 
-               If ListSize( *this\__tabs( ) ) > pheight
-                  SelectElement( *this\__tabs( ), pheight )
-               Else
-                  LastElement( *this\__tabs( ) ) 
-               EndIf
-               Height + ( *this\__tabs( )\y + *this\__tabs( )\height )
-               PopListPosition( *this\__tabs( ) ) 
-            EndIf
-            
-         ElseIf *this\row
-            If ListSize( *this\__rows( ) )
-               pheight = 9
-               Height = *this\padding\y
-               PushListPosition( *this\__rows( ) ) 
-               If ListSize( *this\__rows( ) ) > pheight
-                  SelectElement( *this\__rows( ), pheight )
-               Else
-                  LastElement( *this\__rows( ) ) 
-               EndIf
-               Height + ( *this\__rows( )\y + *this\__rows( )\height )
-               PopListPosition( *this\__rows( ) ) 
-            EndIf
-         EndIf
-         
-         ProcedureReturn Height
-      EndProcedure
-      
       Procedure.s GetBarTitleText( *this._s_WIDGET, _title_.s )
          ProcedureReturn 
       EndProcedure
@@ -13550,7 +13488,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; test_display = 1
                If *this\hide
-                  
                   If test_display
                      Debug "comboBar - hide "+*this\class +" "+ *this\hide
                   EndIf
@@ -13627,14 +13564,64 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If *this\menu\display  
+            If Not *this\hide 
                PopupBar( ) = *this
                
-               ;\\
-               Height = UpdateBarHeight( *this )
                
+               ;\\ 
+               If StartDraw( *this\root )
+                  ;\\ init drawing font
+                  draw_font( *this, GetFontID( *this\root ), *this\TextChange( ))
+                  ;
+                  CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+                     If CurrentFontID( )
+                        DrawingFont( CurrentFontID( ) )
+                     EndIf
+                  CompilerEndIf
+                  ;
+                  If *this\type = #__type_MenuBar Or
+                     *this\type = #__type_PopupBar Or
+                     *this\type = #__type_ToolBar Or
+                     *this\type = #__type_TabBar
+                     ;
+                     If ListSize( *this\__tabs( ) )
+                        bar_UpdateDraw_TabItems( *this, *this\__tabs( ) )
+                        Define visible_item_count = 16 ; количество видимых итемов
+                        Width = 0
+                        Height = 1
+                        PushListPosition( *this\__tabs( ) ) 
+                        If ListSize( *this\__tabs( ) ) > visible_item_count
+                           SelectElement( *this\__tabs( ), visible_item_count )
+                        Else
+                           LastElement( *this\__tabs( ) ) 
+                        EndIf
+                        Height + ( *this\__tabs( )\y + *this\__tabs( )\height )
+                        PopListPosition( *this\__tabs( ) ) 
+                     EndIf
+                     
+                  ElseIf *this\row
+                     If ListSize( *this\__rows( ) )
+                        UpdateDraw_Rows( *this, *this\__rows( ) )
+                        Define visible_item_count = 9 ; количество видимых итемов
+                        Width = DPIUnScaled( *this\padding\x )
+                        Height = DPIUnScaled( *this\padding\y )
+                        PushListPosition( *this\__rows( ) ) 
+                        If ListSize( *this\__rows( ) ) > visible_item_count
+                           SelectElement( *this\__rows( ), visible_item_count )
+                        Else
+                           LastElement( *this\__rows( ) ) 
+                        EndIf
+                        Height + ( *this\__rows( )\y + *this\__rows( )\height )
+                        PopListPosition( *this\__rows( ) ) 
+                     EndIf
+                  EndIf
+                  ;
+                  StopDraw()
+               EndIf
+        
+         
                ;\\
-               Width = *this\scroll_width( ) + 20
+               Width + *this\scroll_width( )
                
                ;\\
                If *display\type = #__type_ComboBox
@@ -20843,7 +20830,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.l UpdateDraw_Rows( *this._s_WIDGET, List *rows._s_ROWS( ), _change_ = 1 )
          Protected state.b, X.l, Y.l
          
-         With *this
             If Not *this\hide
                ;\\ update coordinate
                If _change_ > 0
@@ -21013,6 +20999,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Next
                   PopListPosition( *rows( ))
                   
+                  
+                  ;\\????????????????????????
                   If *this\scroll_height( ) < *this\inner_height( )
                      If bar_PageChange( *this\scroll\v, 0 )
                         UpdateDraw_Rows( *this, *rows( ) )
@@ -21020,7 +21008,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             EndIf
-         EndWith
          
       EndProcedure
       
@@ -27528,10 +27515,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 26160
-; FirstLine = 24271
-; Folding = ----------------------------------------------------------------------------------------------------8---0-----------------+-----------vtv8----------------------------------------------------------------------------------------------------0------------0f-----------------W-------------------------------------------------------------------------------------------------43---+-0-vv--------d---------------------------------------------------------------------------------------------------------------------------v40rGUv0f---------------------------------------------------------------------------------------------------------P---------------P-v5----4t142rVA-----------------------------------------------f4------------X2Imh-f54P-07-4-----------------------------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 13490
+; FirstLine = 12957
+; Folding = ----------------------------------------------------------------------------------------------------8---0-----------------+-----------vtv8----------------------------------------------------------------------------------------------------0------------0f-----------------W-----------------------------------------------------------------------------------------------fb---4-4---88-------f4---------------------------------------------------------------------------------------------------------------------------8d-qB2b-4-----------------------------------------------------------------------------------D--e------------------z---------------z-L+----dL0d0aFw-----------------------------------------------40------------VNiZ5-H+0zfv+-0-----------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

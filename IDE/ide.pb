@@ -2761,6 +2761,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    AddItem( ide_design_PANEL, -1, lng(#lng_CODE$) )
    ide_design_CODE = Editor( 0,0,0,0, #__flag_autosize|#__flag_BorderLess ) : SetClass(ide_design_CODE, "ide_design_CODE" ) ; bug then move anchors window
    SetBackColor( ide_design_CODE, $FFDCF9F6)
+   
    AddItem( ide_design_PANEL, -1, "V-"+lng(#lng_CODE$) )
    CloseList( )
    
@@ -3168,10 +3169,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 600
-; FirstLine = 530
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 2756
+; FirstLine = 2314
 ; Folding = -4--4---8l-3v-----------Aj8-----------------------------n-
 ; EnableXP
 ; DPIAware
-; Executable = ../../2.exe
+; Executable = ..\..\2.exe
