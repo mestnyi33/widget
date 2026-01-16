@@ -3814,7 +3814,691 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;-
+      Macro change_align_horizontal2( _address_, _width_, _size_, _rotate_, _align_, _padding_ )
+         If _rotate_ = 0 Or
+            _rotate_ = 90
+            ;
+            If _align_\right
+               _address_\x + ( _width_ - _size_ - _padding_ )
+            ElseIf Not _align_\left
+               _address_\x + ( _width_ - _size_ ) / 2
+            Else
+               _address_\x + _padding_
+            EndIf
+         EndIf  
+         
+         ; invert
+         If _rotate_ = 180 Or
+            _rotate_ = 270
+            ;
+            If _align_\right
+               _address_\x + _width_ - _padding_
+            ElseIf Not _align_\left
+               _address_\x + ( _width_ + _size_ ) / 2
+            Else
+               _address_\x + _size_ + _padding_
+            EndIf
+         EndIf
+      EndMacro
+      
+      Macro change_align_vertical2( _address_, _height_, _size_, _rotate_, _align_, _padding_ )
+         If _rotate_ = 90 Or 
+            _rotate_ = 180
+            ;
+            If _align_\bottom
+               _address_\y + _height_ - _padding_
+            ElseIf Not _align_\top
+               _address_\y + ( _height_ + _size_ ) / 2
+            Else
+               _address_\y + _size_ + _padding_
+            EndIf
+         EndIf 
+         
+         ; invert 
+         If _rotate_ = 270 Or
+            _rotate_ = 0
+            ;
+            If _align_\bottom
+               _address_\y + ( _height_ - _size_ - _padding_ )
+            ElseIf Not _align_\top
+               _address_\y + ( _height_ - _size_ ) / 2
+            Else
+               _address_\y + _padding_
+            EndIf
+         EndIf
+      EndMacro
+      
+      Procedure   UpdateDraw_BarContent( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
+         Protected test = 0
+         Protected img_indent_x, img_indent_y 
+         
+         ;
+         If *tabs( )\picture And *tabs( )\picture\imageID 
+            If *tabs( )\text And *tabs( )\text\string 
+               img_indent_x = img_indent
+               img_indent_y = img_indent
+            EndIf
+         EndIf
+         
+         ;     
+         If *tabs( )\text\multiLine
+               UpdateDraw_Text( *this, 1 )
+            Else
+               Protected txt_rotate = *this\text\rotate
+               Protected img_rotate = *this\picture\rotate
+               Protected *txt_align._s_ALIGN = *this\text\align
+               Protected *img_align._s_ALIGN = *this\picture\align
+               Protected Width = *tabs( )\width ; *this\scroll_width( )
+               Protected Height = *tabs( )\height          ; *this\scroll_height( )
+               Protected X, Y, padding_x=DPIScaled(6), padding_y=DPIScaled(6)
+;                ;
+;                ; make_scrollarea_pos
+;                make_scrollarea_x( *this, Width, *txt_align )
+;                make_scrollarea_y( *this, Height, *txt_align )
+               
+;                *tabs( )\text\x + X
+;                *tabs( )\text\y + Y
+;                ; aligin text
+               
+               ;
+               If *tabs( )\text\vertical
+                  change_align_horizontal2( *tabs( )\text, Width, *tabs( )\text\height, txt_rotate, *txt_align, padding_x )
+                  change_align_vertical2( *tabs( )\text, Height, *tabs( )\text\width, txt_rotate, *txt_align, padding_y )
+                  ; align image
+                  change_align_horizontal2( *tabs( )\picture, Width, *tabs( )\picture\height, img_rotate, *img_align, padding_x )
+                  change_align_vertical2( *tabs( )\picture, Height, *tabs( )\picture\width, img_rotate, *img_align, padding_y )
+               Else
+                  change_align_horizontal2( *tabs( )\text, Width, *tabs( )\text\width, txt_rotate, *txt_align, padding_x )
+                  change_align_vertical2( *tabs( )\text, Height, *tabs( )\text\height, txt_rotate, *txt_align, padding_y )
+                  ; align image
+                  change_align_horizontal2( *tabs( )\picture, Width, *tabs( )\picture\width, img_rotate, *img_align, padding_x )
+                  change_align_vertical2( *tabs( )\picture, Height, *tabs( )\picture\height, img_rotate, *img_align, padding_y )
+               EndIf
+               
+;                ; align img left & top
+;                If *img_align
+;                   If *tabs( )\picture\width
+;                      If *img_align\left
+;                         If *txt_align\left
+;                            *tabs( )\text\x + ( *tabs( )\picture\width + img_indent_x )
+;                         Else
+;                            *tabs( )\text\x + ( *tabs( )\picture\width + img_indent_x ) / 2
+;                         EndIf
+;                      EndIf
+;                      If *img_align\right
+;                         If *txt_align\right
+;                            *tabs( )\text\x - ( *tabs( )\picture\width + img_indent_x )
+;                         Else
+;                            *tabs( )\text\x - ( *tabs( )\picture\width + img_indent_x ) / 2
+;                         EndIf
+;                      EndIf
+;                   EndIf
+;                   If *tabs( )\picture\height
+;                      If *img_align\top
+;                         If *img_align\top
+;                            If *txt_align\top
+;                               *tabs( )\text\y + ( *tabs( )\picture\height + img_indent_y )
+;                            Else
+;                               *tabs( )\text\y + ( *tabs( )\picture\height + img_indent_y ) / 2
+;                            EndIf
+;                         EndIf
+;                      EndIf
+;                      If *img_align\bottom
+;                         If *img_align\bottom
+;                            If *txt_align\bottom
+;                               *tabs( )\text\y - ( *tabs( )\picture\height + img_indent_y )
+;                            Else
+;                               *tabs( )\text\y - ( *tabs( )\picture\height + img_indent_y ) / 2
+;                            EndIf
+;                         EndIf
+;                      EndIf
+;                   EndIf
+;                EndIf
+;                
+            EndIf
+      EndProcedure
+      
+      Procedure.b ___bar_UpdateDraw_TabItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
+         With *this
+            Protected Index
+            Protected pos
+            Protected separator_step 
+            Protected._s_BAR *bar = *this\bar
+            Protected._s_BUTTONS *BB1, *BB2, *SB
+            ;
+            *SB  = *bar\button
+            *BB1 = *bar\button[1]
+            *BB2 = *bar\button[2]
+            ;
+            If is_bar_( *this )
+               separator_step = 0
+               pos = DPIScaled(1) 
+            EndIf
+            If *this\parent And *this\parent\type = #__type_Panel
+               pos = bar_toggle_line_size
+            EndIf
+            ;
+            Protected layout = pos * 2
+            Protected text_pos = DPIScaled(6)
+            Protected img_pos = DPIScaled(3)
+            Protected childrens.b, qqq = DPIScaled(40)
+            ;
+            If Not *this\hide 
+               If (*this\ResizeChange( ) Or *this\TabChange( ))
+                  *bar\max = 0
+                  *this\scroll_width( ) = 0
+                  *this\scroll_height( ) = 0
+                  *this\picture\x = ( *this\screen_height( ) - DPIScaled(16) - pos - DPIScaled(1) ) / 2
+                  
+                  ;
+                  If *bar\vertical
+                     If *this\type = #__type_popupbar
+                        ForEach *tabs( )
+                           If *tabs( )\hide
+                              Continue
+                           EndIf
+                           ;
+                           draw_font( *tabs( ), GetFontID( *this ), *tabs( )\TextChange( ))
+                           
+                           ; init items position
+                           If *bar\vertical
+                              If *this\scroll_width( ) < qqq+*tabs( )\text\width 
+                                 *this\scroll_width( ) = qqq+*tabs( )\text\width
+                                 
+                                 If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
+                                    *this\scroll_width( ) + *tabs( )\picture\width 
+                                 EndIf
+                              EndIf
+                              If *tabs( )\childrens 
+                                 childrens = #True
+                              EndIf
+                           EndIf
+                        Next
+                        If childrens
+                           *this\scroll_width( ) + DPIScaled(15)
+                        EndIf
+                     Else
+                        *this\scroll_width( ) = *this\screen_width( ) 
+                     EndIf
+                  Else
+                     *this\scroll_height( ) = *this\screen_height( )
+                  EndIf
+                  
+                  ;
+                  ForEach *tabs( )
+                     If *tabs( )\hide
+                        Continue
+                     EndIf
+                     
+                     ;\\
+                     draw_font( *tabs( ), GetFontID( *this ), *tabs( )\TextChange( ))
+                     
+                     Index = ListIndex( *tabs( ) )
+                     
+                     ; init items position
+                     If *bar\vertical=99
+                        
+                        If *this\type = #__type_TabBar
+                           If *this\parent\fs[1]
+                              *tabs( )\x     = bar_toggle_line_size
+                           Else
+                              *tabs( )\x     = DPIScaled(2)
+                           EndIf
+                           *tabs( )\width   = *this\screen_width( ) - bar_toggle_line_size - DPIScaled(2)
+                           ;
+                           *tabs( )\y = *bar\max + pos
+                           ;
+                           If *tabs( )\tindex  = #PB_Ignore
+                              *tabs( )\x      + separator_step
+                              *tabs( )\width  = 1
+                              *bar\max + *tabs( )\width + pos + (separator_step * 2)
+                           Else
+                              ;
+                              *this\text\x = ( *tabs( )\width - *tabs( )\text\width ) / 2
+                              ;
+                              *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width ) / 2
+                              *tabs( )\text\x  = *tabs( )\x + *this\text\x
+                              
+                              ;
+                              *tabs( )\picture\y = *tabs( )\y + Bool( *tabs( )\picture\height ) * img_pos
+                              *tabs( )\text\y  = text_pos + *tabs( )\picture\y + *tabs( )\picture\height
+                              
+                              ;
+                              *tabs( )\height = (Bool( *tabs( )\text\width ) * ( text_pos * 2 ) + *tabs( )\text\width +
+                                                 Bool( *tabs( )\picture\width ) * ( img_pos * 2 ) + *tabs( )\picture\width) - Bool( *tabs( )\picture\width And *tabs( )\text\width ) * ( text_pos )
+                              
+                              *bar\max + *tabs( )\height + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
+                           EndIf
+                        Else
+                           *tabs( )\height = 0
+                           *tabs( )\y = *bar\max + pos
+                           
+                           If *this\type = #__type_TabBar
+                              If *this\TabState( ) = Index 
+                                 ;                               *tabs( )\x        = 0
+                                 ;                               *tabs( )\width    = *this\screen_width( )
+                                 If *this\parent\fs[1]
+                                    *tabs( )\x     = bar_toggle_line_size
+                                 Else
+                                    *tabs( )\x     = 0
+                                 EndIf
+                                 *tabs( )\width    = *this\inner_width( ) - bar_toggle_line_size
+                              Else
+                                 If *this\parent\fs[1]
+                                    *tabs( )\x     = bar_toggle_line_size
+                                 Else
+                                    *tabs( )\x     = DPIScaled(2)
+                                 EndIf
+                                 *tabs( )\width    = *this\inner_width( ) - bar_toggle_line_size - DPIScaled(2)
+                              EndIf
+                              
+                           Else
+                              *tabs( )\x           = pos
+                              If *tabs( )\tindex   = #PB_Ignore
+                                 *tabs( )\x        + 3
+                              EndIf
+                              
+                              *tabs( )\width  = *this\scroll_width( ) - *tabs( )\x * 2
+                           EndIf
+                           
+                           If *tabs( )\tindex  = #PB_Ignore
+                              *tabs( )\y      + separator_step
+                              *tabs( )\height = 1
+                              *bar\max         + separator_step * 2
+                           Else
+                              If *tabs( )\picture\height
+                                 *tabs( )\height = *tabs( )\picture\height
+                              EndIf
+                              If *tabs( )\text\height
+                                 If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
+                                    If Not *tabs( )\picture\height 
+                                       *tabs( )\height = *tabs( )\text\height
+                                    EndIf
+                                 Else
+                                    *tabs( )\height + *tabs( )\text\height
+                                 EndIf
+                              EndIf
+                              
+                              ;
+                              *tabs( )\height + (6)
+                              ;
+                              If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
+                                 ;
+                                 ;                               *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width - *tabs( )\text\width ) / 2 
+                                 ;                               *tabs( )\text\x  = *tabs( )\picture\x + *tabs( )\picture\width + 5
+                                 Protected align_x = (5)
+                                 *tabs( )\picture\x = *tabs( )\x + align_x
+                                 *tabs( )\text\x  = *tabs( )\picture\x + *tabs( )\picture\width + align_x + (5)
+                                 
+                                 ;
+                                 *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height )/2
+                                 *tabs( )\text\y  = *tabs( )\y + ( *tabs( )\height - *tabs( )\text\height )/2
+                                 ;                          
+                              Else
+                                 If *tabs( )\text\width
+                                    *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height - *tabs( )\text\height ) / 2
+                                 Else
+                                    *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height ) / 2
+                                 EndIf
+                                 ;
+                                 *tabs( )\text\y  = *tabs( )\picture\y + *tabs( )\picture\height
+                                 ;
+                                 *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width )/2
+                                 *tabs( )\text\x  = *tabs( )\x + ( *tabs( )\width - *tabs( )\text\width )/2
+                              EndIf
+                              
+                              ;
+                              If *this\type = #__type_TabBar
+                                 *bar\max + *tabs( )\height + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
+                              Else
+                                 *bar\max + *tabs( )\height + pos + Bool( Index = *this\countitems - 1 )
+                              EndIf
+                           EndIf
+                        EndIf
+                        
+                     Else
+                        *tabs( )\width = 0
+                        *tabs( )\x = *bar\max + pos
+                        ;
+                        If *this\type = #__type_TabBar
+                           If *this\parent\fs[2]
+                              *tabs( )\y     = bar_toggle_line_size
+                           Else
+                              *tabs( )\y     = DPIScaled(2)
+                           EndIf
+                           *tabs( )\height   = *this\screen_height( ) - bar_toggle_line_size - DPIScaled(2)
+                        Else
+                           *tabs( )\y           = pos
+                           If *tabs( )\tindex   = #PB_Ignore
+                              *tabs( )\y        + 3
+                           EndIf
+                           
+                           *tabs( )\height  = *this\scroll_height( ) - *tabs( )\y * 2
+                        EndIf
+                        ;
+                        If *tabs( )\tindex  = #PB_Ignore
+                           *tabs( )\x      + separator_step
+                           *tabs( )\width  = 1
+                           *bar\max + *tabs( )\width + pos + (separator_step * 2)
+                        Else
+                           ;
+                           *this\text\y = ( *tabs( )\height - *tabs( )\text\height ) / 2
+                           ;
+                           *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height ) / 2
+                           *tabs( )\text\y  = *tabs( )\y + *this\text\y
+                           
+                           ;
+                           *tabs( )\picture\x = *tabs( )\x + Bool( *tabs( )\picture\width ) * img_pos
+                           *tabs( )\text\x  = text_pos + *tabs( )\picture\x + *tabs( )\picture\width
+                           
+                           ;
+                           *tabs( )\width = (Bool( *tabs( )\text\width ) * ( text_pos * 2 ) + *tabs( )\text\width +
+                                             Bool( *tabs( )\picture\width ) * ( img_pos * 2 ) + *tabs( )\picture\width) - Bool( *tabs( )\picture\width And *tabs( )\text\width ) * ( text_pos )
+                           
+                           If *this\type = #__type_TabBar
+                              *bar\max + *tabs( )\width + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
+                              ;*bar\max + *tabs( )\width + pos + Bool( index = *this\countitems - 1 )
+                           Else
+                              If Not constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
+                                 If *tabs( )\text\width
+                                    If *tabs( )\width > *tabs( )\picture\width 
+                                       *tabs( )\width - *tabs( )\picture\width 
+                                    EndIf
+                                    ;
+                                    *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height - *tabs( )\text\height ) / 2
+                                    *tabs( )\text\y  = *tabs( )\picture\y + *tabs( )\picture\height
+                                    ;
+                                    *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width )/2
+                                    *tabs( )\text\x  = *tabs( )\x + ( *tabs( )\width - *tabs( )\text\width )/2
+                                 EndIf
+                              EndIf
+                              
+                              *bar\max + *tabs( )\width + pos + Bool( Index = *this\countitems - 1 )
+                           EndIf
+                        EndIf
+                     EndIf
+                     
+                     ;  UpdateDraw_BarContent( *this, *tabs( ) )
+                    Next
+                  
+                  ;
+                  If *bar\vertical
+                     *this\scroll_height( ) = *bar\max
+                  Else
+                     *this\scroll_width( ) = *bar\max
+                  EndIf
+                  ;
+                  bar_update( *this, #True )
+                  
+;                   If *this\TextChange( ) Or
+;                      *this\ResizeChange( ) Or 
+;                      *this\picture\change
+                     
+                    ; UpdateDraw_Content( *this )
+;                   EndIf
+                  
+         
+                  *this\TabChange( ) = #False
+                  *this\ResizeChange( ) = 0
+               EndIf
+               
+               ;
+               ; drawin
+               ;
+               If *bar\vertical
+                  *BB2\x = *this\frame_x( ) + ( *this\frame_width( ) + pos - *BB2\size ) / 2
+                  *BB1\x = *this\frame_x( ) + ( *this\frame_width( ) + pos - *BB1\size ) / 2
+               Else
+                  *BB2\y = *this\frame_y( ) + ( *this\frame_height( ) + pos - *BB2\size ) / 2
+                  *BB1\y = *this\frame_y( ) + ( *this\frame_height( ) + pos - *BB1\size ) / 2
+               EndIf
+               
+            EndIf
+         EndWith
+      EndProcedure
+      
       Procedure.b bar_UpdateDraw_TabItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
+         With *this
+            Protected Index
+            Protected pos
+            Protected separator_step 
+            Protected._s_BAR *bar = *this\bar
+            Protected._s_BUTTONS *BB1, *BB2, *SB
+            ;
+            *SB  = *bar\button
+            *BB1 = *bar\button[1]
+            *BB2 = *bar\button[2]
+            ;
+            If is_bar_( *this )
+               separator_step = 0
+               pos = DPIScaled(1) 
+            EndIf
+            If *this\parent And *this\parent\type = #__type_Panel
+               pos = bar_toggle_line_size
+            EndIf
+            ;
+            Protected layout = pos * 2
+            Protected text_pos = DPIScaled(6)
+            Protected img_pos = DPIScaled(3)
+            Protected childrens.b, qqq = DPIScaled(40)
+            ;
+            If Not *this\hide 
+               If (*this\ResizeChange( ) Or *this\TabChange( ))
+                  *bar\max = 0
+                  *this\scroll_width( ) = 0
+                  *this\scroll_height( ) = 0
+                  *this\picture\x = ( *this\screen_height( ) - DPIScaled(16) - pos - DPIScaled(1) ) / 2
+                  
+                  ;
+                  If *bar\vertical
+                     If *this\type = #__type_popupbar
+                        ForEach *tabs( )
+                           If *tabs( )\hide
+                              Continue
+                           EndIf
+                           ;
+                           draw_font( *tabs( ), GetFontID( *this ), *tabs( )\TextChange( ))
+                           
+                           ; init items position
+                           If *bar\vertical
+                              If *this\scroll_width( ) < qqq+*tabs( )\text\width 
+                                 *this\scroll_width( ) = qqq+*tabs( )\text\width
+                                 
+                                 If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
+                                    *this\scroll_width( ) + *tabs( )\picture\width 
+                                 EndIf
+                              EndIf
+                              If *tabs( )\childrens 
+                                 childrens = #True
+                              EndIf
+                           EndIf
+                        Next
+                        If childrens
+                           *this\scroll_width( ) + DPIScaled(15)
+                        EndIf
+                     Else
+                        *this\scroll_width( ) = *this\screen_width( ) 
+                     EndIf
+                  Else
+                     *this\scroll_height( ) = *this\screen_height( )
+                  EndIf
+                  
+                  ;
+                  ForEach *tabs( )
+                     If *tabs( )\hide
+                        Continue
+                     EndIf
+                     
+                     ;\\
+                     draw_font( *tabs( ), GetFontID( *this ), *tabs( )\TextChange( ))
+                     
+                     Index = ListIndex( *tabs( ) )
+                     
+                     ; init items position
+                     If *bar\vertical
+                        *tabs( )\height = 0
+                        *tabs( )\y = *bar\max + pos
+                        
+                        If *this\type = #__type_TabBar
+                           If *this\parent\fs[1]
+                              *tabs( )\x     = bar_toggle_line_size
+                           Else
+                              *tabs( )\x     = DPIScaled(2)
+                           EndIf
+                           *tabs( )\width    = *this\scroll_width( ) - bar_toggle_line_size - DPIScaled(2)
+                        Else
+                           *tabs( )\x           = pos
+                           If *tabs( )\tindex   = #PB_Ignore
+                              *tabs( )\x        + 3
+                           EndIf
+                           
+                           *tabs( )\width  = *this\scroll_width( ) - *tabs( )\x * 2
+                        EndIf
+                        
+                        If *tabs( )\tindex  = #PB_Ignore
+                           *tabs( )\y      + separator_step
+                           *tabs( )\height = 1
+                           *bar\max         + separator_step * 2
+                        Else
+                           If *tabs( )\picture\height
+                              *tabs( )\height = *tabs( )\picture\height
+                           EndIf
+                           If *tabs( )\text\height
+                              If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
+                                 If Not *tabs( )\picture\height 
+                                    *tabs( )\height = *tabs( )\text\height
+                                 EndIf
+                              Else
+                                 *tabs( )\height + *tabs( )\text\height
+                              EndIf
+                           EndIf
+                           
+                           ;
+                           *tabs( )\height + (6)
+                           ;
+                           If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
+                              ;
+                              ;                               *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width - *tabs( )\text\width ) / 2 
+                              ;                               *tabs( )\text\x  = *tabs( )\picture\x + *tabs( )\picture\width + 5
+                              Protected align_x = (5)
+                              *tabs( )\picture\x = *tabs( )\x + align_x
+                              *tabs( )\text\x  = *tabs( )\picture\x + *tabs( )\picture\width + align_x + (5)
+                              
+                              ;
+                              *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height )/2
+                              *tabs( )\text\y  = *tabs( )\y + ( *tabs( )\height - *tabs( )\text\height )/2
+                              ;                          
+                           Else
+                              If *tabs( )\text\width
+                                 *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height - *tabs( )\text\height ) / 2
+                              Else
+                                 *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height ) / 2
+                              EndIf
+                              ;
+                              *tabs( )\text\y  = *tabs( )\picture\y + *tabs( )\picture\height
+                              ;
+                              *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width )/2
+                              *tabs( )\text\x  = *tabs( )\x + ( *tabs( )\width - *tabs( )\text\width )/2
+                           EndIf
+                        
+                           ;
+                           If *this\type = #__type_TabBar
+                              *bar\max + *tabs( )\height + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
+                           Else
+                              *bar\max + *tabs( )\height + pos + Bool( Index = *this\countitems - 1 )
+                           EndIf
+                        EndIf
+                     Else
+                        *tabs( )\width = 0
+                        *tabs( )\x = *bar\max + pos
+                        ;
+                        If *this\type = #__type_TabBar
+                           If *this\parent\fs[2]
+                              *tabs( )\y     = bar_toggle_line_size
+                           Else
+                              *tabs( )\y     = DPIScaled(2)
+                           EndIf
+                           *tabs( )\height   = *this\screen_height( ) - bar_toggle_line_size - DPIScaled(2)
+                        Else
+                           *tabs( )\y           = pos
+                           If *tabs( )\tindex   = #PB_Ignore
+                              *tabs( )\y        + 3
+                           EndIf
+                           
+                           *tabs( )\height  = *this\scroll_height( ) - *tabs( )\y * 2
+                        EndIf
+                        ;
+                        If *tabs( )\tindex  = #PB_Ignore
+                           *tabs( )\x      + separator_step
+                           *tabs( )\width  = 1
+                           *bar\max + *tabs( )\width + pos + (separator_step * 2)
+                        Else
+                           ;
+                           *this\text\y = ( *tabs( )\height - *tabs( )\text\height ) / 2
+                           ;
+                           *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height ) / 2
+                           *tabs( )\text\y  = *tabs( )\y + *this\text\y
+                           
+                           ;
+                           *tabs( )\picture\x = *tabs( )\x + Bool( *tabs( )\picture\width ) * img_pos
+                           *tabs( )\text\x  = text_pos + *tabs( )\picture\x + *tabs( )\picture\width
+                           
+                           ;
+                           *tabs( )\width = (Bool( *tabs( )\text\width ) * ( text_pos * 2 ) + *tabs( )\text\width +
+                                             Bool( *tabs( )\picture\width ) * ( img_pos * 2 ) + *tabs( )\picture\width) - Bool( *tabs( )\picture\width And *tabs( )\text\width ) * ( text_pos )
+                           
+                           If *this\type = #__type_TabBar
+                              *bar\max + *tabs( )\width + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
+                              ;*bar\max + *tabs( )\width + pos + Bool( index = *this\countitems - 1 )
+                           Else
+                              If Not constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
+                                 If *tabs( )\text\width
+                                    If *tabs( )\width > *tabs( )\picture\width 
+                                       *tabs( )\width - *tabs( )\picture\width 
+                                    EndIf
+                                    ;
+                                    *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height - *tabs( )\text\height ) / 2
+                                    *tabs( )\text\y  = *tabs( )\picture\y + *tabs( )\picture\height
+                                    ;
+                                    *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width )/2
+                                    *tabs( )\text\x  = *tabs( )\x + ( *tabs( )\width - *tabs( )\text\width )/2
+                                 EndIf
+                              EndIf
+                              
+                              *bar\max + *tabs( )\width + pos + Bool( Index = *this\countitems - 1 )
+                           EndIf
+                        EndIf
+                     EndIf
+                  Next
+                  
+                  ;
+                  If *bar\vertical
+                     *this\scroll_height( ) = *bar\max
+                  Else
+                     *this\scroll_width( ) = *bar\max
+                  EndIf
+                  ;
+                  bar_update( *this, #True )
+                  
+                  *this\TabChange( ) = #False
+                  *this\ResizeChange( ) = 0
+               EndIf
+               
+               ;
+               ; drawin
+               ;
+               If *bar\vertical
+                  *BB2\x = *this\frame_x( ) + ( *this\frame_width( ) + pos - *BB2\size ) / 2
+                  *BB1\x = *this\frame_x( ) + ( *this\frame_width( ) + pos - *BB1\size ) / 2
+               Else
+                  *BB2\y = *this\frame_y( ) + ( *this\frame_height( ) + pos - *BB2\size ) / 2
+                  *BB1\y = *this\frame_y( ) + ( *this\frame_height( ) + pos - *BB1\size ) / 2
+               EndIf
+               
+            EndIf
+         EndWith
+      EndProcedure
+      Procedure.b _bar_UpdateDraw_TabItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
          With *this
             Protected Index
             Protected pos
@@ -55708,8 +56392,8 @@ CompilerEndIf
 ;    
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 54329
-; FirstLine = 53094
-; Folding = --------------------------------------------------------------------------------------------------------------------4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------tfrX8------------------------------------------------f---------------------------------------------------------
+; CursorPosition = 4500
+; FirstLine = 3862
+; Folding = ----------------------------------------------------------------------------------------e------v--------+-------------------------4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------tfrX8------------------------------------------------f---------------------------------------------------------
 ; EnableXP
 ; DPIAware

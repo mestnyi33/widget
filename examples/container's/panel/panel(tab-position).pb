@@ -1,27 +1,10 @@
 ﻿IncludePath "../../../"
-CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-   XIncludeFile "include/os/id.pbi"
-   XIncludeFile "include/os/win/ClipGadgets.pbi"
-CompilerEndIf
 XIncludeFile "widgets.pbi"
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   
-   #BorderNone = 0
-   #BorderLine = 1
-   #BorderBezel = 2
-   
-   #TopTabsBezelBorder    = 0
-   #LeftTabsBezelBorder   = 1
-   #BottomTabsBezelBorder = 2
-   #RightTabsBezelBorder  = 3
-   
-   #noTabsBezelBorder = 4
-   #noTabsLineBorder = 5
-   #noTabsNoBorder = 6
    
    Global *panel, *option
    Global SelectedGadget
@@ -30,9 +13,30 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn BarPosition(*this\tabbar, position, size)
    EndProcedure
    
-   Procedure events_widget( )
+   Procedure TabViewVertical( *this._s_widget, state )
+      If state
+         ;*this\tabbar\flag | #__flag_Vertical ; BarInlineText 
+         *this\tabbar\text\invert = 1
+         *this\tabbar\text\vertical = 1
+         
+         ;_address_\text\rotate = Bool( _address_\text\invert ) * 180 + Bool( _address_\text\vertical ) * 90
+            
+      Else
+;          *this\tabbar\flag &~ #__flag_Vertical 
+;          *this\tabbar\bar\vertical = 0
+         *this\tabbar\text\invert = 0
+         *this\tabbar\text\vertical = 0
+       ;   *this\tabbar\text\rotate = 270
+     EndIf
+      
+      ;ProcedureReturn BarPosition(*this\tabbar, position, size)
+   EndProcedure
+   
+   Procedure change_events( )
       
       Select GetText( EventWidget( ) )
+         Case "Vertical"
+            TabViewVertical( *panel, GetState(EventWidget( )))
          Case "Top"
             TabViewType( *panel, 2 )
          Case "Left"
@@ -67,17 +71,16 @@ CompilerIf #PB_Compiler_IsMainFile
    AddItem(*panel, 2, "", img_save )
    CloseList() ; *panel
    
-   Frame(30, 200, 300 - 60, 100, "Tab location")
-   Option(130, 220, 80, 20, "Top", #__flag_Transparent) : SetState(Widget(), #True)
-   Option(50, 245, 80, 20, "Left", #__flag_Transparent)
-   Option(130, 245, 80, 20, "Hide", #__flag_Transparent)
-   Option(130, 270, 80, 20, "Bottom", #__flag_Transparent)
-   Option(210, 245, 80, 20, "Right", #__flag_Transparent)
-   Bind( #PB_All, @events_widget( ), #__event_Change )
+   Frame(10, 200, 300 - 20, 100, "");Tab location")
+   CheckBox(130, 200, 80, 20, "Vertical", #__flag_Transparent)
+   ;
+   Option(130, 230, 80, 20, "Top", #__flag_Transparent) : SetState(Widget(), #True)
+   Option(50, 255, 80, 20, "Left", #__flag_Transparent)
+   Option(130, 255, 80, 20, "Hide", #__flag_Transparent)
+   Option(210, 255, 80, 20, "Right", #__flag_Transparent)
+   Option(130, 280, 80, 20, "Bottom", #__flag_Transparent)
+   Bind( #PB_All, @change_events( ), #__event_Change )
    
-   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      ClipGadgets( UseGadgetList(0) )
-   CompilerEndIf
    Repeat
       Select WaitWindowEvent()
          Case #PB_Event_CloseWindow
@@ -87,8 +90,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ForEver
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 18
+; FirstLine = 11
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -2913,7 +2913,7 @@ Global ide_SPLITTER =- 1
    ; set splitters dafault positions
    SetState( ide_main_SPLITTER, Height( ide_toolbar)+3) ; bug
    SetState( ide_SPLITTER, Width( ide_SPLITTER ) - 280 )
-   SetState( ide_designer_SPLITTER, 105 )
+   SetState( ide_designer_SPLITTER, 110 )
    
    ;SetState( ide_properties_SPLITTER, Height(ide_properties_SPLITTER) - 150 )
    SetState( ide_properties_SPLITTER, 150 )
@@ -3169,10 +3169,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2892
-; FirstLine = 2360
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 2915
+; FirstLine = 2404
 ; Folding = -4--4---8l-3v-----------Aj8-----------------------------n-
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2.exe
+; Executable = ../../2.exe

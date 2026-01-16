@@ -24,9 +24,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ;ComboBox(_x_,_y_,_width_,_height_,_flag_|#__flag_Textmultiline) : AddItem(widget( ), -1,"combo") : SetState(widget( ), 0) : SetImage(widget( ), 0)
     ;   Image(_x_,_y_,_width_,_height_,(0),_flag_) : SetBackColor( widget( ), $FFB3FDFF )
          
-    ButtonImage(_x_,_y_,_width_,_height_,(0),(_flag_&~#__align_image));|#__flag_BorderLess)
-;      Button(_x_,_y_,_width_,_height_,_text_, _flag_|#__flag_textmultiline )
-;      SetImage( Widget(), (0))
+   ; ButtonImage(_x_,_y_,_width_,_height_,(0),(_flag_&~#__align_image));|#__flag_BorderLess)
+     Button(_x_,_y_,_width_,_height_,_text_, _flag_|#__flag_textmultiline )
+     SetImage( Widget(), (0))
   EndMacro
   
   Define m.s = #LF$
@@ -96,8 +96,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 28
-; FirstLine = 11
+; CursorPosition = 96
 ; Folding = -
 ; EnableXP
 ; DPIAware

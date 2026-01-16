@@ -2691,6 +2691,7 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
    SetBackColor( ide_design_CODE, $FFDCF9F6)
    AddItem( ide_design_PANEL, -1, "V-"+lng(#lng_CODE$) )
    CloseList( )
+   BarPosition( ide_design_PANEL, 1 )
    
    ;
    ide_design_DEBUG = Editor( 0,0,0,0, #PB_Editor_ReadOnly|#__flag_BorderLess ) : SetClass(ide_design_DEBUG, "ide_design_DEBUG" )
@@ -2820,6 +2821,7 @@ Procedure   ide_open( X=50,Y=75,Width=900,Height=700 )
    
    ; ide_inspector_PANEL_close
    CloseList( )
+   BarPosition( ide_inspector_PANEL, 3 )
    SetState( ide_inspector_PANEL, 1 )
    
    ; ide_inspector_ide_properties_SPLITTER_text
@@ -3116,8 +3118,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 504
-; FirstLine = 480
+; CursorPosition = 2823
+; FirstLine = 2720
 ; Folding = -------------------------------------------------------n-
 ; EnableXP
 ; DPIAware

@@ -1,4 +1,4 @@
-﻿IncludePath "../../../" : XIncludeFile "widgets.pbi"
+﻿IncludePath "../../" : XIncludeFile "widgets.pbi"
 
 ;- 
 ;- example
@@ -7,6 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ; Shows possible flags of ButtonGadget in action...
    EnableExplicit
    UseWidgets( )
+    test_draw_area = 1
    
    Procedure  GadgeCreate(_id_, _x_,_y_,_width_,_height_,_text_.s,_flag_)
       ;Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
@@ -26,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define Y,X = (Width+space)*3 + 5
    
    If Open(0, 0, 0, X+(Width+space)*3 + 15, Y+(Height+space)*3 + 15, "vertical text", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetColor( widget( ), #PB_Gadget_BackColor, $FFffffff )
+      SetColor( Widget( ), #PB_Gadget_BackColor, $FFffffff )
       
       ; vertical
       GadgeCreate(0, 10, 10,                  Width, Height, text_v,                      #__flag_TextVertical|#PB_Button_Left|#__flag_TextTop);
@@ -60,10 +61,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 55
-; FirstLine = 22
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 10
 ; Folding = -
-; Optimizer
 ; EnableXP
 ; DPIAware

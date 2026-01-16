@@ -29,6 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro BarPositon_( this, position, size=-1 )
       BarPosition( this, position, size )
+      PostRepaint( ) 
    EndMacro
    
    ;   Procedure events_widget( )
@@ -120,7 +121,7 @@ CompilerIf #PB_Compiler_IsMainFile
    BindGadgetEvent(13, @events_gadget( ), #PB_EventType_LeftClick )
    
    
-   Open(0, 270)
+   Open(0, 300)
    ;a_init(root(),0)
    ;SetColor(root(), #pb_gadget_backcolor, $FFF2F2F2)
    *panel = Panel(10, 10, 300 - 20, 180)
@@ -160,9 +161,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ForEver
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 87
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 31
+; FirstLine = 29
 ; Folding = ---
 ; EnableXP
 ; DPIAware
