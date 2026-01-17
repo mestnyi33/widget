@@ -1719,6 +1719,7 @@ Procedure new_widget_events( )
          ;
       Case #__event_Focus
          __item = GetData(*g)
+         ;
          If Not ( ide_design_MDI = *g )
             ; Debug  ""+GetFocus(*g)  +" "+ GetClass(*g)
             If a_focused( ) = *g
@@ -1731,6 +1732,10 @@ Procedure new_widget_events( )
                   EndIf
                   SetState( ide_inspector_VIEW, __item )
                EndIf
+               
+               ; чтобы всегда рисовался фокус
+               SetItemColor( ide_inspector_VIEW, __item, #__backcolor, GetColor(ide_inspector_VIEW, #__backcolor, 2), 0, 3)
+               SetItemColor( ide_inspector_VIEW, __item, #__frontcolor, GetColor(ide_inspector_VIEW, #__frontcolor, 2), 0, 3)
                
                Properties_Updates( *g, "Focus" )
             EndIf
@@ -3216,9 +3221,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2971
-; FirstLine = 2497
-; Folding = -4--4---8l-3v-----------Aj------------------------X7------6-
+; CursorPosition = 1735
+; FirstLine = 1351
+; Folding = -4--4---8l-3v-----------Aj-------v----------------X7------6-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2.exe
