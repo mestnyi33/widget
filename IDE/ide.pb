@@ -138,10 +138,16 @@ Global ide_properties_SPLITTER,
        ide_inspector_VIEW, 
        ide_help_SPLITTER, 
        ide_inspector_PANEL,
-       ide_design_ELEMENTS,
        ide_inspector_PROPERTIES, 
        ide_inspector_EVENTS,
        ide_help_VIEW
+
+Global ide_element_PANEL,
+       ide_all_ELEMENTS,
+       ide_1_ELEMENTS,
+       ide_2_ELEMENTS,
+       ide_3_ELEMENTS,
+       ide_4_ELEMENTS
 
 Global group_select
 Global group_drag
@@ -1742,7 +1748,7 @@ Procedure new_widget_events( )
          EndIf
          ;
          If IsContainer(*g)
-            If GetState( ide_design_ELEMENTS ) > 0 
+            If GetState( ide_all_ELEMENTS ) > 0 
                If mouse( )\selector
                   mouse( )\selector\dotted = 0
                EndIf
@@ -1772,8 +1778,8 @@ Procedure new_widget_events( )
       Case #__event_LeftUp
          If IsContainer(*g)
             If Not MouseDrag( )
-               If GetState( ide_design_ELEMENTS) > 0
-                  new_widget_add( *g, GetText( ide_design_ELEMENTS ), GetMouseX(*g), GetMouseY(*g))
+               If GetState( ide_all_ELEMENTS) > 0
+                  new_widget_add( *g, GetText( ide_all_ELEMENTS ), GetMouseX(*g), GetMouseY(*g))
                EndIf
             EndIf
          EndIf
@@ -1806,7 +1812,7 @@ Procedure new_widget_events( )
             If IsContainer(*g) 
                If MouseEnter(*g)
                   If Not a_index( )
-                     If GetState( ide_design_ELEMENTS ) > 0 
+                     If GetState( ide_all_ELEMENTS ) > 0 
                         If DragDropPrivate( #_DD_CreateNew )
                            ChangeCursor( *g, #PB_Cursor_Cross )
                         EndIf
@@ -1832,8 +1838,8 @@ Procedure new_widget_events( )
                ;                EndIf
                
             Case #_DD_CreateNew 
-               Debug " ----- DD_new ----- "+ GetText( ide_design_ELEMENTS ) +" "+ DropX( ) +" "+ DropY( ) +" "+ DropWidth( ) +" "+ DropHeight( )
-               new_widget_add( *g, GetText( ide_design_ELEMENTS ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
+               Debug " ----- DD_new ----- "+ GetText( ide_all_ELEMENTS ) +" "+ DropX( ) +" "+ DropY( ) +" "+ DropWidth( ) +" "+ DropHeight( )
+               new_widget_add( *g, GetText( ide_all_ELEMENTS ), DropX( ), DropY( ), DropWidth( ), DropHeight( ) )
                
             Case #_DD_CreateCopy
                Debug " ----- DD_copy ----- " + GetText( Pressed( ) )
@@ -1849,10 +1855,10 @@ Procedure new_widget_events( )
       Case #__event_MouseMove
          If IsContainer(*g) 
             If MouseEnter(*g)
-               If GetState( ide_design_ELEMENTS ) > 0 
+               If GetState( ide_all_ELEMENTS ) > 0 
                   If MousePress( )
                      ; disable drop 
-                     If GetState( ide_design_ELEMENTS ) = 1
+                     If GetState( ide_all_ELEMENTS ) = 1
                         If *g = ide_design_MDI  
                         Else
                            If MouseDragStart( ) = #PB_Drag_Enter
@@ -1870,7 +1876,7 @@ Procedure new_widget_events( )
                   Else
                      If GetCursor( ) < 255
                         Debug " mouse enter to change cursor " 
-                        ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_design_ELEMENTS, GetState( ide_design_ELEMENTS ) ) ) ))
+                        ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_all_ELEMENTS, GetState( ide_all_ELEMENTS ) ) ) ))
                         a_set(*g)
                      EndIf
                   EndIf
@@ -1899,12 +1905,12 @@ Procedure new_widget_events( )
       ;
       ; end new create
       If Not keyboard( )\key[1]
-         If GetState( ide_design_ELEMENTS ) > 0 
+         If GetState( ide_all_ELEMENTS ) > 0 
             If GetCursor( ) <> GetCursor(*g) 
                Debug " reset cursor " 
                ChangeCursor( *g, GetCursor(*g))
             EndIf
-            SetState( ide_design_ELEMENTS, 0 )
+            SetState( ide_all_ELEMENTS, 0 )
          EndIf
       EndIf
    EndIf
@@ -1989,57 +1995,6 @@ Procedure ide_Lng_change( lng_TYPE=0 )
 EndProcedure
 
 ;-
-Procedure.S ide_help_VIEW_elements(Class.s)
-   Protected Result.S
-   
-   Class = UCase(Class)
-   
-   Select TypeFromClass(Class)
-      Case 0
-         Result.S = "[" +Class+ "] - Элемент не выбран"
-         
-      Case #__type_Date
-         Result.S = "Первая строка"+#CRLF$+
-         "Вторая строка"
-         
-      Case #__type_Window
-         Result.S = "[" +Class+ "] - Это окно"
-         
-      Case #__type_Button
-         Result.S = "[" +Class+ "] - Это кнопка"
-         
-      Case #__type_ButtonImage
-         Result.S = "[" +Class+ "] - Это кнопка картинка"
-         
-      Case #__type_CheckBox
-         Result.S = "[" +Class+ "] - Это переключатель"
-         
-      Case #__type_ComboBox
-         Result.S = "[" +Class+ "] - Это выподающий список"
-         
-      Case #__type_Image
-         Result.S = "[" +Class+ "] - Это картинка"
-         
-      Case #__type_Calendar
-         Result.S = "[" +Class+ "] - Это календарь"
-         
-      Case #__type_Canvas
-         Result.S = "[" +Class+ "] - Это холст для рисования"
-         
-      Case #__type_Container
-         Result.S = "[" +Class+ "] - Это контейнер для других элементов"
-         
-      Case #__type_Editor
-         Result.S ="[" +Class+ "] - Это многострочное поле ввода"
-         
-      Default
-         Result.S = "[" +Class+ "] - не реализованно"
-         
-   EndSelect
-   
-   ProcedureReturn Result.S
-EndProcedure
-
 Procedure ide_mdi_clears( )
    ; Очишаем текст
    ClearItems( ide_design_CODE ) 
@@ -2164,6 +2119,57 @@ Procedure   ide_file_save(Path$) ; Процедура сохранения фа�
 EndProcedure
 
 ;-
+Procedure.S ide_help_VIEW_elements(Class.s)
+   Protected Result.S
+   
+   Class = UCase(Class)
+   
+   Select TypeFromClass(Class)
+      Case 0
+         Result.S = "[" +Class+ "] - Элемент не выбран"
+         
+      Case #__type_Date
+         Result.S = "Первая строка"+#CRLF$+
+         "Вторая строка"
+         
+      Case #__type_Window
+         Result.S = "[" +Class+ "] - Это окно"
+         
+      Case #__type_Button
+         Result.S = "[" +Class+ "] - Это кнопка"
+         
+      Case #__type_ButtonImage
+         Result.S = "[" +Class+ "] - Это кнопка картинка"
+         
+      Case #__type_CheckBox
+         Result.S = "[" +Class+ "] - Это переключатель"
+         
+      Case #__type_ComboBox
+         Result.S = "[" +Class+ "] - Это выподающий список"
+         
+      Case #__type_Image
+         Result.S = "[" +Class+ "] - Это картинка"
+         
+      Case #__type_Calendar
+         Result.S = "[" +Class+ "] - Это календарь"
+         
+      Case #__type_Canvas
+         Result.S = "[" +Class+ "] - Это холст для рисования"
+         
+      Case #__type_Container
+         Result.S = "[" +Class+ "] - Это контейнер для других элементов"
+         
+      Case #__type_Editor
+         Result.S ="[" +Class+ "] - Это многострочное поле ввода"
+         
+      Default
+         Result.S = "[" +Class+ "] - не реализованно"
+         
+   EndSelect
+   
+   ProcedureReturn Result.S
+EndProcedure
+
 Procedure   ide_inspector_VIEW_ADD_ITEMS( *new._s_widget )
    Protected *parent._s_widget, Param1, Param2, Param3, newClass.s = GetClass( *new )
    
@@ -2203,10 +2209,10 @@ Procedure   ide_inspector_VIEW_ADD_ITEMS( *new._s_widget )
          
          ; get image associated with class
          Protected img =- 1
-         count = CountItems( ide_design_ELEMENTS )
+         count = CountItems( ide_all_ELEMENTS )
          For i = 0 To count - 1
-            If LCase( ClassFromType( GetType(*new))) = LCase( GetItemText( ide_design_ELEMENTS, i ))
-               img = GetItemData( ide_design_ELEMENTS, i )
+            If LCase( ClassFromType( GetType(*new))) = LCase( GetItemText( ide_all_ELEMENTS, i ))
+               img = GetItemData( ide_all_ELEMENTS, i )
                Break
             EndIf
          Next  
@@ -2231,8 +2237,12 @@ Procedure   ide_inspector_VIEW_ADD_ITEMS( *new._s_widget )
    ProcedureReturn *new
 EndProcedure
 
-Procedure.i ide_design_ELEMENTS_ADD_ITEMS( *id, Directory$ )
+Procedure.i ide_all_ELEMENTS_ADD_ITEMS( *id, Directory$, Type )
    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
+   
+   If Type = 0
+      Type = #PB_All
+   EndIf
    
    If FileSize( ZipFile$ ) < 1
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -2302,48 +2312,60 @@ Procedure.i ide_design_ELEMENTS_ADD_ITEMS( *id, Directory$ )
                                   FindString( PackEntryName, "scrollarea" ) Or
                                   FindString( PackEntryName, "splitter" )
                               
-                              name$ = ReplaceString( name$,"area","Area", #PB_String_NoCase )
-                              Image = CatchImage( #PB_Any, *memory, ImageSize )
-                              AddItem( *id, -1, name$, Image )
-                              SetItemData( *id, CountItems( *id )-1, Image )
+                              If 1 = Type Or Type = #PB_All 
+                                 name$ = ReplaceString( name$,"area","Area", #PB_String_NoCase )
+                                 Image = CatchImage( #PB_Any, *memory, ImageSize )
+                                 AddItem( *id, -1, name$, Image )
+                                 SetItemData( *id, CountItems( *id )-1, Image )
+                              EndIf
                               
                            ElseIf FindString( PackEntryName, "button" ) Or
                                   FindString( PackEntryName, "option" ) Or
                                   FindString( PackEntryName, "checkbox" ) Or
                                   FindString( PackEntryName, "combobox" )
                               
-                              name$ = ReplaceString( name$,"image","Image", #PB_String_NoCase )
-                              name$ = ReplaceString( name$,"box","Box", #PB_String_NoCase )
-                              Image = CatchImage( #PB_Any, *memory, ImageSize )
-                              AddItem( *id, -1, name$, Image )
-                              SetItemData( *id, CountItems( *id )-1, Image )
-                              
+                              If 2 = Type Or Type = #PB_All 
+                                 name$ = ReplaceString( name$,"image","Image", #PB_String_NoCase )
+                                 name$ = ReplaceString( name$,"box","Box", #PB_String_NoCase )
+                                 Image = CatchImage( #PB_Any, *memory, ImageSize )
+                                 AddItem( *id, -1, name$, Image )
+                                 SetItemData( *id, CountItems( *id )-1, Image )
+                              EndIf
+                           
                            ElseIf FindString( PackEntryName, "image" )
-                              Image = CatchImage( #PB_Any, *memory, ImageSize )
-                              AddItem( *id, -1, name$, Image )
-                              SetItemData( *id, CountItems( *id )-1, Image )
-                              
+                              If Type = #PB_All 
+                                 Image = CatchImage( #PB_Any, *memory, ImageSize )
+                                 AddItem( *id, -1, name$, Image )
+                                 SetItemData( *id, CountItems( *id )-1, Image )
+                              EndIf
+                           
                            ElseIf FindString( PackEntryName, "string" ) Or
                                   FindString( PackEntryName, "text" )
                               
-                              Image = CatchImage( #PB_Any, *memory, ImageSize )
-                              AddItem( *id, -1, name$, Image )
-                              SetItemData( *id, CountItems( *id )-1, Image )
-                              
+                              If 3 = Type Or Type = #PB_All 
+                                 Image = CatchImage( #PB_Any, *memory, ImageSize )
+                                 AddItem( *id, -1, name$, Image )
+                                 SetItemData( *id, CountItems( *id )-1, Image )
+                              EndIf
+                           
                            ElseIf FindString( PackEntryName, "progress" ) Or
                                   FindString( PackEntryName, "track" ) Or
                                   FindString( PackEntryName, "spin" )
                               
-                              Image = CatchImage( #PB_Any, *memory, ImageSize )
-                              AddItem( *id, -1, name$, Image )
-                              SetItemData( *id, CountItems( *id )-1, Image )
-                              
+                              If 4 = Type Or Type = #PB_All 
+                                 Image = CatchImage( #PB_Any, *memory, ImageSize )
+                                 AddItem( *id, -1, name$, Image )
+                                 SetItemData( *id, CountItems( *id )-1, Image )
+                              EndIf
+                           
                            ElseIf FindString( PackEntryName, "tree" ) Or
                                   FindString( PackEntryName, "listview" )
                               
-                              Image = CatchImage( #PB_Any, *memory, ImageSize )
-                              AddItem( *id, -1, name$, Image )
-                              SetItemData( *id, CountItems( *id )-1, Image )
+                              If Type = #PB_All 
+                                 Image = CatchImage( #PB_Any, *memory, ImageSize )
+                                 AddItem( *id, -1, name$, Image )
+                                 SetItemData( *id, CountItems( *id )-1, Image )
+                              EndIf
                               
                            Else
                               ;                               Image = CatchImage( #PB_Any, *memory, ImageSize )
@@ -2527,7 +2549,7 @@ Procedure   ide_events( )
          EndIf
          
       Case #__event_DragStart
-         If *g = ide_design_ELEMENTS
+         If *g = ide_all_ELEMENTS
             If __item >= 0
                SetState( *g, __item)
                
@@ -2539,6 +2561,12 @@ Procedure   ide_events( )
          EndIf
          
       Case #__event_Change
+         If *g = ide_element_PANEL
+            Debug "change element tab "+ __item
+            ClearItems( ide_all_ELEMENTS )
+            SetParent( ide_all_ELEMENTS, ide_element_PANEL, __item )
+            ide_all_ELEMENTS_ADD_ITEMS( ide_all_ELEMENTS, GetCurrentDirectory( )+"Themes/", __item )
+         EndIf
          If *g = ide_inspector_VIEW
             If a_set( GetItemData( *g, GetState(*g) ))
             EndIf
@@ -2557,11 +2585,22 @@ Procedure   ide_events( )
          EndIf
          
       Case #__event_StatusChange
+         If *g = ide_element_PANEL
+            ; Debug "status change element tab "+ __item
+            Select __item 
+               Case 0 : SetText( ide_help_VIEW, "all elements" )
+               Case 1 : SetText( ide_help_VIEW, "all containers" )
+               Case 2 : SetText( ide_help_VIEW, "all buttons" )
+               Case 3 : SetText( ide_help_VIEW, "all texts" )
+               Case 4 : SetText( ide_help_VIEW, "all bars" )
+            EndSelect
+         EndIf
+         ;
          If __item = - 1
             SetText( ide_help_VIEW, "help for the inspector" )
          Else
             If __data < 0
-               If *g = ide_design_ELEMENTS
+               If *g = ide_all_ELEMENTS
                   SetText( ide_help_VIEW, ide_help_VIEW_elements(GetItemText( *g, __item )) )
                EndIf
                If *g = ide_inspector_VIEW
@@ -2744,12 +2783,35 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ;
    ; gadgets
    ;
-   ide_design_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines ) : SetClass(ide_design_ELEMENTS, "ide_design_ELEMENTS" )
-   If ide_design_ELEMENTS
-      Define *g._s_WIDGET = ide_design_ELEMENTS
-      ;*g\padding\x = DPIScaled(4)
-      ide_design_ELEMENTS_ADD_ITEMS( ide_design_ELEMENTS, GetCurrentDirectory( )+"Themes/" )
+   ide_element_PANEL = Panel( 0,0,0,0, #__flag_BorderLess ) : SetClass(ide_element_PANEL, "ide_element_PANEL" ) 
+   AddItem( ide_element_PANEL, -1, "All")
+   ide_all_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines ) : SetClass(ide_all_ELEMENTS, "ide_all_ELEMENTS" )
+   If ide_all_ELEMENTS
+      ide_all_ELEMENTS_ADD_ITEMS( ide_all_ELEMENTS, GetCurrentDirectory( )+"Themes/", - 1 )
    EndIf
+   AddItem( ide_element_PANEL, -1, "1" )
+;    ide_1_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines ) : SetClass(ide_all_ELEMENTS, "ide_all_ELEMENTS" )
+;    If ide_1_ELEMENTS
+;       ide_all_ELEMENTS_ADD_ITEMS( ide_1_ELEMENTS, GetCurrentDirectory( )+"Themes/", 1 )
+;    EndIf
+   AddItem( ide_element_PANEL, -1, "2" )
+;    ide_2_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines ) : SetClass(ide_all_ELEMENTS, "ide_all_ELEMENTS" )
+;    If ide_2_ELEMENTS
+;       ide_all_ELEMENTS_ADD_ITEMS( ide_2_ELEMENTS, GetCurrentDirectory( )+"Themes/", 2 )
+;    EndIf
+   AddItem( ide_element_PANEL, -1, "3" )
+;    ide_3_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines ) : SetClass(ide_all_ELEMENTS, "ide_all_ELEMENTS" )
+;    If ide_3_ELEMENTS
+;       ide_all_ELEMENTS_ADD_ITEMS( ide_3_ELEMENTS, GetCurrentDirectory( )+"Themes/", 3 )
+;    EndIf
+   AddItem( ide_element_PANEL, -1, "4" )
+;    ide_4_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines ) : SetClass(ide_all_ELEMENTS, "ide_all_ELEMENTS" )
+;    If ide_4_ELEMENTS
+;       ide_all_ELEMENTS_ADD_ITEMS( ide_4_ELEMENTS, GetCurrentDirectory( )+"Themes/", 4 )
+;    EndIf
+   
+   CloseList( )
+   BarPosition( ide_element_PANEL, 4, 17 )
    
    ;\\\ 
    ide_design_PANEL = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_PANEL, "ide_design_PANEL" ) ; , #__flag_Vertical ) : OpenList( ide_design_PANEL )
@@ -2889,7 +2951,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
 Global ide_SPLITTER =- 1
    ;
    ;\\ main splitter 2 example 
-   ide_help_SPLITTER = Splitter( 0,0,0,0, ide_design_ELEMENTS, ide_help_VIEW, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_help_SPLITTER, "ide_help_SPLITTER" )
+   ide_help_SPLITTER = Splitter( 0,0,0,0, ide_element_PANEL, ide_help_VIEW, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_help_SPLITTER, "ide_help_SPLITTER" )
    ide_debug_Splitter = Splitter( 0,0,0,0, ide_design_PANEL, ide_help_DEBUG, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_debug_Splitter, "ide_debug_Splitter" )
    ide_designer_SPLITTER = Splitter( 0,0,0,0, ide_help_SPLITTER, ide_debug_Splitter, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_designer_SPLITTER, "ide_designer_SPLITTER" )
    ide_SPLITTER = Splitter( 0,0,0,0, ide_designer_SPLITTER, ide_inspector_PANEL, #PB_Splitter_SecondFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_designer_SPLITTER, "ide_designer_SPLITTER" )
@@ -2952,13 +3014,16 @@ Global ide_SPLITTER =- 1
    Bind( ide_help_DEBUG, @ide_events( ), #__event_Change )
    Bind( ide_help_DEBUG, @ide_events( ), #__event_StatusChange )
    ;
-   Bind( ide_design_ELEMENTS, @ide_events( ), #__event_Change )
-   Bind( ide_design_ELEMENTS, @ide_events( ), #__event_StatusChange )
-   Bind( ide_design_ELEMENTS, @ide_events( ), #__event_Left2Click )
-   Bind( ide_design_ELEMENTS, @ide_events( ), #__event_LeftClick )
-   Bind( ide_design_ELEMENTS, @ide_events( ), #__event_MouseEnter )
-   Bind( ide_design_ELEMENTS, @ide_events( ), #__event_MouseLeave )
-   Bind( ide_design_ELEMENTS, @ide_events( ), #__event_DragStart )
+   Bind( ide_element_PANEL, @ide_events( ), #__event_Change )
+   Bind( ide_element_PANEL, @ide_events( ), #__event_StatusChange )
+   ;
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_Change )
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_StatusChange )
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_Left2Click )
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_LeftClick )
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_MouseEnter )
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_MouseLeave )
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_DragStart )
    ;
    Bind( ide_root, @ide_events( ), #__event_Close )
    ; Bind( ide_root, @ide_events( ), #__event_Free )
@@ -3171,9 +3236,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2914
-; FirstLine = 2402
-; Folding = -4--4---8l-3v-----------Aj8-----------------------------n-
+; CursorPosition = 2813
+; FirstLine = 2347
+; Folding = -4--4---8l-3v-----------Aj8-----------------------X7------6-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2.exe
