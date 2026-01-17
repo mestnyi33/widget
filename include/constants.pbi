@@ -62,10 +62,11 @@
       ;
       ;\\ default values
       ;
-      #__bar_toggle_line_size = 0
+      ;#__bar_toggle_line_size = 0
       #__bar_splitter_size = 9
       #__ButtonRound  = 7
       #__bar_button_size   = 16
+      #__tab_size   = 25;18
       
       #__Draw_plus_Size = 5
       
@@ -714,8 +715,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 64
-; FirstLine = 59
+; CursorPosition = 68
+; FirstLine = 62
 ; Folding = ----
 ; Optimizer
 ; EnableXP

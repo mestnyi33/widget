@@ -96,9 +96,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   OpenWindow(0, 270, 100, 600, 310, "Change tab location")
+   OpenWindow(0, 270, 100, 650, 600, "Change tab location")
    
-   PanelGadget(0, 10, 10, 300 - 20, 180)
+   PanelGadget(0, 10, 10, 310, 350)
    AddGadgetItem (0, -1, "Tab 1", LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"))
    AddGadgetItem (0, -1, "Tab 2 (img-copy)", LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
    ButtonGadget( -1, 0,0,50,50,"Button" )
@@ -106,7 +106,7 @@ CompilerIf #PB_Compiler_IsMainFile
    AddGadgetItem (0, -1, "Tab 3", LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
    CloseGadgetList()
    
-   FrameGadget(1, 30, 200, 300 - 60, 100, "Tab location")
+   FrameGadget(1, 30, 500, 300 - 60, 100, "Tab location")
    OptionGadget(2, 130, GadgetY(1) + 20, 80, 20, "Top")
    OptionGadget(3, 50, GadgetY(1) + 45, 80, 20, "Left")
    OptionGadget(13, 130, GadgetY(1) + 45, 80, 20, "Hide")
@@ -121,10 +121,10 @@ CompilerIf #PB_Compiler_IsMainFile
    BindGadgetEvent(13, @events_gadget( ), #PB_EventType_LeftClick )
    
    
-   Open(0, 300)
+   Open(0, 320)
    ;a_init(root(),0)
    ;SetColor(root(), #pb_gadget_backcolor, $FFF2F2F2)
-   *panel = Panel(10, 10, 300 - 20, 180)
+   *panel = Panel(10, 10, 310, 350)
    AddItem (*panel, -1, "Tab 1", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"))
    AddItem (*panel, -1, "Tab 2 (img-copy)", LoadImage(-1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Copy.png"))
    Button( 0,0,50,50,"Button" )
@@ -162,8 +162,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 31
-; FirstLine = 29
+; CursorPosition = 126
+; FirstLine = 115
 ; Folding = ---
 ; EnableXP
 ; DPIAware

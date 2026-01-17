@@ -2764,6 +2764,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    
    AddItem( ide_design_PANEL, -1, "V-"+lng(#lng_CODE$) )
    CloseList( )
+   ; BarPosition( ide_design_PANEL, 4 )
    
    ;
    ide_help_DEBUG = Editor( 0,0,0,0, #PB_Editor_ReadOnly ) : SetClass(ide_help_DEBUG, "ide_help_DEBUG" )
@@ -2911,7 +2912,7 @@ Global ide_SPLITTER =- 1
    SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 350 )
    
    ; set splitters dafault positions
-   SetState( ide_main_SPLITTER, Height( ide_toolbar)+3) ; bug
+   SetState( ide_main_SPLITTER, Height( ide_toolbar));+3) ; bug
    SetState( ide_SPLITTER, Width( ide_SPLITTER ) - 280 )
    SetState( ide_designer_SPLITTER, 110 )
    
@@ -3170,8 +3171,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2915
-; FirstLine = 2404
+; CursorPosition = 2914
+; FirstLine = 2402
 ; Folding = -4--4---8l-3v-----------Aj8-----------------------------n-
 ; EnableXP
 ; DPIAware

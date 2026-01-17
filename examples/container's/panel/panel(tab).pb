@@ -19,7 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ResizeImage(img_save,32,32)
    EndIf
    img_new =- 1
-   img_open =- 1
+   ;img_open =- 1
    img_save =- 1
    
    Procedure all_events()
@@ -53,30 +53,28 @@ CompilerIf #PB_Compiler_IsMainFile
       ;a_init(*g)
       
       *g1 = Panel(10, 10, 200, 200) 
-      SetFrame( *g1, 10 )
+      ;SetFrame( *g1, 10 )
       AddItem(*g1, 0, "1", img_new )
+      Button(0,0,GetAttribute(*g1, #PB_Panel_ItemWidth),GetAttribute(*g1, #PB_Panel_ItemHeight),"")
       AddItem(*g1, 1, "open top item", img_open, #PB_ToolBar_Normal)
-      AddItem(*g1, 2, "2", img_save )
+      AddItem(*g1, 2, "2g", img_save )
       CloseList() ; *g1
       
       *g2 = Panel(220, 10, 200, 200, #__flag_Invert)
       AddItem(*g2, 0, "1", img_new )
-      ScrollArea(10,10,140,140, 180,180,1) 
-      Button(10,10,40,40,"")
-      CloseList( )
-      
+      Button(0,0,GetAttribute(*g2, #PB_Panel_ItemWidth),GetAttribute(*g2, #PB_Panel_ItemHeight),"")
       AddItem(*g2, 1, "open bottom item", img_open, #PB_ToolBar_Normal)
-      AddItem(*g2, 2, "2", img_save )
+      AddItem(*g2, 2, "2g", img_save )
       CloseList() ; *g2
       
       ;*s1 = Splitter(10,10, 410, 200, *g1,*g2, #PB_Splitter_Vertical)
       
       *g3 = Panel(10, 220, 200, 200, #__flag_Vertical)
-      SetFrame( *g3, 10 )
+      ;SetFrame( *g3, 10 )
       AddItem(*g3, 0, "1", img_new )
-      Button(10,10,40,40,"")
+      Button(0,0,GetAttribute(*g3, #PB_Panel_ItemWidth),GetAttribute(*g3, #PB_Panel_ItemHeight),"")
       AddItem(*g3, 1, "open left item", img_open, #PB_ToolBar_Normal)
-      AddItem(*g3, 2, "2", img_save )
+      AddItem(*g3, 2, "2g", img_save )
       CloseList() ; *g3
       
 ;       Debug ""+*g3\clip_x() +" "+*g3\clip_y() +" "+*g3\clip_width() +" "+*g3\clip_height()
@@ -86,8 +84,12 @@ CompilerIf #PB_Compiler_IsMainFile
       
       *g4 = Panel(220, 220, 200, 200, #__flag_Vertical|#__flag_Invert)
       AddItem(*g4, 0, "1", img_new )
+      Button(0,0,GetAttribute(*g4, #PB_Panel_ItemWidth),GetAttribute(*g4, #PB_Panel_ItemHeight),"")
       AddItem(*g4, 1, "open right item", img_open);, #PB_ToolBar_Normal)
-      AddItem(*g4, 2, "2", img_save )
+      ScrollArea(10,10,140,140, 180,180,1) 
+      Button(10,10,40,40,"")
+      CloseList( )
+      AddItem(*g4, 2, "2g", img_save )
       CloseList() ; *g4
       
       
@@ -113,8 +115,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 89
-; FirstLine = 68
+; CursorPosition = 21
+; FirstLine = 16
 ; Folding = 8-
 ; EnableXP
 ; DPIAware

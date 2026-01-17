@@ -1927,7 +1927,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Global NewMap typeCount( )
       
       
-      Global bar_toggle_line_size = DPIScaled(#__bar_toggle_line_size)
+      Global bar_button_padding = 1
+      Global bar_toggle_size = 0 ; DPIScaled(2)
       Global bar_splitter_size = DPIScaled(#__bar_splitter_size)
       Global dpi_scale_two = DPIScaled(2)
       
@@ -3818,7 +3819,107 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndMacro
       
+      Global ppp = DPIScaled(3)
       ;-
+      Procedure   UpdateDraw_BarContent( *this._s_WIDGET, List *tabs._s_ITEMS( ), padding )
+         Protected img_indent_x, img_indent_y 
+         
+         ;
+         If *tabs( )\picture And *tabs( )\picture\imageID 
+            If *tabs( )\text And *tabs( )\text\string 
+               img_indent_x = 0;img_indent
+               img_indent_y = 0;img_indent
+            EndIf
+         EndIf
+         
+         ;     
+         If *tabs( )\text\multiLine
+               UpdateDraw_Text( *this, 1 )
+            Else
+               Protected txt_rotate = *this\text\rotate
+               Protected img_rotate = *this\picture\rotate
+               Protected *txt_align._s_ALIGN = *this\text\align
+               Protected *img_align._s_ALIGN = *this\picture\align
+               Protected Width = *tabs( )\width 
+               Protected Height = *tabs( )\height
+;                 Width = *this\scroll_width( )
+;                 Height = *this\scroll_height( )
+               
+               ;
+               If *this\text\vertical
+                  change_align_horizontal( *tabs( )\text, Width, *tabs( )\text\height, txt_rotate, *txt_align, padding )
+                  change_align_vertical( *tabs( )\text, Height, *tabs( )\text\width, txt_rotate, *txt_align, padding )
+                  ; align image
+                  change_align_horizontal( *tabs( )\picture, Width, *tabs( )\picture\height, img_rotate, *img_align, padding )
+                  change_align_vertical( *tabs( )\picture, Height, *tabs( )\picture\width, img_rotate, *img_align, padding )
+               Else
+                  change_align_horizontal( *tabs( )\text, Width, *tabs( )\text\width, txt_rotate, *txt_align, padding )
+                  change_align_vertical( *tabs( )\text, Height, *tabs( )\text\height, txt_rotate, *txt_align, padding )
+                  ; align image
+                  change_align_horizontal( *tabs( )\picture, Width, *tabs( )\picture\width, img_rotate, *img_align, padding )
+                  change_align_vertical( *tabs( )\picture, Height, *tabs( )\picture\height, img_rotate, *img_align, padding )
+               EndIf
+               
+               ;pb bug
+               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  If txt_rotate = 90
+                     *tabs( )\text\x - 1
+                  EndIf
+                  If txt_rotate = 270
+                     *tabs( )\text\x + 2
+                  EndIf
+                  If txt_rotate = 0
+                     *tabs( )\text\y - 1
+                  EndIf
+                  If txt_rotate = 180
+                     *tabs( )\text\y + 3
+                  EndIf
+               CompilerEndIf
+               
+               ;ProcedureReturn
+               ; коректировка положения текста если есть изображение
+               If *img_align
+                  If *tabs( )\picture\width
+                     If *img_align\left
+                        If *txt_align\left
+                           *tabs( )\text\x + ( *tabs( )\picture\width + img_indent_x )
+                        Else
+                           *tabs( )\text\x + ( *tabs( )\picture\width + img_indent_x ) / 2
+                        EndIf
+                     EndIf
+                     If *img_align\right
+                        If *txt_align\right
+                           *tabs( )\text\x - ( *tabs( )\picture\width + img_indent_x )
+                        Else
+                           *tabs( )\text\x - ( *tabs( )\picture\width + img_indent_x ) / 2
+                        EndIf
+                     EndIf
+                  EndIf
+                  If *tabs( )\picture\height
+                     If *img_align\top
+                        If *img_align\top
+                           If *txt_align\top
+                              *tabs( )\text\y + ( *tabs( )\picture\height + img_indent_y )
+                           Else
+                              *tabs( )\text\y + ( *tabs( )\picture\height + img_indent_y ) / 2
+                           EndIf
+                        EndIf
+                     EndIf
+                     If *img_align\bottom
+                        If *img_align\bottom
+                           If *txt_align\bottom
+                              *tabs( )\text\y - ( *tabs( )\picture\height + img_indent_y )
+                           Else
+                              *tabs( )\text\y - ( *tabs( )\picture\height + img_indent_y ) / 2
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+               
+            EndIf
+      EndProcedure
+      
       Procedure.b bar_UpdateDraw_TabItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
          With *this
             Protected Index
@@ -3836,12 +3937,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                pos = DPIScaled(1) 
             EndIf
             If *this\parent And *this\parent\type = #__type_Panel
-               pos = bar_toggle_line_size
+               pos = bar_toggle_size
             EndIf
             ;
             Protected layout = pos * 2
-            Protected text_pos = DPIScaled(6)
-            Protected img_pos = DPIScaled(3)
+            Protected text_pos = ppp;DPIScaled(6)
+            Protected img_pos = ppp;DPIScaled(3)
             Protected childrens.b, qqq = DPIScaled(40)
             ;
             If Not *this\hide 
@@ -3897,15 +3998,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Index = ListIndex( *tabs( ) )
                      
                      ; init items position
-                  If *bar\vertical
+                     If *bar\vertical
                         
                         If *this\type = #__type_TabBar
                            If *this\parent\fs[1]
-                              *tabs( )\x     = bar_toggle_line_size
+                              *tabs( )\x     = bar_toggle_size
                            Else
-                              *tabs( )\x     = DPIScaled(2)
+                              *tabs( )\x     = bar_button_padding
                            EndIf
-                           *tabs( )\width   = *this\screen_width( ) - bar_toggle_line_size - DPIScaled(2)
+                           *tabs( )\width   = *this\screen_width( ) - bar_toggle_size - bar_button_padding
                            ;
                            *tabs( )\y = *bar\max + pos
                            ;
@@ -3914,19 +4015,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *tabs( )\width  = 1
                               *bar\max + *tabs( )\width + pos + (separator_step * 2)
                            Else
-                              ;
-                              *this\text\x = ( *tabs( )\width - *tabs( )\text\width ) / 2
-                              ;
-                              *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width ) / 2
-                              *tabs( )\text\x  = *tabs( )\x + *this\text\x
+;                               If *this\text\vertical
+;                                  If *this\text\invert
+;                                     *tabs( )\text\x = *tabs( )\text\height ;- *tabs( )\text\width
+;                                  Else
+;                                     *tabs( )\text\y = *tabs( )\text\width
+;                                  EndIf
+;                               EndIf
                               
-                              ;
-                              *tabs( )\picture\y = *tabs( )\y + Bool( *tabs( )\picture\height ) * img_pos
-                              *tabs( )\text\y  = text_pos + *tabs( )\picture\y + *tabs( )\picture\height
-                              
-                              ;
-                              *tabs( )\height = (Bool( *tabs( )\text\width ) * ( text_pos * 2 ) + *tabs( )\text\width +
-                                                 Bool( *tabs( )\picture\width ) * ( img_pos * 2 ) + *tabs( )\picture\width) - Bool( *tabs( )\picture\width And *tabs( )\text\width ) * ( text_pos )
+                              *tabs( )\height = 0
+                              If *tabs( )\text\width
+                                 *tabs( )\height + *tabs( )\text\width + ( text_pos * 2 )
+                              EndIf
+                              If *tabs( )\picture\width
+                                 *tabs( )\height + *tabs( )\picture\width + ( img_pos * 2 )
+                              EndIf
                               
                               *bar\max + *tabs( )\height + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
                            EndIf
@@ -3939,18 +4042,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  ;                               *tabs( )\x        = 0
                                  ;                               *tabs( )\width    = *this\screen_width( )
                                  If *this\parent\fs[1]
-                                    *tabs( )\x     = bar_toggle_line_size
+                                    *tabs( )\x     = bar_toggle_size
                                  Else
                                     *tabs( )\x     = 0
                                  EndIf
-                                 *tabs( )\width    = *this\inner_width( ) - bar_toggle_line_size
+                                 *tabs( )\width    = *this\inner_width( ) - bar_toggle_size
                               Else
                                  If *this\parent\fs[1]
-                                    *tabs( )\x     = bar_toggle_line_size
+                                    *tabs( )\x     = bar_toggle_size
                                  Else
                                     *tabs( )\x     = DPIScaled(2)
                                  EndIf
-                                 *tabs( )\width    = *this\inner_width( ) - bar_toggle_line_size - DPIScaled(2)
+                                 *tabs( )\width    = *this\inner_width( ) - bar_toggle_size - DPIScaled(2)
                               EndIf
                               
                            Else
@@ -3988,24 +4091,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  ;                               *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width - *tabs( )\text\width ) / 2 
                                  ;                               *tabs( )\text\x  = *tabs( )\picture\x + *tabs( )\picture\width + 5
                                  Protected align_x = (5)
-                                 *tabs( )\picture\x = *tabs( )\x + align_x
+                                 *tabs( )\picture\x = align_x
                                  *tabs( )\text\x  = *tabs( )\picture\x + *tabs( )\picture\width + align_x + (5)
                                  
                                  ;
-                                 *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height )/2
-                                 *tabs( )\text\y  = *tabs( )\y + ( *tabs( )\height - *tabs( )\text\height )/2
+                                 *tabs( )\picture\y = ( *tabs( )\height - *tabs( )\picture\height )/2
+                                 *tabs( )\text\y = ( *tabs( )\height - *tabs( )\text\height )/2
                                  ;                          
                               Else
                                  If *tabs( )\text\width
-                                    *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height - *tabs( )\text\height ) / 2
+                                    *tabs( )\picture\y = ( *tabs( )\height - *tabs( )\picture\height - *tabs( )\text\height ) / 2
                                  Else
-                                    *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height ) / 2
+                                    *tabs( )\picture\y = ( *tabs( )\height - *tabs( )\picture\height ) / 2
                                  EndIf
                                  ;
                                  *tabs( )\text\y  = *tabs( )\picture\y + *tabs( )\picture\height
                                  ;
-                                 *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width )/2
-                                 *tabs( )\text\x  = *tabs( )\x + ( *tabs( )\width - *tabs( )\text\width )/2
+                                 *tabs( )\picture\x = ( *tabs( )\width - *tabs( )\picture\width )/2
+                                 *tabs( )\text\x = ( *tabs( )\width - *tabs( )\text\width )/2
                               EndIf
                               
                               ;
@@ -4023,11 +4126,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;
                         If *this\type = #__type_TabBar
                            If *this\parent\fs[2]
-                              *tabs( )\y     = bar_toggle_line_size
+                              *tabs( )\y     = bar_toggle_size
                            Else
-                              *tabs( )\y     = DPIScaled(2)
+                              *tabs( )\y     = bar_button_padding
                            EndIf
-                           *tabs( )\height   = *this\screen_height( ) - bar_toggle_line_size - DPIScaled(2)
+                           *tabs( )\height   = *this\screen_height( ) - bar_toggle_size - bar_button_padding
                         Else
                            *tabs( )\y           = pos
                            If *tabs( )\tindex   = #PB_Ignore
@@ -4044,17 +4147,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Else
                            ;
                            *this\text\y = ( *tabs( )\height - *tabs( )\text\height ) / 2
-                           ;
-                           *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height ) / 2
-                           *tabs( )\text\y  = *tabs( )\y + *this\text\y
+;                            ;
+;                            *tabs( )\picture\y = ( *tabs( )\height - *tabs( )\picture\height ) / 2
+;                            *tabs( )\text\y  = *this\text\y
+;                            
+;                            ;
+;                            *tabs( )\picture\x = Bool( *tabs( )\picture\width ) * img_pos
+;                            *tabs( )\text\x  = text_pos + *tabs( )\picture\x + *tabs( )\picture\width
                            
                            ;
-                           *tabs( )\picture\x = *tabs( )\x + Bool( *tabs( )\picture\width ) * img_pos
-                           *tabs( )\text\x  = text_pos + *tabs( )\picture\x + *tabs( )\picture\width
-                           
-                           ;
-                           *tabs( )\width = (Bool( *tabs( )\text\width ) * ( text_pos * 2 ) + *tabs( )\text\width +
-                                             Bool( *tabs( )\picture\width ) * ( img_pos * 2 ) + *tabs( )\picture\width) - Bool( *tabs( )\picture\width And *tabs( )\text\width ) * ( text_pos )
+                           *tabs( )\width = 0
+                           If *tabs( )\text\width
+                              *tabs( )\width + *tabs( )\text\width + ( text_pos * 2 )
+                           EndIf
+                           If *tabs( )\picture\width
+                              *tabs( )\width + *tabs( )\picture\width + ( img_pos * 2 )
+                           EndIf
+;                            *tabs( )\width = (Bool( *tabs( )\text\width ) * ( text_pos * 2 ) + *tabs( )\text\width +
+;                                              Bool( *tabs( )\picture\width ) * ( img_pos * 2 ) + *tabs( )\picture\width) - Bool( *tabs( )\picture\width And *tabs( )\text\width ) * ( text_pos )
                            
                            If *this\type = #__type_TabBar
                               *bar\max + *tabs( )\width + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
@@ -4065,12 +4175,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     If *tabs( )\width > *tabs( )\picture\width 
                                        *tabs( )\width - *tabs( )\picture\width 
                                     EndIf
-                                    ;
-                                    *tabs( )\picture\y = *tabs( )\y + ( *tabs( )\height - *tabs( )\picture\height - *tabs( )\text\height ) / 2
-                                    *tabs( )\text\y  = *tabs( )\picture\y + *tabs( )\picture\height
-                                    ;
-                                    *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width )/2
-                                    *tabs( )\text\x  = *tabs( )\x + ( *tabs( )\width - *tabs( )\text\width )/2
+;                                     ;
+;                                     *tabs( )\picture\y = ( *tabs( )\height - *tabs( )\picture\height - *tabs( )\text\height ) / 2
+;                                     *tabs( )\text\y    = *tabs( )\picture\y + *tabs( )\picture\height
+;                                     ;
+;                                     *tabs( )\picture\x = ( *tabs( )\width - *tabs( )\picture\width )/2
+;                                     *tabs( )\text\x    = ( *tabs( )\width - *tabs( )\text\width )/2
                                  EndIf
                               EndIf
                               
@@ -4079,7 +4189,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                      
+                     UpdateDraw_BarContent( *this, *tabs( ), ppp )
                   Next
+                  
+                  
+;                   ; panel tab align
+;                   If is_integral_( *this ) And *this\parent\type = #__type_panel
+;                      ForEach *tabs( )
+;                         If *tabs( )\hide
+;                            Continue
+;                         EndIf
+;                         
+;                         If *bar\vertical
+;                            If *this\inner_height( ) > *bar\max
+;                               ; *tabs( )\y + (*this\inner_height( ) - *bar\max) ; bottom
+;                               *tabs( )\y + (*this\inner_height( ) - *bar\max)/2 ; center
+;                            EndIf
+;                         Else
+;                            If *this\inner_width( ) > *bar\max
+;                               ; *tabs( )\x + (*this\inner_width( ) - *bar\max) ; right
+;                               *tabs( )\x + (*this\inner_width( ) - *bar\max)/2 ; center
+;                            EndIf
+;                         EndIf
+;                      Next
+;                   EndIf
                   
                   ;
                   If *bar\vertical
@@ -4120,19 +4253,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; Draw items img
          If _address_\picture\imageID
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
-            DrawAlphaImage( _address_\picture\imageID, _x_ + _address_\picture\x, _y_ + _address_\picture\y, _address_\color\ialpha )
+            DrawAlphaImage( _address_\picture\imageID, _x_ + _address_\x + _address_\picture\x, _y_ + _address_\y + _address_\picture\y, _address_\color\ialpha )
          EndIf
          ;
          ; Draw items text
          If _address_\text\string
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
             ;DrawText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\string, _address_\color\front[_state_] & $FFFFFF | _address_\AlphaState24( ) )
-            DrawRotatedText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\string, *this\text\rotate, _address_\color\front[_state_] & $FFFFFF | _address_\AlphaState24( ) )
+            DrawRotatedText( _x_ + _address_\x + _address_\text\x, _y_ + _address_\y + _address_\text\y, _address_\text\string, *this\text\rotate, _address_\color\front[_state_] & $FFFFFF | _address_\AlphaState24( ) )
          EndIf
          
          If _vertical_ > 0
             If _address_\childrens
-               DrawText( _x_ + _address_\width - DPIScaled(15), _y_ + _address_\text\y, ">", _address_\color\front[_state_] & $FFFFFF | _address_\AlphaState24( ) )
+               DrawText( _x_ + _address_\x + _address_\width - DPIScaled(15), _y_ + _address_\y + _address_\text\y, ">", _address_\color\front[_state_] & $FFFFFF | _address_\AlphaState24( ) )
             EndIf
          EndIf
          ;          
@@ -4278,27 +4411,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                      If *this\type = #__type_TabBar 
                         If *activeTAB 
-                           If *this\parent\fs
-                              If *bar\vertical
-                                 If *this\parent\fs[1]
-                                    Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
-                                    Line( *this\frame_x( ) + *this\frame_width( ) - 1, Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
-                                 EndIf
-                                 If *this\parent\fs[3]
-                                    Line( *this\frame_x( ), *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
-                                    Line( *this\frame_x( ), Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
-                                 EndIf
-                              Else
-                                 If *this\parent\fs[2]
-                                    Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( X + *activeTAB\x ) - *this\frame_x( ), DPIScaled(1), color ) 
-                                    Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), DPIScaled(1), color )
-                                 EndIf
-                                 If *this\parent\fs[4]
-                                    Line( *this\frame_x( ), *this\frame_y( ), ( X + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
-                                    Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ), *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), 1, color )
-                                 EndIf
-                              EndIf
-                           EndIf
+;                            If *this\parent\fs
+;                               If *bar\vertical
+;                                  If *this\parent\fs[1]
+;                                     Line( *this\frame_x( ) + *this\frame_width( ) - 1, *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
+;                                     Line( *this\frame_x( ) + *this\frame_width( ) - 1, Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
+;                                  EndIf
+;                                  If *this\parent\fs[3]
+;                                     Line( *this\frame_x( ), *this\frame_y( ), 1, ( Y + *activeTAB\y ) - *this\frame_y( ), color ) 
+;                                     Line( *this\frame_x( ), Y + *activeTAB\y + *activeTAB\height, 1, *this\frame_y( ) + *this\frame_height( ) - ( Y + *activeTAB\y + *activeTAB\height ), color )
+;                                  EndIf
+;                               Else
+;                                  If *this\parent\fs[2]
+;                                     Line( *this\frame_x( ), *this\frame_y( ) + *this\frame_height( ) - 1, ( X + *activeTAB\x ) - *this\frame_x( ), DPIScaled(1), color ) 
+;                                     Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ) + *this\frame_height( ) - 1, *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), DPIScaled(1), color )
+;                                  EndIf
+;                                  If *this\parent\fs[4]
+;                                     Line( *this\frame_x( ), *this\frame_y( ), ( X + *activeTAB\x ) - *this\frame_x( ), 1, color ) 
+;                                     Line( X + *activeTAB\x + *activeTAB\width, *this\frame_y( ), *this\frame_x( ) + *this\frame_width( ) - ( X + *activeTAB\x + *activeTAB\width ), 1, color )
+;                                  EndIf
+;                               EndIf
+;                            EndIf
                            ;
                            DrawingMode( #PB_2DDrawing_Default)
                            ;
@@ -7000,7 +7133,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If size = #PB_Default
                If constants::BinaryFlag( *box\flag, #__flag_BarSmall )
                   If *box\type = #__type_TabBar
-                     size = 23 + bar_toggle_line_size*2 
+                     size = #__tab_size + bar_toggle_size*2 
                   Else
                      size = 24
                   EndIf
@@ -7043,12 +7176,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *box\hide = 0
             EndIf
             
+            *box\text\invert = 0
+            *box\text\vertical = 0
+               
+            *box\picture\align\left = 0
+            *box\picture\align\top = 0
+            *box\picture\align\right = 0
+            *box\picture\align\bottom = 0
+            
             If position = 1
                *box\bar\vertical = 1
                *this\fs[1] = size + fs
                ;
-               *box\text\invert = 0
                *box\text\vertical = 1
+               *box\picture\align\bottom = 1
             EndIf
             
             If position = 3
@@ -7057,22 +7198,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                *box\text\invert = 1
                *box\text\vertical = 1
+               *box\picture\align\top = 1
             EndIf
             
             If position = 2
                *box\bar\vertical = 0
                *this\fs[2] = size + fs
                ;
-               *box\text\invert = 0
-               *box\text\vertical = 0
+               *box\picture\align\left = 1
             EndIf
             
             If position = 4
                *box\bar\vertical = 0
                *this\fs[4] = size + fs
                ;
-               *box\text\invert = 0
-               *box\text\vertical = 0
+               *box\picture\align\left = 1
             EndIf
             
             If *this\inner_width( ) And *this\inner_height( )
@@ -27561,9 +27701,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 7022
-; FirstLine = 6698
-; Folding = ------------------------------------------P---------------------------------------------------------f---v-----------------4------------t0d-------------------------------------------------------------------------------------------------40-------------------------0------------0f-----------------W--------------------------------------------------------------------------------------------u---------------------------------------------------------------------------------------------------------------------------48+VDq4+v-----------------------------------------------------------------------------------D--e------------------z---------------z-L+----fL0d0aFw---------PPU-v48-m-n---+-----------------------40------------VNiZ5-H+0zfv+-0-----------------------------
+; CursorPosition = 7190
+; FirstLine = 6820
+; Folding = ------------------------------------------4-------------------------------------------------4--e----------+-0-----------------+-----------vtv8-------------------------------------------------------------------------------------------------u-------------------------v------------v-8----------------47-------------------------------------------------------------------------------------------40---------------------------------------------------------------------------------------------------------------------------e4vaQ03-0----------------------------------------------------------------------------------f5-48-----------------f+--------------f+fx-----bpvrXrA+---------6h7-0e-49-9--4------------------------u------------vqRMD--wvf+82-v-----------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
