@@ -1604,7 +1604,13 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
       If pb_object$ = ""
          result$ + #LF$
          result$ + "CompilerIf #PB_Compiler_IsMainFile" + #LF$
-         result$ + Space$ + ~"XIncludeFile \"C:\\Users\\user\\Documents\\GitHub\\widget\\widgets.pbi\"" + #LF$ 
+         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+            result$ + Space$ + ~"XIncludeFile \"C:\\Users\\user\\Documents\\GitHub\\widget\\widgets.pbi\"" + #LF$ 
+         CompilerEndIf
+         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+            result$ + Space$ + ~"XIncludeFile \"/Users/as/Documents/GitHub/widget/widgets.pbi\"" + #LF$ 
+          ;  result$ + Space$ + ~"XIncludeFile \"\\Users\\as\\Documents\\GitHub\\Widget\\widgets.pbi\"" + #LF$ 
+         CompilerEndIf
          result$ + "CompilerEndIf" + #LF$
          result$ + #LF$
          result$ + "UseWidgets( )" + #LF$
@@ -1979,30 +1985,30 @@ EndProcedure
 CompilerIf #PB_Compiler_IsMainFile
    DisableExplicit
    
-   ; XIncludeFile "test\code\AddFont.pb"
-   ; XIncludeFile "test\code\addimage.pb"
-   ;    XIncludeFile "test\code\additem1.pb"
-   ;    XIncludeFile "test\code\additem2.pb"
-   ;    XIncludeFile "test\code\additem3.pb"
-   ;    XIncludeFile "test\code\additem4.pb"
-   ;    XIncludeFile "test\code\additem5.pb"
-   ;    XIncludeFile "test\code\global&enum.pb"
-   ;    XIncludeFile "test\code\closelist.pb"
-   ;    XIncludeFile "test\code\windows.pb"
+   ; XIncludeFile "test/code/AddFont.pb"
+   ; XIncludeFile "test/code/addimage.pb"
+   ;    XIncludeFile "test/code/additem1.pb"
+   ;    XIncludeFile "test/code/additem2.pb"
+   ;    XIncludeFile "test/code/additem3.pb"
+   ;    XIncludeFile "test/code/additem4.pb"
+   ;    XIncludeFile "test/code/additem5.pb"
+   ;    XIncludeFile "test/code/global&enum.pb"
+   ;    XIncludeFile "test/code/closelist.pb"
+   ;    XIncludeFile "test/code/windows.pb"
    
    If Open(0, 0, 0, 400, 400, "read", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       SetClass(Root(), "read")
-      ;Path$ = "test\code\AddFont.pb"
-      ;Path$ = "test\code\AddFont2.pb"
-      ;Path$ = "test\code\addimage.pb"
-      ;Path$ = "test\open\image.pb"
-      ;Path$ = "test\save_example.pb"
+      ;Path$ = "test/code/AddFont.pb"
+      ;Path$ = "test/code/AddFont2.pb"
+      ;Path$ = "test/code/addimage.pb"
+      ;Path$ = "test/open/image.pb"
+      ;Path$ = "test/save_example.pb"
       
-     ; Path$ = "test\open\splitter.pb"
+     ; Path$ = "test/open/splitter.pb"
       
-      ; Path$ = "test\code\windows.pb"
-       Path$ = "test\open\windows.pb"
-      ; Path$ = "test\open\variable.pb"
+      ; Path$ = "test/code/windows.pb"
+       Path$ = "test/open/windows.pb"
+      ; Path$ = "test/open/variable.pb"
       
       If ReadFile( #File, Path$ ) ; Если файл можно прочитать, продолжаем...
          Define Text$ = ReadString( #File, #PB_File_IgnoreEOL ) ; чтение целиком содержимого файла
@@ -2048,8 +2054,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 1287
-; FirstLine = 1230
-; Folding = -f-----f------------------f9-------4r3f------+HA9--+--
+; CursorPosition = 2024
+; FirstLine = 1783
+; Folding = -f-----f------------------f9-------4r3f------8fAw--8--
 ; EnableXP
 ; DPIAware

@@ -116,38 +116,37 @@ EndEnumeration
 
 ;- GLOBALs
 Global ide_window, 
-       ide_g_inspector_VIEW,
-       ide_g_canvas
-
+       ide_g_canvas, 
+       ide_g_inspector_VIEW
+       
 Global ide_root,
        ide_main_SPLITTER,
        ide_designer_SPLITTER, 
-       ide_toolbar_container, 
-       ide_toolbar, 
-       ide_popup_lenguage,
-       ide_menu
+       ide_TOOLBAR_container, 
+       ide_TOOLBAR, 
+       ide_menu_LENGUAGE,
+       ide_MENU
 
-Global ide_debug_Splitter,
-       ide_design_PANEL, 
+Global ide_debug_SPLITTER,
+       ide_debug_VIEW
+
+Global ide_design_PANEL, 
        ide_design_MDI,
        ide_design_CODE, 
-       ide_design_HIASM, 
-       ide_help_DEBUG 
-
-Global ide_properties_SPLITTER,
-       ide_inspector_VIEW, 
-       ide_help_SPLITTER, 
-       ide_inspector_PANEL,
-       ide_inspector_PROPERTIES, 
-       ide_inspector_EVENTS,
+       ide_design_HIASM 
+ 
+Global ide_help_SPLITTER, 
        ide_help_VIEW
 
+Global ide_inspector_SPLITTER,
+       ide_inspector_PANEL,
+       ide_inspector_VIEW, 
+       ide_inspector_PROPERTIES, 
+       ide_inspector_EVENTS
+       
+
 Global ide_element_PANEL,
-       ide_all_ELEMENTS,
-       ide_1_ELEMENTS,
-       ide_2_ELEMENTS,
-       ide_3_ELEMENTS,
-       ide_4_ELEMENTS
+       ide_all_ELEMENTS
 
 Global group_select
 Global group_drag
@@ -1342,7 +1341,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
                EndIf
                
                If *this = ide_design_CODE Or 
-                  *this = ide_help_DEBUG
+                  *this = ide_debug_VIEW
                   ;
                   Define code$ = GetText( *this )
                   
@@ -1398,8 +1397,8 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
             EndIf
             
             ;
-            If *this <> ide_help_DEBUG
-               ReplaceText( ide_help_DEBUG, find$, replace$, NbOccurrences )
+            If *this <> ide_debug_VIEW
+               ReplaceText( ide_debug_VIEW, find$, replace$, NbOccurrences )
             EndIf
             If *this <> ide_design_CODE
                If Not Hide( ide_design_CODE )
@@ -1760,7 +1759,7 @@ Procedure new_widget_events( )
                If anchors_group_show
                   anchors_group_show = #False
                   Debug "group hide"
-                  HideBarButtons( ide_toolbar, #True )
+                  HideBarButtons( ide_TOOLBAR, #True )
                   ;
                   Define i, state
                   For i = 0 To CountItems( ide_inspector_VIEW )
@@ -1788,7 +1787,7 @@ Procedure new_widget_events( )
             If Not *g\anchors\group\show
                anchors_group_show = 1
                Debug "group show"
-               HideBarButtons( ide_toolbar, #False )
+               HideBarButtons( ide_TOOLBAR, #False )
                ;
                If StartEnum(*g)
                   If widgets( )\anchors\group\show
@@ -1945,18 +1944,18 @@ Procedure ide_Lng_change( lng_TYPE=0 )
    If ChangeLng(lng_TYPE)
       ; Debug "  LNG CHANGE "+lng_TYPE
       ;
-      SetBarItemText( ide_toolbar, 0, lng(#lng_Menu$))
-      SetBarItemText( ide_toolbar, #_tb_file_new, lng(#lng_NEW$))
-      SetBarItemText( ide_toolbar, #_tb_file_open, lng(#lng_OPEN$))
-      SetBarItemText( ide_toolbar, #_tb_file_save, lng(#lng_SAVE$))
-      SetBarItemText( ide_toolbar, #_tb_file_run, "["+UCase(lng(#lng_RUN$))+"]")
-      SetBarItemText( ide_toolbar, #_tb_LNG, "["+UCase(lng(#lng_LENGUAGE$))+"]")
+      SetBarItemText( ide_TOOLBAR, 0, lng(#lng_Menu$))
+      SetBarItemText( ide_TOOLBAR, #_tb_file_new, lng(#lng_NEW$))
+      SetBarItemText( ide_TOOLBAR, #_tb_file_open, lng(#lng_OPEN$))
+      SetBarItemText( ide_TOOLBAR, #_tb_file_save, lng(#lng_SAVE$))
+      SetBarItemText( ide_TOOLBAR, #_tb_file_run, "["+UCase(lng(#lng_RUN$))+"]")
+      SetBarItemText( ide_TOOLBAR, #_tb_LNG, "["+UCase(lng(#lng_LENGUAGE$))+"]")
       ;
-      SetBarItemText( ide_menu, #_tb_file_new, lng(#lng_NEW$)+" (Ctrl+N)")
-      SetBarItemText( ide_menu, #_tb_file_open, lng(#lng_OPEN$)+" (Ctrl+O)")
-      SetBarItemText( ide_menu, #_tb_file_save, lng(#lng_SAVE$)+" (Ctrl+S)")
-      SetBarItemText( ide_menu, #_tb_file_SAVEAS, lng(#lng_SAVEAS$))
-      SetBarItemText( ide_menu, #_tb_QUIT, lng(#lng_QUIT$))
+      SetBarItemText( ide_MENU, #_tb_file_new, lng(#lng_NEW$)+" (Ctrl+N)")
+      SetBarItemText( ide_MENU, #_tb_file_open, lng(#lng_OPEN$)+" (Ctrl+O)")
+      SetBarItemText( ide_MENU, #_tb_file_save, lng(#lng_SAVE$)+" (Ctrl+S)")
+      SetBarItemText( ide_MENU, #_tb_file_SAVEAS, lng(#lng_SAVEAS$))
+      SetBarItemText( ide_MENU, #_tb_QUIT, lng(#lng_QUIT$))
       ;
       ; SetItemText( ide_inspector_PANEL, 0, lng(#lng_ELEMENTS$))
       SetItemText( ide_inspector_PANEL, 0, lng(#lng_PROPERTIES$))
@@ -1968,25 +1967,25 @@ Procedure ide_Lng_change( lng_TYPE=0 )
       
       ;\\
       If lng_TYPE = 0
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #True )
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #False )
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #False )
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #False )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_ENG, #True )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_RUS, #False )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_GERMAN, #False )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_FRENCH, #False )
       ElseIf lng_TYPE = 1
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #True )
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #False )
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #False )
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #False )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_RUS, #True )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_ENG, #False )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_GERMAN, #False )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_FRENCH, #False )
       ElseIf lng_TYPE = 2
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #True )
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #False )
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #False )
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #False )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_FRENCH, #True )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_ENG, #False )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_RUS, #False )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_GERMAN, #False )
       ElseIf lng_TYPE = 3
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_GERMAN, #True )
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #False )
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_RUS, #False )
-         DisableBarButton( ide_popup_lenguage, #_tb_lng_FRENCH, #False )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_GERMAN, #True )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_ENG, #False )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_RUS, #False )
+         DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_FRENCH, #False )
       EndIf
       
       Define *root._s_ROOT = ide_root
@@ -1999,7 +1998,7 @@ Procedure ide_mdi_clears( )
    ; Очишаем текст
    ClearItems( ide_design_CODE ) 
    ; TEMP
-   ClearItems( ide_help_DEBUG ) 
+   ClearItems( ide_debug_VIEW ) 
    ;
    ; удаляем всех детей у MDI (то есть освобождаем его)
    Free( ide_design_MDI )
@@ -2069,7 +2068,7 @@ Procedure   ide_file_open(Path$) ; Открытие файла
          Define code$ = Generate_Code( ide_design_MDI )
          code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
          code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
-         SetText( ide_help_DEBUG, code$ )
+         SetText( ide_debug_VIEW, code$ )
          
          ;
          CloseFile(#File) ; Закрывает ранее открытый файл
@@ -2619,7 +2618,7 @@ Procedure   ide_events( )
    
    
    ; CODE EDIT EVENTS
-   If *g = ide_design_CODE                      Or *g = ide_help_DEBUG ; TEMP
+   If *g = ide_design_CODE                      Or *g = ide_debug_VIEW ; TEMP
       Static argument, object  
       Protected name$, text$, len, caret
       Protected *line._s_ROWS
@@ -2721,11 +2720,11 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ;    Debug "create window - "+WindowID(ide_window)
    ;    Debug "create canvas - "+GadgetID(ide_g_canvas)
    
-   ide_toolbar_container = Container( 0,0,0,0 ) 
-   ide_toolbar = CreateBar( ide_toolbar_container, #PB_ToolBar_Small );|#PB_ToolBar_Large|#PB_ToolBar_Buttons);| #PB_ToolBar_InlineText )
-   SetColor(ide_toolbar, #PB_Gadget_BackColor, $fffefefe )
+   ide_TOOLBAR_container = Container( 0,0,0,0 ) 
+   ide_TOOLBAR = CreateBar( ide_TOOLBAR_container, #PB_ToolBar_Small );|#PB_ToolBar_Large|#PB_ToolBar_Buttons);| #PB_ToolBar_InlineText )
+   SetColor(ide_TOOLBAR, #PB_Gadget_BackColor, $fffefefe )
    
-   ide_menu = OpenSubBar(lng(#lng_MENU$))
+   ide_MENU = OpenSubBar(lng(#lng_MENU$))
    BarItem( #_tb_file_new, lng(#lng_NEW$)+" (Ctrl+N)")
    BarItem( #_tb_file_open, lng(#lng_OPEN$)+" (Ctrl+O)")
    BarItem( #_tb_file_save, lng(#lng_SAVE$)+" (Ctrl+S)")
@@ -2763,8 +2762,8 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    BarSeparator( )
    BarItem( #_tb_file_run, "[RUN]" )
    BarSeparator( )
-   ide_popup_lenguage = OpenSubBar("[LENGUAGE]")
-   If ide_popup_lenguage
+   ide_menu_LENGUAGE = OpenSubBar("[LENGUAGE]")
+   If ide_menu_LENGUAGE
       BarItem(#_tb_lng_ENG, "ENG")
       BarItem(#_tb_lng_RUS, "RUS")
       BarItem(#_tb_lng_FRENCH, "FRENCH")
@@ -2775,10 +2774,10 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ;
    CloseList( )
    
-   DisableBarItem( ide_popup_lenguage, #_tb_lng_ENG, #True )
-   ;DisableBarButton( ide_popup_lenguage, #_tb_lng_ENG, #True )
-   ;DisableBarButton( ide_toolbar, #_tb_lng_ENG, #True )
-   HideBarButtons( ide_toolbar, #True )
+   DisableBarItem( ide_menu_LENGUAGE, #_tb_lng_ENG, #True )
+   ;DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_ENG, #True )
+   ;DisableBarButton( ide_TOOLBAR, #_tb_lng_ENG, #True )
+   HideBarButtons( ide_TOOLBAR, #True )
    
    ;
    ; gadgets
@@ -2790,27 +2789,10 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
       ide_all_ELEMENTS_ADD_ITEMS( ide_all_ELEMENTS, GetCurrentDirectory( )+"Themes/", - 1 )
    EndIf
    AddItem( ide_element_PANEL, -1, "1" )
-;    ide_1_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines ) : SetClass(ide_all_ELEMENTS, "ide_all_ELEMENTS" )
-;    If ide_1_ELEMENTS
-;       ide_all_ELEMENTS_ADD_ITEMS( ide_1_ELEMENTS, GetCurrentDirectory( )+"Themes/", 1 )
-;    EndIf
    AddItem( ide_element_PANEL, -1, "2" )
-;    ide_2_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines ) : SetClass(ide_all_ELEMENTS, "ide_all_ELEMENTS" )
-;    If ide_2_ELEMENTS
-;       ide_all_ELEMENTS_ADD_ITEMS( ide_2_ELEMENTS, GetCurrentDirectory( )+"Themes/", 2 )
-;    EndIf
    AddItem( ide_element_PANEL, -1, "3" )
-;    ide_3_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines ) : SetClass(ide_all_ELEMENTS, "ide_all_ELEMENTS" )
-;    If ide_3_ELEMENTS
-;       ide_all_ELEMENTS_ADD_ITEMS( ide_3_ELEMENTS, GetCurrentDirectory( )+"Themes/", 3 )
-;    EndIf
    AddItem( ide_element_PANEL, -1, "4" )
-;    ide_4_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines ) : SetClass(ide_all_ELEMENTS, "ide_all_ELEMENTS" )
-;    If ide_4_ELEMENTS
-;       ide_all_ELEMENTS_ADD_ITEMS( ide_4_ELEMENTS, GetCurrentDirectory( )+"Themes/", 4 )
-;    EndIf
-   
-   CloseList( )
+   CloseList( ) ; ide_element_PANEL
    BarPosition( ide_element_PANEL, 4, 17 )
    
    ;\\\ 
@@ -2829,10 +2811,10 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ; BarPosition( ide_design_PANEL, 4 )
    
    ;
-   ide_help_DEBUG = Editor( 0,0,0,0, #PB_Editor_ReadOnly ) : SetClass(ide_help_DEBUG, "ide_help_DEBUG" )
-   ;ide_help_DEBUG = Editor( 0,0,0,0) : SetClass(ide_help_DEBUG, "ide_help_DEBUG" )
+   ide_debug_VIEW = Editor( 0,0,0,0, #PB_Editor_ReadOnly ) : SetClass(ide_debug_VIEW, "ide_debug_VIEW" )
+   ;ide_debug_VIEW = Editor( 0,0,0,0) : SetClass(ide_debug_VIEW, "ide_debug_VIEW" )
    If Not ide_design_CODE
-      ide_design_CODE = ide_help_DEBUG
+      ide_design_CODE = ide_debug_VIEW
    EndIf
    
    Define Transparent ;= #__flag_Transparent
@@ -2882,8 +2864,8 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorgreen,      "green",   #__type_Spin, 1 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorred,        "red",     #__type_Spin, 1 )
       EndIf
-   ide_properties_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_inspector_PROPERTIES, #__flag_autosize) : SetClass(ide_properties_SPLITTER, "ide_properties_SPLITTER" )
-   ; ide_properties_SPLITTER = Splitter( 0,0,0,0, ide_inspector_PROPERTIES, ide_inspector_VIEW, #__flag_autosize) : SetClass(ide_properties_SPLITTER, "ide_properties_SPLITTER" )
+   ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_inspector_PROPERTIES, #__flag_autosize) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
+   ; ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_PROPERTIES, ide_inspector_VIEW, #__flag_autosize) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
    
    ; ide_inspector_PANEL_item_3 
    AddItem( ide_inspector_PANEL, -1, "events", 0, 0 )  
@@ -2941,7 +2923,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    CloseList( )
    ;SetState( ide_inspector_PANEL, 1 )
    
-   ; ide_inspector_ide_properties_SPLITTER_text
+   ; ide_inspector_ide_inspector_SPLITTER_text
    ide_help_VIEW  = Text( 0,0,0,0, "help for the inspector", #PB_Text_Border ) : SetClass(ide_help_VIEW, "ide_help_VIEW" )
    ;\\\ close inspector gadgets 
    
@@ -2952,14 +2934,14 @@ Global ide_SPLITTER =- 1
    ;
    ;\\ main splitter 2 example 
    ide_help_SPLITTER = Splitter( 0,0,0,0, ide_element_PANEL, ide_help_VIEW, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_help_SPLITTER, "ide_help_SPLITTER" )
-   ide_debug_Splitter = Splitter( 0,0,0,0, ide_design_PANEL, ide_help_DEBUG, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_debug_Splitter, "ide_debug_Splitter" )
-   ide_designer_SPLITTER = Splitter( 0,0,0,0, ide_help_SPLITTER, ide_debug_Splitter, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_designer_SPLITTER, "ide_designer_SPLITTER" )
+   ide_debug_SPLITTER = Splitter( 0,0,0,0, ide_design_PANEL, ide_debug_VIEW, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_debug_SPLITTER, "ide_debug_SPLITTER" )
+   ide_designer_SPLITTER = Splitter( 0,0,0,0, ide_help_SPLITTER, ide_debug_SPLITTER, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_designer_SPLITTER, "ide_designer_SPLITTER" )
    ide_SPLITTER = Splitter( 0,0,0,0, ide_designer_SPLITTER, ide_inspector_PANEL, #PB_Splitter_SecondFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_designer_SPLITTER, "ide_designer_SPLITTER" )
-   ide_main_SPLITTER = Splitter( 0,0,0,0, ide_toolbar_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed|Transparent ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
+   ide_main_SPLITTER = Splitter( 0,0,0,0, ide_TOOLBAR_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed|Transparent ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
    
    ; set splitters default minimum size
-   SetAttribute( ide_debug_Splitter, #PB_Splitter_FirstMinimumSize, 350 )
-   SetAttribute( ide_debug_Splitter, #PB_Splitter_SecondMinimumSize, 80 )
+   SetAttribute( ide_debug_SPLITTER, #PB_Splitter_FirstMinimumSize, 350 )
+   SetAttribute( ide_debug_SPLITTER, #PB_Splitter_SecondMinimumSize, 80 )
    SetAttribute( ide_help_SPLITTER, #PB_Splitter_FirstMinimumSize, 350 )
    SetAttribute( ide_help_SPLITTER, #PB_Splitter_SecondMinimumSize, 80 )
    ;
@@ -2968,28 +2950,26 @@ Global ide_SPLITTER =- 1
    SetAttribute( ide_SPLITTER, #PB_Splitter_FirstMinimumSize, 450 )
    SetAttribute( ide_SPLITTER, #PB_Splitter_SecondMinimumSize, 120 )
    ;
-   SetAttribute( ide_properties_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
-   SetAttribute( ide_properties_SPLITTER, #PB_Splitter_SecondMinimumSize, 100 )
+   SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_FirstMinimumSize, 100 )
+   SetAttribute( ide_inspector_SPLITTER, #PB_Splitter_SecondMinimumSize, 100 )
    SetAttribute( ide_main_SPLITTER, #PB_Splitter_FirstMinimumSize, 20 )
    SetAttribute( ide_main_SPLITTER, #PB_Splitter_SecondMinimumSize, 350 )
    
    ; set splitters dafault positions
-   SetState( ide_main_SPLITTER, Height( ide_toolbar));+3) ; bug
+   SetState( ide_main_SPLITTER, Height( ide_TOOLBAR ));+3) ; bug
    SetState( ide_SPLITTER, Width( ide_SPLITTER ) - 280 )
    SetState( ide_designer_SPLITTER, 110 )
-   
-   ;SetState( ide_properties_SPLITTER, Height(ide_properties_SPLITTER) - 150 )
-   SetState( ide_properties_SPLITTER, 150 )
-   SetState( ide_debug_Splitter, Height( ide_help_SPLITTER ) - 110 )
+   SetState( ide_inspector_SPLITTER, 150 )
+   SetState( ide_debug_SPLITTER, Height( ide_help_SPLITTER ) - 110 )
    SetState( ide_help_SPLITTER, Height( ide_help_SPLITTER ) - 110 )
    
    ;
    ;-\\ ide binds events
    ;
-   If GetType( ide_toolbar ) = #__type_ToolBar
-      Bind( ide_menu, @ide_menu_events( ) )
-      Bind( ide_toolbar, @ide_menu_events( ) )
-      Bind( ide_popup_lenguage, @ide_menu_events( ) )
+   If GetType( ide_TOOLBAR ) = #__type_ToolBar
+      Bind( ide_MENU, @ide_menu_events( ) )
+      Bind( ide_TOOLBAR, @ide_menu_events( ) )
+      Bind( ide_menu_LENGUAGE, @ide_menu_events( ) )
    EndIf
    Bind( ide_inspector_VIEW, @ide_events( ) )
    ;
@@ -3009,10 +2989,10 @@ Global ide_SPLITTER =- 1
    Bind( ide_design_CODE, @ide_events( ), #__event_Change )
    Bind( ide_design_CODE, @ide_events( ), #__event_StatusChange )
    ; TEMP
-   Bind( ide_help_DEBUG, @ide_events( ), #__event_Down )
-   Bind( ide_help_DEBUG, @ide_events( ), #__event_Up )
-   Bind( ide_help_DEBUG, @ide_events( ), #__event_Change )
-   Bind( ide_help_DEBUG, @ide_events( ), #__event_StatusChange )
+   Bind( ide_debug_VIEW, @ide_events( ), #__event_Down )
+   Bind( ide_debug_VIEW, @ide_events( ), #__event_Up )
+   Bind( ide_debug_VIEW, @ide_events( ), #__event_Change )
+   Bind( ide_debug_VIEW, @ide_events( ), #__event_StatusChange )
    ;
    Bind( ide_element_PANEL, @ide_events( ), #__event_Change )
    Bind( ide_element_PANEL, @ide_events( ), #__event_StatusChange )
@@ -3201,7 +3181,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Define code$ = Generate_Code( ide_design_MDI )
    code$ = Mid( code$, FindString( code$, "Procedure Open_" ))
    code$ = Mid( code$, 1, FindString( code$, "EndProcedure" ))+"ndProcedure"
-   SetText( ide_help_DEBUG, code$ )
+   SetText( ide_debug_VIEW, code$ )
    ;Debug ""+Str(ElapsedMilliseconds( )-time) +" generate code time"
    
    ;ReDraw(root())
@@ -3236,9 +3216,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2813
-; FirstLine = 2347
-; Folding = -4--4---8l-3v-----------Aj8-----------------------X7------6-
+; CursorPosition = 2971
+; FirstLine = 2497
+; Folding = -4--4---8l-3v-----------Aj------------------------X7------6-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2.exe
