@@ -2716,7 +2716,7 @@ Procedure   ide_events( )
 EndProcedure
 
 Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
-   Define Flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget | #PB_Window_Invisible
+   Define Flag = #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget | #PB_Window_Invisible | #PB_Window_ScreenCentered
    ide_root = Open( 1, X,Y,Width,Height, "ide", Flag ) 
    ide_window = GetCanvasWindow( ide_root )
    ide_g_canvas = GetCanvasGadget( ide_root )
@@ -3220,10 +3220,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 1735
-; FirstLine = 1351
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 2718
+; FirstLine = 2307
 ; Folding = -4--4---8l-3v-----------Aj-------v----------------X7------6-
 ; EnableXP
 ; DPIAware
-; Executable = ../../2.exe
+; Executable = ..\..\2.exe
