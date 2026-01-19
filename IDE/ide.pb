@@ -2605,15 +2605,16 @@ Procedure   ide_events( )
          EndIf
          
       Case #__event_Change
+         If *g = ide_inspector_VIEW
+            If a_set( GetItemData( *g, GetState(*g) ))
+            EndIf
+         EndIf
+         
          If *g = ide_element_PANEL
             Debug "change element tab "+ __item
             ClearItems( ide_all_ELEMENTS )
             SetParent( ide_all_ELEMENTS, ide_element_PANEL, __item )
             ide_all_ELEMENTS_ADD_ITEMS( ide_all_ELEMENTS, GetCurrentDirectory( )+"Themes/", __item )
-         EndIf
-         If *g = ide_inspector_VIEW
-            If a_set( GetItemData( *g, GetState(*g) ))
-            EndIf
          EndIf
          
          If *g = ide_design_PANEL
@@ -2844,6 +2845,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ide_design_PANEL = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_PANEL, "ide_design_PANEL" ) ; , #__flag_Vertical ) : OpenList( ide_design_PANEL )
    AddItem( ide_design_PANEL, -1, lng(#lng_FORM$) )
    ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize|#__flag_BorderLess ) : SetClass(ide_design_MDI, "ide_design_MDI" ) ;: SetFrame(ide_design_MDI, 10)
+   EnableDrop( ide_design_MDI, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
    SetColor( ide_design_MDI, #PB_Gadget_BackColor, $FFD3D3D3 )
    a_init( ide_design_MDI);, 0 )
    
@@ -3014,6 +3016,8 @@ Global ide_SPLITTER =- 1
       Bind( ide_TOOLBAR, @ide_menu_events( ) )
       Bind( ide_menu_LENGUAGE, @ide_menu_events( ) )
    EndIf
+   ;
+   Bind( ide_design_MDI, @new_widget_events( ) )
    Bind( ide_inspector_VIEW, @ide_events( ) )
    ;
    Bind( ide_inspector_PROPERTIES, @ide_events( ), #__event_Change )
@@ -3051,10 +3055,6 @@ Global ide_SPLITTER =- 1
    Bind( ide_root, @ide_events( ), #__event_Close )
    ; Bind( ide_root, @ide_events( ), #__event_Free )
    Bind( ide_root, @ide_events( ), #__event_Focus )
-   
-   ;
-   Bind( ide_design_MDI, @new_widget_events( ) )
-   EnableDrop( ide_design_MDI, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
    
    ;
    ;Bind( #PB_All, @ide_events( ) )
@@ -3259,9 +3259,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2053
-; FirstLine = 1664
-; Folding = -4--4---8l-3v-----------Aj-------v----------------fp------v-
+; CursorPosition = 3019
+; FirstLine = 2410
+; Folding = -4--4---8l-3v-----------Aj-------v0fvd-0----------fpl2----v-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2.exe

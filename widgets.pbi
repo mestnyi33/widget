@@ -6294,52 +6294,52 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ get thumb pos
-         If *bar\PageChange( )
-            ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos ) 
-            ;
-            If *bar\invert
-               ThumbPos = *bar\area\end - ThumbPos
-            Else
-               ThumbPos = *bar\area\pos + ThumbPos
+         ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos ) 
+         ;
+         If *bar\invert
+            ThumbPos = *bar\area\end - ThumbPos
+         Else
+            ThumbPos = *bar\area\pos + ThumbPos
+         EndIf
+         ;
+         If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
+         If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
+         ;
+         If *bar\thumb\pos <> ThumbPos
+            *bar\thumb\pos = ThumbPos
+         EndIf
+         
+         ;\\ disable/enable buttons(left&top)-tab(right&bottom)
+         If bar_in_start_( *bar )
+            If *BB1\disable = #False
+               *BB1\disable = #True
             EndIf
-            ;
-            If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
-            If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
-            ;
-            If *bar\thumb\pos <> ThumbPos
-               *bar\thumb\pos = ThumbPos
+         Else
+            If *BB1\disable = #True
+               *BB1\disable = #False
             EndIf
+         EndIf
+         
+         ;\\ disable/enable buttons(right&bottom)-tab(left&top)
+         If bar_in_stop_( *bar )
+            If *BB2\disable = #False
+               *BB2\disable = #True
+            EndIf
+         Else
+            If *BB2\disable = #True
+               *BB2\disable = #False
+            EndIf
+         EndIf
+         
+         ;\\
+         If *this\type = #__type_Progress
+            *this\text\string = "%" + Str( *bar\page\pos )
             
-            ;\\ disable/enable buttons(left&top)-tab(right&bottom)
-            If bar_in_start_( *bar )
-               If *BB1\disable = #False
-                  *BB1\disable = #True
-               EndIf
-            Else
-               If *BB1\disable = #True
-                  *BB1\disable = #False
-               EndIf
+            If *bar\PageChange( )
+               Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
+               *bar\PageChange( ) = 0
+               ProcedureReturn #True   
             EndIf
-            
-            ;\\ disable/enable buttons(right&bottom)-tab(left&top)
-            If bar_in_stop_( *bar )
-               If *BB2\disable = #False
-                  *BB2\disable = #True
-               EndIf
-            Else
-               If *BB2\disable = #True
-                  *BB2\disable = #False
-               EndIf
-            EndIf
-            
-            ;\\
-            If *this\type = #__type_Progress
-               *this\text\string = "%" + Str( *bar\page\pos )
-            EndIf
-            
-            Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
-            *bar\PageChange( ) = 0
-            ProcedureReturn #True   
          EndIf
       EndProcedure
       
@@ -6379,137 +6379,137 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         If *bar\PageChange( )
-            ;\\ get thumb pos
-            ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos ) 
-            ;
-            If *bar\invert
-               ThumbPos = *bar\area\end - ThumbPos
-            Else
-               ThumbPos = *bar\area\pos + ThumbPos
+         ;\\ get thumb pos
+         ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos ) 
+         ;
+         If *bar\invert
+            ThumbPos = *bar\area\end - ThumbPos
+         Else
+            ThumbPos = *bar\area\pos + ThumbPos
+         EndIf
+         ;
+         If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
+         If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
+         ;
+         If *bar\thumb\pos <> ThumbPos
+            *bar\thumb\pos = ThumbPos
+         EndIf
+         
+         ;\\ disable/enable buttons(left&top)-tab(right&bottom)
+         If bar_in_start_( *bar )
+            If *BB1\disable = #False
+               *BB1\disable = #True
             EndIf
-            ;
-            If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
-            If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
-            ;
-            If *bar\thumb\pos <> ThumbPos
-               *bar\thumb\pos = ThumbPos
+         Else
+            If *BB1\disable = #True
+               *BB1\disable = #False
             EndIf
-            
-            ;\\ disable/enable buttons(left&top)-tab(right&bottom)
-            If bar_in_start_( *bar )
-               If *BB1\disable = #False
-                  *BB1\disable = #True
-               EndIf
-            Else
-               If *BB1\disable = #True
-                  *BB1\disable = #False
-               EndIf
+         EndIf
+         
+         ;\\ disable/enable buttons(right&bottom)-tab(left&top)
+         If bar_in_stop_( *bar )
+            If *BB2\disable = #False
+               *BB2\disable = #True
             EndIf
-            
-            ;\\ disable/enable buttons(right&bottom)-tab(left&top)
-            If bar_in_stop_( *bar )
-               If *BB2\disable = #False
-                  *BB2\disable = #True
-               EndIf
-            Else
-               If *BB2\disable = #True
-                  *BB2\disable = #False
-               EndIf
+         Else
+            If *BB2\disable = #True
+               *BB2\disable = #False
             EndIf
-            
-            ;\\
-            If *BB1\disable Or *BB2\disable Or 
-               constants::BinaryFlag( *this\flag, #PB_TrackBar_Ticks )
-               If *bar\vertical 
-                  If *bar\invert
-                     *SB\arrow\direction = #__right ; вправо
-                  Else
-                     *SB\arrow\direction = #__left ; влево
-                  EndIf
+         EndIf
+         
+         ;\\
+         If *BB1\disable Or *BB2\disable Or 
+            constants::BinaryFlag( *this\flag, #PB_TrackBar_Ticks )
+            If *bar\vertical 
+               If *bar\invert
+                  *SB\arrow\direction = #__right ; вправо
                Else
-                  If *bar\invert
-                     *SB\arrow\direction = #__top ; верх
-                  Else
-                     *SB\arrow\direction = #__bottom ; вниз
-                  EndIf
+                  *SB\arrow\direction = #__left ; влево
                EndIf
             Else
-               If ( *bar\direction > 0 And *bar\invert ) Or 
-                  ( *bar\direction < 0 And Not *bar\invert )
-                  ;
-                  If *bar\vertical
-                     *SB\arrow\direction = #__top ; верх
-                  Else
-                     *SB\arrow\direction = #__left ; влево
-                  EndIf
-               ElseIf ( *bar\direction < 0 And *bar\invert ) Or 
-                      ( *bar\direction > 0 And Not *bar\invert )
-                  ;
-                  If *bar\vertical
-                     *SB\arrow\direction = #__bottom ; вниз
-                  Else
-                     *SB\arrow\direction = #__right ; вправо
-                  EndIf
+               If *bar\invert
+                  *SB\arrow\direction = #__top ; верх
+               Else
+                  *SB\arrow\direction = #__bottom ; вниз
                EndIf
             EndIf
-            
-            ; update track-bar draw coordinate
-            If *this\type = #__type_Track
+         Else
+            If ( *bar\direction > 0 And *bar\invert ) Or 
+               ( *bar\direction < 0 And Not *bar\invert )
+               ;
                If *bar\vertical
-                  If *bar\thumb\len
-                     *SB\y      = *this\frame_y( ) + *bar\thumb\pos
-                     *SB\height = *bar\thumb\len
-                  EndIf
-                  
-                  *BB1\width = DPIScaled( #__tracksize )
-                  *BB2\width = *BB1\width
-                  *SB\width  = *SB\size + ( Bool( *SB\size < 10 ) * *SB\size )
-                  
-                  *BB1\y      = *this\frame_y( )
-                  *BB1\height = *bar\thumb\pos
-                  
-                  *BB2\y      = *BB1\y + *BB1\height + *bar\thumb\len
-                  *BB2\height = *this\frame_height( ) - *bar\thumb\pos - *bar\thumb\len
-                  
-                  If *bar\invert
-                     *BB1\x = *this\frame_x( ) + DPIScaled(6)
-                  Else
-                     *BB1\x = *this\frame_x( ) + *this\frame_width( ) + DPIScaled(6) - *SB\size - 1
-                  EndIf
-                  
-                  *BB2\x = *BB1\x
-                  *SB\x  = *BB1\x - ( *SB\size - *BB1\width )/2
+                  *SB\arrow\direction = #__top ; верх
                Else
-                  If *bar\thumb\len
-                     *SB\x     = *this\frame_x( ) + *bar\thumb\pos
-                     *SB\width = *bar\thumb\len
-                  EndIf
-                  
-                  *BB1\height = DPIScaled( #__tracksize )
-                  *BB2\height = *BB1\height
-                  *SB\height  = *SB\size + ( Bool( *SB\size < 10 ) * *SB\size )
-                  
-                  *BB1\x     = *this\frame_x( )
-                  *BB1\width = *bar\thumb\pos
-                  
-                  *BB2\x     = *BB1\x + *BB1\width + *bar\thumb\len
-                  *BB2\width = *this\frame_width( ) - *bar\thumb\pos - *bar\thumb\len
-                  
-                  If *bar\invert
-                     *BB1\y = *this\frame_y( ) + *this\frame_height( ) + DPIScaled(6) - *SB\size - 1
-                  Else
-                     *BB1\y = *this\frame_y( ) + DPIScaled(6)
-                  EndIf
-                  
-                  *BB2\y = *BB1\y
-                  *SB\y  = *BB1\y - ( *SB\size - *BB1\height )/2
+                  *SB\arrow\direction = #__left ; влево
+               EndIf
+            ElseIf ( *bar\direction < 0 And *bar\invert ) Or 
+                   ( *bar\direction > 0 And Not *bar\invert )
+               ;
+               If *bar\vertical
+                  *SB\arrow\direction = #__bottom ; вниз
+               Else
+                  *SB\arrow\direction = #__right ; вправо
                EndIf
             EndIf
+         EndIf
+         
+         ; update track-bar draw coordinate
+         If *this\type = #__type_Track
+            If *bar\vertical
+               If *bar\thumb\len
+                  *SB\y      = *this\frame_y( ) + *bar\thumb\pos
+                  *SB\height = *bar\thumb\len
+               EndIf
+               
+               *BB1\width = DPIScaled( #__tracksize )
+               *BB2\width = *BB1\width
+               *SB\width  = *SB\size + ( Bool( *SB\size < 10 ) * *SB\size )
+               
+               *BB1\y      = *this\frame_y( )
+               *BB1\height = *bar\thumb\pos
+               
+               *BB2\y      = *BB1\y + *BB1\height + *bar\thumb\len
+               *BB2\height = *this\frame_height( ) - *bar\thumb\pos - *bar\thumb\len
+               
+               If *bar\invert
+                  *BB1\x = *this\frame_x( ) + DPIScaled(6)
+               Else
+                  *BB1\x = *this\frame_x( ) + *this\frame_width( ) + DPIScaled(6) - *SB\size - 1
+               EndIf
+               
+               *BB2\x = *BB1\x
+               *SB\x  = *BB1\x - ( *SB\size - *BB1\width )/2
+            Else
+               If *bar\thumb\len
+                  *SB\x     = *this\frame_x( ) + *bar\thumb\pos
+                  *SB\width = *bar\thumb\len
+               EndIf
+               
+               *BB1\height = DPIScaled( #__tracksize )
+               *BB2\height = *BB1\height
+               *SB\height  = *SB\size + ( Bool( *SB\size < 10 ) * *SB\size )
+               
+               *BB1\x     = *this\frame_x( )
+               *BB1\width = *bar\thumb\pos
+               
+               *BB2\x     = *BB1\x + *BB1\width + *bar\thumb\len
+               *BB2\width = *this\frame_width( ) - *bar\thumb\pos - *bar\thumb\len
+               
+               If *bar\invert
+                  *BB1\y = *this\frame_y( ) + *this\frame_height( ) + DPIScaled(6) - *SB\size - 1
+               Else
+                  *BB1\y = *this\frame_y( ) + DPIScaled(6)
+               EndIf
+               
+               *BB2\y = *BB1\y
+               *SB\y  = *BB1\y - ( *SB\size - *BB1\height )/2
+            EndIf
             
-            Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
-            *bar\PageChange( ) = 0
-            ProcedureReturn #True   
+            If *bar\PageChange( )
+               Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
+               *bar\PageChange( ) = 0
+               ProcedureReturn #True   
+            EndIf
          EndIf
       EndProcedure
       
@@ -25182,16 +25182,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If GetRoot( __widget ) = GetRoot( *this )
                   If __gui\event\queuesmask 
-                     Debug  ""+EventString( __event ) +" "+ GetClass( __widget )
+                     ; Debug  ""+EventString( __event ) +" "+ GetClass( __widget )
                      ;
                      DeleteElement( __gui\event\queues( ) )
                      ;
                      If __event = #__event_Free
                         If IsContainer( __widget )
                            Free( @__widget )
-                           If __gui\event\queuesmask = - 1
-                              Repaint( *this\root )
-                           EndIf
+;                            If __gui\event\queuesmask = - 1
+;                               Repaint( #PB_All )
+;                            EndIf
                         EndIf
                         
                      ElseIf __event = #__event_Change
@@ -25574,7 +25574,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure   WaitQuit( *address = #Null )
+      Procedure   WaitQuit( *address.Integer = #Null )
          Protected result
          If __gui\event\loop = #False
             __gui\event\loop = #True
@@ -25605,11 +25605,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *address
-               result = GetData( *address )
-               Free( *address )
+               If *address\i > 0
+                  result = GetData( *address\i )
+                  Free( *address )
+               EndIf
             EndIf
             
-            Debug "  Exit... [LOOP]"
+            Debug "["+result+"]  Exit... [LOOP] "
             ProcedureReturn result
          EndIf
       EndProcedure
@@ -25858,6 +25860,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure IsChildWindow( child, parent )
+         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+            If CocoaMessage( 0, child, "parentWindow" ) = parent
+               ProcedureReturn #True
+            EndIf
+         CompilerElse
+            If Not IsWindow( child )
+               ProcedureReturn #True
+            EndIf
+         CompilerEndIf
+      EndProcedure
+      
+      Procedure IsHasChildWindow( parent )
+         Protected.i childArray = CocoaMessage( 0, parent, "childWindows" )
+         
+         If ID::ClassName( childArray ) <> "__NSArray0"
+            ProcedureReturn 1
+         EndIf
+      EndProcedure
+      
+
       Procedure   Close( *root._s_ROOT )
          Protected result
          Protected window
@@ -25879,42 +25902,65 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                Delete( roots( ))
                If Post( roots( ), #__event_free )
-                  DeleteMapElement( roots( ) )
-                  If window <> canvaswindow
-                     FreeGadget( canvasgadget )
-                     CloseWindow( window )
-                  EndIf
+               EndIf
+               DeleteMapElement( roots( ) )
+               If window <> canvaswindow
+                  FreeGadget( canvasgadget )
+                  CloseWindow( window )
                EndIf
             Else
                If window = *root\canvas\window 
                   Delete( roots( ))
                   If Post( roots( ), #__event_free )
-                     DeleteMapElement( roots( ) )
-                     result = MapSize( roots( ) )
                   EndIf
+                  DeleteMapElement( roots( ) )
+                  result = MapSize( roots( ) )
                EndIf
             EndIf
          Next
          ;
          If result
             FreeGadget( canvasgadget )   
-            result = CloseWindow( canvaswindow )
             ;
-            ; если у окна есть дочернее окно 
-            ; в окнах при закрытии главного окна закрывается и дочернее 
-            If result
-               If MapSize( roots( ) ) > 1
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+               Protected win = WindowID(canvaswindow)
+               ;
+               If IsHasChildWindow( win )
                   ForEach roots( ) 
-                     If Not IsWindow( roots()\canvas\window )
+                     If IsChildWindow( WindowID(roots()\canvas\window), win )
                         Delete( roots( ))
                         If Post( roots( ), #__event_free )
-                           DeleteMapElement( roots( ) )
                         EndIf
+                        DeleteMapElement( roots( ) )
                      EndIf
                   Next 
+                  ;
+                  result = CloseWindow( canvaswindow )
+               Else
+                  result = CocoaMessage( 0, win, "close")
                EndIf
-               ProcedureReturn #True
-            EndIf
+                
+            CompilerElse
+               result = CloseWindow( canvaswindow )
+               ;
+               ; если у окна есть дочернее окно 
+               ; в окнах при закрытии главного окна закрывается и дочернее 
+               ; а в макос нет поэтому надо узнать привязан ли одно окно к другому для всех ОС
+               ; 
+               If result
+                  If MapSize( roots( ) ) > 1
+                     ForEach roots( ) 
+                        If Not IsWindow( roots()\canvas\window )
+                           Delete( roots( ))
+                           If Post( roots( ), #__event_free )
+                           EndIf
+                           DeleteMapElement( roots( ) )
+                        EndIf
+                     Next 
+                  EndIf
+                  ProcedureReturn #True
+               EndIf
+            CompilerEndIf
          Else
             ProcedureReturn #PB_All
          EndIf
@@ -25990,6 +26036,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                   Case lng("Cancel") : SetData( *message, #__message_Cancel ) ; cancel
 ;                EndSelect
                SetData( *message, GetData( EventWidget( )))
+;                Protected *a._s_WIDGET = *message 
+;                Debug "get "+GetData(*a)
                ;\\
                PostQuit( *message )
             EndIf
@@ -26208,8 +26256,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          *ok = Button( Width - bw - f2, Height - bh - f2, bw, bh, lng( "Ok" ), #PB_Button_Default )
-         SetClass( *ok, "message_YES" )
-         SetData( *ok, #__message_Yes )
+         SetClass( *ok, "message_Ok" )
+         SetData( *ok, #__message_Ok )
          
          If constants::BinaryFlag( Flag, #__message_YesNo ) Or
             constants::BinaryFlag( Flag, #__message_YesNoCancel )
@@ -26218,6 +26266,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             SetData( *no, #__message_No )
             ;
             SetText( *ok, lng( "Yes" ))
+            SetClass( *ok, "message_YES" )
+            SetData( *ok, #__message_Yes )
          EndIf
          If constants::BinaryFlag( Flag, #__message_YesNoCancel )
             *cancel = Button( Width - ( bw + f2 ) * 3 - f2 * 2, Height - bh - f2, bw, bh, lng( "Cancel" ))
@@ -26244,9 +26294,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          DisableWindow( *root\canvas\window, #True )
          result = WaitQuit( @*message )
          DisableWindow( *root\canvas\window, #False )
-         
-         
-         
          
          
          ;??????????????
@@ -27696,9 +27743,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 25191
-; FirstLine = 25181
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------W-----------------
+; CursorPosition = 6343
+; FirstLine = 6184
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------r----------------------+----3+8--4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v2----------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -1,5 +1,5 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile
-   XIncludeFile "C:\Users\user\Documents\GitHub\widget\widgets.pbi"
+   XIncludeFile "../../../widgets.pbi"
 CompilerEndIf
 
 UseWidgets( )
@@ -48,9 +48,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    End
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 25
-; FirstLine = 12
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP
 ; DPIAware

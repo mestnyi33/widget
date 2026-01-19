@@ -13,24 +13,24 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure ShowMessage(  )
       ; Debug "open - Title"
-      Define Result = Message( "Title", "Please make your input:", #__message_YesNoCancel ) 
+      Define Result = Message( "Title", "Please make your input:");, #__message_YesNoCancel ) 
       ; Debug " close - Title " + Result
       
-      Define flag, a$ = "Result of the previously requester was: "
+      Define Flag, a$ = "Result of the previously requester was: "
       
       If Result = #__message_Yes       ; pressed Yes button
-         flag = #__message_Ok|#__message_Info
+         Flag = #__message_Ok|#__message_Info
          a$ +#LF$+ "Yes"
       ElseIf Result = #__message_No    ; pressed No button
-         flag = #__message_YesNo|#__message_Error
+         Flag = #__message_YesNo|#__message_Error
          a$ +#LF$+ "No"
       Else                                       ; pressed Cancel button or Esc
-         flag = #__message_YesNoCancel|#__message_Warning
+         Flag = #__message_YesNoCancel|#__message_Warning
          a$ +#LF$+ "Cancel"
       EndIf
       
       ; Debug "open - Information"
-      Result = Message("Information", a$, flag)
+      Result = Message("Information", a$, Flag)
       ; Debug "close - Information "+Result
       
      ; Result = Message("Title", "text without image")
@@ -77,21 +77,21 @@ CompilerIf #PB_Compiler_IsMainFile = 99
     Define Result = Message( "Title", "Please make your input:", #__message_YesNoCancel|#__message_Info ) 
     Debug " close - Title " + Result
     
-    Define flag, a$ = "Result of the previously requester was: "
+    Define Flag, a$ = "Result of the previously requester was: "
     
     If Result = #__message_Yes       ; pressed Yes button
-      flag = #__message_Ok|#__message_Info
+      Flag = #__message_Ok|#__message_Info
       a$ +#LF$+ "Yes"
     ElseIf Result = #__message_No    ; pressed No button
-      flag = #__message_YesNo|#__message_Error
+      Flag = #__message_YesNo|#__message_Error
       a$ +#LF$+ "No"
     Else                                       ; pressed Cancel button or Esc
-      flag = #__message_YesNoCancel|#__message_Warning
+      Flag = #__message_YesNoCancel|#__message_Warning
       a$ +#LF$+ "Cancel"
     EndIf
     
     Debug "open - Information"
-    Result = Message("Information", a$, flag)
+    Result = Message("Information", a$, Flag)
     Debug "close - Information "+Result
     
   EndProcedure
@@ -112,8 +112,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
     WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 5
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 20
+; FirstLine = 15
 ; Folding = -8-
 ; EnableXP
 ; DPIAware

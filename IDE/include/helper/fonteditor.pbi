@@ -1,5 +1,5 @@
 ﻿CompilerIf #PB_Compiler_IsMainFile
-   XIncludeFile "C:\Users\user\Documents\GitHub\widget\widgets.pbi"
+   XIncludeFile "../../../widgets.pbi"
 CompilerEndIf
 
 UseWidgets( )
@@ -24,16 +24,16 @@ Global COMBOBOX_2 = - 1
 
 Procedure Open_EDITORFONTS( )
    EDITORFONTS = Open( #PB_Any, 84, 84, 386, 260, "EDITORFONTS",  #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered  )
-      STRING_FONT = String( 7, 7, 148, 22, "MS sans serif" ) : SetRound( widget( ), 10 )
-      STRING_1 = String( 231, 7, 148, 22, "обычный" ) : SetRound( widget( ), 10 )
-      STRING_SIZE = String( 161, 7, 64, 22, "8" ) : SetRound( widget( ), 10 )
-      TREE_FONT = Tree( 7, 35, 148, 78 ) : SetRound( widget( ), 10 )
-      TREE_SIZE = Tree( 161, 35, 64, 78 ) : SetRound( widget( ), 10 )
-      TREE_1 = Tree( 231, 35, 148, 78 ) : SetRound( widget( ), 10 )
-      TREE_4 = Text( 7, 147, 218, 106, "Образец" ) : SetRound( widget( ), 10 )
-      COMBOBOX_0 = ComboBox( 231, 119, 148, 22 ) : SetRound( widget( ), 10 )
-      COMBOBOX_1 = ComboBox( 7, 119, 148, 22 ) : SetRound( widget( ), 10 )
-      COMBOBOX_2 = ComboBox( 161, 119, 64, 22 ) : SetRound( widget( ), 10 )
+      STRING_FONT = String( 7, 7, 148, 22, "MS sans serif" ) : SetRound( Widget( ), 10 )
+      STRING_1 = String( 231, 7, 148, 22, "обычный" ) : SetRound( Widget( ), 10 )
+      STRING_SIZE = String( 161, 7, 64, 22, "8" ) : SetRound( Widget( ), 10 )
+      TREE_FONT = Tree( 7, 35, 148, 78 ) : SetRound( Widget( ), 10 )
+      TREE_SIZE = Tree( 161, 35, 64, 78 ) : SetRound( Widget( ), 10 )
+      TREE_1 = Tree( 231, 35, 148, 78 ) : SetRound( Widget( ), 10 )
+      TREE_4 = Text( 7, 147, 218, 106, "Образец" ) : SetRound( Widget( ), 10 )
+      COMBOBOX_0 = ComboBox( 231, 119, 148, 22 ) : SetRound( Widget( ), 10 )
+      COMBOBOX_1 = ComboBox( 7, 119, 148, 22 ) : SetRound( Widget( ), 10 )
+      COMBOBOX_2 = ComboBox( 161, 119, 64, 22 ) : SetRound( Widget( ), 10 )
       
 ;       CHECKBOX_0 = Button( 231, 147, 148, 22, "Зачеркнутый",#PB_Button_Toggle,10 )
 ;       CHECKBOX_1 = Button( 231, 175, 148, 22, "Подчеркнутый",#PB_Button_Toggle,10 )
@@ -56,9 +56,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    End
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 31
-; FirstLine = 18
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP
 ; DPIAware
