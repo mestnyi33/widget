@@ -51,12 +51,12 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define Width = 560, Height = 560, pos = 60
    
-   Procedure Flag_(*this._s_WIDGET, flag.q, state.b=0 )
+   Procedure Flag_(*this._s_WIDGET, Flag.q, state.b=0 )
       
    EndProcedure
    
    Procedure events_widgets()
-      Protected flag.q, EventWidget = EventWidget( )
+      Protected Flag.q, EventWidget = EventWidget( )
       
       Select WidgetEvent( )
          Case #__event_LeftClick
@@ -84,7 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
                   ;
-               Case button_default   : flag = #__flag_button_Default
+               Case button_default   : Flag = #__flag_button_Default
                ;Case button_multiline : flag = #__flag_ImageMultiline
                   ;
                Case button_top,
@@ -141,22 +141,22 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                   ;
                   Select EventWidget
-                     Case button_top       : flag = #__flag_ImageTop     
-                     Case button_left      : flag = #__flag_ImageLeft
-                     Case button_right     : flag = #__flag_ImageRight
-                     Case button_bottom    : flag = #__flag_ImageBottom
-                     Case button_center    : flag = #__flag_ImageCenter
+                     Case button_top       : Flag = #__flag_ImageTop     
+                     Case button_left      : Flag = #__flag_ImageLeft
+                     Case button_right     : Flag = #__flag_ImageRight
+                     Case button_bottom    : Flag = #__flag_ImageBottom
+                     Case button_center    : Flag = #__flag_ImageCenter
                   EndSelect
                   ;
-               Case button_toggle    : flag = #PB_Button_Toggle
+               Case button_toggle    : Flag = #PB_Button_Toggle
                ;Case button_invert    : flag = #__flag_Imageinvert
                ;Case button_vertical  : flag = #__flag_Imagevertical
                Case button_mirror    ;: flag = #__flag_ImageMirror
                   Debug "ЕЩЕ НЕ РЕАЛИЗОВАНО"
             EndSelect
             
-            If flag
-               Flag_(*this, flag, GetState(EventWidget))
+            If Flag
+               Flag_(*this, Flag, GetState(EventWidget))
             EndIf
             
          Case #__event_Change
@@ -191,24 +191,24 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open(0, 0, 0, Width + 180, Height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       gadget = ButtonImageGadget(#PB_Any, 100, 100, 250, 200, ImageID(Image)) : HideGadget(gadget, 1)
       ;*this  = widget::ButtonImage(100, 100, 250, 200, Image);|)
-      *this  = widget::Image(100, 100, 250, 200, Image);|)
+      *this  = Widget::Image(100, 100, 250, 200, Image);|)
       
       Define Y  = 10
       Define bh = 24
       Define p = bh+5
       ; flag
-      Button_type      = widget::Button(Width + 45, Y, 100, p, "gadget", #PB_Button_Toggle)
-      button_default   = widget::Button(Width + 45, Y + p * 1, 100, bh, "default", #PB_Button_Toggle)
+      Button_type      = Widget::Button(Width + 45, Y, 100, p, "gadget", #PB_Button_Toggle)
+      button_default   = Widget::Button(Width + 45, Y + p * 1, 100, bh, "default", #PB_Button_Toggle)
       ;button_multiline = widget::Button(Width + 45, Y + p * 2, 100, bh, "multiline", #PB_Button_Toggle)
-      button_top       = widget::Button(Width + 45, Y + p * 3, 100, bh, "top", #PB_Button_Toggle)
-      button_left      = widget::Button(Width + 45, Y + p * 4, 100, bh, "left", #PB_Button_Toggle)
-      button_center    = widget::Button(Width + 45, Y + p * 5, 100, bh, "center", #PB_Button_Toggle)
-      button_right     = widget::Button(Width + 45, Y + p * 6, 100, bh, "right", #PB_Button_Toggle)
-      button_bottom    = widget::Button(Width + 45, Y + p * 7, 100, bh, "bottom", #PB_Button_Toggle)
-      button_toggle    = widget::Button(Width + 45, Y + p * 8, 100, bh, "toggle", #PB_Button_Toggle)
-      button_vertical  = widget::Button(Width + 45, Y + p * 9, 100, bh, "vertical", #PB_Button_Toggle)
-      button_invert    = widget::Button(Width + 45, Y + p * 10, 100, bh, "invert", #PB_Button_Toggle)
-      button_mirror    = widget::Button(Width + 45, Y + p * 11, 100, bh, "mirror", #PB_Button_Toggle)
+      button_top       = Widget::Button(Width + 45, Y + p * 3, 100, bh, "top", #PB_Button_Toggle)
+      button_left      = Widget::Button(Width + 45, Y + p * 4, 100, bh, "left", #PB_Button_Toggle)
+      button_center    = Widget::Button(Width + 45, Y + p * 5, 100, bh, "center", #PB_Button_Toggle)
+      button_right     = Widget::Button(Width + 45, Y + p * 6, 100, bh, "right", #PB_Button_Toggle)
+      button_bottom    = Widget::Button(Width + 45, Y + p * 7, 100, bh, "bottom", #PB_Button_Toggle)
+      button_toggle    = Widget::Button(Width + 45, Y + p * 8, 100, bh, "toggle", #PB_Button_Toggle)
+      button_vertical  = Widget::Button(Width + 45, Y + p * 9, 100, bh, "vertical", #PB_Button_Toggle)
+      button_invert    = Widget::Button(Width + 45, Y + p * 10, 100, bh, "invert", #PB_Button_Toggle)
+      button_mirror    = Widget::Button(Width + 45, Y + p * 11, 100, bh, "mirror", #PB_Button_Toggle)
       
       ;     ; flag
       ;     tree = widget::Tree(width + 20, y + bh * 11 + 10, 150, height - (y + bh * 11), #__flag_NoLines | #__flag_NoButtons | #__flag_optionboxes | #__flag_CheckBoxes | #__flag_threestate)
@@ -233,10 +233,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Hide(Button_type, 1)
       
       ;\\
-      Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
-      Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical)
-      Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
-      Splitter_3 = widget::Splitter(10, 10, Width, Height, Splitter_2, #Null, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+      Splitter_0 = Widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
+      Splitter_1 = Widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical)
+      Splitter_2 = Widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
+      Splitter_3 = Widget::Splitter(10, 10, Width, Height, Splitter_2, #Null, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
       
       
       ;     ;ReDraw(root())
@@ -249,17 +249,15 @@ CompilerIf #PB_Compiler_IsMainFile
       ;     SetState(Splitter_3, Width - pos - #__bar_splitter_size)
       ;     SetState(Splitter_2, Height - pos - #__bar_splitter_size)
       ;     
-      ; ;     ReDraw(root())
       ; ;     
       ; ;     Debug ""+*this\scroll_x( )+" "+*this\scroll_width( )
       
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 231
-; FirstLine = 209
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 251
+; FirstLine = 232
 ; Folding = ----
-; Optimizer
 ; EnableXP
 ; DPIAware

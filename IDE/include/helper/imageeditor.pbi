@@ -2,7 +2,7 @@
 ;   XIncludeFile "../../../widgets.pbi"
 ; CompilerEndIf
 
-Declare  Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
+Declare  Open_EDITORIMAGES( Root, Flag = #PB_Window_TitleBar )
 CompilerIf #PB_Compiler_IsMainFile
    XIncludeFile "../../ide.pb"
    XIncludeFile "../../code.pbi"
@@ -71,6 +71,8 @@ Procedure Disable_BUTTONS( state )
    Disable( TRACK_SIZE, state )
    Disable( OPTION_RAW, state )
    Disable( OPTION_SMOOTH, state )
+   
+   ; ReDraw( Root( ))
 EndProcedure
 
 Procedure Events_EDITORIMAGES( )
@@ -79,7 +81,12 @@ Procedure Events_EDITORIMAGES( )
                
    Select WidgetEvent( )
       Case #__event_free
-         Debug "free "+ EventWidget( )\class +" "+ GetImage( EventWidget( ))
+         Protected img = GetImage( EventWidget( ))
+         Debug "free "+ EventWidget( )\class ;+" "+ img
+         If IsImage(img)
+         Debug "    free image " + img
+            FreeImage( img )
+         EndIf
          
       Case #__event_leftClick
          Select EventWidget( )
@@ -96,7 +103,6 @@ Procedure Events_EDITORIMAGES( )
                         SetText( IMAGE_VIEW, "Загрузите изображения" )
                         ;
                         Disable_BUTTONS( #True )
-                        ReDraw( root( ))
                      EndIf
                   EndIf
                EndIf
@@ -107,7 +113,6 @@ Procedure Events_EDITORIMAGES( )
                ;
                Disable( BUTTON_PASTE, #True )
                Disable_BUTTONS( #False )
-               ReDraw( root( ))
                   
             Case BUTTON_OPEN
                Define file$ = OpenFileRequester( "Пожалуйста выберите изображение для загрузки","",
@@ -132,7 +137,6 @@ Procedure Events_EDITORIMAGES( )
                   ;Debug GetImageKey( IMAGE_VIEW );
                   
                   Disable_BUTTONS( #False )
-                  ReDraw( root( ))
                EndIf
                
             Case BUTTON_OK
@@ -166,19 +170,19 @@ Procedure Events_EDITORIMAGES( )
    ProcedureReturn #PB_Ignore
 EndProcedure
 
-Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
+Procedure Open_EDITORIMAGES( Root, Flag = #PB_Window_TitleBar )
    Protected result
    Load_IMAGES( )
    
-   EDITORIMAGES = Open( #PB_Any, 20, 20, 392, 232, "Редактор изображения", flag | #PB_Window_WindowCentered | #PB_Window_Invisible, WindowID( GetCanvasWindow( root )) )
+   EDITORIMAGES = Open( #PB_Any, 20, 20, 392, 232, "Редактор изображения", Flag | #PB_Window_WindowCentered | #PB_Window_Invisible, WindowID( GetCanvasWindow( Root )) )
    SetBackgroundColor( EDITORIMAGES, $DCDCDC )
    SetClass( EDITORIMAGES, "EDITORIMAGES" )
    
    IMAGE_VIEW = Image( 7, 35, 253, 162, (-1), #__flag_ImageCenter|#__flag_BorderFlat )
    SetBackgroundColor( IMAGE_VIEW, $54EDDE )
    SetText( IMAGE_VIEW, "Загрузите изображения" )
-   widget( )\text\x = - 145
-   widget( )\text\y = - 18
+   Widget( )\text\x = - 145
+   Widget( )\text\y = - 18
    
    TEXT_SIZE = Text( 7, 7, 253, 22, "x16" )
    Disable( TEXT_SIZE, #True )
@@ -220,15 +224,15 @@ Procedure Open_EDITORIMAGES( root, flag = #PB_Window_TitleBar )
    Bind( #PB_All, @Events_EDITORIMAGES( ))
    ReDraw(EDITORIMAGES)
    HideWindow( GetCanvasWindow( EDITORIMAGES), #False )
-   Define Canvas = GetCanvasGadget( root )
+   Define Canvas = GetCanvasGadget( Root )
    ;
 ;    Debug ""+IsGadget( Canvas )+" "+Canvas
 ;    Debug ""+ GetCanvasGadget( root) +" "+ GetCanvasGadget( GetRoot( EDITORIMAGES ))
-   WaitQuit( EDITORIMAGES )
-;    Debug ""+IsGadget( Canvas )+" "+Canvas
+   Debug WaitQuit( @EDITORIMAGES )
+   ; Debug ""+IsGadget( Canvas )+" "+Canvas
    
    ; Debug ""+GetCanvasWindow(EDITORIMAGES) +" "+ IsWindow(GetCanvasWindow(EDITORIMAGES))
-   ChangeCurrentCanvas( GadgetID( GetCanvasGadget( root )))
+   ChangeCurrentCanvas( GadgetID( GetCanvasGadget( Root )))
    Free_Images( )
    
    If IsImage( LOADIMAGE )
@@ -244,33 +248,33 @@ EndProcedure
 ;-
 CompilerIf #PB_Compiler_IsMainFile
    Procedure button_left_click_event( )
-      Define widget = EventWidget( )
-      Define root = EventWidget( )\root
-      Define img = Open_EDITORIMAGES( root )
+      Define Widget = EventWidget( )
+      Define Root = EventWidget( )\root
+      Define img = Open_EDITORIMAGES( Root )
       ; Define img = Open_EDITORIMAGES( root, -1, #PB_Window_BorderLess )
       
       If IsImage( img)
          Debug "Это изображение " + img
-         SetImage( root, img )
+         SetImage( Root, img )
       EndIf
       
-      Disable( widget, #False )
+      Disable( Widget, #False )
    EndProcedure
    
-   Define root = Open( 0, 20, 20, 600, 600, "Загрузка изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
-   SetBackgroundColor( widget( ), $54DE94 )
+   Define Root = Open( 0, 20, 20, 600, 600, "Загрузка изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
+   SetBackgroundColor( Widget( ), $54DE94 )
    Button( 600-300-10, 600-30-10, 300, 30, ~"Открыть окно \"Редактор изображения\"", #__flag_ImageLeft )
-   Disable( widget( ), #True )
+   Disable( Widget( ), #True )
    
-   Bind( widget( ), @button_left_click_event( ), #__event_LeftClick )
-   Post( widget( ), #__event_LeftClick )
+   Bind( Widget( ), @button_left_click_event( ), #__event_LeftClick )
+   Post( Widget( ), #__event_LeftClick )
    
    WaitClose( )
    End
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 180
-; FirstLine = 175
-; Folding = -----
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 86
+; FirstLine = 77
+; Folding = --0v--
 ; EnableXP
 ; DPIAware

@@ -15,9 +15,7 @@ Enumeration Properties
    #_pi_CLASS
    #_pi_TEXT
    #_pi_IMAGE
-   #_pi_FLAG
    ;
-   #_pi_group_LAYOUT 
    #_pi_ALIGN
    #_pi_X
    #_pi_Y
@@ -25,6 +23,7 @@ Enumeration Properties
    #_pi_HEIGHT
    ;
    #_pi_group_VIEW 
+   #_pi_FLAG
    #_pi_CURSOR
    #_pi_HIDE
    #_pi_DISABLE
@@ -1974,10 +1973,9 @@ Procedure ide_Lng_change( lng_TYPE=0 )
       Protected info = GetAttribute( ide_inspector_PROPERTIES, #PB_Splitter_FirstGadget )
       If info
          SetItemText( info, #_pi_group_COMMON, UCase(lng("Common")))
-         SetItemText( info, #_pi_group_LAYOUT, UCase(lng("Layout")))
+         SetItemText( info, #_pi_ALIGN, UCase(lng("LAYOUT")))
          SetItemText( info, #_pi_group_VIEW, UCase(lng("View")))
          
-         SetItemText( info, #_pi_ALIGN, lng("Align"))
          SetItemText( info, #_pi_CLASS, lng("Class"))
          
          SetItemText( info, #_pi_COLOR, UCase(lng("Color")))
@@ -2006,7 +2004,7 @@ Procedure ide_Lng_change( lng_TYPE=0 )
          If lng_TYPE = 0
             SetState(ide_inspector_PROPERTIES, 80)
          ElseIf lng_TYPE = 1
-            SetState(ide_inspector_PROPERTIES, 130)
+            SetState(ide_inspector_PROPERTIES, 140)
          ElseIf lng_TYPE = 2
          ElseIf lng_TYPE = 3
          EndIf
@@ -2885,16 +2883,14 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_text,           "Text",     #__type_String, 1 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_IMAGE,          "Image",    #__type_Button, 1 )
       ;
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_flag,         "Flag",       #__type_ComboBox, 1 )
-   ;
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_LAYOUT, "LAYOUT" )
-      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_align,          "Align"+Chr(10)+"LEFT|TOP", #__type_Button, 1 )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_align,        "LAYOUT"+Chr(10)+"LEFT|TOP", #__type_Button, 0 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_x,              "X",        #__type_Spin, 1 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_y,              "Y",        #__type_Spin, 1 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_width,          "Width",    #__type_Spin, 1 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_height,         "Height",   #__type_Spin, 1 )
       ;
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_VIEW,   "VIEW" )
+      Properties_AddItem( ide_inspector_PROPERTIES, #_pi_flag,           "Flag",       #__type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_cursor,         "Cursor",   #__type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_hide,           "Hide",     #__type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_disable,        "Disable",  #__type_ComboBox, 1 )
@@ -3262,10 +3258,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 1973
-; FirstLine = 1587
-; Folding = -4--4---8l-3v-----------Aj-------v----------------fp------n-
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 2053
+; FirstLine = 1664
+; Folding = -4--4---8l-3v-----------Aj-------v----------------fp------v-
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2.exe
+; Executable = ../../2.exe

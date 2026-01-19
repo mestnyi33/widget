@@ -1,5 +1,5 @@
 ﻿
- XIncludeFile "../../../widgets.pbi"
+ XIncludeFile "../../widgets.pbi"
 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -50,7 +50,6 @@ CompilerIf #PB_Compiler_IsMainFile
    
     Splitter = Splitter(8, 8, 306, 276, 10,g)
     
-    ReDraw(root())
     
     
     
@@ -67,8 +66,9 @@ CompilerIf #PB_Compiler_IsMainFile
                Select EventType()
                   Case #PB_EventType_Focus    
                      SetGadgetText(10, "settext")
-                     SetText(g, "settext")
-                     ReDraw(root())
+                     If SetText(g, "settext")
+                        PostRepaint( ) 
+                     EndIf
                EndSelect
             EndIf
             
@@ -83,9 +83,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 35
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 71
+; FirstLine = 59
 ; Folding = --
 ; EnableXP
 ; DPIAware

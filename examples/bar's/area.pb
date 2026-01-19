@@ -258,7 +258,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
       
             If Repaint
-;                ReDraw( root( ))
+;                Repaint( )
 ;                ; If StartDraw( root( ) )
 ;                ;    Drawing( )
 ;                ;    Canvas_Draw( MyCanvas, _images_( ) ) 
@@ -377,7 +377,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetAttribute(*this\scroll\h, #__flag_Invert, Bool(GetGadgetState(3)))
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
-                  ReDraw( Root( ))
+                  Repaint( )
                   
                Case 4
                   If GetGadgetState(2)
@@ -387,19 +387,19 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetAttribute(*this\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
-                  ReDraw( Root( ))
+                  Repaint( )
                   
                Case 5
-                  ReDraw( Root( ))
+                  Repaint( )
                   
             EndSelect
       EndSelect
       
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 16
-; Folding = -------8-
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 392
+; FirstLine = 285
+; Folding = ---------
 ; EnableXP
 ; DPIAware

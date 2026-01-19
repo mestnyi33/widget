@@ -23,8 +23,6 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
     
-    ; Redraw(*w)
-    
     ; HideGadget(0, 1)
     Define time = ElapsedMilliseconds()
     For a = 0 To LN
@@ -42,7 +40,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 4
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 25
+; FirstLine = 17
 ; Folding = --
 ; EnableXP

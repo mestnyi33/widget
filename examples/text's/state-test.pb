@@ -325,16 +325,15 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*item4, @button_events(), #__event_Up)
       
       
-      ;        ReDraw( root( ))
       ;       ;*second\scroll\v\hide = 1
       ;       Debug *second\scroll\v\hide 
       
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 109
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 327
+; FirstLine = 308
 ; Folding = --------
 ; EnableXP
 ; DPIAware

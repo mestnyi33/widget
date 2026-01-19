@@ -8309,7 +8309,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; make vertical scroll y
          make_scrollarea_y( *this, *this\scroll_height( ), *this\text\align )
          
-         If Not ( __gui\event\queuesmask = - 1 )
+         If Not __gui\event\mask
             If *this\scroll\v And
                bar_PageChange( *this\scroll\v, - *this\scroll_y( ) )
             EndIf
@@ -22117,7 +22117,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   ; post event re draw
                   If *this\binddraw
-                     If __gui\event\queuesmask = - 1
+                     If __gui\event\mask & 1<<#__event_Draw
                         If *this\root\drawmode & 1<<1
                            SaveVectorState( )
                            TranslateCoordinates( *this\x[#__c_frame], *this\y[#__c_frame] )
@@ -22559,8 +22559,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   ReDraw( *this._s_ROOT )
-         __gui\event\queuesmask = - 1
-         
          ;\\ reset events
          ;ResetEvents( *this )
          
@@ -25181,19 +25179,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Define __data   = __gui\event\queues( )\data
                
                If GetRoot( __widget ) = GetRoot( *this )
-                  If __gui\event\queuesmask 
-                     Debug  ""+EventString( __event ) +" "+ GetClass( __widget )
+                  If __gui\event\mask & 1<<__event
+                     Debug  ""+EventString( __event ) +" "+ Bool(__gui\event\mask & 1<<__event) +" "+ GetClass(__widget)
                      ;
                      DeleteElement( __gui\event\queues( ) )
                      ;
                      If __event = #__event_Free
                         If IsContainer( __widget )
                            Free( @__widget )
-                           If __gui\event\queuesmask = - 1
-                              Repaint( *this\root )
-                           EndIf
+                           __gui\event\mask &~ 1<<__event
                         EndIf
-                        
                      ElseIf __event = #__event_Change
                         If GetType(__widget) = #__type_Spin
                            ; Post( __widget, __event, __item, __data )
@@ -25268,11 +25263,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
          
          If *this > 0 
-            If Not __gui\event\queuesmask
-               ; If *this\type <> #__type_Scroll
-               ;    Debug " post add events"+ *this\class +" "+ EventString(event) +" "+ *button +" "+ *data
-               ; EndIf
+            If Not __gui\event\mask & 1<<event
                
+               ;                If *this\type <> #__type_Scroll
+               ;                   Debug " post add events"+ *this\class +" "+ EventString(event) +" "+ *button +" "+ *data
+               ;                EndIf
                If AddEvents( *this, event, *button, *data )
                  If event = #__event_Free 
                     ProcedureReturn #False
@@ -25507,10 +25502,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   __gui\event\binds( )\data     = *data
                EndIf
                
-               If __gui\event\queuesmask = 0
-                  __gui\event\queuesmask = 1
-                  ResetEvents( *this\root )
+               If Not __gui\event\mask & 1<<event
+                  __gui\event\mask | 1<<event
                EndIf
+               ResetEvents( *this\root )
             EndIf
          EndIf
          
@@ -25552,9 +25547,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             __gui\event\loop = #False
             
             If *root
-               Debug "  Exit post... [LOOP] - "+ *root\canvas\window
+               Debug "  Exit post... [LOOP] "+ *root\canvas\window
             Else
-               Debug "  Exit post... [LOOP]"
+               Debug "  Exit post... [LOOP] "
             EndIf
             
             ;\\ stop main loop
@@ -25638,12 +25633,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   IsChild( widgets( ), *parent )
                   ;
                   If Not Post( widgets( ), #__event_free )
-                     If Not (__gui\event\queuesmask = - 1)
-                        If PreviousElement( widgets( ))
-                           Continue
-                        Else
-                           Break
-                        EndIf
+                     If PreviousElement( widgets( ))
+                        Continue
+                     Else
+                        Break
                      EndIf
                   EndIf
                   
@@ -25933,7 +25926,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Else
                   Delete( *g, #True )
                EndIf
-               ProcedureReturn #True
                ;  
             Else
                If IsChildrens( *this )
@@ -25984,12 +25976,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *message
             If #__type_Button = GetType( EventWidget( ))
-;                Select GetText( EventWidget( ))
-;                   Case lng("No")     : SetData( *message, #__message_No )     ; no
-;                   Case lng("Yes")    : SetData( *message, #__message_Yes )    ; yes
-;                   Case lng("Cancel") : SetData( *message, #__message_Cancel ) ; cancel
-;                EndSelect
-               SetData( *message, GetData( EventWidget( )))
+               Select GetText( EventWidget( ))
+                  Case lng("No")     : SetData( *message, #__message_No )     ; no
+                  Case lng("Yes")    : SetData( *message, #__message_Yes )    ; yes
+                  Case lng("Cancel") : SetData( *message, #__message_Cancel ) ; cancel
+               EndSelect
+               
                ;\\
                PostQuit( *message )
             EndIf
@@ -26209,27 +26201,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          *ok = Button( Width - bw - f2, Height - bh - f2, bw, bh, lng( "Ok" ), #PB_Button_Default )
          SetClass( *ok, "message_YES" )
-         SetData( *ok, #__message_Yes )
-         
          If constants::BinaryFlag( Flag, #__message_YesNo ) Or
             constants::BinaryFlag( Flag, #__message_YesNoCancel )
             *no = Button( Width - ( bw + f2 ) * 2 - f2, Height - bh - f2, bw, bh, lng( "No" ))
             SetClass( *no, "message_NO" )
-            SetData( *no, #__message_No )
-            ;
             SetText( *ok, lng( "Yes" ))
          EndIf
          If constants::BinaryFlag( Flag, #__message_YesNoCancel )
             *cancel = Button( Width - ( bw + f2 ) * 3 - f2 * 2, Height - bh - f2, bw, bh, lng( "Cancel" ))
             SetClass( *cancel, "message_CANCEL" )
-            SetData( *cancel, #__message_Cancel )
          EndIf
-               
+         
          ;\\
-         Bind( *message, @MessageEvents( ))
          HideWindow( *message\canvas\window, #False )
          StickyWindow( *message\canvas\window, #True )
          SetActiveGadget( *Message\canvas\gadget )
+         Bind( *message, @MessageEvents( ))
          SetActive( *ok )
          
          ;\\
@@ -26245,12 +26232,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          result = WaitQuit( @*message )
          DisableWindow( *root\canvas\window, #False )
          
-         
-         
-         
-         
-         ;??????????????
-         ;SetActiveGadget( *root\canvas\gadget ) 
          ;          ;\\
          ;     SetActive( *root )  
          ;          ChangeCurrentCanvas( *root\canvas\gadgetID )
@@ -26275,6 +26256,75 @@ EndMacro
 ;-
 ;-\\ EXAMPLE
 ;-
+CompilerIf #PB_Compiler_IsMainFile
+   EnableExplicit
+   UseWidgets( )
+   test_delete = 1
+   
+   
+   
+   
+   Global._s_WIDGET *g, *g0, *g1, *g2
+   
+   
+   Procedure free_events()
+      If Not is_root_(EventWidget())
+         If *g0 <> EventWidget()
+            If *g = EventWidget()
+               *g = 0
+            EndIf
+            
+            Debug "   [free] - "+EventWidget()\class
+            ProcedureReturn 5
+         EndIf
+      EndIf
+   EndProcedure
+   
+   If Open(1, 100, 50, 525, 435+40, "demo tree state", #PB_Window_SystemMenu)
+      *g0 = Container(30, 115, 250, 100 )
+      *g1 = Button(10, 10, 30, 30, "0" )
+      *g2 = Button(60, 10, 30, 30, "1" ) 
+      *g = Splitter(10, 15, 250, 100, *g1, *g2 )
+      CloseList( )
+      
+      
+      Debug ""+roots( )\haschildren +" root childrens count"
+      Debug ""+*g0\haschildren +" container childrens count"
+      If *g
+         Debug ""+*g\haschildren +" splitter childrens count"
+      EndIf
+      Debug ""
+      
+     
+      ;\\1 test free         ; 
+       Bind(*g2, @free_events( ), #__event_Free)
+      ; Bind(#PB_All, @free_events( ), #__event_Free)
+     
+      Free( Root( ))
+      ;Free( *g0)
+      ;Free( *g)    
+      
+      ;\\2 test free
+      ; Bind(*g2, @free_events( ), #__event_Free)
+      ; Bind(#PB_All, @free_events( ), #__event_Free)
+     
+     
+      Debug ""
+      Debug "---after free---"
+      Debug ""+roots( )\haschildren +" root childrens count"
+      Debug ""+*g0\haschildren +" container childrens count"
+      If *g
+         Debug ""+*g\haschildren +" splitter childrens count"
+      EndIf
+      Debug ""
+      
+      WaitClose()
+      Debug "---after close---"
+      Debug ListSize(widgets())
+      Debug MapSize(roots())
+   EndIf
+CompilerEndIf
+
 CompilerIf #PB_Compiler_IsMainFile = 99
    EnableExplicit
    UseWidgets( )
@@ -26848,7 +26898,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
 CompilerEndIf
 
 ;- DEMO
-CompilerIf #PB_Compiler_IsMainFile  ; = 99
+CompilerIf #PB_Compiler_IsMainFile  = 99
    
    EnableExplicit
    UseWidgets( )
@@ -27696,9 +27746,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 25191
-; FirstLine = 25181
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------W-----------------
+; CursorPosition = 25985
+; FirstLine = 25974
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+4v-V8----------
 ; EnableXP
 ; DPIAware
-; Executable = widgets-.app.exe

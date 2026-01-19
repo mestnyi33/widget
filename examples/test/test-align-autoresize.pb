@@ -102,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
         Height + direction
         
         Resize(widget_id(Hex(0)), #PB_Ignore, #PB_Ignore, Width, Height)
-        ReDraw(Root()) 
+        PostRepaint( ) 
         
       Case #PB_Event_Gadget
         
@@ -123,7 +123,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 1
-; Folding = +-
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 104
+; FirstLine = 100
+; Folding = --
 ; EnableXP
