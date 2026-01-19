@@ -1970,6 +1970,48 @@ Procedure ide_Lng_change( lng_TYPE=0 )
       SetItemText( ide_design_PANEL, 1, lng(#lng_CODE$))
       SetItemText( ide_design_PANEL, 2, "V-"+lng(#lng_CODE$))
       
+      
+      Protected info = GetAttribute( ide_inspector_PROPERTIES, #PB_Splitter_FirstGadget )
+      If info
+         SetItemText( info, #_pi_group_COMMON, UCase(lng("Common")))
+         SetItemText( info, #_pi_group_LAYOUT, UCase(lng("Layout")))
+         SetItemText( info, #_pi_group_VIEW, UCase(lng("View")))
+         
+         SetItemText( info, #_pi_ALIGN, lng("Align"))
+         SetItemText( info, #_pi_CLASS, lng("Class"))
+         
+         SetItemText( info, #_pi_COLOR, UCase(lng("Color")))
+         SetItemText( info, #_pi_COLORALPHA, lng("ColorAlpha"))
+         SetItemText( info, #_pi_COLORBLUE, lng("ColorBlue"))
+         SetItemText( info, #_pi_COLORGREEN, lng("ColorGreen"))
+         SetItemText( info, #_pi_COLORRED, lng("ColorRed"))
+         SetItemText( info, #_pi_COLORSTATE, lng("ColorState"))
+         SetItemText( info, #_pi_COLORTYPE, lng("ColorType"))
+         
+         SetItemText( info, #_pi_FONT, UCase(lng("Font")))
+         SetItemText( info, #_pi_FONTSIZE, lng("FontSize"))
+         SetItemText( info, #_pi_FONTSTYLE, lng("FontStyle"))
+         
+         SetItemText( info, #_pi_DISABLE, lng("Disable"))
+         SetItemText( info, #_pi_FLAG, lng("Flag"))
+         SetItemText( info, #_pi_HIDE, lng("Hide"))
+         
+         SetItemText( info, #_pi_X, lng("X"))
+         SetItemText( info, #_pi_Y, lng("Y"))
+         SetItemText( info, #_pi_WIDTH, lng("Width"))
+         SetItemText( info, #_pi_HEIGHT, lng("Height"))
+         
+         SetItemText( info, #_pi_IMAGE, lng("Image"))
+         SetItemText( info, #_pi_TEXT, lng("Text"))
+         If lng_TYPE = 0
+            SetState(ide_inspector_PROPERTIES, 80)
+         ElseIf lng_TYPE = 1
+            SetState(ide_inspector_PROPERTIES, 130)
+         ElseIf lng_TYPE = 2
+         ElseIf lng_TYPE = 3
+         EndIf
+      EndIf
+      
       ;\\
       If lng_TYPE = 0
          DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_ENG, #True )
@@ -3221,9 +3263,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2718
-; FirstLine = 2307
-; Folding = -4--4---8l-3v-----------Aj-------v----------------X7------6-
+; CursorPosition = 1973
+; FirstLine = 1587
+; Folding = -4--4---8l-3v-----------Aj-------v----------------fp------n-
 ; EnableXP
 ; DPIAware
 ; Executable = ..\..\2.exe
