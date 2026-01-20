@@ -3949,7 +3949,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ;
                   If *bar\vertical
-                     If *this\type = #__type_popupbar
+                     If *this\type = #__type_popupbar Or *bar\vertical < 0
+                        If  *bar\vertical < 0
+                           qqq = DPIScaled(10);*this\parent\padding\x
+                        EndIf
+                        
                         ForEach *tabs( )
                            If *tabs( )\hide
                               Continue
@@ -3958,29 +3962,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            draw_font( *tabs( ), GetFontID( *this ), *tabs( )\TextChange( ))
                            
                            ; init items position
-                           If *bar\vertical
-                              If *this\scroll_width( ) < qqq+*tabs( )\text\width 
-                                 *this\scroll_width( ) = qqq+*tabs( )\text\width
-                                 
-                                 If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
-                                    *this\scroll_width( ) + *tabs( )\picture\width 
-                                 EndIf
+                           If *this\scroll_width( ) < qqq + *tabs( )\text\width
+                              *this\scroll_width( ) = qqq + *tabs( )\text\width
+                              
+                              If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
+                                 *this\scroll_width( ) + *tabs( )\picture\width 
                               EndIf
-                              If *tabs( )\childrens 
-                                 childrens = #True
-                              EndIf
+                           EndIf
+                           If *tabs( )\childrens 
+                              childrens = #True
                            EndIf
                         Next
                         If childrens
                            *this\scroll_width( ) + DPIScaled(15)
                         EndIf
+;                         Resize(*this, #PB_Ignore, #PB_Ignore, *this\scroll_width( ), #PB_Ignore)
+;                         *this\parent\fs[1] = *this\scroll_width( )
+;                         Resize(*this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
                      Else
                         *this\scroll_width( ) = *this\screen_width( ) 
                      EndIf
                   Else
                      *this\scroll_height( ) = *this\screen_height( )
                   EndIf
-                  
+                  Protected align_x
                   ;
                   ForEach *tabs( )
                      If *tabs( )\hide
@@ -3993,10 +3998,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Index = ListIndex( *tabs( ) )
                      
                      ; init items position
-                     If *bar\vertical
+                     If *bar\vertical 
                         
                         If *this\type = #__type_TabBar
-                           If *this\parent\fs[1]
+                         If *bar\vertical > 0
+                          If *this\parent\fs[1]
                               *tabs( )\x    = bar_toggle_size
                            Else
                               *tabs( )\x    = bar_button_padding
@@ -4029,6 +4035,86 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *bar\max + *tabs( )\height + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
                            EndIf
                         Else
+                           
+                           
+                           *tabs( )\height = 0
+                        *tabs( )\y = *bar\max + pos
+                        
+                        If *this\type = #__type_TabBar
+                           If *this\TabState( ) = Index 
+;                               *tabs( )\x        = 0
+;                               *tabs( )\width    = *this\screen_width( )
+                              If *this\parent\fs[1]
+                                 *tabs( )\x     = bar_toggle_size
+                              Else
+                                 *tabs( )\x     = 0
+                              EndIf
+                              *tabs( )\width    = *this\inner_width( ) - bar_toggle_size
+                           Else
+                              If *this\parent\fs[1]
+                                 *tabs( )\x     = bar_toggle_size
+                              Else
+                                 *tabs( )\x     = DPIScaled(2)
+                              EndIf
+                              *tabs( )\width    = *this\inner_width( ) - bar_toggle_size - DPIScaled(2)
+                           EndIf
+                           
+                         
+                        If *tabs( )\tindex  = #PB_Ignore
+                           *tabs( )\y      + separator_step
+                           *tabs( )\height = 1
+                           *bar\max         + separator_step * 2
+                        Else
+                           If *tabs( )\picture\height
+                              *tabs( )\height = *tabs( )\picture\height
+                           EndIf
+                           If *tabs( )\text\height
+                              If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
+                                 If Not *tabs( )\picture\height 
+                                    *tabs( )\height = *tabs( )\text\height
+                                 EndIf
+                              Else
+                                 *tabs( )\height + *tabs( )\text\height
+                              EndIf
+                           EndIf
+                           
+                           ;
+                           *tabs( )\height + (6)
+                           ;
+                           If constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
+                              ;
+                              ;                               *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width - *tabs( )\text\width ) / 2 
+                              ;                               *tabs( )\text\x  = *tabs( )\picture\x + *tabs( )\picture\width + 5
+                              align_x = (5)
+                              *tabs( )\picture\x = align_x
+                              *tabs( )\text\x  = *tabs( )\picture\x + *tabs( )\picture\width + align_x + (5)
+                              
+                              ;
+                              *tabs( )\picture\y = ( *tabs( )\height - *tabs( )\picture\height )/2
+                              *tabs( )\text\y  = ( *tabs( )\height - *tabs( )\text\height )/2
+                              ;                          
+                           Else
+                              If *tabs( )\text\width
+                                 *tabs( )\picture\y = ( *tabs( )\height - *tabs( )\picture\height - *tabs( )\text\height ) / 2
+                              Else
+                                 *tabs( )\picture\y = ( *tabs( )\height - *tabs( )\picture\height ) / 2
+                              EndIf
+                              ;
+                              *tabs( )\text\y  = *tabs( )\picture\y + *tabs( )\picture\height
+                              ;
+                              *tabs( )\picture\x = ( *tabs( )\width - *tabs( )\picture\width )/2
+                              *tabs( )\text\x  = ( *tabs( )\width - *tabs( )\text\width )/2
+                           EndIf
+                        EndIf
+                        
+                        *bar\max + *tabs( )\height + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
+                        
+                        EndIf
+                          
+                           
+                           
+                        EndIf
+                     Else
                            *tabs( )\height = 0
                            *tabs( )\y = *bar\max + pos
                            
@@ -4085,7 +4171,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  ;
                                  ;                               *tabs( )\picture\x = *tabs( )\x + ( *tabs( )\width - *tabs( )\picture\width - *tabs( )\text\width ) / 2 
                                  ;                               *tabs( )\text\x  = *tabs( )\picture\x + *tabs( )\picture\width + 5
-                                 Protected align_x = (5)
+                                  align_x = (5)
                                  *tabs( )\picture\x = align_x
                                  *tabs( )\text\x  = *tabs( )\picture\x + *tabs( )\picture\width + align_x + (5)
                                  
@@ -4182,6 +4268,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *bar\max + *tabs( )\width + pos + Bool( Index = *this\countitems - 1 )
                            EndIf
                         EndIf
+                        
                      EndIf
                      
                      UpdateDraw_BarContent( *this, *tabs( ), ppp )
@@ -4218,6 +4305,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   bar_update( *this, #True )
                   
+;                      If childrens
+;                         Resize(*this, #PB_Ignore, #PB_Ignore, *this\scroll_width( ), #PB_Ignore)
+;                         *this\parent\fs[1] = *this\scroll_width( )
+;                         Resize(*this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+;                         EndIf
+                      
                   *this\TabChange( ) = #False
                   *this\ResizeChange( ) = 0
                EndIf
@@ -7131,13 +7224,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-;                If position = 1 Or position = 3
-;                   If constants::BinaryFlag( *box\flag, #__flag_BarInlineText )
-;                      size = 80
-;                   Else
-;                      size = 150; - (1 + fs)
-;                   EndIf
-;                EndIf
+               If position = 1 Or position = 3
+                  If Not *box\bar\vertical
+                     If constants::BinaryFlag( *box\flag, #__flag_BarInlineText )
+                        size = 80
+                     Else
+                        size = 94; - (1 + fs)
+                     EndIf
+                  EndIf
+               EndIf
             EndIf   
             ;
             size = DPIScaled( size )
@@ -7169,20 +7264,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *box\picture\align\bottom = 0
             ;
             If position = 1
-               ;*box\bar\vertical = 1
                *this\fs[1] = size + fs
                ;
-               *box\text\vertical = 1
+               
+               If *box\bar\vertical
                *box\picture\align\bottom = 1
+                  *box\text\vertical = 1
+               Else
+               *box\picture\align\top = 1
+                  *box\bar\vertical = - 1
+               EndIf
             EndIf
             ;
             If position = 3
-               ;*box\bar\vertical = 1
                *this\fs[3] = size + fs
                ;
-               *box\text\invert = 1
-               *box\text\vertical = 1
                *box\picture\align\top = 1
+               If *box\bar\vertical
+                  *box\text\invert = 1
+                  *box\text\vertical = 1
+               Else
+                  *box\bar\vertical = - 1
+               EndIf
             EndIf
             
             If position = 2
@@ -27503,7 +27606,7 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
    ;-\\ OPENROOT1
    OpenList( *root1 )
-   *panel = Panel(20, 20, 180 + 40, 180 + 60, editable) : SetText(*panel, "1")
+   *panel = Panel(20, 20, 250, 180 + 60, editable|#__Panel_Right|#__Flag_Vertical) : SetText(*panel, "1")
    AddItem( *panel, -1, "item_1" )
    ;Button( 20,20, 80,80, "item_1")
    *g = Editor(0, 0, 0, 0, #__flag_autosize|#__flag_Borderless|#__flag_Textwordwrap)
@@ -27790,9 +27893,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 7178
-; FirstLine = 6304
-; Folding = ----------------------------------------------------------------------------------------------+---------------------------------------2---43z0+---+0f--8f-bvf----fb-0--8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-7f4ev-----------------------------------------------------------------------------------------------------------fAU+r48-O--------------------------------------------------------------------------------------------47----------------
+; CursorPosition = 7212
+; FirstLine = 6344
+; Folding = --------------------------------------------------------------------------------------------f-z-f--3------------------------------------2---43z0+---+0f--8f-bvf----fb-0--8----------------f0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------zf0vbv4-----------------------------------------------------------------------------------------------------------PAK-280fn--------------------------------------------------------------------------------------------b00vf-r3--+-2h9---
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

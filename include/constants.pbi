@@ -499,10 +499,7 @@
       #__Panel_Top             = #__flag_Top;1<<10
       #__Panel_Right           = #__flag_Right;1<<11
       #__Panel_Bottom          = #__flag_Bottom;1<<12
-;       #__Panel_Top = 0
-;       #__Panel_Left = #__flag_Vertical                        ; #__flag_Left 
-;       #__Panel_Right = #__flag_Vertical|#__flag_Invert         ; #__flag_Right 
-;       #__Panel_Bottom = #__flag_Invert                          ; #__flag_Bottom 
+
 
       ;-\\ Tree
       #__flag_property         = 1<<50
@@ -725,7 +722,7 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 504
+; CursorPosition = 501
 ; FirstLine = 486
 ; Folding = ----
 ; Optimizer

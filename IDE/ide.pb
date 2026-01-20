@@ -2836,7 +2836,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    AddItem( ide_element_PANEL, -1, "3" )
    AddItem( ide_element_PANEL, -1, "4" )
    CloseList( ) ; ide_element_PANEL
-   BarPosition( ide_element_PANEL, 4, 17 )
+   BarPosition( ide_element_PANEL, 4, 20 )
    
    ;\\\ 
    ide_design_PANEL = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_PANEL, "ide_design_PANEL" ) ; , #__flag_Vertical ) : OpenList( ide_design_PANEL )
@@ -2852,7 +2852,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    
    AddItem( ide_design_PANEL, -1, "V-"+lng(#lng_CODE$) )
    CloseList( )
-   ; BarPosition( ide_design_PANEL, 4 )
+   ;BarPosition( ide_design_PANEL, 3 )
    
    ;
    ide_debug_VIEW = Editor( 0,0,0,0, #PB_Editor_ReadOnly ) : SetClass(ide_debug_VIEW, "ide_debug_VIEW" )
@@ -3256,9 +3256,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2034
-; FirstLine = 1540
-; Folding = -4--4---8l-3v-----------Aj-------v0fvd-0----------fpl2----v-
+; CursorPosition = 2838
+; FirstLine = 2276
+; Folding = -4--4---8l-3v-----------Aj-------v0fvd-0----------fpl2----n-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2.exe

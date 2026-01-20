@@ -93,19 +93,19 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList( )
       AddItem(*g5, 2, "2g", img_save )
       CloseList() ; *g5
-;       
-;      *g6 = Panel(220, 220, 200, 200, #__Panel_Left)
-;       ;SetFrame( *g6, 10 )
-;       AddItem(*g6, 0, "1", img_new )
-;       Button(0,0,GetAttribute(*g6, #PB_Panel_ItemWidth),GetAttribute(*g6, #PB_Panel_ItemHeight),"")
-;       AddItem(*g6, 1, "open item", img_open, #PB_ToolBar_Normal)
-;       AddItem(*g6, 2, "2g", img_save )
-;       CloseList() ; *g6
-;       
-;       ;       Debug ""+*g3\clip_x() +" "+*g3\clip_y() +" "+*g3\clip_width() +" "+*g3\clip_height()
-; ;       Debug ""+*g3\clip_ix() +" "+*g3\clip_iy() +" "+*g3\clip_iwidth() +" "+*g3\clip_iheight()
-; ; ;       Debug ""+*g3\tabbar\clip_x() +" "+*g3\tabbar\clip_y() +" "+*g3\tabbar\clip_width() +" "+*g3\tabbar\clip_height()
-; ; ;       Debug ""+*g3\tabbar\clip_ix() +" "+*g3\tabbar\clip_iy() +" "+*g3\tabbar\clip_iwidth() +" "+*g3\tabbar\clip_iheight()
+      
+     *g6 = Panel(220, 220, 200, 200, #__Panel_Right)
+      ;SetFrame( *g6, 10 )
+      AddItem(*g6, 0, "1", img_new )
+      Button(0,0,GetAttribute(*g6, #PB_Panel_ItemWidth),GetAttribute(*g6, #PB_Panel_ItemHeight),"")
+      AddItem(*g6, 1, "open item", img_open, #PB_ToolBar_Normal)
+      AddItem(*g6, 2, "2g", img_save )
+      CloseList() ; *g6
+      
+      ;       Debug ""+*g3\clip_x() +" "+*g3\clip_y() +" "+*g3\clip_width() +" "+*g3\clip_height()
+;       Debug ""+*g3\clip_ix() +" "+*g3\clip_iy() +" "+*g3\clip_iwidth() +" "+*g3\clip_iheight()
+; ;       Debug ""+*g3\tabbar\clip_x() +" "+*g3\tabbar\clip_y() +" "+*g3\tabbar\clip_width() +" "+*g3\tabbar\clip_height()
+; ;       Debug ""+*g3\tabbar\clip_ix() +" "+*g3\tabbar\clip_iy() +" "+*g3\tabbar\clip_iwidth() +" "+*g3\tabbar\clip_iheight()
       
 
       Bind(#PB_All, @all_events())
@@ -119,8 +119,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 75
-; FirstLine = 36
+; CursorPosition = 96
+; FirstLine = 62
 ; Folding = 8-
 ; EnableXP
 ; DPIAware

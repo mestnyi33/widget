@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;*s1 = Splitter(10,10, 410, 200, *g1,*g2, #PB_Splitter_Vertical)
       
-      *g3 = Panel(10, 220, 200, 200, #__Panel_Left)
+      *g3 = Panel(10, 220, 200, 200, #__Panel_Left|#__flag_Vertical)
       SetFrame( *g3, 10 )
       AddItem(*g3, 0, "", img_new )
       Button(10,10,40,40,"")
@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       Debug ""+*g3\tabbar\clip_x() +" "+*g3\tabbar\clip_y() +" "+*g3\tabbar\clip_width() +" "+*g3\tabbar\clip_height()
 ;       Debug ""+*g3\tabbar\clip_ix() +" "+*g3\tabbar\clip_iy() +" "+*g3\tabbar\clip_iwidth() +" "+*g3\tabbar\clip_iheight()
       
-      *g4 = Panel(220, 220, 200, 200, #__Panel_Right)
+      *g4 = Panel(220, 220, 200, 200, #__Panel_Right|#__flag_Vertical)
       AddItem(*g4, 0, "", img_new )
       AddItem(*g4, 1, "open right item", img_open);, #PB_ToolBar_Normal)
       AddItem(*g4, 2, "", img_save )
@@ -111,8 +111,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 84
-; FirstLine = 68
+; CursorPosition = 71
+; FirstLine = 67
 ; Folding = --
 ; EnableXP
 ; DPIAware
