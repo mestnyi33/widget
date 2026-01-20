@@ -25889,19 +25889,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If CocoaMessage( 0, child, "parentWindow" ) = parent
                ProcedureReturn #True
             EndIf
-         CompilerElse
-            If Not IsWindow( child )
-               ProcedureReturn #True
+         CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+            If parent::GetWindowID( child ) = parent
+               Debug ""+ GetWindow_( child, #GW_CHILD )+" "+ GetWindow_( parent, #GW_CHILD )+" "+child+" "+parent+" "+GetAncestor_( parent, 3 )
             EndIf
+         CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
          CompilerEndIf
       EndProcedure
       
       Procedure IsHasChildWindow( parent )
-         Protected.i childArray = CocoaMessage( 0, parent, "childWindows" )
-         
-         If ID::ClassName( childArray ) <> "__NSArray0"
-            ProcedureReturn 1
-         EndIf
+         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+            Protected.i childArray = CocoaMessage( 0, parent, "childWindows" )
+            
+            If ID::ClassName( childArray ) <> "__NSArray0"
+               ProcedureReturn 1
+            EndIf
+         CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+            #GA_PARENT       = 1
+            #GA_ROOT         = 2
+            #GA_ROOTOWNER    = 3
+            ProcedureReturn GetAncestor_( parent, #GA_PARENT )
+            ; )
+         CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+         CompilerEndIf
       EndProcedure
       
 
@@ -25965,6 +25975,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                 
             CompilerElse
+;                
+;                ForEach roots( ) 
+;                   Debug IsChildWindow( WindowID(roots()\canvas\window), WindowID(canvaswindow) )
+;                Next 
+               
                result = CloseWindow( canvaswindow )
                ;
                ; если у окна есть дочернее окно 
@@ -27766,10 +27781,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 18596
-; FirstLine = 17819
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------2---43z0+---+0f--8f-bvf----fb-0--8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-7f4ev-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fr-----------------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 25980
+; FirstLine = 25041
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------2---43z0+---+0f--8f-bvf----fb-0--8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-7f4ev-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------08---W-----------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

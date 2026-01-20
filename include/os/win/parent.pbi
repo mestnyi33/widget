@@ -1,6 +1,7 @@
 ﻿XIncludeFile "../id.pbi"
 
 DeclareModule Parent
+  Declare GetWindowID( handle.i )
   Declare Window( gadget.i )
   Declare Gadget( gadget.i )
   Declare Get( handle.i )
@@ -320,7 +321,6 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 286
-; FirstLine = 278
+; CursorPosition = 3
 ; Folding = -------
 ; EnableXP
