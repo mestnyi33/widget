@@ -25890,7 +25890,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn #True
             EndIf
          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            If parent::GetWindowID( child ) = parent
+            If  GetWindowLongPtr_(child,#GWL_HWNDPARENT) = parent
                Debug ""+ GetWindow_( child, #GW_CHILD )+" "+ GetWindow_( parent, #GW_CHILD )+" "+child+" "+parent+" "+GetAncestor_( parent, 3 )
             EndIf
          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
@@ -25976,9 +25976,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                 
             CompilerElse
 ;                
-;                ForEach roots( ) 
-;                   Debug IsChildWindow( WindowID(roots()\canvas\window), WindowID(canvaswindow) )
-;                Next 
+               ForEach roots( ) 
+                  Debug IsChildWindow( WindowID(roots()\canvas\window), WindowID(canvaswindow) )
+               Next 
                
                result = CloseWindow( canvaswindow )
                ;
@@ -27782,8 +27782,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 25980
-; FirstLine = 25041
+; CursorPosition = 25899
+; FirstLine = 24999
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------2---43z0+---+0f--8f-bvf----fb-0--8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-7f4ev-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------08---W-----------------
 ; EnableXP
 ; DPIAware

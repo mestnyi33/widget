@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../id.pbi"
 
 DeclareModule Parent
-  Declare GetWindowID( handle.i )
+  Declare RootWindowID( handle.i )
   Declare Window( gadget.i )
   Declare Gadget( gadget.i )
   Declare Get( handle.i )
@@ -9,19 +9,13 @@ DeclareModule Parent
 EndDeclareModule
 
 Module Parent
-  Procedure GetWindowID( handle.i ) ; Return the handle of the parent window from the handle
+  Procedure RootWindowID( handle.i ) ; Return the handle of the parent window from the handle
     ProcedureReturn GetAncestor_( handle, #GA_ROOT )
-  EndProcedure
-  
-  Procedure.s ClassName( handle.i )
-    Protected Class$ = Space( 16 )
-    GetClassName_( handle, @Class$, Len( Class$ ) )
-    ProcedureReturn Class$
   EndProcedure
   
   Procedure Window( gadget.i ) ; Return the handle of the parent window from the gadget handle
     If IsGadget( gadget )
-      ProcedureReturn ID::Window( GetWindowID( GadgetID( gadget ) ) )
+      ProcedureReturn ID::Window( RootWindowID( GadgetID( gadget ) ) )
     EndIf
   EndProcedure
   
@@ -45,7 +39,7 @@ Module Parent
   
   Procedure Set( gadget.i, ParentID.i, Item.i = #PB_Default ) ; Set a new parent for the gadget ; SetWindowLongPtr_( gadgetID( gadget ), #GWLP_HWNDPARENT, ParentID )
     If IsGadget( gadget )
-      Select ClassName( ParentID )
+      Select ID::ClassName( ParentID )
         Case "PureScrollArea"  
           ParentID = FindWindowEx_( ParentID, 0, 0, 0 ) ; get child
         Case "SysTabControl32" 
@@ -62,10 +56,10 @@ Module Parent
       If GadgetType( gadget ) = #PB_GadgetType_Spin
         Protected SpinPrev = GetWindow_( GadgetID( gadget ), #GW_HWNDPREV )
         Protected SpinNext = GetWindow_( GadgetID( gadget ), #GW_HWNDNEXT )
-        If SpinPrev And ClassName( SpinPrev ) = "msctls_updown32"
+        If SpinPrev And ID::ClassName( SpinPrev ) = "msctls_updown32"
           SetParent_( SpinPrev, ParentID )
         EndIf
-        If SpinNext And ClassName( SpinNext ) = "msctls_updown32"
+        If SpinNext And ID::ClassName( SpinNext ) = "msctls_updown32"
           SetParent_( SpinNext, ParentID )
         EndIf
       EndIf
@@ -322,5 +316,5 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
 ; CursorPosition = 3
-; Folding = -------
+; Folding = ------
 ; EnableXP
