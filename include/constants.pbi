@@ -483,7 +483,7 @@
       #__flag_ImageBottom      = #__align_image|#__align_Bottom
       #__flag_ImageCenter      = #__align_image|#__align_Center
       
-     ;-
+      ;-
       ;-\\ Bar
       ; attribute
       #__bar_Minimum           = 1
@@ -494,6 +494,16 @@
       #__bar_Direction         = 7
       #__bar_Invert            = #__flag_invert
       
+      ;-\\ Pamel
+      #__Panel_Left            = #__flag_Left;1<<9
+      #__Panel_Top             = #__flag_Top;1<<10
+      #__Panel_Right           = #__flag_Right;1<<11
+      #__Panel_Bottom          = #__flag_Bottom;1<<12
+;       #__Panel_Top = 0
+;       #__Panel_Left = #__flag_Vertical                        ; #__flag_Left 
+;       #__Panel_Right = #__flag_Vertical|#__flag_Invert         ; #__flag_Right 
+;       #__Panel_Bottom = #__flag_Invert                          ; #__flag_Bottom 
+
       ;-\\ Tree
       #__flag_property         = 1<<50
       
@@ -715,8 +725,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 68
-; FirstLine = 62
+; CursorPosition = 504
+; FirstLine = 486
 ; Folding = ----
 ; Optimizer
 ; EnableXP

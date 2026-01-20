@@ -59,21 +59,21 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*g1, 2, "2g", img_save )
       CloseList() ; *g1
       
-      *g2 = Panel(10, 115, 200, 95, #__flag_Invert)
+      *g2 = Panel(10, 115, 200, 95, #__Panel_Bottom )
       AddItem(*g2, 0, "1", img_new )
       Button(0,0,GetAttribute(*g2, #PB_Panel_ItemWidth),GetAttribute(*g2, #PB_Panel_ItemHeight),"")
       AddItem(*g2, 1, "open bottom item", img_open, #PB_ToolBar_Normal)
       AddItem(*g2, 2, "2g", img_save )
       CloseList() ; *g2
       
-      *g3 = Panel(10, 220, 95, 200, #__flag_Vertical)
+      *g3 = Panel(10, 220, 95, 200, #__Panel_Left|#__flag_Vertical)
       AddItem(*g3, 0, "1", img_new )
       Button(0,0,GetAttribute(*g3, #PB_Panel_ItemWidth),GetAttribute(*g3, #PB_Panel_ItemHeight),"")
       AddItem(*g3, 1, "open left item", img_open, #PB_ToolBar_Normal)
       AddItem(*g3, 2, "2g", img_save )
       CloseList() ; *g3
       
-      *g4 = Panel(115, 220, 95, 200, #__flag_Vertical|#__flag_Invert)
+      *g4 = Panel(115, 220, 95, 200, #__Panel_Right|#__flag_Vertical )
       AddItem(*g4, 0, "1", img_new )
       Button(0,0,GetAttribute(*g4, #PB_Panel_ItemWidth),GetAttribute(*g4, #PB_Panel_ItemHeight),"")
       AddItem(*g4, 1, "open right item", img_open);, #PB_ToolBar_Normal)
@@ -83,7 +83,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;
       ;\\
       ;
-      *g5 = Panel(220, 10, 200, 200, #__flag_Vertical)
+      *g5 = Panel(220, 10, 200, 200, #__Panel_Left)
       ;SetFrame( *g5, 10 )
       AddItem(*g5, 0, "1", img_new )
       Button(0,0,GetAttribute(*g5, #PB_Panel_ItemWidth),GetAttribute(*g5, #PB_Panel_ItemHeight),"")
@@ -94,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*g5, 2, "2g", img_save )
       CloseList() ; *g5
 ;       
-;      *g6 = Panel(220, 220, 200, 200, #__flag_Vertical)
+;      *g6 = Panel(220, 220, 200, 200, #__Panel_Left)
 ;       ;SetFrame( *g6, 10 )
 ;       AddItem(*g6, 0, "1", img_new )
 ;       Button(0,0,GetAttribute(*g6, #PB_Panel_ItemWidth),GetAttribute(*g6, #PB_Panel_ItemHeight),"")
@@ -119,8 +119,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 85
-; FirstLine = 53
+; CursorPosition = 75
+; FirstLine = 36
 ; Folding = 8-
 ; EnableXP
 ; DPIAware

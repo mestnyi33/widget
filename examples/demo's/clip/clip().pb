@@ -51,13 +51,13 @@ CompilerIf #PB_Compiler_IsMainFile
       SetFrame( *g, 10 )
       ;a_init(*g)
       
-      *g1 = Panel(10, 10, 200, 200, #__flag_Top) 
+      *g1 = Panel(10, 10, 200, 200, #__Panel_Top) 
       AddItem(*g1, 0, "", img_new )
       AddItem(*g1, 1, "open top item", img_open, #PB_ToolBar_Normal)
       AddItem(*g1, 2, "", img_save )
       CloseList() ; *g1
       
-      *g2 = Panel(220, 10, 200, 200, #__flag_Bottom)
+      *g2 = Panel(220, 10, 200, 200, #__Panel_Bottom)
       AddItem(*g2, 0, "", img_new )
       ScrollArea(10,10,140,140, 180,180,1) 
       Button(10,10,40,40,"")
@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;*s1 = Splitter(10,10, 410, 200, *g1,*g2, #PB_Splitter_Vertical)
       
-      *g3 = Panel(10, 220, 200, 200, #__flag_Left)
+      *g3 = Panel(10, 220, 200, 200, #__Panel_Left)
       SetFrame( *g3, 10 )
       AddItem(*g3, 0, "", img_new )
       Button(10,10,40,40,"")
@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       Debug ""+*g3\tabbar\clip_x() +" "+*g3\tabbar\clip_y() +" "+*g3\tabbar\clip_width() +" "+*g3\tabbar\clip_height()
 ;       Debug ""+*g3\tabbar\clip_ix() +" "+*g3\tabbar\clip_iy() +" "+*g3\tabbar\clip_iwidth() +" "+*g3\tabbar\clip_iheight()
       
-      *g4 = Panel(220, 220, 200, 200, #__flag_Right)
+      *g4 = Panel(220, 220, 200, 200, #__Panel_Right)
       AddItem(*g4, 0, "", img_new )
       AddItem(*g4, 1, "open right item", img_open);, #PB_ToolBar_Normal)
       AddItem(*g4, 2, "", img_save )
@@ -111,8 +111,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 49
-; FirstLine = 37
+; CursorPosition = 84
+; FirstLine = 68
 ; Folding = --
 ; EnableXP
 ; DPIAware

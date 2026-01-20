@@ -3997,15 +3997,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         If *this\type = #__type_TabBar
                            If *this\parent\fs[1]
-                              *tabs( )\x     = bar_toggle_size
+                              *tabs( )\x    = bar_toggle_size
                            Else
-                              *tabs( )\x     = bar_button_padding
+                              *tabs( )\x    = bar_button_padding
                            EndIf
                            *tabs( )\width   = *this\screen_width( ) - bar_toggle_size - bar_button_padding
                            ;
                            *tabs( )\y = *bar\max + pos
                            ;
-                           If *tabs( )\tindex  = #PB_Ignore
+                           If *tabs( )\tindex = #PB_Ignore
                               *tabs( )\x      + separator_step
                               *tabs( )\width  = 1
                               *bar\max + *tabs( )\width + pos + (separator_step * 2)
@@ -7110,10 +7110,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\fs[3] = 0
          *this\fs[4] = 0
          
-         
+         ;
          If  *box
             *box\TabChange( ) = 1
-            
+            ;
             If size = #PB_Default
                If constants::BinaryFlag( *box\flag, #__flag_BarSmall )
                   If *box\type = #__type_TabBar
@@ -7139,9 +7139,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                   EndIf
 ;                EndIf
             EndIf   
-            
+            ;
             size = DPIScaled( size )
-            
+            ;
             If *this  
                If *this\type = #__type_Panel Or 
                   *box\Type = #__type_ToolBar
@@ -7151,33 +7151,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\MenuBarHeight = size
                EndIf
             EndIf
-            
+            ;
             size = *this\TitleBarHeight + *this\MenuBarHeight + *this\ToolBarHeight
-            
+            ;
             If position = 0
                *box\hide = 1
             Else
                *box\hide = 0
             EndIf
-            
+            ;
             *box\text\invert = 0
             *box\text\vertical = 0
-               
+            ;  
             *box\picture\align\left = 0
             *box\picture\align\top = 0
             *box\picture\align\right = 0
             *box\picture\align\bottom = 0
-            
+            ;
             If position = 1
-               *box\bar\vertical = 1
+               ;*box\bar\vertical = 1
                *this\fs[1] = size + fs
                ;
                *box\text\vertical = 1
                *box\picture\align\bottom = 1
             EndIf
-            
+            ;
             If position = 3
-               *box\bar\vertical = 1
+               ;*box\bar\vertical = 1
                *this\fs[3] = size + fs
                ;
                *box\text\invert = 1
@@ -7186,14 +7186,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If position = 2
-               *box\bar\vertical = 0
+               ;*box\bar\vertical = 0
                *this\fs[2] = size + fs
                ;
                *box\picture\align\left = 1
             EndIf
             
             If position = 4
-               *box\bar\vertical = 0
+               ;*box\bar\vertical = 0
                *this\fs[4] = size + fs
                ;
                *box\picture\align\left = 1
@@ -22968,21 +22968,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If *this\type = #__type_Panel
                *this\tabbar = CreateBar( *this, #__flag_BarSmall, #__type_TabBar ) 
+               *this\tabbar\bar\vertical = constants::BinaryFlag( *this\Flag, #__flag_Vertical )
                
-               If constants::BinaryFlag( Flag, #__flag_Vertical ) And 
-                  Not constants::BinaryFlag( Flag, #__flag_Invert ) ; constants::BinaryFlag( *this\Flag, #__flag_Left ) 
-                  BarPosition(*this\tabbar, 1);, 100 )
-               EndIf
-;                If constants::BinaryFlag( *this\Flag, #__flag_Top ) 
-;                   BarPosition(*this\tabbar, 2);, 100 )
-;                EndIf
-               If constants::BinaryFlag( Flag, #__flag_Vertical ) And 
-                  constants::BinaryFlag( Flag, #__flag_Invert ) ; constants::BinaryFlag( *this\Flag, #__flag_Right ) 
+               If Flag & #__Panel_Left And
+                  Flag & #__Panel_Bottom And 
+                  Flag & #__Panel_Right
                   BarPosition(*this\tabbar, 3);, 100 )
-               EndIf
-               If constants::BinaryFlag( Flag, #__flag_Invert ) And 
-                  Not constants::BinaryFlag( Flag, #__flag_Vertical ) ; constants::BinaryFlag( *this\Flag, #__flag_Bottom ) 
-                  BarPosition(*this\tabbar, 4);, 100 )
+               Else
+                  If Flag & #__Panel_Left
+                     BarPosition(*this\tabbar, 1);, 100 )
+                  ElseIf Flag & #__Panel_Bottom  
+                     BarPosition(*this\tabbar, 4);, 100 )
+                  ElseIf Flag & #__Panel_Right
+                     BarPosition(*this\tabbar, 3);, 100 )
+                  EndIf
                EndIf
                If constants::BinaryFlag( *this\Flag, #__flag_nobuttons ) 
                   If constants::BinaryFlag( *this\Flag, #__flag_Vertical ) 
@@ -27791,9 +27790,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 25927
-; FirstLine = 25092
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------2---43z0+---+0f--8f-bvf----fb-0--8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-7f4ev----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v2----------------
+; CursorPosition = 7178
+; FirstLine = 6304
+; Folding = ----------------------------------------------------------------------------------------------+---------------------------------------2---43z0+---+0f--8f-bvf----fb-0--8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-7f4ev-----------------------------------------------------------------------------------------------------------fAU+r48-O--------------------------------------------------------------------------------------------47----------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
