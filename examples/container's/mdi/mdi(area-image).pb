@@ -45,13 +45,13 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             If *ew\round
-               RoundBox(DpiUnScaled(*ew\x),DpiUnScaled(*ew\y),DpiUnScaled(*ew\width),DpiUnScaled(*ew\height), *ew\round, *ew\round, draw_color)
+               RoundBox(DPIUnScaled(*ew\x),DPIUnScaled(*ew\y),DPIUnScaled(*ew\width),DPIUnScaled(*ew\height), *ew\round, *ew\round, draw_color)
             Else
                Box(*ew\x,*ew\y,*ew\width,*ew\height, draw_color)
             EndIf
             
             With *ew\parent\scroll
-               Box( DpiScaled(X), DpiScaled(Y), DpiScaled(Width), DpiScaled(Height), RGB( 0,255,0 ) )
+               Box( DPIScaled(X), DPIScaled(Y), DPIScaled(Width), DPIScaled(Height), RGB( 0,255,0 ) )
                Box( \h\x, \v\y, \h\bar\page\len, \v\bar\page\len, RGB( 0,0,255 ) )
                Box( \h\x-\h\bar\page\pos, \v\y - \v\bar\page\pos, \h\bar\max, \v\bar\max, RGB( 255,0,0 ) )
             EndWith
@@ -86,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Canvas_resize( )
       ;Protected width = GadgetWidth( EventGadget() )
       Protected Width = WindowWidth( EventWindow() )
-      Resize( root(), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore )
+      Resize( Root(), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore )
       Resize( *mdi, #PB_Ignore, #PB_Ignore, Width-X*2, #PB_Ignore )
    EndProcedure
    
@@ -100,7 +100,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 SetGadgetText(2, "horizontal bar")
                 SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
             EndIf
-            PostReDraw(root())
+            PostRepaint( )
             
          Case 3
             If GetGadgetState(2)
@@ -110,7 +110,7 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-            PostReDraw(root())
+            PostRepaint( )
             
          Case 4
             If GetGadgetState(2)
@@ -120,7 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-            PostReDraw(root())
+            PostRepaint( )
          
          Case 5
             
@@ -196,7 +196,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;
    MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+X*2, Height+Y*2 ) )
-   SetColor(root(), #PB_Gadget_BackColor, $ffffffff)
+   SetColor(Root(), #PB_Gadget_BackColor, $ffffffff)
    
    ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
    ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
@@ -233,8 +233,8 @@ CompilerIf #PB_Compiler_IsMainFile
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 25
-; FirstLine = 6
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 122
+; FirstLine = 73
 ; Folding = ----
 ; EnableXP

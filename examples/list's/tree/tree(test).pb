@@ -170,11 +170,11 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     EndIf
     
-    PostReDraw(root( ))
+    PostRepaint( )
   EndProcedure  
   
-  Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
-  Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,flag)
+  Procedure TreeGadget_(gadget, X,Y,Width,Height,Flag=0)
+  Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,Flag)
   If gadget =- 1 : gadget = g : EndIf
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -254,9 +254,9 @@ Define a
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 172
-; FirstLine = 117
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 171
+; FirstLine = 70
 ; Folding = --yG--
 ; EnableXP
 ; DPIAware

@@ -13,14 +13,12 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug ""+Widget( )\bar\page\pos +" - page\pos"
       Debug ""+Widget( )\bar\page\len +" - page\len"
       Debug ""+Widget( )\bar\page\end +" - page\end"
-      Debug ""+Widget( )\bar\page\change +" - page\change"
       Debug ""+Widget( )\bar\percent +" - percent"
       Debug ""+Widget( )\bar\area\len +" - area\len"
       Debug ""+Widget( )\bar\area\end +" - area\end"
       Debug ""+Widget( )\bar\thumb\pos +" - thumb\pos"
       Debug ""+Widget( )\bar\thumb\len +" - thumb\len"
       Debug ""+Widget( )\bar\thumb\end +" - thumb\end"
-      Debug ""+Widget( )\bar\thumb\change +" - thumb\change"
       Debug " - "
    EndProcedure
    
@@ -96,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetRound( Widget(), 10 )
       Bind( Widget(), @track_vh_events( ), #__event_Down )
       
-      ReDraw(Root())
+      Repaint( )
       
       Widget() = object
       Debug  Widget()\width
@@ -105,8 +103,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 11
-; FirstLine = 7
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 87
+; FirstLine = 78
 ; Folding = ---
 ; EnableXP

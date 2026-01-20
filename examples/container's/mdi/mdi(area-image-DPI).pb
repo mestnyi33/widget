@@ -82,7 +82,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case #__Event_Draw
-            Protected ex=DPIUnscaled(*ew\x), ey=DPIUnscaled(*ew\y), ew=DPIUnscaled(*ew\width), eh=DPIUnscaled(*ew\height)
+            Protected ex=DPIUnScaled(*ew\x), ey=DPIUnScaled(*ew\y), ew=DPIUnScaled(*ew\width), eh=DPIUnScaled(*ew\height)
             ; Demo draw line on the element
             UnclipOutput()
             DrawingMode(#PB_2DDrawing_Outlined)
@@ -96,15 +96,15 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             If *ew\round
-               RoundBox(ex,ey,ew,eh, DPIUnscaled(*ew\round), DPIUnscaled(*ew\round), draw_color)
+               RoundBox(ex,ey,ew,eh, DPIUnScaled(*ew\round), DPIUnScaled(*ew\round), draw_color)
             Else
                Box(ex,ey,ew,eh, draw_color)
             EndIf
             
             With *ew\parent\scroll
                Box( (X), (Y), (Width), (Height), RGB( 0,255,0 ) )
-               Box( DPIUnscaled(\h\x), DPIUnscaled(\v\y), DPIUnscaled(\h\bar\page\len), DPIUnscaled(\v\bar\page\len), RGB( 0,0,255 ) )
-               Box( DPIUnscaled(\h\x-\h\bar\page\pos), DPIUnscaled(\v\y - \v\bar\page\pos), DPIUnscaled(\h\bar\max), DPIUnscaled(\v\bar\max), RGB( 255,0,0 ) )
+               Box( DPIUnScaled(\h\x), DPIUnScaled(\v\y), DPIUnScaled(\h\bar\page\len), DPIUnScaled(\v\bar\page\len), RGB( 0,0,255 ) )
+               Box( DPIUnScaled(\h\x-\h\bar\page\pos), DPIUnScaled(\v\y - \v\bar\page\pos), DPIUnScaled(\h\bar\max), DPIUnScaled(\v\bar\max), RGB( 255,0,0 ) )
             EndWith
       EndSelect
       
@@ -139,7 +139,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Canvas_resize( )
       ;Protected width = GadgetWidth( EventGadget() )
       Protected Width = WindowWidth( EventWindow() )
-      Resize( root(), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore )
+      Resize( Root(), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore )
       Resize( *mdi, #PB_Ignore, #PB_Ignore, Width-X*2, #PB_Ignore )
    EndProcedure
    
@@ -153,7 +153,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 SetGadgetText(2, "horizontal bar")
                 SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__flag_Invert))
             EndIf
-               PostReDraw(root())
+               PostRepaint( )
          
          Case 3
             If GetGadgetState(2)
@@ -163,7 +163,7 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__flag_Invert, Bool(GetGadgetState(3)))
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-              PostReDraw(root())
+              PostRepaint( )
          
          Case 4
             If GetGadgetState(2)
@@ -173,7 +173,7 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-               PostReDraw(root())
+               PostRepaint( )
          
          Case 5
             
@@ -250,7 +250,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;
    MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+X*2, Height+Y*2 ) )
-   SetColor(root(), #PB_Gadget_BackColor, $ffffffff)
+   SetColor(Root(), #PB_Gadget_BackColor, $ffffffff)
    
    ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
    ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
@@ -260,14 +260,14 @@ CompilerIf #PB_Compiler_IsMainFile
    SetColor(*mdi, #PB_Gadget_BackColor, $ffffffff)
    ;SetColor(*mdi, #__FrameColor, $ffffffff)
    
-   Define b=DpiScaled(19);20        
-   *mdi\scroll\v\round = DpiScaled(11)
+   Define b=DPIScaled(19);20        
+   *mdi\scroll\v\round = DPIScaled(11)
    *mdi\scroll\v\bar\button[1]\round = *mdi\scroll\v\round
    *mdi\scroll\v\bar\button[2]\round = *mdi\scroll\v\round
    *mdi\scroll\v\bar\button\round = *mdi\scroll\v\round
    SetAttribute(*mdi\scroll\v, #__bar_buttonsize, b)
    
-   *mdi\scroll\h\round = DpiScaled(11)
+   *mdi\scroll\h\round = DPIScaled(11)
    *mdi\scroll\h\bar\button[1]\round = *mdi\scroll\h\round
    *mdi\scroll\h\bar\button[2]\round = *mdi\scroll\h\round
    *mdi\scroll\h\bar\button\round = *mdi\scroll\h\round
@@ -287,9 +287,9 @@ CompilerIf #PB_Compiler_IsMainFile
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 63
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 157
+; FirstLine = 141
 ; Folding = ------
 ; EnableXP
 ; DPIAware

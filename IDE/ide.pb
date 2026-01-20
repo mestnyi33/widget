@@ -2032,9 +2032,6 @@ Procedure ide_Lng_change( lng_TYPE=0 )
          DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_RUS, #False )
          DisableBarButton( ide_menu_LENGUAGE, #_tb_lng_FRENCH, #False )
       EndIf
-      
-      Define *root._s_ROOT = ide_root
-      PostReDraw( *root )
    EndIf
 EndProcedure
 
@@ -3259,8 +3256,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 3019
-; FirstLine = 2410
+; CursorPosition = 2034
+; FirstLine = 1540
 ; Folding = -4--4---8l-3v-----------Aj-------v0fvd-0----------fpl2----v-
 ; EnableXP
 ; DPIAware

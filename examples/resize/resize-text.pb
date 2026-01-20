@@ -80,7 +80,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       ResizeWindow( 0, #PB_Ignore, #PB_Ignore, 200, #PB_Ignore )
-      ReDraw( Root( ))
+      Repaint( )
       
       Debug ""+CountItems( g ) +" - count wrap items"
       Debug ""+CountItems( *g ) +" - count multi items"
@@ -91,8 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 40
-; FirstLine = 35
+; CursorPosition = 82
+; FirstLine = 33
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global a, *g1._s_WIDGET, g1, *g2._s_WIDGET, g2, CountItems=9; количесвто итемов 
    
    Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
-      Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,flag)
+      Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,Flag)
       If gadget =- 1 : gadget = g : EndIf
       
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -230,7 +230,7 @@ CompilerIf #PB_Compiler_IsMainFile
                EndIf
                
                If test_redraw_items
-                  PostReDraw( *this\root )
+                  PostRepaint( *this\root )
                EndIf
             EndIf
          EndIf
@@ -349,9 +349,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 177
-; FirstLine = 173
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = -------
 ; EnableXP
 ; DPIAware

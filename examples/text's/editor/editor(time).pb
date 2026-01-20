@@ -23,6 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     Next
     Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " + CountItems(*w)
+    
     PostRepaint( ) 
     
     EditorGadget(0, 10, 10, 250, 680)
@@ -45,8 +46,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 25
-; FirstLine = 21
+; CursorPosition = 26
+; FirstLine = 14
 ; Folding = --
 ; EnableXP
 ; DPIAware

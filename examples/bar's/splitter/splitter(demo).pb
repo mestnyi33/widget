@@ -9,9 +9,9 @@ Procedure events_gadgets()
    Select EventType()
       Case #PB_EventType_LeftClick
          Define state = GetGadgetState(EventGadget())
-         Debug  "["+ state +"] - gadget change " + EventGadget()
+         ; Debug  "["+ state +"] - gadget change " + EventGadget()
          If SetState(ID(EventGadget()), state)
-            PostRepaint( )
+            Repaint( )
          EndIf
    EndSelect
 EndProcedure
@@ -22,7 +22,7 @@ Procedure events_widgets()
    Select WidgetEvent( )
       Case #__event_Change
          Define state = GetState(EventWidget( ))
-         Debug "  ["+ state +"] - widget change "+ Str(Index(EventWidget( ))) +" "+ Height( ID(0) ) +" "+ Height( ID(1) )
+         ; Debug "  ["+ state +"] - widget change "+ Str(Index(EventWidget( ))) +" "+ Height( ID(0) ) +" "+ Height( ID(1) )
          SetGadgetState(Index(EventWidget( )), state)
    EndSelect
 EndProcedure
@@ -54,13 +54,21 @@ If OpenWindow(0, 0, 0, 230+230, 200, "SplitterGadget", #PB_Window_SystemMenu | #
    SplitterGadget(#Splitter4, 5, 5, 220, 190, #Splitter2, 3, #PB_Splitter_Separator)
    ;BindGadgetEvent(#Splitter4, @events_gadgets())
    
-   
-   WaitClose( )
+   Repeat
+      Define Event = WaitWindowEvent()
+     
+      Select Event
+         Case #PB_Event_Repaint
+            Debug "repaint os"
+            
+        EndSelect
+   Until Event = #PB_Event_CloseWindow
+
+   ; WaitClose( )
 EndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 20
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 24
+; FirstLine = 7
 ; Folding = --
-; Optimizer
 ; EnableXP
 ; DPIAware

@@ -512,7 +512,6 @@ CompilerIf #PB_Compiler_IsMainFile
             Height + direction
             
             If ResizeWindow(window, #PB_Ignore, #PB_Ignore, Width, Height)
-               ;PostReDraw( root() )
             EndIf
             
             ;          Case #PB_Event_Gadget
@@ -537,10 +536,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 18
-; FirstLine = 14
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 514
+; FirstLine = 187
 ; Folding = --L5-
-; Optimizer
 ; EnableXP
 ; DPIAware

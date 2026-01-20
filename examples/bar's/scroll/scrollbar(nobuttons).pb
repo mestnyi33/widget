@@ -21,18 +21,18 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If OpenWindow(0, 0, 0, 400, 130, "Demo show&hide scrollbar buttons", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       If Open(0, 10, 10, 380, 80)
-         g_Canvas = GetCanvasGadget(root())
+         g_Canvas = GetCanvasGadget(Root())
          *bar = Scroll(5, 10, 370, 30, 20, 50, 8)
          SetAttribute(*bar, #__bar_ButtonSize, DPIScaled(30))
          buttonsize = GetAttribute(*bar, #__bar_ButtonSize)
          Debug "button-size - "+buttonsize
          
          Splitter(5, 5, 340, 70, *bar, - 1)
-         SetState(widget(), 70)
+         SetState(Widget(), 70)
          
          Track(350, 5, 25, 70, 0, 50, #__flag_Vertical|#__flag_Invert)
-         Bind(widget(), @spin_change_event(), #__event_Change)
-         SetState(widget(), DPIUnscaled(buttonsize))
+         SetState(Widget(), DPIUnScaled(buttonsize))
+         Bind(Widget(), @spin_change_event(), #__event_Change)
          
          Bind(*bar, @change_event(), #__event_Change)
          SetWindowTitle(0, Str(GetState(*bar)))
@@ -66,15 +66,15 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetAttribute(*bar, #__bar_ButtonSize, 0)
                   EndIf
                   
-                  PostRepaint()
+                  PostRepaint( )
             EndSelect
       EndSelect
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 37
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 71
+; FirstLine = 49
 ; Folding = --
 ; EnableXP
 ; DPIAware

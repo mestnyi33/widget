@@ -663,48 +663,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       ;-
-      Macro Repaint( _address_=0 )
-         If _address_ = #PB_All
-            PushMapPosition( roots( ))
-            ForEach roots( )
-               ReDraw( roots( ) )
-            Next
-            PopMapPosition( roots( ))
+      Macro Repaint( _address_ = 0 )
+         If _address_
+            If _address_ = #PB_All
+               PushMapPosition( roots( ))
+               ForEach roots( )
+                  ReDraw( roots( ) )
+               Next
+               PopMapPosition( roots( ))
+            Else
+               ReDraw( _address_ )
+            EndIf
          Else
-            If _address_=0
-               ReDraw(Root())
-            Else
-               ReDraw(_address_)
-            EndIf
+            ReDraw( Root( ))
          EndIf
       EndMacro
-      Macro PostRepaint( )
-         PostReDraw(Root())
+      Macro PostRepaint( _address_ = 0 )
+         PostReDraw( _address_ )
       EndMacro
-      Macro PostReDraw( _root_ )
-         If _root_
-            ; Debug #PB_Compiler_Procedure
-            If Widget::__gui\event\loop
-               ;                If test_draw_repaint
-               ;                   Debug "post - ReDraw "+_root_\canvas\gadget +" "+ IsGadget(_root_\canvas\gadget)
-               ;                EndIf
-               ;                If IsGadget(_root_\canvas\gadget)
-               ;                   widget::ReDraw( _root_ )
-               ;                EndIf
-            Else
-               If _root_\canvas\repaint = 0
-                  _root_\canvas\repaint = 1
-                  PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, _root_\canvas\gadgetID )
-               EndIf
-            EndIf
-         EndIf
+      Macro PostReDrawEvent( _root_ )
+        ; PostRepaint( _root_ )
       EndMacro
-      Macro PostEventRepaint( _root_ )
-         ;PostReDraw( _root_ )
-      EndMacro
-      Macro PostEventReDraw( _root_ )
+      Macro PostRepaintEvent( _root_ )
          ; Debug #PB_Compiler_Procedure
-         ; PostReDraw( _root_ )
+         ; PostRepaint( _root_ )
       EndMacro
       Macro PostFree( _this_ )
          AddEvents( _this_, #__event_free  ) 
@@ -1706,6 +1688,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.b Draw_Arrow( direction.a, X.l, Y.l, size.a, mode.b = 1, framesize.a = 0, Color.i = $ff000000 )
       Declare.b Draw( *this )
       Declare   ReDraw( *this )
+      Declare   PostReDraw( *root = #Null )
       Declare   Drawing( )
       
       Declare   IsChild( *this, *parent )
@@ -7218,7 +7201,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\inner_width( ) And *this\inner_height( )
                If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  PostEventRepaint( *this\root )
+                  PostRepaintEvent( *this\root )
                EndIf
             EndIf
          EndIf
@@ -7583,7 +7566,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If test_display
                      Debug "comboBar - show"
                   EndIf
-                  PostEventReDraw( *this\root )
+                  PostRepaintEvent( *this\root )
                EndIf
             Else
                If *this\hide
@@ -7789,7 +7772,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                HideWindow( *this\root\canvas\window, #False, #PB_Window_NoActivate )
                DisableWindow( *this\root\canvas\window, #False)
                
-               PostReDraw( *this\root )
+               PostReDrawEvent( *this\root )
                
                If Not ( Root( ) And Root( )\canvas\gadget = *display\root\canvas\gadget )
                   ChangeCurrentCanvas( GadgetID( *display\root\canvas\gadget ) )
@@ -7820,7 +7803,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Else
                   HidePopupBar( PopupBar( ) )
                EndIf
-               PostReDraw( PopupBar( )\root )
+               PostReDrawEvent( PopupBar( )\root )
             EndIf
          EndIf
          ;
@@ -9646,7 +9629,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If result
-               PostEventReDraw( *this\root )
+               PostRepaintEvent( *this\root )
             EndIf
          EndIf
          
@@ -9882,7 +9865,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         PostEventReDraw( *this\root )
+         PostRepaintEvent( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -10158,7 +10141,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; toggle box change
                If Not Post( *this, #__event_Change )
-                  PostEventRepaint( *this\root )
+                  PostRepaintEvent( *this\root )
                EndIf
                
                ProcedureReturn #True
@@ -10796,7 +10779,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *This\text\string.s = Text.s
                   *this\TextChange( ) = #True
                   result              = #True
-                  PostEventReDraw( *this\root )
+                  PostRepaintEvent( *this\root )
                EndIf
             EndIf
          EndIf
@@ -10868,7 +10851,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *This\text\string.s = Text.s
                *this\TextChange( ) = #True
                result              = #True
-               PostEventReDraw( *This\root )
+               PostRepaintEvent( *This\root )
             EndIf
          EndIf
          
@@ -10979,7 +10962,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          
-         ; PostEventReDraw( *this\root )
+         ; PostRepaintEvent( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -11143,7 +11126,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;*this\WidgetChange( ) = 1
                *this\TextChange( ) = 1
                
-               PostReDraw( *this\root )
+               PostReDrawEvent( *this\root )
             EndIf
          EndIf
          
@@ -11465,7 +11448,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *bar\area\len 
                               bar_update( *this, 4 )
                            EndIf
-                           PostEventReDraw( *this\root )
+                           PostRepaintEvent( *this\root )
                            ProcedureReturn #True
                         EndIf
                      EndIf
@@ -12483,9 +12466,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\
-               PostReDraw( *parent\root )
+               PostReDrawEvent( *parent\root )
                If *parent\root <> *lastParent\root
-                  PostReDraw( *lastParent\root )
+                  PostRepaint( *lastParent\root )
                EndIf
             EndIf
          EndIf
@@ -12989,7 +12972,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; update parent children's coordinate
                ;*this\parent\align\update = 1
                Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-               ; PostEventReDraw( *this\root )
+               ; PostRepaintEvent( *this\root )
             EndIf
          EndIf
       EndProcedure
@@ -13432,7 +13415,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;                   EndIf
                   
                   If test_redraw_items
-                     PostReDraw( *this\root )
+                     PostReDrawEvent( *this\root )
                   EndIf
                EndIf
             EndIf
@@ -13873,7 +13856,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ClearList( *this\ComboBar( )\__rows( ))
-                  PostEventReDraw( *this\ComboBar( )\root )
+                  PostRepaintEvent( *this\ComboBar( )\root )
                EndIf
             EndIf
          EndIf
@@ -13894,7 +13877,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ClearList( *this\__rows( ))
-               PostEventReDraw( *this\root )
+               PostRepaintEvent( *this\root )
             EndIf
          EndIf
          
@@ -17892,7 +17875,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Else
                            HidePopupBar( PopupBar( ) )
                         EndIf
-                        PostReDraw( PopupBar( )\root )
+                        PostReDrawEvent( PopupBar( )\root )
                         PopupBar( ) = 0
                      EndIf
                   EndIf
@@ -18387,7 +18370,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If Not EnteredButton( )
                            SetText( *this\root\parent, GetItemText( *this, GetState( *this ) ) )
                            DisplayPopupBar( *this, *this\root\parent )
-                           PostEventReDraw( *this\root\parent\root )
+                           PostRepaintEvent( *this\root\parent\root )
                         EndIf
                      EndIf
                   EndIf
@@ -18444,7 +18427,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ReDraw( *this\root )
                Else
                   ; Debug "post redraw "+ *this\class +" "+ EventString(event) +" "+ EventString(*data)
-                  PostReDraw( *this\root )
+                  PostRepaint( *this\root )
                EndIf
                ;
                *this\root\repaint = 0
@@ -18593,6 +18576,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             ; PopMapPosition(roots())
+         Else
+           Debug "repaint os []"
+           ; Repaint( ) 
          EndIf
       EndProcedure
       
@@ -18601,6 +18587,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          ;\\
          ;
+         If eventtype = #PB_EventType_Refresh
+            If ChangeCurrentCanvas( GadgetID( eventgadget ))
+               If roots( )\canvas\repaint = 1
+                  roots( )\canvas\repaint = 0
+                  
+                  ReDraw( roots( ) )
+               EndIf
+            EndIf
+         EndIf
+         
          If eventtype = #PB_EventType_DragStart Or
             eventtype = #PB_EventType_LeftClick Or
             eventtype = #PB_EventType_LeftDoubleClick
@@ -22580,6 +22576,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure PostReDraw( *root._s_ROOT = #Null )
+         If *root 
+            If *root = #PB_All
+               PushMapPosition( roots( ))
+               ForEach roots( )
+                  PostReDraw( roots( ))
+               Next
+               PopMapPosition( roots( ))
+            Else
+               If Widget::__gui\event\loop
+                  ;                If test_draw_repaint
+                  ;                   Debug "post - ReDraw "+ *root\canvas\gadget +" "+ IsGadget(*root\canvas\gadget)
+                  ;                EndIf
+                  ;                If IsGadget(*root\canvas\gadget)
+                  ;                   widget::ReDraw( *root )
+                  ;                EndIf
+               Else
+                  If *root\canvas\repaint = 0
+                     *root\canvas\repaint = 1
+                     ; PostEvent( #PB_Event_Repaint, *root\canvas\window, #PB_All, #PB_All, *root\canvas\gadgetID )
+                     PostEvent( #PB_Event_Gadget, *root\canvas\window, *root\canvas\gadget, #PB_EventType_Refresh, *root\canvas\gadgetID )
+                  EndIf
+               EndIf
+            EndIf
+         Else
+            PostReDraw( Root( ))
+         EndIf
+      EndProcedure
       
       ;-
       ;-  CREATEs
@@ -23883,7 +23907,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                ;
                PostEvent( #PB_Event_SizeWindow, window, Canvas ) ; Bug PB
-               PostReDraw( *root )
+               PostRepaintEvent( *root )
             EndIf
          EndIf
          
@@ -27743,9 +27767,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 6343
-; FirstLine = 6184
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------r----------------------+----3+8--4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v2----------------
+; CursorPosition = 18596
+; FirstLine = 17819
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------2---43z0+---+0f--8f-bvf----fb-0--8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-7f4ev-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fr-----------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

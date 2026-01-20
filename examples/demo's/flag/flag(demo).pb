@@ -486,9 +486,6 @@ CompilerIf #PB_Compiler_IsMainFile
                   Debug "flag["+Flag$+"]"
                   SetCheckedText(*g_FLAG, flag$ )
                   
-                  ;PostReDraw( root() )
-                  ;ReDraw( root() )
-                  
                Case *g_FLAG
                   Debug "checked["+GetCheckedText(*g_FLAG)+"]"
                   
@@ -525,8 +522,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 516
-; FirstLine = 429
+; CursorPosition = 487
+; FirstLine = 415
 ; Folding = -----------t7-
 ; EnableXP
 ; DPIAware

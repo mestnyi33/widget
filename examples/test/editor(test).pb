@@ -19,7 +19,9 @@ CompilerIf #PB_Compiler_IsMainFile
            "Otherwise it will not work."
  
   Procedure ResizeCallBack()
-    Resize(Splitter, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-16, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
+     If Resize(Splitter, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-16, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
+        PostRepaint( ) 
+     EndIf
   EndProcedure
   
   Procedure Event_s( )
@@ -61,13 +63,16 @@ CompilerIf #PB_Compiler_IsMainFile
       Define Event = WaitWindowEvent()
      
       Select Event
+         Case #PB_Event_Repaint
+            Debug "repaint os"
+            
          Case #PB_Event_Gadget
             If EventGadget() = 10
                Select EventType()
                   Case #PB_EventType_Focus    
                      SetGadgetText(10, "settext")
                      If SetText(g, "settext")
-                        PostRepaint( ) 
+                       PostRepaint( ) 
                      EndIf
                EndSelect
             EndIf
@@ -84,8 +89,8 @@ CompilerIf #PB_Compiler_IsMainFile
 EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 71
-; FirstLine = 59
+; CursorPosition = 70
+; FirstLine = 57
 ; Folding = --
 ; EnableXP
 ; DPIAware
