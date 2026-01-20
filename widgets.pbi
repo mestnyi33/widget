@@ -25884,60 +25884,47 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure IsChildWindow( child, parent )
+      Procedure GetParentWindowID( hChild )
          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-            If CocoaMessage( 0, child, "parentWindow" ) = parent
-               ProcedureReturn #True
-            EndIf
+            ProcedureReturn CocoaMessage( 0, hChild, "parentWindow" )
+            
+;             Protected.i childArray = CocoaMessage( 0, hChild, "childWindows" )
+;             
+;             If ID::ClassName( childArray ) <> "__NSArray0"
+;                ProcedureReturn 1
+;             EndIf
          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            If  GetWindowLongPtr_(child,#GWL_HWNDPARENT) = parent
-               Debug ""+ GetWindow_( child, #GW_CHILD )+" "+ GetWindow_( parent, #GW_CHILD )+" "+child+" "+parent+" "+GetAncestor_( parent, 3 )
-            EndIf
+            ProcedureReturn GetWindowLongPtr_( hChild, #GWL_HWNDPARENT )
          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
          CompilerEndIf
       EndProcedure
       
-      Procedure IsHasChildWindow( parent )
+      Procedure IsChildWindowID( hChild, hParent )
          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-            Protected.i childArray = CocoaMessage( 0, parent, "childWindows" )
-            
-            If ID::ClassName( childArray ) <> "__NSArray0"
-               ProcedureReturn 1
-            EndIf
+            ProcedureReturn Bool( CocoaMessage( 0, hChild, "parentWindow" ) = hParent )
          CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            #GA_PARENT       = 1
-            #GA_ROOT         = 2
-            #GA_ROOTOWNER    = 3
-            ProcedureReturn GetAncestor_( parent, #GA_PARENT )
-            ; )
+            ProcedureReturn Bool( GetWindowLongPtr_( hChild, #GWL_HWNDPARENT ) = hParent )
          CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+            GtkWidget* = gtk_widget_get_parent ( GtkWidget* Widget)
+            GdkWindow* = gtk_widget_get_root_window ( GtkWidget* Widget )
          CompilerEndIf
       EndProcedure
+      
       
 
       Procedure   Close( *root._s_ROOT )
          Protected result
-         Protected window
+         Protected window =- 1
          Protected canvaswindow = Root( )\canvas\window
          Protected canvasgadget = Root( )\canvas\gadget
          ;
          ForEach roots( ) 
             window = roots( )\canvas\window
-            ;             If Not IsWindow( window )
-            ;                Break
-            ;             EndIf
-            ;
             If *root = #PB_All
                canvasgadget = roots( )\canvas\gadget
-               ;                If Not IsGadget( canvasgadget )
-               ;                   Break
-               ;                EndIf
-               ;
-               ;
                Delete( roots( ))
-               If Post( roots( ), #__event_free )
-               EndIf
-               DeleteMapElement( roots( ) )
+               PostFree( roots( ))
+               DeleteMapElement( roots( ))
                If window <> canvaswindow
                   FreeGadget( canvasgadget )
                   CloseWindow( window )
@@ -25945,61 +25932,83 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
                If window = *root\canvas\window 
                   Delete( roots( ))
-                  If Post( roots( ), #__event_free )
-                  EndIf
-                  DeleteMapElement( roots( ) )
-                  result = MapSize( roots( ) )
+                  PostFree( roots( ))
+                  DeleteMapElement( roots( ))
+                  result = MapSize( roots( ))
                EndIf
             EndIf
          Next
          ;
          If result
+            window =- 1
             FreeGadget( canvasgadget )   
+            Protected hParent = WindowID( canvaswindow )
             ;
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-               Protected win = WindowID(canvaswindow)
-               ;
-               If IsHasChildWindow( win )
-                  ForEach roots( ) 
-                     If IsChildWindow( WindowID(roots()\canvas\window), win )
-                        Delete( roots( ))
-                        If Post( roots( ), #__event_free )
-                        EndIf
-                        DeleteMapElement( roots( ) )
-                     EndIf
-                  Next 
-                  ;
-                  result = CloseWindow( canvaswindow )
-               Else
-                  result = CocoaMessage( 0, win, "close")
-               EndIf
-                
-            CompilerElse
-;                
-               ForEach roots( ) 
-                  Debug IsChildWindow( WindowID(roots()\canvas\window), WindowID(canvaswindow) )
-               Next 
-               
-               result = CloseWindow( canvaswindow )
-               ;
-               ; если у окна есть дочернее окно 
-               ; в окнах при закрытии главного окна закрывается и дочернее 
-               ; а в макос нет поэтому надо узнать привязан ли одно окно к другому для всех ОС
-               ; 
-               If result
-                  If MapSize( roots( ) ) > 1
-                     ForEach roots( ) 
-                        If Not IsWindow( roots()\canvas\window )
-                           Delete( roots( ))
-                           If Post( roots( ), #__event_free )
-                           EndIf
-                           DeleteMapElement( roots( ) )
-                        EndIf
-                     Next 
+            If GetParentWindowID( hParent )
+               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  If GetParentWindowID( hParent )
+                     CocoaMessage( 0, hParent, "close" )
+                  Else
+                     CloseWindow( canvaswindow ) ; BUG 
                   EndIf
-                  ProcedureReturn #True
+               CompilerElse
+                  CloseWindow( canvaswindow ) 
+               CompilerEndIf
+            Else
+               ForEach roots( ) 
+                  If IsChildWindowID( WindowID( roots( )\canvas\window ), hParent )
+                     window = roots( )\canvas\window
+                     Delete( roots( ))
+                     PostFree( roots( ))
+                     DeleteMapElement( roots( ) )
+                  EndIf
+               Next 
+               If IsWindow( window )
+                  CloseWindow( window ) 
                EndIf
-            CompilerEndIf
+               CloseWindow( canvaswindow ) 
+            EndIf 
+;             ;
+;             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
+; ;                Protected win = WindowID(canvaswindow)
+; ;                ;
+; ;                If GetWindowParentID( win )
+; ;                   ForEach roots( ) 
+; ;                      If IsChildWindow( WindowID(roots()\canvas\window), win )
+; ;                         Delete( roots( ))
+; ;                         If Post( roots( ), #__event_free )
+; ;                         EndIf
+; ;                         DeleteMapElement( roots( ) )
+; ;                      EndIf
+; ;                   Next 
+; ;                   ;
+; ;                   result = CloseWindow( canvaswindow )
+; ;                Else
+; ;                   result = CocoaMessage( 0, win, "close")
+; ;                EndIf
+;                 
+;             CompilerElse
+; ;                
+;                result = CloseWindow( canvaswindow )
+;                ;
+;                ; если у окна есть дочернее окно 
+;                ; в окнах при закрытии главного окна закрывается и дочернее 
+;                ; а в макос нет поэтому надо узнать привязан ли одно окно к другому для всех ОС
+;                ; 
+;                If result
+;                   If MapSize( roots( ) ) > 1
+;                      ForEach roots( ) 
+;                         If Not IsWindow( roots()\canvas\window )
+;                            Delete( roots( ))
+;                            If Post( roots( ), #__event_free )
+;                            EndIf
+;                            DeleteMapElement( roots( ) )
+;                         EndIf
+;                      Next 
+;                   EndIf
+;                   ProcedureReturn #True
+;                EndIf
+;             CompilerEndIf
          Else
             ProcedureReturn #PB_All
          EndIf
@@ -27781,10 +27790,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 25899
-; FirstLine = 24999
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------2---43z0+---+0f--8f-bvf----fb-0--8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-7f4ev-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------08---W-----------------
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 25927
+; FirstLine = 25092
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------2---43z0+---+0f--8f-bvf----fb-0--8------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-7f4ev----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v2----------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

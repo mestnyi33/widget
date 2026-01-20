@@ -1,7 +1,9 @@
 ﻿XIncludeFile "../id.pbi"
 
 DeclareModule Parent
-  Declare RootWindowID( handle.i )
+  Declare GetParentWindowID( handle.i )
+  Declare SetParentWindowID( handle.i, ParentID.i )
+  Declare GetWindowID( handle.i )
   Declare Window( gadget.i )
   Declare Gadget( gadget.i )
   Declare Get( handle.i )
@@ -9,35 +11,51 @@ DeclareModule Parent
 EndDeclareModule
 
 Module Parent
-  Procedure RootWindowID( handle.i ) ; Return the handle of the parent window from the handle
-    ProcedureReturn GetAncestor_( handle, #GA_ROOT )
-  EndProcedure
+   Procedure GetParentWindowID( handle.i )
+      ProcedureReturn GetWindowLongPtr_( handle, #GWL_HWNDPARENT )
+   EndProcedure
+   
+   Procedure SetParentWindowID( handle.i, ParentID.i )
+      ProcedureReturn SetWindowLongPtr_( handle, #GWLP_HWNDPARENT, ParentID )
+   EndProcedure
+   
+   Procedure GetWindowID( handle.i ) ; Return the handle of the parent window from the handle
+                                      ;       #GA_PARENT       = 1
+                                      ;       #GA_ROOT         = 2
+                                      ;       #GA_ROOTOWNER    = 3
+      ProcedureReturn GetAncestor_( handle, #GA_ROOT )
+   EndProcedure
+   
+   Procedure Window( gadget.i ) ; Return the id of the parent window from the gadget id
+      If IsGadget( gadget )
+         ProcedureReturn ID::Window( GetWindowID( GadgetID( gadget ) ) )
+      EndIf
+   EndProcedure
+   
+   Procedure Gadget( gadget.i ) ; Return the id of the parent gadget from the gadget id
+      If IsGadget( gadget )
+         ProcedureReturn ID::Gadget( Get( GadgetID( gadget ) ) )
+      EndIf
+   EndProcedure
   
-  Procedure Window( gadget.i ) ; Return the handle of the parent window from the gadget handle
-    If IsGadget( gadget )
-      ProcedureReturn ID::Window( RootWindowID( GadgetID( gadget ) ) )
-    EndIf
-  EndProcedure
-  
-  Procedure Gadget( gadget.i ) ; Return the handle of the parent gadget from the gadget handle
-    If IsGadget( gadget )
-      ProcedureReturn ID::Gadget( Get( GadgetID( gadget ) ) )
-    EndIf
-  EndProcedure
-  
-  Procedure Get( handle.i ) ; Return the handle of the parent from the handle ; Debug GetWindow_( ParentID, #GW_OWNER )
+   Procedure IsChild( hChild, ParentID )
+      ProcedureReturn Bool( GetParentWindowID( hChild ) = ParentID )
+   EndProcedure
+   
+   Procedure Get( handle.i ) ; Return the handle of the parent from the handle ; Debug GetWindow_( ParentID, #GW_OWNER )
     While handle
       handle = GetParent_( handle )
       
-      If IsWindow( ID::Window( handle ) ) Or IsGadget( ID::Gadget( handle ) )
+      If IsWindow( ID::Window( handle )) Or
+         IsGadget( ID::Gadget( handle ))
         ProcedureReturn handle
-      ElseIf IsGadget( ID::Gadget( GetParent_( handle ) ) ) ; Это для скролл ареа гаджет
+      ElseIf IsGadget( ID::Gadget( GetParent_( handle ))) ; Это для скролл ареа гаджет
         ProcedureReturn GetParent_( handle )
       EndIf
     Wend
   EndProcedure
   
-  Procedure Set( gadget.i, ParentID.i, Item.i = #PB_Default ) ; Set a new parent for the gadget ; SetWindowLongPtr_( gadgetID( gadget ), #GWLP_HWNDPARENT, ParentID )
+  Procedure Set( gadget.i, ParentID.i, Item.i = #PB_Default ) ; Set a new parent for the gadget 
     If IsGadget( gadget )
       Select ID::ClassName( ParentID )
         Case "PureScrollArea"  
@@ -65,8 +83,7 @@ Module Parent
       EndIf
       
       SetParent_( GadgetID( gadget ), ParentID )
-      ; SetWindowLongPtr_(GadgetID( gadget ), #GWLP_HWNDPARENT, ParentID )
-    
+      
       ProcedureReturn ParentID
     EndIf
   EndProcedure
@@ -314,7 +331,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 3
-; Folding = ------
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 76
+; Folding = -------
 ; EnableXP
