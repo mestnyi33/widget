@@ -589,9 +589,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             Until Not NextElement( widgets( ) ) 
          EndIf
+         
          ;
          ;\\
-         
          If widgets( )\parent = _parent_
             Repeat
                If widgets( )\parent = _parent_  
@@ -8956,6 +8956,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro HideState( _this_, _parent_ )
          _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide Or ( _parent_\tabbar And _parent_\tabbar\type = #__type_TabBar And _this_\TabIndex( ) <> _parent_\tabbar\TabState( ) ))))
          
+         If _this_\TabIndex( ) = #PB_Ignore
+            _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide )))
+         EndIf
+         
          If _this_\tabbar
             If _this_\hide
                _this_\tabbar\hide = - 1
@@ -12276,17 +12280,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *parent > 0
-            If *parent\container = 0 And *parent\child
-               Debug "SetParent("
-               *parent = *parent\parent
+            ;
+            If *this\parent = *parent
+               If *this\TabIndex( ) = tabindex
+                  ProcedureReturn #False
+               EndIf
             EndIf
             ;
-            If *this\parent = *parent And
-               *this\TabIndex( ) = tabindex
-               ProcedureReturn #False
+            If *parent\child 
+               If Not *parent\container 
+                  tabindex = #PB_Ignore
+                  *parent = *parent\parent
+               EndIf
             EndIf
             ;
-            If tabindex < 0
+            If tabindex = #PB_Default ; < 0
                If *parent\tabbar And *parent\tabbar\type = #__type_TabBar
                   tabindex = *parent\tabbar\TabIndex( )
                Else
@@ -12351,9 +12359,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             *this\TabIndex( ) = tabindex
-            ;
-            HideState( *this, *parent )
-            DisableState( *this, *parent )
+            ; 
+            If tabindex = #PB_Ignore
+            Else
+               HideState( *this, *parent )
+               DisableState( *this, *parent )
+            EndIf
             ;
             ;\\
             PushListPosition( widgets( ) )
@@ -12460,7 +12471,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             ;\\
             If ReParent
-               ;
                If is_drag_move( )
                   ; *this\resize\clip = #True
                   
@@ -13013,25 +13023,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   Alignment( *this._s_WIDGET, align.q, mode.q = 0 )
-         If align & #__align_proportional
+         If align & #__align_Auto
+            align &~ #__align_Auto
+            mode = #__align_Auto
+         EndIf
+         
+         If align & #__align_Proportional
             If align & #__align_left
-               SetAlign( *this, mode, 1,0,#__align_proportional,0)
+               SetAlign( *this, mode, 1,0,#__align_Proportional,0)
             EndIf
             If align & #__align_top
-               SetAlign( *this, mode, 0,1,0,#__align_proportional)
+               SetAlign( *this, mode, 0,1,0,#__align_Proportional)
             EndIf
             If align & #__align_right 
-               SetAlign( *this, mode, #__align_proportional,0,1,0)
+               SetAlign( *this, mode, #__align_Proportional,0,1,0)
             EndIf
             If align & #__align_bottom
-               SetAlign( *this, mode, 0,#__align_proportional,0,1)
+               SetAlign( *this, mode, 0,#__align_Proportional,0,1)
             EndIf
          Else
             SetAlign( *this, mode, 
-                      Bool(align & #__align_left),
-                                 Bool(align & #__align_top),
-                                            Bool(align & #__align_right),
-                                                       Bool(align & #__align_bottom))
+                      Bool(align & #__align_Left),
+                                 Bool(align & #__align_Top),
+                                            Bool(align & #__align_Right),
+                                                       Bool(align & #__align_Bottom))
          EndIf
       EndProcedure
       
@@ -22185,7 +22200,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                      
-                     
                      If *this\anchors
                         If *this\anchors\group\show
                            a_draw( *this, *this\anchors\state )
@@ -22331,7 +22345,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If StartEnum( *root )
                   If widgets( )\parent And Not widgets( )\parent\hide 
-                     If Not ( widgets( )\parent\tabbar And widgets( )\parent\tabbar\TabState( ) <> widgets( )\TabIndex( ))
+                     If Not ( widgets( )\parent\tabbar And widgets( )\parent\tabbar\TabState( ) <> widgets( )\TabIndex( )) Or widgets( )\TabIndex( ) = #PB_Ignore
                         ;
                         If test_focus_draw = 1
                            ;\\ draw active containers frame
@@ -24538,10 +24552,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; frame coordinate
             If *this\parent And *this <> *this\parent And Not is_root_( *this )
                If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
-                  X + *this\parent\inner_x( )
+                  If *this\TabIndex( ) = #PB_Ignore
+                     X + *this\parent\frame_x( ) + *this\parent\fs
+                  Else
+                     X + *this\parent\inner_x( )
+                  EndIf
                EndIf
                If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
-                  Y + *this\parent\inner_y( )
+                  If *this\TabIndex( ) = #PB_Ignore
+                     Y + *this\parent\frame_y( ) + *this\parent\fs
+                  Else
+                     Y + *this\parent\inner_y( )
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -24652,16 +24674,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Protected _p_x2_
                Protected _p_y2_
                
-               _p_x1_ = *parent\inner_x( )
-               _p_y1_ = *parent\inner_y( )
-               
-               If *this\type = #__type_Scroll
-                  _p_x2_ = _p_x1_ + *parent\container_width( )
-                  _p_y2_ = _p_y1_ + *parent\container_height( )
+               If *this\TabIndex( ) = #PB_Ignore
+                  _p_x1_ = *parent\frame_x( ) + *this\fs 
+                  _p_y1_ = *parent\frame_y( ) + *this\fs 
+                  _p_x2_ = _p_x1_
+                  _p_y2_ = _p_y1_
+                  If *parent\fs[1] Or *parent\fs[3]
+                     _p_x2_ + *parent\fs[1] + *parent\fs[3]
+                  Else
+                     _p_x2_ + *parent\container_width( )
+                  EndIf
+                  If *parent\fs[2] Or *parent\fs[4]
+                     _p_y2_ + *parent\fs[2] + *parent\fs[4]
+                  Else
+                     _p_y2_ + *parent\container_height( )
+                  EndIf
                Else
-                  _p_x2_ = _p_x1_ + *parent\inner_width( )
-                  _p_y2_ = _p_y1_ + *parent\inner_height( )
+                  _p_x1_ = *parent\inner_x( )
+                  _p_y1_ = *parent\inner_y( )
+                  
+                  If *this\type = #__type_Scroll
+                     _p_x2_ = _p_x1_ + *parent\container_width( )
+                     _p_y2_ = _p_y1_ + *parent\container_height( )
+                  Else
+                     _p_x2_ = _p_x1_ + *parent\inner_width( )
+                     _p_y2_ = _p_y1_ + *parent\inner_height( )
+                  EndIf
                EndIf
+               
+               
                
                ;\\ clip out draw X&Y coordinates
                If _p_x1_ > *parent\clip_x( ) And 
@@ -27313,9 +27354,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
    
    ;\\
-   Global *button_panel = Panel(10, 10, 200 + 60, 180)
    Define Text.s, m.s   = #LF$, a
-   AddItem(*button_panel, -1, "1")
+   Global._s_WIDGET *btn_panel = Panel(10, 10, 200 + 60, 180)
+   AddItem(*btn_panel, -1, "1")
    *g = Editor(0, 0, 0, 0, #__flag_gridlines | #__flag_autosize)
    ;*g                 = Editor(10, 10, 200 + 60, 200, #__flag_gridlines);, #__flag_autosize)
    ;    Text.s = "This is a long line." + m.s +
@@ -27338,7 +27379,6 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    ;    For a = 4 To 6
    ;       AddItem(*g, a, Str(a) + " Line " + Str(a))
    ;    Next
-   Define Text.s, m.s=#LF$
    
    Text.s = "This is a long line." + m.s +
             "Who should show." + m.s +
@@ -27356,7 +27396,7 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    AddItem(*g, -1, "add line last")
    
    ;\\
-   AddItem(*button_panel, -1, "2")
+   AddItem(*btn_panel, -1, "2")
    *g = Tree(0, 0, 0, 0, #__flag_gridlines | #__flag_autosize)
    a  = - 1
    AddItem(*g, a, "This is a long row.")
@@ -27383,7 +27423,7 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    AddItem(*g, -1, "add row last")
    
    ;\\
-   AddItem(*button_panel, -1, "3")
+   AddItem(*btn_panel, -1, "3")
    *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__flag_autosize | #__flag_RowFullSelect | #__Flag_GridLines | #__Flag_CheckBoxes) ;: *g = GetGadgetData(g)
    For a = 1 To 2
       AddColumn(*g, a, "Column_" + Str(a + 1), 90)
@@ -27392,33 +27432,37 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
       AddItem(*g, a, Str(a) + "_Column_1" + #LF$ + Str(a) + "_Column_2" + #LF$ + Str(a) + "_Column_3" + #LF$ + Str(a) + "_Column_4", 0)
    Next
    
-   SetState(*button_panel, 2)
+   SetState(*btn_panel, 2)
    CloseList( ) ; close panel lists
    
    *g = String(10, 200, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_Textpassword | #__flag_TextRight)
    
    ;\\
-   Global *button_item1, *button_item2, *button_menu
+   Global *btn_item1, *btn_item2, *btn_menu
    Procedure button_tab_events( )
       Select GetText( EventWidget( ) )
          Case "popup menu"
             DisplayPopupBar( *popupmenu, EventWidget( ) );, CanvasMouseX( ), CanvasMouseY( ) )
             
          Case "1"
-            SetState(*button_panel, 0)
-            SetState(*button_item2, 0)
+            SetState(*btn_panel, 0)
+            SetState(*btn_item2, 0)
          Case "2"
-            SetState(*button_panel, 1)
-            SetState(*button_item1, 0)
+            SetState(*btn_panel, 1)
+            SetState(*btn_item1, 0)
       EndSelect
    EndProcedure 
    
-   *button_menu = Button( 120, 5, 150, 25, "popup menu")
-   Bind(*button_menu, @button_tab_events( ), #__event_Down )
-   *button_item1 = Button( 220, 200, 25, 50, "1", #PB_Button_Toggle)
-   *button_item2 = Button( 220 + 25, 200, 25, 50, "2", #PB_Button_Toggle)
-   Bind(*button_item1, @button_tab_events( ), #__event_Down )
-   Bind(*button_item2, @button_tab_events( ), #__event_Down )
+   *btn_menu = Button( 60, 0, 150, 24, "popup menu")
+   Bind(*btn_menu, @button_tab_events( ), #__event_Down )
+   SetParent( *btn_menu, *btn_panel\tabbar )
+   Alignment( *btn_menu, #__align_Auto|#__align_Top|#__align_Right)
+   
+   ;
+   *btn_item1 = Button( 220, 200, 25, 50, "1", #PB_Button_Toggle)
+   *btn_item2 = Button( 220 + 25, 200, 25, 50, "2", #PB_Button_Toggle)
+   Bind(*btn_item1, @button_tab_events( ), #__event_Down )
+   Bind(*btn_item2, @button_tab_events( ), #__event_Down )
    ;\\Close( )
    
    ;-\\ ROOT1
@@ -27834,9 +27878,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 27554
-; FirstLine = 25409
-; Folding = --------------------------------------------------------------------------------------------fv----------------------------------------X---fbP48---84-0-v-0v0+0----t04--v-----------------2-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------P-2-u0e------------------------------------------------------------------------------------------------------------Ao9Xv4-d+-------------------------------------------------------------------------------------------v24-+0va--8-XH7v---
+; CursorPosition = 8959
+; FirstLine = 8189
+; Folding = --------------------------------------------------------------------------------------------fv----------------------------------------X---fbP48---84-0-v-0v0+0----t04--v-----------------2----------------------------------------------------------------------------------------------------------------------------------------------------d-+v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------zf0vbv4---------------------------------------------------------------------------------------83--0-----98f8-8----PAK-280fn---------------------------------n+0+-f---V9---q---------------------------------------------t++4v-V8-f--7Q-0---
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

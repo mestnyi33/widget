@@ -464,7 +464,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     TAB
       Structure _s_TAB
          state.i;c
-         Index.u
+         ;Index.u
+         Index.l
          
          ; tab
          *entered._s_ITEMS
@@ -795,8 +796,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 764
-; FirstLine = 600
+; CursorPosition = 466
+; FirstLine = 311
 ; Folding = -F5w------
 ; Optimizer
 ; EnableXP
