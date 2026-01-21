@@ -1711,7 +1711,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   ResizeRootWindow( *this, X.l, Y.l, Width.l, Height.l )
       Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l, scale.b = 1 )
       Declare   Alignment( *this, align.q, mode.q = 0 )
-      Declare.i SetAlign( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
+      Declare.i SetAlign( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0, update.b = 1 )
       Declare.i SetAttach( *this, *parent, mode.a )
       Declare   SetChildrenBounds( *this, state.b )
       Declare   SetMoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
@@ -1896,8 +1896,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   DoEvents( *this, event.l, *button = #PB_All, *data = #Null )
       Declare   EventHandler( Canvas.i = - 1, event.i = - 1, eventdata = 0 )
       ;
-      ;Declare   AddButton( *this, X,Y,Width,Height, text$, Flag.q = 0 )
-      Declare   AddButton( *this, *g, Flag.q = 0 )
+      Declare   AddButtons( *this, *g, Flag.q = 0 )
+      Declare   UpdateButtons( *this, padding = 10 )
+      ;
       Declare.i Window( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, *parent = 0 )
       Declare.i Gadget( Type.w, Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, Flag.q = #Null )
    EndDeclareModule
@@ -12576,7 +12577,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf         
       EndProcedure
       
-      Procedure   SetAlign( *this._s_WIDGET, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0 )
+      Procedure   SetAlign( *this._s_WIDGET, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0, update.b = 1 )
          Protected Flag.q
          ;\\
          ;          If Not (( mode & #__align_full = #__align_full ) Or
@@ -12892,12 +12893,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\align\x = 0
                      ElseIf Not *this\align\right And Not *this\align\left
                         ; center
-                        *this\align\x = ( *this\parent\align\width - *this\frame_width( ) ) / 2
+                        *this\align\x = ( *this\parent\align\width - *this\align\width ) / 2
                      ElseIf *this\align\right And Not *this\align\left
                         ; right
                         If ( mode & #__align_full = #__align_full ) Or
                            ( mode & #__align_auto = #__align_auto )
-                           *this\align\x = *this\parent\align\width - *this\frame_width( )
+                           *this\align\x = *this\parent\align\width - *this\align\width
                            If *this\type = #__type_window
                               *this\align\x - *this\fs * 2
                            EndIf
@@ -12919,12 +12920,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\align\y = 0
                      ElseIf Not *this\align\bottom And Not *this\align\top
                         ; center
-                        *this\align\y = ( *this\parent\align\height - *this\frame_height( ) ) / 2
+                        *this\align\y = ( *this\parent\align\height - *this\align\height ) / 2
                      ElseIf *this\align\bottom And Not *this\align\top
                         ; bottom
                         If ( mode & #__align_full = #__align_full ) Or
                            ( mode & #__align_auto = #__align_auto )
-                           *this\align\y = *this\parent\align\height - *this\frame_height( )
+                           *this\align\y = *this\parent\align\height - *this\align\height
                            If *this\type = #__type_window
                               *this\align\y - *this\fs * 2
                            EndIf
@@ -13029,11 +13030,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               ;                ;\\
-               ; update parent children's coordinate
-               ;*this\parent\align\update = 1
-               Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-               ; PostRepaintEvent( *this\root )
+               ;\\ update parent children's coordinate
+               If update 
+                  Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+               EndIf
             EndIf
          EndIf
       EndProcedure
@@ -13650,16 +13650,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
-      ; Procedure   AddButton( *this._s_WIDGET, X,Y,Width,Height, text$, Flag.q = 0 )
-      Procedure   AddButton( *this._s_WIDGET, *g._s_WIDGET, Flag.q = 0 )
+      Procedure   AddButtons( *this._s_WIDGET, *g._s_WIDGET, Flag.q = 0 )
          If *this\type = #__type_Panel
-            Debug *this\fs   
             If Flag & #__flag_AutoSize
                If *this\fs[1] Or *this\fs[3]
                   Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[1]+*this\fs[3], *this\fs[1]+*this\fs[3] )
                EndIf
                If *this\fs[2] Or *this\fs[4]
-                  Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[2]+*this\fs[4], *this\fs[2]+*this\fs[4]-7)
+                  Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[2]+*this\fs[4], *this\fs[2]+*this\fs[4])
                EndIf
             Else
                If *this\fs[1] Or *this\fs[3]
@@ -13678,6 +13676,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ProcedureReturn *g
+      EndProcedure
+      
+      Procedure   UpdateButtons( *this._s_WIDGET, padding = 10 )
+         If *this\frame_width( ) <> *this\scroll_width( ) + padding
+            *this\frame_width( ) = *this\scroll_width( ) + padding
+            *this\parent\align = 0 
+            If StartEnum( *this\parent )
+               If widgets( )\TabIndex( ) = #PB_Ignore
+                  SetAlign( widgets( ), 0, 0,1,#__align_auto,0, 0 )          
+               EndIf
+               StopEnum( )
+            EndIf
+            Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+         EndIf
       EndProcedure
       
       ;-
@@ -27854,10 +27866,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 18675
-; FirstLine = 17483
-; Folding = --------------------------------------------------------------------------------------------fv----------------------------------------X---fbP48---84-0-v-0v0+0----t04--v-----------------2----------------------------------------------------------------------------------------------------------------------------------------------------d-+v---+-H5------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------9X-8380---------------------------------------------------------------------------------------u0-f-----P-+4+-+----Dgyf0e-46----------------------------0---bpfv--4--fF3+-va+--0----------------------------------------t++4v-V8-f--7Q-0---
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 13681
+; FirstLine = 12451
+; Folding = --------------------------------------------------------------------------------------------fv----------------------------------------X---fbP48---84-0-v-0v0+0----t04--v-----------------2----------------------------------------------------------------------------------------------------------------------------------------------------d-+v---+-H5-----c+--+--------------f----------------------------------------------------------------------------------------------------------------------------------------------------------------------f+r-d80+--------------------------------------------------------------------------------------f4+-v-----nf-b-f-----BQ6vev-89----------------------------+---t1v4--8--vCb--XN8MD-----------------------------------------Wf-84-q--v-fdo-+--
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

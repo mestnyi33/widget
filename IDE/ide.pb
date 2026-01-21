@@ -117,7 +117,9 @@ EndEnumeration
 Global ide_window, 
        ide_g_canvas, 
        ide_g_inspector_VIEW
-       
+
+Global ide_SPLITTER =- 1
+
 Global ide_root,
        ide_main_SPLITTER,
        ide_designer_SPLITTER, 
@@ -138,7 +140,7 @@ Global ide_help_SPLITTER,
        ide_help_VIEW
 
 Global ide_inspector_SPLITTER,
-       ide_inspector_PANEL,
+       ide_inspector_PANEL, ide_inspector_PANELBUTTON, 
        ide_inspector_VIEW, 
        ide_inspector_PROPERTIES, 
        ide_inspector_EVENTS
@@ -2589,6 +2591,22 @@ Procedure   ide_events( )
             EndIf
          EndIf
          
+      Case #__event_LeftClick
+         If *g = ide_inspector_PANELBUTTON
+            If GetState( *g )
+               SetState( ide_inspector_PANEL, 1 )
+               SetText( ide_inspector_PANELBUTTON, "Properties" )
+            Else
+               SetState( ide_inspector_PANEL, 0 )
+               SetText( ide_inspector_PANELBUTTON, "Events" )
+            EndIf
+            Protected Width = Width( ide_inspector_PANELBUTTON, #__c_required ) + 10
+            ;Resize( ide_inspector_PANELBUTTON, X( ide_inspector_PANELBUTTON, #__c_container )-(Width- Width( ide_inspector_PANELBUTTON, #__c_frame )), #PB_Ignore, Width, #PB_Ignore )
+            Protected._s_WIDGET *g1 = ide_inspector_PANELBUTTON
+            UpdateButtons( ide_inspector_PANELBUTTON )
+            
+         EndIf
+         
       Case #__event_DragStart
          If *g = ide_all_ELEMENTS
             If __item >= 0
@@ -2851,11 +2869,9 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    SetBackColor( ide_design_CODE, $FFDCF9F6)
    
    AddItem( ide_design_PANEL, -1, "V-"+lng(#lng_CODE$) )
-   CloseList( )
    
-   AddButton( ide_design_PANEL, Button(0,0,0,0, "1"), #__flag_AutoSize|#__flag_Right )
-;    AddButton( ide_design_PANEL, String(0,0,80,0, "1"), #__flag_Right )
-;    AddButton( ide_design_PANEL, Button(0,0,0,0, "2"), #__flag_AutoSize|#__flag_Right )
+   ide_inspector_PANELBUTTON =  Button(0,0,0,0, "Events", #PB_Button_Toggle)
+   CloseList( )
    ;BarPosition( ide_design_PANEL, 3 )
    
    ;
@@ -2968,23 +2984,35 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ; ide_inspector_PANEL_close
    CloseList( )
    ;SetState( ide_inspector_PANEL, 1 )
+   If ide_inspector_PANELBUTTON
+      AddButtons( ide_design_PANEL, ide_inspector_PANELBUTTON, #__flag_AutoSize|#__flag_Right )
+      AddButtons( ide_design_PANEL, String(0,0,80,0, "1"), #__flag_Right )
+      AddButtons( ide_design_PANEL, Button(0,0,0,0, "2"), #__flag_AutoSize|#__flag_Right )
+      SetState( ide_inspector_PANELBUTTON, 0 )
+      BarPosition( ide_inspector_PANEL, 0 )
+   EndIf
+   
    
    ; ide_inspector_ide_inspector_SPLITTER_text
    ide_help_VIEW  = Text( 0,0,0,0, "help for the inspector", #PB_Text_Border ) : SetClass(ide_help_VIEW, "ide_help_VIEW" )
    ;\\\ close inspector gadgets 
    
-;    ;
-;    ;\\\ ide splitters
-;    ;
-Global ide_SPLITTER =- 1
    ;
-   ;\\ main splitter 2 example 
+   ;\\\ ide splitters
+   ;
+   ;
+   ;\\
+   ;\\ main splitter example 
+   ; Repaint( ) ; BUG
    ide_help_SPLITTER = Splitter( 0,0,0,0, ide_element_PANEL, ide_help_VIEW, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_help_SPLITTER, "ide_help_SPLITTER" )
    ide_debug_SPLITTER = Splitter( 0,0,0,0, ide_design_PANEL, ide_debug_VIEW, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_debug_SPLITTER, "ide_debug_SPLITTER" )
    ide_designer_SPLITTER = Splitter( 0,0,0,0, ide_help_SPLITTER, ide_debug_SPLITTER, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_designer_SPLITTER, "ide_designer_SPLITTER" )
    ide_SPLITTER = Splitter( 0,0,0,0, ide_designer_SPLITTER, ide_inspector_PANEL, #PB_Splitter_SecondFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_designer_SPLITTER, "ide_designer_SPLITTER" )
    ide_main_SPLITTER = Splitter( 0,0,0,0, ide_TOOLBAR_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed|Transparent ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
    
+   Repaint( ) 
+   UpdateButtons( ide_inspector_PANELBUTTON )
+    
    ; set splitters default minimum size
    SetAttribute( ide_debug_SPLITTER, #PB_Splitter_FirstMinimumSize, 350 )
    SetAttribute( ide_debug_SPLITTER, #PB_Splitter_SecondMinimumSize, 80 )
@@ -3021,6 +3049,7 @@ Global ide_SPLITTER =- 1
    Bind( ide_design_MDI, @new_widget_events( ) )
    Bind( ide_inspector_VIEW, @ide_events( ) )
    ;
+   Bind( ide_inspector_PANELBUTTON, @ide_events( ), #__event_LeftClick )
    Bind( ide_inspector_PROPERTIES, @ide_events( ), #__event_Change )
    Bind( ide_inspector_PROPERTIES, @ide_events( ), #__event_StatusChange )
    ;
@@ -3056,6 +3085,7 @@ Global ide_SPLITTER =- 1
    Bind( ide_root, @ide_events( ), #__event_Close )
    ; Bind( ide_root, @ide_events( ), #__event_Free )
    Bind( ide_root, @ide_events( ), #__event_Focus )
+   
    
    ;
    ;Bind( #PB_All, @ide_events( ) )
@@ -3259,10 +3289,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2842
-; FirstLine = 2291
-; Folding = -4--4---8l-3v-----------Aj-------v0fvd-0----------fpl2----n-
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 3014
+; FirstLine = 2367
+; Folding = -4--4---8l-3v-----------Aj-------v0fvd-0----------f6WW----f+-
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2.exe
+; Executable = ../../2.exe
