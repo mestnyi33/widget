@@ -27505,38 +27505,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
    Define time = ElapsedMilliseconds( )
    
-   Global *c, *p, *panel._s_WIDGET
-   Procedure hide_show_panel_events( )
-      Select WidgetEvent( )
-         Case #__event_LeftClick
-            
-            Select GetText( EventWidget( ) )
-               Case "hide_children"
-                  Hide(*p, 1)
-                  ; Disable(*c, 1)
-                  
-               Case "show_children"
-                  Hide(*p, 0)
-                  
-               Case "hide_parent"
-                  Hide(*c, GetState( EventWidget( ) ))
-                  
-            EndSelect
-            
-            ;         ;Case #__event_LeftUp
-            ;         ClearDebugOutput( )
-            ;         If StartEnum(*panel);root( ))
-            ;           If Not Hide(widget( )) ;And GetParent(widget( )) = *panel
-            ;             Debug " class - " + widget( )\class ;+" ("+ widget( )\item +" - parent_item)"
-            ;           EndIf
-            ;           StopEnum( )
-            ;         EndIf
-            
-            
-      EndSelect
-   EndProcedure
    
    ;-\\ OPENROOT1
+   Global._s_WIDGET *c, *p, *panel
    OpenList( *root1 )
    *panel = Panel(20, 20, 250, 180 + 60, editable|#__Panel_Right|#__Flag_Vertical) : SetText(*panel, "1")
    AddItem( *panel, -1, "item_1" )
@@ -27552,17 +27523,16 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    ;       AddItem(*g, a, "Line " + Str(a))
    ;    Next
    
-   Define Text.s, m.s=#LF$
+   Define m.s = #LF$, Text.s = "This is a long line." + m.s +
+                             "Who should show." + m.s +
+                             m.s +
+                             m.s +
+                             "I have to write the text in the box or not." + m.s +
+                             m.s +
+                             m.s +
+                             "The string must be very long." + m.s +
+                             "Otherwise it will not work."
    
-   Text.s = "This is a long line." + m.s +
-            "Who should show." + m.s +
-            m.s +
-            m.s +
-            "I have to write the text in the box or not." + m.s +
-            m.s +
-            m.s +
-            "The string must be very long." + m.s +
-            "Otherwise it will not work."
    SetText(*g, Text.s)
    AddItem(*g, 0, "add line first")
    AddItem(*g, 4, "add line "+Str(4))
@@ -27570,41 +27540,80 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    AddItem(*g, -1, "add line last")
    
    AddItem( *panel, -1, "(hide&show)-test" )
-   ; Button( 10,10, 80,80, "item_2")
-   Bind(CheckBox( 5, 5, 95, 22, "hide_parent"), @hide_show_panel_events( ))
-   Bind(Option( 5, 30, 95, 22, "hide_children"), @hide_show_panel_events( ))
-   Bind(Option( 5, 55, 95, 22, "show_children", #PB_Button_Toggle ), @hide_show_panel_events( ))
-   ;SetState(widget( ), 1)
+   Procedure hide_show_panel_events( )
+      Select WidgetEvent( )
+         Case #__event_Change
+            Select EventWidget( )
+               Case *c
+                  ; перечисляем детей открытого итема
+                  If StartEnum( *panel, GetState( *panel ))
+                     ; исключаем суб детей
+                     If widgets( )\parent = *panel
+                        If widgets( ) <> *c
+                           ; Debug widgets( )\class
+                           Hide( widgets( ), GetState( *c ))
+                        EndIf
+                     EndIf 
+                     StopEnum( )
+                  EndIf
+               Default
+                  Select GetText( EventWidget( ))
+                     Case "hide_parent"
+                        Hide(*c, GetState( EventWidget( )))
+                     Case "hide_children"
+                        Hide(*p, 1)
+                     Case "show_children"
+                        Hide(*p, 0)
+                  EndSelect
+            EndSelect
+            
+         Case #__event_LeftUp
+            ;         ClearDebugOutput( )
+            ;         If StartEnum(*panel);root( ))
+            ;           If Not Hide(widget( )) ;And GetParent(widget( )) = *panel
+            ;             Debug " class - " + widget( )\class ;+" ("+ widget( )\item +" - parent_item)"
+            ;           EndIf
+            ;           StopEnum( )
+            ;         EndIf
+      EndSelect
+   EndProcedure
    
-   *c = Panel(110, 5, 150, 155)
-   AddItem(*c, -1, "0")
+   *c = Panel(5, 5, 210, 100, #__Panel_Right)
+   AddItem(*c, -1, "item-0")
    *p = Panel(10, 5, 150, 65)
-   AddItem(*p, -1, "item-1")
+   AddItem(*p, -1, "1")
    Container(10, 5, 150, 55, #PB_Container_Flat)
    Container(10, 5, 150, 55, #PB_Container_Flat)
    Button(10, 5, 50, 25, "butt1")
    CloseList( )
    CloseList( )
-   AddItem(*p, -1, "item-2")
+   
+   AddItem(*p, -1, "2")
    Container(10, 5, 150, 55, #PB_Container_Flat)
    Container(10, 5, 150, 55, #PB_Container_Flat)
    Button(10, 5, 50, 25, "butt2")
    CloseList( )
    CloseList( )
-   AddItem(*c, -1, "1")
+   CloseList( ) ; *p
+   
+   AddItem(*c, -1, "item-1")
+   Container(10, 10, 150, 55, #PB_Container_Flat)
+   Container(10, 5, 150, 55, #PB_Container_Flat)
+   Container(10, 5, 150, 55, #PB_Container_Flat)
+   Button(10, 5, 50, 45, "item-1")
+   CloseList( )
+   CloseList( )
    CloseList( )
    
-   Container(10, 75, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Container(10, 5, 150, 55, #PB_Container_Flat)
-   Button(10, 5, 50, 45, "butt1")
-   CloseList( )
-   CloseList( )
-   CloseList( )
-   CloseList( )
+   CloseList( ) ; *c
+   
+   Bind(CheckBox( 5, 145, 150, 22, "hide_parent"), @hide_show_panel_events( ))
+   Bind(Option( 5, 170, 150, 22, "hide_children"), @hide_show_panel_events( ))
+   Bind(Option( 5, 195, 150, 22, "show_children" ), @hide_show_panel_events( ))
+   SetState( Widget( ), 1 )
+   Bind(*c, @hide_show_panel_events( ))
    
    AddItem( *panel, -1, "(enter&leave)-test" ) : SetItemFont(*panel, 2, 6)
-   
    Procedure enter_leave_containers_events( )
       Protected.b Repaint
       Protected.l colorback = colors::*this\blue\fore,
@@ -27825,9 +27834,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 4016
-; FirstLine = 4003
-; Folding = --------------------------------------------------------------------------------------------fv----------------------------------------X---fbP48---84-0-v-0v0+0----t04--v-----------------2-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------P-2-u0e------------------------------------------------------------------------------------------------------------Ao9Xv4-d+-------------------------------------------------------------------------------------------v24-+0va--8-XHy---
+; CursorPosition = 27554
+; FirstLine = 25409
+; Folding = --------------------------------------------------------------------------------------------fv----------------------------------------X---fbP48---84-0-v-0v0+0----t04--v-----------------2-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------P-2-u0e------------------------------------------------------------------------------------------------------------Ao9Xv4-d+-------------------------------------------------------------------------------------------v24-+0va--8-XH7v---
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
