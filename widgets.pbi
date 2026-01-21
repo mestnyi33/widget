@@ -13653,12 +13653,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; Procedure   AddButton( *this._s_WIDGET, X,Y,Width,Height, text$, Flag.q = 0 )
       Procedure   AddButton( *this._s_WIDGET, *g._s_WIDGET, Flag.q = 0 )
          If *this\type = #__type_Panel
+            Debug *this\fs   
             If Flag & #__flag_AutoSize
                If *this\fs[1] Or *this\fs[3]
                   Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[1]+*this\fs[3], *this\fs[1]+*this\fs[3] )
                EndIf
                If *this\fs[2] Or *this\fs[4]
-                  Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[2]+*this\fs[4], *this\fs[2]+*this\fs[4] )
+                  Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[2]+*this\fs[4], *this\fs[2]+*this\fs[4]-7)
                EndIf
             Else
                If *this\fs[1] Or *this\fs[3]
@@ -18672,7 +18673,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ; PopMapPosition(roots())
          Else
-           Debug "repaint os []"
+           ; Debug "repaint os []"
            ; Repaint( ) 
          EndIf
       EndProcedure
@@ -27853,9 +27854,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 12652
-; FirstLine = 11740
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 18675
+; FirstLine = 17483
 ; Folding = --------------------------------------------------------------------------------------------fv----------------------------------------X---fbP48---84-0-v-0v0+0----t04--v-----------------2----------------------------------------------------------------------------------------------------------------------------------------------------d-+v---+-H5------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------9X-8380---------------------------------------------------------------------------------------u0-f-----P-+4+-+----Dgyf0e-46----------------------------0---bpfv--4--fF3+-va+--0----------------------------------------t++4v-V8-f--7Q-0---
 ; EnableXP
 ; DPIAware
