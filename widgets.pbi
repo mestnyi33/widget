@@ -1896,6 +1896,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   DoEvents( *this, event.l, *button = #PB_All, *data = #Null )
       Declare   EventHandler( Canvas.i = - 1, event.i = - 1, eventdata = 0 )
       ;
+      ;Declare   AddButton( *this, X,Y,Width,Height, text$, Flag.q = 0 )
+      Declare   AddButton( *this, *g, Flag.q = 0 )
       Declare.i Window( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, *parent = 0 )
       Declare.i Gadget( Type.w, Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, Flag.q = #Null )
    EndDeclareModule
@@ -12618,36 +12620,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If mode & #__align_auto = #__align_auto
-            If left = 0 And top = 0 And right = 0 And bottom = 0
-               If mode & #__align_left 
-                  left = #__align_auto
-               EndIf
-               If mode & #__align_top 
-                  top = #__align_auto
-               EndIf
-               If mode & #__align_right 
-                  right = #__align_auto
-               EndIf
-               If mode & #__align_bottom 
-                  bottom = #__align_auto
-               EndIf
-               If left = 0 And top = 0 And right = 0 And bottom = 0
-                  left   = #__align_auto
-                  top    = #__align_auto
-                  right  = #__align_auto
-                  bottom = #__align_auto
-               EndIf
-            Else
-               If left > 0 : left = 1 : EndIf
-               If top > 0 : top = 1 : EndIf
-               If right > 0 : right = 1 : EndIf
-               If bottom > 0 : bottom = 1 : EndIf
-               
-               If left > 0 And top = 0 And right = 0 And bottom = 0 : left = #__align_auto : EndIf
-               If top > 0 And left = 0 And right = 0 And bottom = 0 : top = #__align_auto : EndIf
-               If right > 0 And top = 0 And left = 0 And bottom = 0 : right = #__align_auto : EndIf
-               If bottom > 0 And top = 0 And right = 0 And left = 0 : bottom = #__align_auto : EndIf
-            EndIf
+;             If left = 0 And top = 0 And right = 0 And bottom = 0
+;                If mode & #__align_left 
+;                   left = #__align_auto
+;                EndIf
+;                If mode & #__align_top 
+;                   top = #__align_auto
+;                EndIf
+;                If mode & #__align_right 
+;                   right = #__align_auto
+;                EndIf
+;                If mode & #__align_bottom 
+;                   bottom = #__align_auto
+;                EndIf
+;                If left = 0 And top = 0 And right = 0 And bottom = 0
+;                   left   = #__align_auto
+;                   top    = #__align_auto
+;                   right  = #__align_auto
+;                   bottom = #__align_auto
+;                EndIf
+;             Else
+;                If left > 0 : left = 1 : EndIf
+;                If top > 0 : top = 1 : EndIf
+;                If right > 0 : right = 1 : EndIf
+;                If bottom > 0 : bottom = 1 : EndIf
+;                
+;                If left > 0 And top = 0 And right = 0 And bottom = 0 : left = #__align_auto : EndIf
+;                If top > 0 And left = 0 And right = 0 And bottom = 0 : top = #__align_auto : EndIf
+;                If right > 0 And top = 0 And left = 0 And bottom = 0 : right = #__align_auto : EndIf
+;                If bottom > 0 And top = 0 And right = 0 And left = 0 : bottom = #__align_auto : EndIf
+;             EndIf
          EndIf
          
          ;\\
@@ -12779,6 +12781,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             mode = 0
+         EndIf
+         
+         
+         If left = #__align_auto
+            mode = #__align_auto
+         EndIf
+         If top = #__align_auto
+            mode = #__align_auto
+         EndIf
+         If right = #__align_auto
+            mode = #__align_auto
+         EndIf
+         If bottom = #__align_auto
+            mode = #__align_auto
          EndIf
          
          ;\\
@@ -13632,6 +13648,35 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn *tabBox\__tabs( ) 
          EndIf
          
+      EndProcedure
+      
+      ; Procedure   AddButton( *this._s_WIDGET, X,Y,Width,Height, text$, Flag.q = 0 )
+      Procedure   AddButton( *this._s_WIDGET, *g._s_WIDGET, Flag.q = 0 )
+         If *this\type = #__type_Panel
+            If Flag & #__flag_AutoSize
+               If *this\fs[1] Or *this\fs[3]
+                  Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[1]+*this\fs[3], *this\fs[1]+*this\fs[3] )
+               EndIf
+               If *this\fs[2] Or *this\fs[4]
+                  Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[2]+*this\fs[4], *this\fs[2]+*this\fs[4] )
+               EndIf
+            Else
+               If *this\fs[1] Or *this\fs[3]
+                  Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[1]+*this\fs[3], #PB_Ignore )
+               EndIf
+               If *this\fs[2] Or *this\fs[4]
+                  Resize( *g, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\fs[2]+*this\fs[4])
+               EndIf
+            EndIf
+            
+            SetParent( *g, *this, #PB_Ignore )
+            
+            If Flag & #__flag_Right
+               SetAlign( *g, 0, 0,1,#__align_auto,0 )              
+            EndIf
+         EndIf
+         
+         ProcedureReturn *g
       EndProcedure
       
       ;-
@@ -24679,6 +24724,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   _p_y1_ = *parent\frame_y( ) + *this\fs 
                   _p_x2_ = _p_x1_
                   _p_y2_ = _p_y1_
+                  ;
                   If *parent\fs[1] Or *parent\fs[3]
                      _p_x2_ + *parent\fs[1] + *parent\fs[3]
                   Else
@@ -24692,7 +24738,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Else
                   _p_x1_ = *parent\inner_x( )
                   _p_y1_ = *parent\inner_y( )
-                  
+                  ;
                   If *this\type = #__type_Scroll
                      _p_x2_ = _p_x1_ + *parent\container_width( )
                      _p_y2_ = _p_y1_ + *parent\container_height( )
@@ -24702,8 +24748,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               
-               
+               ;
                ;\\ clip out draw X&Y coordinates
                If _p_x1_ > *parent\clip_x( ) And 
                   _p_x1_ > *this\screen_x( )
@@ -24724,7 +24769,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                If *this\clip_x( ) < 0 : *this\clip_x( ) = 0 : EndIf
                If *this\clip_y( ) < 0 : *this\clip_y( ) = 0 : EndIf
-               
+               ;
                ;\\ clip out draw Width&Height coordinates
                If (_p_x2_) > (*parent\clip_x( ) + *parent\clip_width( )) And
                   (*this\screen_x( ) + *this\screen_width( )) > (*parent\clip_x( ) + *parent\clip_width( ))
@@ -24746,7 +24791,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\clip_width( ) < 0 : *this\clip_width( ) = 0 : EndIf
                If *this\clip_height( ) < 0 : *this\clip_height( ) = 0 : EndIf
               
-            ;
                ;
                ;\\ clip inner draw X&Y coordinates             
                If *this\inner_x( ) < *this\clip_x( )
@@ -27809,10 +27853,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 24689
-; FirstLine = 22796
-; Folding = --------------------------------------------------------------------------------------------fv----------------------------------------X---fbP48---84-0-v-0v0+0----t04--v-----------------2----------------------------------------------------------------------------------------------------------------------------------------------------d-+v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------zf0vbv4---------------------------------------------------------------------------------------83--0-----98f8-8----PAK-280fn--------------------------------vl+0+-f---VY8--q6--4----------------------------------------478f-+Xt--0-rD04---
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 12652
+; FirstLine = 11740
+; Folding = --------------------------------------------------------------------------------------------fv----------------------------------------X---fbP48---84-0-v-0v0+0----t04--v-----------------2----------------------------------------------------------------------------------------------------------------------------------------------------d-+v---+-H5------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------9X-8380---------------------------------------------------------------------------------------u0-f-----P-+4+-+----Dgyf0e-46----------------------------0---bpfv--4--fF3+-va+--0----------------------------------------t++4v-V8-f--7Q-0---
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
