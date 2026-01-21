@@ -1,9 +1,10 @@
 ﻿XIncludeFile "../id.pbi"
 
 DeclareModule Parent
-  Declare GetParentWindowID( handle.i )
-  Declare SetParentWindowID( handle.i, ParentID.i )
   Declare GetWindowID( handle.i )
+  Declare SetWindowID( handle.i, ParentID.i )
+  Declare IsChild( hChild.i, ParentID.i )
+  Declare RootWindowID( handle.i )
   Declare Window( gadget.i )
   Declare Gadget( gadget.i )
   Declare Get( handle.i )
@@ -11,15 +12,20 @@ DeclareModule Parent
 EndDeclareModule
 
 Module Parent
-   Procedure GetParentWindowID( handle.i )
+   Procedure GetLast( handle.i ) ; get last child window
+     ProcedureReturn GetWindow_( handle, 6 )
+   EndProcedure
+   
+   Procedure GetWindowID( handle.i ) ; получить владелеца окна
+     ; ProcedureReturn GetWindow_( handle, #GW_OWNER )
       ProcedureReturn GetWindowLongPtr_( handle, #GWL_HWNDPARENT )
    EndProcedure
    
-   Procedure SetParentWindowID( handle.i, ParentID.i )
+   Procedure SetWindowID( handle.i, ParentID.i ) ; установить владелеца окна 
       ProcedureReturn SetWindowLongPtr_( handle, #GWLP_HWNDPARENT, ParentID )
    EndProcedure
    
-   Procedure GetWindowID( handle.i ) ; Return the handle of the parent window from the handle
+   Procedure RootWindowID( handle.i ) ; Return the handle of the parent window from the handle
                                       ;       #GA_PARENT       = 1
                                       ;       #GA_ROOT         = 2
                                       ;       #GA_ROOTOWNER    = 3
@@ -28,7 +34,7 @@ Module Parent
    
    Procedure Window( gadget.i ) ; Return the id of the parent window from the gadget id
       If IsGadget( gadget )
-         ProcedureReturn ID::Window( GetWindowID( GadgetID( gadget ) ) )
+         ProcedureReturn ID::Window( RootWindowID( GadgetID( gadget ) ) )
       EndIf
    EndProcedure
    
@@ -38,8 +44,8 @@ Module Parent
       EndIf
    EndProcedure
   
-   Procedure IsChild( hChild, ParentID )
-      ProcedureReturn Bool( GetParentWindowID( hChild ) = ParentID )
+   Procedure IsChild( hChild.i, ParentID.i )
+      ProcedureReturn Bool( GetWindowID( hChild ) = ParentID )
    EndProcedure
    
    Procedure Get( handle.i ) ; Return the handle of the parent from the handle ; Debug GetWindow_( ParentID, #GW_OWNER )
@@ -331,7 +337,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 76
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 19
 ; Folding = -------
 ; EnableXP

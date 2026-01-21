@@ -24682,12 +24682,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *parent\fs[1] Or *parent\fs[3]
                      _p_x2_ + *parent\fs[1] + *parent\fs[3]
                   Else
-                     _p_x2_ + *parent\container_width( )
+                     _p_x2_ + *parent\frame_width( ) - *this\fs * 2
                   EndIf
                   If *parent\fs[2] Or *parent\fs[4]
                      _p_y2_ + *parent\fs[2] + *parent\fs[4]
                   Else
-                     _p_y2_ + *parent\container_height( )
+                     _p_y2_ + *parent\frame_height( ) - *this\fs * 2
                   EndIf
                Else
                   _p_x1_ = *parent\inner_x( )
@@ -25959,34 +25959,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure GetParentWindowID( hChild )
-         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-            ProcedureReturn CocoaMessage( 0, hChild, "parentWindow" )
-            
-;             Protected.i childArray = CocoaMessage( 0, hChild, "childWindows" )
-;             
-;             If ID::ClassName( childArray ) <> "__NSArray0"
-;                ProcedureReturn 1
-;             EndIf
-         CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            ProcedureReturn GetWindowLongPtr_( hChild, #GWL_HWNDPARENT )
-         CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-         CompilerEndIf
-      EndProcedure
-      
-      Procedure IsChildWindowID( hChild, hParent )
-         CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-            ProcedureReturn Bool( CocoaMessage( 0, hChild, "parentWindow" ) = hParent )
-         CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            ProcedureReturn Bool( GetWindowLongPtr_( hChild, #GWL_HWNDPARENT ) = hParent )
-         CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-            GtkWidget* = gtk_widget_get_parent ( GtkWidget* Widget)
-            GdkWindow* = gtk_widget_get_root_window ( GtkWidget* Widget )
-         CompilerEndIf
-      EndProcedure
-      
-      
-
       Procedure   Close( *root._s_ROOT )
          Protected result
          Protected window =- 1
@@ -26019,9 +25991,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             FreeGadget( canvasgadget )   
             Protected hParent = WindowID( canvaswindow )
             ;
-            If GetParentWindowID( hParent )
+            If parent::GetWindowID( hParent )
                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  If GetParentWindowID( hParent )
+                  If parent::GetWindowID( hParent )
                      CocoaMessage( 0, hParent, "close" )
                   Else
                      CloseWindow( canvaswindow ) ; BUG 
@@ -26031,7 +26003,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                CompilerEndIf
             Else
                ForEach roots( ) 
-                  If IsChildWindowID( WindowID( roots( )\canvas\window ), hParent )
+                  If parent::IsChild( WindowID( roots( )\canvas\window ), hParent )
                      window = roots( )\canvas\window
                      Delete( roots( ))
                      PostFree( roots( ))
@@ -26043,47 +26015,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                CloseWindow( canvaswindow ) 
             EndIf 
-;             ;
-;             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-; ;                Protected win = WindowID(canvaswindow)
-; ;                ;
-; ;                If GetWindowParentID( win )
-; ;                   ForEach roots( ) 
-; ;                      If IsChildWindow( WindowID(roots()\canvas\window), win )
-; ;                         Delete( roots( ))
-; ;                         If Post( roots( ), #__event_free )
-; ;                         EndIf
-; ;                         DeleteMapElement( roots( ) )
-; ;                      EndIf
-; ;                   Next 
-; ;                   ;
-; ;                   result = CloseWindow( canvaswindow )
-; ;                Else
-; ;                   result = CocoaMessage( 0, win, "close")
-; ;                EndIf
-;                 
-;             CompilerElse
-; ;                
-;                result = CloseWindow( canvaswindow )
-;                ;
-;                ; если у окна есть дочернее окно 
-;                ; в окнах при закрытии главного окна закрывается и дочернее 
-;                ; а в макос нет поэтому надо узнать привязан ли одно окно к другому для всех ОС
-;                ; 
-;                If result
-;                   If MapSize( roots( ) ) > 1
-;                      ForEach roots( ) 
-;                         If Not IsWindow( roots()\canvas\window )
-;                            Delete( roots( ))
-;                            If Post( roots( ), #__event_free )
-;                            EndIf
-;                            DeleteMapElement( roots( ) )
-;                         EndIf
-;                      Next 
-;                   EndIf
-;                   ProcedureReturn #True
-;                EndIf
-;             CompilerEndIf
+               
          Else
             ProcedureReturn #PB_All
          EndIf
@@ -27453,7 +27385,7 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
       EndSelect
    EndProcedure 
    
-   *btn_menu = Button( 60, 0, 150, 24, "popup menu")
+   *btn_menu = Button( 60, 0, 80, 24, "popup menu")
    Bind(*btn_menu, @button_tab_events( ), #__event_Down )
    SetParent( *btn_menu, *btn_panel\tabbar )
    Alignment( *btn_menu, #__align_Auto|#__align_Top|#__align_Right)
@@ -27877,10 +27809,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 8959
-; FirstLine = 8189
-; Folding = --------------------------------------------------------------------------------------------fv----------------------------------------X---fbP48---84-0-v-0v0+0----t04--v-----------------2----------------------------------------------------------------------------------------------------------------------------------------------------d-+v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------zf0vbv4---------------------------------------------------------------------------------------83--0-----98f8-8----PAK-280fn---------------------------------n+0+-f---V9---q---------------------------------------------t++4v-V8-f--7Q-0---
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 24689
+; FirstLine = 22796
+; Folding = --------------------------------------------------------------------------------------------fv----------------------------------------X---fbP48---84-0-v-0v0+0----t04--v-----------------2----------------------------------------------------------------------------------------------------------------------------------------------------d-+v------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------zf0vbv4---------------------------------------------------------------------------------------83--0-----98f8-8----PAK-280fn--------------------------------vl+0+-f---VY8--q6--4----------------------------------------478f-+Xt--0-rD04---
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

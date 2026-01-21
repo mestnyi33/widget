@@ -2,6 +2,9 @@
 
 DeclareModule Parent
   EnableExplicit
+  Declare GetWindowID( handle.i )
+  Declare SetWindowID( handle.i, ParentID.i )
+  Declare IsChild( hChild.i, ParentID.i )
   Declare Window( gadget.i )
   Declare Gadget( gadget.i )
   Declare Get( handle.i )
@@ -150,12 +153,26 @@ Module Parent
     ProcedureReturn g_object_get_data_( handle, "pb_id" ) - 1 
   EndProcedure
   
-  Procedure GetWindowID( handle.i ) ; Return the handle of the parent window from the gadget handle
+  Procedure GetWindowID( handle.i )
+      GtkWidget* = gtk_widget_get_parent ( GtkWidget* Widget)
+            GdkWindow* = gtk_widget_get_root_window ( GtkWidget* Widget )
+         ;   ProcedureReturn GetWindowLongPtr_( handle, #GWL_HWNDPARENT )
+   EndProcedure
+   
+   Procedure SetWindowID( handle.i, ParentID.i )
+    ;  ProcedureReturn SetWindowLongPtr_( handle, #GWLP_HWNDPARENT, ParentID )
+   EndProcedure
+   
+   Procedure RootWindowID( handle.i ) ; Return the handle of the parent window from the gadget handle
     ProcedureReturn gtk_widget_get_toplevel_( handle )
   EndProcedure
   
-  Procedure Window( gadget.i ) ; Return the handle of the parent window from the gadget ident
-    ProcedureReturn IDWindow( GetWindowID( GadgetID( gadget.i ) ) )
+  Procedure IsChild( hChild.i, ParentID.i )
+      ProcedureReturn Bool( GetWindowID( hChild ) = ParentID )
+   EndProcedure
+   
+   Procedure Window( gadget.i ) ; Return the handle of the parent window from the gadget ident
+    ProcedureReturn IDWindow( RootWindowID( GadgetID( gadget.i ) ) )
   EndProcedure
   
   Procedure Gadget( gadget.i ) ; Return the handle of the parent gadget from the gadget ident
@@ -506,8 +523,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Event = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (Linux - x64)
-; CursorPosition = 441
-; FirstLine = 428
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 170
+; FirstLine = 167
 ; Folding = ------------
 ; EnableXP

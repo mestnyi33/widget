@@ -4,8 +4,9 @@ CompilerEndIf
 
 DeclareModule Parent
    EnableExplicit
-   Declare GetParentWindowID( handle.i )
-   Declare SetParentWindowID( handle.i, ParentID.i )
+   Declare GetWindowID( handle.i )
+   Declare SetWindowID( handle.i, ParentID.i )
+   Declare IsChild( hChild.i, ParentID.i )
    Declare Window( gadget.i )
    Declare Gadget( gadget.i )
    Declare Get( handle.i )
@@ -13,7 +14,7 @@ DeclareModule Parent
 EndDeclareModule
 
 Module Parent
-   Procedure GetParentWindowID( handle.i )
+   Procedure GetWindowID( handle.i )
       ProcedureReturn CocoaMessage( 0, handle, "parentWindow" )
       
       ;             Protected.i childArray = CocoaMessage( 0, handle, "childWindows" )
@@ -23,7 +24,7 @@ Module Parent
       ;             EndIf
    EndProcedure
    
-   Procedure SetParentWindowID( handle.i, ParentID.i ) ; надо проверить
+   Procedure SetWindowID( handle.i, ParentID.i ) ; надо проверить
       ProcedureReturn CocoaMessage( 0, handle, "setParentWindow", ParentID )
    EndProcedure
    
@@ -44,13 +45,17 @@ Module Parent
       
    EndProcedure
    
-   Procedure.i GetWindowID( handle.i ) ; Return the handle of the Parent window from the handle
+   Procedure.i RootWindowID( handle.i ) ; Return the handle of the Parent window from the handle
       ProcedureReturn CocoaMessage( 0, handle, "window" )
+   EndProcedure
+   
+   Procedure IsChild( hChild.i, ParentID.i )
+      ProcedureReturn Bool( GetWindowID( hChild ) = ParentID )
    EndProcedure
    
    Procedure Window( gadget.i ) ; Return the id of the Parent window from the gadget id
       If IsGadget( gadget )
-         ProcedureReturn ID::Window( GetWindowID( GadgetID( gadget ) ) )
+         ProcedureReturn ID::Window( RootWindowID( GadgetID( gadget ) ) )
       EndIf
    EndProcedure
    
@@ -59,7 +64,7 @@ Module Parent
          Protected gadgetID = GadgetID( gadget )  
          Protected handle = Get( gadgetID )
          
-         If handle = GetWindowID( gadgetID )
+         If handle = RootWindowID( gadgetID )
             ProcedureReturn - 1 ; IDWindow( handle )
          Else
             ProcedureReturn ID::Gadget( handle )
@@ -69,7 +74,7 @@ Module Parent
    
    Procedure Get( handle.i ) ; Return the handle of the Parent from the gadget handle
       Protected GadgetID = handle
-      Protected WindowID = GetWindowID( handle )
+      Protected WindowID = RootWindowID( handle )
       
       While handle 
          handle = CocoaMessage( 0, handle, "superview" )
@@ -145,7 +150,7 @@ Module Parent
                   
                Default
                   ParentID = CocoaMessage(  0, ParentID, "contentView" )
-                  ;ParentID = CocoaMessage( 0, GetWindowID( ParentID ), "contentView" )
+                  ;ParentID = CocoaMessage( 0, RootWindowID( ParentID ), "contentView" )
             EndSelect
             
             ; 
@@ -430,8 +435,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 26
-; FirstLine = 4
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 52
+; FirstLine = 37
 ; Folding = f--------
 ; EnableXP
