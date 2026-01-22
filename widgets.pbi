@@ -13654,24 +13654,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\type = #__type_Panel
             If Flag & #__flag_AutoSize
                If *this\fs[1] Or *this\fs[3]
-                  Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[1]+*this\fs[3], *this\fs[1]+*this\fs[3] )
+                  Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[1]+*this\fs[3], *this\fs[1]+*this\fs[3], 0 )
                EndIf
                If *this\fs[2] Or *this\fs[4]
-                  Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[2]+*this\fs[4], *this\fs[2]+*this\fs[4])
+                  Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[2]+*this\fs[4], *this\fs[2]+*this\fs[4], 0 )
                EndIf
             Else
                If *this\fs[1] Or *this\fs[3]
-                  Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[1]+*this\fs[3], #PB_Ignore )
+                  Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[1]+*this\fs[3], #PB_Ignore, 0 )
                EndIf
                If *this\fs[2] Or *this\fs[4]
-                  Resize( *g, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\fs[2]+*this\fs[4])
+                  Resize( *g, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\fs[2]+*this\fs[4], 0 )
                EndIf
             EndIf
             
             SetParent( *g, *this, #PB_Ignore )
             
             If Flag & #__flag_Right
-               SetAlign( *g, 0, 0,1,#__align_auto,0 )              
+               SetAlign( *g, 0, 0,1,#__align_auto,0, 0 )              
             EndIf
          EndIf
          
@@ -27866,9 +27866,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 13681
-; FirstLine = 12451
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 13673
+; FirstLine = 12419
 ; Folding = --------------------------------------------------------------------------------------------fv----------------------------------------X---fbP48---84-0-v-0v0+0----t04--v-----------------2----------------------------------------------------------------------------------------------------------------------------------------------------d-+v---+-H5-----c+--+--------------f----------------------------------------------------------------------------------------------------------------------------------------------------------------------f+r-d80+--------------------------------------------------------------------------------------f4+-v-----nf-b-f-----BQ6vev-89----------------------------+---t1v4--8--vCb--XN8MD-----------------------------------------Wf-84-q--v-fdo-+--
 ; EnableXP
 ; DPIAware

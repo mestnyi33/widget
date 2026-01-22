@@ -259,7 +259,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   Free( @*g_OBJECT )
                EndIf
                
-               *g_OBJECT = widget_create(Root(), GetItemText( *g_TYPE, GetState( *g_TYPE)), 100, 100, 250, 200, Text, 0,0,0, #PB_Button_Toggle|#__flag_Textmultiline) 
+               *g_OBJECT = widget_create(Root(), GetItemText( *g_TYPE, GetState( *g_TYPE)), 100, 100, 250, 200, Text, 0,0,0, #__flag_Textmultiline) 
                
                Define Type = GetType(*g_OBJECT)
                Define Flag = Flag(*g_OBJECT)
@@ -307,9 +307,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 294
-; FirstLine = 270
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 261
+; FirstLine = 247
 ; Folding = ------
 ; EnableXP
 ; DPIAware
