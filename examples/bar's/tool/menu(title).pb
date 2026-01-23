@@ -17,7 +17,7 @@ CompilerIf #PB_Compiler_IsMainFile
          MenuItem(3, "Закрыть")
       EndIf
       
-      Define *g = CreateBar(root( ))
+      Define *g = CreateBar(Root( ))
       If *g
          BarTitle("Проект1")
          BarItem(1, "Открыть")
@@ -33,11 +33,11 @@ CompilerIf #PB_Compiler_IsMainFile
          If Event = #PB_Event_Gadget
             Select EventGadget()
                Case 0
-                  SetMenuTitleText(g, 1, "Файл") 
+                  SetMenuTitleText(g, 1, "Проект1 (change)") 
                   SetMenuItemText(g, 1, "Открыть (change)")
                   SetMenuItemText(g, 3, "Закрыть (change)")
                   
-                  SetBarTitleText(*g, 1, "Файл") 
+                  SetBarTitleText(*g, 1, "Проект1 (change)") 
                   SetBarItemText(*g, 1, "Открыть (change)") 
                   SetBarItemText(*g, 3, "Закрыть (change)")
                   
@@ -48,9 +48,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 40
-; FirstLine = 9
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 39
+; FirstLine = 20
 ; Folding = --
 ; EnableXP
 ; DPIAware

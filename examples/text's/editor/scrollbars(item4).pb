@@ -5,6 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   EnableExplicit
   UseWidgets( )
+  test_draw_area = 1
   
   Enumeration
     #window_0
@@ -13,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Open(#window, 0, 0, 800, 600, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   Define Text.s, m.s   = #LF$, a
-  a_init(root())
+  a_init(Root())
   
 ;   Define *g = Editor(50, 50, 200 + 60-Bool(#PB_Compiler_OS=#PB_OS_Windows)*16, 200);, #__flag_autosize)
 ;   
@@ -66,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 7
 ; Folding = -
 ; EnableXP

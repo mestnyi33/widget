@@ -51,7 +51,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Debug FontID(0)
   
   If Open( 0, 0, 0, 222+222, 205+70, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-    Global main = GetCanvasWindow( root( ) )
+    Global main = GetCanvasWindow( Root( ) )
     ;BindEventCanvas( )
     
     ButtonGadget( 0, 10, 10, 200, 20, "Standard button", #PB_Button_Default )
@@ -80,7 +80,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Button( 10+222, 40, 200, 20, "Left button", #PB_Button_Left )
     Button( 10+222, 70, 200, 20, "Right button", #PB_Button_Right )
     Button( 10+222,100, 200, 60, "Default button and change font", #PB_Button_Default,4 )
-    SetFont(widget(), (0))
+    SetFont(Widget(), (0))
     Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #PB_Button_MultiLine,4 )
     Button( 10+222,170+70, 200, 25, "Toggle button", #PB_Button_Toggle )
     
@@ -108,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   If Open( 11, 0, 0, 235, 145, "Button on the canvas", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered )
-    c2 = GetCanvasGadget( root( ) )
+    c2 = GetCanvasGadget( Root( ) )
     
     *Button_0 = Button( 15, 42, 250,  60, "Button (Horisontal)", #PB_Button_MultiLine )
 ;     SetColor( *Button_0, #__ForeColor, $0000FF )
@@ -142,10 +142,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   ;WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 112
-; FirstLine = 104
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 133
+; FirstLine = 108
 ; Folding = ---
-; Optimizer
 ; EnableXP
 ; DPIAware

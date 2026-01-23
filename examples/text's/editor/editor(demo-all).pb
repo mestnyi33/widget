@@ -118,13 +118,22 @@ CompilerIf #PB_Compiler_IsMainFile
     SetWindowTitle(EventWindow(), Str(GetGadgetState(EventGadget())))
   EndProcedure
   
-  Macro String( X,Y,Width,Height, Text, flag=0)
-     Editor( X,Y,Width,Height, flag)
-     SetText( widget(), Text)
+  Macro TestGadget( gadget, X,Y,Width,Height, Text, Flag=0)
+     StringGadget( gadget, X,Y,Width,Height, Text, Flag)
+     ; EditorGadget( gadget, X,Y,Width,Height, Flag) : SetGadgetText( gadget, Text)
+  EndMacro
+  
+  Macro Test( X,Y,Width,Height, Text, Flag=0)
+     ; String( X,Y,Width,Height, Text, Flag)
+     Editor( X,Y,Width,Height, Flag) : SetText( Widget(), Text)
   EndMacro
   
   If OpenWindow(0, 0, 0, 615, (Height+5)*7+20+90+160, "String on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Open( 0);, 0, 0, 615, (height+5)*7+20+90+160)
+     TestGadget(0, 0, 0, 0, 0, "")
+     SetGadgetFont(#PB_All, GetGadgetFont(0))
+     FreeGadget(0)
+     Open( 0 )
+    
     ;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
     ;       height = 20
     ;     CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
@@ -135,15 +144,15 @@ CompilerIf #PB_Compiler_IsMainFile
     ;       SetGadgetFont(-1,FontID(0))
     ;     CompilerEndIf
     
-    StringGadget(0, 8,  10, 290, Height, "Read-only StringGadget...", #PB_String_ReadOnly)
-    StringGadget(1, 8,  (Height+5)*1+10, 290, Height, "1234567", #PB_String_Numeric|Bool(#PB_Compiler_OS = #PB_OS_Windows) * #PB_Text_Center)
-    StringGadget(2, 8,  (Height+5)*2+10, 290, Height, "Right-text StringGadget", Bool(#PB_Compiler_OS = #PB_OS_Windows) * #PB_Text_Right)
-    StringGadget(3, 8,  (Height+5)*3+10, 290, Height, "LOWERCASE...", #PB_String_LowerCase)
-    StringGadget(4, 8, (Height+5)*4+10, 290, Height, "uppercase...", #PB_String_UpperCase)
-    StringGadget(5, 8, (Height+5)*5+10, 290, Height, Text1, #PB_String_BorderLess)
-    StringGadget(6, 8, (Height+5)*6+10, 140, Height, "")
-    StringGadget(7, 150+8, (Height+5)*6+10, 140, Height, "Password", #PB_String_Password)
-    ;     StringGadget(8, 8, (height+5)*8+10, 290, 90, Text)
+    TestGadget(0, 8,  10, 290, Height, "Read-only StringGadget...", #PB_String_ReadOnly)
+    TestGadget(1, 8,  (Height+5)*1+10, 290, Height, "1234567", #PB_String_Numeric|Bool(#PB_Compiler_OS = #PB_OS_Windows) * #PB_Text_Center)
+    TestGadget(2, 8,  (Height+5)*2+10, 290, Height, "Right-text StringGadget", Bool(#PB_Compiler_OS = #PB_OS_Windows) * #PB_Text_Right)
+    TestGadget(3, 8,  (Height+5)*3+10, 290, Height, "LOWERCASE...", #PB_String_LowerCase)
+    TestGadget(4, 8, (Height+5)*4+10, 290, Height, "uppercase...", #PB_String_UpperCase)
+    TestGadget(5, 8, (Height+5)*5+10, 290, Height, Text1, #PB_String_BorderLess)
+    TestGadget(6, 8, (Height+5)*6+10, 140, Height, "")
+    TestGadget(7, 150+8, (Height+5)*6+10, 140, Height, "Password", #PB_String_Password)
+    ;     TestGadget(8, 8, (height+5)*8+10, 290, 90, Text)
     
     ;     Define i
     ;     For i=0 To 7
@@ -154,17 +163,17 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetText(7, "GaT")
     Debug "Get gadget text "+GetGadgetText(7)
     
-    *S_0 = String( 305+8,  10, 290, Height, "Read-only StringGadget...", #PB_String_ReadOnly|#__flag_TextTop)
-    *S_1 = String( 305+8,  (Height+5)*1+10, 290, Height, "123-only-4567", #PB_String_Numeric|#__flag_TextCenter)
-    *S_2 = String( 305+8,  (Height+5)*2+10, 290, Height, "Right-text StringGadget", #__flag_TextRight|#__flag_TextBottom)
-    *S_3 = String( 305+8,  (Height+5)*3+10, 290, Height, "LOWERCASE...", #PB_String_LowerCase)
-    *S_4 = String( 305+8, (Height+5)*4+10, 290, Height, "uppercase...", #PB_String_UpperCase)
-    *S_5 = String( 305+8, (Height+5)*5+10, 290, Height, Text1, #PB_String_BorderLess)
-    *S_6 = String( 305+8, (Height+5)*6+10, 140, Height, "")
-    *S_7 = String( 305+150+8, (Height+5)*6+10, 140, Height, "Password", #PB_String_Password )
-    ;     ; *S_8 = String( 305+8, (height+5)*8+10, 290, 90+150, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textmultiline)
-    ;     *S_8 = String( 305+8, (height+5)*8+10, 290, 90+30, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textmultiline)
-    ;     *S_9 = String( 305+8, (height+5)*9+10+60, 290, 90+30, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textwordwrap)
+    *S_0 = Test( 305+8,  10, 290, Height, "Read-only StringGadget...", #__flag_TextReadOnly|#__flag_Left|#__flag_Top)
+    *S_1 = Test( 305+8,  (Height+5)*1+10, 290, Height, "123-only-4567", #__flag_TextNumeric|#__flag_Center)
+    *S_2 = Test( 305+8,  (Height+5)*2+10, 290, Height, "Right-text StringGadget", #__flag_Right|#__flag_Bottom)
+    *S_3 = Test( 305+8,  (Height+5)*3+10, 290, Height, "LOWERCASE...", #__flag_TextLowerCase)
+    *S_4 = Test( 305+8, (Height+5)*4+10, 290, Height, "uppercase...", #__flag_TextUpperCase)
+    *S_5 = Test( 305+8, (Height+5)*5+10, 290, Height, Text1, #__flag_BorderLess)
+    *S_6 = Test( 305+8, (Height+5)*6+10, 140, Height, "")
+    *S_7 = Test( 305+150+8, (Height+5)*6+10, 140, Height, "Password", #__flag_TextPassword )
+    ;     ; *S_8 = Test( 305+8, (height+5)*8+10, 290, 90+150, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textmultiline)
+    ;     *S_8 = Test( 305+8, (height+5)*8+10, 290, 90+30, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textmultiline)
+    ;     *S_9 = Test( 305+8, (height+5)*9+10+60, 290, 90+30, Text, #__flag_gridlines|#__flag_Textnumeric|#__flag_Textwordwrap)
     
     SetText(*S_7, "GaT")
     Debug "Get widget text "+GetText(*S_7)
@@ -181,7 +190,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     SetText(*S_21, get_text(#LF$))
     SetText(*S_22, get_text(""))
-    
+   
     For a = 0 To 2
       AddGadgetItem((21), a, "Line "+Str(a))
       AddItem(*S_21, a, "Line "+Str(a))
@@ -370,9 +379,9 @@ CompilerEndIf
 ;     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ;   EndIf
 ; CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 157
-; FirstLine = 153
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 122
+; FirstLine = 119
 ; Folding = ---
 ; EnableXP
 ; DPIAware

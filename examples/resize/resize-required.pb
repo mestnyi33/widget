@@ -19,9 +19,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ;*gadget = TextGadget(-1, 10,  10, text_gadget_width, 80, text.s, #PB_Text_Border )
       *gadget = StringGadget(-1, 10,  10, text_gadget_width, 80, Text.s )
       
-      ;*widget = Text( text_gadget_width+20,  10, text_gadget_width, 80, Text.s )
-      ;*widget = String( text_gadget_width+20,  10, text_gadget_width, 80, Text.s )
-      *widget = Button( text_gadget_width+20,  10, text_gadget_width, 80, Text.s )
+      ;*widget = Text( text_gadget_width+20,  10, text_gadget_width, 80, Text.s ) : *widget\text\multiline = 0
+      *widget = String( text_gadget_width+20,  10, text_gadget_width, 80, Text.s ) : *widget\text\multiline = 0
+      ;*widget = Button( text_gadget_width+20,  10, text_gadget_width, 80, Text.s )
        ;SetBackgroundColor(*widget, $D47DB2D3)
      
       Repaint( )
@@ -36,14 +36,13 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ResizeGadget( *gadget, #PB_Ignore, #PB_Ignore, gadget_required_width, gadget_required_height )
       Resize( *widget, #PB_Ignore, #PB_Ignore, widget_required_width, widget_required_height )
-      Debug *widget\padding\x ; scroll_x( )
       
       Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
 ; CursorPosition = 22
-; FirstLine = 10
+; FirstLine = 16
 ; Folding = -
 ; EnableXP
 ; DPIAware

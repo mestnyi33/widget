@@ -58,8 +58,10 @@ Procedure DisplayText()
       AddItem (zz_Display, -1, "Test #" +test +" : " + line$)
       count + 1
       If count % 24 = 0
-         SetText(zz_CMD_Go,Str(line))
-         ; While WindowEvent() : Wend ; Flush the events
+         If SetText(zz_CMD_Go,Str(line))
+            ; PostRepaint( )
+            ; While WindowEvent() : Wend ; Flush the events
+         EndIf
       EndIf
    Wend
    lapsed = ElapsedMilliseconds() - lapsed   ; stop  tracking time
@@ -126,7 +128,7 @@ Procedure CreerDialogue()
    gW = gX -#marge -4
    gX = #marge 
    zz_TXT_infos = Text(gX,gY,gW,gH,"The time [in ms] for each run will be shown here.")
-   SetColor(zz_TXT_infos,#PB_Gadget_BackColor,#Yellow)
+   SetColor(zz_TXT_infos, #PB_Gadget_BackColor, #Yellow)
    
    gY + gH +4
    gW = #winW -#marge*2
@@ -153,9 +155,9 @@ Debug "; - - - - - - - - - - - - - - - - - - - - - - - -"
 Debug ""
 Debug ""
 End
-
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 8
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 130
+; FirstLine = 114
 ; Folding = ---
 ; EnableXP
 ; DPIAware

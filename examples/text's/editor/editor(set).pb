@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Define  *MemoryID = AllocateMemory(length)    ; allocate the needed memory for 10 bytes
     If *MemoryID
       Define bytes = ReadData(0, *MemoryID, length)  ; read this last 10 chars in the file
-      text = PeekS(*MemoryID, -1, #PB_UTF8)
+      Text = PeekS(*MemoryID, -1, #PB_UTF8)
     EndIf
     CloseFile(0)
   EndIf
@@ -57,8 +57,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Debug Str(ElapsedMilliseconds()-time) + " - gadget set text time count - " + CountGadgetItems(0)
     
     
+    SetGadgetFont(#PB_All, GetGadgetFont(0))
     Open(0, 8, 250, 402, 230)
     *g = Editor(0, 0, 402, 230, #__flag_autosize) : g = GetCanvasGadget(*g)
+    ;*g = Editor(0, 0, 402, 230, #__flag_autosize|#PB_Editor_WordWrap) : g = GetCanvasGadget(*g)
     Define time = ElapsedMilliseconds()
     SetText(*g, Text.s) 
     Debug Str(ElapsedMilliseconds()-time) + " - widget set text time count - " + CountItems(*g)
@@ -86,8 +88,8 @@ CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 43
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 62
+; FirstLine = 55
 ; Folding = --
 ; EnableXP

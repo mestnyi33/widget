@@ -7,6 +7,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    EnableExplicit
+   test_draw_area = 1
    
    Global window, i, i1, i2
    
@@ -30,10 +31,11 @@ CompilerIf #PB_Compiler_IsMainFile
    Repaint( )
    ResizeWindow(window, #PB_Ignore, #PB_Ignore, 600,#PB_Ignore) ;460,360)
    
+   Debug "scroll "+Root()\scroll_x() +" "+ Root()\scroll_y() +" "+ Root()\scroll_width() +" "+ Root()\scroll_height() 
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 31
+; CursorPosition = 33
 ; FirstLine = 8
 ; Folding = -
 ; EnableXP

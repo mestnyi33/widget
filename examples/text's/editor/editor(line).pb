@@ -5,7 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   EnableExplicit
   
-  Procedure StringGadget_( gadget,X,Y,Width,Height,Text.s, flag=0 )
+  Procedure StringGadget_( gadget,X,Y,Width,Height,Text.s, Flag=0 )
     Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
       Text.s = ReplaceString( Text.s, #CRLF$, #LF$ )
       Text.s = ReplaceString( Text.s, #CR$, #LF$ )
@@ -20,8 +20,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn g
   EndProcedure
   
-  Macro StringGadget( gadget,X,Y,Width,Height,Text, flag=0 )
-    StringGadget_( gadget,X,Y,Width,Height, Text, flag )
+  Macro StringGadget( gadget,X,Y,Width,Height,Text, Flag=0 )
+    StringGadget_( gadget,X,Y,Width,Height, Text, Flag )
   EndMacro
   
   UsePNGImageDecoder()
@@ -148,7 +148,6 @@ CompilerIf #PB_Compiler_IsMainFile
       BindGadgetEvent(i, @events_gadgets())
     Next
     
-    
     SetTextAlignment( )
     ;SetGadgetText(6, "pas")
     Debug GetGadgetText(6)+" - get gadget text"
@@ -174,9 +173,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 156
-; FirstLine = 152
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 149
+; FirstLine = 140
 ; Folding = ---
 ; EnableXP
 ; DPIAware

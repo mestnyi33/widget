@@ -9,7 +9,8 @@ Global *w._S_widget
 If OpenWindow(0, 100, 50, 530, 170, "editor set&get item state", #PB_Window_SystemMenu)
   EditorGadget(0, 10, 10, 250, 150)  
   
-  Open(0, 270, 10, 250, 150)
+   SetGadgetFont(#PB_All, GetGadgetFont(0))
+   Open(0, 270, 10, 250, 150)
   *w=Editor(0, 0, 250, 150, #__Flag_GridLines)  
   
   a=0
@@ -33,7 +34,7 @@ If OpenWindow(0, 100, 50, 530, 170, "editor set&get item state", #PB_Window_Syst
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 12
 ; Folding = -
 ; EnableXP

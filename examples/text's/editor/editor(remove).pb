@@ -20,6 +20,7 @@ Global *w._S_widget
 If OpenWindow(0, 100, 50, 530, 700, "ListView", #PB_Window_SystemMenu)
   EditorGadget(0, 10, 10, 250, 680)    ;, #PB_ListView_MultiSelect
   
+  SetGadgetFont(#PB_All, GetGadgetFont(0))
   Open(0, 270, 10, 250, 680);, "", #__flag_Borderless)
   *w=Editor(0, 0, 250, 680);, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
   
@@ -82,7 +83,8 @@ If OpenWindow(0, 100, 50, 530, 700, "ListView", #PB_Window_SystemMenu)
   Repeat : Event=WaitWindowEvent()
   Until  Event= #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 16
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 23
+; FirstLine = 11
 ; Folding = -
 ; EnableXP

@@ -1,13 +1,14 @@
-﻿IncludePath "../../../" : XIncludeFile "widgets.pbi"
-; XIncludeFile "../empty5.pb"
+﻿IncludePath "../../../" 
+XIncludeFile "widgets.pbi"
 
-UseWidgets( )
-Global *g._S_widget, g_Canvas, WordWrap, NewList *List._S_widget()
 
 
 CompilerIf #PB_Compiler_IsMainFile
    UsePNGImageDecoder()
+   UseWidgets( )
    
+   Global *g._S_widget, g_Canvas, WordWrap, NewList *List._S_widget()
+
    If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
       End
    EndIf
@@ -38,8 +39,10 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
       Next
       
+      SetGadgetFont(#PB_All, GetGadgetFont(g))
+      
       Open(0, 270, 10, 250, 150)
-      g_Canvas = GetCanvasGadget(root())
+      g_Canvas = GetCanvasGadget(Root())
       
       *g=Editor(0, 0, 250, 150, #__Flag_autosize)
       For i=0 To 10
@@ -64,7 +67,12 @@ CompilerIf #PB_Compiler_IsMainFile
                If EventGadget() = 100
                   WordWrap ! 1
                   SetGadgetAttribute(g, #PB_Editor_WordWrap, WordWrap)
-                  SetAttribute(*g, #PB_Editor_WordWrap, WordWrap)
+                  If SetAttribute(*g, #PB_Editor_WordWrap, WordWrap)
+                     Repaint( )
+                  EndIf
+                  
+                  Debug ""+GetGadgetAttribute(g, #PB_Editor_WordWrap) +" "+
+                        GetAttribute(*g, #PB_Editor_WordWrap)
                EndIf
                
             Case #PB_Event_CloseWindow
@@ -74,9 +82,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 43
-; Folding = --
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 74
+; FirstLine = 54
+; Folding = ---
 ; EnableXP
 ; DPIAware

@@ -5,6 +5,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   EnableExplicit
   UseWidgets( )
+  test_draw_area = 1
   
   Enumeration
     #window_0
@@ -137,9 +138,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   
   WaitClose( ) ;;;
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 110
-; FirstLine = 106
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 8
 ; Folding = -
 ; EnableXP
 ; DPIAware

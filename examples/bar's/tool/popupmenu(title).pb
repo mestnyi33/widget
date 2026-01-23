@@ -21,8 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   If Open(0, 200, 200, 300, 200, "Пример SetMenuTitleText")
-      ButtonGadget(0, 70, 110, 200, 30, "Изменить текст заголовка Проект2")
+   If Open(0, 200, 200, 300, 200, "Изменить текст заголовка Проект2")
       g = CreatePopupMenu( #PB_Any )
       If g
          MenuTitle("Проект1")
@@ -43,17 +42,18 @@ CompilerIf #PB_Compiler_IsMainFile
          BarItem(3, "Закрыть")
       EndIf
       
-      SetMenuTitleText(g, 1, "Файл") 
-      SetMenuItemText(g, 1, "change")
-      SetMenuItemText(g, 3, "change")
+      SetMenuTitleText(g, 1, "Проект2 (change)") 
+      SetMenuItemText(g, 1, "Открыть (change)")
+      SetMenuItemText(g, 3, "Закрыть (change)")
       
-      SetBarTitleText(*g, 1, "Файл") 
-      SetBarItemText(*g, 1, "change") 
-      SetBarItemText(*g, 3, "change")
-;       SetBarText(*g, 1, "change") 
-;       SetBarText(*g, 3, "change")
+      SetBarTitleText(*g, 1, "Проект2 (change)") 
+      SetBarItemText(*g, 1, "Открыть (change)") 
+      SetBarItemText(*g, 3, "Закрыть (change)")
+;       SetBarText(*g, 1, "Открыть (change)") 
+;       SetBarText(*g, 3, "Закрыть (change)")
 
-      DisplayPopupBar( *g, root( ), GadgetX(0), GadgetY(0)+GadgetHeight(0))
+      ButtonGadget(0, 70, 110, 200, 30, "popup menu")
+      DisplayPopupBar( *g, Root( ), GadgetX(0), GadgetY(0)+GadgetHeight(0))
       DisplayPopupMenu( g, WindowID(0), DesktopScaledX(GadgetX(0, #PB_Gadget_ScreenCoordinate)), DesktopScaledY(GadgetY(0, #PB_Gadget_ScreenCoordinate))-100)
       
       
@@ -63,22 +63,15 @@ CompilerIf #PB_Compiler_IsMainFile
          If Event = #PB_Event_Gadget
             Select EventGadget()
                Case 0
-                  
-                  
-;                   SetBarText(*g, 1, "change") 
-;                   SetBarText(*g, 3, "change")
-;                   SetBarItemText(*t1, 1, "change") 
-;                   SetBarItemText(*t2, 3, "change")
-                  ReDraw( GetRoot(*g) )
-                  
-            EndSelect
+           EndSelect
          EndIf
       Until Event = #PB_Event_CloseWindow
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 11
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 65
+; FirstLine = 36
 ; Folding = --
 ; EnableXP
 ; DPIAware

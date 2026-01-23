@@ -9,8 +9,12 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Define a, Event, LN=3000; количесвто итемов 
   
-  If Open(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
-    Define *w = Editor(270, 10, 250, 680) 
+  If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
+     EditorGadget(0, 10, 10, 250, 680)
+    
+     SetGadgetFont(#PB_All, GetGadgetFont(0))
+    Open(0, 270, 0, 260, 700)
+    Define *w = Editor(0, 10, 250, 680) 
     
     Define time = ElapsedMilliseconds()
     For a = 0 To LN
@@ -26,7 +30,6 @@ CompilerIf #PB_Compiler_IsMainFile
     
     PostRepaint( ) 
     
-    EditorGadget(0, 10, 10, 250, 680)
     
     ; HideGadget(0, 1)
     Define time = ElapsedMilliseconds()
@@ -46,8 +49,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 26
-; FirstLine = 14
+; CursorPosition = 14
+; FirstLine = 10
 ; Folding = --
 ; EnableXP
 ; DPIAware

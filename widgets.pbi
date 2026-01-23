@@ -1268,7 +1268,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          DrawAlphaImage( _this_\picture#_mode_\imageID, _x_ + _this_\picture#_mode_\x + _this_\scroll_x( ), _y_ + _this_\picture#_mode_\y + _this_\scroll_y( ), _this_\color\ialpha )
       EndMacro
       
-      Macro draw_font( _address_, _font_id_ = 0, _update_ = 0 )
+      Macro draw_font( _address_, _font_id_ = 0, _update_ = 0, draw_font=0 )
          If _font_id_
             If Not GetFontID( _address_ )
                SetFontID( _address_, _font_id_ )
@@ -1278,12 +1278,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          ;
+         If draw_font
+            CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+               If CurrentFontID( )
+                  DrawingFont( CurrentFontID( ))
+               EndIf
+            CompilerEndIf
+         EndIf
+         
          If GetFontID( _address_ ) And
             CurrentFontID( ) <> GetFontID( _address_ )
             ; Debug " draw current font - " + #PB_Compiler_Procedure + " " +  Str(_address_) + " " + CurrentFontID( ) +" "+ GetFontID( _address_ )
             CurrentFontID( ) = GetFontID( _address_ )
             
-            DrawingFont( CurrentFontID( ) )
+            DrawingFont( CurrentFontID( ))
             
             _address_\text\width = 0
             _address_\text\height = 0
@@ -1294,7 +1302,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                _address_\text\width = TextWidth( _address_\text\string )
             EndIf
             
-            _address_\text\height = TextHeight( "A" )
+            _address_\text\height = TextHeight( "A" ) - Bool(#PB_Compiler_OS=#PB_OS_MacOS)
             
             ; set rotate text value
             _address_\text\rotate = Bool( _address_\text\invert ) * 180 + Bool( _address_\text\vertical ) * 90
@@ -1897,7 +1905,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   EventHandler( Canvas.i = - 1, event.i = - 1, eventdata = 0 )
       ;
       Declare   AddButtons( *this, *g, Flag.q = 0 )
-      Declare   UpdateButtons( *this, padding = 10 )
+      Declare   UpdateButtons( *this, change.b = 0 )
       ;
       Declare.i Window( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, *parent = 0 )
       Declare.i Gadget( Type.w, Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, Flag.q = #Null )
@@ -7668,13 +7676,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ 
                If StartDraw( *this\root )
                   ;\\ init drawing font
-                  draw_font( *this, GetFontID( *this\root ), *this\TextChange( ))
-                  ;
-                  CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-                     If CurrentFontID( )
-                        DrawingFont( CurrentFontID( ) )
-                     EndIf
-                  CompilerEndIf
+                  draw_font( *this, GetFontID( *this\root ), *this\TextChange( ), 1 )
                   ;
                   If *this\type = #__type_MenuBar Or
                      *this\type = #__type_PopupBar Or
@@ -10850,16 +10852,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\text\pass$ = Text.s
                EndIf
                
-               ;\\
-               CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+               ;\\ editor example set and add
+               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  draw_font( *this, GetFontID( *this\root ), 1 )
+               CompilerElse
                   If StartDraw( *this\root ) 
-                     If CurrentFontID( )
-                        DrawingFont(CurrentFontID( ))
-                     EndIf
+                     draw_font( *this, GetFontID( *this\root ), 1, 1 )
                   EndIf
                CompilerEndIf
-               UpdateDraw_Text( *this, 1 )
+               UpdateDraw_Content( *this )
                
+               ;\\
                If *this\LineFocused( )
                   If is_integral_( *this )
                      If *this\parent\type = #__type_Spin
@@ -11099,6 +11102,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn 
          EndIf
          
+         If *this\type = #__type_Editor 
+            If Attribute = #PB_Editor_WordWrap
+               If *this\text\multiline = 1
+                  ProcedureReturn #True
+               EndIf
+            EndIf
+         EndIf
+         
          If *this\type = #__type_Panel
             Select Attribute
                Case #PB_Panel_ItemWidth : result = DPIUnscaledX(*this\inner_width( ))                           
@@ -11161,14 +11172,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\type = #__type_Editor 
             If Attribute = #PB_Editor_WordWrap
                If value > 0
-                  *this\text\multiline = - 1
+                  If *this\text\multiline <> 1
+                     *this\text\multiline = 1
+                     *this\TextChange( ) = 1
+                  EndIf
                Else
-                  *this\text\multiline = 1
+                  If *this\text\multiline <> - 1
+                     *this\text\multiline = - 1
+                     *this\TextChange( ) = 1
+                  EndIf
                EndIf
-               ;*this\WidgetChange( ) = 1
-               *this\TextChange( ) = 1
-               
-               PostReDrawEvent( *this\root )
+               If *this\TextChange( )
+                  PostRepaintEvent( *this\root )
+                  ProcedureReturn #True
+               EndIf
             EndIf
          EndIf
          
@@ -13678,18 +13695,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *g
       EndProcedure
       
-      Procedure   UpdateButtons( *this._s_WIDGET, padding = 10 )
-         If *this\frame_width( ) <> *this\scroll_width( ) + padding
-            *this\frame_width( ) = *this\scroll_width( ) + padding
-            *this\parent\align = 0 
-            If StartEnum( *this\parent )
-               If widgets( )\TabIndex( ) = #PB_Ignore
-                  SetAlign( widgets( ), 0, 0,1,#__align_auto,0, 0 )          
-               EndIf
-               StopEnum( )
-            EndIf
-            Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+      Procedure   UpdateButtons( *this._s_WIDGET, change.b = 0 )
+         If change = #PB_All
+            Repaint( ) 
          EndIf
+         ;
+         If change
+            If *this\frame_width( ) <> *this\scroll_width( ) + *this\padding\x
+               *this\frame_width( ) = *this\scroll_width( ) + *this\padding\x
+               
+               *this\parent\align = 0 
+               
+               If StartEnum( *this\parent )
+                  If widgets( )\TabIndex( ) = #PB_Ignore
+                     SetAlign( widgets( ), 0, 0,1,#__align_auto,0, 0 )          
+                  EndIf
+                  StopEnum( )
+               EndIf
+            EndIf
+         EndIf
+         ;
+         Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
       EndProcedure
       
       ;-
@@ -19930,106 +19956,145 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;     
          If *this\text\multiLine
-               UpdateDraw_Text( *this, 1 )
-            Else
-               ; make_scrollarea_size
-               If *this\text\vertical
-                  If *this\text\string
-                     *this\scroll_width( ) = *this\text\height + *this\padding\x * 2
-                  Else
-                     *this\scroll_width( ) = *this\padding\x * 2
-                  EndIf
-                  *this\scroll_height( ) = *this\text\width + *this\padding\y * 2
+            UpdateDraw_Text( *this, 1 )
+         Else
+            ; make_scrollarea_size
+            If *this\text\vertical
+               If *this\text\string
+                  *this\scroll_width( ) = *this\text\height + *this\padding\x * 2
                Else
-                  *this\scroll_width( ) = *this\text\width + *this\padding\x * 2
-                  If *this\text\string
-                     *this\scroll_height( ) = *this\text\height + *this\padding\y * 2
-                  Else
-                     *this\scroll_height( ) = *this\padding\y * 2
+                  *this\scroll_width( ) = *this\padding\x * 2
+               EndIf
+               *this\scroll_height( ) = *this\text\width + *this\padding\y * 2
+            Else
+               *this\scroll_width( ) = *this\text\width + *this\padding\x * 2
+               If *this\text\string
+                  *this\scroll_height( ) = *this\text\height + *this\padding\y * 2
+               Else
+                  *this\scroll_height( ) = *this\padding\y * 2
+               EndIf
+            EndIf
+            ;
+            ; make_scrollarea_width
+            If *this\picture\width
+               If *this\picture\align\left Or
+                  *this\picture\align\right 
+                  *this\scroll_width( ) + *this\picture\width + img_indent_x
+               Else
+                  If *this\scroll_width( ) < *this\picture\width + *this\padding\x * 2
+                     *this\scroll_width( ) = *this\picture\width + *this\padding\x * 2
                   EndIf
                EndIf
-               ;
-               ; make_scrollarea_width
-               If *this\picture\width
-                  If *this\picture\align\left Or
-                     *this\picture\align\right 
-                     *this\scroll_width( ) + *this\picture\width + img_indent_x
-                  Else
-                     If *this\scroll_width( ) < *this\picture\width + *this\padding\x * 2
-                        *this\scroll_width( ) = *this\picture\width + *this\padding\x * 2
-                     EndIf
+            EndIf
+            ;
+            ; make_scrollarea_height
+            If *this\picture\height
+               If *this\picture\align\top Or
+                  *this\picture\align\bottom 
+                  *this\scroll_height( ) + *this\picture\height + img_indent_y
+               Else
+                  If *this\scroll_height( ) < *this\picture\height + *this\padding\y * 2
+                     *this\scroll_height( ) = *this\picture\height + *this\padding\y * 2
                   EndIf
                EndIf
-               ;
-               ; make_scrollarea_height
-               If *this\picture\height
-                  If *this\picture\align\top Or
-                     *this\picture\align\bottom 
-                     *this\scroll_height( ) + *this\picture\height + img_indent_y
-                  Else
-                     If *this\scroll_height( ) < *this\picture\height + *this\padding\y * 2
-                        *this\scroll_height( ) = *this\picture\height + *this\padding\y * 2
-                     EndIf
-                  EndIf
-               EndIf
-               ;
-               ; make_scrollarea_pos
+            EndIf
+            ;
+            ; Debug ""+*this\class +" "+ *this\scroll_width( ) +" "+ *this\padding\x
+            If *this\scroll_width( ) = *this\padding\x * 2
+               *this\scroll_width( ) = *this\inner_width( )
+            EndIf
+            If *this\scroll_height( ) = *this\padding\y * 2
+               *this\scroll_height( ) = *this\inner_height( )
+            EndIf
+            ;
+            ; make_scrollarea_pos
+            If *this\scroll_width( )
                make_scrollarea_x( *this, *this\scroll_width( ), *this\text\align )
+            EndIf
+            If *this\scroll_height( )
                make_scrollarea_y( *this, *this\scroll_height( ), *this\text\align )
-               
-               ; aligin text
+            EndIf
+            ;
+            ; aligin text
+            If *this\scroll_width( )
                If *this\text\vertical
                   change_align_horizontal( *this\text, *this\scroll_width( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\x )
-                  change_align_vertical( *this\text, *this\scroll_height( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\y )
                Else
                   change_align_horizontal( *this\text, *this\scroll_width( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\x )
-                  change_align_vertical( *this\text, *this\scroll_height( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\y )
                EndIf
-               
+               ;
                ; align image
                change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, *this\picture\rotate, *this\picture\align, *this\padding\x )
+            EndIf
+            ;
+            If *this\scroll_height( )
+               If *this\text\vertical
+                  change_align_vertical( *this\text, *this\scroll_height( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\y )
+               Else
+                  change_align_vertical( *this\text, *this\scroll_height( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\y )
+               EndIf
+               ;
+               ; align image
                change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\picture\align, *this\padding\y )
+            EndIf
+            
+            ;pb bug
+               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                  If *this\text\rotate = 90
+                     *this\text\x - 1
+                  EndIf
+                  If *this\text\rotate = 270
+                     *this\text\x + 2
+                  EndIf
+                  If *this\text\rotate = 0
+                     *this\text\y - 1
+                  EndIf
+                  If *this\text\rotate = 180
+                     *this\text\y + 3
+                  EndIf
+               CompilerEndIf
                
-               ; align img left & top
-               If *this\picture\align
-                  If *this\picture\width
-                     If *this\picture\align\left
-                        If *this\text\align\left
-                           *this\text\x + ( *this\picture\width + img_indent_x )
-                        Else
-                           *this\text\x + ( *this\picture\width + img_indent_x ) / 2
-                        EndIf
+               ;
+            ; align img left & top
+            If *this\picture\align
+               If *this\picture\width
+                  If *this\picture\align\left
+                     If *this\text\align\left
+                        *this\text\x + ( *this\picture\width + img_indent_x )
+                     Else
+                        *this\text\x + ( *this\picture\width + img_indent_x ) / 2
                      EndIf
-                     If *this\picture\align\right
-                        If *this\text\align\right
-                           *this\text\x - ( *this\picture\width + img_indent_x )
+                  EndIf
+                  If *this\picture\align\right
+                     If *this\text\align\right
+                        *this\text\x - ( *this\picture\width + img_indent_x )
+                     Else
+                        *this\text\x - ( *this\picture\width + img_indent_x ) / 2
+                     EndIf
+                  EndIf
+               EndIf
+               If *this\picture\height
+                  If *this\picture\align\top
+                     If *this\picture\align\top
+                        If *this\text\align\top
+                           *this\text\y + ( *this\picture\height + img_indent_y )
                         Else
-                           *this\text\x - ( *this\picture\width + img_indent_x ) / 2
+                           *this\text\y + ( *this\picture\height + img_indent_y ) / 2
                         EndIf
                      EndIf
                   EndIf
-                  If *this\picture\height
-                     If *this\picture\align\top
-                        If *this\picture\align\top
-                           If *this\text\align\top
-                              *this\text\y + ( *this\picture\height + img_indent_y )
-                           Else
-                              *this\text\y + ( *this\picture\height + img_indent_y ) / 2
-                           EndIf
-                        EndIf
-                     EndIf
+                  If *this\picture\align\bottom
                      If *this\picture\align\bottom
-                        If *this\picture\align\bottom
-                           If *this\text\align\bottom
-                              *this\text\y - ( *this\picture\height + img_indent_y )
-                           Else
-                              *this\text\y - ( *this\picture\height + img_indent_y ) / 2
-                           EndIf
+                        If *this\text\align\bottom
+                           *this\text\y - ( *this\picture\height + img_indent_y )
+                        Else
+                           *this\text\y - ( *this\picture\height + img_indent_y ) / 2
                         EndIf
                      EndIf
                   EndIf
                EndIf
-               
+            EndIf
+               ;
             EndIf
       EndProcedure
       
@@ -20292,7 +20357,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            
             ;\\
             bar_area_update( *this )
             
@@ -20302,7 +20366,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; make vertical scroll y
             make_scrollarea_y( *this, *this\scroll_height( ), *this\text\align )
             
-            
+            ;
             If *this\picture
                change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, 0, *this\picture\align, *this\padding\y )
                change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, 0, *this\picture\align, *this\padding\y )
@@ -20998,13 +21062,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   Draw_Content( *this._s_WIDGET, state )
-         If *this\TextChange( ) Or
-            *this\ResizeChange( ) Or 
-            *this\picture\change
-            
-            UpdateDraw_Content( *this )
-         EndIf
-         
          ;\\ origin position
          Protected i, X, Y, FontID, UnderLineSize
          X = *this\inner_x( ) + *this\scroll_x( )
@@ -21280,7 +21337,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ;\\
          Draw_Content( *this, state )
          
          ;\\ Draw frames
@@ -22002,40 +22058,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected arrow_right
          
          With *this
-            ;
-            If *this\align And 
-               *this\align\update = 1
-               *this\align\update = 0
-               Resize(*this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+            If *this\root\drawmode & 1<<2
+               ;\\ init drawing font
+               draw_font( *this, GetFontID( *this\root ), 1, 1 )
+            EndIf
+            
+            ; update the position of the scroll area 
+            ; and the contents of that area.
+            If *this\TextChange( ) Or
+               *this\ResizeChange( ) Or 
+               *this\picture\change
+               
+               If *this\type = #__type_Text Or
+                  *this\type = #__type_Button Or
+                  *this\type = #__type_Option Or
+                  *this\type = #__type_Progress Or
+                  *this\type = #__type_CheckBox Or
+                  *this\type = #__type_HyperLink Or
+                  *this\type = #__type_ComboBox 
+               ; If Not *this\container ; *this\type <> #__type_Splitter ;And *this\root <> *this
+                  UpdateDraw_Content( *this )
+               EndIf
             EndIf
             
             ;\\ draw belowe drawing
-            If *this\hide
-               If *this\row
-                  If *this\TextChange( )
-                     If *this\text\string 
-                        If Not ( *this\text\width And *this\text\height )
-                           draw_font( *this, GetFontID( *this ), *this\TextChange( ))
-                           UpdateDraw_Text( *this, 1 )
-                           make_scrollarea_x( *this, *this\frame_width( ), *this\text\align )
-                           make_scrollarea_y( *this, *this\frame_height( ), *this\text\align )
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               
-            Else
-               ; Debug "DRAW( "+*this\class +" "+ *this\enter
-               ;
+            If Not *this\hide
                ;\\ draw clip out transform widgets frame
                If *this\root\drawmode & 1<<2
                   If ( *this\anchors And Not *this\anchors\mode & #__a_zoom ) Or test_clip
-                     ;If Not ( *this\clip_width( ) > 0 And *this\clip_height( ) > 0 )
                      UnclipOutput( )
                      draw_mode_alpha_( #PB_2DDrawing_Outlined )
                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $ff00ffff )
                      draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, $ff00ffff )
-                     ;EndIf
                   EndIf
                EndIf
                
@@ -22044,17 +22098,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\clip_height( ) > 0
                   
                   If *this\root\drawmode & 1<<2
-                     ;\\ init drawing font
-                     draw_font( *this, GetFontID( *this\root ), *this\TextChange( ))
-                     ;
-                     CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-                        If CurrentFontID( )
-                           DrawingFont( CurrentFontID( ) )
-                        EndIf
-                     CompilerEndIf
                      ;
                      ;\\ limit drawing boundaries
                      clip_output_( *this, [#__c_draw] )
+                     
                      ;
                      ;\\ draw widgets
                      Select *this\type
@@ -22967,6 +23014,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\color\front = _get_colors_( )\front
                *this\color\frame = _get_colors_( )\frame
             EndIf
+            If *this\type = #__type_Option Or
+               *this\type = #__type_CheckBox Or
+               *this\type = #__type_HyperLink
+               ;
+               *this\color\fore  = - 1
+               *this\color\back  = _get_colors_( )\fore
+               *this\color\front = _get_colors_( )\front
+            EndIf
+            
             ;
             If *this\type = #__type_Editor
                *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flag, #__flag_TextNumeric, #False )
@@ -22975,7 +23031,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If *this\type = #__type_Option
-               ;\\
                If *this\BeforeWidget( )
                   If *this\BeforeWidget( )\type = #__type_Option
                      *this\groupbar = *this\BeforeWidget( )\groupbar
@@ -22985,23 +23040,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Else
                   *this\groupbar = *parent
                EndIf
-               
-               *this\color\fore  = - 1
-               *this\color\back  = _get_colors_( )\fore
-               *this\color\front = _get_colors_( )\front
-            EndIf
-            
-            If *this\type = #__type_CheckBox
-               *this\color\fore  = - 1
-               *this\color\back  = _get_colors_( )\fore
-               *this\color\front = _get_colors_( )\front
             EndIf
             
             If *this\type = #__type_HyperLink
-               *this\color\fore[#__s_0]  = - 1
-               *this\color\back[#__s_0]  = _get_colors_( )\fore
-               *this\color\front[#__s_0] = _get_colors_( )\front
-               
                Color = *param_1
                If Color
                   If Not Alpha( Color )
@@ -24739,12 +24780,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   _p_y2_ = _p_y1_
                   ;
                   If *parent\fs[1] Or *parent\fs[3]
-                     _p_x2_ + *parent\fs[1] + *parent\fs[3]
+                     _p_x2_ + *parent\fs[1] + *parent\fs[3] + *this\fs
                   Else
                      _p_x2_ + *parent\frame_width( ) - *this\fs * 2
                   EndIf
                   If *parent\fs[2] Or *parent\fs[4]
-                     _p_y2_ + *parent\fs[2] + *parent\fs[4]
+                     _p_y2_ + *parent\fs[2] + *parent\fs[4] + *this\fs
                   Else
                      _p_y2_ + *parent\frame_height( ) - *this\fs * 2
                   EndIf
@@ -27429,9 +27470,17 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    ;\\
    Global *btn_item1, *btn_item2, *btn_menu
    Procedure button_tab_events( )
-      Select GetText( EventWidget( ) )
+      Select GetText( EventWidget( ))
+         Case ">", "<<<"
+            If GetText( EventWidget( )) = ">"
+               SetText( EventWidget( ), "<<<" )
+            Else
+               SetText( EventWidget( ), ">" )
+            EndIf
+            UpdateButtons( EventWidget( ), 1 )
+            
          Case "popup menu"
-            DisplayPopupBar( *popupmenu, EventWidget( ) );, CanvasMouseX( ), CanvasMouseY( ) )
+            DisplayPopupBar( *popupmenu, EventWidget( ), CanvasMouseX( ), Y(EventWidget( ), #__c_screen)+Height(EventWidget( )) )
             
          Case "1"
             SetState(*btn_panel, 0)
@@ -27442,10 +27491,24 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
       EndSelect
    EndProcedure 
    
-   *btn_menu = Button( 60, 0, 80, 24, "popup menu")
+   *btn_menu = Button( 60, 0, 20, 24, ">")
+;    SetParent( *btn_menu, *btn_panel\tabbar )
+;    ;Alignment( *btn_menu, #__align_Auto|#__align_Top|#__align_Right)
+;    SetAlign( *btn_menu, 0,0,1,#__align_Auto,0 )
+   
    Bind(*btn_menu, @button_tab_events( ), #__event_Down )
-   SetParent( *btn_menu, *btn_panel\tabbar )
-   Alignment( *btn_menu, #__align_Auto|#__align_Top|#__align_Right)
+   AddButtons( *btn_panel, *btn_menu, #__flag_Right)
+   
+   *btn_menu = Button( 60, 0, 120, 24, "popup menu")
+;    SetParent( *btn_menu, *btn_panel\tabbar )
+;    ;Alignment( *btn_menu, #__align_Auto|#__align_Top|#__align_Right)
+;    SetAlign( *btn_menu, 0,0,1,#__align_Auto,0 )
+   
+   Bind(*btn_menu, @button_tab_events( ), #__event_Down )
+   AddButtons( *btn_panel, *btn_menu, #__flag_Right)
+   UpdateButtons( *btn_menu )
+            
+            
    
    ;
    *btn_item1 = Button( 220, 200, 25, 50, "1", #PB_Button_Toggle)
@@ -27866,10 +27929,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 13673
-; FirstLine = 12419
-; Folding = --------------------------------------------------------------------------------------------fv----------------------------------------X---fbP48---84-0-v-0v0+0----t04--v-----------------2----------------------------------------------------------------------------------------------------------------------------------------------------d-+v---+-H5-----c+--+--------------f----------------------------------------------------------------------------------------------------------------------------------------------------------------------f+r-d80+--------------------------------------------------------------------------------------f4+-v-----nf-b-f-----BQ6vev-89----------------------------+---t1v4--8--vCb--XN8MD-----------------------------------------Wf-84-q--v-fdo-+--
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 20043
+; FirstLine = 20033
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v6X-0e----------------------------------------------------------------------------------------------------------N-------------VN----------------------------------------------e54-q-----d9-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

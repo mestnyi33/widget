@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
-  Global a, *added, *reset, *w1, *w2, *g1, *g2, countitems=9; количесвто итемов 
+  Global a, *added, *reset, *w1, *w2, *g1, *g2,CountItems =9; количесвто итемов 
   
   Procedure SetGadgetState_(gadget, state)
     CompilerSelect #PB_Compiler_OS
@@ -24,8 +24,8 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState(gadget, state)
   EndProcedure
   
-  Procedure AddGadgetItem_(gadget, position, text.s, imageID=0, flags=0)
-    AddGadgetItem(gadget, position, text, imageID, flags)
+  Procedure AddGadgetItem_(gadget, position, Text.s, imageID=0, flags=0)
+    AddGadgetItem(gadget, position, Text, imageID, flags)
     
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
@@ -38,24 +38,24 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure button_events()
     Protected count
     
-    Select widget::WidgetEvent( )
+    Select Widget::WidgetEvent( )
       Case #__event_LeftClick
         
-        Select widget::EventWidget( )
+        Select Widget::EventWidget( )
           Case *added
-            widget::AddItem(*w1, -1, "item " +Str(widget::CountItems(*w1)) +" (added)")
-            widget::AddItem(*w2, -1, "item " +Str(widget::CountItems(*w2)) +" (added)")
+            Widget::AddItem(*w1, -1, "item " +Str(Widget::CountItems(*w1)) +" (added)")
+            Widget::AddItem(*w2, -1, "item " +Str(Widget::CountItems(*w2)) +" (added)")
             
             AddGadgetItem_(*g1, -1, "item " +Str(CountGadgetItems(*g1)) +" (added)")
             AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
             
           Case *reset
-            If widget::GetState(*reset)
-              count = widget::CountItems( *w1 )
+            If Widget::GetState(*reset)
+              count = Widget::CountItems( *w1 )
             EndIf
             
-            widget::SetState(*w1, count - 1)
-            widget::SetState(*w2, count - 1)
+            Widget::SetState(*w1, count - 1)
+            Widget::SetState(*w2, count - 1)
             SetGadgetState_(*g1, count - 1)
             SetGadgetState_(*g2, count - 1)
             
@@ -67,14 +67,14 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure widget_events()
     Select WidgetEvent( )
       Case #__event_RightClick
-        widget::AddItem(*w1, -1, "item " +Str(widget::CountItems(*w1)) +" (added)")
-        widget::AddItem(*w2, -1, "item " +Str(widget::CountItems(*w2)) +" (added)")
+        Widget::AddItem(*w1, -1, "item " +Str(Widget::CountItems(*w1)) +" (added)")
+        Widget::AddItem(*w2, -1, "item " +Str(Widget::CountItems(*w2)) +" (added)")
         
         AddGadgetItem_(*g1, -1, "item " +Str(CountGadgetItems(*g1)) +" (added)")
         AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
         
       Case #__event_Change
-        widget::SetState(*w1, widget::GetState(widget::EventWidget( )))
+        Widget::SetState(*w1, Widget::GetState(Widget::EventWidget( )))
         
     EndSelect
   EndProcedure
@@ -82,8 +82,8 @@ CompilerIf #PB_Compiler_IsMainFile
   Procedure gadget_events()
     Select EventType( )
       Case #PB_EventType_RightClick
-        widget::AddItem(*w1, -1, "item " +Str(widget::CountItems(*w1)) +" (added)")
-        widget::AddItem(*w2, -1, "item " +Str(widget::CountItems(*w2)) +" (added)")
+        Widget::AddItem(*w1, -1, "item " +Str(Widget::CountItems(*w1)) +" (added)")
+        Widget::AddItem(*w2, -1, "item " +Str(Widget::CountItems(*w2)) +" (added)")
         
         AddGadgetItem_(*g1, -1, "item " +Str(CountGadgetItems(*g1)) +" (added)")
         AddGadgetItem_(*g2, -1, "item " +Str(CountGadgetItems(*g2)) +" (added)")
@@ -94,12 +94,12 @@ CompilerIf #PB_Compiler_IsMainFile
     EndSelect
   EndProcedure
   
-  If Open(#PB_Any, 100, 50, 525, 435+40, "demo Editor state", #PB_Window_SystemMenu)
+  If OpenWindow(0, 100, 50, 525, 435+40, "demo Editor state", #PB_Window_SystemMenu)
     ; demo gadget
     *g1 = EditorGadget(#PB_Any, 10, 10, 250, 150)
     *g2 = EditorGadget(#PB_Any, 10, 165, 250, 260)
     
-    For a = 0 To countitems
+    For a = 0 To CountItems
       AddGadgetItem(*g1, -1, "Item "+Str(a), 0)
       AddGadgetItem(*g2, -1, "Item "+Str(a), 0)
     Next
@@ -108,28 +108,35 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetState_(*g2, a-1) 
     BindGadgetEvent(*g2, @gadget_events())
     
+      
+    SetGadgetFont(#PB_All, GetGadgetFont(*g1))
+    Open(0, 265, 0, 525-265, 435+40)
+        
     ; demo widget
-    *w1 = widget::Editor(265, 10, 250, 150, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
-    *w2 = widget::Editor(265, 165, 250, 260, #__Flag_GridLines) ; |#PB_Flag_MultiSelect
+    *w1 = Widget::Editor(0, 10, 250, 150, #__Flag_GridLines)  ; |#PB_Flag_MultiSelect
+    *w2 = Widget::Editor(0, 165, 250, 260, #__Flag_GridLines) ; |#PB_Flag_MultiSelect
     
-    For a = 0 To countitems
-      widget::AddItem(*w1, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w2, -1, "Item "+Str(a), 0)
+;     SetFont(*w1, Font::ID(GetGadgetFont(*g1)))
+;     SetFont(*w2, Font::ID(GetGadgetFont(*g2)))
+    
+    For a = 0 To CountItems
+      Widget::AddItem(*w1, -1, "Item "+Str(a), 0)
+      Widget::AddItem(*w2, -1, "Item "+Str(a), 0)
     Next
     
-    widget::SetState(*w1, a-1)
-    widget::SetState(*w2, a-1) 
-    widget::Bind(*w2, @widget_events())
-    widget::Bind(*w2, @widget_events(), #__event_RightClick)
+    Widget::SetState(*w1, a-1)
+    Widget::SetState(*w2, a-1) 
+    Widget::Bind(*w2, @widget_events())
+    Widget::Bind(*w2, @widget_events(), #__event_RightClick)
     
-    *reset = widget::Button( 10, 435, 100, 30, "reset state", #PB_Button_Toggle)
-    widget::SetState( *reset, 1)
-    widget::Bind(*reset, @button_events())
+    *reset = Widget::Button( 10, 435, 100, 30, "reset state", #PB_Button_Toggle)
+    Widget::SetState( *reset, 1)
+    Widget::Bind(*reset, @button_events())
     
-    *added = widget::Button( 525 - 10-120, 435, 120, 30, "add new item")
-    widget::Bind(*added, @button_events())
+    *added = Widget::Button( 525-265 - 10-120, 435, 120, 30, "add new item")
+    Widget::Bind(*added, @button_events())
     
-    widget::WaitClose()
+    Widget::WaitClose()
   EndIf
 CompilerEndIf
 
@@ -224,9 +231,9 @@ CompilerEndIf
 ; ;   Repeat : Event=WaitWindowEvent()
 ; ;   Until  Event= #PB_Event_CloseWindow
 ; ; EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 45
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 135
+; FirstLine = 123
 ; Folding = ---
 ; EnableXP
 ; DPIAware

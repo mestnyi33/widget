@@ -64,15 +64,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     ;SetGadgetFont(0, FontID(0))
     
-    
-    Open(0, 270, 10, 250, 680)
-    ;Define *w = Editor(0, 0, 0, 0, #__flag_autosize) 
-    *g = Editor(0, 0, 250, 680, #__flag_autosize) 
-    g=GetCanvasGadget(root())
-    
-    ;     Gadget(g, 8, 133+5+8, 306, 133, #PB_Flag_GridLines|#PB_Flag_Numeric);#PB_Text_WordWrap|#PB_Flag_GridLines) 
-    ;     *g._s_widget=GetGadgetData(g)
-    
+    SetGadgetFont( #PB_All, GetGadgetFont( 0 ))
+    g = GetCanvasGadget( Open( 0, 270, 10, 250, 680 ))
+    SetGadgetData( g, Editor( 0, 0, 0, 0, #__flag_autosize ))
+    *g = GetGadgetData( g )
     SetText(*g, Text.s) 
     For a = 0 To 2
       AddItem(*g, a, "Line "+Str(a))
@@ -159,7 +154,8 @@ CompilerIf #PB_Compiler_IsMainFile
                 CompilerEndSelect
                 
                 
-            EndSelect
+          EndSelect
+          Repaint( )
           EndIf
           
         Case #PB_Event_LeftClick  
@@ -173,8 +169,8 @@ CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 76
-; FirstLine = 73
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 157
+; FirstLine = 144
 ; Folding = ---
 ; EnableXP

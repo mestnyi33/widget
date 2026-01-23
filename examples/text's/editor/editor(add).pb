@@ -56,6 +56,9 @@ CompilerIf #PB_Compiler_IsMainFile
   If OpenWindow(0, 100, 50, 530, 700, "editorGadget", #PB_Window_SystemMenu)
     BindEvent( #PB_Event_Repaint, @event_repaint( ))
     
+    EditorGadget(0, 0, 0, 0, 0)
+    SetGadgetFont(#PB_All, GetGadgetFont(0))
+    FreeGadget(0)
     Open(0, 270, 10, 250, 680)
     Define *w = Editor(0, 0, 250, 680) 
     
@@ -92,8 +95,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 67
-; FirstLine = 59
+; CursorPosition = 69
+; FirstLine = 54
 ; Folding = -
 ; EnableXP
 ; DPIAware

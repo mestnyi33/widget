@@ -248,12 +248,15 @@ UsePNGImageDecoder( )
 ; test_changecursor = 1
 ; test_setcursor = 1
 ; test_delete = 1
-test_focus_draw = 3
+
+;test_focus_draw = 3
+;test_draw_area = 1
 ; test_canvas_focus_draw = 1
 ; test_focus_set = 1
 ; test_changecursor = 1
-test_iclip = 1
-   
+;test_iclip = 1
+;test_clip = 1
+
 
 Global PreviewRunning, PreviewProgramName$
 
@@ -2600,11 +2603,8 @@ Procedure   ide_events( )
                SetState( ide_inspector_PANEL, 0 )
                SetText( ide_inspector_PANELBUTTON, "Events" )
             EndIf
-            Protected Width = Width( ide_inspector_PANELBUTTON, #__c_required ) + 10
-            ;Resize( ide_inspector_PANELBUTTON, X( ide_inspector_PANELBUTTON, #__c_container )-(Width- Width( ide_inspector_PANELBUTTON, #__c_frame )), #PB_Ignore, Width, #PB_Ignore )
-            Protected._s_WIDGET *g1 = ide_inspector_PANELBUTTON
-            UpdateButtons( ide_inspector_PANELBUTTON )
-            
+            ;
+            UpdateButtons( ide_inspector_PANELBUTTON, #True )
          EndIf
          
       Case #__event_DragStart
@@ -3010,8 +3010,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ide_SPLITTER = Splitter( 0,0,0,0, ide_designer_SPLITTER, ide_inspector_PANEL, #PB_Splitter_SecondFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_designer_SPLITTER, "ide_designer_SPLITTER" )
    ide_main_SPLITTER = Splitter( 0,0,0,0, ide_TOOLBAR_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed|Transparent ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
    
-   Repaint( ) 
-   UpdateButtons( ide_inspector_PANELBUTTON )
+   UpdateButtons( ide_inspector_PANELBUTTON, #PB_All )
     
    ; set splitters default minimum size
    SetAttribute( ide_debug_SPLITTER, #PB_Splitter_FirstMinimumSize, 350 )
@@ -3290,8 +3289,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 3014
-; FirstLine = 2367
+; CursorPosition = 256
+; FirstLine = 238
 ; Folding = -4--4---8l-3v-----------Aj-------v0fvd-0----------f6WW----f+-
 ; EnableXP
 ; DPIAware
