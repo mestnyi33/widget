@@ -4,7 +4,7 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   Define size = 18
+   Define size = 27
    
    Global *g, *g1, *g2, *g3, *g4
    
@@ -20,8 +20,19 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure Test( X,Y,Width,Height,txt$, Flag.q=0)
       Protected._s_WIDGET *g
-      *g = Button( X,Y,Width,Height,txt$, Flag)
-       ProcedureReturn *g
+      
+      If Flag & #__flag_Vertical And Flag & #__flag_Invert
+         Flag | #__flag_Right
+      ElseIf Flag & #__flag_Vertical
+         Flag | #__flag_Left
+      ElseIf Flag & #__flag_Invert
+         Flag | #__flag_Bottom
+      EndIf
+      
+      ;*g = Button( X,Y,Width,Height,txt$, Flag)
+      *g = Panel( X,Y,Width,Height, Flag) : AddItem( *g,-1,txt$ ):CloseList()
+      
+      ProcedureReturn *g
     EndProcedure
    
    If Open( 0, 0, 0, 300, 300, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
@@ -38,7 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 38
+; CursorPosition = 6
 ; Folding = -
 ; EnableXP
 ; DPIAware

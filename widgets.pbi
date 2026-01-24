@@ -3922,71 +3922,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *txt\multiLine
             UpdateDraw_Text( *this, 1 )
          Else
+            Protected padding = 6
             Protected *txt_align._s_ALIGN = *this\text\align
             Protected *img_align._s_ALIGN = *this\picture\align
                
-            ;
-            ; aligin text
             If Width
-               If *txt\vertical
-                  change_align_horizontal( *txt, Width, *txt\height, *this\text\rotate, *txt_align, *this\padding\x )
+               If *this\text\vertical
+                  change_align_horizontal( *txt, Width, *txt\height, *this\text\rotate, *txt_align, padding )
+                  change_align_horizontal( *img, Width, *img\height, *this\picture\rotate, *img_align, padding )
                Else
-                  change_align_horizontal( *txt, Width, *txt\width, *this\text\rotate, *txt_align, *this\padding\x )
-               EndIf
-               ;
-               ; align image
-               change_align_horizontal( *img, Width, *img\width, *this\picture\rotate, *img_align, *this\padding\x )
+                  change_align_horizontal( *txt, Width, *txt\width, *this\text\rotate, *txt_align, padding )
+                  change_align_horizontal( *img, Width, *img\width, *this\picture\rotate, *img_align, padding )
+                EndIf
             EndIf
-            ;
+            
             If Height
-               If *txt\vertical
-                  change_align_vertical( *txt, Height, *txt\width, *this\text\rotate, *txt_align, *this\padding\y )
+               If *this\text\vertical
+                  change_align_vertical( *txt, Height, *txt\width, *this\text\rotate, *txt_align, padding )
+                   change_align_vertical( *img, Height, *img\width, *this\picture\rotate, *img_align, padding )
                Else
-                  change_align_vertical( *txt, Height, *txt\height, *this\text\rotate, *txt_align, *this\padding\y )
-               EndIf
-               ;
-               ; align image
-               change_align_vertical( *img, Height, *img\height, *this\picture\rotate, *img_align, *this\padding\y )
-            EndIf
-             
-            ;
-            ; align img left & top
-            If *img_align
-               If *img\width
-                  If *img_align\left
-                     If *txt_align\left
-                        *txt\x + ( *img\width + img_indent_x )
-                     Else
-                        ;*img\x = *txt\x - ( *img\width + img_indent_x ) / 2
-                        *txt\x + ( *img\width + img_indent_x ) / 2
-                     EndIf
-                  EndIf
-                  If *img_align\right
-                     If *txt_align\right
-                        *txt\x - ( *img\width + img_indent_x )
-                     Else
-                        ;*img\x = *txt\x - ( *img\width + img_indent_x ) / 2
-                        *txt\x - ( *img\width + img_indent_x ) / 2
-                     EndIf
-                  EndIf
-               EndIf
-               If *img\height
-                  If *img_align\top
-                     If *txt_align\top
-                        *txt\y + ( *img\height + img_indent_y )
-                     Else
-                        ;*img\y = *txt\y - ( *img\height + img_indent_y ) / 2
-                        *txt\y + ( *img\height + img_indent_y ) / 2
-                     EndIf
-                  EndIf
-                  If *img_align\bottom
-                     If *txt_align\bottom
-                        *txt\y - ( *img\height + img_indent_y )
-                     Else
-                        ;*img\y = *txt\y - ( *img\height + img_indent_y ) / 2
-                        *txt\y - ( *img\height + img_indent_y ) / 2
-                     EndIf
-                  EndIf
+                  change_align_vertical( *txt, Height, *txt\height, *this\text\rotate, *txt_align, padding )
+                   change_align_vertical( *img, Height, *img\height, *this\picture\rotate, *img_align, padding )
                EndIf
             EndIf
             
@@ -4006,20 +3962,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             CompilerEndIf
             
+            CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+               If *this\text\rotate = 90
+                  *txt\x - 3
+               EndIf
+               If *this\text\rotate = 270
+                  *txt\x + 3
+               EndIf
+               If *this\text\rotate = 0
+                  *txt\y - 1
+               EndIf
+               If *this\text\rotate = 180
+                  *txt\y + 2
+               EndIf
+            CompilerEndIf
             ;
          EndIf
       EndProcedure
       
       Procedure   UpdateDraw_BarContent( *this._s_WIDGET, List *tabs._s_ITEMS( ), padding )
-         ;          Debug ""+*this\padding\x+" "+*this\padding\y +" "+ 
-         padding = 0
-;          *this\padding\x = padding
-;          *this\padding\y = padding
-        ; ProcedureReturn UpdateAlign_Content( *this, *tabs( )\text, *tabs( )\picture, *tabs( )\width, *tabs( )\height )
-         
-          
-         
-         
          Protected img_indent_x, img_indent_y 
          
          ;
@@ -4032,89 +3993,54 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;     
          If *tabs( )\text\multiLine
-               UpdateDraw_Text( *this, 1 )
-            Else
-               Protected txt_rotate = *this\text\rotate
-               Protected img_rotate = *this\picture\rotate
-               Protected *txt_align._s_ALIGN = *this\text\align
-               Protected *img_align._s_ALIGN = *this\picture\align
-               Protected Width = *tabs( )\width 
-               Protected Height = *tabs( )\height
-;                 Width = *this\scroll_width( )
-;                 Height = *this\scroll_height( )
-               
-               ;
-               If *this\text\vertical
-                  change_align_horizontal( *tabs( )\text, Width, *tabs( )\text\height, txt_rotate, *txt_align, padding )
-                  change_align_vertical( *tabs( )\text, Height, *tabs( )\text\width, txt_rotate, *txt_align, padding )
-                  ; align image
-                  change_align_horizontal( *tabs( )\picture, Width, *tabs( )\picture\height, img_rotate, *img_align, padding )
-                  change_align_vertical( *tabs( )\picture, Height, *tabs( )\picture\width, img_rotate, *img_align, padding )
-               Else
-                  change_align_horizontal( *tabs( )\text, Width, *tabs( )\text\width, txt_rotate, *txt_align, padding )
-                  change_align_vertical( *tabs( )\text, Height, *tabs( )\text\height, txt_rotate, *txt_align, padding )
-                  ; align image
-                  change_align_horizontal( *tabs( )\picture, Width, *tabs( )\picture\width, img_rotate, *img_align, padding )
-                  change_align_vertical( *tabs( )\picture, Height, *tabs( )\picture\height, img_rotate, *img_align, padding )
+            UpdateDraw_Text( *this, 1 )
+         Else
+            Protected *txt_align._s_ALIGN = *this\text\align
+            Protected *img_align._s_ALIGN = *this\picture\align
+            
+            UpdateAlign_Content( *this, *tabs( )\text, *tabs( )\picture, *tabs( )\width, *tabs( )\height )
+            
+            ; коректировка положения текста если есть изображение
+            If *img_align
+               If *tabs( )\picture\width
+                  If *img_align\left
+                     If *txt_align\left
+                        *tabs( )\text\x + ( *tabs( )\picture\width + img_indent_x )
+                     Else
+                        *tabs( )\text\x + ( *tabs( )\picture\width + img_indent_x ) / 2
+                     EndIf
+                  EndIf
+                  If *img_align\right
+                     If *txt_align\right
+                        *tabs( )\text\x - ( *tabs( )\picture\width + img_indent_x )
+                     Else
+                        *tabs( )\text\x - ( *tabs( )\picture\width + img_indent_x ) / 2
+                     EndIf
+                  EndIf
                EndIf
-               
-               ;pb bug
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  If txt_rotate = 90
-                     *tabs( )\text\x - 1
-                  EndIf
-                  If txt_rotate = 270
-                     *tabs( )\text\x + 2
-                  EndIf
-                  If txt_rotate = 0
-                     *tabs( )\text\y - 1
-                  EndIf
-                  If txt_rotate = 180
-                     *tabs( )\text\y + 3
-                  EndIf
-               CompilerEndIf
-               
-               ; коректировка положения текста если есть изображение
-               If *img_align
-                  If *tabs( )\picture\width
-                     If *img_align\left
-                        If *txt_align\left
-                           *tabs( )\text\x + ( *tabs( )\picture\width + img_indent_x )
-                        Else
-                           *tabs( )\text\x + ( *tabs( )\picture\width + img_indent_x ) / 2
-                        EndIf
-                     EndIf
-                     If *img_align\right
-                        If *txt_align\right
-                           *tabs( )\text\x - ( *tabs( )\picture\width + img_indent_x )
-                        Else
-                           *tabs( )\text\x - ( *tabs( )\picture\width + img_indent_x ) / 2
-                        EndIf
-                     EndIf
-                  EndIf
-                  If *tabs( )\picture\height
+               If *tabs( )\picture\height
+                  If *img_align\top
                      If *img_align\top
-                        If *img_align\top
-                           If *txt_align\top
-                              *tabs( )\text\y + ( *tabs( )\picture\height + img_indent_y )
-                           Else
-                              *tabs( )\text\y + ( *tabs( )\picture\height + img_indent_y ) / 2
-                           EndIf
+                        If *txt_align\top
+                           *tabs( )\text\y + ( *tabs( )\picture\height + img_indent_y )
+                        Else
+                           *tabs( )\text\y + ( *tabs( )\picture\height + img_indent_y ) / 2
                         EndIf
                      EndIf
+                  EndIf
+                  If *img_align\bottom
                      If *img_align\bottom
-                        If *img_align\bottom
-                           If *txt_align\bottom
-                              *tabs( )\text\y - ( *tabs( )\picture\height + img_indent_y )
-                           Else
-                              *tabs( )\text\y - ( *tabs( )\picture\height + img_indent_y ) / 2
-                           EndIf
+                        If *txt_align\bottom
+                           *tabs( )\text\y - ( *tabs( )\picture\height + img_indent_y )
+                        Else
+                           *tabs( )\text\y - ( *tabs( )\picture\height + img_indent_y ) / 2
                         EndIf
                      EndIf
                   EndIf
                EndIf
-               
             EndIf
+            
+         EndIf
       EndProcedure
       
       Procedure.b bar_UpdateDraw_TabItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
@@ -20205,47 +20131,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\scroll_height( )
                make_scrollarea_y( *this, *this\scroll_height( ), *this\text\align )
             EndIf
-            ;
-            ; aligin text
-            If *this\scroll_width( )
-               If *this\text\vertical
-                  change_align_horizontal( *this\text, *this\scroll_width( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\x )
-               Else
-                  change_align_horizontal( *this\text, *this\scroll_width( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\x )
-               EndIf
-               ;
-               ; align image
-               change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, *this\picture\rotate, *this\picture\align, *this\padding\x )
-            EndIf
-            ;
-            If *this\scroll_height( )
-               If *this\text\vertical
-                  change_align_vertical( *this\text, *this\scroll_height( ), *this\text\width, *this\text\rotate, *this\text\align, *this\padding\y )
-               Else
-                  change_align_vertical( *this\text, *this\scroll_height( ), *this\text\height, *this\text\rotate, *this\text\align, *this\padding\y )
-               EndIf
-               ;
-               ; align image
-               change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\picture\align, *this\padding\y )
-            EndIf
             
-            ;pb bug
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  If *this\text\rotate = 90
-                     *this\text\x - 1
-                  EndIf
-                  If *this\text\rotate = 270
-                     *this\text\x + 2
-                  EndIf
-                  If *this\text\rotate = 0
-                     *this\text\y - 1
-                  EndIf
-                  If *this\text\rotate = 180
-                     *this\text\y + 3
-                  EndIf
-               CompilerEndIf
-               
-               ;
+            UpdateAlign_Content( *this, *this\text, *this\picture, *this\scroll_width( ), *this\scroll_height( ) )
+            
+            ;
             ; align img left & top
             If *this\picture\align
                If *this\picture\width
@@ -27671,7 +27560,7 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
             UpdateButtons( EventWidget( ), 1 )
             
          Case "popup menu"
-            DisplayPopupBar( *popupmenu, EventWidget( ), CanvasMouseX( ), Y(EventWidget( ), #__c_screen)+Height(EventWidget( )) )
+            DisplayPopupBar( *popupmenu, EventWidget( ), DPIUnscaledX( CanvasMouseX( )), Y(EventWidget( ), #__c_screen)+Height(EventWidget( )) )
             
          Case "1"
             SetState(*btn_panel, 0)
@@ -28120,10 +28009,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 4155
-; FirstLine = 4074
-; Folding = ---------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------49r-ev----------------------------------------------------------------------------------------------------------m-------------qm---------------------------------------------fP98f2-----O+----
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 20134
+; FirstLine = 20095
+; Folding = -------------------------------------------------------------------------------------------fv-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
