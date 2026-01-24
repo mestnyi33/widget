@@ -3827,7 +3827,199 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Global ppp = DPIScaled(6)
       ;-
+      Procedure   UpdateScroll_Content( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE )
+         Protected test = 0
+         Protected Width, Height
+         Protected img_indent_x, img_indent_y 
+         
+         ;
+         If *img And *img\imageID 
+            If *txt And *txt\string 
+               img_indent_x = img_indent
+               img_indent_y = img_indent
+            EndIf
+         EndIf
+         
+         ;     
+         If *txt\multiLine
+            UpdateDraw_Text( *this, 1 )
+         Else
+            ; make_scrollarea_size
+            If *txt\vertical
+               Width = *this\padding\x * 2
+               Height = *this\padding\y * 2
+               If *txt\string
+                  Width + *txt\height
+                  Height + *txt\width 
+               EndIf
+            Else
+               Width = *this\padding\x * 2
+               Height = *this\padding\y * 2
+               If *txt\string
+                  Width + *txt\width 
+                  Height + *txt\height
+               EndIf
+            EndIf
+            ;
+            ; make_scrollarea_width
+            If *img\width
+               If *img\align\left Or
+                  *img\align\right 
+                  Width + *img\width + img_indent_x
+               Else
+                  If Width < *img\width + *this\padding\x * 2
+                     Width = *img\width + *this\padding\x * 2
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            ; make_scrollarea_height
+            If *img\height
+               If *img\align\top Or
+                  *img\align\bottom 
+                  Height + *img\height + img_indent_y
+               Else
+                  If Height < *img\height + *this\padding\y * 2
+                     Height = *img\height + *this\padding\y * 2
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            ; Debug ""+*this\class +" "+ width +" "+ *this\padding\x
+            If Width = *this\padding\x * 2
+               Width = *this\inner_width( )
+            EndIf
+            If Height = *this\padding\y * 2
+               Height = *this\inner_height( )
+            EndIf
+            ;
+            ; make_scrollarea_pos
+            If Width
+               make_scrollarea_x( *this, Width, *txt\align )
+            EndIf
+            If Height
+               make_scrollarea_y( *this, Height, *txt\align )
+            EndIf
+            
+            *this\scroll_width( ) = Width
+            *this\scroll_height( ) = Height
+         EndIf
+      EndProcedure
+      
+      Procedure   UpdateAlign_Content( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, Width, Height )
+         Protected test = 0
+         Protected img_indent_x, img_indent_y 
+         
+         ;
+         If *img And *img\imageID 
+            If *txt And *txt\string 
+               img_indent_x = 0;img_indent
+               img_indent_y = 0;img_indent
+            EndIf
+         EndIf
+         
+         ;     
+         If *txt\multiLine
+            UpdateDraw_Text( *this, 1 )
+         Else
+            Protected *txt_align._s_ALIGN = *this\text\align
+            Protected *img_align._s_ALIGN = *this\picture\align
+               
+            ;
+            ; aligin text
+            If Width
+               If *txt\vertical
+                  change_align_horizontal( *txt, Width, *txt\height, *this\text\rotate, *txt_align, *this\padding\x )
+               Else
+                  change_align_horizontal( *txt, Width, *txt\width, *this\text\rotate, *txt_align, *this\padding\x )
+               EndIf
+               ;
+               ; align image
+               change_align_horizontal( *img, Width, *img\width, *this\picture\rotate, *img_align, *this\padding\x )
+            EndIf
+            ;
+            If Height
+               If *txt\vertical
+                  change_align_vertical( *txt, Height, *txt\width, *this\text\rotate, *txt_align, *this\padding\y )
+               Else
+                  change_align_vertical( *txt, Height, *txt\height, *this\text\rotate, *txt_align, *this\padding\y )
+               EndIf
+               ;
+               ; align image
+               change_align_vertical( *img, Height, *img\height, *this\picture\rotate, *img_align, *this\padding\y )
+            EndIf
+             
+            ;
+            ; align img left & top
+            If *img_align
+               If *img\width
+                  If *img_align\left
+                     If *txt_align\left
+                        *txt\x + ( *img\width + img_indent_x )
+                     Else
+                        ;*img\x = *txt\x - ( *img\width + img_indent_x ) / 2
+                        *txt\x + ( *img\width + img_indent_x ) / 2
+                     EndIf
+                  EndIf
+                  If *img_align\right
+                     If *txt_align\right
+                        *txt\x - ( *img\width + img_indent_x )
+                     Else
+                        ;*img\x = *txt\x - ( *img\width + img_indent_x ) / 2
+                        *txt\x - ( *img\width + img_indent_x ) / 2
+                     EndIf
+                  EndIf
+               EndIf
+               If *img\height
+                  If *img_align\top
+                     If *txt_align\top
+                        *txt\y + ( *img\height + img_indent_y )
+                     Else
+                        ;*img\y = *txt\y - ( *img\height + img_indent_y ) / 2
+                        *txt\y + ( *img\height + img_indent_y ) / 2
+                     EndIf
+                  EndIf
+                  If *img_align\bottom
+                     If *txt_align\bottom
+                        *txt\y - ( *img\height + img_indent_y )
+                     Else
+                        ;*img\y = *txt\y - ( *img\height + img_indent_y ) / 2
+                        *txt\y - ( *img\height + img_indent_y ) / 2
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;pb bug
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+               If *this\text\rotate = 90
+                  *txt\x - 1
+               EndIf
+               If *this\text\rotate = 270
+                  *txt\x + 2
+               EndIf
+               If *this\text\rotate = 0
+                  *txt\y - 1
+               EndIf
+               If *this\text\rotate = 180
+                  *txt\y + 3
+               EndIf
+            CompilerEndIf
+            
+            ;
+         EndIf
+      EndProcedure
+      
       Procedure   UpdateDraw_BarContent( *this._s_WIDGET, List *tabs._s_ITEMS( ), padding )
+         ;          Debug ""+*this\padding\x+" "+*this\padding\y +" "+ 
+         padding = 0
+;          *this\padding\x = padding
+;          *this\padding\y = padding
+        ; ProcedureReturn UpdateAlign_Content( *this, *tabs( )\text, *tabs( )\picture, *tabs( )\width, *tabs( )\height )
+         
+          
+         
+         
          Protected img_indent_x, img_indent_y 
          
          ;
@@ -3882,7 +4074,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                CompilerEndIf
                
-               ;ProcedureReturn
                ; коректировка положения текста если есть изображение
                If *img_align
                   If *tabs( )\picture\width
@@ -3956,13 +4147,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *bar\max = 0
                   *this\scroll_width( ) = 0
                   *this\scroll_height( ) = 0
-                  *this\picture\x = ( *this\screen_height( ) - DPIScaled(16) - pos - DPIScaled(1) ) / 2
+                  *this\picture\x = ( DPIScaled(16) - pos - DPIScaled(1) ) / 2
                   
                   ;
                   If *bar\vertical
                      If *this\type = #__type_popupbar Or *bar\vertical < 0
                         If  *bar\vertical < 0
-                           qqq = DPIScaled(10);*this\parent\padding\x
+                          ; qqq = DPIScaled(10);*this\parent\padding\x
                         EndIf
                         
                         ForEach *tabs( )
@@ -27930,9 +28121,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 20043
-; FirstLine = 20033
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v6X-0e----------------------------------------------------------------------------------------------------------N-------------VN----------------------------------------------e54-q-----d9-----
+; CursorPosition = 4155
+; FirstLine = 4074
+; Folding = ---------------------------------------------------------------------------------------v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f------49r-ev----------------------------------------------------------------------------------------------------------m-------------qm---------------------------------------------fP98f2-----O+----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

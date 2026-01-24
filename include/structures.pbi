@@ -366,6 +366,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Hide.b
       EndStructure
       
+      ; TEMP
+      Structure _s_CONTENT
+         Text._s_TEXT
+         picture._s_PICTURE
+      EndStructure
+      
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
          selector.a  ; selected lines last selector size
@@ -796,8 +802,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 465
-; FirstLine = 307
+; CursorPosition = 368
+; FirstLine = 206
 ; Folding = -F5w------
 ; Optimizer
 ; EnableXP
