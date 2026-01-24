@@ -57,7 +57,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure Test( X,Y,Width,Height,txt$, Flag.q=0)
       Protected._s_WIDGET *g
-      *g = Button( X,Y,Width,Height,txt$, Flag|#__align_Image)
+      ; *g = Button( X,Y,Width,Height,txt$, Flag|#__align_Image)
+      *g = Progress( X,Y,Width,Height,0,100, Flag|#__align_Image)
       ProcedureReturn *g
    EndProcedure
    
@@ -83,8 +84,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 59
-; FirstLine = 55
+; CursorPosition = 60
+; FirstLine = 46
 ; Folding = --
 ; EnableXP
 ; DPIAware

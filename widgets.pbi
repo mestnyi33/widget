@@ -2192,7 +2192,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             _this_\text\pass     = constants::BinaryFlag( _flag_, #__flag_Textpassword )
             _this_\text\invert   = constants::BinaryFlag( _flag_, #__flag_TextInvert )
             _this_\text\vertical = constants::BinaryFlag( _flag_, #__flag_TextVertical )
+            _this_\text\rotate   = Bool( _this_\text\invert ) * 180 + 
+                                   Bool( _this_\text\vertical ) * 90
             
+            ;
             If constants::BinaryFlag( _flag_, #__flag_Textwordwrap )
                _this_\text\multiLine = 1
             ElseIf constants::BinaryFlag( _flag_, #__flag_Textmultiline )
@@ -3916,19 +3919,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   UpdateAlign_Content( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, Width, Height )
-         Protected test = 0
-         Protected img_indent_x, img_indent_y 
-         
          ;
-         If *img And *img\imageID 
-            If *txt And *txt\string 
-               img_indent_x = 0;img_indent
-               img_indent_y = 0;img_indent
-            EndIf
-         EndIf
-         
-           
-         ;     
          If *txt\multiLine
             
          Else
@@ -3936,8 +3927,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected *txt_align._s_ALIGN = *this\text\align
             Protected *img_align._s_ALIGN = *this\picture\align
             
-            *this\text\rotate = Bool( *this\text\invert ) * 180 + Bool( *this\text\vertical ) * 90
-         
             If Width
                If *this\text\vertical
                   change_align_horizontal( *txt, Width, *txt\height, *this\text\rotate, *txt_align, padding )
@@ -6481,9 +6470,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If *this\type = #__type_Progress
-            *this\text\string = "%" + Str( *bar\page\pos )
-            
             If *bar\PageChange( )
+               *this\text\string = "%" + Str( *bar\page\pos )
+               ;Debug *this\text\rotate
+               ; UpdateDraw_Content( *this )
+               
                Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
                *bar\PageChange( ) = 0
                ProcedureReturn #True   
@@ -7373,6 +7364,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                *box\picture\align\left = 1
             EndIf
+            
+            ;
+            *box\text\rotate = Bool( *box\text\invert ) * 180 + Bool( *box\text\vertical ) * 90
             
             If *this\inner_width( ) And *this\inner_height( )
                If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
@@ -20267,8 +20261,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;
-               *this\text\rotate = Bool( *this\text\invert ) * 180 + Bool( *this\text\vertical ) * 90
-               ;
                While *end\c
                   If *end\c = #LF
                      AddElement( *this\__lines( ))
@@ -21133,7 +21125,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      __draw_rotatedtext( *this\__lines( ), X + *this\__lines( )\x, Y + *this\__lines( )\y, *this\text\rotate, *this\color\front[state], UnderLineSize )
                   Next
                Else
-                  ;\\ draw text
+                 ;\\ draw text
                   __draw_rotatedtext( *this, X, Y, *this\text\rotate, *this\color\front[state], UnderLineSize )
                EndIf
             EndIf
@@ -23352,8 +23344,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\type = #__type_Progress
                *this\color         = _get_colors_( )
                *this\TextChange( ) = #True
-               *this\text\invert = *this\bar\invert
-               *this\text\vertical = *this\bar\vertical
+               If *this\bar\invert
+                 *this\flag | #__flag_TextInvert 
+               EndIf
+               If *this\bar\vertical
+                 *this\flag | #__flag_TextVertical 
+               EndIf
             EndIf
             
             ; - Create Splitter
@@ -23536,7 +23532,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Flag( *this, *this\Flag, #True )
          EndIf
          
-         
          ; set ATTRIBUTE
          If *this\type = #__type_MenuBar Or
             *this\type = #__type_PopupBar Or
@@ -23635,8 +23630,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_Option Or
             *this\type = #__type_CheckBox Or
             *this\type = #__type_ComboBox Or
-            *this\type = #__type_HyperLink Or
-            *this\type = #__type_Progress
+            *this\type = #__type_HyperLink Or *this\type = #__type_Progress
             
             set_align_content( *this\picture, *this\flag )
             
@@ -27977,9 +27971,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 21864
-; FirstLine = 21533
-; Folding = -------------------------------------------------------------------------------------------f28----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------z9T--v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 6475
+; FirstLine = 6373
+; Folding = ----------------------------------------------------------------------------------------8-------------------------9-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------N-3--8----------------------------------------------------------------------0f8-0j8----v-+----------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

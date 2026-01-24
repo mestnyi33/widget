@@ -71,7 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       ;*g = Button( X,Y,Width,Height,txt$, Flag)
-      *g = Panel( X,Y,Width,Height, Flag) : AddItem( *g,-1,txt$ ):CloseList()
+      *g = Panel( X,Y,Width,Height, Flag) : AddItem( *g,-1, txt$, 16 ):CloseList()
       
       ProcedureReturn *g
     EndProcedure
@@ -98,8 +98,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 61
-; FirstLine = 55
+; CursorPosition = 73
+; FirstLine = 69
 ; Folding = --
 ; EnableXP
 ; DPIAware
