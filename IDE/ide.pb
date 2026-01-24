@@ -2690,14 +2690,14 @@ Procedure   ide_events( )
             *line._s_ROWS  = __data
             text$ = *line\text\string
             len = *line\text\len
-            caret = *g\text\caret\pos[1] - *line\text\pos
+            caret = *g\edit_caret_1( ) - *line\text\pos
             
             ;
             If text$
                *g\text\numeric = 0 
                *g\text\editable = 0 
                
-               name$ = *g\text\caret\word ; GetWord( text$, len, caret ) 
+               name$ = *g\edit_caret( )\word ; GetWord( text$, len, caret ) 
                
                If name$
                   object = MakeID( name$, ide_design_MDI )
@@ -2718,7 +2718,7 @@ Procedure   ide_events( )
                   
                   ;argument =  CountString( Left( text$, caret ), "," ) + 1 
                   argument = GetArgIndex( text$, len, caret ) 
-                  name$ = *g\text\caret\word
+                  name$ = *g\edit_caret( )\word
                   If name$ <> GetClass( object )
                      If CountString( text$, "(" )
                         name$ = Trim( StringField( text$, 1, "(" ))
@@ -2743,7 +2743,7 @@ Procedure   ide_events( )
                      *g\text\editable = 1 
                   EndIf
                   
-                  If GetClass( object ) = *g\text\caret\word ; GetWord( text$, len, caret )
+                  If GetClass( object ) = *g\edit_caret( )\word ; GetWord( text$, len, caret )
                      *g\text\editable = 1
                      *g\text\upper = 1 
                   Else
@@ -2763,8 +2763,8 @@ Procedure   ide_events( )
       ;
       If __event = #__event_Change
          If object
-            ReplaceArg( object, argument, *g\text\caret\word ) 
-            ; ReplaceArg( object, argument, GetWord( *line\text\string, *line\text\len, *g\text\caret\pos[1] - *line\text\pos )  )
+            ReplaceArg( object, argument, *g\edit_caret( )\word ) 
+            ; ReplaceArg( object, argument, GetWord( *line\text\string, *line\text\len, *g\edit_caret_1( ) - *line\text\pos )  )
          EndIf
       EndIf
    EndIf
@@ -3289,8 +3289,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 256
-; FirstLine = 238
+; CursorPosition = 2765
+; FirstLine = 2214
 ; Folding = -4--4---8l-3v-----------Aj-------v0fvd-0----------f6WW----f+-
 ; EnableXP
 ; DPIAware

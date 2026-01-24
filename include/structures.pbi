@@ -224,22 +224,22 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; time.l
          ; change.b
       EndStructure
-      ;--     EDIT
-      Structure _s_EDIT Extends _s_COORDINATE
+      ;--     TEXT
+      Structure _s_TEXTINFO Extends _s_COORDINATE
          pos.i
          len.i
          
          String.s
       EndStructure
-      
-      ;       ;--     syntax
-      ;       Structure _s_syntax
-      ;          List *word._s_EDIT( )
-      ;       EndStructure
-      
-      ;--     TEXT
-      Structure _s_TEXT Extends _s_EDIT
+      Structure _s_EDIT Extends _s_TEXTINFO
+         caret._s_caret
+      EndStructure
+      Structure _s_TEXTITEM Extends _s_TEXTINFO
          change.b
+         edit._s_EDIT[3]
+      EndStructure
+      Structure _s_TEXT Extends _s_TEXTITEM
+         editable.b
          ;
          pass$
          pass.b
@@ -247,21 +247,23 @@ CompilerIf Not Defined(Structures, #PB_Module)
          lower.b
          upper.b
          numeric.b
-         editable.b
          multiline.b
          
          invert.b
          vertical.b
          rotate.d
          
+         align._s_align
+         
          ; char.c
          ; short._s_EDIT ; ".."
          ; short._s_TEXT ; сокращенный текст
+         ;
+         ;       ;--     syntax
+         ;       Structure _s_syntax
+         ;          List *word._s_EDIT( )
+         ;       EndStructure
          ; syntax._s_syntax
-         
-         edit._s_EDIT[4]
-         caret._s_caret
-         align._s_align
       EndStructure
       
       ;--     FONTS
@@ -366,12 +368,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Hide.b
       EndStructure
       
-      ; TEMP
-      Structure _s_CONTENT
-         Text._s_TEXT
-         picture._s_PICTURE
-      EndStructure
-      
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
          selector.a  ; selected lines last selector size
@@ -392,7 +388,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;*columnaddress
          columnindex.u
          
-         Text._s_TEXT
+         Text._s_TEXTITEM
          picture._s_PICTURE
          color._s_color
          
@@ -802,8 +798,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 368
-; FirstLine = 206
-; Folding = -F5w------
+; CursorPosition = 257
+; FirstLine = 123
+; Folding = -F59------
 ; Optimizer
 ; EnableXP
