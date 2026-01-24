@@ -1967,7 +1967,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Declare.l UpdateDraw_VisibleRows( *this, List *rows._s_ROWS( ), visible_height.l = 0 )
       Declare   Draw_TreeRows( *this, List *rows._s_ROWS( ) )
-      Declare   UpdateDraw_Text( *this, textchange.b )
+      Declare   UpdateDraw_Text( *this )
       Declare   UpdateDraw_Content( *this )
       
       Declare   ReParent( *this, *parent )
@@ -3851,7 +3851,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;     
          If *txt\multiLine
-            UpdateDraw_Text( *this, 1 )
+            
          Else
             ; make_scrollarea_size
             If *txt\vertical
@@ -3927,16 +3927,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         *this\text\rotate = Bool( *this\text\invert ) * 180 + Bool( *this\text\vertical ) * 90
            
          ;     
          If *txt\multiLine
-            UpdateDraw_Text( *this, 1 )
+            
          Else
             Protected padding = 6
             Protected *txt_align._s_ALIGN = *this\text\align
             Protected *img_align._s_ALIGN = *this\picture\align
-               
+            
+            *this\text\rotate = Bool( *this\text\invert ) * 180 + Bool( *this\text\vertical ) * 90
+         
             If Width
                If *this\text\vertical
                   change_align_horizontal( *txt, Width, *txt\height, *this\text\rotate, *txt_align, padding )
@@ -4004,7 +4005,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;     
          If *this\text\multiLine 
-            UpdateDraw_Text( *this, 1 )
+            
          Else
             Protected *txt_align._s_ALIGN = *this\text\align
             Protected *img_align._s_ALIGN = *this\picture\align
@@ -16304,7 +16305,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Not bar_in_start_( *this\scroll\v\bar )
                      scroll_y = CanvasMouseY( ) - ( *this\inner_y( ) )
                      bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos + scroll_y )
-                     UpdateDraw_Text( *this, *this\TextChange( ) )
+                     UpdateDraw_Content( *this )
                      Debug "timer scroll v top " + scroll_y + " " + *this\RowFirstVisible( )\rindex
                      
                   Else
@@ -16314,7 +16315,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Not bar_in_stop_( *this\scroll\v\bar )
                      scroll_y = 400;CanvasMouseY( ) - ( *this\inner_y( ) + *this\inner_height( ) )
                                    ;bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos + scroll_y )
-                                   ;UpdateDraw_Text( *this, *this\TextChange( ) )
+                                   ;UpdateDraw_Content( *this, *this\TextChange( ) )
                      
                      Debug "timer scroll v bottom " + scroll_y + " " + *this\RowLastVisible( )\rindex
                      
@@ -20081,67 +20082,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
+            
          ;     
          If *this\text\multiLine
-            UpdateDraw_Text( *this, 1 )
+            UpdateDraw_Text( *this )
          Else
-            ; make_scrollarea_size
-            If *this\text\vertical
-               If *this\text\string
-                  *this\scroll_width( ) = *this\text\height + *this\padding\x * 2
-               Else
-                  *this\scroll_width( ) = *this\padding\x * 2
-               EndIf
-               *this\scroll_height( ) = *this\text\width + *this\padding\y * 2
-            Else
-               *this\scroll_width( ) = *this\text\width + *this\padding\x * 2
-               If *this\text\string
-                  *this\scroll_height( ) = *this\text\height + *this\padding\y * 2
-               Else
-                  *this\scroll_height( ) = *this\padding\y * 2
-               EndIf
-            EndIf
-            ;
-            ; make_scrollarea_width
-            If *this\picture\width
-               If *this\picture\align\left Or
-                  *this\picture\align\right 
-                  *this\scroll_width( ) + *this\picture\width + img_indent_x
-               Else
-                  If *this\scroll_width( ) < *this\picture\width + *this\padding\x * 2
-                     *this\scroll_width( ) = *this\picture\width + *this\padding\x * 2
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            ; make_scrollarea_height
-            If *this\picture\height
-               If *this\picture\align\top Or
-                  *this\picture\align\bottom 
-                  *this\scroll_height( ) + *this\picture\height + img_indent_y
-               Else
-                  If *this\scroll_height( ) < *this\picture\height + *this\padding\y * 2
-                     *this\scroll_height( ) = *this\picture\height + *this\padding\y * 2
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            ; Debug ""+*this\class +" "+ *this\scroll_width( ) +" "+ *this\padding\x
-            If *this\scroll_width( ) = *this\padding\x * 2
-               *this\scroll_width( ) = *this\inner_width( )
-            EndIf
-            If *this\scroll_height( ) = *this\padding\y * 2
-               *this\scroll_height( ) = *this\inner_height( )
-            EndIf
-            ;
-            ; make_scrollarea_pos
-            If *this\scroll_width( )
-               make_scrollarea_x( *this, *this\scroll_width( ), *this\text\align )
-            EndIf
-            If *this\scroll_height( )
-               make_scrollarea_y( *this, *this\scroll_height( ), *this\text\align )
-            EndIf
             
+            UpdateScroll_Content( *this, *this\text, *this\picture )
             UpdateAlign_Content( *this, *this\text, *this\picture, *this\scroll_width( ), *this\scroll_height( ) )
             
             ;
@@ -20188,15 +20135,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
       EndProcedure
       
-      Procedure   UpdateDraw_Text( *this._s_WIDGET, textchange.b )
+      Procedure   UpdateDraw_Text( *this._s_WIDGET )
          With *this
-            
+            Protected textchange.b = 1
             Protected *str.Character
             Protected *end.Character
             Protected textHeight = *this\text\height
             Protected String.s, String1.s, CountString
             Protected IT, len.l, Position.l, Width
             Protected ColorFont = *this\color\front[\ColorState( )]
+            ; 
             
             ; *this\max
             If *this\text\vertical
@@ -20319,6 +20267,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;
+               *this\text\rotate = Bool( *this\text\invert ) * 180 + Bool( *this\text\vertical ) * 90
+               ;
                While *end\c
                   If *end\c = #LF
                      AddElement( *this\__lines( ))
@@ -20327,6 +20277,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ; drawing item font
                      draw_font( *this\__lines( ), 0, *this\__lines( )\TextChange( ));, GetFontID( *this ) )
+                     
                      
                      ;; editor
                      *this\__lines( )\lindex = ListIndex( *this\__lines( ))
@@ -21911,15 +21862,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf               
             
             With *this
-               ; Make output multi line text
-               If update
-                  UpdateDraw_Text( *this, update )
-               EndIf
-               
                ;
                ; then change text update cursor pos
                If *this\text\editable And *this\TextChange( ) =- 99 And *this\LineState( ) >= 0
-                  UpdateDraw_Text( *this, #True )
+                  UpdateDraw_Text( *this )
                   
                   If *this\LineFocused( )
                      ;                      *this\LineEntered( ) = *this\LineFocused( )
@@ -22159,6 +22105,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\ResizeChange( ) Or 
                *this\picture\change
                
+               If *this\type = #__type_Editor Or
+                  *this\type = #__type_String
+                  ;
+                  UpdateDraw_Text( *this )
+               EndIf
+               
                If *this\type = #__type_Text Or
                   *this\type = #__type_Button Or
                   *this\type = #__type_Option Or
@@ -22166,7 +22118,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\type = #__type_CheckBox Or
                   *this\type = #__type_HyperLink Or
                   *this\type = #__type_ComboBox 
-               ; If Not *this\container ; *this\type <> #__type_Splitter ;And *this\root <> *this
+                  ;
                   UpdateDraw_Content( *this )
                EndIf
             EndIf
@@ -22217,7 +22169,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Case #__type_ListView   : Draw_Tree( *this )
                         Case #__type_ListIcon   : Draw_ListIcon( *this )
                            
-                        Case #__type_String     : Draw_Editor( *this )
+                        Case #__type_String     
+;                            If *this\text\multiline
+                              Draw_Editor( *this )
+;                            Else
+;                               Draw_Button( *this )
+;                            EndIf
                         Case #__type_Editor     : Draw_Editor( *this )
                            
                         Case #__type_Text       : Draw_Button( *this )
@@ -28020,9 +27977,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 21778
-; FirstLine = 21763
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 21864
+; FirstLine = 21533
+; Folding = -------------------------------------------------------------------------------------------f28----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------z9T--v----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

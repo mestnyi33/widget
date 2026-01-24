@@ -156,8 +156,8 @@ Debug ""
 Debug ""
 End
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 130
-; FirstLine = 114
+; CursorPosition = 8
+; FirstLine = 1
 ; Folding = ---
 ; EnableXP
 ; DPIAware
