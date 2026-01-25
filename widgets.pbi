@@ -1977,7 +1977,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   edit_AddItem( *this, position, *text.Character, string_len )
       Declare.s edit_make_insert_text( *this, Text.s )
       
-      Global img_indent = DPIScaled(10)
       Declare  Draw_Content( *this._s_WIDGET, state )
       
       
@@ -3837,212 +3836,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndMacro
       
-      Global ppp = DPIScaled(6)
+      Global ppp = DPIScaled(5)
       ;-
-      Procedure   UpdateScroll_Content( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE )
-         Protected test = 0
-         Protected Width, Height
-         Protected img_indent_x, img_indent_y 
-         
-         ;
-         If *img And *img\imageID 
-            If *txt And *txt\string 
-               img_indent_x = img_indent
-               img_indent_y = img_indent
-            EndIf
-         EndIf
-         
-         ;     
-         If *txt\multiLine
-            
-         Else
-            ; make_scrollarea_size
-            If *txt\vertical
-               Width = *this\padding\x * 2
-               Height = *this\padding\y * 2
-               If *txt\string
-                  Width + *txt\height
-                  Height + *txt\width 
-               EndIf
-            Else
-               Width = *this\padding\x * 2
-               Height = *this\padding\y * 2
-               If *txt\string
-                  Width + *txt\width 
-                  Height + *txt\height
-               EndIf
-            EndIf
-            ;
-            ; make_scrollarea_width
-            If *img\width
-               If *img\align\left Or
-                  *img\align\right 
-                  Width + *img\width + img_indent_x
-               Else
-                  If Width < *img\width + *this\padding\x * 2
-                     Width = *img\width + *this\padding\x * 2
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            ; make_scrollarea_height
-            If *img\height
-               If *img\align\top Or
-                  *img\align\bottom 
-                  Height + *img\height + img_indent_y
-               Else
-                  If Height < *img\height + *this\padding\y * 2
-                     Height = *img\height + *this\padding\y * 2
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            ; Debug ""+*this\class +" "+ width +" "+ *this\padding\x
-            If Width = *this\padding\x * 2
-               Width = *this\inner_width( )
-            EndIf
-            If Height = *this\padding\y * 2
-               Height = *this\inner_height( )
-            EndIf
-            ;
-            ; make_scrollarea_pos
-            If Width
-               make_scrollarea_x( *this, Width, *txt\align )
-            EndIf
-            If Height
-               make_scrollarea_y( *this, Height, *txt\align )
-            EndIf
-            
-            *this\scroll_width( ) = Width
-            *this\scroll_height( ) = Height
-         EndIf
-      EndProcedure
-      
-      Procedure   UpdateAlign_Content( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, Width, Height )
-         ;
-         If *txt\multiLine
-            
-         Else
-            Protected padding = 6
-            Protected *txt_align._s_ALIGN = *this\text\align
-            Protected *img_align._s_ALIGN = *this\picture\align
-            
-            If Width
-               If *this\text\vertical
-                  change_align_horizontal( *txt, Width, *txt\height, *this\text\rotate, *txt_align, padding )
-                  change_align_horizontal( *img, Width, *img\height, *this\picture\rotate, *img_align, padding )
-               Else
-                  change_align_horizontal( *txt, Width, *txt\width, *this\text\rotate, *txt_align, padding )
-                  change_align_horizontal( *img, Width, *img\width, *this\picture\rotate, *img_align, padding )
-               EndIf
-            EndIf
-            
-            If Height
-               If *this\text\vertical
-                  change_align_vertical( *txt, Height, *txt\width, *this\text\rotate, *txt_align, padding )
-                  change_align_vertical( *img, Height, *img\width, *this\picture\rotate, *img_align, padding )
-               Else
-                  change_align_vertical( *txt, Height, *txt\height, *this\text\rotate, *txt_align, padding )
-                  change_align_vertical( *img, Height, *img\height, *this\picture\rotate, *img_align, padding )
-               EndIf
-            EndIf
-            
-            ;pb bug
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-               If *this\text\rotate = 90
-                  *txt\x - 2
-               EndIf
-               If *this\text\rotate = 270
-                  *txt\x + 2
-               EndIf
-               If *this\text\rotate = 0
-                  *txt\y - 1
-               EndIf
-               If *this\text\rotate = 180
-                  *txt\y + 3
-               EndIf
-            CompilerEndIf
-            
-            CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-               If *this\text\rotate = 90
-                  *txt\x - 3
-               EndIf
-               If *this\text\rotate = 270
-                  *txt\x + 3
-               EndIf
-               If *this\text\rotate = 0
-                  *txt\y - 1
-               EndIf
-               If *this\text\rotate = 180
-                  *txt\y + 2
-               EndIf
-            CompilerEndIf
-            ;
-         EndIf
-      EndProcedure
-      
-      Procedure   UpdateDraw_BarContent( *this._s_WIDGET, List *tabs._s_ITEMS( ), padding )
-         Protected img_indent_x, img_indent_y 
-         
-         ;
-         If *tabs( )\picture And *tabs( )\picture\imageID 
-            If *tabs( )\text And *tabs( )\text\string 
-               img_indent_x = 0;img_indent
-               img_indent_y = 0;img_indent
-            EndIf
-         EndIf
-         
-         ;     
-         If *this\text\multiLine 
-            
-         Else
-            Protected *txt_align._s_ALIGN = *this\text\align
-            Protected *img_align._s_ALIGN = *this\picture\align
-            
-            UpdateAlign_Content( *this, *tabs( )\text, *tabs( )\picture, *tabs( )\width, *tabs( )\height )
-            
-            ; коректировка положения текста если есть изображение
-            If *img_align
-               If *tabs( )\picture\width
-                  If *img_align\left
-                     If *txt_align\left
-                        *tabs( )\text\x + ( *tabs( )\picture\width + img_indent_x )
-                     Else
-                        *tabs( )\text\x + ( *tabs( )\picture\width + img_indent_x ) / 2
-                     EndIf
-                  EndIf
-                  If *img_align\right
-                     If *txt_align\right
-                        *tabs( )\text\x - ( *tabs( )\picture\width + img_indent_x )
-                     Else
-                        *tabs( )\text\x - ( *tabs( )\picture\width + img_indent_x ) / 2
-                     EndIf
-                  EndIf
-               EndIf
-               If *tabs( )\picture\height
-                  If *img_align\top
-                     If *img_align\top
-                        If *txt_align\top
-                           *tabs( )\text\y + ( *tabs( )\picture\height + img_indent_y )
-                        Else
-                           *tabs( )\text\y + ( *tabs( )\picture\height + img_indent_y ) / 2
-                        EndIf
-                     EndIf
-                  EndIf
-                  If *img_align\bottom
-                     If *img_align\bottom
-                        If *txt_align\bottom
-                           *tabs( )\text\y - ( *tabs( )\picture\height + img_indent_y )
-                        Else
-                           *tabs( )\text\y - ( *tabs( )\picture\height + img_indent_y ) / 2
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-         EndIf
-      EndProcedure
+      Global img_indent = DPIScaled(10)
+      Declare   UpdateScroll_Content( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE )
+      Declare   UpdateAlign_Content( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, Width, Height )
       
       Procedure.b bar_UpdateDraw_TabItems( *this._s_WIDGET, List *tabs._s_ITEMS( ) )
          With *this
@@ -4139,6 +3937,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            *tabs( )\y = *bar\max + pos
                            
+                           ; vertical text
                            If *bar\vertical > 0
                               *tabs( )\width   = *this\screen_width( ) - bar_toggle_size - bar_button_padding
                               ;
@@ -4147,12 +3946,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *tabs( )\height  = 1
                                  *bar\max + *tabs( )\height + pos + (separator_step * 2)
                               Else
-                                 *tabs( )\height = 0
-                                 If *tabs( )\text\width
-                                    *tabs( )\height + *tabs( )\text\width + ( text_pos * 2 )
-                                 EndIf
-                                 If *tabs( )\picture\width
-                                    *tabs( )\height + *tabs( )\picture\width + ( img_pos * 2 )
+                                 ;
+                                 If *tabs( )\text\width And *tabs( )\picture\width
+                                    *tabs( )\height = *tabs( )\text\width + *tabs( )\picture\width + ( text_pos * 2 ) + img_indent
+                                 Else
+                                    *tabs( )\height = *tabs( )\text\width + *tabs( )\picture\width + ( text_pos * 2 )
                                  EndIf
                                  
                                  *bar\max + *tabs( )\height + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
@@ -4263,9 +4061,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         
                      Else
-                        *tabs( )\width = 0
-                        *tabs( )\x = *bar\max + pos
-                        ;
                         If *this\type = #__type_TabBar
                            If *this\parent\fs[2]
                               *tabs( )\y     = bar_toggle_size
@@ -4282,80 +4077,57 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *tabs( )\height  = *this\scroll_height( ) - *tabs( )\y * 2
                         EndIf
                         ;
-                        If *tabs( )\tindex  = #PB_Ignore
+                        *tabs( )\x = *bar\max + pos
+                        ;
+                        If *tabs( )\tindex = #PB_Ignore
                            *tabs( )\x      + separator_step
                            *tabs( )\width  = 1
-                           *bar\max + *tabs( )\width + pos + (separator_step * 2)
                         Else
                            ;
-                           *this\text\y = ( *tabs( )\height - *tabs( )\text\height ) / 2
-                           ;                            ;
-                           ;                            *tabs( )\picture\y = ( *tabs( )\height - *tabs( )\picture\height ) / 2
-                           ;                            *tabs( )\text\y  = *this\text\y
-                           ;                            
-                           ;                            ;
-                           ;                            *tabs( )\picture\x = Bool( *tabs( )\picture\width ) * img_pos
-                           ;                            *tabs( )\text\x  = text_pos + *tabs( )\picture\x + *tabs( )\picture\width
-                           
-                           ;
-                           *tabs( )\width = 0
-                           If *tabs( )\text\width
-                              *tabs( )\width + *tabs( )\text\width + ( text_pos * 2 )
-                           EndIf
-                           If *tabs( )\picture\width
-                              *tabs( )\width + *tabs( )\picture\width + ( img_pos * 2 )
-                           EndIf
-                           ;                            *tabs( )\width = (Bool( *tabs( )\text\width ) * ( text_pos * 2 ) + *tabs( )\text\width +
-                           ;                                              Bool( *tabs( )\picture\width ) * ( img_pos * 2 ) + *tabs( )\picture\width) - Bool( *tabs( )\picture\width And *tabs( )\text\width ) * ( text_pos )
-                           
-                           If *this\type = #__type_TabBar
-                              *bar\max + *tabs( )\width + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
-                              ;*bar\max + *tabs( )\width + pos + Bool( index = *this\countitems - 1 )
+                           If *tabs( )\text\width And *tabs( )\picture\width
+                              *tabs( )\width = *tabs( )\text\width + *tabs( )\picture\width + ( text_pos * 2 ) + img_indent
                            Else
-                              If Not constants::BinaryFlag( *this\flag, #__flag_BarInlineText )
-                                 If *tabs( )\text\width
-                                    If *tabs( )\width > *tabs( )\picture\width 
-                                       *tabs( )\width - *tabs( )\picture\width 
-                                    EndIf
-                                    ;                                     ;
-                                    ;                                     *tabs( )\picture\y = ( *tabs( )\height - *tabs( )\picture\height - *tabs( )\text\height ) / 2
-                                    ;                                     *tabs( )\text\y    = *tabs( )\picture\y + *tabs( )\picture\height
-                                    ;                                     ;
-                                    ;                                     *tabs( )\picture\x = ( *tabs( )\width - *tabs( )\picture\width )/2
-                                    ;                                     *tabs( )\text\x    = ( *tabs( )\width - *tabs( )\text\width )/2
-                                 EndIf
-                              EndIf
-                              
-                              *bar\max + *tabs( )\width + pos + Bool( Index = *this\countitems - 1 )
+                              *tabs( )\width = *tabs( )\text\width + *tabs( )\picture\width + ( text_pos * 2 )
+                           EndIf
+                        EndIf
+                        
+                        If *this\type = #__type_TabBar
+                           *bar\max + *tabs( )\width + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
+                        Else
+                           *bar\max + *tabs( )\width + pos
+                           If *tabs( )\tindex = #PB_Ignore
+                              *bar\max + (separator_step * 2)
+                           Else
+                              *bar\max + Bool( Index = *this\countitems - 1 )
                            EndIf
                         EndIf
                         
                      EndIf
                      
-                     UpdateDraw_BarContent( *this, *tabs( ), ppp )
+                     UpdateAlign_Content( *this, *tabs( )\text, *tabs( )\picture, *tabs( )\width, *tabs( )\height )
+                     
+                     If *this\text\vertical
+                        If *tabs( )\picture\height
+                           If *this\text\invert
+                              *tabs( )\text\y + ppp + img_indent/2
+                              *tabs( )\picture\y + ppp
+                           Else
+                              *tabs( )\text\y - ppp - img_indent/2
+                              *tabs( )\picture\y - ppp
+                           EndIf
+                        EndIf
+                     Else
+                        If *tabs( )\picture\width
+                           If *this\text\invert
+                              *tabs( )\text\x - ppp - img_indent/2
+                              *tabs( )\picture\x - ppp
+                           Else
+                              *tabs( )\text\x + ppp + img_indent/2
+                              *tabs( )\picture\x + ppp
+                           EndIf
+                        EndIf
+                     EndIf
                   Next
-                  
-                  
-                  ;                   ; panel tab align
-                  ;                   If is_integral_( *this ) And *this\parent\type = #__type_panel
-                  ;                      ForEach *tabs( )
-                  ;                         If *tabs( )\hide
-                  ;                            Continue
-                  ;                         EndIf
-                  ;                         
-                  ;                         If *bar\vertical
-                  ;                            If *this\inner_height( ) > *bar\max
-                  ;                               ; *tabs( )\y + (*this\inner_height( ) - *bar\max) ; bottom
-                  ;                               *tabs( )\y + (*this\inner_height( ) - *bar\max)/2 ; center
-                  ;                            EndIf
-                  ;                         Else
-                  ;                            If *this\inner_width( ) > *bar\max
-                  ;                               ; *tabs( )\x + (*this\inner_width( ) - *bar\max) ; right
-                  ;                               *tabs( )\x + (*this\inner_width( ) - *bar\max)/2 ; center
-                  ;                            EndIf
-                  ;                         EndIf
-                  ;                      Next
-                  ;                   EndIf
                   
                   ;
                   If *bar\vertical
@@ -4363,6 +4135,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Else
                      *this\scroll_width( ) = *bar\max
                   EndIf
+                  
                   ;
                   bar_update( *this, #True )
                   
@@ -6471,9 +6244,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If *this\type = #__type_Progress
             If *bar\PageChange( )
-               *this\text\string = "%" + Str( *bar\page\pos )
-               ;Debug *this\text\rotate
-               ; UpdateDraw_Content( *this )
+               If *this\text\string <> "%" + Str( *bar\page\pos )
+                  *this\text\string = "%" + Str( *bar\page\pos )
+                  *this\TextChange( ) = 1
+               EndIf
                
                Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
                *bar\PageChange( ) = 0
@@ -15289,8 +15063,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Case "#__flag_autosize"             : Flag = Flag | #__flag_AutoSize            
                         Case "#__flag_nogadgets"            : Flag = Flag | #__flag_NoGadgets      
                            
-                        Case "#__align_text"                : Flag = Flag | #__align_text 
-                        Case "#__align_image"               : Flag = Flag | #__align_image
                         Case "#__align_full"                : Flag = Flag | #__align_Full   
                         Case "#__align_proportional"        : Flag = Flag | #__align_proportional 
                         Case "#__align_auto"                : Flag = Flag | #__align_auto         
@@ -15301,11 +15073,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Case "#__flag_right"                : Flag = Flag | #__flag_Right  
                         Case "#__flag_center"               : Flag = Flag | #__flag_Center 
                            
-                        Case "#__flag_imageleft"            : Flag = Flag | #__flag_ImageLeft          
-                        Case "#__flag_imagetop"             : Flag = Flag | #__flag_ImageTop            
-                        Case "#__flag_imageright"           : Flag = Flag | #__flag_ImageRight        
-                        Case "#__flag_imagebottom"          : Flag = Flag | #__flag_ImageBottom      
-                        Case "#__flag_imagecenter"          : Flag = Flag | #__flag_ImageCenter      
+;                         Case "#__flag_imageleft"            : Flag = Flag | #__flag_ImageLeft          
+;                         Case "#__flag_imagetop"             : Flag = Flag | #__flag_ImageTop            
+;                         Case "#__flag_imageright"           : Flag = Flag | #__flag_ImageRight        
+;                         Case "#__flag_imagebottom"          : Flag = Flag | #__flag_ImageBottom      
+;                         Case "#__flag_imagecenter"          : Flag = Flag | #__flag_ImageCenter      
                            
                         Case "#__flag_textleft"             : Flag = Flag | #__flag_TextLeft          
                         Case "#__flag_texttop"              : Flag = Flag | #__flag_TextTop            
@@ -20064,43 +19836,123 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       ;- UPDATEs
       ;-
-      Procedure   UpdateDraw_Content( *this._s_WIDGET )
-         Protected test = 0
-         Protected img_indent_x, img_indent_y 
+      Procedure   UpdateScroll_Content( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE )
+         Protected Width, Height
          
-         ;
-         If *this\picture And *this\picture\imageID 
-            If *this\text And *this\text\string 
-               img_indent_x = img_indent
-               img_indent_y = img_indent
-            EndIf
-         EndIf
-         
-            
          ;     
-         If *this\text\multiLine
-            UpdateDraw_Text( *this )
+         If *txt\multiLine
+            
          Else
-            
-            UpdateScroll_Content( *this, *this\text, *this\picture )
-            UpdateAlign_Content( *this, *this\text, *this\picture, *this\scroll_width( ), *this\scroll_height( ) )
-            
+            ; make_scrollarea_size
+            If *txt\vertical
+               Width = *this\padding\x * 2
+               Height = *this\padding\y * 2
+               If *txt\string
+                  Width + *txt\height
+                  Height + *txt\width 
+               EndIf
+            Else
+               Width = *this\padding\x * 2
+               Height = *this\padding\y * 2
+               If *txt\string
+                  Width + *txt\width 
+                  Height + *txt\height
+               EndIf
+            EndIf
             ;
+            ; make_scrollarea_width
+            If *img\width
+               If *img\align\left Or
+                  *img\align\right 
+                  Width + *img\width + img_indent
+               Else
+                  If Width < *img\width + *this\padding\x * 2
+                     Width = *img\width + *this\padding\x * 2
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            ; make_scrollarea_height
+            If *img\height
+               If *img\align\top Or
+                  *img\align\bottom 
+                  Height + *img\height + img_indent
+               Else
+                  If Height < *img\height + *this\padding\y * 2
+                     Height = *img\height + *this\padding\y * 2
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            ; Debug ""+*this\class +" "+ width +" "+ *this\padding\x
+            If Width = *this\padding\x * 2
+               Width = *this\inner_width( )
+            EndIf
+            If Height = *this\padding\y * 2
+               Height = *this\inner_height( )
+            EndIf
+            ;
+            ; make_scrollarea_pos
+            If Width
+               make_scrollarea_x( *this, Width, *txt\align )
+            EndIf
+            If Height
+               make_scrollarea_y( *this, Height, *txt\align )
+            EndIf
+            
+            *this\scroll_width( ) = Width
+            *this\scroll_height( ) = Height
+         EndIf
+      EndProcedure
+      
+      Procedure   UpdateAlign_Content( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, Width, Height )
+         ;
+         If *txt\multiLine
+            
+         Else
+            Protected *txt_align._s_ALIGN = *this\text\align
+            Protected *img_align._s_ALIGN = *this\picture\align
+            
+;             If *img\width
+;                Debug ""+Width +" "+ Height +" "+ *txt_align\left+" "+*txt_align\top+" "+*txt_align\right+" "+*txt_align\bottom
+;                Debug "   "+*img_align\left+" "+*img_align\top+" "+*img_align\right+" "+*img_align\bottom
+;             EndIf
+            
+            If Width
+               If *this\text\vertical
+                  change_align_horizontal( *txt, Width, *txt\height, *this\text\rotate, *txt_align, *this\padding\y )
+                  change_align_horizontal( *img, Width, *img\height, *this\picture\rotate, *img_align, *this\padding\y )
+               Else
+                  change_align_horizontal( *txt, Width, *txt\width, *this\text\rotate, *txt_align, *this\padding\x )
+                  change_align_horizontal( *img, Width, *img\width, *this\picture\rotate, *img_align, *this\padding\x )
+               EndIf
+            EndIf
+            
+            If Height
+               If *this\text\vertical
+                  change_align_vertical( *txt, Height, *txt\width, *this\text\rotate, *txt_align, *this\padding\x )
+                  change_align_vertical( *img, Height, *img\width, *this\picture\rotate, *img_align, *this\padding\x )
+               Else
+                  change_align_vertical( *txt, Height, *txt\height, *this\text\rotate, *txt_align, *this\padding\y )
+                  change_align_vertical( *img, Height, *img\height, *this\picture\rotate, *img_align, *this\padding\y )
+               EndIf
+            EndIf
+            
             ; align img left & top
             If *this\picture\align
                If *this\picture\width
                   If *this\picture\align\left
                      If *this\text\align\left
-                        *this\text\x + ( *this\picture\width + img_indent_x )
+                        *this\text\x + ( *this\picture\width + img_indent )
                      Else
-                        *this\text\x + ( *this\picture\width + img_indent_x ) / 2
+                        *this\text\x + ( *this\picture\width + img_indent ) / 2
                      EndIf
                   EndIf
                   If *this\picture\align\right
                      If *this\text\align\right
-                        *this\text\x - ( *this\picture\width + img_indent_x )
+                        *this\text\x - ( *this\picture\width + img_indent )
                      Else
-                        *this\text\x - ( *this\picture\width + img_indent_x ) / 2
+                        *this\text\x - ( *this\picture\width + img_indent ) / 2
                      EndIf
                   EndIf
                EndIf
@@ -20108,25 +19960,67 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\picture\align\top
                      If *this\picture\align\top
                         If *this\text\align\top
-                           *this\text\y + ( *this\picture\height + img_indent_y )
+                           *this\text\y + ( *this\picture\height + img_indent )
                         Else
-                           *this\text\y + ( *this\picture\height + img_indent_y ) / 2
+                           *this\text\y + ( *this\picture\height + img_indent ) / 2
                         EndIf
                      EndIf
                   EndIf
                   If *this\picture\align\bottom
                      If *this\picture\align\bottom
                         If *this\text\align\bottom
-                           *this\text\y - ( *this\picture\height + img_indent_y )
+                           *this\text\y - ( *this\picture\height + img_indent )
                         Else
-                           *this\text\y - ( *this\picture\height + img_indent_y ) / 2
+                           *this\text\y - ( *this\picture\height + img_indent ) / 2
                         EndIf
                      EndIf
                   EndIf
                EndIf
             EndIf
-               ;
-            EndIf
+            
+            ;pb bug
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+               If *this\text\rotate = 90
+                  *txt\x - 2
+               EndIf
+               If *this\text\rotate = 270
+                  *txt\x + 2
+               EndIf
+               If *this\text\rotate = 0
+                  *txt\y - 1
+               EndIf
+               If *this\text\rotate = 180
+                  *txt\y + 3
+               EndIf
+            CompilerEndIf
+            
+            CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+               If *this\text\rotate = 90
+                  *txt\x - 3
+               EndIf
+               If *this\text\rotate = 270
+                  *txt\x + 3
+               EndIf
+               If *this\text\rotate = 0
+                  *txt\y - 1
+               EndIf
+               If *this\text\rotate = 180
+                  *txt\y + 2
+               EndIf
+            CompilerEndIf
+            ;
+         EndIf
+      EndProcedure
+      
+      Procedure   UpdateDraw_Content( *this._s_WIDGET )
+         If *this\text\multiLine
+            UpdateDraw_Text( *this )
+         Else
+            
+            UpdateScroll_Content( *this, *this\text, *this\picture )
+            UpdateAlign_Content( *this, *this\text, *this\picture, *this\scroll_width( ), *this\scroll_height( ))
+            
+         EndIf
       EndProcedure
       
       Procedure   UpdateDraw_Text( *this._s_WIDGET )
@@ -22810,10 +22704,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          size = DPIScaled( size )
          
          Protected.b align_image = constants::BinaryFlag( Flag, #__align_image )
-         Protected.b flag_autosize = constants::BinaryFlag( Flag, #__flag_autosize )
-         Protected.b flag_center = constants::BinaryFlag( Flag, #__flag_Center )
-         Protected.b flag_right = constants::BinaryFlag( Flag, #__flag_Right )
+         Protected.b flag_AutoSize = constants::BinaryFlag( Flag, #__flag_autosize )
+         Protected.b flag_Center = constants::BinaryFlag( Flag, #__flag_Center )
+         Protected.b flag_Right = constants::BinaryFlag( Flag, #__flag_Right )
+         Protected.b flag_Bottom = constants::BinaryFlag( Flag, #__flag_Bottom )
          Protected.b flag_TextInLine = constants::BinaryFlag( Flag, #__flag_TextInLine )
+         
+         If Not flag_Center
+            align_image = 1
+         EndIf
          
          ;
          Protected color, img                 ;, *this.allocate( Widget )
@@ -22867,6 +22766,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or
                                        constants::BinaryFlag( Flag, #PB_ProgressBar_Vertical ))
             *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert )
+            
          EndIf
          If Type = #__type_Scroll
             *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or 
@@ -22906,13 +22806,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; replace pb flag
          Flag = FromPBFlag( Type, Flag )
          *this\flag = Flag
+         
          ;
          ; change flags
          If Type = #__type_Button Or
+            Type = #__type_Progress Or
             Type = #__type_ButtonImage Or
             Type = #__type_HyperLink
             
-            *this\Flag | #__flag_TextCenter
+            *this\Flag | #__flag_Center
             
             If Type = #__type_ButtonImage Or
                Type = #__type_Button 
@@ -22926,18 +22828,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                        *this\Flag & #__flag_Right Or
                        *this\Flag & #__flag_Top Or
                        *this\Flag & #__flag_Bottom)
-                  *this\Flag | #__flag_TextLeft
+                  *this\Flag | #__flag_Left
                EndIf
             EndIf
-            If align_image
-               *this\Flag | #__flag_Center 
-            Else
-               *this\Flag | #__flag_TextCenter 
-            EndIf
+            
+            *this\Flag | #__flag_Center 
             
             If flag_Right
-               *this\flag & ~ #__flag_TextLeft
-               *this\flag | #__flag_TextRight
+               *this\flag & ~ #__flag_Left
+               *this\flag | #__flag_Right
             EndIf
          ElseIf Type = #__type_Spin Or
                 Type = #__type_String Or
@@ -22949,10 +22848,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If flag_Right
-               *this\flag & ~ #__flag_TextLeft
-               *this\flag | #__flag_TextRight
+               *this\flag & ~ #__flag_Left
+               *this\flag | #__flag_Right
             EndIf
             
+         ElseIf Type = #__type_Text Or
+                Type = #__type_Editor
+            
+            If Not flag_Center
+               If Not flag_Right
+                  *this\Flag | #__flag_Left
+               EndIf
+               If Not flag_Bottom
+                  *this\Flag | #__flag_Top
+               EndIf
+            EndIf
          EndIf
          ;
          If Not flag_TextInLine 
@@ -23422,14 +23332,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; If constants::BinaryFlag( *this\flag, #PB_ComboBox_Editable )
             If constants::BinaryFlag( *this\flag, #__flag_Textreadonly, 0 )
                *this\stringbar = Create( *this, "ComboString", #__type_String,
-                                         0, 0, 0, 0, #Null$, #__flag_child | #__flag_Borderless|*this\flag )
+                                         0, 0, 0, 0, #Null$, #__flag_child | #__flag_Borderless )
             EndIf
          EndIf
          If *this\type = #__type_Spin
             SetAttribute( *this, #__bar_buttonsize, Size + 5 )
             *this\stringbar = Create( *this, *this\class + "_STRING",
                                       #__type_String, 0, 0, 0, 0, "", ;Str(*param_1),
-                                      #__flag_child | #__flag_Textnumeric | #__flag_Borderless | *this\flag&~(#__flag_invert|#__flag_vertical) )
+                                      #__flag_child | #__flag_Textnumeric | #__flag_Borderless );| *this\flag&~(#__flag_invert|#__flag_vertical) )
          EndIf
          
          
@@ -23633,21 +23543,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_HyperLink Or *this\type = #__type_Progress
             
             set_align_content( *this\picture, *this\flag )
-            
-            If *this\type = #__type_ComboBox Or
-               *this\type = #__type_Progress
-               
-               If constants::BinaryFlag( *this\flag, #__align_Text )
-                  set_align_content( *this\text, *this\flag )
-               EndIf
-            Else
-               If Not ( constants::BinaryFlag( *this\flag, #__align_image ) And 
-                        constants::BinaryFlag( *this\flag, #__align_Text ))
-                  set_align_content( *this\text, *this\flag )
-               EndIf
+            If align_image
+               set_align_content( *this\text, *this\flag )
             EndIf
          EndIf
-         ;
+         If *this\type = #__type_Progress
+            Debug ""+*this\text\align\left +" "+ *this\text\align\top +" "+ *this\text\align\right +" "+ *this\text\align\bottom
+         EndIf
+            ;
          ; set text flag
          If *this\type = #__type_ComboBox Or 
             *this\type = #__type_Progress Or
@@ -26439,7 +26342,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Container( f1, f1, Width - f1 * 2, Height - bh - f1 - f2 * 2 - 1 )
          SetClass( Widget( ), "message_CONT" )
          If IsImage( img )
-            Image( f2, f2, iw, iw, img, #__flag_ImageCenter | #__flag_Borderflat | #__flag_transparent )
+            Image( f2, f2, iw, iw, img, #__flag_Center | #__flag_Borderflat | #__flag_transparent )
             SetClass( Widget( ), "message_IMAGE" )
             Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__flag_TextCenter | #__flag_TextLeft | #__flag_transparent );| #__flag_Borderless )
          Else
@@ -27291,7 +27194,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    ;Define *a2._s_WIDGET = Container( 50,45,135,95, #__flag_nogadgets )
    
    Define *a2._s_WIDGET = ScrollArea( 50, 45, 135, 95, 300, 300, mouse( )\steps, #__flag_nogadgets )
-   Define *a3._s_WIDGET = Image( 150, 110, 60, 60, -1 )
+   Global img = LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
+   Define *a3._s_WIDGET = Image( 150, 110, 60, 60, img, #__flag_Center )
    
    ;    a_set( *a0, -1, (10))
    a_set( *a3, -1, DPIScaled(10))
@@ -27971,9 +27875,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 6475
-; FirstLine = 6373
-; Folding = ----------------------------------------------------------------------------------------8-------------------------9-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------N-3--8----------------------------------------------------------------------0f8-0j8----v-+----------------------------------------------------------------------------------------------------
+; CursorPosition = 27197
+; FirstLine = 26530
+; Folding = -------------------------------------------------------------------------------------------uf-e----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--v-------------------------------------------------------------------------------------vu3r8J5e7-------------------------------------------------------------------------------------------v-f0------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

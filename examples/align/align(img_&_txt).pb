@@ -25,6 +25,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ;   Image(_x_,_y_,_width_,_height_,(0),_flag_) : SetBackColor( widget( ), $FFB3FDFF )
          
    ; ButtonImage(_x_,_y_,_width_,_height_,(0),(_flag_&~#__align_image));|#__flag_BorderLess)
+     
+     ;Button(_x_,_y_,_width_,_height_,"", _flag_ &~ #__flag_Center|#__flag_textmultiline )
+     ;Button(_x_,_y_,_width_,_height_,_text_, _flag_ &~ #__flag_Center|#__flag_textmultiline )
      Button(_x_,_y_,_width_,_height_,_text_, _flag_|#__flag_textmultiline )
      SetImage( Widget(), (0))
   EndMacro
@@ -96,7 +99,8 @@ CompilerIf #PB_Compiler_IsMainFile
   
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 96
+; CursorPosition = 29
+; FirstLine = 20
 ; Folding = -
 ; EnableXP
 ; DPIAware

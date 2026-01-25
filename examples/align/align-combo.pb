@@ -21,8 +21,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure TestAlign( X,Y,Width,Height, Text.s, flags=0 )
       If flags & #__flag_Center
-         flags &~ #__flag_Center
-         flags | #__align_image
+         ;flags &~ #__flag_Center
+      Else
+        ; flags | #__align_image
       EndIf
       
       Protected._s_WIDGET *g = ComboBox( X,Y,Width,Height, flags)
@@ -47,8 +48,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 23
-; FirstLine = 20
+; CursorPosition = 25
+; FirstLine = 9
 ; Folding = --
 ; EnableXP
 ; DPIAware

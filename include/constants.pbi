@@ -444,7 +444,7 @@
       ;
       #__align_Full           = 1<<59
       #__align_proportional   = 1<<60
-      #__align_text           = 1<<61
+      ;#__align_text           = 1<<61
       #__align_image          = 1<<62
       #__align_none           = 0
       ; #__flag_Limit         = 1<<63
@@ -463,25 +463,34 @@
       #__window_CaptionHeight  = 24
      
       ;-\\ Text
-      #__flag_TextInvert       = #__align_text|#__flag_Invert
-      #__flag_TextVertical     = #__align_text|#__flag_Vertical
-      ;  alignment
-      #__flag_TextLeft         = #__align_text|#__align_Left
-      #__flag_TextTop          = #__align_text|#__align_Top
-      #__flag_TextRight        = #__align_text|#__align_Right
-      #__flag_TextBottom       = #__align_text|#__align_Bottom
-      #__flag_TextCenter       = #__align_text|#__align_Center
+      #__flag_TextInvert       = #__flag_Invert
+      #__flag_TextVertical     = #__flag_Vertical
+      
+      #__flag_TextLeft         = #__align_Left
+      #__flag_TextTop          = #__align_Top
+      #__flag_TextRight        = #__align_Right
+      #__flag_TextBottom       = #__align_Bottom
+      #__flag_TextCenter       = #__align_Center
+      
+;       #__flag_TextInvert       = #__align_text|#__flag_Invert
+;       #__flag_TextVertical     = #__align_text|#__flag_Vertical
+;       ;  alignment
+;       #__flag_TextLeft         = #__align_text|#__align_Left
+;       #__flag_TextTop          = #__align_text|#__align_Top
+;       #__flag_TextRight        = #__align_text|#__align_Right
+;       #__flag_TextBottom       = #__align_text|#__align_Bottom
+;       #__flag_TextCenter       = #__align_text|#__align_Center
       
       ;-\\ Image
       #__image_BackGround      = 1
       #__image_Pressed         = 2
       #__image_Released        = 3
       ;  alignment
-      #__flag_ImageLeft        = #__align_image|#__align_Left
-      #__flag_ImageTop         = #__align_image|#__align_top
-      #__flag_ImageRight       = #__align_image|#__align_Right
-      #__flag_ImageBottom      = #__align_image|#__align_Bottom
-      #__flag_ImageCenter      = #__align_image|#__align_Center
+      #__flag_ImageLeft        = #__flag_Left|#__flag_Center;#__align_image;|#__align_Left
+      #__flag_ImageTop         = #__flag_Top|#__flag_Center;#__align_image|#__align_top
+      #__flag_ImageRight       = #__flag_Right|#__flag_Center;#__align_image|#__align_Right
+      #__flag_ImageBottom      = #__flag_Bottom|#__flag_Center;#__align_image|#__align_Bottom
+      #__flag_ImageCenter      = #__flag_Center;#__align_image|#__align_Center
       
       ;-
       ;-\\ Bar
@@ -722,8 +731,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 501
-; FirstLine = 486
+; CursorPosition = 492
+; FirstLine = 478
 ; Folding = ----
 ; Optimizer
 ; EnableXP

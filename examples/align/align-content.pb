@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define i, h=65, Width = 200
    
-   Global multiline = 1
+   Global multiline = 0
    Global test, change_line, change_txt, change_img
    
    Procedure Click_Events( )
@@ -175,9 +175,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 83
-; FirstLine = 23
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 74
+; FirstLine = 10
 ; Folding = 6+---
 ; EnableXP
 ; DPIAware

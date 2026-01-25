@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
    Global size = 27
-   Global size2 = 130
+   Global size2 = 160
    Global *b16, *b32, *b0
    Global._s_WIDGET *g, *g1, *g2, *g3, *g4
    Global padding = 10
@@ -98,8 +98,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 73
-; FirstLine = 69
+; CursorPosition = 8
+; FirstLine = 2
 ; Folding = --
 ; EnableXP
 ; DPIAware

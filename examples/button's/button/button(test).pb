@@ -4,17 +4,18 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
+   test_draw_area = 1
    
    Global size = 18
-   Global size2 = 130
+   Global size2 = 160
    Global *b16, *b32, *b0
-   Global *g, *g1, *g2, *g3, *g4
+   Global._s_WIDGET *g, *g1, *g2, *g3, *g4
    Global padding = 10
    Global Width = 340
    
    UsePNGImageDecoder()
    
-   Define img = LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
+   Global img = LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
    If Not img
       End
    EndIf
@@ -35,6 +36,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure change_image_events( )
       Select EventWidget( )
          Case *b16
+            ;*g1\flag | #__align_image
             SetImage( *g1, 16)
             SetImage( *g2, 16)
             SetImage( *g3, 16)
@@ -47,6 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile
             SetImage( *g4, 32)
             SetState( *g, 32+padding)
          Case *b0
+            ;*g1\flag &~ #__align_image
             SetImage( *g1, 0)
             SetImage( *g2, 0)
             SetImage( *g3, 0)
@@ -57,8 +60,26 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure Test( X,Y,Width,Height,txt$, Flag.q=0)
       Protected._s_WIDGET *g
-      ; *g = Button( X,Y,Width,Height,txt$, Flag|#__align_Image)
-      *g = Progress( X,Y,Width,Height,0,100, Flag|#__align_Image)
+      
+      If Flag & #__flag_Left
+         Flag &~ #__flag_Left
+      EndIf
+      If Flag & #__flag_Top
+         Flag &~ #__flag_Top
+      EndIf
+      If Flag & #__flag_Right
+         Flag &~ #__flag_Right
+      EndIf
+      If Flag & #__flag_Bottom
+         Flag &~ #__flag_Bottom
+      EndIf
+      
+      *g = Button( X,Y,Width,Height,"", Flag);|#__flag_Center)
+      SetImage( *g, img)
+       
+      ; *g = ButtonImage( X,Y,Width,Height,img, #__flag_Center)
+      
+      ;*g = Progress( X,Y,Width,Height,0,100, Flag) : SetState( *g, 50 )
       ProcedureReturn *g
    EndProcedure
    
@@ -84,8 +105,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 46
+; CursorPosition = 76
+; FirstLine = 60
 ; Folding = --
 ; EnableXP
 ; DPIAware
