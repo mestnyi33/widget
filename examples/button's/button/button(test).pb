@@ -36,7 +36,6 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure change_image_events( )
       Select EventWidget( )
          Case *b16
-            ;*g1\flag | #__align_image
             SetImage( *g1, 16)
             SetImage( *g2, 16)
             SetImage( *g3, 16)
@@ -49,7 +48,6 @@ CompilerIf #PB_Compiler_IsMainFile
             SetImage( *g4, 32)
             SetState( *g, 32+padding)
          Case *b0
-            ;*g1\flag &~ #__align_image
             SetImage( *g1, 0)
             SetImage( *g2, 0)
             SetImage( *g3, 0)
@@ -61,6 +59,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Test( X,Y,Width,Height,txt$, Flag.q=0)
       Protected._s_WIDGET *g
       
+      *g = Button( X,Y,Width,Height,txt$, Flag);|#__flag_Center)
+      SetImage( *g, img)
+       
       If Flag & #__flag_Left
          Flag &~ #__flag_Left
       EndIf
@@ -74,9 +75,6 @@ CompilerIf #PB_Compiler_IsMainFile
          Flag &~ #__flag_Bottom
       EndIf
       
-      *g = Button( X,Y,Width,Height,"", Flag);|#__flag_Center)
-      SetImage( *g, img)
-       
       ; *g = ButtonImage( X,Y,Width,Height,img, #__flag_Center)
       
       ;*g = Progress( X,Y,Width,Height,0,100, Flag) : SetState( *g, 50 )
@@ -105,8 +103,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 76
-; FirstLine = 60
+; CursorPosition = 77
+; FirstLine = 59
 ; Folding = --
 ; EnableXP
 ; DPIAware

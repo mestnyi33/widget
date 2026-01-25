@@ -20,12 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected._s_WIDGET *g
       Protected txt$ = "text"
       
-      If flags & #__flag_Center
-         flags &~ #__flag_Center
-         flags | #__align_image
-      EndIf
-      
-      *g = Button( X,Y,Width,Height, txt$, flags) : Setimage( *g, img )
+      *g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img )
       ;*g = ButtonImage( X,Y,Width,Height, img, flags) : SetText( *g, txt$ )
       ;*g = Image( X,Y,Width,Height, img, flags) : SetText( *g, txt$ )
       
@@ -50,9 +45,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 27
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 22
 ; FirstLine = 20
-; Folding = --
+; Folding = -
 ; EnableXP
 ; DPIAware

@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If flags & #__flag_Center
          flags &~ #__flag_Center
-         flags | #__align_image ;| #__flag_Left
+        ; flags |  ;| #__flag_Left
       EndIf
       
 ;       If word$ = #LF$
@@ -46,7 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 25
-; FirstLine = 17
+; CursorPosition = 12
+; FirstLine = 6
 ; Folding = -
 ; EnableXP

@@ -24,7 +24,6 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If flags & #__flag_Center
          flags &~ #__flag_Center
-         flags | #__align_image ;| #__flag_Left
       EndIf
       
       If word$ = #LF$
@@ -36,12 +35,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ;img =- 1
       
       *g = CheckBox( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
-      ;*g = Button( X,Y,Width,Height, txt$, flags|(Bool(flags&#__align_image)*#__flag_Left)) : SetImage( *g, img ) 
-      ;*g = ComboBox( X,Y,Width,Height, flags|(Bool(flags&#__align_image)*#__flag_Left)) :AddItem(*g, -1, txt$, img ) : SetState(*g,0)
+      ;*g = Button( X,Y,Width,Height, txt$, flags|(Bool(flags&)*#__flag_Left)) : SetImage( *g, img ) 
+      ;*g = ComboBox( X,Y,Width,Height, flags|(Bool(flags&)*#__flag_Left)) :AddItem(*g, -1, txt$, img ) : SetState(*g,0)
       ;*g = Editor( X,Y,Width,Height, flags|#__flag_Center) : SetText( *g, txt$ ) ;: SetImage( *g, img ) 
       ;*g = Text( X,Y,Width,Height, txt$, #__flag_BorderFlat|flags) : SetImage( *g, img )
       
-      ;*g = ButtonImage( X,Y,Width,Height, img, flags|(Bool(flags&#__align_image)*#__flag_Left)) : SetText( *g, txt$ )
+      ;*g = ButtonImage( X,Y,Width,Height, img, flags|(Bool(flags&)*#__flag_Left)) : SetText( *g, txt$ )
       ;*g = Image( X,Y,Width,Height, img, #__flag_BorderFlat|flags) : SetText( *g, txt$ )
       
      ; Alignment( *g, #__align_left|#__align_right)
@@ -68,7 +67,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 37
-; FirstLine = 28
+; CursorPosition = 25
+; FirstLine = 20
 ; Folding = --
 ; EnableXP

@@ -23,7 +23,7 @@ CompilerIf #PB_Compiler_IsMainFile
       If flags & #__flag_Center
          ;flags &~ #__flag_Center
       Else
-        ; flags | #__align_image
+        ; flags | 
       EndIf
       
       Protected._s_WIDGET *g = ComboBox( X,Y,Width,Height, flags)
@@ -49,7 +49,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
 ; CursorPosition = 25
-; FirstLine = 9
+; FirstLine = 21
 ; Folding = --
 ; EnableXP
 ; DPIAware

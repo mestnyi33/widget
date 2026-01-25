@@ -81,11 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
    Procedure TestAlign( X,Y,Width,Height, txt$, img, flags=0, align.q=0 )
       Protected._s_WIDGET *g
-      If flags & #__flag_Center
-         flags &~ #__flag_Center
-         flags | #__align_image
-      EndIf
-      ;
+      
       ; flags|#__flag_TextMultiLine
       
       *g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img )
@@ -137,9 +133,9 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       Button 0 0  0 0  0 0  1 0 bottom&center
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 105
-; FirstLine = 90
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 83
+; FirstLine = 81
 ; Folding = ---
 ; EnableXP
 ; DPIAware

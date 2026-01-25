@@ -13,7 +13,6 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       
 ;       If flags & #__flag_Center
 ;          flags &~ #__flag_Center
-;          flags | #__align_image
 ;       EndIf
 ;       
 ;       If multiline
@@ -57,8 +56,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 27
-; FirstLine = 16
+; CursorPosition = 21
+; FirstLine = 8
 ; Folding = -
 ; EnableXP
 ; DPIAware

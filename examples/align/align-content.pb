@@ -119,11 +119,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected img = 1
       Protected txt$ = "text"
       
-      If flags & #__flag_Center
-         flags &~ #__flag_Center
-         flags | #__align_image
-      EndIf
-      
       If multiline
          txt$+#LF$+"line"
          flags|#__flag_TextMultiLine
@@ -176,8 +171,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 74
-; FirstLine = 10
+; CursorPosition = 121
+; FirstLine = 67
 ; Folding = 6+---
 ; EnableXP
 ; DPIAware
