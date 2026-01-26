@@ -445,7 +445,7 @@
       #__align_Full           = 1<<59
       #__align_proportional   = 1<<60
       ;#__align_text           = 1<<61
-      #__align_image          = 1<<62
+      ;#__align_image          = 1<<62
       #__align_none           = 0
       ; #__flag_Limit         = 1<<63
       
@@ -731,8 +731,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 492
-; FirstLine = 478
+; CursorPosition = 447
+; FirstLine = 438
 ; Folding = ----
 ; Optimizer
 ; EnableXP

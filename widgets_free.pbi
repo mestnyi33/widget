@@ -15290,8 +15290,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Case "#__flag_autosize"             : Flag = Flag | #__flag_AutoSize            
                         Case "#__flag_nogadgets"            : Flag = Flag | #__flag_NoGadgets      
                            
-                        Case "#__align_text"                : Flag = Flag | #__align_text 
-                        Case "#__align_image"               : Flag = Flag | #__align_image
+                        ;Case "#__align_text"                : Flag = Flag | #__align_text 
+                        ;Case "#__align_image"               : Flag = Flag | #__align_image
                         Case "#__align_full"                : Flag = Flag | #__align_Full   
                         Case "#__align_proportional"        : Flag = Flag | #__align_proportional 
                         Case "#__align_auto"                : Flag = Flag | #__align_auto         
@@ -22802,6 +22802,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       ;-  CREATEs
       ;-
+      Procedure SetFlag( *this._s_WIDGET, Flag.q )
+         
+         If *this\type = #__type_ComboBox Or 
+            *this\type = #__type_Progress Or
+            *this\type = #__type_Text Or
+            *this\type = #__type_Editor Or
+            *this\type = #__type_String Or
+            *this\type = #__type_Button Or *this\type = #__type_ButtonImage Or 
+            *this\type = #__type_Option Or
+            *this\type = #__type_CheckBox Or
+            *this\type = #__type_HyperLink Or 
+            *this\type = #__type_Frame
+            
+            If *this\text
+               set_align_content( *this\picture, *this\flag )
+               If constants::BinaryFlag( *this\flag, #__Flag_Center )
+                  set_align_content( *this\text, *this\flag )
+               EndIf
+               
+               *this\text\editable = Bool( Not constants::BinaryFlag( Flag, #__flag_Textreadonly ))
+               *this\text\lower    = constants::BinaryFlag( Flag, #__flag_Textlowercase )
+               *this\text\upper    = constants::BinaryFlag( Flag, #__flag_Textuppercase )
+               *this\text\pass     = constants::BinaryFlag( Flag, #__flag_Textpassword )
+               *this\text\invert   = constants::BinaryFlag( Flag, #__flag_TextInvert )
+               *this\text\vertical = constants::BinaryFlag( Flag, #__flag_TextVertical )
+               *this\text\rotate   = Bool( *this\text\invert ) * 180 + 
+                                     Bool( *this\text\vertical ) * 90
+               
+               ;\\
+               If constants::BinaryFlag( Flag, #__flag_Textwordwrap )
+                  *this\text\multiLine = 1
+               ElseIf constants::BinaryFlag( Flag, #__flag_Textmultiline )
+                  *this\text\multiLine = - 1
+               Else
+                  If *this\type = #__type_Editor
+                     *this\text\multiLine = 1
+                  Else
+                     *this\text\multiLine = 0
+                     *this\text\numeric       = constants::BinaryFlag( Flag, #__flag_Textnumeric )
+                  EndIf
+               EndIf
+            EndIf
+         EndIf   
+         
+      EndProcedure
       Procedure.i Create( *parent._s_WIDGET, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
          Protected *root._s_root
          If *parent
@@ -22810,7 +22855,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          size = DPIScaled( size )
          
-         Protected.b align_image = constants::BinaryFlag( Flag, #__align_image )
          Protected.b flag_AutoSize = constants::BinaryFlag( Flag, #__flag_autosize )
          Protected.b flag_Center = constants::BinaryFlag( Flag, #__flag_Center )
          Protected.b flag_Right = constants::BinaryFlag( Flag, #__flag_Right )
@@ -22940,11 +22984,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\Flag | #__flag_TextLeft
                EndIf
             EndIf
-            If align_image
-               *this\Flag | #__flag_Center 
-            Else
-               *this\Flag | #__flag_TextCenter 
-            EndIf
+            
+            *this\Flag | #__flag_TextCenter 
             
             If flag_Right
                *this\flag & ~ #__flag_Left
@@ -23643,44 +23684,54 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ; set content ALIGNMENT
-         If *this\type = #__type_Text Or
-            *this\type = #__type_Editor Or
-            *this\type = #__type_String Or
-            *this\type = #__type_Image Or
-            *this\type = #__type_Button Or 
-            *this\type = #__type_ButtonImage Or
-            *this\type = #__type_Option Or
-            *this\type = #__type_CheckBox Or
-            *this\type = #__type_ComboBox Or
-            *this\type = #__type_HyperLink Or *this\type = #__type_Progress
-            
-            set_align_content( *this\picture, *this\flag )
-            If constants::BinaryFlag( *this\flag, #__align_image )
-               set_align_content( *this\text, *this\flag )
-            EndIf
-         EndIf
-         If *this\type = #__type_Progress
-            Debug ""+*this\text\align\left +" "+ *this\text\align\top +" "+ *this\text\align\right +" "+ *this\text\align\bottom
-         EndIf
+;          If *this\type = #__type_Text Or
+;             *this\type = #__type_Editor Or
+;             *this\type = #__type_String Or
+;             *this\type = #__type_Image Or
+;             *this\type = #__type_Button Or 
+;             *this\type = #__type_ButtonImage Or
+;             *this\type = #__type_Option Or
+;             *this\type = #__type_CheckBox Or
+;             *this\type = #__type_ComboBox Or
+;             *this\type = #__type_HyperLink Or *this\type = #__type_Progress
+;             
+;             set_align_content( *this\picture, *this\flag )
+;             If constants::BinaryFlag( *this\flag, #__align_center )
+;                set_align_content( *this\text, *this\flag )
+;             EndIf
+;          EndIf
+;          If *this\type = #__type_Progress
+;             Debug ""+*this\text\align\left +" "+ *this\text\align\top +" "+ *this\text\align\right +" "+ *this\text\align\bottom
+;          EndIf
             ;
-         ; set text flag
-         If *this\type = #__type_ComboBox Or 
-            *this\type = #__type_Progress Or
-            *this\type = #__type_Text Or
-            *this\type = #__type_Editor Or
-            *this\type = #__type_String Or
-            *this\type = #__type_ButtonImage Or
-            *this\type = #__type_Button Or 
-            *this\type = #__type_Option Or
-            *this\type = #__type_CheckBox Or
-            *this\type = #__type_HyperLink
+;          ; set text flag
+;          If *this\type = #__type_ComboBox Or 
+;             *this\type = #__type_Progress Or
+;             *this\type = #__type_Text Or
+;             *this\type = #__type_Editor Or
+;             *this\type = #__type_String Or
+;             *this\type = #__type_ButtonImage Or
+;             *this\type = #__type_Button Or 
+;             *this\type = #__type_Option Or
+;             *this\type = #__type_CheckBox Or
+;             *this\type = #__type_HyperLink
+;             
+;             set_text_flag( *this, Text, *this\flag )
+;          EndIf
+;          If *this\type = #__type_Frame
+;             set_text_flag( *this, Text, *this\flag, 12, - *this\fs[2] - 1 )
+;          EndIf
+         SetFlag( *this, *this\flag )
+         If Text
+            If *this\type = #__type_Option Or
+               *this\type = #__type_CheckBox Or
+               *this\type = #__type_HyperLink
+               
+               *this\text\multiline = - CountString( Text, #LF$ )
+            EndIf
             
-            set_text_flag( *this, Text, *this\flag )
+            SetText( *this, Text )
          EndIf
-         If *this\type = #__type_Frame
-            set_text_flag( *this, Text, *this\flag, 12, - *this\fs[2] - 1 )
-         EndIf
-         
          ;\\ Scroll bars
          ;If constants::BinaryFlag( *this\Flag, #__flag_NoScrollBars, #False )
          If *this\type = #__type_String
@@ -27986,8 +28037,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 27986
-; FirstLine = 27961
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 22819
+; FirstLine = 22744
+; Folding = -------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

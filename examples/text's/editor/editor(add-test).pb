@@ -17,7 +17,6 @@ Global zz_CMD_Go
 Global zz_Display
 Global zz_TXT_infos
 
-
 Procedure DisplayText()
    Static test
    test + 1 
@@ -35,11 +34,9 @@ Procedure DisplayText()
    #zz_TIME_ms$ = "[ms]> "
    
    maxLines = Val(GetText(zz_nLines))
-   If 0 = CountItems(zz_Display)
-      SetText(zz_TXT_infos, #zz_TIME_ms$ )
-      Debug "; "+maxLines + " lines in " +gadget$ +" :"
-   Else
-      prevTestValue = CountItems(zz_Display)
+   prevTestValue = CountItems(zz_Display)
+      
+   If prevTestValue
       ClearItems(zz_Display)
       If maxLines <> prevTestValue
          Debug ""
@@ -47,6 +44,9 @@ Procedure DisplayText()
          test = 1
          SetText(zz_TXT_infos, #zz_TIME_ms$)
       EndIf
+   Else
+      SetText(zz_TXT_infos, #zz_TIME_ms$ )
+      Debug "; "+maxLines + " lines in " +gadget$ +" :"
    EndIf
    
    Protected line, count, lapsed
@@ -59,7 +59,6 @@ Procedure DisplayText()
       count + 1
       If count % 24 = 0
          If SetText(zz_CMD_Go,Str(line))
-            ; PostRepaint( )
             ; While WindowEvent() : Wend ; Flush the events
          EndIf
       EndIf
@@ -79,7 +78,11 @@ Procedure DisplayText()
 EndProcedure
 
 Procedure zz_CMD_Go( )
-   DisplayText()
+;    Debug EventWidget( )\ColorState( ) ; root\repaint
+;    Repaint( )
+;    Delay( 2000 )
+    DisplayText()
+;    Debug EventWidget( )\root\repaint
 EndProcedure
 
 Procedure CreerDialogue()
@@ -136,7 +139,7 @@ Procedure CreerDialogue()
    If #liste ; beaucoup plus rapide
       zz_Display = ListView(gX,gY,gW,gH)                     ;- ..ListView
    Else
-      zz_Display = Editor(gX,gY,gW,gH,#PB_Editor_ReadOnly)   ;- ..Editor
+      zz_Display = Editor(gX,gY,gW,gH);,#PB_Editor_ReadOnly)   ;- ..Editor
    EndIf
    
    Bind(zz_CMD_Go, @zz_CMD_Go(), #__event_leftclick)
@@ -156,8 +159,8 @@ Debug ""
 Debug ""
 End
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 8
-; FirstLine = 1
+; CursorPosition = 141
+; FirstLine = 133
 ; Folding = ---
 ; EnableXP
 ; DPIAware

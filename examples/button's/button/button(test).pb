@@ -1,5 +1,6 @@
 ﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
+;XIncludeFile "widgets_free.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
@@ -56,28 +57,113 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
+   Procedure TestType( class$, X,Y,Width,Height,txt$, Flag.q=0)
+      Protected._s_WIDGET *g
+       
+      Protected Center
+;       ;If Flag & #__flag_Center
+          Center = #__flag_Center
+;       ;EndIf
+      
+      If Not ( Flag & #__flag_Left Or
+               Flag & #__flag_Top Or 
+               Flag & #__flag_Right Or 
+               Flag & #__flag_Bottom )
+         
+         If Flag & #__flag_Vertical
+            If Flag & #__flag_Invert
+               If Not Flag & #__flag_Top
+                  Flag | Center | #__flag_Top
+               EndIf
+            Else
+               If Not Flag & #__flag_Bottom
+                  Flag | Center | #__flag_Bottom
+               EndIf
+            EndIf
+         Else
+            If Flag & #__flag_Invert
+               If Not Flag & #__flag_Right
+                  Flag | Center | #__flag_Right
+               EndIf
+            Else
+               If Not Flag & #__flag_Left
+                  Flag | Center | #__flag_Left
+               EndIf
+            EndIf
+         EndIf
+      EndIf
+   
+      Select class$ 
+         Case "Text"      : *g = Text( X,Y,Width,Height,txt$, Flag)
+         Case "Button"    : *g = Button( X,Y,Width,Height,txt$, Flag)
+         Case "Progress"  : *g = Progress( X,Y,Width,Height,0,100, Flag) : SetState( *g, 50 )
+      EndSelect
+      
+      ProcedureReturn *g
+   EndProcedure
+   
    Procedure Test( X,Y,Width,Height,txt$, Flag.q=0)
       Protected._s_WIDGET *g
-      
-      *g = Button( X,Y,Width,Height,txt$, Flag);|#__flag_Center)
-      SetImage( *g, img)
+      ;*g = TestType( "Text", X,Y,Width,Height,txt$, Flag)
+      *g = TestType( "Button", X,Y,Width,Height,txt$, Flag)
+      ;*g = TestType( "Progress", X,Y,Width,Height,txt$, Flag)
        
-      If Flag & #__flag_Left
-         Flag &~ #__flag_Left
-      EndIf
-      If Flag & #__flag_Top
-         Flag &~ #__flag_Top
-      EndIf
-      If Flag & #__flag_Right
-         Flag &~ #__flag_Right
-      EndIf
-      If Flag & #__flag_Bottom
-         Flag &~ #__flag_Bottom
-      EndIf
+       
+;       If Flag & #__flag_Left
+;          Flag &~ #__flag_Left
+;       EndIf
+;       If Flag & #__flag_Top
+;          Flag &~ #__flag_Top
+;       EndIf
+;       If Flag & #__flag_Right
+;          Flag &~ #__flag_Right
+;       EndIf
+;       If Flag & #__flag_Bottom
+;          Flag &~ #__flag_Bottom
+;       EndIf
       
-      ; *g = ButtonImage( X,Y,Width,Height,img, #__flag_Center)
+      Protected Center
+      ;If Flag & #__flag_Center
+      ;   Center = #__flag_Center
+      ;EndIf
       
-      ;*g = Progress( X,Y,Width,Height,0,100, Flag) : SetState( *g, 50 )
+      If Not ( Flag & #__flag_Left Or
+               Flag & #__flag_Top Or 
+               Flag & #__flag_Right Or 
+               Flag & #__flag_Bottom )
+         
+         If Flag & #__flag_Vertical
+            If Flag & #__flag_Invert
+               If Not Flag & #__flag_Top
+                  Flag | Center | #__flag_Top
+               EndIf
+            Else
+               If Not Flag & #__flag_Bottom
+                  Flag | Center | #__flag_Bottom
+               EndIf
+            EndIf
+         Else
+            If Flag & #__flag_Invert
+               If Not Flag & #__flag_Right
+                  Flag | Center | #__flag_Right
+               EndIf
+            Else
+               If Not Flag & #__flag_Left
+                  Flag | Center | #__flag_Left
+               EndIf
+            EndIf
+         EndIf
+      EndIf
+   
+      ;*g = String( X,Y,Width,Height,txt$, Flag)
+      ;*g = Option( X,Y,Width,Height,txt$, Flag)
+      ;*g = CheckBox( X,Y,Width,Height,txt$, Flag)
+      
+      ; *g = Button( X,Y,Width,Height,"", Flag) 
+      ;*g = ButtonImage( X,Y,Width,Height,-1, Flag) : SetText( *g, txt$ )
+      
+      SetBackgroundColor( *g, #Yellow )
+      SetImage( *g, img )
       ProcedureReturn *g
    EndProcedure
    
@@ -87,6 +173,21 @@ CompilerIf #PB_Compiler_IsMainFile
       *g2 = Test( 10, 10+size, size, size2, "left button", #__flag_Bottom|#__flag_Vertical)
       *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__flag_Top|#__flag_Vertical|#__flag_Invert)
       *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__flag_Right|#__flag_Invert)
+      
+;       *g1 = Test( 10+size, 10, size2, size, "top button", #__flag_Right )
+;       *g2 = Test( 10, 10+size, size, size2, "left button", #__flag_Top|#__flag_Vertical)
+;       *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__flag_Bottom|#__flag_Vertical|#__flag_Invert)
+;       *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__flag_Left|#__flag_Invert)
+      
+;       *g1 = Test( 10+size, 10, size2, size, "top button", #__flag_Center )
+;       *g2 = Test( 10, 10+size, size, size2, "left button", #__flag_Center|#__flag_Vertical)
+;       *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__flag_Center|#__flag_Vertical|#__flag_Invert)
+;       *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__flag_Center|#__flag_Invert)
+      
+;       *g1 = Test( 10+size, 10, size2, size, "top button" )
+;       *g2 = Test( 10, 10+size, size, size2, "left button", #__flag_Vertical)
+;       *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__flag_Vertical|#__flag_Invert)
+;       *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__flag_Invert)
       
       ;
       *b0 = Button( Width-40, 10, 30,30, "0")
@@ -103,8 +204,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 77
-; FirstLine = 59
-; Folding = --
+; CursorPosition = 175
+; FirstLine = 139
+; Folding = --v--
 ; EnableXP
 ; DPIAware

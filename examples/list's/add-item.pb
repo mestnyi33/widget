@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global a, *g1._s_WIDGET, g1, *g2._s_WIDGET, g2, CountItems=9; количесвто итемов 
    
-   Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
+   Procedure TreeGadget_(gadget, X,Y,Width,Height,Flag=0)
       Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,Flag)
       If gadget =- 1 : gadget = g : EndIf
       
@@ -43,8 +43,8 @@ CompilerIf #PB_Compiler_IsMainFile
                position = ListIndex( *rows( ))
                ;
                *rows( ) = *row
-               *rowLast = *this\RowLast( )
-               *this\RowLast( ) = *row
+               *rowLast = *this\row\new
+               *this\row\new = *row
             Else
                SelectElement( *rows( ), position )
                
@@ -54,12 +54,12 @@ CompilerIf #PB_Compiler_IsMainFile
                   If PreviousElement( *rows( ))
                      *rowLast = *rows( )
                   ;Else
-                     ;last     = *this\RowLast( )
+                     ;last     = *this\row\new
                      ;sublevel = *rows( )\sublevel
                   EndIf
                   PopListPosition( *rows( ))
                Else
-                  last     = *this\RowLast( )
+                  last     = *this\row\new
                   sublevel = *rows( )\sublevel
                   *rowLast = *rows( )
                EndIf
@@ -114,7 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile
                            If *this\type = #__type_Editor
                               *rowParent         = *rowLast\RowParent( )
                               *rowParent\_last   = *row
-                              *this\RowLast( )   = *rowParent
+                              *this\row\new   = *rowParent
                               last               = *rowParent
                            EndIf
                            
@@ -132,10 +132,10 @@ CompilerIf #PB_Compiler_IsMainFile
             ;
             If sublevel = 0
                If position = 0
-                  *this\RowFirstLevelFirst( ) = *row
+                  *this\row\first = *row
                EndIf
-               If *this\RowLast( ) = *row
-                  *this\RowFirstLevelLast( ) = *row
+               If *this\row\new = *row
+                  *this\row\last = *row
                EndIf
             EndIf
             
@@ -350,8 +350,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 12
-; FirstLine = 8
+; CursorPosition = 137
+; FirstLine = 119
 ; Folding = -------
 ; EnableXP
 ; DPIAware

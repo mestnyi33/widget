@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global a, *g._s_WIDGET, g, CountItems=9; количесвто итемов 
    
-   Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
+   Procedure TreeGadget_(gadget, X,Y,Width,Height,Flag=0)
       Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,Flag)
       If gadget =- 1 : gadget = g : EndIf
       
@@ -62,17 +62,17 @@ CompilerIf #PB_Compiler_IsMainFile
                   If sublevel > *this\__rows( )\sublevel
                   PushListPosition( *this\__rows( ))
                   If PreviousElement( *this\__rows( ))
-                     *this\RowLast( ) = *this\__rows( )
+                     *this\row\new = *this\__rows( )
                   Else
-                     last     = *this\RowLast( )
+                     last     = *this\row\new
                      sublevel = *this\__rows( )\sublevel
                   EndIf
                   PopListPosition( *this\__rows( ))
                Else
-                  last     = *this\RowLast( )
+                  last     = *this\row\new
                   sublevel = *this\__rows( )\sublevel
                   
-                  *this\RowLast( ) =  *this\__rows( )
+                  *this\row\new =  *this\__rows( )
                EndIf
                EndIf
                
@@ -83,19 +83,19 @@ CompilerIf #PB_Compiler_IsMainFile
             *this\__rows( ) = *row
             
             
-            If *this\RowLast( )
-               If sublevel > *this\RowLast( )\sublevel
-                  sublevel    = *this\RowLast( )\sublevel + 1
-                  *parent_row = *this\RowLast( )
+            If *this\row\new
+               If sublevel > *this\row\new\sublevel
+                  sublevel    = *this\row\new\sublevel + 1
+                  *parent_row = *this\row\new
                   
-               ElseIf *this\RowLast( )\RowParent( )
-                  If sublevel > *this\RowLast( )\RowParent( )\sublevel
-                     *parent_row = *this\RowLast( )\RowParent( )
+               ElseIf *this\row\new\RowParent( )
+                  If sublevel > *this\row\new\RowParent( )\sublevel
+                     *parent_row = *this\row\new\RowParent( )
                      
-                  ElseIf sublevel < *this\RowLast( )\sublevel
+                  ElseIf sublevel < *this\row\new\sublevel
                      ; Debug position
-                     If *this\RowLast( )\RowParent( )\RowParent( )
-                        *parent_row = *this\RowLast( )\RowParent( )\RowParent( )
+                     If *this\row\new\RowParent( )\RowParent( )
+                        *parent_row = *this\row\new\RowParent( )\RowParent( )
                         
                         While *parent_row
                            If sublevel >= *parent_row\sublevel
@@ -110,15 +110,15 @@ CompilerIf #PB_Compiler_IsMainFile
                      EndIf
                      
                      ;                         ; for the editor( )
-                     ;                         If *this\RowLast( )\RowParent( )
-                     ;                            If *this\RowLast( )\RowParent( )\sublevel = sublevel
-                     ;                               ;                     *row\before = *this\RowLast( )\RowParent( )
-                     ;                               ;                     *this\RowLast( )\RowParent( )\after = *row
+                     ;                         If *this\row\new\RowParent( )
+                     ;                            If *this\row\new\RowParent( )\sublevel = sublevel
+                     ;                               ;                     *row\before = *this\row\new\RowParent( )
+                     ;                               ;                     *this\row\new\RowParent( )\after = *row
                      ;                               
                      ;                               If *this\type = #__type_Editor
-                     ;                                  *parent_row         = *this\RowLast( )\RowParent( )
+                     ;                                  *parent_row         = *this\row\new\RowParent( )
                      ;                                  *parent_row\_last    = *row
-                     ;                                  *this\RowLast( ) = *parent_row
+                     ;                                  *this\row\new = *parent_row
                      ;                                  last                = *parent_row
                      ;                               EndIf
                      ;                               
@@ -127,7 +127,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                EndIf
                
-               ; position = *this\RowLast( )\index + 1
+               ; position = *this\row\new\index + 1
             Else
                ; position = 0
             EndIf
@@ -156,10 +156,10 @@ CompilerIf #PB_Compiler_IsMainFile
             
             If Not last
                If sublevel = 0
-                  *this\RowLast( ) = *row
+                  *this\row\new = *row
                EndIf
                ;
-               *this\RowLast( ) = *row
+               *this\row\new = *row
                ;
                ; for the tree( )
                If *row\RowParent( ) And
@@ -202,11 +202,11 @@ CompilerIf #PB_Compiler_IsMainFile
             *row\color\fore[3] = 0
             
             ;
-            ;                If *this\RowLast( )
-            ;                   If *this\RowLast( )\_type = #__type_Option
-            ;                      *row\_groupbar = *this\RowLast( )\_groupbar
+            ;                If *this\row\new
+            ;                   If *this\row\new\_type = #__type_Option
+            ;                      *row\_groupbar = *this\row\new\_groupbar
             ;                   Else
-            ;                      *row\_groupbar = *this\RowLast( )
+            ;                      *row\_groupbar = *this\row\new
             ;                   EndIf
             ;                Else
             *row\_groupbar = *row\RowParent( )
@@ -298,7 +298,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ; demo widget
       ;*g = CreateBar(root(), #__flag_vertical ) 
-      *g = Tab(265, 10, 250, 450, #__flag_vertical ) 
+      *g = Tab(265, 10, 250, 450);, #__flag_vertical ) 
       
       AddItem_(*g, 0, "    0_0", -1 )
       AddItem_(*g, 1, "    1_0_1", 0, 1) 
@@ -343,8 +343,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 12
-; FirstLine = 8
+; CursorPosition = 300
+; FirstLine = 279
 ; Folding = -------
 ; EnableXP
 ; DPIAware
