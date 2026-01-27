@@ -215,36 +215,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Flag( Object, Flag, state )
    EndProcedure
    
-   Procedure SetFlag( *this._s_widget, Flag.q )
-      Protected fs
-      ;
-      If constants::BinaryFlag( Flag, #__flag_BorderDouble ) Or
-         constants::BinaryFlag( Flag, #__flag_BorderRaised )
-         fs = 3
-      ElseIf constants::BinaryFlag( Flag, #__flag_BorderFlat ) Or
-             constants::BinaryFlag( Flag, #__flag_BorderSingle ) 
-         fs = 2
-      ElseIf constants::BinaryFlag( Flag, #__flag_BorderLess )
-         fs = 1
-      EndIf
-      ;
-      If fs
-         *this\Flag &~ #__flag_BorderLess 
-         *this\Flag &~ #__flag_BorderFlat 
-         *this\Flag &~ #__flag_BorderSingle 
-         *this\flag &~ #__flag_BorderRaised 
-         *this\flag &~ #__flag_BorderDouble 
-         ;
-         *this\flag | Flag
-         ;
-         *this\fs = fs - 1
-         If *this\bs <> *this\fs
-            *this\bs = *this\fs
-            ProcedureReturn 1
-         EndIf
-      EndIf
-   EndProcedure
-   
    Procedure events_widgets()
       Protected Flag, Type, flag$
       
@@ -307,9 +277,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 261
-; FirstLine = 247
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 217
+; FirstLine = 206
 ; Folding = ------
 ; EnableXP
 ; DPIAware

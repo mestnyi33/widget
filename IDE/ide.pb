@@ -400,7 +400,7 @@ Procedure   ReplaceArg( *object._s_WIDGET, argument, replace$ )
 EndProcedure
 
 ;-
-Procedure   SetFlag( *this._s_WIDGET, flags.q )
+Procedure   SetFlag_( *this._s_WIDGET, flags.q )
    If *this\type = #__type_ComboBox
       ;       If *this\ComboBar( )
       ;          Flag( *this\ComboBar( ), flags, 1 )
@@ -600,14 +600,14 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
          Select item
             Case #_pi_flag
                Hide(*this\stringbar, 1)
-               SetFlag( *this, #__flag_CheckBoxes|#__flag_optionboxes )
+               SetFlag_( *this, #__flag_CheckBoxes|#__flag_optionboxes )
                
             Case #_pi_fontstyle
                AddItem(*this, -1, "None")         
                If *this\ComboBar( )
                   *this\ComboBar( )\mode\Checkboxes = 1
                   *this\ComboBar( )\mode\optionboxes = 1
-                  ;    SetFlag( *this\ComboBar( ), #__flag_CheckBoxes|#__flag_OptionBoxes )
+                  ;    SetFlag_( *this\ComboBar( ), #__flag_CheckBoxes|#__flag_OptionBoxes )
                EndIf
                AddItem(*this, -1, "Bold")        ; Шрифт будет выделен жирным
                AddItem(*this, -1, "Italic")      ; Шрифт будет набран курсивом
@@ -841,7 +841,7 @@ Procedure   PropertiesButton_Events( )
                   Case #_pi_FLAG     
                      Define flag$ = PropertiesButton_GetText( *g )
                      Define Flag.q = MakeValue( flag$ )
-                     SetFlag( *object, Flag)
+                     SetFlag_( *object, Flag)
                      Define class$ = ClassFromType( *object\type ) 
 ;                      Define flag$ = FlagString( Flag )
 ;                      Define flag$ = RemoveString( flag$, "#__flag_Text") 
@@ -3294,9 +3294,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2993
-; FirstLine = 2351
-; Folding = -4--4---8l-3v-----------Aj-------v0fvd-0----------f6WW----f+-
+; CursorPosition = 402
+; FirstLine = 372
+; Folding = -4--4---8n-3v-----------Aj-------v0fvd-0----------f6WW----f+-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2.exe

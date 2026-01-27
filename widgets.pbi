@@ -1695,6 +1695,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;
       Declare.q ToPBFlag( Type, Flag.q )
       Declare.q FromPBFlag( Type, Flag.q )
+      Declare.q GetFlag( *this )
+      Declare   SetFlag( *this, Flag.q )
+      Declare   RemoveFlag( *this, Flag.q )
       Declare.q Flag( *this, Flag.q = #Null, state.b = #PB_Default )
       
       Declare$  FlagString( flags.q )
@@ -15277,65 +15280,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn flags
       EndProcedure
       
-      Macro set_align_content( _address_, _flag_ )
-         _address_\align\left   = constants::BinaryFlag( _flag_, #__flag_left )
-         _address_\align\top    = constants::BinaryFlag( _flag_, #__flag_top )
-         _address_\align\right  = constants::BinaryFlag( _flag_, #__flag_right )
-         _address_\align\bottom = constants::BinaryFlag( _flag_, #__flag_bottom )
+      Procedure   SetFlag( *this._s_WIDGET, Flag.q )
+         Protected fs
          
-         If constants::BinaryFlag( _flag_, #__flag_Center, #False )
-            If Not _address_\align\top And
-               Not _address_\align\left And
-               Not _address_\align\right And
-               Not _address_\align\bottom 
-               
-               If Not _address_\align\right
-                  _address_\align\left = #True
-                  _flag_ | #__flag_left
-               EndIf
-               If Not _address_\align\bottom
-                  _address_\align\top = #True
-                  _flag_ | #__flag_top
-               EndIf
-            Else
-               If _address_\align\left
-                  If Not _address_\align\right Or
-                     Not _address_\align\bottom
-                     _address_\align\top = #True
-                     _flag_ | #__flag_top
-                  EndIf
-               ElseIf _address_\align\top
-                  If Not _address_\align\left Or
-                     Not _address_\align\bottom
-                     _address_\align\right = #True
-                     _flag_ | #__flag_right
-                  EndIf
-               ElseIf _address_\align\right
-                  If Not _address_\align\left Or
-                     Not _address_\align\top
-                     _address_\align\bottom = #True
-                     _flag_ | #__flag_bottom
-                  EndIf
-               ElseIf _address_\align\bottom
-                  If Not _address_\align\right Or
-                     Not _address_\align\top
-                     _address_\align\left = #True
-                     _flag_ | #__flag_left
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
-         If test_align = -1
-            Debug " left "+ constants::BinaryFlag( _flag_, #__flag_Left) +" "+  _address_\align\left +
-                  " top "+ constants::BinaryFlag( _flag_, #__flag_Top) +" "+  _address_\align\top + 
-                  " right "+ constants::BinaryFlag( _flag_, #__flag_Right) +" "+  _address_\align\right + 
-                  " bottom "+ constants::BinaryFlag( _flag_, #__flag_Bottom) +" "+  _address_\align\bottom +
-                  " center "+ constants::BinaryFlag( _flag_, #__flag_Center)
-         EndIf   
-      EndMacro
-      Procedure SetFlag( *this._s_WIDGET, Flag.q )
-         
+         ; установить флаги текста 
          If *this\type = #__type_ComboBox Or 
             *this\type = #__type_Progress Or
             *this\type = #__type_Text Or
@@ -15422,6 +15370,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf   
          
+         ; установить флаги рамки
+         If constants::BinaryFlag( Flag, #__flag_BorderDouble ) Or
+            constants::BinaryFlag( Flag, #__flag_BorderRaised )
+            fs = 3
+         ElseIf constants::BinaryFlag( Flag, #__flag_BorderFlat ) Or
+                constants::BinaryFlag( Flag, #__flag_BorderSingle ) 
+            fs = 2
+         ElseIf constants::BinaryFlag( Flag, #__flag_BorderLess )
+            fs = 1
+         EndIf
+         If fs
+            ; сначала удаляем все флаги 
+            ; так как должен быть один из них
+            *this\Flag &~ #__flag_BorderLess 
+            *this\Flag &~ #__flag_BorderFlat 
+            *this\Flag &~ #__flag_BorderSingle 
+            *this\flag &~ #__flag_BorderRaised 
+            *this\flag &~ #__flag_BorderDouble 
+            ;
+            *this\flag | Flag
+            ;
+            *this\fs = fs - 1
+            If *this\bs <> *this\fs
+               *this\bs = *this\fs
+               ProcedureReturn #True
+            EndIf
+         EndIf
+         
+         ;
+      EndProcedure
+      
+      Procedure   RemoveFlag( *this._s_WIDGET, Flag.q )
+         If *this\flag & Flag
+            *this\flag & ~ Flag
+            ProcedureReturn #True
+         EndIf
+      EndProcedure
+      
+      Procedure.q GetFlag( *this._s_WIDGET )
+         ProcedureReturn *this\flag
       EndProcedure
       
       Procedure.q Flag( *this._s_WIDGET, Flag.q = #Null, state.b = #PB_Default )
@@ -27928,9 +27916,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 15536
-; FirstLine = 15412
-; Folding = ------------------------------------------------------------------------------------------v84v4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v++enva-------vv4v+------------------------------------------8--f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--7------
+; CursorPosition = 1699
+; FirstLine = 1687
+; Folding = ------------------------------------------------------------------------------------------v84v4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--4------------------------------------------------------------------------------------XffvzXt-------448X-------------------------------------------0--v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-f0------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
