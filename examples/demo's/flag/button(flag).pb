@@ -114,7 +114,18 @@ CompilerIf #PB_Compiler_IsMainFile
                      EventWidget = button_bottom Or 
                      EventWidget = button_left Or 
                      EventWidget = button_right 
+                     ;
                      SetState(button_center,0) 
+                  EndIf
+                  
+                  If (GetState(button_left)=0 And 
+                      GetState(button_top)=0 And
+                      GetState(button_right)=0 And 
+                      GetState(button_bottom)=0) 
+                     ;
+                     If SetState(button_center,1) 
+                        Flag(*this, #__flag_Center, 1)
+                     EndIf
                   EndIf
                   
                   If GetState(button_left)
@@ -142,11 +153,16 @@ CompilerIf #PB_Compiler_IsMainFile
                   ;
                Case button_default   : Flag = #__flag_button_Default
                Case button_multiline : Flag = #__flag_TextMultiline
+;                   If GetState(EventWidget)
+;                      SetFlag(*this, #__flag_TextMultiline)
+;                   Else
+;                      RemoveFlag(*this, #__flag_TextMultiline)
+;                   EndIf
+                  
                Case button_toggle    : Flag = #PB_Button_Toggle
                Case button_invert    
                   If GetState(EventWidget)
                      SetFlag(*this, #__flag_Invert)
-                     ;  Flag(*this, #__flag_Invert, 1)
                   Else
                      RemoveFlag(*this, #__flag_Invert)
                   EndIf
@@ -154,7 +170,6 @@ CompilerIf #PB_Compiler_IsMainFile
                Case button_vertical  
                   If GetState(EventWidget)
                      SetFlag(*this, #__flag_Vertical)
-                     ; Flag(*this, #__flag_Vertical, 1)
                   Else
                      RemoveFlag(*this, #__flag_Vertical)
                   EndIf
@@ -166,29 +181,6 @@ CompilerIf #PB_Compiler_IsMainFile
             If Flag
                Flag(*this, Flag, GetState(EventWidget))
             EndIf
-            
-         Case #__event_Change
-            ;         If EventWidget <> tree
-            ;           SetState(tree, - 1)
-            ;         EndIf
-            ;         
-            ;         Select EventWidget
-            ;           Case button_default   
-            ;           Case button_multiline 
-            ;           Case button_top   
-            ;             SetState(tree, #tree_item_top)
-            ;           Case button_left      
-            ;             SetState(tree, #tree_item_left)
-            ;           Case button_right     
-            ;             SetState(tree, #tree_item_right)
-            ;           Case button_bottom    
-            ;             SetState(tree, #tree_item_bottom)
-            ;           Case button_center   
-            ;             SetState(tree, #tree_item_center)
-            ;           Case button_toggle    
-            ;           Case button_invert    
-            ;           Case button_vertical  
-            ;         EndSelect
             
       EndSelect
       
@@ -262,9 +254,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 153
-; FirstLine = 122
-; Folding = ----
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 159
+; FirstLine = 150
+; Folding = -----
 ; EnableXP
 ; DPIAware
