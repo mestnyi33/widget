@@ -9581,66 +9581,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this = *this\stringbar
          EndIf
          
-; ;                
-;          If *this\flag & #__flag_Center
-;             If Not ( *this\flag & #__flag_Left Or
-;                   *this\flag & #__flag_Top Or 
-;                   *this\flag & #__flag_Right Or 
-;                   *this\flag & #__flag_Bottom )
-;             
-;             If *this\flag & #__flag_Vertical
-;                If *this\flag & #__flag_Invert
-;                   If Not *this\flag & #__flag_Top
-;                      ; *this\flag | #__flag_Center | #__flag_Top
-;                      ;*this\text\align\top = 1
-;                      *this\picture\align\top = 1
-;                   EndIf
-;                Else
-;                   If Not *this\flag & #__flag_Bottom
-;                     ; *this\flag | #__flag_Center | #__flag_Bottom
-;                      ;*this\text\align\bottom = 1
-;                      *this\picture\align\bottom = 1
-;                   EndIf
-;                EndIf
-;             Else
-;                If *this\flag & #__flag_Invert
-;                   If Not *this\flag & #__flag_Right
-;                      ; *this\flag | #__flag_Center | #__flag_Right
-;                      ;*this\text\align\right = 1
-;                      *this\picture\align\right = 1
-;                   EndIf
-;                Else
-;                   If Not *this\flag & #__flag_Left
-;                      ; *this\flag | #__flag_Center | #__flag_Left
-;                      ;*this\text\align\left = 1
-;                      *this\picture\align\left = 1
-;                   EndIf
-;                EndIf
-;             EndIf
-;          EndIf
-;          EndIf
-;          
+         ;          
          add_image( *this\picture, img )
          
-         If *this\type <> #__type_window
-            If IsImage( img )
-               *this\picture\x  = *this\padding\x
-               *this\picture\y  = *this\padding\y
-               
-               ; make horizontal scroll max
-               If *this\scroll_width( ) <> *this\picture\width + *this\picture\x * 2
-                  *this\scroll_width( ) = *this\picture\width + *this\picture\x * 2
-               EndIf
-               
-               ; make vertical scroll max
-               If *this\scroll_height( ) <> *this\picture\height + *this\picture\y * 2
-                  *this\scroll_height( ) = *this\picture\height + *this\picture\y * 2
-               EndIf
-               
-               ; updatate scrollarea size
-               bar_area_update( *this )
-            EndIf
-         EndIf
+;          If *this\type <> #__type_window
+;             If IsImage( img )
+;                *this\picture\x  = *this\padding\x
+;                *this\picture\y  = *this\padding\y
+;                
+;                ; make horizontal scroll max
+;                If *this\scroll_width( ) <> *this\picture\width + *this\picture\x * 2
+;                   *this\scroll_width( ) = *this\picture\width + *this\picture\x * 2
+;                EndIf
+;                
+;                ; make vertical scroll max
+;                If *this\scroll_height( ) <> *this\picture\height + *this\picture\y * 2
+;                   *this\scroll_height( ) = *this\picture\height + *this\picture\y * 2
+;                EndIf
+;                
+;                ; updatate scrollarea size
+;                bar_area_update( *this )
+;             EndIf
+;          EndIf
          
          ProcedureReturn *this\picture\imageID
       EndProcedure
@@ -15386,7 +15348,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_Frame
             
             If *this\text
-               ; set content ALIGNMENT
+               ;\\ set content ALIGNMENT
                *this\picture\align\left   = constants::BinaryFlag( Flag, #__flag_left )
                *this\picture\align\top    = constants::BinaryFlag( Flag, #__flag_top )
                *this\picture\align\right  = constants::BinaryFlag( Flag, #__flag_right )
@@ -15429,16 +15391,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
          
-         
-;                set_align_content( *this\picture, *this\flag )
-;                If constants::BinaryFlag( *this\flag, #__Flag_Center )
-;                   set_align_content( *this\text, *this\flag )
-;                EndIf
-;                If *this\type = #__type_Button
-;                   ; Debug ""+*this\picture\align\left +" "+ *this\picture\align\top +" "+ *this\picture\align\right +" "+ *this\picture\align\bottom
-;                   ;Debug ""+*this\text\vertical +" "+ *this\text\invert +" - "+ *this\text\align\left +" "+ *this\text\align\top +" "+ *this\text\align\right +" "+ *this\text\align\bottom
-;                EndIf
-               
+               ;\\
                *this\text\editable = Bool( Not constants::BinaryFlag( Flag, #__flag_Textreadonly ))
                *this\text\lower    = constants::BinaryFlag( Flag, #__flag_Textlowercase )
                *this\text\upper    = constants::BinaryFlag( Flag, #__flag_Textuppercase )
@@ -22846,22 +22799,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          If Not *this\togglebox
-            If *this\type = #__type_Button Or 
-               *this\type = #__type_ButtonImage 
+            If Type = #__type_Button Or 
+               Type = #__type_ButtonImage 
                ;
                If constants::BinaryFlag( Flag, #PB_Button_Toggle )
-                  Flag &~ #PB_Button_Toggle
+                  ;Flag &~ #PB_Button_Toggle
                   *this\togglebox.allocate( BOX )
                EndIf
             EndIf
-            If *this\type = #__type_CheckBox 
+            If Type = #__type_CheckBox 
                *this\togglebox.allocate( BOX )
                *this\togglebox\round  = dpi_scale_two
                *this\togglebox\width = size
                *this\togglebox\width  - Bool( Not *this\togglebox\width % 2)
                *this\togglebox\height = *this\togglebox\width
             EndIf
-            If *this\type = #__type_Option
+            If Type = #__type_Option
                *this\togglebox.allocate( BOX )
                *this\togglebox\round  = size/2
                *this\togglebox\width  = size
@@ -27975,9 +27928,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 15421
-; FirstLine = 15274
-; Folding = ------------------------------------------------------------------------------------------v84v4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------rvv46r3-------880r-------------------------------------------+--4--------------------------------------------------------------------------n8hy-4-+-8fX8l0Ecf0--------------------------------------------------------------------------------------------4-v+-----
+; CursorPosition = 15536
+; FirstLine = 15412
+; Folding = ------------------------------------------------------------------------------------------v84v4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v++enva-------vv4v+------------------------------------------8--f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--7------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

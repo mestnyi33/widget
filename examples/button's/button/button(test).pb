@@ -57,56 +57,11 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   Procedure TestType( class$, X,Y,Width,Height,txt$, Flag.q=0)
-      Protected._s_WIDGET *g
-       
-      Protected Center
-;       ;If Flag & #__flag_Center
-          Center = #__flag_Center
-;       ;EndIf
-      
-      If Not ( Flag & #__flag_Left Or
-               Flag & #__flag_Top Or 
-               Flag & #__flag_Right Or 
-               Flag & #__flag_Bottom )
-         
-         If Flag & #__flag_Vertical
-            If Flag & #__flag_Invert
-               If Not Flag & #__flag_Top
-                  Flag | Center | #__flag_Top
-               EndIf
-            Else
-               If Not Flag & #__flag_Bottom
-                  Flag | Center | #__flag_Bottom
-               EndIf
-            EndIf
-         Else
-            If Flag & #__flag_Invert
-               If Not Flag & #__flag_Right
-                  Flag | Center | #__flag_Right
-               EndIf
-            Else
-               If Not Flag & #__flag_Left
-                  Flag | Center | #__flag_Left
-               EndIf
-            EndIf
-         EndIf
-      EndIf
-   
-      Select class$ 
-         Case "Text"      : *g = Text( X,Y,Width,Height,txt$, Flag)
-         Case "Button"    : *g = Button( X,Y,Width,Height,txt$, Flag)
-         Case "Progress"  : *g = Progress( X,Y,Width,Height,0,100, Flag) : SetState( *g, 50 )
-      EndSelect
-      
-      ProcedureReturn *g
-   EndProcedure
-   
    Procedure Test( X,Y,Width,Height,txt$, Flag.q=0)
       Protected._s_WIDGET *g
-      ;*g = TestType( "Text", X,Y,Width,Height,txt$, Flag)
-      *g = TestType( "Button", X,Y,Width,Height,txt$, Flag)
-      ;*g = TestType( "Progress", X,Y,Width,Height,txt$, Flag)
+      ;*g = Text(X,Y,Width,Height,txt$, Flag)
+      ;*g = Button(X,Y,Width,Height,txt$, Flag)
+      ;*g = Progress(X,Y,Width,Height,txt$, Flag)
        
        
 ;       If Flag & #__flag_Left
@@ -127,37 +82,10 @@ CompilerIf #PB_Compiler_IsMainFile
       ;   Center = #__flag_Center
       ;EndIf
       
-      If Not ( Flag & #__flag_Left Or
-               Flag & #__flag_Top Or 
-               Flag & #__flag_Right Or 
-               Flag & #__flag_Bottom )
-         
-         If Flag & #__flag_Vertical
-            If Flag & #__flag_Invert
-               If Not Flag & #__flag_Top
-                  Flag | Center | #__flag_Top
-               EndIf
-            Else
-               If Not Flag & #__flag_Bottom
-                  Flag | Center | #__flag_Bottom
-               EndIf
-            EndIf
-         Else
-            If Flag & #__flag_Invert
-               If Not Flag & #__flag_Right
-                  Flag | Center | #__flag_Right
-               EndIf
-            Else
-               If Not Flag & #__flag_Left
-                  Flag | Center | #__flag_Left
-               EndIf
-            EndIf
-         EndIf
-      EndIf
-   
+      
       ;*g = String( X,Y,Width,Height,txt$, Flag)
       ;*g = Option( X,Y,Width,Height,txt$, Flag)
-      ;*g = CheckBox( X,Y,Width,Height,txt$, Flag)
+      *g = CheckBox( X,Y,Width,Height,txt$, Flag)
       
       ; *g = Button( X,Y,Width,Height,"", Flag) 
       ;*g = ButtonImage( X,Y,Width,Height,-1, Flag) : SetText( *g, txt$ )
@@ -204,8 +132,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 175
-; FirstLine = 139
-; Folding = --v--
+; CursorPosition = 84
+; FirstLine = 76
+; Folding = --
 ; EnableXP
 ; DPIAware

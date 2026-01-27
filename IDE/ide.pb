@@ -2987,7 +2987,12 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    If ide_inspector_PANELBUTTON
       AddButtons( ide_design_PANEL, ide_inspector_PANELBUTTON, #__flag_AutoSize|#__flag_Right )
       AddButtons( ide_design_PANEL, String(0,0,80,0, "1"), #__flag_Right )
-      AddButtons( ide_design_PANEL, Button(0,0,0,0, "2"), #__flag_AutoSize|#__flag_Right )
+      Global ide_inspector_PANELCOMBO = ComboBox(0,0,0,0) 
+      AddItem(ide_inspector_PANELCOMBO, -1, "1")
+      AddItem(ide_inspector_PANELCOMBO, -1, "2")
+      AddItem(ide_inspector_PANELCOMBO, -1, "3")
+      SetState(ide_inspector_PANELCOMBO, 0)
+      AddButtons( ide_design_PANEL, ide_inspector_PANELCOMBO, #__flag_AutoSize|#__flag_Right )
       SetState( ide_inspector_PANELBUTTON, 0 )
       BarPosition( ide_inspector_PANEL, 0 )
    EndIf
@@ -3289,8 +3294,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 558
-; FirstLine = 513
+; CursorPosition = 2993
+; FirstLine = 2351
 ; Folding = -4--4---8l-3v-----------Aj-------v0fvd-0----------f6WW----f+-
 ; EnableXP
 ; DPIAware
