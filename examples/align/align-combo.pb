@@ -19,16 +19,14 @@ CompilerIf #PB_Compiler_IsMainFile
    Global.s word$ = "&"
    ; word$ = #LF$ ; BUG
    
-   Procedure TestAlign( X,Y,Width,Height, Text.s, flags=0 )
-      If flags & #__flag_Center
-         ;flags &~ #__flag_Center
-      Else
-        ; flags | 
-      EndIf
+   Procedure TestAlign( X,Y,Width,Height, txt$, Flag=0 )
+      Protected._s_WIDGET *g
       
-      Protected._s_WIDGET *g = ComboBox( X,Y,Width,Height, flags)
-      AddItem( *g, -1, Text,img )
-      SetState( *g, 0 )
+      *g = ComboBox( X,Y,Width,Height, Flag) : AddItem( *g, -1, txt$,img ) : SetState( *g, 0 )
+      ;*g = Button( X,Y,Width,Height, txt$, Flag) : SetImage( *g, img )
+      ;*g = Text( X,Y,Width,Height, txt$, Flag) : SetImage( *g, img )
+      ;*g = String( X,Y,Width,Height, txt$, Flag) : SetImage( *g, img )
+      
       Alignment( *g, #__align_left|#__align_right)
    EndProcedure
    
@@ -48,6 +46,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; Folding = --
+; CursorPosition = 24
+; FirstLine = 5
+; Folding = -
 ; EnableXP
 ; DPIAware

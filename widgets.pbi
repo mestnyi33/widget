@@ -446,7 +446,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;       EndMacro
       
       Macro IPAddress( X,Y,Width,Height, Flag=0 )
-         String( X,Y,Width,Height, "", #__flag_Textnumeric|Flag )
+         String( X,Y,Width,Height, "", #__flag_Textnumeric|#__flag_Center|Flag )
          Widget( )\class = "IPAddress"
       EndMacro
       
@@ -9581,6 +9581,45 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this = *this\stringbar
          EndIf
          
+; ;                
+;          If *this\flag & #__flag_Center
+;             If Not ( *this\flag & #__flag_Left Or
+;                   *this\flag & #__flag_Top Or 
+;                   *this\flag & #__flag_Right Or 
+;                   *this\flag & #__flag_Bottom )
+;             
+;             If *this\flag & #__flag_Vertical
+;                If *this\flag & #__flag_Invert
+;                   If Not *this\flag & #__flag_Top
+;                      ; *this\flag | #__flag_Center | #__flag_Top
+;                      ;*this\text\align\top = 1
+;                      *this\picture\align\top = 1
+;                   EndIf
+;                Else
+;                   If Not *this\flag & #__flag_Bottom
+;                     ; *this\flag | #__flag_Center | #__flag_Bottom
+;                      ;*this\text\align\bottom = 1
+;                      *this\picture\align\bottom = 1
+;                   EndIf
+;                EndIf
+;             Else
+;                If *this\flag & #__flag_Invert
+;                   If Not *this\flag & #__flag_Right
+;                      ; *this\flag | #__flag_Center | #__flag_Right
+;                      ;*this\text\align\right = 1
+;                      *this\picture\align\right = 1
+;                   EndIf
+;                Else
+;                   If Not *this\flag & #__flag_Left
+;                      ; *this\flag | #__flag_Center | #__flag_Left
+;                      ;*this\text\align\left = 1
+;                      *this\picture\align\left = 1
+;                   EndIf
+;                EndIf
+;             EndIf
+;          EndIf
+;          EndIf
+;          
          add_image( *this\picture, img )
          
          If *this\type <> #__type_window
@@ -15359,7 +15398,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\text\align\right  = *this\picture\align\right
                   *this\text\align\bottom = *this\picture\align\bottom
                EndIf
-                  
+               
+               If *this\flag & #__flag_Center
+                  If Not ( *this\flag & #__flag_Left Or
+                           *this\flag & #__flag_Top Or 
+                           *this\flag & #__flag_Right Or 
+                           *this\flag & #__flag_Bottom )
+                     
+                     If *this\flag & #__flag_Vertical
+                        If *this\flag & #__flag_Invert
+                           If Not *this\flag & #__flag_Top
+                              *this\picture\align\top = 1
+                           EndIf
+                        Else
+                           If Not *this\flag & #__flag_Bottom
+                              *this\picture\align\bottom = 1
+                           EndIf
+                        EndIf
+                     Else
+                        If *this\flag & #__flag_Invert
+                           If Not *this\flag & #__flag_Right
+                              *this\picture\align\right = 1
+                           EndIf
+                        Else
+                           If Not *this\flag & #__flag_Left
+                              *this\picture\align\left = 1
+                           EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+         
+         
 ;                set_align_content( *this\picture, *this\flag )
 ;                If constants::BinaryFlag( *this\flag, #__Flag_Center )
 ;                   set_align_content( *this\text, *this\flag )
@@ -15447,7 +15517,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\flag & ~ Flag
                EndIf
                
-               ;SetFlag( *this, Flag )
+               SetFlag( *this, Flag )
                
                ;\\ text align
                If string_bar
@@ -21238,10 +21308,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   Draw_Button( *this._s_WIDGET )
-         ;          Draw_BackGround( *this, *this\ColorState( ))
-         ;          Draw_Content( *this, *this\ColorState( ))
-         ;          Draw_Frames( *this, *this\ColorState( ) )
-         ;          ProcedureReturn
+                  Draw_BackGround( *this, *this\ColorState( ))
+                  Draw_Content( *this, *this\ColorState( ))
+                  Draw_Frames( *this, *this\ColorState( ) )
+                  ProcedureReturn
          
          Protected X, Y, state
          state = *this\ColorState( )
@@ -22061,8 +22131,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Case #__type_MDI        : Draw_Container( *this )
                         Case #__type_Container  : Draw_Container( *this )
                         Case #__type_ScrollArea : Draw_Container( *this )
-                        Case #__type_image      : Draw_Container( *this )
                         Case #__type_Panel      : Draw_Container( *this )
+                        Case #__type_image      : Draw_Container( *this )
                            
                         Case #__type_Window     
                            Draw_BackGround( *this, 0 )
@@ -22074,21 +22144,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Case #__type_ListView   : Draw_Tree( *this )
                         Case #__type_ListIcon   : Draw_ListIcon( *this )
                            
+                        Case #__type_Editor     : Draw_Editor( *this )
                         Case #__type_String     
 ;                            If *this\text\multiline
                               Draw_Editor( *this )
 ;                            Else
 ;                               Draw_Button( *this )
 ;                            EndIf
-                        Case #__type_Editor     : Draw_Editor( *this )
                            
                         Case #__type_Text       : Draw_Button( *this )
-                           
                         Case #__type_ButtonImage: Draw_Button( *this )
-;                            Draw_BackGround( *this, *this\ColorState( ))
-;                            Draw_Content( *this, *this\ColorState( ))
-;                            Draw_Frames( *this, *this\ColorState( ) )
-                           
                         Case #__type_Button     : Draw_Button( *this )
                         Case #__type_Option     : Draw_Button( *this )
                         Case #__type_CheckBox   : Draw_Button( *this )
@@ -22762,9 +22827,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\bar.allocate( BAR )
          EndIf
          
+         ;
          *this\child  = constants::BinaryFlag( Flag, #__flag_child )
          If constants::BinaryFlag( Flag, #__flag_NoFocus )
             *this\focus = #__s_nofocus
+         EndIf
+         
+         ;
+         If Type = #__type_Button Or Type = #__type_ButtonImage 
+            *this\deffocus = Bool( Flag & #PB_Button_Default )
          EndIf
          If Type = #__type_CheckBox
             *this\mode\threestate = constants::BinaryFlag( Flag, #PB_CheckBox_ThreeState )
@@ -22772,119 +22843,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If Type = #__type_HyperLink
             *this\mode\Lines = constants::BinaryFlag( Flag, #PB_HyperLink_Underline )
          EndIf
-         If Type = #__type_Editor
-            *this\mode\fullselection = constants::BinaryFlag( Flag, #__flag_RowFullSelect, #False ) * DPIScaled(7)
-         EndIf
-         ;
-         If Type = #__type_Splitter
-            *this\bar\vertical = Bool( Not constants::BinaryFlag( Flag, #__flag_Vertical ) And 
-                                       Not constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
-            *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
-         EndIf
-         If Type = #__type_Progress
-            *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or
-                                       constants::BinaryFlag( Flag, #PB_ProgressBar_Vertical ))
-            *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert )
-            
-         EndIf
-         If Type = #__type_Scroll
-            *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or 
-                                       constants::BinaryFlag( Flag, #PB_ScrollBar_Vertical ))
-            *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
-         EndIf
-         If Type = #__type_Spin
-            If Flag & #__spin_Plus
-               *this\bar\vertical = constants::BinaryFlag( Flag, #__flag_Vertical )
-            Else
-               *this\bar\vertical = constants::BinaryFlag( Flag, #__flag_Vertical, #False )
-            EndIf
-            
-            *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert )
-            *this\bar\mirror = constants::BinaryFlag( Flag, #__spin_mirror )
-         EndIf
-         If Type = #__type_Track
-            *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or
-                                       constants::BinaryFlag( Flag, #PB_TrackBar_Vertical ))
-            
-            If *this\bar\vertical
-               *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert, #False )
-            Else
-               *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert )
-            EndIf
-         EndIf
-         If Type = #__type_MenuBar Or
-            Type = #__type_PopupBar Or
-            Type = #__type_ToolBar Or
-            Type = #__type_TabBar 
-            ;
-            *this\bar\vertical = constants::BinaryFlag( Flag, #__flag_Vertical )
-            *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
-         EndIf
          
          ;
-         ; replace pb flag
-         Flag = FromPBFlag( Type, Flag )
-         *this\flag = Flag
-         
-         ;
-         ; change flags
-         If Not flag_center
-            If Not (*this\Flag & #__flag_Left Or
-                    *this\Flag & #__flag_Right Or
-                    *this\Flag & #__flag_Top Or
-                    *this\Flag & #__flag_Bottom)
-               If Type = #__type_Button Or Type = #__type_ButtonImage Or Type = #__type_Image Or
-                  Type = #__type_Progress Or
-                  Type = #__type_HyperLink
-                  
-                  *this\Flag | #__flag_Center
-                  
-               ElseIf Type = #__type_ComboBox 
-                  *this\Flag | #__flag_Left
-                  
-               ElseIf Type = #__type_Spin Or
-                      Type = #__type_String Or
-                      Type = #__type_Option Or
-                      Type = #__type_CheckBox
-                  
-                  *this\flag | #__flag_Center | #__flag_Left
-                  
-                  If flag_Right
-                     *this\flag & ~ #__flag_Left
-                     *this\flag | #__flag_Right
-                  EndIf
-                  
-               ElseIf Type = #__type_Text Or
-                      Type = #__type_Editor
-                  
-                  If Not flag_Right
-                     *this\Flag | #__flag_Left
-                  EndIf
-                  If Not flag_Bottom
-                     *this\Flag | #__flag_Top
-                  EndIf
-               EndIf
-               
-               Flag | *this\Flag
-            EndIf
-         EndIf
-         ;
-         If Type = #__type_Button Or Type = #__type_ButtonImage 
-               *this\deffocus = Bool( Flag & #PB_Button_Default )
-            EndIf
-            
-         ;
-         ;\\
-         *this\font   = - 1
-         *this\color  = _get_colors_( )
-         *this\type   = Type
-         *this\class  = class
-         *this\round  = DPIScaled( round )
-         
-         
-         ;\\
          If Not *this\togglebox
-            If *this\type = #__type_Button Or *this\type = #__type_ButtonImage 
+            If *this\type = #__type_Button Or 
+               *this\type = #__type_ButtonImage 
                ;
                If constants::BinaryFlag( Flag, #PB_Button_Toggle )
                   Flag &~ #PB_Button_Toggle
@@ -22906,7 +22869,132 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\togglebox\height = *this\togglebox\width
             EndIf
          EndIf
+         
+         ;
+         If Type = #__type_Splitter
+            *this\bar\vertical = Bool( Not constants::BinaryFlag( Flag, #__flag_Vertical ) And 
+                                       Not constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
+            *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
+         EndIf
+         If Type = #__type_Progress
+            *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or
+                                       constants::BinaryFlag( Flag, #PB_ProgressBar_Vertical ))
+            *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert )
             
+         EndIf
+         If Type = #__type_Scroll
+            *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or 
+                                       constants::BinaryFlag( Flag, #PB_ScrollBar_Vertical ))
+            *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
+         EndIf
+         If Type = #__type_Track
+            *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__flag_Vertical ) Or
+                                       constants::BinaryFlag( Flag, #PB_TrackBar_Vertical ))
+            
+            If *this\bar\vertical
+               *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert, #False )
+            Else
+               *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert )
+            EndIf
+         EndIf
+         If Type = #__type_Spin
+            If Flag & #__spin_Plus
+               *this\bar\vertical = constants::BinaryFlag( Flag, #__flag_Vertical )
+            Else
+               *this\bar\vertical = constants::BinaryFlag( Flag, #__flag_Vertical, #False )
+            EndIf
+            
+            *this\bar\invert = constants::BinaryFlag( Flag, #__flag_Invert )
+            *this\bar\mirror = constants::BinaryFlag( Flag, #__spin_mirror )
+         EndIf
+         If Type = #__type_MenuBar Or
+            Type = #__type_PopupBar Or
+            Type = #__type_ToolBar Or
+            Type = #__type_TabBar 
+            ;
+            *this\bar\vertical = constants::BinaryFlag( Flag, #__flag_Vertical )
+            *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
+         EndIf
+         If Type = #__type_Editor
+            *this\mode\fullselection = constants::BinaryFlag( Flag, #__flag_RowFullSelect, #False ) * DPIScaled(7)
+         EndIf
+         
+         ;
+         ; replace pb flag to widget flag
+         Flag = FromPBFlag( Type, Flag )
+         ;
+         ; set default text align flags
+         If Not flag_center
+            If Not (Flag & #__flag_Left Or
+                    Flag & #__flag_Right Or
+                    Flag & #__flag_Top Or
+                    Flag & #__flag_Bottom)
+               
+               If Type = #__type_Spin 
+                  If Flag & #__spin_Plus
+                     Flag | #__flag_Center
+                  Else
+                     Flag | #__flag_Left
+                  EndIf
+                  
+               ElseIf Type = #__type_Text Or
+                      Type = #__type_Editor
+                  
+                  If Not flag_Right
+                     Flag | #__flag_Left
+                  EndIf
+                  If Not flag_Bottom
+                     Flag | #__flag_Top
+                  EndIf
+                  
+               ElseIf Type = #__type_Button Or 
+                      Type = #__type_ButtonImage Or 
+                      Type = #__type_Image Or
+                      Type = #__type_Progress Or
+                      Type = #__type_HyperLink
+                  
+                  Flag | #__flag_Center
+;                   If Flag & #__flag_Vertical
+;                      If Flag & #__flag_Invert
+;                         If Not Flag & #__flag_Top
+;                            Flag | #__flag_Center | #__flag_Top
+;                         EndIf
+;                      Else
+;                         If Not Flag & #__flag_Bottom
+;                            Flag | #__flag_Center | #__flag_Bottom
+;                         EndIf
+;                      EndIf
+;                   Else
+;                      If Flag & #__flag_Invert
+;                         If Not Flag & #__flag_Right
+;                            Flag | #__flag_Center | #__flag_Right
+;                         EndIf
+;                      Else
+;                         If Not Flag & #__flag_Left
+;                            Flag | #__flag_Center | #__flag_Left
+;                         EndIf
+;                      EndIf
+;                   EndIf
+                  
+               ElseIf Type = #__type_ComboBox Or 
+                      Type = #__type_String Or
+                      Type = #__type_Option Or
+                      Type = #__type_CheckBox
+                  
+                  Flag | #__flag_Left
+                  
+               EndIf
+            EndIf
+         EndIf
+         
+         *this\flag = Flag   
+         ;
+         ;\\
+         *this\font   = - 1
+         *this\color  = _get_colors_( )
+         *this\type   = Type
+         *this\class  = class
+         *this\round  = DPIScaled( round )
          
          ;\\
          If *parent
@@ -23059,17 +23147,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\tabbar = CreateBar( *this, #__flag_BarSmall, #__type_TabBar ) 
                *this\tabbar\bar\vertical = constants::BinaryFlag( *this\Flag, #__flag_Vertical )
                
-               If Flag & #__Panel_Left And
-                  Flag & #__Panel_Bottom And 
-                  Flag & #__Panel_Right
-                  BarPosition(*this\tabbar, 3);, 100 )
+               If*this\flag & #__Panel_Left And
+                 *this\flag & #__Panel_Bottom And 
+                 *this\flag & #__Panel_Right
+                  BarPosition(*this\tabbar, 3)
                Else
-                  If Flag & #__Panel_Left
-                     BarPosition(*this\tabbar, 1);, 100 )
-                  ElseIf Flag & #__Panel_Bottom  
-                     BarPosition(*this\tabbar, 4);, 100 )
-                  ElseIf Flag & #__Panel_Right
-                     BarPosition(*this\tabbar, 3);, 100 )
+                  If*this\flag & #__Panel_Left
+                     BarPosition(*this\tabbar, 1)
+                  ElseIf*this\flag & #__Panel_Bottom  
+                     BarPosition(*this\tabbar, 4)
+                  ElseIf*this\flag & #__Panel_Right
+                     BarPosition(*this\tabbar, 3)
                   EndIf
                EndIf
                If constants::BinaryFlag( *this\Flag, #__flag_nobuttons ) 
@@ -23167,9 +23255,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *BB1\color = _get_colors_( )
                *BB2\color = _get_colors_( )
                
-               If *this\flag & #__spin_Plus
-                  *this\flag = Flag | #__flag_TextCenter
-               Else
+               If Not *this\flag & #__spin_Plus
                   *BB1\arrow\size = DPIScaled( #__arrow_size )
                   *BB2\arrow\size = DPIScaled( #__arrow_size )
                   
@@ -23331,7 +23417,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             SetAttribute( *this, #__bar_buttonsize, Size + 5 )
             *this\stringbar = Create( *this, *this\class + "_STRING",
                                       #__type_String, 0, 0, 0, 0, "", ;Str(*param_1),
-                                      #__flag_child | #__flag_Textnumeric | #__flag_Borderless );| *this\flag&~(#__flag_invert|#__flag_vertical) )
+                                      #__flag_child | #__flag_Textnumeric | #__flag_Borderless | *this\flag&~(#__flag_invert|#__flag_vertical) )
          EndIf
          
          
@@ -23532,8 +23618,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_Frame
             
             If *this\text
-               SetFlag( *this, Flag )
-               
                If *this\row
                   If *this\text\multiline
                      *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flag, #__flag_TextNumeric, #False )
@@ -27891,9 +27975,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 22835
-; FirstLine = 22326
-; Folding = ------------------------------------------------------------------------------------------v84v4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f000Of2+------ffvf0------------------------------------------4---+--------------------------------------------------------------------------Ao+---4+f+7avkng8r---------------------------------------------------------------------------------------------+-2------
+; CursorPosition = 15421
+; FirstLine = 15274
+; Folding = ------------------------------------------------------------------------------------------v84v4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------rvv46r3-------880r-------------------------------------------+--4--------------------------------------------------------------------------n8hy-4-+-8fX8l0Ecf0--------------------------------------------------------------------------------------------4-v+-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

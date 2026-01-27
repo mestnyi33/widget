@@ -556,7 +556,7 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
    
    Select Type
       Case #__type_Spin
-         Flag = #__spin_Plus
+         Flag = #__flag_Invert ; #__spin_Plus
          steps = 1 
          ;
          Select item
@@ -3289,8 +3289,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2765
-; FirstLine = 2214
+; CursorPosition = 558
+; FirstLine = 513
 ; Folding = -4--4---8l-3v-----------Aj-------v0fvd-0----------f6WW----f+-
 ; EnableXP
 ; DPIAware
