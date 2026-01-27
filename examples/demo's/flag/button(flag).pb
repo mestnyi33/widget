@@ -152,7 +152,16 @@ CompilerIf #PB_Compiler_IsMainFile
                   ;
                   ;
                Case button_default   : Flag = #__flag_button_Default
-               Case button_toggle    : Flag = #PB_Button_Toggle
+               Case button_toggle    ;: Flag = #PB_Button_Toggle
+                  If GetState(EventWidget)
+                     If Flag(*this, #PB_Button_Toggle, 1 )
+                        ; SetState( *this, 1 )
+                     EndIf
+                  Else
+                     RemoveFlag(*this, #PB_Button_Toggle)
+                     ; SetState( *this, 0 )
+                  EndIf
+                  
                Case button_multiline ;: Flag = #__flag_TextMultiline
                   If GetState(EventWidget)
                      SetFlag(*this, #__flag_TextMultiline)
@@ -255,8 +264,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 62
-; FirstLine = 51
+; CursorPosition = 157
+; FirstLine = 147
 ; Folding = -----
 ; EnableXP
 ; DPIAware

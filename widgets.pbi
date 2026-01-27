@@ -15422,7 +15422,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf 
                   
-                  If constants::BinaryFlag( flag, #__flag_TextMultiLine )
+                  If constants::BinaryFlag( Flag, #__flag_TextMultiLine )
                      If *this\text\multistring
                         *this\text\string = *this\text\multistring 
                         *this\text\multistring = ""
@@ -15592,6 +15592,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                               *this\ColorState( ) = #__s_0
 ;                            EndIf
 ;                         EndIf
+                        ProcedureReturn 1
                      Else
                         If *this\togglebox
                            *this\togglebox = #Null
@@ -27970,8 +27971,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 15424
-; FirstLine = 15260
+; CursorPosition = 15594
+; FirstLine = 15400
 ; Folding = ------------------------------------------------------------------------------------------v84v4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-Pv---f-------------------------------------------------------------------------------rvv46r3-------880r-------------------------------------------+--4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-v+-----
 ; EnableXP
 ; DPIAware
