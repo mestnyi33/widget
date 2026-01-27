@@ -3293,10 +3293,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; IDE Options = PureBasic 6.21 (Windows - x64)
 ; CursorPosition = 402
 ; FirstLine = 372
 ; Folding = -4--4---8n-3v-----------Aj-------v0fvd-0----------f6WW----f+-
 ; EnableXP
 ; DPIAware
-; Executable = ../../2.exe
+; Executable = ..\..\2_621.exe

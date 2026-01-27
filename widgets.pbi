@@ -1312,7 +1312,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          If Not ( _address_\text\width And _address_\text\height ) Or _update_
             If _address_\text\string
-               _address_\text\width = TextWidth( _address_\text\string )
+;                CompilerIf #PB_Compiler_OS = #PB_OS_Windows ; BUG
+;                   _address_\text\width = TextWidth( RemoveString( _address_\text\string, #LF$ ))
+;                CompilerElse
+                  _address_\text\width = TextWidth( _address_\text\string )
+;                CompilerEndIf
             EndIf
             
             _address_\text\height = TextHeight( "A" ) - Bool(#PB_Compiler_OS=#PB_OS_MacOS)
@@ -15310,12 +15314,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                   Bool( *this\text\vertical ) * 90
             
             
-            If Not *this\text\multiLine
-               If *this\text\string
-                  *this\text\multistring = *this\text\string
-                  *this\text\string = RemoveString( *this\text\string, #LF$ )
+            ; CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+            If *this\text\string
+               If Not *this\text\multiLine
+                  If *this\text\multistring = ""
+                     *this\text\multistring = *this\text\string
+                     *this\text\string = RemoveString( *this\text\string, #LF$ )
+                  EndIf
                EndIf
             EndIf
+            ; CompilerEndIf
             *this\TextChange( ) = 1
             
             ProcedureReturn #True
@@ -27970,10 +27978,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 15594
-; FirstLine = 15400
-; Folding = ------------------------------------------------------------------------------------------v84v4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-Pv---f-------------------------------------------------------------------------------rvv46r3-------880r-------------------------------------------+--4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-v+-----
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 15318
+; FirstLine = 15190
+; Folding = ------------------------------------------------------------------------------------------v84v4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-fe----+------------------------------------------------------------------------------XffvzXt-------448X-------------------------------------------0--v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-f0------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
