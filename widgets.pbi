@@ -15280,9 +15280,48 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn flags
       EndProcedure
       
+      Procedure   RemoveFlag( *this._s_WIDGET, Flag.q )
+         If *this\flag & Flag
+            *this\flag & ~ Flag
+            
+            If Flag & #__flag_left : *this\text\align\left = 0 : EndIf
+            If Flag & #__flag_top : *this\text\align\top = 0 : EndIf
+            If Flag & #__flag_right : *this\text\align\right = 0 : EndIf
+            If Flag & #__flag_bottom : *this\text\align\bottom = 0 : EndIf
+            
+            If Flag & #__flag_Textreadonly : *this\text\editable = 1 : EndIf
+            If Flag & #__flag_TextLowerCase : *this\text\lower = 0 : EndIf
+            If Flag & #__flag_TextUpperCase : *this\text\upper = 0 : EndIf
+            If Flag & #__flag_TextPassWord : *this\text\pass = 0 : EndIf
+            If Flag & #__flag_TextInvert : *this\text\invert = 0 : EndIf
+            If Flag & #__flag_TextVertical : *this\text\vertical = 0 : EndIf
+            If Flag & #__flag_TextWordWrap 
+               If *this\text\multiLine = 1
+                  *this\text\multiLine = 0 
+               EndIf
+            EndIf
+            If Flag & #__flag_TextMultiLine 
+               If *this\text\multiLine = - 1
+                  *this\text\multiLine = 0 
+               EndIf
+            EndIf
+            
+            *this\text\rotate   = Bool( *this\text\invert ) * 180 + 
+                                  Bool( *this\text\vertical ) * 90
+              *this\TextChange( ) = 1
+                
+            ProcedureReturn #True
+         EndIf
+      EndProcedure
+      
+      Procedure.q GetFlag( *this._s_WIDGET )
+         ProcedureReturn *this\flag
+      EndProcedure
+      
       Procedure   SetFlag( *this._s_WIDGET, Flag.q )
          Protected fs
-         
+        ; Flag = FromPBFlag( *this\type, Flag )
+            
          ; установить флаги текста 
          If *this\type = #__type_ComboBox Or 
             *this\type = #__type_Progress Or
@@ -15295,79 +15334,89 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_HyperLink Or 
             *this\type = #__type_Frame
             
-            If *this\text
-               ;\\ set content ALIGNMENT
-               *this\picture\align\left   = constants::BinaryFlag( Flag, #__flag_left )
-               *this\picture\align\top    = constants::BinaryFlag( Flag, #__flag_top )
-               *this\picture\align\right  = constants::BinaryFlag( Flag, #__flag_right )
-               *this\picture\align\bottom = constants::BinaryFlag( Flag, #__flag_bottom )
-               
-               If Not constants::BinaryFlag( Flag, #__flag_Center )
-                  *this\text\align\left   = *this\picture\align\left
-                  *this\text\align\top    = *this\picture\align\top
-                  *this\text\align\right  = *this\picture\align\right
-                  *this\text\align\bottom = *this\picture\align\bottom
-               EndIf
-               
-               If *this\flag & #__flag_Center
-                  If Not ( *this\flag & #__flag_Left Or
-                           *this\flag & #__flag_Top Or 
-                           *this\flag & #__flag_Right Or 
-                           *this\flag & #__flag_Bottom )
-                     
-                     If *this\flag & #__flag_Vertical
-                        If *this\flag & #__flag_Invert
-                           If Not *this\flag & #__flag_Top
-                              *this\picture\align\top = 1
+            If Not *this\flag & Flag
+               *this\flag | Flag
+             EndIf
+              
+               If *this\text
+                  ;\\ set content ALIGNMENT
+                  *this\picture\align\left   = constants::BinaryFlag( *this\Flag, #__flag_left )
+                  *this\picture\align\top    = constants::BinaryFlag( *this\Flag, #__flag_top )
+                  *this\picture\align\right  = constants::BinaryFlag( *this\Flag, #__flag_right )
+                  *this\picture\align\bottom = constants::BinaryFlag( *this\Flag, #__flag_bottom )
+                  
+                  If Not constants::BinaryFlag( *this\Flag, #__flag_Center )
+                     *this\text\align\left   = *this\picture\align\left
+                     *this\text\align\top    = *this\picture\align\top
+                     *this\text\align\right  = *this\picture\align\right
+                     *this\text\align\bottom = *this\picture\align\bottom
+                  EndIf
+                  
+                  If *this\flag & #__flag_Center
+                     If Not ( *this\flag & #__flag_Left Or
+                              *this\flag & #__flag_Top Or 
+                              *this\flag & #__flag_Right Or 
+                              *this\flag & #__flag_Bottom )
+                        
+                        If *this\flag & #__flag_Vertical
+                           If *this\flag & #__flag_Invert
+                              If Not *this\flag & #__flag_Top
+                                 *this\picture\align\top = 1
+                              EndIf
+                           Else
+                              If Not *this\flag & #__flag_Bottom
+                                 *this\picture\align\bottom = 1
+                              EndIf
                            EndIf
                         Else
-                           If Not *this\flag & #__flag_Bottom
-                              *this\picture\align\bottom = 1
-                           EndIf
-                        EndIf
-                     Else
-                        If *this\flag & #__flag_Invert
-                           If Not *this\flag & #__flag_Right
-                              *this\picture\align\right = 1
-                           EndIf
-                        Else
-                           If Not *this\flag & #__flag_Left
-                              *this\picture\align\left = 1
+                           If *this\flag & #__flag_Invert
+                              If Not *this\flag & #__flag_Right
+                                 *this\picture\align\right = 1
+                              EndIf
+                           Else
+                              If Not *this\flag & #__flag_Left
+                                 *this\picture\align\left = 1
+                              EndIf
                            EndIf
                         EndIf
                      EndIf
                   EndIf
-               EndIf
-         
-               ;\\
-               *this\text\editable = Bool( Not constants::BinaryFlag( Flag, #__flag_Textreadonly ))
-               *this\text\lower    = constants::BinaryFlag( Flag, #__flag_Textlowercase )
-               *this\text\upper    = constants::BinaryFlag( Flag, #__flag_Textuppercase )
-               *this\text\pass     = constants::BinaryFlag( Flag, #__flag_Textpassword )
-               *this\text\invert   = constants::BinaryFlag( Flag, #__flag_TextInvert )
-               *this\text\vertical = constants::BinaryFlag( Flag, #__flag_TextVertical )
-               *this\text\rotate   = Bool( *this\text\invert ) * 180 + 
-                                     Bool( *this\text\vertical ) * 90
-               
-               ;\\
-               If constants::BinaryFlag( Flag, #__flag_Textwordwrap )
-                  *this\text\multiLine = 1
-               ElseIf constants::BinaryFlag( Flag, #__flag_TextMultiLine )
-                  *this\text\multiLine = - 1
-               Else
-                  If *this\type = #__type_Text And Not constants::BinaryFlag( Flag, #__flag_TextInLine ) 
-                     *this\flag | #__flag_TextWordWrap
+                  
+                  
+                  ;\\
+                  *this\text\editable = Bool( Not constants::BinaryFlag( *this\flag, #__flag_Textreadonly ))
+                  *this\text\lower    = constants::BinaryFlag( *this\flag, #__flag_Textlowercase )
+                  *this\text\upper    = constants::BinaryFlag( *this\flag, #__flag_Textuppercase )
+                  *this\text\pass     = constants::BinaryFlag( *this\flag, #__flag_Textpassword )
+                  *this\text\invert   = constants::BinaryFlag( *this\flag, #__flag_TextInvert )
+                  *this\text\vertical = constants::BinaryFlag( *this\flag, #__flag_TextVertical )
+                  *this\text\rotate   = Bool( *this\text\invert ) * 180 + 
+                                        Bool( *this\text\vertical ) * 90
+                  
+                  
+                  
+                  ;Debug ""+*this\text\invert+" "+*this\text\vertical
+                  ;\\
+                  If constants::BinaryFlag( *this\Flag, #__flag_Textwordwrap )
                      *this\text\multiLine = 1
-                  ElseIf *this\type = #__type_Editor And Not constants::BinaryFlag( Flag, #__flag_TextInLine ) 
-                     *this\flag | #__flag_TextMultiLine
+                  ElseIf constants::BinaryFlag( *this\flag, #__flag_TextMultiLine )
                      *this\text\multiLine = - 1
                   Else
-                     *this\text\multiLine = 0
-                     *this\text\numeric       = constants::BinaryFlag( Flag, #__flag_Textnumeric )
-                  EndIf
-               EndIf 
-               
-            EndIf
+                     If *this\type = #__type_Text And Not constants::BinaryFlag( *this\Flag, #__flag_TextInLine ) 
+                        *this\flag | #__flag_TextWordWrap
+                        *this\text\multiLine = 1
+                     ElseIf *this\type = #__type_Editor And Not constants::BinaryFlag( *this\Flag, #__flag_TextInLine ) 
+                        *this\flag | #__flag_TextMultiLine
+                        *this\text\multiLine = - 1
+                     Else
+                        *this\text\multiLine = 0
+                        *this\text\numeric       = constants::BinaryFlag( *this\flag, #__flag_Textnumeric )
+                     EndIf
+                  EndIf 
+                  
+                  *this\TextChange( ) = 1
+                  ; ProcedureReturn #True
+               EndIf
          EndIf   
          
          ; установить флаги рамки
@@ -15399,17 +15448,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;
-      EndProcedure
-      
-      Procedure   RemoveFlag( *this._s_WIDGET, Flag.q )
-         If *this\flag & Flag
-            *this\flag & ~ Flag
-            ProcedureReturn #True
-         EndIf
-      EndProcedure
-      
-      Procedure.q GetFlag( *this._s_WIDGET )
-         ProcedureReturn *this\flag
       EndProcedure
       
       Procedure.q Flag( *this._s_WIDGET, Flag.q = #Null, state.b = #PB_Default )
@@ -15453,12 +15491,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\ set & remove flags
                If state
-                  *this\flag | Flag
+                  If Not SetFlag( *this, Flag )
+                     *this\flag | Flag
+                  EndIf
                Else
                   *this\flag & ~ Flag
                EndIf
                
-               SetFlag( *this, Flag )
                
                ;\\ text align
                If string_bar
@@ -15525,19 +15564,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\type = #__type_Button Or *this\type = #__type_ButtonImage
                      ; set toggle button
                      If constants::BinaryFlag( Flag, #PB_Button_Toggle )
-                        If constants::BinaryFlag( *this\Flag, #PB_Button_Toggle )
-                           If Not *this\togglebox
-                              *this\togglebox.allocate( BOX )
-                           EndIf
-                           ;
-                           *this\togglebox\checked = state
-                           ;
-                           If state
-                              *this\ColorState( ) = #__s_2
-                           Else
-                              *this\ColorState( ) = #__s_0
-                           EndIf
-                        EndIf
+;                         If constants::BinaryFlag( *this\Flag, #PB_Button_Toggle )
+;                            If Not *this\togglebox
+;                               *this\togglebox.allocate( BOX )
+;                            EndIf
+;                            ;
+;                            *this\togglebox\checked = state
+;                            ;
+;                            If state
+;                               *this\ColorState( ) = #__s_2
+;                            Else
+;                               *this\ColorState( ) = #__s_0
+;                            EndIf
+;                         EndIf
                      Else
                         If *this\togglebox
                            *this\togglebox = #Null
@@ -21249,7 +21288,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   Draw_Button( *this._s_WIDGET )
-                  Draw_BackGround( *this, *this\ColorState( ))
+         Draw_BackGround( *this, *this\ColorState( ))
                   Draw_Content( *this, *this\ColorState( ))
                   Draw_Frames( *this, *this\ColorState( ) )
                   ProcedureReturn
@@ -27915,10 +27954,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 1699
-; FirstLine = 1687
-; Folding = ------------------------------------------------------------------------------------------v84v4--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--4------------------------------------------------------------------------------------XffvzXt-------448X-------------------------------------------0--v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-f0------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 15285
+; FirstLine = 15169
+; Folding = ------------------------------------------------------------------------------------------v84v4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-9+---0------------------------------------------------------------------------------v++enva-------vv4v+------------------------------------------8--f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--7------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
