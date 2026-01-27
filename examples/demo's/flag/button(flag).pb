@@ -60,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define Width = 560, Height = 560, pos = 60
    
-   Procedure events_widgets()
+   Procedure all_events()
       Protected Flag.q, EventWidget = EventWidget( )
       
       Select WidgetEvent( )
@@ -152,14 +152,14 @@ CompilerIf #PB_Compiler_IsMainFile
                   ;
                   ;
                Case button_default   : Flag = #__flag_button_Default
-               Case button_multiline : Flag = #__flag_TextMultiline
-;                   If GetState(EventWidget)
-;                      SetFlag(*this, #__flag_TextMultiline)
-;                   Else
-;                      RemoveFlag(*this, #__flag_TextMultiline)
-;                   EndIf
-                  
                Case button_toggle    : Flag = #PB_Button_Toggle
+               Case button_multiline ;: Flag = #__flag_TextMultiline
+                  If GetState(EventWidget)
+                     SetFlag(*this, #__flag_TextMultiline)
+                  Else
+                     RemoveFlag(*this, #__flag_TextMultiline)
+                  EndIf
+                  
                Case button_invert    
                   If GetState(EventWidget)
                      SetFlag(*this, #__flag_Invert)
@@ -223,7 +223,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;     AddItem(tree, #tree_item_vertical, "vertical")
       ;     AddItem(tree, #tree_item_invert, "invert")
       
-      Bind(#PB_All, @events_widgets())
+      Bind(#PB_All, @all_events())
       ;Flag(*this, #__flag_TextMultiline)
       ;Debug _Flag(*this, #__flag_TextMultiline)
       ;\\ set button toggled state
@@ -255,8 +255,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 159
-; FirstLine = 150
+; CursorPosition = 62
+; FirstLine = 51
 ; Folding = -----
 ; EnableXP
 ; DPIAware

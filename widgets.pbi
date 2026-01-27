@@ -15308,8 +15308,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             *this\text\rotate   = Bool( *this\text\invert ) * 180 + 
                                   Bool( *this\text\vertical ) * 90
-              *this\TextChange( ) = 1
-                
+            
+            
+            If Not *this\text\multiLine
+               If *this\text\string
+                  *this\text\multistring = *this\text\string
+                  *this\text\string = RemoveString( *this\text\string, #LF$ )
+               EndIf
+            EndIf
+            *this\TextChange( ) = 1
+            
             ProcedureReturn #True
          EndIf
       EndProcedure
@@ -15414,6 +15422,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf 
                   
+                  If constants::BinaryFlag( flag, #__flag_TextMultiLine )
+                     If *this\text\multistring
+                        *this\text\string = *this\text\multistring 
+                        *this\text\multistring = ""
+                     EndIf
+                  EndIf
+            
                   *this\TextChange( ) = 1
                   ; ProcedureReturn #True
                EndIf
@@ -15511,10 +15526,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\text\vertical = state
                   EndIf
                   If constants::BinaryFlag( Flag, #__flag_Textwordwrap )
-                     *this\text\multiline = - state
+                     *this\text\multiline = state
                   EndIf
                   If constants::BinaryFlag( Flag, #__flag_Textmultiline )
-                     *this\text\multiline = state
+                     *this\text\multiline = - state
                   EndIf
                   ;
                   If constants::BinaryFlag( Flag, #__flag_TextLeft )
@@ -27954,10 +27969,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 15285
-; FirstLine = 15169
-; Folding = ------------------------------------------------------------------------------------------v84v4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-9+---0------------------------------------------------------------------------------v++enva-------vv4v+------------------------------------------8--f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--7------
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 15424
+; FirstLine = 15260
+; Folding = ------------------------------------------------------------------------------------------v84v4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-Pv---f-------------------------------------------------------------------------------rvv46r3-------880r-------------------------------------------+--4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4-v+-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
