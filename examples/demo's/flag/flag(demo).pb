@@ -355,7 +355,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug FlagString(_FromPBFlag( #__type_Container, Flag.q ))
       
       
-      Procedure SetFlag( *this._s_widget, Flag.q )
+      Procedure SetFlag_( *this._s_widget, Flag.q )
       Protected fs
       ;
       If constants::BinaryFlag( Flag, #__flag_BorderDouble ) Or
@@ -522,8 +522,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 487
-; FirstLine = 415
+; CursorPosition = 357
+; FirstLine = 353
 ; Folding = -----------t7-
 ; EnableXP
 ; DPIAware

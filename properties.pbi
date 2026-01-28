@@ -386,7 +386,7 @@ Procedure   PropertiesButton_Change( *splitter._s_WIDGET )
       Protected *this._s_WIDGET = *second\RowFocused( )\data
       
       If *this
-         Select Type( *this )
+         Select GetType( *this )
             Case #__type_Spin     : SetState(*this, Val(*second\RowFocused( )\text\string) )
             Case #__type_String   : SetText(*this, *second\RowFocused( )\text\string )
             Case #__type_ComboBox : SetState(*this, StrToBool(*second\RowFocused( )\text\string) )
@@ -410,7 +410,7 @@ Procedure   PropertiesButton_AddItem( *splitter._s_WIDGET, item, Text.s )
       Protected *this._s_WIDGET = GetItemData( *second, item )
       
       If *this
-         Select Type( *this )
+         Select GetType( *this )
             Case #__type_ComboBox 
                Static lasttext.s
                
@@ -497,7 +497,7 @@ Procedure   PropertiesButton_Display( *second._s_WIDGET )
             *last = *this
             
             ;
-            Select Type( *this )
+            Select GetType( *this )
                Case #__type_String
                   If GetData( *this ) = #_pi_class
                      *this\text\upper = 1
@@ -573,7 +573,7 @@ Procedure   PropertiesButton_Events( )
          EndSelect
          
       Case #__event_Change
-         Select Type(*g)
+         Select GetType(*g)
             Case #__type_String
                Select GetData(*g) 
                   Case #_pi_class  
@@ -663,11 +663,11 @@ Procedure   PropertiesButton_Create( *second._s_WIDGET, item )
                
             Case #_pi_fontstyle
                AddItem(*this, -1, "None")         
-               If *this\PopupCombo( )
-                  *this\PopupCombo( )\mode\Checkboxes = 1
-                  *this\PopupCombo( )\mode\optionboxes = 1
-                  ;    Flag( *this\PopupCombo( ), #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
-               EndIf
+;                If *this\PopupCombo( )
+;                   *this\PopupCombo( )\mode\Checkboxes = 1
+;                   *this\PopupCombo( )\mode\optionboxes = 1
+;                   ;    Flag( *this\PopupCombo( ), #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
+;                EndIf
                AddItem(*this, -1, "Bold")        ; Шрифт будет выделен жирным
                AddItem(*this, -1, "Italic")      ; Шрифт будет набран курсивом
                AddItem(*this, -1, "Underline")   ; Шрифт будет подчеркнут (только для Windows)
@@ -1052,9 +1052,9 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 599
-; FirstLine = 559
-; Folding = ---------nPf9-q---
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 669
+; FirstLine = 652
+; Folding = ---------4-P+f2---
 ; EnableXP
 ; DPIAware

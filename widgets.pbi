@@ -15288,10 +15288,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\flag & Flag
             *this\flag & ~ Flag
             
-            If Flag & #__flag_left : *this\text\align\left = 0 : EndIf
-            If Flag & #__flag_top : *this\text\align\top = 0 : EndIf
-            If Flag & #__flag_right : *this\text\align\right = 0 : EndIf
-            If Flag & #__flag_bottom : *this\text\align\bottom = 0 : EndIf
+            If Flag & #__flag_left 
+               *this\text\align\left = 0 
+               *this\picture\align\left = 0 
+            EndIf
+            If Flag & #__flag_top 
+               *this\text\align\top = 0 
+               *this\picture\align\top = 0 
+            EndIf
+            If Flag & #__flag_right 
+               *this\text\align\right = 0 
+               *this\picture\align\right = 0 
+            EndIf
+            If Flag & #__flag_bottom 
+               *this\text\align\bottom = 0 
+               *this\picture\align\bottom = 0 
+            EndIf
             
             If Flag & #__flag_Textreadonly : *this\text\editable = 1 : EndIf
             If Flag & #__flag_TextLowerCase : *this\text\lower = 0 : EndIf
@@ -15356,19 +15368,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
               
                If *this\text
                   ;\\ set content ALIGNMENT
-                  *this\picture\align\left   = constants::BinaryFlag( *this\Flag, #__flag_left )
-                  *this\picture\align\top    = constants::BinaryFlag( *this\Flag, #__flag_top )
-                  *this\picture\align\right  = constants::BinaryFlag( *this\Flag, #__flag_right )
-                  *this\picture\align\bottom = constants::BinaryFlag( *this\Flag, #__flag_bottom )
                   
-                  If Not constants::BinaryFlag( *this\Flag, #__flag_Center )
+                  If constants::BinaryFlag( Flag, #__flag_Center )
+                     
+                  Else
+                     *this\picture\align\left   = constants::BinaryFlag( *this\Flag, #__flag_left )
+                     *this\picture\align\top    = constants::BinaryFlag( *this\Flag, #__flag_top )
+                     *this\picture\align\right  = constants::BinaryFlag( *this\Flag, #__flag_right )
+                     *this\picture\align\bottom = constants::BinaryFlag( *this\Flag, #__flag_bottom )
+                     
+;                      If constants::BinaryFlag( Flag, #__flag_left )
+;                         *this\picture\align\right = 0
+;                      EndIf
+;                      If constants::BinaryFlag( Flag, #__flag_top )
+;                         *this\picture\align\bottom = 0
+;                      EndIf
+;                      If constants::BinaryFlag( Flag, #__flag_right )
+;                         *this\picture\align\left = 0
+;                      EndIf
+;                      If constants::BinaryFlag( Flag, #__flag_bottom )
+;                         *this\picture\align\top = 0
+;                      EndIf
+                     
+                  ;EndIf
+                  ;  Debug  55555
+;                   If Not constants::BinaryFlag( *this\Flag, #__flag_Center )
                      *this\text\align\left   = *this\picture\align\left
                      *this\text\align\top    = *this\picture\align\top
                      *this\text\align\right  = *this\picture\align\right
                      *this\text\align\bottom = *this\picture\align\bottom
                   EndIf
-                  
+                     
                   If *this\flag & #__flag_Center
+                     
                      If Not ( *this\flag & #__flag_Left Or
                               *this\flag & #__flag_Top Or 
                               *this\flag & #__flag_Right Or 
@@ -15396,9 +15428,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                      EndIf
+                     
+                  Else
+                      
+                  
+                     *this\text\align\left   = *this\picture\align\left
+                     *this\text\align\top    = *this\picture\align\top
+                     *this\text\align\right  = *this\picture\align\right
+                     *this\text\align\bottom = *this\picture\align\bottom
                   EndIf
                   
+;                   If constants::BinaryFlag( Flag, #__flag_Center )
+;                      *this\text\align\left   = #False
+;                      *this\text\align\top    = #False
+;                      *this\text\align\right  = #False
+;                      *this\text\align\bottom = #False
+;                   EndIf
                   
+                  ;
                   ;\\
                   *this\text\editable = Bool( Not constants::BinaryFlag( *this\flag, #__flag_Textreadonly ))
                   *this\text\lower    = constants::BinaryFlag( *this\flag, #__flag_Textlowercase )
@@ -15410,8 +15457,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                         Bool( *this\text\vertical ) * 90
                   
                   
-                  
-                  ;Debug ""+*this\text\invert+" "+*this\text\vertical
+;                   ClearDebugOutput()
+;                   Debug ""+*this\text\align\left +" "+ *this\text\align\top +" "+ *this\text\align\right +" "+ *this\text\align\bottom
+;                   Debug "  "+*this\picture\align\left +" "+ *this\picture\align\top +" "+ *this\picture\align\right +" "+ *this\picture\align\bottom
+;                   ;Debug ""+*this\text\invert+" "+*this\text\vertical
                   ;\\
                   If constants::BinaryFlag( *this\Flag, #__flag_Textwordwrap )
                      *this\text\multiLine = 1
@@ -15524,7 +15573,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\ text align
                If string_bar
-                  *this\WidgetChange( ) = 1
+                  ;*this\WidgetChange( ) = 1
                   *this\TextChange( ) = 1
                   ; 
                   If constants::BinaryFlag( Flag, #__flag_TextInvert )
@@ -15539,49 +15588,49 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If constants::BinaryFlag( Flag, #__flag_Textmultiline )
                      *this\text\multiline = - state
                   EndIf
-                  ;
-                  If constants::BinaryFlag( Flag, #__flag_TextLeft )
-                     *this\text\align\left = state
-                     ;
-                     If Not *this\text\align\left 
-                        If constants::BinaryFlag( *this\flag, #__flag_TextRight )
-                           *this\text\align\right = #True
-                        EndIf
-                     EndIf
-                  EndIf
-                  If constants::BinaryFlag( Flag, #__flag_TextTop )
-                     *this\text\align\top = state
-                     ;
-                     If Not *this\text\align\top 
-                        If constants::BinaryFlag( *this\flag, #__flag_TextBottom )
-                           *this\text\align\bottom = #True
-                        EndIf
-                     EndIf
-                  EndIf
-                  If constants::BinaryFlag( Flag, #__flag_TextRight )
-                     *this\text\align\right = state
-                     ;
-                     If Not *this\text\align\right 
-                        If constants::BinaryFlag( *this\flag, #__flag_TextLeft )
-                           *this\text\align\left = #True
-                        EndIf
-                     EndIf
-                  EndIf
-                  If constants::BinaryFlag( Flag, #__flag_TextBottom )
-                     *this\text\align\bottom = state
-                     ;
-                     If Not *this\text\align\bottom 
-                        If constants::BinaryFlag( *this\flag, #__flag_TextTop )
-                           *this\text\align\top = #True
-                        EndIf
-                     EndIf
-                  EndIf
-                  If constants::BinaryFlag( Flag, #__flag_TextCenter )
-                     *this\text\align\left   = #False
-                     *this\text\align\top    = #False
-                     *this\text\align\right  = #False
-                     *this\text\align\bottom = #False
-                  EndIf
+;                   ;
+;                   If constants::BinaryFlag( Flag, #__flag_TextLeft )
+;                      *this\text\align\left = state
+;                      ;
+;                      If Not *this\text\align\left 
+;                         If constants::BinaryFlag( *this\flag, #__flag_TextRight )
+;                            *this\text\align\right = #True
+;                         EndIf
+;                      EndIf
+;                   EndIf
+;                   If constants::BinaryFlag( Flag, #__flag_TextTop )
+;                      *this\text\align\top = state
+;                      ;
+;                      If Not *this\text\align\top 
+;                         If constants::BinaryFlag( *this\flag, #__flag_TextBottom )
+;                            *this\text\align\bottom = #True
+;                         EndIf
+;                      EndIf
+;                   EndIf
+;                   If constants::BinaryFlag( Flag, #__flag_TextRight )
+;                      *this\text\align\right = state
+;                      ;
+;                      If Not *this\text\align\right 
+;                         If constants::BinaryFlag( *this\flag, #__flag_TextLeft )
+;                            *this\text\align\left = #True
+;                         EndIf
+;                      EndIf
+;                   EndIf
+;                   If constants::BinaryFlag( Flag, #__flag_TextBottom )
+;                      *this\text\align\bottom = state
+;                      ;
+;                      If Not *this\text\align\bottom 
+;                         If constants::BinaryFlag( *this\flag, #__flag_TextTop )
+;                            *this\text\align\top = #True
+;                         EndIf
+;                      EndIf
+;                   EndIf
+;                   If constants::BinaryFlag( Flag, #__flag_TextCenter )
+;                      *this\text\align\left   = #False
+;                      *this\text\align\top    = #False
+;                      *this\text\align\right  = #False
+;                      *this\text\align\bottom = #False
+;                   EndIf
                   ;
                   ;\\0в ,
                   If *this\type = #__type_Button Or *this\type = #__type_ButtonImage
@@ -15608,21 +15657,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                      
-                     ;\\ reset to center vertical
-                     If *this\text\align\top = #True And
-                        *this\text\align\bottom = #True
-                        ;
-                        *this\text\align\top    = #False
-                        *this\text\align\bottom = #False
-                     EndIf
-                     
-                     ;\\ reset to center horizontal
-                     If *this\text\align\left = #True And
-                        *this\text\align\right = #True
-                        ;
-                        *this\text\align\left  = #False
-                        *this\text\align\right = #False
-                     EndIf
+;                      ;\\ reset to center vertical
+;                      If *this\text\align\top = #True And
+;                         *this\text\align\bottom = #True
+;                         ;
+;                         *this\text\align\top    = #False
+;                         *this\text\align\bottom = #False
+;                      EndIf
+;                      
+;                      ;\\ reset to center horizontal
+;                      If *this\text\align\left = #True And
+;                         *this\text\align\right = #True
+;                         ;
+;                         *this\text\align\left  = #False
+;                         *this\text\align\right = #False
+;                      EndIf
                   EndIf
                EndIf
                
@@ -27978,10 +28027,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 15318
-; FirstLine = 15190
-; Folding = ------------------------------------------------------------------------------------------v84v4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-fe----+------------------------------------------------------------------------------XffvzXt-------448X-------------------------------------------0--v-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-f0------
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 15393
+; FirstLine = 15271
+; Folding = ------------------------------------------------------------------------------------------v84v4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-fe-1-------------------------------------------------------------------------------788d+q0-------+e-7------------------------------------------v---0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-r------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

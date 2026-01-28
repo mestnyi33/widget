@@ -16,14 +16,14 @@ CompilerIf #PB_Compiler_IsMainFile
          Debug ""
          Debug "focus "+EventWidget( )\class
          item = GetData( EventWidget( ))
-         ChangeitemState( *first, item, 2 )
-         ChangeitemState( *second, item, 2 )
+         ChangeItemState( *first, item, 2 )
+         ChangeItemState( *second, item, 2 )
       EndIf
       If WidgetEvent( ) = #__event_LostFocus  
          Debug "lostfocus "+EventWidget( )\class
          item = GetData( EventWidget( ))
-         ChangeitemState( *first, item, 3 )
-         ChangeitemState( *second, item, 3 )
+         ChangeItemState( *first, item, 3 )
+         ChangeItemState( *second, item, 3 )
       EndIf
       
       ProcedureReturn #PB_Ignore
@@ -97,7 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    SetClass(Root( ), "window_0_root" )
    ;Container( 10,10,240,140 ) : SetClass(Widget( ), "window_0_root_container" )
-   *focus = Button( 160, 10, 140, 40, "reset") 
+   *focus = Button( 160, 10, 140, 40, "reset focus") 
    *first = Tree( 10,60,140,140 )
    *second = Tree( 160,60,140,140 )
    
@@ -111,7 +111,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 11
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 99
+; FirstLine = 38
 ; Folding = ---
 ; EnableXP

@@ -389,7 +389,7 @@ EndEnumeration
                   ;                      SetState( *g, GetData( *test ))
                   ;                   Else
                   ;                   EndIf
-                  *row = *g\EnteredRow( )
+                  *row = *g\RowEntered( )
                   If *row
                      If  *row\data
                         If *first <> *g
@@ -582,7 +582,7 @@ EndEnumeration
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 149
-; FirstLine = 122
+; CursorPosition = 391
+; FirstLine = 332
 ; Folding = t+P----------
 ; EnableXP

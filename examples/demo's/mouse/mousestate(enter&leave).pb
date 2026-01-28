@@ -12,38 +12,38 @@ Global.l colorback = colors::*this\blue\fore,
 
 ;\\
 Procedure EventsHandler( )
-   Protected repaint
+
    
    Select WidgetEvent( )
       Case #__event_MouseEnter, ;#__event_MouseMove,
            #__event_MouseLeave
          
-         If EventWidget( ) <> root( )
+         If EventWidget( ) <> Root( )
             If EventWidget( )\enter 
                If EventWidget( )\color\frame <> colorframe1 
                   EventWidget( )\color\frame = colorframe1
-                  repaint = 1 
+                  Repaint = 1 
                EndIf
                If EventWidget( )\color\back <> colorback1 
                   EventWidget( )\color\back = colorback1
-                  repaint = 1 
+                  Repaint = 1 
                EndIf
                
-               If repaint
+               If Repaint
                   Debug "" + GetData( EventWidget( ) ) + " change frame&back color"
                EndIf
                
             Else 
                If EventWidget( )\color\back = colorback1
                   EventWidget( )\color\back = colorback
-                  repaint = 1
+                  Repaint = 1
                EndIf
                If EventWidget( )\color\frame = colorframe1 
                   EventWidget( )\color\frame = colorframe
-                  repaint = 1 
+                  Repaintrepaint = 1 
                EndIf
                
-               If repaint
+               If Repaint
                   Debug "" + GetData( EventWidget( ) ) + " return frame&back color"
                EndIf
                
@@ -52,7 +52,7 @@ Procedure EventsHandler( )
          
    EndSelect
    
-   If repaint            
+   If Repaint            
       
       ; ReDraw( EventWidget( )\root )
    EndIf
@@ -104,10 +104,9 @@ Bind( #PB_All, @EventsHandler( ), #__event_MouseLeave )
 
 ;\\
 WaitClose( )
-
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 17
-; FirstLine = 14
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 14
+; FirstLine = 10
 ; Folding = --
 ; EnableXP
 ; DPIAware
