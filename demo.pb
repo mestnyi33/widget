@@ -65,45 +65,45 @@ Procedure scrolled( )
 EndProcedure
 
 If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-   SetBackColor( root(), $99EBFF)
+   SetBackColor( Root(), $99EBFF)
    Bind(#PB_All, @all_events( ))
    
    ;a_init(root( ), 0)
    ;
    ;id("Container") = Container(0, 0, 0, 0, #__flag_AutoSize) 
    ;\\ 1
-   w_1 = Button(5, 5, 160,95, "Multiline Button_"+Hex(#__type_Button)+" (longer text gets automatically multiline)", #__flag_Textmultiline, round ) 
+   w_1 = Button(5, 5, 160,95, "Multiline Button_"+Hex(#__type_Button)+" (longer text gets automatically multiline)", #__flag_TextWordWrap, round ) 
    w_2 = String(5, 105, 160,95, "String_"+Hex(#__type_String)+" set"+#LF$+"multi"+#LF$+"line"+#LF$+"text")                                 
    w_3 = Text(5, 205, 160,95, "Text_"+Hex(#__type_Text)+#LF$+"set"+#LF$+"multi"+#LF$+"line"+#LF$+"text", #PB_Text_Border)        
-   w_4 = CheckBox(5, 305, 160,95, "CheckBox_"+Hex(#__type_CheckBox), #PB_CheckBox_ThreeState) : SetState(widget(), #PB_Checkbox_Inbetween)
-   w_5 = Option(5, 405, 160,95, "Option_"+Hex(#__type_Option) ) : SetState(widget(), 1)                                                       
-   w_6 = ListView(5, 505, 160,95) : AddItem(widget(), -1, "ListView_"+Hex(#__type_ListView)) : For i=1 To 5 : AddItem(widget(), i, "item_"+Hex(i)) : Next
+   w_4 = CheckBox(5, 305, 160,95, "CheckBox_"+Hex(#__type_CheckBox), #PB_CheckBox_ThreeState) : SetState(Widget(), #PB_Checkbox_Inbetween)
+   w_5 = Option(5, 405, 160,95, "Option_"+Hex(#__type_Option) ) : SetState(Widget(), 1)                                                       
+   w_6 = ListView(5, 505, 160,95) : AddItem(Widget(), -1, "ListView_"+Hex(#__type_ListView)) : For i=1 To 5 : AddItem(Widget(), i, "item_"+Hex(i)) : Next
    
    ;\\ 2
    w_7 = Frame(170, 5, 160,95, "Frame_"+Hex(#__type_Frame) )
-   w_8 = ComboBox(170, 105, 160,45 ) : AddItem(widget(), -1, "ComboBox_"+Hex(#__type_ComboBox)) : For i=1 To 5 : AddItem(widget(), i, "item_"+Hex(i)) : Next : SetState(widget(), 0) 
-   w_9 = ComboBox(170, 155, 160,45, #PB_ComboBox_Editable) : AddItem(widget(), -1, "ComboBox_"+Hex(100+#__type_ComboBox)) : For i=1 To 5 : AddItem(widget(), i, "item_"+Hex(i)) : Next : SetState(widget(), 0) 
+   w_8 = ComboBox(170, 105, 160,45 ) : AddItem(Widget(), -1, "ComboBox_"+Hex(#__type_ComboBox)) : For i=1 To 5 : AddItem(Widget(), i, "item_"+Hex(i)) : Next : SetState(Widget(), 0) 
+   w_9 = ComboBox(170, 155, 160,45, #PB_ComboBox_Editable) : AddItem(Widget(), -1, "ComboBox_"+Hex(100+#__type_ComboBox)) : For i=1 To 5 : AddItem(Widget(), i, "item_"+Hex(i)) : Next : SetState(Widget(), 0) 
    w_10 = Image(170, 205, 160,95, img2, #PB_Image_Border ) 
    w_11 = HyperLink(170, 305, 160,95,"HyperLink_"+Hex(#__type_HyperLink), $00FF00, #PB_HyperLink_Underline ) 
    w_12 = Container(170, 405, 160,95, #PB_Container_Flat )
-   w_101 = Option(10, 10, 110,20, "Container_"+Hex(#__type_Container) )  : SetState(widget(), 1)  
+   w_101 = Option(10, 10, 110,20, "Container_"+Hex(#__type_Container) )  : SetState(Widget(), 1)  
    w_102 = Option(10, 40, 110,20, "Option_widget");, #__flag_flat)  
    CloseList()
    w_13 = ListIcon(170, 505, 160,95,"ListIcon_"+Hex(#__type_ListIcon),120 )                           
    
    ;\\ 3
-   w_14 = IPAddress(335, 5, 160,95 ) : SetState(widget(), MakeIPAddress(1, 2, 3, 4))    
-   w_15 = Progress(335, 105, 160,95,0,100, 0, round) : SetState(widget(), 50)
-   w_16 = Scroll(335, 205, 160,95,0,120,20) : SetState(widget(), 50)
+   w_14 = IPAddress(335, 5, 160,95 ) : SetState(Widget(), MakeIPAddress(1, 2, 3, 4))    
+   w_15 = Progress(335, 105, 160,95,0,100, 0, round) : SetState(Widget(), 50)
+   w_16 = Scroll(335, 205, 160,95,0,120,20) : SetState(Widget(), 50)
    w_17 = ScrollArea(335, 305, 160,95,180,90,1, #PB_ScrollArea_Flat ) : Button(0, 0, 150,20, "ScrollArea_"+Hex(#__type_ScrollArea) ) : Button(180-150, 90-20, 150,20, "Button_"+Hex(202) ) : CloseList()
-   w_18 = Track(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetState(widget(), 11)
+   w_18 = Track(335, 405, 160,95,0,21, #PB_TrackBar_Ticks ) : SetState(Widget(), 11)
    ;     WebGadget(#__type_Web, 335, 505, 160,95,"" )
    
    ;\\ 4
    w_19 = ButtonImage(500, 5, 160,95, img1)
    ;     CalendarGadget(#__type_Calendar, 500, 105, 160,95 )
    ;     DateGadget(#__type_Date, 500, 205, 160,95 )
-   w_22 = Editor(500, 305, 160,95 ) : AddItem(widget(), -1, "editor_"+Hex(#__type_Editor) +#LF$+"add"+#LF$+"multi"+#LF$+"line"+#LF$+"text")  
+   w_22 = Editor(500, 305, 160,95 ) : AddItem(Widget(), -1, "editor_"+Hex(#__type_Editor) +#LF$+"add"+#LF$+"multi"+#LF$+"line"+#LF$+"text")  
    ;     id(Hex(#__type_ExplorerList)) = ExplorerList(500, 405, 160,95,"" )
    ;     ExplorerTreeGadget(#__type_ExplorerTree, 500, 505, 160,95,"" )
    
@@ -111,8 +111,8 @@ If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemM
    ;     ExplorerComboGadget(#__type_ExplorerCombo, 665, 5, 160,95,"" )
    w_26 = Spin(665, 105, 160,95,20,100)
    w_27 = Tree( 665, 205, 160, 95 ) 
-   AddItem(widget(), -1, "Tree_"+Hex(#__type_Tree)) 
-   For i=1 To 5 : AddItem(widget(), i, "item_"+Hex(i)) : Next
+   AddItem(Widget(), -1, "Tree_"+Hex(#__type_Tree)) 
+   For i=1 To 5 : AddItem(Widget(), i, "item_"+Hex(i)) : Next
    w_28 = Panel(665, 305, 160,95) 
    AddItem(w_28, -1, "Panel_"+Hex(#__type_Panel)) 
    w_255 = Button(0, 0, 90,20, "Button_255" ) 
@@ -130,7 +130,7 @@ If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemM
    w_302 = Spin(0, 0, 100,20,0,10) ; Button(0, 0, 100,20,"splitt-button")                 
    w_29 = Splitter(665, 405, 160,95,w_301, w_302)
    w_30 = MDI(665, 505, 160,95)
-   Resize(AddItem(widget(), -1, "form_0"), 7, 40, 120, 60)
+   Resize(AddItem(Widget(), -1, "form_0"), 7, 40, 120, 60)
    
    ;\\ 6
    ;     InitScintilla()
@@ -147,8 +147,8 @@ EndIf
 CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 67
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 74
 ; FirstLine = 57
 ; Folding = ---
 ; EnableXP
