@@ -211,8 +211,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;-
    If Open(0, 0, 0, Width + 180, Height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ; gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
-      *this  = Widget::Text(100, 100, 250, 200, Text )
-      ;*this  = Widget::Text(100, 100, 250, 200, Text )
+      *this  = Widget::Text(100, 100, 250, 200, Text, #__flag_TextMultiLine )
+      ;*this  = Widget::Text(100, 100, 250, 200, Text, #__flag_TextWordWrap )
       
       Define Y  = 10
       Define bh = 24
@@ -254,9 +254,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;\\ set button toggled state
       SetState(button_wordwrap, Flag(*this, #__flag_TextWordWrap ))
+      SetState(button_multiline, Flag(*this, #__flag_TextMultiLine ))
       SetState(button_vertical, Flag(*this, #__flag_Vertical ))
       SetState(button_invert, Flag(*this, #__flag_Invert ))
-      SetState(button_multiline, Flag(*this, #__flag_TextMultiLine ))
       SetState(button_left, Flag(*this, #__flag_Left ))
       SetState(button_Top, Flag(*this, #__flag_Top ))
       SetState(button_Right, Flag(*this, #__flag_Right ))
@@ -278,8 +278,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 36
-; FirstLine = 26
+; CursorPosition = 214
+; FirstLine = 199
 ; Folding = -----
 ; EnableXP
 ; DPIAware

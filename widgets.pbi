@@ -15315,7 +15315,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure   SetFlag( *this._s_WIDGET, Flag.q )
          Protected fs
-         ; Flag = FromPBFlag( *this\type, Flag )
+        ; Flag = FromPBFlag( *this\type, Flag )
          
          ; установить флаги текста 
          If *this\type = #__type_ComboBox Or 
@@ -15399,33 +15399,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\text\rotate   = Bool( *this\text\invert ) * 180 + 
                                      Bool( *this\text\vertical ) * 90
                
-               ;\\
-               If *this\Flag & #__flag_TextWordWrap 
-                  If *this\flag & #__flag_TextMultiLine 
-                     *this\flag &~ #__flag_TextMultiLine
-                  EndIf
-                  *this\text\multiLine = 1
-               ElseIf *this\Flag & #__flag_TextMultiLine
+               ;
+               If Flag & #__flag_TextMultiLine
+                  ; remove wordwrap flag
                   If *this\flag & #__flag_TextWordWrap 
                      *this\flag &~ #__flag_TextWordWrap
                   EndIf
                   *this\text\multiLine = - 1
-               Else
-                  *this\text\multiLine = 0
-                  *this\text\numeric   = Bool( *this\Flag & #__flag_TextNumeric )
                EndIf 
-               
-               ;
-               ;\\
-               If *this\Flag & #__flag_TextMultiLine Or
+               If Flag & #__flag_TextWordWrap 
+                  ; remove multiline flag
+                  If *this\flag & #__flag_TextMultiLine 
+                     *this\flag &~ #__flag_TextMultiLine
+                  EndIf
+                  *this\text\multiLine = 1
+               EndIf
+               If *this\Flag & #__flag_TextMultiLine Or 
                   *this\Flag & #__flag_TextWordWrap
                   ;
                   If *this\text\multistring
                      *this\text\string = *this\text\multistring 
                      *this\text\multistring = ""
                   EndIf
+               Else
+                  *this\text\multiLine = 0
+                  *this\text\numeric   = Bool( *this\Flag & #__flag_TextNumeric )
                EndIf
                
+               ;
                *this\TextChange( ) = 1
                ; ProcedureReturn #True
             EndIf
@@ -17955,6 +17956,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result 
       EndProcedure
       
+      ; - (void)watchEventTap {  
+;   @autoreleasepool {  
+;     CFRunLoopSourceRef RunLoopSource = NULL;  
+;     CFMachPortRef EventTap = CGEventTapCreate(kCGHIDEventTap, kCGHeadInsertEventTap, kCGEventTapOptionDefault, CGEventMaskBit(kCGEventKeyUp) | CGEventMaskBit(kCGEventKeyDown), myCGEventCallback, NULL);  
+;     RunLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, EventTap, 0);  
+;     If (!EventTap) {  
+;       NSLog(@"Не удалось создать событие tap!");  
+;       exit(1);  
+;     }  
+;     If (self.shortcutEnabled) {  
+;       CFRunLoopAddSource(CFRunLoopGetCurrent(), RunLoopSource, kcfrunloopcommon modes);  
+;       CGEventTapEnable(EventTap, true);  
+;       CFRunLoopRun();  
+;     } Else {  
+;       CFRunLoopRemoveSource(CFRunLoopGetCurrent(), RunLoopSource, kcfrunloopcommon modes);  
+;       CGEventTapEnable(EventTap, false);  
+;       CFMachPortInvalidate(EventTap);  
+;       CFRelease(EventTap);  
+;       EventTap = NULL;  
+;     }  
+;   }  
+; }  
 ;       ImportC ""
 ;          CGEventTapCreate(tap.i, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
 ;       EndImport
@@ -27852,9 +27875,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 21042
-; FirstLine = 20575
-; Folding = -------------------------------------------------------------------------------------------uf-e------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--z8-------------------------------------------------------------------------------0-48+83-------880r-------------------------------------------+--4------------------------------------4----------------------------------------4----------------------------------------------------------------------------------------------------------4-v+-----
+; CursorPosition = 15427
+; FirstLine = 15255
+; Folding = -------------------------------------------------------------------------------------------uf-e------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8X0n4-------------------------------------------------------------------------------8-v404t-------448X-------------------------------------------0--v------------------------------------v----------------------------------------v----------------------------------------------------------------------------------------------------------v-f0------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

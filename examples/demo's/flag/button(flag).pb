@@ -37,6 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Text = "V & H" + cr + " multiline" + cr + "text"
    ;Text = "text ";
    
+   Global multiline = #__flag_TextWordWrap
    Global *b16, *b32, *b0
    Global *this._s_widget,
           Tree,
@@ -178,9 +179,9 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                Case button_multiline
                   If GetState(EventWidget)
-                     SetFlag(*this, #__flag_TextMultiline)
+                     SetFlag(*this, multiline)
                   Else
-                     RemoveFlag(*this, #__flag_TextMultiline)
+                     RemoveFlag(*this, multiline)
                   EndIf
                   
                Case button_invert    
@@ -217,7 +218,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;- 
    If Open(0, 0, 0, Width + 180, Height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
-      *this  = Widget::Button(100, 100, 250, 200, Text, #PB_Button_MultiLine);|#PB_Button_Toggle)
+      *this  = Widget::Button(100, 100, 250, 200, Text, multiline);|#PB_Button_Toggle)
       
       Define Y  = 10
       Define bh = 24
@@ -263,7 +264,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetState(button_toggle, Flag(*this, #PB_Button_Toggle ))
       SetState(button_vertical, Flag(*this, #__flag_Vertical ))
       SetState(button_invert, Flag(*this, #__flag_Invert ))
-      SetState(button_multiline, Flag(*this, #__flag_TextMultiLine ))
+      SetState(button_multiline, Flag(*this, multiline ))
       SetState(button_left, Flag(*this, #__flag_Left ))
       SetState(button_Top, Flag(*this, #__flag_Top ))
       SetState(button_Right, Flag(*this, #__flag_Right ))
@@ -287,8 +288,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 202
-; FirstLine = 153
-; Folding = --Pc9
+; CursorPosition = 39
+; FirstLine = 24
+; Folding = --P99
 ; EnableXP
 ; DPIAware
