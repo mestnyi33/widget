@@ -518,6 +518,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ; Macro ComboBar( ): menu\parent: EndMacro
       Macro ComboBar( ): combobar: EndMacro
       Macro PopupBar( ): __GUI\popup: EndMacro
+      Macro Toggle( ): togglebox: EndMacro
+      Macro Combo( ): combobutton: EndMacro
       
       
       ;-
@@ -7331,24 +7333,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ ComboBox
             If *display\type = #__type_ComboBox
-               If *display\combobutton
+               If *display\Combo( )
                   If *this\hide
-                     *display\combobutton\arrow\direction = #__bottom
-                     ;If *display\combobutton\enter
+                     *display\Combo( )\arrow\direction = #__bottom
+                     ;If *display\Combo( )\enter
                      If MousePress( )
-                        *display\combobutton\ColorState( ) = 2
+                        *display\Combo( )\ColorState( ) = 2
                         *display\ColorState( ) = 2
                      EndIf
                      ;EndIf
                   Else
-                     *display\combobutton\arrow\direction = #__right
+                     *display\Combo( )\arrow\direction = #__right
                      If *display\ColorState( ) = 2
-                        If *display\combobutton\enter
+                        If *display\Combo( )\enter
                            *display\ColorState( ) = 1
                         Else
                            *display\ColorState( ) = 0
                         EndIf
-                        *display\combobutton\ColorState( ) = 0
+                        *display\Combo( )\ColorState( ) = 0
                      EndIf
                   EndIf
                EndIf
@@ -9841,8 +9843,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_Option Or
             *this\type = #__type_Button Or *this\type = #__type_ButtonImage
             
-            If *this\togglebox
-               ProcedureReturn *this\togglebox\checked
+            If *this\Toggle( )
+               ProcedureReturn *this\Toggle( )\checked
             EndIf
          EndIf
          
@@ -9923,9 +9925,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ Ok
-         If *this\togglebox
-            If *this\togglebox\checked <> state
-               *this\togglebox\checked = state
+         If *this\Toggle( )
+            If *this\Toggle( )\checked <> state
+               *this\Toggle( )\checked = state
                
                If *this\type = #__type_Button Or *this\type = #__type_ButtonImage
                   If state
@@ -9946,7 +9948,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\groupbar And
                      *this\groupbar\groupbar <> *this
                      If *this\groupbar\groupbar
-                        *this\groupbar\groupbar\togglebox\checked = #False
+                        *this\groupbar\groupbar\Toggle( )\checked = #False
                      EndIf
                      *this\groupbar\groupbar = *this
                   EndIf
@@ -11492,14 +11494,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *active = *active\window 
                         EndIf
                      EndIf 
-                     
-                     ;\\
-                     ;                   If *active\focus = #__s_nofocus
-                     ;                      *active = *active\parent
-                     ;                      If *active And *active\focus = #__s_nofocus 
-                     ;                         ProcedureReturn 0
-                     ;                      EndIf
-                     ;                   EndIf
                   EndIf
                   
                   If Not *active 
@@ -15334,14 +15328,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\type = #__type_Button Or 
                *this\type = #__type_ButtonImage
                ;
-               If Flag & #PB_Button_Toggle 
-                  If *this\togglebox
+               If constants::BinaryFlag( Flag, #PB_Button_Toggle )
+                  If *this\Toggle( )
                      If GetState( *this )
                         SetState( *this, 0 )
                      EndIf
-                     *this\togglebox = #Null
+                     *this\Toggle( ) = #Null
                      ProcedureReturn #True
                   EndIf
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_Button_Default )
+                  *this\deffocus = 0
                EndIf
             EndIf
             
@@ -15480,11 +15477,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf   
          
+         If *this\type = #__type_CheckBox
+            *this\mode\threestate = constants::BinaryFlag( *this\Flag, #PB_CheckBox_ThreeState )
+         EndIf
+         If *this\type = #__type_HyperLink
+            *this\mode\Lines = constants::BinaryFlag( *this\Flag, #PB_HyperLink_Underline )
+         EndIf
+         
          ; 
-         If *this\type = #__type_Button Or *this\type = #__type_ButtonImage
-            If constants::BinaryFlag( Flag, #PB_Button_Toggle )
-               If *this\togglebox = #Null
-                  *this\togglebox.allocate( BOX )
+         If *this\type = #__type_Button Or 
+            *this\type = #__type_ButtonImage
+            ;
+           If constants::BinaryFlag( *this\Flag, #PB_Button_Default )
+              *this\deffocus = 1
+           EndIf
+           If constants::BinaryFlag( *this\Flag, #PB_Button_Toggle )
+               If *this\Toggle( ) = #Null
+                  *this\Toggle( ).allocate( BOX )
                   ProcedureReturn #True
                EndIf
             EndIf
@@ -15636,11 +15645,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                      ; set toggle button
 ;                      If constants::BinaryFlag( Flag, #PB_Button_Toggle )
 ; ;                         If constants::BinaryFlag( *this\Flag, #PB_Button_Toggle )
-; ;                            If Not *this\togglebox
-; ;                               *this\togglebox.allocate( BOX )
+; ;                            If Not *this\Toggle( )
+; ;                               *this\Toggle( ).allocate( BOX )
 ; ;                            EndIf
 ; ;                            ;
-; ;                            *this\togglebox\checked = state
+; ;                            *this\Toggle( )\checked = state
 ; ;                            ;
 ; ;                            If state
 ; ;                               *this\ColorState( ) = #__s_2
@@ -15650,8 +15659,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ; ;                         EndIf
 ;                         ProcedureReturn 1
 ;                      Else
-;                         If *this\togglebox
-;                            *this\togglebox = #Null
+;                         If *this\Toggle( )
+;                            *this\Toggle( ) = #Null
 ;                            *this\ColorState( ) = #__s_0
 ;                         EndIf
 ;                      EndIf
@@ -18130,9 +18139,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If event = #__event_MouseEnter
             If *this\parent
                If *this\parent\stringbar
-                  If *this\parent\combobutton
-                     If *this\parent\combobutton\enter = 1
-                        *this\parent\combobutton\enter = 0
+                  If *this\parent\Combo( )
+                     If *this\parent\Combo( )\enter = 1
+                        *this\parent\Combo( )\enter = 0
                         If *this\ColorState( ) = 1
                            *this\ColorState( ) = 0
                         EndIf
@@ -18142,18 +18151,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
          EndIf
-         If *this\combobutton
-            If is_mouse_enter( *this\combobutton, CanvasMouseX( ), CanvasMouseY( ) )
-               If *this\combobutton\enter = 0
-                  *this\combobutton\enter = 1
+         If *this\Combo( )
+            If is_mouse_enter( *this\Combo( ), CanvasMouseX( ), CanvasMouseY( ) )
+               If *this\Combo( )\enter = 0
+                  *this\Combo( )\enter = 1
                   If *this\ColorState( ) = 0
                      *this\ColorState( ) = 1
                   EndIf
                   *this\root\repaint = 1
                EndIf
             Else
-               If *this\combobutton\enter = 1
-                  *this\combobutton\enter = 0
+               If *this\Combo( )\enter = 1
+                  *this\Combo( )\enter = 0
                   If *this\ColorState( ) = 1
                      *this\ColorState( ) = 0
                   EndIf
@@ -18213,33 +18222,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ TEMP [before post-widget-events drop]
          If *this\row
-            If *this\RowEntered( ) And
-               *this\RowEntered( )\_enter
-               ;
-               If event = #__event_Drop
-                  If *this\RowEntered( )\_enter < 0
-                     *button = *this\RowEntered( )\rindex
-                     *data   = CanvasMouseX( ) | CanvasMouseY( ) << 16
-                  Else
-                     *button = *this\RowEntered( )\rindex + 1
-                     *data   = CanvasMouseX( ) | CanvasMouseY( ) << 16
-                  EndIf
+            If *this\type = #__type_Tree Or
+               *this\type = #__type_ListView
+               If *this\RowEntered( ) And
+                  *this\RowEntered( )\_enter
                   ;
-               ElseIf event = #__event_MouseWheel
-               ElseIf event = #__event_StatusChange
-               Else
-                  ;
-                  If *this\RowEntered( )
-                     *Button = *this\RowEntered( )\rindex
-                     
-                     If *this\RowEntered( )\buttonbox And 
-                        *this\RowEntered( )\buttonbox\_enter
-                        *Data   = *this\RowEntered( )\buttonbox\checked
+                  If event = #__event_Drop
+                     If *this\RowEntered( )\_enter < 0
+                        *button = *this\RowEntered( )\rindex
+                        *data   = CanvasMouseX( ) | CanvasMouseY( ) << 16
                      Else
-                        *Data   = *this\RowEntered( )
+                        *button = *this\RowEntered( )\rindex + 1
+                        *data   = CanvasMouseX( ) | CanvasMouseY( ) << 16
                      EndIf
+                     ;
+                  ElseIf event = #__event_MouseWheel
+                  ElseIf event = #__event_StatusChange
+                  Else
+                     ;
+                     If *this\RowEntered( )
+                        *Button = *this\RowEntered( )\rindex
+                        
+                        If *this\RowEntered( )\buttonbox And 
+                           *this\RowEntered( )\buttonbox\_enter
+                           *Data   = *this\RowEntered( )\buttonbox\checked
+                        Else
+                           *Data   = *this\RowEntered( )
+                        EndIf
+                     EndIf
+                     
                   EndIf
-                  
                EndIf
             EndIf
          EndIf
@@ -18365,7 +18377,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                Case #__type_Button, #__type_ButtonImage
-                  If Not ( *this\togglebox And *this\togglebox\checked)
+                  If Not ( *this\Toggle( ) And *this\Toggle( )\checked)
                      Select event
                         Case #__event_MouseEnter
                            If *this\enter 
@@ -18411,8 +18423,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If event = #__event_Up
                      If CanvasMouseButton( ) & #PB_Canvas_LeftButton
                         If *this\enter 
-                           If *this\togglebox
-                              SetState( *this, Bool( *this\togglebox\checked ! 1 ))
+                           If *this\Toggle( )
+                              SetState( *this, Bool( *this\Toggle( )\checked ! 1 ))
                            EndIf
                         EndIf
                      EndIf
@@ -18440,7 +18452,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      event = #__event_left2Click Or
                      event = #__event_left3Click
                      ;
-                     If SetState( *this, Bool( *this\togglebox\checked ! 1 ) )
+                     If SetState( *this, Bool( *this\Toggle( )\checked ! 1 ) )
                         
                      EndIf
                   EndIf
@@ -20699,10 +20711,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       ;-  DRAWINGs
       ;-
-      Macro Draw_focus_frame( _address_, _color_ )
-         draw_roundbox_( _address_\inner_x( ), _address_\inner_y( ), _address_\inner_width( ), _address_\inner_height( ), _address_\round, _address_\round, _color_ )
-         draw_roundbox_( _address_\inner_x( )+1, _address_\inner_y( )+1, _address_\inner_width( )-2, _address_\inner_height( )-2, _address_\round, _address_\round, _color_ )
-         draw_roundbox_( _address_\inner_x( )+2, _address_\inner_y( )+2, _address_\inner_width( )-4, _address_\inner_height( )-4, _address_\round, _address_\round, _color_ )
+      Macro Draw_focus_frame( _address_, _color_, _padding_ = 0 )
+         draw_roundbox_( _address_\inner_x( )+_padding_, _address_\inner_y( )+_padding_, _address_\inner_width( ), _address_\inner_height( ), _address_\round, _address_\round, _color_ )
+         draw_roundbox_( _address_\inner_x( )+1+_padding_, _address_\inner_y( )+1+_padding_, _address_\inner_width( )-2-_padding_*2, _address_\inner_height( )-2-_padding_*2, _address_\round, _address_\round, _color_ )
+         draw_roundbox_( _address_\inner_x( )+2+_padding_, _address_\inner_y( )+2+_padding_, _address_\inner_width( )-4-_padding_*2, _address_\inner_height( )-4-_padding_*2, _address_\round, _address_\round, _color_ )
          ;draw_roundbox_( _address_\frame_x( ), _address_\frame_y( ), _address_\frame_width( ), _address_\frame_height( ), _address_\round, _address_\round, _color_ )
          ;draw_roundbox_( _address_\frame_x( ) + 1, _address_\frame_y( ) + 1, _address_\frame_width( ) - 2, _address_\frame_height( ) - 2, _address_\round, _address_\round, _color_ )
          ; draw_roundbox_( _address_\frame_x( ) + 2, _address_\frame_y( ) + 2, _address_\frame_width( ) - 4, _address_\frame_height( ) - 4, _address_\round, _address_\round, _color_ )
@@ -21169,18 +21181,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ; arrow draw
-         If *this\combobutton
+         If *this\Combo( )
             draw_mode_alpha_( #PB_2DDrawing_Default )
-            Draw_Arrow( *this\combobutton\arrow\direction,
-                        *this\combobutton\x + ( *this\combobutton\width - *this\combobutton\arrow\size * 2 ) - *this\combobutton\arrow\size / 2,
-                        *this\combobutton\y + ( *this\combobutton\height - *this\combobutton\arrow\size ) / 2,
-                        *this\combobutton\arrow\size, 
-                        *this\combobutton\arrow\type, 0,
-                        *this\combobutton\color\front[state] & $FFFFFF | *this\combobutton\AlphaState24( ))
+            Draw_Arrow( *this\Combo( )\arrow\direction,
+                        *this\Combo( )\x + ( *this\Combo( )\width - *this\Combo( )\arrow\size * 2 ) - *this\Combo( )\arrow\size / 2,
+                        *this\Combo( )\y + ( *this\Combo( )\height - *this\Combo( )\arrow\size ) / 2,
+                        *this\Combo( )\arrow\size, 
+                        *this\Combo( )\arrow\type, 0,
+                        *this\Combo( )\color\front[state] & $FFFFFF | *this\Combo( )\AlphaState24( ))
          EndIf
          
          ;\\ check&option box draw
-         If *this\togglebox
+         If *this\Toggle( )
             Protected _box_type_, _box_x_, _box_y_
             If #__type_Option = *this\type
                _box_type_ = 1
@@ -21190,31 +21202,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             If _box_type_
                If *this\ResizeChange( )
-                  If ( *this\togglebox\width Or *this\togglebox\height )
-                     *this\togglebox\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\togglebox\height ) / 2
+                  If ( *this\Toggle( )\width Or *this\Toggle( )\height )
+                     *this\Toggle( )\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\Toggle( )\height ) / 2
                      
                      If *this\text\align\right
-                        *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\height - DPIScaled(3) )
+                        *this\Toggle( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\Toggle( )\height - DPIScaled(3) )
                      ElseIf Not *this\text\align\left
-                        *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\width ) / 2
+                        *this\Toggle( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\Toggle( )\width ) / 2
                         
                         If Not *this\text\align\top
                            If *this\text\rotate = 0
-                              *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) - *this\togglebox\height
+                              *this\Toggle( )\y = *this\inner_y( ) + *this\scroll_y( ) - *this\Toggle( )\height
                            Else
-                              *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
+                              *this\Toggle( )\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
                            EndIf
                         EndIf
                      Else
-                        *this\togglebox\x = *this\inner_x( ) + DPIScaled(3)
+                        *this\Toggle( )\x = *this\inner_x( ) + DPIScaled(3)
                      EndIf
                   EndIf
                EndIf
                
-               ; Debug ""+*this\togglebox\x +" "+ *this\togglebox\y
+               ; Debug ""+*this\Toggle( )\x +" "+ *this\Toggle( )\y
                
-               ;   __draw_checkbox( _box_type_, *this\togglebox, *this\x,*this\y, *this\togglebox\round )
-               __draw_checkbox( _box_type_, *this\togglebox, 0,0, *this\togglebox\round )
+               ;   __draw_checkbox( _box_type_, *this\Toggle( ), *this\x,*this\y, *this\Toggle( )\round )
+               __draw_checkbox( _box_type_, *this\Toggle( ), 0,0, *this\Toggle( )\round )
             EndIf
          EndIf
          
@@ -21361,10 +21373,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   Draw_Button( *this._s_WIDGET )
-         Draw_BackGround( *this, *this\ColorState( ))
-                  Draw_Content( *this, *this\ColorState( ))
-                  Draw_Frames( *this, *this\ColorState( ) )
-                  ProcedureReturn
+;          Draw_BackGround( *this, *this\ColorState( ))
+;                   Draw_Content( *this, *this\ColorState( ))
+;                   Draw_Frames( *this, *this\ColorState( ) )
+;                   ProcedureReturn
          
          Protected X, Y, state
          state = *this\ColorState( )
@@ -21373,7 +21385,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Y = *this\inner_y( ) + *this\scroll_y( )
          
          If *this\type = #__type_Button Or *this\type = #__type_ButtonImage
-            If *this\togglebox And *this\togglebox\checked
+            If *this\Toggle( ) And *this\Toggle( )\checked
                state = #__s_2
             EndIf
             
@@ -21401,7 +21413,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; gradient draw
             draw_mode_alpha_( #PB_2DDrawing_Gradient )
             If *this\stringbar
-               __draw_gradient( 0, *this\combobutton, 0,0, state )
+               __draw_gradient( 0, *this\Combo( ), 0,0, state )
             Else
                __draw_gradient( 0, *this, 0,0, state, 0,0, [#__c_frame] )
             EndIf
@@ -21419,15 +21431,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ draw frame defaul focus widget
          If *this\type = #__type_Button Or *this\type = #__type_ButtonImage
             If *this\deffocus 
+               Protected z = DPIScaled(3)
+               Protected c.l
+               If state = 2
+                 c = $ffffffff
+              Else
+                 c = *this\color\frame[1] & $FFFFFF | *this\AlphaState24( )
+              EndIf
+               
                draw_mode_( #PB_2DDrawing_Outlined )
-               draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ),
-                               *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
+               draw_roundbox_( *this\inner_x( )+z, *this\inner_y( )+z, *this\inner_width( )-z*2, *this\inner_height( )-z*2, *this\round, *this\round, c )
                If *this\round
-                  draw_roundbox_( *this\inner_x( ) - 1, *this\inner_y( ), *this\inner_width( ) + 2, *this\inner_height( ),
-                                  *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
+                  draw_roundbox_( *this\inner_x( ) - 1+z, *this\inner_y( )+z, *this\inner_width( ) + 2-z*2, *this\inner_height( )-z*2, *this\round, *this\round, c )
                EndIf
-               draw_roundbox_( *this\screen_x( ), *this\screen_y( ), *this\screen_width( ), *this\screen_height( ),
-                               *this\round, *this\round, *this\color\frame[1] & $FFFFFF | *this\AlphaState24( ) )
+               draw_roundbox_( *this\screen_x( )+z, *this\screen_y( )+z, *this\screen_width( )-z*2, *this\screen_height( )-z*2, *this\round, *this\round, c )
             EndIf
          EndIf
          
@@ -22879,43 +22896,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          *this\child  = constants::BinaryFlag( Flag, #__flag_child )
          If constants::BinaryFlag( Flag, #__flag_NoFocus )
-            *this\focus = #__s_nofocus
+            *this\nofocus = #__s_nofocus
          EndIf
          
          ;
-         If Type = #__type_Button Or Type = #__type_ButtonImage 
-            *this\deffocus = Bool( Flag & #PB_Button_Default )
-         EndIf
-         If Type = #__type_CheckBox
-            *this\mode\threestate = constants::BinaryFlag( Flag, #PB_CheckBox_ThreeState )
-         EndIf
-         If Type = #__type_HyperLink
-            *this\mode\Lines = constants::BinaryFlag( Flag, #PB_HyperLink_Underline )
-         EndIf
-         
-         ;
-         If Not *this\togglebox
+         If Not *this\Toggle( )
             If Type = #__type_Button Or 
-               Type = #__type_ButtonImage 
+               Type = #__type_ButtonImage
                ;
                If constants::BinaryFlag( Flag, #PB_Button_Toggle )
-                  ;Flag &~ #PB_Button_Toggle
-                  *this\togglebox.allocate( BOX )
+                  *this\Toggle( ).allocate( BOX )
                EndIf
             EndIf
-            If Type = #__type_CheckBox 
-               *this\togglebox.allocate( BOX )
-               *this\togglebox\round  = dpi_scale_two
-               *this\togglebox\width = size
-               *this\togglebox\width  - Bool( Not *this\togglebox\width % 2)
-               *this\togglebox\height = *this\togglebox\width
-            EndIf
-            If Type = #__type_Option
-               *this\togglebox.allocate( BOX )
-               *this\togglebox\round  = size/2
-               *this\togglebox\width  = size
-               *this\togglebox\width  - Bool( Not *this\togglebox\width % 2)
-               *this\togglebox\height = *this\togglebox\width
+            If Type = #__type_CheckBox Or Type = #__type_Option
+               *this\Toggle( ).allocate( BOX )
+               If Type = #__type_CheckBox 
+                  *this\Toggle( )\round  = dpi_scale_two
+               EndIf
+               If Type = #__type_Option
+                  *this\Toggle( )\round  = size/2
+               EndIf
+               *this\Toggle( )\width = size
+               *this\Toggle( )\width  - Bool( Not *this\Toggle( )\width % 2)
+               *this\Toggle( )\height = *this\Toggle( )\width
             EndIf
          EndIf
          
@@ -23214,11 +23217,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ - Create ComboBox
          If *this\type = #__type_ComboBox
-            *this\combobutton.allocate( BUTTONS )
-            *this\combobutton\color           = _get_colors_( )
-            *this\combobutton\arrow\type      = #__arrow_type
-            *this\combobutton\arrow\size      = DPIScaled( #__arrow_size )
-            *this\combobutton\arrow\direction = #__right
+            *this\Combo( ).allocate( BUTTONS )
+            *this\Combo( )\color           = _get_colors_( )
+            *this\Combo( )\arrow\type      = #__arrow_type
+            *this\Combo( )\arrow\size      = DPIScaled( #__arrow_size )
+            *this\Combo( )\arrow\direction = #__right
             
             *this\fs[3] = size
             *this\fs[3] + Bool( Not *this\fs[3] % 2)
@@ -23523,9 +23526,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\padding\x = DPIScaled(2)
             ; *this\padding\y = *this\padding\x
          EndIf
-         If *this\togglebox And
-            *this\togglebox\width
-            *this\padding\x = *this\togglebox\width + DPIScaled(8)
+         If *this\Toggle( ) And
+            *this\Toggle( )\width
+            *this\padding\x = *this\Toggle( )\width + DPIScaled(8)
          EndIf
          
          ; set FLAG
@@ -24123,7 +24126,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ 
             If *root
                If constants::BinaryFlag( Flag, #PB_Window_NoActivate )
-                  *root\focus = #__s_nofocus
+                  *root\nofocus = #__s_nofocus
                Else
                   If SetActive( *root )
                      ; Post( *root, #__event_Focus )
@@ -24330,7 +24333,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If constants::BinaryFlag( *this\flag, #PB_Window_NoActivate )
-            *this\focus = #__s_nofocus
+            *this\nofocus = #__s_nofocus
          Else
             If Not ( *this\parent And *this\parent\anchors )
                SetActive( *this )
@@ -25139,24 +25142,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;
             ;\\ update option&checkbox position
-            If *this\togglebox 
-               If ( *this\togglebox\width Or *this\togglebox\height )
-                  *this\togglebox\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\togglebox\height ) / 2
+            If *this\Toggle( ) 
+               If ( *this\Toggle( )\width Or *this\Toggle( )\height )
+                  *this\Toggle( )\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\Toggle( )\height ) / 2
                   
                   If *this\text\align\right
-                     *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\height - DPIScaled(3) )
+                     *this\Toggle( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\Toggle( )\height - DPIScaled(3) )
                   ElseIf Not *this\text\align\left
-                     *this\togglebox\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\togglebox\width ) / 2
+                     *this\Toggle( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\Toggle( )\width ) / 2
                      
                      If Not *this\text\align\top
                         If *this\text\rotate = 0
-                           *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) - *this\togglebox\height
+                           *this\Toggle( )\y = *this\inner_y( ) + *this\scroll_y( ) - *this\Toggle( )\height
                         Else
-                           *this\togglebox\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
+                           *this\Toggle( )\y = *this\inner_y( ) + *this\scroll_y( ) + *this\scroll_height( )
                         EndIf
                      EndIf
                   Else
-                     *this\togglebox\x = *this\inner_x( ) + DPIScaled(3)
+                     *this\Toggle( )\x = *this\inner_x( ) + DPIScaled(3)
                   EndIf
                EndIf
             EndIf
@@ -25165,15 +25168,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If *this\type = #__type_ComboBox
                If *this\stringbar
-                  *this\combobutton\width = *this\fs[3]
-                  *this\combobutton\x     = ( *this\screen_x( )+ *this\screen_width( ) ) - *this\fs[3]
+                  *this\Combo( )\width = *this\fs[3]
+                  *this\Combo( )\x     = ( *this\screen_x( )+ *this\screen_width( ) ) - *this\fs[3]
                Else
-                  *this\combobutton\width = *this\frame_width( ) - *this\fs * 2 ; *this\inner_width( )
-                  *this\combobutton\x     = *this\frame_x( ) + *this\fs
+                  *this\Combo( )\width = *this\frame_width( ) - *this\fs * 2 ; *this\inner_width( )
+                  *this\Combo( )\x     = *this\frame_x( ) + *this\fs
                EndIf
                
-               *this\combobutton\y      = *this\inner_y( )
-               *this\combobutton\height = *this\inner_height( )
+               *this\Combo( )\y      = *this\inner_y( )
+               *this\Combo( )\height = *this\inner_height( )
             EndIf
             
             ;\\
@@ -28009,9 +28012,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 23022
-; FirstLine = 22378
-; Folding = ------------------------------------------------------------------------------------------v84v4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--z84-------------------------------------------------------------------------------788d+q0-------+e-7------------------------------------------v---0-----------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------0-r------
+; CursorPosition = 21435
+; FirstLine = 20875
+; Folding = -------------------------------------------------------------------------------------------uf-e-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------40--z8--------------------------------------------------------------------------------+-8d-d8-------00+2------------------------------------------f---8------------------------------------8--------------------------------------n-8-----------------------------------------------------------------------------------------------------------0-r------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

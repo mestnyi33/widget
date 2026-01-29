@@ -601,6 +601,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          lineColor.l
          ChangeColor.b
          deffocus.b ; button default focus
+         nofocus.b ; no activate
          
          padding._s_point
          
@@ -682,7 +683,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *stringbar._s_WIDGET     ; = Spin( ) string box widget
          *combobutton._s_BUTTONS  ; combobox button
          *togglebox._s_BOX        ; checkbox; optionbox, ToggleButton
-         
          
          ;                           
          TitleBarHeight.w
@@ -799,8 +799,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 257
-; FirstLine = 112
+; CursorPosition = 604
+; FirstLine = 458
 ; Folding = -F59------
 ; Optimizer
 ; EnableXP

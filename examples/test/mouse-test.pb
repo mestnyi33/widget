@@ -1,4 +1,4 @@
-﻿IncludePath "../../../"
+﻿IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -88,6 +88,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_LeftClick
             Select EventWidget
+               Case *this
+                  If Flag(*this, #PB_Button_Toggle)
+                     ;  SetState(button_toggle, GetState(EventWidget))
+                  EndIf
+                  
                Case Button_type
                   If GetState(EventWidget)
                      Hide(*this, 1)
@@ -197,26 +202,23 @@ CompilerIf #PB_Compiler_IsMainFile
                      RemoveFlag(*this, #__flag_Vertical)
                   EndIf
                   
-               Case button_default  
-                  If GetState(EventWidget)
-                     SetFlag(*this, #PB_Button_Default)
-                  Else
-                     RemoveFlag(*this, #PB_Button_Default)
-                  EndIf
-               
+               Case button_default   : Flag = #__flag_button_Default
                Case button_mirror    ;: flag = #__flag_TextMirror
                   Debug "ЕЩЕ НЕ РЕАЛИЗОВАНО"
             EndSelect
             
+            If Flag
+               Flag(*this, Flag, GetState(EventWidget))
+            EndIf
             
       EndSelect
       
    EndProcedure
    
    
-   ;- 
+   
    If Open(0, 0, 0, Width + 180, Height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      ;gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
+      gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) ;: HideGadget(gadget, 1)
       *this  = Widget::Button(100, 100, 250, 200, Text, #PB_Button_MultiLine);|#PB_Button_Toggle)
       
       Define Y  = 10
@@ -287,8 +289,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 202
-; FirstLine = 153
-; Folding = --Pc9
+; CursorPosition = 220
+; FirstLine = 212
+; Folding = -----
 ; EnableXP
 ; DPIAware

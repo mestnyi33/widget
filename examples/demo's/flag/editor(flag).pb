@@ -208,9 +208,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    
-   
+   ;-
    If Open(0, 0, 0, Width + 180, Height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
+      ; gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
       *this  = Widget::Editor(100, 100, 250, 200) : SetText( *this, Text )
       ;*this  = Widget::Text(100, 100, 250, 200, Text )
       
@@ -277,9 +277,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 85
-; FirstLine = 73
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 212
+; FirstLine = 199
 ; Folding = -----
 ; EnableXP
 ; DPIAware
