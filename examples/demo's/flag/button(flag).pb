@@ -174,16 +174,6 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
                   
-                  ;                   ;
-                  ;                   Select EventWidget
-                  ;                      Case button_top       : Flag = #__flag_Top     
-                  ;                      Case button_left      : Flag = #__flag_Left
-                  ;                      Case button_right     : Flag = #__flag_Right
-                  ;                      Case button_bottom    : Flag = #__flag_Bottom
-                  ;                      Case button_center    : Flag = #__flag_Center
-                  ;                   EndSelect
-                  
-                  ;
                Case button_default   : Flag = #__flag_button_Default
                Case button_toggle  
                   If GetState(EventWidget)
@@ -299,9 +289,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 192
-; FirstLine = 174
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 176
+; FirstLine = 163
 ; Folding = -----
 ; EnableXP
 ; DPIAware

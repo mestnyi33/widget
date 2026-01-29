@@ -15432,6 +15432,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\text\align\bottom = *this\picture\align\bottom
                EndIf
                
+               
+               ;                   ClearDebugOutput()
+               ;                   Debug ""+*this\text\align\left +" "+ *this\text\align\top +" "+ *this\text\align\right +" "+ *this\text\align\bottom
+               ;                   Debug "  "+*this\picture\align\left +" "+ *this\picture\align\top +" "+ *this\picture\align\right +" "+ *this\picture\align\bottom
+               ;                   ;Debug ""+*this\text\invert+" "+*this\text\vertical
                ;
                ;\\
                *this\text\editable = Bool( Not constants::BinaryFlag( *this\flag, #__flag_Textreadonly ))
@@ -15443,38 +15448,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\text\rotate   = Bool( *this\text\invert ) * 180 + 
                                      Bool( *this\text\vertical ) * 90
                
-               
-               ;                   ClearDebugOutput()
-               ;                   Debug ""+*this\text\align\left +" "+ *this\text\align\top +" "+ *this\text\align\right +" "+ *this\text\align\bottom
-               ;                   Debug "  "+*this\picture\align\left +" "+ *this\picture\align\top +" "+ *this\picture\align\right +" "+ *this\picture\align\bottom
-               ;                   ;Debug ""+*this\text\invert+" "+*this\text\vertical
                ;\\
-               If Flag & #__flag_TextWordWrap 
+               If *this\Flag & #__flag_TextWordWrap 
                   If *this\flag & #__flag_TextMultiLine 
                      *this\flag &~ #__flag_TextMultiLine
                   EndIf
-                  If *this\flag & #__flag_TextInLine 
-                     *this\flag &~ #__flag_TextInLine
-                  EndIf
                   *this\text\multiLine = 1
-               ElseIf Flag & #__flag_TextMultiLine
+               ElseIf *this\Flag & #__flag_TextMultiLine
                   If *this\flag & #__flag_TextWordWrap 
                      *this\flag &~ #__flag_TextWordWrap
-                  EndIf
-                  If *this\flag & #__flag_TextInLine 
-                     *this\flag &~ #__flag_TextInLine
                   EndIf
                   *this\text\multiLine = - 1
                Else
                   *this\text\multiLine = 0
-                  *this\flag | #__flag_TextInLine
-                  *this\text\numeric   = Bool( Flag & #__flag_TextNumeric )
+                  *this\text\numeric   = Bool( *this\Flag & #__flag_TextNumeric )
                EndIf 
                
                ;
                ;\\
-               If Flag & #__flag_TextMultiLine Or
-                  Flag & #__flag_TextWordWrap
+               If *this\Flag & #__flag_TextMultiLine Or
+                  *this\Flag & #__flag_TextWordWrap
                   ;
                   If *this\text\multistring
                      *this\text\string = *this\text\multistring 
@@ -22852,14 +22845,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          size = DPIScaled( size )
          
-         Protected.b flag_AutoSize = constants::BinaryFlag( Flag, #__flag_autosize )
-         Protected.b flag_Center = constants::BinaryFlag( Flag, #__flag_Center )
-         Protected.b flag_Right = constants::BinaryFlag( Flag, #__flag_Right )
-         Protected.b flag_Bottom = constants::BinaryFlag( Flag, #__flag_Bottom )
-         Protected.b flag_TextInLine = constants::BinaryFlag( Flag, #__flag_TextInLine )
-         
          ;
          Protected color, img                 ;, *this.allocate( Widget )
+         Protected.b flag_AutoSize = constants::BinaryFlag( Flag, #__flag_autosize )
+         
          
          Protected *this._s_WIDGET
          If *root And flag_autosize And
@@ -22984,7 +22973,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Flag = FromPBFlag( Type, Flag )
          ;
          ; set default text align flags
-         If Not flag_center
+         If Not Flag & #__flag_Center
             If Not (Flag & #__flag_Left Or
                     Flag & #__flag_Right Or
                     Flag & #__flag_Top Or
@@ -23000,24 +22989,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ElseIf Type = #__type_Text Or
                       Type = #__type_Editor
                   
-                  If Not flag_Right
-                     Flag | #__flag_Left
-                  EndIf
-                  If Not flag_Bottom
-                     Flag | #__flag_Top
-                  EndIf
+                  Flag | #__flag_Left | #__flag_Top
                   
-                  If Not ( Flag & #__flag_TextInLine Or
-                           Flag & #__flag_TextMultiLine Or 
-                           Flag & #__flag_TextWordWrap )
-                     ;
-                     If Type = #__type_Text
-                        Flag | #__flag_TextWordWrap
-                     ElseIf Type = #__type_Editor
-                        Flag | #__flag_TextMultiLine
-                     EndIf
-                  EndIf
-               
                ElseIf Type = #__type_Button Or 
                       Type = #__type_ButtonImage Or 
                       Type = #__type_Image Or
@@ -23025,27 +22998,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       Type = #__type_HyperLink
                   
                   Flag | #__flag_Center
-;                   If Flag & #__flag_Vertical
-;                      If Flag & #__flag_Invert
-;                         If Not Flag & #__flag_Top
-;                            Flag | #__flag_Center | #__flag_Top
-;                         EndIf
-;                      Else
-;                         If Not Flag & #__flag_Bottom
-;                            Flag | #__flag_Center | #__flag_Bottom
-;                         EndIf
-;                      EndIf
-;                   Else
-;                      If Flag & #__flag_Invert
-;                         If Not Flag & #__flag_Right
-;                            Flag | #__flag_Center | #__flag_Right
-;                         EndIf
-;                      Else
-;                         If Not Flag & #__flag_Left
-;                            Flag | #__flag_Center | #__flag_Left
-;                         EndIf
-;                      EndIf
-;                   EndIf
                   
                ElseIf Type = #__type_ComboBox Or 
                       Type = #__type_String Or
@@ -23053,11 +23005,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                       Type = #__type_CheckBox
                   
                   Flag | #__flag_Left
-                  
                EndIf
             EndIf
          EndIf
-         
+             
+         ; set default text line
+         If Not ( Flag & #__flag_TextInLine Or
+                  Flag & #__flag_TextMultiLine Or 
+                  Flag & #__flag_TextWordWrap )
+            ;
+            If Type = #__type_Text
+               Flag | #__flag_TextWordWrap
+            ElseIf Type = #__type_Editor
+               Flag | #__flag_TextMultiLine
+            EndIf
+         EndIf
+               
          *this\flag = Flag   
          ;
          ;\\
@@ -28045,10 +28008,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 15469
-; FirstLine = 15298
-; Folding = ------------------------------------------------------------------------------------------v84v4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--Pvf-------------------------------------------------------------------------------rvv46r3-------880r-------------------------------------------+--4-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f--7------
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 23022
+; FirstLine = 22378
+; Folding = ------------------------------------------------------------------------------------------v84v4-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--z84-------------------------------------------------------------------------------788d+q0-------+e-7------------------------------------------v---0-----------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------0-r------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
