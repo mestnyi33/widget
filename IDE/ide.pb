@@ -483,7 +483,7 @@ Procedure   PropertiesButton_Change( *this._s_WIDGET, item )
    Define._s_WIDGET *object = a_focused( )
    If item = #_pi_flag
       Define class$ = ClassFromType( *object\type ) 
-      Define flag$ = FlagString( *object\flag )
+      Define flag$ = MakeString( *object\flag )
       Define flag$ = RemoveString( flag$, "#__flag_Text") 
       Define flag$ = RemoveString( flag$, "#__flag_") 
       Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, flag$)
@@ -843,7 +843,7 @@ Procedure   PropertiesButton_Events( )
                      Define Flag.q = MakeValue( flag$ )
                      SetFlag_( *object, Flag)
                      Define class$ = ClassFromType( *object\type ) 
-;                      Define flag$ = FlagString( Flag )
+;                      Define flag$ = MakeString( Flag )
 ;                      Define flag$ = RemoveString( flag$, "#__flag_Text") 
 ;                      Define flag$ = RemoveString( flag$, "#__flag_") 
                      Debug "----"+flag$
@@ -1324,7 +1324,7 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
          Else
             Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_fontsize, "" )
          EndIf
-         Define style$ = RemoveString( MakeString( "Font", GetFontStyle( font ) ), "#PB_Font_")
+         Define style$ = RemoveString( MakeString( GetFontStyle( font ), "Font" ), "#PB_Font_")
          If style$ = ""
             style$ = "None"
          EndIf
@@ -3293,10 +3293,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 402
-; FirstLine = 372
-; Folding = -4--4---8n-3v-----------Aj-------v0fvd-0----------f6WW----f+-
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 485
+; FirstLine = 447
+; Folding = -4--4---8n-3v-----------Az-------v0fvd-0----------f6WW----f+-
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2_621.exe
+; Executable = ../../2_621.exe

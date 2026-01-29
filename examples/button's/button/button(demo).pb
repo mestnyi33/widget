@@ -102,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Protected Height = WindowHeight( 11, #PB_Window_InnerCoordinate )
     
     ;ResizeGadget( c2, 10, 10, Width-20, Height-20 )
-    Resize( *Button_0, #PB_Ignore, #PB_Ignore, Width-125, #PB_Ignore )
+    Resize( *Button_0, #PB_Ignore, #PB_Ignore, Width-120, #PB_Ignore )
     Resize( *Button_1, Width-75, #PB_Ignore, #PB_Ignore, Height-50 )
     SetWindowTitle( 11, Str( *Button_0\width ) +" - "+ Str( *Button_1\height ) )
   EndProcedure
@@ -116,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
      SetColor( *Button_0, #PB_Gadget_FrontColor, $4919D5 ) 
      SetFont( *Button_0, ( 0 ) )
     
-    *Button_1 = Button( 270, 15,  60, 120, "Button (Vertical)", #PB_Button_MultiLine|#__flag_TextVertical|#__flag_TextInvert )
+    *Button_1 = Button( 270, 15,  60, 120, "Button (Vertical)", #PB_Button_MultiLine|#__flag_Vertical|#__flag_Invert )
      SetColor( *Button_1, #PB_Gadget_FrontColor, $FFD56F1A )
      SetFont( *Button_1, ( 0 ) )
     
@@ -142,9 +142,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   ;WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 53
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 104
+; FirstLine = 98
 ; Folding = ---
 ; EnableXP
 ; DPIAware

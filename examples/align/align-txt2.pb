@@ -42,38 +42,40 @@ CompilerIf #PB_Compiler_IsMainFile
       a_init( Widget() )
       
       ; horizontal
-      GadgeCreate(0, 10, 10,                      Width, Height, text_h,                      #__flag_TextLeft|#__flag_TextTop);
-      GadgeCreate(1, 10, 10+(Height+space)*1, Width, Height, text_h,                      #__flag_TextLeft);|#__flag_TextCenter) ;
-      GadgeCreate(2, 10, 10+(Height+space)*2, Width, Height, text_h,                      #__flag_TextLeft|#__flag_TextBottom) ;
+      GadgeCreate(0, 10, 10,                      Width, Height, text_h,                  #__flag_Left|#__flag_Top)
+      GadgeCreate(1, 10, 10+(Height+space)*1, Width, Height, text_h,                      #__flag_Left)
+      GadgeCreate(2, 10, 10+(Height+space)*2, Width, Height, text_h,                      #__flag_Left|#__flag_Bottom) 
       
-      GadgeCreate(3, 10+(Width+space), 10,                      Width, Height, text_h,        #__flag_TextCenter|#__flag_TextTop);
-      GadgeCreate(4, 10+(Width+space), 10+(Height+space)*1, Width, Height, text_h,        #__flag_TextCenter)                ;
-      GadgeCreate(5, 10+(Width+space), 10+(Height+space)*2, Width, Height, text_h,        #__flag_TextCenter|#__flag_TextBottom) ;
+      GadgeCreate(3, 10+(Width+space), 10,                      Width, Height, text_h,    #__flag_Top);
+      GadgeCreate(4, 10+(Width+space), 10+(Height+space)*1, Width, Height, text_h,        #__flag_Center)                
+      GadgeCreate(5, 10+(Width+space), 10+(Height+space)*2, Width, Height, text_h,        #__flag_Bottom) 
       
-      GadgeCreate(6, 10+(Width+space)*2, 10,                      Width, Height, text_h,      #__flag_TextRight|#__flag_TextTop);
-      GadgeCreate(7, 10+(Width+space)*2, 10+(Height+space)*1, Width, Height, text_h,      #__flag_TextRight|#__flag_TextCenter) ;
-      GadgeCreate(10, 10+(Width+space)*2, 10+(Height+space)*2, Width, Height, text_h,      #__flag_TextRight|#__flag_TextBottom);
+      GadgeCreate(6, 10+(Width+space)*2, 10,                      Width, Height, text_h,  #__flag_Right|#__flag_Top)
+      GadgeCreate(7, 10+(Width+space)*2, 10+(Height+space)*1, Width, Height, text_h,      #__flag_Right) 
+      GadgeCreate(10, 10+(Width+space)*2, 10+(Height+space)*2, Width, Height, text_h,     #__flag_Right|#__flag_Bottom)
       
       
       ; horizontal invert
-      GadgeCreate(20, X+10, Y+10,                      Width, Height, text_h,                      #__flag_TextInvert|#__flag_TextLeft|#__flag_TextTop);
-      GadgeCreate(21, X+10, Y+10+(Height+space)*1, Width, Height, text_h,                      #__flag_TextInvert|#__flag_TextLeft|#__flag_TextCenter) ;
-      GadgeCreate(22, X+10, Y+10+(Height+space)*2, Width, Height, text_h,                      #__flag_TextInvert|#__flag_TextLeft|#__flag_TextBottom) ;
+      GadgeCreate(20, X+10, Y+10,                      Width, Height, text_h,                  #__flag_Invert|#__flag_Left|#__flag_Top)
+      GadgeCreate(21, X+10, Y+10+(Height+space)*1, Width, Height, text_h,                      #__flag_Invert|#__flag_Left) 
+      GadgeCreate(22, X+10, Y+10+(Height+space)*2, Width, Height, text_h,                      #__flag_Invert|#__flag_Left|#__flag_Bottom) 
       
-      GadgeCreate(23, X+10+Width+space, Y+10,                      Width, Height, text_h,        #__flag_TextInvert|#__flag_TextCenter|#__flag_TextTop);
-      GadgeCreate(24, X+10+Width+space, Y+10+(Height+space)*1, Width, Height, text_h,        #__flag_TextInvert|#__flag_TextCenter)                ;
-      GadgeCreate(25, X+10+Width+space, Y+10+(Height+space)*2, Width, Height, text_h,        #__flag_TextInvert|#__flag_TextCenter|#__flag_TextBottom) ;
+      GadgeCreate(23, X+10+Width+space, Y+10,                      Width, Height, text_h,      #__flag_Invert|#__flag_Top)
+      GadgeCreate(24, X+10+Width+space, Y+10+(Height+space)*1, Width, Height, text_h,          #__flag_Invert)                
+      GadgeCreate(25, X+10+Width+space, Y+10+(Height+space)*2, Width, Height, text_h,          #__flag_Invert|#__flag_Bottom) 
       
-      GadgeCreate(26, X+10+(Width+space)*2, Y+10,                      Width, Height, text_h,      #__flag_TextInvert|#__flag_TextRight|#__flag_TextTop);
-      GadgeCreate(27, X+10+(Width+space)*2, Y+10+(Height+space)*1, Width, Height, text_h,      #__flag_TextInvert|#__flag_TextRight|#__flag_TextCenter) ;
-      GadgeCreate(210, X+10+(Width+space)*2, Y+10+(Height+space)*2, Width, Height, text_h,      #__flag_TextInvert|#__flag_TextRight|#__flag_TextBottom);
+      GadgeCreate(26, X+10+(Width+space)*2, Y+10,                      Width, Height, text_h,  #__flag_Invert|#__flag_Right|#__flag_Top)
+      GadgeCreate(27, X+10+(Width+space)*2, Y+10+(Height+space)*1, Width, Height, text_h,      #__flag_Invert|#__flag_Right) 
+      GadgeCreate(210, X+10+(Width+space)*2, Y+10+(Height+space)*2, Width, Height, text_h,     #__flag_Invert|#__flag_Right|#__flag_Bottom)
       
    EndIf
    
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 59
+; FirstLine = 46
 ; Folding = -
 ; EnableXP
 ; DPIAware

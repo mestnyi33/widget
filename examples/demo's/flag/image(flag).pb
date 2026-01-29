@@ -39,7 +39,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   Procedure events_widgets()
-    Protected flag
+    Protected Flag
     
     Select WidgetEvent()
       Case #__event_LeftClick
@@ -66,22 +66,22 @@ CompilerIf #PB_Compiler_IsMainFile
               SetText(EventWidget(), "gadget")
             EndIf
             
-          Case f_0 : flag = #__flag_button_Default
-          Case f_1 : flag = #__flag_Textmultiline
-          Case f_4 : flag = #PB_Button_Toggle
+          Case f_0 : Flag = #__flag_button_Default
+          Case f_1 : Flag = #__flag_Textmultiline
+          Case f_4 : Flag = #PB_Button_Toggle
             
-          Case f_5 : flag = #__flag_TextTop
+          Case f_5 : Flag = #__flag_Top
             ;SetState(f_6, 0)
-          Case f_2 : flag = #__flag_Textleft
-          Case f_3 : flag = #__flag_TextRight
-          Case f_6 : flag = #__flag_TextBottom
+          Case f_2 : Flag = #__flag_left
+          Case f_3 : Flag = #__flag_Right
+          Case f_6 : Flag = #__flag_Bottom
             
-          Case f_7 : flag = #__flag_TextInvert
-          Case f_8 : flag = #__flag_TextVertical
+          Case f_7 : Flag = #__flag_Invert
+          Case f_8 : Flag = #__flag_Vertical
         EndSelect
         
-        If flag
-          Flag(*this, flag, GetState(EventWidget()))
+        If Flag
+          Flag(*this, Flag, GetState(EventWidget()))
         EndIf
         
         ; PostCanvasRepaint( *this\root )
@@ -91,10 +91,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(0, 0, 0, Width+180, Height+20, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 ;     gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, text, #PB_Button_MultiLine) : HideGadget(gadget,1)
-    *this = widget::Image(100, 100, 250, 250, get_image())
+    *this = Widget::Image(100, 100, 250, 250, get_image())
     
     ; flag
-    f = widget::Tree(Width+20, 10, 150, Y+10, #__flag_NoLines|#__flag_NoButtons|#__flag_OptionBoxes|#__flag_CheckBoxes|#__flag_threestate)
+    f = Widget::Tree(Width+20, 10, 150, Y+10, #__flag_NoLines|#__flag_NoButtons|#__flag_OptionBoxes|#__flag_CheckBoxes|#__flag_threestate)
     ; AddItem(f, -1, "align", -1,0)
     AddItem(f, -1, "top", -1,1)
     AddItem(f, -1, "left", -1,1)
@@ -107,35 +107,35 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(f, -1, "vertical")
     AddItem(f, -1, "invert")
     
-    Button_type = widget::Button(Width+20,   Y, 150, 26, "gadget", #PB_Button_Toggle) 
-    f_5 = widget::Button(Width+20, Y+30*1, 150, 26, "top", #PB_Button_Toggle) 
-    f_2 = widget::Button(Width+20, Y+30*2, 73, 26, "left", #PB_Button_Toggle) 
-    f_3 = widget::Button(Width+20 + 21 + 55, Y+30*2, 73, 26, "right", #PB_Button_Toggle) 
-    f_6 = widget::Button(Width+20, Y+30*3, 150, 26, "bottom", #PB_Button_Toggle) 
+    Button_type = Widget::Button(Width+20,   Y, 150, 26, "gadget", #PB_Button_Toggle) 
+    f_5 = Widget::Button(Width+20, Y+30*1, 150, 26, "top", #PB_Button_Toggle) 
+    f_2 = Widget::Button(Width+20, Y+30*2, 73, 26, "left", #PB_Button_Toggle) 
+    f_3 = Widget::Button(Width+20 + 21 + 55, Y+30*2, 73, 26, "right", #PB_Button_Toggle) 
+    f_6 = Widget::Button(Width+20, Y+30*3, 150, 26, "bottom", #PB_Button_Toggle) 
     
-    f_0 = widget::Button(Width+20, Y+30*4, 150, 26, "center", #PB_Button_Toggle) 
-    f_1 = widget::Button(Width+20, Y+30*5, 150, 26, "strech", #PB_Button_Toggle) 
-    f_4 = widget::Button(Width+20, Y+30*6, 150, 26, "proportional", #PB_Button_Toggle) 
+    f_0 = Widget::Button(Width+20, Y+30*4, 150, 26, "center", #PB_Button_Toggle) 
+    f_1 = Widget::Button(Width+20, Y+30*5, 150, 26, "strech", #PB_Button_Toggle) 
+    f_4 = Widget::Button(Width+20, Y+30*6, 150, 26, "proportional", #PB_Button_Toggle) 
     
-    f_8 = widget::Button(Width+20, Y+30*7, 150, 26, "auto", #PB_Button_Toggle) 
+    f_8 = Widget::Button(Width+20, Y+30*7, 150, 26, "auto", #PB_Button_Toggle) 
 ;     f_7 = widget::Button(width+20, y+30*8, 150, 26, "invert", #PB_Button_Toggle) 
     Bind(#PB_All, @events_widgets())
     
     ; set button toggled state
     SetState(f_1, Flag(*this, #__flag_Textmultiline))
-    SetState(f_5, Flag(*this, #__flag_TextTop))
-    SetState(f_2, Flag(*this, #__flag_Textleft))
-    SetState(f_3, Flag(*this, #__flag_TextRight))
-    SetState(f_6, Flag(*this, #__flag_TextBottom))
+    SetState(f_5, Flag(*this, #__flag_Top))
+    SetState(f_2, Flag(*this, #__flag_left))
+    SetState(f_3, Flag(*this, #__flag_Right))
+    SetState(f_6, Flag(*this, #__flag_Bottom))
     
     If Button_type
        Hide(Button_type, 1)
     EndIf
 
-    Splitter_0 = widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
-    Splitter_1 = widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
-    Splitter_2 = widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
-    Splitter_3 = widget::Splitter(10, 10, Width, Height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
+    Splitter_0 = Widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
+    Splitter_1 = Widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed|#PB_Splitter_Vertical)
+    Splitter_2 = Widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
+    Splitter_3 = Widget::Splitter(10, 10, Width, Height, Splitter_2, #Null, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
     
     Define pos = 80
     SetState(Splitter_0, pos)
@@ -146,10 +146,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 105
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 76
+; FirstLine = 41
 ; Folding = ---
-; Optimizer
 ; EnableXP
 ; DPIAware

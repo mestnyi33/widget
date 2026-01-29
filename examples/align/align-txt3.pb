@@ -30,31 +30,31 @@ CompilerIf #PB_Compiler_IsMainFile
       SetColor( Widget( ), #PB_Gadget_BackColor, $FFffffff )
       
       ; vertical
-      GadgeCreate(0, 10, 10,                  Width, Height, text_v,                      #__flag_TextVertical|#PB_Button_Left|#__flag_TextTop);
-      GadgeCreate(1, 10, 10+(Height+space)*1, Width, Height, text_v,                      #__flag_TextVertical|#PB_Button_Left|#__flag_TextCenter) ;
-      GadgeCreate(2, 10, 10+(Height+space)*2, Width, Height, text_v,                      #__flag_TextVertical|#PB_Button_Left|#__flag_TextBottom) ;
+      GadgeCreate(0, 10, 10,                  Width, Height, text_v,                      #__flag_Vertical|#__flag_Left|#__flag_Top)
+      GadgeCreate(1, 10, 10+(Height+space)*1, Width, Height, text_v,                      #__flag_Vertical|#__flag_Left) 
+      GadgeCreate(2, 10, 10+(Height+space)*2, Width, Height, text_v,                      #__flag_Vertical|#__flag_Left|#__flag_Bottom) 
       
-      GadgeCreate(3, 10+(Width+space), 10,                  Width, Height, text_v,        #__flag_TextVertical|#__flag_TextCenter|#__flag_TextTop);
-      GadgeCreate(4, 10+(Width+space), 10+(Height+space)*1, Width, Height, text_v,        #__flag_TextVertical|#__flag_TextCenter)                ;
-      GadgeCreate(5, 10+(Width+space), 10+(Height+space)*2, Width, Height, text_v,        #__flag_TextVertical|#__flag_TextCenter|#__flag_TextBottom) ;
+      GadgeCreate(3, 10+(Width+space), 10,                  Width, Height, text_v,        #__flag_Vertical|#__flag_Top)
+      GadgeCreate(4, 10+(Width+space), 10+(Height+space)*1, Width, Height, text_v,        #__flag_Vertical|#__flag_Center)                
+      GadgeCreate(5, 10+(Width+space), 10+(Height+space)*2, Width, Height, text_v,        #__flag_Vertical|#__flag_Bottom) 
       
-      GadgeCreate(6, 10+(Width+space)*2, 10,                   Width, Height, text_v,      #__flag_TextVertical|#PB_Button_Right|#__flag_TextTop);
-      GadgeCreate(7, 10+(Width+space)*2, 10+(Height+space)*1,  Width, Height, text_v,      #__flag_TextVertical|#PB_Button_Right|#__flag_TextCenter) ;
-      GadgeCreate(10, 10+(Width+space)*2, 10+(Height+space)*2, Width, Height, text_v,      #__flag_TextVertical|#PB_Button_Right|#__flag_TextBottom);
+      GadgeCreate(6, 10+(Width+space)*2, 10,                   Width, Height, text_v,      #__flag_Vertical|#__flag_Right|#__flag_Top)
+      GadgeCreate(7, 10+(Width+space)*2, 10+(Height+space)*1,  Width, Height, text_v,      #__flag_Vertical|#__flag_Right) 
+      GadgeCreate(10, 10+(Width+space)*2, 10+(Height+space)*2, Width, Height, text_v,      #__flag_Vertical|#__flag_Right|#__flag_Bottom)
       
       
       ; vertical invert
-      GadgeCreate(20, X+10, Y+10,                  Width, Height, text_v,                      #__flag_TextVertical|#__flag_TextInvert|#PB_Button_Left|#__flag_TextTop);
-      GadgeCreate(21, X+10, Y+10+(Height+space)*1, Width, Height, text_v,                      #__flag_TextVertical|#__flag_TextInvert|#PB_Button_Left|#__flag_TextCenter) ;
-      GadgeCreate(22, X+10, Y+10+(Height+space)*2, Width, Height, text_v,                      #__flag_TextVertical|#__flag_TextInvert|#PB_Button_Left|#__flag_TextBottom) ;
+      GadgeCreate(20, X+10, Y+10,                  Width, Height, text_v,                       #__flag_Vertical|#__flag_Invert|#__flag_Left|#__flag_Top)
+      GadgeCreate(21, X+10, Y+10+(Height+space)*1, Width, Height, text_v,                       #__flag_Vertical|#__flag_Invert|#__flag_Left) 
+      GadgeCreate(22, X+10, Y+10+(Height+space)*2, Width, Height, text_v,                       #__flag_Vertical|#__flag_Invert|#__flag_Left|#__flag_Bottom) 
       
-      GadgeCreate(23, X+10+Width+space, Y+10,                  Width, Height, text_v,        #__flag_TextVertical|#__flag_TextInvert|#__flag_TextCenter|#__flag_TextTop);
-      GadgeCreate(24, X+10+Width+space, Y+10+(Height+space)*1, Width, Height, text_v,        #__flag_TextVertical|#__flag_TextInvert|#__flag_TextCenter)                ;
-      GadgeCreate(25, X+10+Width+space, Y+10+(Height+space)*2, Width, Height, text_v,        #__flag_TextVertical|#__flag_TextInvert|#__flag_TextCenter|#__flag_TextBottom) ;
+      GadgeCreate(23, X+10+Width+space, Y+10,                  Width, Height, text_v,           #__flag_Vertical|#__flag_Invert|#__flag_Top)
+      GadgeCreate(24, X+10+Width+space, Y+10+(Height+space)*1, Width, Height, text_v,           #__flag_Vertical|#__flag_Invert|#__flag_Center)                
+      GadgeCreate(25, X+10+Width+space, Y+10+(Height+space)*2, Width, Height, text_v,           #__flag_Vertical|#__flag_Invert|#__flag_Bottom) 
       
-      GadgeCreate(26, X+10+(Width+space)*2, Y+10,                   Width, Height, text_v,      #__flag_TextVertical|#__flag_TextInvert|#PB_Button_Right|#__flag_TextTop);
-      GadgeCreate(27, X+10+(Width+space)*2, Y+10+(Height+space)*1,  Width, Height, text_v,      #__flag_TextVertical|#__flag_TextInvert|#PB_Button_Right|#__flag_TextCenter) ;
-      GadgeCreate(210, X+10+(Width+space)*2, Y+10+(Height+space)*2, Width, Height, text_v,      #__flag_TextVertical|#__flag_TextInvert|#PB_Button_Right|#__flag_TextBottom);
+      GadgeCreate(26, X+10+(Width+space)*2, Y+10,                   Width, Height, text_v,      #__flag_Vertical|#__flag_Invert|#__flag_Right|#__flag_Top)
+      GadgeCreate(27, X+10+(Width+space)*2, Y+10+(Height+space)*1,  Width, Height, text_v,      #__flag_Vertical|#__flag_Invert|#__flag_Right) 
+      GadgeCreate(210, X+10+(Width+space)*2, Y+10+(Height+space)*2, Width, Height, text_v,      #__flag_Vertical|#__flag_Invert|#__flag_Right|#__flag_Bottom)
       
    EndIf
    
@@ -62,7 +62,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 10
+; CursorPosition = 46
+; FirstLine = 34
 ; Folding = -
 ; EnableXP
 ; DPIAware

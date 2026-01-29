@@ -35,7 +35,7 @@ Procedure   AddFont( key$, name$, size, style )
       If IsFont( font )
          key$ = Trim( key$ )
          
-         Define style$ = MakeString( "Font", style )
+         Define style$ = MakeString( style, "Font" )
          style$ = RemoveString( style$, "#PB_Font_" )
          style$ = ReplaceString( style$, " | ", "_" )
          If style$
@@ -1383,7 +1383,7 @@ Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
    Select type$
       Case "Panel", "Web", "IPAddress", "Option", "Scintilla", "Shortcut"
       Default
-         Flag$ = MakeString( type$, *g\flag )
+         Flag$ = MakeString( *g\flag, type$ )
          ; Debug type$ +" "+ Flag$ +" "+ *g\flag
    EndSelect
    
@@ -1719,7 +1719,7 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
             
             If id$ ; Not NumericString( id$ )
                If fonts( )\style
-                  style$ = ", " + MakeString( "Font", fonts( )\style)
+                  style$ = ", " + MakeString( fonts( )\style, "Font" )
                Else
                   style$ = ""
                EndIf
@@ -2054,8 +2054,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2024
-; FirstLine = 1783
+; CursorPosition = 1721
+; FirstLine = 1553
 ; Folding = -f-----f------------------f9-------4r3f------8fAw--8--
 ; EnableXP
 ; DPIAware

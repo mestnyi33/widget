@@ -234,7 +234,7 @@ CompilerIf #PB_Compiler_IsMainFile
                Define Type = GetType(*g_OBJECT)
                Define Flag = Flag(*g_OBJECT)
                Define type$ = ClassFromType(Type)
-               Define flag$ = MakeString( type$, Flag)
+               Define flag$ = MakeString( Flag, type$)
                ; Define flag$ = GetCheckedText(*g_FLAG)
                ; Define Flag = MakeValue( flag$ )
                Debug "make["+flag$+"] "+ Flag +" "+ type$
@@ -278,8 +278,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 217
-; FirstLine = 206
+; CursorPosition = 236
+; FirstLine = 233
 ; Folding = ------
 ; EnableXP
 ; DPIAware
