@@ -127,14 +127,51 @@ CompilerIf #PB_Compiler_IsMainFile
                   If EventWidget = button_right Or EventWidget = button_center
                      SetState(button_left,0) 
                   EndIf
+                  
+                  ;
                   If EventWidget = button_top Or
                      EventWidget = button_bottom Or 
                      EventWidget = button_left Or 
                      EventWidget = button_right 
                      ;
-                     SetState(button_center,0) 
+                     If SetState(button_center,0) 
+                        Debug "reset"
+                        RemoveFlag( *this, #__flag_Center )
+                     EndIf
                   EndIf
                   
+                  ; 
+                  If (GetState(button_left)=0 And 
+                      GetState(button_top)=0 And
+                      GetState(button_right)=0 And 
+                      GetState(button_bottom)=0) 
+                     
+                     ;
+                     If SetState(button_center,1) 
+                     Else
+                        If GetFlag(*this) & #__flag_Left
+                           RemoveFlag(*this, #__flag_Left)
+                           SetFlag(*this, #__flag_Center|#__flag_Left)
+                        EndIf
+                        If GetFlag(*this) & #__flag_Top
+                           RemoveFlag(*this, #__flag_Top)
+                           SetFlag(*this, #__flag_Center|#__flag_Top)
+                        EndIf
+                        If GetFlag(*this) & #__flag_Right
+                           RemoveFlag(*this, #__flag_Right)
+                           SetFlag(*this, #__flag_Center|#__flag_Right)
+                        EndIf
+                        If GetFlag(*this) & #__flag_Bottom
+                           RemoveFlag(*this, #__flag_Bottom)
+                           SetFlag(*this, #__flag_Center|#__flag_Bottom)
+                        EndIf
+                        
+                        Debug "set"
+                        
+                     EndIf
+                  EndIf
+                  
+                   
                   ;
                   If GetState(button_left)
                      SetFlag(*this, #__flag_Left)
@@ -157,18 +194,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      RemoveFlag(*this, #__flag_Top)
                   EndIf
                   
-                  ;
-                  If (GetState(button_left)=0 And 
-                      GetState(button_top)=0 And
-                      GetState(button_right)=0 And 
-                      GetState(button_bottom)=0) 
-                     
-                     ;
-                     If SetState(button_center,1) 
-                        SetFlag(*this, #__flag_Center)
-                     EndIf
-                  EndIf
-                   
+                  
                Case button_toggle  
                   If GetState(EventWidget)
                      SetFlag(*this, #PB_Button_Toggle)
@@ -218,7 +244,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;- 
    If Open(0, 0, 0, Width + 180, Height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
-      *this  = Widget::Button(100, 100, 250, 200, Text, multiline);|#PB_Button_Toggle)
+      *this  = Widget::Button(100, 100, 250, 200, Text, multiline) : SetImage( *this, img ) 
       
       Define Y  = 10
       Define bh = 24
@@ -288,8 +314,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 39
-; FirstLine = 24
-; Folding = --P99
+; CursorPosition = 249
+; FirstLine = 190
+; Folding = -b5fY+
 ; EnableXP
 ; DPIAware
