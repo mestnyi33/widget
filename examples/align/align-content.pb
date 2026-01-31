@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define i, h=65, Width = 200
    
-   Global multiline = 0
+   Global multiline = 1
    Global test, change_line, change_txt, change_img
    
    Procedure Click_Events( )
@@ -117,7 +117,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure TestAlign( X,Y,Width,Height, flags.q=0 )
       Protected._s_WIDGET *g  
       Protected img = 1
-      Protected txt$ = "text"
+      Protected txt$ = "textstring"
       
       If multiline
          txt$+#LF$+"line"
@@ -128,11 +128,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ;img =- 1
       
       ;*g = CheckBox( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
-      *g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
+      ;*g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
       ;*g = Text( X,Y,Width,Height, txt$, #__flag_BorderFlat|flags) : SetImage( *g, img )
       
       ;*g = ButtonImage( X,Y,Width,Height, img, flags) : SetText( *g, txt$ )
       ;*g = Image( X,Y,Width,Height, img, #__flag_BorderFlat|flags) : SetText( *g, txt$ )
+      *g = Editor( X,Y,Width,Height, #__flag_BorderFlat|flags) : SetText( *g, txt$ ) : SetImage( *g, img )
       
       Alignment( *g, #__align_left|#__align_right)
       Bind(*g, @Test_Events( ), #__event_LeftClick)
@@ -171,8 +172,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 121
-; FirstLine = 67
+; CursorPosition = 119
+; FirstLine = 56
 ; Folding = 6+---
 ; EnableXP
 ; DPIAware

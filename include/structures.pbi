@@ -253,7 +253,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          vertical.b
          rotate.d
          
-        ; align._s_align
+         align._s_align
          multistring.s
          
          ; char.c
@@ -293,7 +293,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          change.b 
          rotate.d
          ; vertical.b
-         ;align._s_align
+         align._s_align
       EndStructure
       
       ;--     SELECTOR
@@ -666,8 +666,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *drop._s_DROP
          *align._s_ALIGN
          
-         contentalign._s_align
-         centeralign._s_align
+         alignarea._s_align
          
          ;
          *anchors._s_ANCHORS
@@ -803,8 +802,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 295
-; FirstLine = 156
+; CursorPosition = 255
+; FirstLine = 124
 ; Folding = -F59------
 ; Optimizer
 ; EnableXP

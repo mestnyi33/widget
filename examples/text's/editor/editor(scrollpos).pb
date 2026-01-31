@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
   If Open(#PB_Any, 0, 0, 680, 60+h, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
     *g1 = Test( 30, 30, 200, h, "left 00000000000000000000000000000000000")
-    *g2 = Test( 30+210, 30, 200, h, "0000000000000000000 center 00000000000000000000", #__flag_Top|#__flag_Center) 
+    *g2 = Test( 30+210, 30, 200, h, "0000000000000000000 center 00000000000000000000", #__flag_Top);|#__flag_Center) 
     *g3 = Test( 30+420, 30, 200, h, "00000000000000000000000000000000000 right", #__flag_Top|#__flag_Right)
     
     *g4 = Splitter( 0,0,0,0, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
@@ -56,8 +56,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 21
-; FirstLine = 8
+; CursorPosition = 43
+; FirstLine = 28
 ; Folding = -
 ; EnableXP
 ; DPIAware

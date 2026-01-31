@@ -520,13 +520,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro PopupBar( ): __GUI\popup: EndMacro
       Macro Toggle( ): togglebox: EndMacro
       Macro Combo( ): combobutton: EndMacro
-      
-     ; Macro ContentAlign( ) : Text\align : EndMacro
-    ;  Macro CenterAlign( ) : picture\align : EndMacro
-       Macro ContentAlign( ) : contentalign : EndMacro
-       Macro CenterAlign( ) : centeralign : EndMacro
-      
-      Macro AreaAlign( ) : ContentAlign( ) : EndMacro
+      Macro AreaAlign( ) : alignarea : EndMacro
       
       ;-
       Macro split_1( ) : gadget[1] : EndMacro ; temp
@@ -2047,31 +2041,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Macro make_scrollarea_x( _this_, _size_ )
          ; make horizontal scroll x
-         If _this_\AreaAlign( )\right = 2
+         If _this_\AreaAlign( )\right = - 1
             _this_\scroll_x( ) = ( _this_\inner_width( ) - _size_ )
-         ElseIf Not _this_\AreaAlign( )\left ; horizontal center
-            _this_\scroll_x( ) = ( _this_\inner_width( ) - _size_ ) / 2
-         Else
+         ElseIf _this_\AreaAlign( )\left = - 1
             If _this_\scroll\h
                _this_\scroll_x( ) = - ( _this_\scroll\h\bar\page\pos - _this_\scroll\h\bar\min )
             Else
                _this_\scroll_x( ) = 0
             EndIf
+         Else ; horizontal center
+            _this_\scroll_x( ) = ( _this_\inner_width( ) - _size_ ) / 2
          EndIf
       EndMacro
       
       Macro make_scrollarea_y( _this_, _size_ )
          ; make vertical scroll y
-         If _this_\AreaAlign( )\bottom = 2
+         If _this_\AreaAlign( )\bottom = - 1
             _this_\scroll_y( ) = ( _this_\inner_height( ) - _size_ )
-         ElseIf Not _this_\AreaAlign( )\top ; vertical center
-            _this_\scroll_y( ) = ( _this_\inner_height( ) - _size_ ) / 2
-         Else
+         ElseIf _this_\AreaAlign( )\top = - 1
             If _this_\scroll\v
                _this_\scroll_y( ) = - ( _this_\scroll\v\bar\page\pos - _this_\scroll\v\bar\min )
             Else
                _this_\scroll_y( ) = 0
             EndIf
+         Else ; vertical center
+            _this_\scroll_y( ) = ( _this_\inner_height( ) - _size_ ) / 2
          EndIf
       EndMacro
       
@@ -2082,10 +2076,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If _align_\right
                _address_\x = ( _width_ - _size_ - _padding_ )
-            ElseIf Not _align_\left
-               _address_\x = ( _width_ - _size_ ) / 2
-            Else
+            ElseIf _align_\left
                _address_\x = _padding_
+            Else
+               _address_\x = ( _width_ - _size_ ) / 2
             EndIf
          EndIf  
          
@@ -2095,10 +2089,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If _align_\right
                _address_\x = _width_ - _padding_
-            ElseIf Not _align_\left
-               _address_\x = ( _width_ + _size_ ) / 2
-            Else
+            ElseIf _align_\left
                _address_\x = _size_ + _padding_
+            Else
+               _address_\x = ( _width_ + _size_ ) / 2
             EndIf
          EndIf
       EndMacro
@@ -2109,10 +2103,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If _align_\bottom
                _address_\y = _height_ - _padding_
-            ElseIf Not _align_\top
-               _address_\y = ( _height_ + _size_ ) / 2
-            Else
+            ElseIf _align_\top
                _address_\y = _size_ + _padding_
+            Else
+               _address_\y = ( _height_ + _size_ ) / 2
             EndIf
          EndIf 
          
@@ -2122,10 +2116,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If _align_\bottom
                _address_\y = ( _height_ - _size_ - _padding_ )
-            ElseIf Not _align_\top
-               _address_\y = ( _height_ - _size_ ) / 2
-            Else
+            ElseIf _align_\top
                _address_\y = _padding_
+            Else
+               _address_\y = ( _height_ - _size_ ) / 2
             EndIf
          EndIf
       EndMacro
@@ -6976,20 +6970,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *box\text\invert = 0
             *box\text\vertical = 0
             ;  
-            *box\CenterAlign( )\left = 0
-            *box\CenterAlign( )\top = 0
-            *box\CenterAlign( )\right = 0
-            *box\CenterAlign( )\bottom = 0
+            *box\AreaAlign( )\left = 0
+            *box\AreaAlign( )\top = 0
+            *box\AreaAlign( )\right = 0
+            *box\AreaAlign( )\bottom = 0
             ;
             If position = 1
                *this\fs[1] = size + fs
                ;
                
                If *box\bar\vertical
-                  *box\CenterAlign( )\bottom = 1
+                  *box\AreaAlign( )\bottom = 1
                   *box\text\vertical = 1
                Else
-                  *box\CenterAlign( )\top = 1
+                  *box\AreaAlign( )\top = 1
                   *box\bar\vertical = - 1
                EndIf
             EndIf
@@ -6997,7 +6991,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If position = 3
                *this\fs[3] = size + fs
                ;
-               *box\CenterAlign( )\top = 1
+               *box\AreaAlign( )\top = 1
                If *box\bar\vertical
                   *box\text\invert = 1
                   *box\text\vertical = 1
@@ -7010,14 +7004,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *box\bar\vertical = 0
                *this\fs[2] = size + fs
                ;
-               *box\CenterAlign( )\left = 1
+               *box\AreaAlign( )\left = 1
             EndIf
             
             If position = 4
                *box\bar\vertical = 0
                *this\fs[4] = size + fs
                ;
-               *box\CenterAlign( )\left = 1
+               *box\AreaAlign( )\left = 1
             EndIf
             
             ;
@@ -10985,10 +10979,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   Select value
                      Case 0 ; Default
-                        *this\CenterAlign( )\left = 1
-                        *this\CenterAlign( )\top = 1
-                        *this\CenterAlign( )\right = 0
-                        *this\CenterAlign( )\bottom = 0
+                        *this\AreaAlign( )\left = 1
+                        *this\AreaAlign( )\top = 1
+                        *this\AreaAlign( )\right = 0
+                        *this\AreaAlign( )\bottom = 0
                         
                         ;
                         If (Width And Height)
@@ -10998,10 +10992,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         
                      Case 1 ; Center
-                        *this\CenterAlign( )\left = 0
-                        *this\CenterAlign( )\top = 0
-                        *this\CenterAlign( )\right = 0
-                        *this\CenterAlign( )\bottom = 0
+                        *this\AreaAlign( )\left = 0
+                        *this\AreaAlign( )\top = 0
+                        *this\AreaAlign( )\right = 0
+                        *this\AreaAlign( )\bottom = 0
                         
                      Case 2 ; Mosaic
                         
@@ -15239,20 +15233,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\flag & ~ Flag
             
             If Flag & #__flag_left 
-               *this\ContentAlign( )\left = 0 
-               *this\CenterAlign( )\left = 0 
+               *this\AreaAlign( )\left = 0 
+               *this\AreaAlign( )\left = 0 
             EndIf
             If Flag & #__flag_top 
-               *this\ContentAlign( )\top = 0 
-               *this\CenterAlign( )\top = 0 
+               *this\AreaAlign( )\top = 0 
+               *this\AreaAlign( )\top = 0 
             EndIf
             If Flag & #__flag_right 
-               *this\ContentAlign( )\right = 0 
-               *this\CenterAlign( )\right = 0 
+               *this\AreaAlign( )\right = 0 
+               *this\AreaAlign( )\right = 0 
             EndIf
             If Flag & #__flag_bottom 
-               *this\ContentAlign( )\bottom = 0 
-               *this\CenterAlign( )\bottom = 0 
+               *this\AreaAlign( )\bottom = 0 
+               *this\AreaAlign( )\bottom = 0 
             EndIf
             
             If Flag & #__flag_Textreadonly : *this\text\editable = 1 : EndIf
@@ -15348,47 +15342,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Flag & #__flag_Right Or 
                      Flag & #__flag_Bottom 
                      
-                     *this\CenterAlign( )\left   = 0
-                     *this\CenterAlign( )\top    = 0
-                     *this\CenterAlign( )\right  = 0
-                     *this\CenterAlign( )\bottom = 0
-                     *this\ContentAlign( )\left   = 0
-                     *this\ContentAlign( )\top    = 0
-                     *this\ContentAlign( )\right  = 0
-                     *this\ContentAlign( )\bottom = 0
+                     *this\AreaAlign( )\left   = 0
+                     *this\AreaAlign( )\top    = 0
+                     *this\AreaAlign( )\right  = 0
+                     *this\AreaAlign( )\bottom = 0
                      
                      If *this\Flag & #__flag_left
-                        *this\CenterAlign( )\left = 1
+                        *this\AreaAlign( )\left = 1
                      EndIf
                      If *this\Flag & #__flag_top
-                        *this\CenterAlign( )\top = 1
+                        *this\AreaAlign( )\top = 1
                      EndIf
                      If *this\Flag & #__flag_right
-                        *this\CenterAlign( )\right = 1
+                        *this\AreaAlign( )\right = 1
                      EndIf
                      If *this\Flag & #__flag_bottom
-                        *this\CenterAlign( )\bottom = 1
+                        *this\AreaAlign( )\bottom = 1
                      EndIf
                      
                   Else
                      If *this\flag & #__flag_Vertical
                         If *this\flag & #__flag_Invert
                            If Not *this\flag & #__flag_Top
-                              *this\CenterAlign( )\top = 1
+                              *this\AreaAlign( )\top = 1
                            EndIf
                         Else
                            If Not *this\flag & #__flag_Bottom
-                              *this\CenterAlign( )\bottom = 1
+                              *this\AreaAlign( )\bottom = 1
                            EndIf
                         EndIf
                      Else
                         If *this\flag & #__flag_Invert
                            If Not *this\flag & #__flag_Right
-                              *this\CenterAlign( )\right = 1
+                              *this\AreaAlign( )\right = 1
                            EndIf
                         Else
                            If Not *this\flag & #__flag_Left
-                              *this\CenterAlign( )\left = 1
+                              *this\AreaAlign( )\left = 1
                            EndIf
                         EndIf
                      EndIf
@@ -15396,33 +15386,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                Else
-                  *this\CenterAlign( )\left   = 0
-                  *this\CenterAlign( )\top    = 0
-                  *this\CenterAlign( )\right  = 0
-                  *this\CenterAlign( )\bottom = 0
+                  *this\AreaAlign( )\left   = 0
+                  *this\AreaAlign( )\top    = 0
+                  *this\AreaAlign( )\right  = 0
+                  *this\AreaAlign( )\bottom = 0
                   
                   If *this\Flag & #__flag_left
-                     *this\CenterAlign( )\left = 2
+                     *this\AreaAlign( )\left =- 1
                   EndIf
                   If *this\Flag & #__flag_top
-                     *this\CenterAlign( )\top = 2
+                     *this\AreaAlign( )\top =- 1
                   EndIf
                   If *this\Flag & #__flag_right
-                     *this\CenterAlign( )\right = 2
+                     *this\AreaAlign( )\right =- 1
                   EndIf
                   If *this\Flag & #__flag_bottom
-                     *this\CenterAlign( )\bottom = 2
+                     *this\AreaAlign( )\bottom =- 1
                   EndIf 
-                  
-                  *this\ContentAlign( )\left   = *this\CenterAlign( )\left
-                  *this\ContentAlign( )\top    = *this\CenterAlign( )\top
-                  *this\ContentAlign( )\right  = *this\CenterAlign( )\right
-                  *this\ContentAlign( )\bottom = *this\CenterAlign( )\bottom
                EndIf
                
                ClearDebugOutput()
-               Debug ""+*this\ContentAlign( )\left +" "+ *this\ContentAlign( )\top +" "+ *this\ContentAlign( )\right +" "+ *this\ContentAlign( )\bottom
-               Debug "  "+*this\CenterAlign( )\left +" "+ *this\CenterAlign( )\top +" "+ *this\CenterAlign( )\right +" "+ *this\CenterAlign( )\bottom
+               Debug "  "+*this\AreaAlign( )\left +" "+ *this\AreaAlign( )\top +" "+ *this\AreaAlign( )\right +" "+ *this\AreaAlign( )\bottom
                
                ;
                ;\\
@@ -19916,7 +19900,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             ; make_scrollarea_width
             If *img\width
-               If *this\CenterAlign( )\left Or *this\CenterAlign( )\right 
+               If *this\AreaAlign( )\left Or *this\AreaAlign( )\right 
                   Width + *img\width + img_indent
                Else
                   If Width < *img\width + *this\padding\x * 2
@@ -19927,7 +19911,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             ; make_scrollarea_height
             If *img\height
-               If *this\CenterAlign( )\top Or *this\CenterAlign( )\bottom 
+               If *this\AreaAlign( )\top Or *this\AreaAlign( )\bottom 
                   Height + *img\height + img_indent
                Else
                   If Height < *img\height + *this\padding\y * 2
@@ -19962,63 +19946,175 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *txt\multiLine
             
          Else
-            Protected *txt_align._s_ALIGN = *this\ContentAlign( )
-            Protected *img_align._s_ALIGN = *this\CenterAlign( )
             
 ;             If *img\width
 ;                Debug ""+Width +" "+ Height +" "+ *txt_align\left+" "+*txt_align\top+" "+*txt_align\right+" "+*txt_align\bottom
 ;                Debug "   "+*img_align\left+" "+*img_align\top+" "+*img_align\right+" "+*img_align\bottom
 ;             EndIf
             
-            If Width
-               If *this\text\vertical
-                  change_align_horizontal( *txt, Width, *txt\height, *this\text\rotate, *txt_align, *this\padding\y )
-                  change_align_horizontal( *img, Width, *img\height, *this\picture\rotate, *img_align, *this\padding\y )
+           Protected txt_size, img_size, padding
+           If Width
+              If *this\text\vertical
+                  txt_size = *txt\height
+                  img_size = *img\height
+                  padding = *this\padding\y
                Else
-                  change_align_horizontal( *txt, Width, *txt\width, *this\text\rotate, *txt_align, *this\padding\x )
-                  change_align_horizontal( *img, Width, *img\width, *this\picture\rotate, *img_align, *this\padding\x )
+                  txt_size = *txt\width
+                  img_size = *img\width
+                  padding = *this\padding\x
                EndIf
+               ;
+                              
+               If *this\text\rotate = 0 Or
+                  *this\text\rotate = 90
+                  ;
+                  If *this\AreaAlign( )\right =- 1
+                     *txt\x = ( Width - txt_size - padding )
+                  ElseIf *this\AreaAlign( )\left =- 1
+                     *txt\x = padding
+                  Else
+                     *txt\x = ( Width - txt_size ) / 2
+                  EndIf
+               EndIf  
+               ; invert
+               If *this\text\rotate = 180 Or
+                  *this\text\rotate = 270
+                  ;
+                  If *this\AreaAlign( )\right =- 1
+                     *txt\x = Width - padding
+                  ElseIf *this\AreaAlign( )\left =- 1
+                     *txt\x = txt_size + padding
+                  Else
+                     *txt\x = ( Width + txt_size ) / 2
+                  EndIf
+               EndIf
+               
+               ;
+               If *this\picture\rotate = 0 Or
+                  *this\picture\rotate = 90
+                  ;
+                  If *this\AreaAlign( )\right ;= 1
+                     *img\x = ( Width - img_size - padding )
+                  ElseIf *this\AreaAlign( )\left ;= 1
+                     *img\x = padding
+                  Else
+                     *img\x = ( Width - img_size ) / 2
+                  EndIf
+               EndIf  
+               ; invert
+               If *this\picture\rotate = 180 Or
+                  *this\picture\rotate = 270
+                  ;
+                  If *this\AreaAlign( )\right ;= 1
+                     *img\x = Width - padding
+                  ElseIf *this\AreaAlign( )\left ;= 1
+                     *img\x = img_size + padding
+                  Else
+                     *img\x = ( Width + img_size ) / 2
+                  EndIf
+               EndIf
+               
             EndIf
             
             If Height
                If *this\text\vertical
-                  change_align_vertical( *txt, Height, *txt\width, *this\text\rotate, *txt_align, *this\padding\x )
-                  change_align_vertical( *img, Height, *img\width, *this\picture\rotate, *img_align, *this\padding\x )
+                  txt_size = *txt\width
+                  img_size = *img\width
+                  padding = *this\padding\x
                Else
-                  change_align_vertical( *txt, Height, *txt\height, *this\text\rotate, *txt_align, *this\padding\y )
-                  change_align_vertical( *img, Height, *img\height, *this\picture\rotate, *img_align, *this\padding\y )
+                  txt_size = *txt\height
+                  img_size = *img\height
+                  padding = *this\padding\y
+               EndIf
+               ;
+               If *this\text\rotate = 90 Or 
+                  *this\text\rotate = 180
+                  ;
+                  If *this\AreaAlign( )\bottom =- 1
+                     *txt\y = Height - padding
+                  ElseIf *this\AreaAlign( )\top =- 1
+                     *txt\y = txt_size + padding
+                  Else
+                     *txt\y = ( Height + txt_size ) / 2
+                  EndIf
+               EndIf 
+               ; invert 
+               If *this\text\rotate = 270 Or
+                  *this\text\rotate = 0
+                  ;
+                  If *this\AreaAlign( )\bottom =- 1
+                     *txt\y = ( Height - txt_size - padding )
+                  ElseIf *this\AreaAlign( )\top =- 1
+                     *txt\y = padding
+                  Else
+                     *txt\y = ( Height - txt_size ) / 2
+                  EndIf
+               EndIf
+               
+               ;
+               If *this\picture\rotate = 90 Or 
+                  *this\picture\rotate = 180
+                  ;
+                  If *this\AreaAlign( )\bottom ;= 1
+                     *img\y = Height - padding
+                  ElseIf *this\AreaAlign( )\top ;= 1
+                     *img\y = img_size + padding
+                  Else
+                     *img\y = ( Height + img_size ) / 2
+                  EndIf
+               EndIf 
+               ; invert 
+               If *this\picture\rotate = 270 Or
+                  *this\picture\rotate = 0
+                  ;
+                  If *this\AreaAlign( )\bottom ;= 1
+                     *img\y = ( Height - img_size - padding )
+                  ElseIf *this\AreaAlign( )\top ;= 1
+                     *img\y = padding
+                  Else
+                     *img\y = ( Height - img_size ) / 2
+                  EndIf
                EndIf
             EndIf
             
+             
             ; align img left & top
-            If *this\CenterAlign( )
+            If *this\AreaAlign( )
                If *this\picture\width
-                  If *this\CenterAlign( )\left
-                     If *this\ContentAlign( )\left
+                  If *this\AreaAlign( )\left
+                     If *this\AreaAlign( )\left
                         *this\text\x + ( *this\picture\width + img_indent )
                      Else
                         *this\text\x + ( *this\picture\width + img_indent ) / 2
                      EndIf
                   EndIf
-                  If *this\CenterAlign( )\right 
-                     If *this\ContentAlign( )\right
-                        *this\text\x - ( *this\picture\width + img_indent )
+                  If *this\AreaAlign( )\right 
+                     If *this\AreaAlign( )\right
+;                         If *this\flag & #__flag_Center And Not *txt\invert
+;                            *this\picture\x - ( *this\text\width + img_indent )
+;                         Else
+                           *this\text\x - ( *this\picture\width + img_indent )
+;                         EndIf
                      Else
                         *this\text\x - ( *this\picture\width + img_indent ) / 2
                      EndIf
                   EndIf
                EndIf
                If *this\picture\height
-                  If *this\CenterAlign( )\top
-                     If *this\ContentAlign( )\top
+                  If *this\AreaAlign( )\top
+                     If *this\AreaAlign( )\top
                         *this\text\y + ( *this\picture\height + img_indent )
                      Else
                         *this\text\y + ( *this\picture\height + img_indent ) / 2
                      EndIf
                   EndIf
-                  If *this\CenterAlign( )\bottom
-                     If *this\ContentAlign( )\bottom
-                        *this\text\y - ( *this\picture\height + img_indent )
+                  If *this\AreaAlign( )\bottom
+                     If *this\AreaAlign( )\bottom
+;                         If *this\flag & #__flag_Center And *txt\invert
+;                            *this\picture\y - ( *this\text\width + img_indent )
+;                         Else
+                           *this\text\y - ( *this\picture\height + img_indent )
+;                         EndIf
                      Else
                         *this\text\y - ( *this\picture\height + img_indent ) / 2
                      EndIf
@@ -20278,7 +20374,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                      ; align text y
-                     change_align_vertical( *this\__lines( )\text, *this\scroll_height( ), *this\__lines( )\text\width, *this\text\rotate, *this\ContentAlign( ), *this\padding\y )
+                     change_align_vertical( *this\__lines( )\text, *this\scroll_height( ), *this\__lines( )\text\width, *this\text\rotate, *this\AreaAlign( ), *this\padding\y )
                      
                   Else ; horizontal
                      If *this\text\rotate = 180
@@ -20295,17 +20391,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                      ; align text x
-                     change_align_horizontal( *this\__lines( )\text, *this\scroll_width( ), *this\__lines( )\text\width, *this\text\rotate, *this\ContentAlign( ), *this\padding\x )
+                     change_align_horizontal( *this\__lines( )\text, *this\scroll_width( ), *this\__lines( )\text\width, *this\text\rotate, *this\AreaAlign( ), *this\padding\x )
                   EndIf
                   
                   ; align img 
-                  If *this\CenterAlign( )
-                     If *this\CenterAlign( )\left
+                  If *this\AreaAlign( )
+                     If *this\AreaAlign( )\left
                         If *this\picture\width
                            *this\__lines( )\text\x + img_indent + *this\picture\width
                         EndIf
                      EndIf
-                     If *this\CenterAlign( )\top
+                     If *this\AreaAlign( )\top
                         If *this\picture\height
                            *this\__lines( )\text\y + *this\picture\height + img_indent
                         EndIf
@@ -20316,14 +20412,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; align img
             If *this\text\string.s
-               If *this\CenterAlign( )
+               If *this\AreaAlign( )
                   ; If *this\flag & #__flag_Center 
-                  If *this\CenterAlign( )\left Or *this\CenterAlign( )\right
+                  If *this\AreaAlign( )\left Or *this\AreaAlign( )\right
                      If *this\picture\width
                         *this\scroll_width( ) + img_indent + *this\picture\width
                      EndIf
                   EndIf
-                  If *this\CenterAlign( )\top Or *this\CenterAlign( )\bottom 
+                  If *this\AreaAlign( )\top Or *this\AreaAlign( )\bottom 
                      If *this\picture\height
                         *this\scroll_height( ) + *this\picture\height + img_indent
                      EndIf
@@ -20343,8 +20439,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;
             If *this\picture
-               change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, 0, *this\CenterAlign( ), *this\padding\y )
-               change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, 0, *this\CenterAlign( ), *this\padding\y )
+               change_align_horizontal( *this\picture, *this\scroll_width( ), *this\picture\width, 0, *this\AreaAlign( ), *this\padding\y )
+               change_align_vertical( *this\picture, *this\scroll_height( ), *this\picture\height, 0, *this\AreaAlign( ), *this\padding\y )
             EndIf
             
          EndWith
@@ -21098,12 +21194,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If ( *this\Toggle( )\width Or *this\Toggle( )\height )
                      *this\Toggle( )\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\Toggle( )\height ) / 2
                      
-                     If *this\ContentAlign( )\right
+                     If *this\AreaAlign( )\right
                         *this\Toggle( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\Toggle( )\height - DPIScaled(3) )
-                     ElseIf Not *this\ContentAlign( )\left
+                     ElseIf Not *this\AreaAlign( )\left
                         *this\Toggle( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\Toggle( )\width ) / 2
                         
-                        If Not *this\ContentAlign( )\top
+                        If Not *this\AreaAlign( )\top
                            If *this\text\rotate = 0
                               *this\Toggle( )\y = *this\inner_y( ) + *this\scroll_y( ) - *this\Toggle( )\height
                            Else
@@ -23596,7 +23692,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          
          If *this\type = #__type_ButtonImage
-           ; Debug ""+*this\text\vertical +" "+ *this\text\invert +" "+ *this\ContentAlign( )\left +" "+ *this\ContentAlign( )\top +" "+ *this\ContentAlign( )\right +" "+ *this\ContentAlign( )\bottom
+           ; Debug ""+*this\text\vertical +" "+ *this\text\invert +" "+ *this\AreaAlign( )\left +" "+ *this\AreaAlign( )\top +" "+ *this\AreaAlign( )\right +" "+ *this\AreaAlign( )\bottom
          EndIf
             
          ;\\ Scroll bars
@@ -25039,12 +25135,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                If ( *this\Toggle( )\width Or *this\Toggle( )\height )
 ;                   *this\Toggle( )\y = *this\inner_y( ) + ( *this\inner_height( ) - *this\Toggle( )\height ) / 2
 ;                   
-;                   If *this\ContentAlign( )\right
+;                   If *this\AreaAlign( )\right
 ;                      *this\Toggle( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\Toggle( )\height - DPIScaled(3) )
-;                   ElseIf Not *this\ContentAlign( )\left
+;                   ElseIf Not *this\AreaAlign( )\left
 ;                      *this\Toggle( )\x = *this\inner_x( ) + ( *this\inner_width( ) - *this\Toggle( )\width ) / 2
 ;                      
-;                      If Not *this\ContentAlign( )\top
+;                      If Not *this\AreaAlign( )\top
 ;                         If *this\text\rotate = 0
 ;                            *this\Toggle( )\y = *this\inner_y( ) + *this\scroll_y( ) - *this\Toggle( )\height
 ;                         Else
@@ -27905,8 +28001,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 27905
-; FirstLine = 27877
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 15380
+; FirstLine = 15360
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------80-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
