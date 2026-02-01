@@ -664,9 +664,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;                        ;
          tt._s_tt                 ; notification = уведомление
          *drop._s_DROP
-         *align._s_ALIGN
-         
-         area_align._s_align
          
          ;
          *anchors._s_ANCHORS
@@ -726,6 +723,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Text._s_TEXT
          Scroll._s_SCROLL            ; vertical & horizontal scrollbars
          color._s_color[4]
+         
+         *align._s_ALIGN
+         area_align._s_align
          
       EndStructure
       
@@ -802,8 +802,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 668
-; FirstLine = 533
+; CursorPosition = 727
+; FirstLine = 590
 ; Folding = -F59------
 ; Optimizer
 ; EnableXP
