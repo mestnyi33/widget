@@ -1,10 +1,16 @@
 ﻿XIncludeFile "../../widgets.pbi" 
+;XIncludeFile "../../test.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    ;test_align = 1
    test_draw_area = 1
+   Define i, h=65, Width = 200
+   
+   Global multiline = 1
+   Global test, change_line, change_txt, change_img
+   
       
    Macro add_image( _address_, _img_, _size_ = 0 )
       ;
@@ -70,11 +76,6 @@ CompilerIf #PB_Compiler_IsMainFile
       ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
    EndIf
    
-   Define i, h=65, Width = 200
-   
-   Global multiline = 1
-   Global test, change_line, change_txt, change_img
-   
    Procedure Click_Events( )
       Select EventWidget( )
          Case change_img
@@ -128,12 +129,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ;img =- 1
       
       ;*g = CheckBox( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
-      ;*g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
+      *g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
       ;*g = Text( X,Y,Width,Height, txt$, #__flag_BorderFlat|flags) : SetImage( *g, img )
       
       ;*g = ButtonImage( X,Y,Width,Height, img, flags) : SetText( *g, txt$ )
       ;*g = Image( X,Y,Width,Height, img, #__flag_BorderFlat|flags) : SetText( *g, txt$ )
-      *g = Editor( X,Y,Width,Height, #__flag_BorderFlat|flags) : SetText( *g, txt$ ) : SetImage( *g, img )
+      ;*g = Editor( X,Y,Width,Height, #__flag_BorderFlat|flags) : SetText( *g, txt$ ) : SetImage( *g, img )
       
       Alignment( *g, #__align_left|#__align_right)
       Bind(*g, @Test_Events( ), #__event_LeftClick)
@@ -172,8 +173,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 119
-; FirstLine = 56
+; CursorPosition = 10
 ; Folding = 6+---
 ; EnableXP
 ; DPIAware

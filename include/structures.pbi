@@ -666,7 +666,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *drop._s_DROP
          *align._s_ALIGN
          
-         alignarea._s_align
+         area_align._s_align
          
          ;
          *anchors._s_ANCHORS
@@ -802,8 +802,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 255
-; FirstLine = 124
+; CursorPosition = 668
+; FirstLine = 533
 ; Folding = -F59------
 ; Optimizer
 ; EnableXP
