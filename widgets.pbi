@@ -1918,7 +1918,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   WaitQuit( *address = #Null )
       Declare   WaitClose( *callback = #Null )
       ;
-      Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, Flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
+      Declare   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, Flag.q = #Null, *parentID = #Null, Canvas = #PB_Ignore )
       Declare   Free( *this )
       Declare   Close( *root )
       ;
@@ -15626,13 +15626,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\type = #__type_Button Or 
             *this\type = #__type_ButtonImage
             ;
-           If constants::BinaryFlag( *this\Flag, #PB_Button_Default )
-              *this\deffocus = 1
-           EndIf
-           If constants::BinaryFlag( *this\Flag, #PB_Button_Toggle )
+            If constants::BinaryFlag( *this\Flag, #PB_Button_Toggle )
+               ;Debug *this\Flag
+               ;
+               If *this\Flag & #PB_Button_Default
+               ;   *this\deffocus = 1
+               EndIf
+               
                If *this\Toggle( ) = #Null
                   *this\Toggle( ).allocate( BOX )
                   ProcedureReturn #True
+               EndIf
+            Else
+               If Flag & #PB_Button_Default
+                  *this\deffocus = 1
                EndIf
             EndIf
          EndIf
@@ -23748,7 +23755,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
-      Procedure   Open( window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, Flag.q = #Null, *parentID = #Null, Canvas = #PB_Any )
+      Procedure   Open( window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, Flag.q = #Null, *parentID = #Null, Canvas = #PB_Ignore )
          Protected result, w, g, canvasflag = #PB_Canvas_Keyboard, UseGadgetList, *root._s_root 
          
          ; init
@@ -23794,14 +23801,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                canvasflag | #PB_Canvas_Container
             EndIf
             ;
-            ; then bug in windows
-            If Window = #PB_Any
-               Window = 300 + MapSize( roots( ) )
-            EndIf
-            ;
-            w = OpenWindow( Window, X, Y, Width, Height, title$, Flag, *parentID )
-            If Window = #PB_Any 
-               Window = w 
+            If Canvas = #PB_Ignore
+               ; then bug in windows
+               If Window = #PB_Any
+                  Window = 300 + MapSize( roots( ) )
+               EndIf
+               ;
+               w = OpenWindow( Window, X, Y, Width, Height, title$, Flag, *parentID )
+               If Window = #PB_Any 
+                  Window = w 
+                  w = WindowID( Window ) 
+               EndIf
+               ;
+               X = 0
+               Y = 0
+            Else
+               window = ID::Window(UseGadgetList(0))
                w = WindowID( Window ) 
             EndIf
             ;
@@ -23823,9 +23838,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;  
                CompilerEndIf
             EndIf
-            ;
-            X = 0
-            Y = 0
          EndIf
          
          ;\\ get a handle from the previous usage list
@@ -23862,9 +23874,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If test_canvas_focus_draw = 1
                canvasflag|#PB_Canvas_DrawFocus
             EndIf
-            
+            If Canvas = #PB_Ignore
+               Canvas = #PB_Any
+            EndIf   
             g = CanvasGadget( Canvas, X, Y, Width, Height, canvasflag);|#PB_Canvas_Container ) : CloseGadgetList()
-            If Canvas = - 1 : Canvas = g : g = PB(GadgetID)(Canvas) : EndIf
+            If IsGadget(g) : Canvas = g : g = PB(GadgetID)(Canvas) : EndIf
             
             If constants::BinaryFlag( canvasflag, #PB_Canvas_Container )
                ; BindEvent( #PB_Event_SizeWindow, @EventResize( ), Window )
@@ -27866,10 +27880,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 21875
-; FirstLine = 21512
-; Folding = -------------------------------------------D+P5------z-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------2-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------pd-----------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 15632
+; FirstLine = 15303
+; Folding = -------------------------------------------D+P5------z-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------2-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------T8+---------------------------------------------------8------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

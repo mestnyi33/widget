@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget( 0, 10, 10, 200, 20, "Standard button", #PB_Button_Default )
     ButtonGadget( 1, 10, 40, 200, 20, "Left button", #PB_Button_Left )
     ButtonGadget( 2, 10, 70, 200, 20, "Right button", #PB_Button_Right )
-    ButtonGadget( 3, 10,100, 200, 60, "Default button and change font", #PB_Button_Default )
+    ButtonGadget( 3, 10,100, 200, 60, "Default button and change font", #PB_Button_Toggle|#PB_Button_Default )
     SetGadgetFont(3, FontID(0))
     ButtonGadget( 4, 10,170, 200, 60, "Multiline button (longer text automatically multiline)", #PB_Button_MultiLine )
     ButtonGadget( 5, 10,170+70, 200, 25, "Toggle button", #PB_Button_Toggle ) ; height = 20 bug in mac os 
@@ -79,10 +79,10 @@ CompilerIf #PB_Compiler_IsMainFile
     Button( 10+222, 10, 200, 20, "Standard button", #PB_Button_Default,8 )
     Button( 10+222, 40, 200, 20, "Left button", #PB_Button_Left )
     Button( 10+222, 70, 200, 20, "Right button", #PB_Button_Right )
-    Button( 10+222,100, 200, 60, "Default button and change font", #PB_Button_Default,4 )
+    Button( 10+222,100, 200, 60, "Default button and change font", #PB_Button_Toggle|#PB_Button_Default,4 )
     SetFont(Widget(), (0))
     Button( 10+222,170, 200, 60, "Multiline button (longer text automatically multiline)", #PB_Button_MultiLine,4 )
-    Button( 10+222,170+70, 200, 25, "Toggle button", #PB_Button_Toggle )
+    Button( 10+222,170+70, 200, 25, "Toggle button", #PB_Button_Toggle)
     
     SetState( ID( 5 ), 1 )
     SetFont( ID( 5 ), ( 0 ) )
@@ -142,9 +142,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   ;WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 104
-; FirstLine = 98
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 48
 ; Folding = ---
 ; EnableXP
 ; DPIAware
