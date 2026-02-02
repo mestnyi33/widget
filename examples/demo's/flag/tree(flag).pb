@@ -63,7 +63,7 @@ CompilerIf #PB_Compiler_IsMainFile
         EndSelect
         
         If Flag
-          Flag(*this, Flag, GetState(EventWidget)!Bool(EventWidget=nobuttons Or EventWidget=nolines ))
+          Flag(*this, Flag, GetState(EventWidget));!Bool(EventWidget=nobuttons Or EventWidget=nolines ))
         EndIf
         
 ;         If EventWidget = optionboxes
@@ -124,8 +124,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;\\ flag
     Button_type = Widget::Button(Width+45,   Y, 100, 26, "gadget", #PB_Button_Toggle) 
-    nolines = Widget::Button(Width+45, Y+30*1, 100, 26, "nolines", #PB_Button_Toggle) 
-    nobuttons = Widget::Button(Width+45, Y+30*2, 100, 26, "nobuttons", #PB_Button_Toggle) 
+    nolines = Widget::Button(Width+45, Y+30*1, 100, 26, "lines", #PB_Button_Toggle) 
+    nobuttons = Widget::Button(Width+45, Y+30*2, 100, 26, "buttons", #PB_Button_Toggle) 
     checkboxes = Widget::Button(Width+45, Y+30*3, 100, 26, "checkboxes", #PB_Button_Toggle) 
     optionboxes = Widget::Button(Width+45, Y+30*4, 100, 26, "optionboxes", #PB_Button_Toggle) 
     threestate = Widget::Button(Width+45, Y+30*5, 100, 26, "threestate", #PB_Button_Toggle) 
@@ -137,10 +137,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     Debug Flag(*this, #__flag_nolines)
 ;     Debug Flag(*this, #__flag_nobuttons)
     ;\\ set button toggled state
-;     Widget::SetState(nolines, Flag(*this, #__flag_nolines))
-;     Widget::SetState(nobuttons, Flag(*this, #__flag_nobuttons))
-    Widget::SetState(nolines, Bool(Not Flag(*this, #__flag_nolines)))
-    Widget::SetState(nobuttons, Bool(Not Flag(*this, #__flag_nobuttons)))
+    Widget::SetState(nolines, Flag(*this, #__flag_nolines))
+    Widget::SetState(nobuttons, Flag(*this, #__flag_nobuttons))
     Widget::SetState(checkboxes, Flag(*this, #__flag_checkboxes))
     Widget::SetState(optionboxes, Flag(*this, #__flag_optionboxes))
     Widget::SetState(threestate, Flag(*this, #__flag_threestate))
@@ -176,9 +174,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 65
-; FirstLine = 62
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 141
+; FirstLine = 122
 ; Folding = --
 ; EnableXP
 ; DPIAware

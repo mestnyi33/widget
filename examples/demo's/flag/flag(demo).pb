@@ -170,7 +170,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    ;-
-   Procedure Flag_(*this._s_WIDGET, Flag.q, state.b)
+   Procedure Flag_(*this._s_WIDGET, Flag.q, state.b = #PB_Default )
       If state > 0
          ProcedureReturn SetFlag( *this, Flag )
       ElseIf state < 0
@@ -328,9 +328,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 277
-; FirstLine = 72
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 172
 ; Folding = 0--r+0-
 ; EnableXP
 ; DPIAware

@@ -51,8 +51,14 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define Width = 560, Height = 560, pos = 60
    
-   Procedure Flag_(*this._s_WIDGET, Flag.q, state.b=0 )
-      
+   Procedure Flag_(*this._s_WIDGET, Flag.q, state.b = #PB_Default )
+      If state > 0
+         ProcedureReturn SetFlag( *this, Flag )
+      ElseIf state < 0
+         ProcedureReturn Bool( GetFlag( *this ) & Flag )
+      Else
+         ProcedureReturn RemoveFlag( *this, Flag )
+      EndIf
    EndProcedure
    
    Procedure events_widgets()
@@ -255,9 +261,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 251
-; FirstLine = 232
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 30
 ; Folding = ----
 ; EnableXP
 ; DPIAware

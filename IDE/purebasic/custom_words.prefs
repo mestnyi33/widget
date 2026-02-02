@@ -234,6 +234,8 @@ SetChildrenBounds
 
 SetFrame
 GetFrame
+SetPadding
+GetPadding
 
 SetItemFont
 GetItemFont

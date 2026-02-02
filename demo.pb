@@ -10,6 +10,7 @@ UseWidgets( )
 
 ;test_focus_set = 1
 test_focus_draw = 1
+;test_draw_area = 1
    
 Global i, *test._s_widget
 
@@ -72,7 +73,7 @@ If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemM
    ;
    ;id("Container") = Container(0, 0, 0, 0, #__flag_AutoSize) 
    ;\\ 1
-   w_1 = Button(5, 5, 160,95, "Multiline Button_"+Hex(#__type_Button)+" (longer text gets automatically multiline)", #__flag_TextWordWrap, round ) 
+   w_1 = Button(5, 5, 160,95, "Multiline Button_"+Hex(#__type_Button)+" (longer text gets automatically multiline)", #PB_Button_MultiLine, round ) 
    w_2 = String(5, 105, 160,95, "String_"+Hex(#__type_String)+" set"+#LF$+"multi"+#LF$+"line"+#LF$+"text")                                 
    w_3 = Text(5, 205, 160,95, "Text_"+Hex(#__type_Text)+#LF$+"set"+#LF$+"multi"+#LF$+"line"+#LF$+"text", #PB_Text_Border)        
    w_4 = CheckBox(5, 305, 160,95, "CheckBox_"+Hex(#__type_CheckBox), #PB_CheckBox_ThreeState) : SetState(Widget(), #PB_Checkbox_Inbetween)
@@ -148,8 +149,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 57
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = ---
 ; EnableXP
 ; DPIAware

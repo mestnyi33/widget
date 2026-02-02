@@ -5,6 +5,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   UsePNGImageDecoder()
+  test_draw_area = 1
+   
   
   If Not LoadImage(0,  #PB_Compiler_Home + "examples/sources/Data/ToolBar/Find.png")   
     End
@@ -45,7 +47,10 @@ CompilerIf #PB_Compiler_IsMainFile
 ;      Open( window, #PB_Ignore,#PB_Ignore,#PB_Ignore,#PB_Ignore, "", 0, 0, gadget )  
      
      Open( #PB_Any, X,Y,Width,Height, "", Flag, 0, gadget ) 
-     *g = ButtonImage(0, 0, 0, 0, int, #__flag_autosize)
+     ;*g = ButtonImage(0, 0, 0, 0, int, #__flag_autosize)
+     ;*g = Button(0, 0, Width,Height, ""):SetImage(*g, int)
+     *g = ButtonImage(0, 0, Width,Height, int)
+     ;*g = Image(0, 0, Width,Height, int)
      gadget = *g\root\canvas\gadget
      SetGadgetData( gadget, *g)
      ; CloseGadgetList( )
@@ -60,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetGadgetAttribute(0, #PB_Button_PressedImage, ImageID(#PB_Button_PressedImage))
     
     ;Open( 0, 10, 60, 180, 40 ) : ButtonImage(0, 0, 0, 0, (0), #__flag_autosize)
-   Define gadget = Canvas( -1, 10, 60, 180, 40, (0) )
+    Define gadget = Canvas( -1, 10, 60, 180, 40, (0) )
     ;Debug widget()\width
     ; SetAttribute( GetGadgetData( gadget ), #PB_Button_Image, (#PB_Button_Image))
     SetAttribute( GetGadgetData( gadget ), #PB_Button_PressedImage, (#PB_Button_PressedImage))
@@ -69,8 +74,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 26
+; CursorPosition = 50
+; FirstLine = 28
 ; Folding = --
 ; EnableXP
 ; DPIAware

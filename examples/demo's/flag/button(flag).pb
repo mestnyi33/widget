@@ -83,6 +83,16 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
+   Procedure Flag_(*this._s_WIDGET, Flag.q, state.b = #PB_Default )
+      If state > 0
+         ProcedureReturn SetFlag( *this, Flag )
+      ElseIf state < 0
+         ProcedureReturn Bool( GetFlag( *this ) & Flag )
+      Else
+         ProcedureReturn RemoveFlag( *this, Flag )
+      EndIf
+   EndProcedure
+   
    Procedure all_events()
       Protected Flag.q, EventWidget = EventWidget( )
       
@@ -173,26 +183,10 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                    
                   ;
-                  If GetState(button_left)
-                     SetFlag(*this, #__flag_Left)
-                  Else
-                     RemoveFlag(*this, #__flag_Left)
-                  EndIf
-                  If GetState(button_right) 
-                     SetFlag(*this, #__flag_Right)
-                  Else
-                     RemoveFlag(*this, #__flag_Right)
-                  EndIf
-                  If GetState(button_bottom)
-                     SetFlag(*this, #__flag_Bottom)
-                  Else
-                     RemoveFlag(*this, #__flag_Bottom)
-                  EndIf
-                  If GetState(button_top)
-                     SetFlag(*this, #__flag_Top)
-                  Else
-                     RemoveFlag(*this, #__flag_Top)
-                  EndIf
+                  Flag_(*this, #__flag_Left, GetState(button_left))
+                  Flag_(*this, #__flag_Top, GetState(button_top))
+                  Flag_(*this, #__flag_Right, GetState(button_right))
+                  Flag_(*this, #__flag_Bottom, GetState(button_bottom))
                   
                   
                Case button_toggle  
@@ -204,33 +198,17 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
                Case button_multiline
-                  If GetState(EventWidget)
-                     SetFlag(*this, multiline)
-                  Else
-                     RemoveFlag(*this, multiline)
-                  EndIf
+                  Flag_(*this, multiline, GetState(EventWidget))
                   
                Case button_invert    
-                  If GetState(EventWidget)
-                     SetFlag(*this, #__flag_Invert)
-                  Else
-                     RemoveFlag(*this, #__flag_Invert)
-                  EndIf
+                  Flag_(*this, #__flag_Invert, GetState(EventWidget))
                   
                Case button_vertical  
-                  If GetState(EventWidget)
-                     SetFlag(*this, #__flag_Vertical)
-                  Else
-                     RemoveFlag(*this, #__flag_Vertical)
-                  EndIf
+                  Flag_(*this, #__flag_Vertical, GetState(EventWidget))
                   
                Case button_default  
-                  If GetState(EventWidget)
-                     SetFlag(*this, #PB_Button_Default)
-                  Else
-                     RemoveFlag(*this, #PB_Button_Default)
-                  EndIf
-               
+                  Flag_(*this, #PB_Button_Default, GetState(EventWidget))
+                  
                Case button_mirror    ;: flag = #__flag_TextMirror
                   Debug "ЕЩЕ НЕ РЕАЛИЗОВАНО"
             EndSelect
@@ -313,9 +291,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 249
-; FirstLine = 190
-; Folding = -b5fY+
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 185
+; FirstLine = 139
+; Folding = -vh--
 ; EnableXP
 ; DPIAware

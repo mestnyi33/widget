@@ -1981,7 +1981,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   edit_AddItem( *this, position, *text.Character, string_len )
       Declare.s edit_make_insert_text( *this, Text.s )
       
-      Declare   make_scrollarea( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, indent )
+      Declare   make_area_size( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, indent )
       Declare   make_alignment( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, Width, Height, indent )
       
       ;-
@@ -1994,113 +1994,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro row_scroll_y_( _this_, _row_, _page_height_ = )
-         make_area_pos( _this_\scroll\v, ( row_y_( _this_, _row_ ) _page_height_ ) - _this_\scroll\v\y, _row_\height )
+         make_scrollbar_pos( _this_\scroll\v, ( row_y_( _this_, _row_ ) _page_height_ ) - _this_\scroll\v\y, _row_\height )
       EndMacro
       
       ;-
-      Procedure make_area_pos( *this._s_WIDGET, ScrollPos, len )
-         ScrollPos + *this\bar\min
-         len = *this\bar\page\len - len
-         
-         ; to start position
-         If ( ScrollPos - *this\bar\page\pos ) < 0 
-            ProcedureReturn bar_PageChange( *this, ScrollPos ) 
-         EndIf
-         
-         ; to stop position
-         If ( ScrollPos - *this\bar\page\pos ) > len 
-         Debug ""+Str(ScrollPos - len) +" "+ Str( ScrollPos - *this\bar\page\pos )
-            ProcedureReturn bar_PageChange( *this, ScrollPos - len )
-         EndIf
-      EndProcedure
-      
-      Procedure.b make_area_size( *this._s_WIDGET )
-         Protected result.b
-         
-         ;\\ change vertical scrollbar max
-         If *this\scroll\v And *this\scroll\v\bar\max <> *this\scroll_height( ) And
-            SetAttribute( *this\scroll\v, #PB_ScrollBar_Maximum, *this\scroll_height( ) )
-            result = 1
-         EndIf
-         
-         ;\\ change horizontal scrollbar max
-         If *this\scroll\h And *this\scroll\h\bar\max <> *this\scroll_width( ) And
-            SetAttribute( *this\scroll\h, #PB_ScrollBar_Maximum, *this\scroll_width( ) )
-            result = 1
-         EndIf
-         
-         ;\\
-         If result
-            bar_area_resize( *this )
-         EndIf
-         
-         ; авто скроллим чтобы был виден выбранный итем
-         If *this\row
-            If *this\row\autoscroll = #True
-               *this\row\autoscroll = #PB_All
-               ;
-               If *this\RowFocused( ) 
-                  row_scroll_y_( *this, *this\RowFocused( ))
-                  
-                  *this\scroll\v\WidgetChange( ) = 0
-                  
-                  ;
-                  Protected result2
-                  If *this\RowFocused( )\_focus
-                     If *this\focus = 2
-                        If *this\RowFocused( )\ColorState( ) <> #__s_2
-                           *this\RowFocused( )\ColorState( ) = #__s_2
-                           result2 = 2
-                        EndIf
-                     Else
-                        If *this\RowFocused( )\ColorState( ) <> #__s_3
-                           *this\RowFocused( )\ColorState( ) = #__s_3
-                           result2 = 3
-                        EndIf
-                     EndIf
-                  Else
-                     If *this\RowFocused( )\ColorState( ) <> #__s_1
-                        *this\RowFocused( )\ColorState( ) = #__s_1
-                        result2 = 1
-                     EndIf
-                  EndIf
-                  
-                  ;
-                  If is_integral_( *this ) 
-                     ;                      If *this\parent  
-                     ;                         If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
-                     ;                            SetText( *this\parent\parent, *this\RowFocused( )\text\string )
-                     ;                            DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                     ;                            If result2  
-                     ;                               DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                     ;                            EndIf 
-                     ;                         Else
-                     ;                            If *this\parent\type = #__type_ComboBox
-                     ;                               SetText( *this\parent, *this\RowFocused( )\text\string )
-                     ;                            EndIf 
-                     ;                            DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                     ;                            If result2  
-                     ;                               DoEvents( *this\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                     ;                            EndIf 
-                     ;                         EndIf 
-                     ;                      EndIf 
-                  Else
-                     ;AddEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                     DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                     If result2  
-                        ;DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                     EndIf 
-                  EndIf
-                  
-                  
-               EndIf
-               
-            EndIf
-         EndIf
-         
-         ProcedureReturn result
-      EndProcedure
-      
       Macro make_area_x( _this_, _size_ )
          ; make horizontal scroll x
          If _this_\area_align\right = 2
@@ -2141,6 +2038,81 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndMacro
       
+      Procedure   make_area_size( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, indent )
+         Protected Width, Height
+         
+         ;     
+         If *txt\multiLine
+            
+         Else
+            ; make_area_size
+            If *txt\vertical
+               Width = *this\padding\x * 2
+               Height = *this\padding\y * 2
+               If *txt\string
+                  Width + *txt\height
+                  Height + *txt\width 
+               EndIf
+            Else
+               Width = *this\padding\x * 2
+               Height = *this\padding\y * 2
+               If *txt\string
+                  Width + *txt\width 
+                  Height + *txt\height
+               EndIf
+            EndIf
+            ;
+            ; make_area_width
+            If *img\width
+               If *this\area_align\left Or *this\area_align\right 
+                  Width + *img\width
+                  If *txt\string
+                     Width + indent
+                  EndIf
+               Else
+                  If Width < *img\width + *this\padding\x * 2
+                     Width = *img\width + *this\padding\x * 2
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            ; make_area_height
+            If *img\height
+               If *this\area_align\top Or *this\area_align\bottom 
+                  Height + *img\height
+                  If *txt\string
+                     Height + indent
+                  EndIf
+               Else
+                  If Height < *img\height + *this\padding\y * 2
+                     Height = *img\height + *this\padding\y * 2
+                  EndIf
+               EndIf
+            EndIf
+            ;
+            ; Debug ""+*this\class +" "+ width +" "+ *this\padding\x
+            If Width = *this\padding\x * 2
+               Width = *this\inner_width( )
+            EndIf
+            If Height = *this\padding\y * 2
+               Height = *this\inner_height( )
+            EndIf
+            ;
+            ; make area pos
+            If Width
+               make_area_x( *this, Width )
+            EndIf
+            If Height
+               make_area_y( *this, Height )
+            EndIf
+            
+            *this\scroll_width( ) = Width
+            *this\scroll_height( ) = Height
+            ProcedureReturn #True
+         EndIf
+      EndProcedure
+      
+      ;-
       Macro make_align_x( _address_, _width_, _size_, _rotate_, _align_, _padding_ )
          If _rotate_ = 0 Or
             _rotate_ = 90
@@ -2257,74 +2229,111 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure   make_scrollarea( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, indent )
-         Protected Width, Height
+      ;-
+      Procedure   make_scrollbar_pos( *this._s_WIDGET, ScrollPos, len )
+         ScrollPos + *this\bar\min
+         len = *this\bar\page\len - len
          
-         ;     
-         If *txt\multiLine
-            
-         Else
-            ; make_area_size
-            If *txt\vertical
-               Width = *this\padding\x * 2
-               Height = *this\padding\y * 2
-               If *txt\string
-                  Width + *txt\height
-                  Height + *txt\width 
-               EndIf
-            Else
-               Width = *this\padding\x * 2
-               Height = *this\padding\y * 2
-               If *txt\string
-                  Width + *txt\width 
-                  Height + *txt\height
-               EndIf
-            EndIf
-            ;
-            ; make_area_width
-            If *img\width
-               If *this\area_align\left Or *this\area_align\right 
-                  Width + *img\width + indent
-               Else
-                  If Width < *img\width + *this\padding\x * 2
-                     Width = *img\width + *this\padding\x * 2
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            ; make_area_height
-            If *img\height
-               If *this\area_align\top Or *this\area_align\bottom 
-                  Height + *img\height + indent
-               Else
-                  If Height < *img\height + *this\padding\y * 2
-                     Height = *img\height + *this\padding\y * 2
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            ; Debug ""+*this\class +" "+ width +" "+ *this\padding\x
-            If Width = *this\padding\x * 2
-               Width = *this\inner_width( )
-            EndIf
-            If Height = *this\padding\y * 2
-               Height = *this\inner_height( )
-            EndIf
-            ;
-            ; make area pos
-            If Width
-               make_area_x( *this, Width )
-            EndIf
-            If Height
-               make_area_y( *this, Height )
-            EndIf
-            
-            *this\scroll_width( ) = Width
-            *this\scroll_height( ) = Height
+         ; to start position
+         If ( ScrollPos - *this\bar\page\pos ) < 0 
+            ProcedureReturn bar_PageChange( *this, ScrollPos ) 
+         EndIf
+         
+         ; to stop position
+         If ( ScrollPos - *this\bar\page\pos ) > len 
+            ; Debug ""+Str(ScrollPos - len) +" "+ Str( ScrollPos - *this\bar\page\pos )
+            ProcedureReturn bar_PageChange( *this, ScrollPos - len )
          EndIf
       EndProcedure
       
-      Procedure   make_multitext( *this._s_WIDGET, indent )
+      Procedure.b make_scrollbar_max( *this._s_WIDGET )
+         Protected result.b
+         
+         ;\\ change vertical scrollbar max
+         If *this\scroll\v And *this\scroll\v\bar\max <> *this\scroll_height( ) And
+            SetAttribute( *this\scroll\v, #PB_ScrollBar_Maximum, *this\scroll_height( ) )
+            result = 1
+         EndIf
+         
+         ;\\ change horizontal scrollbar max
+         If *this\scroll\h And *this\scroll\h\bar\max <> *this\scroll_width( ) And
+            SetAttribute( *this\scroll\h, #PB_ScrollBar_Maximum, *this\scroll_width( ) )
+            result = 1
+         EndIf
+         
+         ;\\
+         If result
+            bar_area_resize( *this )
+         EndIf
+         
+         ; авто скроллим чтобы был виден выбранный итем
+         If *this\row
+            If *this\row\autoscroll = #True
+               *this\row\autoscroll = #PB_All
+               ;
+               If *this\RowFocused( ) 
+                  row_scroll_y_( *this, *this\RowFocused( ))
+                  
+                  *this\scroll\v\WidgetChange( ) = 0
+                  
+                  ;
+                  Protected result2
+                  If *this\RowFocused( )\_focus
+                     If *this\focus = 2
+                        If *this\RowFocused( )\ColorState( ) <> #__s_2
+                           *this\RowFocused( )\ColorState( ) = #__s_2
+                           result2 = 2
+                        EndIf
+                     Else
+                        If *this\RowFocused( )\ColorState( ) <> #__s_3
+                           *this\RowFocused( )\ColorState( ) = #__s_3
+                           result2 = 3
+                        EndIf
+                     EndIf
+                  Else
+                     If *this\RowFocused( )\ColorState( ) <> #__s_1
+                        *this\RowFocused( )\ColorState( ) = #__s_1
+                        result2 = 1
+                     EndIf
+                  EndIf
+                  
+                  ;
+                  If is_integral_( *this ) 
+                     ;                      If *this\parent  
+                     ;                         If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
+                     ;                            SetText( *this\parent\parent, *this\RowFocused( )\text\string )
+                     ;                            DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                     ;                            If result2  
+                     ;                               DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                     ;                            EndIf 
+                     ;                         Else
+                     ;                            If *this\parent\type = #__type_ComboBox
+                     ;                               SetText( *this\parent, *this\RowFocused( )\text\string )
+                     ;                            EndIf 
+                     ;                            DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                     ;                            If result2  
+                     ;                               DoEvents( *this\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                     ;                            EndIf 
+                     ;                         EndIf 
+                     ;                      EndIf 
+                  Else
+                     ;AddEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                     DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                     If result2  
+                        ;DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                     EndIf 
+                  EndIf
+                  
+                  
+               EndIf
+               
+            EndIf
+         EndIf
+         
+         ProcedureReturn result
+      EndProcedure
+      
+      Procedure   make_multiline_text( *this._s_WIDGET, indent )
          Protected textchange.b = 1
          Protected *str.Character
          Protected *end.Character
@@ -2591,7 +2600,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         make_area_size( *this )
+         make_scrollbar_max( *this )
          
          ; make horizontal scroll x
          make_area_x( *this, *this\scroll_width( ))
@@ -4315,9 +4324,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               Else
                                  ;
                                  If *tabs( )\text\width And *tabs( )\picture\width
-                                    *tabs( )\height = *tabs( )\text\width + *tabs( )\picture\width + ( *this\padding\x * 2 ) + indent
+                                    *tabs( )\height = *tabs( )\text\width + *tabs( )\picture\width + ( *this\padding\y * 2 ) + indent
                                  Else
-                                    *tabs( )\height = *tabs( )\text\width + *tabs( )\picture\width + ( *this\padding\x * 2 )
+                                    *tabs( )\height = *tabs( )\text\width + *tabs( )\picture\width + ( *this\padding\y * 2 )
                                  EndIf
                                  
                                  *bar\max + *tabs( )\height + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
@@ -4328,7 +4337,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *tabs( )\height = 1
                                  *bar\max        + separator_step * 2
                               Else
-                                 *tabs( )\height = *tabs( )\picture\height + *tabs( )\text\height + ( *this\padding\x * 2 )
+                                 *tabs( )\height = *tabs( )\picture\height + *tabs( )\text\height + ( *this\padding\y * 2 )
                                  If *tabs( )\picture\height   
                                    *tabs( )\height + indent
                                  EndIf
@@ -8446,7 +8455,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure edit_make_text_position( *this._s_WIDGET )
          ;
-         make_area_size( *this )
+         make_scrollbar_max( *this )
          
          ; make horizontal scroll x
          make_area_x( *this, *this\scroll_width( ))
@@ -9529,6 +9538,80 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure   GetPadding( *this._s_WIDGET )
+         ProcedureReturn *this\padding
+      EndProcedure
+      
+      Procedure   SetPadding( *this._s_WIDGET, padding = #PB_Default )
+         Protected vertical = Bool( *this\flag & #__flag_Vertical )
+         ;
+         If padding = #PB_Default
+            padding = DPIScaled(4)
+         EndIf
+         ;
+         ; set PADDING
+         *this\padding\x = 0
+         *this\padding\y = 0
+         ;
+         If *this\type = #__type_MenuBar Or
+            *this\type = #__type_PopupBar Or
+            *this\type = #__type_ToolBar Or
+            *this\type = #__type_TabBar 
+            ;
+            ;If vertical
+            *this\padding\y = padding
+            ;Else
+            *this\padding\x = padding
+            ;EndIf
+         EndIf
+         If *this\type = #__type_Tree Or
+            *this\type = #__type_ListView Or
+            *this\type = #__type_ListIcon Or
+            *this\type = #__type_ExplorerList Or
+            *this\type = #__type_Button
+            ;
+            If vertical
+               *this\padding\y = padding
+            Else
+               *this\padding\x = padding
+            EndIf
+         EndIf
+         If *this\type = #__type_ComboBox
+            If *this\stringbar
+               If vertical
+                  *this\stringbar\padding\y = padding
+               Else
+                  *this\stringbar\padding\x = padding
+               EndIf
+            Else
+               If vertical
+                  *this\padding\y = padding
+               Else
+                  *this\padding\x = padding
+               EndIf
+            EndIf
+         EndIf
+         If *this\type = #__type_String
+            If vertical
+               *this\padding\y = DPIScaled(3)
+            Else
+               *this\padding\x = DPIScaled(3)
+            EndIf
+         EndIf
+         If *this\type = #__type_Text
+            If vertical
+               *this\padding\y = DPIScaled(2)
+            Else
+               *this\padding\x = DPIScaled(2)
+            EndIf
+         EndIf
+         
+         If *this\Toggle( ) And
+            *this\Toggle( )\width
+            *this\padding\x = *this\Toggle( )\width + padding*2
+         EndIf
+      EndProcedure
+
       ;-
       Procedure.s GetClass( *this._s_WIDGET )
          ProcedureReturn *this\class
@@ -9951,6 +10034,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;          
          add_image( *this\picture, img )
          
+         If *this\flag & #__flag_Center
+            If *this\picture\width Or *this\picture\height
+               If *this\flag & #__flag_Vertical
+                  If *this\flag & #__flag_Invert
+                     If Not *this\flag & #__flag_Top
+                        *this\area_align\top = 3
+                     EndIf
+                  Else
+                     If Not *this\flag & #__flag_Bottom
+                        *this\area_align\bottom = 3
+                     EndIf
+                  EndIf
+               Else
+                  If *this\flag & #__flag_Invert
+                     If Not *this\flag & #__flag_Right
+                        *this\area_align\right = 3
+                     EndIf
+                  Else
+                     If Not *this\flag & #__flag_Left
+                        *this\area_align\left = 3
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+         
 ;          If *this\type <> #__type_window
 ;             If IsImage( img )
 ;                *this\picture\x  = *this\padding\x
@@ -9967,7 +10077,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                EndIf
 ;                
 ;                ; updatate scrollarea size
-;                make_area_size( *this )
+;                make_scrollbar_max( *this )
 ;             EndIf
 ;          EndIf
          
@@ -15638,6 +15748,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\text\rotate   = Bool( *this\text\invert ) * 180 + 
                                   Bool( *this\text\vertical ) * 90
             
+            ;
+            SetPadding( *this )
             
             ;
             If *this\type = #__type_Button Or 
@@ -15702,56 +15814,58 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ set content ALIGNMENT
                If Flag & #__flag_Center
                   
-                  If Flag & #__flag_Left Or
-                     Flag & #__flag_Top Or 
-                     Flag & #__flag_Right Or 
-                     Flag & #__flag_Bottom 
-                     
-                     If *this\Flag & #__flag_left
-                        *this\area_align\left = 1
-                     Else
-                        *this\area_align\left = 0
-                     EndIf
-                     If *this\Flag & #__flag_top
-                        *this\area_align\top = 1
-                     Else
-                        *this\area_align\top = 0
-                     EndIf
-                     If *this\Flag & #__flag_right
-                        *this\area_align\right = 1
-                     Else
-                        *this\area_align\right = 0
-                     EndIf
-                     If *this\Flag & #__flag_bottom
-                        *this\area_align\bottom = 1
-                     Else
-                        *this\area_align\bottom = 0
-                     EndIf 
-                     
-                  Else
+;                   If Flag & #__flag_Left Or
+;                      Flag & #__flag_Top Or 
+;                      Flag & #__flag_Right Or 
+;                      Flag & #__flag_Bottom 
+;                      
+;                      If Flag & #__flag_left
+;                         *this\area_align\left = 1
+;                      Else
+;                         *this\area_align\left = 0
+;                      EndIf
+;                      If Flag & #__flag_top
+;                         *this\area_align\top = 1
+;                      Else
+;                         *this\area_align\top = 0
+;                      EndIf
+;                      If Flag & #__flag_right
+;                         *this\area_align\right = 1
+;                      Else
+;                         *this\area_align\right = 0
+;                      EndIf
+;                      If Flag & #__flag_bottom
+;                         *this\area_align\bottom = 1
+;                      Else
+;                         *this\area_align\bottom = 0
+;                      EndIf 
+;                      
+;                   Else
+                  If *this\picture\width Or *this\picture\height
                      If *this\flag & #__flag_Vertical
                         If *this\flag & #__flag_Invert
                            If Not *this\flag & #__flag_Top
-                              *this\area_align\top = 1
+                              *this\area_align\top = 3
                            EndIf
                         Else
                            If Not *this\flag & #__flag_Bottom
-                              *this\area_align\bottom = 1
+                              *this\area_align\bottom = 3
                            EndIf
                         EndIf
                      Else
                         If *this\flag & #__flag_Invert
                            If Not *this\flag & #__flag_Right
-                              *this\area_align\right = 1
+                              *this\area_align\right = 3
                            EndIf
                         Else
                            If Not *this\flag & #__flag_Left
-                              *this\area_align\left = 1
+                              *this\area_align\left = 3
                            EndIf
                         EndIf
                      EndIf
-                     
                   EndIf
+;                      
+;                   EndIf
                   
                Else
                   If *this\Flag & #__flag_left
@@ -15823,6 +15937,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf   
          
+         ;
+         SetPadding( *this )
+         
          If *this\type = #__type_CheckBox
             *this\mode\threestate = constants::BinaryFlag( *this\Flag, #PB_CheckBox_ThreeState )
          EndIf
@@ -15851,6 +15968,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
          EndIf
+         
+         
+         
          
          ; установить флаги рамки
          If constants::BinaryFlag( Flag, #__flag_BorderDouble ) Or
@@ -20256,10 +20376,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected indent = DPIScaled(10)
          ;
          If *this\text\multiLine Or ( *this\type = #__type_Editor Or *this\type = #__type_String )
-            make_multitext( *this, indent )
+            make_multiline_text( *this, indent )
          Else
-            make_scrollarea( *this, *this\text, *this\picture, indent )
-            make_alignment( *this, *this\text, *this\picture, *this\scroll_width( ), *this\scroll_height( ), indent )
+            If make_area_size( *this, *this\text, *this\picture, indent )
+               make_alignment( *this, *this\text, *this\picture, *this\scroll_width( ), *this\scroll_height( ), indent )
+            EndIf
          EndIf
       EndProcedure
       
@@ -21498,7 +21619,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If (*this\ResizeChange( ) Or *this\WidgetChange( ))
                UpdateDraw_Rows( *this, *this\__rows( ), *this\WidgetChange( ))
                
-               make_area_size( *this )
+               make_scrollbar_max( *this )
                
                ; reset draw list
                ClearList( *this\RowVisibleList( ))
@@ -21740,7 +21861,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                         
-                        make_area_pos( *this\scroll\v, *this\edit_caret( )\y, *this\edit_caret( )\height ) ; ok
+                        make_scrollbar_pos( *this\scroll\v, *this\edit_caret( )\y, *this\edit_caret( )\height ) ; ok
                      EndIf
                   EndIf
                   
@@ -21757,7 +21878,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                         
-                        make_area_pos( *this\scroll\h, *this\edit_caret( )\x, *this\edit_caret( )\width ) ; ok
+                        make_scrollbar_pos( *this\scroll\h, *this\edit_caret( )\x, *this\edit_caret( )\width ) ; ok
                      EndIf
                   EndIf
                   ;
@@ -21843,7 +21964,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Next
                
                ;\\
-               make_area_size( *this )
+               make_scrollbar_max( *this )
                
                ;\\ reset draw list
                ClearList( *this\RowVisibleList( ))
@@ -21947,12 +22068,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\type = #__type_Editor Or
                   *this\type = #__type_String Or 
                   *this\type = #__type_Text Or
-                  *this\type = #__type_Button Or *this\type = #__type_ButtonImage Or
+                  *this\type = #__type_Button Or *this\type = #__type_ButtonImage Or *this\type = #__type_Image Or
                   *this\type = #__type_Option Or
                   *this\type = #__type_Progress Or
                   *this\type = #__type_CheckBox Or
                   *this\type = #__type_HyperLink Or
                   *this\type = #__type_ComboBox 
+                  
                   ;
                   UpdateDraw_Content( *this )
                EndIf
@@ -22807,14 +22929,87 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ElseIf Type = #__type_Editor
                Flag | #__flag_TextMultiLine
             EndIf
+         
+            ; set dafault multiline text
+            If Text
+               If Type = #__type_Option Or
+                  Type = #__type_CheckBox Or
+                  Type = #__type_HyperLink
+                  
+                  If CountString( Text, #LF$ )
+                     Flag | #__flag_TextMultiLine
+                  EndIf
+               EndIf
+            EndIf
          EndIf
-               
-         *this\flag = Flag   
+         
+         
+         ; set default lines & buttons show
+         If Type = #__type_Tree Or
+            Type = #__type_ListView Or
+            Type = #__type_ListIcon Or
+            Type = #__type_ExplorerList Or
+            Type = #__type_Properties
+            ;
+            If constants::BinaryFlag( Flag, #__flag_nolines )
+               Flag & ~ #__flag_nolines
+            Else
+               Flag | #__flag_nolines
+            EndIf
+            
+            If constants::BinaryFlag( Flag, #__flag_NoButtons ) 
+               Flag & ~ #__flag_NoButtons
+            Else
+               Flag | #__flag_NoButtons
+            EndIf
+         EndIf
+         
+         ;\\ set default border & frame size
+         If is_integral_( *this )
+            If Type = #__type_Scroll
+               *this\fs = 0
+            Else
+               *this\fs = 0
+            EndIf
+         Else
+            If constants::BinaryFlag( Flag, #__flag_BorderDouble ) Or
+               constants::BinaryFlag( Flag, #__flag_BorderRaised )
+               *this\fs = 2
+            ElseIf constants::BinaryFlag( Flag, #__flag_BorderFlat ) Or
+                   constants::BinaryFlag( Flag, #__flag_BorderSingle ) 
+               *this\fs = 1
+            ElseIf constants::BinaryFlag( Flag, #__flag_BorderLess )
+               *this\fs = 0
+            Else
+               ; default border
+               If Type = #__type_Panel Or
+                  Type = #__type_Editor Or
+                  Type = #__type_String Or
+                  Type = #__type_ScrollArea Or
+                  Type = #__type_ListView Or
+                  Type = #__type_ListIcon Or
+                  Type = #__type_Tree 
+                  
+                  *this\fs = 2
+               EndIf
+               If Type = #__type_Container Or
+                  Type = #__type_Spin Or
+                  Type = #__type_Button Or Type = #__type_ButtonImage Or
+                  Type = #__type_ComboBox Or
+                  Type = #__type_ExplorerList 
+                  
+                  *this\fs = 1
+               EndIf
+            EndIf
+         EndIf
+         *this\bs = *this\fs
+         
          ;
          ;\\
          *this\font   = - 1
          *this\color  = _get_colors_( )
          *this\type   = Type
+         *this\flag   = Flag   
          *this\class  = class
          *this\round  = DPIScaled( round )
          
@@ -22909,8 +23104,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\type = #__type_Tree Or
             *this\type = #__type_ListView Or
             *this\type = #__type_ListIcon Or
-            *this\type = #__type_ExplorerList Or
-            *this\type = #__type_Properties
+            *this\type = #__type_ExplorerList
             ;
             *this\row.allocate( ROW )
             ;
@@ -22919,12 +23113,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\LineState( ) = - 1
             *this\WidgetChange( ) = 1
             *this\TextChange( ) = 1
-            
-            If Type = #__type_Properties
-               If *this\bar
-                  *this\bar\page\pos = 60
-               EndIf
-            EndIf
             
             *this\lineColor = $FFC0C0C0
             *this\color\_alpha = 255
@@ -23205,7 +23393,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\color\back =- 1
          EndIf
          
-         ;-\\ CURSOR init
+         ;\\ CURSOR init
          If *this\type = #__type_Splitter
             If *this\bar\vertical
                *this\cursor[1] = cursor::#__cursor_SplitUpDown
@@ -23243,132 +23431,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          
-         ;\\ Border & Frame size
-         If is_integral_( *this )
-            If Type = #__type_Scroll
-               *this\fs = 0
-            Else
-               *this\fs = 0
-            EndIf
-         Else
-            If constants::BinaryFlag( *this\flag, #__flag_BorderDouble ) Or
-               constants::BinaryFlag( *this\flag, #__flag_BorderRaised )
-               *this\fs = 2
-            ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderFlat ) Or
-                   constants::BinaryFlag( *this\Flag, #__flag_BorderSingle ) 
-               *this\fs = 1
-            ElseIf constants::BinaryFlag( *this\Flag, #__flag_BorderLess )
-               *this\fs = 0
-            Else
-               ; default border
-               If Type = #__type_Panel Or
-                  Type = #__type_Editor Or
-                  Type = #__type_String Or
-                  Type = #__type_ScrollArea Or
-                  Type = #__type_ListView Or
-                  Type = #__type_ListIcon Or
-                  Type = #__type_Tree 
-                  
-                  *this\fs = 2
-               EndIf
-               If Type = #__type_Container Or
-                  Type = #__type_Spin Or
-                  Type = #__type_Button Or Type = #__type_ButtonImage Or
-                  Type = #__type_ComboBox Or
-                  Type = #__type_ExplorerList 
-                  
-                  *this\fs = 1
-               EndIf
-            EndIf
-         EndIf
-         *this\bs = *this\fs
-         
-         ; set PADDING
-         If *this\type = #__type_MenuBar Or
-            *this\type = #__type_PopupBar Or
-            *this\type = #__type_ToolBar Or
-            *this\type = #__type_TabBar 
-            ;
-            If Flag & #__flag_Vertical
-               *this\padding\y = DPIScaled(4)
-            Else
-               *this\padding\x = DPIScaled(4)
-            EndIf
-         EndIf
-         If *this\type = #__type_Tree Or
-            *this\type = #__type_ListView Or
-            *this\type = #__type_ListIcon Or
-            *this\type = #__type_ExplorerList Or
-            *this\type = #__type_Button Or *this\type = #__type_ButtonImage
-            ;
-            If Flag & #__flag_Vertical
-               *this\padding\y = DPIScaled(4)
-            Else
-               *this\padding\x = DPIScaled(4)
-            EndIf
-         EndIf
-         If *this\type = #__type_ComboBox
-            If *this\stringbar
-               If Flag & #__flag_Vertical
-                  *this\stringbar\padding\y = DPIScaled(4)
-               Else
-                  *this\stringbar\padding\x = DPIScaled(4)
-               EndIf
-            Else
-               If Flag & #__flag_Vertical
-                  *this\padding\y = DPIScaled(4)
-               Else
-                  *this\padding\x = DPIScaled(4)
-               EndIf
-            EndIf
-         EndIf
-         If *this\type = #__type_String
-            If Flag & #__flag_Vertical
-               *this\padding\y = DPIScaled(3)
-            Else
-               *this\padding\x = DPIScaled(3)
-            EndIf
-         EndIf
-         If *this\type = #__type_Editor
-            If Flag & #__flag_Vertical
-               *this\padding\y = DPIScaled(1)
-            Else
-               *this\padding\x = DPIScaled(1)
-            EndIf
-         EndIf
-         If *this\type = #__type_Text
-            If Flag & #__flag_Vertical
-               *this\padding\y = DPIScaled(2)
-            Else
-               *this\padding\x = DPIScaled(2)
-            EndIf
-         EndIf
-         
-         If *this\Toggle( ) And
-            *this\Toggle( )\width
-            *this\padding\x = *this\Toggle( )\width + DPIScaled(8)
-         EndIf
-         
-         ; set FLAG
-         If *this\type = #__type_Tree Or
-            *this\type = #__type_ListView Or
-            *this\type = #__type_ListIcon Or
-            *this\type = #__type_ExplorerList Or
-            *this\type = #__type_Properties
-            ;
-            If constants::BinaryFlag( *this\Flag, #__flag_nolines )
-               *this\flag & ~ #__flag_nolines
-            Else
-               *this\Flag | #__flag_nolines
-            EndIf
-            
-            If constants::BinaryFlag( *this\Flag, #__flag_NoButtons ) 
-               *this\flag & ~ #__flag_NoButtons
-            Else
-               *this\Flag | #__flag_NoButtons
-            EndIf
-         EndIf
-         
+         ;\\
          If *this\Flag
             Flag( *this, *this\Flag, #True )
          EndIf
@@ -23466,7 +23529,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_Text Or
             *this\type = #__type_Editor Or
             *this\type = #__type_String Or
-            *this\type = #__type_Button Or *this\type = #__type_ButtonImage Or 
+            *this\type = #__type_Button Or 
             *this\type = #__type_Option Or
             *this\type = #__type_CheckBox Or
             *this\type = #__type_HyperLink Or 
@@ -23507,13 +23570,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If Text
-                  If *this\type = #__type_Option Or
-                     *this\type = #__type_CheckBox Or
-                     *this\type = #__type_HyperLink
-                     
-                     *this\text\multiline = - CountString( Text, #LF$ )
-                  EndIf
-                  
                   SetText( *this, Text )
               EndIf
             EndIf
@@ -27482,8 +27538,13 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
    HyperLink( 10, 10, 80, 30, "HyperLink", RGB(105, 245, 44) )
    String( 60, 20, 60, 30, "String" )
-   String( 80, 5, 187, 20, "abc" + "def" + "ghi" + "jkl" + "mno" + "pqr" + "stu" + "vwxyz" )
-      
+   
+   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      String( 80, 5, 187, 20, "abc" + "def" + "ghi" + "jkl" + "mno" + "pqr" + "stu" + "vwxyz" )
+   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+      String( 80, 5, 164, 19, "abc" + "def" + "ghi" + "jkl" + "mno" + "pqr" + "stu" + "vwxyz" )
+   CompilerEndIf
+   
    *w = ComboBox( 108, 30, 152, 30, #PB_ComboBox_Editable ) ;: Flag( *w, #__flag_optionboxes, 1 )
    For i = 1 To 100                                         ;0000
       AddItem(*w, i, "text-" + Str(i))
@@ -27838,10 +27899,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 22110
-; FirstLine = 21923
-; Folding = --------------------------------------------------0---------------------------------------------------------vfv----------------------------------------------------------------------------------------------------------------------------------------b------------------------------------------------------------------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-0f----------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 10050
+; FirstLine = 9565
+; Folding = ------------------------------------------f+--0---v--t-y---ff9-----------------------------------------------+0+---------------------------------------------------------------------------------------------------------------------------------------v0-----v---------------------------------------------------------------------------------------------------------------------------------f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-+---------------------------------------------0--f-40zX48k7v--------------------------------------------------------------------------------------------8-X------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
