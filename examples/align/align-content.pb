@@ -129,12 +129,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ;img =- 1
       
       ;*g = CheckBox( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
-      ;*g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
+      *g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
       ;*g = Text( X,Y,Width,Height, txt$, #__flag_BorderFlat|flags) : SetImage( *g, img )
       
       ;*g = ButtonImage( X,Y,Width,Height, img, flags) : SetText( *g, txt$ )
       ;*g = Image( X,Y,Width,Height, img, #__flag_BorderFlat|flags) : SetText( *g, txt$ )
-      *g = Editor( X,Y,Width,Height, #__flag_BorderFlat|flags) : SetText( *g, txt$ ) : SetImage( *g, img )
+      ;*g = Editor( X,Y,Width,Height, #__flag_BorderFlat|flags) : SetText( *g, txt$ ) : SetImage( *g, img )
       
       Alignment( *g, #__align_left|#__align_right)
       Bind(*g, @Test_Events( ), #__event_LeftClick)
@@ -173,8 +173,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 131
-; FirstLine = 66
+; CursorPosition = 10
 ; Folding = 6+---
 ; EnableXP
 ; DPIAware

@@ -2062,33 +2062,50 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             ;
-            ; make_area_width
-            If *img\width
-               If *this\area_align\left Or *this\area_align\right 
-                  Width + *img\width
-                  If *txt\string
-                     Width + indent
+            If ( *this\area_align\left Or 
+                 *this\area_align\top Or 
+                 *this\area_align\right Or 
+                 *this\area_align\bottom )
+               ;
+               ; make_area_width
+               If *img\width
+                  If *this\area_align\left Or *this\area_align\right 
+                     Width + *img\width
+                     If *txt\string
+                        Width + indent
+                     EndIf
+                  Else
+                     If Width < *img\width + *this\padding\x * 2
+                        Width = *img\width + *this\padding\x * 2
+                     EndIf
                   EndIf
-               Else
-                  If Width < *img\width + *this\padding\x * 2
-                     Width = *img\width + *this\padding\x * 2
+               EndIf
+               ;
+               ; make_area_height
+               If *img\height
+                  If *this\area_align\top Or *this\area_align\bottom 
+                     Height + *img\height
+                     If *txt\string
+                        Height + indent
+                     EndIf
+                  Else
+                     If Height < *img\height + *this\padding\y * 2
+                        Height = *img\height + *this\padding\y * 2
+                     EndIf
+                  EndIf
+               EndIf
+               
+            Else
+               ;
+               If *txt\string And *img\height And *img\width
+                  If *this\flag & #__flag_Vertical
+                     Height + *img\height + indent
+                  Else
+                     Width + *img\width + indent
                   EndIf
                EndIf
             EndIf
-            ;
-            ; make_area_height
-            If *img\height
-               If *this\area_align\top Or *this\area_align\bottom 
-                  Height + *img\height
-                  If *txt\string
-                     Height + indent
-                  EndIf
-               Else
-                  If Height < *img\height + *this\padding\y * 2
-                     Height = *img\height + *this\padding\y * 2
-                  EndIf
-               EndIf
-            EndIf
+            
             ;
             ; Debug ""+*this\class +" "+ width +" "+ *this\padding\x
             If Width = *this\padding\x * 2
@@ -2175,8 +2192,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\area_align
                If Width
                   If *this\text\vertical
-                     make_align_x( *txt, Width, *txt\height, *this\text\rotate, *this\area_align, *this\padding\y )
-                     make_align_x( *img, Width, *img\height, *this\picture\rotate, *this\area_align, *this\padding\y )
+                     make_align_x( *txt, Width, *txt\height, *this\text\rotate, *this\area_align, *this\padding\x )
+                     make_align_x( *img, Width, *img\height, *this\picture\rotate, *this\area_align, *this\padding\x )
                   Else
                      make_align_x( *txt, Width, *txt\width, *this\text\rotate, *this\area_align, *this\padding\x )
                      make_align_x( *img, Width, *img\width, *this\picture\rotate, *this\area_align, *this\padding\x )
@@ -2185,29 +2202,57 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If Height
                   If *this\text\vertical
-                     make_align_y( *txt, Height, *txt\width, *this\text\rotate, *this\area_align, *this\padding\x )
-                     make_align_y( *img, Height, *img\width, *this\picture\rotate, *this\area_align, *this\padding\x )
+                     make_align_y( *txt, Height, *txt\width, *this\text\rotate, *this\area_align, *this\padding\y )
+                     make_align_y( *img, Height, *img\width, *this\picture\rotate, *this\area_align, *this\padding\y )
                   Else
                      make_align_y( *txt, Height, *txt\height, *this\text\rotate, *this\area_align, *this\padding\y )
                      make_align_y( *img, Height, *img\height, *this\picture\rotate, *this\area_align, *this\padding\y )
                   EndIf
                EndIf
                
-               ; align img left & top
-               If *img\width
-                  If *this\area_align\left
-                     *txt\x + ( *img\width + indent )
+               If ( *this\area_align\left Or 
+                    *this\area_align\top Or 
+                    *this\area_align\right Or 
+                    *this\area_align\bottom )
+                  
+                  ; align img left & top
+                  If *img\width
+                     If *this\area_align\left
+                        *txt\x + ( *img\width + indent )
+                     EndIf
+                     If *this\area_align\right 
+                        *txt\x - ( *img\width + indent )
+                     EndIf
                   EndIf
-                  If *this\area_align\right 
-                     *txt\x - ( *img\width + indent )
+                  If *img\height
+                     If *this\area_align\top
+                        *txt\y + ( *img\height + indent )
+                     EndIf
+                     If *this\area_align\bottom
+                        *txt\y - ( *img\height + indent )
+                     EndIf
                   EndIf
-               EndIf
-               If *img\height
-                  If *this\area_align\top
-                     *txt\y + ( *img\height + indent )
-                  EndIf
-                  If *this\area_align\bottom
-                     *txt\y - ( *img\height + indent )
+                  
+               Else 
+                  ; center image and text
+                  If *txt\string And *img\width And *img\height
+                     If *this\flag & #__flag_Vertical
+                        If *this\flag & #__flag_Invert
+                           *img\y = *this\padding\y
+                           *txt\y = *img\y + *img\height + indent 
+                        Else
+                           *img\y = Height - *img\height - *this\padding\y
+                           *txt\y = *img\y - indent 
+                        EndIf
+                     Else
+                        If *this\flag & #__flag_Invert
+                           *img\x = Width - *img\width - *this\padding\x
+                           *txt\x = *img\x - indent 
+                        Else
+                           *img\x = *this\padding\x
+                           *txt\x = *img\x + *img\width + indent 
+                        EndIf
+                     EndIf
                   EndIf
                EndIf
                
@@ -2225,7 +2270,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\text\rotate = 270 : *txt\x + 3 : EndIf
                CompilerEndIf
             EndIf
-            ;
          EndIf
       EndProcedure
       
@@ -2563,8 +2607,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;
                If *this\area_align
-                  If *this\area_align\left
-                     If *this\picture\width
+                  If *this\picture\width
+                     If *this\area_align\left
+                        *txt\x + indent + *this\picture\width
+                     EndIf
+                     If Not ( *this\area_align\left Or 
+                              *this\area_align\top Or 
+                              *this\area_align\right Or 
+                              *this\area_align\bottom )
                         *txt\x + indent + *this\picture\width
                      EndIf
                   EndIf
@@ -2578,10 +2628,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;
-         If *this\text\string.s
-            If *this\area_align
+         If *this\area_align
+            If *this\text\string.s
                If *this\picture\width
-                  If *this\area_align\left Or *this\area_align\right
+                  If Not ( *this\area_align\top Or *this\area_align\bottom )
                      *this\scroll_width( ) + indent + *this\picture\width
                   EndIf
                EndIf
@@ -2597,6 +2647,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\picture
             make_align_x( *this\picture, *this\scroll_width( ), *this\picture\width, *this\picture\rotate, *this\area_align, *this\padding\x )
             make_align_y( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\area_align, *this\padding\y )
+            If Not ( *this\area_align\left Or 
+                     *this\area_align\top Or 
+                     *this\area_align\right Or 
+                     *this\area_align\bottom )
+               *this\picture\x = *this\padding\x
+            EndIf
          EndIf
          
          ;\\
@@ -2607,6 +2663,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ; make vertical scroll y
          make_area_y( *this, *this\scroll_height( ))
+         
          
       EndProcedure
       
@@ -10033,34 +10090,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;          
          add_image( *this\picture, img )
-         
-         If *this\flag & #__flag_Center
-            If *this\picture\width Or *this\picture\height
-               If *this\flag & #__flag_Vertical
-                  If *this\flag & #__flag_Invert
-                     If Not *this\flag & #__flag_Top
-                        *this\area_align\top = 3
-                     EndIf
-                  Else
-                     If Not *this\flag & #__flag_Bottom
-                        *this\area_align\bottom = 3
-                     EndIf
-                  EndIf
-               Else
-                  If *this\flag & #__flag_Invert
-                     If Not *this\flag & #__flag_Right
-                        *this\area_align\right = 3
-                     EndIf
-                  Else
-                     If Not *this\flag & #__flag_Left
-                        *this\area_align\left = 3
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
-         
+          
 ;          If *this\type <> #__type_window
 ;             If IsImage( img )
 ;                *this\picture\x  = *this\padding\x
@@ -15811,83 +15841,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If *this\text
-               ;\\ set content ALIGNMENT
+                                   *this\area_align\left = 0
+                    *this\area_align\top = 0
+                     *this\area_align\right = 0
+                     *this\area_align\bottom = 0
+                  ;\\ set content ALIGNMENT
                If Flag & #__flag_Center
                   
-;                   If Flag & #__flag_Left Or
-;                      Flag & #__flag_Top Or 
-;                      Flag & #__flag_Right Or 
-;                      Flag & #__flag_Bottom 
-;                      
-;                      If Flag & #__flag_left
-;                         *this\area_align\left = 1
-;                      Else
-;                         *this\area_align\left = 0
-;                      EndIf
-;                      If Flag & #__flag_top
-;                         *this\area_align\top = 1
-;                      Else
-;                         *this\area_align\top = 0
-;                      EndIf
-;                      If Flag & #__flag_right
-;                         *this\area_align\right = 1
-;                      Else
-;                         *this\area_align\right = 0
-;                      EndIf
-;                      If Flag & #__flag_bottom
-;                         *this\area_align\bottom = 1
-;                      Else
-;                         *this\area_align\bottom = 0
-;                      EndIf 
-;                      
-;                   Else
-                  If *this\picture\width Or *this\picture\height
-                     If *this\flag & #__flag_Vertical
-                        If *this\flag & #__flag_Invert
-                           If Not *this\flag & #__flag_Top
-                              *this\area_align\top = 3
-                           EndIf
-                        Else
-                           If Not *this\flag & #__flag_Bottom
-                              *this\area_align\bottom = 3
-                           EndIf
-                        EndIf
-                     Else
-                        If *this\flag & #__flag_Invert
-                           If Not *this\flag & #__flag_Right
-                              *this\area_align\right = 3
-                           EndIf
-                        Else
-                           If Not *this\flag & #__flag_Left
-                              *this\area_align\left = 3
-                           EndIf
-                        EndIf
-                     EndIf
+                  If Flag & #__flag_Left Or Flag & #__flag_Top Or 
+                     Flag & #__flag_Right Or Flag & #__flag_Bottom 
+                     
+                     If Flag & #__flag_Left   : *this\area_align\left   = 1 : EndIf
+                     If Flag & #__flag_Top    : *this\area_align\top    = 1 : EndIf
+                     If Flag & #__flag_Right  : *this\area_align\right  = 1 : EndIf
+                     If Flag & #__flag_Bottom : *this\area_align\bottom = 1 : EndIf 
+                     
                   EndIf
-;                      
-;                   EndIf
                   
                Else
-                  If *this\Flag & #__flag_left
-                     *this\area_align\left = 2
-                  Else
-                     *this\area_align\left = 0
-                  EndIf
-                  If *this\Flag & #__flag_top
-                     *this\area_align\top = 2
-                  Else
-                     *this\area_align\top = 0
-                  EndIf
-                  If *this\Flag & #__flag_right
-                     *this\area_align\right = 2
-                  Else
-                     *this\area_align\right = 0
-                  EndIf
-                  If *this\Flag & #__flag_bottom
-                     *this\area_align\bottom = 2
-                  Else
-                     *this\area_align\bottom = 0
-                  EndIf 
+                  If *this\Flag & #__flag_Left   : *this\area_align\left   = 2 : EndIf
+                  If *this\Flag & #__flag_Top    : *this\area_align\top    = 2 : EndIf
+                  If *this\Flag & #__flag_Right  : *this\area_align\right  = 2 : EndIf
+                  If *this\Flag & #__flag_Bottom : *this\area_align\bottom = 2 : EndIf 
                EndIf
                
                ;ClearDebugOutput()
@@ -22897,13 +22872,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                ElseIf Type = #__type_Text Or
+                      Type = #__type_Image Or
                       Type = #__type_Editor
                   
                   Flag | #__flag_Left | #__flag_Top
                   
                ElseIf Type = #__type_Button Or 
                       Type = #__type_ButtonImage Or 
-                      Type = #__type_Image Or
                       Type = #__type_Progress Or
                       Type = #__type_HyperLink
                   
@@ -27213,7 +27188,7 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
    Define *a2._s_WIDGET = ScrollArea( 50, 45, 135, 95, 300, 300, mouse( )\steps, #__flag_nogadgets )
    Global img = LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
-   Define *a3._s_WIDGET = Image( 150, 110, 60, 60, img, #__flag_Center )
+   Define *a3._s_WIDGET = Image( 150, 110, 60, 60, img);, #__flag_Center )
    
    ;    a_set( *a0, -1, (10))
    a_set( *a3, -1, DPIScaled(10))
@@ -27899,10 +27874,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 10050
-; FirstLine = 9565
-; Folding = ------------------------------------------f+--0---v--t-y---ff9-----------------------------------------------+0+---------------------------------------------------------------------------------------------------------------------------------------v0-----v---------------------------------------------------------------------------------------------------------------------------------f-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-+---------------------------------------------0--f-40zX48k7v--------------------------------------------------------------------------------------------8-X------
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 2195
+; FirstLine = 2102
+; Folding = ------------------------------------------f+--n----4+-4+L-----P-----------------------------------------------vfv----------------------------------------------------------------------------------------------------------------------------------------b------8--------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8v-------------------------------------------------4-d-920Op+8--------------------------------------------------------------------------------------------+-2------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
