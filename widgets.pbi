@@ -2506,20 +2506,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\scroll_height( ) + *this\text\height + gridlines
                   EndIf
                   
-                  ;pb bug
-                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                     If *this\text\rotate = 0   : *this\__lines( )\y + 1 : EndIf
-                     If *this\text\rotate = 90  : *this\__lines( )\x + 2 : EndIf
-                     If *this\text\rotate = 180 : *this\__lines( )\y - 3 : EndIf
-                     If *this\text\rotate = 270 : *this\__lines( )\x - 2 : EndIf
-                  CompilerEndIf
-                  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                     If *this\text\rotate = 0   : *this\__lines( )\y + 1 : EndIf
-                     If *this\text\rotate = 90  : *this\__lines( )\x + 3 : EndIf
-                     If *this\text\rotate = 180 : *this\__lines( )\y - 2 : EndIf
-                     If *this\text\rotate = 270 : *this\__lines( )\x - 3 : EndIf
-                  CompilerEndIf
-                  
                   *str = *end + #__sOC
                EndIf
                
@@ -9373,7 +9359,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                mode = #__c_frame
             EndIf
          EndIf
-         ProcedureReturn DPIUnscaledX( *this\width[mode] ) 
+         If mode = #__c_Required
+            ProcedureReturn DPIUnscaledY( *this\width[mode] + *this\fs * 2 )
+         Else
+            ProcedureReturn DPIUnscaledX( *this\width[mode] ) 
+         EndIf
       EndProcedure
       
       Procedure.l Height( *this._s_WIDGET, mode.l = #PB_Default )
@@ -9384,7 +9374,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                mode = #__c_frame
             EndIf
          EndIf
-         ProcedureReturn DPIUnscaledY( *this\height[mode] ) 
+         If mode = #__c_Required
+            ProcedureReturn DPIUnscaledY( *this\height[mode] + *this\fs * 2 )
+         Else
+            ProcedureReturn DPIUnscaledY( *this\height[mode] ) 
+         EndIf
       EndProcedure
       
       Procedure   IsChild( *this._s_WIDGET, *parent._s_WIDGET )
@@ -10954,6 +10948,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
                ; ProcedureReturn SetText( *this, Text )
                Text.s = edit_make_insert_text( *this, Text.s )
+               If Not *this\text\multiline
+                  Text.s = RemoveString( Text.s, #LF$ )
+               EndIf
                If *This\text\string.s <> Text.s
                   *This\text\string.s = Text.s
                   *this\TextChange( ) = #True
@@ -10966,7 +10963,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\type = #__type_Editor Or
             *this\type = #__type_String Or
             *this\type = #__type_text Or
-            *this\type = #__type_hyperlink Or
+            *this\type = #__type_hyperlink Or ;*this\type = #__type_ComboBox Or 
             *this\type = #__type_Button Or *this\type = #__type_ButtonImage
             
             Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
@@ -13694,6 +13691,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             If *this\ComboBar( )
+               If CountString( Text, #LF$ )
+                  Text = RemoveString( Text, #LF$ )
+               EndIf
                ProcedureReturn AddItem( *this\ComboBar( ), Item, Text, img, Flag )
             EndIf
          EndIf
@@ -22097,7 +22097,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         
                         ;\\
-                        If test_draw_area And Not *this\hide
+                        If test_draw_area = 1 And Not *this\hide
                            ;If Not *this\haschildren
                            draw_mode_alpha_( #PB_2DDrawing_Outlined )
                            
@@ -22108,7 +22108,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            draw_box_( *this\inner_x( ) + *this\scroll_x( ) + *this\padding\x, *this\inner_y( ) + *this\scroll_y( ) + *this\padding\y, *this\scroll_width( ) - *this\padding\x * 2, *this\scroll_height( ) - *this\padding\y * 2, $FFFF0000 )
                            draw_box_( *this\inner_x( ) + *this\scroll_x( ), *this\inner_y( ) + *this\scroll_y( ), *this\scroll_width( ), *this\scroll_height( ), $FF0000FF )
                            
-                           If *this\scroll\v And *this\scroll\h
+                           If *this\scroll\v And *this\scroll\h 
                               draw_box_( *this\scroll\h\frame_x( ) + *this\scroll_x( ), *this\scroll\v\frame_y( ) + *this\scroll_y( ), *this\scroll_width( ), *this\scroll_height( ), $FF0000FF )
                               
                               ; Debug "" +  *this\scroll_x( )  + " " +  *this\scroll_y( )  + " " +  *this\scroll_width( )  + " " +  *this\scroll_height( )
@@ -22227,8 +22227,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf   
                
-               ;\\ draw scroll area frames
-               If test_draw_area
+               ;\\ draw Scroll area frames
+               If test_draw_area = 2
                   draw_mode_alpha_( #PB_2DDrawing_Outlined )
                   
                   ;\\ Scroll area coordinate
@@ -22237,7 +22237,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *this\scroll\v And *this\scroll\h
                      ;\\ page coordinate
-                     draw_box_( *this\scroll\h\frame_x( ), *this\scroll\v\frame_y( ), *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, $FF00FF00 )
+                     ;draw_box_( *this\scroll\h\frame_x( ), *this\scroll\v\frame_y( ), *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, $FF00FF00 )
                   EndIf
                EndIf
             EndIf
@@ -23289,8 +23289,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_ToolBar Or
             *this\type = #__type_TabBar 
             ;
-            *this\padding\x = DPIScaled(4)
-            *this\padding\y = *this\padding\x
+            If Flag & #__flag_Vertical
+               *this\padding\y = DPIScaled(4)
+            Else
+               *this\padding\x = DPIScaled(4)
+            EndIf
          EndIf
          If *this\type = #__type_Tree Or
             *this\type = #__type_ListView Or
@@ -23298,23 +23301,47 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_ExplorerList Or
             *this\type = #__type_Button Or *this\type = #__type_ButtonImage
             ;
-            *this\padding\x = DPIScaled(4)
-            *this\padding\y = *this\padding\x
+            If Flag & #__flag_Vertical
+               *this\padding\y = DPIScaled(4)
+            Else
+               *this\padding\x = DPIScaled(4)
+            EndIf
          EndIf
          If *this\type = #__type_ComboBox
-            If Not *this\stringbar
-               *this\padding\x = DPIScaled(4)
-               *this\padding\y = *this\padding\x
+            If *this\stringbar
+               If Flag & #__flag_Vertical
+                  *this\stringbar\padding\y = DPIScaled(4)
+               Else
+                  *this\stringbar\padding\x = DPIScaled(4)
+               EndIf
+            Else
+               If Flag & #__flag_Vertical
+                  *this\padding\y = DPIScaled(4)
+               Else
+                  *this\padding\x = DPIScaled(4)
+               EndIf
             EndIf
          EndIf
          If *this\type = #__type_String
-            *this\padding\x = DPIScaled(3)
+            If Flag & #__flag_Vertical
+               *this\padding\y = DPIScaled(3)
+            Else
+               *this\padding\x = DPIScaled(3)
+            EndIf
          EndIf
          If *this\type = #__type_Editor
-           ; *this\padding\x = DPIScaled(1)
+            If Flag & #__flag_Vertical
+               *this\padding\y = DPIScaled(1)
+            Else
+               *this\padding\x = DPIScaled(1)
+            EndIf
          EndIf
          If *this\type = #__type_Text
-            *this\padding\x = DPIScaled(2)
+            If Flag & #__flag_Vertical
+               *this\padding\y = DPIScaled(2)
+            Else
+               *this\padding\x = DPIScaled(2)
+            EndIf
          EndIf
          
          If *this\Toggle( ) And
@@ -27455,6 +27482,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
    HyperLink( 10, 10, 80, 30, "HyperLink", RGB(105, 245, 44) )
    String( 60, 20, 60, 30, "String" )
+   String( 80, 5, 187, 20, "abc" + "def" + "ghi" + "jkl" + "mno" + "pqr" + "stu" + "vwxyz" )
+      
    *w = ComboBox( 108, 30, 152, 30, #PB_ComboBox_Editable ) ;: Flag( *w, #__flag_optionboxes, 1 )
    For i = 1 To 100                                         ;0000
       AddItem(*w, i, "text-" + Str(i))
@@ -27810,9 +27839,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 23299
-; FirstLine = 23149
-; Folding = --------------------------------------------------0-----------------------------------------------------------848-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-+v----------------------------------------------------------------------------------------------------
+; CursorPosition = 22110
+; FirstLine = 21923
+; Folding = --------------------------------------------------0---------------------------------------------------------vfv----------------------------------------------------------------------------------------------------------------------------------------b------------------------------------------------------------------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-0f----------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

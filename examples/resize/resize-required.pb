@@ -21,6 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;*widget = Text( text_gadget_width+20,  10, text_gadget_width, 80, Text.s ) : *widget\text\multiline = 0
       *widget = String( text_gadget_width+20,  10, text_gadget_width, 80, Text.s ) : *widget\text\multiline = 0
+      ;*widget = Editor( text_gadget_width+20,  10, text_gadget_width, 80): *widget\text\multiline = 0 : SetText( *widget, Text.s ) 
       ;*widget = Button( text_gadget_width+20,  10, text_gadget_width, 80, Text.s )
        ;SetBackgroundColor(*widget, $D47DB2D3)
      
@@ -41,8 +42,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 22
-; FirstLine = 16
+; CursorPosition = 21
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
 ; DPIAware

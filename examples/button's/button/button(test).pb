@@ -59,8 +59,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure Test( X,Y,Width,Height,txt$, Flag.q=0)
       Protected._s_WIDGET *g
-      ;*g = Text(X,Y,Width,Height,txt$, Flag)
-      *g = Button(X,Y,Width,Height,txt$, Flag)
+      *g = Editor(X,Y,Width,Height, Flag) :SetText(*g,txt$)
+      ;*g = String(X,Y,Width,Height,txt$, Flag)
+      ;*g = Button(X,Y,Width,Height,txt$, Flag)
       ;*g = Progress(X,Y,Width,Height,txt$, Flag)
        
        
@@ -107,15 +108,15 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__flag_Bottom|#__flag_Vertical|#__flag_Invert)
 ;       *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__flag_Left|#__flag_Invert)
       
-;       *g1 = Test( 10+size, 10, size2, size, "top button", #__flag_Center )
-;       *g2 = Test( 10, 10+size, size, size2, "left button", #__flag_Center|#__flag_Vertical)
-;       *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__flag_Center|#__flag_Vertical|#__flag_Invert)
-;       *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__flag_Center|#__flag_Invert)
+      *g1 = Test( 10+size, 10, size2, size, "top button", #__flag_Center )
+      *g2 = Test( 10, 10+size, size, size2, "left button", #__flag_Center|#__flag_Vertical)
+      *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__flag_Center|#__flag_Vertical|#__flag_Invert)
+      *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__flag_Center|#__flag_Invert)
       
-      *g1 = Test( 10+size, 10, size2, size, "top button" )
-      *g2 = Test( 10, 10+size, size, size2, "left button", #__flag_Vertical)
-      *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__flag_Vertical|#__flag_Invert)
-      *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__flag_Invert)
+;       *g1 = Test( 10+size, 10, size2, size, "top button" )
+;       *g2 = Test( 10, 10+size, size, size2, "left button", #__flag_Vertical)
+;       *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__flag_Vertical|#__flag_Invert)
+;       *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__flag_Invert)
       
       ;
       *b0 = Button( Width-40, 10, 30,30, "0")
@@ -132,8 +133,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 117
-; FirstLine = 96
+; CursorPosition = 62
+; FirstLine = 54
 ; Folding = --
 ; EnableXP
 ; DPIAware

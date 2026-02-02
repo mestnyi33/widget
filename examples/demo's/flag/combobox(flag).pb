@@ -218,6 +218,7 @@ CompilerIf #PB_Compiler_IsMainFile
    If Open(0, 0, 0, Width + 180, Height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
       *this  = Widget::ComboBox(100, 100, 250, 200 ) :AddItem( *this, -1, Text ): SetState(*this, 0)
+      ;*this  = Widget::ComboBox(100, 100, 250, 200, #PB_ComboBox_Editable ) :AddItem( *this, -1, Text ): SetState(*this, 0)
     
       Define Y  = 10
       Define bh = 24
@@ -287,8 +288,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 219
-; FirstLine = 26
+; CursorPosition = 220
+; FirstLine = 209
 ; Folding = -----
 ; EnableXP
 ; DPIAware
