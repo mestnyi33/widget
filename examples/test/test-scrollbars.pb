@@ -2,6 +2,7 @@
 XIncludeFile "widgets.pbi"
 
 UseWidgets( )
+test_draw_area = 1
 
 Global._S_widget *g, *s1, *s2
 Global size = 370
@@ -23,9 +24,9 @@ Procedure all_events( )
          Resize(*g,#PB_Ignore,#PB_Ignore,255,255 )
    EndSelect
    
-   Debug "-------"
-   Debug ""+*g\clip_x() +" "+*g\clip_y() +" "+*g\clip_width() +" "+*g\clip_height()
-   Debug ""+*g\clip_ix() +" "+*g\clip_iy() +" "+*g\clip_iwidth() +" "+*g\clip_iheight()
+   Debug "------- "+*g\scroll\v\bar\max+" "+*g\scroll\v\bar\page\len+" "+*g\scroll\v\height
+;    Debug ""+*g\clip_x() +" "+*g\clip_y() +" "+*g\clip_width() +" "+*g\clip_height()
+;    Debug ""+*g\clip_ix() +" "+*g\clip_iy() +" "+*g\clip_iwidth() +" "+*g\clip_iheight()
    
 EndProcedure
 
@@ -58,8 +59,8 @@ If Open(0, 100, 50, 490, 400, "ListViewGadget", #PB_Window_SystemMenu)
    ;a_init(Root())
    Define img = LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/Background.bmp")
    
-   *g = Test( #__type_ScrollArea, img )
-   ; *g = Test( #__type_Image, img )
+   ; *g = Test( #__type_ScrollArea, img )
+   *g = Test( #__type_Image, img )
    ;a_set(*g)
    
    *s1 = Splitter( 10, 10, 380, 380, #PB_Default, *g, #PB_Splitter_Vertical )
@@ -71,8 +72,8 @@ If Open(0, 100, 50, 490, 400, "ListViewGadget", #PB_Window_SystemMenu)
    WaitClose()
 EndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 36
-; FirstLine = 26
+; CursorPosition = 10
+; FirstLine = 5
 ; Folding = --
 ; EnableXP
 ; DPIAware

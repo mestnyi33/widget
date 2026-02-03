@@ -5,7 +5,7 @@ UseWidgets( )
 Global alpha = 192
 
 #Font = 0
-LoadFont(#Font, "Arial", 14)
+LoadFont(#Font, "Arial", 24)
 
 ; Constants for the context menu.
 Enumeration 1
@@ -33,7 +33,7 @@ Procedure menu_events()
             SetPosition(CurrentObject, #PB_List_First) 
       EndSelect
        
-      ReDraw( root() )
+      ReDraw( Root() )
    EndIf
    
 EndProcedure
@@ -88,25 +88,24 @@ If Open(0, 0, 0, 800, 450, "vector Example 4: Changing the order of the objects 
    MenuItem(#MenuItem_ZOrder_Down, "Push one layer down")
    MenuItem(#MenuItem_ZOrder_Bottom, "Push to the deepest layer")
    
-   SetFont( root(), #Font)
+   SetFont( Root(), #Font)
    ; Container(0, 0, 800, 450) 
-   a_init(widget() , 0);6)
-   SetColor(widget(), #pb_gadget_backcolor, RGB(255, 255, 255))
+   a_init(Widget() , 0);6)
+   SetColor(Widget(), #PB_Gadget_BackColor, RGB(255, 255, 255))
    
    
-   a_object(20, 20, 200, 100, "Layer = 1", RGB(64, 128, 192))   : SetDrawCallBack( widget( ), @MyDrawingObject( ), RGB(64, 128, 192))
-   a_object(50, 50, 200, 100, "Layer = 2", RGB(192, 64, 128))   : SetDrawCallBack( widget( ), @MyDrawingObject( ), RGB(192, 64, 128))
-   a_object(80, 80, 200, 100, "Layer = 3", RGB(128, 192, 64))   : SetDrawCallBack( widget( ), @MyDrawingObject( ), RGB(128, 192, 64))
-   a_object(110, 110, 200, 100, "Layer = 4", RGB(192, 128, 64)) : SetDrawCallBack( widget( ), @MyDrawingObject( ), RGB(192, 128, 64))
-   a_object(140, 140, 200, 100, "Layer = 5", RGB(128, 64, 192)) : SetDrawCallBack( widget( ), @MyDrawingObject( ), RGB(128, 64, 192))
+   a_object(20, 20, 200, 100, "Layer = 1", RGB(64, 128, 192))   : SetDrawCallBack( Widget( ), @MyDrawingObject( ), RGB(64, 128, 192))
+   a_object(50, 50, 200, 100, "Layer = 2", RGB(192, 64, 128))   : SetDrawCallBack( Widget( ), @MyDrawingObject( ), RGB(192, 64, 128))
+   a_object(80, 80, 200, 100, "Layer = 3", RGB(128, 192, 64))   : SetDrawCallBack( Widget( ), @MyDrawingObject( ), RGB(128, 192, 64))
+   a_object(110, 110, 200, 100, "Layer = 4", RGB(192, 128, 64)) : SetDrawCallBack( Widget( ), @MyDrawingObject( ), RGB(192, 128, 64))
+   a_object(140, 140, 200, 100, "Layer = 5", RGB(128, 64, 192)) : SetDrawCallBack( Widget( ), @MyDrawingObject( ), RGB(128, 64, 192))
    
    
-   BindEvent( #PB_Event_Gadget, @right_events(), GetCanvasWindow(root()), GetCanvasGadget(root()), #PB_EventType_RightButtonUp )
+   BindEvent( #PB_Event_Gadget, @right_events(), GetCanvasWindow(Root()), GetCanvasGadget(Root()), #PB_EventType_RightButtonUp )
    BindEvent( #PB_Event_Menu, @menu_events())
    WaitClose( )
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 93
-; FirstLine = 76
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 7
 ; Folding = --
 ; EnableXP

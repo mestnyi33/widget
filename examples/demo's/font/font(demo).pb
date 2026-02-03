@@ -179,8 +179,8 @@ If Open(0, 322+50, 0, 322+50, 220)
 	
 	Debug ""+CountGadgetItems(1) +" - count gadget items"
 	
-	Panel(8, 8, 356, 203)
-	AddItem (ID(0), -1, "Panel 1")
+	Define *p = Panel(8, 8, 356, 203)
+	AddItem (*p, -1, "Panel 1")
 	
 	;*g = Panel(10, 10, 334, 130)
 	*g = Tree(10, 10, 334, 130, #__flag_CheckBoxes|#__flag_NoLines|#__flag_NoButtons|#__flag_GridLines | #__flag_ThreeState | #__flag_OptionBoxes)                            
@@ -216,14 +216,16 @@ If Open(0, 322+50, 0, 322+50, 220)
 	SetFont(Button(180, 145, 100, 24,"add (25)"), 6)
 	SetFont(Button(285, 145, 60, 24,"clear"), #Font18R)
 	
-	AddItem (ID(0), -1,"Panel 2")
+	AddItem (*p, -1,"Panel 2")
 	SetFont(Button(10, 15, 100, 24,"Button 2_1"), 5)
 	Button(115, 15, 100, 24,"Button 2_2")
 	
-	AddItem (ID(0), -1,"Panel 3")
+	AddItem (*p, -1,"Panel 3")
 	Button(10, 15, 100, 24,"Button 3_1")
-	*b = Button(10, 15+24+10, 100, 24,"auto resize button when changing font", #__flag_Textmultiline)
-	SetFont(*b, 5)
+	*b = Button(10, 15+24+10, 100, 24,"auto resize button when changing font");, #PB_Button_MultiLine)
+	If SetFont(*b, 5)
+	  ; Repaint( *b )
+	EndIf
 	;SetState(ID(0), 2)
 	
 	;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
@@ -234,7 +236,7 @@ If Open(0, 322+50, 0, 322+50, 220)
 ; 		Drawing( Root( ) )
 ; 	EndMacro
 	
-	ReDraw(Root( ))
+	
 	;Debug Width(*b, #__c_required)
 	
 	Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\Width[#__c_required] +" "+ *b\Height[#__c_required] ; mac = 121 29 ; win 70 16
@@ -242,8 +244,8 @@ If Open(0, 322+50, 0, 322+50, 220)
 
 	CloseList()
 	
-	SetItemFont(ID(0), 1, 6)
-	SetItemFont(ID(0), 2, #Font18R)
+	SetItemFont(*p, 1, 6)
+	SetItemFont(*p, 2, #Font18R)
 	
 	For i = 0 To 1
 		Bind(ID(i), @events_widgets())
@@ -265,9 +267,9 @@ If Open(0, 322+50, 0, 322+50, 220)
 	
 	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 234
-; FirstLine = 224
-; Folding = ----
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 226
+; FirstLine = 182
+; Folding = v---
 ; EnableXP
 ; DPIAware

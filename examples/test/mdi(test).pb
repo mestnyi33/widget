@@ -37,23 +37,24 @@
 ;   Draw - Window 280 180
 ;   reClip - Window 124 59
 
- XIncludeFile "../../../widgets.pbi"
+ XIncludeFile "../../widgets.pbi"
 
 
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
+  test_draw_area = 1
   
   EnableExplicit
   Global Event.i, MyCanvas, *spl1,*spl2
-  Global x=100,y=100, width=420, height=420 , focus
+  Global X=100,Y=100, Width=420, Height=420 , focus
   
-  If Not OpenWindow(0, 0, 0, width+x*2+20, height+y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
+  If Not OpenWindow(0, 0, 0, Width+X*2+20, Height+Y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
     MessageRequester("Fatal error", "Program terminated.")
     End
   EndIf
   
   MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
-   a_init( root(),0 )
+   a_init( Root(),0 )
   
   ;Define *mdi = MDI(0,0,0,0,#__flag_autosize)
   ;Define *mdi = MDI(x,y,width, height)
@@ -135,9 +136,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 57
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 45
+; FirstLine = 32
 ; Folding = -
 ; EnableXP
 ; DPIAware

@@ -105,14 +105,14 @@ Procedure Tool_Gadget( Window, Width, Height )
 ;    Disable(Tool_Line_Container,1)
 ;    SetColor(Tool_Align_To_Line, #PB_Gadget_FrontColor, $757B7B)
    
-   Bind(root( ), @Tool_Gadget_Event( ))
+   Bind(Root( ), @Tool_Gadget_Event( ))
 EndProcedure
 
 ;
 CompilerIf #PB_Compiler_IsMainFile
    Define Event
    Open( 1, 245, 144, 555, 555, "Tool", #PB_Window_SystemMenu )
-   Define Window = GetCanvasWindow(root( ))
+   Define Window = GetCanvasWindow(Root( ))
    Tool_Gadget( Window, 555, 555 )
    
    While IsWindow( Window )
@@ -123,11 +123,9 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 DisableExplicit
-
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 108
-; FirstLine = 4
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 71
+; FirstLine = 67
 ; Folding = --
-; Optimizer
 ; EnableXP
 ; DPIAware

@@ -137,7 +137,16 @@ CompilerIf #PB_Compiler_IsMainFile
    FontID = FontID(0)
    ; FontID = GetGadgetFont(#PB_Default)
    
-   Debug ""+Font::Size(FontID)+" - "+Font::Name(FontID)
+   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      Define fontsize2.CGFloat = 0.0; boldSystemFontOfSize ; fontWithSize
+      ;FontManager = CocoaMessage(0, 0, "NSFontManager sharedFontManager")
+      CocoaMessage(@FontSize2,0,"NSFont systemFontSize")
+      ;FontID = CocoaMessage(0, 0, "NSFont systemFontOfSize:@", @"") ; 13
+      ;FontID = CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @"") ; 12
+      Debug "systemFontSize "+fontsize2
+   CompilerEndIf
+
+   Debug ""+fontsize +" "+ Font::GetSize(FontID)+" - "+Font::GetName(FontID)
    
    Procedure draw_text(X, Y, Text.s, align=0, rotate=0)
       Static Width,Height
@@ -189,7 +198,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 9
+; CursorPosition = 142
+; FirstLine = 122
 ; Folding = ---
 ; EnableXP
 ; DPIAware

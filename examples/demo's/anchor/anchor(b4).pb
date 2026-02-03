@@ -5,7 +5,7 @@ UseWidgets( )
 Global alpha = 192
 
 #Font = 0
-LoadFont(#Font, "Arial", 14)
+LoadFont(#Font, "Arial", 24)
 
 ; Constants for the context menu.
 Enumeration 1
@@ -33,12 +33,12 @@ Procedure menu_events()
             SetPosition(CurrentObject, #PB_List_First) 
       EndSelect
       
-      If StartEnum( root( ) )
-         SetText( widget( ), "Layer = "+Str(widget( )\layer+1))
+      If StartEnum( Root( ) )
+         SetText( Widget( ), "Layer = "+Str(Widget( )\layer+1))
          StopEnum( )
       EndIf
       
-      ReDraw( root() )
+      ReDraw( Root() )
    EndIf
    
 EndProcedure
@@ -58,26 +58,26 @@ If Open(0, 0, 0, 800, 450, "Example 4: Changing the order of the objects (contex
    MenuItem(#MenuItem_ZOrder_Down, "Push one layer down")
    MenuItem(#MenuItem_ZOrder_Bottom, "Push to the deepest layer")
    
-   SetFont( root(), #Font)
+   SetFont( Root(), #Font)
    ; Container(0, 0, 800, 450) 
-   a_init(widget() , 0);6)
-   SetColor(widget(), #PB_Gadget_BackColor, RGBA(255, 255, 255, alpha))
+   a_init(Widget() , 0);6)
+   SetColor(Widget(), #PB_Gadget_BackColor, RGBA(255, 255, 255, alpha))
    
    
-   a_object(20, 20, 200, 100, "Layer = 1", RGBA(64, 128, 192, alpha)) : SetTextXY( widget( ), 9,9)
-   a_object(50, 50, 200, 100, "Layer = 2", RGBA(192, 64, 128, alpha)) : SetTextXY( widget( ), 9,9)
-   a_object(80, 80, 200, 100, "Layer = 3", RGBA(128, 192, 64, alpha)) : SetTextXY( widget( ), 9,9)
-   a_object(110, 110, 200, 100, "Layer = 4", RGBA(192, 128, 64, alpha)) : SetTextXY( widget( ), 9,9)
-   a_object(140, 140, 200, 100, "Layer = 5", RGBA(128, 64, 192, alpha)) : SetTextXY( widget( ), 9,9)
+   a_object(20, 20, 200, 100, "Layer = 1", RGBA(64, 128, 192, alpha)) : SetTextXY( Widget( ), 9,9)
+   a_object(50, 50, 200, 100, "Layer = 2", RGBA(192, 64, 128, alpha)) : SetTextXY( Widget( ), 9,9)
+   a_object(80, 80, 200, 100, "Layer = 3", RGBA(128, 192, 64, alpha)) : SetTextXY( Widget( ), 9,9)
+   a_object(110, 110, 200, 100, "Layer = 4", RGBA(192, 128, 64, alpha)) : SetTextXY( Widget( ), 9,9)
+   a_object(140, 140, 200, 100, "Layer = 5", RGBA(128, 64, 192, alpha)) : SetTextXY( Widget( ), 9,9)
    
    
-   BindEvent( #PB_Event_Gadget, @right_events(), GetCanvasWindow(root()), GetCanvasGadget(root()), #PB_EventType_RightButtonUp )
+   BindEvent( #PB_Event_Gadget, @right_events(), GetCanvasWindow(Root()), GetCanvasGadget(Root()), #PB_EventType_RightButtonUp )
    BindEvent( #PB_Event_Menu, @menu_events())
    WaitClose( )
 EndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 37
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 7
+; FirstLine = 2
 ; Folding = --
 ; EnableXP
 ; DPIAware

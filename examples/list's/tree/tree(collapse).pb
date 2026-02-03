@@ -80,7 +80,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *g9._S_widget
   
   
-  Procedure LoadControls(widget, Directory$)
+  Procedure LoadControls(Widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
     
     If FileSize(ZipFile$) < 1
@@ -136,39 +136,39 @@ CompilerIf #PB_Compiler_IsMainFile
                       Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
                       PackEntryName.S = " "+Left.S+Right.S
                       
-                      If IsGadget(widget)
+                      If IsGadget(Widget)
                         If FindString(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
-                          AddGadgetItem(widget, 0, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(widget, 0, ImageID(Image))
+                          AddGadgetItem(Widget, 0, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(Widget, 0, ImageID(Image))
                           
                         ElseIf FindString(LCase(PackEntryName.S), "window")
                           
                           ;Debug "add gadget window"
-                          AddGadgetItem(widget, 1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(widget, 1, ImageID(Image))
+                          AddGadgetItem(Widget, 1, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(Widget, 1, ImageID(Image))
                           
                         Else
-                          AddGadgetItem(widget, -1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(widget, CountGadgetItems(widget)-1, ImageID(Image))
+                          AddGadgetItem(Widget, -1, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(Widget, CountGadgetItems(Widget)-1, ImageID(Image))
                         EndIf
                         
                       Else
                         If FindString(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
-                          AddItem(widget, 0, PackEntryName.S, Image)
+                          AddItem(Widget, 0, PackEntryName.S, Image)
                           ;SetItemData(Widget, 0, Image)
                           
                         ElseIf FindString(LCase(PackEntryName.S), "window")
                           
                           Debug "add window"
-                          AddItem(widget, 1, PackEntryName.S, Image)
+                          AddItem(Widget, 1, PackEntryName.S, Image)
                           ;SetItemData(Widget, 1, Image)
                           
                         Else
-                          AddItem(widget, -1, PackEntryName.S, Image)
+                          AddItem(Widget, -1, PackEntryName.S, Image)
                           ;SetItemData(Widget, CountItems(Widget)-1, Image)
                         EndIf
                       EndIf
@@ -390,7 +390,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetItemFont(*g, 3, 5)
     SetItemText(*g, 3, "16_font and text change")
     SetItemColor(*g, 5, #PB_Gadget_FrontColor, $FFFFFF00)
-    SetItemColor(*g, 5, #pb_gadget_backcolor, $FFFF00FF)
+    SetItemColor(*g, 5, #PB_Gadget_BackColor, $FFFF00FF)
     SetItemText(*g, 5, "backcolor and text change")
    ; LoadFont(6, "Arial", 25)
     SetItemFont(*g, 4, 6)
@@ -502,10 +502,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 392
-; FirstLine = 387
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 264
+; FirstLine = 260
 ; Folding = --------
-; Optimizer
 ; EnableXP
 ; DPIAware

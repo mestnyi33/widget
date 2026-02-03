@@ -1,5 +1,5 @@
 ﻿
- IncludePath "../../../"
+ IncludePath "../../"
 XIncludeFile "widgets.pbi"
 
 
@@ -53,19 +53,19 @@ CompilerIf #PB_Compiler_IsMainFile
     X = 260
     ;\\
     *combo1 = ComboBox(10+X, 10, 250, h, #PB_ComboBox_Editable|#PB_ComboBox_UpperCase)
-    AddItem(widget( ), -1, "ComboBox editable...")
+    AddItem(Widget( ), -1, "ComboBox editable...")
     For a = 1 To 15
-      AddItem(widget( ), -1,"ComboBox item " + Str(a))
+      AddItem(Widget( ), -1,"ComboBox item " + Str(a))
     Next
     
     *combo2 = ComboBox(10+X, 20+h*1, 250, h, #PB_ComboBox_Image)
     For a = 0 To 4
-      AddItem(widget( ), -1,"ComboBox item with image" + Str(a), a)
+      AddItem(Widget( ), -1,"ComboBox item with image" + Str(a), a)
     Next
     
     *combo3 = ComboBox( 10+X, 30+h*2, 250, h, #PB_ComboBox_UpperCase)
     For a = 0 To 5
-      AddItem(widget( ), -1,"ComboBox item " + Str(a))
+      AddItem(Widget( ), -1,"ComboBox item " + Str(a))
     Next
     
     SetState(*combo1, 0)
@@ -101,11 +101,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 39
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = -
-; Optimizer
 ; EnableXP
 ; DPIAware
 ; CommandLine = PureBasic.exe Example.pb /PORTABLE

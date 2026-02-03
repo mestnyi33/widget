@@ -365,7 +365,7 @@ CompilerIf #PB_Compiler_IsMainFile
     SetItemFont(*g, 3, 5)
     SetItemText(*g, 3, "16_font and text change")
     SetItemColor(*g, 5, #PB_Gadget_FrontColor, $FFFFFF00)
-    SetItemColor(*g, 5, #pb_gadget_backcolor, $FFFF00FF)
+    SetItemColor(*g, 5, #PB_Gadget_BackColor, $FFFF00FF)
     SetItemText(*g, 5, "backcolor and text change")
     
     ;LoadFont(6, "Arial", 25)
@@ -478,10 +478,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 367
-; FirstLine = 362
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 237
+; FirstLine = 233
 ; Folding = -------
-; Optimizer
 ; EnableXP
 ; DPIAware
