@@ -2606,52 +2606,91 @@ CompilerIf Not Defined( Widget, #PB_Module )
                CompilerEndIf
                
                ;
-               If *this\area_align
-                  If *this\picture\width
-                     If *this\area_align\left
-                        *txt\x + indent + *this\picture\width
+               If *this\area_align\left Or 
+                  *this\area_align\top Or 
+                  *this\area_align\right Or 
+                  *this\area_align\bottom 
+                  If *this\area_align
+                     If *this\picture\width
+                        If *this\area_align\left
+                           *txt\x + indent + *this\picture\width
+                        EndIf
                      EndIf
-                     If Not ( *this\area_align\left Or 
-                              *this\area_align\top Or 
-                              *this\area_align\right Or 
-                              *this\area_align\bottom )
-                        *txt\x + indent + *this\picture\width
+                     If *this\area_align\top
+                        If *this\picture\height
+                           *txt\y + indent + *this\picture\height
+                        EndIf
                      EndIf
                   EndIf
-                  If *this\area_align\top
-                     If *this\picture\height
-                        *txt\y + indent + *this\picture\height
+               Else
+                  ; center image and text
+                  If *txt\string And *this\picture\width And *this\picture\height
+                     If *this\flag & #__flag_Vertical
+                        If *this\flag & #__flag_Invert
+                           *txt\y  + *this\picture\height + indent 
+                        EndIf
+                     Else
+                        If Not *this\flag & #__flag_Invert
+                           *txt\x + *this\picture\width + indent 
+                        EndIf
                      EndIf
                   EndIf
                EndIf
+               
             Next
          EndIf
          
          ;
-         If *this\area_align
-            If *this\text\string.s
-               If *this\picture\width
-                  If Not ( *this\area_align\top Or *this\area_align\bottom )
-                     *this\scroll_width( ) + indent + *this\picture\width
+         If *this\area_align\left Or 
+            *this\area_align\top Or 
+            *this\area_align\right Or 
+            *this\area_align\bottom 
+            ;
+            ; make area size
+            If *this\area_align
+               If *this\text\string.s
+                  If *this\picture\width
+                     If *this\area_align\left Or *this\area_align\right
+                        *this\scroll_width( ) + indent + *this\picture\width
+                     EndIf
                   EndIf
-               EndIf
-               If *this\picture\height
-                  If *this\area_align\top Or *this\area_align\bottom 
-                     *this\scroll_height( ) + indent + *this\picture\height
+                  If *this\picture\height
+                     If *this\area_align\top Or *this\area_align\bottom 
+                        *this\scroll_height( ) + indent + *this\picture\height
+                     EndIf
                   EndIf
                EndIf
             EndIf
-         EndIf
-         
-         ; make align position
-         If *this\picture
-            make_align_x( *this\picture, *this\scroll_width( ), *this\picture\width, *this\picture\rotate, *this\area_align, *this\padding\x )
-            make_align_y( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\area_align, *this\padding\y )
-            If Not ( *this\area_align\left Or 
-                     *this\area_align\top Or 
-                     *this\area_align\right Or 
-                     *this\area_align\bottom )
-               *this\picture\x = *this\padding\x
+            
+            ; make img align
+            If *this\picture
+               make_align_x( *this\picture, *this\scroll_width( ), *this\picture\width, *this\picture\rotate, *this\area_align, *this\padding\x )
+               make_align_y( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\area_align, *this\padding\y )
+            EndIf
+         Else
+            ;
+            If *this\text\string And *this\picture\height And *this\picture\width
+               ; make area size
+               If *this\flag & #__flag_Vertical
+                  *this\scroll_height( ) + *this\picture\height + indent
+               Else
+                  *this\scroll_width( ) + *this\picture\width + indent
+               EndIf
+               
+               ; make img align
+               If *this\flag & #__flag_Vertical
+                  If *this\flag & #__flag_Invert
+                     *this\picture\y = *this\padding\y 
+                  Else
+                     *this\picture\y + *this\scroll_height( ) - *this\picture\height - *this\padding\y 
+                  EndIf
+               Else
+                  If *this\flag & #__flag_Invert
+                     *this\picture\x + *this\scroll_width( ) - *this\picture\width - *this\padding\x
+                  Else
+                     *this\picture\x = *this\padding\x 
+                  EndIf
+               EndIf
             EndIf
          EndIf
          
@@ -27875,9 +27914,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2195
-; FirstLine = 2102
-; Folding = ------------------------------------------f+--n----4+-4+L-----P-----------------------------------------------vfv----------------------------------------------------------------------------------------------------------------------------------------b------8--------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8v-------------------------------------------------4-d-920Op+8--------------------------------------------------------------------------------------------+-2------
+; CursorPosition = 2652
+; FirstLine = 2311
+; Folding = ------------------------------------------f+--n----4+-4+L-------6-----------------------------------------------080---------------------------------------------------------------------------------------------------------------------------------------f8-----f--------------------------------------------------------------------------------------------------------------------------------4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-0-------------------------------------------------+v8nvu4J2f--------------------------------------------------------------------------------------------4-v+------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
