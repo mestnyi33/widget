@@ -7,6 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    test_draw_area = 1
    
+   Global multiline = 1
    Global size = 40
    Global size2 = 400
    Global Width = 550
@@ -81,6 +82,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure Test( X,Y,Width,Height,txt$, Flag.q=0)
       Protected._s_WIDGET *g
+      If multiline
+         txt$+#LF$+"line"
+         flag|#__flag_TextMultiLine
+      EndIf
+      
       *g = Button(X,Y,Width,Height,txt$, Flag)
       ; *g = ComboBox(X,Y,Width,Height, Flag) : AddItem(*g, -1, txt$) : SetState( *g, 0)
       
@@ -131,7 +137,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2
+; CursorPosition = 86
+; FirstLine = 24
 ; Folding = 4-
 ; EnableXP
 ; DPIAware
