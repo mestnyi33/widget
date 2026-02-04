@@ -370,7 +370,6 @@ Procedure   ReplaceArg( *object._s_WIDGET, argument, replace$ )
    Select argument
       Case 0
          SetClass( *object, replace$ )
-         
          ;
          Properties_Updates( *object, "Class" )
          
@@ -378,7 +377,6 @@ Procedure   ReplaceArg( *object._s_WIDGET, argument, replace$ )
          Debug "  ------ id"
          
       Case 2,3,4,5 
-         ;
          Select argument
             Case 2 : Resize( *object, Val( replace$ ), #PB_Ignore, #PB_Ignore, #PB_Ignore)
             Case 3 : Resize( *object, #PB_Ignore, Val( replace$ ), #PB_Ignore, #PB_Ignore)
@@ -3311,8 +3309,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 252
-; FirstLine = 241
+; CursorPosition = 373
+; FirstLine = 340
 ; Folding = -4--4---8v-3v-----------Az-------v0fvd-0----------f6WW----f+-
 ; EnableXP
 ; DPIAware

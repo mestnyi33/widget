@@ -253,7 +253,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          rotate.d
          
          align._s_align
-         savestring$
+         string$
          multistring.s
          
          ; char.c
@@ -803,7 +803,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
 ; CursorPosition = 255
-; FirstLine = 115
+; FirstLine = 119
 ; Folding = -F59------
 ; Optimizer
 ; EnableXP

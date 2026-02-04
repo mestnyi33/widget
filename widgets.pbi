@@ -11132,7 +11132,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *this\text\pass
-            ProcedureReturn *this\text\savestring$
+            ProcedureReturn *this\text\string$
          Else
             ProcedureReturn *this\text\string
          EndIf
@@ -11195,8 +11195,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Text.s = ReplaceString( Text.s, #CR$, #LF$ )
             EndIf
             ;
-            If Not *this\text\multiline
-               Text.s = RemoveString( Text.s, #LF$ )
+            If *this\text\multiline = 0
+               If CountString( Text.s, #LF$ )
+                  *this\text\multistring = Text.s
+                  Text.s = RemoveString( Text.s, #LF$ )
+               EndIf
                Text.s = edit_make_insert_text( *this, Text.s )
             EndIf
             
@@ -15835,76 +15838,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Flag & #__flag_TextLowerCase 
                If *this\text\lower
                   *this\text\lower = 0 
-;                   If *this\text\savestring$
-;                      If *this\flag & #__flag_TextPassWord Or 
-;                         *this\flag & #__flag_TextUpperCase Or 
-;                         *this\flag & #__flag_TextNumeric
-;                         *this\text\string = edit_make_insert_text( *this, *this\text\savestring$ )
-;                      Else
-;                         *this\text\string = *this\text\savestring$
-;                         *this\text\savestring$ = ""
-;                      EndIf
-;                   EndIf
                EndIf
             EndIf
             If Flag & #__flag_TextUpperCase 
                If *this\text\upper
                   *this\text\upper = 0 
-;                   If *this\text\savestring$
-;                      If *this\flag & #__flag_TextPassWord Or 
-;                         *this\flag & #__flag_TextLowerCase Or 
-;                         *this\flag & #__flag_TextNumeric
-;                         *this\text\string = edit_make_insert_text( *this, *this\text\savestring$ )
-;                      Else
-;                         *this\text\string = *this\text\savestring$
-;                         *this\text\savestring$ = ""
-;                      EndIf
-;                   EndIf
                EndIf
             EndIf
             If Flag & #__flag_TextNumeric 
                If *this\text\numeric
                   *this\text\numeric = 0 
-;                   If *this\text\savestring$
-;                      If *this\flag & #__flag_TextPassWord Or 
-;                         *this\flag & #__flag_TextUpperCase Or 
-;                         *this\flag & #__flag_TextLowerCase 
-;                         *this\text\string = edit_make_insert_text( *this, *this\text\savestring$ )
-;                      Else
-;                         *this\text\string = *this\text\savestring$
-;                         *this\text\savestring$ = ""
-;                      EndIf
-;                   EndIf
                EndIf
             EndIf
             If Flag & #__flag_TextPassWord 
                If *this\text\pass
                   *this\text\pass = 0 
-;                   If *this\text\savestring$
-;                      If *this\flag & #__flag_TextUpperCase Or 
-;                         *this\flag & #__flag_TextLowerCase Or 
-;                         *this\flag & #__flag_TextNumeric
-;                         *this\text\string = edit_make_insert_text( *this, *this\text\savestring$ )
-;                      Else
-;                         *this\text\string = *this\text\savestring$
-;                         *this\text\savestring$ = ""
-;                      EndIf
-;                   EndIf
                EndIf
             EndIf
             
-            If *this\text\savestring$
-               If *this\flag & #__flag_TextPassWord Or 
-                  *this\flag & #__flag_TextUpperCase Or 
-                  *this\flag & #__flag_TextLowerCase Or 
-                  *this\flag & #__flag_TextNumeric
-                  *this\text\string = edit_make_insert_text( *this, *this\text\savestring$ )
-               Else
-                  *this\text\string = *this\text\savestring$
-                  *this\text\savestring$ = ""
-               EndIf
-            EndIf
-                  
             If Flag & #__flag_Textreadonly : *this\text\editable = 1 : EndIf
             If Flag & #__flag_TextInvert   : *this\text\invert = 0 : EndIf
             If Flag & #__flag_TextVertical : *this\text\vertical = 0 : EndIf
@@ -15949,14 +15900,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             
             ; CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-            If *this\text\string
+            If *this\text\multistring = ""
                If Not *this\text\multiLine
-                  If *this\text\multistring = ""
+                  If *this\text\string
                      *this\text\multistring = *this\text\string
-                     *this\text\string = RemoveString( *this\text\string, #LF$ )
+                     If CountString( *this\text\string, #LF$ )
+                        *this\text\string = RemoveString( *this\text\string, #LF$ )
+                     EndIf
                   EndIf
                EndIf
             EndIf
+            If *this\text\string$
+               If *this\flag & #__flag_TextPassWord Or 
+                  *this\flag & #__flag_TextUpperCase Or 
+                  *this\flag & #__flag_TextLowerCase Or 
+                  *this\flag & #__flag_TextNumeric
+                  *this\text\string = edit_make_insert_text( *this, *this\text\string$ )
+               Else
+                  *this\text\string = *this\text\string$
+                  *this\text\string$ = ""
+               EndIf
+            EndIf
+            
             ; CompilerEndIf
             *this\TextChange( ) = 1
             
@@ -16026,48 +15991,51 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\text\rotate   = Bool( *this\text\invert ) * 180 + 
                                      Bool( *this\text\vertical ) * 90
                
+               ; remove flag
                If Flag & #__flag_TextLowerCase
-                  RemoveFlag(*this, #__flag_TextUpperCase)
-               EndIf
-               
-               If Flag & #__flag_TextUpperCase
-                  RemoveFlag(*this, #__flag_TextLowerCase)
-               EndIf
-               
-               ;
-               If *this\text\pass Or
-                  *this\text\upper Or 
-                  *this\text\lower Or
-                  *this\text\numeric
-                  ;
-                  If *this\text\savestring$ = ""
-                     *this\text\savestring$ = *this\text\string
+                  If *this\flag & #__flag_TextUpperCase 
+                     RemoveFlag(*this, #__flag_TextUpperCase)
                   EndIf
-                  *this\text\string = edit_make_insert_text( *this, *this\text\string )
                EndIf
-               
-               ;
-               If Flag & #__flag_TextInLine
-                  If *this\flag & #__flag_TextWordWrap 
-                     *this\flag &~ #__flag_TextWordWrap
+               If Flag & #__flag_TextUpperCase
+                  If *this\flag & #__flag_TextLowerCase 
+                     RemoveFlag(*this, #__flag_TextLowerCase)
+                  EndIf
+               EndIf
+               If Flag & #__flag_TextWordWrap
+                  If *this\flag & #__flag_TextInLine 
+                     RemoveFlag(*this, #__flag_TextInLine)
                   EndIf
                   If *this\flag & #__flag_TextMultiLine 
-                     *this\flag &~ #__flag_TextMultiLine
+                     RemoveFlag(*this, #__flag_TextMultiLine)
                   EndIf
+               EndIf
+               If Flag & #__flag_TextMultiLine
+                  If *this\flag & #__flag_TextInLine 
+                     RemoveFlag(*this, #__flag_TextInLine)
+                  EndIf
+                  If *this\flag & #__flag_TextWordWrap 
+                     RemoveFlag(*this, #__flag_TextWordWrap)
+                  EndIf
+               EndIf
+               If Flag & #__flag_TextInLine
+                  If *this\flag & #__flag_TextWordWrap 
+                     RemoveFlag(*this, #__flag_TextWordWrap)
+                  EndIf
+                  If *this\flag & #__flag_TextMultiLine 
+                     RemoveFlag(*this, #__flag_TextMultiLine)
+                  EndIf
+               EndIf
+               
+               ;
+               ; set flag
+               If Flag & #__flag_TextInLine
                   *this\text\multiLine = 0
                Else
                   If Flag & #__flag_TextMultiLine
-                     ; remove wordwrap flag
-                     If *this\flag & #__flag_TextWordWrap 
-                        *this\flag &~ #__flag_TextWordWrap
-                     EndIf
                      *this\text\multiLine = - 1
                   EndIf 
                   If Flag & #__flag_TextWordWrap 
-                     ; remove multiline flag
-                     If *this\flag & #__flag_TextMultiLine 
-                        *this\flag &~ #__flag_TextMultiLine
-                     EndIf
                      *this\text\multiLine = 1
                   EndIf
                   If *this\Flag & #__flag_TextMultiLine Or 
@@ -16079,7 +16047,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   Else
                      *this\text\multiLine = 0
+                     *this\flag | #__flag_TextInLine
                   EndIf
+               EndIf
+               
+               ;
+               If *this\text\pass Or
+                  *this\text\upper Or 
+                  *this\text\lower Or
+                  *this\text\numeric
+                  ;
+                  If *this\text\string$ = ""
+                     *this\text\string$ = *this\text\string
+                  EndIf
+                  *this\text\string = edit_make_insert_text( *this, *this\text\string )
                EndIf
                ;
                *this\TextChange( ) = 1
@@ -22033,6 +22014,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   ; text change
                   *this\edit_caret( )\word = GetWord( *this\LineFocused( )\text\string, *this\LineFocused( )\text\len, *this\edit_caret( )\pos[1]-*this\LineFocused( )\text\pos )
+                  *this\text\string$ = *this\text\string
                   DoEvents( *this, #__event_Change, *this\LineFocused( )\lindex, *this\LineFocused( ))
               EndIf
             EndIf
@@ -28038,9 +28020,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 16032
-; FirstLine = 15409
-; Folding = ------------------------------------------f+--n----4--v0X-------n-----------------------------------------------4v4--------------------------+--------------P-z--------------------------------------------------------------------------------------------b------8-----------------------------------------------8-0--0---44-----------------------------------------------------------------------+--------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------+8--------------------------------d-----0-0--------0f4PfdvTq-------------------------v-------------qu-xx-fP-----------------------------------------------4-v+------
+; CursorPosition = 11199
+; FirstLine = 10759
+; Folding = ------------------------------------------f+--n----4--v0X-------n-----------------------------------------------4v4--------------------------+--------------P-z--------------------------------------------------------------------------------------------b------8-----------------------------------------------4-8--8---vv-----------------------------------------------------------------------0-------------------------------------------------------------f--------------------------------------------------------------------------------------------------------------------------------------------------------------------------4f--------------------------------v8----v-v--------v-8+6r8dS0-------------------------0------------X20PO+-86-----------------------------------------------+-2------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

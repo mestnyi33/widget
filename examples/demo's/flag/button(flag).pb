@@ -84,12 +84,16 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure Flag_(*this._s_WIDGET, Flag.q, state.b = #PB_Default )
-      If state > 0
-         ProcedureReturn SetFlag( *this, Flag )
-      ElseIf state < 0
-         ProcedureReturn Bool( GetFlag( *this ) & Flag )
+      If Flag
+         If state > 0
+            ProcedureReturn SetFlag( *this, Flag )
+         ElseIf state < 0
+            ProcedureReturn Bool( GetFlag( *this ) & Flag )
+         Else
+            ProcedureReturn RemoveFlag( *this, Flag )
+         EndIf
       Else
-         ProcedureReturn RemoveFlag( *this, Flag )
+         ProcedureReturn GetFlag( *this )
       EndIf
    EndProcedure
    
@@ -291,9 +295,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 185
-; FirstLine = 139
-; Folding = -vh--
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 98
+; FirstLine = 82
+; Folding = -----
 ; EnableXP
 ; DPIAware

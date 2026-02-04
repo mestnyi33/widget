@@ -34,7 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define cr.s = #LF$, Text.s
    Text = get_text( )
-   Text = "V & H" + cr + " multiline" + cr + "text"
+   Text = "[0]V & H" + cr + " [1]multiline" + cr + "[2]text"
    ;Text = "text ";
    
    Global *b16, *b32, *b0
@@ -88,7 +88,22 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
+   Procedure Flag_(*this._s_WIDGET, Flag.q, state.b = #PB_Default )
+      If Flag
+         If state > 0
+            ProcedureReturn SetFlag( *this, Flag )
+         ElseIf state < 0
+            ProcedureReturn Bool( GetFlag( *this ) & Flag )
+         Else
+            ProcedureReturn RemoveFlag( *this, Flag )
+         EndIf
+      Else
+         ProcedureReturn GetFlag( *this )
+      EndIf
+   EndProcedure
+   
    Procedure all_events()
+      Protected Flag.q
       Protected EventWidget = EventWidget( )
       
       Select WidgetEvent( )
@@ -118,7 +133,6 @@ CompilerIf #PB_Compiler_IsMainFile
                     button_bottom,
                     button_center
                   
-                  
                   ; reset state
                   If EventWidget = button_top Or EventWidget = button_center
                      SetState(button_bottom,0) 
@@ -141,117 +155,74 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
                   ;
-                  If GetState(button_left)
-                     SetFlag(*this, #__flag_Left)
-                  Else
-                     RemoveFlag(*this, #__flag_Left)
-                  EndIf
-                  If GetState(button_right) 
-                     SetFlag(*this, #__flag_Right)
-                  Else
-                     RemoveFlag(*this, #__flag_Right)
-                  EndIf
-                  If GetState(button_bottom)
-                     SetFlag(*this, #__flag_Bottom)
-                  Else
-                     RemoveFlag(*this, #__flag_Bottom)
-                  EndIf
-                  If GetState(button_top)
-                     SetFlag(*this, #__flag_Top)
-                  Else
-                     RemoveFlag(*this, #__flag_Top)
-                  EndIf
+                  Flag_(*this, #__flag_Left, GetState(button_left))
+                  Flag_(*this, #__flag_Top, GetState(button_top))
+                  Flag_(*this, #__flag_Right, GetState(button_right))
+                  Flag_(*this, #__flag_Bottom, GetState(button_bottom))
                   
                   ;
                   If (GetState(button_left)=0 And 
                       GetState(button_top)=0 And
                       GetState(button_right)=0 And 
                       GetState(button_bottom)=0) 
-                     
                      ;
-                     If SetState(button_center,1) 
+                     If GetState(button_center)=0
+                        SetState(button_center,1) 
                      EndIf
                      SetFlag(*this, #__flag_Center)
                   EndIf
                   
                   
-               Case button_multiline 
-                  If GetState(EventWidget)
-                     SetState(Button_wordwrap,0) 
-                     SetFlag(*this, #__flag_TextMultiline)
-                  Else
-                     RemoveFlag(*this, #__flag_TextMultiline)
-                  EndIf
-                  
-               Case Button_wordwrap 
-                  If GetState(EventWidget)
-                     SetState(button_multiline,0) 
-                     SetFlag(*this, #__flag_TextWordWrap)
-                  Else
-                     RemoveFlag(*this, #__flag_TextWordWrap)
-                  EndIf
-                  
-               Case button_invert    
-                  If GetState(EventWidget)
-                     SetFlag(*this, #__flag_Invert)
-                  Else
-                     RemoveFlag(*this, #__flag_Invert)
-                  EndIf
-                  
-               Case button_vertical  
-                  If GetState(EventWidget)
-                     SetFlag(*this, #__flag_Vertical)
-                  Else
-                     RemoveFlag(*this, #__flag_Vertical)
-                  EndIf
-                  
-               Case button_inline  
-                  If GetState(EventWidget)
-                     SetFlag(*this, #__flag_TextInLine)
-                  Else
-                     RemoveFlag(*this, #__flag_TextInLine)
-                  EndIf
-                  
-               Case button_upper 
-                  If GetState(EventWidget)
-                     SetState(button_lower,0) 
-                     SetFlag(*this, #__flag_TextUpperCase)
-                  Else
-                     RemoveFlag(*this, #__flag_TextUpperCase)
-                  EndIf
-                  
-               Case button_lower  
-                  If GetState(EventWidget)
-                     SetState(button_upper,0) 
-                     SetFlag(*this, #__flag_TextLowerCase)
-                  Else
-                     RemoveFlag(*this, #__flag_TextLowerCase)
-                  EndIf
-                  
-               Case button_pass  
-                  If GetState(EventWidget)
-                     SetFlag(*this, #__flag_TextPassword)
-                  Else
-                     RemoveFlag(*this, #__flag_TextPassword)
-                  EndIf
-                  
-               Case button_read 
-                  If GetState(EventWidget)
-                     SetFlag(*this, #__flag_TextReadOnly)
-                  Else
-                     RemoveFlag(*this, #__flag_TextReadOnly)
-                  EndIf
-                  
-               Case button_numeric
-                  If GetState(EventWidget)
-                     SetFlag(*this, #__flag_TextNumeric)
-                  Else
-                     RemoveFlag(*this, #__flag_TextNumeric)
-                  EndIf
-                  
-               Case button_mirror    ;: flag = #__flag_TextMirror
-                  Debug "ЕЩЕ НЕ РЕАЛИЗОВАНО"
+               Case button_inline    : Flag = #__flag_TextInLine
+               Case Button_wordwrap  : Flag = #__flag_TextWordWrap
+               Case button_multiline : Flag = #__flag_TextMultiline
+               Case button_invert    : Flag = #__flag_Invert
+               Case button_vertical  : Flag = #__flag_Vertical
+               Case button_numeric   : Flag = #__flag_TextNumeric
+               Case button_upper     : Flag = #__flag_TextUpperCase
+               Case button_lower     : Flag = #__flag_TextLowerCase
+               Case button_pass      : Flag = #__flag_TextPassword
+               Case button_read      : Flag = #__flag_TextReadOnly
             EndSelect
+            
+            ;
+            If Flag
+               Flag_(*this, Flag, GetState(EventWidget))
+            EndIf
+         
+            ; reset
+            If GetState(button_lower)
+               If Flag( *this, #__flag_TextUpperCase )
+                  SetState(button_lower,0) 
+               EndIf
+            EndIf
+            If GetState(button_upper)
+               If Flag( *this, #__flag_TextLowerCase )
+                  SetState(button_upper,0) 
+               EndIf
+            EndIf
+            If GetState(button_multiline)
+               If Flag(*this, #__flag_TextInline) Or 
+                  Flag(*this, #__flag_TextWordWrap)
+                  SetState(button_multiline,0) 
+               EndIf
+            EndIf
+            If GetState(Button_wordwrap)
+               If Flag(*this, #__flag_TextInline) Or 
+                  Flag(*this, #__flag_TextMultiline)
+                  SetState(Button_wordwrap,0) 
+               EndIf
+            EndIf
+            If Flag(*this, #__flag_TextMultiline) Or 
+               Flag(*this, #__flag_TextWordWrap)
+               If GetState(button_inline)
+                  SetState(button_inline,0) 
+               EndIf
+            Else
+               If GetState(button_inline)=0
+                  SetState(button_inline,1) 
+               EndIf
+            EndIf
             
       EndSelect
       
@@ -336,8 +307,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 224
-; FirstLine = 205
-; Folding = ------
+; CursorPosition = 36
+; FirstLine = 12
+; Folding = -fDuq-
 ; EnableXP
 ; DPIAware
