@@ -1,0 +1,78 @@
+﻿
+XIncludeFile "../../widgets.pbi"
+;   WordWrap ! 1
+;         SetGadgetAttribute(0, #PB_Editor_WordWrap, WordWrap)
+
+
+; Key 
+;         (UP & Down) переход коретки на один итем верх или вниз и делаем видимим итем на который перешла коретка
+;         (PageUP & PageDown) прокрутка на одну страницу верх и вниз 
+; Ctrl -  (PageUP & PageDown) прокрутка на один итем верх и вниз коретка остается на том же итеме
+; Shift - (PageUP & PageDown) выделения на один итем верх и вниз если доходим на первый или последный выдимий итем то прокручиваем
+;         (Left&Right) 
+;
+;
+;
+;
+;
+;
+;
+;
+;
+
+
+CompilerIf #PB_Compiler_IsMainFile
+   EnableExplicit
+   UseWidgets( )
+   ;test_edit_text = 1
+   
+   Define g, *g, Text.s, m.s=#LF$
+   
+   Text.s = "This is a long line." + m.s +
+            "Who should show." + m.s +
+            m.s +
+            m.s +
+            "I have to write the text in the box or not." + m.s +
+            m.s +
+            m.s +
+            "The string must be very long." + m.s +
+            "Otherwise it will not work."
+   
+   
+   If Open(0, 0, 0, 522, 490, "EditorGadget", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered)
+      g = EditorGadget(#PB_Any, 8, 8, 306, 133) 
+      SetGadgetText(g,     "tExt012" +#LF$+ "LiNe345" )
+    
+     
+      ;*g = Editor(8, 146, 306, 133) : 
+      *g = String(8, 146, 306, 133, "") : 
+      ;*g = Button(8, 146, 306, 133, "") : 
+      ; SetFlag( *g, #__flag_TextInLine )
+      
+      SetText(*g,     "tExt012" +#LF$+ "LiNe345")
+      
+      ;SetFlag( *g, #__flag_TextReadOnly )
+      ;RemoveFlag( *g, #__flag_TextReadOnly )
+      
+      SetFlag( *g, #__flag_TextNumeric )
+      RemoveFlag( *g, #__flag_TextNumeric )
+      
+      ;SetFlag( *g, #__flag_TextUpperCase )
+      ;RemoveFlag( *g, #__flag_TextUpperCase )
+      
+      ;SetFlag( *g, #__flag_TextLowerCase )
+      ;RemoveFlag( *g, #__flag_TextLowerCase )
+      
+      ;SetFlag( *g, #__flag_TextPassword )
+      ;RemoveFlag( *g, #__flag_TextPassword )
+      
+      SetBackColor(*g, $FFB3FDFF)         
+      WaitClose( )
+   EndIf
+CompilerEndIf
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 57
+; FirstLine = 45
+; Folding = -
+; EnableXP
+; DPIAware

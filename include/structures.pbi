@@ -241,7 +241,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_TEXT Extends _s_TEXTITEM
          editable.b
          ;
-         pass$
          pass.b
          
          lower.b
@@ -254,6 +253,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          rotate.d
          
          align._s_align
+         savestring$
          multistring.s
          
          ; char.c
@@ -802,8 +802,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 727
-; FirstLine = 590
+; CursorPosition = 255
+; FirstLine = 115
 ; Folding = -F59------
 ; Optimizer
 ; EnableXP

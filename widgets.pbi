@@ -6179,10 +6179,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; Debug "scroll CHANGE "+*this\class
                If is_scrollbars_( *this )
                   If *this\type = #__type_Scroll
-                     If *this\parent\type = #__type_tree Or 
-                        *this\parent\type = #__type_listicon Or 
-                        *this\parent\type = #__type_listview
+                     If *this\parent\type = #__type_Tree Or 
+                        *this\parent\type = #__type_ListIcon Or 
+                        *this\parent\type = #__type_ListView
                         ; *this\parent\WidgetChange( ) = 1
+                        ; *this\parent\TextChange( ) = - 3
                      EndIf
                      Post( *this\parent, #__event_ScrollChange, *this, *bar\page\pos ) 
                   EndIf
@@ -11030,6 +11031,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If State & #PB_Tree_Expanded Or State & #PB_Tree_Collapsed 
                      *row\buttonbox\checked = Bool( State & #PB_Tree_Collapsed )
                      ; *this\WidgetChange( )  = #True
+                     *this\TextChange( ) = - 4 ; collapse & expanded
                      ;
                      PushListPosition( *this\__rows( ))
                      While NextElement( *this\__rows( ))
@@ -11130,7 +11132,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *this\text\pass
-            ProcedureReturn *this\text\pass$
+            ProcedureReturn *this\text\savestring$
          Else
             ProcedureReturn *this\text\string
          EndIf
@@ -11143,116 +11145,98 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\TitleText( )\string = Text
          EndIf
          
-         If *this\type = #__type_Tree
+         If *this\type = #__type_Tree Or
+            *this\type = #__type_ListIcon Or
+            *this\type = #__type_ListView Or
+            *this\type = #__type_ExplorerTree ;*this\type = #__type_ExplorerListIcon Or *this\type = #__type_ExplorerListView
+            
             If *this\RowFocused( )
                *this\RowFocused( )\text\string = Text
             EndIf
          EndIf
          
-         ;          If *this\type = #__type_Spin
-         ;             If *this\stringbar
-         ;                ; Debug " update spin-change " + *this\bar\PageChange( ) + " " + Str( *this\bar\thumb\pos - *this\bar\area\pos )
-         ;                ;Protected i ; *bar\page\pos
-         ;                For i = 0 To 3
-         ;                   If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
-         ;                      SetText( *this\stringbar, StrF( Val(Text), i ) )
-         ;                      ;SetText( *this\stringbar, StrF( ( *this\bar\thumb\pos - *this\bar\area\pos ), i ) )
-         ;                      Break
-         ;                   EndIf
-         ;                Next
-         ;             EndIf
-         ;          EndIf
+         If *this\type = #__type_Spin
+;             If *this\stringbar
+;                ; Debug " update spin-change " + *this\bar\PageChange( ) + " " + Str( *this\bar\thumb\pos - *this\bar\area\pos )
+;                ;Protected i ; *bar\page\pos
+;                For i = 0 To 3
+;                   If *this\scroll\increment = ValF( StrF( *this\scroll\increment, i ) )
+;                      SetText( *this\stringbar, StrF( Val(Text), i ) )
+;                      ;SetText( *this\stringbar, StrF( ( *this\bar\thumb\pos - *this\bar\area\pos ), i ) )
+;                      Break
+;                   EndIf
+;                Next
+;             EndIf
+         EndIf
          
          If *this\type = #__type_ComboBox
             If *this\stringbar
                ProcedureReturn SetText( *this\stringbar, Text )
-            Else
-               ; ProcedureReturn SetText( *this, Text )
-               Text.s = edit_make_insert_text( *this, Text.s )
-               If Not *this\text\multiline
-                  Text.s = RemoveString( Text.s, #LF$ )
-               EndIf
-               If *This\text\string.s <> Text.s
-                  *This\text\string.s = Text.s
-                  *this\TextChange( ) = #True
-                  result              = #True
-                  PostRepaintEvent( *this\root )
-               EndIf
             EndIf
          EndIf
          
          If *this\type = #__type_Editor Or
             *this\type = #__type_String Or
-            *this\type = #__type_text Or
-            *this\type = #__type_hyperlink Or ;*this\type = #__type_ComboBox Or 
+            *this\type = #__type_Text Or
+            *this\type = #__type_Frame Or
+            *this\type = #__type_Option Or 
+            *this\type = #__type_CheckBox Or 
+            *this\type = #__type_ComboBox Or
+            *this\type = #__type_Hyperlink Or 
             *this\type = #__type_Button Or *this\type = #__type_ButtonImage
-            
-            Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
-            Text.s = ReplaceString( Text.s, #CRLF$, #LF$ )
-            Text.s = ReplaceString( Text.s, #CR$, #LF$ )
+            ;
+            If CountString( Text.s, #LFCR$ )
+               Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
+            EndIf
+            If CountString( Text.s, #CRLF$ )
+               Text.s = ReplaceString( Text.s, #CRLF$, #LF$ )
+            EndIf
+            If CountString( Text.s, #CR$ )
+               Text.s = ReplaceString( Text.s, #CR$, #LF$ )
+            EndIf
             ;
             If Not *this\text\multiline
-               Text.s = edit_make_insert_text( *this, Text.s )
                Text.s = RemoveString( Text.s, #LF$ )
+               Text.s = edit_make_insert_text( *this, Text.s )
             EndIf
             
             If *This\text\string.s <> Text.s
                *This\text\string.s = Text.s
                *This\TextChange( ) = 1
                ;
-               If *this\text\pass
-                  *this\text\pass$ = Text.s
-               EndIf
-               
-               ;\\ editor example set and add
-               CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                  draw_font( *this, GetFontID( *this\root ), 1 )
-               CompilerElse
-                  If StartDraw( *this\root ) 
-                     draw_font( *this, GetFontID( *this\root ), 1, 1 )
-                  EndIf
-               CompilerEndIf
-               UpdateDraw_Content( *this )
-               
-               ;\\
-               If *this\LineFocused( )
-                  If is_integral_( *this )
-                     If *this\parent\type = #__type_Spin
-                        If *this\focus
-                           *this\edit_caret_2( ) = 0
-                        Else
-                           *this\edit_caret_2( ) = *this\text\len
-                        EndIf
-                        *this\edit_caret_1( ) = *this\text\len 
-                        *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
+               If *this\row
+                  ;\\ editor example set and add
+                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+                     draw_font( *this, GetFontID( *this\root ), 1 )
+                  CompilerElse
+                     If StartDraw( *this\root ) 
+                        draw_font( *this, GetFontID( *this\root ), 1, 1 )
                      EndIf
-                  EndIf
+                  CompilerEndIf
+                  UpdateDraw_Content( *this )
                   
-                  edit_sel_string_( *this, *this\LineFocused( ) )
-                  edit_sel_text_( *this, *this\LineFocused( ) )
+                  ;\\
+                  If *this\LineFocused( )
+                     If is_integral_( *this )
+                        If *this\parent\type = #__type_Spin
+                           If *this\focus
+                              *this\edit_caret_2( ) = 0
+                           Else
+                              *this\edit_caret_2( ) = *this\text\len
+                           EndIf
+                           *this\edit_caret_1( ) = *this\text\len 
+                           *this\edit_caret_0( ) = *this\edit_caret_1( ) - *this\LineFocused( )\text\pos
+                        EndIf
+                     EndIf
+                     
+                     edit_sel_string_( *this, *this\LineFocused( ) )
+                     edit_sel_text_( *this, *this\LineFocused( ) )
+                  EndIf
                EndIf
                
-               ProcedureReturn 1
-            EndIf
-         Else
-            ;         If Not *this\text\multiline
-            ;           Text = RemoveString( Text, #LF$ )
-            ;         EndIf
-            
-            Text = ReplaceString( Text, #LFCR$, #LF$ )
-            Text = ReplaceString( Text, #CRLF$, #LF$ )
-            Text = ReplaceString( Text, #CR$, #LF$ )
-            ;Text + #LF$
-            
-            If *This\text\string.s <> Text.s
-               *This\text\string.s = Text.s
-               *this\TextChange( ) = #True
-               result              = #True
-               PostRepaintEvent( *This\root )
+               result = 1
             EndIf
          EndIf
-         
-         ; *this\WidgetChange( ) = 1
          
          ProcedureReturn result
       EndProcedure
@@ -11260,52 +11244,52 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.s GetItemText( *this._s_WIDGET, Item.l, Column.l = 0 )
          Protected result.s
          
-         If *this\type = #__type_combobox
-            If *this\ComboBar( )
-               If is_no_select_item_( *this\ComboBar( )\__rows( ), Item )
-                  ProcedureReturn ""
-               EndIf
-               
-               result = *this\ComboBar( )\__rows( )\text\string
+         ;
+         If *this\type = #__type_Editor Or
+            *this\type = #__type_String
+            
+            If is_no_select_item_( *this\__lines( ), Item )
+               ProcedureReturn ""
             EndIf
+            
+            result = *this\__lines( )\text\string
          EndIf
          
-         Protected *tabBox._s_WIDGET
-         If *this\type = #__type_Panel
-            *tabBox = *this\tabbar
-         ElseIf *this\type = #__type_MenuBar Or
-                *this\type = #__type_PopupBar Or
-                *this\type = #__type_ToolBar Or
-                *this\type = #__type_TabBar
-            *tabBox = *this
+         ;
+         If *this\type = #__type_Tree Or
+            *this\type = #__type_ListIcon Or
+            *this\type = #__type_ListView
+            
+            If is_no_select_item_( *this\__rows( ), item )
+               ProcedureReturn ""
+            EndIf
+            
+            result = *this\__rows( )\text\string
          EndIf
          
-         If *tabBox
-            *this = *tabBox
+         ;
+         If *this\type = #__type_MenuBar Or
+            *this\type = #__type_PopupBar Or
+            *this\type = #__type_ToolBar Or
+            *this\type = #__type_TabBar
             
             If is_no_select_item_( *this\__tabs( ), Item )
                ProcedureReturn ""
             EndIf
             
             result = *this\__tabs( )\text\string
-            
-         Else
-            If *this\countitems ; row count
-               If *this\type = #__type_Editor Or
-                  *this\type = #__type_String Or
-                  *this\type = #__type_text
-                  If is_no_select_item_( *this\__lines( ), Item )
-                     ProcedureReturn ""
-                  EndIf
-                  
-                  result = *this\__lines( )\text\string
-               Else
-                  If is_no_select_item_( *this\__rows( ), Item )
-                     ProcedureReturn ""
-                  EndIf
-                  
-                  result = *this\__rows( )\text\string
-               EndIf
+         EndIf
+         
+         ;
+         If *this\type = #__type_Panel
+            If *this\tabbar
+               result = GetItemText( *this\tabbar, Item, Column )
+            EndIf
+         EndIf
+         ;
+         If *this\type = #__type_combobox
+            If *this\ComboBar( )
+               result = GetItemText( *this\ComboBar( ), Item, Column )
             EndIf
          EndIf
          
@@ -11315,9 +11299,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.l SetItemText( *this._s_WIDGET, Item.l, Text.s, Column.l = 0 )
          Protected result
          
+         ;
+         If *this\type = #__type_Editor Or
+            *this\type = #__type_String
+            
+            If is_no_select_item_( *this\__lines( ), item )
+               ProcedureReturn #False
+            EndIf
+            
+            If *this\__lines( )\text\string <> Text
+               *this\__lines( )\text\string = Text
+               *this\TextChange( )         = 1
+               result                      = 1
+            EndIf
+         EndIf
+         
+         ;
          If *this\type = #__type_Tree Or
             *this\type = #__type_ListIcon Or
-            *this\type = #__type_Properties
+            *this\type = #__type_ListView
             
             If is_no_select_item_( *this\__rows( ), item )
                ProcedureReturn #False
@@ -11325,41 +11325,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\__rows( )\text\string <> Text
                *this\__rows( )\text\string = Text
-               result                        = #True
-            EndIf
-            
-            If result
-               ; *this\WidgetChange( )              = 1
-               ; *this\__rows( )\TextChange( ) = 1
+               *this\TextChange( )         = 1
+               result                      = 1
             EndIf
          EndIf
          
          ;
-         Protected *tabBox._s_WIDGET
-         If *this\type = #__type_Panel
-            *tabBox = *this\tabbar
-         ElseIf *this\type = #__type_MenuBar Or
-                *this\type = #__type_PopupBar Or
-                *this\type = #__type_ToolBar Or
-                *this\type = #__type_TabBar
-            *tabBox = *this
-         EndIf
-         
-         If *tabBox
-            *this = *tabBox
+         If *this\type = #__type_MenuBar Or
+            *this\type = #__type_PopupBar Or
+            *this\type = #__type_ToolBar Or
+            *this\type = #__type_TabBar
+            
             If is_no_select_item_( *this\__tabs( ), item )
                ProcedureReturn #False
             EndIf
             
-            *this\__tabs( )\TextChange( ) = 1
-            *this\__tabs( )\text\string = Text.s
-            ;*this\WidgetChange( )       = #True
-            *this\TabChange( )          = #True
-            result                      = #True
+            If *this\__tabs( )\text\string <> Text.s
+               *this\__tabs( )\text\string = Text.s
+               ; *this\__tabs( )\TextChange( ) = 1
+               *this\TabChange( )          = 1
+               result                      = 1
+            EndIf
          EndIf
          
+         ;
+         If *this\type = #__type_Panel
+            If *this\tabbar
+               ProcedureReturn SetItemText( *this\tabbar, Item, Text, Column )
+            EndIf
+         EndIf
          
-         ; PostRepaintEvent( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -15837,11 +15832,81 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\area_align\bottom = 0 
             EndIf
             
+            If Flag & #__flag_TextLowerCase 
+               If *this\text\lower
+                  *this\text\lower = 0 
+;                   If *this\text\savestring$
+;                      If *this\flag & #__flag_TextPassWord Or 
+;                         *this\flag & #__flag_TextUpperCase Or 
+;                         *this\flag & #__flag_TextNumeric
+;                         *this\text\string = edit_make_insert_text( *this, *this\text\savestring$ )
+;                      Else
+;                         *this\text\string = *this\text\savestring$
+;                         *this\text\savestring$ = ""
+;                      EndIf
+;                   EndIf
+               EndIf
+            EndIf
+            If Flag & #__flag_TextUpperCase 
+               If *this\text\upper
+                  *this\text\upper = 0 
+;                   If *this\text\savestring$
+;                      If *this\flag & #__flag_TextPassWord Or 
+;                         *this\flag & #__flag_TextLowerCase Or 
+;                         *this\flag & #__flag_TextNumeric
+;                         *this\text\string = edit_make_insert_text( *this, *this\text\savestring$ )
+;                      Else
+;                         *this\text\string = *this\text\savestring$
+;                         *this\text\savestring$ = ""
+;                      EndIf
+;                   EndIf
+               EndIf
+            EndIf
+            If Flag & #__flag_TextNumeric 
+               If *this\text\numeric
+                  *this\text\numeric = 0 
+;                   If *this\text\savestring$
+;                      If *this\flag & #__flag_TextPassWord Or 
+;                         *this\flag & #__flag_TextUpperCase Or 
+;                         *this\flag & #__flag_TextLowerCase 
+;                         *this\text\string = edit_make_insert_text( *this, *this\text\savestring$ )
+;                      Else
+;                         *this\text\string = *this\text\savestring$
+;                         *this\text\savestring$ = ""
+;                      EndIf
+;                   EndIf
+               EndIf
+            EndIf
+            If Flag & #__flag_TextPassWord 
+               If *this\text\pass
+                  *this\text\pass = 0 
+;                   If *this\text\savestring$
+;                      If *this\flag & #__flag_TextUpperCase Or 
+;                         *this\flag & #__flag_TextLowerCase Or 
+;                         *this\flag & #__flag_TextNumeric
+;                         *this\text\string = edit_make_insert_text( *this, *this\text\savestring$ )
+;                      Else
+;                         *this\text\string = *this\text\savestring$
+;                         *this\text\savestring$ = ""
+;                      EndIf
+;                   EndIf
+               EndIf
+            EndIf
+            
+            If *this\text\savestring$
+               If *this\flag & #__flag_TextPassWord Or 
+                  *this\flag & #__flag_TextUpperCase Or 
+                  *this\flag & #__flag_TextLowerCase Or 
+                  *this\flag & #__flag_TextNumeric
+                  *this\text\string = edit_make_insert_text( *this, *this\text\savestring$ )
+               Else
+                  *this\text\string = *this\text\savestring$
+                  *this\text\savestring$ = ""
+               EndIf
+            EndIf
+                  
             If Flag & #__flag_Textreadonly : *this\text\editable = 1 : EndIf
-            If Flag & #__flag_TextLowerCase : *this\text\lower = 0 : EndIf
-            If Flag & #__flag_TextUpperCase : *this\text\upper = 0 : EndIf
-            If Flag & #__flag_TextPassWord : *this\text\pass = 0 : EndIf
-            If Flag & #__flag_TextInvert : *this\text\invert = 0 : EndIf
+            If Flag & #__flag_TextInvert   : *this\text\invert = 0 : EndIf
             If Flag & #__flag_TextVertical : *this\text\vertical = 0 : EndIf
             If Flag & #__flag_TextWordWrap 
                If *this\text\multiLine = 1
@@ -15951,42 +16016,71 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\type = #__type_Frame
             
             If *this\text
-               *this\text\editable = Bool( Not constants::BinaryFlag( *this\flag, #__flag_Textreadonly ))
-               *this\text\lower    = constants::BinaryFlag( *this\flag, #__flag_Textlowercase )
-               *this\text\upper    = constants::BinaryFlag( *this\flag, #__flag_Textuppercase )
-               *this\text\pass     = constants::BinaryFlag( *this\flag, #__flag_Textpassword )
+               *this\text\editable = Bool( Not constants::BinaryFlag( *this\flag, #__flag_TextReadOnly ))
+               *this\text\numeric  = constants::BinaryFlag( *this\flag, #__flag_TextNumeric )
+               *this\text\lower    = constants::BinaryFlag( *this\flag, #__flag_TextLowerCase )
+               *this\text\upper    = constants::BinaryFlag( *this\flag, #__flag_TextUpperCase )
+               *this\text\pass     = constants::BinaryFlag( *this\flag, #__flag_TextPassword )
                *this\text\invert   = constants::BinaryFlag( *this\flag, #__flag_TextInvert )
                *this\text\vertical = constants::BinaryFlag( *this\flag, #__flag_TextVertical )
                *this\text\rotate   = Bool( *this\text\invert ) * 180 + 
                                      Bool( *this\text\vertical ) * 90
                
+               If Flag & #__flag_TextLowerCase
+                  RemoveFlag(*this, #__flag_TextUpperCase)
+               EndIf
+               
+               If Flag & #__flag_TextUpperCase
+                  RemoveFlag(*this, #__flag_TextLowerCase)
+               EndIf
+               
                ;
-               If Flag & #__flag_TextMultiLine
-                  ; remove wordwrap flag
+               If *this\text\pass Or
+                  *this\text\upper Or 
+                  *this\text\lower Or
+                  *this\text\numeric
+                  ;
+                  If *this\text\savestring$ = ""
+                     *this\text\savestring$ = *this\text\string
+                  EndIf
+                  *this\text\string = edit_make_insert_text( *this, *this\text\string )
+               EndIf
+               
+               ;
+               If Flag & #__flag_TextInLine
                   If *this\flag & #__flag_TextWordWrap 
                      *this\flag &~ #__flag_TextWordWrap
                   EndIf
-                  *this\text\multiLine = - 1
-               EndIf 
-               If Flag & #__flag_TextWordWrap 
-                  ; remove multiline flag
                   If *this\flag & #__flag_TextMultiLine 
                      *this\flag &~ #__flag_TextMultiLine
                   EndIf
-                  *this\text\multiLine = 1
-               EndIf
-               If *this\Flag & #__flag_TextMultiLine Or 
-                  *this\Flag & #__flag_TextWordWrap
-                  ;
-                  If *this\text\multistring
-                     *this\text\string = *this\text\multistring 
-                     *this\text\multistring = ""
-                  EndIf
-               Else
                   *this\text\multiLine = 0
-                  *this\text\numeric   = Bool( *this\Flag & #__flag_TextNumeric )
+               Else
+                  If Flag & #__flag_TextMultiLine
+                     ; remove wordwrap flag
+                     If *this\flag & #__flag_TextWordWrap 
+                        *this\flag &~ #__flag_TextWordWrap
+                     EndIf
+                     *this\text\multiLine = - 1
+                  EndIf 
+                  If Flag & #__flag_TextWordWrap 
+                     ; remove multiline flag
+                     If *this\flag & #__flag_TextMultiLine 
+                        *this\flag &~ #__flag_TextMultiLine
+                     EndIf
+                     *this\text\multiLine = 1
+                  EndIf
+                  If *this\Flag & #__flag_TextMultiLine Or 
+                     *this\Flag & #__flag_TextWordWrap
+                     ;
+                     If *this\text\multistring
+                        *this\text\string = *this\text\multistring 
+                        *this\text\multistring = ""
+                     EndIf
+                  Else
+                     *this\text\multiLine = 0
+                  EndIf
                EndIf
-               
                ;
                *this\TextChange( ) = 1
                ; ProcedureReturn #True
@@ -16299,11 +16393,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                a_entered( )\anchors\state
                ;
                If Not MouseDragStart( )
-                  If *this <> a_entered( ) And 
+                  If *this
+                     If *this <> a_entered( ) And 
                      *this\root = a_entered( )\root 
                      ;
                      Entered( ) = a_entered( )
                      *this = a_entered( )
+                  EndIf
                   EndIf
                EndIf
             EndIf
@@ -27942,9 +28038,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 6144
-; FirstLine = 5763
-; Folding = ------------------------------------------f+--n----4--v0X-------n-----------------------------------------------4v4--------------------------+--------------f-4--------------------------------------------------------------------------------------------b------8---------------------------------------------------8---vv-----------------------------------------------------------------------0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-+-------------------------------f4----f-f--------f-40zX48k7-------------------------8------------vq8fc9-4z-----------------------------------------------0-r------
+; CursorPosition = 16032
+; FirstLine = 15409
+; Folding = ------------------------------------------f+--n----4--v0X-------n-----------------------------------------------4v4--------------------------+--------------P-z--------------------------------------------------------------------------------------------b------8-----------------------------------------------8-0--0---44-----------------------------------------------------------------------+--------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------+8--------------------------------d-----0-0--------0f4PfdvTq-------------------------v-------------qu-xx-fP-----------------------------------------------4-v+------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -68,7 +68,8 @@ CompilerIf #PB_Compiler_IsMainFile
     Open(0, 270, 10, 250, 680)
     ;Define *w = Editor(0, 0, 0, 0, #__flag_autosize) 
     *g = Editor(0, 0, 250, 680, #__flag_autosize) 
-    g=GetCanvasGadget(root())
+    g=GetCanvasGadget(Root())
+    SetGadgetData(g, *g)
     
     ;     Gadget(g, 8, 133+5+8, 306, 133, #PB_Flag_GridLines|#PB_Flag_Numeric);#PB_Text_WordWrap|#PB_Flag_GridLines) 
     ;     *g._s_widget=GetGadgetData(g)
@@ -173,6 +174,8 @@ CompilerEndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; Folding = -------------------0f-f----------------------------
 ; EnableXP
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 72
+; FirstLine = 67
 ; Folding = ---
 ; EnableXP
