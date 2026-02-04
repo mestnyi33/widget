@@ -1030,8 +1030,10 @@ Procedure   Properties_Display( *splitter._s_WIDGET, *this._s_WIDGET, item )
 EndProcedure
 
 Procedure   Properties_HideItem( *splitter._s_WIDGET, item, state )
-   HideItem( GetAttribute( *splitter, #PB_Splitter_FirstGadget ), item, state )
-   HideItem( GetAttribute( *splitter, #PB_Splitter_SecondGadget ), item, state )
+;    HideItem( GetAttribute( *splitter, #PB_Splitter_FirstGadget ), item, state )
+;    HideItem( GetAttribute( *splitter, #PB_Splitter_SecondGadget ), item, state )
+   DisableItem( GetAttribute( *splitter, #PB_Splitter_FirstGadget ), item, state )
+   DisableItem( GetAttribute( *splitter, #PB_Splitter_SecondGadget ), item, state )
 EndProcedure
 
 Procedure.s Properties_GetItemText( *splitter._s_WIDGET, item )
@@ -3309,9 +3311,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 373
-; FirstLine = 340
-; Folding = -4--4---8v-3v-----------Az-------v0fvd-0----------f6WW----f+-
+; CursorPosition = 1035
+; FirstLine = 926
+; Folding = -4--4---8v-3v-----------Ah-------v-fvd-0----------f6WW----f+-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2_621.exe
