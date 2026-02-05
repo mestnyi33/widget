@@ -7226,8 +7226,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If result
                If bar_update( *this, mode )
-                  If *this\type = #__type_Scroll Or *this\type = #__type_Spin
-                     Debug "bar_PageChange spin "+*this\class
+                  If *this\type = #__type_Scroll Or
+                     *this\type = #__type_Spin
+                     ; Debug "bar_PageChange spin "+*this\class
                   Else
                      Post( *this, #__event_Change, *this\stringbar, result )
                   EndIf   
@@ -19017,7 +19018,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   ReDraw( *this\root )
                Else
-                  Debug "post redraw "+ *this\class +" "+ EventString(event) +" "+ EventString(*data)
+                  ; Debug "post redraw "+ *this\class +" "+ EventString(event) +" "+ EventString(*data)
                   PostRepaint( *this\root )
                EndIf
                ;
@@ -27931,8 +27932,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 6869
-; FirstLine = 1408
+; CursorPosition = 7229
+; FirstLine = 1508
 ; Folding = AAGAA+HA------------Pcw------PAc-fAAAAAAAGAAAAAAAg4jcAgCAePAAAAACAAAAAAAAAAEAAAAAAAAAghIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwGAAAAAAAAAAAAAAAAADAAAAAAAAAwAAAAAAAAAYAAgBAAQGQAIBBAAMAAgAC5MAQBAgBA9FAfBAYCCAAAAAAAAAAAg--fAg-PAAAAAAAAAAAAAAEEAECAAAAAAAAAAAAAAAAAgBEAAABgHAAAAAyABAAAmJw-fIgAANgBAAAIAQ-AAAANAAAAHBAAgAMADAAAAAAAAAAAAAAAAAAAAAAAAAAJAAAAAhAAw-AAAAAAAAAAAAAAAAAAAA5AAAAgCAAAAAAAgXAAAAfNAAAAAAAA6-----j---------------HAAAAAAAAAAAAAAgDAAA+HAAAAgTAAACAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAAgJAAAA-HO9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAOEgAAAAAIA5fgPwcAAAgVPNvKAAAAAAAOAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAg-HAAAAAAAAAAAAAAAAAAAw------8HAAAAAAAsDAAAAAAAAAAAAAAAAAAA-HAAAAAAAgAAAAAAAAAAAAAAAAABAADgACBAAAAAAAAAAAAAAAAAAAg-BAAAAmBAAAAAAAAAAAAAA+-HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-
 ; EnableXP
 ; DPIAware
