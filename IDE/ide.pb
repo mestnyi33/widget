@@ -525,7 +525,7 @@ Procedure   PropertiesButton_Resize( *this._s_WIDGET )
    If *this
       Protected *row._s_ROWS
       Protected *second._s_WIDGET = *this\parent
-      Debug *second\class
+      ; Debug *second\class
       
       *row = *second\RowFocused( )
       If *row
@@ -1191,7 +1191,6 @@ Procedure   Properties_Events( )
                EndIf
             EndIf
          EndIf
-         
          
       Case #__event_Up
          If Not EnteredButton( )
@@ -3310,9 +3309,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 3010
-; FirstLine = 2569
-; Folding = -4--4---8v-3v-----------Ah-------v-fvd-0----------f6WW----f+-
+; CursorPosition = 527
+; FirstLine = 484
+; Folding = -4--4---8v-3v--------vb8Ah-------v-fvd-0----------f6WW----f+-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2_621.exe

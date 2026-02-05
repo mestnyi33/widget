@@ -35,6 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetWindowTitle( EventWindow(), "stste ["+Str(GetState( *Spin2 ))+"]" )
       Disable( *g1, *Spin2\bar\button[1]\disable )
       Disable( *g2, *Spin2\bar\button[2]\disable )
+      ; PostRepaint( )
    EndProcedure
    
    If vertical
@@ -79,8 +80,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 73
-; FirstLine = 34
+; CursorPosition = 37
+; FirstLine = 18
 ; Folding = -+
 ; EnableXP
 ; DPIAware

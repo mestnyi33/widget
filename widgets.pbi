@@ -2312,23 +2312,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-;          
-;          ; ProcedureReturn 
-;          ; авто скроллим чтобы был виден выбранный итем
-;          If *this\row
-;             If *this\row\autoscroll = #True
-;                *this\row\autoscroll = #PB_All
-;                ;
-;                If *this\RowFocused( ) 
-;                   row_scroll_y_( *this, *this\RowFocused( ))
-;                   
-;                   ;
-;                   DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-;                EndIf
-;                
-;             EndIf
-;          EndIf
-         
          ProcedureReturn result
       EndProcedure
       
@@ -6881,7 +6864,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; Debug "["+*this\class+"] update post "
                ;
-               Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
+               AddEvents( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
                *bar\PageChange( ) = 0
                ProcedureReturn #True   
             EndIf
@@ -10669,10 +10652,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;\\
                      If *this\RowFocused( ) <> *row
-                        ;\\ scroll to visible
-                        *this\row\autoscroll = #True
-                        
-                        ;
                         If *this\RowFocused( ) And
                            *this\RowFocused( )\_focus
                            *this\RowFocused( )\_focus = 0
@@ -10713,8 +10692,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf 
                         Else
                            If AddEvents( *this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                              ; Debug ""+*this\class +" "+ *this\RowFocused( )\rindex +" "+ ListSize(__gui\event\queues( ))
-                              *this\WidgetChange( ) = - 5
+                              If Not *this\RowFocused( )\height
+                                 *this\WidgetChange( ) = - 5
+                              EndIf
+                              If - *this\scroll_y( ) > *this\RowFocused( )\y
+                                 *this\WidgetChange( ) = - 5
+                              EndIf
+                              If *this\RowFocused( )\y + *this\RowFocused( )\height > *this\inner_height( )
+                                 *this\WidgetChange( ) = - 5
+                              EndIf
                            EndIf
                         EndIf
                         
@@ -13720,12 +13706,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                      *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
                      SetState( *this, position )
                   EndIf
-                  
-                  ;                   ; если был активирован авто скролл 
-                  ;                   ; то указываем что нужно скроллить бар 
-                  ;                   If *this\row\autoscroll = #PB_All
-                  ;                      *this\row\autoscroll = #True
-                  ;                   EndIf
                   
                   If test_redraw_items
                      PostReDrawEvent( *this\root )
@@ -21670,9 +21650,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\WidgetChange( ) = - 5
                If *this\row
-;                   If *this\row\autoscroll = #True
-;                      *this\row\autoscroll = #PB_All
-                     ;
                   If *this\RowFocused( ) 
                      UpdateDraw_Rows( *this, *this\__rows( ), 1 )
                      make_scrollbar_max( *this )
@@ -21688,8 +21665,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         UpdateDraw_VisibleRows( *this, *this\__rows( ))
                      EndIf
                   EndIf
-                     
-;                   EndIf
                EndIf
                *this\WidgetChange( ) = 0
             EndIf
@@ -22760,24 +22735,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   ReDraw( *this._s_ROOT )
+         ;DrawingFont(CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @""))
+         ;\\
+         If Not IsGadget( *this\canvas\gadget )
+            ProcedureReturn 0
+         EndIf
+         
          If is_root_( *this )
             __gui\event\queuesmask = - 1
             
-            ;\\ reset events
-            ;ResetEvents( *this )
+            ;\\ reset events для тест итем
+            ResetEvents( *this )
             
-            ;\\
-            If Not IsGadget( *this\canvas\gadget )
-               ProcedureReturn 0
-            EndIf
             Widget::StartDraw( *this )
             Widget::Drawing( )
             Widget::StopDraw( )
             
-            ResetEvents( *this )
+            ; ResetEvents( *this )
          Else
             Widget::StartDraw( *this\root )
-            ;DrawingFont(CocoaMessage(0, 0, "NSFont controlContentFontOfSize:@", @""))
             Widget::Draw( *this )
             Widget::StopDraw( )
             
@@ -27956,9 +27932,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 10715
-; FirstLine = 1059
-; Folding = AACAA+HA------------PAg------fA5+-AAAAAAAMAAAAAAAAvH6AAFA9eAAAAAEAAAAAAAAAAIAAAAAAAAAADRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgNAAAAAAAAAAAAAAAAAGAAAAAAAAAgBAAAAAAAAwAAADAAAMAAAAAAAYAAAAAAYAAAAAAA5LA+CAAAAAAAAAAAAAAAA---AA-fAAAAAAAAAAAAAAIIAIEAAAAAAAAAAAAAAAAAAAAAAACAPAAAAAEAAAAAMTg+HAAAANgBAAAIAQ-AAAANAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw-AAAAAAAAAAAAAAAAAAAA5AAAAgAAAAAAAAgXAAAAHMAAAAAAAA6-----j---------------HAAAAAAAAAAAAAAgDAAA+HAAAAgTAAACAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAAgJAAAA-HO9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAOEgAAAAAIA5fAAAAAAAAAAAAAAAAAAAAOAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAg-HAAAAAAAAAAAAAAAAAAAw-------HAAAAAAAsDAAAAAAAAAAAAAAAAAAAAEAAAAAAAgAAAAAAAAAAAAAAAAAAAADgAAAAAAAAAAAAAAAAAAAAAAg-BAAAAmBAAAAAAAAAAAAAA+-HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-
+; CursorPosition = 22751
+; FirstLine = 2280
+; Folding = AACAA+HA------------PAg------fA5+-AAAAAAAMAAAAAAAAvH6AAFA9eAAAAAEAAAAAAAAAAIAAAAAAAAAADRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgNAAAAAAAAAAAAAAAAAGAAAAAAAAAgBAAAAAAAAwAAADAAgMgAQCCAAYAAABEwZAAAAAAA5LA+CAAAAAAAAAAAAAAAA---AA-fAAAAAAAAAAAAAAIIAIEAAAAAAAAAAAAAAAAAAAAAAACAPAAAAAEAAAAAMTg--AAGAoBMAAAABA7HAAAoBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+HAAAAAAAAAAAAAAAAAAAAHAAAAUAAAAAAAA9CAAA5gBAAAAAAAI-----f9---------------AAAAAAAAAAAAAAAcAAAw-AAAAAcCAAQAAAAAAAAAAAAAAAAAAAAAAAAoAAAAAAAMBAAA5-whHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAwhAEAAAAABA-DAAAAAAAAAAAAAAAAAAAwBAAAAAAAAAAAAAAAAAAAAAAAAAwAAAA9-AAAAAAAAAAAAAAAAAAAA+-----f-AAAAAAAgdAAAAAAAAAAAAAAAAAAA5gAAAAAAAAEAAAAAAAAAAAAAAAAAAAYAEAAAAAAAAAAAAAAAAAAAAAA9PAAAAwMAAAAAAAAAAAAAAw--AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
