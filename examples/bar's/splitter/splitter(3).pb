@@ -21,7 +21,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;     Resize(s_0, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
 ;     Resize(s_1, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
     If Resize(s_2, #PB_Ignore, #PB_Ignore, Width - 250, #PB_Ignore)
-       PostRepaint( )
+       Repaint( )
     EndIf
  EndProcedure
   
@@ -92,8 +92,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until event = #PB_Event_CloseWindow
   End
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 14
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 23
+; FirstLine = 15
 ; Folding = -
 ; EnableXP
 ; DPIAware

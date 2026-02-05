@@ -228,10 +228,6 @@ CompilerIf #PB_Compiler_IsMainFile
                If *this\row\autoscroll = #True
                   *this\row\autoscroll = - 1
                EndIf
-               
-               If test_redraw_items
-                  PostRepaint( *this\root )
-               EndIf
             EndIf
          EndIf
       EndIf
@@ -350,8 +346,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 137
-; FirstLine = 119
+; CursorPosition = 230
+; FirstLine = 229
 ; Folding = -------
 ; EnableXP
 ; DPIAware

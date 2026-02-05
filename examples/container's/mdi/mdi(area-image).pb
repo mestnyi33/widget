@@ -100,7 +100,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 SetGadgetText(2, "horizontal bar")
                 SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
             EndIf
-            PostRepaint( )
+            Repaint( )
             
          Case 3
             If GetGadgetState(2)
@@ -110,7 +110,7 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-            PostRepaint( )
+            Repaint( )
             
          Case 4
             If GetGadgetState(2)
@@ -120,7 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-            PostRepaint( )
+            Repaint( )
          
          Case 5
             
@@ -235,6 +235,6 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
 ; CursorPosition = 122
-; FirstLine = 73
+; FirstLine = 102
 ; Folding = ----
 ; EnableXP

@@ -692,15 +692,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ReDraw( Root( ))
          EndIf
       EndMacro
-      Macro PostRepaint( _address_ = 0 )
-         PostReDraw( _address_ )
-      EndMacro
+      
       Macro PostReDrawEvent( _root_ )
-        ; PostRepaint( _root_ )
       EndMacro
-      Macro PostRepaintEvent( _root_ )
-         ; Debug #PB_Compiler_Procedure
-         ; PostRepaint( _root_ )
+      Macro PostRepaint( _root_ )
+         If _root_\canvas\repaint = 0
+            _root_\canvas\repaint = 1
+            ; Debug #PB_Compiler_Procedure
+            ; PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, *root\canvas\gadgetID )
+            PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #PB_EventType_Refresh )
+         EndIf
       EndMacro
       Macro PostFree( _this_ )
          AddEvents( _this_, #__event_free  ) 
@@ -6864,6 +6865,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; Debug "["+*this\class+"] update post "
                ;
+               ;Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
+               ;DoEvents( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
+               ; commit 2064 test-spin.pb работает только с ним
                AddEvents( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
                *bar\PageChange( ) = 0
                ProcedureReturn #True   
@@ -7166,7 +7170,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Procedure.b bar_PageChange( *this._s_WIDGET, ScrollPos.l, mode.b = 1 )
          Protected result.l, *bar._s_BAR = *this\bar
-         
+                  
          If *bar\area\len
             If Not *bar\max
                ; example ide.pb
@@ -7223,7 +7227,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If result
                If bar_update( *this, mode )
                   If *this\type = #__type_Scroll Or *this\type = #__type_Spin
-                     
+                     Debug "bar_PageChange spin "+*this\class
                   Else
                      Post( *this, #__event_Change, *this\stringbar, result )
                   EndIf   
@@ -7451,7 +7455,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\inner_width( ) And *this\inner_height( )
                If Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  PostRepaintEvent( *this\root )
+                  PostReDrawEvent( *this\root )
                EndIf
             EndIf
          EndIf
@@ -7816,7 +7820,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If test_display
                      Debug "comboBar - show"
                   EndIf
-                  PostRepaintEvent( *this\root )
+                  PostReDrawEvent( *this\root )
                EndIf
             Else
                If *this\hide
@@ -9941,7 +9945,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If result
-               PostRepaintEvent( *this\root )
+               PostReDrawEvent( *this\root )
             EndIf
          EndIf
          
@@ -10158,7 +10162,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         PostRepaintEvent( *this\root )
+         PostReDrawEvent( *this\root )
          ProcedureReturn result
       EndProcedure
       
@@ -10432,7 +10436,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; toggle box change
                If Not Post( *this, #__event_Change )
-                  PostRepaintEvent( *this\root )
+                  PostReDrawEvent( *this\root )
                EndIf
                
                ProcedureReturn #True
@@ -10695,7 +10699,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               If Not *this\RowFocused( )\height
                                  *this\WidgetChange( ) = - 5
                               EndIf
-                              If - *this\scroll_y( ) > *this\RowFocused( )\y
+                              If *this\RowFocused( )\y < - *this\scroll_y( )  
                                  *this\WidgetChange( ) = - 5
                               EndIf
                               If *this\RowFocused( )\y + *this\RowFocused( )\height > *this\inner_height( )
@@ -10775,8 +10779,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If *this\type = #__type_Progress Or 
             *this\type = #__type_Scroll Or 
-            *this\type = #__type_Track
-            result = bar_PageChange( *this, state, 2 ) ; and post change event
+            *this\type = #__type_Track Or
+            *this\type = #__type_Spin
+            result = bar_PageChange( *this, state, 2 )
          EndIf
          ;
          If *this\type = #__type_Splitter
@@ -10785,14 +10790,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Else
                state = DPIScaledY( state )
             EndIf
-            result = bar_PageChange( *this, state, 2 ) ; and post change event - *this\bar\min[1]
-         EndIf
-         ;
-         If *this\type = #__type_Spin
-            result = bar_PageChange( *this, state, 2 ) ; and post change event
-            If Not result
-               AddEvents( *this, #__event_Change, *this\stringbar, *this\bar\page\pos ) ; *bar\PageChange( ) )
-            EndIf
+            result = bar_PageChange( *this, state, 2 )
          EndIf
          ;
          ProcedureReturn result
@@ -11415,7 +11413,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                If *this\TextChange( )
-                  PostRepaintEvent( *this\root )
+                  PostReDrawEvent( *this\root )
                   ProcedureReturn #True
                EndIf
             EndIf
@@ -11733,7 +11731,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *bar\area\len 
                               bar_update( *this, 4 )
                            EndIf
-                           PostRepaintEvent( *this\root )
+                           PostReDrawEvent( *this\root )
                            ProcedureReturn #True
                         EndIf
                      EndIf
@@ -14203,7 +14201,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ClearList( *this\ComboBar( )\__rows( ))
-                  PostRepaintEvent( *this\ComboBar( )\root )
+                  PostReDrawEvent( *this\ComboBar( )\root )
                EndIf
             EndIf
          EndIf
@@ -14224,7 +14222,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ClearList( *this\__rows( ))
-               PostRepaintEvent( *this\root )
+               PostReDrawEvent( *this\root )
             EndIf
          EndIf
          
@@ -18939,7 +18937,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If Not EnteredButton( )
                            SetText( *this\root\parent, GetItemText( *this, GetState( *this ) ) )
                            DisplayPopupBar( *this, *this\root\parent )
-                           PostRepaintEvent( *this\root\parent\root )
+                           PostReDrawEvent( *this\root\parent\root )
                         EndIf
                      EndIf
                   EndIf
@@ -19019,7 +19017,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   ReDraw( *this\root )
                Else
-                  ; Debug "post redraw "+ *this\class +" "+ EventString(event) +" "+ EventString(*data)
+                  Debug "post redraw "+ *this\class +" "+ EventString(event) +" "+ EventString(*data)
                   PostRepaint( *this\root )
                EndIf
                ;
@@ -19141,6 +19139,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   EventRepaint( )
+         ProcedureReturn 
+         
          If EventData( )
             ; Debug "???? "+MapKey(roots( ))
             
@@ -19184,7 +19184,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If ChangeCurrentCanvas( GadgetID( eventgadget ))
                If roots( )\canvas\repaint = 1
                   roots( )\canvas\repaint = 0
-                  
                   ReDraw( roots( ) )
                EndIf
             EndIf
@@ -19225,7 +19224,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            CanvasMouseX( ) = mouse::GadgetMouseX( eventgadget )
                            CanvasMouseY( ) = mouse::GadgetMouseY( eventgadget )
                            SetActive( roots( )\active )
-                           ; ReDraw( GetActive( )\root )
                         EndIf
                         Break
                      EndIf
@@ -22781,8 +22779,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Else
                   If *root\canvas\repaint = 0
                      *root\canvas\repaint = 1
+                     Debug #PB_Compiler_Procedure
                      ; PostEvent( #PB_Event_Repaint, *root\canvas\window, #PB_All, #PB_All, *root\canvas\gadgetID )
-                     PostEvent( #PB_Event_Gadget, *root\canvas\window, *root\canvas\gadget, #PB_EventType_Refresh, *root\canvas\gadgetID )
+                     PostEvent( #PB_Event_Gadget, *root\canvas\window, *root\canvas\gadget, #PB_EventType_Refresh )
                   EndIf
                EndIf
             EndIf
@@ -24049,7 +24048,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                ;
                PostEvent( #PB_Event_SizeWindow, window, Canvas ) ; Bug PB
-               PostRepaintEvent( *root )
+               PostReDrawEvent( *root )
             EndIf
          EndIf
          
@@ -27932,9 +27931,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 22751
-; FirstLine = 2280
-; Folding = AACAA+HA------------PAg------fA5+-AAAAAAAMAAAAAAAAvH6AAFA9eAAAAAEAAAAAAAAAAIAAAAAAAAAADRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgNAAAAAAAAAAAAAAAAAGAAAAAAAAAgBAAAAAAAAwAAADAAgMgAQCCAAYAAABEwZAAAAAAA5LA+CAAAAAAAAAAAAAAAA---AA-fAAAAAAAAAAAAAAIIAIEAAAAAAAAAAAAAAAAAAAAAAACAPAAAAAEAAAAAMTg--AAGAoBMAAAABA7HAAAoBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+HAAAAAAAAAAAAAAAAAAAAHAAAAUAAAAAAAA9CAAA5gBAAAAAAAI-----f9---------------AAAAAAAAAAAAAAAcAAAw-AAAAAcCAAQAAAAAAAAAAAAAAAAAAAAAAAAoAAAAAAAMBAAA5-whHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAwhAEAAAAABA-DAAAAAAAAAAAAAAAAAAAwBAAAAAAAAAAAAAAAAAAAAAAAAAwAAAA9-AAAAAAAAAAAAAAAAAAAA+-----f-AAAAAAAgdAAAAAAAAAAAAAAAAAAA5gAAAAAAAAEAAAAAAAAAAAAAAAAAAAYAEAAAAAAAAAAAAAAAAAAAAAA9PAAAAwMAAAAAAAAAAAAAAw--AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5
+; CursorPosition = 6869
+; FirstLine = 1408
+; Folding = AAGAA+HA------------Pcw------PAc-fAAAAAAAGAAAAAAAg4jcAgCAePAAAAACAAAAAAAAAAEAAAAAAAAAghIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwGAAAAAAAAAAAAAAAAADAAAAAAAAAwAAAAAAAAAYAAgBAAQGQAIBBAAMAAgAC5MAQBAgBA9FAfBAYCCAAAAAAAAAAAg--fAg-PAAAAAAAAAAAAAAEEAECAAAAAAAAAAAAAAAAAgBEAAABgHAAAAAyABAAAmJw-fIgAANgBAAAIAQ-AAAANAAAAHBAAgAMADAAAAAAAAAAAAAAAAAAAAAAAAAAJAAAAAhAAw-AAAAAAAAAAAAAAAAAAAA5AAAAgCAAAAAAAgXAAAAfNAAAAAAAA6-----j---------------HAAAAAAAAAAAAAAgDAAA+HAAAAgTAAACAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAAgJAAAA-HO9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAOEgAAAAAIA5fgPwcAAAgVPNvKAAAAAAAOAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAg-HAAAAAAAAAAAAAAAAAAAw------8HAAAAAAAsDAAAAAAAAAAAAAAAAAAA-HAAAAAAAgAAAAAAAAAAAAAAAAABAADgACBAAAAAAAAAAAAAAAAAAAg-BAAAAmBAAAAAAAAAAAAAA+-HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

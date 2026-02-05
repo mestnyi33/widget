@@ -20,7 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
  
   Procedure ResizeCallBack()
      If Resize(Splitter, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-16, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
-        PostRepaint( ) 
+        Repaint( ) 
      EndIf
   EndProcedure
   
@@ -72,7 +72,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   Case #PB_EventType_Focus    
                      SetGadgetText(10, "settext")
                      If SetText(g, "settext")
-                       PostRepaint( ) 
+                       Repaint( ) 
                      EndIf
                EndSelect
             EndIf
@@ -89,8 +89,8 @@ CompilerIf #PB_Compiler_IsMainFile
 EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 70
-; FirstLine = 57
+; CursorPosition = 22
+; FirstLine = 15
 ; Folding = --
 ; EnableXP
 ; DPIAware
