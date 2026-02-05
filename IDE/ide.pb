@@ -2594,32 +2594,32 @@ Procedure   ide_events( )
             EndIf
          EndIf
          
-      Case #__event_MouseEnter
-         If *g = ide_inspector_PANELBUTTON
-            If GetState( *g )
-               SetState( *g, 0 );
-               SetState( ide_inspector_PANEL, 0 )
-               SetText( ide_inspector_PANELBUTTON, "Events" )
-            Else
-               SetState( *g, 1 );
-               SetState( ide_inspector_PANEL, 1 )
-               SetText( ide_inspector_PANELBUTTON, "Properties" )
-            EndIf
-            ;
-            UpdateButtons( ide_inspector_PANELBUTTON, #True )
-         EndIf
-;       Case #__event_LeftClick
+;       Case #__event_MouseEnter
 ;          If *g = ide_inspector_PANELBUTTON
 ;             If GetState( *g )
-;                SetState( ide_inspector_PANEL, 1 )
-;                SetText( ide_inspector_PANELBUTTON, "Properties" )
-;             Else
+;                SetState( *g, 0 );
 ;                SetState( ide_inspector_PANEL, 0 )
 ;                SetText( ide_inspector_PANELBUTTON, "Events" )
+;             Else
+;                SetState( *g, 1 );
+;                SetState( ide_inspector_PANEL, 1 )
+;                SetText( ide_inspector_PANELBUTTON, "Properties" )
 ;             EndIf
 ;             ;
 ;             UpdateButtons( ide_inspector_PANELBUTTON, #True )
 ;          EndIf
+      Case #__event_LeftClick
+         If *g = ide_inspector_PANELBUTTON
+            If GetState( *g )
+               SetState( ide_inspector_PANEL, 1 )
+               SetText( ide_inspector_PANELBUTTON, "Properties" )
+            Else
+               SetState( ide_inspector_PANEL, 0 )
+               SetText( ide_inspector_PANELBUTTON, "Events" )
+            EndIf
+            ;
+            UpdateButtons( ide_inspector_PANELBUTTON, #True )
+         EndIf
          
       Case #__event_DragStart
          If *g = ide_all_ELEMENTS
@@ -3008,8 +3008,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
       SetState(ide_inspector_PANELCOMBO, 0)
       AddButtons( ide_design_PANEL, ide_inspector_PANELCOMBO, #__flag_AutoSize|#__flag_Right )
       Bind( ide_inspector_PANELBUTTON, @ide_events( ), #__event_LeftClick )
-      Bind( ide_inspector_PANELBUTTON, @ide_events( ), #__event_MouseEnter )
-      Bind( ide_inspector_PANELBUTTON, @ide_events( ), #__event_MouseLeave )
+      ; Bind( ide_inspector_PANELBUTTON, @ide_events( ), #__event_MouseEnter )
       ;
       SetState( ide_inspector_PANELBUTTON, 0 )
       BarPosition( ide_inspector_PANEL, 0 )
@@ -3311,8 +3310,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 1035
-; FirstLine = 926
+; CursorPosition = 3010
+; FirstLine = 2569
 ; Folding = -4--4---8v-3v-----------Ah-------v-fvd-0----------f6WW----f+-
 ; EnableXP
 ; DPIAware

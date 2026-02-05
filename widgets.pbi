@@ -2312,22 +2312,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         
-         ProcedureReturn 
-         ; авто скроллим чтобы был виден выбранный итем
-         If *this\row
-            If *this\row\autoscroll = #True
-               *this\row\autoscroll = #PB_All
-               ;
-               If *this\RowFocused( ) 
-                  row_scroll_y_( *this, *this\RowFocused( ))
-                  
-                  ;
-                  ; DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-               EndIf
-               
-            EndIf
-         EndIf
+;          
+;          ; ProcedureReturn 
+;          ; авто скроллим чтобы был виден выбранный итем
+;          If *this\row
+;             If *this\row\autoscroll = #True
+;                *this\row\autoscroll = #PB_All
+;                ;
+;                If *this\RowFocused( ) 
+;                   row_scroll_y_( *this, *this\RowFocused( ))
+;                   
+;                   ;
+;                   DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+;                EndIf
+;                
+;             EndIf
+;          EndIf
          
          ProcedureReturn result
       EndProcedure
@@ -2662,7 +2662,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ; make vertical scroll y
          make_area_y( *this, *this\scroll_height( ))
-         
          
       EndProcedure
       
@@ -8245,6 +8244,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndMacro
       
+      Macro edit_redraw_font( _this_ )
+         CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+            If StartDraw( _this_\root ) 
+               If test_edit_text
+                  Debug "  ---- root ReDrawing ----  " 
+               EndIf
+               If CurrentFontID( )
+                  DrawingFont(CurrentFontID( ))
+               EndIf
+            EndIf
+         CompilerEndIf
+      EndMacro
+      
       Procedure.i edit_sel_start_word( *this._s_WIDGET, caret, *rowLine._s_ROWS )
          Protected result.i, i.i, char.i
          
@@ -8288,20 +8300,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Macro edit_redraw_font( _this_ )
-         CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
-            If StartDraw( _this_\root ) 
-               If test_edit_text
-                  Debug "  ---- root ReDrawing ----  " 
-               EndIf
-               If CurrentFontID( )
-                  DrawingFont(CurrentFontID( ))
-               EndIf
-            EndIf
-         CompilerEndIf
-      EndMacro
-      
-      Procedure edit_sel_string_( *this._s_WIDGET, *rowLine._s_ROWS, mode.l = #__sel_to_line )
+      Procedure   edit_sel_string_( *this._s_WIDGET, *rowLine._s_ROWS, mode.l = #__sel_to_line )
          Protected CaretLeftPos, CaretRightPos, lastselectlen = *this\mode\fullselection
          If test_edit_text
             Debug "edit_sel_row_text - " + *rowLine\lindex + " " + mode
@@ -8448,7 +8447,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn #True
       EndProcedure
       
-      Procedure edit_sel_text_( *this._s_WIDGET, *rowLine._s_ROWS )
+      Procedure   edit_sel_text_( *this._s_WIDGET, *rowLine._s_ROWS )
          ; edit sel all items
          If *rowLine = #PB_All
             *rowLine                 = *this\LineFocused( )
@@ -8545,27 +8544,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn caret
       EndProcedure
       
-      Procedure edit_make_text_position( *this._s_WIDGET )
-         ;
-         make_scrollbar_max( *this )
-         
-         ; make horizontal scroll x
-         make_area_x( *this, *this\scroll_width( ))
-         
-         ; make vertical scroll y
-         make_area_y( *this, *this\scroll_height( ))
-         
-         If Not ( __gui\event\queuesmask = - 1 )
-            If *this\scroll\v And
-               bar_PageChange( *this\scroll\v, - *this\scroll_y( ) )
-            EndIf
-            
-            If *this\scroll\h And
-               bar_PageChange( *this\scroll\h, - *this\scroll_x( ) )
-            EndIf
-         EndIf
-      EndProcedure
-      
       Procedure.s edit_make_insert_text( *this._s_WIDGET, Text.s )
          Protected String.s, i.i, Len.i
          
@@ -8649,7 +8627,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure edit_key_change_text( *this._s_WIDGET, Chr.s = "" ) ; Ok
+      Procedure   edit_key_change_text( *this._s_WIDGET, Chr.s = "" ) ; Ok
          Protected key = keyboard( )\key
          
          If Not *this\text\editable
@@ -8808,7 +8786,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf  
       EndProcedure
       
-      Procedure edit_key_page_up_down_( *this._s_WIDGET, wheel, index_select_row )
+      Procedure   edit_key_page_up_down_( *this._s_WIDGET, wheel, index_select_row )
          Protected Repaint, select_index, page_height
          Protected first_index = 0, last_index = *this\countitems - 1
          
@@ -8881,7 +8859,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn Repaint
       EndProcedure
       
-      Procedure edit_key_home_( *this._s_WIDGET )
+      Procedure   edit_key_home_( *this._s_WIDGET )
          Protected result
          
          If keyboard( )\key[1] & #PB_Canvas_Control
@@ -8915,7 +8893,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure edit_key_end_( *this._s_WIDGET )
+      Procedure   edit_key_end_( *this._s_WIDGET )
          Protected result
          
          If keyboard( )\key[1] & #PB_Canvas_Control
@@ -8952,7 +8930,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
-      Procedure edit_AddLine( *this._s_WIDGET, List e_rows._s_ROWS( ), position, *text.Character, string_len, count )
+      Procedure   edit_AddLine( *this._s_WIDGET, List e_rows._s_ROWS( ), position, *text.Character, string_len, count )
          Protected *rowLine._s_ROWS
          Protected add_index = - 1, add_y, add_pos, add_height
          
@@ -9024,7 +9002,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\text\len + string_len + Len( #LF$ )
       EndProcedure
       
-      Procedure edit_AddItem( *this._s_WIDGET, position, *text.Character, string_len )
+      Procedure   edit_AddItem( *this._s_WIDGET, position, *text.Character, string_len )
          ; edit_AddLine(*this, *this\__lines( ), position, *text, string_len, 0);CountString( *this\text\string, #LF$ ) )
          
          Protected add_index = - 1, add_pos
@@ -9085,7 +9063,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; *this\WidgetChange( )    = 1
       EndProcedure
       
-      Procedure edit_SetItemState( *this._s_WIDGET, Item.l, State.i )
+      Procedure   edit_SetItemState( *this._s_WIDGET, Item.l, State.i )
          If *this\LineState( ) <> Item
             *this\LineState( ) = Item
             
@@ -9128,7 +9106,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure edit_SetState( *this._s_WIDGET, State.i )
+      Procedure   edit_SetState( *this._s_WIDGET, State.i )
          If state < 0 Or
             state > *this\text\len
             state = *this\text\len
@@ -9321,6 +9299,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Wend
                PopListPosition( *this\__rows( ))
             EndIf
+            
             ; *this\WidgetChange( ) = 1
             *this\TextChange( ) = - 6
          EndIf
@@ -10126,26 +10105,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;          
          add_image( *this\picture, img )
-          
-;          If *this\type <> #__type_window
-;             If IsImage( img )
-;                *this\picture\x  = *this\padding\x
-;                *this\picture\y  = *this\padding\y
-;                
-;                ; make horizontal scroll max
-;                If *this\scroll_width( ) <> *this\picture\width + *this\picture\x * 2
-;                   *this\scroll_width( ) = *this\picture\width + *this\picture\x * 2
-;                EndIf
-;                
-;                ; make vertical scroll max
-;                If *this\scroll_height( ) <> *this\picture\height + *this\picture\y * 2
-;                   *this\scroll_height( ) = *this\picture\height + *this\picture\y * 2
-;                EndIf
-;                
-;                ; updatate scrollarea size
-;                make_scrollbar_max( *this )
-;             EndIf
-;          EndIf
          
          ProcedureReturn *this\picture\imageID
       EndProcedure
@@ -10668,10 +10627,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *row
                      *this\RowState( ) = state  ; 
-                     If Not *this\TextChange( )
-                      ;  *this\TextChange( ) = - 5
-                     EndIf
-                     ; *this\WidgetChange( ) = 1
                      
                      ;\\ example file "D&D-items"
                      If *this\drop And MouseDragStart( )
@@ -10737,26 +10692,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\RowFocused( )\_focus = 1
                         EndIf
                         
-                        ;                         If *this\RowFocused( )\_focus
-                        ;                            If *this\focus = 2
-                        ;                               If *this\RowFocused( )\ColorState( ) <> #__s_2
-                        ;                                  *this\RowFocused( )\ColorState( ) = #__s_2
-                        ;                                  result = 2
-                        ;                               EndIf
-                        ;                            Else
-                        ;                               If *this\RowFocused( )\ColorState( ) <> #__s_3
-                        ;                                  *this\RowFocused( )\ColorState( ) = #__s_3
-                        ;                                  result = 3
-                        ;                               EndIf
-                        ;                            EndIf
-                        ;                         Else
-                        ;                            If *this\RowFocused( )\ColorState( ) <> #__s_1
-                        ;                               *this\RowFocused( )\ColorState( ) = #__s_1
-                        ;                               result = 1
-                        ;                            EndIf
-                        ;                         EndIf
-                        ;                         
-                        ;                         ;
+                         ;                         ;
                         If is_integral_( *this ) 
                            If *this\parent  
                               If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
@@ -10765,48 +10701,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     SetImage( *this\parent\parent, *this\RowFocused( )\picture\image )
                                  EndIf
                                  DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                                 If result  
-                                    DoEvents( *this\parent\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                                 EndIf 
                               Else
                                  If *this\parent\type = #__type_ComboBox
                                     SetText( *this\parent, *this\RowFocused( )\text\string )
-                                    
                                     If *this\RowFocused( )\picture\image > - 1
                                        SetImage( *this\parent, *this\RowFocused( )\picture\image )
                                     EndIf
                                  EndIf 
                                  DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                                 If result  
-                                    DoEvents( *this\parent, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                                 EndIf 
                               EndIf 
                            EndIf 
-                           ;                                                 Else
-                           ;                                                     DoEvents(*this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                           ;                                                    If result  
-                           ;                                                       DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
-                           ;                                                    EndIf 
-                        EndIf
-                        ;
-                        If *this\RowFocused( )
-                           ; Debug ""+*this\class +" "+ ListSize(__gui\event\queues( ))
-;                            If Not ListSize(__gui\event\queues( ))
+                        Else
+                           If AddEvents( *this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                              ; Debug ""+*this\class +" "+ *this\RowFocused( )\rindex +" "+ ListSize(__gui\event\queues( ))
                               *this\WidgetChange( ) = - 5
-                              AddEvents( *this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-;                            ElseIf __gui\event\queues( )\type <> #__event_Change
-;                                *this\WidgetChange( ) = - 5
-;                              AddEvents( *this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-;                            Else
-;                              AddEvents( *this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-;                            EndIf
+                           EndIf
                         EndIf
+                        
                         ProcedureReturn 1
                      EndIf
-                     
-                     
                   EndIf
-                  
                EndIf
             EndIf
          EndIf
@@ -14860,7 +14774,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result$
       EndProcedure
       
-      Procedure.s EventString( event.i )
+      Procedure.s EventString( event.i ) ; StringFromEvents( )
          Protected result$
          
          Select event
@@ -14915,7 +14829,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure$  FlagString( flags.q )
+      Procedure$  FlagString( flags.q ) ; StringFromFlag( )
          Protected result$
          
          ;\\ create-flags
@@ -18991,19 +18905,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this\focus = 2
                               If *this\RowFocused( )\ColorState( ) <> #__s_2
                                  *this\RowFocused( )\ColorState( ) = #__s_2
-                                 *this\root\repaint = 2
+                                 *this\root\repaint = 5
                               EndIf
                            Else
                               If *this\RowFocused( )\ColorState( ) <> #__s_3
                                  *this\RowFocused( )\ColorState( ) = #__s_3
-                                 *this\root\repaint = 3
+                                 *this\root\repaint = 5
                               EndIf
                            EndIf
                         Else
                            If *this\RowFocused( )\ColorState( ) <> #__s_1
                               *this\RowFocused( )\ColorState( ) = #__s_1
-                              *this\root\repaint = 1
+                              *this\root\repaint = 5
                            EndIf
+                        EndIf
+                        
+                        If *this\root\repaint = 5
+                           ; DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                         EndIf
                      EndIf
                   EndIf
@@ -21757,9 +21675,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                   If *this\RowFocused( ) 
                      UpdateDraw_Rows( *this, *this\__rows( ), 1 )
-                        make_scrollbar_max( *this )
+                     make_scrollbar_max( *this )
                      
-                    
                      If row_scroll_y_( *this, *this\RowFocused( ))
                         Debug "  [" + *this\class + "] scroll change " + *this\RowFocused( )\text\string
                          
@@ -21780,7 +21697,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If (*this\ResizeChange( ) Or *this\TextChange( ))
                UpdateDraw_Rows( *this, *this\__rows( ), 1 )
-               
                make_scrollbar_max( *this )
                
                ; reset draw list
@@ -25528,16 +25444,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure   AddEvents( *this._s_root, event.l, *button = #PB_All, *data = #Null )
          If *this > 0
-;             If event = #__event_free
-;                If *this\haschildren
-;                   If StartEnum( *this )
-;                      AddEvents( widgets( ), #__event_free  ) 
-;                      StopEnum( )
-;                   EndIf
-;                EndIf
-;             EndIf
-            
-            ;   
             If test_event_add
                Static test
                Debug ""+*this\class + " - Put event queues( test "+test +" ) "+ EventString(event)
@@ -28050,9 +27956,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 9324
-; FirstLine = 702
-; Folding = AACAA+HA------------PAg------fA5+-AAAAAAAMAAAAAAAAvH6DAoAg4DAAAAgAAAAAAAAAAABAAAAAAAAAYICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsBAAAAAAAAAAAAAAAAwAAAAAAAAAAMAAAAAAAAAGAAYAAAgBAAAAAAADAAAAAADAAAAAAAfBwXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAQQAQIAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAIAAAAAYmBCABAAAQDYAAAACA1PAAAQDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9PAAAAAAAAAAAAAAAAAAAAOAAAAIAAAAAAAA5FAAAwBDAAAAAAAA+-----5---------------BAAAAAAAAAAAAAA5AAAg-BAAAA5EAAgAAAAAAAAAAAAAAAAAAAAAAAAQBAAAAAAYCAAAw-hDPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAgDBIAAAAACA+DAAAAAAAAAAAAAAAAAAAwBAAAAAAAAAAAAAAAAAAAAAAAAAwAAAA9-AAAAAAAAAAAAAAAAAAAA+-------AAAAAAAgdAAAAAAAAAAAAAAAAAAAAgAAAAAAAAEAAAAAAAAAAAAAAAAAAAYAEAAAAAAAAAAAAAAAAAAAAAA9PAAAAwMAAAAAAAAAAAAAA5--AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5
+; CursorPosition = 10715
+; FirstLine = 1059
+; Folding = AACAA+HA------------PAg------fA5+-AAAAAAAMAAAAAAAAvH6AAFA9eAAAAAEAAAAAAAAAAIAAAAAAAAAADRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgNAAAAAAAAAAAAAAAAAGAAAAAAAAAgBAAAAAAAAwAAADAAAMAAAAAAAYAAAAAAYAAAAAAA5LA+CAAAAAAAAAAAAAAAA---AA-fAAAAAAAAAAAAAAIIAIEAAAAAAAAAAAAAAAAAAAAAAACAPAAAAAEAAAAAMTg+HAAAANgBAAAIAQ-AAAANAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw-AAAAAAAAAAAAAAAAAAAA5AAAAgAAAAAAAAgXAAAAHMAAAAAAAA6-----j---------------HAAAAAAAAAAAAAAgDAAA+HAAAAgTAAACAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAAgJAAAA-HO9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAOEgAAAAAIA5fAAAAAAAAAAAAAAAAAAAAOAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAg-HAAAAAAAAAAAAAAAAAAAw-------HAAAAAAAsDAAAAAAAAAAAAAAAAAAAAEAAAAAAAgAAAAAAAAAAAAAAAAAAAADgAAAAAAAAAAAAAAAAAAAAAAg-BAAAAmBAAAAAAAAAAAAAA+-HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
