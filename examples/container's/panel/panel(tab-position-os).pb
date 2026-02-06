@@ -29,7 +29,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro BarPositon_( this, position, size=-1 )
       BarPosition( this, position, size )
-      Repaint( ) 
+      PostRepaint( Root( ))
    EndMacro
    
    ;   Procedure events_widget( )
@@ -162,8 +162,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 31
-; FirstLine = 20
+; CursorPosition = 32
+; FirstLine = 15
 ; Folding = ---
 ; EnableXP
 ; DPIAware

@@ -274,12 +274,14 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*g_FLAG, -1, "#__flag_BorderRaised", -1,1)
       AddItem(*g_FLAG, -1, "#__flag_BorderDouble", -1,1)
       
+      ;Bind( *g_TYPE, @events_widgets( ), #__event_Change)
+      
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 236
-; FirstLine = 233
+; CursorPosition = 278
+; FirstLine = 250
 ; Folding = ------
 ; EnableXP
 ; DPIAware

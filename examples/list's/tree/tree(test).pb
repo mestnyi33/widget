@@ -170,7 +170,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
     EndIf
     
-    PostRepaint( )
+    PostRepaint( Root( ))
   EndProcedure  
   
   Procedure TreeGadget_(gadget, X,Y,Width,Height,Flag=0)
@@ -255,8 +255,8 @@ Define a
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 171
-; FirstLine = 70
+; CursorPosition = 172
+; FirstLine = 74
 ; Folding = --yG--
 ; EnableXP
 ; DPIAware

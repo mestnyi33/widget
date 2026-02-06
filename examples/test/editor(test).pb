@@ -19,9 +19,7 @@ CompilerIf #PB_Compiler_IsMainFile
            "Otherwise it will not work."
  
   Procedure ResizeCallBack()
-     If Resize(Splitter, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-16, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
-        Repaint( ) 
-     EndIf
+     ResizeGadget(Root( )\canvas\gadget, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-60, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-60)
   EndProcedure
   
   Procedure Event_s( )
@@ -50,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     SetFont(g, (0))
    
-    Splitter = Splitter(8, 8, 306, 276, 10,g)
+    Splitter = Splitter(8, 8, 306, 276, 10,g, #__flag_AutoSize )
     
     
     
@@ -72,7 +70,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   Case #PB_EventType_Focus    
                      SetGadgetText(10, "settext")
                      If SetText(g, "settext")
-                       Repaint( ) 
+                        PostRepaint( Root( )) 
                      EndIf
                EndSelect
             EndIf
@@ -89,8 +87,8 @@ CompilerIf #PB_Compiler_IsMainFile
 EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 22
-; FirstLine = 15
+; CursorPosition = 72
+; FirstLine = 58
 ; Folding = --
 ; EnableXP
 ; DPIAware

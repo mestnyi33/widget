@@ -66,7 +66,8 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetAttribute(*bar, #__bar_ButtonSize, 0)
                   EndIf
                   
-                  Repaint( )
+                  PostRepaint( Root( ))
+            
             EndSelect
       EndSelect
       
@@ -74,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
 ; CursorPosition = 68
-; FirstLine = 45
+; FirstLine = 1
 ; Folding = --
 ; EnableXP
 ; DPIAware

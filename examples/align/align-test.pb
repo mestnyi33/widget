@@ -91,7 +91,9 @@ CompilerIf #PB_Compiler_IsMainFile
             
             If Resize(cont, #PB_Ignore, #PB_Ignore, Width, Height)
                SetText(butt, Str(Width) +"x"+ Str(Height) )
-               Repaint( )
+               
+               ; Repaint( Root( )) ; с ним не происходить вход выход мыши под курсором
+               PostRepaint( Root( ))
             EndIf
             
          Case #PB_Event_Gadget
@@ -114,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 93
-; FirstLine = 79
+; CursorPosition = 94
+; FirstLine = 74
 ; Folding = ----
 ; EnableXP

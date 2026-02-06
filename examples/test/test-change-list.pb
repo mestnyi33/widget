@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../widgets.pbi" 
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -32,16 +32,27 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure change_events( )
+      Protected._s_BAR *bar
       SetWindowTitle( EventWindow(), "stste ["+Str(GetState( *Spin2 ))+"]" )
-      Disable( *g1, *Spin2\bar\button[1]\disable )
-      Disable( *g2, *Spin2\bar\button[2]\disable )
-      Debug " -changestate- "
+      If *Spin2\scroll\v
+         *bar = *Spin2\scroll\v\bar
+      Else
+         *bar = *Spin2\bar
+      EndIf
+      Disable( *g1, *bar\button[1]\disable )
+      Disable( *g2, *bar\button[2]\disable )
+      Debug " -changestate- "+*bar\page\pos
    EndProcedure
    
    Procedure Test( X,Y,Width,Height, param1,param2, Flag.q=0)
+      Protected i
       Protected._s_WIDGET *g
-      *g = Spin( X,Y,Width,Height, param1,param2, Flag.q )
-      ;*g = Scroll( X,Y,Width,Height, param1,param2, Flag.q )
+      ;*g = Spin( X,Y,Width,Height, param1,param2, Flag.q )
+      *g = Tree( X,Y,Width,Height, Flag.q )
+      
+      For i=param1 To param2
+         AddItem( *g, -1, Str(i))
+      Next
       
       ProcedureReturn *g
    EndProcedure
@@ -79,15 +90,18 @@ CompilerIf #PB_Compiler_IsMainFile
          *Spin3 = Test(50, 140, 250, 50,  1, 3, #__flag_Invert)
          
          Debug " -setstate-h "
-         SetState(*Spin1, 2)
-         ; SetState(*Spin2, 0)
+         SetState(*Spin1, 0)
+         SetState(*Spin2, 3)
          SetState(*Spin3, 2)
+         Debug "---"
          
          WaitClose( )
       EndIf
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; Folding = --
+; CursorPosition = 86
+; FirstLine = 44
+; Folding = -7
 ; EnableXP
 ; DPIAware

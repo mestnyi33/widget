@@ -91,6 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure Gadgets_Events()
+      Protected result
+      
       Select EventGadget()
          Case 2
             If GetGadgetState(2)
@@ -100,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
                 SetGadgetText(2, "horizontal bar")
                 SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
             EndIf
-            Repaint( )
+            result = 1
             
          Case 3
             If GetGadgetState(2)
@@ -110,7 +112,7 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-            Repaint( )
+            result = 1
             
          Case 4
             If GetGadgetState(2)
@@ -120,11 +122,15 @@ CompilerIf #PB_Compiler_IsMainFile
                SetAttribute(*mdi\scroll\h, #__bar_buttonsize, Bool( Not GetGadgetState(4)) * hButton)
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
-            Repaint( )
+            result = 1
          
          Case 5
             
       EndSelect
+      
+      If result
+         PostRepaint( Root( ))
+      EndIf
    EndProcedure
    
    Define yy = 90
@@ -234,7 +240,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 122
-; FirstLine = 102
+; CursorPosition = 93
+; FirstLine = 77
 ; Folding = ----
 ; EnableXP

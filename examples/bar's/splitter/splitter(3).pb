@@ -20,9 +20,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
 ;     Resize(s_0, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
 ;     Resize(s_1, #PB_Ignore, #PB_Ignore, width - 250, #PB_Ignore)
-    If Resize(s_2, #PB_Ignore, #PB_Ignore, Width - 250, #PB_Ignore)
-       Repaint( )
-    EndIf
+      Resize(s_2, #PB_Ignore, #PB_Ignore, Width - 250, #PB_Ignore)
  EndProcedure
   
   OpenWindow(0, 10, 10, 510, 340, "SPLITTER", #PB_Window_SizeGadget | #PB_Window_ScreenCentered | #PB_Window_WindowCentered | #PB_Window_SystemMenu)
@@ -93,8 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile
   End
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 23
-; FirstLine = 15
+; CursorPosition = 22
+; FirstLine = 62
 ; Folding = -
 ; EnableXP
 ; DPIAware
