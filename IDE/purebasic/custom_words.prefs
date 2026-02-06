@@ -108,6 +108,7 @@ GetEventType
 GetEventData
 GetEventItem
 
+Events
 AddEvents
 ResetEvents
 DoEvents

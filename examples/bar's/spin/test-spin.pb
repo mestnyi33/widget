@@ -16,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure button_events( )
       Protected state = GetState( *Spin2 )
       Debug "click " + MouseClick( )
-   
+      
       Select EventWidget( )
          Case *g1
             state - 1
@@ -32,10 +32,12 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure change_events( )
-      SetWindowTitle( EventWindow(), "stste ["+Str(GetState( *Spin2 ))+"]" )
-      Disable( *g1, *Spin2\bar\button[1]\disable )
-      Disable( *g2, *Spin2\bar\button[2]\disable )
-      Debug " -changestate- "
+      If Events( ) = #__event_Change
+         SetWindowTitle( EventWindow(), "stste ["+Str(GetState( *Spin2 ))+"]" )
+         Disable( *g1, *Spin2\bar\button[1]\disable )
+         Disable( *g2, *Spin2\bar\button[2]\disable )
+         Debug " -changestate- " + Widget( )\class
+      EndIf
    EndProcedure
    
    Procedure Test( X,Y,Width,Height, param1,param2, Flag.q=0)
@@ -73,7 +75,7 @@ CompilerIf #PB_Compiler_IsMainFile
          *Spin1 = Test(50, 20, 250, 50,  1, 3)
          
          *g1=Button(10, 90, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
-         *Spin2 = Test(50, 80, 250, 50,  min, max ) : Bind( *Spin2, @change_events( ), #__event_Change)
+         *Spin2 = Test(50, 80, 250, 50,  min, max ) ;: Bind( *Spin2, @change_events( ), #__event_Change)
          *g2=Button(310, 90, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
          
          *Spin3 = Test(50, 140, 250, 50,  1, 3, #__flag_Invert)
@@ -83,11 +85,13 @@ CompilerIf #PB_Compiler_IsMainFile
          ; SetState(*Spin2, 0)
          SetState(*Spin3, 2)
          
-         WaitClose( )
+         WaitClose( @change_events( ))
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 38
+; FirstLine = 21
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -558,6 +558,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro WidgetEventData( ): Widget::__gui\event\data: EndMacro
       Macro WidgetEventItem( ): Widget::__gui\event\item: EndMacro
       
+      Macro Events( ): Widget::__gui\event\type: EndMacro
       Macro GetEvent( ): Widget::__gui\event\type: EndMacro
       Macro GetEventWidget( ): EventWidget( ): EndMacro
       Macro GetEventType( ): PBEventType( WidgetEvent( ) ): EndMacro
@@ -25390,16 +25391,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If __event = #__event_Free
                         If IsContainer( __widget )
                            Free( @__widget )
-;                            If __gui\event\queuesmask = - 1
-;                               Repaint( #PB_All )
-;                            EndIf
                         EndIf
-                        
                      ElseIf __event = #__event_Change
 ;                         If GetType(__widget) = #__type_Spin
 ;                            ; Post( __widget, __event, __item, __data )
 ;                         Else
-                           DoEvents( __widget, __event, __item, __data )
+                           Post( __widget, __event, __item, __data )
 ;                         EndIf
                      Else
                         Post( __widget, __event, __item, __data )
@@ -27931,10 +27928,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 7229
-; FirstLine = 1508
-; Folding = AAGAA+HA------------Pcw------PAc-fAAAAAAAGAAAAAAAg4jcAgCAePAAAAACAAAAAAAAAAEAAAAAAAAAghIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwGAAAAAAAAAAAAAAAAADAAAAAAAAAwAAAAAAAAAYAAgBAAQGQAIBBAAMAAgAC5MAQBAgBA9FAfBAYCCAAAAAAAAAAAg--fAg-PAAAAAAAAAAAAAAEEAECAAAAAAAAAAAAAAAAAgBEAAABgHAAAAAyABAAAmJw-fIgAANgBAAAIAQ-AAAANAAAAHBAAgAMADAAAAAAAAAAAAAAAAAAAAAAAAAAJAAAAAhAAw-AAAAAAAAAAAAAAAAAAAA5AAAAgCAAAAAAAgXAAAAfNAAAAAAAA6-----j---------------HAAAAAAAAAAAAAAgDAAA+HAAAAgTAAACAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAAgJAAAA-HO9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAOEgAAAAAIA5fgPwcAAAgVPNvKAAAAAAAOAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAg-HAAAAAAAAAAAAAAAAAAAw------8HAAAAAAAsDAAAAAAAAAAAAAAAAAAA-HAAAAAAAgAAAAAAAAAAAAAAAAABAADgACBAAAAAAAAAAAAAAAAAAAg-BAAAAmBAAAAAAAAAAAAAA+-HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 560
+; FirstLine = 426
+; Folding = AAOAA+HA------------f5j------fA5+-AAAAAAAMAAAAAAAAvH6AAFA9eAAAAAEAAAAAAAAAAIAAAQgNAsDADR9KAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgNAAAAAAAAAAAAAAAAAGAAAAAAAAAgBAAAAAAAAwAAADAAgMgAQCCAAYAAABEwZAgCAADA5LA+CAwEEAAAAAAAAAAAA---AA-fAAAAAAAAAAAAAAIIAIEAAAAAAAAAAAAAAAAAADIAAACAPAAAAAkBCAAAMTg--QABAaADAAAQAg+BAAAaAAAAOCAAABYAGAAAAAAAAAAAAAAAAAAAAAAAAAASAAAAACBAg-BAAAAAAAAAAAAAAAAAAAwBAAAAFAAAAAAAAvAAAA+aAAAAAAAAy-----H---------------PAAAAAAAAAAAAAAAHAAA9PAAAAAnAAAEAAAAAAAAAAAAAAAAAAAAAAAAKAAAAAAATAAAA+Pc5BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAcIABAAAAQAw-Afg6AAAAreaeVAAAAAAAcAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAA-PAAAAAAAAAAAAAAAAAAAg------4PAAAAAAAYHAAAAAAAAAAAAAAAAAAA+PAAAAAAAABAAAAAAAAAAAAAAAACAAGABECAAAAAAAAAAAAAAAAAAAA-DAAAAMDAAAAAAAAAAAAAA+--BACAAALAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

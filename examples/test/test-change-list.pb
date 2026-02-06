@@ -32,16 +32,18 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure change_events( )
-      Protected._s_BAR *bar
-      SetWindowTitle( EventWindow(), "stste ["+Str(GetState( *Spin2 ))+"]" )
-      If *Spin2\scroll\v
-         *bar = *Spin2\scroll\v\bar
-      Else
-         *bar = *Spin2\bar
+      If Events( ) = #__event_Change
+         Protected._s_BAR *bar
+         SetWindowTitle( EventWindow(), "stste ["+Str(GetState( *Spin2 ))+"]" )
+         If *Spin2\scroll\v
+            *bar = *Spin2\scroll\v\bar
+         Else
+            *bar = *Spin2\bar
+         EndIf
+         Disable( *g1, *bar\button[1]\disable )
+         Disable( *g2, *bar\button[2]\disable )
+         Debug " -changestate- " + Widget( )\class +" "+ *bar\page\pos
       EndIf
-      Disable( *g1, *bar\button[1]\disable )
-      Disable( *g2, *bar\button[2]\disable )
-      Debug " -changestate- "+*bar\page\pos
    EndProcedure
    
    Procedure Test( X,Y,Width,Height, param1,param2, Flag.q=0)
@@ -84,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
          *Spin1 = Test(50, 20, 250, 50,  1, 3)
          
          *g1=Button(10, 90, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
-         *Spin2 = Test(50, 80, 250, 50,  min, max ) : Bind( *Spin2, @change_events( ), #__event_Change)
+         *Spin2 = Test(50, 80, 250, 50,  min, max ) ;: Bind( *Spin2, @change_events( ), #__event_Change)
          *g2=Button(310, 90, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
          
          *Spin3 = Test(50, 140, 250, 50,  1, 3, #__flag_Invert)
@@ -95,13 +97,13 @@ CompilerIf #PB_Compiler_IsMainFile
          SetState(*Spin3, 2)
          Debug "---"
          
-         WaitClose( )
+         WaitClose(@change_events( ) )
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 86
-; FirstLine = 44
-; Folding = -7
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 44
+; FirstLine = 32
+; Folding = -2
 ; EnableXP
 ; DPIAware
