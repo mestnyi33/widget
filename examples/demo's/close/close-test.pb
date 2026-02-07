@@ -49,12 +49,11 @@ CompilerIf #PB_Compiler_IsMainFile
        Bind(*g2, @free_events( ), #__event_Free)
       ; Bind(#PB_All, @free_events( ), #__event_Free)
      
-      ;__gui\event\queuesmask = 1
       Free( Root( ))
       ;Free( *g0)
       ;Free( *g)    
+      ;Free( *g1)    
       ;ResetEvents( Root( ))
-      ;__gui\event\queuesmask = 0
       
       ;\\2 test free
       ; Bind(*g2, @free_events( ), #__event_Free)
@@ -76,10 +75,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug MapSize(roots())
    EndIf
 CompilerEndIf
-
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 48
-; FirstLine = 40
+; CursorPosition = 51
+; FirstLine = 47
 ; Folding = --
 ; EnableXP
 ; DPIAware

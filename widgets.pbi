@@ -6870,6 +6870,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;DoEvents( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
                ; commit 2064 test-spin.pb работает только с ним
                AddEvents( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
+               ;
                *bar\PageChange( ) = 0
                ProcedureReturn #True   
             EndIf
@@ -14758,15 +14759,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result$
          
          Select event
-            Case #__event_CursorChange    : result$ = "CursorChange"
-            Case #__event_free            : result$ = "Free"
+            Case #__event_Focus           : result$ = "Focus"            ; The gadget gained keyboard focus
+            Case #__event_LostFocus       : result$ = "LostFocus"        ; The gadget lost keyboard focus
+               
             Case #__event_Drop            : result$ = "Drop"
+            Case #__event_DragStart       : result$ = "DragStart"
             Case #__event_Draw            : result$ = "Draw"
                ;Case #__event_SizeItem    : result$ = "SizeItem"
+               ;Case #__event_TitleChange : result$ = "TitleChange"
                
+            Case #__event_Change          : result$ = "Change"
+            Case #__event_StatusChange    : result$ = "StatusChange"
             Case #__event_ScrollChange    : result$ = "ScrollChange"
+            Case #__event_CursorChange    : result$ = "CursorChange"
                
-            Case #__event_close           : result$ = "CloseWindow"
             Case #__event_maximize        : result$ = "MaximizeWindow"
             Case #__event_minimize        : result$ = "MinimizeWindow"
             Case #__event_restore         : result$ = "RestoreWindow"
@@ -14775,35 +14781,37 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Case #__event_MouseLeave      : result$ = "MouseLeave"       ; The mouse cursor left the gadget
             Case #__event_MouseMove       : result$ = "MouseMove"        ; The mouse cursor moved
             Case #__event_MouseWheel      : result$ = "MouseWheel"       ; The mouse wheel was moved
-            Case #__event_LeftDown        : result$ = "LeftButtonDown"   ; The left mouse button was pressed
-            Case #__event_LeftUp          : result$ = "LeftButtonUp"     ; The left mouse button was released
+               
             Case #__event_LeftClick       : result$ = "LeftClick"        ; A click With the left mouse button
             Case #__event_Left2Click      : result$ = "Left2Click"       ; A double-click With the left mouse button
             Case #__event_Left3Click      : result$ = "Left3Click"       ; A 3-click With the left mouse button
-            Case #__event_RightDown       : result$ = "RightButtonDown"  ; The right mouse button was pressed
-            Case #__event_RightUp         : result$ = "RightButtonUp"    ; The right mouse button was released
+               
             Case #__event_RightClick      : result$ = "RightClick"       ; A click With the right mouse button
             Case #__event_Right2Click     : result$ = "Right2Click"      ; A double-click With the right mouse button
             Case #__event_Right3Click     : result$ = "Right3Click"      ; A 3-click With the right mouse button
+               
+            Case #__event_Down            : result$ = "Down"
+            Case #__event_LeftDown        : result$ = "LeftButtonDown"   ; The left mouse button was pressed
             Case #__event_MiddleDown      : result$ = "MiddleButtonDown" ; The middle mouse button was pressed
+            Case #__event_RightDown       : result$ = "RightButtonDown"  ; The right mouse button was pressed
+               
+            Case #__event_Up              : result$ = "Up"
+            Case #__event_LeftUp          : result$ = "LeftButtonUp"     ; The left mouse button was released
             Case #__event_MiddleUp        : result$ = "MiddleButtonUp"   ; The middle mouse button was released
-            Case #__event_Focus           : result$ = "Focus"            ; The gadget gained keyboard focus
-            Case #__event_LostFocus       : result$ = "LostFocus"        ; The gadget lost keyboard focus
+            Case #__event_RightUp         : result$ = "RightButtonUp"    ; The right mouse button was released
+               
             Case #__event_KeyDown         : result$ = "KeyDown"          ; A key was pressed
             Case #__event_Input           : result$ = "Input"            ; Text input was generated
             Case #__event_Return          : result$ = "ReturnKey"
             Case #__event_KeyUp           : result$ = "KeyUp"            ; A key was released
-            Case #__event_ResizeBegin     : result$ = "ResizeBegin"
-            Case #__event_Resize          : result$ = "Resize"           ; The gadget has been resized
-            Case #__event_ResizeEnd       : result$ = "ResizeEnd"
-            Case #__event_StatusChange    : result$ = "StatusChange"
-               ;Case #__event_TitleChange : result$ = "TitleChange"
-            Case #__event_Change          : result$ = "Change"
-            Case #__event_DragStart       : result$ = "DragStart"
                
-            Case #__event_Down            : result$ = "Down"
-            Case #__event_Up              : result$ = "Up"
-         EndSelect
+               ;Case #__event_ResizeBegin     : result$ = "ResizeBegin"
+            Case #__event_Resize          : result$ = "Resize"           ; The gadget has been resized
+            ;Case #__event_ResizeEnd       : result$ = "ResizeEnd"
+               
+         Case #__event_close           : result$ = "CloseWindow"
+            Case #__event_free            : result$ = "Free"
+            EndSelect
          
          ProcedureReturn result$
       EndProcedure
@@ -22317,7 +22325,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   ; post event re draw
                   If *this\binddraw
-                     If __gui\event\queuesmask = - 1
+                     ;If ( __gui\event\queuesmask = - 1 )
                         If *this\root\drawmode & 1<<1
                            SaveVectorState( )
                            TranslateCoordinates( *this\x[#__c_frame], *this\y[#__c_frame] )
@@ -22332,7 +22340,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\root\drawmode & 1<<1
                            RestoreVectorState( )
                         EndIf
-                     EndIf
+                    ; EndIf
                   EndIf
                   ;
                   ;
@@ -22742,16 +22750,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If is_root_( *this )
-            __gui\event\queuesmask = - 1
-            
             ;\\ reset events для тест итем
             ResetEvents( *this )
             
             Widget::StartDraw( *this )
             Widget::Drawing( )
             Widget::StopDraw( )
-            
-            ; ResetEvents( *this )
          Else
             Widget::StartDraw( *this\root )
             Widget::Draw( *this )
@@ -24917,7 +24921,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         
          ;\\
          If ( Change_x Or Change_y Or Change_width Or Change_height ) 
             ;\\ resize child vertical&horizontal scrollbars
@@ -25374,7 +25377,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure   ResetEvents( *this._s_WIDGET )
+      Procedure   RemoveEvents( *this._s_WIDGET, event.l )
          If ListSize( __gui\event\queues( ) )
             ForEach __gui\event\queues( )
                Define __widget = __gui\event\queues( )\widget
@@ -25382,10 +25385,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Define __item   = __gui\event\queues( )\item
                Define __data   = __gui\event\queues( )\data
                
-               If GetRoot( __widget ) = GetRoot( *this )
-                  If __gui\event\queuesmask 
-                     ; Debug  ""+EventString( __event ) +" "+ GetClass( __widget )
-                     ;
+               If GetRoot( __widget ) = GetRoot( *this ) Or __widget = *this
+                  If __event = event Or event = #PB_All
                      DeleteElement( __gui\event\queues( ) )
                      ;
                      If __event = #__event_Free
@@ -25393,11 +25394,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            Free( @__widget )
                         EndIf
                      ElseIf __event = #__event_Change
-;                         If GetType(__widget) = #__type_Spin
-;                            ; Post( __widget, __event, __item, __data )
-;                         Else
-                           Post( __widget, __event, __item, __data )
-;                         EndIf
+                        DoEvents( __widget, __event, __item, __data )
                      Else
                         Post( __widget, __event, __item, __data )
                      EndIf
@@ -25411,6 +25408,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             Next
             ;
+            ProcedureReturn #True
+         EndIf
+      EndProcedure
+      
+      Procedure   ResetEvents( *this._s_WIDGET )
+         If ListSize( __gui\event\queues( ))
+            RemoveEvents( *this, #PB_All )
+;             If ListSize( __gui\event\binds( ))
+;                ForEach __gui\event\binds( )
+;                   RemoveEvents( __gui\event\binds( )\widget, __gui\event\binds( )\type )
+;                Next
+;             EndIf
+            
             ProcedureReturn #True
          EndIf
       EndProcedure
@@ -25456,21 +25466,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
          
          If *this > 0 
-            If Not __gui\event\queuesmask
-               ; If *this\type <> #__type_Scroll
-               ;    Debug " post add events"+ *this\class +" "+ EventString(event) +" "+ *button +" "+ *data
-               ; EndIf
-               
-               If AddEvents( *this, event, *button, *data )
-                 If event = #__event_Free 
-                    ProcedureReturn #False
-                 EndIf
-                 ProcedureReturn #True
-              EndIf
-            Else
-               ;                If event = #__event_focus
-               ;                   Debug  " POST events "+EventString( event ) +" "+ *this\class 
-               ;                EndIf
+;             If Not __gui\event\queuesmask
+;                ; If *this\type <> #__type_Scroll
+;                ;    Debug " post add events"+ *this\class +" "+ EventString(event) +" "+ *button +" "+ *data
+;                ; EndIf
+;                If AddEvents( *this, event, *button, *data )
+;                  If event = #__event_Free 
+;                     ProcedureReturn #False
+;                  EndIf
+;                  ProcedureReturn #True
+;               EndIf
+;             Else
+;                ;                If event = #__event_focus
+;                ;                   Debug  " POST events "+EventString( event ) +" "+ *this\class 
+;                ;                EndIf
                If is_bar_( *this )
                   ;
                   If event = #__event_LeftClick Or
@@ -25485,6 +25494,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ProcedureReturn 0
                   EndIf
                EndIf
+               
                
                ;\\ 
                __widget = EventWidget( )
@@ -25530,21 +25540,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf    
                
+;                Debug " "+EventString(event) +" "+ *this\class +" "+ ListSize(__gui\event\binds( ))
+; ;                
+;                ForEach __gui\event\binds( )
+;                   Debug "         binds - "+EventString(__gui\event\binds( )\type) ;+" "+ __gui\event\binds( )\item
+;                Next
+;                
                ;\\
                If Not is_root_( *this )
                   ;\\ 1 call (current-widget) bind event function
                   ForEach __gui\event\binds( )
                      If __gui\event\binds( )\widget = *this 
-                        If __gui\event\binds( )\type = event And
-                           Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
-                           
-                           If __gui\event\binds( )\data
-                              WidgetEventData( ) = __gui\event\binds( )\data
-                           EndIf
-                           
-                           result = __gui\event\binds( )\function( )
-                           If result = #PB_Ignore
-                              Break
+                        If __gui\event\binds( )\type = event 
+                           If Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
+                              If __gui\event\binds( )\data
+                                 WidgetEventData( ) = __gui\event\binds( )\data
+                              EndIf
+                              
+                              result = __gui\event\binds( )\function( )
+                              If result = #PB_Ignore
+                                 Break
+                              EndIf
                            EndIf
                         EndIf
                      EndIf
@@ -25622,12 +25638,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;                   EndIf
                ;                EndIf
                
+               
                ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
                EventWidget( )       = __widget
                WidgetEvent( )       = __event
                WidgetEventItem( )   = __item
                WidgetEventData( )   = __data
-            EndIf
+               
+;             EndIf
          EndIf
          
          ProcedureReturn result
@@ -25636,12 +25654,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.i Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
          ;
          If *this < 0
+            ;
             PushMapPosition(roots( ))
             ForEach roots( )
-               If event = #__event_CursorChange
-                  roots( )\canvas\bindcursor = 1
-               EndIf
-               ;
                Bind( roots( ), *callback, event, item )
             Next
             PopMapPosition(roots( ))
@@ -25650,7 +25665,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else
             If event < 0 
                Define i
-               For i = 0 To #__event - 1
+               For i = 1 To #__event - 1
                   If i = #__event_Draw
                      If Not *this\binddraw
                         Continue
@@ -25658,7 +25673,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   If i = #__event_Resize
                      If Not *this\bindresize
-                        Continue
+                        If Not *this\container 
+                           If Not *this\haschildren 
+                              Continue
+                           EndIf
+                        EndIf
                      EndIf
                   EndIf
                   If i = #__event_CursorChange
@@ -25667,10 +25686,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  ; set defaul widget events
                   Bind( *this, *callback, i, item )
                Next
-               ;
             Else
                ; 
                If event = #__event_Draw
@@ -25695,10 +25712,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   __gui\event\binds( )\data     = *data
                EndIf
                
-               If __gui\event\queuesmask = 0
-                  __gui\event\queuesmask = 1
-                  ResetEvents( *this\root )
-               EndIf
+               RemoveEvents( *this, event )
             EndIf
          EndIf
          
@@ -25828,13 +25842,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   IsChild( widgets( ), *parent )
                   ;
                   If Not Post( widgets( ), #__event_free )
-                     If Not (__gui\event\queuesmask = - 1)
-                        If PreviousElement( widgets( ))
-                           Continue
-                        Else
-                           Break
-                        EndIf
-                     EndIf
+;                      If Not ( __gui\event\queuesmask = - 1 )
+;                         If PreviousElement( widgets( ))
+;                            Continue
+;                         Else
+;                            Break
+;                         EndIf
+;                      EndIf
                   EndIf
                   
                   ;
@@ -27928,10 +27942,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 560
-; FirstLine = 426
-; Folding = AAOAA+HA------------f5j------fA5+-AAAAAAAMAAAAAAAAvH6AAFA9eAAAAAEAAAAAAAAAAIAAAQgNAsDADR9KAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgNAAAAAAAAAAAAAAAAAGAAAAAAAAAgBAAAAAAAAwAAADAAgMgAQCCAAYAAABEwZAgCAADA5LA+CAwEEAAAAAAAAAAAA---AA-fAAAAAAAAAAAAAAIIAIEAAAAAAAAAAAAAAAAAADIAAACAPAAAAAkBCAAAMTg--QABAaADAAAQAg+BAAAaAAAAOCAAABYAGAAAAAAAAAAAAAAAAAAAAAAAAAASAAAAACBAg-BAAAAAAAAAAAAAAAAAAAwBAAAAFAAAAAAAAvAAAA+aAAAAAAAAy-----H---------------PAAAAAAAAAAAAAAAHAAA9PAAAAAnAAAEAAAAAAAAAAAAAAAAAAAAAAAAKAAAAAAATAAAA+Pc5BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAcIABAAAAQAw-Afg6AAAAreaeVAAAAAAAcAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAA-PAAAAAAAAAAAAAAAAAAAg------4PAAAAAAAYHAAAAAAAAAAAAAAAAAAA+PAAAAAAAABAAAAAAAAAAAAAAAACAAGABECAAAAAAAAAAAAAAAAAAAA-DAAAAMDAAAAAAAAAAAAAA+--BACAAALAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 25421
+; FirstLine = 25408
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------rL+-------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

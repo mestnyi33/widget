@@ -86,7 +86,7 @@ CompilerIf #PB_Compiler_IsMainFile
          *Spin1 = Test(50, 20, 250, 50,  1, 3)
          
          *g1=Button(10, 90, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
-         *Spin2 = Test(50, 80, 250, 50,  min, max ) ;: Bind( *Spin2, @change_events( ), #__event_Change)
+         *Spin2 = Test(50, 80, 250, 50,  min, max ) : Bind( *Spin2, @change_events( ), #__event_Change)
          *g2=Button(310, 90, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
          
          *Spin3 = Test(50, 140, 250, 50,  1, 3, #__flag_Invert)
@@ -97,13 +97,13 @@ CompilerIf #PB_Compiler_IsMainFile
          SetState(*Spin3, 2)
          Debug "---"
          
-         WaitClose(@change_events( ) )
+         WaitClose( ) ; @change_events( ))
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 32
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 99
+; FirstLine = 46
 ; Folding = -2
 ; EnableXP
 ; DPIAware

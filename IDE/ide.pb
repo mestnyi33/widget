@@ -546,11 +546,13 @@ Procedure   PropertiesButton_Resize( *this._s_WIDGET )
       EndIf
    EndIf
 EndProcedure
-
+Declare Properties_Change( *splitter._s_WIDGET )
 Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
    Protected Type = GetItemData( *parent, item )
    Protected min, max, steps, Flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
    Protected *this._s_WIDGET
+   Protected txt$ = GetItemText( *parent, item)
+   
    
    Select Type
       Case #__type_Spin
@@ -657,6 +659,7 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
    If *this
       SetData( *this, item )
       SetData( *parent, *this )
+      Properties_Change( *parent\parent )
       Bind( *this, @PropertiesButton_Events( ))
    EndIf
    
@@ -922,14 +925,14 @@ Procedure   Properties_Change( *splitter._s_WIDGET )
          ;
          Select GetType( *this )
             Case #__type_Spin     
+               SetState(*this, Val(text$) )
+               
+            Case #__type_String   
                If GetData( *this ) = #_pi_class
                   *this\text\upper = 1
                Else
                   *this\text\upper = 0
                EndIf
-               SetState(*this, Val(text$) )
-               
-            Case #__type_String   
                SetText(*this, text$ )
                
             Case #__type_ComboBox 
@@ -3309,9 +3312,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 527
-; FirstLine = 484
-; Folding = -4--4---8v-3v--------vb8Ah-------v-fvd-0----------f6WW----f+-
+; CursorPosition = 657
+; FirstLine = 541
+; Folding = -4--4---rv-3v--------vb8Ah-------v-fvd-0----------f6WW----f+-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2_621.exe

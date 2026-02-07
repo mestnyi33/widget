@@ -111,6 +111,7 @@ GetEventItem
 Events
 AddEvents
 ResetEvents
+RemoveEvents
 DoEvents
 
            

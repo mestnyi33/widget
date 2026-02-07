@@ -247,8 +247,8 @@
          #__event_StatusChange
          #__event_ScrollChange
          ;
-         #__event_PageDown
-         #__event_PageUp
+         ;#__event_PageDown
+         ;#__event_PageUp
          ;
          #__event_KeyDown
          #__event_Input
@@ -260,9 +260,9 @@
          ;
          #__event_Draw
          ;
-         #__event_ResizeBegin
+         ;#__event_ResizeBegin
          #__event_Resize
-         #__event_ResizeEnd
+         ;#__event_ResizeEnd
          #__event_Maximize
          #__event_Minimize
          #__event_Restore
@@ -731,8 +731,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 447
-; FirstLine = 438
+; CursorPosition = 250
+; FirstLine = 230
 ; Folding = ----
 ; Optimizer
 ; EnableXP

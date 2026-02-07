@@ -208,6 +208,8 @@ EndEnumeration
       PropertiesButton_Free( *this )
       *this = PropertiesButton_Create( *parent, item )
       PropertiesButton_Resize( *this )
+      Debug 444
+      SetText( *this, Str(item))
       ProcedureReturn *this
    EndProcedure
    
@@ -352,9 +354,12 @@ EndEnumeration
                            If *second <> *g
                               ChangeItemState( *second, *row\index, 2 )
                            EndIf
+                           
                            PropertiesButton_Free( *test )
                            *test = PropertiesButton_Create( *second, *row\index )
                            PropertiesButton_Resize( *test )
+                           SetState( *test, *row\index)
+      
                         EndIf
                      EndIf
                   EndIf
@@ -390,20 +395,20 @@ EndEnumeration
                   ;                   Else
                   ;                   EndIf
                   *row = *g\RowEntered( )
-                  If *row
-                     If  *row\data
-                        If *first <> *g
-                           ChangeItemState( *first, *row\index, 2 )
-                        EndIf
-                        If *second <> *g
-                           ChangeItemState( *second, *row\index, 2 )
-                        EndIf
-                        PropertiesButton_Free( *test )
-                        *test = PropertiesButton_Create( *second, *row\index )
-                        PropertiesButton_Resize( *test )
-                        SetActive( *test )
-                     EndIf
-                  EndIf
+;                   If *row
+;                      If  *row\data
+;                         If *first <> *g
+;                            ChangeItemState( *first, *row\index, 2 )
+;                         EndIf
+;                         If *second <> *g
+;                            ChangeItemState( *second, *row\index, 2 )
+;                         EndIf
+;                         PropertiesButton_Free( *test )
+;                         *test = PropertiesButton_Create( *second, *row\index )
+;                         PropertiesButton_Resize( *test )
+;                         SetActive( *test )
+;                      EndIf
+;                   EndIf
                   
                EndIf
             EndIf
@@ -582,7 +587,7 @@ EndEnumeration
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 391
-; FirstLine = 332
-; Folding = t+P----------
+; CursorPosition = 360
+; FirstLine = 240
+; Folding = 0+c---------
 ; EnableXP
