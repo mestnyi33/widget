@@ -9,8 +9,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Global  i, vert=100, horiz=100, Width=450, Height=400
    
    Procedure events_widgets()
-      Debug EventString( Events( )) +" "+ Widget( )\class    
-;       If Events( ) = #__event_Change
+      Debug " ------ "+EventString( Events( )) +" "+ Widget( )\class +" "+ WidgetEventItem( ) +" "+ WidgetEventData( ) 
+      
+      ;       If Events( ) = #__event_Change
 ;          Debug " ----- change ----- " + Widget( )\class     
 ;       EndIf
    EndProcedure
@@ -46,8 +47,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 28
-; FirstLine = 12
+; CursorPosition = 11
+; FirstLine = 3
 ; Folding = -
 ; EnableXP
 ; DPIAware

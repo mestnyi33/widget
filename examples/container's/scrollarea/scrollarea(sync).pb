@@ -1,7 +1,10 @@
 ﻿XIncludeFile "../../../widgets.pbi" ; ok
 
 CompilerIf #PB_Compiler_IsMainFile
-  UseWidgets( )
+   UseWidgets( )
+   
+   ;test_clip = 1
+   test_iclip = 1
   Global *g._S_WIDGET, Quit, *scroll1._s_widget,*scroll2._s_widget,x_0,y_0
   
   Procedure syncCB()
@@ -92,9 +95,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Until Quit = 1
   End
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 18
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 88
+; FirstLine = 67
 ; Folding = -
 ; EnableXP
 ; DPIAware

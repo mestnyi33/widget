@@ -24,7 +24,7 @@ XIncludeFile "../../../widgets.pbi"
 UseWidgets( )
  
  Procedure ListViewGadget_(gadget, X,Y,Width,Height,flag=0)
-  Protected g = ListViewGadget(gadget, X,Y,Width,Height,flag)
+  Protected g = ListViewGadget(gadget, X,Y,Width,Height,Flagflag)
   If gadget =- 1 : gadget = g : EndIf
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -136,7 +136,7 @@ If Open(0, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Window_SystemMenu |
   ;}
   ;--------------
   
-  ListView(270, 30, 250, 120) : SetFrame( widget( ), 2)
+  ListView(270, 30, 250, 120) : SetFrame( Widget( ), 2)
   For a = 0 To 12
     AddItem (ID(0), -1, "listview item " + Str(a)) ; define listview content
     SetItemState(ID(0), a, #PB_Tree_Selected) 
@@ -145,7 +145,7 @@ If Open(0, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Window_SystemMenu |
   SetState(ID(0), 7) 
   SetState(ID(0), 9) 
   
-  ListView(270, 30+150, 250, 120, #PB_ListView_ClickSelect) : SetFrame( widget( ), 2)
+  ListView(270, 30+150, 250, 120, #PB_ListView_ClickSelect) : SetFrame( Widget( ), 2)
   For a = 0 To 12
     AddItem (ID(1), -1, "listview item " + Str(a) + " 1long 2long 3long 4long 5long 6long 7long 8long") ; define listview content
     If a%2
@@ -156,7 +156,7 @@ If Open(0, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Window_SystemMenu |
   SetState(ID(1), 7) 
   SetState(ID(1), 9) 
   
-  ListView(270, 30+150+150, 250, 120, #PB_ListView_MultiSelect) : SetFrame( widget( ), 2)
+  ListView(270, 30+150+150, 250, 120, #PB_ListView_MultiSelect) : SetFrame( Widget( ), 2)
   For a = 0 To 12
     AddItem (ID(2), -1, "listview item " + Str(a)) ; define listview content
     If a%2
@@ -177,9 +177,9 @@ If Open(0, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Window_SystemMenu |
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 67
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 25
+; FirstLine = 21
 ; Folding = --
 ; EnableXP
 ; DPIAware

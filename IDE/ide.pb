@@ -659,7 +659,7 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
    If *this
       SetData( *this, item )
       SetData( *parent, *this )
-      Properties_Change( *parent\parent )
+      ; Properties_Change( *parent\parent )
       Bind( *this, @PropertiesButton_Events( ))
    EndIf
    
@@ -2661,6 +2661,7 @@ Procedure   ide_events( )
          EndIf
          
       Case #__event_StatusChange
+         ; Debug ""+__item +" "+ __data
          If *g = ide_element_PANEL
             ; Debug "status change element tab "+ __item
             Select __item 
@@ -3312,9 +3313,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 657
-; FirstLine = 541
-; Folding = -4--4---rv-3v--------vb8Ah-------v-fvd-0----------f6WW----f+-
+; CursorPosition = 2663
+; FirstLine = 2252
+; Folding = -4--4---rv-3v--------vb8Ah-------v-fvd-0----------f6W3----f+-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2_621.exe

@@ -18,10 +18,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Define Flag, a$ = "Result of the previously requester was: "
       
-      If Result = #__message_Yes       ; pressed Yes button
+      If Result = #__message_Yes                 ; pressed Yes button
          Flag = #__message_Ok|#__message_Info
          a$ +#LF$+ "Yes"
-      ElseIf Result = #__message_No    ; pressed No button
+      ElseIf Result = #__message_No              ; pressed No button
          Flag = #__message_YesNo|#__message_Error
          a$ +#LF$+ "No"
       Else                                       ; pressed Cancel button or Esc
@@ -114,7 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
 ; CursorPosition = 20
-; FirstLine = 15
+; FirstLine = 11
 ; Folding = -8-
 ; EnableXP
 ; DPIAware

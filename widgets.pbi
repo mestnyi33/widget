@@ -705,11 +705,56 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndMacro
       Macro PostFree( _this_ )
-         AddEvents( _this_, #__event_free  ) 
+         AddEvents( _this_, #__event_free ) 
       EndMacro
       Macro PostClose( _this_ )
-         AddEvents( _this_, #__event_Close  ) 
+         AddEvents( _this_, #__event_Close ) 
       EndMacro
+      
+      ; 
+      Macro PostEventsResize( _this_ )
+         AddEvents( _this_, #__event_Resize )
+      EndMacro
+      Macro PostChange( _this_, _item_= #PB_All, _data_ = #Null )
+         AddEvents( _this_, #__event_Change, _item_, _data_  ) 
+      EndMacro
+      Macro PostEventsChange( _this_, _item_= #PB_All, _data_ = #Null )
+         AddEvents( _this_, #__event_Change, _item_, _data_  ) 
+      EndMacro
+      Macro PostEventsStatusChange( _this_, _item_, _data_ )
+         AddEvents( _this_, #__event_StatusChange, _item_, _data_  )
+      EndMacro
+      Macro PostEventsScrollChange( _this_, _item_, _data_ )
+         ;Debug ""+#PB_Compiler_Procedure +" "+ _item_ +" "+ _data_
+         DoEvents( _this_, #__event_ScrollChange, _item_, _data_  )
+      EndMacro
+      Macro PostEventsCursorChange( _this_, _item_, _data_ )
+         AddEvents( _this_, #__event_CursorChange, _item_, _data_  )
+      EndMacro
+      
+      Macro PostEventsFocus( _this_, _item_= #PB_All, _data_ = #Null )
+         AddEvents( _this_, #__event_Focus, _item_, _data_  )
+      EndMacro
+      Macro PostEventsLostFocus( _this_, _item_= #PB_All, _data_ = #Null )
+         AddEvents( _this_, #__event_LostFocus, _item_, _data_  )
+      EndMacro
+      
+      Macro PostEvents( _this_, _event_, _item_= #PB_All, _data_ = #Null )
+         If _event_ = #__event_Change
+            PostChange(_this_, _item_, _data_)
+         ElseIf _event_ = #__event_StatusChange
+            PostEventsStatusChange(_this_, _item_, _data_)
+         Else
+            ;Debug EventString(_event_)
+            DoEvents( _this_, _event_, _item_, _data_  )
+         EndIf
+      EndMacro
+      
+      
+      
+      
+      
+      
       ;-
       Macro MidF(_string_, _start_pos_, _length_ = -1)
          func::MidFast(_string_, _start_pos_, _length_)
@@ -1967,7 +2012,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Declare   DoEvent_Lines( *this, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       Declare   DoEvent_Rows( *this, List  *rows._s_ROWS( ), event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-      Declare   DoEvents( *this, event.l, *button = #PB_All, *data = #Null )
       
       Declare.b bar_draw_tab( *this )
       Declare   bar_area_resize( *this )
@@ -1985,6 +2029,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Declare   make_area_size( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, indent )
       Declare   make_alignment( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, Width, Height, indent )
+      
+      
       
       ;-
       Macro row_x_( _this_, _address_ )
@@ -3509,7 +3555,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                        is_mouse_enter( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ))
                      
                      *this\enter = 1
-                     DoEvents( *this, #__event_MouseEnter, #PB_All, @"[?+a_enter]" )
+                     PostEvents( *this, #__event_MouseEnter, #PB_All, @"[?+a_enter]" )
                   Else
                      *this\enter = 0
                   EndIf   
@@ -3572,7 +3618,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   If *this\enter > 0
                      If *this = Entered( )
-                        DoEvents( *this, #__event_MouseLeave, #PB_All, @"[?-a_leave]"  )
+                        PostEvents( *this, #__event_MouseLeave, #PB_All, @"[?-a_leave]"  )
                      EndIf
                   EndIf   
                   ;
@@ -3710,7 +3756,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *deactive\anchors\group\show
                               a_group_show( *deactive, #__event_LostFocus )
                            EndIf
-                           DoEvents( *deactive, #__event_LostFocus )
+                           PostEventsLostFocus( *deactive )
                         EndIf
                      EndIf
                      ;
@@ -3728,7 +3774,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                 *this\screen_width( ),
                                 *this\screen_height( ) )
                         ;
-                        DoEvents( *this, #__event_Focus )
+                        PostEventsFocus( *this )
                      EndIf
                      ;
                      result = *this
@@ -3743,7 +3789,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\anchors\group\show
                         a_group_show( *this, #__event_LostFocus )
                      EndIf
-                     DoEvents( *this, #__event_LostFocus )
+                     PostEventsLostFocus( *this )
                   EndIf
                EndIf
             Else
@@ -5515,7 +5561,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                EndIf
                ;
                ;\\
-               Post( *this, #__event_Resize )
+               PostEventsResize( *this )
                ProcedureReturn result
             EndIf
          EndWith
@@ -5748,7 +5794,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                EndIf
                ;
                ;\\
-               Post( *this, #__event_Resize )
+               PostEventsResize( *this )
                ProcedureReturn result
             EndIf
          EndWith
@@ -6122,11 +6168,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ; *this\parent\WidgetChange( ) = 1
                         ; *this\parent\TextChange( ) = - 3
                      EndIf
-                     Post( *this\parent, #__event_ScrollChange, *this, *bar\page\pos ) 
+                     PostEventsScrollChange( *this\parent, *this, *bar\page\pos ) 
                   EndIf
                Else
                   ; Debug "bar update AddEvents" + EnteredButton( )
-                  Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
+                  PostEventsChange( *this, *this\stringbar, *bar\PageChange( ) )
                EndIf  
                
                *bar\PageChange( ) = 0
@@ -6554,7 +6600,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\TextChange( ) = 1
                EndIf
                
-               Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ))
+               PostEventsChange( *this, *this\stringbar, *bar\PageChange( ))
                *bar\PageChange( ) = 0
                ProcedureReturn #True   
             EndIf
@@ -6724,7 +6770,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             If *bar\PageChange( )
-               Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
+               PostEventsChange( *this, *this\stringbar, *bar\PageChange( ) )
                *bar\PageChange( ) = 0
                ProcedureReturn #True   
             EndIf
@@ -6865,11 +6911,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ; Debug "["+*this\class+"] update post "
-               ;
-               ;Post( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
-               ;DoEvents( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
-               ; commit 2064 test-spin.pb работает только с ним
-               AddEvents( *this, #__event_Change, *this\stringbar, *bar\PageChange( ) )
+               PostChange( *this, *this\stringbar, *bar\PageChange( ) )
                ;
                *bar\PageChange( ) = 0
                ProcedureReturn #True   
@@ -7232,7 +7274,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\type = #__type_Spin
                      ; Debug "bar_PageChange spin "+*this\class
                   Else
-                     Post( *this, #__event_Change, *this\stringbar, result )
+                     PostEventsChange( *this, *this\stringbar, result )
                   EndIf   
                EndIf
             EndIf
@@ -7766,7 +7808,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If *display\TabEntered( )
-               DoEvents( *display, #__event_StatusChange )
+               PostEvents( *display, #__event_StatusChange )
             EndIf
             
             ;\\ ComboBox
@@ -8030,7 +8072,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not ( Root( ) And Root( )\canvas\gadget = *display\root\canvas\gadget )
                   ChangeCurrentCanvas( GadgetID( *display\root\canvas\gadget ) )
                EndIf 
-               DoEvents( *this, #__event_Focus )
+               PostEventsFocus( *this )
                ProcedureReturn #True
             EndIf
             
@@ -9738,7 +9780,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          If *cursor
             If *this\bindcursor Or *this\root\canvas\bindcursor 
-               result = Post( *this, #__event_CursorChange, #PB_All, *cursor )
+               result = PostEventsCursorChange( *this, #PB_All, *cursor )
                If result > 0
                   *cursor = result
                EndIf
@@ -10438,7 +10480,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ; toggle box change
-               If Not Post( *this, #__event_Change )
+               If Not PostChange( *this )
                   PostReDrawEvent( *this\root )
                EndIf
                
@@ -10603,7 +10645,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\RowFocused( )\_focus = 0
                      *this\RowFocused( )\ColorState( ) = #__s_0
                      ; *this\WidgetChange( ) = 1
-                     DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
+                     PostEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
                      *this\RowFocused( ) = #Null
                      ProcedureReturn - 1
                   EndIf
@@ -10664,7 +10706,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this\RowFocused( )\_focus = 0
                            *this\RowFocused( )\ColorState( ) = #__s_0
                            ;
-                           DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
+                           PostEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
                         EndIf
                         
                         ;
@@ -10686,7 +10728,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If *this\RowFocused( )\picture\image > - 1
                                     SetImage( *this\parent\parent, *this\RowFocused( )\picture\image )
                                  EndIf
-                                 DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                                 PostEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                               Else
                                  If *this\parent\type = #__type_ComboBox
                                     SetText( *this\parent, *this\RowFocused( )\text\string )
@@ -10694,11 +10736,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                        SetImage( *this\parent, *this\RowFocused( )\picture\image )
                                     EndIf
                                  EndIf 
-                                 DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                                 PostEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                               EndIf 
                            EndIf 
                         Else
-                           If AddEvents( *this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                           If PostChange( *this, *this\RowFocused( )\rindex, *this\RowFocused( ))
                               If Not *this\RowFocused( )\height
                                  *this\WidgetChange( ) = - 5
                               EndIf
@@ -10773,7 +10815,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                ;
                ;\\ tab items focus change
-               DoEvents( *this, #__event_Change, state, *this\TabFocused( ) )
+               PostEvents( *this, #__event_Change, state, *this\TabFocused( ) )
                result = #True
             EndIf
             
@@ -11841,17 +11883,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                _this_\focus = #__s_2
                ; widget( ) = _this_
-               DoEvents( _this_, #__event_Focus )
+               PostEventsFocus( _this_ )
                If _this_\stringbar
                   If _this_\stringbar\focus <> _this_\focus
                      _this_\stringbar\focus = _this_\focus
-                     DoEvents( _this_\stringbar, #__event_Focus )
+                     PostEventsFocus( _this_\stringbar )
                   EndIf
                EndIf
                If is_integral_( _this_ )
                   If _this_\parent\focus <> _this_\focus
                      _this_\parent\focus = _this_\focus
-                     DoEvents( _this_\parent, #__event_Focus )
+                     PostEventsFocus( _this_\parent )
                   EndIf
                EndIf
             EndIf
@@ -11865,16 +11907,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If _this_\stringbar
                   _this_\stringbar\focus = _this_\focus
-                  DoEvents( _this_\stringbar, #__event_LostFocus )
+                  PostEventsLostFocus( _this_\stringbar )
                EndIf
                If is_integral_( _this_ )
                   If _this_\parent\focus <> _this_\focus
                      _this_\parent\focus = _this_\focus
-                     DoEvents( _this_\parent, #__event_LostFocus )
+                     PostEventsLostFocus( _this_\parent )
                   EndIf
                EndIf
                ; widget( ) = _this_
-               DoEvents( _this_, #__event_LostFocus )
+               PostEventsLostFocus( _this_ )
             EndIf
          EndMacro               
          Macro DoActivateWindows( _this_ )
@@ -14114,7 +14156,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\RowFocused( ) = 0
                      *this\RowState( ) = - 1
                      ;
-                     DoEvents( *this, #__event_StatusChange, - 1, 0 )
+                     PostEvents( *this, #__event_StatusChange, - 1, 0 )
                   Else
                      If *rowFocused\RowParent( ) 
                         If *rowFocused\RowParent( )\buttonbox  
@@ -14129,8 +14171,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *rowFocused\_focus = *this\focus
                      *rowFocused\ColorState( ) = *this\focus
                      ;
-                     DoEvents( *this, #__event_StatusChange, *row\rindex, -*row\ColorState( ))
-                     DoEvents( *this, #__event_StatusChange, *rowFocused\rindex, -*rowFocused\ColorState( ))
+                     PostEvents( *this, #__event_StatusChange, *row\rindex, -*row\ColorState( ))
+                     PostEvents( *this, #__event_StatusChange, *rowFocused\rindex, -*rowFocused\ColorState( ))
                   EndIf
                EndIf
                PopListPosition( *this\__rows( ))
@@ -16455,16 +16497,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   ;
-                  DoEvents( Leaved( ), #__event_MouseLeave, -1, @"[?+leave]" )
+                  PostEvents( Leaved( ), #__event_MouseLeave, -1, @"[?+leave]" )
                   ;
                   If is_integral_( Leaved( ) ) 
                      If Leaved( )\parent
                         If Leaved( )\parent\enter = 0
-                           DoEvents( Leaved( )\parent, #__event_MouseLeave, -1, @"[?-leave]" )
+                           PostEvents( Leaved( )\parent, #__event_MouseLeave, -1, @"[?-leave]" )
                         Else
                            If a_index( )
                               Leaved( )\parent\enter = - 1
-                              DoEvents( Leaved( )\parent, #__event_MouseLeave, -1, @"[?-a-leave]" )
+                              PostEvents( Leaved( )\parent, #__event_MouseLeave, -1, @"[?-a-leave]" )
                            Else
                               DoChangeCursor( Leaved( )\parent )
                            EndIf
@@ -16494,7 +16536,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         ;
                         If Not a_index( )
-                           DoEvents( *this\parent, #__event_MouseEnter, -1, @"[?-enter]" )
+                           PostEvents( *this\parent, #__event_MouseEnter, -1, @"[?-enter]" )
                         EndIf
                         ;
                      ElseIf MouseEnter( *this\parent )
@@ -16529,7 +16571,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                If Not a_index( )
                   *this\enter = 1
-                  DoEvents( *this, #__event_MouseEnter, -1, @"[?+enter]" )
+                  PostEvents( *this, #__event_MouseEnter, -1, @"[?+enter]" )
                EndIf
             EndIf
          EndIf
@@ -17647,7 +17689,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                      EndIf
                      
                      ; Debug " leave-item status change"
-                     DoEvents( *this, #__event_StatusChange, *rowleaved\rindex, -*rowleaved\ColorState( ) )
+                     PostEvents( *this, #__event_StatusChange, *rowleaved\rindex, -*rowleaved\ColorState( ) )
                   EndIf
                EndIf
                
@@ -17723,7 +17765,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;\\ update non-focus status
                      If Not ( Not *this\press And *row = *this\RowFocused( ) )
                         ; Debug " enter-item status change"
-                        DoEvents( *this, #__event_StatusChange, *row\rindex, -*row\ColorState( ) )
+                        PostEvents( *this, #__event_StatusChange, *row\rindex, -*row\ColorState( ) )
                      EndIf
                   EndIf
                EndIf
@@ -17764,7 +17806,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *rows( )\ColorState( ) = #__s_2
                            ;
                            ; status-focus
-                           DoEvents( *this, #__event_StatusChange, *rows( )\rindex, -*rows( )\ColorState( ))
+                           PostEvents( *this, #__event_StatusChange, *rows( )\rindex, -*rows( )\ColorState( ))
                         EndIf
                      EndIf
                   Next
@@ -17778,7 +17820,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\RowFocused( )\ColorState( ) = #__s_2
                   ;
                   ; status-focus
-                  DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                  PostEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                EndIf
             EndIf
             
@@ -17793,7 +17835,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *rows( )\ColorState( ) = #__s_3
                            ;
                            ; status-lostfocus
-                           DoEvents( *this, #__event_StatusChange, *rows( )\rindex, -*rows( )\ColorState( ))
+                           PostEvents( *this, #__event_StatusChange, *rows( )\rindex, -*rows( )\ColorState( ))
                         EndIf
                      EndIf
                   Next
@@ -17807,7 +17849,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      ; status-lostfocus
                      ; Debug 77777 
-                     DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, - *this\RowFocused( )\ColorState( ))
+                     PostEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, - *this\RowFocused( )\ColorState( ))
                   EndIf
                EndIf
                ;EndIf
@@ -17826,12 +17868,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If *row\buttonbox\checked
                                     ; развернул список
                                     If SetItemState( *this, *row\rindex, (GetItemState(*this, *row\rindex) &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded )
-                                       Post( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Expanded )
+                                       PostEventsStatusChange( *this, *row\rindex, #PB_Tree_Expanded )
                                     EndIf
                                  Else
                                     ; свернул список
                                     If SetItemState( *this, *row\rindex, (GetItemState(*this, *row\rindex) &~ #PB_Tree_Expanded) | #PB_Tree_Collapsed )
-                                       Post( *this, #__event_StatusChange, *row\rindex, #PB_Tree_Collapsed )
+                                       PostEventsStatusChange( *this, *row\rindex, #PB_Tree_Collapsed )
                                     EndIf
                                  EndIf
                               EndIf
@@ -17900,17 +17942,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     *this\RowFocused( )\ColorState( ) = #__s_3
                                     ;
                                     ; status-press-lostfocus
-                                    DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, - *this\RowFocused( )\ColorState( ) )
+                                    PostEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, - *this\RowFocused( )\ColorState( ) )
                                  EndIf
                               EndIf
                               ;
                               ; status-press-change
-                              DoEvents(*this, #__event_StatusChange, *row\rindex, - *row\ColorState( ) )
+                              PostEvents(*this, #__event_StatusChange, *row\rindex, - *row\ColorState( ) )
                            EndIf
                         Else
                            *row\ColorState( ) = #__s_1
                            ; status-press-change
-                           DoEvents(*this, #__event_StatusChange, *row\rindex, - *row\ColorState( ) )
+                           PostEvents(*this, #__event_StatusChange, *row\rindex, - *row\ColorState( ) )
                         EndIf
                      EndIf
                   EndIf
@@ -17924,7 +17966,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; не уверен есть ли в этом польза))
                If *this\RowFocused( )
                   If Not MousePress( ) 
-                     DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, - 1 )
+                     PostEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, - 1 )
                   EndIf
                EndIf
             EndIf
@@ -17963,7 +18005,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               *this\RowFocused( )\ColorState( ) = #__s_2
                               ;
                               ; status-focus
-                              DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                              PostEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                            EndIf
                         EndIf
                         ;
@@ -18275,7 +18317,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ; удобно когда нужно показать подсказку
                            If is_integral_( *this )
                               If *this\parent\type = #__type_panel
-                                 Post( *this\parent, #__event_StatusChange, *tab\index, *tab )
+                                 PostEventsStatusChange( *this\parent, *tab\index, *tab )
                               EndIf
                            EndIf
                         EndIf
@@ -18818,13 +18860,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
-                  If event = #__event_left2Click Or
-                     event = #__event_left3Click
-                     ;
-                     If MouseClick( ) > 1
-                        Post( *this, #__event_LeftClick, *button, *data )
-                     EndIf
-                  EndIf
                   
                Case #__type_Option
                   If event = #__event_LeftClick Or
@@ -18909,7 +18944,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         
                         If *this\root\repaint = 5
-                           ; DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
                         EndIf
                      EndIf
                   EndIf
@@ -18987,31 +19021,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ send-widget-events
          If Not (*this\disable And Not *this\anchors)  
-            If event = #__event_LeftClick
-;                ReDraw( *this\root )
-;                Debug " start post"
-; ;                Protected win = WindowID(*this\root\canvas\window)
-; ;                CocoaMessage(0, win, "update")
-; ;                
-; ;                ; с ним mousemove не происходит если приложение не активно
-; ;                Define  eventTap = CGEventTapCreate(2, 0, 1, -1, @eventTapFunction(), *this)
-; ;                If eventTap
-; ;                   CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), "addPort:", eventTap, "forMode:$", @"kCFRunLoopDefaultMode")
-; ;                EndIf
-; ;                WaitQuit( )
-; ;                CFMachPortInvalidate_( eventTap )
-; ;                CFRelease_(eventTap)
-; ;                eventTap = 0
-;                
-;                Delay( 2000 )
+            If event = #__event_left2Click Or
+               event = #__event_left3Click
+               ;
+               If MouseClick( ) > 1
+                  Post( *this, #__event_LeftClick, *button, *data )
+               EndIf
             EndIf
             If *this\child And *this\parent And *this\parent\tabbar And *this\parent\tabbar\type = #__type_tabbar
                Post( *this\parent, event, *button, *data )
             Else
                Post( *this, event, *button, *data )
-            EndIf
-            If event = #__event_LeftClick
-;                 Debug " stop post"
             EndIf
          EndIf
          
@@ -19024,6 +19044,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     ( event = #__event_Focus Or
                       event = #__event_Drop Or
                       event = #__event_LostFocus )) Or __gui\event\loop
+                  ;Debug 66666
                   ;
                   ReDraw( *this\root )
                Else
@@ -19284,9 +19305,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   MouseData( ) | #__mouse_right
                EndIf
                If is_scrollbars_( Entered( ) )
-                  DoEvents( Entered( )\parent, #__event_MouseWheel, #PB_All, eventdata )
+                  PostEvents( Entered( )\parent, #__event_MouseWheel, #PB_All, eventdata )
                Else
-                  DoEvents( Entered( ), #__event_MouseWheel, #PB_All, eventdata )
+                  PostEvents( Entered( ), #__event_MouseWheel, #PB_All, eventdata )
                EndIf
                ;MouseDirection( ) = 0
             EndIf
@@ -19303,9 +19324,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   MouseData( ) | #__mouse_bottom
                EndIf
                If is_scrollbars_( Entered( ) )
-                  DoEvents( Entered( )\parent, #__event_MouseWheel, #PB_All, eventdata )
+                  PostEvents( Entered( )\parent, #__event_MouseWheel, #PB_All, eventdata )
                Else
-                  DoEvents( Entered( ), #__event_MouseWheel, #PB_All, eventdata )
+                  PostEvents( Entered( ), #__event_MouseWheel, #PB_All, eventdata )
                EndIf
                ;MouseDirection( ) = 0
             EndIf
@@ -19733,15 +19754,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  DoEvents( *keywidget, #__event_KeyDown )
+                  PostEvents( *keywidget, #__event_KeyDown )
                EndIf
                If eventtype = #PB_EventType_Input
                   ; Debug *keywidget\class
-                  DoEvents( *keywidget, #__event_Input )
+                  PostEvents( *keywidget, #__event_Input )
                   ; keyboard( )\input = 0
                EndIf
                If eventtype = #PB_EventType_KeyUp
-                  DoEvents( *keywidget, #__event_KeyUp )
+                  PostEvents( *keywidget, #__event_KeyUp )
                   ;
                   keyboard( )\key[1] = 0
                   keyboard( )\Key    = 0
@@ -19759,7 +19780,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                MouseDrag( ) = 1 ; ._s_DROP = AllocateStructure( _s_DROP);RAG )
                MouseDragStart( ) = #PB_Drag_Update
-               DoEvents( Pressed( ), #__event_DragStart )
+               PostEvents( Pressed( ), #__event_DragStart )
             EndIf
          EndIf
          
@@ -19805,7 +19826,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   CanvasMouseX( ) = mouse::GadgetMouseX( Pressed( )\root\canvas\gadget )
                   CanvasMouseY( ) = mouse::GadgetMouseY( Pressed( )\root\canvas\gadget )
                EndIf
-               DoEvents( Pressed( ), event )
+               PostEvents( Pressed( ), event )
             EndIf
             
             ;\\ mouse-entered-widget move event
@@ -19817,7 +19838,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   CanvasMouseX( ) = mouse::GadgetMouseX( Root( )\canvas\gadget )
                   CanvasMouseY( ) = mouse::GadgetMouseY( Root( )\canvas\gadget )
                EndIf
-               DoEvents( Entered( ), event )
+               PostEvents( Entered( ), event )
             EndIf
          EndIf
          
@@ -20014,10 +20035,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                ;
-               DoEvents( Entered( ), #__event_Down )
+               PostEvents( Entered( ), #__event_Down )
                ;
                If MouseClick( ) = 1
-                  DoEvents( Entered( ), event )
+                  PostEvents( Entered( ), event )
                EndIf
             EndIf
          EndIf
@@ -20041,7 +20062,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If is_drag_move( )
                         If Entered( )\drop
                            Debug "drop - is_drag_move"
-                           DoEvents( Entered( ), #__event_Drop )
+                           PostEvents( Entered( ), #__event_Drop )
                         EndIf
                      Else
                         If IsContainer( Pressed( ) ) 
@@ -20053,7 +20074,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  mouse( )\drop\width  = DPIUnscaledX( mouse( )\selector\width )
                                  mouse( )\drop\height = DPIUnscaledY( mouse( )\selector\height )
                                  
-                                 DoEvents( Pressed( ), #__event_Drop )
+                                 PostEvents( Pressed( ), #__event_Drop )
                               EndIf
                            EndIf
                            
@@ -20065,7 +20086,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               mouse( )\drop\width  = #PB_Ignore
                               mouse( )\drop\height = #PB_Ignore
                               
-                              DoEvents( Entered( ), #__event_Drop )
+                              PostEvents( Entered( ), #__event_Drop )
                            EndIf
                         EndIf
                      EndIf
@@ -20091,11 +20112,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   Pressed( )\press = #False
                   ;\\
-                  DoEvents( Pressed( ), #__event_Up )
+                  PostEvents( Pressed( ), #__event_Up )
                   
                   ;\\ do up left&right events
                   If MouseClick( ) = 1
-                     DoEvents( Pressed( ), event )
+                     PostEvents( Pressed( ), event )
                   EndIf
                   
                   ;\\ do click left&right events
@@ -20104,29 +20125,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;\\ do 1-click
                         If Pressed( ) = Entered( )
                            If event = #__event_LeftUp
-                              DoEvents( Pressed( ), #__event_LeftClick )
+                              PostEvents( Pressed( ), #__event_LeftClick )
                            EndIf
                            If event = #__event_RightUp
-                              DoEvents( Pressed( ), #__event_RightClick )
+                              PostEvents( Pressed( ), #__event_RightClick )
                            EndIf
                         EndIf
                         
                         ;\\ do 2-click
                      ElseIf MouseClick( ) = 2
                         If event = #__event_LeftUp
-                           DoEvents( Pressed( ), #__event_Left2Click )
+                           PostEvents( Pressed( ), #__event_Left2Click )
                         EndIf
                         If event = #__event_RightUp
-                           DoEvents( Pressed( ), #__event_Right2Click )
+                           PostEvents( Pressed( ), #__event_Right2Click )
                         EndIf
                         
                         ;\\ do 3-click
                      ElseIf MouseClick( ) = 3
                         If event = #__event_LeftUp
-                           DoEvents( Pressed( ), #__event_Left3Click )
+                           PostEvents( Pressed( ), #__event_Left3Click )
                         EndIf
                         If event = #__event_RightUp
-                           DoEvents( Pressed( ), #__event_Right3Click )
+                           PostEvents( Pressed( ), #__event_Right3Click )
                         EndIf
                         
                      EndIf
@@ -21944,7 +21965,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; text change
                   *this\edit_caret( )\word = GetWord( *this\LineFocused( )\text\string, *this\LineFocused( )\text\len, *this\edit_caret( )\pos[1]-*this\LineFocused( )\text\pos )
                   *this\text\string$ = *this\text\string
-                  DoEvents( *this, #__event_Change, *this\LineFocused( )\lindex, *this\LineFocused( ))
+                  PostEvents( *this, #__event_Change, *this\LineFocused( )\lindex, *this\LineFocused( ))
               EndIf
             EndIf
             
@@ -23653,7 +23674,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             SetAttribute( *this, #PB_ScrollArea_ScrollStep, *param_3 )
          EndIf
          
-         ;          AddEvents( *this, #__event_Create )
          Widget( ) = *this
          ProcedureReturn *this
       EndProcedure
@@ -24047,9 +24067,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If constants::BinaryFlag( Flag, #PB_Window_NoActivate )
                   *root\nofocus = #__s_nofocus
                Else
-                  If SetActive( *root )
-                     ; Post( *root, #__event_Focus )
-                  EndIf
+                  SetActive( *root )
                   SetActiveGadget( *root\canvas\gadget )
                EndIf
                ;
@@ -24398,6 +24416,578 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure Reclip1( *this._s_WIDGET )
+         Protected _p_x1_
+         Protected _p_y1_
+         Protected _p_x2_
+         Protected _p_y2_
+         
+         Protected *parent._s_WIDGET
+         
+         ;
+         ;\\ change clip output coordinate
+         If is_root_( *this )
+            If *this\clip_width( ) <> *this\screen_width( )
+               *this\clip_width( )  = *this\screen_width( )
+               *this\clip_iwidth( ) = *this\screen_width( )
+            EndIf
+            If *this\clip_height( ) <> *this\screen_height( )
+               *this\clip_height( )  = *this\screen_height( )
+               *this\clip_iheight( ) = *this\screen_height( )
+            EndIf
+         Else
+            If *this\bounds\attach
+               *parent = *this\bounds\attach\parent
+            Else
+               *parent = *this\parent
+            EndIf
+            
+            If *parent
+               If *this\TabIndex( ) = #PB_Ignore
+                  _p_x1_ = *parent\frame_x( ) + *this\fs 
+                  _p_y1_ = *parent\frame_y( ) + *this\fs 
+                  _p_x2_ = _p_x1_
+                  _p_y2_ = _p_y1_
+                  ;
+                  If *parent\fs[1] Or *parent\fs[3]
+                     _p_x2_ + *parent\fs[1] + *parent\fs[3] + *this\fs
+                  Else
+                     _p_x2_ + *parent\frame_width( ) - *this\fs * 2
+                  EndIf
+                  If *parent\fs[2] Or *parent\fs[4]
+                     _p_y2_ + *parent\fs[2] + *parent\fs[4] + *this\fs
+                  Else
+                     _p_y2_ + *parent\frame_height( ) - *this\fs * 2
+                  EndIf
+               Else
+                  ;
+                  ; for the splitter children's
+                  If *parent\type = #__type_Splitter
+                     If *parent\split_1( ) = *this
+                        _p_x1_ = *parent\bar\button[1]\x
+                        _p_y1_ = *parent\bar\button[1]\y
+                        _p_x2_ = *parent\bar\button[1]\x + *parent\bar\button[1]\width
+                        _p_y2_ = *parent\bar\button[1]\y + *parent\bar\button[1]\height
+                     EndIf
+                     If *parent\split_2( ) = *this
+                        _p_x1_ = *parent\bar\button[2]\x
+                        _p_y1_ = *parent\bar\button[2]\y
+                        _p_x2_ = *parent\bar\button[2]\x + *parent\bar\button[2]\width
+                        _p_y2_ = *parent\bar\button[2]\y + *parent\bar\button[2]\height
+                     EndIf
+                  Else
+                     _p_x1_ = *parent\inner_x( )
+                     _p_y1_ = *parent\inner_y( )
+                     ;
+                     If *this\type = #__type_Scroll
+                        _p_x2_ = _p_x1_ + *parent\container_width( )
+                        _p_y2_ = _p_y1_ + *parent\container_height( )
+                     Else
+                        _p_x2_ = _p_x1_ + *parent\inner_width( )
+                        _p_y2_ = _p_y1_ + *parent\inner_height( )
+                     EndIf
+                  EndIf
+               EndIf
+               
+               
+               ;
+               ;\\ clip out draw X&Y coordinates
+               If _p_x1_ > *parent\clip_x( ) And 
+                  _p_x1_ > *this\screen_x( )
+                  *this\clip_x( ) = _p_x1_
+               ElseIf *parent\clip_x( ) > *this\screen_x( )
+                  *this\clip_x( ) = *parent\clip_x( )
+               Else
+                  *this\clip_x( ) = *this\screen_x( )
+               EndIf
+               If _p_y1_ > *parent\clip_y( ) And 
+                  _p_y1_ > *this\screen_y( )
+                  *this\clip_y( ) = _p_y1_
+               ElseIf *parent\clip_y( ) > *this\screen_y( )
+                  *this\clip_y( ) = *parent\clip_y( )
+               Else
+                  *this\clip_y( ) = *this\screen_y( )
+               EndIf
+               ;
+               If *this\clip_x( ) < 0 : *this\clip_x( ) = 0 : EndIf
+               If *this\clip_y( ) < 0 : *this\clip_y( ) = 0 : EndIf
+               ;
+               ;\\ clip out draw Width&Height coordinates
+               If (_p_x2_) > (*parent\clip_x( ) + *parent\clip_width( )) And
+                  (*this\screen_x( ) + *this\screen_width( )) > (*parent\clip_x( ) + *parent\clip_width( ))
+                  *this\clip_width( ) = (*parent\clip_x( ) + *parent\clip_width( )) - *this\clip_x( )
+               ElseIf (_p_x2_) > (*this\screen_x( ) + *this\screen_width( )) 
+                  *this\clip_width( ) = (*this\screen_x( ) + *this\screen_width( )) - *this\clip_x( )
+               Else
+                  *this\clip_width( ) = (_p_x2_) - *this\clip_x( )
+               EndIf
+               If (_p_y2_) > (*parent\clip_y( ) + *parent\clip_height( )) And
+                  (*this\screen_y( ) + *this\screen_height( )) > (*parent\clip_y( ) + *parent\clip_height( ))
+                  *this\clip_height( ) = (*parent\clip_y( ) + *parent\clip_height( )) - *this\clip_y( )
+               ElseIf (_p_y2_) > (*this\screen_y( ) + *this\screen_height( )) 
+                  *this\clip_height( ) = (*this\screen_y( ) + *this\screen_height( )) - *this\clip_y( )
+               Else
+                  *this\clip_height( ) = (_p_y2_) - *this\clip_y( )
+               EndIf
+               ;
+               If *this\clip_width( ) < 0 : *this\clip_width( ) = 0 : EndIf
+               If *this\clip_height( ) < 0 : *this\clip_height( ) = 0 : EndIf
+              
+               ;
+               ;\\ clip inner draw X&Y coordinates             
+               If *this\inner_x( ) < *this\clip_x( )
+                  *this\clip_ix( ) = *this\clip_x( )
+               Else
+                  *this\clip_ix( ) = *this\inner_x( )
+               EndIf
+               If *this\inner_y( ) < *this\clip_y( )
+                  *this\clip_iy( ) = *this\clip_y( )
+               Else
+                  *this\clip_iy( ) = *this\inner_y( )
+               EndIf
+               
+               ;\\ clip inner draw Width&Height coordinates
+               If (*this\inner_x( ) + *this\inner_width( )) > (*this\clip_x( ) + *this\clip_width( ))
+                  *this\clip_iwidth( ) = (*this\clip_x( ) + *this\clip_width( )) - *this\clip_ix( )
+               Else
+                  *this\clip_iwidth( ) = (*this\inner_x( ) + *this\inner_width( )) - *this\clip_ix( )
+               EndIf
+               If (*this\inner_y( ) + *this\inner_height( )) > (*this\clip_y( ) + *this\clip_height( ))
+                  *this\clip_iheight( ) = (*this\clip_y( ) + *this\clip_height( )) - *this\clip_iy( )
+               Else
+                  *this\clip_iheight( ) = (*this\inner_y( ) + *this\inner_height( )) - *this\clip_iy( )
+               EndIf
+               ;
+            EndIf
+         EndIf
+         
+      EndProcedure
+      
+      Procedure Reclip2( *this._s_WIDGET )
+         ; ProcedureReturn  Reclip1( *this )
+         
+         Protected _p_x1_
+         Protected _p_y1_
+         Protected _p_x2_
+         Protected _p_y2_
+         Protected *parent._s_WIDGET
+         
+         If *this\bounds\attach
+            *parent = *this\bounds\attach\parent
+         Else
+            *parent = *this\parent
+         EndIf
+         
+         If test_scrollbars_reclip
+            If *parent
+               Debug "   reClip - " + *this\class + " * " + *parent\inner_width( ) + " " + *parent\inner_height( )
+            EndIf
+         EndIf
+         
+         If is_root_( *this )
+            If *this\clip_width( ) <> *this\screen_width( )
+               *this\clip_width( )     = *this\screen_width( )
+               *this\clip_iwidth( ) = *this\screen_width( )
+            EndIf
+            If *this\clip_height( ) <> *this\screen_height( )
+               *this\clip_height( )     = *this\screen_height( )
+               *this\clip_iheight( ) = *this\screen_height( )
+            EndIf
+         Else
+            If *parent
+               If *this\TabIndex( ) = #PB_Ignore
+                  _p_x1_ = *parent\frame_x( ) + *this\fs 
+                  _p_y1_ = *parent\frame_y( ) + *this\fs 
+                  _p_x2_ = _p_x1_
+                  _p_y2_ = _p_y1_
+                  ;
+                  If *parent\fs[1] Or *parent\fs[3]
+                     _p_x2_ + *parent\fs[1] + *parent\fs[3] + *this\fs
+                  Else
+                     _p_x2_ + *parent\frame_width( ) - *this\fs * 2
+                  EndIf
+                  If *parent\fs[2] Or *parent\fs[4]
+                     _p_y2_ + *parent\fs[2] + *parent\fs[4] + *this\fs
+                  Else
+                     _p_y2_ + *parent\frame_height( ) - *this\fs * 2
+                  EndIf
+               Else
+                  _p_x1_ = *parent\inner_x( )
+                  _p_y1_ = *parent\inner_y( )
+                  _p_x2_ = _p_x1_ + *parent\inner_width( )
+                  _p_y2_ = _p_y1_ + *parent\inner_height( )
+                  
+                  ; for the splitter children's
+                  If *parent\type = #__type_Splitter
+                     If *parent\split_1( ) = *this
+                        _p_x2_ = *parent\bar\button[1]\x + *parent\bar\button[1]\width
+                        _p_y2_ = *parent\bar\button[1]\y + *parent\bar\button[1]\height
+                     EndIf
+                     If *parent\split_2( ) = *this
+                        _p_x2_ = *parent\bar\button[2]\x + *parent\bar\button[2]\width
+                        _p_y2_ = *parent\bar\button[2]\y + *parent\bar\button[2]\height
+                     EndIf
+                  EndIf
+                  
+                  If is_integral_( *this ) And Not *this\bounds\attach
+                     If *this\type = #__type_MenuBar Or
+                        *this\type = #__type_PopupBar Or
+                        *this\type = #__type_ToolBar Or
+                        *this\type = #__type_TabBar Or
+                        *this\type = #__type_Scroll
+                        ;
+                        _p_x2_ = _p_x1_ + *parent\container_width( )
+                        _p_y2_ = _p_y1_ + *parent\container_height( )
+                     EndIf
+                     
+                  Else
+                     ; for the scrollarea&MDI children's except scrollbars
+                     If *parent\container
+                        ;                      If *this\anchors
+                        ;                         Debug ""+*parent\class +" "+ *parent\scroll_width( )
+                        ;                      EndIf
+                        If *parent\scroll_width( ) And
+                           _p_x2_ > _p_x1_ + *parent\scroll_x( ) + *parent\scroll_width( )
+                           _p_x2_ = _p_x1_ + *parent\scroll_x( ) + *parent\scroll_width( )
+                        EndIf
+                        If *parent\scroll_height( ) And
+                           _p_y2_ > _p_y1_ + *parent\scroll_y( ) + *parent\scroll_height( )
+                           _p_y2_ = _p_y1_ + *parent\scroll_y( ) + *parent\scroll_height( )
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+               
+             
+            ; then move and size parent set clip coordinate
+            ; x&y clip frame coordinate
+            If *parent And
+               _p_x1_ > *this\screen_x( ) And
+               _p_x1_ > *parent\clip_x( )
+               *this\clip_x( ) = _p_x1_
+            ElseIf *parent And *parent\clip_x( ) > *this\screen_x( )
+               *this\clip_x( ) = *parent\clip_x( )
+            Else
+               *this\clip_x( ) = *this\screen_x( )
+            EndIf
+            If *this\clip_x( ) < 0 : *this\clip_x( ) = 0 : EndIf
+            ;
+            If *parent And
+               _p_y1_ > *this\screen_y( ) And
+               _p_y1_ > *parent\clip_y( )
+               *this\clip_y( ) = _p_y1_
+            ElseIf *parent And *parent\clip_y( ) > *this\screen_y( )
+               *this\clip_y( ) = *parent\clip_y( )
+            Else
+               *this\clip_y( ) = *this\screen_y( )
+            EndIf
+            If *this\clip_y( ) < 0 : *this\clip_y( ) = 0 : EndIf
+            ;
+            ; width&height clip frame coordinate
+            If *parent And
+               (*parent\clip_x( ) + *parent\clip_width( )) > 0 And
+               (*parent\clip_x( ) + *parent\clip_width( )) < (*this\screen_x( ) + *this\screen_width( )) And
+               (_p_x2_) > (*parent\clip_x( ) + *parent\clip_width( ))
+               
+               *this\clip_width( ) = (*parent\clip_x( ) + *parent\clip_width( )) - *this\clip_x( )
+            ElseIf *parent And (_p_x2_) > 0 And (_p_x2_) < (*this\screen_x( ) + *this\screen_width( ))
+               *this\clip_width( ) = (_p_x2_) - *this\clip_x( )
+            Else
+               *this\clip_width( ) = (*this\screen_x( ) + *this\screen_width( )) - *this\clip_x( )
+            EndIf
+            If *this\clip_width( ) < 0 : *this\clip_width( ) = 0 : EndIf
+            ;
+            If *parent And
+               (*parent\clip_y( ) + *parent\clip_height( )) > 0 And
+               (*parent\clip_y( ) + *parent\clip_height( )) < (*this\screen_y( ) + *this\screen_height( )) And
+               (_p_y2_) > (*parent\clip_y( ) + *parent\clip_height( ))
+               
+               *this\clip_height( ) = (*parent\clip_y( ) + *parent\clip_height( )) - *this\clip_y( )
+            ElseIf *parent And (_p_y2_) > 0 And (_p_y2_) < (*this\screen_y( ) + *this\screen_height( ))
+               
+               *this\clip_height( ) = (_p_y2_) - *this\clip_y( )
+            Else
+               *this\clip_height( ) = (*this\screen_y( ) + *this\screen_height( )) - *this\clip_y( )
+            EndIf
+            If *this\clip_height( ) < 0 : *this\clip_height( ) = 0 : EndIf
+            ;
+            ;\\ x&y clip inner coordinate
+            If *parent And
+               _p_x1_ > *this\inner_x( ) And
+               _p_x1_ > *parent\clip_ix( )
+               *this\clip_ix( ) = _p_x1_
+            ElseIf *parent And *parent\clip_ix( ) > *this\inner_x( )
+               *this\clip_ix( ) = *parent\clip_ix( )
+            Else
+               *this\clip_ix( ) = *this\inner_x( )
+            EndIf
+            If *this\clip_ix( ) < 0 : *this\clip_ix( ) = 0 : EndIf
+            ;
+            If *parent And
+               _p_y1_ > *this\inner_y( ) And
+               _p_y1_ > *parent\clip_iy( )
+               *this\clip_iy( ) = _p_y1_
+            ElseIf *parent And *parent\clip_iy( ) > *this\inner_y( )
+               *this\clip_iy( ) = *parent\clip_iy( )
+            Else
+               *this\clip_iy( ) = *this\inner_y( )
+            EndIf
+            If *this\clip_iy( ) < 0 : *this\clip_iy( ) = 0 : EndIf
+            
+            ;\\ width&height clip inner coordinate
+            If *parent And
+               (*parent\clip_ix( ) + *parent\clip_iwidth( )) > 0 And
+               (*parent\clip_ix( ) + *parent\clip_iwidth( )) < (*this\inner_x( ) + *this\inner_width( )) And
+               (_p_x2_) > (*parent\clip_ix( ) + *parent\clip_iwidth( ))
+               
+               *this\clip_iwidth( ) = (*parent\clip_ix( ) + *parent\clip_iwidth( )) - *this\clip_ix( )
+            ElseIf *parent And (_p_x2_) > 0 And (_p_x2_) < (*this\inner_x( ) + *this\inner_width( ))
+               
+               *this\clip_iwidth( ) = (_p_x2_) - *this\clip_ix( )
+            Else
+               *this\clip_iwidth( ) = (*this\inner_x( ) + *this\inner_width( )) - *this\clip_ix( )
+            EndIf
+            If *this\clip_iwidth( ) < 0 : *this\clip_iwidth( ) = 0 : EndIf
+            ;
+            If *parent And
+               (*parent\clip_iy( ) + *parent\clip_iheight( )) > 0 And
+               (*parent\clip_iy( ) + *parent\clip_iheight( )) < (*this\inner_y( ) + *this\inner_height( )) And
+               (_p_y2_) > (*parent\clip_iy( ) + *parent\clip_iheight( ))
+               
+               *this\clip_iheight( ) = (*parent\clip_iy( ) + *parent\clip_iheight( )) - *this\clip_iy( )
+            ElseIf *parent And (_p_y2_) > 0 And (_p_y2_) < (*this\inner_y( ) + *this\inner_height( ))
+               
+               *this\clip_iheight( ) = (_p_y2_) - *this\clip_iy( )
+            Else
+               *this\clip_iheight( ) = (*this\inner_y( ) + *this\inner_height( )) - *this\clip_iy( )
+            EndIf
+            If *this\clip_iheight( ) < 0 : *this\clip_iheight( ) = 0 : EndIf
+            EndIf
+           
+         EndIf
+         
+         ;
+         ; clip child bar
+         If *this\tabbar
+            *this\tabbar\clip_x( )      = *this\clip_x( )
+            *this\tabbar\clip_y( )      = *this\clip_y( )
+            *this\tabbar\clip_width( )  = *this\clip_width( ) 
+            *this\tabbar\clip_height( ) = *this\clip_height( )
+         EndIf
+         If *this\menubar
+            *this\menubar\clip_x( )      = *this\clip_x( )
+            *this\menubar\clip_y( )      = *this\clip_y( )
+            *this\menubar\clip_width( )  = *this\clip_width( )  
+            *this\menubar\clip_height( ) = *this\clip_height( )
+         EndIf
+         If *this\stringbar
+            *this\stringbar\clip_x( )      = *this\clip_x( )
+            *this\stringbar\clip_y( )      = *this\clip_y( )
+            *this\stringbar\clip_width( )  = *this\clip_width( )
+            *this\stringbar\clip_height( ) = *this\clip_height( )
+         EndIf
+         If *this\scroll
+            If *this\scroll\v
+               *this\scroll\v\clip_x( )      = *this\clip_x( )
+               *this\scroll\v\clip_y( )      = *this\clip_y( )
+               *this\scroll\v\clip_width( )  = *this\clip_width( )
+               *this\scroll\v\clip_height( ) = *this\clip_height( )
+            EndIf
+            If *this\scroll\h
+               *this\scroll\h\clip_x( )      = *this\clip_x( )
+               *this\scroll\h\clip_y( )      = *this\clip_y( )
+               *this\scroll\h\clip_width( )  = *this\clip_width( )
+               *this\scroll\h\clip_height( ) = *this\clip_height( )
+            EndIf
+         EndIf
+         
+         ProcedureReturn Bool( *this\clip_width( ) > 0 And *this\clip_height( ) > 0 )
+      EndProcedure
+      
+      Procedure Reclip( *this._s_WIDGET )
+         ; ProcedureReturn  Reclip1( *this )
+         
+         Protected _p_x1_
+         Protected _p_y1_
+         Protected _p_x2_
+         Protected _p_y2_
+         Protected *parent._s_WIDGET
+         
+         If *this\bounds\attach
+            *parent = *this\bounds\attach\parent
+         Else
+            *parent = *this\parent
+         EndIf
+         
+         If is_root_( *this )
+            If *this\clip_width( ) <> *this\screen_width( )
+               *this\clip_width( )     = *this\screen_width( )
+               *this\clip_iwidth( ) = *this\screen_width( )
+            EndIf
+            If *this\clip_height( ) <> *this\screen_height( )
+               *this\clip_height( )     = *this\screen_height( )
+               *this\clip_iheight( ) = *this\screen_height( )
+            EndIf
+         Else
+            If *parent
+               If *this\TabIndex( ) = #PB_Ignore
+                  _p_x1_ = *parent\frame_x( ) + *this\fs 
+                  _p_y1_ = *parent\frame_y( ) + *this\fs 
+                  _p_x2_ = _p_x1_
+                  _p_y2_ = _p_y1_
+                  ;
+                  If *parent\fs[1] Or *parent\fs[3]
+                     _p_x2_ + *parent\fs[1] + *parent\fs[3] + *this\fs
+                  Else
+                     _p_x2_ + *parent\frame_width( ) - *this\fs * 2
+                  EndIf
+                  If *parent\fs[2] Or *parent\fs[4]
+                     _p_y2_ + *parent\fs[2] + *parent\fs[4] + *this\fs
+                  Else
+                     _p_y2_ + *parent\frame_height( ) - *this\fs * 2
+                  EndIf
+               Else
+                  ;
+                  ; for the splitter children's
+                  If *parent\type = #__type_Splitter
+                     If *parent\split_1( ) = *this
+                        _p_x1_ = *parent\bar\button[1]\x
+                        _p_y1_ = *parent\bar\button[1]\y
+                        _p_x2_ = *parent\bar\button[1]\x + *parent\bar\button[1]\width
+                        _p_y2_ = *parent\bar\button[1]\y + *parent\bar\button[1]\height
+                     EndIf
+                     If *parent\split_2( ) = *this
+                        _p_x1_ = *parent\bar\button[2]\x
+                        _p_y1_ = *parent\bar\button[2]\y
+                        _p_x2_ = *parent\bar\button[2]\x + *parent\bar\button[2]\width
+                        _p_y2_ = *parent\bar\button[2]\y + *parent\bar\button[2]\height
+                     EndIf
+                  Else
+                     _p_x1_ = *parent\inner_x( )
+                     _p_y1_ = *parent\inner_y( )
+                     ;
+                     If *this\type = #__type_Scroll
+                        _p_x2_ = _p_x1_ + *parent\container_width( )
+                        _p_y2_ = _p_y1_ + *parent\container_height( )
+                     Else
+                        _p_x2_ = _p_x1_ + *parent\inner_width( )
+                        _p_y2_ = _p_y1_ + *parent\inner_height( )
+                     EndIf
+                  EndIf
+               EndIf
+               
+               
+               ; then move and size parent set clip coordinate
+               ; x&y clip frame coordinate
+               If *parent And
+                  _p_x1_ > *this\screen_x( ) And
+                  _p_x1_ > *parent\clip_x( )
+                  *this\clip_x( ) = _p_x1_
+               ElseIf *parent And *parent\clip_x( ) > *this\screen_x( )
+                  *this\clip_x( ) = *parent\clip_x( )
+               Else
+                  *this\clip_x( ) = *this\screen_x( )
+               EndIf
+               If *this\clip_x( ) < 0 : *this\clip_x( ) = 0 : EndIf
+               ;
+               If *parent And
+                  _p_y1_ > *this\screen_y( ) And
+                  _p_y1_ > *parent\clip_y( )
+                  *this\clip_y( ) = _p_y1_
+               ElseIf *parent And *parent\clip_y( ) > *this\screen_y( )
+                  *this\clip_y( ) = *parent\clip_y( )
+               Else
+                  *this\clip_y( ) = *this\screen_y( )
+               EndIf
+               If *this\clip_y( ) < 0 : *this\clip_y( ) = 0 : EndIf
+               ;
+               ; width&height clip frame coordinate
+               If *parent And
+                  (*parent\clip_x( ) + *parent\clip_width( )) > 0 And
+                  (*parent\clip_x( ) + *parent\clip_width( )) < (*this\screen_x( ) + *this\screen_width( )) And
+                  (_p_x2_) > (*parent\clip_x( ) + *parent\clip_width( ))
+                  
+                  *this\clip_width( ) = (*parent\clip_x( ) + *parent\clip_width( )) - *this\clip_x( )
+               ElseIf *parent And (_p_x2_) > 0 And (_p_x2_) < (*this\screen_x( ) + *this\screen_width( ))
+                  *this\clip_width( ) = (_p_x2_) - *this\clip_x( )
+               Else
+                  *this\clip_width( ) = (*this\screen_x( ) + *this\screen_width( )) - *this\clip_x( )
+               EndIf
+               If *this\clip_width( ) < 0 : *this\clip_width( ) = 0 : EndIf
+               ;
+               If *parent And
+                  (*parent\clip_y( ) + *parent\clip_height( )) > 0 And
+                  (*parent\clip_y( ) + *parent\clip_height( )) < (*this\screen_y( ) + *this\screen_height( )) And
+                  (_p_y2_) > (*parent\clip_y( ) + *parent\clip_height( ))
+                  
+                  *this\clip_height( ) = (*parent\clip_y( ) + *parent\clip_height( )) - *this\clip_y( )
+               ElseIf *parent And (_p_y2_) > 0 And (_p_y2_) < (*this\screen_y( ) + *this\screen_height( ))
+                  
+                  *this\clip_height( ) = (_p_y2_) - *this\clip_y( )
+               Else
+                  *this\clip_height( ) = (*this\screen_y( ) + *this\screen_height( )) - *this\clip_y( )
+               EndIf
+               If *this\clip_height( ) < 0 : *this\clip_height( ) = 0 : EndIf
+               
+               ;
+               ;\\ x&y clip inner coordinate
+               If *parent And 
+                  _p_x1_ > *this\inner_x( ) And
+                  _p_x1_ > *parent\clip_ix( )
+                  *this\clip_ix( ) = _p_x1_
+               ElseIf *parent And *parent\clip_ix( ) > *this\inner_x( )
+                  *this\clip_ix( ) = *parent\clip_ix( )
+               Else
+                  *this\clip_ix( ) = *this\inner_x( )
+               EndIf
+               If *this\clip_ix( ) < 0 : *this\clip_ix( ) = 0 : EndIf
+               ;
+               If *parent And
+                  _p_y1_ > *this\inner_y( ) And
+                  _p_y1_ > *parent\clip_iy( )
+                  *this\clip_iy( ) = _p_y1_
+               ElseIf *parent And *parent\clip_iy( ) > *this\inner_y( )
+                  *this\clip_iy( ) = *parent\clip_iy( )
+               Else
+                  *this\clip_iy( ) = *this\inner_y( )
+               EndIf
+               If *this\clip_iy( ) < 0 : *this\clip_iy( ) = 0 : EndIf
+               ;
+               ;\\ width&height clip inner coordinate
+               If *parent And
+                  (*parent\clip_ix( ) + *parent\clip_iwidth( )) > 0 And
+                  (*parent\clip_ix( ) + *parent\clip_iwidth( )) < (*this\inner_x( ) + *this\inner_width( )) And
+                  (_p_x2_) > (*parent\clip_ix( ) + *parent\clip_iwidth( ))
+                  
+                  *this\clip_iwidth( ) = (*parent\clip_ix( ) + *parent\clip_iwidth( )) - *this\clip_ix( )
+               ElseIf *parent And (_p_x2_) > 0 And (_p_x2_) < (*this\inner_x( ) + *this\inner_width( ))
+                  
+                  *this\clip_iwidth( ) = (_p_x2_) - *this\clip_ix( )
+               Else
+                  *this\clip_iwidth( ) = (*this\inner_x( ) + *this\inner_width( )) - *this\clip_ix( )
+               EndIf
+               If *this\clip_iwidth( ) < 0 : *this\clip_iwidth( ) = 0 : EndIf
+               ;
+               If *parent And
+                  (*parent\clip_iy( ) + *parent\clip_iheight( )) > 0 And
+                  (*parent\clip_iy( ) + *parent\clip_iheight( )) < (*this\inner_y( ) + *this\inner_height( )) And
+                  (_p_y2_) > (*parent\clip_iy( ) + *parent\clip_iheight( ))
+                  
+                  *this\clip_iheight( ) = (*parent\clip_iy( ) + *parent\clip_iheight( )) - *this\clip_iy( )
+               ElseIf *parent And (_p_y2_) > 0 And (_p_y2_) < (*this\inner_y( ) + *this\inner_height( ))
+                  
+                  *this\clip_iheight( ) = (_p_y2_) - *this\clip_iy( )
+               Else
+                  *this\clip_iheight( ) = (*this\inner_y( ) + *this\inner_height( )) - *this\clip_iy( )
+               EndIf
+               If *this\clip_iheight( ) < 0 : *this\clip_iheight( ) = 0 : EndIf
+            EndIf
+            
+         EndIf
+         
+         ProcedureReturn Bool( *this\clip_width( ) > 0 And *this\clip_height( ) > 0 )
+      EndProcedure
+      
       Procedure.b Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, scale.b = 1 )
          Protected.b result
          Protected.l ix, iy, iwidth, iheight, Change_x, Change_y, Change_width, Change_height
@@ -24794,133 +25384,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
          EndIf   
-            
-         ;
-         ;\\ change clip output coordinate
-         If is_root_( *this )
-            If *this\clip_width( ) <> *this\screen_width( )
-               *this\clip_width( )  = *this\screen_width( )
-               *this\clip_iwidth( ) = *this\screen_width( )
-            EndIf
-            If *this\clip_height( ) <> *this\screen_height( )
-               *this\clip_height( )  = *this\screen_height( )
-               *this\clip_iheight( ) = *this\screen_height( )
-            EndIf
-         Else
-            Protected *parent._s_WIDGET
-            
-            If *this\bounds\attach
-               *parent = *this\bounds\attach\parent
-            Else
-               *parent = *this\parent
-            EndIf
-            
-            If *parent
-               Protected _p_x1_
-               Protected _p_y1_
-               Protected _p_x2_
-               Protected _p_y2_
-               
-               If *this\TabIndex( ) = #PB_Ignore
-                  _p_x1_ = *parent\frame_x( ) + *this\fs 
-                  _p_y1_ = *parent\frame_y( ) + *this\fs 
-                  _p_x2_ = _p_x1_
-                  _p_y2_ = _p_y1_
-                  ;
-                  If *parent\fs[1] Or *parent\fs[3]
-                     _p_x2_ + *parent\fs[1] + *parent\fs[3] + *this\fs
-                  Else
-                     _p_x2_ + *parent\frame_width( ) - *this\fs * 2
-                  EndIf
-                  If *parent\fs[2] Or *parent\fs[4]
-                     _p_y2_ + *parent\fs[2] + *parent\fs[4] + *this\fs
-                  Else
-                     _p_y2_ + *parent\frame_height( ) - *this\fs * 2
-                  EndIf
-               Else
-                  _p_x1_ = *parent\inner_x( )
-                  _p_y1_ = *parent\inner_y( )
-                  ;
-                  If *this\type = #__type_Scroll
-                     _p_x2_ = _p_x1_ + *parent\container_width( )
-                     _p_y2_ = _p_y1_ + *parent\container_height( )
-                  Else
-                     _p_x2_ = _p_x1_ + *parent\inner_width( )
-                     _p_y2_ = _p_y1_ + *parent\inner_height( )
-                  EndIf
-               EndIf
-               
-               ;
-               ;\\ clip out draw X&Y coordinates
-               If _p_x1_ > *parent\clip_x( ) And 
-                  _p_x1_ > *this\screen_x( )
-                  *this\clip_x( ) = _p_x1_
-               ElseIf *parent\clip_x( ) > *this\screen_x( )
-                  *this\clip_x( ) = *parent\clip_x( )
-               Else
-                  *this\clip_x( ) = *this\screen_x( )
-               EndIf
-               If _p_y1_ > *parent\clip_y( ) And 
-                  _p_y1_ > *this\screen_y( )
-                  *this\clip_y( ) = _p_y1_
-               ElseIf *parent\clip_y( ) > *this\screen_y( )
-                  *this\clip_y( ) = *parent\clip_y( )
-               Else
-                  *this\clip_y( ) = *this\screen_y( )
-               EndIf
-               ;
-               If *this\clip_x( ) < 0 : *this\clip_x( ) = 0 : EndIf
-               If *this\clip_y( ) < 0 : *this\clip_y( ) = 0 : EndIf
-               ;
-               ;\\ clip out draw Width&Height coordinates
-               If (_p_x2_) > (*parent\clip_x( ) + *parent\clip_width( )) And
-                  (*this\screen_x( ) + *this\screen_width( )) > (*parent\clip_x( ) + *parent\clip_width( ))
-                  *this\clip_width( ) = (*parent\clip_x( ) + *parent\clip_width( )) - *this\clip_x( )
-               ElseIf (_p_x2_) > (*this\screen_x( ) + *this\screen_width( )) 
-                  *this\clip_width( ) = (*this\screen_x( ) + *this\screen_width( )) - *this\clip_x( )
-               Else
-                  *this\clip_width( ) = (_p_x2_) - *this\clip_x( )
-               EndIf
-               If (_p_y2_) > (*parent\clip_y( ) + *parent\clip_height( )) And
-                  (*this\screen_y( ) + *this\screen_height( )) > (*parent\clip_y( ) + *parent\clip_height( ))
-                  *this\clip_height( ) = (*parent\clip_y( ) + *parent\clip_height( )) - *this\clip_y( )
-               ElseIf (_p_y2_) > (*this\screen_y( ) + *this\screen_height( )) 
-                  *this\clip_height( ) = (*this\screen_y( ) + *this\screen_height( )) - *this\clip_y( )
-               Else
-                  *this\clip_height( ) = (_p_y2_) - *this\clip_y( )
-               EndIf
-               ;
-               If *this\clip_width( ) < 0 : *this\clip_width( ) = 0 : EndIf
-               If *this\clip_height( ) < 0 : *this\clip_height( ) = 0 : EndIf
-              
-               ;
-               ;\\ clip inner draw X&Y coordinates             
-               If *this\inner_x( ) < *this\clip_x( )
-                  *this\clip_ix( ) = *this\clip_x( )
-               Else
-                  *this\clip_ix( ) = *this\inner_x( )
-               EndIf
-               If *this\inner_y( ) < *this\clip_y( )
-                  *this\clip_iy( ) = *this\clip_y( )
-               Else
-                  *this\clip_iy( ) = *this\inner_y( )
-               EndIf
-               
-               ;\\ clip inner draw Width&Height coordinates
-               If (*this\inner_x( ) + *this\inner_width( )) > (*this\clip_x( ) + *this\clip_width( ))
-                  *this\clip_iwidth( ) = (*this\clip_x( ) + *this\clip_width( )) - *this\clip_ix( )
-               Else
-                  *this\clip_iwidth( ) = (*this\inner_x( ) + *this\inner_width( )) - *this\clip_ix( )
-               EndIf
-               If (*this\inner_y( ) + *this\inner_height( )) > (*this\clip_y( ) + *this\clip_height( ))
-                  *this\clip_iheight( ) = (*this\clip_y( ) + *this\clip_height( )) - *this\clip_iy( )
-               Else
-                  *this\clip_iheight( ) = (*this\inner_y( ) + *this\inner_height( )) - *this\clip_iy( )
-               EndIf
-               ;
-            EndIf
-         EndIf
          
+         reclip( *this )
+
          ;\\
          If ( Change_x Or Change_y Or Change_width Or Change_height ) 
             ;\\ resize child vertical&horizontal scrollbars
@@ -25192,7 +25658,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\bindresize ; (*this\haschildren Or *this\anchors) ; 
                                 ; Debug ""+Change_x +" "+ Change_y +" "+ Change_width +" "+ Change_height
                                 ; Debug "   "+X +" "+ Y +" "+ Width +" "+ Height
-               Post( *this, #__event_resize )
+               PostEventsResize( *this )
             EndIf
          EndIf
          
@@ -25395,6 +25861,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      ElseIf __event = #__event_Change
                         DoEvents( __widget, __event, __item, __data )
+                     ElseIf __event = #__event_Focus
+                        DoEvents( __widget, __event, __item, __data )
+                     ElseIf __event = #__event_LostFocus
+                        DoEvents( __widget, __event, __item, __data )
+                     ElseIf __event = #__event_StatusChange
+                        DoEvents( __widget, __event, __item, __data )
+                     ElseIf __event = #__event_ScrollChange
+                        DoEvents( __widget, __event, __item, __data )
                      Else
                         Post( __widget, __event, __item, __data )
                      EndIf
@@ -25438,7 +25912,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If ListSize(__gui\event\queues( ))  
                If ListIndex( __gui\event\queues( ) ) >= 0 
                   If __gui\event\queues( )\widget = *this
-                     If __gui\event\queues( )\type = event
+                     If __gui\event\queues( )\type = event And __gui\event\queues( )\item = *button
                         ProcedureReturn __gui\event\queues( )
                      EndIf
                   EndIf
@@ -25454,9 +25928,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                __gui\event\queues( )\item   = *button
                __gui\event\queues( )\data   = *data
                
-               ;                If event = #__event_focus
-               ;                   Debug  "ADD events "+EventString( event ) +" "+ *this\class 
-               ;                EndIf
+               If event = #__event_focus
+                  ; Debug  "ADD events "+EventString( event ) +" "+ *this\class 
+                  PostRepaint( *this\root )
+               EndIf
+               If event = #__event_StatusChange
+                  PostRepaint( *this\root )
+               EndIf
                ProcedureReturn __gui\event\queues( )
             EndIf
          EndIf
@@ -25494,7 +25972,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ProcedureReturn 0
                   EndIf
                EndIf
-               
                
                ;\\ 
                __widget = EventWidget( )
@@ -25712,7 +26189,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   __gui\event\binds( )\data     = *data
                EndIf
                
-               RemoveEvents( *this, event )
+              ; RemoveEvents( *this, event )
             EndIf
          EndIf
          
@@ -25728,22 +26205,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn #PB_All
             ;
          Else
-            If event < 0
-               Define i
-               For i = 0 To #__event - 1
-                  Unbind( *this, *callback, i, item )
-               Next
-               ;
-            Else
+            If *callback = #PB_All
                ForEach __gui\event\binds( )
-                  ;   Debug ""+__gui\event\binds( )\widget +" "+ __gui\event\binds( )\type +" "+ event +" "+ __gui\event\binds( )\item +" "+ *button
-                  If __gui\event\binds( )\widget = *this And 
-                     __gui\event\binds( )\type = event And 
-                     __gui\event\binds( )\item = item
-                     
+                  If __gui\event\binds( )\widget = *this
                      DeleteElement( __gui\event\binds( ), 1 )
                   EndIf
                Next
+            Else
+               If event < 0
+                  Define i
+                  For i = 0 To #__event - 1
+                     Unbind( *this, *callback, i, item )
+                  Next
+                  ;
+               Else
+                  ForEach __gui\event\binds( )
+                     ;   Debug ""+__gui\event\binds( )\widget +" "+ __gui\event\binds( )\type +" "+ event +" "+ __gui\event\binds( )\item +" "+ *button
+                     If __gui\event\binds( )\widget = *this And 
+                        __gui\event\binds( )\type = event And 
+                        __gui\event\binds( )\item = item
+                        
+                        DeleteElement( __gui\event\binds( ), 1 )
+                     EndIf
+                  Next
+               EndIf
             EndIf
          EndIf
       EndProcedure
@@ -26004,12 +26489,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;
                      ;\\ unbind events
-                     ForEach __gui\event\binds( )
-                        If __gui\event\binds( )\widget = widgets( )
-                           DeleteElement( __gui\event\binds( ), 1 )
-                        EndIf
-                     Next
-                     
+                     Unbind( widgets( ), #PB_All )
                      ;
                      ;                      ;                      ;
                      ;                      If widgets( )\haschildren
@@ -27943,9 +28423,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 25421
-; FirstLine = 25408
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------rL+-------------------------------
+; CursorPosition = 24806
+; FirstLine = 24396
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f+--4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------++--0-----------u-------------q7-------------------------7i--------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
