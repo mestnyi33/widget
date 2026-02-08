@@ -20,12 +20,13 @@ CompilerIf #PB_Compiler_IsMainFile
       *g_TYPE = Widget::ListView(Width, 10, 195, 250) 
       ;*g_TYPE = Widget::Panel(Width, 10, 195, 250) 
       ;*g_TYPE = Widget::Container(Width, 10, 195, 250) 
-      SetActive(*g_TYPE)
       For i=0 To 31
          AddItem(*g_TYPE, -1, ClassFromType(i))
       Next
+      
+      SetActive(*g_TYPE)
       SetState(*g_TYPE, 1)
-;       OpenList(*g_TYPE)
+    ;       OpenList(*g_TYPE)
 ;       Button( 10,10,10,10,"")
 ;       CloseList()
       
@@ -46,8 +47,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( );@events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 11
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 26
 ; FirstLine = 3
 ; Folding = -
 ; EnableXP

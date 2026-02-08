@@ -710,37 +710,37 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro PostClose( _this_ )
          AddEvents( _this_, #__event_Close ) 
       EndMacro
+      Macro PostChange( _this_, _item_= #PB_All, _data_ = #Null )
+         AddEvents( _this_, #__event_Change, _item_, _data_  ) 
+      EndMacro
+      Macro PostFocus( _this_, _item_= #PB_All, _data_ = #Null )
+         AddEvents( _this_, #__event_Focus, _item_, _data_  )
+      EndMacro
+      Macro PostLostFocus( _this_, _item_= #PB_All, _data_ = #Null )
+         AddEvents( _this_, #__event_LostFocus, _item_, _data_  )
+      EndMacro
       
       ; 
         ;Debug ""+#PB_Compiler_Procedure +" "+ _item_ +" "+ _data_
        Macro PostEventsResize( _this_ )
-         AddEvents( _this_, #__event_Resize )
-      EndMacro
-      Macro PostChange( _this_, _item_= #PB_All, _data_ = #Null )
-         AddEvents( _this_, #__event_Change, _item_, _data_  ) 
+         DoEvents( _this_, #__event_Resize )
       EndMacro
       Macro PostEventsChange( _this_, _item_= #PB_All, _data_ = #Null )
-         AddEvents( _this_, #__event_Change, _item_, _data_  ) 
+         DoEvents( _this_, #__event_Change, _item_, _data_  ) 
       EndMacro
       Macro PostEventsStatusChange( _this_, _item_, _data_ )
-         AddEvents( _this_, #__event_StatusChange, _item_, _data_  )
+         Post( _this_, #__event_StatusChange, _item_, _data_  )
       EndMacro
       Macro PostEventsCursorChange( _this_, _item_, _data_ )
-         AddEvents( _this_, #__event_CursorChange, _item_, _data_  )
+         Post( _this_, #__event_CursorChange, _item_, _data_  )
       EndMacro
       
-      Macro PostEventsFocus( _this_, _item_= #PB_All, _data_ = #Null )
-         AddEvents( _this_, #__event_Focus, _item_, _data_  )
-      EndMacro
-      Macro PostEventsLostFocus( _this_, _item_= #PB_All, _data_ = #Null )
-         AddEvents( _this_, #__event_LostFocus, _item_, _data_  )
-      EndMacro
       
       Macro PostEvents( _this_, _event_, _item_= #PB_All, _data_ = #Null )
          If _event_ = #__event_Change
-            PostChange(_this_, _item_, _data_)
-         ElseIf _event_ = #__event_StatusChange
-            PostEventsStatusChange(_this_, _item_, _data_)
+            PostEventsChange(_this_, _item_, _data_)
+;          ElseIf _event_ = #__event_StatusChange
+;             PostEventsStatusChange(_this_, _item_, _data_)
          Else
             ;Debug EventString(_event_)
             DoEvents( _this_, _event_, _item_, _data_  )
@@ -3753,7 +3753,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *deactive\anchors\group\show
                               a_group_show( *deactive, #__event_LostFocus )
                            EndIf
-                           PostEventsLostFocus( *deactive )
+                           PostLostFocus( *deactive )
                         EndIf
                      EndIf
                      ;
@@ -3771,7 +3771,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                 *this\screen_width( ),
                                 *this\screen_height( ) )
                         ;
-                        PostEventsFocus( *this )
+                        PostFocus( *this )
                      EndIf
                      ;
                      result = *this
@@ -3786,7 +3786,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\anchors\group\show
                         a_group_show( *this, #__event_LostFocus )
                      EndIf
-                     PostEventsLostFocus( *this )
+                     PostLostFocus( *this )
                   EndIf
                EndIf
             Else
@@ -8051,7 +8051,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not ( Root( ) And Root( )\canvas\gadget = *display\root\canvas\gadget )
                   ChangeCurrentCanvas( GadgetID( *display\root\canvas\gadget ) )
                EndIf 
-               PostEventsFocus( *this )
+               PostFocus( *this )
                ProcedureReturn #True
             EndIf
             
@@ -11862,17 +11862,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                _this_\focus = #__s_2
                ; widget( ) = _this_
-               PostEventsFocus( _this_ )
+               PostFocus( _this_ )
                If _this_\stringbar
                   If _this_\stringbar\focus <> _this_\focus
                      _this_\stringbar\focus = _this_\focus
-                     PostEventsFocus( _this_\stringbar )
+                     PostFocus( _this_\stringbar )
                   EndIf
                EndIf
                If is_integral_( _this_ )
                   If _this_\parent\focus <> _this_\focus
                      _this_\parent\focus = _this_\focus
-                     PostEventsFocus( _this_\parent )
+                     PostFocus( _this_\parent )
                   EndIf
                EndIf
             EndIf
@@ -11886,16 +11886,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If _this_\stringbar
                   _this_\stringbar\focus = _this_\focus
-                  PostEventsLostFocus( _this_\stringbar )
+                  PostLostFocus( _this_\stringbar )
                EndIf
                If is_integral_( _this_ )
                   If _this_\parent\focus <> _this_\focus
                      _this_\parent\focus = _this_\focus
-                     PostEventsLostFocus( _this_\parent )
+                     PostLostFocus( _this_\parent )
                   EndIf
                EndIf
                ; widget( ) = _this_
-               PostEventsLostFocus( _this_ )
+               PostLostFocus( _this_ )
             EndIf
          EndMacro               
          Macro DoActivateWindows( _this_ )
@@ -19017,7 +19017,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ post repaint canvas
          If Not (*this\disable And Not *this\anchors)
             If *this\root And *this\root\repaint > 0 
-               ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ EventString(event)
+              *this\root\repaint = 0
+                ; Debug ""+" ["+*this\ColorState( )+"] "+*this\class +" "+ EventString(event)
                If ( MousePress( ) And
                     ( event = #__event_Focus Or
                       event = #__event_Drop Or
@@ -19030,7 +19031,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   PostRepaint( *this\root )
                EndIf
                ;
-               *this\root\repaint = 0
             EndIf
          EndIf
          
@@ -28012,9 +28012,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 5930
-; FirstLine = 5909
+; IDE Options = PureBasic 6.21 (Windows - x64)
+; CursorPosition = 11897
+; FirstLine = 11035
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------z-0-8----------0--v----f-------------------------------------------------------------------------------------------------------z---+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fffv8v7+-------vv-------------------------------------------------------------------------I8-f--------------8-br+------------------------------------------------------4----40------------XV-------------------------XX9--------------------------------
 ; EnableXP
 ; DPIAware

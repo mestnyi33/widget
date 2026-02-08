@@ -126,10 +126,18 @@ Drawing
 StartDraw
 StopDraw
 Repaint
+
+Post
+Bind
+Unbind
+
 PostRepaint
 PostReDraw
 PostClose
 PostFree
+PostFocus
+PostLostFocus
+PostChange
 
 StartEnum
 StopEnum
@@ -151,11 +159,6 @@ CloseList
 Free
 Delete
 DeleteRoot
-
-Post
-Send
-Bind
-Unbind
 
 IsBar
 PopupCombo
