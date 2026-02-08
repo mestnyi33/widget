@@ -177,11 +177,11 @@ CompilerIf #PB_Compiler_IsMainFile
             Select EventWidget( )
                Case *second 
                   If GetState( *this\scroll\v ) <> WidgetEventData( )
-                     SetState(*this\scroll\v, WidgetEventData( ) )
+                     SetState(*this\scroll\v, WidgetEventData( ))
                   EndIf
                Case *this 
                   If GetState( *second\scroll\v ) <> WidgetEventData( )
-                     SetState(*second\scroll\v, WidgetEventData( ) )
+                     SetState(*second\scroll\v, WidgetEventData( ))
                   EndIf
             EndSelect
             
@@ -332,8 +332,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 327
-; FirstLine = 308
+; CursorPosition = 104
+; FirstLine = 21
 ; Folding = --------
 ; EnableXP
 ; DPIAware

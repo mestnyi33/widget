@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
         SetData(*g2, GetData(*g1) + 1)
        
       If position >= 2
-         *g2 = Splitter( 0,0,110,110, *g1,*g2, #PB_Splitter_Vertical);|#PB_Splitter_FirstFixed )
+         *g2 = Splitter( 0,0,*this\Width,*this\height, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
          SetAttribute( *this, #PB_Splitter_SecondGadget, *g2 )
          SetState(*g2, Width)
       EndIf
@@ -205,9 +205,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 76
-; FirstLine = 73
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 63
+; FirstLine = 47
 ; Folding = ---
 ; EnableXP
 ; DPIAware

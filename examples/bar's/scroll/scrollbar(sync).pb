@@ -20,11 +20,11 @@ CompilerIf #PB_Compiler_IsMainFile
             Select EventWidget( )
                Case *demo 
                   If GetState( *this\scroll\v ) <> WidgetEventData( )
-                     SetState(*this\scroll\v, WidgetEventData( ) )
+                     SetState(*this\scroll\v, WidgetEventData( ))
                   EndIf
                Case *this 
                   If GetState( *demo\scroll\v ) <> WidgetEventData( )
-                     SetState(*demo\scroll\v, WidgetEventData( ) )
+                     SetState(*demo\scroll\v, WidgetEventData( ))
                   EndIf
             EndSelect
       EndSelect
@@ -42,14 +42,15 @@ CompilerIf #PB_Compiler_IsMainFile
          AddItem(*this, -1, "item "+Str(a), -1, 0)
       Next
       
-      Bind(*demo, @widget_events())
-      Bind(*this, @widget_events())
+      Bind(*demo, @widget_events(), #__event_ScrollChange)
+      Bind(*this, @widget_events(), #__event_ScrollChange)
       
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 12
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 26
+; FirstLine = 13
 ; Folding = --
 ; EnableXP
 ; DPIAware

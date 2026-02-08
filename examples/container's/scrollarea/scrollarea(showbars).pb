@@ -18,7 +18,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   MyCanvas = GetCanvasGadget(Open(0, 10, 10));, #PB_Ignore, #PB_Ignore, #PB_Canvas_Keyboard, @Canvas_CallBack()))
-   a_init( Root() )
+  ; a_init( Root() )
   
   ; Define *mdi = ScrollArea(0,0,0,0, 308,232,1,#__flag_autosize)
   ; Define *mdi = ScrollArea(x,y,width, height, 288,212,1)
@@ -49,9 +49,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 6
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 20
+; FirstLine = 9
 ; Folding = -
 ; EnableXP
 ; DPIAware

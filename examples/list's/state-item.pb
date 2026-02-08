@@ -483,7 +483,7 @@ EndEnumeration
       ;
       Hide( HBar(*second), #True )
       Hide( HBar(*first), #True )
-      Hide( VBar(*first), #True )
+      ;Hide( VBar(*first), #True )
       
       
       ;*first = ListView(10, 10, 220, 310)
@@ -580,6 +580,27 @@ EndEnumeration
       Bind(*item4, @widgets_events(), #__event_Up)
       
       
+      Debug "--------"
+      Hide( VBar(*first), #True )
+      Repaint( )
+      Define._s_WIDGET *this = *first\scroll\v
+      Define._s_BAR *bar = *this\bar
+      Debug "["+ *this\class +"] "+;mode +" >< "+;*bar\PageChange( ) +" >< "+
+            *bar\percent +" >< "+
+            *bar\min +" "+
+            *bar\max +" >< "+
+            *bar\page\pos +" "+
+            *bar\page\len +" "+
+            *bar\page\end +" >< "+
+            *bar\area\pos +" "+
+            *bar\area\len +" "+
+            *bar\thumb\end +" >< "+
+            *bar\thumb\pos +" "+
+            *bar\thumb\len +" "+
+            *bar\area\end +" "
+      Debug "<<<<<<<<<<<<<<<<<"
+      
+           
       WaitClose()
       
       
@@ -587,7 +608,7 @@ EndEnumeration
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 360
-; FirstLine = 240
-; Folding = 0+c---------
+; CursorPosition = 584
+; FirstLine = 441
+; Folding = 0+c--------+
 ; EnableXP

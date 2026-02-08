@@ -80,10 +80,10 @@ CompilerIf #PB_Compiler_IsMainFile
   
   Procedure events_tree_widget()
     ;Debug " widget - "+*event\widget+" "+*event\type
-    Protected EventGadget = Widget( )
-    Protected EventType = Type( )
-    Protected EventData = Data( )
-    Protected EventItem = Item( )
+    Protected EventGadget = EventWidget( )
+    Protected EventType = WidgetEvent( )
+    Protected EventData = WidgetEventData( )
+    Protected EventItem = WidgetEventItem( )
     
     Select EventType
       Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
@@ -149,8 +149,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 84
-; FirstLine = 25
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 85
+; FirstLine = 22
 ; Folding = 0----
 ; EnableXP
