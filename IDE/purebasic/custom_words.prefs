@@ -119,7 +119,6 @@ GetWindow
 GetGadget
 GetRoot
 
-
 Draw
 ReDraw
 Drawing
@@ -127,17 +126,13 @@ StartDraw
 StopDraw
 Repaint
 
+PostRepaint
+PostClose
+PostFree
+
 Post
 Bind
 Unbind
-
-PostRepaint
-PostReDraw
-PostClose
-PostFree
-PostFocus
-PostLostFocus
-PostChange
 
 StartEnum
 StopEnum

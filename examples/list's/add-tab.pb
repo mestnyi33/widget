@@ -238,9 +238,6 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                   *this\ScrollState( ) = - 1
 ;                EndIf
                
-               If test_redraw_items
-                  PostReDraw( *this\root )
-               EndIf
             EndIf
          EndIf
       EndIf
@@ -343,8 +340,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 300
-; FirstLine = 279
+; CursorPosition = 240
+; FirstLine = 227
 ; Folding = -------
 ; EnableXP
 ; DPIAware

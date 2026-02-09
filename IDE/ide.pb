@@ -224,8 +224,8 @@ Declare$  GetImageKey( img )
 Declare$  GetImageFile( img )
 ;
 ;- INCLUDEs
-;XIncludeFile #ide_path + "widgets.pbi"
-XIncludeFile #ide_path + "temp.pbi"
+XIncludeFile #ide_path + "widgets.pbi"
+;XIncludeFile #ide_path + "temp.pbi"
 ; XIncludeFile "C:\Users\user\Downloads\Compressed\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widgets.pbi"
 ; Procedure.i GetFontColor( *this.structures::_s_WIDGET )
 ;    ProcedureReturn widget::GetColor( *this, constants::#__FrontColor )
