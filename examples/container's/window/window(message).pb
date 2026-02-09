@@ -1,4 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
+;XIncludeFile "../../../temp.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
@@ -113,8 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 20
-; FirstLine = 11
+; CursorPosition = 1
 ; Folding = -8-
 ; EnableXP
 ; DPIAware

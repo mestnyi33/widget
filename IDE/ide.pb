@@ -224,7 +224,8 @@ Declare$  GetImageKey( img )
 Declare$  GetImageFile( img )
 ;
 ;- INCLUDEs
-XIncludeFile #ide_path + "widgets.pbi"
+;XIncludeFile #ide_path + "widgets.pbi"
+XIncludeFile #ide_path + "temp.pbi"
 ; XIncludeFile "C:\Users\user\Downloads\Compressed\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widgets.pbi"
 ; Procedure.i GetFontColor( *this.structures::_s_WIDGET )
 ;    ProcedureReturn widget::GetColor( *this, constants::#__FrontColor )
@@ -3313,8 +3314,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2663
-; FirstLine = 2252
+; CursorPosition = 227
+; FirstLine = 219
 ; Folding = -4--4---rv-3v--------vb8Ah-------v-fvd-0----------f6W3----f+-
 ; EnableXP
 ; DPIAware

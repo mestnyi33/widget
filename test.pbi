@@ -1,5 +1,6 @@
 ﻿;IncludePath "../../../"
 XIncludeFile "widgets.pbi"
+;XIncludeFile "temp.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
@@ -47,9 +48,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( );@events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 3
+; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
+; CursorPosition = 2
 ; Folding = -
 ; EnableXP
 ; DPIAware

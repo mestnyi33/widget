@@ -1,4 +1,5 @@
 ﻿XIncludeFile "../../widgets.pbi" 
+;XIncludeFile "../../temp.pbi" 
 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
@@ -9,8 +10,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Global._s_WIDGET *g1, *g2, *Spin1,*Spin2,*Spin3
    
    ; Test( x.l, y.l, width.l, height.l, Min.l, Max.l.l, flag.q = 0, round.l = 0 )
-   Define min = - 3
-   Define max = 3
+   Define min = - 1
+   Define max = 1
    Define event = #__event_LeftClick
    
    Procedure button_events( )
@@ -40,15 +41,16 @@ CompilerIf #PB_Compiler_IsMainFile
          Else
             *bar = *Spin2\bar
          EndIf
+         Debug " -changestate- " + Widget( )\class +" "+ *bar\page\pos
          Disable( *g1, *bar\button[1]\disable )
          Disable( *g2, *bar\button[2]\disable )
-         Debug " -changestate- " + Widget( )\class +" "+ *bar\page\pos
       EndIf
    EndProcedure
    
    Procedure Test( X,Y,Width,Height, param1,param2, Flag.q=0)
       Protected i
       Protected._s_WIDGET *g
+      
       ;*g = Spin( X,Y,Width,Height, param1,param2, Flag.q )
       *g = Tree( X,Y,Width,Height, Flag.q )
       
@@ -86,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
          *Spin1 = Test(50, 20, 250, 50,  1, 3)
          
          *g1=Button(10, 90, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
-         *Spin2 = Test(50, 80, 250, 50,  min, max ) : Bind( *Spin2, @change_events( ), #__event_Change)
+         *Spin2 = Test(50, 85, 250, 40,  min, max ) : Bind( *Spin2, @change_events( ), #__event_Change)
          *g2=Button(310, 90, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
          
          *Spin3 = Test(50, 140, 250, 50,  1, 3, #__flag_Invert)
@@ -102,8 +104,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 99
-; FirstLine = 46
-; Folding = -2
+; CursorPosition = 1
+; Folding = -4
 ; EnableXP
 ; DPIAware
