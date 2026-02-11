@@ -7550,7 +7550,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   *this\__tabs( )\TextChange( ) = #True
                   *this\__tabs( )\text\string = _text_
-                  ; *this\WidgetChange( )       = #True
+                  *this\TextChange( )         = #True
                   *this\TabChange( )          = #True
                   
                   Break
@@ -7568,7 +7568,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         *this\__tabs( )\popupbar\__tabs( )\TextChange( ) = #True
                         *this\__tabs( )\popupbar\__tabs( )\text\string = _text_
-                        ; *this\__tabs( )\popupbar\WidgetChange( )       = #True
+                        *this\__tabs( )\popupbar\TextChange( )       = #True
                         *this\__tabs( )\popupbar\TabChange( )          = #True
                         
                         Break 2
@@ -7580,7 +7580,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      *this\__tabs( )\TextChange( ) = #True
                      *this\__tabs( )\text\string = _text_
-                     ; *this\WidgetChange( )       = #True
+                     *this\TextChange( )       = #True
                      *this\TabChange( )          = #True
                      
                      
@@ -11137,7 +11137,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\__tabs( )\text\string <> Text.s
                *this\__tabs( )\text\string = Text.s
-               ; *this\__tabs( )\TextChange( ) = 1
+               *this\__tabs( )\TextChange( ) = 1
+               *this\TextChange( ) = 1
                *this\TabChange( )          = 1
                result                      = 1
             EndIf
@@ -27907,9 +27908,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 2235
-; FirstLine = 1173
-; Folding = AAGAA+HA------------fAG-------Aw0-BAAAAAAYATAAg----PAAAe-jt0-+f+DAAAw8BAAAAQAAAAAAAAAAgAAAAB3AwOAMEwrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbABAAAGAEABAAgAAgBAAAAAAACwAWADAQwMgAQAAAAYAAABEwZAAAAAAAAAAAAAwCAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIEAAAAAAAAgMAAAxAAAAAAAAAAAAAAAAAEAAAAAMTgdAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgQAAyAAAAAAAAAAA5-----j---------------HAAAAAAAAAAAAAAgDAAA+HAAAAAAAAAEAAAAAAAAgDg-RgAAAAAAAAAAAAAAAAAAAAAAAAAAADQMQEE5---AA+jfAAAAAQHCMAgBAAAAAAACAAAAAAAAAAAAAAAAA5HAAAAQAAAUrAAAAAgTEQAwDwaAAAAA++x-DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3FBAAAwGAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgBQAAAAAAAAAAAAVVNAAAAAAAAAAAA9PA--fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-
+; CursorPosition = 4802
+; FirstLine = 4693
+; Folding = ------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
