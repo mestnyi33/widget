@@ -583,7 +583,8 @@ EndEnumeration
       Debug "--------"
       Hide( VBar(*first), #True )
       Repaint( )
-      Define._s_WIDGET *this = *first\scroll\v
+      ;Define._s_WIDGET *this = *first\scroll\h
+      Define._s_WIDGET *this = *second\scroll\h
       Define._s_BAR *bar = *this\bar
       Debug "["+ *this\class +"] "+;mode +" >< "+;*bar\PageChange( ) +" >< "+
             *bar\percent +" >< "+
@@ -608,7 +609,7 @@ EndEnumeration
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 584
-; FirstLine = 441
+; CursorPosition = 586
+; FirstLine = 440
 ; Folding = 0+c--------+
 ; EnableXP
