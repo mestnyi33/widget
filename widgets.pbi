@@ -3039,7 +3039,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Static v_max, h_max
          Protected round, result
          Protected scroll_x, scroll_y, scroll_width, scroll_height
-         Protected v_x, h_y, w, h 
+         Protected w, h 
             
             
          With *this\scroll
@@ -3057,11 +3057,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             scroll_width  = Width 
             scroll_height = Height
             
-            ;\\
-            X = 0
-            Y = 0
-            Width  = *this\container_width( ) 
-            Height = *this\container_height( )
             ;\\
             If StartEnum( *this )
                If *this = Widget( )\parent
@@ -3081,24 +3076,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
                StopEnum( )
             EndIf
             
-            w = Bool( scroll_Width > Width )
-            h = Bool( scroll_height > Height )
+            ;\\
+            X = 0
+            Y = 0
+            Width  = *this\container_width( ) 
+            Height = *this\container_height( )
+            
+            w = Bool( scroll_Width >= Width )
+            h = Bool( scroll_height >= Height )
                 
-           
-;             w = Bool( \h\hide = 0 );And scroll_Width >= Width )
-;             h = Bool( \v\hide = 0 );And scroll_height >= Height )
-            
-            ; Debug "hide "+ \h\hide +" "+ \v\hide
-            
-            v_x = Width - h * \v\width
-            h_y = Height - w * \h\height
+   
+;             X = Width - h * \v\width
+;             Y = Height - w * \h\height
        
             If scroll_x > 0
                scroll_x = 0
             Else
-               ;\\
-               If scroll_width < v_x
-                  scroll_width = v_x
+               If scroll_width < Width
+                  scroll_width = Width
                EndIf
                scroll_width - scroll_x
                \h\bar\page\pos = - scroll_x
@@ -3106,17 +3101,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If scroll_y > 0 
                scroll_y = 0
             Else
-               If scroll_height < h_y
-                  scroll_height = h_y
+               If scroll_height < Height
+                  scroll_height = Height
                EndIf
                scroll_height - scroll_y
                \v\bar\page\pos = - scroll_y
             EndIf
             
-            
-            
-            Debug "area "+scroll_x +" "+ scroll_y +" "+ scroll_width +" "+ scroll_height
-      
             ;\\
             If \h\bar\Max <> scroll_width
                \h\bar\Max = scroll_width
@@ -3128,74 +3119,26 @@ CompilerIf Not Defined( Widget, #PB_Module )
                result = 1
             EndIf
             
-;             ;\\
-;             If \h\bar\Max < v_x
-;                \h\bar\Max = v_x
-;             EndIf
-;             If \v\bar\Max < h_y
-;                \v\bar\Max = h_y
-;             EndIf
-
             ;\\
             If result
+               ;
+               ; Debug "hide "+ \h\hide +" "+ \v\hide +" area "+ scroll_x +" "+ scroll_y +" "+ scroll_width +" "+ scroll_height
+               ;
                ;\\
                *this\scroll_x( )      = scroll_x
                *this\scroll_y( )      = scroll_y
                *this\scroll_width( )  = scroll_width
                *this\scroll_height( ) = scroll_height
                
-;                ;\\
-;             If *this\scroll_width( ) < v_x
-;                *this\scroll_width( ) = v_x
-;             EndIf
-;             If *this\scroll_height( ) < h_y
-;                *this\scroll_height( ) = h_y
-;             EndIf
-
-               Protected.b resize_v, resize_h
-               Protected.l x1 = #PB_Ignore, y1 = #PB_Ignore, iwidth, iheight
+               \v\bar\page\len = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( ))
+               \h\bar\page\len = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( ) )
                
-               Width = *this\container_width( ) 
-               Height =  *this\container_height( )
-               
-               \v\bar\page\len = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\frame_height( ))
-               \h\bar\page\len = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\frame_width( ))
-               
-               iheight = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( ))
-               If \v\bar\page\len <> iheight
-                  \v\bar\page\len = iheight
-;                ElseIf \h\bar\area\len And \h\bar\page\end
-;                   bar_update( \h, 10 )
-               EndIf
-               
-               iwidth = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( ) )
-               If \h\bar\page\len <> iwidth
-                  \h\bar\page\len = iwidth
-;                ElseIf \v\bar\area\len And \v\bar\page\end
-;                   bar_update( \v, 10 )
-               EndIf
-               
+               ;Debug ""+\h\bar\page\len +" "+ \v\bar\page\len
                ;             
                If Not \v\hide[1]
                   If \v\bar\max > \v\bar\page\len
                      Height = ( \v\bar\page\len + Bool( Not \h\hide[1] And \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
                      If \v\frame_height( ) <> Height
-                        ;\v\hide = \v\hide[1]
-                        resize_v = 1
-                     EndIf
-                     
-                     If \v\frame_x( ) <> *this\inner_x( ) + (*this\container_width( ) - \v\frame_width( )) 
-                        x1 = *this\inner_x( ) + (*this\container_width( ) - \v\frame_width( )) 
-                        resize_v = 1
-                     Else
-                        x1 = \v\frame_x( )
-                        
-                        If \v\frame_y( ) <> *this\inner_y( )
-                           resize_v = 1
-                        EndIf
-                     EndIf
-                     
-                     If resize_v ; And Not \v\hide
                         Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height )
                      Else
                         bar_update( \v, 100 )
@@ -3210,12 +3153,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
-               Else
-                  If \v\hide
-                     If \v\frame_height( ) <> *this\container_height( )
-                        Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\container_height( ))
-                     EndIf
-                  EndIf
+;                Else
+;                   If \v\hide
+;                      If \v\frame_height( ) <> *this\container_height( )
+;                         Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\container_height( ))
+;                      EndIf
+;                   EndIf
                EndIf
                
                ;
@@ -3223,21 +3166,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If \h\bar\max > \h\bar\page\len
                      Width = ( \h\bar\page\len + Bool( Not \v\hide[1] And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\frame_width( ) / 4 ))
                      If \h\frame_width( ) <> Width
-                        ;\h\hide = \h\hide[1]
-                        resize_h    = 1
-                     EndIf
-                     
-                     If \h\frame_y( ) <> *this\inner_y( ) + (*this\container_height( ) - \h\frame_height( ))
-                        y1 = *this\inner_y( ) + (*this\container_height( ) - \h\frame_height( ))
-                        resize_h = 1
-                     Else
-                        y1 = \h\frame_y( )
-                        If \h\frame_x( ) <> *this\inner_x( )
-                           resize_h = 1
-                        EndIf
-                     EndIf
-                     
-                     If resize_h ;And Not \h\hide
                         Resize( \h, #PB_Ignore, #PB_Ignore, Width, #PB_Ignore )
                      Else
                         bar_update( \h, 100 )
@@ -3252,12 +3180,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
-               Else
-                  If \h\hide
-                     If \h\frame_width( ) <> *this\container_width( )
-                        Resize( \h, #PB_Ignore, #PB_Ignore, *this\container_width( ), #PB_Ignore)
-                     EndIf
-                  EndIf
+;                Else
+;                   If \h\hide
+;                      If \h\frame_width( ) <> *this\container_width( )
+;                         Resize( \h, #PB_Ignore, #PB_Ignore, *this\container_width( ), #PB_Ignore)
+;                      EndIf
+;                   EndIf
                EndIf
                
                result = 0
@@ -29115,9 +29043,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 3112
-; FirstLine = 1134
-; Folding = AAGAA+HA------------fAG-------Aw0-BAAAAAAYATAAAd-----8-----f----4---------f-4PAAAe-jt0-+f+DAAAw8BAAAAQAAAAAAAAAAgAAAAB3AwOAMEwrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbABAAAGAEABAAgAAgBAAAAAAACwAWADAQwMgAQAAAAYAAABEwZAAAAAAAAAAAAAwCAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIEAAAAAAAAgMAAAxAAAAAAAAAAAAAAAAAEAAAAAMTgdAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgQAAyAAAAAAAAAAA5-----j---------------HAAAAAAAAAAAAAAgDAAA+HAAAAAAAAAEAAAAAAAAgDg-RgAAAAAAAAAAAAAAAAAAAAAAAAAAADQMQEE5---AA+jfAAAAAQHCMAgBAAAAAAACAAAAAAAAAAAAAAAAA5HAAAAQAAAUrAAAAAgTEQAwDwaAAAAA++x-DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3FBAAAwGAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgBQAAAAAAAAAAAAVVNAAAAAAAAAAAA9PA--fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-
+; CursorPosition = 3087
+; FirstLine = 1113
+; Folding = AAGAA+HA------------fAG-------Aw0-BAAAAAAYATAAAd-----8-----f----4---------ePAAAe-jt0-+f+DAAAw8BAAAAQAAAAAAAAAAgAAAAB3AwOAMEwrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbABAAAGAEABAAgAAgBAAAAAAACwAWADAQwMgAQAAAAYAAABEwZAAAAAAAAAAAAAwCAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIEAAAAAAAAgMAAAxAAAAAAAAAAAAAAAAAEAAAAAMTgdAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgQAAyAAAAAAAAAAA5-----j---------------HAAAAAAAAAAAAAAgDAAA+HAAAAAAAAAEAAAAAAAAgDg-RgAAAAAAAAAAAAAAAAAAAAAAAAAAADQMQEE5---AA+jfAAAAAQHCMAgBAAAAAAACAAAAAAAAAAAAAAAAA5HAAAAQAAAUrAAAAAgTEQAwDwaAAAAA++x-DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3FBAAAwGAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgBQAAAAAAAAAAAAVVNAAAAAAAAAAAA9PA--fAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
