@@ -53,16 +53,28 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn *this
    EndProcedure
    
+;    Procedure AddColumn_( *this._s_WIDGET, position.l, Text.s, Width.l, Image.i = -1 )
+;       Protected *g1 = GetAttribute(*this, #PB_Splitter_SecondGadget)
+;       Protected *g2 = Tree(0,0,0,0)
+;         SetData(*g2, GetData(*g1) + 1)
+;        
+;       If position >= 2
+;          *g2 = Splitter( 0,0,*this\Width,*this\height, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+;          SetAttribute( *this, #PB_Splitter_SecondGadget, *g2 )
+;          SetState(*g2, Width)
+;       EndIf
+;       
+;    EndProcedure
    Procedure AddColumn_( *this._s_WIDGET, position.l, Text.s, Width.l, Image.i = -1 )
-      Protected *g1 = GetAttribute(*this, #PB_Splitter_SecondGadget)
-      Protected *g2 = Tree(0,0,0,0)
-        SetData(*g2, GetData(*g1) + 1)
-       
-      If position >= 2
-         *g2 = Splitter( 0,0,*this\Width,*this\height, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
-         SetAttribute( *this, #PB_Splitter_SecondGadget, *g2 )
-         SetState(*g2, Width)
-      EndIf
+      Static count = 2
+      count + 1
+      Protected *g2 = GetAttribute(*this, #PB_Splitter_SecondGadget)
+      Protected *g1 = Tree(0,0,0,0)
+      SetData(*g1, count)
+      
+      *g2 = Splitter( 0,0,*this\Width,*this\height,*g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+      SetAttribute( *this, #PB_Splitter_SecondGadget, *g2 )
+      SetState(*g2, Width)
       
    EndProcedure
    
@@ -206,8 +218,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 63
-; FirstLine = 47
+; CursorPosition = 71
+; FirstLine = 55
 ; Folding = ---
 ; EnableXP
 ; DPIAware
