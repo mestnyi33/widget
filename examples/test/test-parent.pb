@@ -72,13 +72,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected._s_WIDGET *g3, *g1 = Button(40,0,30,30,Str(count)) ; Tree(0,0,0,0)
       ;SetData(*g1, count)
       
-       Static X = 0
+       Static X 
 ;       If GetType(*g2) = #__type_Splitter
 ;       Else
 ;          X = GetState(*this)
 ;       EndIf
       
-      *g3 = Container( Width,0,*this\width,70 ) : CloseList()
+      *g3 = Container( X,0,*this\width,70 ) : CloseList()
       SetGadget(*g1, *g3, 1) 
       SetGadget(*g2, *g3, 2) 
       
@@ -139,7 +139,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       
       
-      g = 13
+     a_init(Root())
+       g = 13
       *g = ListIcon_(10, 230, 700, 210, "Column_0",190, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect);|: *g = GetGadgetData(g)                                          
 ;       For i=1 To 3
 ;          AddColumn_(*g, i,"Column_"+Str(i),90)
@@ -166,8 +167,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 80
-; FirstLine = 64
+; CursorPosition = 142
+; FirstLine = 121
 ; Folding = --
 ; EnableXP
 ; DPIAware
