@@ -34,12 +34,19 @@ CompilerIf #PB_Compiler_IsMainFile
          X = GetGadgetState(*this)
       EndIf
       
-      *g3 = SplitterGadget(#PB_Any, 0,0,X ,GadgetHeight(*this), *g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+      *g3 = SplitterGadget(#PB_Any, 0,0,X,GadgetHeight(*this), *g1, *g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+      ;*g3 = SplitterGadget(#PB_Any, 0,0,X,GadgetHeight(*this), *g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+      
+      ;*g3 = SplitterGadget(#PB_Any, 0,0,GadgetWidth(*this),GadgetHeight(*this), *g1, *g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+      ;*g3 = SplitterGadget(#PB_Any, 0,0,GadgetWidth(*this),GadgetHeight(*this), *g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+      
       *g2 = GetGadgetAttribute(*this, #PB_Splitter_SecondGadget)
-     SetGadgetAttribute( *this, #PB_Splitter_SecondGadget, *g3 )
+      SetGadgetAttribute( *this, #PB_Splitter_SecondGadget, *g3 )
       FreeGadget( *g2 )
       SetGadgetState(*g3, Width)
       
+         SetGadgetState(*this, GetGadgetState(*this)+1)
+   
    EndProcedure
    
    Procedure AddItem_( *this, Item.l, Text.s, Image.i = - 1, Flag.q = 0 )
@@ -104,8 +111,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 39
-; FirstLine = 11
+; CursorPosition = 40
+; FirstLine = 20
 ; Folding = --
 ; EnableXP
 ; DPIAware

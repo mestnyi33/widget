@@ -56,7 +56,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure AddColumn_( *this._s_WIDGET, position.l, Text.s, Width.l, Image.i = -1 )
       Static count = 2
       count + 1
-      Protected._s_WIDGET *g2 = GetAttribute(*this, #PB_Splitter_SecondGadget)
+      Protected gadget = #PB_Splitter_SecondGadget ;   #PB_Splitter_FirstGadget ; 
+      Protected._s_WIDGET *g2 = GetAttribute(*this, gadget)
       Protected._s_WIDGET *g1 = Button(0,0,0,0,Str(count)) ; Tree(0,0,0,0)
       SetData(*g1, count)
       
@@ -67,9 +68,52 @@ CompilerIf #PB_Compiler_IsMainFile
          X = GetState(*this)
       EndIf
       
-      *g2 = Splitter( 0,0,*this\Width ,*this\height, *g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
-      SetAttribute( *this, #PB_Splitter_SecondGadget, *g2 )
+      ;*g2 = Splitter( 0,0,x ,*this\height, *g1, *g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+      ;*g2 = Splitter( 0,0,*this\Width ,*this\height, *g1, *g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+;       SPLITTER_0 > Root
+;       BUTTON_1 > SPLITTER_0
+;       SPLITTER_3 > SPLITTER_0
+;       BUTTON_4 > SPLITTER_3
+;       SPLITTER_2 > SPLITTER_3
+;       BUTTON_3 > SPLITTER_2
+;       SPLITTER_1 > SPLITTER_2
+;       BUTTON_2 > SPLITTER_1
+;       BUTTON_0 > SPLITTER_1
+
+;       SPLITTER_0 > Root
+;       BUTTON_0 > SPLITTER_0
+;       SPLITTER_3 > SPLITTER_0
+;       BUTTON_4 > SPLITTER_3
+;       SPLITTER_2 > SPLITTER_3
+;       BUTTON_3 > SPLITTER_2
+;       SPLITTER_1 > SPLITTER_2
+;       BUTTON_2 > SPLITTER_1
+;       BUTTON_1 > SPLITTER_1
+
+      *g2 = Splitter( 0,0,X ,*this\height, *g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+;      *g2 = Splitter( 0,0,*this\Width ,*this\height, *g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+;       SPLITTER_0 > Root
+;       BUTTON_1 > SPLITTER_0
+;       SPLITTER_3 > SPLITTER_0
+;       SPLITTER_2 > SPLITTER_3
+;       SPLITTER_1 > SPLITTER_2
+;       BUTTON_0 > SPLITTER_1
+;       BUTTON_2 > SPLITTER_1
+;       BUTTON_3 > SPLITTER_2
+;       BUTTON_4 > SPLITTER_3
+
+;       SPLITTER_0 > Root
+;       BUTTON_0 > SPLITTER_0
+;       SPLITTER_3 > SPLITTER_0
+;       SPLITTER_2 > SPLITTER_3
+;       SPLITTER_1 > SPLITTER_2
+;       BUTTON_1 > SPLITTER_1
+;       BUTTON_2 > SPLITTER_1
+;       BUTTON_3 > SPLITTER_2
+;       BUTTON_4 > SPLITTER_3
+      SetAttribute( *this, gadget, *g2 )
       SetState(*g2, Width)
+      SetState(*this, GetState(*this)+1)
       
    EndProcedure
    
@@ -139,7 +183,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       Next
 ;
          If StartEnum(Root())
-            Debug ""+widgets()\class
+            Debug "" + widgets()\class +" > "+ widgets()\parent\class
             
            StopEnum() 
          EndIf
@@ -149,8 +193,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 70
-; FirstLine = 52
+; CursorPosition = 93
+; FirstLine = 90
 ; Folding = --
 ; EnableXP
 ; DPIAware
