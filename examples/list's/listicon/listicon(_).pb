@@ -43,6 +43,104 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define a,i
    
+   Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
+      Protected._s_WIDGET *first = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+      Protected._s_WIDGET *second = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+      Protected._s_ROWS *row
+      Protected state
+      
+      ;
+      If PushItem( *this )
+         If SelectItem( *this, Item)
+            *row = *this\__rows( )
+         EndIf
+         PopItem( *this)
+      EndIf
+      
+      ; чтобы не виделялся
+      If MouseDrag( )
+         If *this\RowFocused( ) = *row 
+            *row\focus = 1
+            *row\ColorState( ) = #__s_2
+         Else
+            *row\focus = 0
+            *row\ColorState( ) = #__s_0
+         EndIf
+         ProcedureReturn
+      EndIf
+      
+      ;
+      If *row\data
+         Select *this
+            Case *first 
+               If GetState( *second ) <> *row\index
+                  ChangeItemState( *second, *row\index, *row\ColorState( ))
+               EndIf
+            Case *second 
+               If GetState( *first ) <> *row\index
+                  ChangeItemState( *first, *row\index, *row\ColorState( ))
+               EndIf   
+         EndSelect
+         
+      Else
+         Select *this
+            Case *first 
+               If *second\RowFocused( )
+                  item = *second\RowFocused( )\index
+                  state = *second\RowFocused( )\ColorState( ) 
+               EndIf
+               
+            Case *second 
+               If *first\RowFocused( )
+                  item = *first\RowFocused( )\index
+                  state = *first\RowFocused( )\ColorState( ) 
+               EndIf
+         EndSelect
+         
+         If GetState( *this ) <> item
+            ChangeItemState( *this, item, state )
+         EndIf
+         
+         *row\focus = 0
+         *row\ColorState( ) = #__s_0
+      EndIf
+      
+   EndProcedure
+   
+   Procedure listicon_tree_events( )
+      Protected._s_WIDGET *g = EventWidget()
+      Protected._s_WIDGET *area = *g\parent\data
+      
+      Select WidgetEvent( )
+         Case #__event_StatusChange
+            Protected._s_ROWS *row
+            
+            If PushItem( *g )
+               If SelectItem( *g, WidgetEventItem( ))
+                  *row = *g\__rows( )
+               EndIf
+               PopItem( *g)
+            EndIf
+            
+            If StartEnum( *area )
+               If *g = widgets()
+                  Continue
+               EndIf
+               If widgets()\type = #__type_Tree
+                  ChangeItemState( widgets(), *row\index, *row\ColorState( ))
+               EndIf
+               StopEnum()
+            EndIf
+            
+         Case #__event_MouseWheel
+            If MouseDirection( ) > 0
+               SetAttribute( *area, #PB_ScrollArea_Y, GetAttribute( *area, #PB_ScrollArea_Y)-WidgetEventData())
+            Else
+               SetAttribute( *area, #PB_ScrollArea_X, GetAttribute( *area, #PB_ScrollArea_X)-WidgetEventData())
+            EndIf
+      EndSelect
+      
+   EndProcedure
    
    Procedure SetAttribute_( *this._s_WIDGET, attribute, value )
       Select attribute
@@ -74,17 +172,27 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure ListIcon_(X,Y,Width,Height,firstcolumntitle.s, firstcolumnwidth, flags.q=0 )
       Protected._s_WIDGET *parent = ScrollArea(X,Y,Width,Height, Width,Height, 1 )
-      Protected._s_WIDGET *g1 = Tree(0,0,0,0, #__flag_NoLines|flags)
+      Protected._s_WIDGET *g1 = Tree(0,0,0,0, #__flag_NoLines|flags);|#__flag_BorderLess)
+      Bind(*g1, @listicon_tree_events())
       Hide(*g1\scroll\v, 1)
       Hide(*g1\scroll\h, 1)
       SetData(*g1, 1)
       
       ;Protected *this._s_WIDGET = Splitter( 0,0,Width,Height, *g1,-1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-      Protected *this._s_WIDGET = Splitter( 0,0,0,0, *g1,-1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed|#__flag_AutoSize )
+      Protected *this._s_WIDGET = Splitter( 0,0,0,0, *g1,-1, #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed|#__flag_AutoSize|#__flag_BorderLess )
+;       ;
+;       *this\bar\button\size = DPIScaled(1)
+;       *this\bar\button\size + Bool( *this\bar\button\size % 2 )
+;       *this\bar\button\round = 0;  DPIScaled(1)
+      
       If flags & #__flag_CheckBoxes
          firstcolumnwidth + 25
       EndIf
       SetState( *this, firstcolumnwidth)
+      SetData(*this, *parent)
+      
+     
+   
       CloseList( )
       ProcedureReturn *parent
    EndProcedure
@@ -101,8 +209,12 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
          
          ;
+         Define *Tree._s_WIDGET=GetAttribute(*this, #PB_Splitter_FirstGadget)
          *g2 = GetAttribute(parent, #PB_Splitter_SecondGadget)
-         *g1 = Tree(0,0,0,0, #__flag_NoLines) ; 
+         *g1 = Tree(0,0,0,0, #__flag_NoLines|(*Tree\flag&~#__flag_CheckBoxes)) ; 
+         Bind(*g1, @listicon_tree_events())
+         
+         ;SetFlag(*g1, *Tree\flag)
          Hide(*g1\scroll\v, 1)
          Hide(*g1\scroll\h, 1)
          
@@ -115,8 +227,14 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
          
          If *g2 > 0
-            *g = Splitter( 0,0,0,0, *g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+            *g = Splitter( 0,0,0,0, *g2, *g1, #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed|#__flag_BorderLess )
+;             ;
+;             *g\bar\button\size = DPIScaled(1)
+;             *g\bar\button\size + Bool( *g\bar\button\size % 2 )
+;             *g\bar\button\round = 0;  DPIScaled(1)
+            
             SetAttribute( parent, #PB_Splitter_SecondGadget, *g )
+            SetData(*g, *parent)
             SetState(*g, Width)
             If position =- 1
                c = 1  
@@ -169,21 +287,21 @@ CompilerIf #PB_Compiler_IsMainFile
       ;{ - gadget 
       Define t=ElapsedMilliseconds()
       Define g = 1
-      ListIconGadget(g, 10, 10, 165, 210,"Column_1",90)                                         
+      ListIconGadget(g, 10, 10, 165, 210,"Column_1",130)                                         
       For i=1 To 2 : AddGadgetColumn(g, i,"Column_"+Str(i+1),90) : Next
       For i=0 To 7
          AddGadgetItem(g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", ImageID(0))                                           
       Next
       
       g = 2
-      ListIconGadget(g, 180, 10, 165, 210,"Column_1",90)                                         
+      ListIconGadget(g, 180, 10, 165, 210,"Column_1",130)                                         
       For i=1 To 2 : AddGadgetColumn(g, i,"Column_"+Str(i+1),90) : Next
       For i=0 To Count
          AddGadgetItem(g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", 0)                                           
       Next
       
       g = 3
-      ListIconGadget(g, 350, 10, 430, 210,"Column_1",90, #PB_ListIcon_FullRowSelect|#PB_ListIcon_GridLines|#PB_ListIcon_CheckBoxes)                                         
+      ListIconGadget(g, 350, 10, 430, 210,"Column_1",130, #PB_ListIcon_FullRowSelect|#PB_ListIcon_GridLines|#PB_ListIcon_CheckBoxes)                                         
       
       ;HideListIcon_(g,1)
       For i=1 To 2
@@ -203,7 +321,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;{ - widget
       t=ElapsedMilliseconds()
       g = 11
-      Define *g._s_WIDGET = ListIcon_(10, 230, 165, 210, "Column_1",90) ;: *g = GetGadgetData(g)                                        
+      Define *g._s_WIDGET = ListIcon_(10, 230, 165, 210, "Column_1",130) ;: *g = GetGadgetData(g)                                        
       For i=1 To 2 : AddColumn_(*g, i,"Column_"+Str(i+1),90) : Next
       ; 1_example
       For i=0 To 7
@@ -215,7 +333,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAttribute_( *g, #PB_ScrollArea_InnerHeight, value )
       
       g = 12
-      *g = ListIcon_(180, 230, 165, 210, "Column_1",90);, #__flag_RowFullSelect) ;: *g = GetGadgetData(g)                                          
+      *g = ListIcon_(180, 230, 165, 210, "Column_1",130);, #__flag_RowFullSelect) ;: *g = GetGadgetData(g)                                          
       For i=1 To 2 : AddColumn_(*g, i,"Column_"+Str(i+1),90) : Next
       ; 1_example
       For i=0 To Count
@@ -227,7 +345,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAttribute_( *g, #PB_ScrollArea_InnerHeight, value )
       
       g = 13
-      *g = ListIcon_(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect);|: *g = GetGadgetData(g)                                          
+      *g = ListIcon_(350, 230, 430, 210, "Column_1",130, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect);|: *g = GetGadgetData(g)                                          
       
       ;HideListIcon_(g,1)
       For i=1 To 2
@@ -292,8 +410,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 232
-; FirstLine = 196
-; Folding = ---+--
+; CursorPosition = 213
+; FirstLine = 199
+; Folding = ------4--
 ; EnableXP
 ; DPIAware

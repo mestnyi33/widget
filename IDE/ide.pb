@@ -1112,7 +1112,7 @@ Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    ;     ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
    ;     SetColor(*g, #PB_Gadget_BackColor,  $D4C8C8C8)
    
-   Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, Flag|#__flag_Transparent|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
+   Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, Flag|#__flag_Transparent|#PB_Splitter_Vertical|#PB_Splitter_Separator )
    SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
    SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
    ;
@@ -3313,9 +3313,9 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 227
-; FirstLine = 219
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 1114
+; FirstLine = 949
 ; Folding = -4--4---rv-3v--------vb8Ah-------v-fvd-0----------f6W3----f+-
 ; EnableXP
 ; DPIAware
