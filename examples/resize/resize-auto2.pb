@@ -6,6 +6,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
+  Global._S_WIDGET *g
+  
   Enumeration 
     #g_tree 
     #w_tree
@@ -32,8 +34,12 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Container(0,0,0,0, #__flag_autosize)
     ; ScrollArea(0,0,0,0, 800,800,0, #__flag_autosize)
     ;Panel(0,0,200, 200, #__flag_autosize) : AddItem(widget(), -1, "panel")
-    Button(0,0,0,0,"button", #__flag_autosize)
     
+    ;*g = Button(0,0,800,800,"button")
+     *g = Button(0,0,0,0,"auto", #__flag_autosize)
+;     
+;     Repaint()
+;     Debug Width( *g)
    ; String(10, 10, 200, 65, "string gadget text");, #__flag_autosize)
   
 ;     If ListSize(widget())
@@ -53,7 +59,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 37
+; FirstLine = 24
 ; Folding = -
 ; EnableXP

@@ -33,6 +33,7 @@ XIncludeFile "../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
+   EnableExplicit
    
    UsePNGImageDecoder()
    ;Debug #PB_Compiler_Home+"examples/sources/Data/Toolbar/Paste.png"
@@ -42,37 +43,119 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define a,i
    
+   
+   Procedure SetAttribute_( *this._s_WIDGET, attribute, value )
+      Select attribute
+         Case #PB_ScrollArea_InnerWidth
+            ;Repaint( )
+            If value < Width(*this)
+               value = Width(*this)
+            EndIf
+            If SetAttribute( *this, attribute, value )
+               If Not *this\flag & #__flag_AutoSize
+                  Resize(*this\firstWidget( ), #PB_Ignore, #PB_Ignore, value, #PB_Ignore)
+               EndIf
+            EndIf
+            
+         Case #PB_ScrollArea_InnerHeight
+            ;Repaint( )
+            If value < Height(*this)
+               value = Height(*this)
+            EndIf
+            If SetAttribute( *this, attribute, value )
+               If Not *this\flag & #__flag_AutoSize
+                  Resize(*this\firstWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, value)
+               EndIf
+            EndIf
+            
+      EndSelect
+      
+   EndProcedure
+   
    Procedure ListIcon_(X,Y,Width,Height,firstcolumntitle.s, firstcolumnwidth, flags.q=0 )
-      Protected *g1 = Tree(0,0,0,0)
+      Protected._s_WIDGET *parent = ScrollArea(X,Y,Width,Height, Width,Height, 1 )
+      Protected._s_WIDGET *g1 = Tree(0,0,0,0, #__flag_NoLines|flags)
+      Hide(*g1\scroll\v, 1)
+      Hide(*g1\scroll\h, 1)
       SetData(*g1, 1)
-      Protected *this._s_WIDGET = Splitter( X,Y,Width,Height, *g1,-1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+      
+      ;Protected *this._s_WIDGET = Splitter( 0,0,Width,Height, *g1,-1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+      Protected *this._s_WIDGET = Splitter( 0,0,0,0, *g1,-1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed|#__flag_AutoSize )
+      If flags & #__flag_CheckBoxes
+         firstcolumnwidth + 25
+      EndIf
       SetState( *this, firstcolumnwidth)
-      
-      ProcedureReturn *this
+      CloseList( )
+      ProcedureReturn *parent
    EndProcedure
    
-   Procedure AddColumn_( *this._s_WIDGET, position.l, Text.s, Width.l, Image.i = -1 )
-     ; If position ;>= 2
-          Protected *g1 = Tree(0,0,0,0)
-      ;Protected *g2 = ListIcon_(0,0,0,0,Text.s, Width, 0 )
-         Protected *g2 = Splitter( 0,0,110,110, *g1,-1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
-         SetData( GetAttribute(*g2, #PB_Splitter_FirstGadget), position)
-         SetState(*g2, Width)
+   Procedure AddColumn_( *parent._s_WIDGET, position.l, Text.s, Width.l, Image.i = -1 )
+      Protected *this._s_WIDGET = *parent\FirstWidget( )
+      
+      If *this
+         Protected._s_WIDGET *g,*g1,*g2
+         Static X, parent
          
-         SetAttribute( *this, #PB_Splitter_SecondGadget, *g2 )
-        ; EndIf  
+         If Not ( parent And IsChild( parent, *this ))
+            parent = *this
+         EndIf
+         
+         ;
+         *g2 = GetAttribute(parent, #PB_Splitter_SecondGadget)
+         *g1 = Tree(0,0,0,0, #__flag_NoLines) ; 
+         Hide(*g1\scroll\v, 1)
+         Hide(*g1\scroll\h, 1)
+         
+         If position =- 1
+            Static c = 1
+            c + 1
+            SetData(*g1, c)
+         Else
+            SetData(*g1, position+1)
+         EndIf
+         
+         If *g2 > 0
+            *g = Splitter( 0,0,0,0, *g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+            SetAttribute( parent, #PB_Splitter_SecondGadget, *g )
+            SetState(*g, Width)
+            If position =- 1
+               c = 1  
+            EndIf
+            parent = *g
+         Else
+            SetAttribute( parent, #PB_Splitter_SecondGadget, *g1 )
+            X = GetState(*this)
+            parent = 0
+         EndIf
+         
+         X + Width
+         SetAttribute_( *parent, #PB_ScrollArea_InnerWidth, X )
+         
+         ProcedureReturn *g
+      EndIf
    EndProcedure
    
-   Procedure AddItem_( *this._s_WIDGET, Item.l, Text.s, Image.i = - 1, Flag.q = 0 )
-      Protected *g1 = GetAttribute(*this, #PB_Splitter_FirstGadget)
-      Protected *g2 = GetAttribute(*this, #PB_Splitter_SecondGadget)
+   Procedure AddItem_( *parent._s_WIDGET, Item.l, Text.s, Image.i = - 1, Flag.q = 0 )
+      Protected *this._s_WIDGET
       
-      If *g1 ;And GetType(*g1) = #__type_tree
-         AddItem( *g1, Item, StringField(Text.s, GetData(*g1), #LF$), Image, Flag )
+      If GetType(*parent) = #__type_ScrollArea
+         *this = *parent\FirstWidget( )
+      Else
+         *this = *parent
       EndIf
       
-      If *g2 
-         AddItem_( *g2, Item, Text.s, -1,0);Image, flag )
+      If *this
+         Protected._s_WIDGET *g1 = GetAttribute(*this, #PB_Splitter_FirstGadget)
+         Protected._s_WIDGET *g2 = GetAttribute(*this, #PB_Splitter_SecondGadget)
+         
+         If GetType(*g1) = #__type_tree
+            AddItem( *g1, Item, StringField(Text.s, GetData(*g1), #LF$), Image, Flag )
+         EndIf
+         If GetType(*g2) = #__type_tree
+            AddItem( *g2, Item, StringField(Text.s, GetData(*g2), #LF$), -1, 0 )
+         Else
+            AddItem_( *g2, Item, Text.s, -1,0)
+         EndIf
       EndIf
       
    EndProcedure
@@ -120,20 +203,28 @@ CompilerIf #PB_Compiler_IsMainFile
       ;{ - widget
       t=ElapsedMilliseconds()
       g = 11
-      *g = ListIcon_(10, 230, 165, 210, "Column_1",90) ;: *g = GetGadgetData(g)                                        
-      ;For i=1 To 2 : AddColumn_(*g, i,"Column_"+Str(i+1),90) : Next
+      Define *g._s_WIDGET = ListIcon_(10, 230, 165, 210, "Column_1",90) ;: *g = GetGadgetData(g)                                        
+      For i=1 To 2 : AddColumn_(*g, i,"Column_"+Str(i+1),90) : Next
       ; 1_example
       For i=0 To 7
          AddItem_(*g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", 0)                                          
       Next
       
+      Repaint()
+      Define value = *g\FirstWidget( )\split_1( )\Scroll\v\bar\max
+      SetAttribute_( *g, #PB_ScrollArea_InnerHeight, value )
+      
       g = 12
       *g = ListIcon_(180, 230, 165, 210, "Column_1",90);, #__flag_RowFullSelect) ;: *g = GetGadgetData(g)                                          
-      For i=1 To 1 : AddColumn_(*g, i,"Column_"+Str(i+1),90) : Next
+      For i=1 To 2 : AddColumn_(*g, i,"Column_"+Str(i+1),90) : Next
       ; 1_example
       For i=0 To Count
          AddItem_(*g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", -1)                                          
       Next
+      
+      Repaint()
+      Define value = *g\FirstWidget( )\split_1( )\Scroll\v\bar\max
+      SetAttribute_( *g, #PB_ScrollArea_InnerHeight, value )
       
       g = 13
       *g = ListIcon_(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect);|: *g = GetGadgetData(g)                                          
@@ -149,6 +240,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       ;HideListIcon_(g,0)
       
+      Repaint()
+      Define value = *g\FirstWidget( )\split_1( )\Scroll\v\bar\max
+      SetAttribute_( *g, #PB_ScrollArea_InnerHeight, value )
+     
       Debug " time create canvas (listicon) - "+Str(ElapsedMilliseconds()-t)
       ;}
       
@@ -196,9 +291,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 69
-; FirstLine = 66
-; Folding = ---
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 232
+; FirstLine = 196
+; Folding = ---+--
 ; EnableXP
 ; DPIAware

@@ -1,37 +1,186 @@
-﻿; Debug #PB_ListIcon_CheckBoxes           ; = 1           ; = 2
-; Debug #PB_ListIcon_ThreeState           ; = 4           ; = 8
-; Debug #PB_ListIcon_MultiSelect          ; = 4           ; = 1
-; Debug #PB_ListIcon_AlwaysShowSelection  ; = 8           ; = 0
-; Debug #PB_ListIcon_GridLines            ; = 65536       ; = 16
-; Debug #PB_ListIcon_HeaderDragDrop       ; = 268435456   ; = 32
-; Debug #PB_ListIcon_FullRowSelect        ; = 1073741824  ; = 0
-; 
-; ; GetGadgetAttribute
-; Debug #PB_ListIcon_ColumnCount          ; = 3           ; = 3
-; ; SetGadgetAttribute & GetGadgetAttribute
-; Debug #PB_ListIcon_DisplayMode          ; = 2           ; = 2
-;   Debug #PB_ListIcon_LargeIcon          ; = 0           ; = 0
-;   Debug #PB_ListIcon_SmallIcon          ; = 1           ; = 1
-;   Debug #PB_ListIcon_List               ; = 2           ; = 2
-;   Debug #PB_ListIcon_Report             ; = 3           ; = 3
-;   
-;   ; SetGadgetItemAttribute & GetGadgetItemAttribute
-; Debug #PB_ListIcon_ColumnWidth          ; = 1           ; = 1
-; 
-; Debug #PB_ListIcon_Selected             ; = 1           ; = 1
-; Debug #PB_ListIcon_Checked              ; = 2           ; = 2
-; Debug #PB_ListIcon_Inbetween            ; = 4           ; = 4
-; 
-; ;ListIconGadget(
-
-;- 
-;- example list-icon
-;-
-; CocoaMessage(0, GadgetID(0), "setHeaderView:", 0)
-
+﻿
 XIncludeFile "../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
+   UseWidgets( )
+   
+   UsePNGImageDecoder()
+   ;Debug #PB_Compiler_Home+"examples/sources/Data/Toolbar/Paste.png"
+   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
+      End
+   EndIf
+   
+   Define a,i
+   
+   Procedure ListIcon_(X,Y,Width,Height,firstcolumntitle.s, firstcolumnwidth, flags.q=0 )
+      Protected *g1 = Button(0,0,0,0,"0") ; Tree(0,0,0,0)
+      Protected *g2 = Button(0,0,0,0,"1") ; Tree(0,0,0,0)
+      SetData(*g1, 1)
+      SetData(*g2, 2)
+      Protected *this._s_WIDGET = Splitter( X,Y,Width,Height, *g1,*g2, #PB_Splitter_Vertical);|#PB_Splitter_FirstFixed )
+      SetState( *this, firstcolumnwidth)
+      
+      ProcedureReturn *this
+   EndProcedure
+   
+   Procedure AddColumn_( *this._s_WIDGET, position.l, Text.s, Width.l, Image.i = -1 )
+      Static parent
+      Static count = 2
+      count + 1
+      
+      Protected._s_WIDGET *g,*g1,*g2
+      
+      If Not ( parent And IsChild( parent, *this ))
+         count = 2
+         parent = *this
+      EndIf
+      
+      *g2 = GetAttribute(parent, #PB_Splitter_SecondGadget)
+      If *g2 > 0
+         If GetType(*g2) <> #__type_Splitter
+            *g1 = Button(0,0,0,0,Str(count))
+            SetData(*g1, Count)
+         EndIf
+      EndIf
+       
+       *g = Splitter( 0,0,*this\width ,*this\height, *g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+         SetAttribute( parent, #PB_Splitter_SecondGadget, *g )
+         SetState(*g, Width)
+         parent = *g
+;       Else
+;          X = GetState(*this)
+;          SetAttribute( parent, #PB_Splitter_SecondGadget, *g1 )
+;       EndIf
+      
+      ProcedureReturn *g
+   EndProcedure
+   
+   
+   If Open(0, 0, 0, 800, 450, "ListiconGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      g = 13
+      *g = ListIcon_(10, 10, 700, 210, "Column_0",190, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect);|: *g = GetGadgetData(g)                                          
+      
+      Define *this._s_WIDGET
+      i=1 
+      *this = AddColumn_(*g, i,"Column_"+Str(i),90)
+        ; Debug ""+*this\class +" "+ *this\parent\class
+         
+         i=2 
+      *this = AddColumn_(*g, i,"Column_"+Str(i),90)
+        ; Debug ""+*this\class +" "+ *this\parent\class
+;          
+      i=3 
+      *this = AddColumn_(*g, i,"Column_"+Str(i),90)
+;         ; Debug ""+*this\class +" "+ *this\parent\class
+      
+      
+      
+      Debug "-----"
+      
+         If StartEnum(Root())
+            Debug "" + widgets()\class +" > "+ widgets()\parent\class
+            
+           StopEnum() 
+         EndIf
+         
+         
+      WaitClose( )
+  EndIf
+CompilerEndIf
+
+
+CompilerIf #PB_Compiler_IsMainFile = 99
+   UseWidgets( )
+   
+   UsePNGImageDecoder()
+   ;Debug #PB_Compiler_Home+"examples/sources/Data/Toolbar/Paste.png"
+   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
+      End
+   EndIf
+   
+   Define a,i
+   
+   Procedure ListIcon_(X,Y,Width,Height,firstcolumntitle.s, firstcolumnwidth, flags.q=0 )
+      Protected *g1 = Button(0,0,0,0,"0") ; Tree(0,0,0,0)
+      Protected *g2 = Button(0,0,0,0,"1") ; Tree(0,0,0,0)
+      SetData(*g1, 1)
+      SetData(*g2, 2)
+      Protected *this._s_WIDGET = Splitter( X,Y,Width,Height, *g1,*g2, #PB_Splitter_Vertical);|#PB_Splitter_FirstFixed )
+      SetState( *this, firstcolumnwidth)
+      
+      ProcedureReturn *this
+   EndProcedure
+   
+   Procedure AddColumn_( *this._s_WIDGET, position.l, Text.s, Width.l, Image.i = -1 )
+      Static parent
+      Static count = 2
+      count + 1
+      
+      Protected._s_WIDGET *g,*g1,*g2
+      
+      If Not ( parent And IsChild( parent, *this ))
+         count = 2
+         parent = *this
+      EndIf
+      
+      *g2 = GetAttribute(parent, #PB_Splitter_SecondGadget)
+      *g1 = Button(0,0,0,0,Str(count))
+      SetData(*g1, Count)
+      
+      If *g2 > 0
+         Static X
+         If GetType(*g2) = #__type_Splitter
+            X + GetState(*g2 )
+         Else
+            X = GetState(*this)
+         EndIf
+         
+         *g = Splitter( 0,0,X ,*this\height, *g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+         SetAttribute( parent, #PB_Splitter_SecondGadget, *g )
+         SetState(*g, Width)
+         parent = *g
+      Else
+         X = GetState(*this)
+         SetAttribute( parent, #PB_Splitter_SecondGadget, *g1 )
+      EndIf
+      
+      ProcedureReturn *g
+   EndProcedure
+   
+   
+   If Open(0, 0, 0, 800, 450, "ListiconGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      g = 13
+      *g = ListIcon_(10, 10, 700, 210, "Column_0",190, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect);|: *g = GetGadgetData(g)                                          
+      
+      Define *this._s_WIDGET
+      i=1 
+      *this = AddColumn_(*g, i,"Column_"+Str(i),90)
+        ; Debug ""+*this\class +" "+ *this\parent\class
+         
+         i=2 
+      *this = AddColumn_(*g, i,"Column_"+Str(i),90)
+        ; Debug ""+*this\class +" "+ *this\parent\class
+;          
+;       i=3 
+ ;      *this = AddColumn_(*g, i,"Column_"+Str(i),90)
+;         ; Debug ""+*this\class +" "+ *this\parent\class
+      
+      
+      
+      Debug "-----"
+      
+         If StartEnum(Root())
+            Debug "" + widgets()\class +" > "+ widgets()\parent\class
+            
+           StopEnum() 
+         EndIf
+         
+         
+      WaitClose( )
+  EndIf
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile = 99
    UseWidgets( )
    
    UsePNGImageDecoder()
@@ -68,7 +217,7 @@ CompilerIf #PB_Compiler_IsMainFile
          X = GetState(*this)
       EndIf
       
-      ;*g2 = Splitter( 0,0,x ,*this\height, *g1, *g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+      ;*g2 = Splitter( 0,0,X ,*this\height, *g1, *g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
       ;*g2 = Splitter( 0,0,*this\Width ,*this\height, *g1, *g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
 ;       SPLITTER_0 > Root
 ;       BUTTON_1 > SPLITTER_0
@@ -113,7 +262,10 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       BUTTON_4 > SPLITTER_3
       SetAttribute( *this, gadget, *g2 )
       SetState(*g2, Width)
-      SetState(*this, GetState(*this)+1)
+      
+      
+      ;Resize( *g2, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+      ; SetState(*this, GetState(*this)+1)
       
    EndProcedure
    
@@ -193,8 +345,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 93
-; FirstLine = 90
-; Folding = --
+; CursorPosition = 41
+; FirstLine = 22
+; Folding = 84---
 ; EnableXP
 ; DPIAware

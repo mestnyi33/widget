@@ -23,7 +23,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Static count = 2
       count + 1
       Protected *g2 = GetGadgetAttribute(*this, #PB_Splitter_SecondGadget)
-      SetGadgetAttribute( *this, #PB_Splitter_SecondGadget, ButtonGadget(#PB_Any, 0,0,0,0,Str(count)) )
       Protected *g1 = ButtonGadget(#PB_Any, 0,0,0,0,Str(count)) ; Tree(0,0,0,0)
       SetGadgetData(*g1, count)
       
@@ -34,19 +33,25 @@ CompilerIf #PB_Compiler_IsMainFile
          X = GetGadgetState(*this)
       EndIf
       
+      ;
+      Define *g4 = ButtonGadget(#PB_Any, 0,0,0,0,"")
+      SetGadgetAttribute( *this, #PB_Splitter_SecondGadget, *g4 )
+      
+      ;
       *g3 = SplitterGadget(#PB_Any, 0,0,X,GadgetHeight(*this), *g1, *g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
       ;*g3 = SplitterGadget(#PB_Any, 0,0,X,GadgetHeight(*this), *g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
       
       ;*g3 = SplitterGadget(#PB_Any, 0,0,GadgetWidth(*this),GadgetHeight(*this), *g1, *g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
       ;*g3 = SplitterGadget(#PB_Any, 0,0,GadgetWidth(*this),GadgetHeight(*this), *g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
       
-      *g2 = GetGadgetAttribute(*this, #PB_Splitter_SecondGadget)
       SetGadgetAttribute( *this, #PB_Splitter_SecondGadget, *g3 )
-      FreeGadget( *g2 )
       SetGadgetState(*g3, Width)
       
-         SetGadgetState(*this, GetGadgetState(*this)+1)
-   
+      ;
+      FreeGadget( *g4 )
+      
+      ;SetGadgetState(*this, GetGadgetState(*this)+1)
+      
    EndProcedure
    
    Procedure AddItem_( *this, Item.l, Text.s, Image.i = - 1, Flag.q = 0 )
@@ -86,33 +91,33 @@ CompilerIf #PB_Compiler_IsMainFile
       
       g = 13
       *g = ListIcon_(10, 230, 700, 210, "Column_0",190);, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect);|: *g = GetGadgetData(g)                                          
-;       For i=1 To 3
-;          AddColumn_(*g, i,"Column_"+Str(i),90)
-;       Next
-         i=1 : AddColumn_(*g, i,"Column_"+Str(i),90)
-         
-         i=2 : AddColumn_(*g, i,"Column_"+Str(i),90)
-         
-         i=3 : AddColumn_(*g, i,"Column_"+Str(i),90)
+                                                       ;       For i=1 To 3
+                                                       ;          AddColumn_(*g, i,"Column_"+Str(i),90)
+                                                       ;       Next
+      i=1 : AddColumn_(*g, i,"Column_"+Str(i),90)
       
-;       AddItem_(*g, -1, Chr(10)+"ListIcon_"+Str(i)) 
-;       For i=1 To 5
-;          AddItem_(*g, i, Str(i)+"_Column_0"+#LF$+Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3", (0))                                        
-;       Next
-;
-;          If StartEnum(Root())
-;             Debug ""+widgets()\class
-;             
-;            StopEnum() 
-;          EndIf
-;          
-         
-         Repeat : Until WaitWindowEvent()= #PB_Event_CloseWindow
-  EndIf
+      i=2 : AddColumn_(*g, i,"Column_"+Str(i),90)
+      
+      i=3 : AddColumn_(*g, i,"Column_"+Str(i),90)
+      
+      ;       AddItem_(*g, -1, Chr(10)+"ListIcon_"+Str(i)) 
+      ;       For i=1 To 5
+      ;          AddItem_(*g, i, Str(i)+"_Column_0"+#LF$+Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3", (0))                                        
+      ;       Next
+      ;
+      ;          If StartEnum(Root())
+      ;             Debug ""+widgets()\class
+      ;             
+      ;            StopEnum() 
+      ;          EndIf
+      ;          
+      
+      Repeat : Until WaitWindowEvent()= #PB_Event_CloseWindow
+   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 40
-; FirstLine = 20
+; CursorPosition = 31
+; FirstLine = 19
 ; Folding = --
 ; EnableXP
 ; DPIAware

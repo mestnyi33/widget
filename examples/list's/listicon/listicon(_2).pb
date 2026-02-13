@@ -43,48 +43,69 @@ CompilerIf #PB_Compiler_IsMainFile
    Define a,i
    
    Procedure ListIcon_(X,Y,Width,Height,firstcolumntitle.s, firstcolumnwidth, flags.q=0 )
-      Protected *g1 = Tree(0,0,0,0)
-      Protected *g2 = Tree(0,0,0,0)
+      Protected *g1 = Tree(0,0,0,0, #__flag_NoLines|flags)
       SetData(*g1, 1)
-      SetData(*g2, 2)
-      Protected *this._s_WIDGET = Splitter( X,Y,Width,Height, *g1,*g2, #PB_Splitter_Vertical);|#PB_Splitter_FirstFixed )
+      
+      Protected *this._s_WIDGET = Splitter( X,Y,Width,Height, *g1,-1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+      If flags & #__flag_CheckBoxes
+         firstcolumnwidth + 25
+      EndIf
       SetState( *this, firstcolumnwidth)
       
       ProcedureReturn *this
    EndProcedure
    
-;    Procedure AddColumn_( *this._s_WIDGET, position.l, Text.s, Width.l, Image.i = -1 )
-;       Protected *g1 = GetAttribute(*this, #PB_Splitter_SecondGadget)
-;       Protected *g2 = Tree(0,0,0,0)
-;         SetData(*g2, GetData(*g1) + 1)
-;        
-;       If position >= 2
-;          *g2 = Splitter( 0,0,*this\Width,*this\height, *g1,*g2, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
-;          SetAttribute( *this, #PB_Splitter_SecondGadget, *g2 )
-;          SetState(*g2, Width)
-;       EndIf
-;       
-;    EndProcedure
    Procedure AddColumn_( *this._s_WIDGET, position.l, Text.s, Width.l, Image.i = -1 )
-      Static count = 2
-      count + 1
-      Protected *g2 = GetAttribute(*this, #PB_Splitter_SecondGadget)
-      Protected *g1 = Tree(0,0,0,0)
-      SetData(*g1, count)
+      Static parent
+      Static c ;= 1
       
-      *g2 = Splitter( 0,0,*this\Width,*this\height,*g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
-      SetAttribute( *this, #PB_Splitter_SecondGadget, *g2 )
-      SetState(*g2, Width)
+      Protected._s_WIDGET *g,*g1,*g2
       
+      
+      If parent 
+         c = 1
+         If Not IsChild( parent, *this )
+            parent = *this
+         EndIf
+      Else
+         parent = *this
+      EndIf
+      
+      c + 1
+      *g2 = GetAttribute(parent, #PB_Splitter_SecondGadget)
+      *g1 = Tree(0,0,0,0, #__flag_NoLines) ; Button(0,0,0,0,Str(c))
+      
+      If position =- 1
+         SetData(*g1, c)
+      Else
+         SetData(*g1, position+1)
+      EndIf
+      ;Debug ""+c+" "+position
+      
+      If *g2 > 0
+         Static X
+         If GetType(*g2) = #__type_Splitter
+            X + GetState(*g2 )
+         Else
+            X = GetState(*this)
+         EndIf
+         
+         *g = Splitter( 0,0,X ,*this\height, *g2, *g1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed )
+         SetAttribute( parent, #PB_Splitter_SecondGadget, *g )
+         SetState(*g, Width)
+         parent = *g
+      Else
+         X = GetState(*this)
+         SetAttribute( parent, #PB_Splitter_SecondGadget, *g1 )
+         parent = 0
+      EndIf
+      
+      ProcedureReturn *g
    EndProcedure
    
    Procedure AddItem_( *this._s_WIDGET, Item.l, Text.s, Image.i = - 1, Flag.q = 0 )
       Protected *g1 = GetAttribute(*this, #PB_Splitter_FirstGadget)
       Protected *g2 = GetAttribute(*this, #PB_Splitter_SecondGadget)
-      Protected i, count = CountString(Text.s, #LF$)
-      ;       For i=1 To count
-      ;          AddItem( *g1, Item, StringField(Text.s, i, #LF$), Image, flag )
-      ;       Next
       
       If GetType(*g1) = #__type_tree
          AddItem( *g1, Item, StringField(Text.s, GetData(*g1), #LF$), Image, Flag )
@@ -92,10 +113,8 @@ CompilerIf #PB_Compiler_IsMainFile
       If GetType(*g2) = #__type_tree
          AddItem( *g2, Item, StringField(Text.s, GetData(*g2), #LF$), -1, 0 )
       Else
-         ;*g2 = GetAttribute(*g2, #PB_Splitter_FirstGadget)
          AddItem_( *g2, Item, Text.s, -1,0)
       EndIf
-      
    EndProcedure
    
    If Open(0, 0, 0, 800, 450, "ListiconGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -160,7 +179,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *g = ListIcon_(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect);|: *g = GetGadgetData(g)                                          
       
       ;HideListIcon_(g,1)
-      For i=1 To 3
+      For i=1 To 2
          AddColumn_(*g, i,"Column_"+Str(i+1),90)
       Next
       ; 1_example
@@ -218,8 +237,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 71
-; FirstLine = 55
-; Folding = ---
+; CursorPosition = 237
+; FirstLine = 208
+; Folding = ----
 ; EnableXP
 ; DPIAware

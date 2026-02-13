@@ -11509,6 +11509,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Else
                         *this\split_1( ) = 0
                      EndIf
+                     ;
+                     bar_update( *this )
                      ProcedureReturn 1
                      
                   Case #PB_Splitter_SecondGadget
@@ -11523,6 +11525,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Else
                         *this\split_2( ) = 0
                      EndIf
+                     ;
+                     bar_update( *this )
                      ProcedureReturn 1
                      
                EndSelect
@@ -24496,10 +24500,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If *this\autosize  ;And not is_root_( *this )
             If *this\parent And *this\parent <> *this 
-               X      = (*this\parent\inner_x( ))
-               Y      = (*this\parent\inner_y( ))
-               Width  = (*this\parent\inner_width( ))
-               Height = (*this\parent\inner_height( ))
+               X      = (*this\parent\inner_x( )+*this\parent\scroll_x( ))
+               Y      = (*this\parent\inner_y( )+*this\parent\scroll_y( ))
+               Width  = (*this\parent\scroll_width( ))
+               Height = (*this\parent\scroll_height( ))
+;                If *this\parent\scroll And 
+;                   *this\parent\scroll\v And 
+;                   *this\parent\scroll\h
+;                   ;
+;                   X      = (-*this\parent\scroll\h\bar\page\pos)
+;                   Y      = (-*this\parent\scroll\v\bar\page\pos)
+;                   Width  = (*this\parent\scroll\h\bar\max)
+;                   Height = (*this\parent\scroll\v\bar\max)
+;                Else
+;                   X      = (*this\parent\inner_x( ))
+;                   Y      = (*this\parent\inner_y( ))
+;                   Width  = (*this\parent\inner_width( ))
+;                   Height = (*this\parent\inner_height( ))
+;                EndIf
+               
+;                If X > *this\parent\inner_x( )
+;                   X = *this\parent\inner_x( )
+;                EndIf
+;                If Y > *this\parent\inner_y( )
+;                   Y = *this\parent\inner_y( )
+;                EndIf
+               If Width < *this\parent\inner_width( )
+                  Width = *this\parent\inner_width( )
+               EndIf
+               If Height < *this\parent\inner_height( )
+                  Height = *this\parent\inner_height( )
+               EndIf
+               
+               ; Debug ""+X+" "+Y+" "+Width+" "+Height
             EndIf
             ; Debug "auto resize "+X+" "+Y ; combobox bug fixed
          Else
@@ -24663,7 +24696,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            
             ;\\
             If Width = #PB_Ignore
                If is_window_( *this )
@@ -24720,7 +24752,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If test_resize
                Debug "resize - "+*this\class +" ("+ X +" "+ Y +" "+ Width +" "+ Height +")"
             EndIf
-            
             
             ; frame coordinate
             If *this\parent And *this <> *this\parent And Not is_root_( *this )
@@ -24867,11 +24898,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If ( Change_x Or Change_y Or Change_width Or Change_height ) 
-            *this\root\repaint = 1
-            
             If *this\ResizeChange( ) <> #True
                *this\ResizeChange( ) = #True
             EndIf
+            *this\root\repaint = 1
             
             ;
             ;\\ resize child vertical&horizontal scrollbars
@@ -27907,10 +27937,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 27493
-; FirstLine = 27314
-; Folding = ------------------------------------------------------------------------------------------------------------------------f-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 24520
+; FirstLine = 24236
+; Folding = ------------------------------------------------------------------------------------------------------------------------f---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------tu02-+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------748--0--XhN--q+--hf-9-------------------------------------------f---------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
