@@ -2289,6 +2289,8 @@ EndProcedure
 Procedure.i ide_all_ELEMENTS_ADD_ITEMS( *id, Directory$, Type )
    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
    
+   ClearItems( *id )
+         
    If Type = 0
       Type = #PB_All
    EndIf
@@ -2630,9 +2632,8 @@ Procedure   ide_events( )
          
          If *g = ide_element_PANEL
             Debug "change element tab "+ __item
-            SetParent( ide_all_ELEMENTS, ide_element_PANEL, __item )
-            ClearItems( ide_all_ELEMENTS )
             ide_all_ELEMENTS_ADD_ITEMS( ide_all_ELEMENTS, GetCurrentDirectory( )+"Themes/", __item )
+            SetParent( ide_all_ELEMENTS, ide_element_PANEL, __item )
          EndIf
          
          If *g = ide_design_PANEL
@@ -3300,8 +3301,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 2634
-; FirstLine = 2217
+; CursorPosition = 2291
+; FirstLine = 1930
 ; Folding = -4--4---rv-3v--------vb8Ah-------v-fvd-0----------fp33----f+-
 ; EnableXP
 ; DPIAware
