@@ -1,11 +1,7 @@
 ﻿EnableExplicit
 
 CompilerIf #PB_Compiler_IsMainFile
-   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-      XIncludeFile "/Users/as/Documents/GitHub/widget/widgets.pbi"
-   CompilerElse
-      XIncludeFile "C:\Users\user\Documents\GitHub\widget\widgets.pbi"
-   CompilerEndIf
+   XIncludeFile "C:\Users\user\Documents\GitHub\widget\widgets.pbi"
 CompilerEndIf
 
 UseWidgets( )
@@ -82,9 +78,3 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    End
 CompilerEndIf
-
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 8
-; Folding = -
-; EnableXP
-; DPIAware

@@ -288,7 +288,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Define t=ElapsedMilliseconds()
       Define g = 1
       ListIconGadget(g, 10, 10, 165, 210,"Column_1",130)                                         
-      For i=1 To 2 : AddGadgetColumn(g, i,"Column_"+Str(i+1),90) : Next
+      For i=1 To 1 : AddGadgetColumn(g, i,"Column_"+Str(i+1),90) : Next
       For i=0 To 7
          AddGadgetItem(g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", ImageID(0))                                           
       Next
@@ -304,7 +304,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ListIconGadget(g, 350, 10, 430, 210,"Column_1",130, #PB_ListIcon_FullRowSelect|#PB_ListIcon_GridLines|#PB_ListIcon_CheckBoxes)                                         
       
       ;HideListIcon_(g,1)
-      For i=1 To 2
+      For i=1 To 3
          AddGadgetColumn(g, i,"Column_"+Str(i+1),90)
       Next
       ; 1_example
@@ -322,7 +322,7 @@ CompilerIf #PB_Compiler_IsMainFile
       t=ElapsedMilliseconds()
       g = 11
       Define *g._s_WIDGET = ListIcon_(10, 230, 165, 210, "Column_1",130) ;: *g = GetGadgetData(g)                                        
-      For i=1 To 2 : AddColumn_(*g, i,"Column_"+Str(i+1),90) : Next
+      For i=1 To 1 : AddColumn_(*g, i,"Column_"+Str(i+1),90) : Next
       ; 1_example
       For i=0 To 7
          AddItem_(*g, i, Str(i)+"_Column_1"+#LF$+Str(i)+"_Column_2"+#LF$+Str(i)+"_Column_3"+#LF$+Str(i)+"_Column_4", 0)                                          
@@ -348,7 +348,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *g = ListIcon_(350, 230, 430, 210, "Column_1",130, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect);|: *g = GetGadgetData(g)                                          
       
       ;HideListIcon_(g,1)
-      For i=1 To 2
+      For i=1 To 3
          AddColumn_(*g, i,"Column_"+Str(i+1),90)
       Next
       ; 1_example
@@ -409,9 +409,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 213
-; FirstLine = 199
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 350
+; FirstLine = 281
 ; Folding = ------4--
 ; EnableXP
 ; DPIAware
