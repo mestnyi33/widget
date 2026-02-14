@@ -2597,20 +2597,6 @@ Procedure   ide_events( )
             EndIf
          EndIf
          
-;       Case #__event_MouseEnter
-;          If *g = ide_inspector_PANELBUTTON
-;             If GetState( *g )
-;                SetState( *g, 0 );
-;                SetState( ide_inspector_PANEL, 0 )
-;                SetText( ide_inspector_PANELBUTTON, "Events" )
-;             Else
-;                SetState( *g, 1 );
-;                SetState( ide_inspector_PANEL, 1 )
-;                SetText( ide_inspector_PANELBUTTON, "Properties" )
-;             EndIf
-;             ;
-;             UpdateButtons( ide_inspector_PANELBUTTON, #True )
-;          EndIf
       Case #__event_LeftClick
          If *g = ide_inspector_PANELBUTTON
             If GetState( *g )
@@ -2644,8 +2630,8 @@ Procedure   ide_events( )
          
          If *g = ide_element_PANEL
             Debug "change element tab "+ __item
-            ClearItems( ide_all_ELEMENTS )
             SetParent( ide_all_ELEMENTS, ide_element_PANEL, __item )
+            ClearItems( ide_all_ELEMENTS )
             ide_all_ELEMENTS_ADD_ITEMS( ide_all_ELEMENTS, GetCurrentDirectory( )+"Themes/", __item )
          EndIf
          
@@ -3004,13 +2990,13 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ;SetState( ide_inspector_PANEL, 1 )
    If ide_inspector_PANELBUTTON
       AddButtons( ide_design_PANEL, ide_inspector_PANELBUTTON, #__flag_AutoSize|#__flag_Right )
-      AddButtons( ide_design_PANEL, String(0,0,80,0, "1"), #__flag_Right )
-      Global ide_inspector_PANELCOMBO = ComboBox(0,0,0,0) 
-      AddItem(ide_inspector_PANELCOMBO, -1, "1")
-      AddItem(ide_inspector_PANELCOMBO, -1, "2")
-      AddItem(ide_inspector_PANELCOMBO, -1, "3")
-      SetState(ide_inspector_PANELCOMBO, 0)
-      AddButtons( ide_design_PANEL, ide_inspector_PANELCOMBO, #__flag_AutoSize|#__flag_Right )
+;       AddButtons( ide_design_PANEL, String(0,0,80,0, "1"), #__flag_Right )
+;       Global ide_inspector_PANELCOMBO = ComboBox(0,0,0,0) 
+;       AddItem(ide_inspector_PANELCOMBO, -1, "1")
+;       AddItem(ide_inspector_PANELCOMBO, -1, "2")
+;       AddItem(ide_inspector_PANELCOMBO, -1, "3")
+;       SetState(ide_inspector_PANELCOMBO, 0)
+;       AddButtons( ide_design_PANEL, ide_inspector_PANELCOMBO, #__flag_AutoSize|#__flag_Right )
       Bind( ide_inspector_PANELBUTTON, @ide_events( ), #__event_LeftClick )
       ; Bind( ide_inspector_PANELBUTTON, @ide_events( ), #__event_MouseEnter )
       ;
@@ -3313,10 +3299,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1114
-; FirstLine = 949
-; Folding = -4--4---rv-3v--------vb8Ah-------v-fvd-0----------f6W3----f+-
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 2634
+; FirstLine = 2217
+; Folding = -4--4---rv-3v--------vb8Ah-------v-fvd-0----------fp33----f+-
 ; EnableXP
 ; DPIAware
-; Executable = ../../2_621.exe
+; Executable = ..\..\2_621.exe

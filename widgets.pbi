@@ -14092,20 +14092,38 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.l ClearItems( *this._s_WIDGET )
          Protected result
          
-         ; - widget::editor_clear_items( )
+         ;
          If *this\type = #__type_Editor
-            If *this\countitems
-               *this\countitems       = 0
-               *this\text\string      = ""
+            If *this\countitems    <> 0
+               *this\TextChange( ) = - 1
+               *this\text\string   = ""
                ;          
-               *this\edit_caret_1( )     = 0
-               *this\edit_caret_2( )     = 0
+               *this\edit_caret_1( ) = 0
+               *this\edit_caret_2( ) = 0
                *this\LineIndex( ) = 0
                ;
-               ; *this\WidgetChange( )   = - 1
-               *this\TextChange( )     = - 1
+               *this\countitems = 0
+               result = 1
+            EndIf
+         EndIf
+         
+         ;
+         If *this\type = #__type_Tree Or
+            *this\type = #__type_ListIcon Or
+            *this\type = #__type_ListView
+            
+            If *this\countitems <> 0
+               *this\TextChange( ) = - 1
                
-               ProcedureReturn 1
+               If *this\RowFocused( )
+                  *this\RowFocused( )\ColorState( ) = 0
+                  ClearStructure(*this\RowFocused( ), _s_ROWS)
+                  *this\RowFocused( ) = 0
+               EndIf
+               
+               ClearList( *this\__rows( ))
+               *this\countitems = 0
+               result = 1
             EndIf
          EndIf
          
@@ -14132,26 +14150,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ; - widget::tree_clear_items( )
-         If *this\type = #__type_Tree Or
-            *this\type = #__type_ListIcon Or
-            *this\type = #__type_ListView
-            
-            If *this\countitems <> 0
-               ; *this\WidgetChange( ) = 1
-               *this\countitems     = 0
-               
-               If *this\RowFocused( )
-                  *this\RowFocused( )\ColorState( ) = 0
-                  ClearStructure(*this\RowFocused( ), _s_ROWS)
-                  *this\RowFocused( ) = 0
-               EndIf
-               
-               ClearList( *this\__rows( ))
-               PostEventsRepaint( *this\root )
-            EndIf
-         EndIf
-         
          ; - Panel_ClearItems( )
          Protected *tabBox._s_WIDGET
          If *this\type = #__type_Panel
@@ -14165,11 +14163,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *tabBox
             If *tabBox\countitems <> 0
-               
+               *tabBox\TextChange( ) = - 1
                *tabBox\TabChange( ) = #True
                ClearList( *tabBox\__tabs( ))
-               
                *tabBox\countitems = 0
+               result = 1
             EndIf
          EndIf
          
@@ -27938,9 +27936,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 1697
-; FirstLine = 1694
-; Folding = -------------------------------------------4----------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------473X--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------000u-q8--------++-----------------------------------------------------------------------------------------------------------------------------------------------------------rfv--4--fF39--7--H+0z--------------------------------------------0---------
+; CursorPosition = 14100
+; FirstLine = 13997
+; Folding = -------------------------------------------4----------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------473X--------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------000u-q8--------++-----------------------------------------------------------------------------------------------------------------------------------------------------------rfv--4--fF39--7--H+0z--------------------------------------------0---------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

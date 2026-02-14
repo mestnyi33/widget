@@ -601,7 +601,6 @@ CompilerIf #PB_Compiler_IsMainFile
          DrawingMode(#PB_2DDrawing_Outlined)
          Box(X, Y, Width, Height, RGB(0,255,255))
          Box(*this\scroll_x( ), *this\scroll_y( ), *this\scroll_width( ), *this\scroll_height( ), RGB(255,0,255))
-         Box(*this\scroll_x( ), *this\scroll_y( ), *this\scroll\h\bar\max, *this\scroll\v\bar\max, RGB(255,0,0))
          Box(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, RGB(255,255,0))
          
       ;   StopDrawing()
@@ -730,7 +729,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 398
-; FirstLine = 127
+; CursorPosition = 603
+; FirstLine = 308
 ; Folding = -4+----8-----------
 ; EnableXP
