@@ -39,14 +39,14 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_LeftUp
             DraggedGadget = 0
             
-         Case #__event_ResizeBegin
-            Debug ""+GetClass(eventobject) + " event( RESIZEBEGIN )" 
+;          Case #__event_ResizeBegin
+;             Debug ""+GetClass(eventobject) + " event( RESIZEBEGIN )" 
             
          Case #__event_Resize
             Debug ""+GetClass(eventobject) + " event( RESIZE )" 
             
-         Case #__event_ResizeEnd
-            Debug ""+GetClass(eventobject) + " event( RESIZEEND )" 
+;          Case #__event_ResizeEnd
+;             Debug ""+GetClass(eventobject) + " event( RESIZEEND )" 
             
          Case #__event_MouseMove
             If DraggedGadget 
@@ -199,9 +199,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 84
-; FirstLine = 69
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 48
+; FirstLine = 32
 ; Folding = --
 ; EnableXP
 ; DPIAware
