@@ -19021,6 +19021,36 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure   EventActive( )
+         If PopupBar( )
+            Protected window = PB(EventWindow)( )
+            Protected Canvas = PB(GetWindowData)( window )
+            Debug "Active... " + window
+            If IsGadget( Canvas )
+               ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
+               
+            EndIf
+         EndIf
+      EndProcedure
+      
+      Procedure   EventDeactive( )
+         If PopupBar( )
+            Protected window = PB(EventWindow)( )
+            Protected Canvas = PB(GetWindowData)( window )
+            Debug "Deactive... " + window
+            If IsGadget( Canvas )
+               ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
+               If PopupBar( )\root\canvas\gadget = Canvas
+                  If PopupBar( )\root\parent\press
+                     DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent )
+                     ; PostEventsRepaint( PopupBar( )\root\parent\root )
+                     PopupBar( ) = 0
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+      EndProcedure
+      
       Procedure   EventRestore( )
          Protected window = PB(EventWindow)( )
          Protected Canvas = PB(GetWindowData)( window )
@@ -23890,6 +23920,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             CompilerEndIf
             ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
             ;
+            BindEvent( #PB_Event_ActivateWindow, @EventActive( ), Window )
+            BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
             BindEvent( #PB_Event_CloseWindow, @EventClose( ), Window )
             BindEvent( #PB_Event_RestoreWindow, @EventRestore( ), Window )
             BindEvent( #PB_Event_MaximizeWindow, @EventMaximize( ), Window )
@@ -27940,10 +27972,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 2497
-; FirstLine = 2397
-; Folding = -------------------------------------------4---------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------------------------------------------------------------------f8+0-v----------------------frbf0-------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------------------f228urql7t-8qdv8------------------------------------------------------------------------------------------------------------------------------------------------------------v+0+-f---VYz--r--f54P--------------------------------------------4---------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 19043
+; FirstLine = 18432
+; Folding = -------------------------------------------4---------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------------------------------------------------------------------f8+0-v----------------------frbf0-------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------------------f228urql7t-8qdv8--------------------------------------------------------------------------------------------------------------------------------------------------------------748--0--XhN--v+--hf-9-------------------------------------------f----------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
