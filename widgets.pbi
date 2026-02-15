@@ -7614,6 +7614,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn CreateBar( Root( ), _flags_, #__type_PopupBar )
       EndProcedure
       
+      Procedure   HideComboBar( *this._s_WIDGET )
+         If PopupBar( )\root\parent <> *this 
+            If PopupBar( )\root\parent\type = #__type_ComboBox
+               If Not ( Not MouseEnter( PopupBar( )) And *this\root\parent = PopupBar( )\root\parent )
+                  DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent )
+                  SetActiveWindow( PopupBar( )\root\parent\root\canvas\window )
+                  ; PostEventsRepaint( PopupBar( )\root\parent\root )
+                  ProcedureReturn 1
+               EndIf
+            EndIf
+         EndIf
+      EndProcedure
+      
       Procedure   HidePopupBar( *this._s_WIDGET )
          If *this\type = #__type_MenuBar Or
             *this\type = #__type_PopupBar Or
@@ -18895,13 +18908,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; чтобы спрятать при отпускании кнопки мыши 
             ; на виджете кроме интегрированного скролл бара списка
             If event = #__event_up ; *this\menu\display
-               If PopupBar( ) And *this <> PopupBar( )\root\parent
-                  If PopupBar( )\root\parent\type = #__type_ComboBox
-                     If Not ( Not MouseEnter( PopupBar( )) And *this\root\parent = PopupBar( )\root\parent )
-                        DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent )
-                        PostEventsRepaint( PopupBar( )\root\parent\root )
-                        PopupBar( ) = 0
-                     EndIf
+               If PopupBar( ) 
+                  If HideComboBar( *this )
+                     PopupBar( ) = 0
                   EndIf
                EndIf
             EndIf
@@ -19025,10 +19034,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If PopupBar( )
             Protected window = PB(EventWindow)( )
             Protected Canvas = PB(GetWindowData)( window )
-            Debug "Active... " + window
+            ;
             If IsGadget( Canvas )
                ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
-               
+               If PopupBar( )\root\canvas\gadget = Canvas
+                  Debug "Active... " + window
+                  If MousePress( )
+                     If PopupBar( )\RowEntered( )
+                        SetState( PopupBar( ), PopupBar( )\RowEntered( )\index )
+                        ; DoEvents( PopupBar( ), #__event_Up, PopupBar( )\RowEntered( )\index, PopupBar( )\RowEntered( ) )
+                        HideComboBar( PopupBar( ))
+                        DisableWindow( window, 1 )
+                        PopupBar( )  = 0
+                     EndIf
+                  EndIf
+               EndIf
             EndIf
          EndIf
       EndProcedure
@@ -19037,15 +19057,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If PopupBar( )
             Protected window = PB(EventWindow)( )
             Protected Canvas = PB(GetWindowData)( window )
-            Debug "Deactive... " + window
+            ;
             If IsGadget( Canvas )
                ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
-               If PopupBar( )\root\canvas\gadget = Canvas
-                  If PopupBar( )\root\parent\press
-                     DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent )
-                     ; PostEventsRepaint( PopupBar( )\root\parent\root )
-                     PopupBar( ) = 0
-                  EndIf
+               If PopupBar( )\root\canvas\gadget <> Canvas
+                  Debug "Deactive... " + window
+;                   DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent )
+;                   ; SetActiveWindow( PopupBar( )\root\parent\root\canvas\window )
+;                   PostRepaint( PopupBar( )\root\parent\root )
+;                   PopupBar( ) = 0
                EndIf
             EndIf
          EndIf
@@ -27972,10 +27992,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 19043
-; FirstLine = 18432
-; Folding = -------------------------------------------4---------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------------------------------------------------------------------f8+0-v----------------------frbf0-------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------------------f228urql7t-8qdv8--------------------------------------------------------------------------------------------------------------------------------------------------------------748--0--XhN--v+--hf-9-------------------------------------------f----------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 19041
+; FirstLine = 18354
+; Folding = -------------------------------------------4---------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------------------------------4uf--8----------------------473X--------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------Xd0u8qape8-ua48+--88---f2----------------------------------------------------------------------------------------------------------------------------------------------------f080--+--rwm--X---wvf+-------------------------------------------v---------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
