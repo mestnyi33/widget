@@ -801,9 +801,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 255
-; FirstLine = 119
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 586
+; FirstLine = 480
 ; Folding = -F59------
 ; Optimizer
 ; EnableXP

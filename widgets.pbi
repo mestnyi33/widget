@@ -2489,13 +2489,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not \v\bar\max
                   bar_max( \v\bar, iheight )
                EndIf
-            Else
-               If \h\bar\area\len And \h\bar\page\end
-                  ;If \v\bar\thumb\len = \v\bar\thumb\end 
-                  ;  bar_update( \v, 10 )
-                  ;EndIf
-                  bar_update( \h, 10 )
-               EndIf
+;             Else
+;                If \h\bar\area\len And \h\bar\page\end
+;                   ;If \v\bar\thumb\len = \v\bar\thumb\end 
+;                   ;  bar_update( \v, 10 )
+;                   ;EndIf
+;                   bar_update( \h, 10 )
+;                EndIf
             EndIf
             
             iwidth = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( ) )
@@ -2504,14 +2504,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not \h\bar\max
                   bar_max( \h\bar, iwidth )
                EndIf
-            Else
-               If \v\bar\area\len And \v\bar\page\end
-                  ; Debug ""+\v\bar\area\len +" "+ \v\bar\thumb\len +" "+ \v\bar\thumb\end 
-                  ;If \h\bar\thumb\len = \h\bar\thumb\end 
-                  ;  bar_update( \h, 11 )
-                  ;EndIf
-                  bar_update( \v, 11 )
-               EndIf
+;             Else
+;                If \v\bar\area\len And \v\bar\page\end
+;                   ; Debug ""+\v\bar\area\len +" "+ \v\bar\thumb\len +" "+ \v\bar\thumb\end 
+;                   ;If \h\bar\thumb\len = \h\bar\thumb\end 
+;                   ;  bar_update( \h, 11 )
+;                   ;EndIf
+;                   bar_update( \v, 11 )
+;                EndIf
             EndIf
             
             
@@ -2563,12 +2563,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-            Else
-               If \v\hide
-                  If \v\frame_height( ) <> *this\container_height( )
-                     Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\container_height( ))
-                  EndIf
-               EndIf
+;             Else
+;                If \v\hide
+;                   If \v\frame_height( ) <> *this\container_height( )
+;                      Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\container_height( ))
+;                   EndIf
+;                EndIf
             EndIf
             
             ;
@@ -2607,12 +2607,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                EndIf
-            Else
-               If \h\hide
-                  If \h\frame_width( ) <> *this\container_width( )
-                     Resize( \h, #PB_Ignore, #PB_Ignore, *this\container_width( ), #PB_Ignore)
-                  EndIf
-               EndIf
+;             Else
+;                If \h\hide
+;                   If \h\frame_width( ) <> *this\container_width( )
+;                      Resize( \h, #PB_Ignore, #PB_Ignore, *this\container_width( ), #PB_Ignore)
+;                   EndIf
+;                EndIf
             EndIf
             
             ;\\ update scrollbars parent inner coordinate
@@ -6037,12 +6037,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; Debug "scroll CHANGE "+*this\class
                If is_scrollbars_( *this )
                   If *this\type = #__type_Scroll
-                     If *this\parent\type = #__type_Tree Or 
-                        *this\parent\type = #__type_ListIcon Or 
-                        *this\parent\type = #__type_ListView
-                        ; *this\parent\WidgetChange( ) = 1
-                        ; *this\parent\TextChange( ) = - 3
-                     EndIf
+;                      If *this\parent\type = #__type_Tree Or 
+;                         *this\parent\type = #__type_ListIcon Or 
+;                         *this\parent\type = #__type_ListView
+;                         ; *this\parent\WidgetChange( ) = 1
+;                         ; *this\parent\TextChange( ) = - 3
+;                      EndIf
                      Post( *this\parent, #__event_ScrollChange, *this, *bar\page\pos ) 
                   EndIf
                Else
@@ -10367,10 +10367,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          If *this\type = #__type_image
-            SetImage( *this, state )
+            ProcedureReturn SetImage( *this, state )
          EndIf
          
-         ;\\ - widget::IPaddress_SetState( )
+         ;\\ - editor set state
+         If *this\type = #__type_Editor
+            ProcedureReturn edit_SetState( *this, state )
+         EndIf
+         
+         ;\\
+         If *this\type = #__type_ComboBox
+            If *this\ComboBar( )
+               ProcedureReturn SetState( *this\ComboBar( ), state )
+            EndIf
+         EndIf
+         
+         ;\\ - IPaddress set state
          If *this\class = "IPAddress" ; type = #__type_IPAddress
             If *this\LineState( ) <> State
                *this\LineState( ) = State
@@ -10381,7 +10393,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ;\\ - widget::Window_SetState( )
+         ;\\ - window set state
          If *this\type = #__type_Window
             ; restore state
             If state = #PB_Window_Normal
@@ -10488,19 +10500,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ;\\ - widget::Editor_SetState( )
-         If *this\type = #__type_Editor
-            edit_SetState( *this, state )
-         EndIf
-         
-         ;\\
-         If *this\type = #__type_ComboBox
-            If *this\ComboBar( )
-               SetState( *this\ComboBar( ), state )
-            EndIf
-         EndIf
-         
-         ;\\ - widget::tree_setState
+         ;\\ - tree set state
          If *this\type = #__type_Tree Or
             *this\type = #__type_ListIcon Or
             *this\type = #__type_ListView
@@ -10527,7 +10527,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ProcedureReturn - 1
                   EndIf
                Else
-                  
+                  ;
                   If Not ( *this\RowFocused( ) And *this\RowFocused( )\rindex = state )
                      If SelectElement( *this\__rows( ), State )
                         *row = *this\__rows( )
@@ -10589,35 +10589,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;
                         *this\RowFocused( ) = *row
                         
-                        ; click select mode
-                        If *this\mode\clickSelect And 
-                           *this\RowFocused( )\_focus = 1
-                           *this\RowFocused( )\_focus = 0
-                        Else
-                           *this\RowFocused( )\_focus = 1
-                        EndIf
+                        ;                         ; click select mode
+                        ;                         If *this\mode\clickSelect  
+                        ;                            *this\RowFocused( )\_focus ! 1
+                        ;                         Else
+                        *this\RowFocused( )\_focus = 1
+                        ;                         EndIf
                         
-                        ;                         ;
+                        DoEvents( *this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                        
+                        ;
                         If is_integral_( *this ) 
-                           If *this\parent  
-                              If *this\parent\parent And *this\parent\parent\type = #__type_ComboBox
+                           If is_root_( *this\parent )
+                              If *this\parent\parent\type = #__type_ComboBox
                                  SetText( *this\parent\parent, *this\RowFocused( )\text\string )
-                                 If *this\RowFocused( )\picture\image > - 1
-                                    SetImage( *this\parent\parent, *this\RowFocused( )\picture\image )
-                                 EndIf
-                                 DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
-                              Else
-                                 If *this\parent\type = #__type_ComboBox
-                                    SetText( *this\parent, *this\RowFocused( )\text\string )
-                                    If *this\RowFocused( )\picture\image > - 1
-                                       SetImage( *this\parent, *this\RowFocused( )\picture\image )
-                                    EndIf
-                                 EndIf 
-                                 DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                                 SetImage( *this\parent\parent, *this\RowFocused( )\picture\image )
                               EndIf 
+                              DoEvents( *this\parent\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                           Else
+                              If *this\parent\type = #__type_ComboBox
+                                 SetText( *this\parent, *this\RowFocused( )\text\string )
+                                 SetImage( *this\parent, *this\RowFocused( )\picture\image )
+                              EndIf 
+                              DoEvents( *this\parent, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                            EndIf 
                         Else
-                           DoEvents( *this, #__event_Change, *this\RowFocused( )\rindex, *this\RowFocused( ))
                            If Not *this\RowFocused( )\height
                               *this\WidgetChange( ) = - 5
                            EndIf
@@ -11397,7 +11393,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                   EndSelect
                   ;
-                  If SetState( *this, *this\picture\image )
+                  If SetImage( *this, *this\picture\image )
                      result = #True
                   EndIf
                   ProcedureReturn result
@@ -18222,7 +18218,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Else
                         ; 
                         If ToolBar 
-                           If PopupBar( )
+                           If PopupBar( ) And Not ( PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__type_ComboBox )
                               If *this\TabFocused( )
                                  If *this\TabFocused( )\childrens 
                                     Protected GadgetY = DPIScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
@@ -18291,7 +18287,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If ToolBar
                      Protected GadgetY1 = DPIScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
                      Protected GadgetX1 = DPIScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
-                     If PopupBar( )
+                     If PopupBar( ) And Not ( PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__type_ComboBox )
                         If is_inside_( GadgetY1 +*this\y, *this\height + PopupBar()\height , DesktopMouseY( ) ) And
                            is_inside_( GadgetX1 +*this\x, *this\TabFocused( )\x+*this\TabFocused( )\width, DesktopMouseX( ) )
                         Else
@@ -18322,7 +18318,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\tab
                   *tab = *this\TabEntered( )
                   
-                  If PopupBar( ) 
+                  If PopupBar( ) And Not ( PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__type_ComboBox )
                      If PopupBar( )\menu\display And Not ( ToolBar And *tab And *tab\childrens)
                         If test_display
                            Debug "6?   " + HidePopupBar( PopupBar( ) )
@@ -18763,12 +18759,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      event = #__event_left2Click Or
                      event = #__event_left3Click
                      ;
-                     If SetState( *this, #True )
+                     If SetState( *this, 1 )
                         
                      EndIf
                   EndIf
                   
-               Case #__type_checkBox
+               Case #__type_CheckBox
                   If event = #__event_LeftClick Or
                      event = #__event_left2Click Or
                      event = #__event_left3Click
@@ -18843,75 +18839,73 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\root\repaint = 5
                         EndIf
                      EndIf
+                     
                   EndIf
                   
+               Case #__type_ComboBox
+                  If event = #__event_Down
+                     If CanvasMouseButton( ) & #PB_Canvas_LeftButton
+                        If *this\ComboBar( )
+                           DisplayPopupBar( *this\ComboBar( ), *this )
+                        EndIf
+                     EndIf
+                  EndIf
+                  
+              ; Case #__type_Scroll
                   
             EndSelect
-            
-            
-            ;\\
-            ; If Popup( )
-            If event = #__event_Down
-               If CanvasMouseButton( ) & #PB_Canvas_LeftButton
-                  If *this\type = #__type_combobox
-                     If *this\ComboBar( )
-                        DisplayPopupBar( *this\ComboBar( ), *this )
-                     EndIf
-                  Else
-                     If *this\root\parent And
-                        ( *this\root\parent\type = #__type_MenuBar ) ; *this\root\parent\type = #__type_ComboBox Or
-                        
-                        ;
-                        If IsWindow( *this\root\parent\root\canvas\window )
-                           DisableWindow( *this\root\canvas\window, #True )
-                           SetActiveWindow( *this\root\parent\root\canvas\window )
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            If event = #__event_up
-               If *this\root\parent 
-                  If *this <> *this\root\parent
-                     If *this\root\parent\type = #__type_ComboBox 
-                        If Not EnteredButton( )
-                           SetText( *this\root\parent, GetItemText( *this, GetState( *this ) ) )
-                           DisplayPopupBar( *this, *this\root\parent )
-                           PostEventsRepaint( *this\root\parent\root )
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-            ; EndIf
-            
             
             If event = #__event_MouseWheel
                ;\\ mouse wheel verticl
                If MouseDirection( ) > 0
                   ; Debug "wheelY " + *data
                   If Not *this\hide
-                     If *this\scroll And *this\scroll\v And bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
-                        *this\root\repaint = 1
-                     ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
-                        *this\root\repaint = 1
+                     If *this\scroll And *this\scroll\v  
+                        If *this\scroll\v\bar\page\end
+                           If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
+                              *this\root\repaint = 1
+                           EndIf
+                        EndIf
+                     Else
+                        ;                         If *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
+                        ;                            *this\root\repaint = 1
+                        ;                         EndIf
                      EndIf
                   EndIf
                   ;\\ mouse wheel horizontal
                Else
                   ; Debug "wheelX " + *data
                   If Not *this\hide
-                     If *this\scroll And *this\scroll\h And
-                        bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - *data, 2 )
-                        *this\root\repaint = 1
-                     ElseIf *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
-                        *this\root\repaint = 1
+                     If *this\scroll And *this\scroll\h 
+                        ;Debug *this\scroll\h\bar\page\end
+                        If *this\scroll\h\bar\page\end
+                           If bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - *data, 2 )
+                              *this\root\repaint = 1
+                           EndIf
+                        EndIf
+                     Else
+                        ;                         If *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
+                        ;                            *this\root\repaint = 1
+                        ;                         EndIf
                      EndIf
                   EndIf
                EndIf
             EndIf
+            
+            ; чтобы спрятать при отпускании кнопки мыши 
+            ; на виджете кроме интегрированного скролл бара списка
+            If event = #__event_up ; *this\menu\display
+               If PopupBar( ) And *this <> PopupBar( )\root\parent
+                  If PopupBar( )\root\parent\type = #__type_ComboBox
+                     If Not ( Not MouseEnter( PopupBar( )) And *this\root\parent = PopupBar( )\root\parent )
+                        DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent )
+                        PostEventsRepaint( PopupBar( )\root\parent\root )
+                        PopupBar( ) = 0
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
             
          EndIf
          
@@ -25482,6 +25476,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
+            
+;             If event = #__event_Change
+;                If is_integral_( *this )
+;                   Debug *this\parent\class
+;                   ;                               If is_root_( *this\parent )
+;                   ;                                  Debug *this\parent\parent\class
+;                   ;                                  SetState( *this\parent\parent\ComboBar( ), *this\RowEntered( )\rindex ) 
+;                   ;                               EndIf
+;                EndIf
+;             EndIf
+            
             ;\\ 
             __widget = EventWidget( )
             __event  = WidgetEvent( )
@@ -27935,10 +27940,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 14100
-; FirstLine = 13997
-; Folding = -------------------------------------------4----------------------------------------------------------------------------0--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------473X--------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------000u-q8--------++-----------------------------------------------------------------------------------------------------------------------------------------------------------rfv--4--fF39--7--H+0z--------------------------------------------0---------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 2497
+; FirstLine = 2397
+; Folding = -------------------------------------------4---------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------------------------------------------------------------------f8+0-v----------------------frbf0-------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------------------f228urql7t-8qdv8------------------------------------------------------------------------------------------------------------------------------------------------------------v+0+-f---VYz--r--f54P--------------------------------------------4---------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
