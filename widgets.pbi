@@ -9972,13 +9972,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro add_image( _address_, _img_, _size_ = 0 )
          ;
          If IsImage( _img_ )
-            If _size_
+            _address_\width  = ImageWidth( _img_ )
+            _address_\height = ImageHeight( _img_ )
+            If _size_ And 
+               ( _address_\width <> _size_ Or 
+                 _address_\height <> _size_ )
+               
                _address_\width  = _size_
                _address_\height = _size_
-               ResizeImage( _img_, _size_, _size_, #PB_Image_Raw )
-            Else
-               _address_\width  = ImageWidth( _img_ )
-               _address_\height = ImageHeight( _img_ )
+                ResizeImage( _img_, _size_, _size_, #PB_Image_Raw )
             EndIf
             
             _address_\change  = 1
@@ -13634,7 +13636,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;          ;          
          ;          ;CompilerIf #PB_Compiler_DPIAware
          If IsImage( img )
-            *this\picturesize = DPIScaled(16)
+            *this\picturesize = ImageWidth( img ) 
+            If *this\picturesize < 14
+               *this\picturesize = DPIScaled(16)
+            EndIf   
+            If *this\picturesize > 16
+               *this\picturesize = DPIScaled(16)
+            EndIf   
          EndIf
          ;          ;CompilerEndIf
          
@@ -27971,9 +27979,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 8377
-; FirstLine = 8139
-; Folding = -------------------------------------------4---------------------------------------------------------------------------0--------------------------------------------------------------------------------------8--8L8-------------------------------------------------------------------f8+0-v----------------------frbf0-------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------------------f228urql7t-8qdv8+--ff----vK-t+-------------------------------------------------------------------------------------------------------------------------------------------------v+0+-f---VYz--r--f54P--------------------------------------------4---------
+; CursorPosition = 13642
+; FirstLine = 13240
+; Folding = -------------------------------------------4---------------------------------------------------------------------------0--------------------------------------------------------------------------------------8--8L8-------------------------------------------------------------------f8+0-v----------------------frbf0-------------------------------------------------------------------------------------v------------------------------------------------------------------------------------------------------------------------------------------VXv8uqWq4+vr30u8---00----q947--------------------------------------------------------------------------------------------------------------------------------------------------748--0--XhN--v+--hf-9-------------------------------------------f----------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
