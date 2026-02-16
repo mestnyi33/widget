@@ -7,6 +7,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   test_clip = 1
   ;test_draw_area = 1
+  ;test_canvas_events = 1
+  test_focus_set = 2
   
   Define a,i, Height=60
   
@@ -135,8 +137,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 118
-; FirstLine = 86
+; CursorPosition = 11
 ; Folding = 8--
 ; EnableXP
 ; DPIAware

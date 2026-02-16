@@ -7614,26 +7614,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn CreateBar( Root( ), _flags_, #__type_PopupBar )
       EndProcedure
       
-      Procedure   HideComboBar( *this._s_WIDGET )
-         If PopupBar( )
-            If *this
-               If PopupBar( )\root\parent <> *this 
-                  If PopupBar( )\root\parent\type = #__type_ComboBox
-                     If Not ( Not MouseEnter( PopupBar( )) And *this\root\parent = PopupBar( )\root\parent )
-                        DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent )
-                        SetActiveWindow( PopupBar( )\root\parent\root\canvas\window )
-                        ; PostEventsRepaint( PopupBar( )\root\parent\root )
-                        ProcedureReturn 1
-                     EndIf
-                  EndIf
-               EndIf
-            Else
-               DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent )
-               PopupBar( ) = 0
-            EndIf
-         EndIf
-      EndProcedure
-      
       Procedure   HidePopupBar( *this._s_WIDGET )
          If *this\type = #__type_MenuBar Or
             *this\type = #__type_PopupBar Or
@@ -7712,21 +7692,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *display\Combo( )
                   If *this\hide
                      *display\Combo( )\arrow\direction = #__bottom
-                     ;If *display\Combo( )\enter
-                     ;If MousePress( )
-                        *display\Combo( )\ColorState( ) = 2
-                        *display\ColorState( ) = 2
-                     ;EndIf
-                     ;EndIf
+                     *display\Combo( )\ColorState( ) = 2
+                     *display\ColorState( ) = 2
                   Else
                      *display\Combo( )\arrow\direction = #__right
                      If *display\ColorState( ) = 2
+                        *display\Combo( )\ColorState( ) = 0
                         If *display\Combo( )\enter
                            *display\ColorState( ) = 1
                         Else
                            *display\ColorState( ) = 0
                         EndIf
-                        *display\Combo( )\ColorState( ) = 0
                      EndIf
                   EndIf
                EndIf
@@ -7734,7 +7710,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ hide current popup bar
                Hide( *this, *this\hide ! 1 )
                
-               ; test_display = 1
                If *this\hide
                   If test_display
                      Debug "comboBar - hide "+*this\class +" "+ *this\hide
@@ -7748,8 +7723,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Pressed( ) = *display
                      EndIf
                   EndIf
-                  ;             ;
-                  ;             Popup( ) = #Null 
+                  ;
+                  If GetActiveWindow( ) <> *display\root\canvas\window
+                     SetActiveWindow( *display\root\canvas\window )
+                  EndIf
+                  PostRepaint( *display\root )
                   ProcedureReturn - 1
                Else
                   If test_display
@@ -7762,7 +7740,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If test_display
                      Debug "menuBar - show "+*this\class
                   EndIf
-                  Hide( *this, #False )
+                  Hide( *this, 0 )
                EndIf
             EndIf
             
@@ -7785,9 +7763,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Debug "displayBar - create " + *this\class +" "+ *this\root ;
                EndIf
                *displayroot = Open( #PB_Any, 0, 0, 1, 1, "", #PB_Window_NoActivate | #PB_Window_NoGadgets | #PB_Window_BorderLess | #PB_Window_Invisible | #PB_Window_Tool,  parentID )
+               *displayroot\class = "["+*this\class+"]"+"-root"
                *displayroot\parent = *display
-               *displayroot\class = "["+*this\class+"]"+"-root" ; "root_"+
-                                                                ;\\
+               *displayroot\menubar = *this
+               
+               ;\\
                Protected Window = GetCanvasWindow( *displayroot )
                Protected WindowID = WindowID( Window )
                CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -7798,8 +7778,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   StickyWindow( window, #True )
                CompilerEndIf
                
-               *displayroot\menubar = *this
-               
                ;\\
                If is_integral_( *this )
                   ReParent( *this, *displayroot )
@@ -7807,14 +7785,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   SetParent( *this, *displayroot )
                EndIf
                
-               
                *this\autosize = 1
             EndIf
             
             ;\\
             If Not *this\hide 
                PopupBar( ) = *this
-               
                
                ;\\ 
                If StartDraw( *this\root )
@@ -18856,19 +18832,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                   EndIf
                   
-               Case #__type_ComboBox
-                  If event = #__event_Down
-                     If CanvasMouseButton( ) & #PB_Canvas_LeftButton
-                        If *this\ComboBar( )
-                           DisplayPopupBar( *this\ComboBar( ), *this )
-                        EndIf
-                     EndIf
-                  EndIf
-                  
-              ; Case #__type_Scroll
-                  
             EndSelect
             
+            ;
             If event = #__event_MouseWheel
                ;\\ mouse wheel verticl
                If MouseDirection( ) > 0
@@ -18906,12 +18872,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
+            ;
+            If event = #__event_Down
+               ; скрываем всплывающее меню если есть 
+               ; при нажатии кнопки мыши на любом виджете
+               If PopupBar( )
+                  If PopupBar( )\root\parent <> *this And
+                     PopupBar( )\root\parent <> *this\root\parent And 
+                     PopupBar( )\root\parent\type = #__type_ComboBox
+                     ;
+                     If DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent ) < 0
+                        PopupBar( ) = 0
+                     EndIf
+                  EndIf
+               EndIf
+               ;
+               ; показываем/скрываем всплывающее меню комбобокса
+               If *this\type = #__type_ComboBox
+                  If *this\ComboBar( )
+                     If CanvasMouseButton( ) & #PB_Canvas_LeftButton
+                        If DisplayPopupBar( *this\ComboBar( ), *this ) < 0
+                           PopupBar( ) = 0
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
             ; чтобы спрятать при отпускании кнопки мыши 
-            ; на виджете кроме интегрированного скролл бара списка
-            If event = #__event_up ; *this\menu\display
-               If PopupBar( ) 
-                  If HideComboBar( *this )
-                     PopupBar( ) = 0
+            ; внутри списка после выбора итема
+            If event = #__event_up 
+               If PopupBar( )
+                  If PopupBar( )\root\parent <> *this And
+                     PopupBar( )\root\parent = *this\root\parent And 
+                     PopupBar( )\root\parent\type = #__type_ComboBox
+                     ;
+                     If MouseEnter( PopupBar( ))
+                        If DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent ) < 0
+                           PopupBar( ) = 0
+                        EndIf
+                     EndIf
                   EndIf
                EndIf
             EndIf
@@ -19040,13 +19040,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
                If PopupBar( )\root\canvas\gadget = Canvas
                    Debug "Active... " + window
-;                   If PopupBar( )\RowEntered( )
-;                      SetState( PopupBar( ), PopupBar( )\RowEntered( )\index )
-;                      DoEvents( PopupBar( ), #__event_Up, PopupBar( )\RowEntered( )\index, PopupBar( )\RowEntered( ) )
-;                      ; HideComboBar( PopupBar( ))
-;                      DisableWindow( window, 1 )
-;                      PopupBar( )  = 0
-;                   EndIf
                EndIf
             EndIf
          EndIf
@@ -19061,8 +19054,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
                If PopupBar( )\root\canvas\gadget = Canvas
                   Debug "Deactive... " + window
-                  
-                  
                EndIf
             EndIf
             
@@ -19073,8 +19064,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             CompilerElse  
                If GetActiveWindow( ) =- 1 
                   Debug "[APP] - Deactivate..."
-                  DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent )
-                  PopupBar( ) = 0
+                  If DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent ) < 0
+                     PopupBar( ) = 0
+                  EndIf
                EndIf
             CompilerEndIf
          EndIf
@@ -19221,6 +19213,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Debug "CANVAS - LostFocus " + GetActive( )\root\class +" "+ GetActive( )\root\canvas\gadget + " " + eventgadget
                EndIf
                SetActive( 0 )
+               ; в макос при потере фокуса окна не теряется фокус гаджета по этому нужен deactive app
+               If PopupBar( )
+                  If DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent ) < 0
+                     PopupBar( ) = 0
+                  EndIf
+               EndIf
                ; Debug "after LostFocus" 
                ReDraw( GetActive( )\root )
             EndIf
@@ -28001,10 +27999,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 7734
-; FirstLine = 7603
-; Folding = -------------------------------------------4---------------------------------------------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------------------------------vd-+-4----------------------v2tv+-------------------------------------------------------------------------------------0-----------------------------------------------------------------------------------------------------------------------------------------v77d4V2S03-d2u40--44----V6----------------------------------------------------------------------------------------------------------------------------------------------------2v4--8--vCb+-f0--D-+6--------------------------------------------+---------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 19061
+; FirstLine = 18205
+; Folding = -------------------------------------------4---------------------------------------------------------------------------0--------------------------------------------------------------------------------------8--8L8-------------------------------------------------------------------f8+0-v----------------------frbf0-------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------------------f228urql7t-8qdv8+--ff----vK-t+--------------------------------------------------------------------------------------------------------------------------------------------------748--0--XhN--v+--hf-9-------------------------------------------f----------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
