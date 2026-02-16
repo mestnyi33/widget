@@ -1272,10 +1272,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro draw_mode_alpha_( _mode_ )
-         draw_mode_( _mode_ | #PB_2DDrawing_AlphaBlend )
+         __draw_mode( _mode_ | #PB_2DDrawing_AlphaBlend )
       EndMacro
       
-      Macro draw_mode_( _mode_ )
+      Macro __draw_mode( _mode_ )
          DrawingMode( _mode_ )
       EndMacro
       
@@ -3343,7 +3343,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\ second - draw frame color
-               draw_mode_( #PB_2DDrawing_Outlined )
+               __draw_mode( #PB_2DDrawing_Outlined )
                If *this\drop And MouseEnter( *this )
                   If MouseEnter( *this )
                      If MouseDragStart( ) = #PB_Drag_Enter
@@ -3635,7 +3635,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          Widget::StopDraw( )
          If StartDrawing( ImageOutput( hDC ))
-            draw_mode_( #PB_2DDrawing_AllChannels )
+            __draw_mode( #PB_2DDrawing_AllChannels )
             If Color = 0 : Color = $ff808080 : EndIf
             ;
             For X = startx To Width - 1
@@ -4963,7 +4963,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
          Next
-         ;          draw_mode_(#PB_2DDrawing_Outlined)
+         ;          __draw_mode(#PB_2DDrawing_Outlined)
          ;          draw_box_( *this\x,*this\y,*this\width,*this\height,0)
          ;          ProcedureReturn
          ;
@@ -5497,7 +5497,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          __draw_gradient(*bar\vertical, *BB2, 0,0, *BB2\ColorState( ))
          
          ;\\
-         draw_mode_( #PB_2DDrawing_Outlined )
+         __draw_mode( #PB_2DDrawing_Outlined )
          If *this\flag & #__spin_Plus 
             ; -/+
             __draw_plus( *BB1, Bool( *bar\invert ) )
@@ -5569,7 +5569,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                __draw_box(*SB, color\frame)
             EndIf
             
-            draw_mode_( #PB_2DDrawing_XOr )
+            __draw_mode( #PB_2DDrawing_XOr )
             
             If *bar\vertical
                X = *this\screen_x( )+ Bool( *bar\invert ) * ( *this\screen_width( ) - size )
@@ -5628,7 +5628,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Not *SB2\hide : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
          EndIf
          
-         draw_mode_( #PB_2DDrawing_Outlined )
+         __draw_mode( #PB_2DDrawing_Outlined )
          
          If Not *this\flag & #__flag_Transparent
             ; draw the frame
@@ -8375,7 +8375,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\edit_caret( )\x    = *rowLine\edit_text_2( )\x - 1
             EndIf
             
-            *this\edit_caret( )\x + *rowLine\x + *this\padding\x
+            *this\edit_caret( )\x + *rowLine\x ;+ *this\padding\x  ; мешает при выделении текста коретка 
             *this\edit_caret( )\height = *rowLine\text\height
             *this\edit_caret( )\y      = *rowLine\y
             
@@ -8508,7 +8508,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                CompilerIf #PB_Compiler_Version =< 546
                   For i = 1 To Len : String.s + "*" : Next
                CompilerElse
-                  For i = 1 To Len : String.s + Chr($25CF) : Next ; "•?"
+                  For i = 1 To Len : String.s + Chr($25CF) : Next ; "•?" Chr('•')
                CompilerEndIf
                
             Else
@@ -21358,7 +21358,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ Draw frames
          ;          If *this\fs
-         ;             draw_mode_( #PB_2DDrawing_Outlined )
+         ;             __draw_mode( #PB_2DDrawing_Outlined )
          ;             draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ),
          ;                             *this\round, *this\round, *this\color\frame[state] & $FFFFFF | *this\AlphaState24( ) )
          ;          EndIf
@@ -21374,7 +21374,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   c = *this\color\frame[1] & $FFFFFF | *this\AlphaState24( )
                EndIf
                
-               draw_mode_( #PB_2DDrawing_Outlined )
+               __draw_mode( #PB_2DDrawing_Outlined )
                draw_roundbox_( *this\inner_x( )+z, *this\inner_y( )+z, *this\inner_width( )-z*2, *this\inner_height( )-z*2, *this\round, *this\round, c )
                If *this\round
                   draw_roundbox_( *this\inner_x( ) - 1+z, *this\inner_y( )+z, *this\inner_width( ) + 2-z*2, *this\inner_height( )-z*2, *this\round, *this\round, c )
@@ -21387,7 +21387,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   Draw_TreeRows( *this._s_WIDGET, List *rows._s_ROWS( ) )
-         Protected state.b, X.l, Y.l, xs.l, ys.l, _box_x_.l, _box_y_.l, minus.l = 7
+         Protected state.b, X.l, Y.l, _box_x_.l, _box_y_.l, minus.l = 7
          Protected bs = Bool( *this\fs )
          Protected _scroll_x_ = *this\scroll\h\bar\page\pos
          Protected _scroll_y_ = *this\scroll\v\bar\page\pos
@@ -21408,85 +21408,50 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ init real drawing font
             draw_font( *rows( ), 0, *rows( )\TextChange( ))
             
-            If ListSize( *this\columns( )) = 1
-               Define property; = *this\row\sublevelsize
-            EndIf
-            
             ;\\
             state = *rows( )\ColorState( )
-            X     = row_x_( *this, *rows( ) )
-            Y     = row_y_( *this, *rows( ) )
-            Xs    = X - _scroll_x_ + property
-            Ys    = Y - _scroll_y_
+            X = row_x_( *this, *rows( )) - _scroll_x_
+            Y = row_y_( *this, *rows( )) - _scroll_y_
             
             ;\\ Draw selector back
             If *rows( )\color\back[state] <> - 1
-               ;                If ListSize( *this\columns( )) = 1
                draw_mode_alpha_( #PB_2DDrawing_Default )
-               ; ;                   If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
-               ; ;                      draw_roundbox_( *this\inner_x( ), ys, *this\inner_width( ), *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
-               ; ;                   Else
-               draw_roundbox_( xs, ys, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
-               ; ;                   EndIf
-               ;                Else
-               ;                   If *rows( ) = *this\RowEntered( )
-               ;                      draw_roundbox_( xs, ys, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
-               ;                   ;   draw_roundbox_( X, Y, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
-               ;                   EndIf
-               ;                EndIf
+               draw_roundbox_( X, Y, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\back[state] )
             EndIf
             
             ;\\ Draw items img
             If *rows( )\picture\imageID
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *rows( )\picture\imageID, xs + *rows( )\picture\x - property, ys + *rows( )\picture\y, *rows( )\color\ialpha )
+               DrawAlphaImage( *rows( )\picture\imageID, X + *rows( )\picture\x, Y + *rows( )\picture\y, *rows( )\color\ialpha )
             EndIf
             
             ;\\ Draw items text
             If *rows( )\text\string.s
-               draw_mode_( #PB_2DDrawing_Transparent )
-               If *rows( )\text\x > *this\row\sublevelsize
-                  ; DrawRotatedText( xs + *rows( )\text\x - property, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
-                  __draw_rotatedtext( *rows( ), xs - property, ys, *this\text\rotate, *rows( )\color\front[state] )
-               Else
-                  ; DrawRotatedText( xs + *rows( )\text\x, ys + *rows( )\text\y, *rows( )\text\string.s, *this\text\rotate, *rows( )\color\front[state] )
-                  __draw_rotatedtext( *rows( ), xs, ys, *this\text\rotate, *rows( )\color\front[state] )
-               EndIf
-            EndIf
-            
-            ;\\ Draw selector frame
-            If *rows( )\color\frame[state]
-               draw_mode_( #PB_2DDrawing_Outlined )
-               ;                If constants::BinaryFlag( *this\flag, #__flag_RowFullSelect )
-               ;                ;   draw_roundbox_( *this\inner_x( ), ys, *this\inner_width( ), *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
-               ;                Else
-               draw_roundbox_( xs, ys, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
-               ;                EndIf
+               __draw_mode( #PB_2DDrawing_Transparent )
+               __draw_rotatedtext( *rows( ), X, Y, *this\text\rotate, *rows( )\color\front[state] )
             EndIf
             
             ;\\ Horizontal line
             If *this\mode\GridLines
                draw_mode_alpha_( #PB_2DDrawing_Default )
-               ;If *this\LineColor <> *rows( )\color\back
-               draw_box_( X, ys + *rows( )\height, *rows( )\width, *this\mode\GridLines, *this\LineColor )
-               ;EndIf
-               If property
-                  draw_box_( X, ys, *this\row\sublevelsize, *rows( )\height, *this\LineColor )
-               EndIf
+               draw_box_( X, Y + *rows( )\height, *rows( )\width, *this\mode\GridLines, *this\LineColor )
+            EndIf
+            
+            ;\\ Draw selector frame
+            If *rows( )\color\frame[state]
+               __draw_mode( #PB_2DDrawing_Outlined )
+               draw_roundbox_( X, Y, *rows( )\width, *rows( )\height, *rows( )\round, *rows( )\round, *rows( )\color\frame[state] )
             EndIf
          Next
          
-         
-         ;           draw_mode_alpha_( #PB_2DDrawing_Default ); | #PB_2DDrawing_AlphaBlend )
-         ;          draw_box_( *this\inner_x( ), *this\inner_y( ), *this\row\sublevelsize, *this\inner_height( ), *this\__rows( )\RowParent( )\color\back )
-         
+         ;
          If ListIndex( *this\columns( )) = 0
             Protected *buttonBox._s_buttons
             
             ; - Draw plots line
             If *this\mode\Lines
                draw_mode_alpha_( #PB_2DDrawing_Default )
-               ; draw_mode_( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
+               ; __draw_mode( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
                
                ForEach *this\__rows( )
                   If Not *this\__rows( )\buttonbox
@@ -21499,18 +21464,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *buttonBox = *this\__rows( )\_last\buttonbox
                   EndIf
                   
-                  Xs         = row_x_( *this, *this\__rows( ) ) - _scroll_x_ 
-                  Ys         = row_y_( *this, *this\__rows( ) ) - _scroll_y_
+                  X         = row_x_( *this, *this\__rows( ) ) - _scroll_x_ 
+                  Y         = row_y_( *this, *this\__rows( ) ) - _scroll_y_
                   
                   If display_mode_linux
                      If *this\__rows( )\sublevel Or  *this\__rows( )\childrens
-                        Xs - *this\row\sublevelsize
+                        X - *this\row\sublevelsize
                      EndIf
                   EndIf
                   
                   ; for the tree vertical line
                   If *this\__rows( )\_last And Not *this\__rows( )\_last\hide And *this\__rows( )\_last\sublevel
-                     Define iy = (Ys + *this\__rows( )\height / 2 )
+                     Define iy = (Y + *this\__rows( )\height / 2 )
                      Define iheight = (*this\__rows( )\_last\y - *this\__rows( )\y) 
                      ;
                      If Not display_mode_linux
@@ -21529,13 +21494,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      ;
                      If *buttonBox
-                        Line((xs + *buttonBox\x + *buttonBox\width / 2), iy, 1, iheight, $FF000000 ) ; *this\LineColor )
+                        Line((X + *buttonBox\x + *buttonBox\width / 2), iy, 1, iheight, $FF000000 ) ; *this\LineColor )
                      EndIf
                   EndIf
                   
                   ; for the tree horizontal line
                   If *this\__rows( )\visible And Not *this\__rows( )\hide And Not ( *this\__rows( )\childrens And Not *this\__rows( )\sublevel)
-                     Line((xs + *this\__rows( )\buttonbox\x + *this\__rows( )\buttonbox\width / 2), (ys + *this\__rows( )\height / 2), *this\row\sublevelsize/2-DPIScaled(2), 1, $FF000000 ) ;*this\LineColor )
+                     Line((X + *this\__rows( )\buttonbox\x + *this\__rows( )\buttonbox\width / 2), (Y + *this\__rows( )\height / 2), *this\row\sublevelsize/2-DPIScaled(2), 1, $FF000000 ) ;*this\LineColor )
                   EndIf
                Next
                
@@ -21679,7 +21644,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ draw frames
             If *this\bs
-               draw_mode_( #PB_2DDrawing_Outlined )
+               __draw_mode( #PB_2DDrawing_Outlined )
                draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
                If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[*this\ColorState( )] ) : EndIf  ; Сглаживание краев ) ))
             EndIf
@@ -21838,7 +21803,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; Draw margin text
                If *this\MarginLine( )\width > 0
-                  draw_mode_( #PB_2DDrawing_Transparent )
+                  __draw_mode( #PB_2DDrawing_Transparent )
                   DrawRotatedText( e_rows( )\margin\x + Bool( *this\text\vertical ) * *this\scroll_x( ),
                                    e_rows( )\margin\y + Bool( Not *this\text\vertical ) * *this\scroll_y( ),
                                    e_rows( )\margin\string, *this\text\rotate, *this\MarginLine( )\color\front )
@@ -21962,18 +21927,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; Draw caret
             ;If *this\text\editable 
             If *this\focus = 2
-               draw_mode_( #PB_2DDrawing_XOr )
+               __draw_mode( #PB_2DDrawing_XOr )
                draw_box_( X + *this\edit_caret( )\x, Y + *this\edit_caret( )\y, *this\edit_caret( )\width, *this\edit_caret( )\height, $FFFFFFFF )
             EndIf
             ;EndIf
             
             ; Draw frames
             If *this\notify
-               draw_mode_( #PB_2DDrawing_Outlined )
+               __draw_mode( #PB_2DDrawing_Outlined )
                draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $FF0000FF )
                If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, $FF0000FF ) : EndIf  ; Сглаживание краев ) ))
             ElseIf *this\bs
-               draw_mode_( #PB_2DDrawing_Outlined )
+               __draw_mode( #PB_2DDrawing_Outlined )
                draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
                If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[*this\ColorState( )] ) : EndIf  ; Сглаживание краев ) ))
             EndIf
@@ -22052,7 +22017,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\ Draw items text
                If *this\columns( )\text\string.s
-                  draw_mode_( #PB_2DDrawing_Transparent )
+                  __draw_mode( #PB_2DDrawing_Transparent )
                   ; DrawRotatedText( X + *this\columns( )\text\x, Y + *this\columns( )\text\y, *this\columns( )\text\string.s, *this\text\rotate, *this\color\front )
                   __draw_rotatedtext( *this\columns( ), X, Y, *this\text\rotate, *this\color\front )
                EndIf
@@ -22320,7 +22285,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;\\
                      If test_focus_draw = 1 Or test_focus_draw = 3
                         If *this\focus = 2
-                           draw_mode_(#PB_2DDrawing_Outlined)
+                           __draw_mode(#PB_2DDrawing_Outlined)
                            If Not *this\haschildren 
                               If *this = GetActive( )
                                  draw_focus_frame( *this, $ff0000ff) ; $ffff0000
@@ -22329,7 +22294,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                            EndIf
                         ElseIf *this\focus = 3 And test_focus_draw <> 3
-                           draw_mode_(#PB_2DDrawing_Outlined)
+                           __draw_mode(#PB_2DDrawing_Outlined)
                            draw_focus_frame( *this, $FFBFBFC3)
                         EndIf
                      EndIf
@@ -22475,7 +22440,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  ;
                                  If GetActive( )\AfterWidget( ) = widgets( )  
                                     clip_output_( GetActive( ), [#__c_draw] )
-                                    draw_mode_(#PB_2DDrawing_Outlined)
+                                    __draw_mode(#PB_2DDrawing_Outlined)
                                     draw_focus_frame( GetActive( ), $ff0000ff) ; $ffff0000)
                                  EndIf
                               EndIf
@@ -22488,7 +22453,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     ;
                                     If ActiveWindow( )\AfterWidget( ) = widgets( )  
                                        clip_output_( ActiveWindow( ), [#__c_draw] )
-                                       draw_mode_(#PB_2DDrawing_Outlined)
+                                       __draw_mode(#PB_2DDrawing_Outlined)
                                        draw_focus_frame( ActiveWindow( ), $ff00ff00)
                                     EndIf
                                  EndIf
@@ -22501,7 +22466,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     
                                     If ActiveGadget( )\AfterWidget( ) = widgets( )  
                                        clip_output_( ActiveGadget( ), [#__c_draw] )
-                                       draw_mode_(#PB_2DDrawing_Outlined)
+                                       __draw_mode(#PB_2DDrawing_Outlined)
                                        draw_focus_frame( ActiveGadget( ), $ff00ff00)
                                     EndIf
                                  EndIf
@@ -22537,7 +22502,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If Not GetActive( )\AfterWidget( ) 
                                     If widgets( ) = GetLast( GetActive( ) )
                                        clip_output_( GetActive( ), [#__c_draw] )
-                                       draw_mode_(#PB_2DDrawing_Outlined)
+                                       __draw_mode(#PB_2DDrawing_Outlined)
                                        draw_focus_frame( GetActive( ), $ff0000ff) ; $ffff0000)
                                     EndIf
                                  EndIf
@@ -22552,7 +22517,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     If Not ActiveWindow( )\AfterWidget( ) 
                                        If widgets( ) = GetLast( ActiveWindow( ) )
                                           clip_output_( ActiveWindow( ), [#__c_draw] )
-                                          draw_mode_(#PB_2DDrawing_Outlined)
+                                          __draw_mode(#PB_2DDrawing_Outlined)
                                           draw_focus_frame( ActiveWindow( ), $ff00ff00)
                                        EndIf
                                     EndIf
@@ -22567,7 +22532,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     If Not ActiveGadget( )\AfterWidget( ) 
                                        If widgets( ) = GetLast( ActiveGadget( ) )
                                           clip_output_( ActiveGadget( ), [#__c_draw] )
-                                          draw_mode_(#PB_2DDrawing_Outlined)
+                                          __draw_mode(#PB_2DDrawing_Outlined)
                                           draw_focus_frame( ActiveGadget( ), $ff00ff00)
                                        EndIf
                                     EndIf
@@ -22705,7 +22670,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;             ; TEST ROW
             ;             If Entered( ) And Entered( )\root = *root And Entered( )\row And Entered( )\RowEntered( )
-            ;                draw_mode_( #PB_2DDrawing_Outlined )
+            ;                __draw_mode( #PB_2DDrawing_Outlined )
             ;                draw_box_( Entered( )\inner_x( )+Entered( )\RowEntered( )\x, Entered( )\inner_y( )+Entered( )\RowEntered( )\y, Entered( )\RowEntered( )\width, Entered( )\RowEntered( )\height, $ffff0000 )
             ;             EndIf
             
@@ -28005,10 +27970,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 19220
-; FirstLine = 18254
-; Folding = -------------------------------------------4---------------------------------------------------------------------------0--------------------------------------------------------------------------------------8--8L8-------------------------------------------------------------------f8+0-v----------------------frbf0-------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------------------f228urql7t-8qdv8+--ff----vK-t+--------------------------------------------------------------------------------------------------------------------------------------------------2v4--8--vCb+-f0--D-+6--------------------------------------------+---------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 8377
+; FirstLine = 8139
+; Folding = -------------------------------------------4---------------------------------------------------------------------------0--------------------------------------------------------------------------------------8--8L8-------------------------------------------------------------------f8+0-v----------------------frbf0-------------------------------------------------------------------------------------8-----------------------------------------------------------------------------------------------------------------------------------------f228urql7t-8qdv8+--ff----vK-t+-------------------------------------------------------------------------------------------------------------------------------------------------v+0+-f---VYz--r--f54P--------------------------------------------4---------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
