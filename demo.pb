@@ -90,7 +90,8 @@ If Open(0, 0, 0, 995, 605, "demo then draw id on the canvas", #PB_Window_SystemM
    w_101 = Option(10, 10, 110,20, "Container_"+Hex(#__type_Container) )  : SetState(Widget(), 1)  
    w_102 = Option(10, 40, 110,20, "Option_widget");, #__flag_flat)  
    CloseList()
-   w_13 = ListIcon(170, 505, 160,95,"ListIcon_"+Hex(#__type_ListIcon),120 )                           
+   w_13 = ListIcon(170, 505, 160,95,"ListIcon_"+Hex(#__type_ListIcon),120 ) : AddItem(Widget(), -1, "ListIcon_"+Hex(#__type_ListIcon)) : For i=1 To 5 : AddItem(Widget(), i, "item_"+Hex(i)) : Next
+                              
    
    ;\\ 3
    w_14 = IPAddress(335, 5, 160,95 ) : SetState(Widget(), MakeIPAddress(1, 2, 3, 4))    
@@ -148,9 +149,9 @@ EndIf
 CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 133
-; FirstLine = 109
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 92
+; FirstLine = 83
 ; Folding = ---
 ; EnableXP
 ; DPIAware
