@@ -84,7 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If *g2 > 0
          Static X
-         If GetType(*g2) = #__type_Splitter
+         If Type(*g2) = #__type_Splitter
             X + GetState(*g2 )
          Else
             X = GetState(*this)
@@ -107,10 +107,10 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected *g1 = GetAttribute(*this, #PB_Splitter_FirstGadget)
       Protected *g2 = GetAttribute(*this, #PB_Splitter_SecondGadget)
       
-      If GetType(*g1) = #__type_tree
+      If Type(*g1) = #__type_tree
          AddItem( *g1, Item, StringField(Text.s, GetData(*g1), #LF$), Image, Flag )
       EndIf
-      If GetType(*g2) = #__type_tree
+      If Type(*g2) = #__type_tree
          AddItem( *g2, Item, StringField(Text.s, GetData(*g2), #LF$), -1, 0 )
       Else
          AddItem_( *g2, Item, Text.s, -1,0)
@@ -236,9 +236,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 237
-; FirstLine = 208
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 112
+; FirstLine = 86
 ; Folding = ----
 ; EnableXP
 ; DPIAware

@@ -139,7 +139,7 @@ CompilerIf #PB_Compiler_IsMainFile
          CloseList( ) 
       EndIf
       
-      If GetType( ide_toolbar ) = #__type_ToolBar
+      If Type( ide_toolbar ) = #__type_ToolBar
          ;       BindBarEvent( ide_menu, -1, @ide_events( ) )
          ;       BindBarEvent( ide_toolbar, -1, @ide_events( ) )
          ;       BindBarEvent( ide_popup_lenguage, -1, @ide_events( ) )
@@ -192,9 +192,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
 ; CursorPosition = 141
-; FirstLine = 138
+; FirstLine = 137
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
          ; create elements
          Select type$
             Case "window"    
-               If GetType( *parent ) = #__Type_MDI
+               If Type( *parent ) = #__Type_MDI
                   *new = AddItem( *parent, #PB_Any, text$, - 1, Flag | #PB_Window_NoActivate )
                   Resize( *new, X, Y, Width, Height )
                Else
@@ -272,7 +272,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                   If *g_OBJECT
                      Flag = Flag(*g_OBJECT)
-                     Type = GetType(*g_OBJECT)
+                     Type = Type(*g_OBJECT)
                   EndIf
                   
                   Add( PBFlagString( GetState(*g_TYPE)))
@@ -289,7 +289,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_LeftClick
             If EnteredButton( )
-               Type = GetType(*g_OBJECT)
+               Type = Type(*g_OBJECT)
                Define check_flag$ = GetCheckedText(*g_FLAG)
                Debug "checked["+check_flag$+"]"
                ; pb flag
@@ -328,9 +328,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 322
-; FirstLine = 99
-; Folding = 0--r+--
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 291
+; FirstLine = 221
+; Folding = ---r+--
 ; EnableXP
 ; DPIAware

@@ -777,7 +777,7 @@ Procedure   PropertiesButton_Events( )
       Case #__event_Change
          __item = GetData(*g) 
          ;
-         Select GetType(*g)
+         Select Type(*g)
             Case #__type_String
                Select __item 
                   Case #_pi_CLASS  
@@ -899,7 +899,7 @@ Procedure   PropertiesButton_Events( )
          
       Case #__event_MouseWheel
          If MouseDirection( ) > 0
-            If GetType(*g) = #__type_Spin
+            If Type(*g) = #__type_Spin
                Debug "PropertiesButton__event_MouseWheel "+*g\class
                SetState(*g, GetState( *g ) - WidgetEventData( ))
             EndIf
@@ -924,7 +924,7 @@ Procedure   Properties_Change( *splitter._s_WIDGET )
       If *second\RowFocused( )
          text$ = *second\RowFocused( )\text\string
          ;
-         Select GetType( *this )
+         Select Type( *this )
             Case #__type_Spin     
                SetState(*this, Val(text$) )
                
@@ -1064,14 +1064,14 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=
    If *row\parent
       *row\color\back = - 1
       If *row\parent\data
-         *row\parent\color\back = $D4C8C8C8
+         ;*row\parent\color\back = $FFF4F4F4 ; $D4C8C8C8
       Else
          If *row\parent\sublevel
-            *row\parent\color\back = $D4E4E4E4
+           ; *row\parent\color\back = $D4E4E4E4
          EndIf
       EndIf
    Else
-      *row\color\back = $D4C8C8C8
+      *row\color\back = $FFF4F4F4 ; $D4C8C8C8
    EndIf
    *row\data = Type  
    ;
@@ -1079,14 +1079,14 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=
    If *row\parent
       *row\color\back = - 1
       If *row\parent\data
-         *row\parent\color\back = $D4C8C8C8
+        ; *row\parent\color\back = $FFF4F4F4 ; $D4C8C8C8
       Else
          If *row\parent\sublevel
-            *row\parent\color\back = $D4E4E4E4
+           ; *row\parent\color\back = $D4E4E4E4
          EndIf
       EndIf
    Else
-      *row\color\back = $D4C8C8C8
+      *row\color\back = $FFF4F4F4 ; $D4C8C8C8
    EndIf
    *row\data = Type  
    
@@ -1565,7 +1565,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
       ; create elements
       Select type$
          Case "window"   
-            If GetType( *parent ) = #__type_MDI
+            If Type( *parent ) = #__type_MDI
                *new = AddItem( *parent, #PB_Any, text$, - 1, Flag | #PB_Window_NoActivate )
                Resize( *new, X, Y, Width, Height )
             Else
@@ -1721,7 +1721,7 @@ Procedure new_widget_events( )
             EndIf
             
             ;
-            DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType( GetType(*g))+"_" ))
+            DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType( Type(*g))+"_" ))
          EndIf
          ;
       Case #__event_Focus
@@ -2260,7 +2260,7 @@ Procedure   ide_inspector_VIEW_ADD_ITEMS( *new._s_widget )
          Protected img =- 1
          count = CountItems( ide_all_ELEMENTS )
          For i = 0 To count - 1
-            If LCase( ClassFromType( GetType(*new))) = LCase( GetItemText( ide_all_ELEMENTS, i ))
+            If LCase( ClassFromType( Type(*new))) = LCase( GetItemText( ide_all_ELEMENTS, i ))
                img = GetItemData( ide_all_ELEMENTS, i )
                Break
             EndIf
@@ -2488,7 +2488,7 @@ Procedure   ide_menu_events(  )
          
          
       Case #_tb_group_select
-         If GetType(*g) = #__type_ToolBar
+         If Type(*g) = #__type_ToolBar
             If GetItemState( *g, BarButton )  
                ; group
                group_select = *g
@@ -2731,7 +2731,7 @@ Procedure   ide_events( )
                      EndIf
                   EndIf
                   If argument
-                     If name$ = ClassFromType( GetType( object ))
+                     If name$ = ClassFromType( Type( object ))
                         argument + 1
                      EndIf
                      If name$ = GetClass( object )
@@ -3052,7 +3052,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ;
    ;-\\ ide binds events
    ;
-   If GetType( ide_TOOLBAR ) = #__type_ToolBar
+   If Type( ide_TOOLBAR ) = #__type_ToolBar
       Bind( ide_MENU, @ide_menu_events( ) )
       Bind( ide_TOOLBAR, @ide_menu_events( ) )
       Bind( ide_menu_LENGUAGE, @ide_menu_events( ) )
@@ -3300,10 +3300,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 2291
-; FirstLine = 1930
-; Folding = -4--4---rv-3v--------vb8Ah-------v-fvd-0----------fp33----f+-
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 1069
+; FirstLine = 905
+; Folding = -4--4---rv-3v--------vb8Ah---------fvd-0----------fp33----f+-
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2_621.exe
+; Executable = ../../2_621.exe

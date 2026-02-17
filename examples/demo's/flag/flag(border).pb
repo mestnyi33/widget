@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
          ; create elements
          Select type$
             Case "window"    
-               If GetType( *parent ) = #__Type_MDI
+               If Type( *parent ) = #__Type_MDI
                   *new = AddItem( *parent, #PB_Any, text$, - 1, Flag | #PB_Window_NoActivate )
                   Resize( *new, X, Y, Width, Height )
                Else
@@ -231,7 +231,7 @@ CompilerIf #PB_Compiler_IsMainFile
                
                *g_OBJECT = widget_create(Root(), GetItemText( *g_TYPE, GetState( *g_TYPE)), 100, 100, 250, 200, Text, 0,0,0, #__flag_Textmultiline) 
                
-               Define Type = GetType(*g_OBJECT)
+               Define Type = Type(*g_OBJECT)
                Define Flag = Flag(*g_OBJECT)
                Define type$ = ClassFromType(Type)
                Define flag$ = MakeString( Flag, type$)
@@ -277,9 +277,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 276
-; FirstLine = 249
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 233
+; FirstLine = 207
 ; Folding = ------
 ; EnableXP
 ; DPIAware

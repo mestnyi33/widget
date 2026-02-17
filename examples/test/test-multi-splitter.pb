@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       *g2 = GetAttribute(parent, #PB_Splitter_SecondGadget)
       If *g2 > 0
-         If GetType(*g2) <> #__type_Splitter
+         If Type(*g2) <> #__type_Splitter
             *g1 = Button(0,0,0,0,Str(count))
             SetData(*g1, Count)
          EndIf
@@ -129,7 +129,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       
       If *g2 > 0
          Static X
-         If GetType(*g2) = #__type_Splitter
+         If Type(*g2) = #__type_Splitter
             X + GetState(*g2 )
          Else
             X = GetState(*this)
@@ -211,7 +211,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       SetData(*g1, count)
       
       Static X
-      If GetType(*g2) = #__type_Splitter
+      If Type(*g2) = #__type_Splitter
          X + GetState(*g2 )
       Else
          X = GetState(*this)
@@ -291,10 +291,10 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       ;          AddItem( *g1, Item, StringField(Text.s, i, #LF$), Image, flag )
       ;       Next
       
-      If GetType(*g1) = #__type_tree
+      If Type(*g1) = #__type_tree
          AddItem( *g1, Item, StringField(Text.s, GetData(*g1), #LF$), Image, Flag )
       EndIf
-      If GetType(*g2) = #__type_tree
+      If Type(*g2) = #__type_tree
          AddItem( *g2, Item, StringField(Text.s, GetData(*g2), #LF$), -1, 0 )
       Else
          ;*g2 = GetAttribute(*g2, #PB_Splitter_FirstGadget)
@@ -344,9 +344,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       WaitClose( )
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 41
-; FirstLine = 22
-; Folding = 84---
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 296
+; FirstLine = 261
+; Folding = 8----
 ; EnableXP
 ; DPIAware

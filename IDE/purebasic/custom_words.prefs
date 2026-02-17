@@ -257,8 +257,6 @@ RemoveItem
 ChangeItemState
 
 Type
-GetType
-
 Is
 ItemID
 ToolTip

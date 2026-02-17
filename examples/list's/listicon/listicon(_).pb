@@ -256,7 +256,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure AddItem_( *parent._s_WIDGET, Item.l, Text.s, Image.i = - 1, Flag.q = 0 )
       Protected *this._s_WIDGET
       
-      If GetType(*parent) = #__type_ScrollArea
+      If Type(*parent) = #__type_ScrollArea
          *this = *parent\FirstWidget( )
       Else
          *this = *parent
@@ -266,10 +266,10 @@ CompilerIf #PB_Compiler_IsMainFile
          Protected._s_WIDGET *g1 = GetAttribute(*this, #PB_Splitter_FirstGadget)
          Protected._s_WIDGET *g2 = GetAttribute(*this, #PB_Splitter_SecondGadget)
          
-         If GetType(*g1) = #__type_tree
+         If Type(*g1) = #__type_tree
             AddItem( *g1, Item, StringField(Text.s, GetData(*g1), #LF$), Image, Flag )
          EndIf
-         If GetType(*g2) = #__type_tree
+         If Type(*g2) = #__type_tree
             AddItem( *g2, Item, StringField(Text.s, GetData(*g2), #LF$), -1, 0 )
          Else
             AddItem_( *g2, Item, Text.s, -1,0)
@@ -409,9 +409,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 350
-; FirstLine = 281
-; Folding = ------4--
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 271
+; FirstLine = 258
+; Folding = ---------
 ; EnableXP
 ; DPIAware

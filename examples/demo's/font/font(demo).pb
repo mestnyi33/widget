@@ -185,9 +185,9 @@ If Open(0, 322+50, 0, 322+50, 220)
 	;*g = Panel(10, 10, 334, 130)
 	*g = Tree(10, 10, 334, 130, #__flag_CheckBoxes|#__flag_NoLines|#__flag_NoButtons|#__flag_GridLines | #__flag_ThreeState | #__flag_OptionBoxes)                            
 	
-	If GetType(*g) = #PB_GadgetType_Panel
+	If Type(*g) = #PB_GadgetType_Panel
 		Text = "Sub"
-	ElseIf GetType(*g) = #PB_GadgetType_Tree
+	ElseIf Type(*g) = #PB_GadgetType_Tree
 		Text = "Tree"
 	EndIf
 	
@@ -201,7 +201,7 @@ If Open(0, 322+50, 0, 322+50, 220)
 	Next 
 	
 	SetState(*g, 2)
-	If GetType(*g) = #PB_GadgetType_Panel
+	If Type(*g) = #PB_GadgetType_Panel
 		CloseList()
 	EndIf
 	
@@ -267,9 +267,9 @@ If Open(0, 322+50, 0, 322+50, 220)
 	
 	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 226
-; FirstLine = 182
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 203
+; FirstLine = 159
 ; Folding = v---
 ; EnableXP
 ; DPIAware

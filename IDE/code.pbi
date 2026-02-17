@@ -1285,7 +1285,7 @@ EndProcedure
 
 Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
    Protected result$, function$, x$, y$, width$, height$, text$, param1$, param2$, param3$, flag$, quotetext$
-   Protected type$ = ClassFromType( GetType(*g) )
+   Protected type$ = ClassFromType( Type(*g) )
    Protected id$ = GetClass(*g)
    
    ; coordinate
@@ -1430,7 +1430,7 @@ Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
    
    ;
    ;\\ add splitter children
-   If GetType(*g) = #__type_Splitter
+   If Type(*g) = #__type_Splitter
       Define first = GetAttribute( *g, #PB_Splitter_FirstGadget )
       Define Second = GetAttribute( *g, #PB_Splitter_SecondGadget )
       ; result$ + #LF$
@@ -1830,7 +1830,7 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
             
             If StartEnum( *w )
                *g = widgets( )
-               If GetType( GetParent(*g)) = #__type_Splitter
+               If Type( GetParent(*g)) = #__type_Splitter
                Else
                   result$ + Generate_CodeObject( *mdi, *g, Space(( Level(*g) - parentlevel ) * codeindent ))
                EndIf
@@ -1875,7 +1875,7 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
                      result$ + Space$ + "Open_" + Trim( GetClass( *g ), "#" ) + "( )" + #LF$
                   Else
                      If Not win
-                        If GetType( GetParent(*g)) = #__type_Splitter
+                        If Type( GetParent(*g)) = #__type_Splitter
                         Else
                            result$ + Generate_CodeObject( *mdi, *g, Space(( Level(*g) - parentlevel ) * codeindent ))
                         EndIf
@@ -2053,9 +2053,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 1721
-; FirstLine = 1553
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 1877
+; FirstLine = 1658
 ; Folding = -f-----f------------------f9-------4r3f------8fAw--8--
 ; EnableXP
 ; DPIAware

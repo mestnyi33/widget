@@ -26,14 +26,14 @@ CompilerIf #PB_Compiler_IsMainFile
         EndIf
        
       Case #__Event_Focus   
-        If GetType(*g) > 0
+        If Type(*g) > 0
           Debug "Focus "+ GetData(*g)
         Else
           Debug "Active "+ GetData(*g)
         EndIf
         
       Case #__Event_LostFocus 
-        If GetType(*g) > 0
+        If Type(*g) > 0
           Debug " LostFocus "+ GetData(*g) 
         Else
           Debug " DeActive "+ GetData(*g)
@@ -310,9 +310,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ;Repaint()
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 36
-; FirstLine = 25
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 35
+; FirstLine = 28
 ; Folding = -40-
 ; EnableXP
 ; DPIAware
