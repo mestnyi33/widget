@@ -170,10 +170,21 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
+   Procedure AddCaption( *this._s_WIDGET, Width, Height, Text.s, Flag.q = #__align_auto ) 
+      Protected *g._s_WIDGET
+      *this\fs[2] = Height
+      *g = Button( 0,0,Width,Height, Text.s, #__flag_Left )
+      
+      SetParent( *g, *this, #PB_Ignore )
+      If Flag & #__align_auto
+         SetAlign( *g, 0, #__align_auto,1,#__align_auto,0, 0 )              
+      EndIf
+   EndProcedure
+   
    Procedure ListIcon_(X,Y,Width,Height,firstcolumntitle.s, firstcolumnwidth, flags.q=0 )
       Protected._s_WIDGET *parent = ScrollArea(X,Y,Width,Height, Width,Height, 1 )
-      Protected._s_WIDGET *g1 = Tree(0,0,0,0, #__flag_NoLines|flags);|#__flag_BorderLess)
-      *g1\fs[2] = 30
+      Protected._s_WIDGET *g1 = Tree(0,0,0,0, #__flag_NoLines|flags);|#__flag_BorderLess);|#__flag_Borderflat);|#__flag_BorderLess)
+      AddCaption( *g1, firstcolumnwidth, 30, firstcolumntitle.s ) 
       Bind(*g1, @listicon_tree_events())
       Hide(*g1\scroll\v, 1)
       Hide(*g1\scroll\h, 1)
@@ -212,18 +223,13 @@ CompilerIf #PB_Compiler_IsMainFile
          ;
          Define *Tree._s_WIDGET=GetAttribute(*this, #PB_Splitter_FirstGadget)
          *g2 = GetAttribute(parent, #PB_Splitter_SecondGadget)
-         ;*g1 = Tree(0,0,0,0, #__flag_NoLines|(*Tree\flag&~#__flag_CheckBoxes)) ; 
-         *g1 = Panel(0,0,0,0, #__flag_BorderLess) : CloseList(); 
-         *g1\fs[2] = 30
-         AddButtons( *g1, Button(0,0,Width,*g1\fs[2], Text.s), #__align_Full )
-         ;;SetFrame( *g1, 3)
          
+         *g1 = Tree(0,0,0,0, #__flag_NoLines|(*Tree\flag&~#__flag_CheckBoxes)) ; 
          Bind(*g1, @listicon_tree_events())
+         Hide(*g1\scroll\v, 1)
+         Hide(*g1\scroll\h, 1)
          
-;          ;SetFlag(*g1, *Tree\flag)
-;          Hide(*g1\scroll\v, 1)
-;          Hide(*g1\scroll\h, 1)
-         
+         ;
          If position =- 1
             Static c = 1
             c + 1
@@ -233,7 +239,8 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
          
          If *g2 > 0
-            *g = Splitter( 0,0,0,0, *g2, *g1, #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed|#__flag_BorderLess )
+          AddCaption( *g1, Width, 30, Text.s ) 
+           *g = Splitter( 0,0,0,0, *g2, *g1, #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed|#__flag_BorderLess )
 ;             ;
 ;             *g\bar\button\size = DPIScaled(1)
 ;             *g\bar\button\size + Bool( *g\bar\button\size % 2 )
@@ -248,6 +255,7 @@ CompilerIf #PB_Compiler_IsMainFile
             parent = *g
          Else
             SetAttribute( parent, #PB_Splitter_SecondGadget, *g1 )
+            AddCaption( *g1, Width, 30, Text.s ) 
             X = GetState(*this)
             parent = 0
          EndIf
@@ -260,7 +268,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure AddItem_( *parent._s_WIDGET, Item.l, Text.s, Image.i = - 1, Flag.q = 0 )
-      ProcedureReturn 
+      ;ProcedureReturn 
       Protected *this._s_WIDGET
       
       If Type(*parent) = #__type_ScrollArea
@@ -417,8 +425,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 218
-; FirstLine = 205
+; CursorPosition = 185
+; FirstLine = 172
 ; Folding = ---------
 ; EnableXP
 ; DPIAware

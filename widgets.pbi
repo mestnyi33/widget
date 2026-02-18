@@ -12437,6 +12437,29 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *this\parent
       EndProcedure
       
+      Procedure   GetParentLast( *this._s_WIDGET, *parent._s_WIDGET, tabindex )
+         Protected._s_WIDGET *after, *last
+         
+         If *parent\LastWidget( )
+            *after = GetPosition( *parent, #PB_List_Last, tabindex )
+            If *after = *this
+               *after = *this\beforeWidget( )
+            EndIf
+            ;
+            If *after And *after\parent = *parent
+               *last = GetLast( *after, tabindex )
+               
+               If *this = *after Or IsChild( *last, *this )
+                  *last = GetLast( *this\BeforeWidget( ), tabindex )
+               EndIf
+            Else
+               *last = *after
+            EndIf
+            
+            ProcedureReturn *last
+         EndIf
+      EndProcedure
+      
       Procedure   SetParent( *this._s_WIDGET, *parent._s_WIDGET, tabindex.l = #PB_Default )
          Protected parent, ReParent.b, X, Y
          Protected._s_WIDGET *after, *last, *lastParent, NewList *D( ), NewList *C( )
@@ -12484,30 +12507,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *after And *after\parent = *parent
                   *last = GetLast( *after, tabindex )
                   
-                  ;                   *last = *after 
-                  ;                   If StartEnum( *after )
-                  ;                      *last = widgets( )
-                  ;                      StopEnum( )
-                  ;                   EndIf
-                  ;
                   If *this = *after Or IsChild( *last, *this )
                      *last = GetLast( *this\BeforeWidget( ), tabindex )
-                     
-                     ;                      *last = *this\BeforeWidget( )
-                     ;                      If StartEnum( *this\BeforeWidget( ) )
-                     ;                        *last = widgets( )
-                     ;                        StopEnum( )
-                     ;                      EndIf
-                     
                   EndIf
                Else
                   *last = *after
                EndIf
-               
-               ;                If tabindex = 2
-               ;                    Debug ""+*this\text\string +" last-"+ *last\class +" after-"+ *after\class
-               ;                EndIf
             EndIf
+            
+            ; Debug ""+ GetParentLast( *this, *parent, tabindex )
+            
             ;
             If *parent\type = #__type_Splitter
                If tabindex > 0
@@ -13820,7 +13829,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   AddButtons( *this._s_WIDGET, *g._s_WIDGET, Flag.q = 0 )
-         If *this\type = #__type_Panel
+         ;If *this\type = #__type_Panel
             If Flag & #__flag_AutoSize
                If *this\fs[1] Or *this\fs[3]
                   Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[1]+*this\fs[3], *this\fs[1]+*this\fs[3], 0 )
@@ -13842,7 +13851,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Flag & #__flag_Right
                SetAlign( *g, 0, 0,1,#__align_auto,0, 0 )              
             EndIf
-         EndIf
+         ;EndIf
          
          ProcedureReturn *g
       EndProcedure
@@ -24406,6 +24415,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else
             If *parent
                If *this\TabIndex( ) = #PB_Ignore
+                  ;Debug "TabIndex( ) = #PB_Ignore"
+                  
                   _p_x1_ = *parent\frame_x( ) + *this\fs 
                   _p_y1_ = *parent\frame_y( ) + *this\fs 
                   _p_x2_ = _p_x1_
@@ -28035,10 +28046,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 24643
-; FirstLine = 24581
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------H7------------------------------------------------------------------------------f8--4--8--------------------------------------------------------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 13831
+; FirstLine = 13830
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------h+------------------------------------------------------------------------------45--0--+--------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
