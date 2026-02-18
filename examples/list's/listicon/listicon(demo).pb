@@ -85,7 +85,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ;{ - widget
     t=ElapsedMilliseconds()
     g = 11
-    *g = ListIcon(10, 230, 165, 210, "Column_1",90) ;: *g = GetGadgetData(g)                                        
+    Define Flag = #__flag_NoLines|#__flag_NoButtons
+    *g = ListIcon(10, 230, 165, 210, "Column_1",90, Flag) ;: *g = GetGadgetData(g)                                        
     For i=1 To 1 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To 7
@@ -93,7 +94,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 12
-    *g = ListIcon(180, 230, 165, 210, "Column_1",90, #__flag_RowFullSelect) ;: *g = GetGadgetData(g)                                          
+    *g = ListIcon(180, 230, 165, 210, "Column_1",90, #__flag_RowFullSelect|Flag) ;: *g = GetGadgetData(g)                                          
     For i=1 To 2 : AddColumn(*g, i,"Column_"+Str(i+1),90) : Next
     ; 1_example
     For i=0 To Count
@@ -101,7 +102,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Next
     
     g = 13
-    *g = ListIcon(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect);|: *g = GetGadgetData(g)                                          
+    *g = ListIcon(350, 230, 430, 210, "Column_1",90, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect|flag);|: *g = GetGadgetData(g)                                          
     
     ;HideListIcon(g,1)
     For i=1 To 3
@@ -161,9 +162,9 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 95
-; FirstLine = 84
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 104
+; FirstLine = 102
 ; Folding = --
 ; EnableXP
 ; DPIAware

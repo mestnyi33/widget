@@ -15619,6 +15619,30 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   flags & ~ #PB_ListIcon_ThreeState
                   flags | #__flag_threestate
                EndIf
+               If constants::BinaryFlag( Flag, #PB_ListIcon_MultiSelect )
+                  flags & ~ #PB_ListIcon_MultiSelect
+                  flags | #__flag_RowMultiSelect
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ListIcon_GridLines )
+                  flags & ~ #PB_ListIcon_GridLines
+                  flags | #__flag_GridLines
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ListIcon_FullRowSelect )
+                  flags & ~ #PB_ListIcon_FullRowSelect
+                  flags | #__flag_RowFullSelect
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ListIcon_HeaderDragDrop )
+                  flags & ~ #PB_ListIcon_HeaderDragDrop
+                 ; flags | #__flag_HeaderDragDrop
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ListIcon_AlwaysShowSelection )
+                  flags & ~ #PB_ListIcon_AlwaysShowSelection
+                 ; flags | #__flag_AlwaysShowSelection
+               EndIf
+               If constants::BinaryFlag( Flag, #PB_ListIcon_NoHeaders )
+                  flags & ~ #PB_ListIcon_NoHeaders
+                 ; flags | #__flag_NoHeaders
+               EndIf
                
          EndSelect
          
@@ -23641,7 +23665,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.i ListIcon( X.l, Y.l, Width.l, Height.l, ColumnTitle.s, ColumnWidth.i, Flag.q = 0 )
-         ;  ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_tree, x, y, width, height, "", Flag ); #__type_ListIcon
+         ; #PB_ListIcon_CheckBoxes          ; Display checkboxes in the first column.
+         ; #PB_ListIcon_ThreeState          ; The checkboxes can have an "in between" state.
+         ; #PB_ListIcon_MultiSelect         ; Enable multiple selection.
+         ; #PB_ListIcon_GridLines           ; Display separator lines between rows And columns.
+         ; #PB_ListIcon_FullRowSelect       ; The selection covers the full row instead of the first column (Windows And QT only).
+         ; #PB_ListIcon_HeaderDragDrop      ; The order of columns can be changed using drag'n'drop.
+         ; #PB_ListIcon_AlwaysShowSelection ; The selection Is still visible, even when the gadget Is Not activated (Windows only).
+         ; #PB_ListIcon_NoHeaders           ; Hide the columns titles.
+         ;
+         ; ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_tree, x, y, width, height, "", Flag ); #__type_ListIcon
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ListIcon, X, Y, Width, Height, ColumnTitle, Flag, ColumnWidth ); #__type_ListIcon
       EndProcedure
       
@@ -28003,9 +28036,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 20608
-; FirstLine = 20590
-; Folding = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------h+----------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 15643
+; FirstLine = 15630
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------h+----------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

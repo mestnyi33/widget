@@ -6,7 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global Steps = 0
    
    
-   Procedure Events( )
+   Procedure all_events( )
       Protected i, j, Buffer$, Parent, Element, EventWidget = EventWidget( )
       
       ;Buffer$=Gadgets(GetGadgetData(IDGadget))\Flag$
@@ -330,12 +330,12 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Debug "["+ListSize(*g\columns()\items())+"] second column items count"
    
-   Bind(*g, @Events(), #__Event_Change|#__Event_LeftClick)
+   Bind(*g, @all_events(), #__Event_Change|#__Event_LeftClick)
    WaitClose( )
 CompilerEndIf
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 7
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 332
+; FirstLine = 45
 ; Folding = 4----
 ; EnableXP
 ; DPIAware
