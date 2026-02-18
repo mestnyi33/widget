@@ -4,7 +4,7 @@
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   test_draw_area = 1
-   Global g,*g._s_widget, b,*b, i, time, ss=50,Sw = 350, Sh = 300, count;=1000;0
+   Global g,*g._s_widget, b,*b._s_widget, i, time, ss=50,Sw = 350, Sh = 300, count;=1000;0
   
   Procedure events_gadgets()
     ;Debug ""+EventGadget()+ " - gadget event - " +EventType()
@@ -78,8 +78,11 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetAttribute(g, #PB_ScrollArea_InnerHeight, sh+80)
       SetAttribute(*g, #PB_ScrollArea_InnerHeight, sh+80)
       
-      ResizeGadget(b, #PB_Ignore, GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-GadgetHeight(b), #PB_Ignore, #PB_Ignore)
-      Resize(*b, #PB_Ignore, (GetAttribute(*g, #PB_ScrollArea_InnerHeight)- Height(*b)), #PB_Ignore, #PB_Ignore)
+      Define GadgetY = GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-GadgetHeight(b)
+      Define Y = 350;GetAttribute(*g, #PB_ScrollArea_InnerHeight)-Height(*b)
+      
+      ResizeGadget(b, #PB_Ignore, GadgetY, #PB_Ignore, #PB_Ignore)
+      Resize(*b, #PB_Ignore, Y, #PB_Ignore, #PB_Ignore)
       
       SetGadgetAttribute(g, #PB_ScrollArea_Y, 0)
       SetAttribute(*g, #PB_ScrollArea_Y, 0)
@@ -87,7 +90,13 @@ CompilerIf #PB_Compiler_IsMainFile
       SetGadgetAttribute(g, #PB_ScrollArea_Y, sh)
       SetAttribute(*g, #PB_ScrollArea_Y, sh)
       
-      Debug ""
+      
+      Debug "----- ";+*b\parent\scroll_y()
+      ;*b\parent\scroll_y()-1
+      Debug ""+GadgetY+" "+GadgetY(b)  ; 350
+      Debug ""+Y+" "+Y(*b)             ; 351 ; DPI BUG
+    
+      Debug "-----"
       Debug *g\scroll\v\bar\percent
       Debug ""
       Debug *g\scroll\v\bar\area\pos
@@ -124,13 +133,15 @@ CompilerIf #PB_Compiler_IsMainFile
     BindGadgetEvent(g, @events_gadgets())
     Bind(*g, @events_widgets())
     
+    
+      
     WaitClose()
     ; Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 37
-; FirstLine = 14
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 93
+; FirstLine = 42
 ; Folding = v-
 ; EnableXP
 ; DPIAware

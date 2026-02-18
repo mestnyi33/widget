@@ -2480,14 +2480,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             w = Bool( *this\scroll_width( ) > Width )
             h = Bool( *this\scroll_height( ) > Height )
             
+            
             \v\bar\page\len = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\frame_height( ))
             \h\bar\page\len = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\frame_width( ))
             
-            iheight = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( ))
+            iheight = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( )) 
             If \v\bar\page\len <> iheight
                \v\bar\page\len = iheight
                If Not \v\bar\max
-                  bar_max( \v\bar, iheight )
+                 ; bar_max( \v\bar, iheight )
                EndIf
 ;             Else
 ;                If \h\bar\area\len And \h\bar\page\end
@@ -2498,11 +2499,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                EndIf
             EndIf
             
-            iwidth = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( ) )
+            iwidth = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( )) 
             If \h\bar\page\len <> iwidth
                \h\bar\page\len = iwidth
                If Not \h\bar\max
-                  bar_max( \h\bar, iwidth )
+                 ; bar_max( \h\bar, iwidth )
                EndIf
 ;             Else
 ;                If \v\bar\area\len And \v\bar\page\end
@@ -2513,7 +2514,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                   bar_update( \v, 11 )
 ;                EndIf
             EndIf
-            
             
             ; no auto size scroll inner size
             If *this\type = #__type_ScrollArea
@@ -2637,13 +2637,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ change vertical scrollbar max
          If *this\scroll\v And *this\scroll\v\bar\max <> *this\scroll_height( ) And
-            SetAttribute( *this\scroll\v, #PB_ScrollBar_Maximum, *this\scroll_height( ) )
+            SetAttribute( *this\scroll\v, #PB_ScrollBar_Maximum, *this\scroll_height( ))
             result = 1
          EndIf
          
          ;\\ change horizontal scrollbar max
          If *this\scroll\h And *this\scroll\h\bar\max <> *this\scroll_width( ) And
-            SetAttribute( *this\scroll\h, #PB_ScrollBar_Maximum, *this\scroll_width( ) )
+            SetAttribute( *this\scroll\h, #PB_ScrollBar_Maximum, *this\scroll_width( ))
             result = 1
          EndIf
          
@@ -5986,9 +5986,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     *this\parent\scroll\h <> Widget( ) And Not Widget( )\align
                                     ;
                                     If Widget( )\child =- 1
-                                       Resize( Widget( ), #PB_Ignore, ( Widget( )\container_y( ) + *bar\PageChange( ) ), #PB_Ignore, #PB_Ignore, 0 )
+                                       Resize( Widget( ), #PB_Ignore, ( Widget( )\container_y( ) + *bar\PageChange( )), #PB_Ignore, #PB_Ignore, 0 )
                                     Else
-                                       Resize( Widget( ), #PB_Ignore, ( Widget( )\container_y( ) + *bar\PageChange( ) ) - *this\parent\scroll_y( ), #PB_Ignore, #PB_Ignore, 0 )
+;                                        If Widget( )\text\string = "Button"
+;                                           Debug "scroll y "+Widget( )\container_y( ) +" "+ *this\parent\scroll_y( ) +" "+ *bar\PageChange( ) +" = "+ Str(( Widget( )\container_y( ) + *bar\PageChange( )) - *this\parent\scroll_y( ))
+;                                        EndIf
+                                       Resize( Widget( ), #PB_Ignore, ( Widget( )\container_y( ) + *bar\PageChange( )) - *this\parent\scroll_y( ), #PB_Ignore, #PB_Ignore, 0 )
                                     EndIf
                                  EndIf
                               EndIf
@@ -6929,16 +6932,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ scroll to active tab
             If *this\TabChange( )
                If Not *bar\thumb\pos
-                  ; Debug ""+*bar\page\pos +" "+ *bar\thumb\pos
                   *bar\page\pos = *bar\max
-                  ;                   If Not *bar\page\pos
-                  ;                      ScrollPos = *bar\max
-                  ;                      ScrollPos     = bar_page_pos_( *bar, ScrollPos )
-                  ;                      If *bar\invert
-                  ;                         ScrollPos = ( *bar\page\end - ( ScrollPos - *bar\min ))           
-                  ;                      EndIf
-                  ;                      *bar\page\pos = ScrollPos
-                  ;                   EndIf
                EndIf
                
                If *this\TabFocused( ) 
@@ -6948,7 +6942,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;Debug " tab max - " + *bar\max + " " + " " + *bar\page\pos + " " + *bar\page\end
                         ScrollPos = *bar\max - *this\TabFocused( )\x
                         ;ScrollPos - *bar\thumb\end                                    ; to left
-                        ;ScrollPos - *this\TabFocused( )\width                        ; to right
+                        ;ScrollPos - *this\TabFocused( )\width                         ; to right
                         ScrollPos - ( *bar\thumb\end + *this\TabFocused( )\width ) / 2 ; to center
                         
                         ScrollPos = bar_page_pos_( *bar, ScrollPos )
@@ -9336,6 +9330,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                mode = #__c_frame
             Else
                mode = #__c_container
+               If *this\parent
+                  ProcedureReturn DPIUnscaledX( *this\x[mode] )-DPIUnscaledX(*this\parent\scroll_x( ))
+               EndIf
             EndIf
          EndIf
          ProcedureReturn DPIUnscaledX( *this\x[mode] ) 
@@ -9347,6 +9344,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                mode = #__c_frame
             Else
                mode = #__c_container
+               If *this\parent
+                  ProcedureReturn DPIUnscaledY( *this\y[mode] )-DPIUnscaledY(*this\parent\scroll_y( ))
+               EndIf
             EndIf
          EndIf
          ProcedureReturn DPIUnscaledY( *this\y[mode] )
@@ -24832,7 +24832,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Y + *this\parent\scroll_y( )
                   EndIf
                EndIf
-               *this\container_y( ) = Y
+               *this\container_y( ) = Y 
             EndIf
             
             ; container coordinate
@@ -28035,10 +28035,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 15643
-; FirstLine = 15630
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------h+----------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 24643
+; FirstLine = 24581
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------H7------------------------------------------------------------------------------f8--4--8--------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
