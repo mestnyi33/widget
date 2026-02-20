@@ -11,24 +11,25 @@ CompilerIf #PB_Compiler_IsMainFile
       *this\fs[position] = Height
       
       If position = 1
-         *g = Button( 0,0,Height,0, Text.s, Flag|#__flag_Vertical )
+         *g = Button( 0,0,Height,0, Text.s, Flag|#__flag_Vertical|#__flag_autosize )
          SetParent( *g, *this, #PB_Ignore )
-         SetAlign( *g, 0, 1,#__align_auto,0,#__align_auto, 0 )              
+         ;SetAlign( *g, 0, 1,#__align_auto,0,#__align_auto, 0 )              
       EndIf
       If position = 2
-         *g = Button( 0,0,0,Height, Text.s, Flag )
+         *g = Button( 0,0,0,Height, Text.s, Flag|#__flag_autosize )
          SetParent( *g, *this, #PB_Ignore )
-         SetAlign( *g, 0, #__align_auto,1,#__align_auto,0, 0 )              
+        ; SetAlign( *g, 0, #__align_auto,1,#__align_auto,0, 0 )              
       EndIf
       If position = 3
-         *g = Button( 0,0,Height,0, Text.s, Flag|#__flag_Vertical|#__flag_invert )
+         *g = Button( 0,0,Height,0, Text.s, Flag|#__flag_Vertical|#__flag_invert|#__flag_autosize )
          SetParent( *g, *this, #PB_Ignore )
-         SetAlign( *g, 0, 0,#__align_auto,1,#__align_auto, 0 )              
+        ; SetAlign( *g, 0, 0,#__align_auto,1,#__align_auto, 0 )              
       EndIf
       If position = 4
-         *g = Button( 0,80,100,Height, Text.s, Flag )
+         *g = Button( 0,80,100,Height, Text.s, Flag|#__flag_autosize )
          SetParent( *g, *this, #PB_Ignore )
-         SetAlign( *g, 0, #__align_auto,0,#__align_auto,1, 0 )              
+        ; Resize( *g, *this\height, #PB_Ignore, *this\width, #PB_Ignore )
+        ; SetAlign( *g, 0, #__align_auto,0,#__align_auto,1, 0 )              
       EndIf
    EndProcedure
    
@@ -54,8 +55,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 10
+; CursorPosition = 55
+; FirstLine = 27
 ; Folding = --
 ; EnableXP
 ; DPIAware

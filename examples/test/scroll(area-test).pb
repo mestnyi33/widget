@@ -1,4 +1,4 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿XIncludeFile "../../widgets.pbi" 
 ; bug scrollstep
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -33,8 +33,7 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 15
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
 ; Folding = -
 ; EnableXP
 ; DPIAware

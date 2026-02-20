@@ -2,15 +2,15 @@
 
 CompilerIf #PB_Compiler_IsMainFile = 99
    UseWidgets( )
-   Define i, widget
+   Define i, 
    ;
    If Open(0, 0, 0, 420, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      widget = Tree(0, 0, 0, 0)
+      Widget = Tree(0, 0, 0, 0)
       For i=0 To 20
-         AddItem(widget, -1, "test item test item test item "+Str(i))
+         AddItem(Widget, -1, "test item test item test item "+Str(i))
       Next
       ;
-      Splitter(0, 0, 180, 120, widget, -1, #PB_Splitter_Vertical)
+      Splitter(0, 0, 180, 120, Widget, -1, #PB_Splitter_Vertical)
       WaitClose( )
    EndIf
 CompilerEndIf
@@ -18,15 +18,15 @@ CompilerEndIf
 CompilerIf #PB_Compiler_IsMainFile ;= 99
    UseWidgets( )
    
-   Global widget, v_bar, h_bar
+   Global Widget, v_bar, h_bar
    Global w = 420-40
    Global h = 280-40
    
    Procedure track_v_events( )
-      Resize(widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState(EventWidget()))
+      Resize(Widget, #PB_Ignore, #PB_Ignore, #PB_Ignore, GetState(EventWidget()))
    EndProcedure
    Procedure track_h_events( )
-      Resize(widget, #PB_Ignore, #PB_Ignore, GetState(EventWidget()), #PB_Ignore)
+      Resize(Widget, #PB_Ignore, #PB_Ignore, GetState(EventWidget()), #PB_Ignore)
    EndProcedure
    
    Procedure track_vh_events( )
@@ -40,39 +40,39 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    EndProcedure
    
    If Open(0, 0, 0, 420, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      widget()\bs = 0
-      widget()\fs = 0
+      Widget()\bs = 0
+      Widget()\fs = 0
       Container(0,0, w,h, #PB_Container_Double)
-      SetBackColor(widget(), $FFB3FDFF)
-      widget()\bs = 20
-      widget()\fs = 20
-      Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) 
+      SetBackColor(Widget(), $FFB3FDFF)
+      Widget()\bs = 20
+      Widget()\fs = 20
+      Resize(Widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) 
      
       test_resize = 1
      ; test_resize_area = 1
-      widget = Tree(0, 0, 0, 0, #__flag_Borderless)
+      Widget = Tree(0, 0, 0, 0, #__flag_Borderless)
       Define i
-      AddItem(widget, -1, Str(i)+"test item ")
+      AddItem(Widget, -1, Str(i)+"test item ")
       For i=1 To 20
          If i%2
-            AddItem(widget, -1, Str(i)+"test item test item test item ", -1, 1)
+            AddItem(Widget, -1, Str(i)+"test item test item test item ", -1, 1)
          Else
-            AddItem(widget, -1, Str(i)+"test item test item test item ")
+            AddItem(Widget, -1, Str(i)+"test item test item test item ")
          EndIf
       Next
       
-      widget()\bs = 0
-      widget()\fs = 0
+      Widget()\bs = 0
+      Widget()\fs = 0
       
-      widget()\scroll\v\round = 0
-      widget()\scroll\v\bar\button\round = 0
-      widget()\scroll\v\bar\button[1]\round = 0
-      widget()\scroll\v\bar\button[2]\round = 0
+      Widget()\scroll\v\round = 0
+      Widget()\scroll\v\bar\button\round = 0
+      Widget()\scroll\v\bar\button[1]\round = 0
+      Widget()\scroll\v\bar\button[2]\round = 0
       
-      widget()\scroll\h\round = 0
-      widget()\scroll\h\bar\button\round = 0
-      widget()\scroll\h\bar\button[1]\round = 0
-      widget()\scroll\h\bar\button[2]\round = 0
+      Widget()\scroll\h\round = 0
+      Widget()\scroll\h\bar\button\round = 0
+      Widget()\scroll\h\bar\button[1]\round = 0
+      Widget()\scroll\h\bar\button[2]\round = 0
       CloseList()
       
 ;        Resize(widget(), 0, #PB_Ignore, 0, 120) 
@@ -82,29 +82,29 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
       ; v
       ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__bar_invert)
        v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__bar_invert)
-      SetBackColor(widget(), $FF80BE8E)
-      SetState(widget(), 120)
-      Bind( widget(), @track_v_events( ), #__event_change )
+      SetBackColor(Widget(), $FF80BE8E)
+      SetState(Widget(), 120)
+      Bind( Widget(), @track_v_events( ), #__event_change )
       ; h
       ;h_bar=Splitter( 10,h+10,w,20, -1, -1 , #PB_Splitter_Vertical)
        h_bar=Track( 10,h+10,w,20, 0, w-10 )
-      SetBackColor(widget(), $FF80BE8E)
-      SetState(widget(), 213)
+      SetBackColor(Widget(), $FF80BE8E)
+      SetState(Widget(), 213)
       Bind( widget(), @track_h_events( ), #__event_change )
       
       
       Button(w+10,h+10,20,20,"", #PB_Button_Toggle)
-      SetRound( widget(), 10 )
-      Bind( widget(), @track_vh_events( ), #__event_Down )
+      SetRound( Widget(), 10 )
+      Bind( Widget(), @track_vh_events( ), #__event_Down )
 ;       
       ClearDebugOutput()
       WaitClose( )
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 62
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 92
+; FirstLine = 75
 ; Folding = --
 ; EnableXP
 ; DPIAware

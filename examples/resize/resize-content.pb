@@ -34,6 +34,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;txt$ = ""
       ;img =- 1
       
+      ;*g = Panel( X,Y,Width,Height, flags) :AddItem( *g,-1,"panel item open"): CloseList( )
       *g = CheckBox( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
       ;*g = Button( X,Y,Width,Height, txt$, flags|(Bool(flags&)*#__flag_Left)) : SetImage( *g, img ) 
       ;*g = ComboBox( X,Y,Width,Height, flags|(Bool(flags&)*#__flag_Left)) :AddItem(*g, -1, txt$, img ) : SetState(*g,0)
@@ -66,8 +67,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 25
-; FirstLine = 20
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 37
+; FirstLine = 28
 ; Folding = --
 ; EnableXP
