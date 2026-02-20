@@ -1727,6 +1727,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.s EventString( event.i )
       
       Declare.b Draw_Arrow( direction.a, X.l, Y.l, size.a, mode.b = 1, framesize.a = 0, Color.i = $ff000000 )
+      Declare   Draw_Button( *this._s_WIDGET )
       Declare.b Draw( *this )
       Declare   ReDraw( *this )
       Declare   Drawing( )
@@ -24997,32 +24998,43 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If ( Change_x Or Change_y Or Change_width Or Change_height ) 
                If *this\parent\type = #__type_MDI
-                  If *this\child =- 1
-                     If *this\parent\scroll\v <> *this And
-                        *this\parent\scroll\h <> *this ;And *this\parent\scroll\v\bar\PageChange( ) = 0 And *this\parent\scroll\h\bar\PageChange( ) = 0
-                        
+                  If *this\parent\scroll\v\bar\PageChange( ) = 0 And
+                     *this\parent\scroll\h\bar\PageChange( ) = 0
+                     
+                     If *this\child =- 1
                         make_mdi_area( *this\parent, *this\container_x( ), *this\container_y( ), *this\frame_width( ), *this\frame_height( ) )
                      EndIf
                   EndIf
-               Else
-                  If *this\parent\scroll\v = *this Or
-                     *this\parent\scroll\h = *this
-                     Debug  ""+*this\class +" "+ 
-                            *this\parent\scroll\v +" "+ *this +" "+
-                            *this\parent\scroll\h +" "+ *this
+               EndIf
+               ;
+               If *this\parent\scroll\v = *this Or
+                  *this\parent\scroll\h = *this
+                  
+                  If *this\bar\max > *this\bar\page\len
                      
-                        If *this\parent\container_width( ) = *this\parent\inner_width( ) And
-                           *this\parent\container_height( ) = *this\parent\inner_height( )
-                           ; Debug ""+*this\parent\scroll\v\bar\max +" "+ *this\parent\scroll\v\bar\page\len +" "+ *this\parent\scroll\h\bar\max +" "+ *this\parent\scroll\h\bar\page\len
-                           
-                           If *this\parent\scroll\v\bar\max > *this\parent\scroll\v\bar\page\len Or
-                              *this\parent\scroll\h\bar\max > *this\parent\scroll\h\bar\page\len
-                              
-                              make_scrollbar_area( *this\parent )
-                           EndIf
+                     If *this\parent\container_width( ) = *this\parent\inner_width( ) And
+                        *this\parent\container_height( ) = *this\parent\inner_height( )
+                        ; Debug ""+*this\parent\scroll\v\bar\max +" "+ *this\parent\scroll\v\bar\page\len +" "+ *this\parent\scroll\h\bar\max +" "+ *this\parent\scroll\h\bar\page\len
+                        
+                        Debug  ""+*this\class +" "+ 
+                               *this\parent\scroll\v +" "+ *this +" "+
+                               *this\parent\scroll\h +" "+ *this
+                        
+                        make_scrollbar_area( *this\parent )
                      EndIf
                   EndIf
                EndIf
+               
+;                   
+;                ;\\ update scrollbars parent inner coordinate
+;                If *this\parent\scroll_inner_width( ) <> *this\parent\scroll\h\bar\page\len
+;                   *this\parent\scroll_inner_width( ) = *this\parent\scroll\h\bar\page\len
+;                EndIf
+;                
+;                If *this\parent\scroll_inner_height( ) <> *this\parent\scroll\v\bar\page\len
+;                   *this\parent\scroll_inner_height( ) = *this\parent\scroll\v\bar\page\len
+;                EndIf
+            
             EndIf
          EndIf   
          
@@ -28070,10 +28082,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 25009
-; FirstLine = 24671
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-------V0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------h+--------------------------------------------------------------------------Pk---f-2v4--8--vi-----f-4--4ulq-nt23+--------------------------------------------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 25022
+; FirstLine = 24346
+; Folding = --------------------------------------------------8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ff0--4--------------------------------------f-------V0-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------h+--------------------------------------------------------------------------Pk---f-2v4--8--vi-------4--4ulq-nt23+--------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

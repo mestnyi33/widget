@@ -52,8 +52,9 @@ CompilerIf #PB_Compiler_IsMainFile
                EndSelect
             EndIf
             
+           ; Root( )\repaint = 0
       EndSelect
-       
+      
    EndProcedure
    
    If Open(1, 100, 50, 330, 330, "demo ListView state", #PB_Window_SystemMenu)
@@ -76,8 +77,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 5
-; Folding = ---
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 54
+; FirstLine = 21
+; Folding = -7-
 ; EnableXP
 ; DPIAware

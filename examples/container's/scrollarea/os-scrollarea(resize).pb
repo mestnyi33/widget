@@ -23,14 +23,14 @@ If OpenWindow(0, 0, 0, 680, 60+h, "splitter thumb position then resized", #PB_Wi
 	SetGadgetState(g4, 200)
 	SetGadgetState(g5, 200*2+8)
 	SetGadgetState(g6, h)
-	;;SetGadgetState(g4, 200) ; bug splitter
+	
 	Debug GetGadgetAttribute(g2, #PB_ScrollArea_InnerWidth)
 	SetGadgetAttribute(g2, #PB_ScrollArea_X, 100/2 )
 	SetGadgetAttribute(g3, #PB_ScrollArea_X, 100 )
 	
 	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow ; WaitClose( )
 EndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 27
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 26
 ; Folding = -
 ; EnableXP

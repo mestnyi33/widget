@@ -13,12 +13,12 @@ CompilerIf #PB_Compiler_IsMainFile
       ButtonGadget   (0,    5,   95, 390,  30, "", #PB_Button_Toggle)
       
       If Open(0, 10, 10, 380, 80)
-        g_Canvas = GetCanvasGadget(root())
+        g_Canvas = GetCanvasGadget(Root())
         *scrollbar = Scroll(5, 10, 370, 30, 20, 50, 8, 0, round)
-        SetState(widget(), 31)
+        SetState(Widget(), 31)
         
         Splitter(5, 5, 370, 70, *scrollbar,-1)
-        SetState(widget(), 70)
+        SetState(Widget(), 70)
         
         SetGadgetState(0, GetAttribute(*scrollbar, #__bar_buttonsize))
         SetWindowTitle(0, Str(GetState(*scrollbar)))
@@ -46,7 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile
         
         Select EventGadget()
           Case 0
-            *scrollbar\round = GetGadgetState(0) * round
+            *scrollbar\round = GetGadgetState(0) * DPIScaled(round)
             *scrollbar\bar\button[0]\round = *scrollbar\round
             *scrollbar\bar\button[1]\round = *scrollbar\round
             *scrollbar\bar\button[2]\round = *scrollbar\round
@@ -62,13 +62,13 @@ CompilerIf #PB_Compiler_IsMainFile
               SetGadgetText(0, "round scrollbar buttons")
             EndIf
             
-            PostEventRepaint( root( ) )
+            PostRepaint( Root( ))
             
           Case g_Canvas
-            If widget()\change
-              ; SetWindowTitle(0, Str(GetState(widget())))
-              Debug GetState(widget())
-              widget()\change = 0
+            If Widget( )\bar\change
+              ; SetWindowTitle(0, Str(GetState(widget( ))))
+              Debug GetState(Widget( ))
+              Widget( )\bar\change = 0
             EndIf
             
         EndSelect
@@ -77,8 +77,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 5
-; FirstLine = 1
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 64
+; FirstLine = 37
 ; Folding = --
 ; EnableXP
+; DPIAware

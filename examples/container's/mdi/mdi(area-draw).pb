@@ -69,31 +69,31 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                Button_DrawCallback(*ew, \width[#__c_frame], \height[#__c_frame], \data)
 ; ;                StopVectorDrawing( )
 ;              EndWith
-             
 ;              
-;             ; Demo draw line on the element
-;             UnclipOutput()
-;             DrawingMode(#PB_2DDrawing_Outlined)
-;             
-;             Protected draw_color 
-;             If *ew\width[#__c_draw] > 0 And
-;                *ew\height[#__c_draw] > 0
-;                draw_color = $ff00ff00
-;             Else
-;                draw_color = $ff00ffff
-;             EndIf
-;             
-;             If *ew\round
-;                RoundBox(*ew\x,*ew\y,*ew\width,*ew\height, *ew\round, *ew\round, draw_color)
-;             Else
-;                Box(*ew\x,*ew\y,*ew\width,*ew\height, draw_color)
-;             EndIf
-;             
-;             With *ew\parent\scroll
-;                Box( x, y, Width, Height, RGB( 0,255,0 ) )
-;                Box( \h\x, \v\y, \h\bar\page\len, \v\bar\page\len, RGB( 0,0,255 ) )
-;                Box( \h\x-\h\bar\page\pos, \v\y - \v\bar\page\pos, \h\bar\max, \v\bar\max, RGB( 255,0,0 ) )
-;             EndWith
+             
+            ; Demo draw line on the element
+            UnclipOutput()
+            DrawingMode(#PB_2DDrawing_Outlined)
+            
+            Protected draw_color 
+            If *ew\width[#__c_draw] > 0 And
+               *ew\height[#__c_draw] > 0
+               draw_color = $ff00ff00
+            Else
+               draw_color = $ff00ffff
+            EndIf
+            
+            If *ew\round
+               RoundBox(*ew\x,*ew\y,*ew\width,*ew\height, *ew\round, *ew\round, draw_color)
+            Else
+               Box(*ew\x,*ew\y,*ew\width,*ew\height, draw_color)
+            EndIf
+            
+            With *ew\parent\parent\scroll
+               Box( X, Y, Width, Height, RGB( 0,255,0 ) )
+               Box( \h\x, \v\y, \h\bar\page\len, \v\bar\page\len, RGB( 0,0,255 ) )
+               Box( \h\x-\h\bar\page\pos, \v\y - \v\bar\page\pos, \h\bar\max, \v\bar\max, RGB( 255,0,0 ) )
+            EndWith
       EndSelect
       
    EndProcedure
@@ -127,7 +127,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Canvas_resize( )
       ;Protected width = GadgetWidth( EventGadget() )
       Protected Width = WindowWidth( EventWindow() )
-      Resize( root(), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore )
+      Resize( Root(), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore )
       Resize( *mdi, #PB_Ignore, #PB_Ignore, Width-X*2, #PB_Ignore )
    EndProcedure
    
@@ -204,7 +204,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;
    MyCanvas = GetCanvasGadget(Open(0, xx+10, yy+10, Width+X*2, Height+Y*2 ) )
-   SetColor(root(), #PB_Gadget_BackColor, $ffffffff)
+   SetColor(Root(), #PB_Gadget_BackColor, $ffffffff)
    
    ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
    ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
@@ -242,9 +242,9 @@ CompilerIf #PB_Compiler_IsMainFile
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 112
-; FirstLine = 108
-; Folding = ---
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 92
+; FirstLine = 76
+; Folding = ----
 ; EnableXP
 ; DPIAware

@@ -111,9 +111,6 @@ CompilerIf #PB_Compiler_IsMainFile
          Debug  Str(ElapsedMilliseconds()-time) + " - time add widget"
          CloseGadgetList()
       Else
-         ;       SetGadgetAttribute(g, #PB_ScrollArea_X, 50)
-         ;       SetAttribute(*g, #PB_ScrollArea_X, 50)
-         
          SetGadgetAttribute(g, #PB_ScrollArea_Y, 50)
          SetAttribute(*g, #PB_ScrollArea_Y, 50)
          
@@ -150,9 +147,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 33
-; FirstLine = 31
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 4
 ; Folding = --
 ; EnableXP
 ; DPIAware
