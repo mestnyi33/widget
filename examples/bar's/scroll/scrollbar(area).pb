@@ -91,16 +91,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Macro make_mdi_area_size( _address_ )
       *this\scroll_x( ) = _address_\x 
       *this\scroll_y( ) = _address_\Y
-      If *this\scroll_x( ) < 0
-         *this\scroll_width( ) = *this\inner_width( ) - *this\scroll_x( )
-      Else
-         *this\scroll_width( ) = _address_\width
-      EndIf
-      If *this\scroll_y( ) < 0
-         *this\scroll_height( ) = *this\inner_height( ) - *this\scroll_y( ) 
-      Else
-         *this\scroll_height( ) = _address_\height
-      EndIf
+      *this\scroll_width( ) = _address_\width
+      *this\scroll_height( ) = _address_\height
          
       PushListPosition(_address_)
       ForEach _address_
@@ -117,11 +109,142 @@ CompilerIf #PB_Compiler_IsMainFile
             *this\scroll_height( ) = _address_\Y + _address_\height
          EndIf
      Next
-      PopListPosition(_address_)
-   EndMacro
+     PopListPosition(_address_)
+     
+     If *this\scroll_x( ) > X
+        *this\scroll_x( ) = X
+     EndIf
+     If *this\scroll_y( ) > Y
+        *this\scroll_y( ) = Y
+     EndIf
+     *this\scroll_width( ) - *this\scroll_x( )
+     *this\scroll_height( ) - *this\scroll_y( ) 
+  EndMacro
    
    
-   Procedure   make_pos_and_max( *this._s_WIDGET, X, Y, Width, Height )
+   Procedure make_pos_and_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
+         Protected round, result
+         Protected scroll_x, scroll_y, scroll_width, scroll_height
+         
+         With *this\scroll
+            If Not ( *this\scroll And ( \v Or \h ))
+               ProcedureReturn 0
+            EndIf
+            make_mdi_area_size( imgs() )
+       
+            ;\\
+            scroll_x      = *this\scroll_x( )
+            scroll_y      = *this\scroll_y( )
+            scroll_width  = *this\scroll_width( )
+            scroll_height = *this\scroll_height( )
+            
+            ;\\ top set state
+            If scroll_y < Y
+               \v\bar\page\pos = - ( scroll_y - Y )
+               \h\bar\page\len = Width - \v\width
+            Else
+               \h\bar\page\len = Width ;- Bool( scroll_height > Height ) * \v\width
+               
+               scroll_height + ( scroll_y - Y )
+               scroll_y = Y
+            EndIf
+            
+            ;\\ left set state
+            If scroll_x < X
+               \h\bar\page\pos = - ( scroll_x - X )
+               \v\bar\page\len = Height - \h\height
+            Else
+               \v\bar\page\len = Height ;- Bool( scroll_width > Width ) * \h\height
+               
+               scroll_width + ( scroll_x - X )
+               scroll_x = X
+            EndIf
+            
+            ;\\
+            If scroll_width > \h\bar\page\len - ( scroll_x - X )
+               If scroll_height = \v\bar\page\len - ( scroll_y - Y ) ;And scroll_width - sx <= Width 
+                  scroll_height - \h\height
+               EndIf
+               
+               \v\bar\page\len = Height - \h\height
+            Else
+               scroll_width = \h\bar\page\len - ( scroll_x - X )
+               result = 1
+            EndIf
+            
+            ;\\
+            If scroll_height > \v\bar\page\len - ( scroll_y - Y )
+               If scroll_width = \h\bar\page\len - ( scroll_x - X ) ;And scroll_height - sy <= Height 
+                  scroll_width - \v\width
+               EndIf
+               
+               \h\bar\page\len = Width - \v\width
+            Else
+               scroll_height = \v\bar\page\len - ( scroll_y - Y )
+               result = 1
+            EndIf
+            
+            ;\\
+            If scroll_width < \h\bar\page\len - ( scroll_x - X )
+               scroll_width = \h\bar\page\len - ( scroll_x - X )
+            EndIf
+            
+;             If scroll_height < \v\bar\page\len - ( scroll_y - Y )
+;                scroll_height = \v\bar\page\len - ( scroll_y - Y )
+;             EndIf
+            
+            ;\\
+            If \v\bar\Max <> scroll_height
+               \v\bar\Max = scroll_height
+               result = 1
+            EndIf
+            
+            If \h\bar\Max <> scroll_width
+               \h\bar\Max = scroll_width
+               result = 1
+            EndIf
+            
+            ;\\
+            If result
+               If \h\round And
+                  \v\round And
+                  \h\bar\page\len < Width And
+                  \v\bar\page\len < Height
+                  round = ( \h\height / 4 )
+               EndIf
+               
+               If \v\frame_height( ) <> \v\bar\page\len + round
+                  Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len + round )
+               Else
+                  bar_Update( \v, 5 )
+               EndIf
+               
+               If \h\frame_width( ) <> \h\bar\page\len + round
+                  Resize( \h, #PB_Ignore, #PB_Ignore, \h\bar\page\len + round, #PB_Ignore )
+               Else
+                  bar_Update( \h, 5 )
+               EndIf
+               
+               ;\\
+               *this\scroll_x( )      = scroll_x
+               *this\scroll_y( )      = scroll_y
+               *this\scroll_width( )  = scroll_width
+               *this\scroll_height( ) = scroll_height
+               
+               ;\\ update scrollbars parent inner coordinate
+               If *this\scroll_inner_width( ) <> \h\bar\page\len
+                  *this\scroll_inner_width( ) = \h\bar\page\len
+               EndIf
+               If *this\scroll_inner_height( ) <> \v\bar\page\len
+                  *this\scroll_inner_height( ) = \v\bar\page\len
+               EndIf
+            EndIf
+            
+            ProcedureReturn result
+         EndWith
+      EndProcedure
+      
+   Procedure   __make_pos_and_max( *this._s_WIDGET, X, Y, Width, Height )
          make_mdi_area_size( imgs() )
          Protected round, result
          
@@ -218,6 +341,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
          EndWith
       EndProcedure
+      
       Procedure   _make_pos_and_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
       
       Static v_max, h_max
@@ -758,8 +882,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 90
-; FirstLine = 87
-; Folding = --+-----------------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 122
+; FirstLine = 84
+; Folding = -----------------------
 ; EnableXP
