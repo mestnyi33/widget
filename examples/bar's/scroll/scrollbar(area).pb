@@ -123,8 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    Procedure make_pos_and_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
-         Protected round, result
-         Protected scroll_x, scroll_y, scroll_width, scroll_height
+         Protected result, round, scroll_v, scroll_h
          
          With *this\scroll
             If Not ( *this\scroll And ( \v Or \h ))
@@ -132,75 +131,71 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             make_mdi_area_size( imgs() )
        
-            ;\\
-            scroll_x      = *this\scroll_x( )
-            scroll_y      = *this\scroll_y( )
-            scroll_width  = *this\scroll_width( )
-            scroll_height = *this\scroll_height( )
-            
             ;\\ top set state
-            If scroll_y < Y
-               \v\bar\page\pos = - ( scroll_y - Y )
+            If *this\scroll_y( ) < Y
+               scroll_v = ( *this\scroll_y( ) - Y )
                \h\bar\page\len = Width - \v\width
+               \v\bar\page\pos = - scroll_v
             Else
-               \h\bar\page\len = Width ;- Bool( scroll_height > Height ) * \v\width
-               
-               scroll_height + ( scroll_y - Y )
-               scroll_y = Y
+               \v\bar\page\pos = \v\bar\min
+               \h\bar\page\len = Width
+               *this\scroll_height( ) + ( *this\scroll_y( ) - Y )
+               *this\scroll_y( ) = Y
             EndIf
             
             ;\\ left set state
-            If scroll_x < X
-               \h\bar\page\pos = - ( scroll_x - X )
+            If *this\scroll_x( ) < X
+               scroll_h = ( *this\scroll_x( ) - X )
                \v\bar\page\len = Height - \h\height
+               \h\bar\page\pos = - scroll_h
             Else
-               \v\bar\page\len = Height ;- Bool( scroll_width > Width ) * \h\height
-               
-               scroll_width + ( scroll_x - X )
-               scroll_x = X
+               \h\bar\page\pos = \h\bar\min
+               \v\bar\page\len = Height
+               *this\scroll_width( ) + ( *this\scroll_x( ) - X )
+               *this\scroll_x( ) = X
             EndIf
             
             ;\\
-            If scroll_width > \h\bar\page\len - ( scroll_x - X )
-               If scroll_height = \v\bar\page\len - ( scroll_y - Y ) ;And scroll_width - sx <= Width 
-                  scroll_height - \h\height
+            If *this\scroll_width( ) > \h\bar\page\len - scroll_h
+               If *this\scroll_height( ) = \v\bar\page\len - scroll_v
+                  *this\scroll_height( ) - \h\height
                EndIf
                
                \v\bar\page\len = Height - \h\height
             Else
-               scroll_width = \h\bar\page\len - ( scroll_x - X )
+               *this\scroll_width( ) = \h\bar\page\len - scroll_h
                result = 1
             EndIf
             
             ;\\
-            If scroll_height > \v\bar\page\len - ( scroll_y - Y )
-               If scroll_width = \h\bar\page\len - ( scroll_x - X ) ;And scroll_height - sy <= Height 
-                  scroll_width - \v\width
+            If *this\scroll_height( ) > \v\bar\page\len - scroll_v
+               If *this\scroll_width( ) = \h\bar\page\len - scroll_h
+                  *this\scroll_width( ) - \v\width
                EndIf
                
                \h\bar\page\len = Width - \v\width
             Else
-               scroll_height = \v\bar\page\len - ( scroll_y - Y )
+               *this\scroll_height( ) = \v\bar\page\len - scroll_v
                result = 1
             EndIf
             
             ;\\
-            If scroll_width < \h\bar\page\len - ( scroll_x - X )
-               scroll_width = \h\bar\page\len - ( scroll_x - X )
+            If *this\scroll_width( ) < \h\bar\page\len - scroll_h
+               *this\scroll_width( ) = \h\bar\page\len - scroll_h
             EndIf
             
-;             If scroll_height < \v\bar\page\len - ( scroll_y - Y )
-;                scroll_height = \v\bar\page\len - ( scroll_y - Y )
+;             If *this\scroll_height( ) < \v\bar\page\len - scroll_v
+;                *this\scroll_height( ) = \v\bar\page\len - scroll_v
 ;             EndIf
             
             ;\\
-            If \v\bar\Max <> scroll_height
-               \v\bar\Max = scroll_height
+            If \v\bar\Max <> *this\scroll_height( )
+               \v\bar\Max = *this\scroll_height( )
                result = 1
             EndIf
             
-            If \h\bar\Max <> scroll_width
-               \h\bar\Max = scroll_width
+            If \h\bar\Max <> *this\scroll_width( )
+               \h\bar\Max = *this\scroll_width( )
                result = 1
             EndIf
             
@@ -213,6 +208,8 @@ CompilerIf #PB_Compiler_IsMainFile
                   round = ( \h\height / 4 )
                EndIf
                
+               ;
+               ;\\
                If \v\frame_height( ) <> \v\bar\page\len + round
                   Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len + round )
                Else
@@ -225,12 +222,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   bar_Update( \h, 5 )
                EndIf
                
-               ;\\
-               *this\scroll_x( )      = scroll_x
-               *this\scroll_y( )      = scroll_y
-               *this\scroll_width( )  = scroll_width
-               *this\scroll_height( ) = scroll_height
-               
+               ;
                ;\\ update scrollbars parent inner coordinate
                If *this\scroll_inner_width( ) <> \h\bar\page\len
                   *this\scroll_inner_width( ) = \h\bar\page\len
@@ -243,7 +235,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ProcedureReturn result
          EndWith
       EndProcedure
-      
+         
    Procedure   __make_pos_and_max( *this._s_WIDGET, X, Y, Width, Height )
          make_mdi_area_size( imgs() )
          Protected round, result
@@ -883,7 +875,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 122
-; FirstLine = 84
+; CursorPosition = 139
+; FirstLine = 124
 ; Folding = -----------------------
 ; EnableXP

@@ -42,15 +42,15 @@ CompilerIf #PB_Compiler_IsMainFile
 ;       CloseList( )
       
       *g = MDI(200, 20, 160,95)
-      Resize(AddItem(*g, -1, "form_0"), 30, 20, 120, 20)
-      Resize(AddItem(*g, -1, "form_1"), 40, 0, 120, 20)
+      ;Resize(AddItem(*g, -1, "form_0"), 30, 20, 120, 20)
+      Resize(AddItem(*g, -1, "form_1"), 50, 43, 120, 20)
       CloseList( )
       
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 41
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 45
 ; Folding = +
 ; EnableXP
 ; DPIAware

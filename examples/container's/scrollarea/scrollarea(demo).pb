@@ -4,8 +4,9 @@
 CompilerIf #PB_Compiler_IsMainFile
   UseWidgets( )
   test_draw_area = 1
-   Global g,*g._s_widget, b,*b._s_widget, i, time, ss=50,Sw = 350, Sh = 300, count;=1000;0
-  
+  Global g,*g._s_widget, b,*b._s_widget, i, time, ss=50,Sw = 350, Sh = 300, count;=1000;0
+  Global bs=30
+    
   Procedure events_gadgets()
     ;Debug ""+EventGadget()+ " - gadget event - " +EventType()
   EndProcedure
@@ -23,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ButtonGadget  (3,  90,  90, 230, 30,"Button 3")
     TextGadget    (4, 130, 130, 330, 20,"This is the content of a ScrollAreaGadget!", #PB_Text_Right)
     
-    b = ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button")
+    b = ButtonGadget  (#PB_Any, Sw-130, Sh-bs, 130, bs,"Button")
     CloseGadgetList()
     
     *g = ScrollArea(310, 10, 300, 300, Sw, Sh, ss, #PB_ScrollArea_Flat)
@@ -34,8 +35,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Button(90,  90, 230, 30, "Button 3")
     Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__flag_TextRight)
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
-    
-    *b = Button(Sw-130, Sh-30, 130, 30, "Button")
+    *b = Button(Sw-130, Sh-bs, 130, bs, "Button")
     CloseList()
     
     ;
@@ -48,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If Bool(i>count-110)
           ButtonGadget  (#PB_Any, (count-i)*2, (count-i)*2, 130, 30,"Button"+Str(i))
         Else
-          ButtonGadget  (#PB_Any, Sw-130, Sh-30, 130, 30,"Button"+Str(i))
+          ButtonGadget  (#PB_Any, Sw-130, Sh-sb, 130, sb,"Button"+Str(i))
         EndIf
       Next
       Debug  Str(ElapsedMilliseconds()-time) + " - time add gadget" 
@@ -60,7 +60,7 @@ CompilerIf #PB_Compiler_IsMainFile
         If Bool(i>count-110)
           Button((count-i)*2, (count-i)*2, 130, 30,"Button"+Str(i))
         Else
-          Button(Sw-130, Sh-30, 130, 30,"Button"+Str(i))
+          Button(Sw-130, Sh-sb, 130, sb,"Button"+Str(i))
         EndIf
       Next
       Debug  Str(ElapsedMilliseconds()-time) + " - time add widget"
@@ -79,7 +79,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAttribute(*g, #PB_ScrollArea_InnerHeight, sh+80)
       
       Define GadgetY = GetGadgetAttribute(g, #PB_ScrollArea_InnerHeight)-GadgetHeight(b)
-      Define Y = 350;GetAttribute(*g, #PB_ScrollArea_InnerHeight)-Height(*b)
+      Define Y = GetAttribute(*g, #PB_ScrollArea_InnerHeight)-Height(*b)
       
       ResizeGadget(b, #PB_Ignore, GadgetY, #PB_Ignore, #PB_Ignore)
       Resize(*b, #PB_Ignore, Y, #PB_Ignore, #PB_Ignore)
@@ -140,8 +140,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 93
-; FirstLine = 42
-; Folding = v-
+; CursorPosition = 6
+; Folding = --
 ; EnableXP
 ; DPIAware
