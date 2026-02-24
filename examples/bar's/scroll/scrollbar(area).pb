@@ -61,8 +61,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure AddImage (List imgs.canvasitem(), img_x, img_y, img, alphatest=0)
       If AddElement(imgs())
          imgs()\img    = img
-         imgs()\x          = img_x
-         imgs()\y          = img_y
+         imgs()\x      = img_x
+         imgs()\y      = img_y
          imgs()\width  = ImageWidth(img)
          imgs()\height = ImageHeight(img)
          imgs()\alphatest = alphatest
@@ -623,8 +623,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 78
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 64
 ; FirstLine = 54
 ; Folding = ----------------
 ; EnableXP
