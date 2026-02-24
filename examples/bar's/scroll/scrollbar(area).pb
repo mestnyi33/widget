@@ -69,14 +69,14 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   ;AddImage(imgs(),  X-80, Y-20, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp"))
+   AddImage(imgs(),  X-80, Y-20, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp"))
    AddImage(imgs(), X+100,Y+100, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp"))
    ;AddImage(imgs(),  x+221,y+200, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
    ;AddImage(imgs(),  x+210,y+321, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
    ;AddImage(imgs(),  x,y-1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
    ;AddImage(imgs(),  X+100,Y+200, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
-   ;AddImage(imgs(),  X+310,Y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
-   AddImage(imgs(),  X+220,Y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
+   AddImage(imgs(),  X+310,Y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
+   ;AddImage(imgs(),  X+220,Y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
    
    hole = CreateImage(#PB_Any,100,100,32)
    If StartDrawing(ImageOutput(hole))
@@ -623,8 +623,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 71
-; FirstLine = 60
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 78
+; FirstLine = 54
 ; Folding = ----------------
 ; EnableXP
