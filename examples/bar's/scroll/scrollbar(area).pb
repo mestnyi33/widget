@@ -88,28 +88,62 @@ CompilerIf #PB_Compiler_IsMainFile
    AddImage(imgs(),X+170,Y+70,hole,1)
    
    ;-
-   Macro make_mdi_area_size( _address_ )
-      *this\scroll_x( ) = _address_\x 
-      *this\scroll_y( ) = _address_\Y
-      *this\scroll_width( ) = _address_\width
-      *this\scroll_height( ) = _address_\height
+;    Macro make_scroll_area( _address_ )
+;       *this\scroll_x( ) = _address_\x 
+;       *this\scroll_y( ) = _address_\Y
+;       *this\scroll_width( ) = _address_\width
+;       *this\scroll_height( ) = _address_\height
+;          
+;       PushListPosition(_address_)
+;       ForEach _address_
+;          If *this\scroll_x( ) > _address_\x
+;             *this\scroll_x( ) = _address_\x
+;          EndIf
+;          If *this\scroll_y( ) > _address_\Y
+;             *this\scroll_y( ) = _address_\Y
+;          EndIf
+;          If *this\scroll_width( ) < _address_\x + _address_\width
+;             *this\scroll_width( ) = _address_\x + _address_\width
+;          EndIf
+;          If *this\scroll_height( ) < _address_\Y + _address_\height
+;             *this\scroll_height( ) = _address_\Y + _address_\height
+;          EndIf
+;      Next
+;      PopListPosition(_address_)
+;      
+;      If *this\scroll_x( ) > X
+;         *this\scroll_x( ) = X
+;      EndIf
+;      If *this\scroll_y( ) > Y
+;         *this\scroll_y( ) = Y
+;      EndIf
+;      *this\scroll_width( ) - *this\scroll_x( )
+;      *this\scroll_height( ) - *this\scroll_y( ) 
+;   EndMacro
+   
+   
+  Procedure make_area( List img.canvasitem( ), *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
+      *this\scroll_x( ) = img( )\x 
+      *this\scroll_y( ) = img( )\Y
+      *this\scroll_width( ) = img( )\width
+      *this\scroll_height( ) = img( )\height
          
-      PushListPosition(_address_)
-      ForEach _address_
-         If *this\scroll_x( ) > _address_\x
-            *this\scroll_x( ) = _address_\x
+      PushListPosition(img( ))
+      ForEach img( )
+         If *this\scroll_x( ) > img( )\x
+            *this\scroll_x( ) = img( )\x
          EndIf
-         If *this\scroll_y( ) > _address_\Y
-            *this\scroll_y( ) = _address_\Y
+         If *this\scroll_y( ) > img( )\Y
+            *this\scroll_y( ) = img( )\Y
          EndIf
-         If *this\scroll_width( ) < _address_\x + _address_\width
-            *this\scroll_width( ) = _address_\x + _address_\width
+         If *this\scroll_width( ) < img( )\x + img( )\width
+            *this\scroll_width( ) = img( )\x + img( )\width
          EndIf
-         If *this\scroll_height( ) < _address_\Y + _address_\height
-            *this\scroll_height( ) = _address_\Y + _address_\height
+         If *this\scroll_height( ) < img( )\Y + img( )\height
+            *this\scroll_height( ) = img( )\Y + img( )\height
          EndIf
      Next
-     PopListPosition(_address_)
+     PopListPosition(img( ))
      
      If *this\scroll_x( ) > X
         *this\scroll_x( ) = X
@@ -119,298 +153,12 @@ CompilerIf #PB_Compiler_IsMainFile
      EndIf
      *this\scroll_width( ) - *this\scroll_x( )
      *this\scroll_height( ) - *this\scroll_y( ) 
-  EndMacro
-   
-   
-   Procedure make_pos_and_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
-         Protected result, round, scroll_v, scroll_h
-         
-         With *this\scroll
-            If Not ( *this\scroll And ( \v Or \h ))
-               ProcedureReturn 0
-            EndIf
-            make_mdi_area_size( imgs() )
-       
-            ;\\ top set state
-            If *this\scroll_y( ) < Y
-               scroll_v = ( *this\scroll_y( ) - Y )
-               \h\bar\page\len = Width - \v\width
-               \v\bar\page\pos = - scroll_v
-            Else
-               \v\bar\page\pos = \v\bar\min
-               \h\bar\page\len = Width
-               *this\scroll_height( ) + ( *this\scroll_y( ) - Y )
-               *this\scroll_y( ) = Y
-            EndIf
-            
-            ;\\ left set state
-            If *this\scroll_x( ) < X
-               scroll_h = ( *this\scroll_x( ) - X )
-               \v\bar\page\len = Height - \h\height
-               \h\bar\page\pos = - scroll_h
-            Else
-               \h\bar\page\pos = \h\bar\min
-               \v\bar\page\len = Height
-               *this\scroll_width( ) + ( *this\scroll_x( ) - X )
-               *this\scroll_x( ) = X
-            EndIf
-            
-            ;\\
-            If *this\scroll_width( ) > \h\bar\page\len - scroll_h
-               If *this\scroll_height( ) = \v\bar\page\len - scroll_v
-                  *this\scroll_height( ) - \h\height
-               EndIf
-               
-               \v\bar\page\len = Height - \h\height
-            Else
-               *this\scroll_width( ) = \h\bar\page\len - scroll_h
-               result = 1
-            EndIf
-            
-            ;\\
-            If *this\scroll_height( ) > \v\bar\page\len - scroll_v
-               If *this\scroll_width( ) = \h\bar\page\len - scroll_h
-                  *this\scroll_width( ) - \v\width
-               EndIf
-               
-               \h\bar\page\len = Width - \v\width
-            Else
-               *this\scroll_height( ) = \v\bar\page\len - scroll_v
-               result = 1
-            EndIf
-            
-            ;\\
-            If *this\scroll_width( ) < \h\bar\page\len - scroll_h
-               *this\scroll_width( ) = \h\bar\page\len - scroll_h
-            EndIf
-            
-;             If *this\scroll_height( ) < \v\bar\page\len - scroll_v
-;                *this\scroll_height( ) = \v\bar\page\len - scroll_v
-;             EndIf
-            
-            ;\\
-            If \v\bar\Max <> *this\scroll_height( )
-               \v\bar\Max = *this\scroll_height( )
-               result = 1
-            EndIf
-            
-            If \h\bar\Max <> *this\scroll_width( )
-               \h\bar\Max = *this\scroll_width( )
-               result = 1
-            EndIf
-            
-            ;\\
-            If result
-               If \h\round And
-                  \v\round And
-                  \h\bar\page\len < Width And
-                  \v\bar\page\len < Height
-                  round = ( \h\height / 4 )
-               EndIf
-               
-               ;
-               ;\\
-               If \v\frame_height( ) <> \v\bar\page\len + round
-                  Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len + round )
-               Else
-                  bar_Update( \v, 5 )
-               EndIf
-               
-               If \h\frame_width( ) <> \h\bar\page\len + round
-                  Resize( \h, #PB_Ignore, #PB_Ignore, \h\bar\page\len + round, #PB_Ignore )
-               Else
-                  bar_Update( \h, 5 )
-               EndIf
-               
-               ;
-               ;\\ update scrollbars parent inner coordinate
-               If *this\scroll_inner_width( ) <> \h\bar\page\len
-                  *this\scroll_inner_width( ) = \h\bar\page\len
-               EndIf
-               If *this\scroll_inner_height( ) <> \v\bar\page\len
-                  *this\scroll_inner_height( ) = \v\bar\page\len
-               EndIf
-            EndIf
-            
-            ProcedureReturn result
-         EndWith
-      EndProcedure
-         
-   Procedure   __make_pos_and_max( *this._s_WIDGET, X, Y, Width, Height )
-         make_mdi_area_size( imgs() )
-         Protected round, result
-         
-         With *this\scroll
-            If Not ( *this\scroll And ( \v Or \h ))
-               ProcedureReturn 0
-            EndIf
-            
-            If Not *this\haschildren
-               ProcedureReturn 0
-            EndIf
-            
-            ;\\
-                        If *this\scroll_x( ) < X
-;                            *this\scroll_width( ) - *this\scroll_x( )
-;                            If *this\scroll_width( ) < Width
-;                               *this\scroll_width( ) = Width
-;                            EndIf
-                        Else
-                           *this\scroll_x( ) = X
-                        EndIf
-                        If *this\scroll_y( ) < Y 
-;                            *this\scroll_height( ) - *this\scroll_y( )
-;                            If *this\scroll_height( ) < Height
-;                               *this\scroll_height( ) = Height
-;                            EndIf
-                        Else
-                           *this\scroll_y( ) = Y
-                        EndIf
-                        
-            ;\\
-            \v\bar\page\pos = - (*this\scroll_y( ) - Y)
-            \h\bar\page\pos = - (*this\scroll_x( ) - X)
-            
-            ;\\
-            If \h\bar\Max <> *this\scroll_width( )
-               \h\bar\Max = *this\scroll_width( )
-               result = 1
-            EndIf
-            
-            If \v\bar\Max <> *this\scroll_height( )
-               \v\bar\Max = *this\scroll_height( ) 
-               result = 1
-            EndIf
-            
-            ;\\
-            If result
-               \v\bar\page\len = Height - ( Bool( Not \h\hide[1] And (\h\bar\Max >= Width Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( ))
-               \h\bar\page\len = Width - ( Bool( Not \v\hide[1] And (\v\bar\Max >= Height Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( ) )
-               
-               ;             
-               If Not \v\hide[1]
-                  If \v\bar\max > \v\bar\page\len
-                     Height = ( \v\bar\page\len + Bool( Not \h\hide[1] And \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
-                     If \v\frame_height( ) <> Height
-                        Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height )
-                     Else
-                        bar_update( \v, 100 )
-                     EndIf
-                     
-                  Else
-                     If \v\hide <> #True
-                        \v\hide = #True
-                        ;// reset page pos then hide scrollbar
-                        If \v\bar\page\pos > \v\bar\min
-                           bar_PageChange( \v, \v\bar\min, #False )
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               
-               ;
-               If Not \h\hide[1]
-                  If \h\bar\max > \h\bar\page\len
-                     Width = ( \h\bar\page\len + Bool( Not \v\hide[1] And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\frame_width( ) / 4 ))
-                     If \h\frame_width( ) <> Width
-                        Resize( \h, #PB_Ignore, #PB_Ignore, Width, #PB_Ignore )
-                     Else
-                        bar_update( \h, 100 )
-                     EndIf
-                     
-                  Else
-                     If \h\hide <> #True
-                        \h\hide = #True
-                        ;// reset page pos then hide scrollbar
-                        If \h\bar\page\pos > \h\bar\min
-                           bar_PageChange( \h, \h\bar\min, #False )
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               
-               ProcedureReturn result
-            EndIf
-         EndWith
-      EndProcedure
-      
-      Procedure   _make_pos_and_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
-      
-      Static v_max, h_max
-      Protected round, result
-      
-      With *this\scroll
-         If Not ( *this\scroll And ( \v Or \h ))
-            ProcedureReturn 0
-         EndIf
-         
-;          make_mdi_area_size( X, Y, Width -  ( Bool( Not \v\hide[1] And (\v\bar\max > \v\bar\page\len) ) * \v\frame_width( ) ), 
-;                                         Height - ( Bool( Not \h\hide[1] And (\h\bar\max > \h\bar\page\len) ) * \h\frame_height( )))
-       
-         make_mdi_area_size( imgs() )
-       
-         ;\\
-         *this\scroll_width( ) - *this\scroll_x( )
-         *this\scroll_height( ) - *this\scroll_y( )
-         
-         \h\bar\page\pos = - ( *this\scroll_x( ) - X )
-         \v\bar\page\pos = - ( *this\scroll_y( ) - Y )
-         
-         ;\\
-         If \v\bar\Max <> *this\scroll_height( )
-            \v\bar\Max = *this\scroll_height( )
-            result = 1
-         EndIf
-         
-         If \h\bar\Max <> *this\scroll_width( )
-            \h\bar\Max = *this\scroll_width( )
-            result = 1
-         EndIf
-         ;Debug \v\bar\page\len
-         ;\\
-         If result 
-;             \v\bar\page\len = Height - ( Bool( Not \h\hide[1] And (*this\scroll_width( ) >= Width Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( ))
-;                \h\bar\page\len = Width - ( Bool( Not \v\hide[1] And (*this\scroll_height( ) >= Height Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( ) )
-; ;                  Height = ( \v\bar\page\len + Bool( Not \h\hide[1] And \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
-; ;                 Width = ( \h\bar\page\len + Bool( Not \v\hide[1] And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\frame_width( ) / 4 ))
-                        
-            If *this\scroll_width( ) > Width And
-               *this\scroll_height( ) > Height
-               round = ( \h\frame_height( ) / 4 )
-            Else
-               round = 20
-               If *this\scroll_width( ) > Width 
-                 \v\bar\page\len = Width - 20 
-               EndIf
-               If *this\scroll_height( ) > Height
-                 \h\bar\page\len = Height - 20
-               EndIf
-            EndIf
-            
-            If \v\height <> \v\bar\page\len + round
-               Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len + round, 0 )
-            Else
-               If v_max <> \v\bar\Max
-                  v_max = \v\bar\Max
-                  bar_update( \v, 5 )
-               EndIf
-            EndIf
-            
-            If \h\frame_width( ) <> \h\bar\page\len + round
-               Resize( \h, #PB_Ignore, #PB_Ignore, \h\bar\page\len + round, #PB_Ignore, 0 )
-            Else
-               If h_max <> \h\bar\Max
-                  h_max = \h\bar\Max
-                  bar_update( \h, 5 )
-               EndIf
-            EndIf
-            
-            ProcedureReturn result
-         EndIf
-         
-      EndWith
-   EndProcedure
-   
+     
+     If make_scroll_max( *this, X, Y, Width, Height)
+        ProcedureReturn 1
+     EndIf
+  EndProcedure
+  
    ;-
    Procedure   _bar_area_resize_( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
          Protected.b result, resize_v, resize_h
@@ -796,16 +544,16 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
                   If Repaint
-                     make_pos_and_max( *this, X, Y, Width, Height)
+                     make_area( imgs(), *this, X, Y, Width, Height)
                   EndIf
                EndIf
             EndIf
             
          Case #PB_EventType_Resize 
             ResizeGadget(Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) ; Bug (562)
-            make_mdi_area_size( imgs() )
+;             make_scroll_area( imgs() )
             bar_area_resize_( *this, X, Y, Width, Height )
-            ;make_pos_and_max( *this, x, y, width, height)
+            ;make_scroll_max( *this, x, y, width, height)
             
             Repaint = #True
             
@@ -864,7 +612,7 @@ CompilerIf #PB_Compiler_IsMainFile
    *this\scroll\h = Widget::Scroll(X, Y+Height-20, 0,  20, 0, 0, Height-20, invert, 11)
    ; *this\scroll\v\parent = *this
    
-   make_pos_and_max( *this, X, Y, Width, Height)
+   make_area( imgs(), *this, X, Y, Width, Height)
    
    Bind(*this\scroll\v, @events_scrolls())
    Bind(*this\scroll\h, @events_scrolls())
@@ -874,8 +622,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 139
-; FirstLine = 124
-; Folding = -----------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 553
+; FirstLine = 549
+; Folding = ----------------
 ; EnableXP
