@@ -69,13 +69,14 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   AddImage(imgs(),  X-80, Y-20, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp"))
+   ;AddImage(imgs(),  X-80, Y-20, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/PureBasic.bmp"))
    AddImage(imgs(), X+100,Y+100, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/Geebee2.bmp"))
    ;AddImage(imgs(),  x+221,y+200, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
    ;AddImage(imgs(),  x+210,y+321, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
    ;AddImage(imgs(),  x,y-1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
    ;AddImage(imgs(),  X+100,Y+200, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
-   AddImage(imgs(),  X+310,Y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
+   ;AddImage(imgs(),  X+310,Y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
+   AddImage(imgs(),  X+220,Y+350, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/AlphaChannel.bmp"))
    
    hole = CreateImage(#PB_Any,100,100,32)
    If StartDrawing(ImageOutput(hole))
@@ -122,12 +123,12 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   EndMacro
    
    
-  Procedure make_area( List img.canvasitem( ), *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
+   Procedure make_area( List img.canvasitem( ), *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
       *this\scroll_x( ) = img( )\x 
       *this\scroll_y( ) = img( )\Y
       *this\scroll_width( ) = img( )\width
       *this\scroll_height( ) = img( )\height
-         
+      
       PushListPosition(img( ))
       ForEach img( )
          If *this\scroll_x( ) > img( )\x
@@ -142,10 +143,10 @@ CompilerIf #PB_Compiler_IsMainFile
          If *this\scroll_height( ) < img( )\Y + img( )\height
             *this\scroll_height( ) = img( )\Y + img( )\height
          EndIf
-     Next
-     PopListPosition(img( ))
-     
-     If *this\scroll_x( ) > X
+      Next
+      PopListPosition(img( ))
+      
+      If *this\scroll_x( ) > X
         *this\scroll_x( ) = X
      EndIf
      If *this\scroll_y( ) > Y
@@ -155,9 +156,9 @@ CompilerIf #PB_Compiler_IsMainFile
      *this\scroll_height( ) - *this\scroll_y( ) 
      
      If make_scroll_max( *this, X, Y, Width, Height)
-        ProcedureReturn 1
-     EndIf
-  EndProcedure
+         ProcedureReturn 1
+      EndIf
+   EndProcedure
   
    ;-
    Procedure   _bar_area_resize_( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
@@ -623,7 +624,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 553
-; FirstLine = 549
+; CursorPosition = 71
+; FirstLine = 60
 ; Folding = ----------------
 ; EnableXP

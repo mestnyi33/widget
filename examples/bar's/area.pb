@@ -36,65 +36,65 @@ CompilerIf #PB_Compiler_IsMainFile
          scroll_width  = *this\scroll_width( )
          scroll_height = *this\scroll_height( )
          
-;          ;\\ top set state
-;          If scroll_y < Y
-;             \h\bar\page\len = Width - \v\width
-;             \v\bar\page\pos = - ( scroll_y - Y )
-;             
-;          Else
-;             \h\bar\page\len = Width
-;             
-;             sy = ( scroll_y - Y )
-;             scroll_height + sy
-;             scroll_y = Y
-;          EndIf
-;          
-;          ;\\ left set state
-;          If scroll_x < X
-;             \v\bar\page\len = Height - \h\height
-;             \h\bar\page\pos = - ( scroll_x - X )
-;          Else
-;             \v\bar\page\len = Height
-;             
-;             sx = ( scroll_x - X )
-;             scroll_width + sx
-;             scroll_x = X
-;          EndIf
-;\\ top set state
+         ;          ;\\ top set state
+         ;          If scroll_y < Y
+         ;             \h\bar\page\len = Width - \v\width
+         ;             \v\bar\page\pos = - ( scroll_y - Y )
+         ;             
+         ;          Else
+         ;             \h\bar\page\len = Width
+         ;             
+         ;             sy = ( scroll_y - Y )
+         ;             scroll_height + sy
+         ;             scroll_y = Y
+         ;          EndIf
+         ;          
+         ;          ;\\ left set state
+         ;          If scroll_x < X
+         ;             \v\bar\page\len = Height - \h\height
+         ;             \h\bar\page\pos = - ( scroll_x - X )
+         ;          Else
+         ;             \v\bar\page\len = Height
+         ;             
+         ;             sx = ( scroll_x - X )
+         ;             scroll_width + sx
+         ;             scroll_x = X
+         ;          EndIf
+         ;\\ top set state
          Protected scroll_v
          Protected scroll_h
          
-            If *this\scroll_y( ) < Y
-               scroll_v = ( *this\scroll_y( ) - Y )
-               \h\bar\page\len = Width - \v\width
-               \v\bar\page\pos = - scroll_v
-            Else
-               *this\scroll_height( ) + ( *this\scroll_y( ) - Y )
-               \h\bar\page\len = Width
-               \v\bar\page\pos = \v\bar\min
-               *this\scroll_y( ) = Y
-            EndIf
-            
-            ;\\ left set state
-            If *this\scroll_x( ) < X
-               scroll_h = ( *this\scroll_x( ) - X )
-               \v\bar\page\len = Height - \h\height
-               \h\bar\page\pos = - scroll_h
-            Else
-               *this\scroll_width( ) + ( *this\scroll_x( ) - X )
-               \v\bar\page\len = Height
-               \h\bar\page\pos = \h\bar\min
-               *this\scroll_x( ) = X
-            EndIf
-            
-            
+         If *this\scroll_y( ) < Y
+            scroll_v = ( *this\scroll_y( ) - Y )
+            \h\bar\page\len = Width - \v\width
+            \v\bar\page\pos = - scroll_v
+         Else
+            *this\scroll_height( ) + ( *this\scroll_y( ) - Y )
+            \h\bar\page\len = Width
+            \v\bar\page\pos = \v\bar\min
+            *this\scroll_y( ) = Y
+         EndIf
+         
+         ;\\ left set state
+         If *this\scroll_x( ) < X
+            scroll_h = ( *this\scroll_x( ) - X )
+            \v\bar\page\len = Height - \h\height
+            \h\bar\page\pos = - scroll_h
+         Else
+            *this\scroll_width( ) + ( *this\scroll_x( ) - X )
+            \v\bar\page\len = Height
+            \h\bar\page\pos = \h\bar\min
+            *this\scroll_x( ) = X
+         EndIf
+         
+         
          ;\\
          If scroll_width > \h\bar\page\len - ( scroll_x - X )
             If scroll_height = \v\bar\page\len - ( scroll_y - Y )
-;                If \v\bar\max > Height - \h\height
-;                Else
-                  scroll_height = \v\bar\page\len - ( scroll_x - X ) - \h\height
-;                EndIf
+               ;                If \v\bar\max > Height - \h\height
+               ;                Else
+               scroll_height = \v\bar\page\len - ( scroll_x - X ) - \h\height
+               ;                EndIf
             EndIf
             
             \v\bar\page\len = Height - \h\height
@@ -107,10 +107,10 @@ CompilerIf #PB_Compiler_IsMainFile
          ;\\
          If scroll_height > \v\bar\page\len - ( scroll_y - Y )
             If scroll_width = \h\bar\page\len - ( scroll_x - X )
-;                If \h\bar\max > Width - \v\width
-;                Else
-                  scroll_width = \h\bar\page\len - ( scroll_x - X ) - \v\width
-;                EndIf
+               ;                If \h\bar\max > Width - \v\width
+               ;                Else
+               scroll_width = \h\bar\page\len - ( scroll_x - X ) - \v\width
+               ;                EndIf
             EndIf
             
             \h\bar\page\len = Width - \v\width
@@ -159,7 +159,7 @@ CompilerIf #PB_Compiler_IsMainFile
             bar_Update( \h, 5 )
          EndIf
          
-        ;\\
+         ;\\
          *this\scroll_x( )      = scroll_x
          *this\scroll_y( )      = scroll_y
          *this\scroll_width( )  = scroll_width
@@ -201,7 +201,7 @@ CompilerIf #PB_Compiler_IsMainFile
       PopListPosition(_list_)
       
       If *this\scroll_x( ) > X
-         *this\scroll_x( ) = X
+         *this\scroll_x( ) = X 
       EndIf
       If *this\scroll_y( ) > Y
          *this\scroll_y( ) = Y
@@ -212,10 +212,10 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Macro Area_Draw( _this_ )
       make_scroll_max( _this_,
-                          _this_\scroll\h\x, 
-                          _this_\scroll\v\y, 
-                          (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
-                          (_this_\scroll\h\y+_this_\scroll\h\height)-_this_\scroll\v\y )
+                       _this_\scroll\h\x, 
+                       _this_\scroll\v\y, 
+                       (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
+                       (_this_\scroll\h\y+_this_\scroll\h\height)-_this_\scroll\v\y )
       
       If Not _this_\scroll\v\hide
          ; widget::Draw( _this_\scroll\v )
@@ -575,8 +575,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 213
-; FirstLine = 212
+; CursorPosition = 179
+; FirstLine = 203
 ; Folding = -----------
 ; EnableXP
 ; DPIAware
