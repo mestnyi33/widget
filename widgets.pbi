@@ -2344,8 +2344,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\scroll_height( ) - *this\scroll_y( ) 
       EndProcedure
       
-      Procedure   make_scroll_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
+      Procedure   make_scroll_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l ) ; commit 2110 ok
          Protected result, round, scroll_v, scroll_h
+         ; https://github.com/mestnyi33/widget/commit/cdbedf660445ddeb9ae16fe96ad891b5aa68cd4e
          
          With *this\scroll
             If Not ( *this\scroll And ( \v Or \h ))
@@ -2377,29 +2378,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If *this\scroll_width( ) < \h\bar\page\len - scroll_h
-               *this\scroll_width( ) = \h\bar\page\len - scroll_h
-               result = 1
-            Else
-               \v\bar\page\len = Height - \h\height
+            If *this\scroll_width( ) <> \h\bar\page\len - scroll_h
+               If *this\scroll_width( ) < \h\bar\page\len - scroll_h
+                  *this\scroll_width( ) = \h\bar\page\len - scroll_h
+                  result = 1
+               Else
+                  \v\bar\page\len = Height - \h\height
+               EndIf
             EndIf
             
             ;\\
-            If *this\scroll_height( ) < \v\bar\page\len - scroll_v
-               *this\scroll_height( ) = \v\bar\page\len - scroll_v
-               result = 1
-            Else
-               If *this\scroll_width( ) = \h\bar\page\len - scroll_h
-                  If *this\scroll_width( ) > ( Width - \v\width ) - scroll_h
-                     *this\scroll_width( ) - \v\width
+            If *this\scroll_height( ) <> \v\bar\page\len - scroll_v
+               If *this\scroll_height( ) < \v\bar\page\len - scroll_v
+                  *this\scroll_height( ) = \v\bar\page\len - scroll_v
+                  result = 1
+               Else
+                  If *this\scroll_width( ) = \h\bar\page\len - scroll_h
+                     If *this\scroll_width( ) > ( Width - \v\width ) - scroll_h
+                        *this\scroll_width( ) - \v\width
+                     EndIf
                   EndIf
+                  
+                  \h\bar\page\len = Width - \v\width
+                  
+                  ;                If *this\scroll_width( ) < \h\bar\page\len - scroll_h
+                  ;                   *this\scroll_width( ) = \h\bar\page\len - scroll_h
+                  ;                EndIf
                EndIf
-               
-               \h\bar\page\len = Width - \v\width
-               
-;                If *this\scroll_width( ) < \h\bar\page\len - scroll_h
-;                   *this\scroll_width( ) = \h\bar\page\len - scroll_h
-;                EndIf
             EndIf
             
             ;\\
@@ -28330,9 +28335,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 2391
-; FirstLine = 2285
-; Folding = -----------------------------------------------0-------z+---+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------r7-----------------------------------------------------------
+; CursorPosition = 2392
+; FirstLine = 2296
+; Folding = -----------------------------------------------0-------P8---8--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8--------------vq------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
