@@ -582,7 +582,7 @@ CompilerIf #PB_Compiler_IsMainFile
                PopListPosition(imgs())
                
                ;Debug ""+*this\class +" - "+ EventWidget( )\parent\class
-               *this\scroll_y( ) =- EventWidget( )\bar\page\pos + EventWidget( )\y
+               *this\scroll_y( ) =- ( EventWidget( )\bar\page\pos - EventWidget( )\y )
             Else
                
                PushListPosition(imgs())
@@ -591,7 +591,7 @@ CompilerIf #PB_Compiler_IsMainFile
                Next
                PopListPosition(imgs())
                
-               *this\scroll_x( ) =- EventWidget( )\bar\page\pos + EventWidget( )\x
+               *this\scroll_x( ) =- ( EventWidget( )\bar\page\pos - EventWidget( )\x ) 
             EndIf
       EndSelect
    EndProcedure
@@ -624,7 +624,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 64
-; FirstLine = 54
+; CursorPosition = 593
+; FirstLine = 575
 ; Folding = ----------------
 ; EnableXP

@@ -14,8 +14,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open(0, 0, 0, 740, 480, "MDI", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       *g = MDI(20, 20, 160,95)
-      Resize(AddItem(*g, -1, "form_0"), 7, 0, 120, 60)
-      ;Resize(AddItem(*g, -1, "form_0"), - 40, 0, 120, 60)
+      ;Resize(AddItem(*g, -1, "form_0"), 7, 0, 120, 60)
+      Resize(AddItem(*g, -1, "form_0"), - 40, 0, 120, 60)
       CloseList( )
       
       *g = MDI(200, 20, 160, 95)
@@ -105,7 +105,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 17
+; CursorPosition = 16
 ; Folding = -
 ; EnableXP
 ; DPIAware
