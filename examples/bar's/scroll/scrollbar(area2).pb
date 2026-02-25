@@ -123,7 +123,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ;   EndMacro
    
    
-   Procedure make_area( List img.canvasitem( ), *this._s_WIDGET, X.l, Y.l, Width.l, Height.l )
+   Procedure make_area( List img.canvasitem( ), *this._s_WIDGET )
       *this\scroll_x( ) = img( )\x 
       *this\scroll_y( ) = img( )\Y
       *this\scroll_width( ) = img( )\width
@@ -149,10 +149,10 @@ CompilerIf #PB_Compiler_IsMainFile
       *this\scroll_width( ) - *this\scroll_x( )
       *this\scroll_height( ) - *this\scroll_y( )
       
-      If make_scroll_max( *this, DPIScaledX(X), DPIScaledY(Y), DPIScaledX(Width), DPIScaledY(Height))
-      ; If make_scroll_max( *this, X, Y, Width, Height)
-         ProcedureReturn 1
-      EndIf
+;       If make_scroll_max( *this, DPIScaledX(X), DPIScaledY(Y), DPIScaledX(Width), DPIScaledY(Height))
+;       ; If make_scroll_max( *this, X, Y, Width, Height)
+;          ProcedureReturn 1
+;       EndIf
    EndProcedure
   
    ;-
@@ -541,7 +541,8 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
                   If Repaint
-                     make_area( imgs(), *this, X, Y, Width, Height)
+                     make_area( imgs(), *this )
+                     make_scroll_max( *this, DPIScaledX(X), DPIScaledY(Y), DPIScaledX(Width), DPIScaledY(Height))
                   EndIf
                EndIf
             EndIf
@@ -571,29 +572,22 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( ) ;   WidgetEvent( ) ; 
          Case #__event_Change
             ; Debug ""+*this +" "+ EventWidget( )\parent
+            
+            PushListPosition(imgs())
             If EventWidget( )\bar\vertical
-               PushListPosition(imgs())
                ForEach imgs()
                   imgs()\Y + WidgetEventData( ) 
                Next
-               PopListPosition(imgs())
-               
-               ;Debug ""+*this\class +" - "+ EventWidget( )\parent\class
-               ; *this\scroll_y( ) =- ( EventWidget( )\bar\page\pos - EventWidget( )\y )
-               *this\scroll_y( ) + WidgetEventData( ) 
             Else
-               
-               PushListPosition(imgs())
                ForEach imgs()
                   imgs()\X + WidgetEventData( )
                Next
-               PopListPosition(imgs())
-               
-               ; *this\scroll_x( ) =- ( EventWidget( )\bar\page\pos - EventWidget( )\x ) 
-               *this\scroll_x( ) + WidgetEventData( ) 
-
             EndIf
-      EndSelect
+            PopListPosition(imgs())
+            
+            make_area( imgs(), *this)
+         make_scroll_max( *this, DPIScaledX(X), DPIScaledY(Y), DPIScaledX(Width), DPIScaledY(Height))
+                  EndSelect
    EndProcedure
    
    If Not OpenWindow(0, 0, 0, Width+X*2+20, Height+Y*2+20, "Move/Drag Canvas Image", #PB_Window_SystemMenu | #PB_Window_SizeGadget | #PB_Window_ScreenCentered) 
@@ -613,7 +607,8 @@ CompilerIf #PB_Compiler_IsMainFile
    *this\scroll\h = Widget::Scroll((X), (Y+Height)-20, 0,  20, 0, 0, Height-20, invert, 11)
    ; *this\scroll\v\parent = *this
    
-   make_area( imgs(), *this, X, Y, Width, Height)
+   ;make_area( imgs(), *this, X, Y, Width, Height)
+   make_scroll_max( *this, DPIScaledX(X), DPIScaledY(Y), DPIScaledX(Width), DPIScaledY(Height))
    
    Bind(*this\scroll\v, @events_scrolls())
    Bind(*this\scroll\h, @events_scrolls())
@@ -624,8 +619,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 592
-; FirstLine = 537
-; Folding = 8--0------------
+; CursorPosition = 589
+; FirstLine = 571
+; Folding = ----------------
 ; EnableXP
 ; DPIAware

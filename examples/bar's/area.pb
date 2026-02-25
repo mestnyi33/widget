@@ -199,6 +199,9 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
       Next
       PopListPosition(_list_)
+      
+      *this\scroll_width( ) - *this\scroll_x( )
+      *this\scroll_height( ) - *this\scroll_y( )
    EndMacro
    
    Macro Area_Draw( _this_ )
@@ -565,9 +568,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 361
-; FirstLine = 354
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 199
+; FirstLine = 179
 ; Folding = -----------
 ; EnableXP
 ; DPIAware
