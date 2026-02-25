@@ -145,17 +145,8 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
       Next
       PopListPosition(img( ))
-      
-      If *this\scroll_x( ) > X
-        *this\scroll_x( ) = X
-     EndIf
-     If *this\scroll_y( ) > Y
-        *this\scroll_y( ) = Y
-     EndIf
-     *this\scroll_width( ) - *this\scroll_x( )
-     *this\scroll_height( ) - *this\scroll_y( ) 
      
-     If make_scroll_max( *this, X, Y, Width, Height)
+      If make_scroll_max( *this, X, Y, Width, Height)
          ProcedureReturn 1
       EndIf
    EndProcedure
@@ -624,7 +615,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 593
-; FirstLine = 575
+; CursorPosition = 148
+; FirstLine = 139
 ; Folding = ----------------
 ; EnableXP
