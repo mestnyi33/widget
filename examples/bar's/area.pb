@@ -355,8 +355,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure Canvas_AddImage( List _images_.IMAGES( ), X, Y, img, alphatest=0 )
       If AddElement( _images_( ) )
          _images_( )\img       = img
-         _images_( )\x         = X
-         _images_( )\y         = Y
+         _images_( )\x         = DPIScaledX(X)
+         _images_( )\y         = DPIScaledY(Y)
          _images_( )\width     = ImageWidth( img )
          _images_( )\height    = ImageHeight( img )
          _images_( )\alphatest = alphatest
@@ -565,9 +565,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 200
-; FirstLine = 176
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 361
+; FirstLine = 354
 ; Folding = -----------
 ; EnableXP
 ; DPIAware

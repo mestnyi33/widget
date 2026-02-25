@@ -2472,12 +2472,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                ;\\
                If \v\frame_height( ) <> \v\bar\page\len + round
-                  Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len + round )
+                  Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len + round, 0 )
                Else
                   bar_Update( \v, 5 )
                EndIf
                If \h\frame_width( ) <> \h\bar\page\len + round
-                  Resize( \h, #PB_Ignore, #PB_Ignore, \h\bar\page\len + round, #PB_Ignore )
+                  Resize( \h, #PB_Ignore, #PB_Ignore, \h\bar\page\len + round, #PB_Ignore, 0 )
                Else
                   bar_Update( \h, 5 )
                EndIf
@@ -28314,9 +28314,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 25291
-; FirstLine = 24809
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 2474
+; FirstLine = 2440
 ; Folding = ----------------------------------------------------+-----+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

@@ -61,8 +61,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure AddImage (List imgs.canvasitem(), img_x, img_y, img, alphatest=0)
       If AddElement(imgs())
          imgs()\img    = img
-         imgs()\x      = img_x
-         imgs()\y      = img_y
+         imgs()\x      = DPIScaledX(img_x)
+         imgs()\y      = DPIScaledY(img_y)
          imgs()\width  = ImageWidth(img)
          imgs()\height = ImageHeight(img)
          imgs()\alphatest = alphatest
@@ -146,7 +146,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       PopListPosition(img( ))
      
-      If make_scroll_max( *this, X, Y, Width, Height)
+     If make_scroll_max( *this, DPIScaledX(X), DPIScaledY(Y), DPIScaledX(Width), DPIScaledY(Height))
+      ; If make_scroll_max( *this, X, Y, Width, Height)
          ProcedureReturn 1
       EndIf
    EndProcedure
@@ -486,7 +487,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
       UnclipOutput()
       DrawingMode(#PB_2DDrawing_Outlined)
-      Box(X, Y, Width, Height, RGB(0,255,255))
+      ;Box(X, Y, Width, Height, RGB(0,255,255))
+      Box( DPIScaledX(X), DPIScaledY(Y), DPIScaledX(Width), DPIScaledY(Height), RGB( 0,255,255 ) )
       Box(*this\scroll_x( ), *this\scroll_y( ), *this\scroll_width( ), *this\scroll_height( ), RGB(255,0,255))
       Box(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, RGB(255,255,0))
       
@@ -600,8 +602,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    *this\inner_y() = 100
    ; Resize(*this, X, Y, Width, Height)
    Define invert = #__flag_Invert
-   *this\scroll\v = Widget::Scroll(X+Width-20, Y, 20, 0, 0, 0, Width-20, #__flag_Vertical|invert, 11)
-   *this\scroll\h = Widget::Scroll(X, Y+Height-20, 0,  20, 0, 0, Height-20, invert, 11)
+   *this\scroll\v = Widget::Scroll((X+Width)-20, (Y), 20, 0, 0, 0, Width-20, #__flag_Vertical|invert, 11)
+   *this\scroll\h = Widget::Scroll((X), (Y+Height)-20, 0,  20, 0, 0, Height-20, invert, 11)
    ; *this\scroll\v\parent = *this
    
    make_area( imgs(), *this, X, Y, Width, Height)
@@ -614,8 +616,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 148
-; FirstLine = 139
-; Folding = ----------------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 489
+; FirstLine = 126
+; Folding = 8--0----+-------
 ; EnableXP
+; DPIAware
