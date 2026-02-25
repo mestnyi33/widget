@@ -149,10 +149,15 @@ CompilerIf #PB_Compiler_IsMainFile
       *this\scroll_width( ) - *this\scroll_x( )
       *this\scroll_height( ) - *this\scroll_y( )
       
-      If make_scroll_max( *this, DPIScaledX(X), DPIScaledY(Y), DPIScaledX(Width), DPIScaledY(Height))
-      ; If make_scroll_max( *this, X, Y, Width, Height)
-         ProcedureReturn 1
-      EndIf
+      make_scroll_max( *this, DPIScaledX(X), DPIScaledY(Y), DPIScaledX(Width), DPIScaledY(Height))
+;       
+; ;       If *this\scroll_x( ) > X: *this\scroll_x( ) = X: EndIf
+; ;       If *this\scroll_y( ) > Y: *this\scroll_y( ) = Y: EndIf
+;       *this\scroll_x( ) = X - *this\scroll\h\bar\page\pos
+;       *this\scroll_y( ) = Y - *this\scroll\v\bar\page\pos
+;       *this\scroll_width( ) = *this\scroll\h\bar\max
+;       *this\scroll_height( ) = *this\scroll\v\bar\max
+            
    EndProcedure
   
    ;-
@@ -624,8 +629,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 592
-; FirstLine = 537
-; Folding = 8--0------------
+; CursorPosition = 155
+; FirstLine = 108
+; Folding = 8--+------------
 ; EnableXP
 ; DPIAware

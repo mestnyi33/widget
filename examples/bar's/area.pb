@@ -211,6 +211,7 @@ CompilerIf #PB_Compiler_IsMainFile
                        (_this_\scroll\v\x+_this_\scroll\v\width)-_this_\scroll\h\x,
                        (_this_\scroll\h\y+_this_\scroll\h\height)-_this_\scroll\v\y )
       
+   
       If Not _this_\scroll\v\hide
          ; widget::Draw( _this_\scroll\v )
       EndIf
@@ -222,9 +223,8 @@ CompilerIf #PB_Compiler_IsMainFile
       DrawingMode( #PB_2DDrawing_Outlined )
       Box( DPIScaledX(X), DPIScaledY(Y), DPIScaledX(Width), DPIScaledY(Height), RGB( 0,255,0 ) )
       Box( _this_\scroll\h\x, _this_\scroll\v\y, _this_\scroll\h\bar\page\len, _this_\scroll\v\bar\page\len, RGB( 0,0,255 ) )
-      ;Debug " "+_this_\scroll\v\y +" "+ _this_\scroll\v\bar\page\pos
-      ; Box( _this_\scroll_x( ), _this_\scroll_y( ), _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
-      Box( _this_\scroll\h\x -_this_\scroll\h\bar\page\pos, _this_\scroll\v\y - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
+      Box( _this_\scroll\h\x - _this_\scroll\h\bar\page\pos, _this_\scroll\v\y - _this_\scroll\v\bar\page\pos, _this_\scroll\h\bar\max, _this_\scroll\v\bar\max, RGB( 255,0,0 ) )
+      Box( _this_\scroll_x( ), _this_\scroll_y( ), _this_\scroll_width( ), _this_\scroll_height( ), RGB( 255,0,255 ) )
    EndMacro
    
    Macro Area_Use( _canvas_window_, _callback_, _canvas_gadget_ = #PB_Any )
@@ -569,8 +569,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 199
-; FirstLine = 179
+; CursorPosition = 213
+; FirstLine = 207
 ; Folding = -----------
 ; EnableXP
 ; DPIAware
