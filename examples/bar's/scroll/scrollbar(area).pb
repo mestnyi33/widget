@@ -628,9 +628,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Event = WaitWindowEvent()
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 155
-; FirstLine = 108
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 152
+; FirstLine = 102
 ; Folding = 8--+------------
 ; EnableXP
 ; DPIAware

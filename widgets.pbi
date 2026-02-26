@@ -2302,7 +2302,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure   make_scroll_area( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l ) ; Ok
+      Procedure   make_mdi_area( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l ) ; Ok
          *this\scroll_x( )      = 0;X
          *this\scroll_y( )      = 0;Y
          *this\scroll_width( )  = Width
@@ -2331,7 +2331,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\scroll_height( ) - *this\scroll_y( )
       EndProcedure
       
-      Procedure   make_scroll_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l ) ; commit 2119 ok
+      Procedure   make_mdi_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l ) ; commit 2119 ok
          Protected result, round, scroll_v, scroll_h, inner_width, inner_height
          Protected scroll_x, scroll_y, scroll_width, scroll_height
          
@@ -2423,7 +2423,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   result = 1
                EndIf
             EndIf
-                        
+            
             ;\\
             If scroll_width < \h\bar\page\len 
                scroll_width = \h\bar\page\len
@@ -2442,8 +2442,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
                result = 1
             EndIf
             
-            ;\\
             If result
+               ;\\ update scrollbars parent inner coordinate
+               If *this\inner_width( ) <> \h\bar\page\len
+                  *this\inner_width( ) = \h\bar\page\len
+               EndIf
+               If *this\inner_height( ) <> \v\bar\page\len
+                  *this\inner_height( ) = \v\bar\page\len
+               EndIf
+               
+               ProcedureReturn result
+            EndIf
+         EndWith
+      EndProcedure
+      
+      Procedure   make_scroll_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l ) ; commit 2119 ok
+         Protected round
+         
+         With *this\scroll
+            If make_mdi_max( *this, X, Y, Width, Height )
                If \h\round And
                   \v\round And
                   \h\bar\page\len < Width And
@@ -2454,36 +2471,88 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                ;\\
                If \v\frame_height( ) <> \v\bar\page\len + round
-                  Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len + round )
+                  Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, \v\bar\page\len + round, 0 )
                Else
                   bar_Update( \v, 5 )
                EndIf
                If \h\frame_width( ) <> \h\bar\page\len + round
-                  Resize( \h, #PB_Ignore, #PB_Ignore, \h\bar\page\len + round, #PB_Ignore )
+                  Resize( \h, #PB_Ignore, #PB_Ignore, \h\bar\page\len + round, #PB_Ignore, 0 )
                Else
                   bar_Update( \h, 5 )
-               EndIf
-               
-               ;
-               ;\\ update scrollbars parent inner coordinate
-               If *this\scroll_inner_width( ) <> \h\bar\page\len
-                  *this\scroll_inner_width( ) = \h\bar\page\len
-               EndIf
-               If *this\scroll_inner_height( ) <> \v\bar\page\len
-                  *this\scroll_inner_height( ) = \v\bar\page\len
                EndIf
                
                ;\\
                If StartEnum( *this )
                   If *this = widgets( )\parent
                      ; Reclip( widgets( ) )
-                     Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                     Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
                   EndIf
                   StopEnum( )
                EndIf
+               
+               ProcedureReturn 1
+            EndIf
+         EndWith
+      EndProcedure
+      
+      Procedure   make_scrollbar_area_mdi( *this._s_Widget, Width.l, Height.l )
+         With *this\scroll
+            If Not ( *this\scroll And ( \v Or \h ))
+               ProcedureReturn 0
             EndIf
             
-            ProcedureReturn result
+            ;\\
+            Define frame_x = #PB_Ignore
+            Define frame_y = #PB_Ignore
+            Define frame_width = #PB_Ignore
+            Define frame_height = #PB_Ignore
+            Define change_h, change_v, round
+            
+            Define result = make_mdi_max( *this, 0, 0, Width, Height )
+            
+            If \h\round And
+               \v\round And
+               \h\bar\page\len < Width And
+               \v\bar\page\len < Height
+               round = ( \h\height / 4 )
+            EndIf
+            
+            ;
+            If \h\container_y( ) <> Height - \h\frame_height( )
+               frame_y = Height - \h\frame_height( )
+               change_h = 1
+            EndIf
+            If \h\frame_width( ) <> \h\bar\page\len + round
+               frame_width = \h\bar\page\len + round
+               change_h = 1
+            EndIf
+            If change_h 
+               Resize( \h, #PB_Ignore, frame_y, frame_width, #PB_Ignore, 0 )
+            EndIf
+            
+            ;
+            If \v\container_x( ) <> Width - \v\frame_width( )
+               frame_x = Width - \v\frame_width( )
+               change_v = 1
+            EndIf
+            If \v\frame_height( ) <> \v\bar\page\len + round
+               frame_height = \v\bar\page\len + round
+               change_v = 1
+            EndIf
+            If change_v
+               Resize( \v, frame_x, #PB_Ignore, #PB_Ignore, frame_height, 0 )
+            EndIf
+            
+            ;\\
+            If result
+;                If StartEnum( *this )
+;                   If *this = widgets( )\parent
+;                      ; Reclip( widgets( ) )
+;                      Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+;                   EndIf
+;                   StopEnum( )
+;                EndIf
+            EndIf
          EndWith
       EndProcedure
       
@@ -2696,9 +2765,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\
          If result
-            If make_scrollbar_area( *this )
-               ; Debug "[1] - make_scrollbar_area( )"
-            EndIf
+            make_scrollbar_area( *this )
          EndIf
          
          ProcedureReturn result
@@ -23284,7 +23351,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\type = #__type_Progress Or
                *this\type = #__type_Track Or
                *this\type = #__type_Spin
-               *this\bar\PageChange( ) = 1
+               ;
+               If Not is_integral_( *this )
+                  *this\bar\PageChange( ) = 1 ; для MDI мешает
+               EndIf
             EndIf
             
             ; - Create Scroll
@@ -24158,10 +24228,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\class           = #PB_Compiler_Procedure ;+""+ count : count + 1
          *this\container       = 2
          *this\picture\image   = - 1 ; Background img
-         *this\frame_x( )      = #PB_Ignore
-         *this\frame_y( )      = #PB_Ignore
-         *this\frame_width( )  = #PB_Ignore
-         *this\frame_height( ) = #PB_Ignore
+;          *this\frame_x( )      = #PB_Ignore
+;          *this\frame_y( )      = #PB_Ignore
+;          *this\frame_width( )  = #PB_Ignore
+;          *this\frame_height( ) = #PB_Ignore
          
          ;\\ replace pb flag
          Flag = FromPBFlag( *this\type, Flag )
@@ -24925,12 +24995,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\container_y( ) = Y 
             EndIf
             
-            ; container coordinate
+              ; container coordinate
             If test_resize
                Debug "resize - "+*this\class +" ("+ X +" "+ Y +" "+ Width +" "+ Height +")"
             EndIf
             
-            ; frame coordinate
+          ; frame coordinate
             If *this\parent And *this <> *this\parent And Not is_root_( *this )
                If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
                   If *this\TabIndex( ) = #PB_Ignore
@@ -24966,12 +25036,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          iwidth  = Width - ( *this\fs * 2 + *this\fs[1] + *this\fs[3] )
          iheight = Height - ( *this\fs * 2 + *this\fs[2] + *this\fs[4] )
          
-         ;          ;\\
-         ;          If Not Change_x And *this\screen_x( ) <> X - ( *this\bs - *this\fs ) : Change_x = ( X - ( *this\bs - *this\fs )) - *this\screen_x( ) : EndIf
-         ;          If Not Change_y And *this\screen_y( ) <> Y - ( *this\bs - *this\fs ) : Change_y = ( Y - ( *this\bs - *this\fs )) - *this\screen_y( ) : EndIf
-         ;          If Not Change_width And *this\screen_width( ) <> Width + ( *this\bs * 2 - *this\fs * 2 ) : Change_width = ( Width + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_width( ) : EndIf
-         ;          If Not Change_height And *this\screen_height( ) <> Height + ( *this\bs * 2 - *this\fs * 2 ) : Change_height = ( Height + ( *this\bs * 2 - *this\fs * 2 )) - *this\screen_height( ) : EndIf
-         ;          
+         ;
          ; для сплиттера
          If Not Change_x And *this\frame_x( ) <> X : Change_x = X - *this\frame_x( ) : EndIf
          If Not Change_y And *this\frame_y( ) <> Y : Change_y = Y - *this\frame_y( ) : EndIf
@@ -24981,8 +25046,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; для меню 
          If Not Change_x And *this\inner_x( ) <> ix : Change_x = ix - *this\inner_x( ) : EndIf
          If Not Change_y And *this\inner_y( ) <> iy : Change_y = iy - *this\inner_y( ) : EndIf
-         ;          If Not Change_width And *this\container_width( ) <> iwidth : Change_width = iwidth - *this\container_width( ) : EndIf
-         ;          If Not Change_height And *this\container_height( ) <> iheight : Change_height = iheight - *this\container_height( ) : EndIf
          If Not Change_width And *this\inner_width( ) <> iwidth : Change_width = iwidth - *this\inner_width( ) : EndIf
          If Not Change_height And *this\inner_height( ) <> iheight : Change_height = iheight - *this\inner_height( ) : EndIf
          
@@ -25052,32 +25115,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\parent\scroll\h\bar\PageChange( ) = 0
                      
                      If *this\child =- 1 
-                        make_scroll_area( *this\parent, *this\container_x( ), *this\container_y( ), *this\frame_width( ), *this\frame_height( ) )
+                        Debug "--- "+*this\class +" "+ Change_x +" "+ Change_y +" "+ Change_width +" "+ Change_height
+                        make_mdi_area( *this\parent, *this\container_x( ), *this\container_y( ), *this\frame_width( ), *this\frame_height( ) )
                         make_scroll_max( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
                      EndIf
                   EndIf
                Else
                   ;
-               If *this\parent\scroll\v = *this Or
-                  *this\parent\scroll\h = *this
-                  
-                  If *this\bar\max > *this\bar\page\len
-                        
-;                         Debug  ""+*this\class +" "+ 
-;                                *this\parent\scroll\v +" "+ *this +" "+
-;                                *this\parent\scroll\h +" "+ *this
+                  If *this\parent\scroll\v = *this Or
+                     *this\parent\scroll\h = *this
                      
-                     If *this\parent\container_width( ) = *this\parent\inner_width( ) And
-                        *this\parent\container_height( ) = *this\parent\inner_height( )
-                        ; Debug ""+*this\parent\scroll\v\bar\max +" "+ *this\parent\scroll\v\bar\page\len +" "+ *this\parent\scroll\h\bar\max +" "+ *this\parent\scroll\h\bar\page\len
-                        ; example test-scrollarea.pb
-                        make_scrollbar_area( *this\parent )
-                    EndIf
+                     If *this\bar\max > *this\bar\page\len
+                        
+                        ;                         Debug  ""+*this\class +" "+ 
+                        ;                                *this\parent\scroll\v +" "+ *this +" "+
+                        ;                                *this\parent\scroll\h +" "+ *this
+                        
+                        If *this\parent\container_width( ) = *this\parent\inner_width( ) And
+                           *this\parent\container_height( ) = *this\parent\inner_height( )
+                           ; Debug ""+*this\parent\scroll\v\bar\max +" "+ *this\parent\scroll\v\bar\page\len +" "+ *this\parent\scroll\h\bar\max +" "+ *this\parent\scroll\h\bar\page\len
+                           ; example test-scrollarea.pb
+                           make_scrollbar_area( *this\parent )
+                        EndIf
+                     EndIf
                   EndIf
-                EndIf
-              EndIf
-              
-           EndIf
+               EndIf
+            EndIf
          EndIf   
          
          ;\\
@@ -25089,20 +25152,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\root\repaint = 1
             
             ;
-            ;\\ resize child vertical&horizontal scrollbars
+            ;\\ if the integral scroll bars
             If *this\scroll And *this\scroll\v And *this\scroll\h
                If *this\type = #__type_MDI
-                  If Change_y Or Change_height
-                     Resize( *this\scroll\h, #PB_Ignore, *this\container_height( ) - *this\scroll\h\frame_height( ), #PB_Ignore, #PB_Ignore )
-                  EndIf
-                  If Change_x Or Change_width
-                     Resize( *this\scroll\v, *this\container_width( ) - *this\scroll\v\frame_width( ), #PB_Ignore, #PB_Ignore, #PB_Ignore )
-                  EndIf
-                  If Change_width Or Change_height
-                     make_scroll_max( *this, 0, 0, *this\container_width( ), *this\container_height( ) )
-                  EndIf
+                  make_scrollbar_area_mdi( *this, *this\container_width( ), *this\container_height( ))
                Else
-                  ;\\ if the integral scroll bars
                   make_scrollbar_area( *this )
                EndIf
             EndIf
@@ -28123,10 +28177,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 2300
-; FirstLine = 2299
-; Folding = ----------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------------------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 2531
+; FirstLine = 2319
+; Folding = ---------------------------------------------------f++---0-------------------------------------------------------------------------------------------------fz4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------P+Qx0380P-v------------------------------------+v+0+-f-----------D-+0v+-0+------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
