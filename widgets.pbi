@@ -1702,9 +1702,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Declare.l UpdateDraw_Rows( *this, List *rows._s_ROWS( ))
       Declare.b bar_UpdateDraw_TabItems( *this, List *tabs._s_ITEMS( ) )
-      Declare   make_scroll_max( *this, X.l, Y.l, Width.l, Height.l )
       
-      
+      Declare   make_mdi_max( *this, X.l, Y.l, Width.l, Height.l )
+      Declare   make_area_max( *this, X.l, Y.l, Width.l, Height.l )
+      Declare   make_area_size( *this, X.l, Y.l, Width.l, Height.l )
       
       Declare   GetAtPoint( *root._s_root, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
       Declare.i Sticky( *window = #PB_Default, state.b = #PB_Default )
@@ -2331,7 +2332,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\scroll_height( ) - *this\scroll_y( )
       EndProcedure
       
-      Procedure   make_mdi_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l ) ; commit 2119 ok
+      Procedure   make_mdi_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l ) ; Ok
          Protected result, round, scroll_v, scroll_h, inner_width, inner_height
          Protected scroll_x, scroll_y, scroll_width, scroll_height
          
@@ -2456,7 +2457,76 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndWith
       EndProcedure
       
-      Procedure   make_scroll_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l ) ; commit 2119 ok
+      ;-
+      Procedure   make_area_size( *this._s_Widget, X.l, Y.l, Width.l, Height.l )
+      With *this\scroll
+         If Not ( *this\scroll And ( \v Or \h ))
+            ProcedureReturn 0
+         EndIf
+         
+         ;\\
+         Define frame_x = #PB_Ignore
+         Define frame_y = #PB_Ignore
+         Define frame_width = #PB_Ignore
+         Define frame_height = #PB_Ignore
+         Define change_h, change_v, round
+         
+         If X
+            Width + X
+         EndIf
+         If Y
+            Height + Y
+         EndIf
+         
+         Define result = make_mdi_max( *this, X, Y, Width, Height )
+         
+         If \h\round And
+            \v\round And
+            \h\bar\page\len < Width And
+            \v\bar\page\len < Height
+            round = ( \h\height / 4 )
+         EndIf
+         
+         ;
+         If \h\container_y( ) <> Height - \h\frame_height( )
+            frame_y = Height - \h\frame_height( )
+            change_h = 1
+         EndIf
+         If \h\frame_width( ) <> \h\bar\page\len + round
+            frame_width = \h\bar\page\len + round
+            change_h = 1
+         EndIf
+         If change_h 
+            Resize( \h, X, frame_y, frame_width, #PB_Ignore, 0 )
+         EndIf
+         
+         ;
+         If \v\container_x( ) <> Width - \v\frame_width( )
+            frame_x = Width - \v\frame_width( )
+            change_v = 1
+         EndIf
+         If \v\frame_height( ) <> \v\bar\page\len + round
+            frame_height = \v\bar\page\len + round
+            change_v = 1
+         EndIf
+         If change_v
+            Resize( \v, frame_x, Y, #PB_Ignore, frame_height, 0 )
+         EndIf
+         
+         ;\\
+         If result
+            ;                If StartEnum( *this )
+            ;                   If *this = widgets( )\parent
+            ;                      ; Reclip( widgets( ) )
+            ;                      Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+            ;                   EndIf
+            ;                   StopEnum( )
+            ;                EndIf
+         EndIf
+      EndWith
+   EndProcedure
+   
+      Procedure   make_area_max( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l ) ; commit 2119 ok
          Protected round
          
          With *this\scroll
@@ -2495,66 +2565,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndWith
       EndProcedure
       
-      Procedure   make_scrollbar_area_mdi( *this._s_Widget, Width.l, Height.l )
-         With *this\scroll
-            If Not ( *this\scroll And ( \v Or \h ))
-               ProcedureReturn 0
-            EndIf
-            
-            ;\\
-            Define frame_x = #PB_Ignore
-            Define frame_y = #PB_Ignore
-            Define frame_width = #PB_Ignore
-            Define frame_height = #PB_Ignore
-            Define change_h, change_v, round
-            
-            Define result = make_mdi_max( *this, 0, 0, Width, Height )
-            
-            If \h\round And
-               \v\round And
-               \h\bar\page\len < Width And
-               \v\bar\page\len < Height
-               round = ( \h\height / 4 )
-            EndIf
-            
-            ;
-            If \h\container_y( ) <> Height - \h\frame_height( )
-               frame_y = Height - \h\frame_height( )
-               change_h = 1
-            EndIf
-            If \h\frame_width( ) <> \h\bar\page\len + round
-               frame_width = \h\bar\page\len + round
-               change_h = 1
-            EndIf
-            If change_h 
-               Resize( \h, #PB_Ignore, frame_y, frame_width, #PB_Ignore, 0 )
-            EndIf
-            
-            ;
-            If \v\container_x( ) <> Width - \v\frame_width( )
-               frame_x = Width - \v\frame_width( )
-               change_v = 1
-            EndIf
-            If \v\frame_height( ) <> \v\bar\page\len + round
-               frame_height = \v\bar\page\len + round
-               change_v = 1
-            EndIf
-            If change_v
-               Resize( \v, frame_x, #PB_Ignore, #PB_Ignore, frame_height, 0 )
-            EndIf
-            
-            ;\\
-            If result
-;                If StartEnum( *this )
-;                   If *this = widgets( )\parent
-;                      ; Reclip( widgets( ) )
-;                      Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
-;                   EndIf
-;                   StopEnum( )
-;                EndIf
-            EndIf
-         EndWith
-      EndProcedure
       
       ;-
       Procedure   make_scrollbar_pos( *this._s_WIDGET, ScrollPos, len )
@@ -25117,7 +25127,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\child =- 1 
                         Debug "--- "+*this\class +" "+ Change_x +" "+ Change_y +" "+ Change_width +" "+ Change_height
                         make_mdi_area( *this\parent, *this\container_x( ), *this\container_y( ), *this\frame_width( ), *this\frame_height( ) )
-                        make_scroll_max( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
+                        make_area_max( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
                      EndIf
                   EndIf
                Else
@@ -25155,7 +25165,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ if the integral scroll bars
             If *this\scroll And *this\scroll\v And *this\scroll\h
                If *this\type = #__type_MDI
-                  make_scrollbar_area_mdi( *this, *this\container_width( ), *this\container_height( ))
+                  make_area_size( *this, 0, 0, *this\container_width( ), *this\container_height( ))
                Else
                   make_scrollbar_area( *this )
                EndIf
@@ -28177,10 +28187,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 2531
-; FirstLine = 2319
-; Folding = ---------------------------------------------------f++---0-------------------------------------------------------------------------------------------------fz4---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------P+Qx0380P-v------------------------------------+v+0+-f-----------D-+0v+-0+------------------------------------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 2334
+; FirstLine = 2302
+; Folding = ---------------------------------------------------f++---0--------------------------------------------------------------------------------------------------Nf----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------5DF4bv4-9-+-----------------------------------8-748--0----------P984-7-48------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
