@@ -63,8 +63,8 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   Procedure   PropertiesButton_ChangeItemState( *this._s_WIDGET, Item.l, State.b )
-      ProcedureReturn ChangeItemState( *this, Item, State )
+   Procedure   _ChangeItemState( *this._s_WIDGET, Item.l, State.b )
+      ; ProcedureReturn ChangeItemState( *this, Item, State )
       
       If item < 0 Or item > ListSize( *this\__rows( ))
          ProcedureReturn 0
@@ -76,13 +76,16 @@ CompilerIf #PB_Compiler_IsMainFile
             If *this\__rows( )\ColorState( ) <> state
                If state = #__s_2
                   If *this\RowFocused( )
-                     *this\RowFocused( )\focus = 0
-                     *this\RowFocused( )\ColorState( ) = 0
+                     ;*this\RowFocused( )\ColorState( ) = 0
+                     ;DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ) )
+                     ;*this\RowFocused( )\focus = 0
                   EndIf
-                  *this\RowFocused( ) = *this\__rows( )
-                  *this\RowFocused( )\focus = state
+;                   *this\RowFocused( ) = *this\__rows( )
+;                   *this\RowFocused( )\focus = state
+                 ; DoEvents( *this, #__event_StatusChange, *row\rindex, *row )
                EndIf
                
+               *this\__rows( )\focus = state
                *this\__rows( )\ColorState( ) = state
             EndIf
          EndIf
@@ -96,22 +99,21 @@ CompilerIf #PB_Compiler_IsMainFile
       *row = WidgetEventData( )
       
       Select WidgetEvent( )
-         Case #__event_DragStart
-            DragDropText( "dragtext" )
+         Case #__event_MouseEnter
+            If *g\RowFocused( ) > 0
+               Debug "  [+] enter "+*g\class +" "+*g\RowFocused( )\index
+            EndIf
             
          Case #__event_LeftDown
-            ;
-            If *row > 0
+;             If *row > 0
 ;                If SetState( *g, *row\index)
 ;                   DoEvents( *g, #__event_StatusChange, *row\rindex, *row )
 ;                EndIf
-            EndIf
+;             EndIf
             
          Case #__event_Change
             If *row > 0
-               Debug ""
-               Debug "change "+*g\class +" "+*row\index
-               Debug ""
+               Debug "  [+] change "+*g\class +" "+*row\index
             EndIf
             
          Case #__event_StatusChange
@@ -119,11 +121,11 @@ CompilerIf #PB_Compiler_IsMainFile
                Select *g
                   Case *first 
                      ;If GetState( *second ) <> *row\index
-                     PropertiesButton_ChangeItemState( *second, *row\index, *row\ColorState( ))
+                     _ChangeItemState( *second, *row\index, *row\ColorState( ))
                      ;EndIf
                   Case *second 
                      ;If GetState( *first ) <> *row\index
-                     PropertiesButton_ChangeItemState( *first, *row\index, *row\ColorState( ))
+                     _ChangeItemState( *first, *row\index, *row\ColorState( ))
                      ;EndIf   
                EndSelect
                
@@ -132,7 +134,21 @@ CompilerIf #PB_Compiler_IsMainFile
                   ;Case 1 : Debug "enter "+*g\class +" "+ *row\index
                   ;Case 2 : Debug "e-press "+*g\class +" "+ *row\index
                   Case 3 : Debug "focus "+*g\class +" "+ *row\index
-                  ;Case 4 : Debug "e-focus "+*g\class +" "+ *row\index
+                     If *first <> *g
+                        ; SetState( *first, *row\index )
+                        Protected._s_ROWS *row_first = ItemID( *first, *row\index )
+                        *first\RowFocused( ) = *row_first
+                        *row_first\focus = *row\focus
+                        ;*row_first\ColorState( ) = *row\ColorState( )
+                        
+                        
+                        
+                        ForEach *first\__rows( )
+                              Debug ""+*first\__rows( )\focus +" "+ *first\__rows( )\index +" "+ *first\__rows( )\ColorState( )
+                           Next
+                        
+                     EndIf
+                     ;Case 4 : Debug "e-focus "+*g\class +" "+ *row\index
                   ;Case -1 : Debug "leave "+*g\class +" "+ *row\index
                   ;Case -2 : Debug "l-press "+*g\class +" "+ *row\index
                   Case -3 : Debug "f-lost "+*g\class +" "+ *row\index
@@ -154,12 +170,13 @@ CompilerIf #PB_Compiler_IsMainFile
          AddItem(*second, -1, "item "+Str(a), -1, 0)
       Next
       
-      ;EnableDrop( *first, #PB_Drop_Text, #PB_Drag_Link )
-      
+      ; comment\uncomment
       Bind(*first, @all_events(), #__event_LeftDown)
       Bind(*second, @all_events(), #__event_LeftDown)
       
-      Bind(*first, @all_events(), #__event_DragStart)
+      Bind(*first, @all_events(), #__event_MouseEnter)
+      Bind(*second, @all_events(), #__event_MouseEnter)
+      
       Bind(*first, @all_events(), #__event_StatusChange)
       Bind(*second, @all_events(), #__event_StatusChange)
       
@@ -170,8 +187,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 15
+; CursorPosition = 87
+; FirstLine = 20
 ; Folding = 0----
 ; EnableXP
 ; DPIAware
