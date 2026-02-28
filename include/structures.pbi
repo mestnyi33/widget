@@ -360,8 +360,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *selector._s_SELECTOR   ; mouse select frame
          
          
-         *button._s_BUTTONS[3]   ;
-         *widget._s_WIDGET[3]    ;
+         *button._s_BUTTONS[3]   
+         *widget._s_WIDGET[3]    
+         ; widget[0] = Leaved( ) - Returns mouse leaved widget
+         ; widget[1] = Entered( ) - Returns mouse entered widget
+         ; widget[2] = Pressed( ) - Returns mouse button pushed widget
+         
       EndStructure
       ;;--     margin
       Structure _s_margin Extends _s_COORDINATE
@@ -802,8 +806,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 609
-; FirstLine = 470
+; CursorPosition = 354
+; FirstLine = 221
 ; Folding = -F59------
 ; Optimizer
 ; EnableXP

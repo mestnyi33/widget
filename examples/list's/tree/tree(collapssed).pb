@@ -25,43 +25,6 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;     End
 ; ;   EndIf
   
-  Procedure events_tree_gadget()
-    ;Debug " gadget - "+EventGadget()+" "+EventType()
-    Protected EventGadget = EventGadget()
-    Protected EventType = EventType()
-    Protected EventData = EventData()
-    Protected EventItem = GetGadgetState(EventGadget)
-    
-    Select EventType
-      ; Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
-      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_DragStart : Debug "gadget dragStart item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_LeftClick : Debug "gadget click item = " + EventItem +" data "+ EventData
-    EndSelect
-  EndProcedure
-  
-  Procedure events_tree_widget()
-    ;Debug " widget - "+EventWidget( )+" "+WidgetEvent( )
-    Protected EventGadget = EventWidget( )
-    Protected EventType = WidgetEvent( )
-    Protected EventData; = this()\data
-    Protected EventItem = GetState(EventGadget)
-    
-    Select EventType
-      Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
-      Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-        ;; DD::DragText(GetItemText(EventGadget, EventItem))
-        
-      Case #__event_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
-        ;; Debug DD::DropText()
-        
-      Case #__event_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
-      Case #__event_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
-    EndSelect
-  EndProcedure
-  
   Procedure.i add( *this._s_widget, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
     ProcedureReturn AddItem( *this, position, Text, Image, sublevel)
     Protected handle, *last._s_ROWS, *parent._s_ROWS
@@ -144,7 +107,7 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;                   *parent = *this\row\last\parent
 ; ; ;                   *parent\_last = *this\__rows( )
 ; ;                    *this\row\last = *parent
-                  *this\row\last\parent\after = *this\__rows( )
+             ;???????     *this\row\last\parent\after = *this\__rows( )
                   ;*this\row\last = *parent
                   Debug Text
                 EndIf
@@ -170,10 +133,10 @@ CompilerIf #PB_Compiler_IsMainFile
         
         If sublevel = 0
           If *this\row\first 
-            If *this\row\first\first
-              *this\__rows( )\first = *this\row\first\first
-            EndIf
-            *this\row\first\first = *this\__rows( )
+;?????            If *this\row\first\first
+;               *this\__rows( )\first = *this\row\first\first
+;             EndIf
+;?????             *this\row\first\first = *this\__rows( )
           EndIf
         EndIf
         
@@ -478,9 +441,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 237
-; FirstLine = 233
-; Folding = -------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 27
+; FirstLine = 338
+; Folding = ------
 ; EnableXP
 ; DPIAware

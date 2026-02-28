@@ -192,43 +192,6 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure events_tree_gadget()
-    ;Debug " gadget - "+EventGadget()+" "+EventType()
-    Protected EventGadget = EventGadget()
-    Protected EventType = EventType()
-    Protected EventData = EventData()
-    Protected EventItem = GetGadgetState(EventGadget)
-    
-    Select EventType
-      ; Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
-      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_DragStart : Debug "gadget dragStart item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_LeftClick : Debug "gadget click item = " + EventItem +" data "+ EventData
-    EndSelect
-  EndProcedure
-  
-  Procedure events_tree_widget()
-    ;Debug " widget - "+EventWidget( )+" "+WidgetEvent( )
-    Protected EventGadget = EventWidget( )
-    Protected EventType = WidgetEvent( )
-    Protected EventData = WidgetEventData( )
-    Protected EventItem = GetState(EventGadget)
-    
-    Select EventType
-      Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
-      Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-        ;; DD::DragText(GetItemText(EventGadget, EventItem))
-        
-      Case #__event_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
-        ;; Debug DD::DropText()
-        
-      Case #__event_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
-      Case #__event_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
-    EndSelect
-  EndProcedure
-  
   Procedure.i add( *this._s_widget, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
     ProcedureReturn AddItem( *this, position, Text, Image, sublevel)
   EndProcedure
@@ -502,9 +465,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 264
-; FirstLine = 260
-; Folding = --------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 194
+; FirstLine = 194
+; Folding = -------
 ; EnableXP
 ; DPIAware

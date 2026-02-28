@@ -667,6 +667,33 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
    ProcedureReturn *this
 EndProcedure
 
+Procedure   PropertiesButton_ChangeItemState( *this._s_WIDGET, Item.l, State.b )
+   ;ProcedureReturn ChangeItemState( *this, Item, State )
+   
+   If item < 0 Or item > ListSize( *this\__rows( ))
+      ProcedureReturn 0
+   EndIf
+   ;
+   If ListSize( *this\__rows( ))
+      PushListPosition( *this\__rows( ))
+      If SelectElement( *this\__rows( ), item )
+         If *this\__rows( )\ColorState( ) <> state
+            If state = #__s_2
+               If *this\RowFocused( )
+                  *this\RowFocused( )\focus = 0
+                  *this\RowFocused( )\ColorState( ) = 0
+               EndIf
+               *this\RowFocused( ) = *this\__rows( )
+               *this\RowFocused( )\focus = state
+            EndIf
+            
+            *this\__rows( )\ColorState( ) = state
+         EndIf
+      EndIf
+      PopListPosition( *this\__rows( ) )
+   EndIf
+EndProcedure
+
 Procedure   PropertiesButton_Events( )
    Protected __item 
    Protected __event = WidgetEvent( )
@@ -679,13 +706,13 @@ Procedure   PropertiesButton_Events( )
    Select __event
       Case #__event_LostFocus
          __item = GetData(*g) 
-         ChangeItemState( *first, __item, 3 )
-         ChangeItemState( *second, __item, 3 )
+         PropertiesButton_ChangeItemState( *first, __item, 3 )
+         PropertiesButton_ChangeItemState( *second, __item, 3 )
          
       Case #__event_Focus
          __item = GetData(*g) 
-         ChangeItemState( *first, __item, 2 )
-         ChangeItemState( *second, __item, 2 )
+         PropertiesButton_ChangeItemState( *first, __item, 2 )
+         PropertiesButton_ChangeItemState( *second, __item, 2 )
          
       Case #__event_LeftClick
          __item = GetData(*g) 
@@ -980,11 +1007,11 @@ Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
       Select *this
          Case *first 
             If GetState( *second ) <> *row\index
-               ChangeItemState( *second, *row\index, *row\ColorState( ))
+               PropertiesButton_ChangeItemState( *second, *row\index, *row\ColorState( ))
             EndIf
          Case *second 
             If GetState( *first ) <> *row\index
-               ChangeItemState( *first, *row\index, *row\ColorState( ))
+               PropertiesButton_ChangeItemState( *first, *row\index, *row\ColorState( ))
             EndIf   
       EndSelect
       
@@ -1004,7 +1031,7 @@ Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
       EndSelect
       
       If GetState( *this ) <> item
-         ChangeItemState( *this, item, state )
+         PropertiesButton_ChangeItemState( *this, item, state )
       EndIf
       
       *row\focus = 0
@@ -1018,10 +1045,10 @@ Procedure   Properties_Display( *splitter._s_WIDGET, *this._s_WIDGET, item )
    Protected *second._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
    
    If *first <> *this
-      ChangeItemState( *first, item, 2 )
+      PropertiesButton_ChangeItemState( *first, item, 2 )
    EndIf
    If *second <> *this
-      ChangeItemState( *second, item, 2 )
+      PropertiesButton_ChangeItemState( *second, item, 2 )
    EndIf
    ;
    PropertiesButton_Free( *second\data )  
@@ -1167,7 +1194,7 @@ Procedure   Properties_Events( )
             If Not EnteredButton( )
                *row = WidgetEventData( )
                If *row
-                  If SetState( *g, *row\index )
+                  If SetState( *g, *row\index ):DoEvents( *g, #__event_StatusChange, *row\rindex, *row )
                      If *row\data
                         *test = Properties_Display( *g\parent, *g, *row\index )
                      EndIf
@@ -2558,8 +2585,8 @@ Procedure   ide_menu_events(  )
 EndProcedure
 
 Procedure   ide_events( )
-   Protected *this._s_widget
-   Protected *g._s_WIDGET = EventWidget( )
+   Protected._s_ROWS *row
+   Protected._s_WIDGET *this, *g = EventWidget( )
    Protected __event = WidgetEvent( )
    Protected __item = WidgetEventItem( )
    Protected __data = WidgetEventData( )
@@ -2649,6 +2676,8 @@ Procedure   ide_events( )
          EndIf
          
       Case #__event_StatusChange
+         *row = __data
+         
          ; Debug ""+__item +" "+ __data
          If *g = ide_element_PANEL
             ; Debug "status change element tab "+ __item
@@ -2663,20 +2692,18 @@ Procedure   ide_events( )
          ;
          If __item = - 1
             SetText( ide_help_VIEW, "help for the inspector" )
-         Else
-            If __data < 0
-               If *g = ide_all_ELEMENTS
-                  SetText( ide_help_VIEW, ide_help_VIEW_elements(GetItemText( *g, __item )) )
-               EndIf
-               If *g = ide_inspector_VIEW
-                  SetText( ide_help_VIEW, GetItemText( *g, __item ) )
-               EndIf
-               If *g = ide_inspector_PROPERTIES
-                  SetText( ide_help_VIEW, GetItemText( *g, __item ) )
-               EndIf
-               If *g = ide_inspector_EVENTS
-                  SetText( ide_help_VIEW, GetItemText( *g, __item ) )
-               EndIf
+         ElseIf *row\enter Or *row\focus
+            If *g = ide_all_ELEMENTS
+               SetText( ide_help_VIEW, ide_help_VIEW_elements(GetItemText( *g, __item )) )
+            EndIf
+            If *g = ide_inspector_VIEW
+               SetText( ide_help_VIEW, GetItemText( *g, __item ) )
+            EndIf
+            If *g = ide_inspector_PROPERTIES
+               SetText( ide_help_VIEW, GetItemText( *g, __item ) )
+            EndIf
+            If *g = ide_inspector_EVENTS
+               SetText( ide_help_VIEW, GetItemText( *g, __item ) )
             EndIf
          EndIf
          
@@ -3301,9 +3328,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1069
-; FirstLine = 905
-; Folding = -4--4---rv-3v--------vb8Ah---------fvd-0----------fp33----f+-
+; CursorPosition = 670
+; FirstLine = 564
+; Folding = -4--4---r-f-tf--------f-3BC----------e8+8-----------Svt----f+-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2_621.exe

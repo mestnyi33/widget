@@ -13,13 +13,13 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-   a_init(root(), 4)
+   a_init(Root(), 4)
    Define fs = 10
    ;\\
     parent = Window(50, 50, 500, 500, "parent", #PB_Window_SystemMenu)
    ; parent = Window(50, 50, 500, 500, "parent", #PB_Window_BorderLess)
    ; parent = Container(50, 50, 500, 500)
-   widget()\fs = fs : Resize(widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+   Widget()\fs = fs : Resize(Widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
    SetColor(parent, #PB_Gadget_BackColor, $FFE9E9E9)
    
    ;\\
@@ -94,9 +94,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 6
-; FirstLine = 2
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 89
+; FirstLine = 42
 ; Folding = --
 ; EnableXP
 ; DPIAware

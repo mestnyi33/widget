@@ -903,9 +903,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro CanvasMouseX( ): mouse( )\x: EndMacro                                  ; Returns mouse x
       Macro CanvasMouseY( ): mouse( )\y: EndMacro                                  ; Returns mouse y
       Macro CanvasMouseButton( )                                                   ; Returns mouse button 
-                                                                                   ; #PB_Canvas_LeftButton
-                                                                                   ; #PB_Canvas_MiddleButton
-                                                                                   ; #PB_Canvas_RightButton
+         mouse( )\buttons
+         ; #PB_Canvas_LeftButton
+         ; #PB_Canvas_MiddleButton
+         ; #PB_Canvas_RightButton
+      EndMacro                                                                     
+      Macro MouseButtons( ) ; Returns mouse button 
          mouse( )\buttons
       EndMacro                                                                     
       ;-
@@ -2551,15 +2554,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   bar_Update( \h, 5 )
                EndIf
                
-               ;\\
-               If StartEnum( *this )
-                  If *this = widgets( )\parent
-                     ; Reclip( widgets( ) )
-                     Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
-                  EndIf
-                  StopEnum( )
-               EndIf
-               
                ProcedureReturn 1
             EndIf
          EndWith
@@ -3448,8 +3442,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\enter > 0
                ;\\ first - draw backgraund color
                draw_mode_alpha_( #PB_2DDrawing_Default )
-               If *this\drop And MouseEnter( *this )
-                  If MouseEnter( *this )
+               If *this\drop And MouseEnter( *this, 2 )
+                  If MouseEnter( *this, 2 )
                      If MouseDragStart( ) = #PB_Drag_Enter
                         draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $1000ff00 )
                         
@@ -3463,7 +3457,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                      draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $10ff0000 )
                   EndIf
                Else
-                  If *this\press And MouseEnter( *this )
+                  If *this\press And MouseEnter( *this, 2 )
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $10ff00ff )
                   Else
                      draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $100000ff )
@@ -3472,8 +3466,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\ second - draw frame color
                __draw_mode( #PB_2DDrawing_Outlined )
-               If *this\drop And MouseEnter( *this )
-                  If MouseEnter( *this )
+               If *this\drop And MouseEnter( *this, 2 )
+                  If MouseEnter( *this, 2 )
                      If MouseDragStart( ) = #PB_Drag_Enter
                         draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff00ff00 )
                         
@@ -3487,7 +3481,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                      draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $ffff0000 )
                   EndIf
                Else
-                  If *this\press And MouseEnter( *this )
+                  If *this\press And MouseEnter( *this, 2 )
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ffff00ff )
                   Else
                      draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $ff0000ff )
@@ -4350,7 +4344,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          If event = #__event_DragStart 
             If a_anchors( )\grid_image
-               If *this\container > 0 And Not a_index( ) And MouseEnter( *this )
+               If *this\container > 0 And Not a_index( ) And MouseEnter( *this, 2 )
                   If *this\parent
                      SetBackgroundImage( *this\parent, 0 )
                   EndIf
@@ -9810,7 +9804,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If MousePress( )
             If mouse( )\drop
                If Not *this\disable
-                  If *this\drop And MouseEnter( *this ) And 
+                  If *this\drop And MouseEnter( *this, 2 ) And 
                      *this\drop\format = mouse( )\drop\format And
                      *this\drop\actions & mouse( )\drop\actions And
                      ( *this\drop\private = mouse( )\drop\private Or
@@ -9859,7 +9853,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else
             If Not a_index( )
                If Not *this\disable And
-                  MouseEnter( *this ) And *this\cursor
+                  MouseEnter( *this, 2 ) And *this\cursor
                   
                   If GetCursor( ) <> *this\cursor
                      ChangeCursor( *this, *this\cursor )
@@ -10411,6 +10405,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure ResetState( *this._s_WIDGET )
+         ;\\ reset selected items
+         If *this\RowFocused( ) And
+            *this\RowFocused( )\_focus
+            *this\RowFocused( )\ColorState( ) = #__s_0
+            DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+            *this\RowFocused( )\_focus = 0
+            *this\RowFocused( ) = #Null
+            ProcedureReturn - 1
+         EndIf
+      EndProcedure
+      
       Procedure.b SetState( *this._s_WIDGET, state.i )
          ; This is a universal function which works For almost all gadgets: 
          ; 
@@ -10655,15 +10661,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If state = - 1
                   ;\\ reset all selected items
-                  If *this\RowFocused( ) And
-                     *this\RowFocused( )\_focus
-                     *this\RowFocused( )\_focus = 0
-                     *this\RowFocused( )\ColorState( ) = #__s_0
-                     ; *this\WidgetChange( ) = 1
-                     DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
-                     *this\RowFocused( ) = #Null
-                     ProcedureReturn - 1
-                  EndIf
+                  ProcedureReturn ResetState( *this )
                Else
                   ;
                   If Not ( *this\RowFocused( ) And *this\RowFocused( )\rindex = state )
@@ -10716,14 +10714,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;\\
                      If *this\RowFocused( ) <> *row
-                        If *this\RowFocused( ) And
-                           *this\RowFocused( )\_focus
-                           *this\RowFocused( )\_focus = 0
-                           *this\RowFocused( )\ColorState( ) = #__s_0
-                           ;
-                           DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ) )
-                        EndIf
-                        
+                        ResetState( *this )
                         ;
                         *this\RowFocused( ) = *row
                         
@@ -10998,24 +10989,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If item < 0 Or item > ListSize( *this\__rows( ))
             ProcedureReturn 0
          EndIf
+         Protected result
          If ListSize( *this\__rows( ))
             PushListPosition( *this\__rows( ))
             If SelectElement( *this\__rows( ), item )
                If *this\__rows( )\ColorState( ) <> state
-                  If state = #__s_2
-                     If *this\RowFocused( )
-                        *this\RowFocused( )\focus = 0
-                        *this\RowFocused( )\ColorState( ) = 0
-                     EndIf
-                     *this\RowFocused( ) = *this\__rows( )
-                     *this\RowFocused( )\focus = 1
-                  EndIf
-                  
                   *this\__rows( )\ColorState( ) = state
+                  result = 1
                EndIf
             EndIf
             PopListPosition( *this\__rows( ) )
          EndIf
+         ProcedureReturn result
       EndProcedure
       
       ;-
@@ -14167,7 +14152,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\RowFocused( )\ColorState( ) = 0
                
                PushListPosition( *this\__rows( ))
-               ; if he is a parent then we find the next item of his level
+               ; If this is a parent element, then we find the next element at its level.
                While NextElement( *this\__rows( ))
                   If *this\__rows( )\sublevel =< *row\sublevel
                      Break
@@ -16519,7 +16504,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If Leaved( )\parent = *this
                            If is_mouse_enter( Leaved( )\parent, mouse_x, mouse_y, [#__c_inner] ) And
                               is_mouse_enter( Leaved( )\parent, mouse_x, mouse_y, [#__c_draw] )
-                              MouseEnter( Leaved( )\parent )
+                              MouseEnter( Leaved( )\parent, 2 )
                            Else
                               Leaved( )\parent\enter = 1
                            EndIf
@@ -16591,7 +16576,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            DoEvents( *this\parent, #__event_MouseEnter, -1, @"[?-enter]" )
                         EndIf
                         ;
-                     ElseIf MouseEnter( *this\parent )
+                     ElseIf MouseEnter( *this\parent, 2 )
                         *this\parent\enter = 1
                      EndIf
                   EndIf
@@ -17667,7 +17652,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ search at point entered items
             If Not mouse( )\drop Or *this\drop
-               If MouseEnter( *this )
+               If MouseEnter( *this, 2 )
                   If ListSize( *this\RowVisibleList( ) )
                      If *this\RowEntered( ) And
                         *this\RowEntered( )\visible And
@@ -17797,7 +17782,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                      EndIf
                      
                      ; Debug " leave-item status change"
-                     DoEvents( *this, #__event_StatusChange, *rowleaved\rindex, -*rowleaved\ColorState( ) )
+                     DoEvents( *this, #__event_StatusChange, *rowleaved\rindex, *rowleaved )
                   EndIf
                EndIf
                
@@ -17868,10 +17853,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      
                      ;\\ update non-focus status
-                     If Not ( Not *this\press And *row = *this\RowFocused( ) )
-                        ; Debug " enter-item status change"
-                        DoEvents( *this, #__event_StatusChange, *row\rindex, -*row\ColorState( ) )
-                     EndIf
+                     ;If Not ( Not *this\press And *row = *this\RowFocused( ) )
+                        ; Debug "status-enter-item"
+                     DoEvents( *this, #__event_StatusChange, *row\rindex, *row )
+                     ;EndIf
+                  EndIf
+               Else
+                  ; Debug "status-leave-items"
+                  If *this\RowFocused( ) And Not MousePress( ) 
+                     DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                   EndIf
                EndIf
                ;
@@ -17910,8 +17900,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *rows( )\ColorState( ) = #__s_3
                            *rows( )\ColorState( ) = #__s_2
                            ;
-                           ; status-focus
-                           DoEvents( *this, #__event_StatusChange, *rows( )\rindex, -*rows( )\ColorState( ))
+                           ; Debug "status-focus-others"
+                           DoEvents( *this, #__event_StatusChange, *rows( )\rindex, *rows( ))
                         EndIf
                      EndIf
                   Next
@@ -17924,8 +17914,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\RowFocused( )\ColorState( ) = #__s_3
                   *this\RowFocused( )\ColorState( ) = #__s_2
                   ;
-                  ; status-focus
-                  DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                  ; Debug "status-focus-current"
+                  DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                EndIf
             EndIf
             
@@ -17939,8 +17929,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *rows( )\ColorState( ) = #__s_2
                            *rows( )\ColorState( ) = #__s_3
                            ;
-                           ; status-lostfocus
-                           DoEvents( *this, #__event_StatusChange, *rows( )\rindex, -*rows( )\ColorState( ))
+                           ; Debug "status-lostfocus-others"
+                           DoEvents( *this, #__event_StatusChange, *rows( )\rindex, *rows( ))
                         EndIf
                      EndIf
                   Next
@@ -17952,9 +17942,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\RowFocused( )\ColorState( ) = #__s_2
                      *this\RowFocused( )\ColorState( ) = #__s_3
                      ;
-                     ; status-lostfocus
-                     ; Debug 77777 
-                     DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, - *this\RowFocused( )\ColorState( ))
+                     ; Debug "status-lostfocus-current"
+                     DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                   EndIf
                EndIf
                ;EndIf
@@ -18042,22 +18031,24 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *row\ColorState( ) <> #__s_2
                               *row\ColorState( ) = #__s_2
                               
-                              If *this\RowFocused( ) And *this\RowFocused( ) <> *row  
-                                 If *this\RowFocused( )\ColorState( ) = #__s_2
-                                    *this\RowFocused( )\ColorState( ) = #__s_3
-                                    ;
-                                    ; status-press-lostfocus
-                                    DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, - *this\RowFocused( )\ColorState( ) )
+                              If *this\RowFocused( ) 
+                                 If *this\RowFocused( ) <> *row  
+                                    If *this\RowFocused( )\ColorState( ) = #__s_2
+                                       *this\RowFocused( )\ColorState( ) = #__s_3
+                                       ;
+                                       ; Debug "status-press-lostfocus"
+                                       DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                                    EndIf
                                  EndIf
                               EndIf
                               ;
-                              ; status-press-change
-                              DoEvents(*this, #__event_StatusChange, *row\rindex, - *row\ColorState( ) )
+                              ; Debug "status-press-change"
+                              DoEvents(*this, #__event_StatusChange, *row\rindex, *row )
                            EndIf
                         Else
                            *row\ColorState( ) = #__s_1
-                           ; status-press-change
-                           DoEvents(*this, #__event_StatusChange, *row\rindex, - *row\ColorState( ) )
+                           ; Debug "status-press-change"
+                           DoEvents(*this, #__event_StatusChange, *row\rindex, *row )
                         EndIf
                      EndIf
                   EndIf
@@ -18071,7 +18062,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; не уверен есть ли в этом польза))
                If *this\RowFocused( )
                   If Not MousePress( ) 
-                     DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, - 1 )
+                     DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                   EndIf
                EndIf
             EndIf
@@ -18102,15 +18093,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\RowPressed( )
                      If Not *this\mode\clickSelect
                         If *this\RowEntered( )
-                           SetState( *this, *this\RowEntered( )\rindex ) 
+                           If SetState( *this, *this\RowEntered( )\rindex ) 
+                              DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                           EndIf
                         Else
-                           ; Debug *this\RowFocused( )\ColorState( ) 
                            If *this\RowFocused( ) And
                               *this\RowFocused( )\ColorState( ) = #__s_3
                               *this\RowFocused( )\ColorState( ) = #__s_2
                               ;
-                              ; status-focus
-                              DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, -*this\RowFocused( )\ColorState( ))
+                              ; Debug "status-focus"
+                              DoEvents(*this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                            EndIf
                         EndIf
                         ;
@@ -18305,7 +18297,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;                   Protected mouse_bar_y = CanvasMouseY( ) - *this\inner_y( )
                   
                   ;\\ get at point tab 
-                  If MouseEnter( *this )
+                  If MouseEnter( *this, 2 )
                      If ListSize( *this\__tabs( ) )
                         If *this\TabEntered( ) And
                            *this\TabEntered( )\visible And
@@ -18988,7 +18980,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Case #__type_HyperLink
                   If event = #__event_Down
                      If *this\cursor[2]
-                        If MouseEnter( *this )
+                        If MouseEnter( *this, 2 )
                            ChangeCursor( *this, *this\cursor[2] )
                         EndIf
                      EndIf
@@ -18998,7 +18990,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      event = #__event_MouseEnter Or
                      event = #__event_MouseLeave
                      
-                     If MouseEnter( *this )
+                     If MouseEnter( *this, 2 )
                         If *this\ColorState( ) <> #__s_1
                            *this\ColorState( ) = #__s_1
                         EndIf
@@ -19128,7 +19120,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      PopupBar( )\root\parent = *this\root\parent And 
                      PopupBar( )\root\parent\type = #__type_ComboBox
                      ;
-                     If MouseEnter( PopupBar( ))
+                     If MouseEnter( PopupBar( ), 2)
                         If DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent ) < 0
                            PopupBar( ) = 0
                         EndIf
@@ -25127,7 +25119,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\child =- 1 
                         Debug "--- "+*this\class +" "+ Change_x +" "+ Change_y +" "+ Change_width +" "+ Change_height
                         make_mdi_area( *this\parent, *this\container_x( ), *this\container_y( ), *this\frame_width( ), *this\frame_height( ) )
-                        make_area_max( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
+                        If make_area_max( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
+                           ;\\
+                           If StartEnum( *this\parent )
+                              If *this\parent = widgets( )\parent And *this <> widgets( )
+                                 ; Reclip( widgets( ) )
+                                 Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+                              EndIf
+                              StopEnum( )
+                           EndIf
+                           
+                        EndIf
                      EndIf
                   EndIf
                Else
@@ -25790,6 +25792,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ForEach __gui\event\binds( )
                   If __gui\event\binds( )\widget = *this 
                      If __gui\event\binds( )\type = event 
+                        ; Debug ""+EventString(__gui\event\binds( )\type)+" "+ListSize(__gui\event\binds( ))
                         If Not ( __gui\event\binds( )\item >= 0 And __gui\event\binds( )\item <> *button )
                            If __gui\event\binds( )\data
                               WidgetEventData( ) = __gui\event\binds( )\data
@@ -28188,9 +28191,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 2334
-; FirstLine = 2302
-; Folding = ---------------------------------------------------f++---0--------------------------------------------------------------------------------------------------Nf----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------5DF4bv4-9-+-----------------------------------8-748--0----------P984-7-48------------------------------------------------
+; CursorPosition = 19122
+; FirstLine = 17670
+; Folding = ----------------------------------------------------00---8--t-----4-----------------------------------------------------------------------------------------mv---------------------------------------------------------------------------------------------------------------------------v-f0--n3-----------------------------------------------------------------------------------------------------------fb0-6--------------------------------------------------------------------------------------------------------------3v-++e--4f--0v-------------------4448+r3--------8-+-------------------------------------------------------------------------------------------------------------f9hi8t48f+f------------------------------------0f080--+-----------wvf-r-fv-----------++------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

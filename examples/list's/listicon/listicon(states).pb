@@ -8,7 +8,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
    
   
-  Global a, *first, *last, *added, *reset, *w1, *w3, *w2, *w4, *w5, *w6, *w7, *w8, *g1, *g3, *g2, *g4, *g5, *g6, *g7, *g8, CountItems=4; количесвто итемов 
+  Global a, *first, *last, *added, *reset, *g1, *g3, *g2, *g4, *g5, *g6, *g7, *g8, g1, g3, g2, g4, g5, g6, g7, g8, CountItems=4; количесвто итемов 
   
   ;\\
   Procedure SetGadgetState_(gadget, state)
@@ -53,8 +53,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
   ;\\
-  Procedure ListIconGadget_(gadget, X,Y,Width,Height, titleText.s, titleWidth, flag=0)
-    Protected g = PB(ListIconGadget)(gadget, X,Y,Width,Height, titleText, titleWidth,flag)
+  Procedure ListIconGadget_(gadget, X,Y,Width,Height, titleText.s, titleWidth, Flag=0)
+    Protected g = PB(ListIconGadget)(gadget, X,Y,Width,Height, titleText, titleWidth,Flag)
     If gadget =- 1 : gadget = g : EndIf
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -134,103 +134,103 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If Open(1, 100, 50, 520, 755, "demo ListIcon state", #PB_Window_SystemMenu)
     ;\\ demo gadget
-    *g1 = ListIconGadget_(#PB_Any, 10, 10, 120, 180, "column", 100 )
-    *g2 = ListIconGadget_(#PB_Any, 10+125, 10, 120, 180, "column", 100)
+    g1 = ListIconGadget_(#PB_Any, 10, 10, 120, 180, "column", 100 )
+    g2 = ListIconGadget_(#PB_Any, 10+125, 10, 120, 180, "column", 100)
     
     ;\\
-    *g3 = ListIconGadget_(#PB_Any, 10, 195, 120, 180, "column", 100)
-    *g4 = ListIconGadget_(#PB_Any, 10+125, 195, 120, 180, "column", 100)
+    g3 = ListIconGadget_(#PB_Any, 10, 195, 120, 180, "column", 100)
+    g4 = ListIconGadget_(#PB_Any, 10+125, 195, 120, 180, "column", 100)
     
     ;\\
-    *g5 = ListIconGadget_(#PB_Any, 10, 380, 120, 180, "column", 100)
-    *g6 = ListIconGadget_(#PB_Any, 10+125, 380, 120, 180, "column", 100)
+    g5 = ListIconGadget_(#PB_Any, 10, 380, 120, 180, "column", 100)
+    g6 = ListIconGadget_(#PB_Any, 10+125, 380, 120, 180, "column", 100)
     
     ;\\
-    *g7 = ListIconGadget_(#PB_Any, 10, 565, 120, 180, "column", 100)
-    *g8 = ListIconGadget_(#PB_Any, 10+125, 565, 120, 180, "column", 100)
+    g7 = ListIconGadget_(#PB_Any, 10, 565, 120, 180, "column", 100)
+    g8 = ListIconGadget_(#PB_Any, 10+125, 565, 120, 180, "column", 100)
     
     ;\\
-    For a = 0 To countitems
-      AddGadgetItem_(*g1, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g3, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g5, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g7, -1, "Item "+Str(a), 0)
+    For a = 0 To CountItems
+      AddGadgetItem_(g1, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(g3, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(g5, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(g7, -1, "Item "+Str(a), 0)
     Next
-    For a = 0 To countitems*10
-      AddGadgetItem_(*g2, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g4, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g6, -1, "Item "+Str(a), 0)
-      AddGadgetItem_(*g8, -1, "Item "+Str(a), 0)
+    For a = 0 To CountItems*10
+      AddGadgetItem_(g2, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(g4, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(g6, -1, "Item "+Str(a), 0)
+      AddGadgetItem_(g8, -1, "Item "+Str(a), 0)
     Next
     
     ;\\
-    SetGadgetState_(*g1, countitems-1)
-    SetGadgetState_(*g3, countitems-1) 
-    SetGadgetState_(*g5, countitems-1) 
-    SetGadgetState_(*g7, countitems-1) 
+    SetGadgetState_(g1, CountItems-1)
+    SetGadgetState_(g3, CountItems-1) 
+    SetGadgetState_(g5, CountItems-1) 
+    SetGadgetState_(g7, CountItems-1) 
     
     ;\\ demo widget
-    *w1 = widget::ListIcon(265, 10, 120, 180, "column", 100 )
-    *w2 = widget::ListIcon(265+125, 10, 120, 180, "column", 100 )
+    *g1 = Widget::ListIcon(265, 10, 120, 180, "column", 100 )
+    *g2 = Widget::ListIcon(265+125, 10, 120, 180, "column", 100 )
     
     ;\\
-    *w3 = widget::ListIcon(265, 195, 120, 180, "column", 100, #__flag_RowClickSelect )
-    *w4 = widget::ListIcon(265+125, 195, 120, 180, "column", 100, #__flag_RowClickSelect )
+    *g3 = Widget::ListIcon(265, 195, 120, 180, "column", 100, #__flag_RowClickSelect )
+    *g4 = Widget::ListIcon(265+125, 195, 120, 180, "column", 100, #__flag_RowClickSelect )
     
     ;\\
-    *w5 = widget::ListIcon(265, 380, 120, 180, "column", 100, #__flag_RowMultiSelect )
-    *w6 = widget::ListIcon(265+125, 380, 120, 180, "column", 100, #__flag_RowMultiSelect )
+    *g5 = Widget::ListIcon(265, 380, 120, 180, "column", 100, #__flag_RowMultiSelect )
+    *g6 = Widget::ListIcon(265+125, 380, 120, 180, "column", 100, #__flag_RowMultiSelect )
     
     ;\\
-    *w7 = widget::ListIcon(265, 565, 120, 180, "column", 100, #__flag_RowMultiSelect|#__flag_RowClickSelect )
-    *w8 = widget::ListIcon(265+125, 565, 120, 180, "column", 100, #__flag_RowMultiSelect|#__flag_RowClickSelect )
+    *g7 = Widget::ListIcon(265, 565, 120, 180, "column", 100, #__flag_RowMultiSelect|#__flag_RowClickSelect )
+    *g8 = Widget::ListIcon(265+125, 565, 120, 180, "column", 100, #__flag_RowMultiSelect|#__flag_RowClickSelect )
     
     ;\\
-    For a = 0 To countitems
-      widget::AddItem(*w1, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w3, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w5, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w7, -1, "Item "+Str(a), 0)
+    For a = 0 To CountItems
+      Widget::AddItem(*g1, -1, "Item "+Str(a), 0)
+      Widget::AddItem(*g3, -1, "Item "+Str(a), 0)
+      Widget::AddItem(*g5, -1, "Item "+Str(a), 0)
+      Widget::AddItem(*g7, -1, "Item "+Str(a), 0)
     Next
-    For a = 0 To countitems*10
-      widget::AddItem(*w2, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w4, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w6, -1, "Item "+Str(a), 0)
-      widget::AddItem(*w8, -1, "Item "+Str(a), 0)
+    For a = 0 To CountItems*10
+      Widget::AddItem(*g2, -1, "Item "+Str(a), 0)
+      Widget::AddItem(*g4, -1, "Item "+Str(a), 0)
+      Widget::AddItem(*g6, -1, "Item "+Str(a), 0)
+      Widget::AddItem(*g8, -1, "Item "+Str(a), 0)
     Next
     
     ;\\
-    widget::SetState(*w1, countitems-1)
-    widget::SetState(*w3, countitems-1) 
-    widget::SetState(*w5, countitems-1) 
-    widget::SetState(*w7, countitems-1) 
+    Widget::SetState(*g1, CountItems-1)
+    Widget::SetState(*g3, CountItems-1) 
+    Widget::SetState(*g5, CountItems-1) 
+    Widget::SetState(*g7, CountItems-1) 
     
     ;\\
-    SetActive( *w5 )
-    SetActiveGadget( *g5 )
-    SetActive( *w5 )
+    SetActive( *g5 )
+    SetActiveGadget( g5 )
+    SetActive( *g5 )
     
     ;\\
-    BindGadgetEvent(*g1, @events_gadgets())
-    BindGadgetEvent(*g2, @events_gadgets())
-    BindGadgetEvent(*g3, @events_gadgets())
-    BindGadgetEvent(*g4, @events_gadgets())
-    BindGadgetEvent(*g5, @events_gadgets())
-    BindGadgetEvent(*g6, @events_gadgets())
+    BindGadgetEvent(g1, @events_gadgets())
+    BindGadgetEvent(g2, @events_gadgets())
+    BindGadgetEvent(g3, @events_gadgets())
+    BindGadgetEvent(g4, @events_gadgets())
+    BindGadgetEvent(g5, @events_gadgets())
+    BindGadgetEvent(g6, @events_gadgets())
     ;\\
-    Bind(*w1, @events_widgets())
-    Bind(*w2, @events_widgets())
-    Bind(*w3, @events_widgets())
-    Bind(*w4, @events_widgets())
-    Bind(*w5, @events_widgets())
-    Bind(*w6, @events_widgets())
+    Bind(*g1, @events_widgets())
+    Bind(*g2, @events_widgets())
+    Bind(*g3, @events_widgets())
+    Bind(*g4, @events_widgets())
+    Bind(*g5, @events_widgets())
+    Bind(*g6, @events_widgets())
     
-    widget::WaitClose()
+    Widget::WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 129
-; FirstLine = 101
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 225
+; FirstLine = 200
 ; Folding = ---
 ; EnableXP
 ; DPIAware

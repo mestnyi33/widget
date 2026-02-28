@@ -62,38 +62,6 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure events_tree_gadget()
-    ;Debug " gadget - "+EventGadget()+" "+EventType()
-    Protected EventGadget = EventGadget()
-    Protected EventType = EventType()
-    Protected EventData = EventData()
-    Protected EventItem = GetGadgetState(EventGadget)
-    
-    Select EventType
-      Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
-      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_DragStart : Debug "gadget dragStart item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_LeftClick : Debug "gadget click item = " + EventItem +" data "+ EventData
-    EndSelect
-  EndProcedure
-  
-  Procedure events_tree_widget()
-    ;Debug " widget - "+*event\widget+" "+*event\type
-    Protected EventGadget = EventWidget( )
-    Protected EventType = WidgetEvent( )
-    Protected EventData = WidgetEventData( )
-    Protected EventItem = WidgetEventItem( )
-    
-    Select EventType
-      Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
-      Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-      Case #__event_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
-      Case #__event_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
-    EndSelect
-  EndProcedure
-  
   Procedure ResizeCallBack()
     ResizeGadget(100, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-62, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-30, #PB_Ignore, #PB_Ignore)
     ResizeGadget(10, #PB_Ignore, #PB_Ignore, WindowWidth(EventWindow(), #PB_Window_InnerCoordinate)-65, WindowHeight(EventWindow(), #PB_Window_InnerCoordinate)-16)
@@ -149,8 +117,8 @@ CompilerIf #PB_Compiler_IsMainFile
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 85
-; FirstLine = 22
-; Folding = 0----
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 64
+; FirstLine = 4
+; Folding = 0---
 ; EnableXP

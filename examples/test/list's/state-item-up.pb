@@ -1,7 +1,7 @@
 ﻿; 
 ; second state
 
-IncludePath "../../"
+IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -15,6 +15,33 @@ CompilerIf #PB_Compiler_IsMainFile
    ;- DECLARE
    Declare PropertiesButton_Events( )
    
+   Procedure   _ChangeItemState( *this._s_WIDGET, Item.l, State.b )
+     ; ProcedureReturn ChangeItemState( *this, Item, State )
+      
+      If item < 0 Or item > ListSize( *this\__rows( ))
+         ProcedureReturn 0
+      EndIf
+      ;
+      If ListSize( *this\__rows( ))
+         PushListPosition( *this\__rows( ))
+         If SelectElement( *this\__rows( ), item )
+            If *this\__rows( )\ColorState( ) <> state
+               If state = #__s_2
+                  If *this\RowFocused( )
+                     *this\RowFocused( )\focus = 0
+                     *this\RowFocused( )\ColorState( ) = 0
+                  EndIf
+                  *this\RowFocused( ) = *this\__rows( )
+                  *this\RowFocused( )\focus = state
+               EndIf
+               
+               
+               *this\__rows( )\ColorState( ) = state
+            EndIf
+         EndIf
+         PopListPosition( *this\__rows( ) )
+      EndIf
+   EndProcedure
    ;-
    Procedure   PropertiesButton_Hide( *this._s_WIDGET )
       Protected._s_ROWS *row
@@ -360,9 +387,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 145
-; FirstLine = 119
-; Folding = ----------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 17
+; FirstLine = 13
+; Folding = -----------
 ; EnableXP
 ; DPIAware

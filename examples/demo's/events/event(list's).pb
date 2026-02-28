@@ -14,7 +14,7 @@
 ; spake post event leftclick
 
 
-XIncludeFile "../../widgets.pbi" 
+XIncludeFile "../../../widgets.pbi" 
 UseWidgets( )
 
 Procedure events_gadgets()
@@ -158,7 +158,7 @@ If Open(0, 0, 0, 270+270+270, 160+160, "ListViewGadget", #PB_Window_SystemMenu |
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
 ; CursorPosition = 16
 ; FirstLine = 12
 ; Folding = --

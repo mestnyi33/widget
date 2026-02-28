@@ -1,7 +1,7 @@
 ﻿; 
 ; second state
 
-IncludePath "../../"
+IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -49,6 +49,33 @@ EndEnumeration
    ;- DECLARE
    Declare PropertiesButton_Events( )
    
+   Procedure   _ChangeItemState( *this._s_WIDGET, Item.l, State.b )
+     ; ProcedureReturn ChangeItemState( *this, Item, State )
+      
+      If item < 0 Or item > ListSize( *this\__rows( ))
+         ProcedureReturn 0
+      EndIf
+      ;
+      If ListSize( *this\__rows( ))
+         PushListPosition( *this\__rows( ))
+         If SelectElement( *this\__rows( ), item )
+            If *this\__rows( )\ColorState( ) <> state
+               If state = #__s_2
+                  If *this\RowFocused( )
+                     *this\RowFocused( )\focus = 0
+                     *this\RowFocused( )\ColorState( ) = 0
+                  EndIf
+                  *this\RowFocused( ) = *this\__rows( )
+                  *this\RowFocused( )\focus = state
+               EndIf
+               
+               
+               *this\__rows( )\ColorState( ) = state
+            EndIf
+         EndIf
+         PopListPosition( *this\__rows( ) )
+      EndIf
+   EndProcedure
    ;-
    Procedure   PropertiesButton_Hide( *this._s_WIDGET )
       Protected._s_ROWS *row
@@ -220,12 +247,12 @@ EndEnumeration
             
          Case #__event_Focus
             ; Debug "test focus"
-            ChangeItemState( *first, GetData( EventWidget( )), 2 )
-            ChangeItemState( *second, GetData( EventWidget( )), 2 )
+            _ChangeItemState( *first, GetData( EventWidget( )), 2 )
+            _ChangeItemState( *second, GetData( EventWidget( )), 2 )
             
          Case #__event_LostFocus
-            ChangeItemState( *first, GetData( EventWidget( )), 3 )
-            ChangeItemState( *second, GetData( EventWidget( )), 3 )
+            _ChangeItemState( *first, GetData( EventWidget( )), 3 )
+            _ChangeItemState( *second, GetData( EventWidget( )), 3 )
             
          Case #__event_MouseWheel
             If MouseDirection( ) > 0
@@ -266,11 +293,11 @@ EndEnumeration
          Select *this
             Case *first 
                If GetState( *second ) <> *row\index
-                  ChangeItemState( *second, *row\index, *row\ColorState( ))
+                  _ChangeItemState( *second, *row\index, *row\ColorState( ))
                EndIf
             Case *second 
                If GetState( *first ) <> *row\index
-                  ChangeItemState( *first, *row\index, *row\ColorState( ))
+                  _ChangeItemState( *first, *row\index, *row\ColorState( ))
                EndIf   
          EndSelect
          
@@ -290,7 +317,7 @@ EndEnumeration
          EndSelect
          
          If GetState( *this ) <> item
-            ChangeItemState( *this, item, state )
+            _ChangeItemState( *this, item, state )
          EndIf
          
          *row\focus = 0
@@ -349,10 +376,10 @@ EndEnumeration
                      If SetState( *g, *row\index )
                         If *row\data
                            If *first <> *g
-                              ChangeItemState( *first, *row\index, 2 )
+                              _ChangeItemState( *first, *row\index, 2 )
                            EndIf
                            If *second <> *g
-                              ChangeItemState( *second, *row\index, 2 )
+                              _ChangeItemState( *second, *row\index, 2 )
                            EndIf
                            
                            PropertiesButton_Free( *test )
@@ -398,10 +425,10 @@ EndEnumeration
 ;                   If *row
 ;                      If  *row\data
 ;                         If *first <> *g
-;                            ChangeItemState( *first, *row\index, 2 )
+;                            _ChangeItemState( *first, *row\index, 2 )
 ;                         EndIf
 ;                         If *second <> *g
-;                            ChangeItemState( *second, *row\index, 2 )
+;                            _ChangeItemState( *second, *row\index, 2 )
 ;                         EndIf
 ;                         PropertiesButton_Free( *test )
 ;                         *test = PropertiesButton_Create( *second, *row\index )
@@ -608,8 +635,8 @@ EndEnumeration
       
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 586
-; FirstLine = 440
-; Folding = 0+c--------+
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 52
+; FirstLine = 51
+; Folding = -806--------0
 ; EnableXP

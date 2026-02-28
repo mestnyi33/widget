@@ -218,45 +218,6 @@ EndProcedure
   
   Global img = ImageID( 0 )
   
-  Procedure events_tree_gadget()
-    ;Debug " gadget - "+EventGadget()+" "+EventType()
-    Protected EventGadget = EventGadget()
-    Protected EventType = EventType()
-    Protected EventData = EventData()
-    Protected EventItem = GetGadgetState(EventGadget)
-    
-    Select EventType
-      ;Case #PB_EventType_ScrollChange : Debug "gadget scroll change data "+ EventData
-      Case #PB_EventType_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_DragStart : Debug "gadget dragStart item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_Change    : Debug "gadget change item = " + EventItem +" data "+ EventData
-      Case #PB_EventType_LeftClick : Debug "gadget click item = " + EventItem +" data "+ EventData
-    EndSelect
-  EndProcedure
-  
-  Procedure events_tree_widget()
-    With structures::*event
-      ;Debug " widget - "+EventWidget( )+" "+WidgetEvent( )
-    Protected EventGadget = EventWidget( )
-    Protected EventType = WidgetEvent( )
-    Protected EventData = EventWidget( )\data
-    Protected EventItem = GetState(EventGadget)
-    
-    Select EventType
-      Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
-      Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
-      Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-        DragText(GetItemText(EventGadget, EventItem))
-        
-      Case #__event_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
-        Debug EventDropText()
-        
-      Case #__event_Change    : Debug "widget change item = " + EventItem +" data "+ EventData
-      Case #__event_LeftClick : Debug "widget click item = " + EventItem +" data "+ EventData
-    EndSelect
-    EndWith
-  EndProcedure
-  
   Define item = 2
   Define sublevel = 2
   
@@ -395,12 +356,12 @@ EndProcedure
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     SetGadgetItemState(g, 0, #PB_Tree_Selected|#PB_Tree_Checked)
     SetGadgetItemState(g, 5, #PB_Tree_Selected|#PB_Tree_Inbetween)
-    BindGadgetEvent(g, @events_tree_gadget())
+
     
     ;}
     
     Open(0, 0, 225, 1110, 425)
-    g_Canvas = GetCanvasGadget(root())
+    g_Canvas = GetCanvasGadget(Root())
     g = 10
     
 ; ;     *g = Tree(10, 100, 210, 210, #__flag_CheckBoxes)                                         
@@ -496,9 +457,9 @@ EndProcedure
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 402
-; FirstLine = 361
-; Folding = --------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 358
+; FirstLine = 354
+; Folding = -------
 ; EnableXP
 ; DPIAware

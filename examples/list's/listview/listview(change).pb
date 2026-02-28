@@ -64,32 +64,14 @@ EndProcedure
 
 Procedure events_widgets()
   Select WidgetEvent( )
-    Case #__event_DragStart
-      Debug  ""+Index(EventWidget( ))+" - widget DragStart "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+    Case #__event_StatusChange
+      Debug  ""+Index(EventWidget( ))+" - widget status "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
+      
+    Case #__event_ScrollChange
+      Debug  ""+Index(EventWidget( ))+" - widget scroll "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
     Case #__event_Change
       Debug  ""+Index(EventWidget( ))+" - widget Change "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
-      
-    Case #__event_LeftClick
-      Debug  ""+Index(EventWidget( ))+" - widget LeftClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
-      
-    Case #__event_Left2Click
-      Debug  ""+Index(EventWidget( ))+" - widget LeftDoubleClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
-      
-    Case #__event_RightClick
-      Debug  ""+Index(EventWidget( ))+" - widget RightClick "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
-;       
-;     Case #__event_Up
-;       Debug  ""+Index(EventWidget( ))+" - widget Up "+GetState(EventWidget( ))
-;       
-;     Case #__event_Down
-;       Debug  ""+Index(EventWidget( ))+" - widget Down "+GetState(EventWidget( ))
-;       
-;     Case #__event_ScrollChange
-;       Debug  ""+Index(EventWidget( ))+" - widget ScrollChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
-;       
-;     Case #__event_StatusChange
-;       Debug  ""+Index(EventWidget( ))+" - widget StatusChange "+GetState(EventWidget( )) +" "+ WidgetEventItem( )
       
   EndSelect
 EndProcedure
@@ -174,8 +156,8 @@ If Open(0, 0, 0, 270+260, 160+150+150, "listviewGadget", #PB_Window_SystemMenu |
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 93
-; FirstLine = 60
+; CursorPosition = 67
+; FirstLine = 55
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -136,26 +136,6 @@ CompilerIf #PB_Compiler_IsMainFile
             ; Debug "-------change-stop-------"
             
          Case #__event_StatusChange
-            If WidgetEventData( ) = #PB_Tree_Expanded Or
-               WidgetEventData( ) = #PB_Tree_Collapsed
-               
-               ;                ;
-               ;                If *this\RowFocused( ) 
-               ;                   If *this\RowFocused( )\data
-               ;                      If *this\RowFocused( )\index = WidgetEventItem( )
-               ;                         Debug 8765678
-               ;                         Hide( *this\RowFocused( )\data, Bool( WidgetEventData( ) = #PB_Tree_Collapsed ))
-               ;                      EndIf
-               ;                   EndIf
-               ;                EndIf
-               
-               ;
-               Select EventWidget( )
-                  Case *second : SetItemState(*this, WidgetEventItem( ), WidgetEventData( ))
-                  Case *this : SetItemState(*second, WidgetEventItem( ), WidgetEventData( ))
-               EndSelect
-            EndIf
-            
             ; изменять цвета только у выделеных итемов
             ; If Not CanvasMouseButton( ) : ProcedureReturn : EndIf
             
@@ -331,9 +311,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 104
-; FirstLine = 21
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 140
+; FirstLine = 135
 ; Folding = --------
 ; EnableXP
 ; DPIAware
