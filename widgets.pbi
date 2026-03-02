@@ -1806,6 +1806,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.s GetItemText( *this, Item.l, Column.l = 0 )
       Declare.l SetItemText( *this, Item.l, Text.s, Column.l = 0 )
       
+      Declare   ChangeStatus( *this, *row )
       Declare.i GetState( *this )
       Declare.b SetState( *this, state.i )
       Declare.l GetItemState( *this, Item.l )
@@ -10287,6 +10288,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
+      Procedure   ChangeStatus( *this._s_WIDGET, *row._s_ROWS )
+         Protected count = ListSize( *this\__rows( ))
+         If count
+            If *row\index < 0 Or
+               *row\index > count
+               ProcedureReturn 0
+            EndIf
+            ;
+            PushListPosition( *this\__rows( ))
+            If SelectElement( *this\__rows( ), *row\index )
+               *this\__rows( )\ColorState( ) = *row\ColorState( )
+               *this\__rows( )\focus = *row\focus
+               ;             *this\__rows( )\enter = *row\enter
+               ;             *this\__rows( )\press = *row\press
+               If *row\focus
+                  *this\RowFocused( ) = *this\__rows( )
+               EndIf
+            EndIf
+            PopListPosition( *this\__rows( ) )
+         EndIf
+      EndProcedure
+      
       Procedure.i GetState( *this._s_WIDGET )
          ; This is a universal function which works For almost all gadgets: 
          ; 
@@ -10402,18 +10425,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn DPIUnScaled( *this\bar\thumb\pos )
          ElseIf *this\bar
             ProcedureReturn *this\bar\page\pos
-         EndIf
-      EndProcedure
-      
-      Procedure ResetState( *this._s_WIDGET )
-         ;\\ reset selected items
-         If *this\RowFocused( ) And
-            *this\RowFocused( )\_focus
-            *this\RowFocused( )\ColorState( ) = #__s_0
-            DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
-            *this\RowFocused( )\_focus = 0
-            *this\RowFocused( ) = #Null
-            ProcedureReturn - 1
          EndIf
       EndProcedure
       
@@ -10661,7 +10672,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\
                If state = - 1
                   ;\\ reset all selected items
-                  ProcedureReturn ResetState( *this )
+                  If *this\RowFocused( ) And 
+                     *this\RowFocused( )\_focus
+                     *this\RowFocused( )\_focus = 0
+                     *this\RowFocused( )\ColorState( ) = #__s_0
+                     DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                     *this\RowFocused( ) = #Null
+                     ProcedureReturn - 1
+                  EndIf
                Else
                   ;
                   If Not ( *this\RowFocused( ) And *this\RowFocused( )\rindex = state )
@@ -10714,7 +10732,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;\\
                      If *this\RowFocused( ) <> *row
-                        ResetState( *this )
+                       ;\\ reset selected items
+                        If *this\RowFocused( ) And 
+                           *this\RowFocused( )\_focus
+                           *this\RowFocused( )\_focus = #__s_0
+                           *this\RowFocused( )\ColorState( ) = #__s_0
+                           DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                           *this\RowFocused( ) = #Null
+                        EndIf
+                        
                         ;
                         *this\RowFocused( ) = *row
                         
@@ -10993,10 +11019,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If ListSize( *this\__rows( ))
             PushListPosition( *this\__rows( ))
             If SelectElement( *this\__rows( ), item )
+               ;
                If *this\__rows( )\ColorState( ) <> state
                   *this\__rows( )\ColorState( ) = state
                   result = 1
                EndIf
+               ;
+               If *this\__rows( )\focus <> state
+                  *this\__rows( )\focus = state
+                  If state
+                     *this\RowFocused( ) = *this\__rows( )
+                  EndIf
+                  result = 1
+               EndIf
+               ;
             EndIf
             PopListPosition( *this\__rows( ) )
          EndIf
@@ -17755,7 +17791,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *rowleaved\_enter = 0
                      
                      
-                     If Not EnteredButton( ) And ( *this\press And Not mouse( )\drop ) And Not *this\mode\multiSelect And Not *this\mode\clickSelect
+                     If Not EnteredButton( ) And 
+                        ( *this\press And Not mouse( )\drop ) And 
+                        *this\mode\multiSelect = 0 And 
+                        *this\mode\clickSelect = 0
                         ;
                         If *rowleaved\ColorState( ) = #__s_2
                            If *rowleaved = *this\RowFocused( )
@@ -17776,10 +17815,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                      EndIf
-                     
-                     ;                      If *rowleaved\ColorState( ) <> #__s_0
-                     ;                         *rowleaved\ColorState( ) = #__s_0
-                     ;                      EndIf
                      
                      ; Debug " leave-item status change"
                      DoEvents( *this, #__event_StatusChange, *rowleaved\rindex, *rowleaved )
@@ -17824,17 +17859,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *row\_enter = 0
                      *row\_enter = 1
                      
-                     ;                      If MousePress( )
-                     ;                         If *row\ColorState( ) <> #__s_2
-                     ;                            *row\ColorState( ) = #__s_2
-                     ;                         EndIf
-                     ;                      Else
-                     ;                         If *row\ColorState( ) <> #__s_1
-                     ;                            *row\ColorState( ) = #__s_1
-                     ;                         EndIf
-                     ;                      EndIf
-                     
-                     If Not EnteredButton( ) And ( *this\press And Not mouse( )\drop ) And ( *this\mode\clickSelect = 0 Or ( *this\mode\clickSelect And *this\mode\multiSelect ))
+                     If Not EnteredButton( ) And 
+                        ( *this\press And Not mouse( )\drop ) And 
+                        ( *this\mode\clickSelect = 0 Or ( *this\mode\clickSelect And *this\mode\multiSelect ))
                         
                         If *row\ColorState( ) <> #__s_2
                            *row\ColorState( ) = #__s_2
@@ -17852,11 +17879,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                      
-                     ;\\ update non-focus status
-                     ;If Not ( Not *this\press And *row = *this\RowFocused( ) )
-                        ; Debug "status-enter-item"
+                     ; Debug "status-enter-item"  ;;; Not ( Not *this\press And *row = *this\RowFocused( ) )
                      DoEvents( *this, #__event_StatusChange, *row\rindex, *row )
-                     ;EndIf
                   EndIf
                Else
                   ; Debug "status-leave-items"
@@ -18068,7 +18092,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If event = #__event_DragStart ; Ok
+            If event = #__event_DragStart 
             EndIf
             
             ;\\
@@ -28191,9 +28215,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 19122
-; FirstLine = 17670
-; Folding = ----------------------------------------------------00---8--t-----4-----------------------------------------------------------------------------------------mv---------------------------------------------------------------------------------------------------------------------------v-f0--n3-----------------------------------------------------------------------------------------------------------fb0-6--------------------------------------------------------------------------------------------------------------3v-++e--4f--0v-------------------4448+r3--------8-+-------------------------------------------------------------------------------------------------------------f9hi8t48f+f------------------------------------0f080--+-----------wvf-r-fv-----------++------------------------------------
+; CursorPosition = 10300
+; FirstLine = 9528
+; Folding = ----------------------------------------------------00---8--t-----4-----------------------------------------------------------------------------------------mv------------------------------------------------------------------------------------------------------------------------------r----0------------------------------------------------------------------------------------------------------------37-z--------------------------------------------------------------------------------------------------------------Nb-00---v-+-8f-------------------vvv4-ft--------4-0--------------------------------------------------------------------------------------------------------------5DF4bv4-9-+-----------------------------------8-748--0-----------hf-+X--e-----------00------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

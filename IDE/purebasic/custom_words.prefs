@@ -254,7 +254,6 @@ CountItems
 CountType
 RemoveColumn
 RemoveItem
-ChangeItemState
 
 Type
 Is
@@ -334,7 +333,6 @@ GetItemData
 GetItemState
 GetItemText
 GetData
-GetState
 GetText
 
 SetAttribute
@@ -344,8 +342,13 @@ SetItemData
 SetItemState
 SetItemText
 SetData
-SetState
 SetText
+
+SetState
+GetState
+
+ChangeStatus
+GetStatus
 
 Button
 ButtonImage

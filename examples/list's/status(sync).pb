@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global a, CountItems = 10
    Global._s_WIDGET *g, *first, *second
    
-   Procedure GetRowStatus( *this._s_WIDGET, *row._s_ROWS )
+   Procedure GetStatus( *this._s_WIDGET, *row._s_ROWS )
       ;Debug ""+*g\press +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
       
       If *row\focus And *row\press  
@@ -45,7 +45,8 @@ CompilerIf #PB_Compiler_IsMainFile
                   ;Debug "leave from focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
                   ProcedureReturn - 4
                Else
-                 ; Debug "deactive "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+                  ; Debug "deactive "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+                  ProcedureReturn 0
                EndIf
             EndIf
          EndIf
@@ -57,59 +58,67 @@ CompilerIf #PB_Compiler_IsMainFile
             ;Debug "press leave "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
             ProcedureReturn - 2
          Else
-            ;Debug "leave "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-            ProcedureReturn - 1
-         EndIf
-      EndIf
-   EndProcedure
-   
-   Procedure   _ChangeItemState( *this._s_WIDGET, Item.l, State.b )
-      ; ProcedureReturn ChangeItemState( *this, Item, State )
-      
-      If item < 0 Or item > ListSize( *this\__rows( ))
-         ProcedureReturn 0
-      EndIf
-      ;
-      If ListSize( *this\__rows( ))
-         PushListPosition( *this\__rows( ))
-         If SelectElement( *this\__rows( ), item )
-            If *this\__rows( )\ColorState( ) <> state
-               If state = #__s_2
-                  If *this\RowFocused( )
-                     ;*this\RowFocused( )\ColorState( ) = 0
-                     ;DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ) )
-                     ;*this\RowFocused( )\focus = 0
-                  EndIf
-;                   *this\RowFocused( ) = *this\__rows( )
-;                   *this\RowFocused( )\focus = state
-                 ; DoEvents( *this, #__event_StatusChange, *row\rindex, *row )
-               EndIf
-               
-               *this\__rows( )\focus = state
-               *this\__rows( )\ColorState( ) = state
+            If *this\RowFocused( ) = *row
+               ; Debug "lost focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+               ProcedureReturn - 3
+            Else
+               ; Debug "leave "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+               ProcedureReturn - 1
             EndIf
          EndIf
-         PopListPosition( *this\__rows( ) )
       EndIf
    EndProcedure
    
+   Procedure   _ChangeStatus( *this._s_WIDGET, *row._s_ROWS )
+         Protected count = ListSize( *this\__rows( ))
+         If count
+            If *row\index < 0 Or
+               *row\index > count
+               ProcedureReturn 0
+            EndIf
+            ;
+            PushListPosition( *this\__rows( ))
+            If SelectElement( *this\__rows( ), *row\index )
+               ;If *this\__rows( )\ColorState( ) <> *row\ColorState( )
+                  *this\__rows( )\ColorState( ) = *row\ColorState( )
+                  *this\__rows( )\focus = *row\focus
+                              *this\__rows( )\enter = *row\enter
+                              *this\__rows( )\press = *row\press
+                  If *row\focus
+                     *this\RowFocused( ) = *this\__rows( )
+                  EndIf
+              ; EndIf
+            EndIf
+            PopListPosition( *this\__rows( ) )
+         EndIf
+      EndProcedure
+      
    Procedure all_events()
       Protected._s_ROWS *row
       *g = EventWidget( )
       *row = WidgetEventData( )
       
       Select WidgetEvent( )
+         Case #__event_MouseLeave
+            If MousePress( )
+               *g\press = 0
+            EndIf
+            
          Case #__event_MouseEnter
             If *g\RowFocused( ) > 0
                Debug "  [+] enter "+*g\class +" "+*g\RowFocused( )\index
             EndIf
             
+            If MousePress( )
+               *g\press = 1
+            EndIf
+            
          Case #__event_LeftDown
-;             If *row > 0
-;                If SetState( *g, *row\index)
-;                   DoEvents( *g, #__event_StatusChange, *row\rindex, *row )
-;                EndIf
-;             EndIf
+            ;             If *row > 0
+            ;                If SetState( *g, *row\index)
+            ;                   DoEvents( *g, #__event_StatusChange, *row\rindex, *row )
+            ;                EndIf
+            ;             EndIf
             
          Case #__event_Change
             If *row > 0
@@ -121,40 +130,35 @@ CompilerIf #PB_Compiler_IsMainFile
                Select *g
                   Case *first 
                      ;If GetState( *second ) <> *row\index
-                     _ChangeItemState( *second, *row\index, *row\ColorState( ))
+                     _ChangeStatus( *second, *row )
                      ;EndIf
                   Case *second 
                      ;If GetState( *first ) <> *row\index
-                     _ChangeItemState( *first, *row\index, *row\ColorState( ))
+                     _ChangeStatus( *first, *row )
                      ;EndIf   
                EndSelect
                
+               ProcedureReturn 
                ;
-               Select GetRowStatus( *g, *row )
-                  ;Case 1 : Debug "enter "+*g\class +" "+ *row\index
-                  ;Case 2 : Debug "e-press "+*g\class +" "+ *row\index
+               Select GetStatus( *g, *row )
+                     ;Case 1 : Debug "enter "+*g\class +" "+ *row\index
+                     ;Case 2 : Debug "e-press "+*g\class +" "+ *row\index
                   Case 3 : Debug "focus "+*g\class +" "+ *row\index
-                     If *first <> *g
-                        ; SetState( *first, *row\index )
-                        Protected._s_ROWS *row_first = ItemID( *first, *row\index )
-                        *first\RowFocused( ) = *row_first
-                        *row_first\focus = *row\focus
-                        ;*row_first\ColorState( ) = *row\ColorState( )
-                        
-                        
-                        
-                        ForEach *first\__rows( )
-                              Debug ""+*first\__rows( )\focus +" "+ *first\__rows( )\index +" "+ *first\__rows( )\ColorState( )
-                           Next
-                        
-                     EndIf
                      ;Case 4 : Debug "e-focus "+*g\class +" "+ *row\index
-                  ;Case -1 : Debug "leave "+*g\class +" "+ *row\index
-                  ;Case -2 : Debug "l-press "+*g\class +" "+ *row\index
+                     ;Case -1 : Debug "leave "+*g\class +" "+ *row\index
+                     ;Case -2 : Debug "l-press "+*g\class +" "+ *row\index
                   Case -3 : Debug "f-lost "+*g\class +" "+ *row\index
-                  ;Case -4 : Debug "l-focus "+*g\class +" "+ *row\index
+                     ;Case -4 : Debug "l-focus "+*g\class +" "+ *row\index
                EndSelect
+               
             EndIf
+            ;                
+            ;                         ForEach *second\__rows( )
+            ;                               Debug "[s] "+*second\__rows( )\focus +" "+ *second\__rows( )\index +" "+ *second\__rows( )\ColorState( )
+            ;                            Next
+            ;                          ForEach *first\__rows( )
+            ;                               Debug "[f] "+*first\__rows( )\focus +" "+ *first\__rows( )\index +" "+ *first\__rows( )\ColorState( )
+            ;                            Next
             
       EndSelect
    EndProcedure
@@ -177,6 +181,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*first, @all_events(), #__event_MouseEnter)
       Bind(*second, @all_events(), #__event_MouseEnter)
       
+      Bind(*first, @all_events(), #__event_MouseLeave)
+      Bind(*second, @all_events(), #__event_MouseLeave)
+      
       Bind(*first, @all_events(), #__event_StatusChange)
       Bind(*second, @all_events(), #__event_StatusChange)
       
@@ -187,8 +194,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 87
-; FirstLine = 20
-; Folding = 0----
+; CursorPosition = 184
+; FirstLine = 82
+; Folding = -----
 ; EnableXP
 ; DPIAware
