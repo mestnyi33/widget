@@ -4353,17 +4353,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
          EndIf
-         ;
-         If event = #__event_Up
-            If a_anchors( )\grid_image
-               If *this\container > 0 And a_focused( ) = *this And MouseDrag( )
-                  SetBackgroundImage( *this, 0 )
-                  If *this\parent
-                     SetBackgroundImage( *this\parent, a_anchors( )\grid_image )
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
          
          ;
          If event = #__event_Focus 
@@ -4485,7 +4474,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;                  
-                  If MouseDragStart( )
+                  If MouseDrag( ) ; Start
                      If a_anchors( )\grid_image
                         If *this\parent And 
                            *this\parent\anchors
@@ -10692,7 +10681,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\RowState( ) = state  ; 
                      
                      ;\\ example file "D&D-items"
-                     If *this\drop And MouseDragStart( )
+                     If *this\drop And MouseDrag( ) ;  Start
                         If *this\RowPressed( )
                            *this\__rows( )\rindex = State
                            
@@ -16291,7 +16280,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         is_mouse_enter( *list( ), mouse_x, mouse_y, [#__c_draw] )
                         
                         ;\\ если переместили виджет то его исключаем
-                        If MouseDragStart( )
+                        If MouseDrag( ) ; Start
                            If is_drag_move( )
                               If Pressed( ) = *list( )
                                  Continue
@@ -16363,7 +16352,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                a_entered( )\anchors\id[a_index( )] And
                a_entered( )\anchors\state
                ;
-               If Not MouseDragStart( )
+               If Not MouseDrag( ) ; Start
                   If *this
                      If *this <> a_entered( ) And 
                         *this\root = a_entered( )\root 
@@ -17126,7 +17115,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
          
          If *this\press
-            dragged = MouseDragStart( )
+            dragged = MouseDrag( ) ; Start
          EndIf
          
          ;
@@ -17673,7 +17662,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   DoEvent_Rows( *this._s_WIDGET, List *rows._s_ROWS( ), event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-         Protected dragged = Bool( MouseDragStart( ) And *this\press )
+         Protected dragged = Bool( MouseDrag( ) And *this\press ) ; Start
          Protected Repaint, *row._s_ROWS
          If *this\type = #__type_ListIcon
             mouse_x - *this\inner_x( ) - *this\scroll_x( )
@@ -17768,7 +17757,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ change enter/leave state
             If *this\RowEntered( ) <> *row
-               If MouseDragStart( ) And *this\RowFocused( ) And  *this\RowFocused( )\press
+               If MouseDrag( ) And *this\RowFocused( ) And  *this\RowFocused( )\press ; Start
+                  Debug "------ "+*this\RowFocused( )\index +" "+ MousePress( )
                   If Not MousePress( )
                      *this\RowFocused( )\press = 0
                   EndIf
@@ -17891,10 +17881,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
             EndIf
             
-            ;\\
-            If mouse( )\drop
-               ; drag & drop state
-               If *this\drop
+            ;
+            ;\\ DD drop state
+            If *this\drop
+               If mouse( )\drop
                   If *this\RowEntered( ) And
                      *this\RowEntered( )\_enter
                      
@@ -19915,7 +19905,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If Pressed( ) And 
                Pressed( )\press And Not MouseDrag( )
                ;
-               MouseDrag( ) = 1 ; ._s_DROP = AllocateStructure( _s_DROP);RAG )
+               MouseDrag( ) =- 1 ; ._s_DROP = AllocateStructure( _s_DROP);RAG )
                MouseDragStart( ) = #PB_Drag_Update
                DoEvents( Pressed( ), #__event_DragStart )
             EndIf
@@ -19955,7 +19945,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; mouse move event start
          If event = #__event_MouseMove
             ;\\ mouse-pressed-widget move event
-            If MouseDragStart( ) And 
+            If MouseDrag( ) And ; Start
                Pressed( ) And 
                Pressed( ) <> Entered( )
                ;
@@ -20234,7 +20224,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\ do enter&leave events
-                  If MouseDragStart( )
+                  If MouseDrag( ) ; Start
                      If Entered( ) <> Pressed( )
                         GetAtPoint( Root( ), CanvasMouseX( ), CanvasMouseY( ), widgets( ) )
                         
@@ -20243,7 +20233,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            GetAtPoint( Pressed( )\root, CanvasMouseX( ), CanvasMouseY( ), widgets( ) )
                         EndIf
                      EndIf
-                     MouseDragStart( ) = 0
+                     ; MouseDragStart( ) = 0
                   EndIf
                   
                   ;
@@ -28215,9 +28205,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 10300
-; FirstLine = 9528
-; Folding = ----------------------------------------------------00---8--t-----4-----------------------------------------------------------------------------------------mv------------------------------------------------------------------------------------------------------------------------------r----0------------------------------------------------------------------------------------------------------------37-z--------------------------------------------------------------------------------------------------------------Nb-00---v-+-8f-------------------vvv4-ft--------4-0--------------------------------------------------------------------------------------------------------------5DF4bv4-9-+-----------------------------------8-748--0-----------hf-+X--e-----------00------------------------------------
+; CursorPosition = 28205
+; FirstLine = 28179
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

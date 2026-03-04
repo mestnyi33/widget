@@ -1,4 +1,5 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
+;XIncludeFile "../../../temp.pbi" 
 
 EnableExplicit
 UseWidgets( )
@@ -411,7 +412,7 @@ Procedure ListIconWidget( X,Y,Width,Height, title.s, titleWidth )
   ; ProcedureReturn ListIcon(x,y,width,height, title.s, titleWidth)
   
    ;\\
-   Text(X,Y,Width,20,title, #__flag_Textinline) : SetColor( widget( ), #PB_Gadget_BackColor, $FFC2C2C2)
+   Text(X,Y,Width,20,title, #__flag_Textinline) : SetColor( Widget( ), #PB_Gadget_BackColor, $FFC2C2C2)
    
    ProcedureReturn Tree(X,Y+20,Width,Height-20)
 EndProcedure
@@ -509,10 +510,8 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
 EndIf
 
 End
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 445
-; FirstLine = 431
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = -----
-; Optimizer
 ; EnableXP
 ; DPIAware

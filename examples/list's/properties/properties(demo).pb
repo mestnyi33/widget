@@ -267,30 +267,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;-
-   Procedure   PropertiesItems_StatusChange2( *this._s_WIDGET, item, state )
-      If item < 0 Or item > ListSize( *this\__rows( ))
-         ProcedureReturn 0
-      EndIf
-      If ListSize( *this\__rows( ))
-         PushListPosition( *this\__rows( ))
-         If SelectElement( *this\__rows( ), item )
-            If state = #__s_2
-               If *this\RowFocused( )
-                  *this\RowFocused( )\focus = 0
-               EndIf
-               *this\RowFocused( ) = *this\__rows( )
-               *this\RowFocused( )\focus = 1
-            EndIf
-            
-            *this\__rows( )\ColorState( ) = state
-         EndIf
-         PopListPosition( *this\__rows( ) )
-      EndIf
-   EndProcedure
-   
    Procedure   PropertiesItems_StatusChange( *this._s_WIDGET, item, state )
-      ;ProcedureReturn PropertiesItems_StatusChange2( *this, item, state )
-      
       Protected._s_ROWS *row = ItemID( *this, item )
       If *row 
          If state = #__s_2
@@ -386,15 +363,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure   Properties_StatusChange( *splitter._s_WIDGET, *this._s_WIDGET )
       Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
       Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
-      Protected._s_ROWS *row
+      Protected._s_ROWS *row = ItemID( *this, WidgetEventItem( ))
       Protected item, state
-      ;
-      If PushItem( *this)
-         If SelectItem( *this, WidgetEventItem( ))
-            *row = *this\__rows( )
-         EndIf
-         PopItem( *this)
-      EndIf
+      
       ;
       If *row\childrens
          *row\ColorState( ) = #__s_0
@@ -428,13 +399,15 @@ CompilerIf #PB_Compiler_IsMainFile
       Else
          Select *this
             Case *first 
-               If GetState( *second ) <> *row\index
-                  PropertiesItems_StatusChange( *second, *row\index, *row\ColorState( ) )
-               EndIf
+               ChangeStatus( *second, *row )
+;                If GetState( *second ) <> *row\index
+;                   PropertiesItems_StatusChange( *second, *row\index, *row\ColorState( ) )
+;                EndIf
             Case *second 
-               If GetState( *first ) <> *row\index
-                  PropertiesItems_StatusChange( *first, *row\index, *row\ColorState( ) )
-               EndIf   
+               ChangeStatus( *first, *row )
+;                If GetState( *first ) <> *row\index
+;                   PropertiesItems_StatusChange( *first, *row\index, *row\ColorState( ) )
+;                EndIf   
          EndSelect
       EndIf
    EndProcedure
@@ -684,9 +657,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 181
-; FirstLine = 174
-; Folding = -----------0-
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 406
+; FirstLine = 393
+; Folding = ------------
 ; EnableXP
 ; DPIAware

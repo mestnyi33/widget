@@ -100,9 +100,11 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEvent( )
          Case #__event_MouseLeave
-            If MousePress( )
-               *g\press = 0
-            EndIf
+;             If MousePress( )
+;             Else
+;                Pressed( ) = 0
+;                *g\press = 0
+;             EndIf
             
          Case #__event_MouseEnter
             If *g\RowFocused( ) > 0
@@ -110,15 +112,9 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             If MousePress( )
+               Pressed( ) = *g
                *g\press = 1
             EndIf
-            
-         Case #__event_LeftDown
-            ;             If *row > 0
-            ;                If SetState( *g, *row\index)
-            ;                   DoEvents( *g, #__event_StatusChange, *row\rindex, *row )
-            ;                EndIf
-            ;             EndIf
             
          Case #__event_Change
             If *row > 0
@@ -174,10 +170,6 @@ CompilerIf #PB_Compiler_IsMainFile
          AddItem(*second, -1, "item "+Str(a), -1, 0)
       Next
       
-      ; comment\uncomment
-      Bind(*first, @all_events(), #__event_LeftDown)
-      Bind(*second, @all_events(), #__event_LeftDown)
-      
       Bind(*first, @all_events(), #__event_MouseEnter)
       Bind(*second, @all_events(), #__event_MouseEnter)
       
@@ -194,8 +186,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 184
-; FirstLine = 82
+; CursorPosition = 172
+; FirstLine = 69
 ; Folding = -----
 ; EnableXP
 ; DPIAware

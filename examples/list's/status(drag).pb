@@ -88,29 +88,18 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_StatusChange
             If *row > 0
-               Select *g
-                  Case *first 
-                     ;If GetState( *second ) <> *row\index
-                     ChangeItemState( *second, *row\index, *row\ColorState( ))
-                     ;EndIf
-                  Case *second 
-                     ;If GetState( *first ) <> *row\index
-                     ChangeItemState( *first, *row\index, *row\ColorState( ))
-                     ;EndIf   
-               EndSelect
-               
-               ;
-               Select GetRowStatus( *g, *row )
-                  ;Case 1 : Debug "enter "+*g\class +" "+ *row\index
-                  ;Case 2 : Debug "e-press "+*g\class +" "+ *row\index
-                  Case 3 : Debug "focus "+*g\class +" "+ *row\index
-                  ;Case 4 : Debug "e-focus "+*g\class +" "+ *row\index
-                  ;Case -1 : Debug "leave "+*g\class +" "+ *row\index
-                  ;Case -2 : Debug "l-press "+*g\class +" "+ *row\index
-                  Case -3 : Debug "f-lost "+*g\class +" "+ *row\index
-                  ;Case -4 : Debug "l-focus "+*g\class +" "+ *row\index
-               EndSelect
-            EndIf
+               Debug " status "+*g\class +" "+ *row\index +" "+ *row\ColorState( )
+;                Select *g
+;                   Case *first 
+;                      ;If GetState( *second ) <> *row\index
+;                      ChangeStatus( *second, *row )
+;                      ;EndIf
+;                   Case *second 
+;                      ;If GetState( *first ) <> *row\index
+;                      ChangeStatus( *first, *row )
+;                      ;EndIf   
+;                EndSelect
+           EndIf
             
       EndSelect
    EndProcedure
@@ -126,10 +115,11 @@ CompilerIf #PB_Compiler_IsMainFile
          AddItem(*second, -1, "item "+Str(a), -1, 0)
       Next
       
-      EnableDrop( *first, #PB_Drop_Text, #PB_Drag_Link )
-      EnableDrop( *second, #PB_Drop_Text, #PB_Drag_Link )
+;       EnableDrop( *first, #PB_Drop_Text, #PB_Drag_Link )
+;       EnableDrop( *second, #PB_Drop_Text, #PB_Drag_Link )
       
       Bind(*first, @all_events(), #__event_DragStart)
+      Bind(*second, @all_events(), #__event_DragStart)
       
 ;       Bind(*first, @all_events(), #__event_LeftDown)
 ;       Bind(*second, @all_events(), #__event_LeftDown)
@@ -144,8 +134,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 134
-; FirstLine = 118
-; Folding = ----
+; CursorPosition = 90
+; FirstLine = 86
+; Folding = ---
 ; EnableXP
 ; DPIAware

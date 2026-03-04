@@ -5,90 +5,9 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
-   ;test_focus_draw = 1
-   ;test_focus_set = 1
    
    Global a, CountItems = 10
    Global._s_WIDGET *g, *first, *second
-   
-   Procedure GetRowStatus( *this._s_WIDGET, *row._s_ROWS )
-      ;Debug ""+*g\press +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
-      
-      If *row\focus And *row\press  
-         If *row\ColorState( )
-            ;Debug "focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-            ProcedureReturn 3
-         Else
-            ;Debug "lost focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-            ProcedureReturn - 3
-         EndIf
-      ElseIf *this\press And *row\enter  
-         ;Debug "press enter "+*this\class +" "+ *row\index +" "+ *row\ColorState( ) +" "+ *row\press
-         ProcedureReturn 2
-      ElseIf *row\focus 
-         If *row\enter 
-            If MouseButtons( )
-               ;Debug ""+*g\press +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
-               ;Debug "focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-               ProcedureReturn 3
-            Else
-               ;Debug "enter focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-               ProcedureReturn 4
-            EndIf
-         Else
-            If Not *row\ColorState( ) 
-               ; Debug *row\focus ; bug должен быть 3
-               ;Debug "lost focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-               ProcedureReturn - 3
-            Else
-               If Not *this\press
-                  ;Debug "leave from focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-                  ProcedureReturn - 4
-               Else
-                 ; Debug "deactive "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-               EndIf
-            EndIf
-         EndIf
-      ElseIf *row\enter
-         ;Debug "enter "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-         ProcedureReturn 1
-      Else
-         If *this\press
-            ;Debug "press leave "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-            ProcedureReturn - 2
-         Else
-            ;Debug "leave "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-            ProcedureReturn - 1
-         EndIf
-      EndIf
-   EndProcedure
-   
-   Procedure   PropertiesButton_ChangeItemState( *this._s_WIDGET, Item.l, State.b )
-      ProcedureReturn ChangeItemState( *this, Item, State )
-      
-      If item < 0 Or item > ListSize( *this\__rows( ))
-         ProcedureReturn 0
-      EndIf
-      ;
-      If ListSize( *this\__rows( ))
-         PushListPosition( *this\__rows( ))
-         If SelectElement( *this\__rows( ), item )
-            If *this\__rows( )\ColorState( ) <> state
-               If state = #__s_2
-                  If *this\RowFocused( )
-                     *this\RowFocused( )\focus = 0
-                     *this\RowFocused( )\ColorState( ) = 0
-                  EndIf
-                  *this\RowFocused( ) = *this\__rows( )
-                  *this\RowFocused( )\focus = state
-               EndIf
-               
-               *this\__rows( )\ColorState( ) = state
-            EndIf
-         EndIf
-         PopListPosition( *this\__rows( ) )
-      EndIf
-   EndProcedure
    
    Procedure all_events()
       Protected._s_ROWS *row
@@ -96,11 +15,7 @@ CompilerIf #PB_Compiler_IsMainFile
       *row = WidgetEventData( )
       
       Select WidgetEvent( )
-         Case #__event_DragStart
-            DragDropText( "dragtext" )
-            
          Case #__event_LeftDown
-            ;
             If *row > 0
                If SetState( *g, *row\index)
                   DoEvents( *g, #__event_StatusChange, *row\rindex, *row )
@@ -109,40 +24,23 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_Change
             If *row > 0
-               Debug "[+] change "+*g\class +" "+*row\index
+               Debug "  [+] change "+*g\class +" "+*row\index
             EndIf
             
          Case #__event_StatusChange
             If *row > 0
                Select *g
-                  Case *first 
-                     ;If GetState( *second ) <> *row\index
-                     PropertiesButton_ChangeItemState( *second, *row\index, *row\ColorState( ))
-                     ;EndIf
-                  Case *second 
-                     ;If GetState( *first ) <> *row\index
-                     PropertiesButton_ChangeItemState( *first, *row\index, *row\ColorState( ))
-                     ;EndIf   
+                  Case *first  : ChangeStatus( *second, *row )
+                  Case *second : ChangeStatus( *first, *row )
                EndSelect
-               
-               ;
-               Select GetRowStatus( *g, *row )
-                  ;Case 1 : Debug "enter "+*g\class +" "+ *row\index
-                  ;Case 2 : Debug "e-press "+*g\class +" "+ *row\index
-                  ;Case 3 : Debug "focus "+*g\class +" "+ *row\index
-                  ;Case 4 : Debug "e-focus "+*g\class +" "+ *row\index
-                  ;Case -1 : Debug "leave "+*g\class +" "+ *row\index
-                  ;Case -2 : Debug "l-press "+*g\class +" "+ *row\index
-                  ;Case -3 : Debug "f-lost "+*g\class +" "+ *row\index
-                  ;Case -4 : Debug "l-focus "+*g\class +" "+ *row\index
-               EndSelect
-            EndIf
-            
-;             If *second\press
-;                ForEach *first\__rows( )
-;                   Debug ""+*first\__rows( )\focus +" "+ *first\__rows( )\index +" "+ *first\__rows( )\ColorState( )
-;                Next
-;             EndIf
+           EndIf
+            ;                
+            ;                         ForEach *second\__rows( )
+            ;                               Debug "[s] "+*second\__rows( )\focus +" "+ *second\__rows( )\index +" "+ *second\__rows( )\ColorState( )
+            ;                            Next
+            ;                          ForEach *first\__rows( )
+            ;                               Debug "[f] "+*first\__rows( )\focus +" "+ *first\__rows( )\index +" "+ *first\__rows( )\ColorState( )
+            ;                            Next
             
       EndSelect
    EndProcedure
@@ -158,12 +56,10 @@ CompilerIf #PB_Compiler_IsMainFile
          AddItem(*second, -1, "item "+Str(a), -1, 0)
       Next
       
-      ;EnableDrop( *first, #PB_Drop_Text, #PB_Drag_Link )
-      
+      ;
       Bind(*first, @all_events(), #__event_LeftDown)
       Bind(*second, @all_events(), #__event_LeftDown)
       
-      Bind(*first, @all_events(), #__event_DragStart)
       Bind(*first, @all_events(), #__event_StatusChange)
       Bind(*second, @all_events(), #__event_StatusChange)
       
@@ -174,8 +70,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 144
-; FirstLine = 119
-; Folding = -----
+; CursorPosition = 59
+; FirstLine = 44
+; Folding = --
 ; EnableXP
 ; DPIAware

@@ -113,21 +113,14 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEvent( )
          Case #__event_StatusChange
-            Protected._s_ROWS *row
-            
-            If PushItem( *g )
-               If SelectItem( *g, WidgetEventItem( ))
-                  *row = *g\__rows( )
-               EndIf
-               PopItem( *g)
-            EndIf
+            Protected._s_ROWS *row = WidgetEventData( )
             
             If StartEnum( *area )
                If *g = widgets()
                   Continue
                EndIf
                If widgets()\type = #__type_Tree
-                  ChangeItemState( widgets(), *row\index, *row\ColorState( ))
+                  ChangeStatus( widgets(), *row )
                EndIf
                StopEnum()
             EndIf
@@ -425,8 +418,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 185
-; FirstLine = 172
+; CursorPosition = 122
+; FirstLine = 104
 ; Folding = ---------
 ; EnableXP
 ; DPIAware
