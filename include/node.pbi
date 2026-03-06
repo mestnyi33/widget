@@ -1,78 +1,61 @@
 ﻿; =================================================================
-; NODE EDITOR: ВЫДЕЛЕНИЕ И ПРАВКА ЛИНИЙ
+; Block EDITOR: ВЫДЕЛЕНИЕ И ПРАВКА ЛИНИЙ
 ; =================================================================
 EnableExplicit
 #GridSize = 20
 
-Structure Port : X.i : Y.i : color.i : Active.b : EndStructure
-
-;- struct node
-Structure Node
-   X.i : Y.i : w.i : h.i : color.i : Text.s
-   List Ports.Port() 
-EndStructure
-
-;- struct connect
-; [В структуру Connection добавлено поле для хранения смещения при перетаскивании]
-Structure Connection
-  *fromNode.Node : *fromPort.Port : *toNode.Node : *toPort.Port
-  List Path.Port() 
-  IsHovered.b
-  IsDragging.b ; Флаг перемещения всей линии
-   color.i   ; Цвет линии (берется от порта-источника)
-EndStructure
+Structure Port : X.i : Y.i : color.i : round.b : Active.b : EndStructure
+Structure Block : X.i : Y.i : Width.i : Height.i : color.i : Text.s : List Ports.Port() : EndStructure
+Structure Connection : *fromBlock.Block : *fromPort.Port : *toBlock.Block : *toPort.Port : List Path.Port() : IsHovered.b : IsDragging.b : color.i : EndStructure
 
 Global *DragLink.Connection = #Null ; Ссылка на перемещаемую линию
 
-Global NewList Nodes.Node()
+Global NewList Blocks.Block()
 Global NewList Links.Connection()
-Global *DragNode.Node = #Null, *DragPort.Port = #Null, *ActiveSourceNode.Node = #Null
+Global *DragBlock.Block = #Null, *DragPort.Port = #Null, *ActiveSourceBlock.Block = #Null
 Global *SelectedPathPoint.Port = #Null, *ActiveLink.Connection = #Null
-; Переменные для отслеживания наведения на грань
-Global *HoverEdgeNode.Node = #Null
+Global *HoverEdgeBlock.Block = #Null
+Global *TargetTempPort.Port = #Null ; Временная точка входа
+Global *TargetTempBlock.Block = #Null ; Блок, в который мы "входим"
+
 Global HoverSide.i = 0
 Global HoverPos.f = 0.0
 
-; --- Добавьте эти переменные в начало к остальным Global ---
 Global DragOffX.f = 0
 Global DragOffY.f = 0
 
-Global *TargetTempPort.Port = #Null ; Временная точка входа
-Global *TargetTempNode.Node = #Null ; Блок, в который мы "входим"
-
-
 Macro Min(a, b) : (Bool((a) <= (b)) * (a) + Bool((b) < (a)) * (b)) : EndMacro
 Macro Max(a, b) : (Bool((a) >= (b)) * (a) + Bool((b) > (a)) * (b)) : EndMacro
-Macro IsMouseOnPort(mx, my, nodePtr, portPtr)
-   (Abs(mx - (nodePtr\x + portPtr\x)) < 12 And Abs(my - (nodePtr\y + portPtr\y)) < 12)
+Macro IsMouseOnPort(mx, my, BlockPtr, portPtr)
+   (Abs(mx - (BlockPtr\x + portPtr\x)) < portPtr\round And Abs(my - (BlockPtr\y + portPtr\y)) < portPtr\round)
 EndMacro
 
-Macro IsMouseOnNode(mx, my, nodePtr)
-   (mx > nodePtr\x And mx < nodePtr\x + nodePtr\w And my > nodePtr\y And my < nodePtr\y + nodePtr\h)
+Macro IsMouseOnBlock(mx, my, BlockPtr)
+   (mx > BlockPtr\x And mx < BlockPtr\x + BlockPtr\width And my > BlockPtr\y And my < BlockPtr\y + BlockPtr\height)
 EndMacro
 
-Procedure IsMouseOnSide(mx,my,  *node.Node, sidesize )
-   If mx >= *node\x - sidesize And 
-      mx <= *node\x + *node\w + sidesize And
-      my >= *node\y - sidesize And
-      my <= *node\y + *node\h + sidesize
+Procedure IsMouseOnSide(*Block.Block, mx,my, sidesize )
+   If mx >= *Block\x - sidesize And 
+      mx <= *Block\x + *Block\width + sidesize And
+      my >= *Block\y - sidesize And
+      my <= *Block\y + *Block\height + sidesize
       ;
-      If Abs(mx - *node\x) <= sidesize 
+      If Abs(mx - *Block\x) <= sidesize 
          HoverSide = 1 
-         HoverPos = (my - *node\y) / *node\h 
-         ProcedureReturn @*node
-      ElseIf Abs(my - *node\y) <= sidesize 
+         HoverPos = (my - *Block\y) / *Block\height 
+         ProcedureReturn @*Block
+      ElseIf Abs(my - *Block\y) <= sidesize 
          HoverSide = 2 
-         HoverPos = (mx - *node\x) / *node\w 
-         ProcedureReturn @*node
-      ElseIf Abs(mx - (*node\x + *node\w)) <= sidesize 
+         HoverPos = (mx - *Block\x) / *Block\width 
+         ProcedureReturn @*Block
+      ElseIf Abs(mx - (*Block\x + *Block\width)) <= sidesize 
          HoverSide = 3 
-         HoverPos = (my - *node\y) / *node\h 
-         ProcedureReturn @*node
-      ElseIf Abs(my - (*node\y + *node\h)) <= sidesize 
+         HoverPos = (my - *Block\y) / *Block\height 
+         ProcedureReturn @*Block
+      ElseIf Abs(my - (*Block\y + *Block\height)) <= sidesize 
          HoverSide = 4 
-         HoverPos = (mx - *node\x) / *node\w 
-         ProcedureReturn @*node
+         HoverPos = (mx - *Block\x) / *Block\width 
+         ProcedureReturn @*Block
       EndIf
    EndIf
 EndProcedure
@@ -88,22 +71,22 @@ Procedure.f DistToSegment(px, py, x1, y1, x2, y2)
    ProcedureReturn Sqr(Pow(px - (x1 + t * dx), 2) + Pow(py - (y1 + t * dy), 2))
 EndProcedure
 
-Procedure GetPortSide(*n.Node, *p.Port)
+Procedure GetPortSide(*n.Block, *p.Port)
    If *p\X <= 0 : ProcedureReturn 1 : ElseIf *p\Y <= 0 : ProcedureReturn 2
-      ElseIf *p\X >= *n\w : ProcedureReturn 3 : ElseIf *p\Y >= *n\h : ProcedureReturn 4
+      ElseIf *p\X >= *n\width : ProcedureReturn 3 : ElseIf *p\Y >= *n\height : ProcedureReturn 4
    EndIf : ProcedureReturn 1
 EndProcedure
 
 
 Procedure RecalculatePath(*link.Connection)
    ClearList(*link\Path())
-   Protected x1 = *link\fromNode\X + *link\fromPort\X
-   Protected y1 = *link\fromNode\Y + *link\fromPort\Y
-   Protected x2 = *link\toNode\X + *link\toPort\X
-   Protected y2 = *link\toNode\Y + *link\toPort\Y
+   Protected x1 = *link\fromBlock\X + *link\fromPort\X
+   Protected y1 = *link\fromBlock\Y + *link\fromPort\Y
+   Protected x2 = *link\toBlock\X + *link\toPort\X
+   Protected y2 = *link\toBlock\Y + *link\toPort\Y
    
-   Protected s1 = GetPortSide(*link\fromNode, *link\fromPort)
-   Protected s2 = GetPortSide(*link\toNode, *link\toPort)
+   Protected s1 = GetPortSide(*link\fromBlock, *link\fromPort)
+   Protected s2 = GetPortSide(*link\toBlock, *link\toPort)
    Protected offset = 50
    
    ; Точка 1: Старт
@@ -161,61 +144,62 @@ Procedure RecalculatePath(*link.Connection)
    AddElement(*link\Path()) : *link\Path()\X = x2 : *link\Path()\Y = y2
 EndProcedure
 
-Procedure.i AddNotePort(*n.Node, side, position.f, color = $00FF00)
+Procedure.i AddBlockPort(*n.Block, side, position.f, color = $00FF00)
    AddElement(*n\Ports())
    *n\Ports()\color = color
+   *n\Ports()\round = 12
    Select side
       Case 1 ; Лево
          *n\Ports()\x = 0
-         *n\Ports()\y = *n\h * position 
+         *n\Ports()\y = *n\height * position 
       Case 2 ; Верх
-         *n\Ports()\x = *n\w * position
+         *n\Ports()\x = *n\width * position
          *n\Ports()\y = 0               
       Case 3 ; Право
-         *n\Ports()\x = *n\w
-         *n\Ports()\y = *n\h * position 
+         *n\Ports()\x = *n\width
+         *n\Ports()\y = *n\height * position 
       Case 4 ; Низ
-         *n\Ports()\x = *n\w * position
-         *n\Ports()\y = *n\h            
+         *n\Ports()\x = *n\width * position
+         *n\Ports()\y = *n\height            
    EndSelect
    ProcedureReturn @*n\Ports()
 EndProcedure
 
-Procedure UpdateDynamicTarget(mx, my, *sourceNode.Node)
+Procedure UpdateDynamicTarget(mx, my, *sourceBlock.Block)
    ; Если мы тянем линию и навели на грань другого блока
-   If *HoverEdgeNode And *HoverEdgeNode <> *sourceNode
+   If *HoverEdgeBlock And *HoverEdgeBlock <> *sourceBlock
       
       ; Если точка еще не создана - создаем
       If *TargetTempPort = #Null
-         *TargetTempPort = AddNotePort(*HoverEdgeNode, HoverSide, HoverPos, $A0A0A0)
-         *TargetTempNode = *HoverEdgeNode
+         *TargetTempPort = AddBlockPort(*HoverEdgeBlock, HoverSide, HoverPos, $A0A0A0)
+         *TargetTempBlock = *HoverEdgeBlock
       Else
          ; Если мы перемещаем мышь вдоль той же грани - обновляем координаты точки
          ; Чтобы она плавно скользила за курсором
          Select HoverSide
-            Case 2, 4 : *TargetTempPort\x = *TargetTempNode\w * HoverPos
-            Case 1, 3 : *TargetTempPort\y = *TargetTempNode\h * HoverPos
+            Case 2, 4 : *TargetTempPort\x = *TargetTempBlock\width * HoverPos
+            Case 1, 3 : *TargetTempPort\y = *TargetTempBlock\height * HoverPos
          EndSelect
       EndIf
       
    Else
       ; Если мышь ушла с грани или вернулась на исходный блок - удаляем "призрака"
       If *TargetTempPort
-         ChangeCurrentElement(*TargetTempNode\Ports(), *TargetTempPort)
-         DeleteElement(*TargetTempNode\Ports())
+         ChangeCurrentElement(*TargetTempBlock\Ports(), *TargetTempPort)
+         DeleteElement(*TargetTempBlock\Ports())
          *TargetTempPort = #Null
-         *TargetTempNode = #Null
+         *TargetTempBlock = #Null
       EndIf
    EndIf
 EndProcedure
 
 
-Procedure CreateNewNode(X, Y, label.s = "Блок", w = 120, h = 80, color = -1)
-   Protected *n.Node = AddElement(Nodes())
+Procedure CreateNewBlock(X, Y, label.s = "Блок", w = 120, h = 80, color = -1)
+   Protected *n.Block = AddElement(Blocks())
    *n\x = X - w/2
    *n\y = Y - h/2
-   *n\w = w
-   *n\h = h
+   *n\width = w
+   *n\height = h
    *n\text = label
    If color = -1
       *n\color = RGB(Random(150), Random(150), Random(150))
@@ -224,18 +208,18 @@ Procedure CreateNewNode(X, Y, label.s = "Блок", w = 120, h = 80, color = -1)
    EndIf
    
    ; УЛУЧШЕНИЕ: Создаем 4 точки с отступом 0.1 от краев для красоты
-   AddNotePort(*n, 1, 0.1, $00FF00) ; Слева (отступ сверху)
-   AddNotePort(*n, 2, 0.1, $0000FF) ; Сверху (отступ слева)
-   AddNotePort(*n, 3, 0.1, $FF0000) ; Справа (отступ сверху)
-   AddNotePort(*n, 4, 0.1, $00FFFF) ; Снизу (отступ слева)
+   AddBlockPort(*n, 1, 0.1, $00FF00) ; Слева (отступ сверху)
+   AddBlockPort(*n, 2, 0.1, $0000FF) ; Сверху (отступ слева)
+   AddBlockPort(*n, 3, 0.1, $FF0000) ; Справа (отступ сверху)
+   AddBlockPort(*n, 4, 0.1, $00FFFF) ; Снизу (отступ слева)
    
    ProcedureReturn *n
 EndProcedure
 
-Procedure CreateEditorNode(X, Y, t.s)
-   ProcedureReturn CreateNewNode(X, Y, t.s)
-   Protected *n.Node = AddElement(Nodes())
-   *n\X = X : *n\Y = Y : *n\w = 120 : *n\h = 80 : *n\Text = t : *n\color = $444444
+Procedure CreateEditorBlock(X, Y, t.s)
+   ProcedureReturn CreateNewBlock(X, Y, t.s)
+   Protected *n.Block = AddElement(Blocks())
+   *n\X = X : *n\Y = Y : *n\width = 120 : *n\height = 80 : *n\Text = t : *n\color = $444444
    AddElement(*n\Ports()) : *n\Ports()\X = 0 : *n\Ports()\Y = 40 
    AddElement(*n\Ports()) : *n\Ports()\X = 120 : *n\Ports()\Y = 40
    AddElement(*n\Ports()) : *n\Ports()\X = 60 : *n\Ports()\Y = 0 
@@ -266,43 +250,43 @@ Procedure ReDraw(Canvas)
       Next
       
       ;     ForEach Links()
-      ;        LineXY(Links()\fromNode\x + Links()\fromPort\x, Links()\fromNode\y + Links()\fromPort\y, 
-      ;               Links()\toNode\x + Links()\toPort\x, Links()\toNode\y + Links()\toPort\y, Links()\color)
+      ;        LineXY(Links()\fromBlock\x + Links()\fromPort\x, Links()\fromBlock\y + Links()\fromPort\y, 
+      ;               Links()\toBlock\x + Links()\toPort\x, Links()\toBlock\y + Links()\toPort\y, Links()\color)
       ;     Next
       
-      ForEach Nodes()
-         Box(Nodes()\X, Nodes()\Y, Nodes()\w, Nodes()\h, Nodes()\color)
+      ForEach Blocks()
+         Box(Blocks()\X, Blocks()\Y, Blocks()\width, Blocks()\height, Blocks()\color)
          
          ; Визуальная подсветка грани при наведении
-         If *HoverEdgeNode = @Nodes()
+         If *HoverEdgeBlock = @Blocks()
             DrawingMode(#PB_2DDrawing_Outlined)
-            Box(Nodes()\x - 1, Nodes()\y - 1, Nodes()\w + 2, Nodes()\h + 2, $00D7FF)
+            Box(Blocks()\x - 1, Blocks()\y - 1, Blocks()\width + 2, Blocks()\height + 2, $00D7FF)
          EndIf
          
          DrawingMode(#PB_2DDrawing_Transparent) 
-         DrawText(Nodes()\X+10, Nodes()\Y+10, Nodes()\Text, $FFFFFF) 
+         DrawText(Blocks()\X+10, Blocks()\Y+10, Blocks()\Text, $FFFFFF) 
          DrawingMode(#PB_2DDrawing_Default)
          
-         ForEach Nodes()\Ports()
-            c = Nodes()\Ports()\color
+         ForEach Blocks()\Ports()
+            c = Blocks()\Ports()\color
             r = 4
-            If Nodes()\Ports()\active
+            If Blocks()\Ports()\active
                c = $FF00FF
                r = 7
             EndIf
-            Circle(Nodes()\x + Nodes()\Ports()\x, Nodes()\y + Nodes()\Ports()\y, r, c)
+            Circle(Blocks()\x + Blocks()\Ports()\x, Blocks()\y + Blocks()\Ports()\y, r, c)
          Next
       Next
       
-      ;If *DragPort : LineXY(*ActiveSourceNode\X + *DragPort\X, *ActiveSourceNode\Y + *DragPort\Y, GetGadgetAttribute(0, #PB_Canvas_MouseX), GetGadgetAttribute(0, #PB_Canvas_MouseY), $FFBB00) : EndIf
-      If *DragPort : LineXY(*ActiveSourceNode\x + *DragPort\x, *ActiveSourceNode\y + *DragPort\y, WindowMouseX(0), WindowMouseY(0), $AAAAAA) : EndIf
+      ;If *DragPort : LineXY(*ActiveSourceBlock\X + *DragPort\X, *ActiveSourceBlock\Y + *DragPort\Y, GetGadgetAttribute(0, #PB_Canvas_MouseX), GetGadgetAttribute(0, #PB_Canvas_MouseY), $FFBB00) : EndIf
+      If *DragPort : LineXY(*ActiveSourceBlock\x + *DragPort\x, *ActiveSourceBlock\y + *DragPort\y, WindowMouseX(0), WindowMouseY(0), $AAAAAA) : EndIf
       StopDrawing()
    EndIf
 EndProcedure
 
-OpenWindow(0, 0, 0, 1000, 750, "Node Editor: Line Interaction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+OpenWindow(0, 0, 0, 1000, 750, "Block Editor: Line Interaction", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 CanvasGadget(0, 0, 0, 1000, 750)
-CreateEditorNode(100, 100, "Node A") : CreateEditorNode(500, 300, "Node B")
+CreateEditorBlock(100, 100, "Block A") : CreateEditorBlock(500, 300, "Block B")
 ReDraw(0)
 
 Repeat
@@ -312,13 +296,13 @@ Repeat
    
    Select EventType()
       Case #PB_EventType_MouseMove
-         If *DragNode
-            *DragNode\X = Round((mx-DragOffX) / #GridSize, #PB_Round_Nearest) * #GridSize
-            *DragNode\Y = Round((my-DragOffY) / #GridSize, #PB_Round_Nearest) * #GridSize
+         If *DragBlock
+            *DragBlock\X = Round((mx-DragOffX) / #GridSize, #PB_Round_Nearest) * #GridSize
+            *DragBlock\Y = Round((my-DragOffY) / #GridSize, #PB_Round_Nearest) * #GridSize
             
             ForEach Links() 
-               If Links()\fromNode = *DragNode Or
-                  Links()\toNode = *DragNode 
+               If Links()\fromBlock = *DragBlock Or
+                  Links()\toBlock = *DragBlock 
                   RecalculatePath(Links()) 
                EndIf 
             Next
@@ -364,55 +348,55 @@ Repeat
             Next
          EndIf
          
-         *HoverEdgeNode = #Null
+         *HoverEdgeBlock = #Null
          HoverSide = 0
-         ForEach Nodes()
-            ForEach Nodes()\Ports() 
-               If IsMouseOnPort(mx, my, Nodes(), Nodes()\Ports()) 
-                  Nodes()\Ports()\active = #True 
+         ForEach Blocks()
+            ForEach Blocks()\Ports() 
+               If IsMouseOnPort(mx, my, Blocks(), Blocks()\Ports()) 
+                  Blocks()\Ports()\active = #True 
                Else
-                  Nodes()\Ports()\active = #False 
+                  Blocks()\Ports()\active = #False 
                EndIf
             Next
             
             ; Определение наведения на грань (точность 6 пикселей)
-            If IsMouseOnSide( mx, my, Nodes(), 6)
-               *HoverEdgeNode = @Nodes()
+            If IsMouseOnSide( Blocks(), mx, my, 6)
+               *HoverEdgeBlock = @Blocks()
             EndIf
          Next
          
-         ; ... (после блока определения *HoverEdgeNode) ...
+         ; ... (после блока определения *HoverEdgeBlock) ...
          If *DragPort
-            UpdateDynamicTarget(mx, my, *ActiveSourceNode)
+            UpdateDynamicTarget(mx, my, *ActiveSourceBlock)
          EndIf
          
          ReDraw(0)
          
       Case #PB_EventType_LeftButtonDown
          *DragPort = #Null
-         *DragNode = #Null
+         *DragBlock = #Null
          ; 1. Проверка портов и нод
-         ForEach Nodes()
-            ForEach Nodes()\Ports()
-               If Nodes()\Ports()\active 
-                  *DragPort = @Nodes()\Ports() 
-                  *ActiveSourceNode = @Nodes() 
+         ForEach Blocks()
+            ForEach Blocks()\Ports()
+               If Blocks()\Ports()\active 
+                  *DragPort = @Blocks()\Ports() 
+                  *ActiveSourceBlock = @Blocks() 
                   Break 2
                EndIf
             Next
             ; 3. Если клик в тело блока — перемещаем
-            If IsMouseOnNode(mx, my, Nodes())
-               *DragNode = @Nodes() 
+            If IsMouseOnBlock(mx, my, Blocks())
+               *DragBlock = @Blocks() 
                ; ИСПРАВЛЕНИЕ: Запоминаем дистанцию от мыши до левого верхнего угла ноды
-               DragOffX = mx - Nodes()\X 
-               DragOffY = my - Nodes()\Y 
-               MoveElement(Nodes(), #PB_List_Last) 
+               DragOffX = mx - Blocks()\X 
+               DragOffY = my - Blocks()\Y 
+               MoveElement(Blocks(), #PB_List_Last) 
                Break
             EndIf
          Next
          
          ; 2. Проверка точек на линиях (если не схватили ноду)
-         If Not *DragNode And Not *DragPort
+         If Not *DragBlock And Not *DragPort
             ForEach Links()
                ForEach Links()\Path()
                   If Abs(mx - Links()\Path()\X) < 8 And Abs(my - Links()\Path()\Y) < 8
@@ -423,7 +407,7 @@ Repeat
          EndIf
          
          ; В CASE #PB_EventType_LeftButtonDown (после проверки точек):
-         If Not *DragNode And Not *DragPort And Not *SelectedPathPoint
+         If Not *DragBlock And Not *DragPort And Not *SelectedPathPoint
             ForEach Links()
                If Links()\IsHovered
                   *DragLink = @Links()
@@ -436,26 +420,26 @@ Repeat
 
       Case #PB_EventType_LeftButtonUp
          If *DragPort
-            ForEach Nodes() : If @Nodes() <> *ActiveSourceNode : ForEach Nodes()\Ports()
-                     If Abs(mx - (Nodes()\X + Nodes()\Ports()\X)) < 10 And Abs(my - (Nodes()\Y + Nodes()\Ports()\Y)) < 10
-                        AddElement(Links()) : Links()\fromNode = *ActiveSourceNode : Links()\fromPort = *DragPort : Links()\toNode = @Nodes() : Links()\toPort = @Nodes()\Ports()
+            ForEach Blocks() : If @Blocks() <> *ActiveSourceBlock : ForEach Blocks()\Ports()
+                     If Abs(mx - (Blocks()\X + Blocks()\Ports()\X)) < 10 And Abs(my - (Blocks()\Y + Blocks()\Ports()\Y)) < 10
+                        AddElement(Links()) : Links()\fromBlock = *ActiveSourceBlock : Links()\fromPort = *DragPort : Links()\toBlock = @Blocks() : Links()\toPort = @Blocks()\Ports()
                         RecalculatePath(Links()) : Break 2
                      EndIf
             Next : EndIf : Next
          EndIf
          *SelectedPathPoint = #Null 
-         *DragNode = #Null 
+         *DragBlock = #Null 
          *DragPort = #Null 
          *DragLink = #Null
          ReDraw(0)
          
       Case #PB_EventType_RightButtonDown ; Удаление связей порта
-         ForEach Nodes()
-            ForEach Nodes()\Ports()
-               If Nodes()\Ports()\active
+         ForEach Blocks()
+            ForEach Blocks()\Ports()
+               If Blocks()\Ports()\active
                   ForEach Links()
-                     If Links()\fromPort = @Nodes()\Ports() Or 
-                        Links()\toPort = @Nodes()\Ports()
+                     If Links()\fromPort = @Blocks()\Ports() Or 
+                        Links()\toPort = @Blocks()\Ports()
                         DeleteElement(Links())
                      EndIf
                   Next
@@ -465,13 +449,13 @@ Repeat
          ReDraw(0)
          
       Case #PB_EventType_LeftDoubleClick
-         CreateNewNode(mx, my)
+         CreateNewBlock(mx, my)
          
    EndSelect
 Until Event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 341
-; FirstLine = 322
+; CursorPosition = 7
+; FirstLine = 127
 ; Folding = -----------
 ; EnableXP
 ; DPIAware
