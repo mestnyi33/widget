@@ -37,23 +37,23 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Protected eState.i
       
-      If *Object\disable : eState | #State_Disabled : EndIf
-      If *Object\hide    : eState | #State_Hidden   : EndIf
+      If Disable(*Object) : eState | #State_Disabled : EndIf
+      If Hide(*Object)    : eState | #State_Hidden   : EndIf
       
       If Not a_index( )
-         If *Object\enter    
+         If MouseEnter(*Object)   
             eState | #State_Hovered 
          EndIf
          
-         If *Object\press   
+         If MousePress(*Object)
             eState | #State_Selected 
-            If CanvasMouseButton( ) & #PB_Canvas_LeftButton
+            If MouseButtons( ) & #PB_Canvas_LeftButton
                eState | #State_LeftMousePushed
             EndIf
-            If CanvasMouseButton( ) & #PB_Canvas_RightButton
+            If MouseButtons( ) & #PB_Canvas_RightButton
                eState | #State_RightMousePushed
             EndIf
-            If CanvasMouseButton( ) & #PB_Canvas_MiddleButton
+            If MouseButtons( ) & #PB_Canvas_MiddleButton
                eState | #State_MiddleMousePushed
             EndIf
          EndIf
@@ -90,8 +90,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected Text.s = GetText(*Object)
       Protected Hue = DataValue
       
-      Protected enter = Bool(*object\enter > 0)
-      Protected press = Bool(*object\press > 0 And enter)
+      Protected enter = Bool(MouseEnter(*object))
+      Protected press = Bool(MousePress(*object) And enter)
       
       If a_index( )
          enter = 0
@@ -226,7 +226,7 @@ CompilerIf #PB_Compiler_IsMainFile
       If ObjectState & (#State_LeftMousePushed|#State_Hovered) = (#State_LeftMousePushed|#State_Hovered)
          VectorSourceGradientColor(HSVA(Hue, 40, $E8), 0.00)
          VectorSourceGradientColor(HSVA(Hue, 10, $FF), 1.00)
-      ElseIf ObjectState & #State_Hovered And Not CanvasMouseButton( ) & #PB_Canvas_LeftButton
+      ElseIf ObjectState & #State_Hovered And Not ObjectState & #State_LeftMousePushed
          VectorSourceGradientColor(HSVA(Hue, 20, $E8), 0.00)
          VectorSourceGradientColor(HSVA(Hue, 5, $FF), 1.00)
       Else
@@ -250,7 +250,7 @@ CompilerIf #PB_Compiler_IsMainFile
          AddPathBox(1.5, Y+1.5, 16, 16)
          VectorSourceColor(HSVA(Hue, 50, $FF))
          StrokePath(1)
-      ElseIf ObjectState & #State_Hovered And Not CanvasMouseButton( ) & #PB_Canvas_LeftButton
+      ElseIf ObjectState & #State_Hovered And Not ObjectState & #State_LeftMousePushed
          AddPathBox(0.5, Y+0.5, 18, 18)
          VectorSourceColor(HSVA(0, 0, $A0))
          StrokePath(1)
@@ -361,14 +361,14 @@ CompilerIf #PB_Compiler_IsMainFile
    If Not Open( #Window );, #Canvas )
       Debug "Unable to initialize the object manager !"    
    EndIf
-   SetColor(root( ), #PB_Gadget_BackColor, $FFF0F0F0 )
-   a_init(root( ), 0)
+   SetColor(Root( ), #PB_Gadget_BackColor, $FFF0F0F0 )
+   a_init(Root( ), 0)
    
    ; 2DDrawing 
    
-   root( )\drawmode | 1<<2
+   Root( )\drawmode | 1<<2
    ; VectorDrawing
-   root( )\drawmode | 1<<1
+   Root( )\drawmode | 1<<1
    
    ; Creates some customized buttons
    *Object_Button1 = Button_Add(50, 50, 200, 30, "Normal button")
@@ -415,7 +415,7 @@ CompilerIf #PB_Compiler_IsMainFile
    End
    
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.30 (Windows - x64)
 ; CursorPosition = 47
 ; FirstLine = 43
 ; Folding = -------

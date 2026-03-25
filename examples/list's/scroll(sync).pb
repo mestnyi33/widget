@@ -31,9 +31,9 @@ CompilerIf #PB_Compiler_IsMainFile
             Protected._s_ROWS *row = WidgetEventData( )
             
             If *row > 0
-               *row\press = 0
-               *row\focus = 0
-               *row\enter = 0
+               *row\_press = 0
+               *row\_focus = 0
+               *row\_enter = 0
                *row\ColorState( ) = 0
             EndIf
             
@@ -64,9 +64,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; IDE Options = PureBasic 6.30 (Windows - x64)
 ; CursorPosition = 35
-; FirstLine = 12
+; FirstLine = 13
 ; Folding = --
 ; EnableXP
 ; DPIAware

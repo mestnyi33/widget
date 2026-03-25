@@ -136,9 +136,6 @@ CompilerIf #PB_Compiler_IsMainFile
             ; Debug "-------change-stop-------"
             
          Case #__event_StatusChange
-            ; изменять цвета только у выделеных итемов
-            ; If Not CanvasMouseButton( ) : ProcedureReturn : EndIf
-            
             ;
             Select EventWidget( )
                Case *second : Properties_StatusChange(*this, WidgetEventItem( ))
@@ -187,13 +184,13 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;             If *this\row
             ;                If *this\EnteredRow( )
-            ;                   Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\press + " " + *this\EnteredRow( )\enter + " " + *this\EnteredRow( )\focus
+            ;                   Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\_press + " " + *this\EnteredRow( )\enter + " " + *this\EnteredRow( )\focus
             ;                EndIf
             ;                If *this\PressedRow( )
-            ;                   Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\press + " " + *this\PressedRow( )\enter + " " + *this\PressedRow( )\focus
+            ;                   Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\_press + " " + *this\PressedRow( )\enter + " " + *this\PressedRow( )\focus
             ;                EndIf
             ;                If *this\RowFocused( )
-            ;                   Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\press + " " + *this\RowFocused( )\enter + " " + *this\RowFocused( )\focus
+            ;                   Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\_press + " " + *this\RowFocused( )\enter + " " + *this\RowFocused( )\focus
             ;                EndIf
             ;             EndIf
             
@@ -218,13 +215,13 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;             If *this\row
             ;                If *this\EnteredRow( )
-            ;                   Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\press + " " + *this\EnteredRow( )\enter + " " + *this\EnteredRow( )\focus
+            ;                   Debug "e - " + *this\EnteredRow( ) + " " + *this\EnteredRow( )\text\string + " " + *this\EnteredRow( )\_press + " " + *this\EnteredRow( )\_enter + " " + *this\EnteredRow( )\_focus
             ;                EndIf
             ;                If *this\PressedRow( )
-            ;                   Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\press + " " + *this\PressedRow( )\enter + " " + *this\PressedRow( )\focus
+            ;                   Debug "p - " + *this\PressedRow( ) + " " + *this\PressedRow( )\text\string + " " + *this\PressedRow( )\_press + " " + *this\PressedRow( )\_enter + " " + *this\PressedRow( )\_focus
             ;                EndIf
             ;                If *this\RowFocused( )
-            ;                   Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\press + " " + *this\RowFocused( )\enter + " " + *this\RowFocused( )\focus
+            ;                   Debug "f - " + *this\RowFocused( ) + " " + *this\RowFocused( )\text\string + " " + *this\RowFocused( )\_press + " " + *this\RowFocused( )\_enter + " " + *this\RowFocused( )\_focus
             ;                EndIf
             ;             EndIf
             
@@ -311,9 +308,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 140
-; FirstLine = 135
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 188
+; FirstLine = 185
 ; Folding = --------
 ; EnableXP
 ; DPIAware

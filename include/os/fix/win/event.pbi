@@ -1,4 +1,4 @@
-﻿;-\\ WINDOWS OS
+﻿;-\\ WINDOWS OS ; #GCLP_HCURSOR = -12 : SetClassLongPtr_(hWnd, #GCLP_HCURSOR, hCursor)
 CompilerIf #PB_Compiler_IsMainFile
    XIncludeFile "../../../constants.pbi"
 CompilerEndIf
@@ -6,12 +6,24 @@ CompilerEndIf
 XIncludeFile "../events.pbi"
 
 Module Events
+   #WM_DPICHANGED = $02E0
+   
    Procedure.w HIWORD(Value.L)
       ProcedureReturn (((Value) >> 16) & $FFFF)
    EndProcedure
    
    Procedure.w LOWORD(Value)
       ProcedureReturn ((Value) & $FFFF)
+   EndProcedure
+   
+   ; Callback для перехвата смены DPI
+   Procedure WindowCallback(hWnd, uMsg, wParam, lParam)
+      Select uMsg
+         Case #WM_DPICHANGED
+            Debug  "DPI изменился!"
+            
+      EndSelect
+      ProcedureReturn #PB_ProcessPureBasicEvents
    EndProcedure
    
    Procedure CallbackHandler(hWnd, uMsg, wParam, lParam) 
@@ -21,28 +33,31 @@ Module Events
       Static focus.i, enter.b, move.b 
       
       Select uMsg
+         Case #WM_DPICHANGED
+            Debug  "gadget DPI изменился!"
+            
          Case #WM_NCDESTROY 
             SetWindowLongPtr_(hwnd, #GWLP_USERDATA, sysProc)
             RemoveProp_(hwnd, sysProc)
-;             
-;          Case #WM_LBUTTONDOWN : move = 0
-;          Case #WM_LBUTTONUP : move = 0
-;          Case #WM_MOUSEFIRST
-;             Protected Track.TRACKMOUSEEVENT
-;             Track\cbSize = SizeOf(Track)
-;             Track\dwFlags = #TME_HOVER|#TME_LEAVE
-;             Track\hwndTrack = hWnd
-;             Track\dwHoverTime = 1
-;             TrackMouseEvent_(@TRACK)
-;             
-;             ; Case #WM_MOUSEMOVE
-;             If move
-;                CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseMove )
-;                ProcedureReturn 0
-;             Else
-;                move = 1
-;             EndIf
-;             
+            ;             
+            ;          Case #WM_LBUTTONDOWN : move = 0
+            ;          Case #WM_LBUTTONUP : move = 0
+            ;          Case #WM_MOUSEFIRST
+            ;             Protected Track.TRACKMOUSEEVENT
+            ;             Track\cbSize = SizeOf(Track)
+            ;             Track\dwFlags = #TME_HOVER|#TME_LEAVE
+            ;             Track\hwndTrack = hWnd
+            ;             Track\dwHoverTime = 1
+            ;             TrackMouseEvent_(@TRACK)
+            ;             
+            ;             ; Case #WM_MOUSEMOVE
+            ;             If move
+            ;                CallFunctionFast( *callBack,  gadget, #PB_EventType_MouseMove )
+            ;                ProcedureReturn 0
+            ;             Else
+            ;                move = 1
+            ;             EndIf
+            ;             
          Case #WM_MOUSEHWHEEL 
             CallFunctionFast( *callBack,  gadget, constants::#PB_EventType_MouseWheelX, - HIWORD(wparam) );( delta * step / #WHEEL_DELTA )) )
             ProcedureReturn 0
@@ -51,14 +66,14 @@ Module Events
             CallFunctionFast( *callBack,  gadget, constants::#PB_EventType_MouseWheelY , HIWORD(wparam) );( delta * step / #WHEEL_DELTA ))
             ProcedureReturn 0
             
-;          Case #WM_KEYUP
-;             If wParam = 9
-;                ProcedureReturn 0
-;             EndIf
+            ;          Case #WM_KEYUP
+            ;             If wParam = 9
+            ;                ProcedureReturn 0
+            ;             EndIf
             
          Case #WM_KEYDOWN
-           If wParam = 9
-             Debug ""+wParam +" "+ lParam +" "
+            If wParam = 9
+               Debug ""+wParam +" "+ lParam +" "
             EndIf
       EndSelect
       
@@ -78,10 +93,16 @@ Module Events
    ;    EndProcedure
    
    Procedure   SetCallBack(*callback)
-      
+      Debug "call"
+      ; Устанавливаем callback
+      SetWindowCallback(@WindowCallback())
    EndProcedure
-EndModule
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 2
+EndModule 
+
+; Events::SetCallBack(0) 
+
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 101
+; FirstLine = 64
 ; Folding = --
 ; EnableXP

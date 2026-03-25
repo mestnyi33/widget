@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure EventsHandler( )
       Static drag, deltax, deltay
-      If EventWidget( ) <> root( )
+      If EventWidget( ) <> Root( )
          Select WidgetEvent( )
             Case #__event_down
                deltax = CanvasMouseX( ) - EventWidget( )\x
@@ -29,12 +29,12 @@ CompilerIf #PB_Compiler_IsMainFile
                EndIf
                
             Case #__event_mouseenter : Debug "enter "+EventWidget( )\class 
-               If Not EventWidget( )\press
+               If Not EventWidget( )\mask & #__mask_press
                   SetColor(EventWidget( ), #__FrameColor, $ff0000ff)
                EndIf
                
             Case #__event_mouseleave : Debug "leave "+EventWidget( )\class 
-               If Not EventWidget( )\press
+               If Not EventWidget( )\mask & #__mask_press
                   SetColor(EventWidget( ), #__FrameColor, $ff00ff00)
                EndIf
                
@@ -110,9 +110,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 15
-; FirstLine = 11
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 36
+; FirstLine = 21
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -11,8 +11,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global a, *g1._s_WIDGET,*g2, g1,g2, CountItems=21; количесвто итемов 
    
-   Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
-      Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,flag)
+   Procedure TreeGadget_(gadget, X,Y,Width,Height,Flag=0)
+      Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,Flag)
       If gadget =- 1 : gadget = g : EndIf
       
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -92,13 +92,13 @@ CompilerIf #PB_Compiler_IsMainFile
 ;                Case #__event_RightClick
 ;                   Debug "----->-----"
 ;                   ;                   If *g1\RowEntered( )
-;                   ;                      Debug "e "+*g1\RowEntered( )\enter +" "+ *g1\RowEntered( )\press +" "+ *g1\RowEntered( )\focus
+;                   ;                      Debug "e "+*g1\RowEntered( )\_enter +" "+ *g1\RowEntered( )\_press +" "+ *g1\RowEntered( )\_focus
 ;                   ;                   EndIf
 ;                   ;                   If *g1\RowPressed( )
-;                   ;                      Debug "p "+*g1\RowPressed( )\enter +" "+ *g1\RowPressed( )\press +" "+ *g1\RowPressed( )\focus
+;                   ;                      Debug "p "+*g1\RowPressed( )\_enter +" "+ *g1\RowPressed( )\_press +" "+ *g1\RowPressed( )\_focus
 ;                   ;                   EndIf
 ;                   ;                   If *g1\RowFocused( )
-;                   ;                      Debug "f "+*g1\RowFocused( )\enter +" "+ *g1\RowFocused( )\press +" "+ *g1\RowFocused( )\focus
+;                   ;                      Debug "f "+*g1\RowFocused( )\_enter +" "+ *g1\RowFocused( )\_press +" "+ *g1\RowFocused( )\_focus
 ;                   ;                   EndIf
 ;                   
 ;                   If *g1\RowFirstLevelFirst( )
@@ -185,9 +185,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 173
-; FirstLine = 137
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 94
+; FirstLine = 78
 ; Folding = ----
 ; EnableXP
 ; DPIAware

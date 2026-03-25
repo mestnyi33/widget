@@ -31,7 +31,7 @@ CompilerIf #PB_Compiler_IsMainFile
   
   
   Define *w,a, Event
-  Define gLN=1500
+  Define gLN=10000
   Define LN=gLN
   
   
@@ -76,8 +76,8 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 54
-; FirstLine = 49
-; Folding = --
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 56
+; FirstLine = 40
+; Folding = -
 ; EnableXP

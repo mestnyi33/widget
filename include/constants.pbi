@@ -24,41 +24,40 @@
          #PB_EventType_SizeItem = 65534
       CompilerEndIf
       
-      
       ;-\\ Bounds
       #__bounds_Parentsize = 0
       #__bounds_Children = 1<<0
       #__bounds_move = 1<<1
       #__bounds_size = 1<<2
       
-;       Enumeration - 1
-;          #SelectionStyle_Default
-;          #SelectionStyle_none
-;          #SelectionStyle_Solid
-;          #SelectionStyle_Dotted
-;          #SelectionStyle_Dashed
-;       EndEnumeration
-;       #SelectionStyle_Mode       = $100
-;       #SelectionStyle_Completely = 0
-;       #SelectionStyle_partially  = $100
-;       #SelectionStyle_Ignore     = #PB_Ignore
-;       
-;       Enumeration 1
-;          #Boundary_MinX
-;          #Boundary_MinY
-;          #Boundary_MaxX
-;          #Boundary_MaxY
-;          #Boundary_MinWidth
-;          #Boundary_MinHeight
-;          #Boundary_MaxWidth
-;          #Boundary_MaxHeight
-;       EndEnumeration
-;       #Boundary_Ignore         = - $80000000    ; 0b10000000...
-;       #Boundary_Default        = - $7FFFFFFF    ; 0b01111111...
-;       #Boundary_none           = $3FFFFFFF      ; 0b00111111...
-;       #Boundary_parentSize     = $60000000      ; 0b01100000...
-;       #Boundary_parentSizeMask = $C0000000      ; 0b11000000...
-;       
+      ;       Enumeration - 1
+      ;          #SelectionStyle_Default
+      ;          #SelectionStyle_none
+      ;          #SelectionStyle_Solid
+      ;          #SelectionStyle_Dotted
+      ;          #SelectionStyle_Dashed
+      ;       EndEnumeration
+      ;       #SelectionStyle_Mode       = $100
+      ;       #SelectionStyle_Completely = 0
+      ;       #SelectionStyle_partially  = $100
+      ;       #SelectionStyle_Ignore     = #PB_Ignore
+      ;       
+      ;       Enumeration 1
+      ;          #Boundary_MinX
+      ;          #Boundary_MinY
+      ;          #Boundary_MaxX
+      ;          #Boundary_MaxY
+      ;          #Boundary_MinWidth
+      ;          #Boundary_MinHeight
+      ;          #Boundary_MaxWidth
+      ;          #Boundary_MaxHeight
+      ;       EndEnumeration
+      ;       #Boundary_Ignore         = - $80000000    ; 0b10000000...
+      ;       #Boundary_Default        = - $7FFFFFFF    ; 0b01111111...
+      ;       #Boundary_none           = $3FFFFFFF      ; 0b00111111...
+      ;       #Boundary_parentSize     = $60000000      ; 0b01100000...
+      ;       #Boundary_parentSizeMask = $C0000000      ; 0b11000000...
+      ;       
       ;
       ;\\ default values
       ;
@@ -83,22 +82,22 @@
       #__wb_Mini  = 3
       #__wb_help  = 4
       
-      ;-\\ Direction 
-      #__left = 0
-      #__top = 1
-      #__right = 2
-      #__bottom = 3
-      
       #__sOC = SizeOf(Character)
       
       ;-\\ Anchors
       #__a_anchors_Size = 7
       
+      ;-\\ Direction 
+      #__left = 1
+      #__top = 2
+      #__right = 3
+      #__bottom = 4
+      
       ; a_Index( )
-      #__a_Left         = 1
-      #__a_top          = 2
-      #__a_Right        = 3
-      #__a_Bottom       = 4
+      #__a_Left         = #__left
+      #__a_top          = #__top
+      #__a_Right        = #__right
+      #__a_Bottom       = #__bottom
       #__a_Left_top     = 5
       #__a_Right_top    = 6
       #__a_Right_Bottom = 7
@@ -173,9 +172,9 @@
       #__s_nofocus    = -1 
       
       ;-\\ resize-state
-;       ;#__resize_Restore  = 1<<1 
-;       #__resize_Minimize = 1<<2 
-;       #__resize_Maximize = 1<<3 
+      ;       ;#__resize_Restore  = 1<<1 
+      ;       #__resize_Minimize = 1<<2 
+      ;       #__resize_Maximize = 1<<3 
       
       ;-\\ color-state
       Enumeration
@@ -188,22 +187,6 @@
       ;-\\ mouse-state
       ; #__mouse_EnterChild = - 2
       ; #__mouse_EnterInner = 2
-      
-      #__mouse_leave    = - 1    ;-1   leave
-      #__mouse_enter    = 1 << 0 ; 1   enter
-      #__mouse_left     = 1 << 1 ; 2   move to left
-      #__mouse_top      = 1 << 2 ; 4   move to top
-      #__mouse_right    = 1 << 3 ; 8   move to right
-      #__mouse_bottom   = 1 << 4 ; 16  move to bottom
-      #__mouse_press    = 1 << 5 ; 32  button press
-      #__mouse_release  = 1 << 6 ; 64  button release
-      #__mouse_update   = 1 << 7 ; 128 enter inner
-      
-      ; #__mouse_move     = 1 << 8 ; 256 enter frame
-      ; #__mouse_wheel    = 1 << 9 ; 512 wheel
-      
-      
-      
       
       ;-
       ;-\\ event-type
@@ -256,6 +239,7 @@
          #__event_KeyUp
          ;
          #__event_DragStart
+         #__event_Drag
          #__event_Drop
          ;
          #__event_Draw
@@ -271,7 +255,6 @@
          #__event_Free
          #__event
       EndEnumeration
-      
       
       ;     #__eventmask_Create       = 1<<#__event_Create
       ;     #__eventmask_enter        = 1<<#__event_MouseEnter
@@ -297,22 +280,74 @@
       ;     #__eventmask_Right3Click  = 1<<#__event_Right3Click
       ;     #__eventmask_Lostfocus    = 1<<#__event_LostFocus
       ;     #__eventmask_Change       = 1<<#__event_Change
-      ;     #__eventmask_CursorChange = 1<<#__event_CursorChange
+           #__eventmask_Cursor       = 1<<#__event_CursorChange
       ;     #__eventmask_StatusChange = 1<<#__event_StatusChange
       ;     #__eventmask_ScrollChange = 1<<#__event_ScrollChange
       ;     #__eventmask_KeyDown      = 1<<#__event_KeyDown
       ;     #__eventmask_Input        = 1<<#__event_Input
       ;     #__eventmask_Return       = 1<<#__event_Return
       ;     #__eventmask_KeyUp        = 1<<#__event_KeyUp
-      ;     #__eventmask_Draw         = 1<<#__event_Draw
+           #__eventmask_Draw         = 1<<#__event_Draw
       ;     #__eventmask_Maximize     = 1<<#__event_Maximize
       ;     #__eventmask_Minimize     = 1<<#__event_Minimize
       ;     #__eventmask_Restore      = 1<<#__event_Restore
       ;     #__eventmask_Resizebegin  = 1<<#__event_ResizeBegin
-      ;     #__eventmask_Resize       = 1<<#__event_Resize
+           #__eventmask_Resize       = 1<<#__event_Resize
       ;     #__eventmask_Resizeend    = 1<<#__event_ResizeEnd
       ;     #__eventmask_Close        = 1<<#__event_Close
       ;     #__eventmask_Free         = 1<<#__event_Free  ; Destroy
+      
+      
+      ; Если флагов станет больше 8, смените тип state.a на state.w (до 16 флагов) или state.l (до 32 флагов).
+      
+      ; .a (ASCII/Byte) — 8 бит (8 флагов)
+      ; .w (Word) — 16 бит (16 флагов)
+      ; .l (Long) — 32 бита (32 флага)
+      ; .i (Integer) — 32 или 64 бита (зависит от разрядности системы x86/x64)
+      ; .q (Quad) — 64 бита (64 флага)
+      
+      #__text_editable  = 1 << 0 ; Будет 1  (2^0)
+      #__text_pass      = 1 << 1 ; Будет 2  (2^1)
+      #__text_lower     = 1 << 2 ; Будет 4  (2^2)
+      #__text_upper     = 1 << 3 ; Будет 8  (2^3)
+      #__text_numeric   = 1 << 4 ; Будет 16 (2^4)
+      #__text_multiline = 1 << 5 ; Будет 32 (2^5)
+      #__text_invert    = 1 << 6 ; Будет 64 (2^6)
+      #__text_vertical  = 1 << 7 ; Будет 128(2^7)
+      
+      
+      #__mouse_leave    = -1             ; -1  leave
+      #__mouse_enter    = 1 << 0         ; 1   enter
+      
+      #__mask_left      = 1 << #__left   ; 2   move to left
+      #__mask_top       = 1 << #__top    ; 4   move to top
+      #__mask_right     = 1 << #__right  ; 8   move to right
+      #__mask_bottom    = 1 << #__bottom ; 16  move to bottom
+      
+      #__mask_press     = 1 << 5         ; 32  button press
+      #__mask_dragstart = 1 << 6         ; 64
+      #__mask_update    = 1 << 7         ; 128 enter inner
+      #__mask_release   = 1 << 8         ; 256 button release
+      
+      #__mask_focus     = 1 << 9         ; 512
+      #__mask_lostfocus = 1 << 10        ; 1024
+      #__mask_active    = 1 << 11        ; 2048
+      
+      ; Единые битовые константы (Quad)
+#__mask_none      = 0
+#__mask_active    = 1 << 0  ; Виджет в фокусе / Строка выбрана / Окно активно
+#__mask_node      = 1 << 1  ; Виджет-контейнер / Строка-узел (папка)
+#__mask_collapsed = 1 << 2  ; Виджет свернут / Строка-ветка скрыта
+#__mask_hidden    = 1 << 3  ; Объект полностью скрыт
+#__mask_disable   = 1 << 4  ; Объект заблокирован (Read-only)
+#__mask_update    = 1 << 5  ; Нужен пересчет геометрии (для всех)
+#__mask_redraw    = 1 << 6  ; Нужна перерисовка
+#__mask_drag      = 1 << 7  ; Объект в процессе перетаскивания
+#__mask_shift     = 1 << 8  ; Режим диапазона
+#__mask_ctrl      = 1 << 9  ; Режим инверсии
+
+      ; #__mouse_move   = 1 << 8 ; 256 enter frame
+      ; #__mouse_wheel  = 1 << 9 ; 512 wheel
       
       ;
       ;-\\ create-type
@@ -362,7 +397,7 @@
       #__type_Panel         = #PB_GadgetType_Panel         ; 28
       #__type_Splitter      = #PB_GadgetType_Splitter      ; 29
       #__type_MDI           = #PB_GadgetType_MDI           ; 30
-      ;
+                                                           ;
       #__type_Scintilla     = #PB_GadgetType_Scintilla     ; 31
       #__type_Shortcut      = #PB_GadgetType_Shortcut      ; 32
       #__type_Canvas        = #PB_GadgetType_Canvas        ; 33
@@ -433,21 +468,21 @@
       ; #__flag_Modal         = 1<<50
       ; #__flag_AllEvents     = 1<<51
       ; #__flag_              = 1<<52
+      ; #__flag_              = 1<<53
       
       ;- \\ align-flag
-      #__flag_Left            = 1<<53
-      #__flag_Top             = 1<<54
-      #__flag_Right           = 1<<55
-      #__flag_Bottom          = 1<<56
-      #__flag_Center          = 1<<57 
-      #__flag_AutoSize        = 1<<58
+      ;#__align_text           = 1<<54
+      ;#__align_image          = 1<<55
+      #__flag_Left            = 1<<56
+      #__flag_Top             = 1<<57
+      #__flag_Right           = 1<<58
+      #__flag_Bottom          = 1<<59
+      #__flag_Center          = 1<<60 
+      #__flag_AutoSize        = 1<<61
       ;
-      #__align_Full           = 1<<59
-      #__align_proportional   = 1<<60
-      ;#__align_text           = 1<<61
-      ;#__align_image          = 1<<62
+      #__align_proportional   = 1<<62
+      #__align_Full           = 1<<63
       #__align_none           = 0
-      ; #__flag_Limit         = 1<<63
       
       ;
       #__align_Left           = #__flag_Left
@@ -461,7 +496,7 @@
       ;-\\ Window
       #__window_FrameSize      = 4
       #__window_CaptionHeight  = 24
-     
+      
       ;-\\ Text
       #__flag_TextInvert       = #__flag_Invert
       #__flag_TextVertical     = #__flag_Vertical
@@ -472,25 +507,38 @@
       #__flag_TextBottom       = #__align_Bottom
       #__flag_TextCenter       = #__align_Center
       
-;       #__flag_TextInvert       = #__align_text|#__flag_Invert
-;       #__flag_TextVertical     = #__align_text|#__flag_Vertical
-;       ;  alignment
-;       #__flag_TextLeft         = #__align_text|#__align_Left
-;       #__flag_TextTop          = #__align_text|#__align_Top
-;       #__flag_TextRight        = #__align_text|#__align_Right
-;       #__flag_TextBottom       = #__align_text|#__align_Bottom
-;       #__flag_TextCenter       = #__align_text|#__align_Center
+      ;       #__flag_TextInvert       = #__align_text|#__flag_Invert
+      ;       #__flag_TextVertical     = #__align_text|#__flag_Vertical
+      ;       ;  alignment
+      ;       #__flag_TextLeft         = #__align_text|#__align_Left
+      ;       #__flag_TextTop          = #__align_text|#__align_Top
+      ;       #__flag_TextRight        = #__align_text|#__align_Right
+      ;       #__flag_TextBottom       = #__align_text|#__align_Bottom
+      ;       #__flag_TextCenter       = #__align_text|#__align_Center
       
+;       ; 1. Создаем массив для хранения текстовых названий (например, на 64 флага)
+;       Global Dim FlagNames.s(63)
+;       
+;       ; 2. Заполняем массив именами (индекс = номер бита)
+;       FlagNames(0) = "Visible"
+;       FlagNames(1) = "Enabled"
+;       FlagNames(2) = "Focused"
+;       FlagNames(3) = "Bold"
+;       FlagNames(4) = "Italic"
+;       FlagNames(10) = "Centered" ; Можно пропускать индексы, если биты пустые
+;       FlagNames(31) = "Locked"   ; Самый старший бит для .l
+      
+
       ;-\\ Image
       #__image_BackGround      = 1
       #__image_Pressed         = 2
       #__image_Released        = 3
       ;  alignment
       #__flag_ImageLeft        = #__flag_Left|#__flag_Center;#__align_image;|#__align_Left
-      #__flag_ImageTop         = #__flag_Top|#__flag_Center;#__align_image|#__align_top
+      #__flag_ImageTop         = #__flag_Top|#__flag_Center ;#__align_image|#__align_top
       #__flag_ImageRight       = #__flag_Right|#__flag_Center;#__align_image|#__align_Right
       #__flag_ImageBottom      = #__flag_Bottom|#__flag_Center;#__align_image|#__align_Bottom
-      #__flag_ImageCenter      = #__flag_Center;#__align_image|#__align_Center
+      #__flag_ImageCenter      = #__flag_Center               ;#__align_image|#__align_Center
       
       ;-
       ;-\\ Bar
@@ -505,11 +553,11 @@
       
       ;-\\ Pamel
       #__Panel_Left            = #__flag_Left;1<<9
-      #__Panel_Top             = #__flag_Top;1<<10
+      #__Panel_Top             = #__flag_Top ;1<<10
       #__Panel_Right           = #__flag_Right;1<<11
       #__Panel_Bottom          = #__flag_Bottom;1<<12
-
-
+      
+      
       ;-\\ Tree
       #__flag_property         = 1<<50
       
@@ -730,9 +778,9 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 250
-; FirstLine = 230
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 347
+; FirstLine = 347
 ; Folding = ----
 ; Optimizer
 ; EnableXP

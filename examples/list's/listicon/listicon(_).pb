@@ -58,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       ; чтобы не виделялся
-      If MouseDrag( )
+      If MouseDragStart( )
          If *this\RowFocused( ) = *row 
             *row\focus = 1
             *row\ColorState( ) = #__s_2
@@ -143,7 +143,7 @@ CompilerIf #PB_Compiler_IsMainFile
                value = Width(*this)
             EndIf
             If SetAttribute( *this, attribute, value )
-               If Not *this\flag & #__flag_AutoSize
+               If Not *this\flagmask & #__flag_AutoSize
                   Resize(*this\firstWidget( ), #PB_Ignore, #PB_Ignore, value, #PB_Ignore)
                EndIf
             EndIf
@@ -154,7 +154,7 @@ CompilerIf #PB_Compiler_IsMainFile
                value = Height(*this)
             EndIf
             If SetAttribute( *this, attribute, value )
-               If Not *this\flag & #__flag_AutoSize
+               If Not *this\flagmask & #__flag_AutoSize
                   Resize(*this\firstWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, value)
                EndIf
             EndIf
@@ -217,7 +217,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Define *Tree._s_WIDGET=GetAttribute(*this, #PB_Splitter_FirstGadget)
          *g2 = GetAttribute(parent, #PB_Splitter_SecondGadget)
          
-         *g1 = Tree(0,0,0,0, #__flag_NoLines|(*Tree\flag&~#__flag_CheckBoxes)) ; 
+         *g1 = Tree(0,0,0,0, #__flag_NoLines|(*Tree\flagmask&~#__flag_CheckBoxes)) ; 
          Bind(*g1, @listicon_tree_events())
          Hide(*g1\scroll\v, 1)
          Hide(*g1\scroll\h, 1)
@@ -417,9 +417,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 122
-; FirstLine = 104
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 219
+; FirstLine = 215
 ; Folding = ---------
 ; EnableXP
 ; DPIAware

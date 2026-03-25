@@ -482,7 +482,7 @@ Procedure   PropertiesButton_Change( *this._s_WIDGET, item )
    Define._s_WIDGET *object = a_focused( )
    If item = #_pi_flag
       Define class$ = ClassFromType( *object\type ) 
-      Define flag$ = MakeString( *object\flag )
+      Define flag$ = MakeString( *object\flagmask )
       Define flag$ = RemoveString( flag$, "#__flag_Text") 
       Define flag$ = RemoveString( flag$, "#__flag_") 
       Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, flag$)
@@ -949,7 +949,7 @@ Procedure   Properties_Change( *splitter._s_WIDGET )
    *this = GetData( *second )
    If *this
       If *second\RowFocused( )
-         text$ = *second\RowFocused( )\text\string
+         text$ = *second\RowFocused( )\text\Str(0)
          ;
          Select Type( *this )
             Case #__type_Spin     
@@ -957,9 +957,9 @@ Procedure   Properties_Change( *splitter._s_WIDGET )
                
             Case #__type_String   
                If GetData( *this ) = #_pi_class
-                  *this\text\upper = 1
+                  *this\text\mode | #__text_upper
                Else
-                  *this\text\upper = 0
+                  *this\text\mode &~ #__text_upper
                EndIf
                SetText(*this, text$ )
                
@@ -991,7 +991,7 @@ Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
    EndIf
    
    ; чтобы не виделялся
-   If MouseDrag( )
+   If MouseDragStart( )
       If *this\RowFocused( ) = *row 
          *row\focus = 1
          *row\ColorState( ) = #__s_2
@@ -1225,7 +1225,7 @@ Procedure   Properties_Events( )
          
       Case #__event_Up
          If Not EnteredButton( )
-            If MouseDrag( ) 
+            If MouseDragStart( ) 
                *row = *g\RowEntered( )
                If *row 
                   If *row\data
@@ -1502,7 +1502,7 @@ Procedure  new_widget_paste( )
                          X(*copy( ), #__c_container)+copy_x,
                          Y(*copy( ), #__c_container)+copy_y, 
                          Width(*copy( ), #__c_frame),
-                         Height(*copy( ), #__c_frame), *copy( )\flag )
+                         Height(*copy( ), #__c_frame), *copy( )\flagmask )
          
       Next
       
@@ -1815,7 +1815,7 @@ Procedure new_widget_events( )
          ;
       Case #__event_LeftUp
          If IsContainer(*g)
-            If Not MouseDrag( )
+            If Not MouseDragStart( )
                If GetState( ide_all_ELEMENTS) > 0
                   new_widget_add( *g, GetText( ide_all_ELEMENTS ), GetMouseX(*g), GetMouseY(*g))
                EndIf
@@ -1899,14 +1899,14 @@ Procedure new_widget_events( )
                      If GetState( ide_all_ELEMENTS ) = 1
                         If *g = ide_design_MDI  
                         Else
-                           If MouseDragStart( ) = #PB_Drag_Enter
-                              MouseDragStart( ) = #PB_Drag_Leave
+                           If MouseDrag( ) = #PB_Drag_Enter
+                              MouseDrag( ) = #PB_Drag_Leave
                            EndIf
                         EndIf
                      Else
                         If *g = ide_design_MDI  
-                           If MouseDragStart( ) = #PB_Drag_Enter
-                              MouseDragStart( ) = #PB_Drag_Leave
+                           If MouseDrag( ) = #PB_Drag_Enter
+                              MouseDrag( ) = #PB_Drag_Leave
                            EndIf
                         Else
                         EndIf
@@ -2720,14 +2720,14 @@ Procedure   ide_events( )
       If __event = #__event_Down
          If __data
             *line._s_ROWS  = __data
-            text$ = *line\text\string
+            text$ = *line\text\Str(0)
             len = *line\text\len
             caret = *g\edit_caret_1( ) - *line\text\pos
             
             ;
             If text$
-               *g\text\numeric = 0 
-               *g\text\editable = 0 
+               *g\text\mode &~ #__text_numeric
+               *g\text\mode &~ #__text_editable
                
                name$ = *g\edit_caret( )\word ; GetWord( text$, len, caret ) 
                
@@ -2770,20 +2770,20 @@ Procedure   ide_events( )
                   
                   If argument > 1
                      If argument < 6 ; coordinate
-                        *g\text\numeric = 1 
+                        *g\text\mode | #__text_numeric 
                      EndIf
-                     *g\text\editable = 1 
+                     *g\text\mode | #__text_editable 
                   EndIf
                   
                   If GetClass( object ) = *g\edit_caret( )\word ; GetWord( text$, len, caret )
-                     *g\text\editable = 1
-                     *g\text\upper = 1 
+                     *g\text\mode | #__text_editable
+                     *g\text\mode | #__text_upper
                   Else
-                     *g\text\upper = 0 
+                     *g\text\mode &~ #__text_upper
                   EndIf
                EndIf
                
-               If *g\text\editable
+               If *g\text\mode & #__text_editable
                   *line\color\back[1] = *g\color\back[1]
                Else
                   *line\color\back[1] = $CD9CC3EE
@@ -3327,10 +3327,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 670
-; FirstLine = 564
-; Folding = -4--4---r-f-tf--------f-3BC----------e8+8-----------Svt----f+-
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 2722
+; FirstLine = 2356
+; Folding = -4--4---r-f-tf----------3BC----------+8+8-----------Svt----f+-
 ; EnableXP
 ; DPIAware
-; Executable = ../../2_621.exe
+; Executable = ..\..\2_621.exe

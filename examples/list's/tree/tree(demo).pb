@@ -10,8 +10,8 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
  UseWidgets( )
  
- Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
-  Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,flag)
+ Procedure TreeGadget_(gadget, X,Y,Width,Height,Flag=0)
+  Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,Flag)
   If gadget =- 1 : gadget = g : EndIf
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -289,11 +289,16 @@ EndProcedure
     g = 0
     ; 1_example
     TreeGadget_(g, 10, 10, 210, 100, #PB_Tree_CheckBoxes)                                         
-    AddGadgetItem(g, -1, "Node "+Str(a), img, 0)                                         
-    AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)                                           
-    AddGadgetItem(g, -1, "Sub-Item 3", 0, 3)
-    AddGadgetItem(g, -1, "Sub-Item 2", 0, 2)
-    AddGadgetItem(g, -1, "Sub-Item 4", 0, 4)
+;     AddGadgetItem(g, -1, "Node "+Str(a), img, 0)                                         
+;     AddGadgetItem(g, -1, "Sub-Item 1", 0, 1)                                           
+;     AddGadgetItem(g, -1, "Sub-Item 3", 0, 3)
+;     AddGadgetItem(g, -1, "Sub-Item 2", 0, 2)
+;     AddGadgetItem(g, -1, "Sub-Item 4", 0, 4)
+    AddGadgetItem(g, 0, "Папка", 0, 0)
+AddGadgetItem(g, 1, "Файл1", 0, 2) ; Ошибка! Пропустили уровень 1. 
+AddGadgetItem(g, 2, "Файл2", 0, 2) ; Ошибка! Пропустили уровень 1. 
+
+
     For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
     
       
@@ -433,13 +438,17 @@ EndProcedure
     
     ; 1_example
     *g = Tree(10, 100, 210, 100, #__flag_CheckBoxes)                                         
-    AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
-    AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
-    AddItem (*g, -1, "Sub-Item 3", -1, 3)
-    AddItem (*g, -1, "Sub-Item 2", -1, 2)
-    AddItem (*g, -1, "Sub-Item 4", -1, 4)
-    ;;AddItem (*g, item, "Add-Item "+Str(item), -1, sublevel)
-    
+;     AddItem (*g, -1, "Node "+Str(a), 0, 0)                                         
+;     AddItem (*g, -1, "Sub-Item 1", -1, 1)                                           
+;     AddItem (*g, -1, "Sub-Item 3", -1, 3)
+;     AddItem (*g, -1, "Sub-Item 2", -1, 2)
+;     AddItem (*g, -1, "Sub-Item 4", -1, 4)
+;     ;;AddItem (*g, item, "Add-Item "+Str(item), -1, sublevel)
+    AddItem(*g, 0, "Папка", -1, 0)
+AddItem(*g, 1, "Файл1", -1, 2) ; Ошибка! Пропустили уровень 1. 
+AddItem(*g, 2, "Файл2", -1, 2) ; Ошибка! Пропустили уровень 1. 
+
+
     ; 2_example
     *g = Tree(10, 100+110, 210, 100, #__flag_CheckBoxes)                                         
     AddItem (*g, 0, "Node "+Str(a), 0, 0)                                         
@@ -585,10 +594,10 @@ EndProcedure
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 547
-; FirstLine = 381
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 298
+; FirstLine = 111
 ; Folding = f-b------
 ; EnableXP
 ; DPIAware
-; Executable = C:/Users/user/Documents/GitHub/1.exe
+; Executable = C:\Users\user\Documents\GitHub\1.exe

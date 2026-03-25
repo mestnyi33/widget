@@ -9,10 +9,10 @@ CompilerIf #PB_Compiler_IsMainFile
    ;test_focus_set = 1
    
    Global a, CountItems = 10
-   Global._s_WIDGET *g, *first, *second
+   Global._s_WIDGET *g, *first, *drop, *second
    
    Procedure GetRowStatus( *this._s_WIDGET, *row._s_ROWS )
-      ;Debug ""+*g\press +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
+      ;Debug ""+MousePress( *g ) +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
       
       If *row\focus And *row\press  
          If *row\ColorState( )
@@ -22,7 +22,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ;Debug "lost focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
             ProcedureReturn - 3
          EndIf
-      ElseIf *this\press And *row\enter  
+      ElseIf MousePress(*this) And *row\enter  
          ;Debug "press enter "+*this\class +" "+ *row\index +" "+ *row\ColorState( ) +" "+ *row\press
          ProcedureReturn 2
       ElseIf *row\focus 
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
                ;Debug "lost focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
                ProcedureReturn - 3
             Else
-               If Not *this\press
+               If Not MousePress(*this)
                   ;Debug "leave from focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
                   ProcedureReturn - 4
                Else
@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
          ;Debug "enter "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
          ProcedureReturn 1
       Else
-         If *this\press
+         If MousePress(*this)
             ;Debug "press leave "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
             ProcedureReturn - 2
          Else
@@ -70,6 +70,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEvent( )
          Case #__event_Drop
+            Debug "drop "+DropText( )
+            
          Case #__event_DragStart
             DragDropText( "dragtext" )
             
@@ -116,7 +118,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open(1, 100, 50, 490, 330, "demo items status", #PB_Window_SystemMenu)
       *first = Tree(10, 10, 150, 310, #__flag_nolines ) : SetClass(*first, "first")
-      *second = Tree(170, 10, 150, 310, #__flag_nolines ) : SetClass(*second, "second")
+      *drop = Tree(170, 10, 150, 310, #__flag_nolines ) : SetClass(*drop, "drop")
       *second = Tree(330, 10, 150, 310, #__flag_nolines ) : SetClass(*second, "second")
       
       For a = 0 To CountItems
@@ -126,12 +128,14 @@ CompilerIf #PB_Compiler_IsMainFile
          AddItem(*second, -1, "item "+Str(a), -1, 0)
       Next
       
-      EnableDrop( *first, #PB_Drop_Text, #PB_Drag_Link )
+      EnableDrop( *drop, #PB_Drop_Text, #PB_Drag_Copy )
       EnableDrop( *second, #PB_Drop_Text, #PB_Drag_Link )
       
       Bind(*first, @all_events(), #__event_LeftDown)
       Bind(*second, @all_events(), #__event_LeftDown)
       
+      Bind(*first, @all_events(), #__event_DragStart)
+      Bind(*drop, @all_events(), #__event_Drop)
       Bind(*first, @all_events(), #__event_DragStart)
       Bind(*first, @all_events(), #__event_Drop)
       
@@ -144,9 +148,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 129
-; FirstLine = 117
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 130
+; FirstLine = 109
 ; Folding = ---
 ; EnableXP
 ; DPIAware

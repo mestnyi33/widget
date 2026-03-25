@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global._s_WIDGET *g, *first, *second
    
    Procedure GetRowStatus( *this._s_WIDGET, *row._s_ROWS )
-      ;Debug ""+*g\press +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
+      ;Debug ""+MousePress(*g) +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
       
       If *row\focus And *row\press  
          If *row\ColorState( )
@@ -22,11 +22,11 @@ CompilerIf #PB_Compiler_IsMainFile
             ;Debug "lost focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
             ProcedureReturn - 3
          EndIf
-      ElseIf *this\press And *row\enter  
+      ElseIf MousePress(*this) And *row\_enter  
          ;Debug "press enter "+*this\class +" "+ *row\index +" "+ *row\ColorState( ) +" "+ *row\press
          ProcedureReturn 2
-      ElseIf *row\focus 
-         If *row\enter 
+      ElseIf *row\_focus 
+         If *row\_enter 
             If MouseButtons( )
                ;Debug ""+*g\press +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
                ;Debug "focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
@@ -41,7 +41,7 @@ CompilerIf #PB_Compiler_IsMainFile
                ;Debug "lost focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
                ProcedureReturn - 3
             Else
-               If Not *this\press
+               If Not MousePress(*this)
                   ;Debug "leave from focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
                   ProcedureReturn - 4
                Else
@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
          ;Debug "enter "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
          ProcedureReturn 1
       Else
-         If *this\press
+         If MousePress(*this)
             ;Debug "press leave "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
             ProcedureReturn - 2
          Else
@@ -133,9 +133,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 90
-; FirstLine = 86
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 43
+; FirstLine = 39
 ; Folding = ---
 ; EnableXP
 ; DPIAware

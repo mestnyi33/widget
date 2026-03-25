@@ -52,6 +52,7 @@ ChangeCurrentCanvas
 MouseEnter
 MouseClick
 MousePress
+MouseRelease
 MousePressX
 MousePressY
 
@@ -65,7 +66,7 @@ MouseWheelData
 
 MouseDragStart
 MouseDrag
-MouseData
+MouseMask
 MouseDirection
 MouseMoveX
 MouseMoveY

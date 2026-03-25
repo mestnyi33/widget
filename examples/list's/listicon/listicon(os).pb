@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       ; чтобы не виделялся
-      If MouseDrag( )
+      If MouseDragStart( )
          If *this\RowFocused( ) = *row 
             *row\focus = 1
             *row\ColorState( ) = #__s_2
@@ -286,7 +286,7 @@ CompilerIf #PB_Compiler_IsMainFile
          EndIf
          If GadgetType(*g2) = #PB_GadgetType_Tree
             Debug StringField(Text.s, GetGadgetData(*g1), #LF$)
-            AddGadgetItem( *g2, Item, StringField(Text.s, GetGadgetData(*g2), #LF$), -1, 0 )
+            AddGadgetItem( *g2, Item, StringField(Text.s, GetGadgetData(*g2), #LF$), 0, 0 )
          Else
             AddItem_( *g2, Item, Text.s, -1,0)
          EndIf
@@ -386,9 +386,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; IDE Options = PureBasic 6.30 (Windows - x64)
 ; CursorPosition = 288
-; FirstLine = 172
-; Folding = 8-4------
+; FirstLine = 222
+; Folding = --4------
 ; EnableXP
 ; DPIAware

@@ -974,7 +974,7 @@ Procedure   MakeLine( *mdi, string$, findtext$ )
                         param1 = MakeID( UCase(Param1$), *mdi )
                         
                      Case "ListIcon"
-                        param1 = Val( param2$ ) ; *this\columns( )\width
+                        param1 = Val( param2$ ) ; *this\__columns( )\width
                         
                      Case "Image"
                         param1 = GetImageFromKey( param1$ )
@@ -1317,7 +1317,7 @@ Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
          ; Case "MDI" : param1$ = *g\SubMenu
          ; Case "Date" : param1$ = *g\Date
          ; Case "Calendar" : param1$ = *g\Date
-      Case "ListIcon" : param1$ = Str(*g\columns( )\width)
+      Case "ListIcon" : param1$ = Str(*g\__columns( )\width)
          ; Case "Scintilla" : param1$ = *g\CallBack
          ; Case "Shortcut" : param1$ = *g\Shortcut
       Case "Spin",
@@ -1383,8 +1383,8 @@ Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
    Select type$
       Case "Panel", "Web", "IPAddress", "Option", "Scintilla", "Shortcut"
       Default
-         Flag$ = MakeString( *g\flag, type$ )
-         ; Debug type$ +" "+ Flag$ +" "+ *g\flag
+         Flag$ = MakeString( *g\flagmask, type$ )
+         ; Debug type$ +" "+ Flag$ +" "+ *g\flagmask
    EndSelect
    
    ;
@@ -2053,9 +2053,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1877
-; FirstLine = 1658
-; Folding = -f-----f------------------f9-------4r3f------8fAw--8--
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 1319
+; FirstLine = 1250
+; Folding = -f-----f-------------------9--------r3f------8fAw--8--
 ; EnableXP
 ; DPIAware

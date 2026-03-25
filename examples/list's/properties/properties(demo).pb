@@ -558,13 +558,13 @@ CompilerIf #PB_Compiler_IsMainFile
             
             ;             If *first\row
             ;                If *first\EnteredRow( )
-            ;                   Debug "e - " + *first\EnteredRow( ) + " " + *first\EnteredRow( )\text\string + " " + *first\EnteredRow( )\press + " " + *first\EnteredRow( )\enter + " " + *first\EnteredRow( )\focus
+            ;                   Debug "e - " + *first\EnteredRow( ) + " " + *first\EnteredRow( )\text\string + " " + *first\EnteredRow( )\_press + " " + *first\EnteredRow( )\_enter + " " + *first\EnteredRow( )\_focus
             ;                EndIf
             ;                If *first\PressedRow( )
-            ;                   Debug "p - " + *first\PressedRow( ) + " " + *first\PressedRow( )\text\string + " " + *first\PressedRow( )\press + " " + *first\PressedRow( )\enter + " " + *first\PressedRow( )\focus
+            ;                   Debug "p - " + *first\PressedRow( ) + " " + *first\PressedRow( )\text\string + " " + *first\PressedRow( )\_press + " " + *first\PressedRow( )\_enter + " " + *first\PressedRow( )\_focus
             ;                EndIf
             ;                If *first\RowFocused( )
-            ;                   Debug "f - " + *first\RowFocused( ) + " " + *first\RowFocused( )\text\string + " " + *first\RowFocused( )\press + " " + *first\RowFocused( )\enter + " " + *first\RowFocused( )\focus
+            ;                   Debug "f - " + *first\RowFocused( ) + " " + *first\RowFocused( )\text\string + " " + *first\RowFocused( )\_press + " " + *first\RowFocused( )\_enter + " " + *first\RowFocused( )\_focus
             ;                EndIf
             ;             EndIf
             
@@ -657,9 +657,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 406
-; FirstLine = 393
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 566
+; FirstLine = 550
 ; Folding = ------------
 ; EnableXP
 ; DPIAware
