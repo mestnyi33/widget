@@ -1,15 +1,15 @@
 ﻿;- >>> [DECLARE] <<<
 DeclareModule ID
+   Declare.s ClassName( handle.i )
+   Declare.i GetWindowID( handle.i )
+   Declare.i IsWindowID( handle.i )
    Declare.i Window( WindowID.i )
    Declare.i Gadget( GadgetID.i )
-   Declare.i IsWindowID( handle.i )
-   Declare.i GetWindowID( handle.i )
-   Declare.s ClassName( handle.i )
 EndDeclareModule
 
-;- >>> [MACOS] <<<
-CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
-   Module ID
+Module ID
+   ;- >>> [MACOS] <<<
+   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       ; XIncludeFile "../import.pbi"
       Import ""
          PB_Window_GetID( WindowID.i ) 
@@ -57,12 +57,10 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
             ProcedureReturn - 1
          EndIf
       EndProcedure
-   EndModule
-CompilerEndIf
-
-;- >>> [WINDOWS] <<<
-CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-   Module ID
+   CompilerEndIf
+   
+   ;- >>> [WINDOWS] <<<
+   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
       Procedure.s GetTitle(Handle)
          Protected Name.s
          Name.s = Space(1024)
@@ -109,12 +107,10 @@ CompilerIf #PB_Compiler_OS = #PB_OS_Windows
             ProcedureReturn - 1
          EndIf
       EndProcedure
-   EndModule
-CompilerEndIf
-
-;- >>> [LINUX] <<<
-CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-   Module ID
+   CompilerEndIf
+   
+   ;- >>> [LINUX] <<<
+   CompilerIf #PB_Compiler_OS = #PB_OS_Linux
       Procedure.s ClassName( handle.i )
          Protected Result = gtk_widget_get_name_( handle )
          If Result
@@ -157,8 +153,8 @@ CompilerIf #PB_Compiler_OS = #PB_OS_Linux
             ProcedureReturn - 1
          EndIf
       EndProcedure
-   EndModule
-CompilerEndIf
+   CompilerEndIf
+EndModule
 
 ;- >>> [EXAMPLE] <<<
 CompilerIf #PB_Compiler_IsMainFile 
@@ -178,8 +174,8 @@ CompilerIf #PB_Compiler_IsMainFile
       eventID = WaitWindowEvent( )
    Until eventID = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 1
-; Folding = 9-8-4-f-
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 4
+; Folding = ------4
 ; EnableXP
 ; DPIAware
