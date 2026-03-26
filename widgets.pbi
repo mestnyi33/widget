@@ -20450,223 +20450,240 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   CanvasEvents( )
-         ; ProcedureReturn EventHandler( EventGadget( ), EventType( ), EventData( ) )
-         
-         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-            Static down, move, leave, drag, double, gadgetID, enterID, focus
-            
-            If EventType( ) = #PB_EventType_LeftButtonDown
-               down = 1
-               EventHandler( EventGadget( ), EventType( ), EventData( ))
-            ElseIf EventType( ) = #PB_EventType_LeftButtonUp
-               drag = 0
-               move = 1
-               EventHandler( EventGadget( ), EventType( ), EventData( ))
-            ElseIf EventType( ) = #PB_EventType_LeftDoubleClick
-               double = 1
-            ElseIf EventType( ) = #PB_EventType_LeftClick
-               If down = 1
-                  down = 0
-                  If double = 1
-                     double = 0
-                     EventHandler( EventGadget( ), #PB_EventType_LeftDoubleClick, EventData( ))
-                  Else
-                     EventHandler( EventGadget( ), EventType( ), EventData( ))
-                  EndIf
-               EndIf
-            ElseIf EventType( ) = #PB_EventType_Focus
-               If focus <> GadgetID( EventGadget( ))
-                  focus = GadgetID( EventGadget( ))
-                  EventHandler( EventGadget( ), EventType( ), EventData( ))
-               EndIf
-               
-            ElseIf EventType( ) = #PB_EventType_LostFocus
-               If GetFocus_( ) <> GadgetID( EventGadget( ))
-                  EventHandler( EventGadget( ), EventType( ), EventData( ))
-                  focus = 0
-               EndIf
-               
-            ElseIf EventType( ) = #PB_EventType_MouseEnter
-               If Not GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
-                  If enterID <> GadgetID( EventGadget( ))
-                     If enterID
-                        EventHandler(  ID::Gadget( enterID ), #PB_EventType_MouseLeave, EventData( ))
-                     EndIf
-                     
-                     enterID = GadgetID( EventGadget( ))
-                  EndIf
-               EndIf
-               EventHandler( EventGadget( ), EventType( ), EventData( ))
-               
-            ElseIf EventType( ) = #PB_EventType_MouseLeave
-               If drag
-                  ; drag = 0
-               Else
-                  If leave = 1
-                     leave = 0
-                  Else
-                     If enterID = GadgetID( EventGadget( ))
-                        enterID = 0
-                        EventHandler( EventGadget( ), EventType( ), EventData( ))
-                     EndIf
-                  EndIf
-               EndIf
-            ElseIf EventType( ) = #PB_EventType_MouseMove
-               If down 
-                  If down = 3
-                     down = 0
-                     drag = 1
-                     EventHandler( EventGadget( ), #PB_EventType_DragStart, EventData( ))
-                  Else
-                     down + 1
-                  EndIf
-               Else
-                  If drag 
-                     enterID = mouse::Gadget( mouse::Window( ))
-                     ;
-                     If gadgetID <> enterID 
-                        If gadgetID = GadgetID( EventGadget( ))
-                           leave = 1
-                           EventHandler( EventGadget( ), #PB_EventType_MouseLeave, EventData( ))
-                        EndIf
-                        ;
-                        If enterID = GadgetID( EventGadget( ))
-                           If leave = 1 
-                              leave = 0
-                              EventHandler( EventGadget( ), #PB_EventType_MouseEnter, EventData( ))
-                           EndIf
-                        Else
-                           enterID = 0
-                        EndIf
-                        
-                        gadgetID = enterID
-                     EndIf
-                  EndIf
-                  
-                  If move = 1
-                     move = 0
-                  Else
-                     EventHandler( EventGadget( ), EventType( ), EventData( ))
-                  EndIf
-               EndIf
-               
+   ; ProcedureReturn EventHandler( EventGadget( ), EventType( ), EventData( ) )
+   
+   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      Static down, move, leave, drag, double, gadgetID, enterID, focus
+      
+      If EventType( ) = #PB_EventType_LeftButtonDown
+         down = 1
+         EventHandler( EventGadget( ), EventType( ), EventData( ))
+      ElseIf EventType( ) = #PB_EventType_LeftButtonUp
+         drag = 0
+         move = 1
+         EventHandler( EventGadget( ), EventType( ), EventData( ))
+      ElseIf EventType( ) = #PB_EventType_LeftDoubleClick
+         double = 1
+      ElseIf EventType( ) = #PB_EventType_LeftClick
+         If down = 1
+            down = 0
+            If double = 1
+               double = 0
+               EventHandler( EventGadget( ), #PB_EventType_LeftDoubleClick, EventData( ))
             Else
                EventHandler( EventGadget( ), EventType( ), EventData( ))
             EndIf
-            
-         CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-            Static down, double, enterID
-            
-            If EventType( ) = #PB_EventType_Focus
-               EventHandler( EventGadget( ), EventType( ), EventData( ))
-               If GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
-                  If GetActiveGadget( ) = EventGadget( )
-                     down = 1
-                     EventHandler( EventGadget( ), #PB_EventType_LeftButtonDown, EventData( ))
-                  EndIf
-               EndIf
-            ElseIf EventType( ) = #PB_EventType_LeftButtonDown
-               If GetActiveGadget( ) = EventGadget( )
-                  down = 1
-                  EventHandler( EventGadget( ), EventType( ), EventData( ))
-               EndIf
-            ElseIf EventType( ) = #PB_EventType_LeftDoubleClick
-               double = 1
-            ElseIf EventType( ) = #PB_EventType_LeftClick
-               If down = 1
-                  down = 0
-                  If double = 1
-                     double = 0
-                     EventHandler( EventGadget( ), #PB_EventType_LeftDoubleClick, EventData( ))
-                  Else
-                     EventHandler( EventGadget( ), EventType( ), EventData( ))
-                  EndIf
-               EndIf
-            ElseIf EventType( ) = #PB_EventType_MouseEnter
-               enterID = 1
-               EventHandler( EventGadget( ), EventType( ), EventData( ))
-            ElseIf EventType( ) = #PB_EventType_MouseLeave
+         EndIf
+      ElseIf EventType( ) = #PB_EventType_Focus
+         If focus <> GadgetID( EventGadget( ))
+            focus = GadgetID( EventGadget( ))
+            EventHandler( EventGadget( ), EventType( ), EventData( ))
+         EndIf
+         
+      ElseIf EventType( ) = #PB_EventType_LostFocus
+         If GetFocus_( ) <> GadgetID( EventGadget( ))
+            EventHandler( EventGadget( ), EventType( ), EventData( ))
+            focus = 0
+         EndIf
+         
+      ElseIf EventType( ) = #PB_EventType_MouseEnter
+         If Not GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
+            If enterID <> GadgetID( EventGadget( ))
                If enterID
+                  EventHandler(  ID::Gadget( enterID ), #PB_EventType_MouseLeave, EventData( ))
+               EndIf
+               
+               enterID = GadgetID( EventGadget( ))
+            EndIf
+         EndIf
+         EventHandler( EventGadget( ), EventType( ), EventData( ))
+         
+      ElseIf EventType( ) = #PB_EventType_MouseLeave
+         If drag
+            ; drag = 0
+         Else
+            If leave = 1
+               leave = 0
+            Else
+               If enterID = GadgetID( EventGadget( ))
                   enterID = 0
                   EventHandler( EventGadget( ), EventType( ), EventData( ))
                EndIf
-            ElseIf EventType( ) = #PB_EventType_MouseMove
-               If down = 1
-                  down = 0
-                  EventHandler( EventGadget( ), #PB_EventType_DragStart, EventData( ))
-               Else
-                  EventHandler( EventGadget( ), EventType( ), EventData( ))
-               EndIf
-            Else
-               EventHandler( EventGadget( ), EventType( ), EventData( ))
             EndIf
-            
-         CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
-            Static leave, drag, gadgetID, enterID
-            
-            If EventType( ) = #PB_EventType_Focus
-               EventHandler( EventGadget( ), EventType( ), EventData( ))
-               If GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
-                  If GetActiveGadget( ) = EventGadget( )
-                     EventHandler( EventGadget( ), #PB_EventType_LeftButtonDown, EventData( ))
-                  EndIf
-               EndIf
-            ElseIf EventType( ) = #PB_EventType_LeftButtonDown
-               If GetActiveGadget( ) = EventGadget( )
-                  EventHandler( EventGadget( ), EventType( ), EventData( ))
-               EndIf
-            ElseIf EventType( ) = #PB_EventType_DragStart
-               EventHandler( EventGadget( ), EventType( ), EventData( ))
+         EndIf
+      ElseIf EventType( ) = #PB_EventType_MouseMove
+         If down 
+            If down = 3
+               down = 0
                drag = 1
-            ElseIf EventType( ) = #PB_EventType_LeftButtonUp
-               EventHandler( EventGadget( ), EventType( ), EventData( ))
-               If leave 
-                  enterID = mouse::Gadget( mouse::Window( ))
-                  If enterID;
-                     If GadgetID( EventGadget( )) <> enterID 
-                        EventHandler( ID::Gadget( enterID ), #PB_EventType_MouseEnter, EventData( ))
-                     EndIf
-                  EndIf
-               EndIf
-            ElseIf EventType( ) = #PB_EventType_MouseEnter
-               If drag = 1
-                  drag = 0
-               Else
-                  EventHandler( EventGadget( ), EventType( ), EventData( ))
-               EndIf
-            ElseIf EventType( ) = #PB_EventType_MouseLeave
-               If GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
-                  If leave = 0
+               EventHandler( EventGadget( ), #PB_EventType_DragStart, EventData( ))
+            Else
+               down + 1
+            EndIf
+         Else
+            If drag 
+               enterID = mouse::Gadget( mouse::Window( ))
+               ;
+               If gadgetID <> enterID 
+                  If gadgetID = GadgetID( EventGadget( ))
                      leave = 1
-                     EventHandler( EventGadget( ), EventType( ), EventData( ))
+                     EventHandler( EventGadget( ), #PB_EventType_MouseLeave, EventData( ))
                   EndIf
-               Else
-                  EventHandler( EventGadget( ), EventType( ), EventData( ))
-               EndIf
-               
-            ElseIf EventType( ) = #PB_EventType_MouseMove
-               If leave
-                  enterID = mouse::Gadget( mouse::Window( ))
                   ;
-                  If gadgetID <> enterID 
-                     If gadgetID = GadgetID( EventGadget( ))
-                        EventHandler( EventGadget( ), #PB_EventType_MouseLeave, EventData( ))
-                     EndIf
-                     If enterID = GadgetID( EventGadget( ))
+                  If enterID = GadgetID( EventGadget( ))
+                     If leave = 1 
+                        leave = 0
                         EventHandler( EventGadget( ), #PB_EventType_MouseEnter, EventData( ))
                      EndIf
-                     gadgetID = enterID
+                  Else
+                     enterID = 0
                   EndIf
+                  
+                  gadgetID = enterID
                EndIf
-               
-               EventHandler( EventGadget( ), EventType( ), EventData( ))
-               
+            EndIf
+            
+            If move = 1
+               move = 0
             Else
                EventHandler( EventGadget( ), EventType( ), EventData( ))
             EndIf
-         CompilerEndIf
-      EndProcedure
+         EndIf
+         
+      Else
+         EventHandler( EventGadget( ), EventType( ), EventData( ))
+      EndIf
       
+   CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+      Static down, double, enterID
+      
+      If EventType( ) = #PB_EventType_Focus
+         EventHandler( EventGadget( ), EventType( ), EventData( ))
+         If GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
+            If GetActiveGadget( ) = EventGadget( )
+               down = 1
+               EventHandler( EventGadget( ), #PB_EventType_LeftButtonDown, EventData( ))
+            EndIf
+         EndIf
+      ElseIf EventType( ) = #PB_EventType_LeftButtonDown
+         If GetActiveGadget( ) = EventGadget( )
+            down = 1
+            EventHandler( EventGadget( ), EventType( ), EventData( ))
+         EndIf
+      ElseIf EventType( ) = #PB_EventType_LeftDoubleClick
+         double = 1
+      ElseIf EventType( ) = #PB_EventType_LeftClick
+         If down = 1
+            down = 0
+            If double = 1
+               double = 0
+               EventHandler( EventGadget( ), #PB_EventType_LeftDoubleClick, EventData( ))
+            Else
+               EventHandler( EventGadget( ), EventType( ), EventData( ))
+            EndIf
+         EndIf
+      ElseIf EventType( ) = #PB_EventType_MouseEnter
+         enterID = 1
+         EventHandler( EventGadget( ), EventType( ), EventData( ))
+      ElseIf EventType( ) = #PB_EventType_MouseLeave
+         If enterID
+            enterID = 0
+            EventHandler( EventGadget( ), EventType( ), EventData( ))
+         EndIf
+      ElseIf EventType( ) = #PB_EventType_MouseMove
+         If down = 1
+            down = 0
+            EventHandler( EventGadget( ), #PB_EventType_DragStart, EventData( ))
+         Else
+            EventHandler( EventGadget( ), EventType( ), EventData( ))
+         EndIf
+      Else
+         EventHandler( EventGadget( ), EventType( ), EventData( ))
+      EndIf
+      
+   CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
+      Static leave, drag, gadgetID, enterID, leaveID
+      
+      If EventType( ) = #PB_EventType_Focus
+         EventHandler( EventGadget( ), EventType( ), EventData( ))
+         If GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
+            If GetActiveGadget( ) = EventGadget( )
+               EventHandler( EventGadget( ), #PB_EventType_LeftButtonDown, EventData( ))
+            EndIf
+         EndIf
+      ElseIf EventType( ) = #PB_EventType_LeftButtonDown
+         If GetActiveGadget( ) = -1 Or GetActiveGadget( ) = EventGadget( )
+            EventHandler( EventGadget( ), EventType( ), EventData( ))
+         EndIf
+      ElseIf EventType( ) = #PB_EventType_DragStart
+         EventHandler( EventGadget( ), EventType( ), EventData( ))
+         drag = 1
+      ElseIf EventType( ) = #PB_EventType_LeftButtonUp
+         EventHandler( EventGadget( ), EventType( ), EventData( ))
+         If leave 
+            enterID = mouse::Gadget( mouse::Window( ))
+            If enterID;
+               If GadgetID( EventGadget( )) <> enterID 
+                  EventHandler( ID::Gadget( enterID ), #PB_EventType_MouseEnter, EventData( ))
+               EndIf
+            EndIf
+         EndIf
+      ElseIf EventType( ) = #PB_EventType_MouseEnter
+         If drag = 1
+            drag = 0
+         Else
+            If enterID
+               leaveID = enterID
+            EndIf
+            enterID = mouse::Gadget( mouse::Window( ))
+            If enterID = GadgetID(EventGadget())
+               If leaveID
+                  EventHandler( ID::Gadget(leaveID), #PB_EventType_MouseLeave, EventData( ))
+                  leaveID = 0
+               EndIf
+               EventHandler( EventGadget( ), EventType( ), EventData( ))
+            EndIf
+         EndIf
+      ElseIf EventType( ) = #PB_EventType_MouseLeave
+         If GetGadgetAttribute( EventGadget( ), #PB_Canvas_Buttons ) 
+            If leave = 0
+               leave = 1
+               EventHandler( EventGadget( ), EventType( ), EventData( ))
+            EndIf
+         Else
+            If enterID = GadgetID(EventGadget())
+               enterID = mouse::Gadget( mouse::Window( ))
+               EventHandler( EventGadget( ), EventType( ), EventData( ))
+               If enterID
+                  EventHandler( ID::Gadget(enterID), #PB_EventType_MouseEnter, EventData( ))
+                 ; enterID = GadgetID(EventGadget())
+               EndIf
+            EndIf
+         EndIf
+         
+      ElseIf EventType( ) = #PB_EventType_MouseMove
+;          If leave
+;             enterID = mouse::Gadget( mouse::Window( ))
+;             ;
+;             If gadgetID <> enterID 
+;                If gadgetID = GadgetID( EventGadget( ))
+;                   EventHandler( EventGadget( ), #PB_EventType_MouseLeave, EventData( ))
+;                EndIf
+;                If enterID = GadgetID( EventGadget( ))
+;                   EventHandler( EventGadget( ), #PB_EventType_MouseEnter, EventData( ))
+;                EndIf
+;                gadgetID = enterID
+;             EndIf
+;          EndIf
+         
+         EventHandler( EventGadget( ), EventType( ), EventData( ))
+         
+      Else
+         EventHandler( EventGadget( ), EventType( ), EventData( ))
+      EndIf
+   CompilerEndIf
+EndProcedure
+
       
       ;-
       ;- UPDATEs
@@ -28222,10 +28239,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 20416
-; FirstLine = 20015
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vd---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---08------------------------------------------------------+-----------------------------------------+f-------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 20668
+; FirstLine = 20268
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vd---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---08------------------------------------------------------0-----------------------------------------0-+------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

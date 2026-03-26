@@ -280,19 +280,19 @@
       ;     #__eventmask_Right3Click  = 1<<#__event_Right3Click
       ;     #__eventmask_Lostfocus    = 1<<#__event_LostFocus
       ;     #__eventmask_Change       = 1<<#__event_Change
-           #__eventmask_Cursor       = 1<<#__event_CursorChange
+      #__eventmask_Cursor       = 1<<#__event_CursorChange
       ;     #__eventmask_StatusChange = 1<<#__event_StatusChange
       ;     #__eventmask_ScrollChange = 1<<#__event_ScrollChange
       ;     #__eventmask_KeyDown      = 1<<#__event_KeyDown
       ;     #__eventmask_Input        = 1<<#__event_Input
       ;     #__eventmask_Return       = 1<<#__event_Return
       ;     #__eventmask_KeyUp        = 1<<#__event_KeyUp
-           #__eventmask_Draw         = 1<<#__event_Draw
+      #__eventmask_Draw         = 1<<#__event_Draw
       ;     #__eventmask_Maximize     = 1<<#__event_Maximize
       ;     #__eventmask_Minimize     = 1<<#__event_Minimize
       ;     #__eventmask_Restore      = 1<<#__event_Restore
       ;     #__eventmask_Resizebegin  = 1<<#__event_ResizeBegin
-           #__eventmask_Resize       = 1<<#__event_Resize
+      #__eventmask_Resize       = 1<<#__event_Resize
       ;     #__eventmask_Resizeend    = 1<<#__event_ResizeEnd
       ;     #__eventmask_Close        = 1<<#__event_Close
       ;     #__eventmask_Free         = 1<<#__event_Free  ; Destroy
@@ -326,26 +326,24 @@
       
       #__mask_press     = 1 << 5         ; 32  button press
       #__mask_dragstart = 1 << 6         ; 64
-      #__mask_update    = 1 << 7         ; 128 enter inner
       #__mask_release   = 1 << 8         ; 256 button release
       
       #__mask_focus     = 1 << 9         ; 512
       #__mask_lostfocus = 1 << 10        ; 1024
-      #__mask_active    = 1 << 11        ; 2048
       
       ; Единые битовые константы (Quad)
-#__mask_none      = 0
-#__mask_active    = 1 << 0  ; Виджет в фокусе / Строка выбрана / Окно активно
-#__mask_node      = 1 << 1  ; Виджет-контейнер / Строка-узел (папка)
-#__mask_collapsed = 1 << 2  ; Виджет свернут / Строка-ветка скрыта
-#__mask_hidden    = 1 << 3  ; Объект полностью скрыт
-#__mask_disable   = 1 << 4  ; Объект заблокирован (Read-only)
-#__mask_update    = 1 << 5  ; Нужен пересчет геометрии (для всех)
-#__mask_redraw    = 1 << 6  ; Нужна перерисовка
-#__mask_drag      = 1 << 7  ; Объект в процессе перетаскивания
-#__mask_shift     = 1 << 8  ; Режим диапазона
-#__mask_ctrl      = 1 << 9  ; Режим инверсии
-
+      #__mask_none      = 0
+      #__mask_active    = 1 << 11  ; Виджет в фокусе / Строка выбрана / Окно активно
+      #__mask_node      = 1 << 1   ; Виджет-контейнер / Строка-узел (папка)
+      #__mask_collapsed = 1 << 2   ; Виджет свернут / Строка-ветка скрыта
+      #__mask_hidden    = 1 << 3   ; Объект полностью скрыт
+      #__mask_disable   = 1 << 4   ; Объект заблокирован (Read-only)
+      #__mask_update    = 1 << 7   ; Нужен пересчет геометрии (для всех)
+      #__mask_redraw    = 1 << 6   ; Нужна перерисовка
+      #__mask_drag      = 1 << 7   ; Объект в процессе перетаскивания
+      #__mask_shift     = 1 << 8   ; Режим диапазона
+      #__mask_ctrl      = 1 << 9   ; Режим инверсии
+      
       ; #__mouse_move   = 1 << 8 ; 256 enter frame
       ; #__mouse_wheel  = 1 << 9 ; 512 wheel
       
@@ -516,19 +514,19 @@
       ;       #__flag_TextBottom       = #__align_text|#__align_Bottom
       ;       #__flag_TextCenter       = #__align_text|#__align_Center
       
-;       ; 1. Создаем массив для хранения текстовых названий (например, на 64 флага)
-;       Global Dim FlagNames.s(63)
-;       
-;       ; 2. Заполняем массив именами (индекс = номер бита)
-;       FlagNames(0) = "Visible"
-;       FlagNames(1) = "Enabled"
-;       FlagNames(2) = "Focused"
-;       FlagNames(3) = "Bold"
-;       FlagNames(4) = "Italic"
-;       FlagNames(10) = "Centered" ; Можно пропускать индексы, если биты пустые
-;       FlagNames(31) = "Locked"   ; Самый старший бит для .l
+      ;       ; 1. Создаем массив для хранения текстовых названий (например, на 64 флага)
+      ;       Global Dim FlagNames.s(63)
+      ;       
+      ;       ; 2. Заполняем массив именами (индекс = номер бита)
+      ;       FlagNames(0) = "Visible"
+      ;       FlagNames(1) = "Enabled"
+      ;       FlagNames(2) = "Focused"
+      ;       FlagNames(3) = "Bold"
+      ;       FlagNames(4) = "Italic"
+      ;       FlagNames(10) = "Centered" ; Можно пропускать индексы, если биты пустые
+      ;       FlagNames(31) = "Locked"   ; Самый старший бит для .l
       
-
+      
       ;-\\ Image
       #__image_BackGround      = 1
       #__image_Pressed         = 2
@@ -778,9 +776,9 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 347
-; FirstLine = 347
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 777
+; FirstLine = 749
 ; Folding = ----
 ; Optimizer
 ; EnableXP
