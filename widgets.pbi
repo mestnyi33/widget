@@ -476,8 +476,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro TabFocused( ): Tab\focused: EndMacro   ; Returns mouse focused tab
                                                    ;                                             ;
       Macro TabState( ): Tab\state: EndMacro      
-      Macro TabIndex( ): Tab\index: EndMacro
-      Macro TabBarIndex( ): tabbar\tab\index: EndMacro
+      Macro TabIndex( ): Tabindex: EndMacro
+      Macro TabBarIndex( ): tabbar\tabindex: EndMacro
       
       ;-
       Macro LineEntered( ): row\entered: EndMacro ; Returns mouse entered widget
@@ -9221,7 +9221,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro HideState( _this_, _parent_ )
-         _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide Or ( _parent_\tabbar And _parent_\tabbar\type = #__type_TabBar And _this_\TabIndex( ) <> _parent_\tabbar\TabState( ) ))))
+         _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide Or ( _parent_\tabbar And _parent_\tabbar\type = #__type_TabBar And _parent_\tabbar\TabState( ) <> _this_\TabIndex( ) ))))
          
          If _this_\TabIndex( ) = #PB_Ignore
             _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide )))
@@ -24633,105 +24633,6 @@ EndProcedure
       EndProcedure
       
       ;-
-      Procedure.i _CloseList( )
-         Protected *open._s_WIDGET
-         
-         ;\\ 1-test splitter
-         If Opened( ) And
-            Opened( )\type = #__type_Splitter
-            
-            Opened( )\split_1( ) = Opened( )\FirstWidget( )
-            Opened( )\split_2( ) = Opened( )\LastWidget( )
-            
-            bar_update( Opened( ), 1 )
-         EndIf
-         
-         If Opened( ) And
-            Opened( )\parent
-            
-            If Opened( )\parent\type = #__type_MDI
-               *open = Opened( )\parent\parent
-            Else
-               If Opened( )\Lastroot( )
-                  *open                 = Opened( )\Lastroot( )
-                  Opened( )\Lastroot( ) = #Null
-               Else
-                  If Opened( ) = Opened( )\root
-                     *open = Opened( )\root\Beforeroot( )
-                  Else
-                     *open = Opened( )\parent
-                  EndIf
-               EndIf
-            EndIf
-         Else
-            *open = Root( )
-         EndIf
-         
-         If *open = Opened( )
-            If *open\root\Beforeroot( )
-               UseGadgetList( WindowID(*open\root\Beforeroot( )\canvas\window))
-               ; Debug ""+*open\root\Beforeroot( )\canvas\window +" "+Opened( )\root\canvas\window
-               *open = *open\root\Beforeroot( )
-            EndIf
-         EndIf
-         
-         If *open And
-            Opened( ) <> *open
-            Opened( ) = *open
-            ; OpenList( *open )
-         EndIf
-      EndProcedure
-      
-      Procedure.i _OpenList( *this._s_WIDGET, item.l = 0 )
-         Protected result.i = Opened( )
-         
-         If *this And *this\type = #__type_Unknown
-            *this = Opened( )
-         EndIf
-         
-         ; Debug "OpenList "+*this\class +" - "+ Opened( )\class
-         
-         If *this = Opened( )
-            If Not( *this\tabbar And *this\tabbar\type = #__type_TabBar And *this\TabBarIndex( ) <> item )
-               ProcedureReturn result
-            EndIf
-         EndIf
-         
-         If *this
-            If *this\parent <> Opened( )
-               *this\Lastroot( ) = Opened( )
-            EndIf
-            
-            If *this\root
-               If *this\root <> Root( )
-                  If Opened( )\root
-                     Opened( )\root\Afterroot( ) = *this\root
-                  EndIf
-                  *this\root\Beforeroot( ) = Opened( )\root
-                  
-                  If is_root_( *this )
-                     ChangeCurrentCanvas( GadgetID( *this\root\canvas\gadget ) )
-                  EndIf
-               EndIf
-            EndIf
-            
-            ; add 
-            If *this\tabbar And 
-               *this\tabbar\type = #__type_TabBar
-               
-               ; tab\index.c так как не принимает минусавое значение
-               If Item < 0
-                  Item = 0
-               EndIf
-               *this\TabBarIndex( ) = Item
-            EndIf
-            
-            Opened( ) = *this
-         EndIf
-         
-         ProcedureReturn result
-      EndProcedure
-      
       Procedure.i OpenList(*this._s_WIDGET, item.l = 0)
          Protected *prev._s_WIDGET = Opened()
          
@@ -24741,7 +24642,7 @@ EndProcedure
          If *this\tabbar And *this\tabbar\type = #__type_TabBar
             ; Гарантируем, что индекс не отрицательный
             If Item < 0 : Item = 0 : EndIf
-            *this\TabBarIndex() = Item
+            *this\TabBarIndex( ) = Item
          EndIf
          
          ; 3. ПЕРЕКЛЮЧЕНИЕ СИСТЕМНОГО КОНТЕКСТА
@@ -28398,9 +28299,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 24734
-; FirstLine = 23066
-; Folding = ----------------------6------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6-+0----------------------------------------------------------------------------------------v--4-------+---8v--8----------------------------------f8+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---8-------------------------------------------------------8----------------------------------4------8-0------------------------0---94--v------------------------------------------------------------------------------------
+; CursorPosition = 479
+; FirstLine = 478
+; Folding = ----------------------6---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------------------------------------------------------------------v--4-----------8v--8----------------------------------f8+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---8-------------------------------------------------------8-----------------------------------------8--------------------------0----0-----------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

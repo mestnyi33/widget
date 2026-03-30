@@ -417,7 +417,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     TAB
       Structure _s_TAB
          state.i
-         Index.l ; add #pb_ignore tab
          
          ; tab
          *entered._s_ITEMS
@@ -633,8 +632,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *parent._s_WIDGET[2]    
          ; parent[0] - Родитель ; Иерархия - физический (где лежит) 
          ; parent[1] - Владелец ; Иерархия - логический (кто открыл)
-         
-      
+         tabindex.l[2]
+        
          ;
          *gadget._s_WIDGET[3]
          ; \root\gadget[0] - active gadget
@@ -728,8 +727,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 635
-; FirstLine = 608
-; Folding = ---0--4---
+; CursorPosition = 634
+; FirstLine = 620
+; Folding = ---0------
 ; Optimizer
 ; EnableXP
