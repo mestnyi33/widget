@@ -6,6 +6,25 @@ UseWidgets( )
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
+  
+  If Open(0, 100, 0, 180, 130, "openlist1", #PB_Window_SystemMenu)
+  EndIf
+  
+  If Open(1, 300, 0, 180, 130, "openlist2", #PB_Window_SystemMenu)
+    CloseList()
+  EndIf
+  
+  If Open(2, 500, 0, 180, 130, "openlist3", #PB_Window_SystemMenu)
+    CloseList()
+  EndIf
+  
+  Button( 30, 55, 120,20,"openlist1")
+  
+  Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
+CompilerEndIf
+
+CompilerIf #PB_Compiler_IsMainFile = 99 
+  EnableExplicit
   Global *w, *w1, *w2
   
   If Open(0, 100, 0, 180, 130, "openlist1", #PB_Window_SystemMenu)
@@ -26,13 +45,12 @@ CompilerIf #PB_Compiler_IsMainFile
     CloseList()
   EndIf
   
-  
   Button( 30, 55, 120,20,"openlist2")
   
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; CursorPosition = 23
-; Folding = -
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 19
+; Folding = --
 ; EnableXP

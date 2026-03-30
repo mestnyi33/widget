@@ -475,8 +475,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro TabPressed( ): Tab\pressed: EndMacro   ; Returns mouse focused tab
       Macro TabFocused( ): Tab\focused: EndMacro   ; Returns mouse focused tab
                                                    ;                                             ;
-      Macro TabIndex( ): Tab\index: EndMacro
       Macro TabState( ): Tab\state: EndMacro      
+      Macro TabIndex( ): Tab\index: EndMacro
+      Macro TabBarIndex( ): tabbar\tab\index: EndMacro
       
       ;-
       Macro LineEntered( ): row\entered: EndMacro ; Returns mouse entered widget
@@ -542,6 +543,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro AfterRoot( ): afterroot: EndMacro
       Macro BeforeRoot( ): beforeroot: EndMacro
       
+      Macro NextRoot(): Canvas\next: EndMacro
+      Macro PrevRoot(): Canvas\prev: EndMacro
+      Macro Root( ): Widget::__gui\root: EndMacro
+      Macro Opened( ): Widget::__gui\opened: EndMacro ; object list opened container
+      Macro Closed( ): Widget::__gui\closed: EndMacro ; object list opened container
+      
       ;-
       Macro FirstWidget( ): FirstWidget: EndMacro
       Macro LastWidget( ): LastWidget: EndMacro
@@ -552,7 +559,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro Leaved( ): mouse( )\widget[0]: EndMacro ; Returns mouse entered widget
       Macro Entered( ): mouse( )\widget[1]: EndMacro; Returns mouse entered widget
       Macro Pressed( ): mouse( )\widget[2]: EndMacro; Returns mouse button pushed widget
-      Macro Opened( ): Widget::__gui\opened: EndMacro ; object list opened container
       Macro Sticked( ): Widget::__gui\sticky\window: EndMacro
       
       ;-
@@ -560,7 +566,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro PressedButton( ): mouse( )\button[2]: EndMacro
       
       ;-
-      Macro Root( ): Widget::__gui\root: EndMacro
       Macro Widget( ): Widget::__gui\widget: EndMacro
       Macro EventWidget( ): Widget::Widget( ): EndMacro
       ;Macro EventWidget( ): widget::__gui\event\widget: EndMacro
@@ -594,7 +599,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else
             ResetList( widgets( ) )
          EndIf
-         Widget( ) = widgets( )
+         ;Widget( ) = widgets( )
          ;
          ;\\
          If _item_ > 0
@@ -653,9 +658,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;             EndMacro
             ;             ;
             Macro StopEnum( )
-            Until Not NextElement( widgets( ) )
+            Until Not NextElement( widgets( ))
          EndIf
-         PopListPosition( widgets( ) )
+         PopListPosition( widgets( ))
          Widget( ) = *before_start_enumerate_widget
       EndMacro
       
@@ -925,9 +930,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro CanvasMouseX( ): mouse( )\x: EndMacro                                  ; Returns mouse x
       Macro CanvasMouseY( ): mouse( )\y: EndMacro                                  ; Returns mouse y
       ;-
-      Macro IsCanvas(_gadget_)
-         FindMapElement( Widget::gadgets( ), Str(_gadget_))
-      EndMacro
+;       Macro IsCanvas(_gadget_)
+;          FindMapElement( Widget::gadgets( ), Str(_gadget_))
+;       EndMacro
       Macro ChangeCurrentCanvas( _canvasID_, _change_root_ = 1 )
          FindMapElement( Widget::roots( ), Str( _canvasID_ ) )
          If _change_root_ = 1
@@ -12632,21 +12637,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure   SetParent( *this._s_WIDGET, *parent._s_WIDGET, tabindex.l = #PB_Default )
          Protected parent, ReParent.b, X, Y
          Protected._s_WIDGET *after, *last, *lastParent, NewList *D( ), NewList *C( )
-         
-         ;\\
-         If *this = *parent
-            ProcedureReturn 0
-         EndIf
-         
-         If Not *this > 0
-            ProcedureReturn 0
-         EndIf
+         If Not *this > 0 Or *this = *parent : ProcedureReturn 0 : EndIf
          
          If *parent > 0
-            ;
             If *this\parent = *parent
                If *this\TabIndex( ) = tabindex
-                  ProcedureReturn #False
+                  ProcedureReturn 0
                EndIf
             EndIf
             ;
@@ -12659,7 +12655,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If tabindex = #PB_Default ; < 0
                If *parent\tabbar And *parent\tabbar\type = #__type_TabBar
-                  tabindex = *parent\tabbar\TabIndex( )
+                  tabindex = *parent\TabBarIndex( )
                Else
                   tabindex = 0
                EndIf
@@ -12722,7 +12718,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *lastParent = *this\parent
                
                ;
-               If *this\address
+               If *this\address ;= 99
                   ChangeCurrentElement( widgets( ), *this\address )
                   AddElement( *D( ) ) : *D( ) = widgets( )
                   
@@ -12781,7 +12777,96 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   ReParent = #True
                EndIf
-               ;
+               
+               If *this\address = 99
+                  *lastParent = *this\parent
+                  
+                  If *last And *last <> *this
+                     ; 1. Запоминаем, кто стоит СРАЗУ ЗА родителем на старом месте
+                     Protected *first_child_addr = 0
+                     PushListPosition(widgets())
+                     ChangeCurrentElement(widgets(), *this\address)
+                     If NextElement(widgets())
+                        *first_child_addr = @widgets() ; Это потенциальный первый ребенок
+                     EndIf
+                     PopListPosition(widgets())
+                     
+                     ; 2. Переносим самого родителя
+                     ChangeCurrentElement(widgets(), *this\address)
+                     MoveElement(widgets(), #PB_List_After, *last\address)
+                     Protected *new_place_anchor._s_WIDGET = *this
+                     
+                     ; 3. Переносим детей, пока они есть
+                     If *this\haschildren And *first_child_addr
+                        While *first_child_addr
+                           ChangeCurrentElement(widgets(), *first_child_addr)
+                           
+                           ; Проверяем: это все еще ребенок нашего переехавшего *this?
+                           If IsChild(widgets(), *this)
+                              ; Синхронизация (Твой блок)
+                              widgets()\root = *parent\root
+                              If *parent\window : widgets()\window = *parent\window : Else : widgets()\window = *parent : EndIf
+                              HideState(widgets(), widgets()\parent)
+                              
+                              ; Запоминаем, кто будет следующим на старом месте ДО переноса текущего
+                              Protected *next_to_move = 0
+                              PushListPosition(widgets())
+                              If NextElement(widgets()) : *next_to_move = @widgets() : EndIf
+                              PopListPosition(widgets())
+                              
+                              ; ФИЗИЧЕСКИЙ ПЕРЕНОС в новую пачку
+                              MoveElement(widgets(), #PB_List_After, *new_place_anchor\address)
+                              *new_place_anchor = widgets() ; Обновляем якорь вставки
+                              
+                              ; Обновляем адрес для следующей итерации
+                              *first_child_addr = *next_to_move
+                           Else
+                              ; Встретили чужака — ветка закончилась
+                              Break
+                           EndIf
+                        Wend
+                     EndIf
+                  EndIf
+                  ReParent = #True
+               EndIf
+               
+                           If *this\address = 99
+               *lastParent = *this\parent
+               
+               If *last And *last <> *this
+                  ; 1. Находим физический конец ветки в списке
+                  Protected *branch_end._s_WIDGET = *this\afterWidget( ) ;   GetLast(*this) ; 
+                  ;Debug ""+*this\text\Str(0) +" - "+ *branch_end\text\Str(0)
+                  ; 2. Создаем временный список-контейнер (он не выделяет память под данные, только под узлы)
+                  
+                  ; 3. Отрезаем ветку из основного списка
+                  ChangeCurrentElement(widgets(), *this\address)
+                  SplitList(widgets(), *D()) ; Теперь вся ветка в *temp_list
+                  
+;                   ; Если в основном списке после ветки кто-то остался, 
+;                   ; SplitList отрезал и их. Нужно вернуть "чужих" назад.
+                  If *branch_end And *branch_end\address
+                     ChangeCurrentElement(*D(), *branch_end\address)
+;                   If NextElement(*D())
+                     SplitList(*D(), widgets()) ; Возвращаем лишних в основной список
+;                   EndIf
+                  EndIf
+                  
+                  ; 4. Обновляем ROOT для всей отрезанной пачки (быстрый цикл)
+                  ForEach *D()
+                     *D()\root = *parent\root
+                     If *parent\window : *D()\window = *parent\window : Else : *D()\window = *parent : EndIf
+                     HideState(*D(), *D()\parent)
+                  Next
+                  
+                  ; 5. Вклеиваем всю пачку обратно за один проход
+                  ChangeCurrentElement(widgets(), *last\address)
+                  MergeLists(*D(), widgets(), #PB_List_After)
+               EndIf
+               
+               ReParent = #True
+            EndIf
+;
             Else
                ;
                If *last
@@ -12870,7 +12955,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Widget( ) = *this
          ProcedureReturn *this
       EndProcedure
-      
+
       ;-
       Procedure.i SetAttach( *this._s_WIDGET, *parent._s_WIDGET, mode.a )
          If *parent
@@ -24187,8 +24272,13 @@ EndProcedure
          If Not FindMapElement( roots( ), Str( g ) ) ; ChangeCurrentCanvas(g)
             result     = AddMapElement( roots( ), Str( g ) )
             roots( )   = AllocateStructure( _s_root )
-            Root( )    = roots( )
             *root      = roots( )
+            If Root( )
+               Root( )\NextRoot( ) = *root
+               Root( )\NextRoot( )\PrevRoot( ) = Root( )
+            EndIf
+            Root( ) = *root 
+            ;Root( )    = @roots( )
             
             ;
             ;*root\address   = result
@@ -24226,9 +24316,9 @@ EndProcedure
                If *root\Beforeroot( )
                   *root\Beforeroot( )\Afterroot( ) = *root
                EndIf
-               Opened( ) = *root
+               ;Opened( ) = *root
                ;
-               ; OpenList( *root)
+               OpenList( *root)
             EndIf
          EndIf
          
@@ -24301,6 +24391,8 @@ EndProcedure
          EndIf
          
          Widget( ) = *root
+         
+         
          ProcedureReturn *root
       EndProcedure
       
@@ -24541,7 +24633,7 @@ EndProcedure
       EndProcedure
       
       ;-
-      Procedure.i CloseList( )
+      Procedure.i _CloseList( )
          Protected *open._s_WIDGET
          
          ;\\ 1-test splitter
@@ -24590,7 +24682,7 @@ EndProcedure
          EndIf
       EndProcedure
       
-      Procedure.i OpenList( *this._s_WIDGET, item.l = 0 )
+      Procedure.i _OpenList( *this._s_WIDGET, item.l = 0 )
          Protected result.i = Opened( )
          
          If *this And *this\type = #__type_Unknown
@@ -24600,7 +24692,7 @@ EndProcedure
          ; Debug "OpenList "+*this\class +" - "+ Opened( )\class
          
          If *this = Opened( )
-            If Not( *this\tabbar And *this\tabbar\type = #__type_TabBar And *this\tabbar\TabIndex( ) <> item )
+            If Not( *this\tabbar And *this\tabbar\type = #__type_TabBar And *this\TabBarIndex( ) <> item )
                ProcedureReturn result
             EndIf
          EndIf
@@ -24631,7 +24723,7 @@ EndProcedure
                If Item < 0
                   Item = 0
                EndIf
-               *this\tabbar\TabIndex( ) = Item
+               *this\TabBarIndex( ) = Item
             EndIf
             
             Opened( ) = *this
@@ -24640,6 +24732,72 @@ EndProcedure
          ProcedureReturn result
       EndProcedure
       
+      Procedure.i OpenList(*this._s_WIDGET, item.l = 0)
+         Protected *prev._s_WIDGET = Opened()
+         
+         If Not *this : ProcedureReturn #False : EndIf
+         
+         ; 2. ПОДДЕРЖКА ВКЛАДОК (TabBar)
+         If *this\tabbar And *this\tabbar\type = #__type_TabBar
+            ; Гарантируем, что индекс не отрицательный
+            If Item < 0 : Item = 0 : EndIf
+            *this\TabBarIndex() = Item
+         EndIf
+         
+         ; 3. ПЕРЕКЛЮЧЕНИЕ СИСТЕМНОГО КОНТЕКСТА
+         If *prev <> *this
+            If *prev
+               ; 1. ЛОГИЧЕСКАЯ СВЯЗЬ (Путь назад)
+               ; Если уже есть открытый контекст — запоминаем его как "предыдущий"
+               *this\parent[1] = *prev
+               
+               ; Если мы переходим на другой холст (другое окно)
+               If *prev\root <> *this\root And *this\root
+                  ; Указываем PureBasic, в каком окне теперь создавать гаджеты
+                  UseGadgetList(WindowID(*this\root\canvas\window))
+                  ; Обновляем глобальный указатель на текущий активный холст
+                  ChangeCurrentCanvas(GadgetID(*this\root\canvas\gadget))
+               EndIf
+            EndIf
+            
+            ; Устанавливаем новый текущий активный элемент (куда будут падать виджеты)
+            Opened() = *this
+         EndIf        
+         
+         ; Возвращаем указатель на того, кто был активен до этого (удобно для проверок)
+         ProcedureReturn *prev
+      EndProcedure
+      
+      Procedure.i CloseList()
+         Protected *prevRoot._s_ROOT
+         If Opened()
+            Protected *prev._s_WIDGET = Opened()\parent[1]
+            ; Если у текущего элемента есть записанный "путь назад"
+            If *prev
+               If *prev\root
+                  *prevRoot = *prev\root
+               Else
+                  *prevRoot = *prev
+               EndIf
+               
+               ; Проверяем, нужно ли переключить системное окно PB назад
+               ; (если родитель находится на другом холсте)
+               If *prevRoot
+                  If Opened()\root <> *prevRoot
+                     UseGadgetList(WindowID(*prevRoot\canvas\window))
+                     ChangeCurrentCanvas(GadgetID(*prevRoot\canvas\gadget))
+                  EndIf
+               EndIf
+               
+               ; Делаем шаг назад по логической цепочке
+               Opened() = *prev
+            EndIf
+         EndIf
+         
+         ; Возвращаем новый текущий контекст
+         ProcedureReturn Opened()
+      EndProcedure
+
       ;-
       Procedure   Reclip( *this._s_WIDGET )
          Protected x1, p_x1
@@ -28240,9 +28398,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 20668
-; FirstLine = 20268
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------vd---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v---08------------------------------------------------------0-----------------------------------------0-+------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 24734
+; FirstLine = 23066
+; Folding = ----------------------6------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------6-+0----------------------------------------------------------------------------------------v--4-------+---8v--8----------------------------------f8+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---8-------------------------------------------------------8----------------------------------4------8-0------------------------0---94--v------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -1,6 +1,4 @@
-﻿EnableExplicit
-
-; Прототип функции, которую ты будешь привязывать через Bind
+﻿; Прототип функции, которую ты будешь привязывать через Bind
 Prototype.i ProtoOnEvent(*this, Type.i)
 Enumeration 1
    ;#__event_Create
@@ -116,7 +114,6 @@ Structure _s_MOUSE Extends _s_POINT
    press._s_POINT        ; Точка начала нажатия
    *widget._s_WIDGET[3]  ; Текущий виджет под мышью (Entered)
 EndStructure
-
 Structure _s_KEYBOARD  ; Ok
    *active._S_WIDGET   ; keyboard focus element ; GetActive( )\
 EndStructure
@@ -131,7 +128,7 @@ Structure _s_VISIBLE_ROW
    *last._s_rows         ; Указатель на последнюю видимую строку
 EndStructure
 
-Structure _s_ROWS Extends _s_COORDINATE
+Structure _s_rows Extends _s_COORDINATE
    Array str.s(0)        ; Динамический массив ячеек данных
    Level.i               ; Уровень вложенности для дерева
    mask.q                ; Состояние строки (#___mask_active, #___mask_node...)
@@ -141,6 +138,11 @@ Structure _s_SCROLL Extends _s_COORDINATE
    pos.i : max.i : thumb_h.i : is_drag.b
 EndStructure
 
+Structure _s_CANVAS Extends _s_COORDINATE
+   gadget.i              ; Системный номер CanvasGadget
+   window.i              ; Номер родительского окна
+EndStructure
+
 Structure _s_WIDGET Extends _s_COORDINATE
    class.s
    Type.i                         ; EDIT или TREE
@@ -148,8 +150,8 @@ Structure _s_WIDGET Extends _s_COORDINATE
    
    mask.q                ; Состояние виджета (#___mask_update, #___mask_active...)
    
-   RowHeight.i           ; Высота строки данных ; 0 = авто по шрифту
-   ColumnHeight.i        ; Высота шапки (заголовков)
+   rowheight.i           ; Высота строки данных ; 0 = авто по шрифту
+   columnheight.i        ; Высота шапки (заголовков)
    
    padding.i             ; Внутренний отступ текста
    indent.i              ; Отступ веток дерева
@@ -162,24 +164,17 @@ Structure _s_WIDGET Extends _s_COORDINATE
    clip._s_COORDINATE    ; Предрассчитанная область отсечения (reclip)
    OnEvent.ProtoOnEvent[#__event] ; Указатель на процедуру событий
    
-   ; *address
-   *root._s_ROOT         ; Ссылка на корень (холст)
+   
    *parent._s_WIDGET     ; Ссылка на родителя
-   *first._s_WIDGET      ; Указатель на первый виджет 
-   *last._s_WIDGET       ; Указатель на последний виджет 
+   *root._s_ROOT         ; Ссылка на корень (холст)
    
    List __columns._s_columns()
    List *__Items._s_ROWS()          ; Развернутый рулон (указатели)
    List __rows._s_rows()
 EndStructure
 
-Structure _s_CANVAS Extends _s_COORDINATE
-   dpi.f
-   gadget.i              ; Системный номер CanvasGadget
-   window.i              ; Номер родительского окна
-EndStructure
-
 Structure _s_ROOT Extends _s_WIDGET
+   dpi.f
    *next._s_ROOT
    *prev._s_ROOT
    
@@ -202,15 +197,15 @@ EndStructure
 ;-
 Global GUI._s_GUI
 
-Macro Opened(): GUI\opened: EndMacro
-Macro widgets(): GUI\root\Widget(): EndMacro
 Macro Root(): GUI\root: EndMacro
-Macro mouse( ): GUI\mouse: EndMacro
+Macro Opened(): GUI\opened: EndMacro
 Macro Entered(): GUI\mouse\widget[0]: EndMacro
 Macro Leaved( ): GUI\mouse\widget[1]: EndMacro
 Macro Pressed(): GUI\mouse\widget[2]: EndMacro
-Macro keyboard( ): GUI\keyboard: EndMacro
 Macro GetActive(): GUI\keyboard\active: EndMacro
+Macro widgets(): GUI\root\Widget(): EndMacro
+Macro mouse( ): GUI\mouse: EndMacro
+Macro keyboard( ): GUI\keyboard: EndMacro
 
 ; Глобальный указатель на текущий активный корень
 Root() = AllocateStructure(_s_ROOT)
@@ -860,81 +855,83 @@ Procedure add_row(*this._s_WIDGET, Text.s, Level.i = 0)
 EndProcedure
 
 ;-
-Procedure.i SetParent(*this._s_WIDGET, *parent._s_WIDGET, tabindex.l = #PB_Default)
-   Protected *r._s_ROOT, *old_r._s_ROOT
-   Protected *new._s_WIDGET
+Procedure.i create_edit(*root._s_ROOT, X.i, Y.i, w.i, h.i)
+   AddElement(*root\Widget())
+   Protected *this._s_WIDGET = @*root\Widget()
    
-   ; 1. Определяем целевой холст
-   If *parent
-      If *parent\root
-         *r = *parent\root
-      Else
-         *r = *parent
-      EndIf
-      
-      ; 2. ЛОГИКА ПЕРЕНОСА ИЛИ СОЗДАНИЯ
-      If *this And *this\root ; Виджет уже существует в каком-то списке
-         *old_r = *this\root
-         
-         If *old_r <> *r
-            ; --- ПЕРЕЕЗД НА ДРУГОЙ КАНВАС ---
-            PushListPosition(*old_r\Widget())
-            ChangeCurrentElement(*old_r\Widget(), *this)
-            
-            ; Создаем копию в новом холсте
-            *new = AddElement(*r\Widget())
-            CopyStructure(*this, *new, _s_WIDGET)
-            
-            ; Удаляем оригинал из старого холста
-            DeleteElement(*old_r\Widget())
-            PopListPosition(*old_r\Widget())
-            
-            ; ВАЖНО: Перерисовываем старый холст, так как виджет оттуда исчез
-            *old_r\mask | #___mask_update | #___mask_redraw
-            
-            *this = *new 
-         EndIf
-      Else
-         ; --- СОЗДАНИЕ НОВОГО (из Create) ---
-         *new = AddElement(*r\Widget())
-         CopyStructure(*this, *new, _s_WIDGET)
-         *this = *new
-      EndIf
-      
-      ; 3. ОБНОВЛЯЕМ ИЕРАРХИЮ
-      *this\root = *r
-      *this\parent = *parent
-      
-      ; 4. ПЕРЕРИСОВЫВАЕМ НОВЫЙ ХОЛСТ
-      ; После того как виджет прописан, обновляем его текущий root
-      *r\mask | #___mask_update | #___mask_redraw
-      
-      ProcedureReturn *this
-   EndIf
+   *this\Type = #__type_Editor
+   *this\root = *root
+   *this\rowheight = 25
+   *this\indent = 20 ; Специфично для дерева (отступ веток)
+   
+   ; Сразу создаем одну невидимую колонку на всю ширину
+   add_column(*this, "едит", w) 
+                             
+   ; Устанавливаем положение и размер
+   ; Resize внутри себя вызовет reclip() и поднимет флаг #___mask_update
+   Resize(*this, X, Y, w, h) 
+   
+   ProcedureReturn *this
+EndProcedure
+
+Procedure.i create_grid(*root._s_ROOT, X.i, Y.i, w.i, h.i)
+   AddElement(*root\Widget())
+   Protected *this._s_WIDGET = @*root\Widget()
+   
+   *this\Type = #__type_ListIcon
+   *this\root = *root
+   *this\rowheight = 25
+   
+   ; Устанавливаем положение и размер
+   ; Resize внутри себя вызовет reclip() и поднимет флаг #___mask_update
+   Resize(*this, X, Y, w, h) 
+   
+   ProcedureReturn *this
+EndProcedure
+
+Procedure.i create_tree(*root._s_ROOT, X.i, Y.i, w.i, h.i)
+   AddElement(*root\Widget())
+   Protected *this._s_WIDGET = @*root\Widget()
+   
+   *this\Type = #__type_Tree
+   *this\root = *root
+   *this\indent = 20 ; Специфично для дерева (отступ веток)
+   *this\rowheight = 25
+   
+   Resize(*this, X, Y, w, h)
+   
+   ProcedureReturn *this
 EndProcedure
 
 Procedure.i Create(*parent._s_WIDGET, class.s, Type.i, X, Y, Width, Height, title.s, flags.q=0, param1=0,param2=0,param3=0 )
-   Protected this._s_WIDGET ;= AllocateStructure(_s_WIDGET)
-   this\Type = Type
+   Protected *Root._s_ROOT = Root();*parent\root
+   If Not *Root
+      *Root = *parent
+   EndIf
    
-   this\class = class
-   this\indent = 20 ; (отступ веток)
-   this\rowheight = 25
+   AddElement(*root\Widget())
+   Protected *this._s_WIDGET = @*root\Widget()
+   *this\Type = Type
+   *this\class = class
+   *this\root = *root
    
    If Type = #__type_Tree
-      ; Сразу создаем одну невидимую колонку на всю ширину
-      add_column(@this, "tree", Width) 
+      *this\indent = 20 ; (отступ веток)
+      *this\rowheight = 25
    EndIf
    If Type = #__type_ListIcon
-      add_column(@this, title, param1) 
+      *this\rowheight = 25
    EndIf
    If Type = #__type_Editor
+      *this\rowheight = 25
+      *this\indent = 20 ; (отступ веток)
+      
       ; Сразу создаем одну невидимую колонку на всю ширину
-      add_column(@this, "едит", Width) 
+      add_column(*this, "едит", w) 
+                                
    EndIf
    
-   Resize(@this, X, Y, Width, Height)
-   Protected *this = SetParent( @this, *parent )
+   Resize(*this, X, Y, Width, Height)
    ProcedureReturn *this
 EndProcedure
 
@@ -1386,7 +1383,7 @@ Procedure Open( window, X,Y,Width,Height, title.s, flags.q )
    Static i:*Root\class = Str(i):i+1
    
    ; Получаем масштаб окна (встроено в PB 5.70+)
-   *root\canvas\dpi = DesktopResolutionX() 
+   *root\dpi = DesktopResolutionX() 
    
    If Root( )
       Root( )\next = *root
@@ -1407,31 +1404,40 @@ Procedure InitApp(*root._s_ROOT)
    *root = Open(0, 0, 0, w, h, "PureBasic UI Engine", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    
    ; СОЗДАЕМ виджеты (выделяем память, задаем тип и координаты)
-   Protected *g._s_WIDGET = ListIcon(10, 10, 280, 480, "Имя", 120)
-   Protected *t._s_WIDGET = Tree(300, 10, 280, 480)
+   Protected *g._s_WIDGET = create_grid(*root, 10, 10, 280, 480)
+   Protected *t._s_WIDGET = create_Tree(*root, 300, 10, 280, 480)
+;    Protected *e._s_WIDGET = create_edit(*root, 590, 10, 265, 480)
+;    Protected *g._s_WIDGET = ListIcon(10, 10, 280, 480, "Имя", 120)
+;    Protected *t._s_WIDGET = Tree(300, 10, 280, 480)
+   
+   Debug ""+*root +" "+ Root()
    Protected *e._s_WIDGET = Editor(590, 10, 265, 480)
    Protected chr.s = "|"
    
    ; Наполняем данными через твои add_column / add_row
+   add_column(*g, "Имя", 120) 
    add_column(*g, "возраст", 50)
-   add_column(*g, "город", 150)
-                           
+                             add_column(*g, "город", 150)
+   
    add_row(*g, "Александр" + chr + "31" + chr + "Москва")
    add_row(*g, "Елена" + chr + "24" + chr + "Владивосток")
    add_row(*g, "Дмитрий" + chr + "45" + chr + "Тула")
    
-   ;-                    
-   add_row(*t, "node")
-   add_row(*t, "Александр" + chr + "31" + chr + "Москва",1)
-   add_row(*t, "Елена" + chr + "24" + chr + "Владивосток",1)
-   add_row(*t, "Дмитрий" + chr + "45" + chr + "Тула",1)
+   
+   add_column(*t, "Имя", 150) 
+   add_column(*t, "возраст", 50)
+   add_column(*t, "город", 150)
    
    add_row(*t, "node")
    add_row(*t, "Александр" + chr + "31" + chr + "Москва",1)
    add_row(*t, "Елена" + chr + "24" + chr + "Владивосток",1)
    add_row(*t, "Дмитрий" + chr + "45" + chr + "Тула",1)
    
-   ;-
+   add_row(*t, "node")
+   add_row(*t, "Александр" + chr + "31" + chr + "Москва",1)
+   add_row(*t, "Елена" + chr + "24" + chr + "Владивосток",1)
+   add_row(*t, "Дмитрий" + chr + "45" + chr + "Тула",1)
+   
    add_row(*e, "node")
    add_row(*e, "Александр" + chr + "31" + chr + "Москва",1)
    add_row(*e, "Елена" + chr + "24" + chr + "Владивосток",1)
@@ -1492,8 +1498,7 @@ Close(Root( ))
 Root( ) = 0
 End ; Завершение программы
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 119
-; FirstLine = 179
+; FirstLine = 1451
 ; Folding = ------------------------------------
 ; EnableXP
 ; DPIAware

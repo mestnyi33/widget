@@ -96,6 +96,8 @@ BeforeWidget
 
 UseWidgets
 Root
+NextRoot
+PrevRoot
 Widget
 
 EventWidget

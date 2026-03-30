@@ -69,7 +69,7 @@ DeclareModule Cursor
       windowID.i
    EndStructure
    
-   ;Declare   isHiden( )
+   Declare   isHiden( )
    ;Declare   Hide( state.b )
    Declare   Free( *cursor )
    ;Declare   Get( )
@@ -235,7 +235,168 @@ DeclareModule Cursor
 EndDeclareModule
 
 Module Cursor
+   Global NewMap images.i( )
+   
    ;-
+   Procedure GetMemory( GadgetID )
+      CompilerSelect #PB_Compiler_OS
+         CompilerCase #PB_OS_Windows : ProcedureReturn GetProp_(GadgetID, "__cursor")
+         CompilerCase #PB_OS_MacOS   : ProcedureReturn objc_getAssociatedObject_(GadgetID, "__cursor")
+         CompilerCase #PB_OS_Linux   : ProcedureReturn g_object_get_data_(GadgetID, "__cursor")
+      CompilerEndSelect
+   EndProcedure
+   
+   Procedure SetMemory( GadgetID, *memory )
+      CompilerSelect #PB_Compiler_OS
+         CompilerCase #PB_OS_Windows : SetProp_(GadgetID, "__cursor", *memory)
+         CompilerCase #PB_OS_MacOS   : objc_setAssociatedObject_(GadgetID, "__cursor", *memory, 0)
+         CompilerCase #PB_OS_Linux   : g_object_set_data_(GadgetID, "__cursor", *memory)
+      CompilerEndSelect
+   EndProcedure
+   
+   Procedure ChangeCursor( GadgetID, hcursor.i )
+      If GadgetID
+         CompilerSelect #PB_Compiler_OS
+            CompilerCase #PB_OS_Windows : ProcedureReturn SetCursor_(hcursor)
+               ; SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, *cursor\hcursor )
+               ; SetClassLongPtr_( GadgetID( gadget ), #GCL_HCURSOR, *cursor\hcursor )
+            CompilerCase #PB_OS_MacOS   : ProcedureReturn CocoaMessage(0, hcursor, "set")
+            CompilerCase #PB_OS_Linux   : ProcedureReturn gdk_window_set_cursor_(gtk_widget_get_window(GadgetID), hcursor)
+         CompilerEndSelect
+      EndIf
+   EndProcedure
+   
+   ;-
+   Procedure New( Type.a, ImageID.i )
+      If Not FindMapElement(images( ), Str(Type))
+         AddMapElement(images( ), Str(Type))
+         images( ) = ImageID
+      EndIf
+      
+      ProcedureReturn ImageID
+   EndProcedure
+   
+   Procedure.i Create( ImageID.i, X.l = 0, Y.l = 0 )
+      Protected *ic
+      CompilerSelect #PB_Compiler_OS
+         CompilerCase #PB_OS_MacOS
+            Protected Hotspot.NSPoint : Hotspot\x = X : Hotspot\y = Y
+            *ic = CocoaMessage(0, CocoaMessage(0, 0, "NSCursor alloc"), "initWithImage:", ImageID, "hotSpot:@", @Hotspot)
+         CompilerCase #PB_OS_Windows
+            Protected iconinfo.ICONINFO
+            iconinfo\fIcon = #False : iconinfo\xHotspot = X : iconinfo\yHotspot = Y
+            iconinfo\hbmMask = ImageID : iconinfo\hbmColor = ImageID
+            *ic = CreateIconIndirect_(@iconinfo)
+         CompilerCase #PB_OS_Linux
+            *ic = gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, X, Y)
+      CompilerEndSelect
+      ProcedureReturn *ic
+   EndProcedure
+   
+   Procedure   Change( GadgetID.i, state.b )
+      Protected result, *cursor._s_cursor = GetMemory(GadgetID)
+      If *cursor And
+         *cursor\hcursor
+         
+         ;\\ reset
+         If state = 0 
+            CompilerSelect #PB_Compiler_OS
+               CompilerCase #PB_OS_Windows : result = SetCursor_( LoadCursor_(0,#IDC_ARROW) )
+               CompilerCase #PB_OS_MacOS    
+                  ;         Protected EnteredWindowID = Mouse::window( )
+                  ;         If EnteredWindowID 
+                  ;           CocoaMessage(0, EnteredWindowID, "disableCursorRects")
+                  ;         EndIf
+                  If Not CocoaMessage(0, *cursor\windowID, "areCursorRectsEnabled")
+                     result = CocoaMessage(0, *cursor\windowID, "enableCursorRects")
+                  EndIf
+                  If *cursor\hcursor = - 1
+                     result = CocoaMessage(0, 0, "NSCursor unhide")
+                  EndIf
+                  
+               CompilerCase #PB_OS_Linux   : 
+                  result = gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), gdk_cursor_new_(#GDK_ARROW))
+                  
+            CompilerEndSelect
+         EndIf
+         
+         ;\\ set
+         If state > 0
+            CompilerSelect #PB_Compiler_OS
+               CompilerCase #PB_OS_Windows 
+                  If *cursor\hcursor =- 1
+                     If GetCursor_( )
+                        result = SetCursor_( #NUL )
+                     Else
+                        result = *cursor\hcursor
+                     EndIf
+                  Else
+                     result = SetCursor_( *cursor\hcursor )
+                  EndIf 
+                  
+               CompilerCase #PB_OS_MacOS   : 
+                  If *cursor\hcursor <> CocoaMessage(0, 0, "NSCursor currentCursor")
+                     If CocoaMessage(0, *cursor\windowID, "areCursorRectsEnabled")
+                        CocoaMessage(0, *cursor\windowID, "disableCursorRects")
+                     EndIf
+                     
+                     If *cursor\hcursor = - 1
+                        CocoaMessage(0, 0, "NSCursor hide")
+                     Else
+                        CocoaMessage(0, *cursor\hcursor, "set") 
+                     EndIf
+                  EndIf
+                  
+               CompilerCase #PB_OS_Linux   : 
+                  gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), 0) ; bug
+                  gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), *cursor\hcursor)
+            CompilerEndSelect
+         EndIf
+         
+         If result <> *cursor\hcursor
+            CompilerIf #test_cursor
+               Debug " :: changeCursor "+ state +" "+ GadgetID +" "+ result +" "+ *cursor\hcursor
+            CompilerEndIf
+         EndIf
+      EndIf
+   EndProcedure
+   
+      
+   Procedure Free( *cursor )
+      If *cursor > 255
+         CompilerSelect #PB_Compiler_OS
+            CompilerCase #PB_OS_Windows : DestroyIcon_(*cursor)
+            CompilerCase #PB_OS_MacOS   : CocoaMessage(0, *cursor, "release")
+            CompilerCase #PB_OS_Linux   : g_object_unref_(*cursor)
+         CompilerEndSelect
+         ForEach images()
+            If images() = *cursor : DeleteMapElement(images()) : Break : EndIf
+         Next
+      EndIf
+   EndProcedure
+;    Procedure   Free(*cursor) 
+;          ; Debug "cursor-free "+*cursor
+;          
+;          If *cursor >= 0 And *cursor <= 255
+;             If FindMapElement(images( ), Str(*cursor))
+;                DeleteMapElement(images( ));, Str(*cursor))
+;             EndIf
+;          Else
+;             If MapSize(images( ))
+;                ForEach images( )
+;                   If *cursor = images( )
+;                      DeleteMapElement(images( ))
+;                   EndIf
+;                Next
+;             EndIf
+;             
+;             ; CocoaMessage(0, *cursor, "autorelease")
+;             
+;             ProcedureReturn CocoaMessage(0, *cursor, "release")
+;          EndIf
+;       EndProcedure
+      
+   ;-   
    ;- >>> [MACOS] <<<
    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       #test_cursor = 0
@@ -314,7 +475,7 @@ Module Cursor
             If handle <> PressedID
                If PressedID  
                   If handle
-                     *cursor = objc_getAssociatedObject_(handle, "__cursor")
+                     *cursor = GetMemory(handle)
                      If Not ( *cursor And *cursor\hcursor )
                         Cursor::change(PressedID, 0)
                      EndIf
@@ -338,8 +499,7 @@ Module Cursor
                ; Debug ""+#PB_Compiler_Procedure+" "+EnteredID +" "+ handle
                If EnteredID
                   If handle
-                     ;
-                     *cursor = objc_getAssociatedObject_(EnteredID, "__cursor")
+                     *cursor = GetMemory(EnteredID)
                      If *cursor And *cursor\hcursor = - 1
                         If Not CocoaMessage(0, *cursor\windowID, "areCursorRectsEnabled")
                            CocoaMessage(0, *cursor\windowID, "enableCursorRects")
@@ -348,7 +508,7 @@ Module Cursor
                      EndIf
                      
                      ;
-                     *cursor = objc_getAssociatedObject_(handle, "__cursor")
+                     *cursor = GetMemory(handle)
                      If Not ( *cursor And *cursor\hcursor ) 
                         Cursor::change(EnteredID, 0)
                      EndIf
@@ -460,13 +620,16 @@ Module Cursor
          CocoaMessage(0, CocoaMessage(0, 0, "NSRunLoop currentRunLoop"), "addPort:", eventTap, "forMode:$", @"kCFRunLoopDefaultMode")
       EndIf
       
-      Global NewMap images.i( )
+      Macro s( _val_ ) 
+         Round((_val_) * DesktopResolutionX(), #PB_Round_Nearest)
+      EndMacro
       
       Procedure   Draw( Type.a )
-         Protected Image
+         Protected Image, *cursor
          Protected X = 0
          Protected Y = 0
-         Protected size = 16
+         Protected scale.f = DesktopResolutionX()
+         Protected size = s(16)
          Protected Width = size
          Protected Height = size
          Protected fcolor = $ffFFFFFF
@@ -571,7 +734,9 @@ Module Cursor
             StopDrawing( )
          EndIf
          
-         ProcedureReturn Create( ImageID( Image ), X, Y )
+         *cursor = Create(ImageID(Image), X, Y)
+         FreeImage(Image) ; Удаляем картинку PB, системный хендл остается
+         ProcedureReturn *cursor
       EndProcedure
       
       
@@ -640,106 +805,6 @@ Module Cursor
          ProcedureReturn Image
       EndProcedure
       
-      Procedure New( Type.a, ImageID.i )
-         If Not FindMapElement(images( ), Str(Type))
-            AddMapElement(images( ), Str(Type))
-            images( ) = ImageID
-         EndIf
-         
-         ProcedureReturn ImageID
-      EndProcedure
-      
-      Procedure   Free(*cursor) 
-         ; Debug "cursor-free "+*cursor
-         
-         If *cursor >= 0 And *cursor <= 255
-            If FindMapElement(images( ), Str(*cursor))
-               DeleteMapElement(images( ));, Str(*cursor))
-            EndIf
-         Else
-            If MapSize(images( ))
-               ForEach images( )
-                  If *cursor = images( )
-                     DeleteMapElement(images( ))
-                  EndIf
-               Next
-            EndIf
-            
-            ; CocoaMessage(0, *cursor, "autorelease")
-            
-            ProcedureReturn CocoaMessage(0, *cursor, "release")
-         EndIf
-      EndProcedure
-      
-      Procedure   isHiden( )
-         ProcedureReturn Bool( CGCursorIsVisible( ) = 0 )
-      EndProcedure
-      
-      Procedure   Hide(state.b)
-         If state
-            CocoaMessage(0, 0, "NSCursor hide")
-         Else
-            CocoaMessage(0, 0, "NSCursor unhide")
-         EndIf
-      EndProcedure
-      
-      Procedure.i Create( ImageID.i, X.l = 0, Y.l = 0 )
-         Protected *ic, Hotspot.NSPoint
-         If ImageID
-            CompilerIf #test_cursor
-               Debug " ::---------------- create-cursor -----------------"
-            CompilerEndIf
-            Hotspot\x = X
-            Hotspot\y = Y
-            *ic = CocoaMessage(0, 0, "NSCursor alloc")
-            CocoaMessage(0, *ic, "initWithImage:", ImageID, "hotSpot:@", @Hotspot)
-         EndIf
-         
-         ProcedureReturn *ic
-      EndProcedure
-      
-      Procedure   Change( GadgetID.i, state.b )
-         ;If Not CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
-         Protected *cursor._s_cursor = objc_getAssociatedObject_(GadgetID, "__cursor")
-         If *cursor And *cursor\hcursor
-            ; reset
-            If state = 0 
-               ;         Protected EnteredWindowID = Mouse::window( )
-               ;         If EnteredWindowID 
-               ;           CocoaMessage(0, EnteredWindowID, "disableCursorRects")
-               ;         EndIf
-               If Not CocoaMessage(0, *cursor\windowID, "areCursorRectsEnabled")
-                  CocoaMessage(0, *cursor\windowID, "enableCursorRects")
-               EndIf
-               If *cursor\hcursor = - 1
-                  CocoaMessage(0, 0, "NSCursor unhide")
-               EndIf
-            EndIf
-            
-            
-            ; set
-            If *cursor\hcursor <> CocoaMessage(0, 0, "NSCursor currentCursor")
-               If state > 0 
-                  If CocoaMessage(0, *cursor\windowID, "areCursorRectsEnabled")
-                     CocoaMessage(0, *cursor\windowID, "disableCursorRects")
-                  EndIf
-                  
-                  If *cursor\hcursor = - 1
-                     CocoaMessage(0, 0, "NSCursor hide")
-                  Else
-                     CocoaMessage(0, *cursor\hcursor, "set") 
-                  EndIf
-               EndIf
-               
-               CompilerIf #test_cursor
-                  Debug " ::changeCursor " + *cursor\hcursor +" "+ state
-               CompilerEndIf
-               ProcedureReturn #True
-            EndIf
-         EndIf
-         ;EndIf
-      EndProcedure
-      
       Procedure   Set( Gadget.i, *cursor )
          Protected *memory._s_cursor
          
@@ -751,14 +816,15 @@ Module Cursor
                   Debug " ::setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
                CompilerEndIf
                
-               *memory = objc_getAssociatedObject_( GadgetID, "__cursor" )
-               ; object_getInstanceVariable_(GadgetID, "__cursor", @*memory)
+               *memory = GetMemory( GadgetID )
                
-               If Not *memory
+               If *memory
+                  ; Если уже был кастомный курсор — удаляем старый системный объект!
+                 ; If *memory\hcursor > 255 : Free(*memory\hcursor) : EndIf
+               Else
                   *memory = AllocateStructure( _s_cursor )
                   \windowID = ID::GetWindowID( GadgetID )
-                  objc_setAssociatedObject_( GadgetID, "__cursor", *memory, 0 ) 
-                  ; object_setInstanceVariable_(GadgetID, "__cursor", *memory)
+                  SetMemory( GadgetID, *memory ) 
                EndIf
                
                If \type <> *cursor
@@ -921,8 +987,6 @@ Module Cursor
          
          ProcedureReturn result
       EndProcedure
-      
-      Global NewMap images.i( )
       
       Procedure   Draw( Type.a )
          Protected Image
@@ -1148,99 +1212,11 @@ Module Cursor
          ProcedureReturn Image
       EndProcedure
       
-      Procedure New( Type.a, ImageID.i )
-         If Not FindMapElement(images( ), Str(Type))
-            AddMapElement(images( ), Str(Type))
-            images( ) = ImageID
-         EndIf
-         
-         ProcedureReturn ImageID
-      EndProcedure
-      
-      Procedure   Free( *cursor ) 
-         ;Debug "cursor-free "+*cursor
-         
-         If *cursor >= 0 And *cursor <= 255
-            If FindMapElement(images( ), Str(*cursor))
-               DeleteMapElement(images( ));, Str(*cursor))
-            EndIf
-         Else
-            If MapSize(images( ))
-               ForEach images( )
-                  If *cursor = images( )
-                     DeleteMapElement(images( ))
-                     Break 
-                  EndIf
-               Next
-            EndIf
-            ProcedureReturn DestroyCursor_( *cursor )
-         EndIf
-      EndProcedure
-      
-      Procedure   isHiden( )
-         Protected cursor_info.CURSORINFO 
-         cursor_info\cbSize = SizeOf(CURSORINFO)
-         GetCursorInfo_(@cursor_info)
-         ProcedureReturn Bool(cursor_info\flags & #CURSOR_SHOWING)
-      EndProcedure
-      
-      Procedure   Hide(state.b)
-         ProcedureReturn ShowCursor_(state)
-      EndProcedure
-      
       Procedure   Clip( X.l,Y.l,Width.l,Height.l )
          Protected rect.RECT
          ;GetWindowRect_(GadgetID,rect.RECT)
          SetRect_(rect,X,Y,X+Width,Y+Height)
          ProcedureReturn ClipCursor_(rect)
-      EndProcedure
-      
-      Procedure.i Create(ImageID.i, X.l = 0, Y.l = 0)
-         Protected *create_icon, cursor_info.ICONINFO
-         cursor_info\fIcon = 0
-         cursor_info\xHotspot = X 
-         cursor_info\yHotspot = Y 
-         cursor_info\hbmMask = ImageID
-         cursor_info\hbmColor = ImageID
-         *create_icon = CreateIconIndirect_( @cursor_info ) 
-         If Not *create_icon : *create_icon = ImageID : EndIf
-         ProcedureReturn *create_icon
-      EndProcedure
-      
-      Procedure   Change( GadgetID.i, state.b )
-         Protected result, *cursor._s_cursor = GetProp_(GadgetID, "#__cursor")
-         If *cursor And
-            *cursor\hcursor
-            
-            ;\\ reset
-            If state = 0 
-               ; SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, LoadCursor_(0,#IDC_ARROW) )
-               result = SetCursor_( LoadCursor_(0,#IDC_ARROW) )
-            EndIf
-            
-            ;\\ set
-            ; If *cursor\hcursor <> GetCursor_( )
-            If state > 0
-               If *cursor\hcursor =- 1
-                  If GetCursor_( )
-                     result = SetCursor_( #NUL )
-                  Else
-                     result = *cursor\hcursor
-                  EndIf
-               Else
-                  ; SetClassLongPtr_( *cursor\windowID, #GCL_HCURSOR, *cursor\hcursor )
-                  ; SetClassLongPtr_( GadgetID( gadget ), #GCL_HCURSOR, *cursor\hcursor )
-                  result = SetCursor_( *cursor\hcursor )
-               EndIf
-            EndIf
-            
-            If result <> *cursor\hcursor
-               CompilerIf #test_cursor
-                  Debug " :: changeCursor "+ state +" "+ GadgetID +" "+ result +" "+ *cursor\hcursor
-               CompilerEndIf
-            EndIf
-            ; EndIf
-         EndIf
       EndProcedure
       
       Procedure   Set( Gadget.i, *cursor )
@@ -1253,13 +1229,16 @@ Module Cursor
                   Debug " :: setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
                CompilerEndIf
                
-               *memory = GetProp_( GadgetID, "#__cursor" )
+               *memory = GetMemory( GadgetID )
                
                If Not *memory
                   *memory = AllocateStructure( _s_cursor )
                   \windowID = ID::GetWindowID( GadgetID )
-                  SetProp_( GadgetID, "#__cursor", *memory ) 
+                  SetMemory(( GadgetID, *memory ) 
                   SetProp_( GadgetID, "#__oldproc_cursor", SetWindowLongPtr_(GadgetID, #GWL_WNDPROC, @Proc( )))
+               Else
+                  ; Если уже был кастомный курсор — удаляем старый системный объект!
+                  If *memory\hcursor > 255 : Free(*memory\hcursor) : EndIf
                EndIf
                
                If \type <> *cursor
@@ -1329,11 +1308,10 @@ Module Cursor
       
       Procedure   Get( )
          Protected result.i
-         Protected cursor_info.CURSORINFO 
-         cursor_info\cbSize = SizeOf(CURSORINFO)
-         GetCursorInfo_(@cursor_info)
          
-         If cursor_info\flags & #CURSOR_SHOWING
+         If isHiden()
+            result = #__cursor_Invisible
+         Else
             Select cursor_info\hCursor ; GetCursor_( )
                Case LoadCursor_(0,#IDC_ARROW) : result = #__cursor_Default
                Case LoadCursor_(0,#IDC_IBEAM) : result = #__cursor_IBeam
@@ -1360,8 +1338,6 @@ Module Cursor
                Case LoadCursor_(0,#IDC_ARROW) : result = #__cursor_Grab
                Case LoadCursor_(0,#IDC_ARROW) : result = #__cursor_Grabbing
             EndSelect 
-         Else
-            result = #__cursor_Invisible
          EndIf
          
          ProcedureReturn result
@@ -1479,8 +1455,6 @@ Module Cursor
       ;     g_object_get_data_(*Widget.GtkWidget, strData.p-utf8) As "g_object_get_data"
       ;   EndImport
       
-      
-      Global NewMap images.i( )
       
       Procedure   Draw( Type.a )
          Protected Image
@@ -1646,84 +1620,6 @@ Module Cursor
          ProcedureReturn Image
       EndProcedure
       
-      Procedure New( Type.a, ImageID.i )
-         If Not FindMapElement(images( ), Str(Type))
-            AddMapElement(images( ), Str(Type))
-            images( ) = ImageID
-         EndIf
-         
-         ProcedureReturn ImageID
-      EndProcedure
-      
-      Procedure   Free( *cursor )
-         Debug "cursor-free "+*cursor
-         
-         If *cursor >= 0 And *cursor <= 255
-            If FindMapElement(images( ), Str(*cursor))
-               DeleteMapElement(images( ));, Str(*cursor))
-            EndIf
-         Else
-            If MapSize(images( ))
-               ForEach images( )
-                  If *cursor = images( )
-                     DeleteMapElement(images( ))
-                  EndIf
-               Next
-            EndIf
-            ;     ; Используйте g_object_unref( )
-            ;     ProcedureReturn gdk_cursor_unref_(*cursor)
-            
-;             CompilerIf Subsystem("gtk3")
-;                g_object_unref_( *cursor )
-;             CompilerEndIf
-         
-         EndIf
-      EndProcedure
-      
-      Procedure   isHiden( )
-         ProcedureReturn 0;Bool( gdk_cursor_get_cursor_type(gdk_window_get_cursor( gdk_display_get_default_( ) )) = #GDK_BLANK_CURSOR )
-      EndProcedure
-      
-      Procedure   Hide( state.b )
-         ; CompilerIf Subsystem("gtk3")
-            ; Чтобы сделать курсор невидимым, используйте GDK_BLANK_CURSOR.
-         If state
-            gdk_cursor_new_for_display_(gdk_display_get_default_( ),gdk_cursor_new_(#GDK_BLANK_CURSOR)) ; #GDK_BLANK_CURSOR = -2
-                                                                                                        ;gdk_cursor_new_from_name("none")
-         Else
-            gdk_cursor_new_for_display_(gdk_display_get_default_( ),gdk_cursor_new_(#GDK_ARROW))
-         EndIf
-      EndProcedure
-      
-      Procedure.i Create( ImageID.i, X.l = 0, Y.l = 0 )
-         ;             CompilerIf Subsystem("gtk3")
-         ;                Protected *ic.GdkCursor
-         ProcedureReturn gdk_cursor_new_from_pixbuf_( gdk_display_get_default_( ), ImageID, X, Y)
-         ;             CompilerEndIf
-      EndProcedure
-      
-      Procedure Change( GadgetID.i, state.b )
-         Protected *cursor._s_cursor = g_object_get_data_(GadgetID, "__cursor") ; GetGadgetData(EnteredGadget( ))
-         If *cursor And 
-            *cursor\hcursor  
-            
-            ; reset 
-            If state = 0 
-               gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), gdk_cursor_new_(#GDK_ARROW))
-            EndIf
-            
-            ; set
-            If state = 1 
-               gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), 0) ; bug
-               gdk_window_set_cursor_( gtk_widget_get_window(*cursor\windowID), *cursor\hcursor)
-            EndIf
-            
-            CompilerIf #test_cursor
-               Debug " ::changeCursor"
-            CompilerEndIf
-         EndIf
-      EndProcedure
-      
       Procedure Set( Gadget.i, *cursor )
          Protected *memory._s_cursor
          
@@ -1734,12 +1630,15 @@ Module Cursor
                   Debug " ::setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
                CompilerEndIf
                
-               *memory = g_object_get_data_(GadgetID, "__cursor")
+               *memory = GetMemory(GadgetID)
                
                If Not *memory
                   *memory = AllocateStructure(_s_cursor)
                   \windowID = ID::GetWindowID(GadgetID)
-                  g_object_set_data(GadgetID, "__cursor", *memory) 
+                  SetMemory(GadgetID, *memory) 
+               Else
+                  ; Если уже был кастомный курсор — удаляем старый системный объект!
+                  If *memory\hcursor > 255 : Free(*memory\hcursor) : EndIf
                EndIf
                
                If \type <> *cursor
@@ -1847,6 +1746,39 @@ Module Cursor
          ProcedureReturn result
       EndProcedure
    CompilerEndIf
+   
+   ;-
+   Procedure   isHiden( )
+      CompilerSelect #PB_Compiler_OS
+         CompilerCase #PB_OS_Windows  
+            Protected cursor_info.CURSORINFO 
+            cursor_info\cbSize = SizeOf(CURSORINFO)
+            GetCursorInfo_(@cursor_info)
+            ProcedureReturn Bool(cursor_info\flags & #CURSOR_SHOWING)
+         CompilerCase #PB_OS_MacOS   : ProcedureReturn Bool( CGCursorIsVisible( ) = 0 )
+         CompilerCase #PB_OS_Linux   : 
+        ProcedureReturn 0;Bool( gdk_cursor_get_cursor_type(gdk_window_get_cursor( gdk_display_get_default_( ) )) = #GDK_BLANK_CURSOR )
+      CompilerEndSelect
+   EndProcedure
+   
+   Procedure   Hide(state.b)
+      CompilerSelect #PB_Compiler_OS
+         CompilerCase #PB_OS_Windows : ProcedureReturn ShowCursor_(state)
+         CompilerCase #PB_OS_MacOS   
+            If state
+               CocoaMessage(0, 0, "NSCursor hide")
+            Else
+               CocoaMessage(0, 0, "NSCursor unhide")
+            EndIf
+         CompilerCase #PB_OS_Linux   
+            If state
+               gdk_cursor_new_for_display_(gdk_display_get_default_( ),gdk_cursor_new_(#GDK_BLANK_CURSOR)) ; #GDK_BLANK_CURSOR = -2
+            Else
+               gdk_cursor_new_for_display_(gdk_display_get_default_( ),gdk_cursor_new_(#GDK_ARROW))
+            EndIf
+      CompilerEndSelect
+   EndProcedure
+   
    
 EndModule
 
@@ -2447,10 +2379,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 1687
-; FirstLine = 1534
-; Folding = ---f----------------------------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 822
+; FirstLine = 807
+; Folding = ------------------------8----8----------
 ; Optimizer
 ; EnableXP
 ; DPIAware

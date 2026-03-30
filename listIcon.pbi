@@ -1,383 +1,338 @@
-﻿; =================================================================
-; Модуль: CanvasListIcon (PureBasic)
-; Возможности: Скролл, Drag&Drop, Resize, Edit, Sort, Icons, Checkboxes, AutoSize
-; =================================================================
+﻿EnableExplicit
 
-EnableExplicit
-
-;- --- КОНСТАНТЫ ---
+; --- Константы ---
 #ALIGN_LEFT   = 0
 #ALIGN_CENTER = 1
 #ALIGN_RIGHT  = 2
 
-;- --- СТРУКТУРЫ ---
+; --- Структуры ---
 Structure _s_COLUMN
   Title.s
   Width.i
+  img.i
   Align.b
 EndStructure
 
 Structure _s_ITEM
   List ColText.s()
-  List ColImage.i()
-  SortKey.s
-  Checked.b   ; Флаг чекбокса
+  img.i
+  Checked.b
   Selected.b
 EndStructure
 
 Structure _s_WIDGET
-  GadgetID.i : ScrollVID.i : ScrollHID.i : EditID.i
-  X.i : Y.i : W.i : H.i
-  HeaderHeight.i : RowHeight.i
-  HoverCol.i : ResizeCol.i : DragCol.i : DropCol.i ; <--- Добавили DropCol
-  ColumnStartX.i : DragMouseX.i : CurrentDragX.i
-  SortColumn.i : SortOrder.i
-  EditRow.i : EditCol.i
+  GadgetID.i
+  
+  ColHeight.i
+  MoveColX.i
+  HoverCol.i
+  DragCol.i     
+  ResizeCol.i
+  
+  RowHeight.i
+  TargetIdx.i   
+  DragItem.i    
+  
+  MouseOffX.i   
+  MouseOffY.i
+  
   List Columns._s_COLUMN()
   List Items._s_ITEM()
 EndStructure
 
-;- --- РЕАЛИЗАЦИЯ ЛОГИКИ ---
-Macro Min(a, b) : (Bool((a) <= (b)) * (a) + Bool((b) < (a)) * (b)) : EndMacro
-Macro Max(a, b) : (Bool((a) >= (b)) * (a) + Bool((b) > (a)) * (b)) : EndMacro
-
-
-; Перемещение колонок (Drag & Drop логика)
-Procedure MoveColumnLogic(*this._s_WIDGET, FromIdx, ToIdx)
-   If FromIdx = ToIdx : ProcedureReturn : EndIf
-   
-   ; Перемещаем саму колонку
-   SelectElement(*this\Columns(), FromIdx)
-   If FromIdx < ToIdx
-      MoveElement(*this\Columns(), #PB_List_After, SelectElement(*this\Columns(), ToIdx))
-   Else
-      MoveElement(*this\Columns(), #PB_List_Before, SelectElement(*this\Columns(), ToIdx))
-   EndIf
-   
-   ; Перемещаем данные (текст и картинки) во всех строках
-   ForEach *this\Items()
-      SelectElement(*this\Items()\ColText(), FromIdx)
-      If FromIdx < ToIdx
-         MoveElement(*this\Items()\ColText(), #PB_List_After, SelectElement(*this\Items()\ColText(), ToIdx))
-      Else
-         MoveElement(*this\Items()\ColText(), #PB_List_Before, SelectElement(*this\Items()\ColText(), ToIdx))
-      EndIf
-      
-      SelectElement(*this\Items()\ColImage(), FromIdx)
-      If FromIdx < ToIdx
-         MoveElement(*this\Items()\ColImage(), #PB_List_After, SelectElement(*this\Items()\ColImage(), ToIdx))
-      Else
-         MoveElement(*this\Items()\ColImage(), #PB_List_Before, SelectElement(*this\Items()\ColImage(), ToIdx))
-      EndIf
-   Next
-EndProcedure
-
-; Обновление параметров скроллбаров
-Procedure UpdateScrollState(*this._s_WIDGET)
-  Protected SumW = 0, VisibleH = *this\H - *this\HeaderHeight
-  Protected PageV = VisibleH / *this\RowHeight
-  Protected Count = ListSize(*this\Items())
-  ForEach *this\Columns() : SumW + *this\Columns()\Width : Next
-  SetGadgetAttribute(*this\ScrollHID, #PB_ScrollBar_Maximum, SumW)
-  SetGadgetAttribute(*this\ScrollHID, #PB_ScrollBar_PageLength, *this\W - 20)
-  HideGadget(*this\ScrollHID, Bool(SumW <= *this\W - 20))
-  SetGadgetAttribute(*this\ScrollVID, #PB_ScrollBar_Maximum, Count)
-  SetGadgetAttribute(*this\ScrollVID, #PB_ScrollBar_PageLength, PageV)
-  HideGadget(*this\ScrollVID, Bool(Count <= PageV))
-EndProcedure
-
-; Авто-подбор ширины колонки по содержимому
-Procedure AutoSizeColumn(*this._s_WIDGET, Col)
-  Protected maxW = 40, tw
-  If Not StartDrawing(CanvasOutput(*this\GadgetID)) : ProcedureReturn : EndIf
-  ; Ширина заголовка
-  SelectElement(*this\Columns(), Col)
-  maxW = TextWidth(*this\Columns()\Title) + 25
-  ; Ширина данных
-  ForEach *this\Items()
-    SelectElement(*this\Items()\ColText(), Col)
-    tw = TextWidth(*this\Items()\ColText()) + 15
-    If Col = 0 : tw + 45 : EndIf ; Запас под чекбокс и иконку
-    If tw > maxW : maxW = tw : EndIf
-  Next
-  StopDrawing()
-  *this\Columns()\Width = maxW
-  UpdateScrollState(*this)
-EndProcedure
-
-; Отрисовка всего контрола
-Procedure RedrawCanvas(*this._s_WIDGET)
-  Protected X, Y, txt.s, BgColor, i = 0, tx, tw, img, imgW
-  Protected sx = GetGadgetState(*this\ScrollHID) ; Смещение по X
-  Protected sy = GetGadgetState(*this\ScrollVID) ; Индекс первой строки
+; --- Отрисовка ---
+Procedure ReDraw(*this._s_WIDGET)
+  Protected X, Y, txt.s, BgColor, CurX, tx, tw, colIdx, mx, my, i
+  If Not *this Or Not IsGadget(*this\GadgetID) : ProcedureReturn : EndIf
   
-  If Not StartDrawing(CanvasOutput(*this\GadgetID)) : ProcedureReturn : EndIf
-  Box(0, 0, OutputWidth(), OutputHeight(), $FFFFFF)
+  mx = GetGadgetAttribute(*this\GadgetID, #PB_Canvas_MouseX)
+  my = GetGadgetAttribute(*this\GadgetID, #PB_Canvas_MouseY)
   
-  ; --- ОТРИСОВКА СТРОК ---
-  Y = *this\HeaderHeight
-  ForEach *this\Items()
-    If i >= sy And Y < OutputHeight()
+  If StartDrawing(CanvasOutput(*this\GadgetID))
+    Box(0, 0, OutputWidth(), OutputHeight(), $FFFFFF) 
+    
+    ; 1. Строки
+    Y = *this\ColHeight
+    ForEach *this\Items()
+      colIdx = ListIndex(*this\Items())
       BgColor = $FFFFFF : If *this\Items()\Selected : BgColor = $F0D090 : EndIf
+      If colIdx = *this\DragItem : BgColor = $F5F5F5 : EndIf
+      
       Box(0, Y, OutputWidth(), *this\RowHeight, BgColor)
-      X = -sx
+      X = 0
       ForEach *this\Columns()
-        ClipOutput(Max(0, X), Y, *this\Columns()\Width, *this\RowHeight)
-        SelectElement(*this\Items()\ColText(), ListIndex(*this\Columns())) : txt = *this\Items()\ColText()
-        SelectElement(*this\Items()\ColImage(), ListIndex(*this\Columns())) : img = *this\Items()\ColImage()
+        colIdx = ListIndex(*this\Columns())
+        ClipOutput(X, Y, *this\Columns()\Width, *this\RowHeight)
+        SelectElement(*this\Items()\ColText(), colIdx)
+        txt = *this\Items()\ColText()
         
         DrawingMode(#PB_2DDrawing_Transparent)
-        imgW = 0
-        
-        ; Отрисовка чекбокса в первой колонке
-        If ListIndex(*this\Columns()) = 0
-          DrawingMode(#PB_2DDrawing_Outlined)
-          Box(X + 5, Y + 6, 14, 14, $A0A0A0)
-          If *this\Items()\Checked
-            FillArea(X + 7, Y + 8, -1, $404040) ; Упрощенная отметка
+        CurX = X + 5
+        If colIdx = 0 
+          Box(CurX, Y+6, 12, 12, $808080) : Box(CurX+1, Y+7, 10, 10, $FFFFFF)
+          If *this\Items()\Checked : DrawText(CurX+2, Y+3, "v", $FF0000) : EndIf
+          CurX + 20
+          If *this\Items()\img <> -1 And IsImage(*this\Items()\img)
+            DrawImage(ImageID(*this\Items()\img), CurX, Y + (*this\RowHeight-16)/2, 16, 16)
+            CurX + 20
           EndIf
-          DrawingMode(#PB_2DDrawing_Transparent)
-          imgW + 20
         EndIf
-          
-        ; Отрисовка иконки
-        If img <> -1 And IsImage(img)
-          DrawImage(ImageID(img), X + 5 + imgW, Y + 4, 16, 16)
-          imgW + 20
-        EndIf
-        
-        ; Выравнивание текста
+
         tw = TextWidth(txt)
         Select *this\Columns()\Align
-          Case #ALIGN_CENTER : tx = X + (*this\Columns()\Width - tw)/2
+          Case #ALIGN_CENTER : tx = X + (*this\Columns()\Width - tw) / 2
           Case #ALIGN_RIGHT  : tx = X + *this\Columns()\Width - tw - 5
-          Default            : tx = X + 5 + imgW
+          Default            : tx = CurX
         EndSelect
-        DrawText(tx, Y+4, txt, 0)
+        DrawText(tx, Y + 4, txt, 0)
         UnclipOutput()
         Line(X + *this\Columns()\Width - 1, Y, 1, *this\RowHeight, $F0F0F0)
         X + *this\Columns()\Width
       Next
       Y + *this\RowHeight
-    EndIf
-    i + 1
-  Next
-  
-  ; --- ОТРИСОВКА ЗАГОЛОВКА ---
-  X = -sx : DrawingMode(#PB_2DDrawing_Default)
-  ForEach *this\Columns()
-    If ListIndex(*this\Columns()) <> *this\DragCol
+    Next
+    
+    ; 2. Шапка
+    X = 0 : DrawingMode(#PB_2DDrawing_Transparent)
+    ForEach *this\Columns()
       Protected HeadColor = $D0D0D0 : If ListIndex(*this\Columns()) = *this\HoverCol : HeadColor = $E5E5E5 : EndIf
-      Box(X, 0, *this\Columns()\Width, *this\HeaderHeight, HeadColor)
-      Line(X + *this\Columns()\Width - 1, 0, 1, *this\HeaderHeight, $808080)
-      DrawText(X+5, 7, *this\Columns()\Title, 0, HeadColor)
+      If ListIndex(*this\Columns()) = *this\DragCol : HeadColor = $AAAAAA : EndIf
+      
+      Box(X, 0, *this\Columns()\Width, *this\ColHeight, HeadColor)
+      Line(X + *this\Columns()\Width - 1, 0, 1, *this\ColHeight, $808080)
+      
+      txt = *this\Columns()\Title : tw = TextWidth(txt)
+      Select *this\Columns()\Align
+        Case #ALIGN_CENTER : tx = X + (*this\Columns()\Width - tw) / 2
+        Case #ALIGN_RIGHT  : tx = X + *this\Columns()\Width - tw - 5
+        Default            : tx = X + 5
+      EndSelect
+      DrawText(tx, 7, txt, 0)
+      X + *this\Columns()\Width
+    Next
+    
+    ; 3. Фантомы
+    DrawingMode(#PB_2DDrawing_AlphaBlend)
+    If *this\DragItem <> -1
+      Box(0, my - *this\MouseOffY, OutputWidth(), *this\RowHeight, $6090D0F0)
+      Line(0, *this\ColHeight + *this\TargetIdx * *this\RowHeight, OutputWidth(), 2, $FF0000FF)
     EndIf
-    X + *this\Columns()\Width
+    
+    If *this\DragCol <> -1
+      SelectElement(*this\Columns(), *this\DragCol)
+      Box(mx - *this\MouseOffX, 0, *this\Columns()\Width, *this\ColHeight, $60A0A0A0)
+      Protected lineX = 0
+      For i = 0 To *this\TargetIdx - 1 : SelectElement(*this\Columns(), i) : lineX + *this\Columns()\Width : Next
+      Line(lineX, 0, 2, *this\ColHeight, $FF0000FF)
+    EndIf
+    StopDrawing()
+  EndIf
+EndProcedure
+
+; --- API Добавления ---
+Procedure.i AddColumn(*this._s_WIDGET, position.l, Text.s, Width.l, img.i = -1, Align.b = #ALIGN_LEFT)
+  If position = -1 : AddElement(*this\Columns()) : Else : SelectElement(*this\Columns(), position) : InsertElement(*this\Columns()) : EndIf
+  *this\Columns()\Title = Text : *this\Columns()\Width = Width : *this\Columns()\img = img : *this\Columns()\Align = Align
+  Protected colIdx = ListIndex(*this\Columns())
+  ForEach *this\Items() : SelectElement(*this\Items()\ColText(), colIdx) : InsertElement(*this\Items()\ColText()) : Next
+  ProcedureReturn colIdx
+EndProcedure
+
+Procedure.i AddItem(*this._s_WIDGET, Item.l, Text.s, img.i = -1)
+   If ListSize(*this\Columns())
+      Protected i
+      If Item = -1 : AddElement(*this\Items()) : Else : SelectElement(*this\Items(), Item) : InsertElement(*this\Items()) : EndIf
+      *this\Items()\img = img
+      
+      ; Наполняем данными строго по количеству существующих колонок
+      ForEach *this\Columns()
+         AddElement(*this\Items()\ColText()) 
+         *this\Items()\ColText() = StringField(Text, i+1, Chr(10)) 
+         i + 1
+      Next
+      ProcedureReturn @*this\Items()
+   EndIf
+EndProcedure
+
+; --- API Удаления (НОВОЕ) ---
+Procedure RemoveItem(*this._s_WIDGET, Index.l)
+  If Not *this Or Index < 0 Or Index >= ListSize(*this\Items()) : ProcedureReturn : EndIf
+  SelectElement(*this\Items(), Index) : DeleteElement(*this\Items())
+  *this\DragItem = -1 : ReDraw(*this)
+EndProcedure
+
+Procedure ClearItems(*this._s_WIDGET)
+  If Not *this : ProcedureReturn : EndIf
+  ClearList(*this\Items()) : *this\DragItem = -1 : ReDraw(*this)
+EndProcedure
+
+Procedure RemoveColumn(*this._s_WIDGET, Index.l)
+  ; Если индекс некорректен или колонок уже нет - выходим
+  If Not *this Or Index < 0 Or Index >= ListSize(*this\Columns()) : ProcedureReturn : EndIf
+  
+  ; Очищаем данные в строках
+  ForEach *this\Items()
+    If SelectElement(*this\Items()\ColText(), Index)
+      DeleteElement(*this\Items()\ColText())
+    EndIf
   Next
   
-  ; Отрисовка перетаскиваемой колонки
-  If *this\DragCol <> -1 : SelectElement(*this\Columns(), *this\DragCol)
-    Box(*this\CurrentDragX, 0, *this\Columns()\Width, *this\HeaderHeight, $A0A0A0)
-    DrawText(*this\CurrentDragX+5, 7, *this\Columns()\Title, $FFFFFF)
-  EndIf
-  StopDrawing()
+  ; Удаляем саму колонку
+  SelectElement(*this\Columns(), Index)
+  DeleteElement(*this\Columns())
+  
+  ; ОБЯЗАТЕЛЬНО: сбрасываем индексы интерактива
+  *this\DragCol = -1
+  *this\HoverCol = -1
+  *this\ResizeCol = -1 
+  
+  ReDraw(*this)
 EndProcedure
 
-;- --- API ФУНКЦИИ ---
-
-Procedure AddColumn(*this._s_WIDGET, Title.s, Width, Align = #ALIGN_LEFT)
-  AddElement(*this\Columns())
-  *this\Columns()\Title = Title : *this\Columns()\Width = Width : *this\Columns()\Align = Align
-  ForEach *this\Items()
-    AddElement(*this\Items()\ColText()) : AddElement(*this\Items()\ColImage()) : *this\Items()\ColImage() = -1
-  Next
-EndProcedure
-
-Procedure AddItem(*this._s_WIDGET, Text.s, Image = -1)
-  Protected i
-  AddElement(*this\Items())
-  For i = 1 To ListSize(*this\Columns())
-    AddElement(*this\Items()\ColText()) : AddElement(*this\Items()\ColImage()) : *this\Items()\ColImage() = -1
-  Next
-  FirstElement(*this\Items()\ColText()) : *this\Items()\ColText() = Text
-  FirstElement(*this\Items()\ColImage()) : *this\Items()\ColImage() = Image
-  UpdateScrollState(*this) : RedrawCanvas(*this)
-EndProcedure
-
-Procedure SetItemText(*this._s_WIDGET, Row, Col, Text.s)
-  If SelectElement(*this\Items(), Row) And SelectElement(*this\Items()\ColText(), Col)
-    *this\Items()\ColText() = Text : RedrawCanvas(*this)
-  EndIf
-EndProcedure
-
-Procedure.s GetItemText(*this._s_WIDGET, Row, Col)
-  If SelectElement(*this\Items(), Row) And SelectElement(*this\Items()\ColText(), Col)
-    ProcedureReturn *this\Items()\ColText()
-  EndIf
-EndProcedure
-
-Procedure SortListIcon(*this._s_WIDGET, Col)
-  ForEach *this\Items() : SelectElement(*this\Items()\ColText(), Col) : *this\Items()\SortKey = *this\Items()\ColText() : Next
-  If *this\SortColumn = Col : *this\SortOrder ! 1 : Else : *this\SortColumn = Col : *this\SortOrder = 0 : EndIf
-  SortStructuredList(*this\Items(), *this\SortOrder, OffsetOf(_s_ITEM\SortKey), #PB_String)
-  RedrawCanvas(*this)
-EndProcedure
-
-Procedure StartEdit(*this._s_WIDGET, Row, Col)
-  Protected X = -GetGadgetState(*this\ScrollHID), Y = *this\HeaderHeight + (Row - GetGadgetState(*this\ScrollVID)) * *this\RowHeight, i
-  For i = 0 To Col-1 : SelectElement(*this\Columns(), i) : X + *this\Columns()\Width : Next
-  *this\EditID = StringGadget(#PB_Any, *this\X + X, *this\Y + Y, *this\Columns()\Width, *this\RowHeight, "", #PB_String_BorderLess)
-  SetGadgetText(*this\EditID, GetItemText(*this, Row, Col))
-  *this\EditRow = Row : *this\EditCol = Col : SetActiveGadget(*this\EditID)
-EndProcedure
-
-Procedure StopEdit(*this._s_WIDGET, Save = #True)
-  If IsGadget(*this\EditID)
-    If Save : SetItemText(*this, *this\EditRow, *this\EditCol, GetGadgetText(*this\EditID)) : EndIf
-    FreeGadget(*this\EditID) : *this\EditID = 0 : SetActiveGadget(*this\GadgetID) : RedrawCanvas(*this)
-  EndIf
-EndProcedure
-
-Procedure.i ListIcon(X, Y, w, h, Title.s, Width)
+Procedure.i ListIcon(X, Y, Width, Height, Title.s, ColWidth.i)
   Protected *this._s_WIDGET = AllocateStructure(_s_WIDGET)
-  *this\X=X : *this\Y=Y : *this\W=w : *this\H=h : *this\HeaderHeight=30 : *this\RowHeight=25 : *this\HoverCol=-1 : *this\ResizeCol=-1 : *this\DragCol=-1
-  *this\GadgetID = CanvasGadget(#PB_Any, X, Y, w-20, h-20, #PB_Canvas_Keyboard)
-  *this\ScrollVID = ScrollBarGadget(#PB_Any, X+w-20, Y, 20, h-20, 0, 1, 1, #PB_ScrollBar_Vertical)
-  *this\ScrollHID = ScrollBarGadget(#PB_Any, X, Y+h-20, w-20, 20, 0, 1, 1)
-  SetGadgetData(*this\GadgetID, *this) : SetGadgetData(*this\ScrollVID, *this) : SetGadgetData(*this\ScrollHID, *this)
-  AddColumn(*this, Title, Width)
+  *this\GadgetID = CanvasGadget(#PB_Any, X, Y, Width, Height, #PB_Canvas_Keyboard)
+  *this\ColHeight = 30 : *this\RowHeight = 25 : *this\ResizeCol = -1 : *this\DragCol = -1 : *this\DragItem = -1
+  SetGadgetData(*this\GadgetID, *this)
+  AddColumn(*this, -1, Title, ColWidth)
   ProcedureReturn *this
 EndProcedure
 
-;- --- ОБРАБОТКА СОБЫТИЙ ---
-
-Procedure DoEvent_ListIcon(*this._s_WIDGET)
-  Protected GID = EventGadget(), mx = GetGadgetAttribute(GID, #PB_Canvas_MouseX), my = GetGadgetAttribute(GID, #PB_Canvas_MouseY), et = EventType(), i
-  Protected sx = GetGadgetState(*this\ScrollHID)
-  Protected realMX = mx + sx
+; --- СОБЫТИЯ ---
+Procedure DoEvents(*this._s_WIDGET)
+  If Not *this : ProcedureReturn : EndIf
+  Protected GID = *this\GadgetID, mx = GetGadgetAttribute(GID, #PB_Canvas_MouseX), my = GetGadgetAttribute(GID, #PB_Canvas_MouseY)
+  Protected curX, idx, targetIdx, *srcPtr, i
   
-  If IsGadget(*this\EditID) : ProcedureReturn : EndIf 
-  
-  Select et
+  Select EventType()
     Case #PB_EventType_MouseMove
-      If *this\ResizeCol <> -1 ; РЕСАЙЗ
+      If *this\ResizeCol <> -1
         SelectElement(*this\Columns(), *this\ResizeCol)
-        *this\Columns()\Width = Max(20, realMX - *this\ColumnStartX) : RedrawCanvas(*this)
-      ElseIf *this\DragCol <> -1 ; ПЕРЕМЕЩЕНИЕ КОЛОНКИ
-        *this\CurrentDragX = mx - *this\DragMouseX : RedrawCanvas(*this)
-      Else ; НАВЕДЕНИЕ
-        Protected tx = -sx, foundB = -1 : *this\HoverCol = -1
+        *this\Columns()\Width = mx - *this\MoveColX
+        If *this\Columns()\Width < 20 : *this\Columns()\Width = 20 : EndIf
+      ElseIf *this\DragItem <> -1
+        *this\TargetIdx = (my - *this\ColHeight + *this\RowHeight/2) / *this\RowHeight
+        If *this\TargetIdx < 0 : *this\TargetIdx = 0 : EndIf
+        If *this\TargetIdx > ListSize(*this\Items()) : *this\TargetIdx = ListSize(*this\Items()) : EndIf
+      ElseIf *this\DragCol <> -1
+        curX = 0 : *this\TargetIdx = 0
         ForEach *this\Columns()
-          If mx >= tx And mx < tx + *this\Columns()\Width And my < *this\HeaderHeight : *this\HoverCol = ListIndex(*this\Columns()) : EndIf
-          tx + *this\Columns()\Width 
-          If mx > tx - 5 And mx < tx + 5 And my < *this\HeaderHeight : foundB = ListIndex(*this\Columns()) : EndIf
+          curX + *this\Columns()\Width
+          If mx > curX - *this\Columns()\Width/2 : *this\TargetIdx = ListIndex(*this\Columns()) + 1 : EndIf
         Next
-        If foundB <> -1 : SetGadgetAttribute(GID, #PB_Canvas_Cursor, #PB_Cursor_LeftRight) : Else : SetGadgetAttribute(GID, #PB_Canvas_Cursor, #PB_Cursor_Default) : EndIf
-        RedrawCanvas(*this)
+      Else
+        curX = 0 : *this\HoverCol = -1
+        ForEach *this\Columns()
+          curX + *this\Columns()\Width
+          If mx > curX - 5 And mx < curX + 5 And my < *this\ColHeight
+            SetGadgetAttribute(GID, #PB_Canvas_Cursor, #PB_Cursor_LeftRight)
+            *this\HoverCol = ListIndex(*this\Columns()) : Break
+          EndIf
+          If mx >= curX - *this\Columns()\Width And mx < curX And my < *this\ColHeight : *this\HoverCol = ListIndex(*this\Columns()) : EndIf
+        Next
+        If *this\HoverCol = -1 : SetGadgetAttribute(GID, #PB_Canvas_Cursor, #PB_Cursor_Default) : EndIf
       EndIf
+      ReDraw(*this)
       
     Case #PB_EventType_LeftButtonDown
-      If GetGadgetAttribute(GID, #PB_Canvas_Cursor) = #PB_Cursor_LeftRight ; Начало ресайза
-        Protected curX = -sx
-        ForEach *this\Columns() 
-          If mx > curX + *this\Columns()\Width-5 And mx < curX + *this\Columns()\Width+5 
-            *this\ResizeCol = ListIndex(*this\Columns()) : *this\ColumnStartX = curX + sx : Break 
-          EndIf : curX + *this\Columns()\Width 
-        Next
-      ElseIf my < *this\HeaderHeight ; Начало Drag&Drop колонки
-        *this\DragCol = *this\HoverCol : Protected dx = -sx : For i=0 To *this\DragCol-1 : SelectElement(*this\Columns(), i) : dx + *this\Columns()\Width : Next 
-        *this\DragMouseX = mx - dx
-      Else ; Работа со строками
-        ; Проверка клика по ЧЕКБОКСУ
-        If mx >= -sx + 5 And mx <= -sx + 20
-          Protected chkIdx = ((my - *this\HeaderHeight) / *this\RowHeight) + GetGadgetState(*this\ScrollVID)
-          If SelectElement(*this\Items(), chkIdx)
-            *this\Items()\Checked ! 1 : RedrawCanvas(*this) : ProcedureReturn
-          EndIf
+      curX = 0
+      ForEach *this\Columns()
+        curX + *this\Columns()\Width
+        If mx > curX - 5 And mx < curX + 5 And my < *this\ColHeight
+          *this\ResizeCol = ListIndex(*this\Columns()) : *this\MoveColX = curX - *this\Columns()\Width : ProcedureReturn
         EndIf
-        ; Выбор строки
-        Protected idx = ((my - *this\HeaderHeight) / *this\RowHeight) + GetGadgetState(*this\ScrollVID)
+      Next
+      
+      If my < *this\ColHeight 
+        curX = 0
+        ForEach *this\Columns()
+          curX + *this\Columns()\Width
+          If mx < curX : *this\DragCol = ListIndex(*this\Columns()) : *this\MouseOffX = mx - (curX - *this\Columns()\Width) : Break : EndIf
+        Next
+      Else 
+        idx = (my - *this\ColHeight) / *this\RowHeight
         If idx >= 0 And idx < ListSize(*this\Items())
-          If Not (GetGadgetAttribute(GID, #PB_Canvas_Modifiers) & #PB_Canvas_Control) : ForEach *this\Items() : *this\Items()\Selected = 0 : Next : EndIf
-          SelectElement(*this\Items(), idx) : *this\Items()\Selected ! 1 : RedrawCanvas(*this)
+          *this\DragItem = idx
+          *this\MouseOffY = (my - *this\ColHeight) % *this\RowHeight
+          SelectElement(*this\Items(), idx)
+          If mx < 25 : *this\Items()\Checked ! 1 : Else
+            ForEach *this\Items() : *this\Items()\Selected = 0 : Next
+            SelectElement(*this\Items(), idx) : *this\Items()\Selected = 1
+          EndIf
+        EndIf
+      EndIf
+      ReDraw(*this)
+      
+    Case #PB_EventType_LeftButtonUp
+      If *this\DragCol <> -1
+        targetIdx = *this\TargetIdx
+        If targetIdx > *this\DragCol : targetIdx - 1 : EndIf ; Коррекция индекса для MoveElement
+        If targetIdx >= 0 And targetIdx < ListSize(*this\Columns()) And targetIdx <> *this\DragCol
+          SelectElement(*this\Columns(), *this\DragCol) : *srcPtr = @*this\Columns()
+          SelectElement(*this\Columns(), targetIdx) : MoveElement(*this\Columns(), #PB_List_Before, *srcPtr)
+          ForEach *this\Items()
+            SelectElement(*this\Items()\ColText(), *this\DragCol) : *srcPtr = @*this\Items()\ColText()
+            SelectElement(*this\Items()\ColText(), targetIdx) : MoveElement(*this\Items()\ColText(), #PB_List_Before, *srcPtr)
+          Next
         EndIf
       EndIf
       
-    Case #PB_EventType_LeftDoubleClick
-      If GetGadgetAttribute(GID, #PB_Canvas_Cursor) = #PB_Cursor_LeftRight ; АВТОПОДБОР
-        Protected autoX = -sx, cIdx = 0
-        ForEach *this\Columns()
-          If mx > autoX + *this\Columns()\Width-5 And mx < autoX + *this\Columns()\Width+5
-            AutoSizeColumn(*this, cIdx) : RedrawCanvas(*this) : Break
-          EndIf
-          autoX + *this\Columns()\Width : cIdx + 1
-        Next
-      ElseIf my > *this\HeaderHeight ; РЕДАКТИРОВАНИЕ
-        StartEdit(*this, ((my - *this\HeaderHeight) / *this\RowHeight) + GetGadgetState(*this\ScrollVID), *this\HoverCol)
-      EndIf
-      
-        Case #PB_EventType_LeftButtonUp
-      If *this\DragCol <> -1 
-        Protected target = -1, targetX = -sx
-        ; Ищем над какой колонкой отпустили мышь
-        ForEach *this\Columns()
-          If mx >= targetX And mx < targetX + *this\Columns()\Width
-            target = ListIndex(*this\Columns())
-            Break
-          EndIf
-          targetX + *this\Columns()\Width
-        Next
-        
-        ; Если нашли цель - перемещаем и ОБЯЗАТЕЛЬНО обновляем состояние
-        If target <> -1 And target <> *this\DragCol
-          MoveColumnLogic(*this, *this\DragCol, target)
-          UpdateScrollState(*this) ; Чтобы скролл пересчитал границы если надо
+      If *this\DragItem <> -1
+        targetIdx = *this\TargetIdx
+        If targetIdx > *this\DragItem : targetIdx - 1 : EndIf
+        If targetIdx >= 0 And targetIdx < ListSize(*this\Items()) And targetIdx <> *this\DragItem
+          SelectElement(*this\Items(), *this\DragItem) : *srcPtr = @*this\Items()
+          SelectElement(*this\Items(), targetIdx) : MoveElement(*this\Items(), #PB_List_Before, *srcPtr)
         EndIf
       EndIf
       
-      *this\DragCol = -1 
-      *this\ResizeCol = -1 
-      RedrawCanvas(*this)
-
-    Case #PB_EventType_MouseWheel
-      SetGadgetState(*this\ScrollVID, GetGadgetState(*this\ScrollVID) - GetGadgetAttribute(GID, #PB_Canvas_WheelDelta)) : RedrawCanvas(*this)
+      *this\DragCol = -1 : *this\DragItem = -1 : *this\ResizeCol = -1 : ReDraw(*this)
   EndSelect
 EndProcedure
 
-;- --- ПРИМЕР ИСПОЛЬЗОВАНИЯ ---
+; --- ПРИМЕР ---
+CreateImage(0, 16, 16) : StartDrawing(ImageOutput(0)) : Box(0,0,16,16,$00FF00) : StopDrawing()
+OpenWindow(0, 0, 0, 640, 400, "Classic 3-List Drag & Drop + API", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 
-CompilerIf #PB_Compiler_IsMainFile
-  OpenWindow(0, 0, 0, 600, 400, "Advanced Canvas ListIcon", #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
-  AddKeyboardShortcut(0, #PB_Shortcut_Return, 1)
-  
-  Global *L = ListIcon(10, 10, 580, 380, "Имя файла", 200)
-  AddColumn(*L, "Размер", 100, #ALIGN_RIGHT)
-  AddColumn(*L, "Тип", 100, #ALIGN_CENTER)
-  
-  AddItem(*L, "Notes.txt") : SetItemText(*L, 0, 1, "14 KB") : SetItemText(*L, 0, 2, "Text")
-  AddItem(*L, "Image.png") : SetItemText(*L, 1, 1, "2.4 MB") : SetItemText(*L, 1, 2, "Image")
-  AddItem(*L, "Huge_Database_File_Backup.sql") : SetItemText(*L, 2, 1, "1.2 GB") : SetItemText(*L, 2, 2, "SQL")
-  
-  Repeat
-    Define ev = WaitWindowEvent()
-    If ev = #PB_Event_Menu And EventMenu() = 1 : StopEdit(*L) : EndIf
-    If ev = #PB_Event_Gadget
-      Define *obj._s_WIDGET = GetGadgetData(EventGadget())
-      If *obj
-        ; Обработка и скроллов, и холста
-        If EventGadget() = *obj\ScrollVID Or EventGadget() = *obj\ScrollHID
-          RedrawCanvas(*obj)
-        Else
-          DoEvent_ListIcon(*obj)
-        EndIf
-      EndIf
-    EndIf
-  Until ev = #PB_Event_CloseWindow
-CompilerEndIf
+Global *MyList = ListIcon(10, 10, 620, 300, "Имя (Left)", 200)
+AddColumn(*MyList, -1, "Возраст (Center)", 120, 0, #ALIGN_CENTER)
+AddColumn(*MyList, -1, "Город (Right)", 180, -1, #ALIGN_RIGHT)
 
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 158
-; FirstLine = 138
-; Folding = -----------
+AddColumn(*MyList, 1, "add", 180, -1)
+
+AddItem(*MyList, -1, "Александр" + Chr(10) + "31" + Chr(10) + "Москва", 0)
+AddItem(*MyList, -1, "Елена" + Chr(10) + "24" + Chr(10) + "Владивосток")
+AddItem(*MyList, -1, "Дмитрий" + Chr(10) + "45" + Chr(10) + "Тула")
+
+Define i
+For i = 1 To 5;000
+  AddItem(*MyList, -1, "Пользователь " + Str(i) + Chr(10) + Str(Random(60, 18)))
+Next
+
+; Кнопки для теста новых функций
+ButtonGadget(1, 10, 320, 150, 30, "Удалить 1-ю строку")
+ButtonGadget(2, 170, 320, 150, 30, "Удалить 2-ю колонку")
+ButtonGadget(3, 330, 320, 150, 30, "Очистить всё")
+
+ReDraw(*MyList)
+
+Repeat
+  Define Event = WaitWindowEvent()
+  Select Event
+    Case #PB_Event_Gadget
+      Select EventGadget()
+        Case 1 : RemoveItem(*MyList, 0)
+        Case 2 : RemoveColumn(*MyList, 1)
+        Case 3 : ClearItems(*MyList)
+        Default
+          Define *obj = GetGadgetData(EventGadget())
+          If *obj : DoEvents(*obj) : EndIf
+      EndSelect
+  EndSelect
+Until Event = #PB_Event_CloseWindow
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 331
+; FirstLine = 304
+; Folding = ----------
 ; EnableXP
 ; DPIAware

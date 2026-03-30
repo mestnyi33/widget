@@ -630,7 +630,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *beforewidget._s_WIDGET
          *lastwidget._s_WIDGET
          *window._s_WIDGET
-         *parent._s_WIDGET
+         *parent._s_WIDGET[2]    
+         ; parent[0] - Родитель ; Иерархия - физический (где лежит) 
+         ; parent[1] - Владелец ; Иерархия - логический (кто открыл)
+         
+      
          ;
          *gadget._s_WIDGET[3]
          ; \root\gadget[0] - active gadget
@@ -645,8 +649,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; \cursor[1]     ; current cursor
          ; \cursor[2]     ; change cursor 1
          ; \cursor[3]     ; change cursor 2
-         
-       
       EndStructure
       
       ;--     CANVAS
@@ -657,6 +659,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
          *gadgetID                ; canvas handle
+         
+         *next._s_ROOT
+         *prev._s_ROOT
       EndStructure
       
       ;--     ROOT
@@ -701,11 +706,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *root._s_ROOT                 ; enumerate root
          *drawingroot._s_ROOT
          *opened._s_WIDGET             ; last opened-list element
+         *closed._s_WIDGET             ; last opened-list element
          *widget._s_WIDGET             ; enumerate widget
          *popup._s_WIDGET
          
          mouse._s_mouse                ; mouse( )\
-         keyboard._s_keyboard          ; keyboard( )\
+         keyboard._s_KEYBOARD          ; keyboard( )\
          Sticky._s_STICKY              ; sticky( )\
          event._s_EVENT
          
@@ -721,9 +727,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 295
-; FirstLine = 279
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 635
+; FirstLine = 608
 ; Folding = ---0--4---
 ; Optimizer
 ; EnableXP

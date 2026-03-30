@@ -39,7 +39,7 @@ Structure _s_WIDGET
    Gadget.i
    X.l : Y.l : W.l : H.l
    Flags.q
-   ItemHeight.l
+   RowHeight.l
    HoverIndex.l
    DragIndex.l
    ScrollY.l           
@@ -77,7 +77,7 @@ Procedure DrawTree(*this._s_WIDGET)
    
    ; --- РАСЧЕТ НАЧАЛЬНОЙ ПОЗИЦИИ ---
    ; LocalY определяет, где рисовать первую строку с учетом вертикальной прокрутки (ScrollY)
-   Protected LocalY = 2 - (*this\ScrollY * *this\ItemHeight)
+   Protected LocalY = 2 - (*this\ScrollY * *this\RowHeight)
    Protected VisibleCount = 0
    Protected Index
    
@@ -91,8 +91,8 @@ Procedure DrawTree(*this._s_WIDGET)
       ; --- ОПТИМИЗАЦИЯ ТУТ ---
       ; Если элемент находится ВНЕ зоны видимости экрана - 
       ; мы просто обновляем координату LocalY и идем к следующему, ничего не рисуя.
-      If LocalY + *this\ItemHeight <= 0 Or LocalY >= CanvasH
-         LocalY + *this\ItemHeight
+      If LocalY + *this\RowHeight <= 0 Or LocalY >= CanvasH
+         LocalY + *this\RowHeight
          Continue
       EndIf
       
@@ -101,22 +101,22 @@ Procedure DrawTree(*this._s_WIDGET)
       If *this\Items()\State & #PB_Tree_Selected : BgColor = $F0D090 : EndIf
       If Index = *this\HoverIndex : BgColor = $A0A0A0 : EndIf
       If Index = *this\DragIndex : BgColor = $F5F5F5 : EndIf
-      Box(0, LocalY, CanvasW, *this\ItemHeight, BgColor)
+      Box(0, LocalY, CanvasW, *this\RowHeight, BgColor)
       
       ; Базовый отступ текста/иконок в зависимости от уровня вложенности (sublevel)
       Protected OffsetX = *this\Items()\sublevel * #TREE_Indent + #TREE_Padding
       Protected LineColor = $D0D0D0 ; Цвет линий иерархии
-      Protected MidY = LocalY + *this\ItemHeight / 2 ; Середина строки по вертикали
+      Protected MidY = LocalY + *this\RowHeight / 2 ; Середина строки по вертикали
       
       
       ; Подсветка Hover (сделай цвет чуть светлее выделения)
       If Index = *this\HoverIndex
-        ; Box(0, LocalY, CanvasW, *this\ItemHeight, $F5F5F5) ; Очень светло-серый
+        ; Box(0, LocalY, CanvasW, *this\RowHeight, $F5F5F5) ; Очень светло-серый
       EndIf
       ; --- ПОДСВЕТКА ВЫДЕЛЕНИЯ ---
       If *this\Items()\State & #PB_Tree_Selected
          ; Рисуем серый прямоугольник под выделенным элементом
-        ; Box(0, LocalY, CanvasW, *this\ItemHeight, $EAEAEA)
+        ; Box(0, LocalY, CanvasW, *this\RowHeight, $EAEAEA)
       EndIf
       
       ; --- БЛОК ОТРИСОВКИ ЛИНИЙ ИЕРАРХИИ ---
@@ -132,13 +132,13 @@ Procedure DrawTree(*this._s_WIDGET)
          ; Рисуем её всегда, кроме самого первого элемента в дереве, 
          ; чтобы линия не торчала над самым верхним корнем.
          If Index > 0
-            Line(LineX, LocalY, 1, *this\ItemHeight / 2, LineColor)
+            Line(LineX, LocalY, 1, *this\RowHeight / 2, LineColor)
          EndIf
          
          ; 3. Вертикальная линия ВНИЗ (Связующая)
          ; Если флаг Verticalline = 1, значит ниже есть "брат" того же уровня, тянем линию дальше
          If *this\Items()\Verticalline 
-            Line(LineX, MidY + 1, 1, *this\ItemHeight / 2, LineColor)
+            Line(LineX, MidY + 1, 1, *this\RowHeight / 2, LineColor)
          EndIf
          
          ; 4. ОТРИСОВКА СКВОЗНЫХ ЛИНИЙ (для уровней выше текущего)
@@ -148,7 +148,7 @@ Procedure DrawTree(*this._s_WIDGET)
             While *p
                If *p\Verticalline
                   Protected pX = (*p\sublevel * #TREE_Indent + #TREE_Padding) - #TREE_LineOffset
-                  Line(pX, LocalY, 1, *this\ItemHeight, LineColor)
+                  Line(pX, LocalY, 1, *this\RowHeight, LineColor)
                EndIf
                *p = *p\parent
             Wend
@@ -159,7 +159,7 @@ Procedure DrawTree(*this._s_WIDGET)
       If Not (*this\Flags & #PB_Tree_NoButtons)
          If *this\Items()\Childrens ; Рисуем кнопку только если у элемента есть дети
             Protected HalfSize = #TREE_ButtonSize / 2
-            Protected btnX = OffsetX, btnY = LocalY + (*this\ItemHeight - #TREE_ButtonSize) / 2
+            Protected btnX = OffsetX, btnY = LocalY + (*this\RowHeight - #TREE_ButtonSize) / 2
             ; Квадратик кнопки
             Box(btnX, btnY, #TREE_ButtonSize, #TREE_ButtonSize, $A0A0A0) : Box(btnX+1, btnY+1, #TREE_ButtonSize-2, #TREE_ButtonSize-2, $FFFFFF)
             ; Замени отрисовку линий внутри кнопки на расчетные значения:
@@ -176,14 +176,14 @@ Procedure DrawTree(*this._s_WIDGET)
       
       ; --- ОТРИСОВКА ТЕКСТА ---
       ; ВНИМАНИЕ: цвет текста $FFFFFF (белый) на белом фоне будет не виден!
-      DrawText(OffsetX, LocalY + (*this\ItemHeight - TextHeight("A"))/2, *this\Items()\Text, 0, $FFFFFF)
+      DrawText(OffsetX, LocalY + (*this\RowHeight - TextHeight("A"))/2, *this\Items()\Text, 0, $FFFFFF)
       
       ; Переходим к следующей Y-координате для следующей строки
-      LocalY + *this\ItemHeight
+      LocalY + *this\RowHeight
    Next
    
    ; --- ОТРИСОВКА СКРОЛЛБАРА ---
-   Protected MaxRows = CanvasH / *this\ItemHeight
+   Protected MaxRows = CanvasH / *this\RowHeight
    If VisibleCount > MaxRows
       ; Рассчитываем высоту и позицию ползунка
       Protected sH = (MaxRows * CanvasH) / VisibleCount
@@ -199,7 +199,8 @@ EndProcedure
 Procedure.i Tree(X.l, Y.l, Width.l, Height.l, Flag.q = 0)
    Protected *this._s_WIDGET = AllocateStructure(_s_WIDGET)
    If *this
-      *this\X=X : *this\Y=Y : *this\W=Width : *this\H=Height : *this\Flags=Flag : *this\ItemHeight=24 
+      *this\X=X : *this\Y=Y : *this\W=Width : *this\H=Height : *this\Flags=Flag 
+      *this\RowHeight=24 
       *this\HoverIndex = -1
       *this\Gadget = CanvasGadget(#PB_Any, X, Y, Width, Height, #PB_Canvas_Keyboard | #PB_Canvas_Container)
       SetGadgetData(*this\Gadget, *this)
@@ -392,7 +393,7 @@ Procedure TreeEvents(*this._s_WIDGET, EventType)
       Protected VisibleCount = 0
       ForEach *this\Items() : If *this\Items()\IsVisible : VisibleCount + 1 : EndIf : Next
       
-      Protected MaxVisibleRows = *this\H / *this\ItemHeight
+      Protected MaxVisibleRows = *this\H / *this\RowHeight
       *this\ScrollY - Wheel
       
       ; Ограничения: не выше начала и не ниже последнего элемента
@@ -406,7 +407,7 @@ Procedure TreeEvents(*this._s_WIDGET, EventType)
    
    If EventType = #PB_EventType_MouseMove
       Protected OldHover = *this\HoverIndex
-      *this\HoverIndex = (MY - 2) / *this\ItemHeight + *this\ScrollY
+      *this\HoverIndex = (MY - 2) / *this\RowHeight + *this\ScrollY
       
       ; Ограничиваем, чтобы не вылетало за пределы списка
       If *this\HoverIndex < 0 Or *this\HoverIndex >= ListSize(*this\Items())
@@ -424,10 +425,10 @@ Procedure TreeEvents(*this._s_WIDGET, EventType)
  EndIf      
  
    If EventType = #PB_EventType_LeftButtonDown
-      Protected CurY = 2 - (*this\ScrollY * *this\ItemHeight)
+      Protected CurY = 2 - (*this\ScrollY * *this\RowHeight)
       ForEach *this\Items()
          If Not *this\Items()\IsVisible : Continue : EndIf
-         If MY >= CurY And MY < CurY + *this\ItemHeight
+         If MY >= CurY And MY < CurY + *this\RowHeight
             Protected ClickIdx = ListIndex(*this\Items())
             Protected SX = *this\Items()\sublevel * 22 + 5
             If MX < SX + 20 And Not (*this\Flags & #PB_Tree_NoButtons) ; Зона +/-
@@ -443,7 +444,7 @@ Procedure TreeEvents(*this._s_WIDGET, EventType)
             EndIf
             DrawTree(*this) : ProcedureReturn ClickIdx
          EndIf
-         CurY + *this\ItemHeight
+         CurY + *this\RowHeight
       Next
    EndIf
    ProcedureReturn -1
@@ -578,10 +579,9 @@ Repeat
       TreeEvents(*T, EventType())
    EndIf
 Until Ev = #PB_Event_CloseWindow
-
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 90
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 446
+; FirstLine = 22
 ; Folding = --------------
 ; EnableXP
 ; DPIAware

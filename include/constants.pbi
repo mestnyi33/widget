@@ -777,8 +777,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 777
-; FirstLine = 749
+; CursorPosition = 345
+; FirstLine = 329
 ; Folding = ----
 ; Optimizer
 ; EnableXP

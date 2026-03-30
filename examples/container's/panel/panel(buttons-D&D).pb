@@ -27,7 +27,7 @@ Global TargetItem, TargetLevel
 #PrivateType = 0
 #PB_Item_Sublevel = #PB_Tree_SubLevel
 
-Procedure Events( )
+Procedure all_events( )
   Protected i, Text$, Level, CountItems
   
   If EventWidget( ) = *Panel                     
@@ -235,15 +235,15 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
   ; это позволяет переместить наш частный тип с помощью операции перемещения
   EnableDrop(*Panel, #PB_Drop_Private, #PB_Drag_Move, #PrivateType)
   
-  Bind( *Panel, @events( ) )
+  Bind( *Panel, @all_events( ) )
   Repeat
     Event = WaitWindowEvent()
   Until Event = #PB_Event_CloseWindow
 EndIf
 
 End
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 235
-; FirstLine = 203
-; Folding = --
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 237
+; FirstLine = 33
+; Folding = +-
 ; EnableXP

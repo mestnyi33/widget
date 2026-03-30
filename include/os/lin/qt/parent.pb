@@ -1,4 +1,17 @@
 ﻿EnableExplicit
+; Изменение заголовка:
+; QtScript(~"window("+w+").windowTitle = 'Новый заголовок'")
+; Изменение видимости:
+; QtScript(~"window("+w+").visible = false")
+; Управление размером:
+; QtScript(~"window("+w+").setFixedSize(400, 300)")
+; Фокус ввода:
+; QtScript(~"window("+w+").setFocus()")
+; Прозрачность (Opacity):
+; QtScript(~"window("+w+").setWindowOpacity(0.5)") 
+; Qt Forum
+; Qt Forum
+; +2
 
 Procedure SetTextWordWrap( g,s )
   QtScript(~"gadget("+g+").wordWrap = "+s+"")
@@ -41,7 +54,8 @@ If OpenWindow(0, 0, 0, 250, 200, "TextGadget Test", #PB_Window_SystemMenu | #PB_
    
   Until Event = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 5.72 (Linux - x64)
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = --
 ; EnableXP
 ; SubSystem = qt

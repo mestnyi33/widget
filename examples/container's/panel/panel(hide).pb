@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
   Global *c, *s
   Global ._s_widget *w,*w1,*w2, *hide, *show ;
   
-  Procedure Events()
+  Procedure all_events()
     Select WidgetEvent( )
       Case #__Event_LeftClick
         
@@ -36,8 +36,8 @@ CompilerIf #PB_Compiler_IsMainFile
         ClearDebugOutput( )
         
         If StartEnum(*w1);Root())
-          If Not Hide(widget( )) ;And GetParent(widget()) = *w1
-            Debug " class - " + widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
+          If Not Hide(Widget( )) ;And GetParent(widget()) = *w1
+            Debug " class - " + Widget( )\Class ;+" ("+ widget( )\item +" - parent_item)"
           EndIf
           StopEnum( )
         EndIf
@@ -73,10 +73,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
       AddItem(*w1, -1, "Под-Панель 2")
       *hide = Button( 5, 5, 55, 22, "hide_2")
-      Bind(*hide, @Events())
+      Bind(*hide, @all_events())
       *show = Button( 5, 30, 55, 22, "show_2")
       Disable(*show, 1)
-      Bind(*show, @Events())
+      Bind(*show, @all_events())
       
       *c=Container(110,5,150,155, #PB_Container_Flat) 
       Define *p = Panel(10,5,150,65) 
@@ -149,9 +149,9 @@ CompilerIf #PB_Compiler_IsMainFile
     
   EndIf   
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 36
-; Folding = --
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 75
+; FirstLine = 37
+; Folding = 0-
 ; EnableXP
 ; DPIAware

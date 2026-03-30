@@ -5,7 +5,7 @@ EnableExplicit
 UseWidgets( )
 Global *container._s_WIDGET
 
-Procedure event_button_click()
+Procedure add_buttons_events()
    Define *g, *panel = WidgetEventData()
    *g = GetItemData( *panel, GetState( *panel))
    SetState(*panel, GetData(EventWidget()))
@@ -16,20 +16,20 @@ Procedure event_button_click()
    Disable(EventWidget(), #True)
 EndProcedure
 
-Procedure event_panel_change( )
-   Debug ""+ WidgetEventItem() +" change "+ GetItemData(widget(), WidgetEventItem())
-EndProcedure
-
-Procedure AddButtons( item, X,Y,Text.s, *data )
+Procedure add_buttons( item, X,Y,Text.s, *data )
    Button(X, Y, 80, 24, Text)
-   SetData(widget( ), item )
+   SetData(Widget( ), item )
    If *data
-      SetItemData(*data, item, widget())
+      SetItemData(*data, item, Widget())
       If item = GetState( *data)
-         Post( widget( ), #__event_LeftClick )
+         Post( Widget( ), #__event_LeftClick )
       EndIf
    EndIf
-   Bind(widget(), @event_button_click(), #__event_LeftClick, #PB_All, *data )
+   Bind(Widget(), @add_buttons_events(), #__event_LeftClick, #PB_All, *data )
+EndProcedure
+
+Procedure event_panel_change( )
+   Debug ""+ WidgetEventItem() +" change "+ GetItemData(Widget(), WidgetEventItem())
 EndProcedure
 
 ;\\
@@ -58,15 +58,15 @@ If Open(0, 0, 0, 300, 200, "PanelGadget", #PB_Window_SystemMenu | #PB_Window_Scr
   ; SetState( *container, 1)
   
   ;\\ 
-  AddButtons(0, 300-285, 200-32,"Page 0", *container) 
-  AddButtons(1, 300-190, 200-32,"Page 1", *container)
-  AddButtons(2, 300-95, 200-32,"Page 2", *container)
+  add_buttons(0, 300-285, 200-32,"Page 0", *container) 
+  add_buttons(1, 300-190, 200-32,"Page 1", *container)
+  add_buttons(2, 300-95, 200-32,"Page 2", *container)
   
   ;
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 8
-; FirstLine = 2
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 34
+; FirstLine = 6
 ; Folding = --
 ; EnableXP

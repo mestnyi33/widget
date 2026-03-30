@@ -1,8 +1,4 @@
-﻿; Это полноценный Canvas GUI Framework.
-; Padding.i      ; Внутренний отступ контейнера
-; Spacing.i      ; Расстояние между элементами внутри
-
-EnableExplicit
+﻿EnableExplicit
 
 ; Прототип функции, которую ты будешь привязывать через Bind
 Prototype.i ProtoOnEvent(*this, Type.i)
@@ -94,23 +90,27 @@ Structure _s_COORDINATE Extends _s_SIZE
    Y.l
 EndStructure
 
-Structure _s_WIDGET Extends _s_COORDINATE
-   class.s
-   Type.i
-   
-   *root._s_ROOT
-   *parent._s_WIDGET
-   
-   color.i
-   name.s
-   OnEvent.ProtoOnEvent[#__event] ; Указатель на процедуру событий
-EndStructure
-
 Structure _s_MOUSE Extends _s_POINT
    *widget._s_WIDGET[3] ; entered - [0]; leaved - [1]; pressed - [2]
 EndStructure
 Structure _s_KEYBOARD  ; Ok
    *active._S_WIDGET   ; keyboard focus element ; GetActive( )\
+EndStructure
+
+Structure _s_WIDGET Extends _s_COORDINATE
+   mask.q
+   class.s
+   Type.i
+   color.i
+   name.s
+   *address
+   
+   *root._s_ROOT
+   *parent._s_WIDGET
+   *first._s_WIDGET ; Указатель на первый виджет в глобальном списке для этого холста
+   *last._s_WIDGET  ; Указатель на последний виджет этого холста
+   
+   OnEvent.ProtoOnEvent[#__event] ; Указатель на процедуру событий
 EndStructure
 
 Structure _s_CANVAS
@@ -124,18 +124,20 @@ EndStructure
 
 Structure _s_ROOT Extends _s_WIDGET
    Canvas._s_CANVAS
-   List Widget._s_WIDGET()
 EndStructure
 
 Structure _s_GUI
    *root._s_ROOT
-   *opened._s_WIDGET             ; last opened-list element
-         
+   ; *opened._s_WIDGET             ; last opened-list element
+   
    mouse._s_MOUSE                ; mouse( )\
    keyboard._s_KEYBOARD          ; keyboard( )\
+   List *OpenList._s_WIDGET()
+   List Widget._s_WIDGET()
 EndStructure
 
 Global GUI._s_GUI
+Macro widgets(): GUI\Widget(): EndMacro
 
 Macro Root()
    GUI\root
@@ -148,7 +150,7 @@ Macro PrevRoot()
 EndMacro
 
 Macro Opened()
-   GUI\opened
+   GUI\OpenList( ) ;opened
 EndMacro
 Macro Entered()
    GUI\mouse\widget[0]
@@ -163,22 +165,114 @@ Macro GetActive()
    GUI\keyboard\active
 EndMacro
 
+
+Macro StartEnum(_parent_ptr_)
+   Bool(_parent_ptr_ And _parent_ptr_\first)
+   ChangeCurrentElement(widgets(), _parent_ptr_\first)
+   Repeat 
+      If _parent_ptr_\root
+         If widgets()\root = _parent_ptr_\root\NextRoot( )
+            Break
+         EndIf
+      Else
+         If widgets()\root = _parent_ptr_\NextRoot( )
+            Break
+         EndIf
+      EndIf
+   EndMacro
+   Macro StopEnum( )
+   Until Not NextElement(widgets())
+EndMacro
+
+Macro ChangeCurrentCanvas( _canvasID_, _change_root_ = 1 )
+   Root( ) = GetGadgetData( ) ; FindMapElement( GUI\roots( ), Str( _canvasID_ ) )
+EndMacro
+
 Declare Draw(*root._s_ROOT)
 
 ;-
+CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+   CompilerIf Subsystem("Qt")
+      ; Импортируем нужные функции из библиотеки Qt
+      ImportC "-lQt5Core" ; Для систем с Qt5 (стандарт для текущих версий PB)
+                          ; QObject::setProperty(const char *name, const QVariant &value)
+                          ; Мы упрощаем вызов, так как PB передает указатели
+         q_object_set_property(obj.i, name.p-utf8, value.i) 
+         q_object_get_property(obj.i, name.p-utf8)
+      EndImport
+   CompilerEndIf
+CompilerEndIf
+
+Procedure SetOSData(handle.i, Value.i)
+   CompilerSelect #PB_Compiler_OS
+      CompilerCase #PB_OS_Windows
+         SetProp_(handle, "MyOSData", Value)
+         
+      CompilerCase #PB_OS_Linux
+         CompilerIf Subsystem("Qt")
+           ; QtScript(~"qt.object("+Str(handle)+").setProperty('MyOSData', "+Str(Value)+")")
+           q_object_set_property(handle, "MyOSData", Value)
+         CompilerElse
+            g_object_set_data_(handle, "MyOSData", Value)
+         CompilerEndIf
+         
+      CompilerCase #PB_OS_MacOS
+         objc_setAssociatedObject_(handle, "MyOSData", Value, 0)
+   CompilerEndSelect
+EndProcedure
+
+Procedure.i GetOSData(handle.i)
+   CompilerSelect #PB_Compiler_OS
+      CompilerCase #PB_OS_Windows
+         ProcedureReturn GetProp_(handle, "MyOSData")
+         
+      CompilerCase #PB_OS_Linux
+         CompilerIf Subsystem("Qt")
+         ; ProcedureReturn Val(QtScript(~"qt.object("+Str(handle)+").property('MyOSData')"))
+          ProcedureReturn q_object_get_property(handle, "MyOSData")
+         CompilerElse
+            ProcedureReturn g_object_get_data_(handle, "MyOSData")
+         CompilerEndIf
+         
+      CompilerCase #PB_OS_MacOS
+         ProcedureReturn objc_getAssociatedObject_(handle, "MyOSData")
+   CompilerEndSelect
+EndProcedure
+
+; Получить реальный X на холсте (с учетом всех родителей)
 Procedure.i X(*this._s_WIDGET)
-   Protected X.i = *this\x
-   ; Если есть родитель, рекурсивно прибавляем его X
-   If *this\parent
-      X + X(*this\parent)
-   EndIf
+   Protected X = *this\x
+   Protected *p._s_WIDGET = *this\parent
+   While *p
+      X + *p\x
+      *p = *p\parent
+   Wend
    ProcedureReturn X
 EndProcedure
 
 Procedure.i Y(*this._s_WIDGET)
+   Protected Y = *this\y
+   Protected *p._s_WIDGET = *this\parent
+   While *p
+      Y + *p\y
+      *p = *p\parent
+   Wend
+   ProcedureReturn Y
+EndProcedure
+
+Procedure.i AbstractX(*this._s_WIDGET)
+   Protected X.i = *this\x
+   ; Если есть родитель, рекурсивно прибавляем его X
+   If *this\parent
+      X + AbstractX(*this\parent)
+   EndIf
+   ProcedureReturn X
+EndProcedure
+
+Procedure.i AbstractY(*this._s_WIDGET)
    Protected Y.i = *this\y
    If *this\parent
-      Y + Y(*this\parent)
+      Y + AbstractY(*this\parent)
    EndIf
    ProcedureReturn Y
 EndProcedure
@@ -330,100 +424,133 @@ EndProcedure
 
 ;-
 Procedure.i SetParent(*this._s_WIDGET, *parent._s_WIDGET, tabindex.l = #PB_Default)
-   Protected *r._s_ROOT, *old_r._s_ROOT
-   Protected *new._s_WIDGET
+   Protected *r._s_ROOT, *old_r._s_ROOT, *new._s_WIDGET
    
-   ; 1. Определяем целевой холст
+   ; 1. Определяем целевой холст (root)
    If *parent
-      If *parent\root
-         *r = *parent\root
-      Else
-         *r = *parent
-      EndIf
+      If *parent\root : *r = *parent\root : Else : *r = *parent : EndIf
    Else
       *r = Root() 
    EndIf
-   
    If Not *r : ProcedureReturn 0 : EndIf
    
-   ; 2. ЛОГИКА ПЕРЕНОСА ИЛИ СОЗДАНИЯ
-   If *this And *this\root ; Виджет уже существует в каком-то списке
+   ; 2. ЛОГИКА ПЕРЕМЕЩЕНИЯ (Вместо создания копий)
+   If *this And *this\root
       *old_r = *this\root
       
       If *old_r <> *r
-         ; --- ПЕРЕЕЗД НА ДРУГОЙ КАНВАС ---
-         PushListPosition(*old_r\Widget())
-         ChangeCurrentElement(*old_r\Widget(), *this)
+         PushListPosition(widgets())
+         ChangeCurrentElement(widgets(), *this) ; Встаем на сам виджет в списке
          
-         ; Создаем копию в новом холсте
-         *new = AddElement(*r\Widget())
-         CopyStructure(*this, *new, _s_WIDGET)
+         ; --- ОБНОВЛЯЕМ УКАЗАТЕЛИ СТАРОГО ХОЛСТА ---
+         ; Если виджет был единственным, первым или последним в своем старом холсте
+         If *old_r\first = *this
+            NextElement(widgets())
+            If widgets()\root = *old_r : *old_r\first = @widgets() : Else : *old_r\first = 0 : EndIf
+            ChangeCurrentElement(widgets(), *this) ; Возвращаемся на *this
+         EndIf
          
-         ; Удаляем оригинал из старого холста
-         DeleteElement(*old_r\Widget())
-         PopListPosition(*old_r\Widget())
+         If *old_r\last = *this
+            PreviousElement(widgets())
+            If widgets()\root = *old_r : *old_r\last = @widgets() : Else : *old_r\last = 0 : EndIf
+            ChangeCurrentElement(widgets(), *this) ; Возвращаемся на *this
+         EndIf
          
-         ; ВАЖНО: Перерисовываем старый холст, так как виджет оттуда исчез
-         Draw(*old_r)
+         ; --- ПЕРЕНОСИМ В НОВЫЙ ХОЛСТ ---
+         If *r\last
+            ; Вставляем сразу после последнего виджета нового холста
+            MoveElement(widgets(), #PB_List_After, *r\last)
+         Else
+            ; Если новый холст пуст — в самый конец общего списка
+            LastElement(widgets())
+            MoveElement(widgets(), #PB_List_After)
+            *r\first = *this
+         EndIf
          
-         *this = *new 
+         *r\last = *this ; Теперь этот виджет стал последним в новом холсте
+         PopListPosition(widgets())
+         
+         Draw(*old_r) ; Перерисовываем старый (откуда ушли)
       EndIf
    Else
-      ; --- СОЗДАНИЕ НОВОГО (из Create) ---
-      *new = AddElement(*r\Widget())
-      If *this : CopyStructure(*this, *new, _s_WIDGET) : EndIf
-      *this = *new
+      ; --- ЕСЛИ ВИДЖЕТА ЕЩЕ НЕТ В СПИСКЕ (Новое создание) ---
+      If *r\last
+         ; Если у холста уже есть виджеты, встаем на последний из них
+         ChangeCurrentElement(widgets(), *r\last)
+         ; Добавляем новый СРАЗУ ПОСЛЕ него
+         *new = AddElement(widgets())
+      Else
+         ; Если это самый первый виджет для этого холста
+         LastElement(widgets()) ; Идем в конец общего списка
+         *new = AddElement(widgets())
+         *r\first = *new   ; Запоминаем как начало секции холста
+      EndIf
+      
+      ; Копируем данные из временного шаблона *this в новый элемент списка
+      CopyStructure(*this, *new, _s_WIDGET) 
+      
+      *r\last = *new ; Новый элемент теперь последний для этого холста
+      *this = *new   ; Теперь работаем с элементом из списка
    EndIf
    
    ; 3. ОБНОВЛЯЕМ ИЕРАРХИЮ
    *this\root = *r
-   If *parent
-      Select *parent\Type
-         Case #__type_Container, #__type_ScrollArea, #__type_Panel, #__type_Window, #__type_Root
-            *this\parent = *parent
-         Default
-            *this\parent = *parent\parent 
-      EndSelect
-   Else
-      *this\parent = 0
-   EndIf
+   *this\parent = *parent
    
-   ; 4. ПЕРЕРИСОВЫВАЕМ НОВЫЙ ХОЛСТ
-   ; После того как виджет прописан, обновляем его текущий root
+   ; 4. ПЕРЕРИСОВЫВАЕМ
    Draw(*this\root)
    
    ProcedureReturn *this
 EndProcedure
 
 ;-
-Procedure AtPoint(*root._s_ROOT, mx,my)
-   ForEach *root\Widget()
-      If mx >= *root\Widget()\x And mx <= *root\Widget()\x + *root\Widget()\width And 
-         my >= *root\Widget()\y And my <= *root\Widget()\y + *root\Widget()\height
-         ProcedureReturn *root\Widget()
+Procedure AtPoint(*root._s_ROOT, mx, my)
+   Protected result
+   ; Перебор с конца в начало (LastElement -> Previous), 
+   ; чтобы верхние виджеты ловили клик первыми
+   PushListPosition(widgets())
+   LastElement(widgets())
+   Repeat  
+      If widgets()\root = *root
+         If mx >= widgets()\x And mx <= widgets()\x + widgets()\width And 
+            my >= widgets()\y And my <= widgets()\y + widgets()\height
+            result = widgets()
+         EndIf
       EndIf
-   Next
-   ProcedureReturn 0
+   Until Not PreviousElement(widgets())
+   PopListPosition(widgets())
+   ProcedureReturn result
 EndProcedure
 
 ; --- Отрисовка ---
 Procedure Draw(*root._s_ROOT)
-   ; Рисуем в тот холст, который сейчас "подставлен" в root
+   Protected color.l
+   
    If StartDrawing(CanvasOutput(*root\Canvas\gadget))
       Box(0, 0, OutputWidth(), OutputHeight(), $F0F0F0) 
       
-      ForEach *root\Widget()
-         Box(*root\Widget()\x, *root\Widget()\y, *root\Widget()\Width, *root\Widget()\Height, *root\Widget()\color)
-         
-         ; Если этот виджет активен - рисуем рамку
-         If Entered( ) = *root\Widget()
-            Box( *root\Widget()\x, *root\Widget()\y, *root\Widget()\Width, *root\Widget()\Height, $00FF00) ; Синяя рамка
-         EndIf
-         ; Если этот виджет активен - рисуем рамку
-         If GetActive( ) = *root\Widget()
-            Box( *root\Widget()\x, *root\Widget()\y, *root\Widget()\Width, *root\Widget()\Height, $0000FF) ; Синяя рамка
-         EndIf
-      Next
+      ; Прыгаем в начало секции этого холста
+      If *root\first 
+         ChangeCurrentElement(widgets(), *root\first)
+         Repeat 
+            If GetActive( ) = widgets()
+               color = $0000FF
+            ElseIf Entered( ) = widgets()
+               color = $00FF00 
+            Else
+               color = widgets()\color
+            EndIf
+            
+            Box( widgets()\x, widgets()\y, widgets()\Width, widgets()\Height, color) ; Синяя рамка
+            DrawText( widgets()\x, widgets()\y, widgets()\name, $000000, color )
+            
+            ; Если дошли до последнего виджета этого окна — выходим
+            If widgets() = *root\last
+               Break
+            EndIf
+         Until Not NextElement(widgets())
+      EndIf
+      
       StopDrawing()
    EndIf
 EndProcedure
@@ -438,7 +565,7 @@ Procedure ReDraw(*root._s_ROOT)
    
    ; 2. Рисуем все элементы по порядку (снизу вверх)
    While *r
-      ; Debug "Отрисовка холста: " + *r + " (Имя: " + *r\Widget()\name + ")"
+      ; Debug "Отрисовка холста: " + *r + " (Имя: " + widgets()\name + ")"
       Draw(*r)
       *r = *r\NextRoot( ) ; Переходим к следующему
    Wend
@@ -463,27 +590,57 @@ Procedure.i Create(*parent._s_WIDGET, X, Y, Width, Height, title.s, color, Type 
    ProcedureReturn SetParent(@tmp, *parent)
 EndProcedure
 
-
 Procedure Button(X,Y,Width,Height, Text.s, Flags.q=0)
-   
+   ProcedureReturn Create(Opened(), X, Y, Width, Height, Text.s, $CCCCCC, #__type_Button )
 EndProcedure
 
 Procedure Container(X,Y,Width,Height, Flags.q=0)
+   ProcedureReturn Create(Opened(), X, Y, Width, Height, "", $CCCCCC, #__type_Container )
+EndProcedure
+
+; Procedure.i _OpenList(*this._s_WIDGET, item.l = 0)
+;    If Not *this : ProcedureReturn #False : EndIf
+;    
+;    ; Если уже есть открытый контекст — запоминаем его как "предыдущий"
+;    If Opened() And Opened() <> *this
+;       *this\parent[1] = Opened()
+;    EndIf
+; 
+;    ; Устанавливаем текущий активный элемент
+;    Opened() = *this
+;    ProcedureReturn #True
+; EndProcedure
+; 
+; Procedure.i _CloseList()
+;    ; Если у текущего элемента есть записанный "путь назад" — идем по нему
+;    If Opened() And Opened()\parent[1]
+;       Opened() = Opened()\parent[1]
+;    EndIf
+;    
+;    ProcedureReturn Opened()
+; EndProcedure
+
+Procedure.i OpenList(*this._s_WIDGET, item.l = 0)
+   If Not *this : ProcedureReturn #False : EndIf
    
-EndProcedure
-
-Procedure OpenList(*this._s_WIDGET, item.i = 0)
-   ; Запоминаем, что теперь все новые виджеты будут дочерними для *this
+   ; Добавляем новый "слой" в стек и записываем туда адрес виджета
+   AddElement(Opened())
    Opened() = *this
+   
+   ProcedureReturn #True
 EndProcedure
 
-Procedure CloseList()
-   ; Возвращаемся на уровень выше или в корень
-   If Opened()
-      Opened() = Opened()\parent
+Procedure.i CloseList()
+   ; Если в стеке есть элементы — удаляем текущий (последний)
+   If ListSize(Opened()) > 1
+      DeleteElement(Opened())
+      ; Переходим на предыдущий элемент стека
+      LastElement(Opened())
    EndIf
+   
+   ; Теперь Opened() указывает на того, кто был в стеке до этого
+   ProcedureReturn Opened()
 EndProcedure
-
 
 ;-
 Procedure Close( *root._s_ROOT )
@@ -499,8 +656,8 @@ Procedure Close( *root._s_ROOT )
       ; 2. Удаляем всех по очереди
       While *root
          *next = *root\NextRoot( ) ; ЗАПОМИНАЕМ следующий адрес ДО удаления
-         Close(*root)       ; Теперь удаляем текущий
-         *root = *next      ; Переходим к запомненному адресу
+         Close(*root)              ; Теперь удаляем текущий
+         *root = *next             ; Переходим к запомненному адресу
       Wend
       
    Else
@@ -532,7 +689,7 @@ Procedure Close( *root._s_ROOT )
    EndIf
 EndProcedure
 
-Procedure Open( window, X,Y,Width,Height, title.s )
+Procedure Open( window, X,Y,Width,Height, title.s, flags.q=0 )
    Protected *root._s_ROOT = AllocateStructure(_s_ROOT)
    If IsWindow(window)
       *root\Canvas\window = window
@@ -541,7 +698,7 @@ Procedure Open( window, X,Y,Width,Height, title.s )
       *root\Canvas\window = OpenWindow(#PB_Any, X,Y,Width,Height, title)
       *root\Canvas\gadget = CanvasGadget(#PB_Any, 0, 0, Width,Height)
    EndIf
-   SetGadgetData(*root\Canvas\gadget, *root )
+   SetOsData(GadgetID(*Root\Canvas\gadget), *root )
    
    Static i:*Root\class = Str(i):i+1
    
@@ -554,16 +711,18 @@ Procedure Open( window, X,Y,Width,Height, title.s )
    EndIf
    Root( ) = *root 
    
+   ; --- ИЕРАРХИЯ ОТКРЫТИЯ (OpenList) ---
+   OpenList(*root)
+   
    ProcedureReturn *root
 EndProcedure
-
 
 ;-
 Procedure   EventHandler( EvGadget = - 1, EvType = - 1, eventdata = 0 )
    Protected mx,my
    ; 2. ОБРАБОТКА (Клик по виджету)
    If EvType = #PB_EventType_MouseEnter
-      Root( ) = GetGadgetData(EvGadget)
+      Root( ) = GetOsData(GadgetID(EvGadget))
    EndIf
    
    If Root( )
@@ -612,7 +771,7 @@ Procedure   EventHandler( EvGadget = - 1, EvType = - 1, eventdata = 0 )
 EndProcedure
 
 ; FIXED CANVAS EVENTS
-IncludeFile "FCE.pbi"
+;IncludeFile "widget/FCE.pbi"
 
 Procedure all_events(*this._s_WIDGET, event)
    
@@ -637,31 +796,19 @@ EndProcedure
 
 
 Global *r, *r1,*r2,*r3,*r4,*r5, *g
-; --- Создаем 2 окна ---
-*r = Open(#PB_Any, 100, 200, 200, 200, "Окно 1")
-Create(*r, 20,20,60,60,"Квадрат окна 1", $CCCCCC)
-; Draw(*r)
-
-*r = Open(#PB_Any, 350, 200, 200, 200, "Окно 2")
-Create(*r, 100,100,80,40,"Квадрат окна 2", $AAAAAA)
-; Draw(*r)
-
-; В одном окне
-Global win = OpenWindow(#PB_Any, 600, 100, 410, 410, "4 Холста в одном окне")
-
-; Создаем 4 независимых корня/холста
-*r1 = Open(win, 0,   0,   200, 200, "Топ-Лево")
-*r2 = Open(win, 205, 0,   200, 200, "Топ-Право")
-*r3 = Open(win, 0,   205, 200, 200, "Бот-Лево")
-*r4 = Open(win, 205, 205, 200, 200, "Бот-Право")
-*r5 = Open(win, 40,   40,   230, 230, "Топ-Лево")
-
-*g = Create(*r1, 20,20,60,60,"Квадрат 1", $CCCCCC)
-Create(*r2, 20,20,60,60,"Квадрат 2", $CCCCCC)
-Create(*r3, 20,20,60,60,"Квадрат 3", $CCCCCC)
-Create(*r4, 20,20,60,60,"Квадрат 4", $CCCCCC)
-Create(*r5, 40,40,120,120,"Квадрат 5", $CCCCCC)
-
+If Open(0, 100, 0, 180, 130, "openlist1", #PB_Window_SystemMenu)
+  EndIf
+  
+  If Open(1, 300, 0, 180, 130, "openlist2", #PB_Window_SystemMenu)
+    CloseList()
+  EndIf
+  
+  If Open(2, 500, 0, 180, 130, "openlist3", #PB_Window_SystemMenu)
+    CloseList()
+  EndIf
+  
+  Button( 30, 55, 120,20,"openlist1")
+  
 ReDraw(Root( ))
 
 ;-
@@ -675,15 +822,15 @@ Repeat
    If Event = #PB_Event_Gadget
       Define EvGadget = EventGadget()
       Define EvType = EventType()
-      ; EventHandler( EvGadget, EvType, EventData() )
+      EventHandler( EvGadget, EvType, EventData() )
    EndIf
    
 Until Event = #PB_Event_CloseWindow
 
 Close(#PB_All)
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 550
-; FirstLine = 536
-; Folding = -------------------
+; CursorPosition = 621
+; FirstLine = 617
+; Folding = ----------------+-----
 ; EnableXP
 ; DPIAware

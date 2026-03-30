@@ -171,10 +171,9 @@ If OpenWindow(0, 0, 0, 322 + 322, 220, "PanelGadget", #PB_Window_SystemMenu | #P
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
 ; CursorPosition = 51
 ; FirstLine = 38
 ; Folding = ---
-; Optimizer
 ; EnableXP
 ; DPIAware
