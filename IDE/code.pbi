@@ -1263,11 +1263,11 @@ Procedure$ Generate_CodeCloseList( *g._s_WIDGET, Space$ )
             If *g = *g\LastWidget( )
                result$ + Generate_CodePanelItems( *g, 0, *g\tabbar\countitems - 1, Space2$ )
             Else
-               If *g\LastWidget( )\TabIndex( ) = *g\tabbar\countitems - 1
+               If *g\LastWidget( )\tabindex = *g\tabbar\countitems - 1
                   ; result$ + #LF$
                Else
-                  result$ + Generate_CodePanelItems( *g, *g\LastWidget( )\TabIndex( ) + 1, *g\tabbar\countitems - 1, Space2$ )
-                  ;  Debug ""+*g\class +" > "+ *g\LastWidget( )\class +" "+ *g\LastWidget( )\TabIndex( ) +" "+ *g\tabbar\countitems
+                  result$ + Generate_CodePanelItems( *g, *g\LastWidget( )\tabindex + 1, *g\tabbar\countitems - 1, Space2$ )
+                  ;  Debug ""+*g\class +" > "+ *g\LastWidget( )\class +" "+ *g\LastWidget( )\tabindex +" "+ *g\tabbar\countitems
                EndIf
             EndIf
          EndIf
@@ -1412,19 +1412,19 @@ Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
          TabParent = *g\parent
          TabIndex = - 1
       EndIf
-      If TabIndex <> *g\TabIndex( ) 
+      If TabIndex <> *g\tabindex 
          ;
          If *g\BeforeWidget( )
-            If *g\TabIndex( ) = *g\BeforeWidget( )\TabIndex( )
+            If *g\tabindex = *g\BeforeWidget( )\tabindex
                ; result$ + #LF$
             Else
-               result$ + Generate_CodePanelItems( *g\parent, *g\BeforeWidget( )\TabIndex( ) + 1, *g\TabIndex( ), Space$ )
+               result$ + Generate_CodePanelItems( *g\parent, *g\BeforeWidget( )\tabindex + 1, *g\tabindex, Space$ )
             EndIf
          Else
-            result$ + Generate_CodePanelItems( *g\parent, 0, *g\TabIndex( ), Space$ )
+            result$ + Generate_CodePanelItems( *g\parent, 0, *g\tabindex, Space$ )
          EndIf
          ;
-         TabIndex = *g\TabIndex( ) 
+         TabIndex = *g\tabindex 
       EndIf
    EndIf
    
@@ -2054,8 +2054,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 1319
-; FirstLine = 1250
-; Folding = -f-----f-------------------9--------r3f------8fAw--8--
+; CursorPosition = 1426
+; FirstLine = 1335
+; Folding = -f-----f-------------------9--------r+f------8fAw--8--
 ; EnableXP
 ; DPIAware

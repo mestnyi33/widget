@@ -1234,7 +1234,7 @@ Module Cursor
                If Not *memory
                   *memory = AllocateStructure( _s_cursor )
                   \windowID = ID::GetWindowID( GadgetID )
-                  SetMemory(( GadgetID, *memory ) 
+                  SetMemory( GadgetID, *memory ) 
                   SetProp_( GadgetID, "#__oldproc_cursor", SetWindowLongPtr_(GadgetID, #GWL_WNDPROC, @Proc( )))
                Else
                   ; Если уже был кастомный курсор — удаляем старый системный объект!
@@ -1308,8 +1308,11 @@ Module Cursor
       
       Procedure   Get( )
          Protected result.i
-         
-         If isHiden()
+         Protected cursor_info.CURSORINFO 
+            cursor_info\cbSize = SizeOf(CURSORINFO)
+            GetCursorInfo_(@cursor_info)
+            
+         If Bool(cursor_info\flags & #CURSOR_SHOWING)
             result = #__cursor_Invisible
          Else
             Select cursor_info\hCursor ; GetCursor_( )
@@ -2379,10 +2382,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 822
-; FirstLine = 807
-; Folding = ------------------------8----8----------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 1317
+; FirstLine = 1304
+; Folding = ------------------------8---------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
