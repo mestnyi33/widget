@@ -476,8 +476,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro TabFocused( ): Tab\focused: EndMacro   ; Returns mouse focused tab
                                                    ;                                             ;
       Macro TabState( ): Tab\state: EndMacro      
-      Macro TabIndex( ): Tabindex: EndMacro
-      Macro TabBarIndex( ): tabbar\tabindex: EndMacro
       
       ;-
       Macro LineEntered( ): row\entered: EndMacro ; Returns mouse entered widget
@@ -614,7 +612,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Break
                EndIf
                If widgets( )\parent = _parent_  
-                  If widgets( )\TabIndex( ) = _item_
+                  If widgets( )\tabindex = _item_
                      Break
                   EndIf
                EndIf
@@ -626,7 +624,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If widgets( )\parent = _parent_
             Repeat
                If widgets( )\parent = _parent_  
-                  If widgets( )\TabIndex( ) <> _item_
+                  If widgets( )\tabindex <> _item_
                      If _item_ >= 0  
                         Break
                      EndIf
@@ -817,7 +815,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro is_window_( _this_ ) : Bool( _this_\type = constants::#__type_Window ) : EndMacro
       
       Macro is_level_( _address_1, _address_2 )
-         Bool( _address_1 <> _address_2 And _address_1\parent = _address_2\parent And _address_1\TabIndex( ) = _address_2\TabIndex( ) )
+         Bool( _address_1 <> _address_2 And _address_1\parent = _address_2\parent And _address_1\tabindex = _address_2\tabindex )
       EndMacro
       
       Macro is_scrollbars_( _this_ )
@@ -9221,9 +9219,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro HideState( _this_, _parent_ )
-         _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide Or ( _parent_\tabbar And _parent_\tabbar\type = #__type_TabBar And _parent_\tabbar\TabState( ) <> _this_\TabIndex( ) ))))
+         _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide Or ( _parent_\tabbar And _parent_\tabbar\type = #__type_TabBar And _parent_\tabbar\TabState( ) <> _this_\tabindex ))))
          
-         If _this_\TabIndex( ) = #PB_Ignore
+         If _this_\tabindex = #PB_Ignore
             _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide )))
          EndIf
          
@@ -12275,7 +12273,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          If *parent
             If *parent\tabbar And *parent\tabbar\type = #__type_TabBar
-               If *this\TabIndex( ) = *parent\tabbar\countitems - 1
+               If *this\tabindex = *parent\tabbar\countitems - 1
                   *parent\LastWidget( ) = *this
                EndIf
             Else
@@ -12403,13 +12401,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                If *this\tabbar 
                   If *this\haschildren
-                     If *first And *first\TabIndex( ) < tabindex
+                     If *first And *first\tabindex < tabindex
                         PushListPosition( widgets( ) )
                         ChangeCurrentElement( widgets( ), *first\address )
                         *first = *this
                         While NextElement( widgets( ) )
                            If widgets( )\parent = *this 
-                              If widgets( )\TabIndex( ) >= tabindex
+                              If widgets( )\tabindex >= tabindex
                                  *first = widgets( )
                                  Break
                               EndIf
@@ -12428,13 +12426,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                If *this\tabbar 
                   If *this\haschildren
-                     If *last And *last\TabIndex( ) > tabindex
+                     If *last And *last\tabindex > tabindex
                         PushListPosition( widgets( ) )
                         ChangeCurrentElement( widgets( ), *last\address )
                         *last = *this
                         While PreviousElement( widgets( ) )
                            If widgets( )\parent = *this 
-                              If widgets( )\TabIndex( ) =< tabindex
+                              If widgets( )\tabindex =< tabindex
                                  *last = widgets( )
                                  Break
                               EndIf
@@ -12459,11 +12457,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Case #PB_List_After  : *widget = *this\AfterWidget( )
                Case #PB_List_First 
                   If *this\parent
-                     *widget = GetPosition( *this\parent, Position, *this\TabIndex( ) )
+                     *widget = GetPosition( *this\parent, Position, *this\tabindex )
                   EndIf
                Case #PB_List_Last 
                   If *this\parent
-                     *widget = GetPosition( *this\parent, Position, *this\TabIndex( ) )
+                     *widget = GetPosition( *this\parent, Position, *this\tabindex )
                   EndIf
             EndSelect
          EndIf
@@ -12499,7 +12497,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Position = #PB_List_Last Or
                   Position = #PB_List_After
                   
-                  *last = GetLast( *widget, *widget\TabIndex( ) )
+                  *last = GetLast( *widget, *widget\tabindex )
                   If *last
                      PushListPosition( widgets( ))
                      ChangeCurrentElement( widgets( ), *this\address )
@@ -12641,7 +12639,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *parent > 0
             If *this\parent = *parent
-               If *this\TabIndex( ) = tabindex
+               If *this\tabindex = tabindex
                   ProcedureReturn 0
                EndIf
             EndIf
@@ -12655,7 +12653,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If tabindex = #PB_Default ; < 0
                If *parent\tabbar And *parent\tabbar\type = #__type_TabBar
-                  tabindex = *parent\TabBarIndex( )
+                  tabindex = *parent\tabindex[1]
                Else
                   tabindex = 0
                EndIf
@@ -12703,7 +12701,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             ;
-            *this\TabIndex( ) = tabindex
+            *this\tabindex = tabindex
             ; 
             If tabindex = #PB_Ignore
             Else
@@ -14107,8 +14105,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If is_integral_( *tabBox )
                         If StartEnum( *tabBox\parent )
                            If Widget( )\parent = *tabBox\parent 
-                              If Widget( )\TabIndex( ) >= Item
-                                 Widget( )\TabIndex( ) + 1
+                              If Widget( )\tabindex >= Item
+                                 Widget( )\tabindex + 1
                               EndIf
                            EndIf
                            StopEnum( )
@@ -14146,13 +14144,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;         
             If is_integral_( *tabBox )
-               If *tabBox\parent = Opened( )
-                  If *tabBox\type = #__type_TabBar
-                     *tabBox\TabIndex( ) = Item
-                  EndIf
-               Else
-                  OpenList( *tabBox\parent, Item )
-               EndIf
+               OpenList( *tabBox\parent, Item )
             EndIf
             
             ProcedureReturn *tabBox\__tabs( ) 
@@ -14200,7 +14192,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\parent\align = 0 
                
                If StartEnum( *this\parent )
-                  If widgets( )\TabIndex( ) = #PB_Ignore
+                  If widgets( )\tabindex = #PB_Ignore
                      SetAlign( widgets( ), 0, 0,1,#__align_auto,0, 0 )          
                   EndIf
                   StopEnum( )
@@ -16870,7 +16862,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
             Else
                If *this\AfterWidget( ) And 
-                  *this\AfterWidget( )\TabIndex( ) = *this\TabIndex( )
+                  *this\AfterWidget( )\tabindex = *this\tabindex
                   ;
                   SetActive( *this\AfterWidget( ) )
                   ;
@@ -20054,14 +20046,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               
                            Case #PB_Shortcut_Up
                               If *keywidget\BeforeWidget( )
-                                 If *keywidget\BeforeWidget( )\TabIndex( ) = *keywidget\TabIndex( )
+                                 If *keywidget\BeforeWidget( )\tabindex = *keywidget\tabindex
                                     a_set( *keywidget\BeforeWidget( ) )
                                  EndIf
                               EndIf
                               
                            Case #PB_Shortcut_Down
                               If *keywidget\AfterWidget( )
-                                 If *keywidget\AfterWidget( )\TabIndex( ) = *keywidget\TabIndex( )
+                                 If *keywidget\AfterWidget( )\tabindex = *keywidget\tabindex
                                     a_set( *keywidget\AfterWidget( ) )
                                  EndIf
                               EndIf
@@ -22828,7 +22820,7 @@ EndProcedure
                
                If StartEnum( *root )
                   If widgets( )\parent And Not widgets( )\parent\hide 
-                     If Not ( widgets( )\parent\tabbar And widgets( )\parent\tabbar\TabState( ) <> widgets( )\TabIndex( )) Or widgets( )\TabIndex( ) = #PB_Ignore
+                     If Not ( widgets( )\parent\tabbar And widgets( )\parent\tabbar\TabState( ) <> widgets( )\tabindex) Or widgets( )\tabindex = #PB_Ignore
                         ;
                         If test_focus_draw = 1
                            ;\\ draw active containers frame
@@ -24639,11 +24631,9 @@ EndProcedure
          If Not *this : ProcedureReturn #False : EndIf
          
          ; 2. ПОДДЕРЖКА ВКЛАДОК (TabBar)
-         If *this\tabbar And *this\tabbar\type = #__type_TabBar
-            ; Гарантируем, что индекс не отрицательный
-            If Item < 0 : Item = 0 : EndIf
-            *this\TabBarIndex( ) = Item
-         EndIf
+         ; Гарантируем, что индекс не отрицательный
+         If Item < 0 : Item = 0 : EndIf
+         *this\tabindex[1] = Item
          
          ; 3. ПЕРЕКЛЮЧЕНИЕ СИСТЕМНОГО КОНТЕКСТА
          If *prev <> *this
@@ -24720,8 +24710,8 @@ EndProcedure
             EndIf
             ;
             If *parent
-               If *this\TabIndex( ) = #PB_Ignore
-                  ;Debug "TabIndex( ) = #PB_Ignore"
+               If *this\tabindex = #PB_Ignore
+                  ;Debug "tabindex = #PB_Ignore"
                   
                   ;
                   If *parent\fs[3]
@@ -24868,7 +24858,7 @@ EndProcedure
                If *this\parent = *this 
                   ;
                Else
-                  If *this\TabIndex( ) = #PB_Ignore
+                  If *this\tabindex = #PB_Ignore
                      If *this\parent\fs[1] Or
                         *this\parent\fs[2]
                         X      = *this\parent\frame_x( ) + *this\parent\fs
@@ -25138,14 +25128,14 @@ EndProcedure
           ; frame coordinate
             If *this\parent And *this <> *this\parent And Not is_root_( *this )
                If Not ( *this\bounds\attach And *this\bounds\attach\mode = 2 )
-                  If *this\TabIndex( ) = #PB_Ignore
+                  If *this\tabindex = #PB_Ignore
                      X + *this\parent\frame_x( ) + *this\parent\fs
                   Else
                      X + *this\parent\inner_x( )
                   EndIf
                EndIf
                If Not ( *this\bounds\attach And *this\bounds\attach\mode = 1 )
-                  If *this\TabIndex( ) = #PB_Ignore
+                  If *this\tabindex = #PB_Ignore
                      Y + *this\parent\frame_y( ) + *this\parent\fs
                   Else
                      Y + *this\parent\inner_y( )
@@ -28299,9 +28289,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 479
-; FirstLine = 478
-; Folding = ----------------------6---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0----------------------------------------------------------------------------------------v--4-----------8v--8----------------------------------f8+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f---8-------------------------------------------------------8-----------------------------------------8--------------------------0----0-----------------------------------------------------------------------------------
+; CursorPosition = 25137
+; FirstLine = 24529
+; Folding = ---------------------f+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-----------------------------------------------------------------------------------------8--0-----------+8--+----------------------------------4u---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--v-------------------------------------------------------v-----------------------------------------v--------------------------4----8-----------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

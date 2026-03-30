@@ -2100,7 +2100,7 @@ Procedure   ide_file_new( )
    ;    Debug "---"
    ;    ForEach widgets( )
    ;       If IsChild(widgets( ), ide_design_PANEL) 
-   ;          Debug ""+widgets( )\class +" "+ widgets( )\level +" "+ widgets( )\TabIndex( )
+   ;          Debug ""+widgets( )\class +" "+ widgets( )\level +" "+ widgets( )\tabindex
    ;       EndIf
    ;    Next
    ;    Debug "---"
@@ -3327,10 +3327,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 2722
-; FirstLine = 2356
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 2102
+; FirstLine = 1778
 ; Folding = -4--4---r-f-tf----------3BC----------+8+8-----------Svt----f+-
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2_621.exe
+; Executable = ../../2_621.exe
