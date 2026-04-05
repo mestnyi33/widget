@@ -71,9 +71,9 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             Debug "--- enumerate all gadgets ---"
-            If StartEnum( EventWidget( )\parent, EventWidget( )\tabindex( ) )
-               If Not is_window_( widget(  ) )
-                  Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
+            If StartEnum( EventWidget( )\parent, EventWidget( )\tabindex )
+               If Not is_window_( Widget(  ) )
+                  Debug "     gadget - "+ Index( Widget( ) ) +" "+ Widget( )\class
                EndIf
                StopEnum( )
             EndIf
@@ -103,9 +103,9 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
             Debug "--- enumerate all gadgets ---"
-            If StartEnum( EventWidget( )\parent, EventWidget( )\tabindex( ) )
-               If Not is_window_( widget(  ) )
-                  Debug "     gadget - "+ Index( widget( ) ) +" "+ widget( )\class
+            If StartEnum( EventWidget( )\parent, EventWidget( )\tabindex )
+               If Not is_window_( Widget(  ) )
+                  Debug "     gadget - "+ Index( Widget( ) ) +" "+ Widget( )\class
                EndIf
                StopEnum( )
             EndIf
@@ -143,8 +143,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ;SetState( *PARENT, 2 )
       
       If StartEnum( *PARENT )
-         Bind(widget( ), @widget_events( ), #__Event_LeftDown)
-         Bind(widget( ), @widget_events( ), #__Event_LeftUp)
+         Bind(Widget( ), @widget_events( ), #__Event_LeftDown)
+         Bind(Widget( ), @widget_events( ), #__Event_LeftUp)
          ;
          StopEnum( )
       EndIf
@@ -152,9 +152,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 120
-; FirstLine = 107
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 105
+; FirstLine = 101
 ; Folding = -----
 ; EnableXP
 ; DPIAware

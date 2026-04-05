@@ -552,7 +552,7 @@ Procedure NumericString( string$ )
 EndProcedure
 
 ;-
-Procedure   MakeID( class$, *rootParent._s_WIDGET )
+Procedure   MakeID( class$, *rootParent._s_CONTAINER )
    If FindMapElement( GetObject( ), class$ )
       class$ = GetObject( )
    EndIf
@@ -1254,7 +1254,7 @@ Procedure$ Generate_CodePanelItems( *g._s_WIDGET, start, stop, space$ )
    ProcedureReturn result$
 EndProcedure
 
-Procedure$ Generate_CodeCloseList( *g._s_WIDGET, Space$ )
+Procedure$ Generate_CodeCloseList( *g._s_CONTAINER, Space$ )
    Protected result$, Space2$ = Space$ + Space(codeindent)
    
    If IsContainer(*g) > 2
@@ -1576,7 +1576,7 @@ Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
    ProcedureReturn result$
 EndProcedure
 
-Procedure.s Generate_Code( *mdi._s_WIDGET ) ; 
+Procedure.s Generate_Code( *mdi._s_CONTAINER ) ; 
    Protected Type, Count, Image, Parent
    Protected imageScale$, style$
    Protected Space$, id$, Class$, result$, Gadgets$, Windows$, Events$, Functions$
@@ -1586,9 +1586,9 @@ Procedure.s Generate_Code( *mdi._s_WIDGET ) ;
              GloballoadFont$, EnumFont$, Enumloadfont$,
              GloballoadImage$, EnumImage$, EnumloadImage$
    
-   Protected *g._s_WIDGET
-   Protected *w._s_WIDGET
-   Protected *mainWindow._s_WIDGET
+   Protected *g._s_CONTAINER
+   Protected *w._s_CONTAINER
+   Protected *mainWindow._s_CONTAINER
    
    If *mdi
       parentlevel = Level(*mdi)
@@ -2053,9 +2053,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 1426
-; FirstLine = 1335
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 1588
+; FirstLine = 1497
 ; Folding = -f-----f-------------------9--------r+f------8fAw--8--
 ; EnableXP
 ; DPIAware

@@ -97,6 +97,13 @@ Structure _s_KEYBOARD  ; Ok
    *active._S_WIDGET   ; keyboard focus element ; GetActive( )\
 EndStructure
 
+Structure _s_PARENT
+   *owner._s_WIDGET
+   *first._s_WIDGET
+   *last._s_WIDGET
+   tabindex.l
+EndStructure
+
 Structure _s_WIDGET Extends _s_COORDINATE
    mask.q
    class.s
@@ -107,10 +114,14 @@ Structure _s_WIDGET Extends _s_COORDINATE
    
    *root._s_ROOT
    *parent._s_WIDGET
-   *first._s_WIDGET ; Указатель на первый виджет в глобальном списке для этого холста
-   *last._s_WIDGET  ; Указатель на последний виджет этого холста
-   
+  
    OnEvent.ProtoOnEvent[#__event] ; Указатель на процедуру событий
+EndStructure
+
+; Промежуточный тип для тех, кто имеет детей (Панель, Группа, Сплиттер)
+Structure _s_CONTAINER Extends _s_WIDGET
+   *first._s_WIDGET ; Первый ребенок в списке
+   *last._s_WIDGET  ; Последний ребенок
 EndStructure
 
 Structure _s_CANVAS
@@ -122,7 +133,7 @@ Structure _s_CANVAS
    *prev._s_ROOT
 EndStructure
 
-Structure _s_ROOT Extends _s_WIDGET
+Structure _s_ROOT Extends _s_CONTAINER
    Canvas._s_CANVAS
 EndStructure
 
@@ -829,8 +840,8 @@ Until Event = #PB_Event_CloseWindow
 
 Close(#PB_All)
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 621
-; FirstLine = 617
-; Folding = ----------------+-----
+; CursorPosition = 116
+; FirstLine = 102
+; Folding = ----------------8-----
 ; EnableXP
 ; DPIAware

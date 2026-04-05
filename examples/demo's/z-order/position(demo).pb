@@ -1,4 +1,5 @@
-﻿XIncludeFile "../../../widgets.pbi" 
+﻿;XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../panel.pbi" 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile   
    EnableExplicit  
@@ -13,7 +14,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure Demo() 
       Protected   ParentID = OpenWindow(0, 0, 0, 250, 180, "Demo z-order position", #PB_Window_SystemMenu|#PB_Window_ScreenCentered) 
-      Open(0, 0, 0, 250, 180)             
+      Open(0, 10, 10, 230, 160)             
       ;{ first container   
       Container(55, 95, 30, 45)           
       SetColor(Widget(), #PB_Gadget_BackColor, $00ffff)  
@@ -121,7 +122,7 @@ CompilerIf #PB_Compiler_IsMainFile
                         EndIf                            
                      Case #before             
                         If SetPosition(*this, #PB_List_Before)    
-                           If *this = GetPosition( GetParent( *this ), #PB_List_First )   
+                           If *this = GetPosition( GetParent( *this ), #PB_List_First, *this\tabindex )   
                               DisableGadget(#first,1)                  
                               DisableGadget(#before,1)            
                            Else                         
@@ -131,7 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
                         EndIf                
                      Case #after    
                         If SetPosition(*this, #PB_List_After)   
-                           If *this = GetPosition( GetParent( *this ), #PB_List_Last )    
+                           If *this = GetPosition( GetParent( *this ), #PB_List_Last, *this\tabindex )    
                               DisableGadget(#after,1)                   
                               DisableGadget(#last,1)         
                            Else                       
@@ -140,7 +141,10 @@ CompilerIf #PB_Compiler_IsMainFile
                            EndIf                     
                         EndIf                       
                      Case #last                  
-                        
+                        Debug "Жмем Last для: " + *this\class
+                        Define *temp._s_WIDGET = GetLast(*this)
+   Debug "Его последний потомок: " + *temp\class
+   
                         If SetPosition(*this, #PB_List_Last)  
                            DisableGadget(#after,1)      
                            DisableGadget(#last,1)      
@@ -160,14 +164,14 @@ CompilerIf #PB_Compiler_IsMainFile
                         DisableGadget(#first,0)     
                         DisableGadget(#before,0)    
                   EndSelect                         
-                  ClearDebugOutput()           
-                  Debug "--- enumerate all gadgets ---"    
-                  If StartEnum( Root( ) )                
-                     If Not is_window_( Widget(  ) )     
-                        Debug ""+ Index( Widget( ) ) +" "+ Widget( )\class 
-                     EndIf                    
-                     StopEnum( )               
-                  EndIf                      
+                  ;ClearDebugOutput()           
+;                   Debug "--- enumerate all gadgets ---"    
+;                   If StartEnum( Root( ) )                
+;                      If Not is_window_( Widget(  ) )     
+;                         Debug ""+ Index( Widget( ) ) +" "+ Widget( )\class 
+;                      EndIf                    
+;                      StopEnum( )               
+;                   EndIf                      
                   ReDraw( Root( ) )           
             EndSelect                  
          Case #PB_Event_CloseWindow   
@@ -175,9 +179,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect        
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 103
-; FirstLine = 88
-; Folding = ----
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 132
+; FirstLine = 117
+; Folding = ---
 ; EnableXP
 ; DPIAware

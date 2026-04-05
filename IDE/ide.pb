@@ -1717,7 +1717,7 @@ EndProcedure
 Procedure new_widget_events( )
    Protected *new
    Protected __item
-   Protected *g._s_WIDGET = EventWidget( )
+   Protected *g._s_CONTAINER = EventWidget( )
    Protected __event = WidgetEvent( )
    Static anchors_group_show
    
@@ -3328,9 +3328,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 2102
-; FirstLine = 1778
-; Folding = -4--4---r-f-tf----------3BC----------+8+8-----------Svt----f+-
+; CursorPosition = 1719
+; FirstLine = 1469
+; Folding = -4--4---r-f-tf----------3BC----------+-+8-----------Svt----f+-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2_621.exe

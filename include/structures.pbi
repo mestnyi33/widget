@@ -278,7 +278,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          backcolor.i[3]
          framecolor.i[3]
          *grid_image
-         *main._s_WIDGET                     ; a_main( )
+         *main._s_PARENT                     ; a_main( )
          *entered._s_WIDGET                  ; a_entered( )
          *focused._s_WIDGET                  ; a_focused( )
          line._s_COORDINATE[4]               ; a_line( )
@@ -300,7 +300,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *selector._s_SELECTOR   ; mouse select frame
          *drop._s_DROPMOUSE           ;
-         *button._s_BUTTONS[3]   
+         *button._s_BUTTONS[3]  
+         *item._s_ITEMS[3]
          *widget._s_WIDGET[3]    
          ; widget[0] = Leaved( ) - Returns mouse leaved widget
          ; widget[1] = Entered( ) - Returns mouse entered widget
@@ -372,7 +373,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Hide.b
          Text._s_TEXT
          picture._s_PICTURE
-       ;  List items._s_rows( )
+       ;  List rows._s_rows( )
       EndStructure
       
       Structure _s_COLUMNs
@@ -410,20 +411,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *tt._s_tt
          ;
-         List items._s_rows( )
-         List *eItems._s_rows()   ; Развернутый рулон (указатели)
-      EndStructure
-      
-      ;--     TAB
-      Structure _s_TAB
-         state.i
-         
-         ; tab
-         *entered._s_ITEMS
-         *pressed._s_ITEMS
-         *focused._s_ITEMS
-         
-         List *_s._s_ITEMS( )
+         List rows._s_rows( )
+         List *items._s_rows()   ; Развернутый рулон (указатели)
       EndStructure
       
       ;--     PAGE
@@ -587,7 +576,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          eventmask.q
          
          tt._s_tt                 ; notification = уведомление
-         Tab._s_TAB               ; 
          menu._s_POPUP
          mode._s_mode               ; drawing mode
          bounds._s_BOUNDS
@@ -605,34 +593,33 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; \image[3] - background image
          
          ;                        ;
-         *bar._s_BAR
-         *row._s_ROW              ; multi-text; buttons; lists; - gadgets
+         *root._s_ROOT
          *column._s_COLUMNs             ; multi-text; buttons; lists; - gadgets
+         *row._s_ROW              ; multi-text; buttons; lists; - gadgets
+         *bar._s_BAR
          *drop._s_DROP
          *align._s_ALIGN
          *anchors._s_ANCHORS
          *togglebox._s_BOX        ; checkbox; optionbox, ToggleButton
          *combobutton._s_BUTTONS  ; combobox button
          
-         *root._s_ROOT
-         *afterroot._s_ROOT
-         *beforeroot._s_ROOT
-         *lastroot._s_ROOT
          
          *tabbar._s_WIDGET
          *menubar._s_WIDGET
          *combobar._s_WIDGET      ; = ComboBox( ) popup list view widget
          *groupbar._s_WIDGET      ; = Option( ) group widget
          *stringbar._s_WIDGET     ; = Spin( ) string box widget
-         *firstwidget._s_WIDGET
-         *afterwidget._s_WIDGET
-         *beforewidget._s_WIDGET
-         *lastwidget._s_WIDGET
-         *window._s_WIDGET
-         *parent._s_WIDGET[2]    
+         
+;          *first._s_WIDGET  ; это в лист будем переносить так как он нужен только для родителя 
+;          *last._s_WIDGET    ; это в лист будем переносить так как он нужен только для родителя
+         *next._s_PARENT
+         *prev._s_PARENT
+         
+         *window._s_PARENT
+         *parent._s_PARENT;[2]   ; [1] - это в лист будем переносить так как он нужен только для родителя  
          ; parent[0] - Родитель ; Иерархия - физический (где лежит) 
          ; parent[1] - Владелец ; Иерархия - логический (кто открыл)
-         tabindex.l[2]
+         tabindex.l;[2]          ; [1] - это в лист будем переносить так как он нужен только для родителя
         
          ;
          *gadget._s_WIDGET[3]
@@ -648,13 +635,35 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; \cursor[1]     ; current cursor
          ; \cursor[2]     ; change cursor 1
          ; \cursor[3]     ; change cursor 2
+         
+         *first._s_PARENT ; Первый ребенок в списке
+         *last._s_PARENT  ; Последний ребенок
+         
+         List *__tabs._s_ITEMS( )
+         tab_state.l
+       
+      EndStructure
+      
+      ; Промежуточный тип для тех, кто имеет детей (Панель, Группа, Сплиттер)
+      Structure _s_PARENT Extends _s_WIDGET
+;          *first._s_PARENT ; Первый ребенок в списке
+;          *last._s_PARENT  ; Последний ребенок
+         *opened._s_PARENT
+         openeditem.l
+         *tab_entered._s_ITEMS
+         *tab_pressed._s_ITEMS
+         *tab_selected._s_ITEMS
+       EndStructure
+      
+      ; Промежуточный тип для тех, кто имеет детей (Панель, Группа, Сплиттер)
+      Structure _s_WINDOW Extends _s_PARENT
       EndStructure
       
       ;--     CANVAS
       Structure _s_CANVAS
          Repaint.b
-         bindcursor.b
          enter.b
+         
          window.i                 ; canvas window
          gadget.i                 ; canvas gadget
          *gadgetID                ; canvas handle
@@ -664,7 +673,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     ROOT
-      Structure _s_ROOT Extends _s_WIDGET
+      Structure _s_ROOT Extends _s_PARENT
          Repaint.b
          drawmode.b
          Canvas._s_canvas
@@ -702,12 +711,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_GUI
          fontID.i                       ; current drawing fontID
          ;
-         *root._s_ROOT                 ; enumerate root
          *drawingroot._s_ROOT
-         *opened._s_WIDGET             ; last opened-list element
-         *closed._s_WIDGET             ; last opened-list element
+         *root._s_ROOT                 ; enumerate root
          *widget._s_WIDGET             ; enumerate widget
          *popup._s_WIDGET
+         *opened._s_PARENT             ; last opened-list element
          
          mouse._s_mouse                ; mouse( )\
          keyboard._s_KEYBOARD          ; keyboard( )\
@@ -727,8 +735,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 634
-; FirstLine = 620
-; Folding = ---0------
+; CursorPosition = 655
+; FirstLine = 630
+; Folding = ---0-------
 ; Optimizer
 ; EnableXP

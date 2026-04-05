@@ -301,7 +301,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Global DrawingDC = 0
       
       Global __GUI._s_GUI
-      ;Global NewMap *roots._s_root( )
+      ;Global NewMap *roots._s_ROOT( )
       ;Global *event._s_EVENT( )
       Global NewMap fonts._s_FONTS( )
       Global NewList images._s_images( )
@@ -460,7 +460,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro PageChange( ): change: EndMacro          ; temp
-      Macro TabChange( ): change: EndMacro           ; tab\widget\change
+      Macro TabChange( ): change: EndMacro           ; temp
       Macro TextChange( ): Text\change: EndMacro     ; temp
       Macro ResizeChange( ): Resize\change: EndMacro ; temp
       Macro WidgetChange( ): change: EndMacro        ; temp
@@ -470,12 +470,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro MarginLine( ): row\margin: EndMacro ; temp
       
       ;-
-      Macro __tabs: Tab\_s: EndMacro
-      Macro TabEntered( ): Tab\entered: EndMacro   ; Returns mouse entered tab
-      Macro TabPressed( ): Tab\pressed: EndMacro   ; Returns mouse focused tab
-      Macro TabFocused( ): Tab\focused: EndMacro   ; Returns mouse focused tab
+      ;Macro __tabs: Tab\_s: EndMacro
+      Macro TabEntered( _this_ ): _this_\Tab_entered: EndMacro   ; Returns mouse entered tab
+      Macro TabPressed( ): parent\Tab_pressed: EndMacro   ; Returns mouse focused tab
+      Macro TabSelected( ): parent\tab_selected: EndMacro   ; Returns mouse focused tab
+;       Macro TabEntered( ): parent\Tab_entered: EndMacro   ; Returns mouse entered tab
+;       Macro TabPressed( ): parent\Tab_pressed: EndMacro   ; Returns mouse focused tab
+;       Macro TabSelected( ): parent\tab_selected: EndMacro   ; Returns mouse focused tab
                                                    ;                                             ;
-      Macro TabState( ): Tab\state: EndMacro      
+      Macro parentTabEntered( _this_ ): _this_\parent\Tab_entered: EndMacro   ; Returns mouse entered tab
+      Macro parentTabPressed( ): parent\Tab_pressed: EndMacro   ; Returns mouse focused tab
+      Macro parentTabSelected( ): parent\tab_selected: EndMacro   ; Returns mouse focused tab
+                                                   ;                                             ;
+      Macro TabState( ): Tab_state: EndMacro      
       
       ;-
       Macro LineEntered( ): row\entered: EndMacro ; Returns mouse entered widget
@@ -500,10 +507,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro __columns( ): column\columns( ) : EndMacro    ; row\items( )
-     ; Macro __rows( ): __columns( )\items( ) : EndMacro    ; row\items( )
-      Macro __lines( ): row\items( ) : EndMacro    ; row\items( )
-      Macro __rows( ): row\items( ) : EndMacro    ; row\items( )
-      Macro __items( ): row\eitems( ) : EndMacro    ; row\items( )
+     ; Macro __rows( ): __columns( )\rows( ) : EndMacro    ; row\items( )
+      Macro __lines( ): row\rows( ) : EndMacro    ; row\items( )
+      Macro __rows( ): row\rows( ) : EndMacro    ; row\items( )
+      Macro __items( ): row\items( ) : EndMacro    ; row\items( )
       Macro RowLeaved( ): row\leaved: EndMacro           ; Returns mouse leaved item address
       Macro RowEntered( ): row\entered: EndMacro         ; Returns mouse entered item address
       Macro RowPressed( ): row\pressed: EndMacro         ; Returns mouse press item address
@@ -536,11 +543,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro split_2( ) : gadget[2] : EndMacro ; temp
       
       ;-
-      ; Macro Firstroot( ): firstroot: EndMacro
-      Macro LastRoot( ): lastroot: EndMacro
-      Macro AfterRoot( ): afterroot: EndMacro
-      Macro BeforeRoot( ): beforeroot: EndMacro
-      
       Macro NextRoot(): Canvas\next: EndMacro
       Macro PrevRoot(): Canvas\prev: EndMacro
       Macro Root( ): Widget::__gui\root: EndMacro
@@ -548,10 +550,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro Closed( ): Widget::__gui\closed: EndMacro ; object list opened container
       
       ;-
-      Macro FirstWidget( ): FirstWidget: EndMacro
-      Macro LastWidget( ): LastWidget: EndMacro
-      Macro AfterWidget( ): AfterWidget: EndMacro
-      Macro BeforeWidget( ): BeforeWidget: EndMacro
+      Macro FirstWidget( ): first: EndMacro
+      Macro LastWidget( ): last: EndMacro
+      Macro AfterWidget( ): Next: EndMacro
+      Macro BeforeWidget( ): prev: EndMacro
       
       ;-
       Macro Leaved( ): mouse( )\widget[0]: EndMacro ; Returns mouse entered widget
@@ -1726,7 +1728,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare   make_area_max( *this, X.l, Y.l, Width.l, Height.l )
       Declare   make_area_size( *this, X.l, Y.l, Width.l, Height.l )
       
-      Declare   GetAtPoint( *root._s_root, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
+      Declare   GetAtPoint( *root._s_ROOT, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
       Declare.i Sticky( *window = #PB_Default, state.b = #PB_Default )
       
       Declare$  PBEventString( event.i )
@@ -1771,7 +1773,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.l Width( *this, mode.l = #PB_Default )
       Declare.l Height( *this, mode.l = #PB_Default )
       
-      Declare   Reclip( *this._s_WIDGET )
+      Declare   ReClip( *this._s_WIDGET )
       Declare   ResizeRootWindow( *this, X.l, Y.l, Width.l, Height.l )
       Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l, scale.b = 1 )
       Declare   Alignment( *this, align.q, mode.q = 0 )
@@ -2334,7 +2336,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure   make_mdi_area( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l ) ; Ok
+      Procedure   make_mdi_area( *this._s_PARENT, X.l, Y.l, Width.l, Height.l ) ; Ok
          *this\scroll_x( )      = 0;X
          *this\scroll_y( )      = 0;Y
          *this\scroll_width( )  = Width
@@ -4101,7 +4103,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure a_align( *g._s_WIDGET, align )
          Protected.l X,Y,Width,Height
-         Protected *parent._s_WIDGET
+         Protected *parent._s_PARENT
          
          If a_anchors( )\group\show
             If *g And *g\anchors\group\show
@@ -4265,7 +4267,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *this\anchors
       EndProcedure
       
-      Procedure a_update( *this._s_WIDGET )
+      Procedure a_update( *this._s_PARENT )
          ;
          a_anchors( )\group\x = *this\x+*this\width 
          a_anchors( )\group\y = *this\y+*this\height 
@@ -4360,7 +4362,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *this
       EndProcedure
       
-      Procedure a_doevents( *this._s_WIDGET, event.l )
+      Procedure a_doevents( *this._s_PARENT, event.l )
          Protected mouse_x.l = CanvasMouseX( )
          Protected mouse_y.l = CanvasMouseY( )
          
@@ -5040,9 +5042,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure bar_draw_tabitems( *this._s_WIDGET, vertical, X,Y, round, List *tabs._s_ITEMS( ) )
          Protected._s_BAR *bar = *this\bar
          Protected._s_BUTTONS *BB1, *BB2, *SB
+         Protected._s_ITEMS *activeTAB, *enteredTAB
          *SB  = *bar\button
          *BB1 = *bar\button[1]
          *BB2 = *bar\button[2]
+         ; Если мышь физически находится над этим конкретным виджетом (*this)
+         If Entered() = *this 
+            ; Только тогда мы разрешаем подсвечивать айтем из глобального стека
+            *EnteredTAB = parentTabEntered( *this )
+         EndIf
+         ;If GetActive() = *this 
+            *activeTAB = *this\parentTabSelected( )
+         ;EndIf
          
          ; draw all visible items
          ForEach *tabs( )
@@ -5087,8 +5098,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *tabs( )\checked
                      bar_draw_item_( *this\bar\vertical, *tabs( ), X, Y, 2, round )
                   Else
-                     If *tabs( ) <> *this\TabEntered( )
-                        ; And Not (*tabs( ) <> *this\TabFocused( ) And *tabs( )\_focus) 
+                     If *tabs( ) <> *EnteredTAB
+                        ; And Not (*tabs( ) <> *this\TabSelected( ) And *tabs( )\_focus) 
                         
                         ; Debug *this\parent\class
                         ;                     ;
@@ -5109,24 +5120,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;          ProcedureReturn
          ;
          ; draw mouse-enter visible item
-         If *this\TabEntered( )
-            If *this\TabEntered( )\_focus = 0 And
-               *this\TabEntered( )\checked = 0 And
-               *this\TabEntered( )\visible 
+         If *EnteredTAB
+            If *EnteredTAB\_focus = 0 And
+               *EnteredTAB\checked = 0 And
+               *EnteredTAB\visible 
                ;
-               If *this\TabEntered( )\tindex <> #PB_Ignore
-                  draw_font( *this\TabEntered( ), GetFontID( *this ), *this\TabEntered( )\TextChange( ))
-                  bar_draw_item_( *this\bar\vertical, *this\TabEntered( ), X, Y, *this\TabEntered( )\ColorState( ), round)
+               If *EnteredTAB\tindex <> #PB_Ignore
+                  draw_font( *EnteredTAB, GetFontID( *this ), *EnteredTAB\TextChange( ))
+                  bar_draw_item_( *this\bar\vertical, *EnteredTAB, X, Y, *EnteredTAB\ColorState( ), round)
                EndIf
             EndIf
          EndIf
          
          ;
          ; draw key-focus visible item
-         If *this\TabFocused( ) And
-            *this\TabFocused( )\_focus And 
-            *this\TabFocused( )\visible
-            Protected._s_ITEMS *activeTAB = *this\TabFocused( )
+         If *activeTAB And
+            *activeTAB\_focus And 
+            *activeTAB\visible
             ;   
             If *activeTAB\tindex <> #PB_Ignore
                draw_font( *activeTAB, GetFontID( *this ), *activeTAB\TextChange( ))
@@ -5218,7 +5228,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected backcolor
          
          With *this
-            Protected._s_ITEMS *activeTAB = *this\TabFocused( )
+            Protected._s_ITEMS *activeTAB = *this\parentTabSelected( )
             Protected._s_BAR *bar = *this\bar
             Protected._s_BUTTONS *BB1, *BB2, *SB
             If Not *bar
@@ -7073,15 +7083,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *bar\page\pos = *bar\max
                EndIf
                
-               If *this\TabFocused( ) 
-                  If *this\TabFocused( )\_enter = #False
-                     If *this\TabFocused( )\ScrollToActive( - 1 )
-                        *this\TabFocused( )\ScrollToActive( 1 )
+               Protected *activedTAB._s_ITEMS = *this\parentTabSelected( )
+               If *activedTAB
+                  If *activedTAB\_enter = #False
+                     If *activedTAB\ScrollToActive( - 1 )
+                        *activedTAB\ScrollToActive( 1 )
                         ;Debug " tab max - " + *bar\max + " " + " " + *bar\page\pos + " " + *bar\page\end
-                        ScrollPos = *bar\max - *this\TabFocused( )\x
+                        ScrollPos = *bar\max - *activedTAB\x
                         ;ScrollPos - *bar\thumb\end                                    ; to left
-                        ;ScrollPos - *this\TabFocused( )\width                         ; to right
-                        ScrollPos - ( *bar\thumb\end + *this\TabFocused( )\width ) / 2 ; to center
+                        ;ScrollPos - *activedTAB\width                         ; to right
+                        ScrollPos - ( *bar\thumb\end + *activedTAB\width ) / 2 ; to center
                         
                         ScrollPos = bar_page_pos_( *bar, ScrollPos )
                         If *bar\invert
@@ -7750,6 +7761,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   HidePopupBar( *this._s_WIDGET )
+         Protected *activedTAB._s_ITEMS = *this\parentTabSelected( )
+         
          If *this\type = #__type_MenuBar Or
             *this\type = #__type_PopupBar Or
             *this\type = #__type_ToolBar 
@@ -7761,18 +7774,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; uncomment if you don't need to keep 
                   ; the last selected item highlighted
                   ;
-                  ; If *this\TabFocused( ) 
-                  ;    *this\TabFocused( )\_focus = 0
-                  ;    *this\TabFocused( )\checked = 0
-                  ;    *this\TabFocused( ) = 0
+                  ; If *activedTAB 
+                  ;    *activedTAB\_focus = 0
+                  ;    *activedTAB\checked = 0
+                  ;    *activedTAB = 0
                   ; EndIf
                   ;
                   ;
                   Hide( *this, #True )
                   HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
                   If MousePress( )
-                     If *this\TabFocused( )
-                        Post( *this, #__event_LeftClick, *this\TabFocused( )\tindex, *this\TabFocused( ) )
+                     If *activedTAB
+                        Post( *this, #__event_LeftClick, *activedTAB\tindex, *activedTAB )
                      EndIf
                   EndIf
                EndIf
@@ -7786,10 +7799,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Break
                Else
                   ; Debug *this\class
-                  If *this\TabFocused( ) 
-                     *this\TabFocused( )\_focus = 0
-                     *this\TabFocused( )\checked = 0
-                     *this\TabFocused( ) = 0
+                  If *activedTAB 
+                     *activedTAB\_focus = 0
+                     *activedTAB\checked = 0
+                     *activedTAB = 0
                   EndIf
                EndIf
             Wend
@@ -7801,13 +7814,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.i DisplayPopupBar( *this._s_WIDGET, *display._s_WIDGET, X.l = #PB_Ignore, Y.l = #PB_Ignore )
+      Procedure.i DisplayPopupBar( *this._s_WIDGET, *display._s_PARENT, X.l = #PB_Ignore, Y.l = #PB_Ignore )
          Protected Width = #PB_Ignore
          Protected Height = #PB_Ignore
          
          Protected Index
          Protected mode = 0
-         Protected *displayroot._s_root
+         Protected *displayroot._s_ROOT
          
          ;\\
          If *this
@@ -7818,7 +7831,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *display\root\repaint = 1
             
             ;\\
-            If *display\TabEntered( )
+            If TabEntered( *display )
                DoEvents( *display, #__event_StatusChange )
             EndIf
             
@@ -8013,8 +8026,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If ListSize( *this\__rows( ) ) And *this\RowFocused( )\_focus
                      Y = CanvasMouseY( ) - row_y_( *this, *this\RowFocused( ) ) - *this\RowFocused( )\height / 2
                   EndIf
-                  If ListSize( *this\__tabs( ) ) And *this\TabFocused( )\_focus
-                     Y = CanvasMouseY( ) - row_y_( *this, *this\TabFocused( ) ) - *this\TabFocused( )\height / 2
+                  Protected *activedTAB._s_ITEMS = *this\parentTabSelected( )
+                  If ListSize( *this\__tabs( ) ) And *activedTAB\_focus
+                     Y = CanvasMouseY( ) - row_y_( *this, *activedTAB ) - *activedTAB\height / 2
                   EndIf
                Else
                   If X = #PB_Ignore
@@ -8023,8 +8037,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Else
                         If *display\type = #__type_ComboBox
                            X = *display\screen_x( )
-                        ElseIf *display\bar And *display\TabEntered( )
-                           X = *display\screen_x( ) + *display\TabEntered( )\x
+                        ElseIf *display\bar And TabEntered( *display )
+                           X = *display\screen_x( ) + TabEntered( *display )\x
                         Else
                            X = CanvasMouseX( )
                         EndIf
@@ -8045,12 +8059,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *display\type = #__type_ComboBox
                         Y = *display\screen_y( ) + *display\screen_height( )
                         
-                     ElseIf *display\bar And *display\TabEntered( )
-                        Y = *display\screen_y( ) + (*display\TabEntered( )\y + (*display\bar\thumb\pos - *display\bar\area\end))
-                        ;  Debug ""+*display\scroll_height( )+" "+*display\TabEntered( )\y
+                     ElseIf *display\bar And TabEntered( *display )
+                        Y = *display\screen_y( ) + (TabEntered( *display )\y + (*display\bar\thumb\pos - *display\bar\area\end))
+                        ;  Debug ""+*display\scroll_height( )+" "+TabEntered( *display )\y
                         
                         If Not *display\bar\vertical
-                           Y + *display\TabEntered( )\height
+                           Y + TabEntered( *display )\height
                         EndIf
                      Else
                         Y = CanvasMouseY( )
@@ -9396,7 +9410,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.b Hide( *this._s_WIDGET, state.b = #PB_Default, flags.q = 0 )
+      Procedure.b Hide( *this._s_PARENT, state.b = #PB_Default, flags.q = 0 )
          If State = #PB_Default : ProcedureReturn *this\hide[1] : EndIf
          
          If *this\hide[1] <> state
@@ -9415,7 +9429,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.b Disable( *this._s_WIDGET, State.b = #PB_Default )
+      Procedure.b Disable( *this._s_PARENT, State.b = #PB_Default )
          If State = #PB_Default : ProcedureReturn *this\disable[1] : EndIf
          
          If *this\disable[1] <> State
@@ -10840,17 +10854,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                *this\TabChange( ) = #True
                
-               If *this\TabFocused( )
-                  *this\TabFocused( )\_focus = 0
-                  *this\TabFocused( )       = #Null
+               If *this\parentTabSelected( )
+                  *this\parentTabSelected( )\_focus = 0
+                  *this\parentTabSelected( )       = #Null
                EndIf
                
                If state >= 0
                   ;PushListPosition( *this\__tabs( ) )
                   SelectElement( *this\__tabs( ), state )
                   
-                  *this\TabFocused( )       = *this\__tabs( )
-                  *this\TabFocused( )\ScrollToActive( - 1 ) ; scroll to active tab
+                  *this\parentTabSelected( )       = *this\__tabs( )
+                  *this\parentTabSelected( )\ScrollToActive( - 1 ) ; scroll to active tab
                   
                   ;PopListPosition( *this\__tabs( ) )
                EndIf
@@ -10868,7 +10882,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                ;
                ;\\ tab items focus change
-               DoEvents( *this, #__event_Change, state, *this\TabFocused( ) )
+               DoEvents( *this, #__event_Change, state, *this\parentTabSelected( ) )
                result = #True
             EndIf
             
@@ -12234,8 +12248,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure   GetLast( *this._s_WIDGET, tabindex.l = #PB_Default )
-         Protected *last._s_WIDGET = *this\LastWidget( )
+      Procedure   GetLast( *this._s_PARENT, tabindex.l = #PB_Default )
+         Protected *last._s_PARENT = *this\LastWidget( )
          
          While *last\LastWidget( )
             If *last = *last\LastWidget( )
@@ -12257,7 +12271,70 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *last
       EndProcedure
       
-      Procedure   RePosition( *this._s_WIDGET, *parent._s_WIDGET, *after._s_WIDGET )
+      Procedure.i GetPosition( *this._s_PARENT, position.l, tabindex.l = #PB_Default )
+         Protected._s_WIDGET *first, *last
+         
+         If tabindex = #PB_Default
+            Select position
+               Case #PB_List_First    : ProcedureReturn *this\FirstWidget( )
+               Case #PB_List_Before   : ProcedureReturn *this\BeforeWidget( )
+               Case #PB_List_After    : ProcedureReturn *this\AfterWidget( )
+               Case #PB_List_Last     : ProcedureReturn *this\LastWidget( )
+            EndSelect
+         Else
+            If position = #PB_List_First
+               *first = *this\FirstWidget( ) 
+               ;
+               If *this\tabbar 
+                  If *this\haschildren
+                     If *first And *first\tabindex < tabindex
+                        PushListPosition( widgets( ) )
+                        ChangeCurrentElement( widgets( ), *first\address )
+                        *first = *this
+                        While NextElement( widgets( ) )
+                           If widgets( )\parent = *this 
+                              If widgets( )\tabindex >= tabindex
+                                 *first = widgets( )
+                                 Break
+                              EndIf
+                           EndIf
+                        Wend
+                        PopListPosition( widgets( ) )
+                     EndIf
+                  EndIf
+               EndIf
+               ;
+               ProcedureReturn *first
+            EndIf
+            
+            If position = #PB_List_Last
+               *last = *this\LastWidget( ) 
+               ;
+               If *this\tabbar 
+                  If *this\haschildren
+                     If *last And *last\tabindex > tabindex
+                        PushListPosition( widgets( ) )
+                        ChangeCurrentElement( widgets( ), *last\address )
+                        *last = *this
+                        While PreviousElement( widgets( ) )
+                           If widgets( )\parent = *this 
+                              If widgets( )\tabindex =< tabindex
+                                 *last = widgets( )
+                                 Break
+                              EndIf
+                           EndIf
+                        Wend
+                        PopListPosition( widgets( ) )
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+            ProcedureReturn *last
+         EndIf
+      EndProcedure
+      
+      Procedure   RePosition( *this._s_PARENT, *parent._s_PARENT, *after._s_PARENT )
          ;
          If *this\parent 
             If *this\parent\FirstWidget( ) = *this
@@ -12385,69 +12462,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure.i GetPosition( *this._s_WIDGET, position.l, tabindex.l = #PB_Default )
-         Protected._s_WIDGET *first, *last
-         
-         If tabindex = #PB_Default
-            Select position
-               Case #PB_List_First    : ProcedureReturn *this\FirstWidget( )
-               Case #PB_List_Before   : ProcedureReturn *this\BeforeWidget( )
-               Case #PB_List_After    : ProcedureReturn *this\AfterWidget( )
-               Case #PB_List_Last     : ProcedureReturn *this\LastWidget( )
-            EndSelect
-         Else
-            If position = #PB_List_First
-               *first = *this\FirstWidget( ) 
-               ;
-               If *this\tabbar 
-                  If *this\haschildren
-                     If *first And *first\tabindex < tabindex
-                        PushListPosition( widgets( ) )
-                        ChangeCurrentElement( widgets( ), *first\address )
-                        *first = *this
-                        While NextElement( widgets( ) )
-                           If widgets( )\parent = *this 
-                              If widgets( )\tabindex >= tabindex
-                                 *first = widgets( )
-                                 Break
-                              EndIf
-                           EndIf
-                        Wend
-                        PopListPosition( widgets( ) )
-                     EndIf
-                  EndIf
-               EndIf
-               ;
-               ProcedureReturn *first
-            EndIf
-            
-            If position = #PB_List_Last
-               *last = *this\LastWidget( ) 
-               ;
-               If *this\tabbar 
-                  If *this\haschildren
-                     If *last And *last\tabindex > tabindex
-                        PushListPosition( widgets( ) )
-                        ChangeCurrentElement( widgets( ), *last\address )
-                        *last = *this
-                        While PreviousElement( widgets( ) )
-                           If widgets( )\parent = *this 
-                              If widgets( )\tabindex =< tabindex
-                                 *last = widgets( )
-                                 Break
-                              EndIf
-                           EndIf
-                        Wend
-                        PopListPosition( widgets( ) )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-            ProcedureReturn *last
-         EndIf
-      EndProcedure
-      
       Procedure   SetPosition( *this._s_WIDGET, position.l, *widget._s_WIDGET = #Null ) ; Ok
          Protected *last._s_WIDGET
          ;
@@ -12531,7 +12545,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure   ReParent( *this._s_WIDGET, *parent._s_WIDGET )
+      Procedure   ReParent( *this._s_WIDGET, *parent._s_PARENT )
          ;\\
          If Not is_integral_( *this )
             If Not is_root_( *parent )
@@ -12609,7 +12623,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *this\parent
       EndProcedure
       
-      Procedure   GetParentLast( *this._s_WIDGET, *parent._s_WIDGET, tabindex )
+      Procedure   GetParentLast( *this._s_WIDGET, *parent._s_PARENT, tabindex )
          Protected._s_WIDGET *after, *last
          
          If *parent\LastWidget( )
@@ -12632,7 +12646,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure   SetParent( *this._s_WIDGET, *parent._s_WIDGET, tabindex.l = #PB_Default )
+      Procedure   SetParent( *this._s_WIDGET, *parent._s_PARENT, tabindex.l = #PB_Default )
          Protected parent, ReParent.b, X, Y
          Protected._s_WIDGET *after, *last, *lastParent, NewList *D( ), NewList *C( )
          If Not *this > 0 Or *this = *parent : ProcedureReturn 0 : EndIf
@@ -12653,7 +12667,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If tabindex = #PB_Default ; < 0
                If *parent\tabbar And *parent\tabbar\type = #__type_TabBar
-                  tabindex = *parent\tabindex[1]
+                  tabindex = *parent\openeditem
                Else
                   tabindex = 0
                EndIf
@@ -12955,7 +12969,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
 
       ;-
-      Procedure.i SetAttach( *this._s_WIDGET, *parent._s_WIDGET, mode.a )
+      Procedure.i SetAttach( *this._s_WIDGET, *parent._s_PARENT, mode.a )
          If *parent
             *this\bounds\attach.allocate(BOUNDAttach)
             
@@ -14129,12 +14143,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ set default selected tab
             If item = 0 
-               If Not *tabBox\TabFocused( )
+               If Not *tabBox\parentTabSelected( )
                   *tabBox\TabState( )         = 0
                   ;
                   If *tabBox\type = #__type_TabBar
-                     *tabBox\TabFocused( )       = *tabBox\__tabs( )
-                     *tabBox\TabFocused( )\ScrollToActive( - 1 ) ; scroll to active tab
+                     *tabBox\parentTabSelected( )       = *tabBox\__tabs( )
+                     *tabBox\parentTabSelected( )\ScrollToActive( - 1 ) ; scroll to active tab
                   EndIf
                EndIf
             EndIf
@@ -16455,7 +16469,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
-      Procedure   GetAtPoint( *root._s_root, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
+      Procedure   GetAtPoint( *root._s_ROOT, mouse_x, mouse_y, List *List._s_WIDGET( ), *address = #Null )
          Protected *this._s_WIDGET
          
          ;\\ get at point address
@@ -16709,6 +16723,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ do events entered & leaved
          If Entered( ) <> *this
+            mouse()\item[0] = 0   ; Обнуляем текущую вкладку
+            
             ; Debug ""+*root +" "+ Entered( ) +" "+ *this +" "+ Leaved( )
             Leaved( ) = Entered( )
             Entered( ) = *this
@@ -16843,7 +16859,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;- EVENTs
       ;-
       ;-
-      Procedure   DoTabFocus( *this._s_WIDGET, recursion.b = 0 )
+      Procedure   DoTabFocus( *this._s_PARENT, recursion.b = 0 )
          If *this\anchors And
             Not *this\anchors\mode & #__a_zoom
             ;
@@ -18451,14 +18467,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\
-                  If *this\TabPressed( )
-                     If *this\TabPressed( )\press = #True
-                        *this\TabPressed( )\press = #False
+                  If *this\parentTabPressed( )
+                     If *this\parentTabPressed( )\press = #True
+                        *this\parentTabPressed( )\press = #False
                         
-                        If *this\TabPressed( )\_enter
-                           *this\TabPressed( )\ColorState( ) = #__s_1
+                        If *this\parentTabPressed( )\_enter
+                           *this\parentTabPressed( )\ColorState( ) = #__s_1
                         Else
-                           *this\TabPressed( )\ColorState( ) = #__s_0
+                           *this\parentTabPressed( )\ColorState( ) = #__s_0
                         EndIf
                      EndIf
                   EndIf
@@ -18487,11 +18503,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected result.b
          Protected *bar._s_BAR = *this\bar
          Protected._s_BUTTONS *BB1, *BB2, *SB
-         Protected *tab._s_ROWS, mode_type = 0
+         Protected mode_type = 0
          Static *lasttab._s_ROWS
-         
          Static ToolBar
          
+         Protected *Tab._s_ROWS 
+         If *this\parent
+            Protected *EnteredTAB._s_ITEMS = parentTabEntered( *this )
+         EndIf
          
          If *bar
             *SB  = *bar\button
@@ -18500,7 +18519,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If Not MousePress( )
-            If *this\tab
+            ;If *this\tab
                If *bar
                   Protected mouse_bar_x = CanvasMouseX( ) - *this\bar\button\x
                   Protected mouse_bar_y = CanvasMouseY( ) - *this\bar\button\y
@@ -18509,13 +18528,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ;\\ get at point tab 
                   If MouseEnter( *this, 2 )
+                     
                      If ListSize( *this\__tabs( ) )
-                        If *this\TabEntered( ) And
-                           *this\TabEntered( )\visible And
-                           *this\TabEntered( )\hide = 0 And
-                           is_mouse_enter( *this\TabEntered( ), mouse_bar_x, mouse_bar_y )
+                        If *EnteredTAB And
+                           *EnteredTAB\visible And
+                           *EnteredTAB\hide = 0 And
+                           is_mouse_enter( *EnteredTAB, mouse_bar_x, mouse_bar_y )
                            
-                           *tab = *this\TabEntered( )
+                           *tab = *EnteredTAB
                         Else
                            ; search entered item
                            LastElement( *this\__tabs( ))
@@ -18532,19 +18552,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ; change enter/leave state
-                  If *this\TabEntered( ) <> *tab 
+                  If *EnteredTAB <> *tab 
                      ;\\ leaved tabs
-                     If *this\TabEntered( ) 
-                        If *this\TabEntered( )\_enter
-                           *this\TabEntered( )\_enter = 0
+                     If *EnteredTAB 
+                        If *EnteredTAB\_enter
+                           *EnteredTAB\_enter = 0
                            
-                           If *this\TabEntered( )\ColorState( ) = #__s_1
-                              *this\TabEntered( )\ColorState( ) = #__s_0
+                           If *EnteredTAB\ColorState( ) = #__s_1
+                              *EnteredTAB\ColorState( ) = #__s_0
                            EndIf
                            ;
                            If *this\type = #__type_PopupBar 
-                              If *this\TabEntered( )\checked
-                                 *this\TabEntered( )\checked = 0
+                              If *EnteredTAB\checked
+                                 *EnteredTAB\checked = 0
                               EndIf
                            EndIf
                            ;
@@ -18555,8 +18575,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *tab And *tab\disable
                         *tab = 0    
                      EndIf  
-                     *this\TabEntered( ) = *tab
-                     
+                     parentTabEntered( *this ) = *tab
+                     *EnteredTAB = *tab
                      ;
                      If *tab
                         If *this\enter 
@@ -18573,42 +18593,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               ;\\ show popup bar
                               If is_bar_( *this ) 
                                  ;\\ change focused Tab
-                                 If *this\TabFocused( ) <> *tab
+                                 If *this\parentTabSelected( ) <> *tab
                                     If *this\type = #__type_MenuBar ;Or Not ToolBar
-                                       If *this\TabFocused( )
-                                          *this\TabFocused( )\_focus = 0
-                                          *this\TabFocused( ) = *tab
+                                       If *this\parentTabSelected( )
+                                          *this\parentTabSelected( )\_focus = 0
+                                          *this\parentTabSelected( ) = *tab
                                           ; Debug " menubar focus change "
-                                          *this\TabFocused( )\_focus = 1
+                                          *this\parentTabSelected( )\_focus = 1
                                        EndIf
                                     EndIf
                                     If ToolBar > 0
-                                       If *this\TabFocused( )
-                                          ; *this\TabFocused( )\_focus = 0
-                                          *this\TabFocused( )\checked = 0
-                                          *this\TabFocused( ) = *tab
+                                       If *this\parentTabSelected( )
+                                          ; *this\parentTabSelected( )\_focus = 0
+                                          *this\parentTabSelected( )\checked = 0
+                                          *this\parentTabSelected( ) = *tab
                                        EndIf
                                        If *tab\childrens  
                                           ; Debug " toolbar focus change "
                                           ; *tab\_focus = 1
-                                          *this\TabFocused( ) = *tab
-                                          *this\TabFocused( )\checked = 1
+                                          *this\parentTabSelected( ) = *tab
+                                          *this\parentTabSelected( )\checked = 1
                                        EndIf
                                     EndIf
                                     If *this\type = #__type_PopupBar 
-                                       If *this\TabFocused( )
-                                          ; *this\TabFocused( )\_focus = 0
-                                          *this\TabFocused( )\checked = 0
+                                       If *this\parentTabSelected( )
+                                          ; *this\parentTabSelected( )\_focus = 0
+                                          *this\parentTabSelected( )\checked = 0
                                        EndIf
                                        ; Debug " popupbar focus change "
-                                       *this\TabFocused( ) = *tab
-                                       ; *this\TabFocused( )\_focus = 1
-                                       *this\TabFocused( )\checked = 1
+                                       *this\parentTabSelected( ) = *tab
+                                       ; *this\parentTabSelected( )\_focus = 1
+                                       *this\parentTabSelected( )\checked = 1
                                     EndIf
                                  Else
                                     If *this\type = #__type_PopupBar 
-                                       If *this\TabFocused( )\checked = 0
-                                          *this\TabFocused( )\checked = 1
+                                       If *this\parentTabSelected( )\checked = 0
+                                          *this\parentTabSelected( )\checked = 1
                                           ; Debug "----- popup enter "
                                        EndIf
                                     EndIf
@@ -18633,16 +18653,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ; 
                         If ToolBar 
                            If PopupBar( ) And Not ( PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__type_ComboBox )
-                              If *this\TabFocused( )
-                                 If *this\TabFocused( )\childrens 
+                              If *this\parentTabSelected( )
+                                 If *this\parentTabSelected( )\childrens 
                                     Protected GadgetY = DPIScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
                                     Protected GadgetX = DPIScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
                                     If is_inside_( GadgetY + *this\y, *this\height + PopupBar()\height , DesktopMouseY( ) ) And
-                                       is_inside_( GadgetX + *this\x, *this\TabFocused( )\x+*this\TabFocused( )\width, DesktopMouseX( ) )
+                                       is_inside_( GadgetX + *this\x, *this\parentTabSelected( )\x+*this\parentTabSelected( )\width, DesktopMouseX( ) )
                                     Else
-                                       *this\TabFocused( )\_focus = 0
-                                       *this\TabFocused( )\checked = 0
-                                       *this\TabFocused( ) = 0
+                                       *this\parentTabSelected( )\_focus = 0
+                                       *this\parentTabSelected( )\checked = 0
+                                       *this\parentTabSelected( ) = 0
                                        If test_display
                                           Debug "3?   "+HidePopupBar( PopupBar( ) )
                                        Else
@@ -18659,69 +18679,69 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                   EndIf
                EndIf
-            EndIf
+            ;EndIf
          Else
+           *Tab._s_ROWS = *EnteredTAB
             If *this\type = #__type_ToolBar
                If event = #__event_Down
-                  *tab = *this\TabEntered( )
                   If *tab And *tab\childrens  
                      ToolBar ! 1
                      If ToolBar
                         ; Debug " toolbar focus change "
                         ; *tab\_focus = 1
-                        *this\TabFocused( ) = *tab
-                        *this\TabFocused( )\checked = 1
+                        *this\parentTabSelected( ) = *tab
+                        *this\parentTabSelected( )\checked = 1
                         
                         ChangePopupBar( *this, *tab )
                      Else
-                        If *this\TabFocused( )
-                           *this\TabFocused( )\checked = 0
-                           *this\TabFocused( ) = 0
+                        If *this\parentTabSelected( )
+                           *this\parentTabSelected( )\checked = 0
+                           *this\parentTabSelected( ) = 0
                         EndIf
                      EndIf
                   Else
                      If ToolBar
-                        If *this\TabFocused( )
-                           *this\TabFocused( )\checked = 0
-                           *this\TabFocused( ) = 0
+                        If *this\parentTabSelected( )
+                           *this\parentTabSelected( )\checked = 0
+                           *this\parentTabSelected( ) = 0
                         EndIf
                         ToolBar = 0
                      EndIf
                   EndIf
                EndIf
             EndIf
-            
-            ;
          EndIf
          
          ;
          If event = #__event_MouseLeave
-            If *this\TabFocused( )
-               If *this\TabFocused( )\childrens 
-                  If ToolBar
-                     Protected GadgetY1 = DPIScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
-                     Protected GadgetX1 = DPIScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
-                     If PopupBar( ) And Not ( PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__type_ComboBox )
-                        If is_inside_( GadgetY1 +*this\y, *this\height + PopupBar()\height , DesktopMouseY( ) ) And
-                           is_inside_( GadgetX1 +*this\x, *this\TabFocused( )\x+*this\TabFocused( )\width, DesktopMouseX( ) )
-                        Else
-                           *this\TabFocused( )\_focus = 0
-                           *this\TabFocused( )\checked = 0
-                           *this\TabFocused( ) = 0
-                           If test_display
-                              Debug "4?   "+HidePopupBar( PopupBar( ) )
+            If *this\parent
+               If *this\parentTabSelected( )
+                  If *this\parentTabSelected( )\childrens 
+                     If ToolBar
+                        Protected GadgetY1 = DPIScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
+                        Protected GadgetX1 = DPIScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
+                        If PopupBar( ) And Not ( PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__type_ComboBox )
+                           If is_inside_( GadgetY1 +*this\y, *this\height + PopupBar()\height , DesktopMouseY( ) ) And
+                              is_inside_( GadgetX1 +*this\x, *this\parentTabSelected( )\x+*this\parentTabSelected( )\width, DesktopMouseX( ) )
                            Else
-                              HidePopupBar( PopupBar( ) )
+                              *this\parentTabSelected( )\_focus = 0
+                              *this\parentTabSelected( )\checked = 0
+                              *this\parentTabSelected( ) = 0
+                              If test_display
+                                 Debug "4?   "+HidePopupBar( PopupBar( ) )
+                              Else
+                                 HidePopupBar( PopupBar( ) )
+                              EndIf
+                              PopupBar( ) = 0
                            EndIf
-                           PopupBar( ) = 0
                         EndIf
                      EndIf
-                  EndIf
-               Else
-                  If *this\menu\display
-                     *this\TabFocused( )\_focus = 0
-                     *this\TabFocused( )\checked = 0
-                     *this\TabFocused( ) = 0
+                  Else
+                     If *this\menu\display
+                        *this\parentTabSelected( )\_focus = 0
+                        *this\parentTabSelected( )\checked = 0
+                        *this\parentTabSelected( ) = 0
+                     EndIf
                   EndIf
                EndIf
             EndIf
@@ -18729,9 +18749,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          If event = #__event_Down
             If MouseButtons( ) & #PB_Canvas_LeftButton
-               If *this\tab
-                  *tab = *this\TabEntered( )
-                  
+               ;If *this\tab
                   If PopupBar( ) And Not ( PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__type_ComboBox )
                      If PopupBar( )\menu\display And Not ( ToolBar And *tab And *tab\childrens)
                         If test_display
@@ -18746,21 +18764,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *this\type = #__type_MenuBar
                      If *tab And Not *tab\disable 
-                        If Not *this\TabFocused( )
-                           If *this\TabFocused( ) <> *tab
-                              If *this\TabFocused( )
-                                 *this\TabFocused( )\_focus = 0
-                                 ; *this\TabFocused( )\checked = 0
-                                 *this\TabFocused( ) = 0 
+                        If Not *this\parentTabSelected( )
+                           If *this\parentTabSelected( ) <> *tab
+                              If *this\parentTabSelected( )
+                                 *this\parentTabSelected( )\_focus = 0
+                                 ; *this\parentTabSelected( )\checked = 0
+                                 *this\parentTabSelected( ) = 0 
                               EndIf
                               ;
-                              *this\TabFocused( ) = *tab
-                              *this\TabFocused( )\_focus ! 1
-                              ; *this\TabFocused( )\checked ! 1
+                              *this\parentTabSelected( ) = *tab
+                              *this\parentTabSelected( )\_focus ! 1
+                              ; *this\parentTabSelected( )\checked ! 1
                            Else
-                              ; *this\TabFocused( )\checked = 0
-                              *this\TabFocused( )\_focus = 0 
-                              *this\TabFocused( ) = 0
+                              ; *this\parentTabSelected( )\checked = 0
+                              *this\parentTabSelected( )\_focus = 0 
+                              *this\parentTabSelected( ) = 0
                            EndIf
                            ;
                            If *tab\childrens 
@@ -18771,7 +18789,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   If Not ( *tab And *tab\disable And *tab\childrens )
-                     *this\TabPressed( ) = *tab
+                     *this\parentTabPressed( ) = *tab
                      
                      ;                                              ;
                      If Not ( EnteredButton( ) And 
@@ -18788,20 +18806,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                   EndIf
-               EndIf
+               ;EndIf
             EndIf
          EndIf
          ;
          If event = #__event_Up
             If MouseButtons( ) & #PB_Canvas_LeftButton
-               *tab = *this\TabEntered( )
-               ;
                If *tab
                   If *tab\childrens 
                      If Not PopupBar( )
-                        If *this\TabFocused( )
-                           *this\TabFocused( )\_focus = 0
-                           *this\TabFocused( ) = 0
+                        If *this\parentTabSelected( )
+                           *this\parentTabSelected( )\_focus = 0
+                           *this\parentTabSelected( ) = 0
                         EndIf
                      EndIf
                   EndIf
@@ -19519,7 +19535,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   EventHandler( eventgadget = - 1, eventtype = - 1, eventdata = 0 )
-         Protected *root._s_root, Repaint, event, mouse_x , mouse_y
+         Protected *root._s_ROOT, Repaint, event, mouse_x , mouse_y
          ;
          ;\\
          ;
@@ -19852,7 +19868,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If test_canvas_events
                Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
-            Protected *keywidget._s_WIDGET
+            Protected *keywidget._s_PARENT
             
             *keywidget = GetActive( )
             
@@ -20338,13 +20354,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   Else
                      ; reset all anchors
-                     If a_focused( )
-                        If Entered( )\FirstWidget( )
-                           If Entered( )\FirstWidget( )\anchors
-                              ; a_set( 0 )
-                           EndIf
-                        EndIf
-                     EndIf
+;                      If a_focused( )
+;                         If Entered( )\FirstWidget( )
+;                            If Entered( )\FirstWidget( )\anchors
+;                               ; a_set( 0 )
+;                            EndIf
+;                         EndIf
+;                      EndIf
                      ;
                      If GetActive( ) <> Entered( )
                         SetActive( Entered( ))
@@ -22783,7 +22799,7 @@ EndProcedure
       EndProcedure
       
       Procedure   Drawing( )
-         Protected *root._s_root = __gui\DrawingRoot
+         Protected *root._s_ROOT = __gui\DrawingRoot
          
          ;\\
          If *root
@@ -23108,8 +23124,8 @@ EndProcedure
       ;-
       ;-  CREATEs
       ;-
-      Procedure.i Create( *parent._s_WIDGET, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
-         Protected *root._s_root
+      Procedure.i Create( *parent._s_PARENT, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
+         Protected *root._s_ROOT
          If *parent
             *root = *parent\root
          EndIf
@@ -23120,19 +23136,40 @@ EndProcedure
          Protected color, img                 ;, *this.allocate( Widget )
          Protected.b flag_AutoSize = constants::BinaryFlag( Flag, #__flag_autosize )
          
-         
-         Protected *this._s_WIDGET
-         If *root And flag_autosize And
-            Not ListSize( widgets( ) )
-            X              = 0
-            Y              = 0
-            Width          = *root\width
-            Height         = *root\height
-            *root\autosize = #True
-            *this          = *root
-         Else
-            *this.allocate( Widget )
-         EndIf
+         ;
+;          If Type = #__type_Container Or
+;             Type = #__type_ScrollArea Or
+;             Type = #__type_Panel Or
+;             Type = #__type_MDI Or
+;             Type = #__type_Frame
+;             Protected *this._s_PARENT
+;             If *root And flag_autosize And
+;                Not ListSize( widgets( ) )
+;                X              = 0
+;                Y              = 0
+;                Width          = *root\width
+;                Height         = *root\height
+;                *root\autosize = #True
+;                *this          = *root
+;             Else
+;                *this.allocate( Container )
+;             EndIf
+;          Else
+            Protected *this._s_WIDGET
+            If *root And flag_autosize And
+               Not ListSize( widgets( ) )
+               X              = 0
+               Y              = 0
+               Width          = *root\width
+               Height         = *root\height
+               *root\autosize = #True
+               *this          = *root
+            Else
+               *this.allocate( Widget )
+            EndIf
+            
+;          EndIf
+      
          
          If Type = #__type_MenuBar Or
             Type = #__type_PopupBar Or
@@ -23970,6 +24007,418 @@ EndProcedure
          ProcedureReturn *this
       EndProcedure
       
+      Procedure.i CreateContainer( *parent._s_PARENT, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
+         Protected *root._s_ROOT
+         If *parent
+            *root = *parent\root
+         EndIf
+         If Not *root : ProcedureReturn 0 : EndIf
+         ;
+         size = DPIScaled( size )
+         
+         ;
+         Protected color, img                 ;, *this.allocate( Widget )
+         Protected.b flag_AutoSize = constants::BinaryFlag( Flag, #__flag_autosize )
+         
+         ;
+           Protected *this._s_PARENT
+            If flag_autosize And
+               Not ListSize( widgets( ) )
+               X              = 0
+               Y              = 0
+               Width          = *root\width
+               Height         = *root\height
+               *root\autosize = #True
+               *this          = *root
+            Else
+               *this.allocate( PARENT )
+            EndIf
+;          
+      
+         
+         If Type = #__type_Splitter 
+            *this\bar.allocate( BAR )
+         EndIf
+         
+         ;
+         *this\child  = constants::BinaryFlag( Flag, #__flag_child )
+         
+         ;
+         If Type = #__type_Splitter
+            *this\bar\vertical = Bool( Not constants::BinaryFlag( Flag, #__flag_Vertical ) And 
+                                       Not constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
+            *this\bar\invert   = constants::BinaryFlag( Flag, #__flag_Invert )
+         EndIf
+         
+         ;
+         ; replace pb flag to widget flag
+         Flag = FromPBFlag( Type, Flag )
+         ;
+         ; set default text align flags
+         If Not Flag & #__flag_Center
+            If Not (Flag & #__flag_Left Or
+                    Flag & #__flag_Right Or
+                    Flag & #__flag_Top Or
+                    Flag & #__flag_Bottom)
+               
+               If Type = #__type_Spin 
+                  If Flag & #__spin_Plus
+                     Flag | #__flag_Center
+                  Else
+                     Flag | #__flag_Left
+                  EndIf
+                  
+               ElseIf Type = #__type_Text Or
+                      Type = #__type_Image Or
+                      Type = #__type_Editor
+                  
+                  Flag | #__flag_Left | #__flag_Top
+                  
+               ElseIf Type = #__type_Button Or 
+                      Type = #__type_ButtonImage Or 
+                      Type = #__type_Progress Or
+                      Type = #__type_HyperLink
+                  
+                  Flag | #__flag_Center
+                  
+               ElseIf Type = #__type_ComboBox Or 
+                      Type = #__type_String Or
+                      Type = #__type_Option Or
+                      Type = #__type_CheckBox
+                  
+                  Flag | #__flag_Left
+               EndIf
+            EndIf
+         EndIf
+         
+         ; set default text line
+         If Not ( Flag & #__flag_TextInLine Or
+                  Flag & #__flag_TextMultiLine Or 
+                  Flag & #__flag_TextWordWrap )
+            ;
+            If Type = #__type_Text
+               Flag | #__flag_TextWordWrap
+            ElseIf Type = #__type_Editor
+               Flag | #__flag_TextMultiLine
+            EndIf
+            
+            ; set dafault multiline text
+            If Text
+               If Type = #__type_Option Or
+                  Type = #__type_CheckBox Or
+                  Type = #__type_HyperLink
+                  
+                  If CountString( Text, #LF$ )
+                     Flag | #__flag_TextMultiLine
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+         
+         ;\\ set default border & frame size
+         If is_integral_( *this )
+            If Type = #__type_Scroll
+               *this\fs = 0
+            Else
+               *this\fs = 0
+            EndIf
+         Else
+            If constants::BinaryFlag( Flag, #__flag_BorderDouble ) Or
+               constants::BinaryFlag( Flag, #__flag_BorderRaised )
+               *this\fs = 2
+            ElseIf constants::BinaryFlag( Flag, #__flag_BorderFlat ) Or
+                   constants::BinaryFlag( Flag, #__flag_BorderSingle ) 
+               *this\fs = 1
+            ElseIf constants::BinaryFlag( Flag, #__flag_BorderLess )
+               *this\fs = 0
+            Else
+               ; default border
+               If Type = #__type_Panel Or
+                  Type = #__type_ScrollArea 
+                  
+                  *this\fs = 2
+               EndIf
+               If Type = #__type_Container 
+                  *this\fs = 1
+               EndIf
+            EndIf
+         EndIf
+         *this\bs = *this\fs
+         
+         ;
+         ;\\
+         *this\font   = - 1
+         *this\color  = _get_colors_( )
+         *this\type   = Type
+         *this\flagmask   = Flag   
+         *this\class  = class
+         *this\round  = DPIScaled( round )
+         
+         ;\\
+         If *parent
+            ;\\
+            If flag_autosize
+               If *parent <> *this
+                  If *parent\type <> #__type_Splitter
+                     *this\autosize = 1
+                     ; set transparent parent
+                     *parent\color\back   = - 1
+                     *parent\color\_alpha = 0
+                  EndIf
+               EndIf
+            EndIf
+            
+            ;\\
+            If is_integral_( *this )
+               *this\createindex   =- 1
+               *this\address = *parent\address
+               ReParent( *this, *parent )
+            Else
+               ;*this\text\str(0) = Text
+               SetParent( *this, *parent, #PB_Default )
+            EndIf
+         EndIf
+         
+         ;
+         ;\\ add count types
+         CountType( *this, 1 )
+         
+         ;\\ - Create Containers
+         If *this\type = #__type_Container Or
+            *this\type = #__type_ScrollArea Or
+            *this\type = #__type_Panel Or
+            *this\type = #__type_MDI Or
+            *this\type = #__type_Frame
+            
+            If *this\type = #__type_Frame
+               *this\container = - 1
+            ElseIf *this\type = #__type_Panel
+               *this\container = 3
+            ElseIf *this\type = #__type_MDI
+               *this\container = 4
+            Else
+               *this\container = 5
+               *this\eventmask | #__eventmask_resize
+            EndIf
+            
+            ;
+            ;\\
+            If *this\type = #__type_Frame
+               *this\color\back = $96D8D8D8
+               
+               If Text
+                  *this\fs[2] = 8
+               EndIf
+            Else
+               *this\color\back = $FFF9F9F9
+            EndIf
+            
+            ;\\
+            If *this\type = #__type_Panel
+               *this\tabbar = CreateBar( *this, #__flag_BarSmall, #__type_TabBar ) 
+               *this\tabbar\bar\vertical = constants::BinaryFlag( *this\flagmask, #__flag_Vertical )
+               
+               If*this\flagmask & #__Panel_Left And
+                 *this\flagmask & #__Panel_Bottom And 
+                 *this\flagmask & #__Panel_Right
+                  BarPosition(*this\tabbar, 3)
+               Else
+                  If*this\flagmask & #__Panel_Left
+                     BarPosition(*this\tabbar, 1)
+                  ElseIf*this\flagmask & #__Panel_Bottom  
+                     BarPosition(*this\tabbar, 4)
+                  ElseIf*this\flagmask & #__Panel_Right
+                     BarPosition(*this\tabbar, 3)
+                  EndIf
+               EndIf
+               If constants::BinaryFlag( *this\flagmask, #__flag_nobuttons ) 
+                  If constants::BinaryFlag( *this\flagmask, #__flag_Vertical ) 
+                     *this\fs[1] = 0
+                  Else
+                     *this\fs[2] = 0
+                  EndIf
+               EndIf
+               
+            EndIf
+            
+            ;\\ Open gadget list
+            If *this\container > 0 
+               If constants::BinaryFlag( *this\flagmask, #__flag_NoGadgets, #False )
+                  OpenList( *this )
+               EndIf
+            EndIf
+         EndIf
+         
+         ;\\ - Create Bars
+         If *this\bar
+            *this\bar\button.allocate( BUTTONS )
+            *this\bar\button.allocate( BUTTONS, [1] )
+            *this\bar\button.allocate( BUTTONS, [2] )
+            
+            *this\scroll\increment  = ScrollStep
+            Protected._s_BUTTONS *BB1, *BB2, *SB
+            *SB  = *this\bar\button
+            *BB1 = *this\bar\button[1]
+            *BB2 = *this\bar\button[2]
+            
+            If *this\type = #__type_Splitter 
+               If Not is_integral_( *this )
+                  *this\bar\PageChange( ) = 1 ; для MDI мешает
+               EndIf
+               
+               *this\container  = - 1
+               *this\color\back = - 1
+               ;
+               *SB\round = dpi_scale_two
+               *SB\size = bar_splitter_size 
+               ;
+               If constants::BinaryFlag( *this\flagmask, #PB_Splitter_FirstFixed )
+                  *this\bar\fixed = 1
+               ElseIf constants::BinaryFlag( *this\flagmask, #PB_Splitter_SecondFixed )
+                  *this\bar\fixed = 2
+               EndIf
+               ;
+               *this\split_1( ) = *param_1
+               *this\split_2( ) = *param_2
+               ;
+               *this\bar\button[1]\hide = Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
+               *this\bar\button[2]\hide = Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
+               ;
+               If IsGadget( *this\split_1( ) )
+                  Debug "bar_is_first_gadget_ " + IsGadget( *this\split_1( ) )
+                  parent::set( *this\split_1( ), *this\root\canvas\GadgetID )
+               ElseIf *this\split_1( ) > 65535
+                  SetParent( *this\split_1( ), *this )
+               EndIf
+               ;
+               If IsGadget( *this\split_2( ) )
+                  Debug "bar_is_second_gadget_ " + IsGadget( *this\split_2( ) )
+                  parent::set( *this\split_2( ), *this\root\canvas\GadgetID )
+               ElseIf *this\split_2( ) > 65535
+                  SetParent( *this\split_2( ), *this )
+               EndIf
+            EndIf
+            ;
+         EndIf
+         
+         
+         ; COLOR
+         If constants::BinaryFlag( *this\flagmask, #__flag_Transparent )
+            *this\color\back =- 1
+         EndIf
+         
+         ;\\ CURSOR init
+         If *this\type = #__type_Splitter
+            If *this\bar\vertical
+               *this\cursor[1] = cursor::#__cursor_SplitUpDown
+               *this\cursor[2] = cursor::#__cursor_SplitUp
+               *this\cursor[3] = cursor::#__cursor_SplitDown
+            Else
+               *this\cursor[1] = cursor::#__cursor_SplitLeftRight
+               *this\cursor[2] = cursor::#__cursor_SplitLeft
+               *this\cursor[3] = cursor::#__cursor_SplitRight
+            EndIf
+         EndIf
+         If *this\cursor[1]
+            *this\cursor[0] = *this\cursor[1]
+         EndIf
+         
+         ;\\
+         If *this\flagmask
+            Flag( *this, *this\flagmask, #True )
+         EndIf
+         
+         
+         ; RESIZE
+         If is_integral_( *this )
+         Else
+            If *this\root And 
+               Width And Height And 
+               Not *this\root\width And 
+               Not *this\root\height
+               *this\autosize = 1
+               Debug " canvas gadget resize"
+               ResizeGadget( *this\root\canvas\gadget, X, Y, Width, Height )
+            Else
+               If Not ( *this\autosize And is_root_( *this ))
+                  *this\frame_x( )      = #PB_Ignore
+                  *this\frame_y( )      = #PB_Ignore
+                  *this\frame_width( )  = #PB_Ignore
+                  *this\frame_height( ) = #PB_Ignore
+               EndIf
+               
+               If Not ( *this\autosize And is_root_( *this ))
+                  Resize( *this, X, Y, Width, Height )
+               Else
+                  If *this\type = #__type_Splitter
+                     bar_update( *this, 1 )
+                  EndIf
+               EndIf
+               
+            EndIf
+         EndIf
+         
+         ;
+         ; set text flag
+         If *this\type = #__type_Frame
+            
+            If *this\text
+               If *this\row
+                  If *this\text\multiline
+                     *this\MarginLine( )\hide        = constants::BinaryFlag( *this\flagmask, #__flag_TextNumeric, #False )
+                     *this\MarginLine( )\color\front = $C8000000 ; \color\back[0]
+                     *this\MarginLine( )\color\back  = $C8F0F0F0 ; \color\back[0]
+                  Else
+                     *this\MarginLine( )\hide = 1
+                  EndIf
+               EndIf
+               
+               ;\\
+               If *this\type = #__type_Editor Or
+                  *this\type = #__type_String
+                  *this\color\fore = 0
+                  
+                  If *this\text\mode & #__text_editable
+                     *this\edit_caret( )\width = DPIScaled(1)
+                     *this\color\back[0] = $FFFFFFFF
+                  Else
+                     *this\edit_caret( )\width = 0
+                     *this\color\back[0] = $FFF0F0F0
+                  EndIf
+               EndIf
+               
+               ;\\
+               If *this\type = #__type_Frame
+                  If *this\text
+                     *this\text\x = 12
+                     *this\text\y = - *this\fs[2] - 1
+                  EndIf
+               EndIf
+               
+               ;\\
+               If Text
+                  SetText( *this, Text )
+               EndIf
+            EndIf
+         EndIf
+         
+         
+         ;\\ Scroll bars
+         If *this\type = #__type_MDI Or
+                *this\type = #__type_ScrollArea
+            
+            bar_area_create( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
+         EndIf
+         
+         If *this\type = #__type_ScrollArea
+            SetAttribute( *this, #PB_ScrollArea_ScrollStep, *param_3 )
+         EndIf
+         
+         Widget( ) = *this
+         ProcedureReturn *this
+      EndProcedure
+      
       Procedure.i Scroll( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, PageLength.l, Flag.q = 0, round.l = 0 )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Scroll, X, Y, Width, Height, #Null$, Flag, min, max, pagelength, #__bar_button_size, round, 1 )
       EndProcedure
@@ -23980,10 +24429,6 @@ EndProcedure
       
       Procedure.i Progress( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, Flag.q = 0, round.l = 0 )
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Progress, X, Y, Width, Height, #Null$, Flag, min, max, 0, 0, round, 1 )
-      EndProcedure
-      
-      Procedure.i Splitter( X.l, Y.l, Width.l, Height.l, First.i, Second.i, Flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Splitter, X, Y, Width, Height, #Null$, Flag, First, Second, 0, 0, 0, 1 )
       EndProcedure
       
       Procedure.i Spin( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, Flag.q = 0, round.l = 0, Increment.d = 1.0 )
@@ -24100,34 +24545,38 @@ EndProcedure
          ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ComboBox, X, Y, Width, Height, "", Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
       EndProcedure
       
+      Procedure.i Image( X.l, Y.l, Width.l, Height.l, img.i, Flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
+         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_image, X, Y, Width, Height, #Null$, Flag, img, 0, 0, #__bar_button_size, 0, 1 )
+      EndProcedure
+      
+      Procedure.i Splitter( X.l, Y.l, Width.l, Height.l, First.i, Second.i, Flag.q = 0 )
+         ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__type_Splitter, X, Y, Width, Height, #Null$, Flag, First, Second, 0, 0, 0, 1 )
+      EndProcedure
+      
       Procedure.i MDI( X.l, Y.l, Width.l, Height.l, Flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_MDI, X, Y, Width, Height, #Null$, Flag | #__flag_nogadgets, 0, 0, 0, #__bar_button_size, 0, 1 )
+         ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__type_MDI, X, Y, Width, Height, #Null$, Flag | #__flag_nogadgets, 0, 0, 0, #__bar_button_size, 0, 1 )
       EndProcedure
       
       Procedure.i Panel( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Panel, X, Y, Width, Height, #Null$, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
+         ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__type_Panel, X, Y, Width, Height, #Null$, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
       EndProcedure
       
       Procedure.i Container( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Container, X, Y, Width, Height, #Null$, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
+         ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__type_Container, X, Y, Width, Height, #Null$, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
       EndProcedure
       
       Procedure.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, Flag.q = 0 )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ScrollArea, X, Y, Width, Height, #Null$, Flag, ScrollAreaWidth, ScrollAreaHeight, ScrollStep, #__bar_button_size, 0, ScrollStep )
+         ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__type_ScrollArea, X, Y, Width, Height, #Null$, Flag, ScrollAreaWidth, ScrollAreaHeight, ScrollStep, #__bar_button_size, 0, ScrollStep )
       EndProcedure
       
       Procedure.i Frame( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = #__flag_nogadgets )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Frame, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, 7 )
-      EndProcedure
-      
-      Procedure.i Image( X.l, Y.l, Width.l, Height.l, img.i, Flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-         ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_image, X, Y, Width, Height, #Null$, Flag, img, 0, 0, #__bar_button_size, 0, 1 )
+         ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__type_Frame, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, 7 )
       EndProcedure
       
       
       ;-
       Procedure   Open( window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, Flag.q = #Null, *parentID = #Null, Canvas = #PB_Ignore )
-         Protected result, w, g, canvasflag = #PB_Canvas_Keyboard, UseGadgetList, *root._s_root 
+         Protected result, w, g, canvasflag = #PB_Canvas_Keyboard, UseGadgetList, *root._s_ROOT 
          
          ; init
          If Not MapSize( roots( ) )
@@ -24263,7 +24712,7 @@ EndProcedure
          ;
          If Not FindMapElement( roots( ), Str( g ) ) ; ChangeCurrentCanvas(g)
             result     = AddMapElement( roots( ), Str( g ) )
-            roots( )   = AllocateStructure( _s_root )
+            roots( )   = AllocateStructure( _s_ROOT )
             *root      = roots( )
             If Root( )
                Root( )\NextRoot( ) = *root
@@ -24304,12 +24753,6 @@ EndProcedure
             
             ;\\
             If Not constants::BinaryFlag( Flag, #PB_Window_NoGadgets ) 
-               *root\Beforeroot( ) = Opened( )
-               If *root\Beforeroot( )
-                  *root\Beforeroot( )\Afterroot( ) = *root
-               EndIf
-               ;Opened( ) = *root
-               ;
                OpenList( *root)
             EndIf
          EndIf
@@ -24367,8 +24810,6 @@ EndProcedure
                ; CocoaMessage(0, g,"setFocusRingType:",1)
             CompilerEndIf
             
-            
-            
             ;\\ 
             If *root
                If constants::BinaryFlag( Flag, #PB_Window_NoActivate )
@@ -24384,18 +24825,17 @@ EndProcedure
          
          Widget( ) = *root
          
-         
          ProcedureReturn *root
       EndProcedure
       
-      Procedure.i Window( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, *parent._s_WIDGET = 0 )
+      Procedure.i Window( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, *parent._s_PARENT = 0 )
          Protected fs = DPIScaled(#__window_FrameSize)
          Protected barHeight = DPIScaled( #__window_CaptionHeight )
-         Protected *this._s_WIDGET
+         Protected *this._s_WINDOW
          
          ;Protected *this.allocate( Widget )
          If Opened( )
-            Protected *root._s_root = Opened( )\root
+            Protected *root._s_ROOT = Opened( )\root
          EndIf
          
          
@@ -24422,7 +24862,7 @@ EndProcedure
             ;                ;                      ;  
             ;                ;                   CompilerEndIf
             ;             Else
-            *this.allocate( Widget )
+            *this.allocate( WINDOW )
             ;             EndIf
             ;             ;\\ open root list
          Else
@@ -24625,43 +25065,43 @@ EndProcedure
       EndProcedure
       
       ;-
-      Procedure.i OpenList(*this._s_WIDGET, item.l = 0)
-         If Not *this : ProcedureReturn #False : EndIf
-         Protected *prev._s_WIDGET = Opened()
+      Procedure.i OpenList( *parent._s_PARENT, item.l = 0 )
+         If Not *parent : ProcedureReturn #False : EndIf
+         Protected *prev._s_PARENT = Opened( )
          
          ; 2. ПОДДЕРЖКА ВКЛАДОК (TabBar)
          ; Гарантируем, что индекс не отрицательный
          If Item < 0 : Item = 0 : EndIf
-         *this\tabindex[1] = Item
+         *parent\openeditem = Item
          
          ; 3. ПЕРЕКЛЮЧЕНИЕ СИСТЕМНОГО КОНТЕКСТА
-         If *prev <> *this
+         If *prev <> *parent
             If *prev
                ; 1. ЛОГИЧЕСКАЯ СВЯЗЬ (Путь назад)
                ; Если уже есть открытый контекст — запоминаем его как "предыдущий"
-               *this\parent[1] = *prev
+               *parent\opened = *prev
                
                ; Если мы переходим на другой холст (другое окно)
-               If *prev\root <> *this\root And *this\root
+               If *prev\root <> *parent\root And *parent\root
                   ; Указываем PureBasic, в каком окне теперь создавать гаджеты
-                  UseGadgetList(WindowID(*this\root\canvas\window))
+                  UseGadgetList( WindowID( *parent\root\canvas\window ))
                   ; Обновляем глобальный указатель на текущий активный холст
-                  ChangeCurrentCanvas(GadgetID(*this\root\canvas\gadget))
+                  ChangeCurrentCanvas( GadgetID( *parent\root\canvas\gadget ))
                EndIf
             EndIf
             
             ; Устанавливаем новый текущий активный элемент (куда будут падать виджеты)
-            Opened() = *this
+            Opened( ) = *parent
          EndIf        
          
          ; Возвращаем указатель на того, кто был активен до этого (удобно для проверок)
          ProcedureReturn *prev
       EndProcedure
       
-      Procedure.i CloseList()
+      Procedure.i CloseList( )
          Protected *prevRoot._s_ROOT
-         If Opened()
-            Protected *prev._s_WIDGET = Opened()\parent[1]
+         If Opened( )
+            Protected *prev._s_PARENT = Opened( )\opened
             ; Если у текущего элемента есть записанный "путь назад"
             If *prev
                If *prev\root
@@ -24673,30 +25113,30 @@ EndProcedure
                ; Проверяем, нужно ли переключить системное окно PB назад
                ; (если родитель находится на другом холсте)
                If *prevRoot
-                  If Opened()\root <> *prevRoot
+                  If Opened( )\root <> *prevRoot
                      ; Указываем PureBasic, в каком окне теперь создавать гаджеты
-                     UseGadgetList(WindowID(*prevRoot\canvas\window))
+                     UseGadgetList( WindowID( *prevRoot\canvas\window ))
                      ; Обновляем глобальный указатель на текущий активный холст
-                     ChangeCurrentCanvas(GadgetID(*prevRoot\canvas\gadget))
+                     ChangeCurrentCanvas( GadgetID( *prevRoot\canvas\gadget ))
                   EndIf
                EndIf
                
                ; Делаем шаг назад по логической цепочке
-               Opened() = *prev
+               Opened( ) = *prev
             EndIf
          EndIf
          
          ; Возвращаем новый текущий контекст
-         ProcedureReturn Opened()
+         ProcedureReturn Opened( )
       EndProcedure
 
       ;-
-      Procedure   Reclip( *this._s_WIDGET )
+      Procedure   ReClip( *this._s_WIDGET )
          Protected x1, p_x1
          Protected y1, p_y1
          Protected x2, p_x2
          Protected y2, p_y2
-         Protected *parent._s_WIDGET
+         Protected *parent._s_PARENT
          ;
          If is_root_( *this )
             *this\clip_x() = *this\screen_x() : *this\clip_width() = *this\screen_width()
@@ -24826,7 +25266,7 @@ EndProcedure
          ProcedureReturn Bool( *this\clip_width( ) > 0 And *this\clip_height( ) > 0 )
       EndProcedure
       
-      Procedure.b Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, scale.b = 1 )
+      Procedure.b Resize( *this._s_PARENT, X.l, Y.l, Width.l, Height.l, scale.b = 1 )
          Protected.l Change_x, Change_y, Change_width, Change_height
          Protected.l ix, iy, iwidth, iheight
          Protected.b result
@@ -25280,7 +25720,7 @@ EndProcedure
          EndIf   
          
          ;\\
-         Reclip( *this )
+         ReClip( *this )
          
          ;\\
          If ( Change_x Or Change_y Or Change_width Or Change_height ) 
@@ -25773,7 +26213,7 @@ EndProcedure
          EndIf
       EndProcedure
       
-      Procedure   AddEvents( *this._s_root, event.l, *button = #PB_All, *data = #Null )
+      Procedure   AddEvents( *this._s_ROOT, event.l, *button = #PB_All, *data = #Null )
          If *this > 0
             If test_event_add
                Static test
@@ -25817,10 +26257,13 @@ EndProcedure
          EndIf
       EndProcedure
       
-      Procedure.i Post( *this._s_root, event.l, *button = #PB_All, *data = #Null )
+      Procedure.i Post( *this._s_ROOT, event.l, *button = #PB_All, *data = #Null )
          Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
          
          If *this > 0 
+            If *this\parent
+               Protected *EnteredTab._s_ITEMS = parentTabEntered( *this )
+            EndIf
             ;             If Not __gui\event\queuesmask
             ;                ; If *this\type <> #__type_Scroll
             ;                ;    Debug " post add events"+ *this\class +" "+ EventString(event) +" "+ *button +" "+ *data
@@ -25839,10 +26282,9 @@ EndProcedure
                ;
                If event = #__event_LeftClick Or
                   event = #__event_Change
-                  If *this\TabEntered( )
-                     *button = *this\TabEntered( )\tindex
+                  If *EnteredTab
+                     *button = *EnteredTab\tindex
                   EndIf
-                  ; Debug ""+EventString(event)+" "+*this\TabEntered( ) +" "+ *Button
                EndIf
                ;
                If *button < 0
@@ -25881,7 +26323,7 @@ EndProcedure
                   Wend
                   EventWidget( )     = *this
                Else
-                  If *this\TabEntered( ) And *this\TabEntered( )\childrens
+                  If *EnteredTab And *EnteredTab\childrens
                      ; Чтобы не отправлять события
                      ProcedureReturn 0
                   EndIf
@@ -26131,7 +26573,7 @@ EndProcedure
 EndProcedure
 
       ;-
-      Procedure   PostQuit( *root._s_root = #Null )
+      Procedure   PostQuit( *root._s_ROOT = #Null )
          If __gui\event\loop = #True
             __gui\event\loop = #False
             
@@ -26215,7 +26657,7 @@ EndProcedure
          ForEver 
       EndProcedure
       
-     Procedure   Delete( *parent._s_WIDGET, mode = 0 )
+     Procedure   Delete( *parent._s_PARENT, mode = 0 )
          Protected *root._s_ROOT = *parent\root
          
          If LastElement(widgets( ))
@@ -26572,7 +27014,7 @@ EndProcedure
          Protected img = - 1, f1 = - 1, f2 = 8
          Protected bw = 85, bh = 25, iw = Height - bh - f1 - f2 * 4 - 2 - 1
          
-         Protected._s_root *root, *message
+         Protected._s_ROOT *root, *message
          Protected._s_WIDGET *ok, *no, *cancel, *widget
          
          *widget = EventWidget( )
@@ -27963,7 +28405,7 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
    
    ;-\\ OPENROOT1
-   Global._s_WIDGET *c, *p, *panel
+   Global._s_PARENT *c, *p, *panel
    OpenList( *root1 )
    *panel = Panel(20, 20, 250, 180 + 60, editable|#__Panel_Right|#__Flag_Vertical) : SetText(*panel, "1")
    AddItem( *panel, -1, "item_1" )
@@ -28289,10 +28731,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 24629
-; FirstLine = 24080
-; Folding = ---------------------f+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-----------------------------------------------------------------------------------------8--0-----------+8--+----------------------------------4u---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0--v-------------------------------------------------------v-----------------------------------------v--------------------------4----------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 12546
+; FirstLine = 11853
+; Folding = ---------------------P---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4----------------------------------------------------------------------v---n-8-8-------------------------------D--------r--0-v--+------04--0----------------------------------vd-----------------------------------------------------------------------------------------------------------------------------------------------8-+------+4-----------------------------------8--f-------------------------------------------------------8------------------------------------------------------------------f+----------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
