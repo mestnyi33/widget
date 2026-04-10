@@ -142,19 +142,19 @@ Structure _s_TEXTITEM Extends _s_TEXTINFO
    change.b
 EndStructure
 Structure _s_TEXT Extends _s_TEXTITEM
-   caret.l[2]            ; [0] - точка старта (push), [1] - точка конца (cursor)
-   padding._s_POINT      ; ВНУТРЕННИЙ ОТСТУП ТЕКСТА (слева + справа)
+caret.l[2]            ; [0] - точка старта (push), [1] - точка конца (cursor)
+   padding._s_POINT  ; ВНУТРЕННИЙ ОТСТУП ТЕКСТА (слева + справа)
    align.a
    ;    mode.a    
-   ;    
-   ;    multiline.b
-   ;    invert.b
-   ;    vertical.b
-   ;    rotate.d
-   ;    
-   ;    ;align._s_align
+;    
+;    multiline.b
+;    invert.b
+;    vertical.b
+;    rotate.d
+;    
+;    ;align._s_align
 EndStructure
-
+      
 Structure _s_MOUSE Extends _s_POINT
    mask.q                ; Битовые состояния (Shift, Ctrl, Drag)
    press._s_POINT        ; Точка начала нажатия
@@ -175,8 +175,6 @@ Structure _s_ROWS Extends _s_COORDINATE
    Array str.s(0)        ; Динамический массив ячеек данных
    Level.i               ; Уровень вложенности для дерева
    mask.q                ; Состояние строки (#__mask_active, #__mask_node...)
-   sel_start.l
-   sel_end.l
 EndStructure
 
 Structure _s_HEADER ; ЗАГОЛОВОК
@@ -211,7 +209,6 @@ Structure _s_ROW
    indent.l         ; Отступ веток дерева
    padding._s_POINT ; Внутренний отступ текста
    *active._s_ROWS
-   *press._s_ROWS
    List __s._s_ROWS()        ; Строки данных
 EndStructure
 
@@ -220,8 +217,8 @@ Structure _s_BAR Extends _s_COORDINATE
 EndStructure
 
 Structure _s_SCROLL Extends _s_COORDINATE
-   v._s_BAR
-   h._s_BAR
+  v._s_BAR
+  h._s_BAR
 EndStructure
 
 Structure _s_WIDGET Extends _s_COORDINATE
@@ -246,7 +243,6 @@ Structure _s_WIDGET Extends _s_COORDINATE
    
    
    tabindex.l ; Номер страницы родителя к которому будеть привязан          
-   tabpage.l  ; Активная страница (используется если у родителя есть таб бар)
    
    *tab._s_TAB
    *row._s_ROW
@@ -266,7 +262,7 @@ Structure _s_WIDGET Extends _s_COORDINATE
    *prev._s_WIDGET              ; Предыдущий брат
    
    *tabbar._s_WIDGET           ; Виджет-шапка Ссылка на дочерний виджет-полосу вкладок
-   *areabar._s_WIDGET          ; Виджет-контейнер для скроллинга контента
+   *areabar._s_WIDGET           ; Виджет-контейнер для скроллинга контента
    
    List *__items._s_ROWS( )     ; Развернутый рулон (указатели)
 EndStructure
@@ -318,7 +314,7 @@ Procedure SetActive(*this._s_WIDGET)
    EndIf
    GetActive( ) = *this
    Root( ) = *this\root
-   *this\mask | (#__mask_active | #__mask_redraw)
+   *this\mask | #__mask_active | #__mask_redraw
 EndProcedure
 
 ; Macro RowFocused( _this_ )
@@ -328,6 +324,10 @@ EndProcedure
 ; Macro ColumnFocused( _this_ )
 ;    _this_\column\active ; GUI\rowactive
 ; EndMacro
+
+Macro tabindex()
+   tabbar\tab\active\id
+EndMacro
 
 ;-
 Macro __tabs( )
@@ -380,16 +380,16 @@ Macro hidden( _this_, _parent_, _tabpage_ )
             
          Else
             ; СЛУЧАЙ А: Мы лежим в AreaBar (смотрим на дедушку)
-            If _parent_\Type = #__type_AreaBar And _parent_\parent
-               If _tabpage_ <> _parent_\parent\tabpage
+            If _parent_\Type = #__type_AreaBar And _parent_\parent And _parent_\parent\tabbar\tab\active And _parent_\parent\tabbar
+               If _tabpage_ <> _parent_\parent\tabindex( )
                   _this_\mask | #__mask_hidden
                Else
                   _this_\mask & ~#__mask_hidden
                EndIf
                
                ; СЛУЧАЙ Б: Мы лежим прямо в Панели (смотрим на отца)
-            ElseIf _parent_\tabbar
-               If _tabpage_ <> _parent_\tabpage
+            ElseIf _parent_\tabbar And _parent_\tabbar\tab\active 
+               If _tabpage_ <> _parent_\tabindex( )
                   _this_\mask | #__mask_hidden
                Else
                   _this_\mask & ~#__mask_hidden
@@ -402,12 +402,12 @@ Macro hidden( _this_, _parent_, _tabpage_ )
          EndIf
       EndIf
       
-      ; ОТЛАДКА (внутри If _parent_)
-      If _this_\mask & #__mask_hidden
-         Debug "СКРЫТ: " + _this_\class + " (Стр: " + Str(_this_\tabindex) + " Род.Инд: " + Str(_parent_\tabpage) + ")"
-      Else
-         Debug "ВИДИМ: " + _this_\class + " (Стр: " + Str(_this_\tabindex) + " Род.Инд: " + Str(_parent_\tabpage) + ")"
-      EndIf
+;       ; ОТЛАДКА (внутри If _parent_)
+;       If _this_\mask & #__mask_hidden
+;          Debug "СКРЫТ: " + _this_\class + " (Стр: " + Str(_this_\tabindex) + " Род.Инд: " + Str(_parent_\tabindex( )) + ")"
+;       Else
+;          Debug "ВИДИМ: " + _this_\class + " (Стр: " + Str(_this_\tabindex) + " Род.Инд: " + Str(_parent_\tabindex( )) + ")"
+;       EndIf
    EndIf
 EndMacro
 
@@ -554,15 +554,6 @@ Procedure.i edit_make_textcaret_position(*this._s_WIDGET, *rowLine._s_rows, rx, 
    ProcedureReturn textcaret
 EndProcedure
 
-Procedure caret(*this._s_WIDGET)
-   Protected result
-   StartDrawing(CanvasOutput(*this\root\Canvas\gadget))
-   ; 1. Всегда обновляем текущую позицию каретки (конец выделения)
-   result = edit_make_textcaret_position(*this, *this\row\active, *this\real\x, *this\real\y)
-   StopDrawing()
-   ProcedureReturn result    
-EndProcedure
-
 
 ;-
 Procedure resize_column(*this._s_WIDGET, *column._s_HEADER, new_w.i)
@@ -577,7 +568,7 @@ Procedure resize_column(*this._s_WIDGET, *column._s_HEADER, new_w.i)
          ; Поднимаем флаги: 
          ; 1. update — чтобы в redraw вызвался update_columns (пересчет X)
          ; 2. redraw — чтобы холст обновился визуально
-         *this\mask | (#__mask_update | #__mask_redraw)
+         *this\mask | #__mask_update | #__mask_redraw
       EndIf
    EndIf
 EndProcedure
@@ -592,7 +583,7 @@ Procedure resize_row(*this._s_WIDGET, *row._s_rows, new_h.i)
          *row\height = new_h
          
          ; Поднимаем флаги для вызова update_rows (пересчет Y всех строк ниже)
-         *this\mask | (#__mask_update | #__mask_redraw)
+         *this\mask | #__mask_update | #__mask_redraw
       EndIf
    EndIf
 EndProcedure
@@ -630,7 +621,7 @@ Procedure Resize(*this._s_WIDGET, X.l, Y.l, Width.l, Height.l)
    Stop(*g, *this)
    
    ; 4. Поднимаем маску обновления
-   *this\mask | (#__mask_update | #__mask_redraw)
+   *this\mask | #__mask_update | #__mask_redraw
 EndProcedure
 
 ;-
@@ -1003,15 +994,15 @@ Procedure draw_columns(*this._s_WIDGET, rx.l, ry.l)
          Box(col_x, dy, *column\Width, *this\column\height, color)
          DrawText(col_x + 5, dy + 5, *column\Title, $333333, color)
          
-         ;          ; --- ДОБАВЛЕНО: Линия на середине колонки под мышью ---
-         ;          If *this\mask & #__mask_press
-         ;             If *column\mask & #__mask_hover And Not *column\mask & #__mask_active
-         ;                ; Рисуем яркую вертикальную линию ровно по центру ховер-колонки
-         ;                Protected mid_x = col_x + (*column\Width / 2)
-         ;                Line(mid_x, dy, 1, *this\column\height, $0000FF) ; Синяя линия
-         ;             EndIf
-         ;          EndIf
-         ; --- ДОБАВЛЕНО: Линия на середине колонки с засечками ---
+;          ; --- ДОБАВЛЕНО: Линия на середине колонки под мышью ---
+;          If *this\mask & #__mask_press
+;             If *column\mask & #__mask_hover And Not *column\mask & #__mask_active
+;                ; Рисуем яркую вертикальную линию ровно по центру ховер-колонки
+;                Protected mid_x = col_x + (*column\Width / 2)
+;                Line(mid_x, dy, 1, *this\column\height, $0000FF) ; Синяя линия
+;             EndIf
+;          EndIf
+                  ; --- ДОБАВЛЕНО: Линия на середине колонки с засечками ---
          If *this\mask & #__mask_press
             If *column\mask & #__mask_hover And Not *column\mask & #__mask_active
                ; 1. Рассчитываем центр
@@ -1028,7 +1019,7 @@ Procedure draw_columns(*this._s_WIDGET, rx.l, ry.l)
                Line(mid_x - 3, dy + *this\column\height - 1, 7, 1, c_blue)
             EndIf
          EndIf
-         
+
          ; 3. Рисуем вертикальный разделитель (сетку) на всю высоту виджета
          Line(col_x + *column\Width, dy, 1, *this\height , $CCCCCC)
       EndIf
@@ -1049,7 +1040,7 @@ Procedure draw_rows(*this._s_WIDGET, rx.l, ry.l)
    Repeat 
       ; Берем адрес текущей строки (безопасный доступ)
       *row = *this\__items( )
-      If *row 
+      If *row
          ; Рассчитываем экранный Y для текущей строки
          Protected dy = ry + *row\y
          
@@ -1124,59 +1115,60 @@ Procedure draw_rows(*this._s_WIDGET, rx.l, ry.l)
                         EndIf
                      EndIf
                      
-                     
                      ; 1. РИСУЕМ ВЫДЕЛЕНИЕ (между якорем и курсором)
-                     If *row\sel_start <> *row\sel_end 
-                        Protected sel_x = col_x + offset + TextWidth(Left(Text, *row\sel_start))
-                        Protected sel_w = TextWidth(Mid(Text, *row\sel_start + 1, *row\sel_end - *row\sel_start))
-                        
-                        Box(sel_x, dy + 2, sel_w, *row\height - 4, #COLOR_BACK_SELECTED)
+                     If *row\mask & #__mask_edit
+                        If *this\text\caret[0] <> *this\text\caret[1]
+                           Protected s_min = Min(*this\text\caret[0], *this\text\caret[1])
+                           Protected s_max = Max(*this\text\caret[0], *this\text\caret[1])
+                           
+                           Protected sel_x = col_x + offset + TextWidth(Left(Text, s_min))
+                           Protected sel_w = TextWidth(Mid(Text, s_min + 1, s_max - s_min))
+                           
+                           Box(sel_x, dy + 2, sel_w, *row\height - 4, #COLOR_BACK_SELECTED)
+                        EndIf
                      EndIf
-                     
                      
                      ; --- РИСУЕМ ТЕКСТ (ПОВЕРХ ВЫДЕЛЕНИЯ) ---
                      DrawingMode(#PB_2DDrawing_Transparent) ; Включаем прозрачность
                      DrawText(col_x + offset, dy + 5, Text, #COLOR_TEXT_NORMAL)
                      DrawingMode(#PB_2DDrawing_Default)     ; Возвращаем как было
                      
-                     If *row\mask & #__mask_edit 
-                        ; --- РИСУЕМ КАРЕТКУ (КУРСОР) ---
-                        If *this\mask & #__mask_active 
-                           If *row\mask & #__mask_active 
-                              ; 1. Берем подстроку от начала до индекса каретки
-                              ; Если textcaret = 0, Left вернет пустую строку, и TextWidth будет 0 (начало строки)
-                              Protected textcaret_text.s = Left(Text, *this\text\caret)
-                              
-                              ; 2. Считаем ширину только этой части текста
-                              Protected textcaret_x_offset = TextWidth(textcaret_text)
-                              
-                              ; 3. Итоговая экранная координата линии
-                              ; col_x (экранный X колонки) + offset (дерево) + ширина текста до курсора
-                              Protected cx = col_x + offset + textcaret_x_offset
-                              
-                              ; Рисуем мигающую линию
-                              ; If (ElapsedMilliseconds( ) / 500) % 2
-                              Line(cx, dy + 2, 1, *row\height - 4, $000000)
-                              ; EndIf
-                           EndIf
+                     ; --- ДОБАВЛЕНО: Линия на середине колонки под мышью ---
+                     If *this\mask & #__mask_press
+                        If *row\mask & #__mask_hover And Not *row\mask & #__mask_active
+                           ; Рисуем яркую горизонтальную линию ровно по центру ховер-колонки
+                           Protected mid_y = dy + (*row\Height / 2)
+                           Protected c_blue = $FF0000 ; Синий в BGR
+                           
+                           ; 2. Рисуем основную горизонтальную линию
+                           Line(dx, mid_y, clip_width, 1, c_blue)
+                           
+                           ; 3. Рисуем слева засечку (вертикальная перекладина)
+                           Line(dx, mid_y-3, 1, 7, c_blue)
+                           
+                           ; 4. Рисуем справа засечку
+                           Line(dx + clip_width - 1, mid_y-3, 1, 7, c_blue)
                         EndIf
-                     Else
-                        ; --- ДОБАВЛЕНО: Линия на середине строки под мышью ---
-                        If *this\mask & #__mask_press
-                           If *row\mask & #__mask_hover And *row\mask & #__mask_active 
-                              ; Рисуем яркую горизонтальную линию ровно по центру ховер-колонки
-                              Protected mid_y = dy + (*row\Height / 2)
-                              Protected c_blue = $FF0000 ; Синий в BGR
-                              
-                              ; 2. Рисуем основную горизонтальную линию
-                              Line(dx, mid_y, clip_width, 1, c_blue)
-                              
-                              ; 3. Рисуем слева засечку (вертикальная перекладина)
-                              Line(dx, mid_y-3, 1, 7, c_blue)
-                              
-                              ; 4. Рисуем справа засечку
-                              Line(dx + clip_width - 1, mid_y-3, 1, 7, c_blue)
-                           EndIf
+                     EndIf
+                     
+                     ; --- РИСУЕМ КАРЕТКУ (КУРСОР) ---
+                     If *this\mask & #__mask_active
+                        If *row\mask & #__mask_edit And *row\mask & #__mask_active
+                           ; 1. Берем подстроку от начала до индекса каретки
+                           ; Если textcaret = 0, Left вернет пустую строку, и TextWidth будет 0 (начало строки)
+                           Protected textcaret_text.s = Left(Text, *this\text\caret)
+                           
+                           ; 2. Считаем ширину только этой части текста
+                           Protected textcaret_x_offset = TextWidth(textcaret_text)
+                           
+                           ; 3. Итоговая экранная координата линии
+                           ; col_x (экранный X колонки) + offset (дерево) + ширина текста до курсора
+                           Protected cx = col_x + offset + textcaret_x_offset
+                           
+                           ; Рисуем мигающую линию
+                           ; If (ElapsedMilliseconds( ) / 500) % 2
+                           Line(cx, dy + 2, 1, *row\height - 4, $000000)
+                           ; EndIf
                         EndIf
                      EndIf
                   EndIf
@@ -1237,127 +1229,91 @@ Procedure Draw(*root._s_ROOT)
       
       ; Прыгаем в начало секции этого холста
       If StartEnum(*r)
-         Protected *this._s_WIDGET = @widgets()
-         If *this\tabindex = -1 : Continue : EndIf
-         If *this\mask & #__mask_hidden : Continue : EndIf
-         ;Debug ""+ *this\class +" "+ *r\last\class
+         Protected *g._s_WIDGET = @widgets()
+         If *g\tabindex = -1 : Continue : EndIf
+         If *g\mask & #__mask_hidden : Continue : EndIf
+         ;Debug ""+ *g\class +" "+ *r\last\class
          
          ; Считаем реальные координаты
-         Protected rx = *this\real\x
-         Protected ry = *this\real\y
+         Protected rx = *g\real\x
+         Protected ry = *g\real\y
          
-         If GetActive( ) = *this
+         If GetActive( ) = *g
             color = $0000FF
-         ElseIf Entered( ) = *this
+         ElseIf Entered( ) = *g
             color = $00FF00 
          Else
-            color = *this\color
+            color = *g\color
          EndIf
          
          ; Расчет геометрии (если нужно)
-         If *this\mask & #__mask_update
-            If *this\tabbar
-               update_tab(*this\tabbar)
+         If *g\mask & #__mask_update
+            If *g\tabbar
+               update_tab(*g\tabbar)
             EndIf
             
-            If *this\column
-               update_columns(*this)
-               If *this\row
-                  update_rows(*this)
+            If *g\column
+               update_columns(*g)
+               If *g\row
+                  update_rows(*g)
                EndIf
             EndIf
             
-            *this\mask &~ #__mask_update
+            *g\mask &~ #__mask_update
          EndIf
          
-         ;
-         If *this\mask & #__mask_edit
-            Protected *start_r._s_ROWS = *this\row\press
-            Protected *end_r._s_ROWS   = *this\row\active
-            
-            If *start_r And *end_r
-               Protected min_y = *start_r\y
-               Protected max_y = *end_r\y
-               Protected is_down = Bool(max_y >= min_y)
-               If Not is_down : Swap min_y, max_y : EndIf
+         ; 
+         If *g\mask & #__mask_edit
+            If *g\row\active
+               ; 1. Всегда обновляем текущую позицию каретки (конец выделения)
+               *g\text\caret = edit_make_textcaret_position(*g, *g\row\active, rx, ry)
                
-               ForEach *this\__rows()
-                  Protected *rw._s_rows = *this\__rows()
-                  
-                  ; 1. ПЕРВЫМ ДЕЛОМ проверяем, не одна ли это строка
-                  If *rw = *start_r And *rw = *end_r
-                     *rw\sel_start = Min(*this\text\caret[1], *this\text\caret[0])
-                     *rw\sel_end   = Max(*this\text\caret[1], *this\text\caret[0])
-                     
-                     ; 2. ВТОРЫМ ДЕЛОМ — те, что вне диапазона
-                  ElseIf *rw\y < min_y Or *rw\y > max_y
-                     *rw\sel_start = 0 
-                     *rw\sel_end = 0
-                     
-                     ; 3. ТРЕТЬИМ — те, что строго посередине
-                  ElseIf *rw\y > min_y And *rw\y < max_y
-                     *rw\sel_start = 0 
-                     *rw\sel_end = Len(*rw\Str(0))
-                     
-                     ; 4. И в конце — границы (старт и конец)
-                  ElseIf *rw = *start_r
-                     ; Начальная строка
-                     If is_down 
-                        *rw\sel_start = *this\text\caret[1] 
-                        *rw\sel_end = Len(*rw\Str(0))
-                     Else       
-                        *rw\sel_start = 0 
-                        *rw\sel_end = *this\text\caret[1] 
-                     EndIf
-                  ElseIf *rw = *end_r
-                     ; Конечная строка
-                     If is_down 
-                        *rw\sel_start = 0 
-                        *rw\sel_end = *this\text\caret[0]
-                     Else       
-                        *rw\sel_start = *this\text\caret[0] 
-                        *rw\sel_end = Len(*rw\Str(0)) 
-                     EndIf
+               ; 2. Если это ПЕРВЫЙ клик (был флаг press) — приравниваем старт к концу
+               If Not *g\mask & #__mask_drag  
+                  If *g\mask & #__mask_press
+                     *g\text\caret[1] = *g\text\caret
                   EndIf
-               Next
+               EndIf
             EndIf
-            *this\mask &~ #__mask_edit
-         EndIf
+         EndIf  
          
          ; Ограничиваем рисование областью виджета
-         Clip(*this)
+         Clip(*g)
          
-         If *this\Type = #__type_Panel
-            draw_panel(*this, rx, ry)
-         ElseIf *this\Type = #__type_Container
-            draw_container(*this, rx, ry)
-         ElseIf *this\Type = #__type_Button
-            draw_button(*this, rx, ry)
-         ElseIf *this\Type = #__type_TabBar
-            draw_tab(*this, rx, ry)
-         ElseIf *this\Type = #__type_AreaBar
-            
+         If *g\Type = #__type_Panel
+            draw_panel(*g, rx, ry)
+         ElseIf *g\Type = #__type_Container
+            draw_container(*g, rx, ry)
+         ElseIf *g\Type = #__type_Button
+            draw_button(*g, rx, ry)
          Else
-            If *this\row\height
+            If *g\row\height
                ; --- СЛОИ ОТРИСОВКИ ---
                ; Слой 1: Фон и данные строк
-               draw_rows(*this, rx, ry) 
+               draw_rows(*g, rx, ry) 
             EndIf
             
-            If *this\column\height
+            If *g\column\height
                ; Слой 2: Шапка и вертикальные линии сетки
-               draw_columns(*this, rx, ry) 
+               draw_columns(*g, rx, ry) 
             EndIf
             
             ; Слой 3: Внешняя рамка виджета (рисуем ПОВЕРХ всего)
             DrawingMode(#PB_2DDrawing_Outlined)
-            Box(*this\x, *this\y, *this\Width, *this\height , $CCCCCC) ; Цвет рамки
+            Box(*g\x, *g\y, *g\Width, *g\height , $CCCCCC) ; Цвет рамки
          EndIf
          
          UnClip( )
          
+         ; Сбрасываем флаг изменения после завершения
+         If *g\mask & #__mask_drag
+            If *g\mask & #__mask_edit
+               *g\mask &~ #__mask_edit
+            EndIf
+         EndIf
+         
          ; Сбрасываем флаг перерисовки после завершения
-         *this\mask &~ #__mask_redraw
+         *g\mask &~ #__mask_redraw
          
          StopEnum()
       EndIf
@@ -1673,7 +1629,13 @@ Procedure.i SetParent(*this._s_WIDGET, *parent._s_WIDGET, tabpage.l = #PB_Defaul
    If Not *r : ProcedureReturn 0 : EndIf
    
    ; Страница и AreaBar
-   If tabpage = #PB_Default And *parent : tabpage = *parent\tabpage : EndIf
+   If tabpage = #PB_Default 
+      If *parent And *parent\tabbar And *parent\tabbar\tab\active
+         tabpage = *parent\tabindex( ) 
+      Else
+         tabpage = 0
+      EndIf
+   EndIf
    If *parent And *parent\areabar : *parent = *parent\areabar : EndIf
    
    ; --- 2. ПОИСК ТОЧКИ ВСТАВКИ (ВЕЗДЕ GetLast) ---
@@ -1774,7 +1736,9 @@ Procedure OpenList(*this._s_WIDGET, tabpage.i = 0)
    Else
       Opened( ) = *this
    EndIf
-   Opened()\tabpage = tabpage
+   If Opened()\tabbar
+      Opened()\tabindex( ) = tabpage
+   EndIf
 EndProcedure
 
 Procedure CloseList()
@@ -1818,7 +1782,7 @@ EndProcedure
 Procedure SetTab(*this._s_WIDGET, tabpage.l)
    Protected *g._s_WIDGET ; Локальный указатель для этого уровня рекурсии
    If Not *this : ProcedureReturn : EndIf
-   If *this\tabbar : *this\tabpage = tabpage : EndIf
+   If *this\tabbar : *this\tabindex( ) = tabpage : EndIf
    
    *this\mask | #__mask_redraw
    
@@ -1830,7 +1794,7 @@ Procedure SetTab(*this._s_WIDGET, tabpage.l)
    If *g = *this\areabar
       SetTab(*g, tabpage) 
    ElseIf *g\tabbar
-      SetTab(*g, *g\tabpage)
+      SetTab(*g, *g\tabindex( ))
    EndIf
    Stop(*g, *this)
 EndProcedure
@@ -1852,141 +1816,70 @@ Procedure add_column(*this._s_WIDGET, Title.s, Width.i)
    *this\mask | #__mask_update | #__mask_redraw
 EndProcedure
 
-Procedure add_row(*this._s_WIDGET, Text.s = "", Index.i = -1, Level.i = 0, *start = 0, len.i = -1)
+Procedure add_row(*this._s_WIDGET, Text.s, Level.i = 0)
    If Not *this : ProcedureReturn : EndIf
    
-   ; --- 1. Позиционирование (как мы обсуждали ранее) ---
-   If Index < 0 Or Index > ListSize(*this\__rows()) - 1
-      LastElement(*this\__rows())
-      AddElement(*this\__rows())
-   Else
-      SelectElement(*this\__rows(), Index)
-      InsertElement(*this\__rows())
+   AddElement(*this\__rows( ))
+   *this\__rows( )\Level = Level
+   
+   Protected i, TotalCols = ListSize(*this\__columns( )) - 1
+   ReDim *this\__rows( )\Str(TotalCols)
+   
+   ; 3. Ультра-быстрый разбор строки через указатели (O(N))
+   Protected *start, *ptr.Character = @Text 
+   If *ptr
+      *start = *ptr           
+      
+      While *ptr\c And i <= TotalCols
+         If *ptr\c = '|' 
+            *this\__rows( )\Str(i) = PeekS(*start, (*ptr - *start) >> 1)
+            
+            *start = *ptr + 2 ; SizeOf(Character) ; Сдвигаем начало следующей колонки
+            i + 1
+         EndIf
+         *ptr + SizeOf(Character)
+      Wend
    EndIf
    
-   *this\__rows()\Level = Level
-   Protected i, TotalCols = ListSize(*this\__columns()) - 1
-   ReDim *this\__rows()\Str(TotalCols)
+   ; Добавляем последнюю колонку (хвост строки)
+   If i <= TotalCols : *this\__rows( )\Str(i) = PeekS(*start) : EndIf
    
-   ; --- 2. Быстрый разбор ---
-   ; Если передали указатель - берем его, иначе адрес строки Text
-   If Not *start : *start = @Text : EndIf
-   
-   Protected *ptr.Character = *start
-   Protected *colStart = *start
-   Protected count.i = 0
-   
-   ; Если длина не указана - ищем конец строки (0 или LF)
-   While i <= TotalCols
-      ; Условие остановки: либо дошли до конца переданной длины, либо до спецсимвола
-      If (len <> -1 And (*ptr - *start) >> 1 >= len) Or *ptr\c = 0 Or *ptr\c = 10
-         *this\__rows()\Str(i) = PeekS(*colStart, (*ptr - *colStart) >> 1)
-         Break
-      EndIf
-      
-      ; Разбор колонок через '|'
-      If *ptr\c = '|' 
-         *this\__rows()\Str(i) = PeekS(*colStart, (*ptr - *colStart) >> 1)
-         *colStart = *ptr + SizeOf(Character)
-         i + 1
-      EndIf
-      
-      *ptr + SizeOf(Character)
-   Wend
-   
+   ; Поднимаем флаги: нужно пересчитать Y строк и перерисовать
    *this\mask | #__mask_update | #__mask_redraw
 EndProcedure
 
 Procedure add_tab(*this._s_WIDGET, Text.s)
-   If Not *this : ProcedureReturn : EndIf
+   ; Если у виджета нет таббара — он не поддерживает вкладки. Выходим.
+   If Not *this\tabbar : ProcedureReturn : EndIf
+   
+   Protected *tb._s_WIDGET = *this\tabbar
    
    ; 1. Добавляем элемент в список вкладок Таббара
-   AddElement(*this\__tabs())
-   *this\__tabs()\title = Text
+   *tb\tab\active = AddElement(*tb\__tabs())
+   *tb\__tabs()\title = Text
    
    ; 2. Обновляем индекс в самом виджете (он главный "дирижер")
-   *this\__tabs()\id = ListSize(*this\__tabs()) - 1
-   If *this\__tabs()\id = 0
-      *this\__tabs()\mask | #__mask_active
-      *this\tab\active = @*this\__tabs()
+   *tb\__tabs()\id = ListSize(*tb\__tabs()) - 1
+   If *tb\__tabs()\id = 0
+      *tb\__tabs()\mask | #__mask_active
    EndIf
    
-   ; 3. Обновляем ширины текста и перерисовываем
-   If is_integral_(*this)
-      If *this\parent
-         *this\parent\tabpage = *this\__tabs()\id
-         *this\parent\mask | #__mask_update | #__mask_redraw
-      EndIf
-   Else
-      *this\mask | #__mask_update | #__mask_redraw
-   EndIf
+   
+   ; 4. Обновляем ширины текста и перерисовываем
+   *this\mask | #__mask_update | #__mask_redraw
 EndProcedure
 
 Procedure   AddItem( *this._s_WIDGET, Item.l, Text.s, img.i = - 1, Flag.q = 0 )
    If *this\type = #__type_Panel Or 
       *this\type = #__type_TabBar
-      ProcedureReturn add_tab(*this\tabbar, Text)
+      ProcedureReturn add_tab(*this, Text)
    EndIf
    If *this\type = #__type_Tree Or
       *this\type = #__type_ListIcon Or
       *this\type = #__type_Editor
-      ProcedureReturn add_row(*this, Text, Item, Flag)
+      ProcedureReturn add_row(*this, Text, Flag)
    EndIf
 EndProcedure
-
-Procedure SetText(*this._s_WIDGET, Text.s)
-   If Not *this : ProcedureReturn : EndIf
-   Protected *start, *ptr.Character = @Text
-   ClearList(*this\__rows())
-   
-   If *ptr
-      *start = *ptr
-      
-      ;
-      While #True
-         If *ptr\c = 10 Or *ptr\c = 0
-            ; Передаем только адрес начала и количество символов
-            add_row(*this, "", -1, 0, *start, (*ptr - *start) >> 1)
-            ;
-            ;             AddElement(*this\__rows())
-            ;             ReDim *this\__rows()\Str(TotalCols)
-            ;             *this\__rows()\Str(0) = PeekS(*start, (*ptr - *start) >> 1)
-
-            If *ptr\c = 0 : Break : EndIf
-            *start = *ptr + SizeOf(Character)
-         EndIf
-         *ptr + SizeOf(Character)
-      Wend
-      
-      ;       ; Цикл работает, пока символ не равен 0 (конец строки)
-;       While *ptr\c 
-;          If *ptr\c = 10 ; Нашли LF
-;             AddElement(*this\__rows())
-;             ReDim *this\__rows()\Str(TotalCols)
-;             *this\__rows()\Str(0) = PeekS(*start, (*ptr - *start) >> 1)
-;             
-;             *ptr + SizeOf(Character)
-;             *start = *ptr
-;          Else
-;             *ptr + SizeOf(Character)
-;          EndIf
-;       Wend
-;       
-;       ; Добавляем последний хвост, который остался после последнего LF 
-;       ; (или если текст вообще без LF)
-;       AddElement(*this\__rows())
-;       ReDim *this\__rows()\Str(TotalCols)
-;       *this\__rows()\Str(0) = PeekS(*start)
-   EndIf
-
-   ; Сбрасываем старое состояние
-   *this\row\active = 0
-   *this\row\press = 0
-   
-   ; Даем команду на пересчет координат и перерисовку
-   *this\mask | #__mask_update | #__mask_redraw
-EndProcedure
-
 
 ;-
 ; Скрыть/Показать вкладку
@@ -1998,7 +1891,7 @@ Procedure hide_tab(*this._s_WIDGET, Index.l, state.b = #True)
       If state
          *this\__tabs()\mask | #__mask_hidden
          ; Если скрыли активную — прыгаем на первую попавшуюся видимую
-         If *this\tabpage = Index : SetTab(*this, 0) : EndIf
+         If *this\tabindex( ) = Index : SetTab(*this, 0) : EndIf
       Else
          *this\__tabs()\mask & ~#__mask_hidden
       EndIf
@@ -2182,7 +2075,7 @@ Procedure tab_events(*this._s_WIDGET, event)
                PopListPosition(*this\__tabs( ))
                *hover_tab\mask | #__mask_active
             EndIf
-            
+         
             PushListPosition(*this\__tabs())
             ChangeCurrentElement(*this\__tabs(), *hover_tab)
             Protected new_index = ListIndex(*this\__tabs())
@@ -2253,13 +2146,13 @@ Procedure column_events(*this._s_WIDGET, event)
             *pressed_column = 0
          EndIf
          is_edge.b = #False
-         
+      
       Case #PB_EventType_LeftButtonDown
          If *hover_column
             *pressed_column = *hover_column
             *hover_column\mask | #__mask_press
             *this\column\active = *hover_column
-            
+               
             ;
             If Not *pressed_column\mask & #__mask_active
                PushListPosition(*this\__columns( ))
@@ -2271,7 +2164,7 @@ Procedure column_events(*this._s_WIDGET, event)
                PopListPosition(*this\__columns( ))
                *hover_column\mask | #__mask_active
             EndIf
-            
+         
             If is_edge
                ; А. Попали в КРАЙ — включаем Resize
                *hover_column\mask | #__mask_resize
@@ -2303,59 +2196,16 @@ Procedure row_events(*this._s_WIDGET,  event)
             EndIf
             If *row
                *row\mask | #__mask_hover
-               
-               ; Если мышь зажата и у начальной строки ЕСТЬ флаг редактирования
-               If *pressed_row And 
-                  *pressed_row\mask & #__mask_edit
-                  
-                  ; 1. Определяем границы диапазона по Y
-                  Protected max_y = *row\y
-                  Protected min_y = *pressed_row\y
-                  If min_y > max_y : Swap min_y, max_y : EndIf
-                  
-                  ; 2. Пересчитываем маски для всех ВИДИМЫХ строк
-                  PushListPosition(*this\__items())
-                  ForEach *this\__items()
-                     Protected *current_row._s_rows = *this\__items()
-                     
-                     If *current_row <> *pressed_row
-                        If *current_row\y >= min_y And 
-                           *current_row\y <= max_y
-                           ; Если строка в физическом диапазоне между кликом и курсором
-                           *current_row\mask | #__mask_edit
-                        Else
-                           ; Снимаем выделение, если строка вышла из диапазона
-                           *current_row\mask &~ #__mask_edit
-                        EndIf
-                     EndIf
-                  Next
-                  PopListPosition(*this\__items())
-                  
-                  ; 3. Синхронизируем активную строку
-                  If *this\row\active <> *row
-                     If *this\row\active 
-                        *this\row\active\mask &~ #__mask_active 
-                     EndIf
-                     *row\mask | #__mask_active
-                     *this\row\active = *row
-                  EndIf
-                  ;
-                  *this\mask | #__mask_edit
-               EndIf
-               
-               *this\mask | #__mask_redraw
-               *hover_row = *row
             EndIf
+            *this\mask | #__mask_redraw
+            *hover_row = *row
          EndIf
          
          If *pressed_row
             If *pressed_row\mask & #__mask_edit
                If *this\mask & #__mask_drag
-                  Protected caret = caret(*this)
-                  If *this\text\caret[0] <> caret 
-                     *this\text\caret[0] = caret 
-                     *this\mask | (#__mask_edit | #__mask_redraw)
-                  EndIf
+                  *this\mask | #__mask_edit
+                  *this\mask | #__mask_redraw
                EndIf
             Else
                If *this\mask & #__mask_active
@@ -2368,20 +2218,13 @@ Procedure row_events(*this._s_WIDGET,  event)
          If *pressed_row
             *pressed_row\mask &~ #__mask_press
             *pressed_row = 0
-            *this\row\press = 0
          EndIf
          
       Case #PB_EventType_LeftButtonDown
          If *hover_row
-            *hover_row\mask | #__mask_press
-            
             *pressed_row = *hover_row 
+            *hover_row\mask | #__mask_press
             *this\row\active = *hover_row
-            *this\row\press = *hover_row 
-            
-            *this\text\caret[0] = caret( *this )
-            *this\text\caret[1] = *this\text\caret[0]
-            
             ;
             If Not *hover_row\mask & #__mask_active
                PushListPosition(*this\__rows( ))
@@ -2421,10 +2264,10 @@ Procedure key_events(*this._s_WIDGET, event.i)
    Protected._s_BAR *h = *this\scroll\h
    
    ; Нам нужно знать, какая строка сейчас активна (фокус)
-   Protected *current_row._s_rows = 0
+   Protected *current._s_rows = 0
    ForEach *this\__rows( )
       If *this\__rows( )\mask & #__mask_active
-         *current_row = @*this\__rows( )
+         *current = @*this\__rows( )
          Break
       EndIf
    Next
@@ -2464,9 +2307,9 @@ Procedure key_events(*this._s_WIDGET, event.i)
          EndIf
          
       Case #PB_Shortcut_Up
-         If *current_row
+         If *current
             PushListPosition(*this\__rows( ))
-            ChangeCurrentElement(*this\__rows( ), *current_row)
+            ChangeCurrentElement(*this\__rows( ), *current)
             If PreviousElement(*this\__rows( ))
                ; Снимаем старое выделение (если не зажат Shift)
                If Not (mouse( )\mask & #__mask_shift)
@@ -2483,9 +2326,9 @@ Procedure key_events(*this._s_WIDGET, event.i)
          EndIf
          
       Case #PB_Shortcut_Down
-         If *current_row
+         If *current
             PushListPosition(*this\__rows( ))
-            ChangeCurrentElement(*this\__rows( ), *current_row)
+            ChangeCurrentElement(*this\__rows( ), *current)
             If NextElement(*this\__rows( ))
                If Not (mouse( )\mask & #__mask_shift)
                   ForEach *this\__rows( ) : *this\__rows( )\mask &~ #__mask_active : Next
@@ -2504,8 +2347,8 @@ Procedure key_events(*this._s_WIDGET, event.i)
          EndIf
          
       Case #PB_Shortcut_Delete
-         If *current_row
-            ChangeCurrentElement(*this\__rows( ), *current_row)
+         If *current
+            ChangeCurrentElement(*this\__rows( ), *current)
             DeleteElement(*this\__rows( ))
             *this\mask | #__mask_update ; Пересчитываем Y для всех строк ниже
          EndIf
@@ -2641,7 +2484,7 @@ Procedure canvas_events( )
                   *v\pos - (delta * 30)
                   If *v\pos < 0 : *v\pos = 0 : EndIf
                   If *v\pos > *v\max : *v\pos = *v\max : EndIf
-                  Entered( )\mask | #__mask_update
+                  update_visible_rows(Entered( )) ; Не забываем обновлять видимость строк
                EndIf
                
                Entered( )\mask | #__mask_redraw
@@ -2958,10 +2801,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ; СОЗДАЕМ виджеты (выделяем память, задаем тип и координаты)
    *p = Panel(10, 10, w-20, h-20)
    AddItem(*p, -1, "Вкладка А") 
-;    *e = Editor(10, 10, 265, 235)
-;    *e1 = Editor(10, 255, 265, 235)
-   *e = Editor(10, 10, 265, 480)
-   *e1 = Editor(285, 10, 265, 480)
+   *e = Editor(10, 10, 265, 235)
+   *e1 = Editor(10, 255, 265, 235)
    AddItem(*p, -1, "Вкладка B") 
    *t = Tree(300-15, 10, 280, 480)
    AddItem(*p, -1, "Вкладка C") 
@@ -2999,48 +2840,28 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;
    If *e
-      Define Text.s, m.s   = #LF$
-      Text.s = "This is a long line." + m.s +
-               "Who should show." + m.s +
-               m.s +
-               m.s +
-               "I have to write the text in the box or not." + m.s +
-               m.s +
-               m.s +
-               "The string must be very long." + m.s +
-               "Otherwise it will not work."
-      SetText(*e, Text.s)
-      AddItem(*e, 0, "add line first")
-      AddItem(*e, 4, "add line "+Str(4))
-      AddItem(*e, 8, "add line "+Str(8))
-      AddItem(*e, -1, "add line last")
+      add_row(*e, "edit node")
+      add_row(*e, "Александр" + chr + "31" + chr + "Москва",1)
+      add_row(*e, "Елена" + chr + "24" + chr + "Владивосток",1)
+      add_row(*e, "Дмитрий" + chr + "45" + chr + "Тула",1)
+      
+      add_row(*e, "edit node")
+      add_row(*e, "Александр" + chr + "31" + chr + "Москва",1)
+      add_row(*e, "Елена" + chr + "24" + chr + "Владивосток",1)
+      add_row(*e, "Дмитрий" + chr + "45" + chr + "Тула",1)
    EndIf
    
    ;
    If *e1
-      Define a  = - 1
-      AddItem(*e1, a, "This is a long row.")
-      AddItem(*e1, a, "Who should show.")
-      AddItem(*e1, a, "")
-      AddItem(*e1, a, "")
-      ; AddItem(*e1, a, "")
-      AddItem(*e1, a, "I have to write the text in the box or not.")
-      ; AddItem(*e1, a, "")
-      AddItem(*e1, a, "")
-      AddItem(*e1, a, "")
-      AddItem(*e1, a, "The string must be very long.")
-      AddItem(*e1, a, "Otherwise it will not work.")
-      ;    For a = 0 To 2
-      ;       AddItem(*e1, a, Str(a) + " Row " + Str(a))
-      ;    Next
-      ;    AddItem(*e1, 7 + a, "_")
-      ;    For a = 4 To 6
-      ;       AddItem(*e1, a, Str(a) + " Row " + Str(a))
-      ;    Next
-      AddItem(*e1, 0, "add row first")
-      AddItem(*e1, 4, "add row "+Str(4))
-      AddItem(*e1, 8, "add row "+Str(8))
-      AddItem(*e1, -1, "add row last")
+      add_row(*e1, "edit node")
+      add_row(*e1, "Александр" + chr + "31" + chr + "Москва",1)
+      add_row(*e1, "Елена" + chr + "24" + chr + "Владивосток",1)
+      add_row(*e1, "Дмитрий" + chr + "45" + chr + "Тула",1)
+      
+      add_row(*e1, "edit node")
+      add_row(*e1, "Александр" + chr + "31" + chr + "Москва",1)
+      add_row(*e1, "Елена" + chr + "24" + chr + "Владивосток",1)
+      add_row(*e1, "Дмитрий" + chr + "45" + chr + "Тула",1)
    EndIf
    
    
@@ -3067,8 +2888,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 2356
-; FirstLine = 2269
-; Folding = ---------------------------------------------------------------------------
+; CursorPosition = 245
+; FirstLine = 181
+; Folding = ----------------------------------v--------------------------------------
 ; EnableXP
 ; DPIAware

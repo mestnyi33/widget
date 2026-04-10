@@ -898,6 +898,7 @@ Procedure CloseList()
             Opened( ) = Opened( )\parent
          EndIf
       EndIf
+      Opened( )\tabpage = 0
       Opened( ) = Opened( )\parent 
    EndIf
 EndProcedure
@@ -1502,7 +1503,7 @@ Procedure.i SetParent(*this._s_WIDGET, *parent._s_WIDGET, tabpage.l = #PB_Defaul
    
    If *parent : update_level(*new, *parent\Level + 1) : Else : update_level(*new, 0) : EndIf
    
-   hidden(*new, *parent, *new\tabindex)
+   hidden(*new, *parent, 0)
    If *parent : *parent\mask | #__mask_redraw : EndIf
    
    ProcedureReturn *new
@@ -2165,14 +2166,14 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
       ;     *butt0 = Button( 20,25,80,35, "_0" )
       ;     SetParent( *butt0, *panel, 0 )
       
-      Debug Opened()\class
+     ; Debug Opened()\class
       ;
       *butt1 = Button( X,5,80,25, "*butt1" ) 
       *butt2 = Button( X,35,80,25, "*butt2" ) 
-      Debug *butt2\parent\class
+     ; Debug *butt2\parent\class
       
       If *panel
-         SetState( *panel, 2 )
+       ;  SetState( *panel, 2 )
       EndIf
       
       ReDraw(Root())
@@ -2274,8 +2275,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 2152
-; FirstLine = 1503
-; Folding = -----w----8u8-vu0--vvP------8----+---4---------8
+; CursorPosition = 1505
+; FirstLine = 984
+; Folding = -----w----8u8-vv0--vvP------8----+---4---------8
 ; EnableXP
 ; DPIAware
