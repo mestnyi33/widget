@@ -569,6 +569,28 @@ Procedure.i edit_delete_selection(*this._s_WIDGET)
    ProcedureReturn #True
 EndProcedure
 
+Procedure.i edit_find_word_start(Text.s, currentPos.i)
+  Protected i.i = currentPos
+  
+  ; Уменьшаем индекс, пока символ не станет пробелом или не дойдем до начала (0)
+  While i > 0 And Mid(Text, i, 1) <> " "
+    i - 1
+  Wend
+  
+  ProcedureReturn i ; Возвращаем позицию начала
+EndProcedure
+
+Procedure.i edit_find_word_end(Text.s, currentPos.i)
+  Protected len.i = Len(Text)
+  Protected i.i = currentPos + 1 ; Начинаем со следующего символа
+  
+  ; Увеличиваем индекс, пока не встретим пробел или конец текста
+  While i <= len And Mid(Text, i, 1) <> " "
+    i + 1
+  Wend
+  
+  ProcedureReturn i - 1 ; Возвращаем позицию последнего символа слова
+EndProcedure
 
 Procedure.i edit_make_textcaret_position(*this._s_WIDGET, *rowLine._s_rows, rx, ry )
    Protected i.i, mouse_x.i, textcaret_x.i, textcaret.i = -1
@@ -2848,6 +2870,16 @@ Procedure row_events(*this._s_WIDGET,  event)
             *this\mask | #__mask_redraw
          EndIf
          
+      Case #PB_EventType_LeftDoubleClick
+         If *this\row\active And *this\row\active\mask &~ #__mask_edit
+            ; Находим начало и конец слова от текущей позиции
+            *this\text\caret[1] = edit_find_word_start(*this\row\active\Str(0), *this\text\caret[1])
+            *this\text\caret[0] = edit_find_word_end(*this\row\active\Str(0), *this\text\caret[0])
+            If *this\text\caret[0] <> *this\text\caret[1]
+               *this\mask | (#__mask_edit | #__mask_redraw)
+            EndIf
+         EndIf
+         
    EndSelect
 EndProcedure
 
@@ -3414,9 +3446,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Root( ) = 0
    End ; Завершение программы
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 2515
-; FirstLine = 2295
-; Folding = ---------------------v--+---8---------------------03+--------v---------------------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 2880
+; FirstLine = 2643
+; Folding = ----------------------+-8---v---------------------4b8------------------------------
 ; EnableXP
 ; DPIAware
