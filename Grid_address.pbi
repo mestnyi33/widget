@@ -1009,13 +1009,58 @@ Procedure.i edit_make_textcaret_position(*this._s_WIDGET, *rowLine._s_rows, rx, 
    
    ProcedureReturn textcaret
 EndProcedure
+Procedure.i edit_make_caret(*this._s_WIDGET, *rowLine._s_rows )
+   Protected i.i, mouse_x.i, textcaret_x.i, textcaret.i = -1
+   Protected Distance.d, MinDistance.d = 1e308 ; Аналог Infinity( )
+   
+   If *rowLine
+      ; 1. Находим экранный X начала текста первой колонки
+      ; X_виджета + Отступ_Level - Скролл + Базовый_отступ(5)
+      Protected dx = *this\real\x
+      Protected offset = *this\text\padding\x + (*rowLine\Level * *this\row\indent)
+      
+      ; Если есть треугольник, текст смещен еще на 15 пикселей
+      If (*rowLine\mask & #__mask_node) : offset + 15 : EndIf
+      
+      ; 2. Рассчитываем X мыши относительно начала текста
+      ; (Учитываем, что mouse\x — это экранная координата из root)
+      mouse_x = mouse( )\x - (dx + offset)
+      
+      ; 3. Текст из первой ячейки массива
+      Protected Text.s = *rowLine\Str(0)
+      Protected LenText = Len(Text)
+      
+      If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
+         ; 4. Перебор позиций между символами
+         For i = 0 To LenText
+            ; Ширина текста от начала до текущего индекса i
+            textcaret_x = TextWidth(Left(Text, i))
+            
+            ; Квадрат расстояния для поиска ближайшей точки (примагничивание)
+            Distance = (mouse_x - textcaret_x) * (mouse_x - textcaret_x)
+            
+            If MinDistance >= Distance
+               MinDistance = Distance
+               textcaret = i
+            Else
+               ; Если расстояние начало расти — мы прошли точку минимума
+               Break
+            EndIf
+         Next
+         StopDrawing()
+      EndIf
+   EndIf
+   
+   ProcedureReturn textcaret
+EndProcedure
 
 Procedure caret(*this._s_WIDGET)
    Protected result
-   StartDrawing(CanvasOutput(*this\root\Canvas\gadget))
-   ; 1. Всегда обновляем текущую позицию каретки (конец выделения)
-   result = edit_make_textcaret_position(*this, *this\row\active[0], *this\real\x, *this\real\y)
-   StopDrawing()
+;    StartDrawing(CanvasOutput(*this\root\Canvas\gadget))
+;    ; 1. Всегда обновляем текущую позицию каретки (конец выделения)
+;    result = edit_make_textcaret_position(*this, *this\row\active[0], *this\real\x, *this\real\y)
+;    StopDrawing()
+   result = edit_make_caret(*this, *this\row\active[0])
    ProcedureReturn result    
 EndProcedure
 
@@ -3092,7 +3137,8 @@ Procedure.i Create(*parent._s_WIDGET, class.s, Type.i, X, Y, Width, Height, titl
    If Type = #__type_Tree Or
       Type = #__type_ListIcon Or
       Type = #__type_Editor
-      this\column._s_COLUMN = AllocateStructure(_s_COLUMN)
+      this\text\padding\X = 5
+         this\column._s_COLUMN = AllocateStructure(_s_COLUMN)
       this\row._s_ROW = AllocateStructure(_s_ROW)
       this\row\height = 25
       this\row\indent = 20 ; (отступ веток)
@@ -3454,8 +3500,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 803
-; FirstLine = 756
-; Folding = --------8--------------f8--------------------------------v---------------------------
+; CursorPosition = 2801
+; FirstLine = 2707
+; Folding = --------8------------v--v0--------------------------------4---------------------------
 ; EnableXP
 ; DPIAware
