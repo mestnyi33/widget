@@ -1750,13 +1750,13 @@ Procedure draw_rows(*this._s_WIDGET, rx.l, ry.l)
                               Protected c_blue = $FF0000 ; Синий в BGR
                               
                               ; 2. Рисуем основную горизонтальную линию
-                              Line(dx, mid_y, clip_width, 1, c_blue)
+                              Line(*this\clip\x+2, mid_y, *this\clip\width-4, 1, c_blue)
                               
                               ; 3. Рисуем слева засечку (вертикальная перекладина)
-                              Line(dx, mid_y-3, 1, 7, c_blue)
+                              Line(*this\clip\x+2, mid_y-3, 1, 7, c_blue)
                               
                               ; 4. Рисуем справа засечку
-                              Line(dx + clip_width - 1, mid_y-3, 1, 7, c_blue)
+                              Line(*this\clip\x + *this\clip\width - 2, mid_y-3, 1, 7, c_blue)
                            EndIf
                         EndIf
                      EndIf
@@ -3017,6 +3017,7 @@ Procedure row_events(*this._s_WIDGET,  event)
             If *this\row\active[0]
                If *this\text\caret[0] <> *this\text\caret[1] Or
                   *this\row\active[0] <> *this\row\active[1]
+                  ;
                   PushListPosition(*this\__rows( ))
                   ForEach *this\__rows( )
                      If *this\__rows( )\mask & #__mask_active
@@ -3047,7 +3048,7 @@ Procedure row_events(*this._s_WIDGET,  event)
             
             If *this\Type = #__type_Editor
                *this\mask | #__mask_edit
-               *hover_row\mask | #__mask_e
+               *hover_row\mask | #__mask_edit
             EndIf
             
             ; 4. Если это папка (узел) — переключаем схлопывание
@@ -3279,6 +3280,7 @@ Procedure.i Create(*parent._s_WIDGET, class.s, Type.i, X, Y, Width, Height, titl
       this\row\height = 25
       this\row\indent = 20 ; (отступ веток)
       this\row\padding\y = 5
+      this\text\padding\X = 5
    EndIf
    
    ; --- В конструкторе или блоке создания ---
@@ -3296,9 +3298,6 @@ Procedure.i Create(*parent._s_WIDGET, class.s, Type.i, X, Y, Width, Height, titl
          
       Case #__type_Container
          this\fs[0] = 1  ; Тонкая рамка вокруг контента
-         
-      Case #__type_Editor
-         this\text\padding\X = 5
          
       Case #__type_TabBar
          this\tab._s_TAB = AllocateStructure(_s_TAB)
@@ -3638,9 +3637,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Root( ) = 0
    End ; Завершение программы
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 3044
-; FirstLine = 2857
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 3019
+; FirstLine = 2831
 ; Folding = -------------------4u4---------------------------------------------47+--------------------
 ; EnableXP
 ; DPIAware
