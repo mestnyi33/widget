@@ -160,6 +160,7 @@ EndStructure
 
 Structure _s_MOUSE Extends _s_POINT
    mask.q                ; Битовые состояния (Shift, Ctrl, Drag)
+   click.b
    press._s_POINT        ; Точка начала нажатия
    *widget._s_WIDGET[3]  ; Текущий виджет под мышью (Entered)
 EndStructure
@@ -371,6 +372,10 @@ Procedure ReClip(*this._s_WIDGET)
       If *this\clip\y + *this\clip\height > py + ph : *this\clip\height = (py + ph) - *this\clip\y : EndIf
    EndIf
 EndProcedure
+
+;-
+Macro MouseClick( ): mouse( )\click: EndMacro                                               ; Returns mouse click count
+
 ;-
 Macro hidden( _this_, _parent_, _tabpage_ )
    If _parent_
@@ -601,29 +606,6 @@ Procedure.i edit_reset_selection(*this._s_WIDGET, direction = 0) ; -1 - Left, 1 
    ;
    *this\mask | #__mask_update
    ProcedureReturn #True
-EndProcedure
-
-Procedure.i edit_find_word_start(Text.s, currentPos.i)
-   Protected i.i = currentPos
-   
-   ; Уменьшаем индекс, пока символ не станет пробелом или не дойдем до начала (0)
-   While i > 0 And Mid(Text, i, 1) <> " "
-      i - 1
-   Wend
-   
-   ProcedureReturn i ; Возвращаем позицию начала
-EndProcedure
-
-Procedure.i edit_find_word_end(Text.s, currentPos.i)
-   Protected len.i = Len(Text)
-   Protected i.i = currentPos + 1 ; Начинаем со следующего символа
-   
-   ; Увеличиваем индекс, пока не встретим пробел или конец текста
-   While i <= len And Mid(Text, i, 1) <> " "
-      i + 1
-   Wend
-   
-   ProcedureReturn i - 1 ; Возвращаем позицию последнего символа слова
 EndProcedure
 
 Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
@@ -2665,18 +2647,26 @@ EndProcedure
 
 Procedure.i hover_row(*this._s_WIDGET, my.i)
    Protected *res
-   If *this\row\height
-      ; Переводим экранный Y во внутренний Y данных
-      my - *this\real\y
-      PushListPosition(*this\__items( ))
-      ForEach *this\__items( )
-         If my >= *this\__items( )\y And my < (*this\__items( )\y + *this\__items( )\height)
-            *res = *this\__items( )
+   my - *this\real\y ; Локальная координата внутри виджета
+   
+   ; Становимся на первую видимую строку
+   PushListPosition(*this\__items())
+   If *this\visible\first
+      ChangeCurrentElement(*this\__items(), *this\visible\first)
+      
+      ; Перебираем только до последней видимой
+      Repeat
+         Protected *row._s_rows = @*this\__items()
+         If my >= *row\y And my < (*row\y + *row\height)
+            *res = *row
             Break
          EndIf
-      Next
-      PopListPosition(*this\__items( ))
+         
+         If *row = *this\visible\last : Break : EndIf
+      Until Not NextElement(*this\__items())
    EndIf
+   PopListPosition(*this\__items())
+   
    ProcedureReturn *res
 EndProcedure
 
@@ -3014,62 +3004,82 @@ Procedure row_events(*this._s_WIDGET,  event)
             *pressed_row = *hover_row 
             *hover_row\mask | #__mask_press
             
-            If *this\row\active[0]
-               If *this\text\caret[0] <> *this\text\caret[1] Or
-                  *this\row\active[0] <> *this\row\active[1]
-                  ;
-                  PushListPosition(*this\__rows( ))
-                  ForEach *this\__rows( )
-                     If *this\__rows( )\mask & #__mask_active
-                        *this\__rows( )\mask &~ #__mask_active
-                     EndIf
-                     If *this\__rows( )\mask & #__mask_edit
-                        *this\__rows( )\sel_start = 0
-                        *this\__rows( )\sel_end = 0
-                        *this\__rows( )\mask &~ #__mask_edit
-                     EndIf
-                  Next
-                  PopListPosition(*this\__rows( ))
-               Else
-                  *this\row\active[0]\mask &~ #__mask_active
+            If MouseClick() = 1
+               If *this\row\active[0]
+                  If *this\text\caret[0] <> *this\text\caret[1] Or
+                     *this\row\active[0] <> *this\row\active[1]
+                     ;
+                     PushListPosition(*this\__rows( ))
+                     ForEach *this\__rows( )
+                        If *this\__rows( )\mask & #__mask_active
+                           *this\__rows( )\mask &~ #__mask_active
+                        EndIf
+                        If *this\__rows( )\mask & #__mask_edit
+                           *this\__rows( )\sel_start = 0
+                           *this\__rows( )\sel_end = 0
+                           *this\__rows( )\mask &~ #__mask_edit
+                        EndIf
+                     Next
+                     PopListPosition(*this\__rows( ))
+                  Else
+                     *this\row\active[0]\mask &~ #__mask_active
+                  EndIf
+               EndIf
+               
+               *this\row\active[0] = *hover_row
+               *this\row\active[1] = *hover_row
+               
+               *this\text\caret[0] = edit_make_caret(*this)
+               *this\text\caret[1] = *this\text\caret[0]
+               
+               ; 
+               If Not *hover_row\mask & #__mask_active
+                  *hover_row\mask | #__mask_active
+               EndIf
+               
+               If *this\Type = #__type_Editor
+                  *this\mask | #__mask_edit
+                  *hover_row\mask | #__mask_edit
+               EndIf
+               
+               ; 4. Если это папка (узел) — переключаем схлопывание
+               If *hover_row\mask & #__mask_node
+                  *hover_row\mask ! #__mask_collapsed
+                  ; Если ветка закрылась/открылась — пересобираем рулон
+                  *this\mask | #__mask_update 
+               EndIf
+               
+               *this\mask | #__mask_redraw
+            EndIf
+            
+            If MouseClick() > 1
+               If *hover_row\mask &~ #__mask_edit
+                  Protected txt.s = *hover_row\Str(0)
+                  Protected len.i = Len(txt)
+                  
+                  ; Находим начало и конец слова от текущей позиции
+                  If MouseClick() = 2
+                     Protected start.i = *this\text\caret[1]
+                     Protected stop.i = *this\text\caret[0] + 1 ; Начинаем со следующего символа
+                     ; Уменьшаем индекс, пока символ не станет пробелом или не дойдем до начала (0)
+                     While start > 0 And Mid(txt, start, 1) <> " " : start - 1 : Wend
+                     ; Увеличиваем индекс, пока не встретим пробел или конец текста
+                     While stop <= len And Mid(txt, stop, 1) <> " " : stop + 1 : Wend
+                     *this\text\caret[1] = start
+                     *this\text\caret[0] = stop - 1
+                  EndIf
+                  If MouseClick() = 3
+                     *this\text\caret[1] = 0
+                     *this\text\caret[0] = Len
+                  EndIf
+                  If *this\text\caret[0] <> *this\text\caret[1]
+                     *this\mask | (#__mask_edit | #__mask_redraw)
+                  EndIf
                EndIf
             EndIf
             
-            *this\row\active[0] = *hover_row
-            *this\row\active[1] = *hover_row
-            
-            *this\text\caret[0] = edit_make_caret(*this)
-            *this\text\caret[1] = *this\text\caret[0]
-            
-            ; 
-            If Not *hover_row\mask & #__mask_active
-               *hover_row\mask | #__mask_active
-            EndIf
-            
-            If *this\Type = #__type_Editor
-               *this\mask | #__mask_edit
-               *hover_row\mask | #__mask_edit
-            EndIf
-            
-            ; 4. Если это папка (узел) — переключаем схлопывание
-            If *hover_row\mask & #__mask_node
-               *hover_row\mask ! #__mask_collapsed
-               ; Если ветка закрылась/открылась — пересобираем рулон
-               *this\mask | #__mask_update 
-            EndIf
-            
-            *this\mask | #__mask_redraw
          EndIf
          
-      Case #PB_EventType_LeftDoubleClick
-         If *this\row\active[0] And *this\row\active[0]\mask &~ #__mask_edit
-            ; Находим начало и конец слова от текущей позиции
-            *this\text\caret[1] = edit_find_word_start(*this\row\active[0]\Str(0), *this\text\caret[1])
-            *this\text\caret[0] = edit_find_word_end(*this\row\active[0]\Str(0), *this\text\caret[0])
-            If *this\text\caret[0] <> *this\text\caret[1]
-               *this\mask | (#__mask_edit | #__mask_redraw)
-            EndIf
-         EndIf
          
    EndSelect
 EndProcedure
@@ -3105,6 +3115,18 @@ Procedure canvas_events( )
    If eventtype = #PB_EventType_MouseWheel      ; The mouse wheel was moved
    EndIf
    If eventtype = #PB_EventType_LeftButtonDown  ; The left mouse Button was Pressed
+                                                ;
+                                                ;\\ double click
+                                                ;
+      Static ClickTime.q
+      Protected ElapsedMilliseconds.q = ElapsedMilliseconds( )
+      If MouseClick( ) < 3 And 
+         DoubleClickTime( ) > ( ElapsedMilliseconds - ClickTime )
+         MouseClick( ) + 1
+      Else
+         MouseClick( ) = 1
+      EndIf
+      ClickTime = ElapsedMilliseconds
    EndIf
    If eventtype = #PB_EventType_LeftButtonUp    ; The left mouse Button was released
    EndIf
@@ -3637,9 +3659,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Root( ) = 0
    End ; Завершение программы
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 3019
-; FirstLine = 2831
-; Folding = -------------------4u4---------------------------------------------47+--------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 2652
+; FirstLine = 2588
+; Folding = ------------------------------------8-----------------------------8W4----------------------
 ; EnableXP
 ; DPIAware
