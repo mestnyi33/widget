@@ -1,5 +1,4 @@
-﻿; https://www.google.com/search?aep=28&oq=&gs_lcrp=EgZjaHJvbWUqDwgCECMYJxjqAhjwBRieBjIPCAAQIxgnGOoCGPAFGJ4GMg8IARAjGCcY6gIY8AUYngYyDwgCECMYJxjqAhjwBRieBjIPCAMQIxgnGOoCGPAFGJ4GMg8IBBAjGCcY6gIY8AUYngYyDwgFECMYJxjqAhjwBRieBjIPCAYQIxgnGOoCGPAFGJ4GMg8IBxAjGCcY6gIY8AUYngbSAQkyODQ4ajBqMTWoAgiwAgHxBewecmINzL8j&sourceid=chrome&ie=UTF-8&mtid=VMjfae7aHZW5wPAPzdeLiAQ&ved=2ahUKEwimrMzNrPCTAxU_OBAIHUaDMMoQoo4PegYIAQgAEAE&q=%D0%BF%D0%BE%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B8+%D0%BA%D0%BE%D0%B4+%D1%8F+%D0%BE%D1%82%D0%BF%D1%80%D0%B0%D0%B2%D0%BB%D1%8E+%D1%87%D0%B0%D1%81%D1%82%D1%8F%D0%BC%D0%B8+Procedure+row_events%28*this._s_WIDGET%2C++event%29%0A+++Static+*hover_row._s_ROWS%0A+++Static+*pressed_row._s_ROWS%0A+++%0A+++Select+event%0A++++++Case+%23PB_EventType_MouseLeave%0A+++++++++If+*hover_row%0A++++++++++++*this%5Cmask+%7C+%23__mask_redraw%0A++++++++++++*hover_row%5Cmask+%26%7E+%23__mask_hover%0A++++++++++++*hover_row+%3D+0%0A+++++++++EndIf%0A+++++++++If+*this%5Cmask+%26+%23__mask_change_cursor%0A++++++++++++*this%5Cmask+%26%7E+%23__mask_change_cursor%0A++++++++++++Debug+%22reset+cursor%22%0A++++++++++++SetGadgetAttribute%28+*this%5Croot%5CCanvas%5Cgadget%2C+%23PB_Canvas_Cursor%2C+%23PB_Cursor_Default%29%0A+++++++++EndIf%0A+++++++++%0A++++++Case+%23PB_EventType_MouseMove++++%0A+++++++++Protected._s_ROWS+*row+%3D+hover_row%28*this%2C+mouse%28+%29%5Cy%29+++%0A+++++++++If+*hover_row+%3C%3E+*row%0A++++++++++++If+*hover_row%0A+++++++++++++++*hover_row%5Cmask+%26%7E+%23__mask_hover%0A++++++++++++EndIf%0A++++++++++++If+*row%0A+++++++++++++++*row%5Cmask+%7C+%23__mask_hover%0A+++++++++++++++%0A+++++++++++++++%3B+%D0%95%D1%81%D0%BB%D0%B8+%D0%BC%D1%8B%D1%88%D1%8C+%D0%B7%D0%B0%D0%B6%D0%B0%D1%82%D0%B0+%D0%B8+%D1%83+%D0%BD%D0%B0%D1%87%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B9+%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B8+%D0%95%D0%A1%D0%A2%D0%AC+%D1%84%D0%BB%D0%B0%D0%B3+%D1%80%D0%B5%D0%B4%D0%B0%D0%BA%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%0A+++++++++++++++If+*pressed_row+And+%0A++++++++++++++++++*pressed_row%5Cmask+%26+%23__mask_edit%0A++++++++++++++++++%0A++++++++++++++++++%3B+1.+%D0%9E%D0%BF%D1%80%D0%B5%D0%B4%D0%B5%D0%BB%D1%8F%D0%B5%D0%BC+%D0%B3%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D1%8B+%D0%B4%D0%B8%D0%B0%D0%BF%D0%B0%D0%B7%D0%BE%D0%BD%D0%B0+%D0%BF%D0%BE+Y%0A++++++++++++++++++Protected+max_y+%3D+*row%5Cy%0A++++++++++++++++++Protected+min_y+%3D+*pressed_row%5Cy%0A++++++++++++++++++If+min_y+%3E+max_y+%3A+Swap+min_y%2C+max_y+%3A+EndIf%0A++++++++++++++++++%0A++++++++++++++++++%3B+2.+%D0%9F%D0%B5%D1%80%D0%B5%D1%81%D1%87%D0%B8%D1%82%D1%8B%D0%B2%D0%B0%D0%B5%D0%BC+%D0%BC%D0%B0%D1%81%D0%BA%D0%B8+%D0%B4%D0%BB%D1%8F+%D0%B2%D1%81%D0%B5%D1%85+%D0%92%D0%98%D0%94%D0%98%D0%9C%D0%AB%D0%A5+%D1%81%D1%82%D1%80%D0%BE%D0%BA%0A++++++++++++++++++PushListPosition%28*this%5C__items%28%29%29%0A++++++++++++++++++ForEach+*this%5C__items%28%29%0A+++++++++++++++++++++Protected+*current_row._s_rows+%3D+*this%5C__items%28%29%0A+++++++++++++++++++++%0A+++++++++++++++++++++If+*current_row+%3C%3E+*pressed_row%0A++++++++++++++++++++++++If+*current_row%5Cy+%3E%3D+min_y+And+%0A+++++++++++++++++++++++++++*current_row%5Cy+%3C%3D+max_y%0A+++++++++++++++++++++++++++%3B+%D0%95%D1%81%D0%BB%D0%B8+%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B0+%D0%B2+%D1%84%D0%B8%D0%B7%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%BC+%D0%B4%D0%B8%D0%B0%D0%BF%D0%B0%D0%B7%D0%BE%D0%BD%D0%B5+%D0%BC%D0%B5%D0%B6%D0%B4%D1%83+%D0%BA%D0%BB%D0%B8%D0%BA%D0%BE%D0%BC+%D0%B8+%D0%BA%D1%83%D1%80%D1%81%D0%BE%D1%80%D0%BE%D0%BC%0A+++++++++++++++++++++++++++*current_row%5Cmask+%7C+%23__mask_edit%0A++++++++++++++++++++++++Else%0A+++++++++++++++++++++++++++%3B+%D0%A1%D0%BD%D0%B8%D0%BC%D0%B0%D0%B5%D0%BC+%D0%B2%D1%8B%D0%B4%D0%B5%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%2C+%D0%B5%D1%81%D0%BB%D0%B8+%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B0+%D0%B2%D1%8B%D1%88%D0%BB%D0%B0+%D0%B8%D0%B7+%D0%B4%D0%B8%D0%B0%D0%BF%D0%B0%D0%B7%D0%BE%D0%BD%D0%B0%0A+++++++++++++++++++++++++++*current_row%5Cmask+%26%7E+%23__mask_edit%0A++++++++++++++++++++++++EndIf%0A+++++++++++++++++++++EndIf%0A++++++++++++++++++Next%0A++++++++++++++++++PopListPosition%28*this%5C__items%28%29%29%0A++++++++++++++++++%0A++++++++++++++++++%3B+3.+%D0%A1%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B8%D1%80%D1%83%D0%B5%D0%BC+%D0%B0%D0%BA%D1%82%D0%B8%D0%B2%D0%BD%D1%83%D1%8E+%D1%81%D1%82%D1%80%D0%BE%D0%BA%D1%83%0A++++++++++++++++++If+*this%5Crow%5Cactive%5B0%5D+%3C%3E+*row%0A+++++++++++++++++++++If+*this%5Crow%5Cactive%5B0%5D+%0A++++++++++++++++++++++++*this%5Crow%5Cactive%5B0%5D%5Cmask+%26%7E+%23__mask_active+%0A+++++++++++++++++++++EndIf%0A+++++++++++++++++++++*row%5Cmask+%7C+%23__mask_active%0A+++++++++++++++++++++*this%5Crow%5Cactive%5B0%5D+%3D+*row%0A++++++++++++++++++EndIf%0A++++++++++++++++++%3B%0A++++++++++++++++++*this%5Cmask+%7C+%23__mask_edit%0A+++++++++++++++EndIf%0A+++++++++++++++%0A+++++++++++++++*this%5Cmask+%7C+%23__mask_redraw%0A+++++++++++++++*hover_row+%3D+*row%0A++++++++++++EndIf%0A+++++++++EndIf%0A+++++++++%0A+++++++++If+*pressed_row%0A++++++++++++If+*pressed_row%5Cmask+%26+%23__mask_edit%0A+++++++++++++++If+*this%5Cmask+%26+%23__mask_drag%0A++++++++++++++++++Protected+caret+%3D+edit_make_caret%28*this%29%0A++++++++++++++++++If+*this%5Ctext%5Ccaret%5B0%5D+%3C%3E+caret+%0A+++++++++++++++++++++*this%5Ctext%5Ccaret%5B0%5D+%3D+caret+%0A+++++++++++++++++++++*this%5Cmask+%7C+%28%23__mask_edit+%7C+%23__mask_redraw%29%0A++++++++++++++++++EndIf%0A+++++++++++++++EndIf%0A++++++++++++Else%0A+++++++++++++++If+*this%5Cmask+%26+%23__mask_active%0A++++++++++++++++++swap_row%28*this%2C+*pressed_row%2C+*hover_row%2C+mouse%28+%29%5Cy%29%0A+++++++++++++++EndIf%0A++++++++++++EndIf%0A+++++++++EndIf%0A+++++++++%0A+++++++++%0A+++++++++%3B+change+cursor%0A+++++++++If+*this%5Ctype+%3D+%23__type_Editor%0A++++++++++++If+Not+*this%5Cmask+%26+%23__mask_drag+%0A+++++++++++++++If+*row%0A++++++++++++++++++If+Not+*this%5Cmask+%26+%23__mask_change_cursor%0A+++++++++++++++++++++*this%5Cmask+%7C+%23__mask_change_cursor%0A+++++++++++++++++++++Debug+%22set+cursor%22%0A+++++++++++++++++++++SetGadgetAttribute%28+*this%5Croot%5CCanvas%5Cgadget%2C+%23PB_Canvas_Cursor%2C+%23PB_Cursor_IBeam%29%0A++++++++++++++++++EndIf%0A+++++++++++++++Else%0A++++++++++++++++++If+*this%5Cmask+%26+%23__mask_change_cursor%0A+++++++++++++++++++++*this%5Cmask+%26%7E+%23__mask_change_cursor%0A+++++++++++++++++++++Debug+%22reset+cursor2%22%0A+++++++++++++++++++++SetGadgetAttribute%28+*this%5Croot%5CCanvas%5Cgadget%2C+%23PB_Canvas_Cursor%2C+%23PB_Cursor_Default%29%0A++++++++++++++++++EndIf%0A+++++++++++++++EndIf%0A++++++++++++EndIf%0A+++++++++EndIf%0A+++++++++%0A+++++++++%0A++++++Case+%23PB_EventType_LeftButtonUp%0A+++++++++If+*pressed_row%0A++++++++++++*pressed_row%5Cmask+%26%7E+%23__mask_press%0A++++++++++++*pressed_row+%3D+0%0A+++++++++EndIf%0A+++++++++%0A++++++Case+%23PB_EventType_LeftButtonDown%0A+++++++++If+*hover_row%0A++++++++++++*pressed_row+%3D+*hover_row+%0A++++++++++++*hover_row%5Cmask+%7C+%23__mask_press%0A++++++++++++%0A++++++++++++If+MouseClick%28%29+%3D+1%0A+++++++++++++++If+*this%5Crow%5Cactive%5B0%5D%0A++++++++++++++++++If+*this%5Ctext%5Ccaret%5B0%5D+%3C%3E+*this%5Ctext%5Ccaret%5B1%5D+Or%0A+++++++++++++++++++++*this%5Crow%5Cactive%5B0%5D+%3C%3E+*this%5Crow%5Cactive%5B1%5D%0A+++++++++++++++++++++%3B%0A+++++++++++++++++++++PushListPosition%28*this%5C__rows%28+%29%29%0A+++++++++++++++++++++ForEach+*this%5C__rows%28+%29%0A++++++++++++++++++++++++If+*this%5C__rows%28+%29%5Cmask+%26+%23__mask_active%0A+++++++++++++++++++++++++++*this%5C__rows%28+%29%5Cmask+%26%7E+%23__mask_active%0A++++++++++++++++++++++++EndIf%0A++++++++++++++++++++++++If+*this%5C__rows%28+%29%5Cmask+%26+%23__mask_edit%0A+++++++++++++++++++++++++++*this%5C__rows%28+%29%5Csel_start+%3D+0%0A+++++++++++++++++++++++++++*this%5C__rows%28+%29%5Csel_end+%3D+0%0A+++++++++++++++++++++++++++*this%5C__rows%28+%29%5Cmask+%26%7E+%23__mask_edit%0A++++++++++++++++++++++++EndIf%0A+++++++++++++++++++++Next%0A+++++++++++++++++++++PopListPosition%28*this%5C__rows%28+%29%29%0A++++++++++++++++++Else%0A+++++++++++++++++++++*this%5Crow%5Cactive%5B0%5D%5Cmask+%26%7E+%23__mask_active%0A++++++++++++++++++EndIf%0A+++++++++++++++EndIf%0A+++++++++++++++%0A+++++++++++++++*this%5Crow%5Cactive%5B0%5D+%3D+*hover_row%0A+++++++++++++++*this%5Crow%5Cactive%5B1%5D+%3D+*hover_row%0A+++++++++++++++%0A+++++++++++++++*this%5Ctext%5Ccaret%5B0%5D+%3D+edit_make_caret%28*this%29%0A+++++++++++++++*this%5Ctext%5Ccaret%5B1%5D+%3D+*this%5Ctext%5Ccaret%5B0%5D%0A+++++++++++++++%0A+++++++++++++++%3B+%0A+++++++++++++++If+Not+*hover_row%5Cmask+%26+%23__mask_active%0A++++++++++++++++++*hover_row%5Cmask+%7C+%23__mask_active%0A+++++++++++++++EndIf%0A+++++++++++++++%0A+++++++++++++++If+*this%5CType+%3D+%23__type_Editor%0A++++++++++++++++++*this%5Cmask+%7C+%23__mask_edit%0A++++++++++++++++++*hover_row%5Cmask+%7C+%23__mask_edit%0A+++++++++++++++EndIf%0A+++++++++++++++%0A+++++++++++++++%3B+4.+%D0%95%D1%81%D0%BB%D0%B8+%D1%8D%D1%82%D0%BE+%D0%BF%D0%B0%D0%BF%D0%BA%D0%B0+%28%D1%83%D0%B7%D0%B5%D0%BB%29+%E2%80%94+%D0%BF%D0%B5%D1%80%D0%B5%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D0%B5%D0%BC+%D1%81%D1%85%D0%BB%D0%BE%D0%BF%D1%8B%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%0A+++++++++++++++If+*hover_row%5Cmask+%26+%23__mask_node%0A++++++++++++++++++*hover_row%5Cmask+%21+%23__mask_collapsed%0A++++++++++++++++++%3B+%D0%95%D1%81%D0%BB%D0%B8+%D0%B2%D0%B5%D1%82%D0%BA%D0%B0+%D0%B7%D0%B0%D0%BA%D1%80%D1%8B%D0%BB%D0%B0%D1%81%D1%8C%2F%D0%BE%D1%82%D0%BA%D1%80%D1%8B%D0%BB%D0%B0%D1%81%D1%8C+%E2%80%94+%D0%BF%D0%B5%D1%80%D0%B5%D1%81%D0%BE%D0%B1%D0%B8%D1%80%D0%B0%D0%B5%D0%BC+%D1%80%D1%83%D0%BB%D0%BE%D0%BD%0A++++++++++++++++++*this%5Cmask+%7C+%23__mask_update+%0A+++++++++++++++EndIf%0A+++++++++++++++%0A+++++++++++++++*this%5Cmask+%7C+%23__mask_redraw%0A++++++++++++EndIf%0A++++++++++++%0A++++++++++++If+MouseClick%28%29+%3E+1%0A+++++++++++++++If+*hover_row%5Cmask+%26%7E+%23__mask_edit%0A++++++++++++++++++Protected+txt.s+%3D+*hover_row%5CStr%280%29%0A++++++++++++++++++Protected+len.i+%3D+Len%28txt%29%0A++++++++++++++++++%0A++++++++++++++++++%3B+%D0%9D%D0%B0%D1%85%D0%BE%D0%B4%D0%B8%D0%BC+%D0%BD%D0%B0%D1%87%D0%B0%D0%BB%D0%BE+%D0%B8+%D0%BA%D0%BE%D0%BD%D0%B5%D1%86+%D1%81%D0%BB%D0%BE%D0%B2%D0%B0+%D0%BE%D1%82+%D1%82%D0%B5%D0%BA%D1%83%D1%89%D0%B5%D0%B9+%D0%BF%D0%BE%D0%B7%D0%B8%D1%86%D0%B8%D0%B8%0A++++++++++++++++++If+MouseClick%28%29+%3D+2%0A+++++++++++++++++++++Protected+start.i+%3D+*this%5Ctext%5Ccaret%5B1%5D%0A+++++++++++++++++++++Protected+stop.i+%3D+*this%5Ctext%5Ccaret%5B0%5D+%2B+1+%3B+%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC+%D1%81%D0%BE+%D1%81%D0%BB%D0%B5%D0%B4%D1%83%D1%8E%D1%89%D0%B5%D0%B3%D0%BE+%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%B0%0A+++++++++++++++++++++%3B+%D0%A3%D0%BC%D0%B5%D0%BD%D1%8C%D1%88%D0%B0%D0%B5%D0%BC+%D0%B8%D0%BD%D0%B4%D0%B5%D0%BA%D1%81%2C+%D0%BF%D0%BE%D0%BA%D0%B0+%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB+%D0%BD%D0%B5+%D1%81%D1%82%D0%B0%D0%BD%D0%B5%D1%82+%D0%BF%D1%80%D0%BE%D0%B1%D0%B5%D0%BB%D0%BE%D0%BC+%D0%B8%D0%BB%D0%B8+%D0%BD%D0%B5+%D0%B4%D0%BE%D0%B9%D0%B4%D0%B5%D0%BC+%D0%B4%D0%BE+%D0%BD%D0%B0%D1%87%D0%B0%D0%BB%D0%B0+%280%29%0A+++++++++++++++++++++While+start+%3E+0+And+Mid%28txt%2C+start%2C+1%29+%3C%3E+%22+%22+%3A+start+-+1+%3A+Wend%0A+++++++++++++++++++++%3B+%D0%A3%D0%B2%D0%B5%D0%BB%D0%B8%D1%87%D0%B8%D0%B2%D0%B0%D0%B5%D0%BC+%D0%B8%D0%BD%D0%B4%D0%B5%D0%BA%D1%81%2C+%D0%BF%D0%BE%D0%BA%D0%B0+%D0%BD%D0%B5+%D0%B2%D1%81%D1%82%D1%80%D0%B5%D1%82%D0%B8%D0%BC+%D0%BF%D1%80%D0%BE%D0%B1%D0%B5%D0%BB+%D0%B8%D0%BB%D0%B8+%D0%BA%D0%BE%D0%BD%D0%B5%D1%86+%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0%0A+++++++++++++++++++++While+stop+%3C%3D+len+And+Mid%28txt%2C+stop%2C+1%29+%3C%3E+%22+%22+%3A+stop+%2B+1+%3A+Wend%0A+++++++++++++++++++++*this%5Ctext%5Ccaret%5B1%5D+%3D+start%0A+++++++++++++++++++++*this%5Ctext%5Ccaret%5B0%5D+%3D+stop+-+1%0A++++++++++++++++++EndIf%0A++++++++++++++++++If+MouseClick%28%29+%3D+3%0A+++++++++++++++++++++*this%5Ctext%5Ccaret%5B1%5D+%3D+0%0A+++++++++++++++++++++*this%5Ctext%5Ccaret%5B0%5D+%3D+Len%0A++++++++++++++++++EndIf%0A++++++++++++++++++If+*this%5Ctext%5Ccaret%5B0%5D+%3C%3E+*this%5Ctext%5Ccaret%5B1%5D%0A+++++++++++++++++++++*this%5Cmask+%7C+%28%23__mask_edit+%7C+%23__mask_redraw%29%0A++++++++++++++++++EndIf%0A+++++++++++++++EndIf%0A++++++++++++EndIf%0A++++++++++++%0A+++++++++EndIf%0A+++++++++%0A+++++++++%0A+++EndSelect%0AEndProcedure&mstk=AUtExfCLP3WtE7a4PFdWP552N5JYH3sZbQ16RxIJIbMrCPeaubGLUSaTcoBMsat80s3YyuCAqcQPxDEvLOCzLs0yJzp4JWLKVT-U06VsAAyGdUP0QN25Gmfd9qlgoxnv4yCxWFhtoy9Z1zFSJxNR_9hfR1FAW_WKn4_viQbgLMruRjI2xzhL3TGg8FOhMAOH-VjwYl416Ran0oAiDfZdLR0IB-jBGH3UklmQLm66MdIR6bw9dAPvtiWcgufuHzUsOkvJ0ZWeUHBBJlLSHF87Uxv8OxDHMZ4EypGlWUVfl3D8o6omOCo6EHVLjuvWRhZ748vfdMeIc_A-5QmzpQ&csuir=1&udm=50
-EnableExplicit
+﻿EnableExplicit
 
 ; Прототип функции, которую ты будешь привязывать через Bind
 Prototype.i ProtoOnEvent(*this, Type.i)
@@ -224,7 +223,11 @@ Structure _s_ROW
 EndStructure
 
 Structure _s_BAR Extends _s_COORDINATE
-   pos.i : max.i : thumb_h.i : is_drag.b
+   pos.i 
+   max.i
+   is_drag.b
+   thumb_w.l
+   thumb_h.l
 EndStructure
 
 Structure _s_SCROLL Extends _s_COORDINATE
@@ -1214,11 +1217,18 @@ Procedure update_columns(*this._s_WIDGET)
       cur_x + *this\__columns()\Width
    Next
    
-   ; Максимальный сдвиг
-   *h\max = cur_x - *this\Width
+   ; 3. cur_x теперь равен ОБЩЕЙ ширине всех колонок.
+   ; Вычисляем макс для горизонтального скролла:
+   ; (Общая ширина) - (Ширина виджета - место под вертикальный скролл)
+   Protected v_bar_w = 0
+   If *this\scroll\v\max > 0 : v_bar_w = *this\fs : EndIf
+   
+   *h\max = cur_x - (*this\width - v_bar_w)
+   
+   ; Если контент уже виджета, сбрасываем макс в 0
    If *h\max < 0 : *h\max = 0 : EndIf
    
-   ; Корректировка позиции при изменении размеров
+   ; Если скролл уехал дальше нового максимума (например, при уменьшении ширины)
    If *h\pos > *h\max : *h\pos = *h\max : EndIf
 EndProcedure
 
@@ -1261,14 +1271,26 @@ Procedure update_rows(*this._s_WIDGET)
       *this\__rows( )\y = cur_y
       If *this\__rows( )\height <= 0 : *this\__rows( )\height = h_item : EndIf
       
-      ; --- РАСЧЕТ ШИРИНЫ (для H-Scroll) ---
-      Protected offset = *this\text\padding\x + (*this\__rows( )\Level * *this\row\indent)
-      If (*this\__rows( )\mask & #__mask_node) : offset + 15 : EndIf
+            ; --- РАСЧЕТ ШИРИНЫ (для H-Scroll) ---
+      Protected row_w = 0
       
-      ; Используем текущий DrawingFont, который уже установлен в Draw
-      Protected row_w = TextWidth(*this\__rows( )\Str(0)) + offset + *this\text\padding\x
+      ; Если колонок больше одной (или это таблица)
+      If ListSize(*this\__columns()) > 1
+         ; Находим крайнюю правую точку последней колонки
+         PushListPosition(*this\__columns())
+         LastElement(*this\__columns())
+         row_w = *this\__columns()\x + *this\__columns()\Width
+         PopListPosition(*this\__columns())
+      Else
+         ; Если колонка одна — считаем по длине текста (как было)
+         Protected offset = *this\text\padding\x + (*this\__rows()\Level * *this\row\indent)
+         If (*this\__rows()\mask & #__mask_node) : offset + 15 : EndIf
+         
+         row_w = TextWidth(*this\__rows()\Str(0)) + offset + *this\text\padding\x
+      EndIf
+      
       If row_w > max_w : max_w = row_w : EndIf
-      
+
       ; --- ЛОГИКА ВИДИМОСТИ ---
       Protected r_top = *this\__rows( )\y - *this\column\height
       Protected r_bottom = r_top + *this\__rows( )\height 
@@ -1285,12 +1307,30 @@ Procedure update_rows(*this._s_WIDGET)
       cur_y + *this\__rows( )\height 
    Next
    
-   ; Фиксируем результаты
-   *v\max = cur_y - *this\height 
-   If *v\max < 0 : *v\max = 0 : EndIf
+   ; Внутри update_rows, после цикла ForEach, где мы нашли max_w
+   If ListSize(*this\__columns()) = 1
+      FirstElement(*this\__columns())
+      ; Устанавливаем ширину единственной колонки равной самому длинному тексту
+      *this\__columns()\Width = max_w 
+   EndIf
    
-   *h\max = max_w - *this\width 
+   ; --- ФИКСИРУЕМ РЕЗУЛЬТАТЫ ---
+   Protected v_bar_w = 0 : If cur_y > *this\height : v_bar_w = *this\fs[3] : EndIf
+   Protected h_bar_h = 0 : If max_w > (*this\width - v_bar_w) : h_bar_h = *this\fs[4] : EndIf
+   
+   ; Если появился горизонтальный скролл, нужно заново проверить, не появился ли вертикальный
+   ; из-за уменьшения высоты (h_bar_h)
+   If (cur_y + h_bar_h) > *this\height : v_bar_w = *this\fs[3] : EndIf
+
+   ; Расчет максимума для Горизонтального скролла
+   *h\max = max_w - (*this\width - v_bar_w)
    If *h\max < 0 : *h\max = 0 : EndIf
+   
+   ; Расчет максимума для Вертикального скролла
+   ; (Высота контента - Высота шапки) - (Высота виджета - Высота шапки - Высота H-скролла)
+   Protected view_h = *this\height - *this\column\height - h_bar_h
+   *v\max = (cur_y - *this\column\height) - view_h
+   If *v\max < 0 : *v\max = 0 : EndIf
 EndProcedure
 
 Procedure update_level(*this._s_WIDGET, new_level.l)
@@ -1529,69 +1569,57 @@ Procedure draw_panel(*this._s_WIDGET, rx.l, ry.l)
 EndProcedure
 
 Procedure draw_columns(*this._s_WIDGET, rx.l, ry.l)
-   Protected dx = rx
-   Protected dy = ry
-   Protected color
-   Protected *column._s_HEADER
+   Protected dx = rx - *this\scroll\h\pos 
    
-   ; 1. Рисуем общий фон шапки высота columnheight
-   Box(rx, dy, *this\Width, *this\column\height, $F5F5F5)
+   ; 1. Рисуем фон всей шапки (статично)
+   Box(rx, ry, *this\Width, *this\column\height, $F5F5F5)
    
-   ForEach *this\__columns( )
-      *column = *this\__columns( )
-      If *column
-         Protected col_x = dx + *column\x
+   ; 2. Заходим в цикл отрисовки колонок
+   ForEach *this\__columns()
+      Protected *column._s_HEADER = @*this\__columns()
+      Protected col_x = dx + *column\x
+      Protected col_w = *column\Width
+      
+      ; Проверка видимости колонки в окне виджета
+      If (col_x + col_w) > *this\clip\x And col_x < (*this\clip\x + *this\clip\width)
          
-         If *column\mask & #__mask_hover
-            color = $E0E0E0 ; Цвет при наведении
-         Else
-            color = $F5F5F5
-         EndIf
+         ; Рассчитываем клип для ТЕКСТА (чтобы он не вылазил на соседние колонки)
+         Protected clip_x = Max(col_x, *this\clip\x)
+         Protected clip_w = Min(col_x + col_w, *this\clip\x + *this\clip\width) - clip_x
          
-         ; 2. Рисуем фон колонки и текст заголовка
-         Box(col_x, dy, *column\Width, *this\column\height, color)
-         DrawText(col_x + 5, dy + 5, *column\Title, $333333, color)
-         
-         ;          ; --- ДОБАВЛЕНО: Линия на середине колонки под мышью ---
-         ;          If *this\mask & #__mask_press
-         ;             If *column\mask & #__mask_hover And Not *column\mask & #__mask_active
-         ;                ; Рисуем яркую вертикальную линию ровно по центру ховер-колонки
-         ;                Protected mid_x = col_x + (*column\Width / 2)
-         ;                Line(mid_x, dy, 1, *this\column\height, $0000FF) ; Синяя линия
-         ;             EndIf
-         ;          EndIf
-         ; --- ДОБАВЛЕНО: Линия на середине колонки с засечками ---
-         If *this\mask & #__mask_drag
-            If *column\mask & #__mask_hover And Not *column\mask & #__mask_active
-               ; 1. Рассчитываем центр
-               Protected mid_x = col_x + (*column\Width / 2)
-               Protected c_blue = $FF0000 ; Синий в BGR
-               
-               ; 2. Рисуем основную вертикальную линию
-               Line(mid_x, dy, 1, *this\column\height, c_blue)
-               
-               ; 3. Рисуем верхнюю засечку (горизонтальная перекладина)
-               Line(mid_x - 3, dy, 7, 1, c_blue)
-               
-               ; 4. Рисуем нижнюю засечку
-               Line(mid_x - 3, dy + *this\column\height - 1, 7, 1, c_blue)
+         If clip_w > 0
+            ; --- СЛОЙ 1: ТЕКСТ (в узком клипе) ---
+            ClipOutput(clip_x, *this\clip\y, clip_w, *this\clip\height)
+            
+            ; Рисуем фон ячейки (если нужно, например при Hover)
+            If *column\mask & #__mask_hover
+               Box(col_x, ry, col_w, *this\column\height, $E0E0E0)
             EndIf
+            
+            DrawingMode(#PB_2DDrawing_Transparent)
+            DrawText(col_x + 5, ry + 5, *column\Title, $333333)
+            DrawingMode(#PB_2DDrawing_Default)
+            
+            ; --- СЛОЙ 2: ЛИНИЯ СЕТКИ (в широком клипе) ---
+            ; Сначала возвращаем клип виджета, чтобы линия не "отсеклась" 
+            ; по правой границе текста (которая на 1 пиксель левее линии)
+            Clip(*this) 
+            
+            ; Теперь рисуем вертикальную линию
+            Line(col_x + col_w - 1, ry, 1, *this\height, $CCCCCC)
          EndIf
-         
-         ; 3. Рисуем вертикальный разделитель (сетку) на всю высоту виджета
-         Line(col_x + *column\Width, dy, 1, *this\height , $CCCCCC)
       EndIf
    Next
    
-   ; Нижняя граница шапки
-   Line(*this\real\x, dy + *this\column\height, *this\Width, 1, $AAAAAA)
+   ; Линия отделения шапки от строк
+   Line(rx, ry + *this\column\height, *this\Width, 1, $AAAAAA)
 EndProcedure
 
 Procedure draw_rows(*this._s_WIDGET, rx.l, ry.l)
    If Not *this\visible\first : ProcedureReturn : EndIf
    Protected._s_rows *row
    ; Рассчитываем базовое смещение по X ОДИН РАЗ (экранный X виджета - скролл)
-   Protected dx = rx
+   Protected dx = rx - *this\scroll\h\pos
    ; 1. Прыгаем сразу к первой видимой строке
    ChangeCurrentElement(*this\__items( ), *this\visible\first)
    Repeat 
@@ -1632,13 +1660,19 @@ Procedure draw_rows(*this._s_WIDGET, rx.l, ry.l)
                
                ; 2. РАСЧЕТ УМНОГО КЛИПА (Пересечение колонки и виджета)
                ; Берем максимальное из левых границ
-               Protected clip_x = Max(col_x, rx) 
+               Protected clip_x = Max(col_x, *this\clip\x) 
+               Protected clip_y = Max(dy, *this\clip\y)
                ; Берем минимальное из правых границ и вычитаем левую, чтобы получить ширину
-               Protected clip_width = Min(col_x + col_w, rx + *this\Width) - clip_x
+               Protected clip_w = Min(col_x + col_w, *this\clip\x + *this\clip\width) - clip_x
                
                ; Если ширина клипа получилась отрицательной (вне видимости) — пропускаем
-               If clip_width > 0
-                  ClipOutput(clip_x, dy, clip_width, *row\height )
+               ; 2. Высота должна быть такой, чтобы не вылезти за нижний край виджета
+               Protected view_bottom = *this\clip\y + *this\clip\height
+               Protected row_bottom  = dy + *row\height
+               Protected clip_h = Min(row_bottom, view_bottom) - clip_y
+               
+               If clip_w > 0 And clip_h > 0
+                  ClipOutput(clip_x, clip_y, clip_w, clip_h)
                   
                   If data_idx <= ArraySize(*row\Str( ))
                      Protected Text.s = *row\Str(data_idx)
@@ -1691,8 +1725,7 @@ Procedure draw_rows(*this._s_WIDGET, rx.l, ry.l)
                      
                      ; --- РИСУЕМ ТЕКСТ (ПОВЕРХ) ---
                      DrawingMode(#PB_2DDrawing_Transparent)
-                     ;DrawText(col_x + offset, dy + 5, Text, #COLOR_TEXT_NORMAL)
-                     DrawText(col_x + offset - *this\scroll\h\pos, dy + 5, Text, #COLOR_TEXT_NORMAL)
+                     DrawText(col_x + offset, dy + 5, Text, #COLOR_TEXT_NORMAL)
          
                      If *row\mask & #__mask_edit 
                         ; --- РИСУЕМ КАРЕТКУ (КУРСОР) ---
@@ -1887,12 +1920,6 @@ Procedure Draw(*root._s_ROOT)
          ElseIf *this\Type = #__type_AreaBar
             
          Else
-            If *this\column\height
-               ; Слой 2: Шапка и вертикальные линии сетки
-               DrawingMode(#PB_2DDrawing_Default)
-               draw_columns(*this, rx, ry) 
-            EndIf
-            
             If *this\row\height
                ; --- СЛОИ ОТРИСОВКИ ---
                ; Слой 1: Фон и данные строк
@@ -1900,12 +1927,16 @@ Procedure Draw(*root._s_ROOT)
                draw_rows(*this, rx, ry) 
             EndIf
             
+            If *this\column\height
+               ; Слой 2: Шапка и вертикальные линии сетки
+               DrawingMode(#PB_2DDrawing_Default)
+               draw_columns(*this, rx, ry) 
+            EndIf
+            
             ; Слой 3: Внешняя рамка виджета (рисуем ПОВЕРХ всего)
             DrawingMode(#PB_2DDrawing_Outlined)
             Box(rx, ry, *this\Width, *this\height , $CCCCCC) ; Цвет рамки
          EndIf
-         
-         UnClip( )
          
          ; Теперь рисуем скроллбары поверх всего, в границах виджета
          If *this\Scroll
@@ -2708,6 +2739,76 @@ EndProcedure
 
 
 ;-
+Procedure scroll_events(*this._s_WIDGET, event)
+   Protected._s_BAR *v = @*this\scroll\v
+   Protected._s_BAR *h = @*this\scroll\h
+   Static is_drag_v, is_drag_h, drag_start_pos
+   
+   Select event
+      Case #PB_EventType_MouseWheel
+         ; Вращение колесика (Вертикальный скролл)
+         If *v\max > 0
+            Protected delta = GetGadgetAttribute(*this\root\Canvas\gadget, #PB_Canvas_WheelDelta)
+            *v\pos - (delta * (*this\row\height * 3)) ; Скроллим по 3 строки
+            
+            ; Ограничители
+            If *v\pos < 0 : *v\pos = 0 : EndIf
+            If *v\pos > *v\max : *v\pos = *v\max : EndIf
+            
+            *this\mask | (#__mask_update | #__mask_redraw)
+         EndIf
+
+      Case #PB_EventType_LeftButtonDown
+         ; Проверка попадания в вертикальный скролл
+         If mouse()\x > (*this\real\x + *this\width - *this\fs)
+            If *v\max > 0
+               ; Если попали в ползунок — включаем Drag
+               ; (Здесь нужна твоя логика проверки Y относительно thumb_y)
+               is_drag_v = #True
+               drag_start_pos = mouse()\y
+            EndIf
+            
+         ; Проверка попадания в горизонтальный скролл
+         ElseIf mouse()\y > (*this\real\y + *this\height - *this\fs)
+            If *h\max > 0
+               is_drag_h = #True
+               drag_start_pos = mouse()\x
+            EndIf
+         EndIf
+
+      Case #PB_EventType_MouseMove
+         If is_drag_v
+            ; Расчет дельты движения мыши и пропорциональное смещение pos
+            Protected dy = mouse()\y - drag_start_pos
+            ; Коэффициент: сколько пикселей контента в 1 пикселе скроллбара
+            Protected.f ratio = *v\max / (*this\height - *v\thumb_h) 
+            *v\pos + (dy * ratio)
+            
+            drag_start_pos = mouse()\y
+            
+            If *v\pos < 0 : *v\pos = 0 : EndIf
+            If *v\pos > *v\max : *v\pos = *v\max : EndIf
+            *this\mask | (#__mask_update | #__mask_redraw)
+            
+         ElseIf is_drag_h
+            Protected dx = mouse()\x - drag_start_pos
+            Protected.f ratio_h = *h\max / (*this\width - *h\thumb_w)
+            *h\pos + (dx * ratio_h)
+            
+            drag_start_pos = mouse()\x
+            
+            If *h\pos < 0 : *h\pos = 0 : EndIf
+            If *h\pos > *h\max : *h\pos = *h\max : EndIf
+            *this\mask | (#__mask_update | #__mask_redraw)
+         EndIf
+
+      Case #PB_EventType_LeftButtonUp
+         is_drag_v = #False
+         is_drag_h = #False
+
+   EndSelect
+EndProcedure
+
 Procedure tab_events(*this._s_WIDGET, event)
    Static *hover_tab._s_HEADER
    Static *pressed_tab._s_HEADER
@@ -3083,6 +3184,11 @@ Procedure row_events(*this._s_WIDGET,  event)
 EndProcedure
 
 Procedure do_events(*this._s_WIDGET, event)
+   
+   If *this\Scroll
+      scroll_events(*this,  event)
+   EndIf
+   
    If *this\column
       If *this\column\height
          column_events(*this, event)
@@ -3304,6 +3410,9 @@ Procedure.i Create(*parent._s_WIDGET, class.s, Type.i, X, Y, Width, Height, titl
       this\row\indent = 20 ; (отступ веток)
       this\row\padding\y = 5
       this\text\padding\X = 5
+      
+      this\fs[3] = 16 ; Ширина вертикального скролла
+      this\fs[4] = 16 ; Высота горизонтального скролла
    EndIf
    
    ; --- В конструкторе или блоке создания ---
@@ -3667,7 +3776,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Root( ) = 0
    End ; Завершение программы
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; Folding = ----------4---3--nu8-------------------v------------------------------------f----------------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 2779
+; FirstLine = 2368
+; Folding = ----------4---3--nu8----------------4W--4--v8--------------------------8--------+---------------
 ; EnableXP
 ; DPIAware
