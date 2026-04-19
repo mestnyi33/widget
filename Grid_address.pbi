@@ -524,11 +524,6 @@ Procedure.i GetOSData(handle.i)
 EndProcedure
 
 ;-
-;    Protected._s_BAR *v = *this\scroll\v
-;    Protected._s_BAR *h = *this\scroll\h  
-;    Protected._s_ROWS *row = *this\row\active[0]
-;    Protected result
-;    
 Procedure auto_scroll_y(*this._s_WIDGET)
    Protected._s_BAR *v = *this\scroll\v
    Protected._s_BAR *h = *this\scroll\h  
