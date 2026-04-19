@@ -3037,28 +3037,29 @@ Procedure row_events(*this._s_WIDGET,  event)
          
          ; --- ЛОГИКА АВТОСКРОЛЛА ПРИ ВЫДЕЛЕНИИ ---
          If *pressed_row And *pressed_row\mask & #__mask_edit
-            Protected scroll_speed = 10 ; Скорость скролла в пикселях
+            Protected scroll_speed = 1 ; Скорость скролла в пикселях
             Protected scroll_changed.b = #False
             
             ; Вертикальный автоскролл
-            If my < *this\column\height
+            If my < *this\column\height                                         + *this\row\Height
                *this\scroll\v\pos - scroll_speed : scroll_changed = #True
-            ElseIf my > *this\height - *this\fs[4]
+            ElseIf my > *this\height - Bool(*this\scroll\h\max>0) * *this\fs[4] - *this\row\Height 
                *this\scroll\v\pos + scroll_speed : scroll_changed = #True
             EndIf
             
             ; Горизонтальный автоскролл
-            If mx < *this\fs[1]
+            If mx < *this\fs[1]                                                + *this\row\Height
                *this\scroll\h\pos - scroll_speed : scroll_changed = #True
-            ElseIf mx > *this\width - *this\fs[3]
+            ElseIf mx > *this\width - Bool(*this\scroll\v\max>0) * *this\fs[3] - *this\row\Height
                *this\scroll\h\pos + scroll_speed : scroll_changed = #True
             EndIf
             
             If scroll_changed
                ; Ограничители
                If *this\scroll\v\pos < 0 : *this\scroll\v\pos = 0 : EndIf
-               If *this\scroll\v\pos > *this\scroll\v\max : *this\scroll\v\pos = *this\scroll\v\max : EndIf
                If *this\scroll\h\pos < 0 : *this\scroll\h\pos = 0 : EndIf
+               
+               If *this\scroll\v\pos > *this\scroll\v\max : *this\scroll\v\pos = *this\scroll\v\max : EndIf
                If *this\scroll\h\pos > *this\scroll\h\max : *this\scroll\h\pos = *this\scroll\h\max : EndIf
                
                ; Пересобираем рулон и перерисовываем, чтобы edit_make_caret ниже 
@@ -3186,7 +3187,7 @@ Procedure row_events(*this._s_WIDGET,  event)
                      Next
                      PopListPosition(*this\__rows( ))
                   Else
-                     *this\row\active[0]\mask &~ #__mask_active
+                     *this\row\active[0]\mask &~ (#__mask_active | #__mask_edit)
                   EndIf
                EndIf
                
@@ -3227,7 +3228,8 @@ Procedure row_events(*this._s_WIDGET,  event)
                   If MouseClick() = 2
                      Protected start.i = *this\row\edit\caret[1]
                      Protected stop.i = *this\row\edit\caret[0] + 1 ; Начинаем со следующего символа
-                                                                    ; Уменьшаем индекс, пока символ не станет пробелом или не дойдем до начала (0)
+                     
+                     ; Уменьшаем индекс, пока символ не станет пробелом или не дойдем до начала (0)
                      While start > 0 And Mid(txt, start, 1) <> " " : start - 1 : Wend
                      ; Увеличиваем индекс, пока не встретим пробел или конец текста
                      While stop <= len And Mid(txt, stop, 1) <> " " : stop + 1 : Wend
@@ -3245,8 +3247,6 @@ Procedure row_events(*this._s_WIDGET,  event)
             EndIf
             
          EndIf
-         
-         
    EndSelect
 EndProcedure
 
@@ -3952,8 +3952,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 537
-; FirstLine = 526
-; Folding = -----------------------------------------------------------------------------------------------------
+; CursorPosition = 3172
+; FirstLine = 3165
+; Folding = ----------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
