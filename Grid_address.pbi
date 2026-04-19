@@ -524,26 +524,31 @@ Procedure.i GetOSData(handle.i)
 EndProcedure
 
 ;-
-; Procedure auto_scroll_y(*this._s_WIDGET)
 ;    Protected._s_BAR *v = *this\scroll\v
 ;    Protected._s_BAR *h = *this\scroll\h  
 ;    Protected._s_ROWS *row = *this\row\active[0]
 ;    Protected result
 ;    
-;    ; Проверка автоскролла по Y
-;    If *v\pos < (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
-;       *v\pos = (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
-;       result = 1
-;    ElseIf *v\pos > (*row\y - *this\column\height)
-;       *v\pos = (*row\y - *this\column\height)
-;       result = -1
-;    EndIf
-;    
-;    If *v\pos < 0 : *v\pos = 0 : EndIf
-;    If *v\pos > *v\max : *v\pos = *v\max : EndIf
-;    
-;    ProcedureReturn result
-; EndProcedure
+Procedure auto_scroll_y(*this._s_WIDGET)
+   Protected._s_BAR *v = *this\scroll\v
+   Protected._s_BAR *h = *this\scroll\h  
+   Protected._s_ROWS *row = *this\row\active[0]
+   Protected result
+   
+   ; Проверка автоскролла по Y
+   If *v\pos < (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
+      *v\pos = (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
+      result = 1
+   ElseIf *v\pos > (*row\y - *this\column\height)
+      *v\pos = (*row\y - *this\column\height)
+      result = -1
+   EndIf
+   
+   If *v\pos < 0 : *v\pos = 0 : EndIf
+   If *v\pos > *v\max : *v\pos = *v\max : EndIf
+   
+   ProcedureReturn result
+EndProcedure
 
 Procedure.i edit_make_caret(*this._s_WIDGET)
    Protected i.i, mouse_x.i, caret_x.i, caret.i = -1
@@ -723,8 +728,8 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                         NextElement(*this\__rows())
                         DeleteElement(*this\__rows())
                         
-                        ;*v\max - *row\Height
-                        ;auto_scroll_y(*this)
+;                         *v\max - *row\Height
+;                         auto_scroll_y(*this)
                         If *v\pos > (*this\row\active[0]\y - *this\column\height)
                            *v\pos = (*this\row\active[0]\y - *this\column\height)
                         Else
@@ -2508,11 +2513,16 @@ Procedure Hide(*this._s_WIDGET, state.b)
 EndProcedure
 
 Procedure SetTab(*this._s_WIDGET, tabpage.l)
+   Protected result
    Protected *g._s_WIDGET ; Локальный указатель для этого уровня рекурсии
    If Not *this : ProcedureReturn : EndIf
-   If *this\tabbar : *this\tabpage = tabpage : EndIf
-   
-   *this\mask | #__mask_redraw
+   If *this\tabbar 
+      If *this\tabpage <> tabpage 
+         *this\tabpage = tabpage
+         Debug 5555
+         result = 1
+      EndIf
+   EndIf
    
    Start(*g, *this)
    ; 1. Логика видимости
@@ -2520,11 +2530,12 @@ Procedure SetTab(*this._s_WIDGET, tabpage.l)
    
    ; 2. Рекурсия (каждый вызов создаст свой *g на стеке)
    If *g = *this\areabar
-      SetTab(*g, tabpage) 
+      result = SetTab(*g, tabpage) 
    ElseIf *g\tabbar
-      SetTab(*g, *g\tabpage)
+      result = SetTab(*g, *g\tabpage)
    EndIf
    Stop(*g, *this)
+   ProcedureReturn result
 EndProcedure
 
 ;-
@@ -2776,16 +2787,16 @@ Procedure.i hover_row(*this._s_WIDGET, my.i)
    Protected *res
    ; Локальная координата внутри виджета
    my = (my - *this\real\y) + *this\scroll\v\pos
-   
+            
    ; Становимся на первую видимую строку
    PushListPosition(*this\__items())
    If *this\visible\first
       ChangeCurrentElement(*this\__items(), *this\visible\first)
-      
+    
       ; Перебираем только до последней видимой
       Repeat
          Protected *row._s_rows = @*this\__items()
-         If my >= *row\y And my < (*row\y + *row\height)
+     If my >= *row\y And my < (*row\y + *row\height)
             *res = *row
             Break
          EndIf
@@ -2841,8 +2852,9 @@ EndProcedure
 
 ;-
 Procedure tab_events(*this._s_WIDGET, event)
-   Static *hover_tab._s_HEADER
-   Static *pressed_tab._s_HEADER
+   Protected._s_HEADER *tab
+   Static._s_HEADER *hover_tab
+   Static._s_HEADER *pressed_tab
    
    Select event
       Case #PB_EventType_MouseLeave
@@ -2854,7 +2866,7 @@ Procedure tab_events(*this._s_WIDGET, event)
          EndIf
          
       Case #PB_EventType_MouseMove
-         Protected._s_HEADER *tab = hover_tab(*this, mouse( )\x, mouse( )\y)
+         *tab = hover_tab(*this, mouse( )\x, mouse( )\y)
          If *hover_tab <> *tab
             ; 1. Уходим со старой вкладки
             If *hover_tab
@@ -2864,9 +2876,9 @@ Procedure tab_events(*this._s_WIDGET, event)
             If *tab
                *tab\mask | #__mask_hover
             EndIf
-            *this\mask | #__mask_redraw
             ; 3. Запоминаем текущий для следующего раза
             *hover_tab = *tab
+            *this\mask | #__mask_redraw
          EndIf
          
       Case #PB_EventType_LeftButtonUp
@@ -2901,7 +2913,9 @@ Procedure tab_events(*this._s_WIDGET, event)
             Debug "КЛИК ПО ТАБУ: " + Str(new_index) + " НА ПАНЕЛИ: " + *this\parent\class
             
             ; ВЫЗЫВАЕМ ПЕРЕКЛЮЧЕНИЕ У ПАНЕЛИ
-            SetTab(*this\parent, new_index) 
+            If SetTab(*this\parent, new_index) 
+               *this\mask | #__mask_redraw
+            EndIf
          EndIf
          
    EndSelect
@@ -2910,9 +2924,10 @@ EndProcedure
 Procedure column_events(*this._s_WIDGET, event)
    Protected._s_BAR *v = *this\scroll\v
    Protected._s_BAR *h = *this\scroll\h
+   Protected._s_HEADER *column
    
-   Static *hover_column._s_HEADER
-   Static *pressed_column._s_HEADER
+   Static._s_HEADER *hover_column
+   Static._s_HEADER *pressed_column
    
    Select event
       Case #PB_EventType_MouseLeave
@@ -2924,7 +2939,7 @@ Procedure column_events(*this._s_WIDGET, event)
          
       Case #PB_EventType_MouseMove
          If Not (*pressed_column And *pressed_column\mask & #__mask_resize)
-            Protected._s_HEADER *column = hover_column(*this, mouse( )\x, mouse( )\y)
+            *column = hover_column(*this, mouse( )\x, mouse( )\y)
             If *hover_column <> *column
                If *hover_column
                   *hover_column\mask &~ #__mask_hover
@@ -2932,8 +2947,8 @@ Procedure column_events(*this._s_WIDGET, event)
                If *column
                   *column\mask | #__mask_hover
                EndIf
-               *this\mask | #__mask_redraw
                *hover_column = *column
+               *this\mask | #__mask_redraw
             EndIf
          EndIf
          
@@ -3015,8 +3030,9 @@ Procedure column_events(*this._s_WIDGET, event)
 EndProcedure
 
 Procedure row_events(*this._s_WIDGET,  event)
-   Static *hover_row._s_ROWS
-   Static *pressed_row._s_ROWS
+   Protected._s_ROWS *row
+   Static._s_ROWS *hover_row
+   Static._s_ROWS *pressed_row
    
    Select event
       Case #PB_EventType_MouseLeave
@@ -3069,11 +3085,12 @@ Procedure row_events(*this._s_WIDGET,  event)
          EndIf
          
          ;
-         Protected._s_ROWS *row = hover_row(*this, mouse( )\y)   
+         *row = hover_row(*this, mouse( )\y)   
          If *hover_row <> *row
             If *hover_row
                *hover_row\mask &~ #__mask_hover
             EndIf
+            
             If *row
                *row\mask | #__mask_hover
                
@@ -3115,10 +3132,10 @@ Procedure row_events(*this._s_WIDGET,  event)
                   ;
                   *this\mask | #__mask_edit
                EndIf
-               
-               *this\mask | #__mask_redraw
-               *hover_row = *row
             EndIf
+            
+            *hover_row = *row
+            *this\mask | #__mask_redraw
          EndIf
          
          If *pressed_row
@@ -3361,10 +3378,10 @@ Procedure do_events(*this._s_WIDGET, event)
       If *this\column\height
          column_events(*this, event)
       EndIf
-      If *this\row
-         If *this\row\height
-            row_events(*this, event)
-         EndIf
+   EndIf
+   If *this\row
+      If *this\row\height
+         row_events(*this, event)
       EndIf
    EndIf
    If *this\Type = #__type_TabBar
@@ -3951,9 +3968,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Root( ) = 0
    End ; Завершение программы
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 3172
-; FirstLine = 3165
-; Folding = ----------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 2517
+; FirstLine = 2499
+; Folding = ------------------------------------------------------------------4280f-5-0---------------------------
 ; EnableXP
 ; DPIAware
