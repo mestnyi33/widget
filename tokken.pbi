@@ -177,6 +177,7 @@ Structure _s_TOKEN
    len.l    ; Длина куска
    color.l  ; Цвет ($BBGGRR)
    font.i   ; Сюда пишем FontID(Ваш_Шрифт)
+   Width.l  ; <--- КЭШ: Ширина сегмента в пикселях
 EndStructure
 
 Structure _s_ROWS Extends _s_COORDINATE
@@ -614,7 +615,7 @@ Procedure auto_scroll_y(*this._s_WIDGET)
    ProcedureReturn result
 EndProcedure
 
-Procedure.i edit_make_caret(*this._s_WIDGET)
+Procedure.i _edit_make_caret(*this._s_WIDGET)
    Protected i.i, mouse_x.i, caret_x.i, caret.i = -1
    Protected Distance.q, MinDistance.q = 9223372036854775807 
    Protected *rowLine._s_rows = *this\row\active
@@ -674,6 +675,150 @@ Procedure.i edit_make_caret(*this._s_WIDGET)
                *this\row\edit\caret_x = caret_x
             Else
                ; Если расстояние начало расти — мы нашли ближайшую точку
+               Break
+            EndIf
+         Next
+         StopDrawing()
+      EndIf
+   EndIf
+   
+   ProcedureReturn caret
+EndProcedure
+Procedure.i __edit_make_caret(*this._s_WIDGET)
+   Protected *rowLine._s_rows = *this\row\active
+   Protected caret.i = 0
+   
+   If *rowLine
+      ; 1. Координаты
+      Protected offset = *this\text\padding\x + (*rowLine\Level * *this\row\indent)
+      If (*rowLine\mask & #__mask_node) : offset + 15 : EndIf
+      Protected dx = *this\real\x + offset - *this\scroll\h\pos
+      Protected mouse_x = mouse()\x - dx
+      
+      Protected Text.s = *rowLine\Str(0)
+      Protected LenText = Len(Text)
+      Protected HasTokens = Bool(ListSize(*rowLine\tokens()) > 0)
+      
+      If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
+         DrawingFont(Font_Editor_Normal)
+         
+         ; --- БИНАРНЫЙ ПОИСК ---
+         Protected low = 0
+         Protected high = LenText
+         Protected mid, mid_x
+         
+         While low <= high
+            mid = (low + high) / 2
+            mid_x = 0
+            
+            If Not HasTokens
+               ; СЛУЧАЙ БЕЗ ТОКЕНОВ
+               mid_x = TextWidth(Left(Text, mid))
+            Else
+               ; СЛУЧАЙ С ТОКЕНАМИ
+               PushListPosition(*rowLine\tokens())
+               ForEach *rowLine\tokens()
+                  If mid >= *rowLine\tokens()\pos + *rowLine\tokens()\len
+                     mid_x + *rowLine\tokens()\width
+                  Else
+                     If *rowLine\tokens()\font : DrawingFont(*rowLine\tokens()\font) : Else : DrawingFont(Font_Editor_Normal) : EndIf
+                     mid_x + TextWidth(Mid(Text, *rowLine\tokens()\pos, mid - *rowLine\tokens()\pos + 1))
+                     Break
+                  EndIf
+               Next
+               PopListPosition(*rowLine\tokens())
+            EndIf
+            
+            If mid_x < mouse_x
+               low = mid + 1
+            ElseIf mid_x > mouse_x
+               high = mid - 1
+            Else
+               low = mid : Break
+            EndIf
+         Wend
+         
+         ; --- ФИНАЛЬНЫЙ РАСЧЕТ caret_x ---
+         caret = low
+         If Not HasTokens
+            *this\row\edit\caret_x = TextWidth(Left(Text, caret))
+         Else
+            *this\row\edit\caret_x = 0
+            PushListPosition(*rowLine\tokens())
+            ForEach *rowLine\tokens()
+               If caret >= *rowLine\tokens()\pos + *rowLine\tokens()\len
+                  *this\row\edit\caret_x + *rowLine\tokens()\width
+               Else
+                  If *rowLine\tokens()\font : DrawingFont(*rowLine\tokens()\font) : Else : DrawingFont(Font_Editor_Normal) : EndIf
+                  *this\row\edit\caret_x + TextWidth(Mid(Text, *rowLine\tokens()\pos, caret - *rowLine\tokens()\pos + 1))
+                  Break
+               EndIf
+            Next
+            PopListPosition(*rowLine\tokens())
+         EndIf
+         
+         StopDrawing()
+      EndIf
+   EndIf
+   
+   ProcedureReturn caret
+EndProcedure
+Procedure.i edit_make_caret(*this._s_WIDGET)
+   Protected i.i, mouse_x.i, caret_x.i, caret.i = -1
+   Protected Distance.q, MinDistance.q = 9223372036854775807 
+   Protected *rowLine._s_rows = *this\row\active
+   
+   If *rowLine
+      Protected offset = *this\text\padding\x + (*rowLine\Level * *this\row\indent)
+      If (*rowLine\mask & #__mask_node) : offset + 15 : EndIf
+      Protected dx = *this\real\x + offset - *this\scroll\h\pos
+      mouse_x = mouse()\x - dx
+      
+      Protected Text.s = *rowLine\Str(0)
+      Protected LenText = Len(Text)
+      Protected HasTokens = Bool(ListSize(*rowLine\tokens()) > 0)
+      
+      If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
+         DrawingFont(Font_Editor_Normal)
+         
+         ; Временные переменные для накопления X
+         Protected current_x = 0
+         
+         ; Мы идем по символам, как в твоем коде (это дает 100% точность)
+         For i = 0 To LenText
+            
+            ; --- РАСЧЕТ caret_x (точно как в update_edit) ---
+            If i = 0
+               caret_x = 0
+            Else
+               If Not HasTokens
+                  caret_x = TextWidth(Left(Text, i))
+               Else
+                  ; Считаем через токены, используя кэш ширины
+                  caret_x = 0
+                  PushListPosition(*rowLine\tokens())
+                  ForEach *rowLine\tokens()
+                     If i >= *rowLine\tokens()\pos + *rowLine\tokens()\len
+                        caret_x + *rowLine\tokens()\width
+                     Else
+                        If *rowLine\tokens()\font : DrawingFont(*rowLine\tokens()\font) : Else : DrawingFont(Font_Editor_Normal) : EndIf
+                        caret_x + TextWidth(Mid(Text, *rowLine\tokens()\pos, i - *rowLine\tokens()\pos + 1))
+                        Break
+                     EndIf
+                  Next
+                  PopListPosition(*rowLine\tokens())
+               EndIf
+            EndIf
+            
+            ; --- ТВОЯ ЛОГИКА ДИСТАНЦИИ ---
+            Distance = (mouse_x - caret_x) * (mouse_x - caret_x)
+            
+            If Distance <= MinDistance
+               MinDistance = Distance
+               caret = i
+               *this\row\edit\caret_x = caret_x 
+            Else
+               ; Как только начали отдаляться — это была самая близкая точка
                Break
             EndIf
          Next
@@ -1693,6 +1838,9 @@ Procedure update_rows(*this._s_WIDGET)
             ForEach *row\tokens()
                If *row\tokens()\font
                   DrawingFont((*row\tokens()\font))
+                  
+                  ; Считаем ширину токена один раз для всей жизни строки
+                  *row\tokens()\width = TextWidth(Mid(*row\Str(0), *row\tokens()\pos, *row\tokens()\len))
                   Protected token_h = TextHeight("A")
                   If token_h > max_text_h
                      max_text_h = token_h
@@ -4517,8 +4665,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 2397
-; FirstLine = 1950
-; Folding = 8-Ax---8HQf-4------------f40---------------------9------------------------------------4----------------------
+; CursorPosition = 830
+; FirstLine = 640
+; Folding = ----------f-4----------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
