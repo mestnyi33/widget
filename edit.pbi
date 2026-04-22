@@ -172,32 +172,11 @@ Structure _s_VISIBLE_ROW
    *last._s_rows         ; Указатель на последнюю видимую строку
 EndStructure
 
-; Структура правила (Чертеж)
-Structure _s_KEYWORD
-   word.s  ; Правильное написание ("Structure")
-   color.l ; Цвет ($BBGGRR)
-   font.i  ; ID шрифта (Bold)
-EndStructure
-
-; Структура визуального фрагмента (Команда для отрисовки)
 Structure _s_TOKEN
    pos.l    ; Позиция начала в строке (от 1)
    len.l    ; Длина куска
    color.l  ; Цвет ($BBGGRR)
    font.i   ; Сюда пишем FontID(Ваш_Шрифт)
-   Width.l  ; <--- КЭШ: Ширина сегмента в пикселях
-EndStructure
-
-; Структура темы оформления
-Structure _s_THEME
-   Map Keywords._s_KEYWORD() ; Карта ключевых слов
-   Map Operators.l()         ; Карта операторов (просто цвет)
-   
-   Normal.l  ; Цвет обычного текста
-   String.l  ; Цвет строк в кавычках
-   Comment.l ; Цвет комментариев
-   Number.l  ; Цвет чисел
-   Constant.l ; 
 EndStructure
 
 Structure _s_ROWS Extends _s_COORDINATE
@@ -337,13 +316,24 @@ Structure _s_GUI
    keyboard._s_KEYBOARD          ; keyboard( )\
 EndStructure
 
+Structure _s_THEME
+   Map Keywords.l()   ; Для слов ("Procedure", "If")
+   Map Operators.l()  ; Для знаков ("+", "=", ":")
+   
+   ; Базовые цвета лексера
+   Normal.l           ; Обычный текст (черный)
+   String.l           ; Строки в кавычках (зеленый)
+   Comment.l          ; Комментарии (серый)
+   Number.l           ; Числа (синий или красный)
+EndStructure
+
 Global GUI._s_GUI
-Global Theme._s_THEME
 Global NewList widgets._s_WIDGET() ; Список всех виртуальных виджетов на холсте
 
 Global Font_Editor_Normal = GetGadgetFont(#PB_Default) ; LoadFont(#PB_Any, "Consolas", 15)
 Global Font_Editor_Bold   = FontID(LoadFont(#PB_Any, "Consolas", 15, #PB_Font_Bold))
 
+Global Theme._s_THEME
 Declare AddOperator(chars.s, color.l)
 Declare AddKeyword(word.s, color.l, font.i = 0)
 
@@ -353,7 +343,6 @@ Theme\Normal  = $000000 ; Черный
 Theme\Number  = $0000FF ; Красный (BGR)
 Theme\String  = $008800 ; Зеленый
 Theme\Comment = $888888 ; Серый
-Theme\Constant = $956111
 
 ; --- Ключевые слова (Синие и жирные) ---
 AddKeyword("Structure",    $FF0000) ; Синий в BGR
@@ -379,9 +368,7 @@ AddOperator("+-*/=<>()[]{},", $888888)
 AddOperator(".\", $FF00FF)
 
 
-; ==============================================================================
-;- МАКРОС 
-; ==============================================================================
+;
 Macro Opened( ): GUI\opened: EndMacro
 ;Macro widgets( ): GUI\root\Widget( ): EndMacro
 Macro Root( ): GUI\root: EndMacro
@@ -440,8 +427,6 @@ Macro Max(a, b) : (Bool((a) >= (b)) * (a) + Bool((b) > (a)) * (b)) : EndMacro
 ;-
 Macro Clip(_widget_) : ClipOutput(_widget_\clip\x, _widget_\clip\y, _widget_\clip\width, _widget_\clip\height) : EndMacro
 Macro UnClip() : UnclipOutput() : EndMacro
-; Macro Mid(txt, pos, length = -1) : PeekS(@txt + (pos - 1) * SizeOf(Character), length) : EndMacro
-
 
 Procedure ReClip(*this._s_WIDGET)
    *this\clip\x = *this\real\x : *this\clip\width = *this\Width
@@ -475,7 +460,7 @@ Macro hidden( _this_, _parent_, _tabpage_ )
          ; 2. ЛОГИКА СТРАНИЦ
          If is_integral_(_this_)
             ; Системные виджеты всегда видны
-            _this_\mask &~ #__mask_hidden
+            _this_\mask & ~#__mask_hidden
             
          Else
             ; СЛУЧАЙ А: Мы лежим в AreaBar (смотрим на дедушку)
@@ -483,7 +468,7 @@ Macro hidden( _this_, _parent_, _tabpage_ )
                If _tabpage_ <> _parent_\parent\tabpage
                   _this_\mask | #__mask_hidden
                Else
-                  _this_\mask &~ #__mask_hidden
+                  _this_\mask & ~#__mask_hidden
                EndIf
                
                ; СЛУЧАЙ Б: Мы лежим прямо в Панели (смотрим на отца)
@@ -491,12 +476,12 @@ Macro hidden( _this_, _parent_, _tabpage_ )
                If _tabpage_ <> _parent_\tabpage
                   _this_\mask | #__mask_hidden
                Else
-                  _this_\mask &~ #__mask_hidden
+                  _this_\mask & ~#__mask_hidden
                EndIf
                
             Else
                ; В обычном контейнере без вкладок — всегда видны
-               _this_\mask &~ #__mask_hidden
+               _this_\mask & ~#__mask_hidden
             EndIf
          EndIf
       EndIf
@@ -611,15 +596,15 @@ EndProcedure
 Procedure auto_scroll_y(*this._s_WIDGET)
    Protected._s_BAR *v = *this\scroll\v
    Protected._s_BAR *h = *this\scroll\h  
-   Protected._s_ROWS *active = *this\row\active[0]
+   Protected._s_ROWS *row = *this\row\active[0]
    Protected result
    
    ; Проверка автоскролла по Y
-   If *v\pos < (*active\y + *active\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
-      *v\pos = (*active\y + *active\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
+   If *v\pos < (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
+      *v\pos = (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
       result = 1
-   ElseIf *v\pos > (*active\y - *this\column\height)
-      *v\pos = (*active\y - *this\column\height)
+   ElseIf *v\pos > (*row\y - *this\column\height)
+      *v\pos = (*row\y - *this\column\height)
       result = -1
    EndIf
    
@@ -632,60 +617,63 @@ EndProcedure
 Procedure.i edit_make_caret(*this._s_WIDGET)
    Protected i.i, mouse_x.i, caret_x.i, caret.i = -1
    Protected Distance.q, MinDistance.q = 9223372036854775807 
-   Protected *row._s_rows = *this\row\active
+   Protected *rowLine._s_rows = *this\row\active
    
-   If *row
-      *row\mask | #__mask_update
-      Protected offset = *this\text\padding\x + (*row\Level * *this\row\indent)
-      If (*row\mask & #__mask_node) : offset + 15 : EndIf
+   If *rowLine
+      ; 1. Координаты
+      Protected offset = *this\text\padding\x + (*rowLine\Level * *this\row\indent)
+      If (*rowLine\mask & #__mask_node) : offset + 15 : EndIf
+      
       Protected dx = *this\real\x + offset - *this\scroll\h\pos
       mouse_x = mouse()\x - dx
       
-      Protected txt.s = *row\Str(0)
-      Protected LenText = Len(txt)
-      Protected HasTokens = Bool(ListSize(*row\tokens()) > 0)
+      Protected Text.s = *rowLine\Str(0)
+      Protected LenText = Len(Text)
+      Protected HasTokens = Bool(ListSize(*rowLine\tokens()) > 0)
       
       If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
+         ; Устанавливаем базовый шрифт сразу
          DrawingFont(Font_Editor_Normal)
          
-         ; Временные переменные для накопления X
-         Protected current_x = 0
-         
-         ; Мы идем по символам, как в твоем коде (это дает 100% точность)
          For i = 0 To LenText
-            
-            ; --- РАСЧЕТ caret_x (точно как в update_edit) ---
+            ; --- РАСЧЕТ caret_x ---
             If i = 0
                caret_x = 0
             Else
                If Not HasTokens
-                  caret_x = TextWidth(Left(txt, i))
+                  ; Прямой расчет, если токенов нет (БЫСТРО)
+                  caret_x = TextWidth(Left(Text, i))
                Else
-                  ; Считаем через токены, используя кэш ширины
-                  caret_x = 0
-                  PushListPosition(*row\tokens())
-                  ForEach *row\tokens()
-                     If i >= *row\tokens()\pos + *row\tokens()\len
-                        caret_x + *row\tokens()\width
-                     Else
-                        If *row\tokens()\font : DrawingFont(*row\tokens()\font) : Else : DrawingFont(Font_Editor_Normal) : EndIf
-                        caret_x + TextWidth(Mid(txt, *row\tokens()\pos, i - *row\tokens()\pos + 1))
+                  ; Расчет через токены (ТОЧНО)
+                  Protected found_x = 0, temp_x = 0
+                  PushListPosition(*rowLine\tokens())
+                  ForEach *rowLine\tokens()
+                     If *rowLine\tokens()\font : DrawingFont(*rowLine\tokens()\font) : Else : DrawingFont(Font_Editor_Normal) : EndIf
+                     
+                     Protected ts = *rowLine\tokens()\pos
+                     Protected tl = *rowLine\tokens()\len
+                     
+                     If i < ts + tl
+                        found_x = temp_x + TextWidth(Mid(Text, ts, i - ts + 1))
                         Break
                      EndIf
+                     temp_x + TextWidth(Mid(Text, ts, tl))
                   Next
-                  PopListPosition(*row\tokens())
+                  PopListPosition(*rowLine\tokens())
+                  
+                  If found_x = 0 : caret_x = temp_x : Else : caret_x = found_x : EndIf
                EndIf
             EndIf
             
-            ; --- ТВОЯ ЛОГИКА ДИСТАНЦИИ ---
+            ; --- СРАВНЕНИЕ ДИСТАНЦИИ ---
             Distance = (mouse_x - caret_x) * (mouse_x - caret_x)
             
             If Distance <= MinDistance
                MinDistance = Distance
                caret = i
-               *this\row\edit\caret_x = caret_x 
+               *this\row\edit\caret_x = caret_x
             Else
-               ; Как только начали отдаляться — это была самая близкая точка
+               ; Если расстояние начало расти — мы нашли ближайшую точку
                Break
             EndIf
          Next
@@ -739,7 +727,7 @@ Procedure.i edit_reset_selection(*this._s_WIDGET, direction = 0) ; -1 - Left, 1 
             EndIf
             *this\__rows()\sel_start = 0
             *this\__rows()\sel_end = 0
-            *this\__rows()\mask &~ (#__mask_active | #__mask_edit | #__mask_update)
+            *this\__rows()\mask &~ (#__mask_active | #__mask_edit)
             If @*this\__rows() = *last_s
                Break
             EndIf
@@ -774,12 +762,14 @@ Procedure.i edit_reset_selection(*this._s_WIDGET, direction = 0) ; -1 - Left, 1 
    ; Сброс масок (только для выжившей, остальные и так удалены)
    *this\row\active[0]\sel_start = 0
    *this\row\active[0]\sel_end = 0
-   *this\row\active[0]\mask | (#__mask_active | #__mask_edit | #__mask_update)
+   *this\row\active[0]\mask | (#__mask_active | #__mask_edit)
    
    ; Подтягиваем "якорь" к "голове"
    *this\row\active[1] = *this\row\active[0]
    *this\row\edit\caret[1] = *this\row\edit\caret[0]
    
+   ;
+   *this\mask | (#__mask_edit)
    ProcedureReturn #True
 EndProcedure
 
@@ -800,12 +790,12 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
             txt = *row\Str(0)
             pos = *this\row\edit\caret[0]
             *row\Str(0) = Left(txt, pos) + Chr(keyboard()\input) + Mid(txt, pos + 1)
-            
+            *row\mask | #__mask_change 
+   
             ; 3. Сдвигаем каретку и просим обновить WordWrap
             *this\row\edit\caret[0] + 1
             *this\row\edit\caret[1] = *this\row\edit\caret[0]
-            *this\mask | (#__mask_update | #__mask_change)
-            *row\mask |  #__mask_change
+            *this\mask | (#__mask_update | #__mask_edit | #__mask_change)
          EndIf
          
       Case #PB_EventType_KeyDown ; --- ГОРЯЧИЕ КЛАВИШИ ---
@@ -846,7 +836,7 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                   EndIf
                   
                   *this\row\edit\caret[1] = *this\row\edit\caret[0]
-                  *this\mask | (#__mask_change)
+                  *this\mask | (#__mask_edit | #__mask_change)
                   *row\mask | #__mask_change 
                EndIf
                
@@ -866,7 +856,7 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                      *row\Str(0) = Left(txt, pos) + Mid(txt, pos + 2)
                   EndIf
                   
-                  *this\mask | (#__mask_update)
+                  *this\mask | (#__mask_update | #__mask_edit)
                EndIf
                
                ; --- ENTER (Разрыв строки) ---  
@@ -901,7 +891,7 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                   
                   *this\row\active[1] = *this\row\active[0]
                   *this\row\edit\caret[1] = *this\row\edit\caret[0]
-                  *this\mask | (#__mask_update)
+                  *this\mask | (#__mask_update | #__mask_edit)
                   
                   ; auto_scroll_y(*this)
                   If *v\pos < (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
@@ -919,6 +909,7 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                      If *row\y > *this\row\active[1]\y
                         *row\mask &~ (#__mask_edit)
                      EndIf
+                     *this\mask | #__mask_edit
                   Else
                      *row\mask &~ (#__mask_edit)
                      *this\row\active[1] = *row
@@ -948,6 +939,7 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                      If *row\y < *this\row\active[1]\y
                         *row\mask &~ (#__mask_edit)
                      EndIf
+                     *this\mask | #__mask_edit
                   Else
                      *row\mask &~ (#__mask_edit)
                      *this\row\active[1] = *row
@@ -968,6 +960,7 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                PopListPosition(*this\__items())
                
             Case #PB_Shortcut_Left
+               If Not *this\mask & #__mask_edit
                   If *this\row\edit\caret[0] > Len(*row\Str(0))
                      *this\row\edit\caret[0] = Len(*row\Str(0))
                   EndIf
@@ -987,7 +980,6 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                   Else
                      ; 2. Просто двигаемся влево внутри текста
                      *this\row\edit\caret[0] - 1
-                     *row\mask | #__mask_update
                   EndIf
                   If (keyboard()\key[1] & #PB_Canvas_Shift)
                      If *this\row\active[0] <> *row
@@ -1003,9 +995,11 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                         *this\row\edit\caret[1] = *this\row\edit\caret[0]
                      EndIf
                   EndIf
-                  
-                  
+                  *this\mask | #__mask_edit
+               EndIf
+               
             Case #PB_Shortcut_Right
+               If Not *this\mask & #__mask_edit
                   If *this\row\edit\caret[0] > Len(*row\Str(0))
                      *this\row\edit\caret[0] = Len(*row\Str(0))
                   EndIf
@@ -1040,8 +1034,11 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                         *this\row\edit\caret[1] = *this\row\edit\caret[0] 
                      EndIf
                   EndIf
+                  *this\mask | #__mask_edit
+               EndIf
                
             Case #PB_Shortcut_Home
+               If Not *this\mask & #__mask_edit
                   ; 1. Если зажат CTRL — прыгаем в начало документа
                   If (keyboard()\key[1] & #PB_Canvas_Control)
                      PushListPosition(*this\__items())
@@ -1063,8 +1060,11 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                      *this\row\edit\caret[1] = *this\row\edit\caret[0]
                      *this\row\active[1] = *this\row\active[0]
                   EndIf
+                  *this\mask | #__mask_edit
+               EndIf
                
             Case #PB_Shortcut_End
+               If Not *this\mask & #__mask_edit
                   ; 1. Если зажат CTRL — прыгаем в самый конец документа
                   If (keyboard()\key[1] & #PB_Canvas_Control)
                      If LastElement(*this\__items())
@@ -1084,6 +1084,8 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                      *this\row\edit\caret[0] = *this\row\edit\caret[1]
                      *this\row\active[0] = *this\row\active[1]
                   EndIf
+                  *this\mask | (#__mask_edit)
+               EndIf
                
             Case #PB_Shortcut_A ; --- SELECT ALL ---
                If keyboard()\key[1] & #PB_Canvas_Control
@@ -1096,7 +1098,7 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                      *this\__rows()\sel_start = 0
                      *this\__rows()\sel_end = Len(*this\__rows()\Str(0))
                      *this\__rows()\mask &~ #__mask_active
-                     *this\__rows()\mask | (#__mask_edit | #__mask_update)
+                     *this\__rows()\mask | #__mask_edit
                   Next
                   PopListPosition(*this\__rows())
                   If LastElement(*this\__rows())
@@ -1112,7 +1114,7 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                   PushListPosition(*this\__rows())
                   ForEach *this\__rows()
                      If *this\__rows()\mask & #__mask_edit
-                       Clip + Mid(*this\__rows()\Str(0), *this\__rows()\sel_start + 1, *this\__rows()\sel_end - *this\__rows()\sel_start) + #LF$
+                        Clip + Mid(*this\__rows()\Str(0), *this\__rows()\sel_start + 1, *this\__rows()\sel_end - *this\__rows()\sel_start) + #LF$
                      EndIf
                   Next
                   PopListPosition(*this\__rows())
@@ -1165,15 +1167,14 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                            *row\Str(0) = current_line
                         EndIf
                      EndIf
-                     *row\mask | #__mask_change 
-                   Next
+                  Next
                   
                   *this\row\active[0] = *row
                   *this\row\active[1] = *row
                   *this\row\edit\caret[1] = *this\row\edit\caret[0]
                   PopListPosition(*this\__rows())
                   
-                  *this\mask | (#__mask_update | #__mask_change)
+                  *this\mask | #__mask_update
                EndIf
                
             Case #PB_Shortcut_PageUp, #PB_Shortcut_PageDown
@@ -1295,12 +1296,9 @@ Procedure AddKeyword(word.s, color.l, font.i = 0)
    ; Если шрифт не указан, используем стандартный
    If font = 0 : font = Font_Editor_Bold : EndIf 
    
-   ; Ключ карты — всегда маленькими (для поиска)
-   Protected key.s = LCase(word)
-   
-   Theme\Keywords(key)\word  = word  ; Сохраняем как есть: "Structure"
-   Theme\Keywords(key)\color = color ; Цвет
-   Theme\Keywords(key)\font  = font  ; Шрифт
+   Theme\Keywords(word) = color
+   ; Если ты добавил карту шрифтов в структуру Theme:
+   ; Theme\Keywords_Font(word) = font
 EndProcedure
 
 ; Процедура для массового добавления операторов
@@ -1322,96 +1320,153 @@ EndProcedure
    *row\tokens()\color = color
    *row\tokens()\font  = font  ; Записываем FontID(шрифта)
 EndProcedure
-
-;-
-Procedure _update_token(*this._s_WIDGET, *row._s_ROWS)
-   If Not *row : ProcedureReturn : EndIf
-   
-   ClearList(*row\tokens())
-   Protected txt.s = *row\Str(0)
-   Protected *c.Character = @txt
-   Protected pos.l = 1, start.l
-   Protected row_width.l = 0
-   Protected last_font = -1 
-   
-   While *c\c
-      start = pos
-      Protected cur_font = Font_Editor_Normal 
-      Protected cur_color = Theme\Normal
-      Protected is_comment.b = #False
-      
-      ; --- 1. ОПРЕДЕЛЯЕМ ТИП ТОКЕНА ---
-      If *c\c = ' ' Or *c\c = 9
-         While *c\c = ' ' Or *c\c = 9 : *c + SizeOf(Character) : pos + 1 : Wend
-         
-      ElseIf *c\c = ';'
-         pos = Len(txt) + 1 ; Сразу в конец строки
-         cur_color = Theme\Comment
-         is_comment = #True
-         
-      ElseIf *c\c = '"'
-         *c + SizeOf(Character) : pos + 1 
-         While *c\c And *c\c <> '"' : *c + SizeOf(Character) : pos + 1 : Wend
-         If *c\c = '"' : *c + SizeOf(Character) : pos + 1 : EndIf 
-         cur_color = Theme\String
-
-      ; --- ДОБАВЛЕНО: КОНСТАНТЫ (#...) ---
-      ElseIf *c\c = '#'
-         *c + SizeOf(Character) : pos + 1
-         While (*c\c >= 'a' And *c\c <= 'z') Or (*c\c >= 'A' And *c\c <= 'Z') Or (*c\c >= '0' And *c\c <= '9') Or *c\c = '_'
-            *c + SizeOf(Character) : pos + 1
-         Wend
-         cur_color = Theme\Constant ; Цвет констант (сине-серый)
-         
-      ElseIf *c\c >= '0' And *c\c <= '9'
-         While *c\c >= '0' And *c\c <= '9' : *c + SizeOf(Character) : pos + 1 : Wend
-         cur_color = Theme\Number
-         
-      ElseIf (*c\c >= 'a' And *c\c <= 'z') Or (*c\c >= 'A' And *c\c <= 'Z') Or *c\c = '_'
-         While (*c\c >= 'a' And *c\c <= 'z') Or (*c\c >= 'A' And *c\c <= 'Z') Or (*c\c >= '0' And *c\c <= '9') Or *c\c = '_'
-            *c + SizeOf(Character) : pos + 1
-         Wend
-         
-         Protected word.s = Mid(txt, start, pos - start)
-         If FindMapElement(Theme\Keywords(), LCase(word))
-            Protected correct.s = Theme\Keywords()\word
-            If word <> correct
-               *row\Str(0) = Left(txt, start - 1) + correct + Mid(txt, pos)
-               txt = *row\Str(0)
-               *c = @txt + (pos - 1) * SizeOf(Character)
-               word = correct
-            EndIf
-            cur_color = Theme\Keywords()\color
-            cur_font  = Theme\Keywords()\font
-         EndIf
-      
-      Else ; Операторы
-         If FindMapElement(Theme\Operators(), Chr(*c\c)) : cur_color = Theme\Operators() : EndIf
-         *c + SizeOf(Character) : pos + 1
-      EndIf
-
-      ; --- 2. ПРИМЕНЯЕМ ШРИФТ И СЧИТАЕМ ШИРИНУ ---
-      If last_font <> cur_font
-         DrawingFont((cur_font))
-         last_font = cur_font
-      EndIf
-      
-      Protected t_width = TextWidth(Mid(txt, start, pos - start))
-      row_width + t_width
-      
-      ; --- 3. ДОБАВЛЯЕМ ТОКЕН (с кэшем ширины) ---
-      AddElement(*row\tokens())
-      *row\tokens()\pos   = start
-      *row\tokens()\len   = pos - start
-      *row\tokens()\color = cur_color
-      *row\tokens()\font  = cur_font
-      *row\tokens()\Width = t_width 
-      
-      If is_comment : Break : EndIf 
-   Wend
-   
-   *row\width = row_width + (*this\text\padding\x * 2)
+    
+Procedure update_token3(*this._s_WIDGET, *row._s_ROWS)
+;    If Not *row : ProcedureReturn : EndIf
+;    ClearList(*row\tokens())
+;    Protected txt.s = *row\Str(0)
+;    Protected *c.Character = @txt
+;    Protected pos.l = 1, start.l, word.s
+;    
+;    While *c\c
+;       ; --- ПРОБЕЛЫ ---
+;       If *c\c = ' ' Or *c\c = 9
+;          start = pos
+;          While *c\c = ' ' Or *c\c = 9 : *c + SizeOf(Character) : pos + 1 : Wend
+;          add_token(*row, start, pos - start, $000000, Font_Editor_Normal)
+;          Continue
+;       EndIf
+;       
+;       start = pos
+;       
+;             ; --- 1. КОММЕНТАРИИ (;) ---
+;       If *c\c = ';'
+;          add_token(*row, pos, Len(txt) - pos + 1, $888888, Font_Editor_Normal)
+;          Break ; Выходим из While, так как комментарий идет до конца строки
+;       EndIf
+;       
+;       ; --- 2. СТРОКИ ("текст") ---
+;       If *c\c = '"'
+;          start = pos
+;          *c + SizeOf(Character) : pos + 1 ; Пропускаем открывающую кавычку
+;          ; Читаем, пока не встретим закрывающую кавычку или конец строки
+;          While *c\c And *c\c <> '"'
+;             *c + SizeOf(Character) : pos + 1
+;          Wend
+;          If *c\c = '"' : *c + SizeOf(Character) : pos + 1 : EndIf ; Пропускаем закрывающую
+;          
+;          add_token(*row, start, pos - start, $008800, Font_Editor_Normal) ; Зеленый
+;          Continue
+;       EndIf
+; 
+;       ; --- ЧИСЛА ---
+;       If *c\c >= '0' And *c\c <= '9'
+;          While *c\c >= '0' And *c\c <= '9' : *c + SizeOf(Character) : pos + 1 : Wend
+;          add_token(*row, start, pos - start, $FF0000, Font_Editor_Normal) ; Синий BGR
+;          
+;       ; --- СЛОВА ---
+;       ElseIf (*c\c >= 'a' And *c\c <= 'z') Or (*c\c >= 'A' And *c\c <= 'Z') Or *c\c = '_'
+;          While (*c\c >= 'a' And *c\c <= 'z') Or (*c\c >= 'A' And *c\c <= 'Z') Or (*c\c >= '0' And *c\c <= '9') Or *c\c = '_'
+;             *c + SizeOf(Character) : pos + 1
+;          Wend
+;          word = Mid(txt, start, pos - start)
+;          
+;          If FindMapElement(Keywords(), word)
+;             add_token(*row, start, pos - start, Keywords(), Font_Editor_Bold)
+;          Else
+;             add_token(*row, start, pos - start, $000000, Font_Editor_Normal)
+;          EndIf
+;          
+;       ; --- ОПЕРАТОРЫ ---
+;       Else
+;          add_token(*row, start, 1, $888888, Font_Editor_Normal)
+;          *c + SizeOf(Character) : pos + 1
+;       EndIf
+;    Wend
 EndProcedure
+
+Procedure update_token2(*this._s_WIDGET, *row._s_ROWS)
+;    If Not *row : ProcedureReturn : EndIf
+;    ClearList(*row\tokens())
+;    Protected txt.s = *row\Str(0)
+;    Protected *c.Character = @txt
+;    Protected pos.l = 1, start.l, word.s
+;    Protected row_width.l = 0 
+;    
+;    While *c\c
+;       ; --- 1. ПРОБЕЛЫ ---
+;       If *c\c = ' ' Or *c\c = 9
+;          start = pos
+;          While *c\c = ' ' Or *c\c = 9 : *c + SizeOf(Character) : pos + 1 : Wend
+;          DrawingFont(FontID(Font_Editor_Normal))
+;          row_width + TextWidth(Mid(txt, start, pos - start))
+;          add_token(*row, start, pos - start, $000000, Font_Editor_Normal)
+;          Continue
+;       EndIf
+;       
+;       ; --- 2. КОММЕНТАРИИ (;) ---
+;       If *c\c = ';'
+;          start = pos
+;          Protected comment_len = Len(txt) - pos + 1
+;          DrawingFont(FontID(Font_Editor_Normal))
+;          row_width + TextWidth(Mid(txt, start, comment_len))
+;          add_token(*row, start, comment_len, $888888, Font_Editor_Normal)
+;          Break ; Комментарий всегда до конца строки
+;       EndIf
+;       
+;       ; --- 3. СТРОКИ ("...") ---
+;       If *c\c = '"'
+;          start = pos
+;          *c + SizeOf(Character) : pos + 1 
+;          While *c\c And *c\c <> '"' : *c + SizeOf(Character) : pos + 1 : Wend
+;          If *c\c = '"' : *c + SizeOf(Character) : pos + 1 : EndIf 
+;          
+;          DrawingFont(FontID(Font_Editor_Normal))
+;          row_width + TextWidth(Mid(txt, start, pos - start))
+;          add_token(*row, start, pos - start, $008800, Font_Editor_Normal) ; Зеленый
+;          Continue
+;       EndIf
+; 
+;       start = pos
+;       
+;       ; --- 4. ЧИСЛА ---
+;       If *c\c >= '0' And *c\c <= '9'
+;          While *c\c >= '0' And *c\c <= '9' : *c + SizeOf(Character) : pos + 1 : Wend
+;          DrawingFont(FontID(Font_Editor_Normal))
+;          row_width + TextWidth(Mid(txt, start, pos - start))
+;          add_token(*row, start, pos - start, $FF0000, Font_Editor_Normal)
+;          
+;       ; --- 5. СЛОВА (Ключевые слова) ---
+;       ElseIf (*c\c >= 'a' And *c\c <= 'z') Or (*c\c >= 'A' And *c\c <= 'Z') Or *c\c = '_'
+;          While (*c\c >= 'a' And *c\c <= 'z') Or (*c\c >= 'A' And *c\c <= 'Z') Or (*c\c >= '0' And *c\c <= '9') Or *c\c = '_'
+;             *c + SizeOf(Character) : pos + 1
+;          Wend
+;          word = Mid(txt, start, pos - start)
+;          
+;          Protected cur_font = Font_Editor_Normal
+;          Protected cur_color = $000000
+;          
+;          If FindMapElement(Keywords(), word)
+;             cur_color = Keywords()
+;             cur_font  = Font_Editor_Bold 
+;          EndIf
+;          
+;          DrawingFont(FontID(cur_font))
+;          row_width + TextWidth(word)
+;          add_token(*row, start, pos - start, cur_color, cur_font)
+;          
+;       ; --- 6. ОПЕРАТОРЫ ---
+;       Else
+;          DrawingFont(FontID(Font_Editor_Normal))
+;          row_width + TextWidth(Chr(*c\c))
+;          add_token(*row, start, 1, $888888, Font_Editor_Normal)
+;          *c + SizeOf(Character) : pos + 1
+;       EndIf
+;    Wend
+;    
+;    *row\width = row_width + (*this\text\padding\x * 2)
+EndProcedure
+
 Procedure update_token(*this._s_WIDGET, *row._s_ROWS)
    If Not *row : ProcedureReturn : EndIf
    
@@ -1420,227 +1475,93 @@ Procedure update_token(*this._s_WIDGET, *row._s_ROWS)
    Protected *c.Character = @txt
    Protected pos.l = 1, start.l
    Protected row_width.l = 0
-   Protected last_font = -1 
    
-   ; Буфер для быстрой проверки ключевых слов без выделения памяти
-   Protected word.s
-   
+   ; Мы ОБЯЗАНЫ быть внутри StartDrawing (вызывается из Draw), чтобы TextWidth работал
    While *c\c
-      start = pos
-      Protected cur_font = Font_Editor_Normal 
-      Protected cur_color = Theme\Normal
-      Protected is_comment.b = #False
-      
-      ; --- 1. ОПРЕДЕЛЯЕМ ТИП ТОКЕНА ---
+      ; --- 1. ОБРАБОТКА ПРОБЕЛОВ (СТАВИТЬ СЮДА) ---
       If *c\c = ' ' Or *c\c = 9
-         While *c\c = ' ' Or *c\c = 9 : *c + SizeOf(Character) : pos + 1 : Wend
+         start = pos
+         While *c\c = ' ' Or *c\c = 9
+            *c + SizeOf(Character) : pos + 1
+         Wend
+         ; Добавляем пробелы в список токенов, чтобы не терять координаты
+         add_token(*row, start, pos - start, Theme\Normal, Font_Editor_Normal)
          
-      ElseIf *c\c = ';'
-         pos = Len(txt) + 1 
-         cur_color = Theme\Comment
-         is_comment = #True
-         *c = @txt + (pos - 1) * SizeOf(Character) ; Прыгаем в конец
-         
-      ElseIf *c\c = '"'
+         ; Учитываем их в общей ширине строки
+         DrawingFont((Font_Editor_Normal))
+         row_width + TextWidth(Mid(txt, start, pos - start))
+         Continue ; Идем на следующую итерацию While
+      EndIf
+      
+      ; --- 2. КОММЕНТАРИИ (;) ---
+      If *c\c = ';'
+         start = pos
+         Protected comment_len = Len(txt) - pos + 1
+         DrawingFont(FontID(Font_Editor_Normal))
+         row_width + TextWidth(Mid(txt, start, comment_len))
+         add_token(*row, start, comment_len, $888888, Font_Editor_Normal)
+         Break ; Комментарий всегда до конца строки
+      EndIf
+      
+      ; --- 3. СТРОКИ ("...") ---
+      If *c\c = '"'
+         start = pos
          *c + SizeOf(Character) : pos + 1 
          While *c\c And *c\c <> '"' : *c + SizeOf(Character) : pos + 1 : Wend
          If *c\c = '"' : *c + SizeOf(Character) : pos + 1 : EndIf 
-         cur_color = Theme\String
+         
+         DrawingFont(FontID(Font_Editor_Normal))
+         row_width + TextWidth(Mid(txt, start, pos - start))
+         add_token(*row, start, pos - start, $008800, Font_Editor_Normal) ; Зеленый
+         Continue
+      EndIf
 
-      ElseIf *c\c = '#'
-         *c + SizeOf(Character) : pos + 1
-         While (*c\c >= 'a' And *c\c <= 'z') Or (*c\c >= 'A' And *c\c <= 'Z') Or (*c\c >= '0' And *c\c <= '9') Or *c\c = '_'
-            *c + SizeOf(Character) : pos + 1
-         Wend
-         cur_color = Theme\Constant 
-         
-      ElseIf *c\c >= '0' And *c\c <= '9'
+      start = pos
+      
+      ; --- 4. ЧИСЛА ---
+      If *c\c >= '0' And *c\c <= '9'
          While *c\c >= '0' And *c\c <= '9' : *c + SizeOf(Character) : pos + 1 : Wend
-         cur_color = Theme\Number
+         DrawingFont((Font_Editor_Normal))
+         row_width + TextWidth(Mid(txt, start, pos - start))
+         add_token(*row, start, pos - start, Theme\Number, 0)
          
+      ; --- 5. СЛОВА (Ключевые слова) ---
       ElseIf (*c\c >= 'a' And *c\c <= 'z') Or (*c\c >= 'A' And *c\c <= 'Z') Or *c\c = '_'
          While (*c\c >= 'a' And *c\c <= 'z') Or (*c\c >= 'A' And *c\c <= 'Z') Or (*c\c >= '0' And *c\c <= '9') Or *c\c = '_'
             *c + SizeOf(Character) : pos + 1
          Wend
          
-         ; Используем макрос Mid (PeekS) для получения слова
-         word = Mid(txt, start, pos - start)
+         Protected word.s = Mid(txt, start, pos - start)
+         Protected cur_color = Theme\Normal
+         Protected cur_font  = Font_Editor_Normal
          
-         ; ОПТИМИЗАЦИЯ: Чтобы не делать LCase(word) каждый раз, 
-         ; можно сделать мапу Keywords чувствительной к регистру или хранить все в нижнем.
-         ; Здесь используем LCase только для поиска.
-         If FindMapElement(Theme\Keywords(), LCase(word))
-            Protected correct.s = Theme\Keywords()\word
-            If word <> correct
-               ; Автозамена регистра без лишних Left/Mid
-               ; Мы меняем память напрямую в строке, это быстрее
-               PokeS(@txt + (start - 1) * SizeOf(Character), correct, Len(correct))
-               *row\Str(0) = txt ; Синхронизируем
-               word = correct
-            EndIf
-            cur_color = Theme\Keywords()\color
-            cur_font  = Theme\Keywords()\font
+         If FindMapElement(Theme\Keywords(), word)
+            cur_color = Theme\Keywords()
+            cur_font  = Font_Editor_Bold ; Ключевые слова - ЖИРНЫЕ
          EndIf
-      
-      Else ; Операторы
-         ; Вместо Chr(*c\c) для поиска в мапе, лучше PeekS с длиной 1
-         If FindMapElement(Theme\Operators(), Mid(txt, pos, 1))
-            cur_color = Theme\Operators()
-         EndIf
+         
+         DrawingFont((cur_font))
+         row_width + TextWidth(word)
+         add_token(*row, start, pos - start, cur_color, cur_font)
+         
+      ; --- 6. ОПЕРАТОРЫ (ИСПРАВЛЕНО) ---
+      Else
+         Protected op.s = Chr(*c\c)
+         Protected op_color = Theme\Normal
+         If FindMapElement(Theme\Operators(), op) : op_color = Theme\Operators() : EndIf
+         
+         DrawingFont((Font_Editor_Normal))
+         row_width + TextWidth(op)
+         
+         ; ВАЖНО: используем start, а не pos!
+         add_token(*row, start, 1, op_color, Font_Editor_Normal)
+         
          *c + SizeOf(Character) : pos + 1
       EndIf
-
-      ; --- 2. ПРИМЕНЯЕМ ШРИФТ И СЧИТАЕМ ШИРИНУ ---
-      If last_font <> cur_font
-         DrawingFont((cur_font))
-         last_font = cur_font
-      EndIf
-      
-      ; Твой макрос Mid (PeekS) делает TextWidth очень быстрым
-      Protected t_width = TextWidth(Mid(txt, start, pos - start))
-      row_width + t_width
-      
-      ; --- 3. ДОБАВЛЯЕМ ТОКЕН ---
-      AddElement(*row\tokens())
-      *row\tokens()\pos   = start
-      *row\tokens()\len   = pos - start
-      *row\tokens()\color = cur_color
-      *row\tokens()\font  = cur_font
-      *row\tokens()\Width = t_width 
-      
-      If is_comment : Break : EndIf 
    Wend
    
+   ; Итоговая ширина строки с учетом всех Bold-эффектов
    *row\width = row_width + (*this\text\padding\x * 2)
-EndProcedure
-
-Procedure update_rows(*this._s_WIDGET)
-   If Not *this : ClearList(*this\__items( )) : ProcedureReturn : EndIf
-   Protected._s_ROWS *row
-   Protected._s_BAR *v = *this\scroll\v
-   Protected._s_BAR *h = *this\scroll\h
-   
-   ClearList(*this\__items( ))
-   
-   Protected max_w = 0 
-   Protected cur_y = *this\column\height 
-   Protected view_top = *v\pos
-   Protected view_bottom = view_top + *this\height - *this\column\height
-   
-   ; Контекст StartDrawing уже открыт в Procedure Draw, просто считаем
-   ForEach *this\__rows( )
-      *row = @*this\__rows( )
-      ; --- ЛОГИКА СХЛОПЫВАНИЯ ---
-      Static skip_level : skip_level = -1 
-      If *this\row\indent
-         ; 1. Если мы в режиме пропуска (родитель выше по списку был свернут)
-         If skip_level <> -1
-            If *row\Level > skip_level : Continue : Else : skip_level = -1 : EndIf
-         EndIf
-         ; 2. Проверяем: не является ли текущая строка свернутым узлом?
-         If (*row\mask & #__mask_node) And (*row\mask & #__mask_collapsed)
-            skip_level = *row\Level
-         EndIf
-      EndIf
-      
-      ; --- ГЕОМЕТРИЯ ---
-      *row\y = cur_y
-      ; 3. И только в конце применяем логику высоты строки или падингов
-      If *this\row\height > 0
-         *row\height = *this\row\height
-      Else
-         ; 1. Базовая высота текста без падингов
-         DrawingFont((Font_Editor_Normal))
-         Protected max_text_h = TextHeight("A")
-         
-         ; 2. Если есть токены, ищем самый высокий шрифт
-         If ListSize(*row\tokens()) > 0
-            ForEach *row\tokens()
-               If *row\tokens()\font
-                  DrawingFont((*row\tokens()\font))
-                  
-                  ; Считаем ширину токена один раз для всей жизни строки
-                  *row\tokens()\width = TextWidth(Mid(*row\Str(0), *row\tokens()\pos, *row\tokens()\len))
-                  Protected token_h = TextHeight("A")
-                  If token_h > max_text_h
-                     max_text_h = token_h
-                  EndIf
-               EndIf
-            Next
-         EndIf
-         *row\height = max_text_h + (*this\row\padding\y * 2)
-      EndIf
-      If *row\height < 16 : *row\height = 16 : EndIf
-      
-                         
-      ; --- РАСЧЕТ ШИРИНЫ (для H-Scroll) ---
-      Protected row_w = 0
-      
-      ; Если колонок больше одной (или это таблица)
-      If ListSize(*this\__columns()) > 1
-         ; Находим крайнюю правую точку последней колонки
-         PushListPosition(*this\__columns())
-         LastElement(*this\__columns())
-         row_w = *this\__columns()\x + *this\__columns()\Width
-         PopListPosition(*this\__columns())
-      Else
-         ; Если колонка одна — считаем по длине текста (как было)
-         Protected offset = *this\text\padding\x + (*this\__rows()\Level * *this\row\indent)
-         If (*this\__rows()\mask & #__mask_node) : offset + 15 : EndIf
-         
-         row_w = TextWidth(*this\__rows()\Str(0)) + offset + *this\text\padding\x
-      EndIf
-      
-      If row_w > max_w : max_w = row_w : EndIf
-      
-      
-      ; 3. ПРОВЕРКА ВИДИМОСТИ (Умный рулон)
-      Protected r_top = *this\__rows()\y - *this\column\height
-      Protected r_bottom = r_top + *this\__rows()\height 
-      
-      ; Если строка ВНУТРИ видимого окна (с небольшим запасом)
-      If r_bottom > view_top And r_top < view_bottom 
-         AddElement(*this\__items())
-         *this\__items() = @*this\__rows()
-         ;  Debug *this\__items()\Str(0)
-         
-         ; Устанавливаем границы для отрисовщика
-         If Not *this\visible\first
-            *this\visible\first = *this\__items()
-         EndIf
-         *this\visible\last = *this\__items()
-      EndIf
-      
-      cur_y + *row\height 
-   Next
-   
-   ; --- ФИКСИРУЕМ РЕЗУЛЬТАТЫ ---
-   Protected v_bar_w = 0 : If cur_y > *this\height : v_bar_w = *this\fs[3] : EndIf
-   Protected h_bar_h = 0 : If max_w > (*this\width - v_bar_w) : h_bar_h = *this\fs[4] : EndIf
-   
-   ; Если появился горизонтальный скролл, нужно заново проверить, не появился ли вертикальный
-   ; из-за уменьшения высоты (h_bar_h)
-   If (cur_y + h_bar_h) > *this\height : v_bar_w = *this\fs[3] : EndIf
-   
-   ; Расчет максимума для Горизонтального скролла
-   *h\max = max_w - (*this\width - v_bar_w)
-   ; If *h\max < *this\width : *h\max = *this\width : EndIf
-   If *h\max < 0 : *h\max = 0 : EndIf
-   
-   ; Расчет максимума для Вертикального скролла
-   ; (Высота контента - Высота шапки) - (Высота виджета - Высота шапки - Высота H-скролла)
-   Protected view_h = *this\height - *this\column\height - h_bar_h
-   *v\max = (cur_y - *this\column\height) - view_h
-   If *v\max < 0 : *v\max = 0 : EndIf
-   
-   ; Внутри update_rows, после цикла ForEach, где мы нашли max_w
-   If ListSize(*this\__columns()) = 1
-      FirstElement(*this\__columns())
-      ; Устанавливаем ширину единственной колонки равной самому длинному тексту
-      *this\__columns()\Width = max_w 
-   EndIf
-   
-   
 EndProcedure
 
 Procedure update_tab(*this._s_WIDGET)
@@ -1728,6 +1649,132 @@ Procedure update_columns(*this._s_WIDGET)
    If *h\pos > *h\max : *h\pos = *h\max : EndIf
 EndProcedure
 
+Procedure update_rows(*this._s_WIDGET)
+   If Not *this : ClearList(*this\__items( )) : ProcedureReturn : EndIf
+   Protected._s_ROWS *row
+   Protected._s_BAR *v = *this\scroll\v
+   Protected._s_BAR *h = *this\scroll\h
+   
+   ClearList(*this\__items( ))
+   
+   Protected max_w = 0 
+   Protected cur_y = *this\column\height 
+   Protected view_top = *v\pos
+   Protected view_bottom = view_top + *this\height - *this\column\height
+   
+   ; Контекст StartDrawing уже открыт в Procedure Draw, просто считаем
+   ForEach *this\__rows( )
+      *row = @*this\__rows( )
+      ; --- ЛОГИКА СХЛОПЫВАНИЯ ---
+      Static skip_level : skip_level = -1 
+      If *this\row\indent
+         ; 1. Если мы в режиме пропуска (родитель выше по списку был свернут)
+         If skip_level <> -1
+            If *row\Level > skip_level : Continue : Else : skip_level = -1 : EndIf
+         EndIf
+         ; 2. Проверяем: не является ли текущая строка свернутым узлом?
+         If (*row\mask & #__mask_node) And (*row\mask & #__mask_collapsed)
+            skip_level = *row\Level
+         EndIf
+      EndIf
+      
+      ; --- ГЕОМЕТРИЯ ---
+      *row\y = cur_y
+      ; 3. И только в конце применяем логику высоты строки или падингов
+      If *this\row\height > 0
+         *row\height = *this\row\height
+      Else
+         ; 1. Базовая высота текста без падингов
+         DrawingFont((Font_Editor_Normal))
+         Protected max_text_h = TextHeight("A")
+         
+         ; 2. Если есть токены, ищем самый высокий шрифт
+         If ListSize(*row\tokens()) > 0
+            ForEach *row\tokens()
+               If *row\tokens()\font
+                  DrawingFont((*row\tokens()\font))
+                  Protected token_h = TextHeight("A")
+                  If token_h > max_text_h
+                     max_text_h = token_h
+                  EndIf
+               EndIf
+            Next
+         EndIf
+         *row\height = max_text_h + (*this\row\padding\y * 2)
+      EndIf
+      If *row\height < 16 : *row\height = 16 : EndIf
+      
+                         
+      ; --- РАСЧЕТ ШИРИНЫ (для H-Scroll) ---
+      Protected row_w = 0
+      
+      ; Если колонок больше одной (или это таблица)
+      If ListSize(*this\__columns()) > 1
+         ; Находим крайнюю правую точку последней колонки
+         PushListPosition(*this\__columns())
+         LastElement(*this\__columns())
+         row_w = *this\__columns()\x + *this\__columns()\Width
+         PopListPosition(*this\__columns())
+      Else
+         ; Если колонка одна — считаем по длине текста (как было)
+         Protected offset = *this\text\padding\x + (*this\__rows()\Level * *this\row\indent)
+         If (*this\__rows()\mask & #__mask_node) : offset + 15 : EndIf
+         
+         row_w = TextWidth(*this\__rows()\Str(0)) + offset + *this\text\padding\x
+      EndIf
+      
+      If row_w > max_w : max_w = row_w : EndIf
+      
+      
+      ; 3. ПРОВЕРКА ВИДИМОСТИ (Умный рулон)
+      Protected r_top = *this\__rows()\y - *this\column\height
+      Protected r_bottom = r_top + *this\__rows()\height 
+      
+      ; Если строка ВНУТРИ видимого окна (с небольшим запасом)
+      If r_bottom > view_top And r_top < view_bottom 
+         AddElement(*this\__items())
+         *this\__items() = @*this\__rows()
+         ;  Debug *this\__items()\Str(0)
+         
+         ; Устанавливаем границы для отрисовщика
+         If Not *this\visible\first
+            *this\visible\first = *this\__items()
+         EndIf
+         *this\visible\last = *this\__items()
+      EndIf
+      
+      cur_y + *row\height 
+   Next
+   
+   ; --- ФИКСИРУЕМ РЕЗУЛЬТАТЫ ---
+   Protected v_bar_w = 0 : If cur_y > *this\height : v_bar_w = *this\fs[3] : EndIf
+   Protected h_bar_h = 0 : If max_w > (*this\width - v_bar_w) : h_bar_h = *this\fs[4] : EndIf
+   
+   ; Если появился горизонтальный скролл, нужно заново проверить, не появился ли вертикальный
+   ; из-за уменьшения высоты (h_bar_h)
+   If (cur_y + h_bar_h) > *this\height : v_bar_w = *this\fs[3] : EndIf
+   
+   ; Расчет максимума для Горизонтального скролла
+   *h\max = max_w - (*this\width - v_bar_w)
+   ; If *h\max < *this\width : *h\max = *this\width : EndIf
+   If *h\max < 0 : *h\max = 0 : EndIf
+   
+   ; Расчет максимума для Вертикального скролла
+   ; (Высота контента - Высота шапки) - (Высота виджета - Высота шапки - Высота H-скролла)
+   Protected view_h = *this\height - *this\column\height - h_bar_h
+   *v\max = (cur_y - *this\column\height) - view_h
+   If *v\max < 0 : *v\max = 0 : EndIf
+   
+   ; Внутри update_rows, после цикла ForEach, где мы нашли max_w
+   If ListSize(*this\__columns()) = 1
+      FirstElement(*this\__columns())
+      ; Устанавливаем ширину единственной колонки равной самому длинному тексту
+      *this\__columns()\Width = max_w 
+   EndIf
+   
+   
+EndProcedure
+
 Procedure update_level(*this._s_WIDGET, new_level.l)
    Protected *child._s_WIDGET
    *this\Level = new_level
@@ -1740,121 +1787,232 @@ Procedure update_level(*this._s_WIDGET, new_level.l)
    Wend
 EndProcedure
 
-Procedure update_edit(*this._s_WIDGET, *row._s_ROWS)
-   Protected *active._s_ROWS = *this\row\active[0]
-   Protected._s_BAR *v = *this\scroll\v
-   Protected._s_BAR *h = *this\scroll\h  
+Procedure update_edit(*this._s_WIDGET)
+   Protected *start_r._s_ROWS = *this\row\active[1]
+   Protected *end_r._s_ROWS   = *this\row\active[0]
    
-   ; 1. Ленивое обновление токенов
-   If *row\mask & #__mask_change 
-      update_token(*this, *row)
-      *row\mask &~ #__mask_change
-      *row\mask | #__mask_update 
-   EndIf
-   
-   ; Работаем только если взведен флаг обновления строки
-   If *row\mask & #__mask_update
-      Protected *start_r._s_ROWS = *this\row\active[1]
-      Protected *end_r._s_ROWS   = *this\row\active[0]
-      Protected caret_pos = *this\row\edit\caret[0]
-            
-      If *start_r And *end_r
-         Protected txt_active.s = *active\Str(0)
-         Protected txt.s = *row\Str(0)
-         Protected *txt_ptr = @txt
-         Protected min_y = *start_r\y
-         Protected max_y = *end_r\y
-         Protected is_down = Bool(max_y >= min_y)
-         If Not is_down : Swap min_y, max_y : EndIf
+   If *start_r And *end_r
+      Protected min_y = *start_r\y
+      Protected max_y = *end_r\y
+      Protected is_down = Bool(max_y >= min_y)
+      If Not is_down : Swap min_y, max_y : EndIf
+      
+      ForEach *this\__rows()
+         Protected *rw._s_rows = *this\__rows()
+         Protected txt.s = *rw\Str(0)
          
          ; --- 1. ОПРЕДЕЛЕНИЕ ИНДЕКСОВ СИМВОЛОВ ---
-         If *row = *start_r And *row = *end_r
-            *row\sel_start = Min(*this\row\edit\caret[1], *this\row\edit\caret[0])
-            *row\sel_end   = Max(*this\row\edit\caret[1], *this\row\edit\caret[0])
-         ElseIf *row\y < min_y Or *row\y > max_y
-            *row\sel_start = 0 : *row\sel_end = 0
-         ElseIf *row\y > min_y And *row\y < max_y
-            *row\sel_start = 0 : *row\sel_end = MemoryStringLength(*txt_ptr)
-         ElseIf *row = *start_r
-            If is_down : *row\sel_start = *this\row\edit\caret[1] : *row\sel_end = MemoryStringLength(*txt_ptr)
-               Else       : *row\sel_start = 0 : *row\sel_end = *this\row\edit\caret[1] : EndIf
-         ElseIf *row = *end_r
-            If is_down : *row\sel_start = 0 : *row\sel_end = *this\row\edit\caret[0]
-               Else       : *row\sel_start = *this\row\edit\caret[0] : *row\sel_end = MemoryStringLength(*txt_ptr) : EndIf
+         If *rw = *start_r And *rw = *end_r
+            *rw\sel_start = Min(*this\row\edit\caret[1], *this\row\edit\caret[0])
+            *rw\sel_end   = Max(*this\row\edit\caret[1], *this\row\edit\caret[0])
+         ElseIf *rw\y < min_y Or *rw\y > max_y
+            *rw\sel_start = 0 : *rw\sel_end = 0
+         ElseIf *rw\y > min_y And *rw\y < max_y
+            *rw\sel_start = 0 : *rw\sel_end = Len(txt)
+         ElseIf *rw = *start_r
+            If is_down : *rw\sel_start = *this\row\edit\caret[1] : *rw\sel_end = Len(txt)
+            Else       : *rw\sel_start = 0 : *rw\sel_end = *this\row\edit\caret[1] : EndIf
+         ElseIf *rw = *end_r
+            If is_down : *rw\sel_start = 0 : *rw\sel_end = *this\row\edit\caret[0]
+            Else       : *rw\sel_start = *this\row\edit\caret[0] : *rw\sel_end = Len(txt) : EndIf
          EndIf
          
-         ; --- 2. РАСЧЕТ ПИКСЕЛЕЙ ВЫДЕЛЕНИЯ (ДЛЯ ТЕКУЩЕЙ СТРОКИ) ---
-         If *row\sel_start = *row\sel_end
-            *row\sel_x = 0 : *row\sel_w = 0
+         ; --- 2. РАСЧЕТ ПИКСЕЛЕЙ (sel_x, sel_w) С УЧЕТОМ ТОКЕНОВ ---
+         If *rw\sel_start = *rw\sel_end
+            *rw\sel_x = 0
+            *rw\sel_w = 0
          Else
-            If ListSize(*row\tokens()) = 0
+            Protected current_x = 0
+            Protected x1 = 0, x2 = 0
+            
+            ; Если токенов нет - считаем стандартно
+            If ListSize(*rw\tokens()) = 0
                DrawingFont(Font_Editor_Normal)
-               *row\sel_x = TextWidth(Mid(txt, 1, *row\sel_start))
-               *row\sel_w = TextWidth(Mid(txt, *row\sel_start + 1, *row\sel_end - *row\sel_start))
+               *rw\sel_x = TextWidth(Left(txt, *rw\sel_start))
+               *rw\sel_w = TextWidth(Mid(txt, *rw\sel_start + 1, *rw\sel_end - *rw\sel_start))
             Else
-               Protected cur_x = 0, x1 = -1, x2 = -1
-               PushListPosition(*row\tokens())
-               ForEach *row\tokens()
-                  Protected ts = *row\tokens()\pos
-                  Protected tl = *row\tokens()\len
+               ; Идем по токенам и суммируем ширину
+               PushListPosition(*rw\tokens())
+               ForEach *rw\tokens()
+                  If *rw\tokens()\font : DrawingFont(*rw\tokens()\font) : Else : DrawingFont(Font_Editor_Normal) : EndIf
                   
-                  If x1 = -1 And *row\sel_start >= ts - 1 And *row\sel_start < ts + tl
-                     If *row\tokens()\font : DrawingFont(*row\tokens()\font) : Else : DrawingFont(Font_Editor_Normal) : EndIf
-                     x1 = cur_x + TextWidth(Mid(txt, ts, *row\sel_start - ts + 1))
-                  EndIf
-                  If x2 = -1 And *row\sel_end >= ts - 1 And *row\sel_end < ts + tl
-                     If *row\tokens()\font : DrawingFont(*row\tokens()\font) : Else : DrawingFont(Font_Editor_Normal) : EndIf
-                     x2 = cur_x + TextWidth(Mid(txt, ts, *row\sel_end - ts + 1))
-                  EndIf
-                  cur_x + *row\tokens()\width
-                  If x1 <> -1 And x2 <> -1 : Break : EndIf
-               Next
-               PopListPosition(*row\tokens())
-               If x1 = -1 : x1 = cur_x : EndIf : If x2 = -1 : x2 = cur_x : EndIf
-               *row\sel_x = x1 : *row\sel_w = x2 - x1
-            EndIf
-         EndIf
-
-         ; --- 3. РАСЧЕТ КАРЕТКИ И СКРОЛЛИНГ (ТОЛЬКО ЕСЛИ СТРОКА АКТИВНА) ---
-         If *row = *active And Not *this\mask & #__mask_drag 
-            If caret_pos <= 0
-               *this\row\edit\caret_x = 0
-            Else
-               Protected cur_cx = 0
-               If ListSize(*active\tokens()) = 0
-                  DrawingFont(Font_Editor_Normal)
-                  *this\row\edit\caret_x = TextWidth(Left(txt_active, caret_pos))
-               Else
-                  PushListPosition(*active\tokens())
-                  ForEach *active\tokens()
-                     ts = *active\tokens()\pos : tl = *active\tokens()\len
-                     If caret_pos >= ts - 1 And caret_pos < ts + tl
-                        If *active\tokens()\font : DrawingFont(*active\tokens()\font) : Else : DrawingFont(Font_Editor_Normal) : EndIf
-                        cur_cx + TextWidth(Mid(txt_active, ts, caret_pos - ts + 1))
-                        Break
+                  Protected t_start = *rw\tokens()\pos
+                  Protected t_len   = *rw\tokens()\len
+                  Protected t_end   = t_start + t_len
+                  
+                  ; Ищем X для sel_start
+                  If x1 = 0 And *rw\sel_start > 0
+                     If *rw\sel_start < t_end
+                        x1 = current_x + TextWidth(Mid(txt, t_start, *rw\sel_start - t_start + 1))
                      EndIf
-                     cur_cx + *active\tokens()\width
-                  Next
-                  PopListPosition(*active\tokens())
-                  *this\row\edit\caret_x = cur_cx
-               EndIf
+                  EndIf
+                  
+                  ; Ищем X для sel_end
+                  If x2 = 0 And *rw\sel_end > 0
+                     If *rw\sel_end < t_end
+                        x2 = current_x + TextWidth(Mid(txt, t_start, *rw\sel_end - t_start + 1))
+                     EndIf
+                  EndIf
+                  
+                  current_x + TextWidth(Mid(txt, t_start, t_len))
+                  
+                  ; Если нашли обе точки или вышли за пределы выделения
+                  If (x2 > 0 Or *rw\sel_end = 0) And (x1 > 0 Or *rw\sel_start = 0) : Break : EndIf
+               Next
+               PopListPosition(*rw\tokens())
+               
+               ; Если точки попали точно на конец строки (за пределы циклов токенов)
+               If x1 = 0 And *rw\sel_start > 0 : x1 = current_x : EndIf
+               If x2 = 0 And *rw\sel_end > 0   : x2 = current_x : EndIf
+               
+               *rw\sel_x = x1
+               *rw\sel_w = x2 - x1
             EndIf
-            
-            ; СКРОЛЛИНГ
-            Protected offset = *this\text\padding\x + (*active\Level * *this\row\indent)
-            If (*active\mask & #__mask_node) : offset + 15 : EndIf
-            Protected cx = *this\row\edit\caret_x + offset
-            Protected view_w = *this\width - Bool(*v\max > 0) * *this\fs[3]
-            
-            If *h\pos < cx - view_w + *this\text\padding\x : *h\pos = cx - view_w + *this\text\padding\x
-            ElseIf *h\pos > cx - *this\text\padding\x : *h\pos = cx - *this\text\padding\x : EndIf
-            If *h\pos < 0 : *h\pos = 0 : ElseIf *h\pos > *h\max : *h\pos = *h\max : EndIf
          EndIf
+      Next
+   EndIf
+   
+   ; --- 3. РАСЧЕТ КАРЕТКИ И РЕАКТИВНЫЙ СКРОЛЛ ---
+   If Not *this\mask & #__mask_drag
+      If *this\row\active[0]
+         Protected *active._s_ROWS = *this\row\active[0]
+         Protected caret_pos = *this\row\edit\caret[0]
+         Protected txt_active.s = *active\Str(0)
+         
+         ; Считаем caret_x с учетом токенов
+         If caret_pos <= 0
+            *this\row\edit\caret_x = 0
+         Else
+            Protected cur_cx = 0
+            If ListSize(*active\tokens()) = 0
+               DrawingFont(Font_Editor_Normal)
+               *this\row\edit\caret_x = TextWidth(Left(txt_active, caret_pos))
+            Else
+               PushListPosition(*active\tokens())
+               ForEach *active\tokens()
+                  If *active\tokens()\font : DrawingFont(*active\tokens()\font) : Else : DrawingFont(Font_Editor_Normal) : EndIf
+                  Protected ts = *active\tokens()\pos
+                  Protected tl = *active\tokens()\len
+                  If caret_pos < ts + tl
+                     cur_cx + TextWidth(Mid(txt_active, ts, caret_pos - ts + 1))
+                     Break
+                  EndIf
+                  cur_cx + TextWidth(Mid(txt_active, ts, tl))
+               Next
+               PopListPosition(*active\tokens())
+               *this\row\edit\caret_x = cur_cx
+            EndIf
+         EndIf
+         
+         ; --- СКРОЛЛИНГ ---
+         Protected *v._s_BAR = *this\scroll\v
+         Protected *h._s_BAR = *this\scroll\h
+         
+         Protected offset = *this\text\padding\x + (*active\Level * *this\row\indent)
+         If (*active\mask & #__mask_node) : offset + 15 : EndIf
+         
+         Protected cx = *this\row\edit\caret_x + offset
+         Protected pad = *this\text\padding\x 
+         
+         Protected view_w = *this\width - Bool(*v\max > 0) * *this\fs[3]
+         
+         If *h\pos < cx - view_w + pad
+            *h\pos = cx - view_w + pad
+         ElseIf *h\pos > cx - pad
+            *h\pos = cx - pad
+         EndIf
+         
+         If *h\pos < 0 : *h\pos = 0 : EndIf
+         If *h\pos > *h\max : *h\pos = *h\max : EndIf
       EndIf
-      *row\mask &~ #__mask_update
    EndIf
 EndProcedure
-
+Procedure _update_edit(*this._s_WIDGET)
+   Protected *start_r._s_ROWS = *this\row\active[1]
+   Protected *end_r._s_ROWS   = *this\row\active[0]
+   
+   If *start_r And *end_r
+      Protected min_y = *start_r\y
+      Protected max_y = *end_r\y
+      Protected is_down = Bool(max_y >= min_y)
+      If Not is_down : Swap min_y, max_y : EndIf
+      
+      ForEach *this\__rows()
+         Protected *rw._s_rows = *this\__rows()
+         Protected txt.s = *rw\Str(0)
+         
+         ; --- 1. СНАЧАЛА ОПРЕДЕЛЯЕМ ИНДЕКСЫ (твой код) ---
+         If *rw = *start_r And *rw = *end_r
+            *rw\sel_start = Min(*this\row\edit\caret[1], *this\row\edit\caret[0])
+            *rw\sel_end   = Max(*this\row\edit\caret[1], *this\row\edit\caret[0])
+         ElseIf *rw\y < min_y Or *rw\y > max_y
+            *rw\sel_start = 0 : *rw\sel_end = 0
+         ElseIf *rw\y > min_y And *rw\y < max_y
+            *rw\sel_start = 0 : *rw\sel_end = Len(txt)
+         ElseIf *rw = *start_r
+            If is_down : *rw\sel_start = *this\row\edit\caret[1] : *rw\sel_end = Len(txt)
+               Else       : *rw\sel_start = 0 : *rw\sel_end = *this\row\edit\caret[1] : EndIf
+         ElseIf *rw = *end_r
+            If is_down : *rw\sel_start = 0 : *rw\sel_end = *this\row\edit\caret[0]
+               Else       : *rw\sel_start = *this\row\edit\caret[0] : *rw\sel_end = Len(txt) : EndIf
+         EndIf
+         
+         ; --- 2. ТЕПЕРЬ СЧИТАЕМ ПИКСЕЛИ (sel_x, sel_w, caret_x) ---
+         
+         ; Расчет выделения
+         If *rw\sel_start > 0
+            *rw\sel_x = TextWidth(Left(txt, *rw\sel_start))
+         Else
+            *rw\sel_x = 0
+         EndIf
+         If *rw\sel_start = *rw\sel_end
+            *rw\sel_w = 0
+         Else
+            *rw\sel_w = TextWidth(Mid(txt, *rw\sel_start + 1, *rw\sel_end - *rw\sel_start))
+         EndIf
+         
+      Next
+   EndIf
+   
+   ; После цикла считаем каретку один раз для активной строки
+   If Not *this\mask & #__mask_drag
+      If *this\row\active[0]
+         If *this\row\edit\caret[0] > 0
+            *this\row\edit\caret_x = TextWidth(Left(*this\row\active[0]\Str(0), *this\row\edit\caret[0]))
+         Else
+            *this\row\edit\caret_x = 0
+         EndIf
+         
+         ; 3. РЕАКТИВНЫЙ СКРОЛЛ: 
+         ; Каретка только что получила новые координаты — проверяем, не вылезла ли она
+         Protected *v._s_BAR = *this\scroll\v
+         Protected *h._s_BAR = *this\scroll\h
+         
+         ; --- ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ ---
+         Protected offset = *this\text\padding\x + (*this\row\active[0]\Level * *this\row\indent)
+         If (*this\row\active[0]\mask & #__mask_node) : offset + 15 : EndIf
+         
+         Protected cx = *this\row\edit\caret_x + offset
+         Protected pad = *this\text\padding\x ; Запас, чтобы каретка не липла к краям
+         
+         ; Видимая ширина с учетом вертикального скроллбара
+         Protected view_w = *this\width - Bool(*v\max > 0) * *this\fs[3]
+         
+         ; Если каретка ушла правее края
+         If *h\pos < cx - view_w + pad
+            *h\pos = cx - view_w + pad
+            ; Если каретка ушла левее края
+         ElseIf *h\pos > cx - pad
+            *h\pos = cx - pad
+         EndIf
+         
+         ; Ограничиваем скролл
+         If *h\pos < 0 : *h\pos = 0 : EndIf
+         If *h\pos > *h\max : *h\pos = *h\max : EndIf
+      EndIf
+   EndIf
+   
+EndProcedure
 ;-
 Procedure.i GetTabStartX(*this._s_WIDGET)
    ; Если вкладок нет или ширина не посчитана
@@ -2141,37 +2299,19 @@ Procedure draw_columns(*this._s_WIDGET, rx.l, ry.l)
    Line(rx, ry + *this\column\height, *this\Width, 1, $AAAAAA)
 EndProcedure
 
-Procedure _draw_rows(*this._s_WIDGET, rx.l, ry.l)
+Procedure draw_rows(*this._s_WIDGET, rx.l, ry.l)
    If Not *this\visible\first : ProcedureReturn : EndIf
-   ;
-   Protected *v._s_BAR = *this\scroll\v
-   Protected *h._s_BAR = *this\scroll\h
-   
-   
-   ; --- 3. РАСЧЕТ КАРЕТКИ И РЕАКТИВНЫЙ СКРОЛЛ ---
-   If Not *this\mask & #__mask_drag
-      ;auto_scroll_x(*this)
-   EndIf
-   
    Protected._s_rows *row
    ; Рассчитываем базовое смещение по X ОДИН РАЗ (экранный X виджета - скролл)
-   Protected dx = rx - *h\pos
+   Protected dx = rx - *this\scroll\h\pos
    ; 1. Прыгаем сразу к первой видимой строке
    ChangeCurrentElement(*this\__items( ), *this\visible\first)
    Repeat 
       ; Берем адрес текущей строки (безопасный доступ)
       *row = @*this\__items( )
       If *row 
-         ; 1. Координата Y и Базовый отступ (Offset)
-         Protected dy = ry + (*row\y - *v\pos)
-         Protected offset = *this\text\padding\x + (*row\Level * *this\row\indent)
-         If (*row\mask & #__mask_node) : offset + 15 : EndIf
-         
-         ;
-         If *row\mask & #__mask_change Or 
-            *row\mask & #__mask_update
-            update_edit(*this, *row)
-         EndIf
+         ; Рассчитываем экранный Y для текущей строки
+         Protected dy = ry + (*row\y - *this\scroll\v\pos)
          
          ; --- ЛОГИКА ЦВЕТА ФОНА ---
          Protected color = #COLOR_BACK_NORMAL
@@ -2220,7 +2360,7 @@ Procedure _draw_rows(*this._s_WIDGET, rx.l, ry.l)
                   
                   If data_idx <= ArraySize(*row\Str( ))
                      Protected txt.s = *row\Str(data_idx)
-                     offset = *this\text\padding\x
+                     Protected offset = *this\text\padding\x
                      
                      ; --- ЛОГИКА ДЕРЕВА (ДЛЯ ПЕРВОЙ КОЛОНКИ) ---
                      If *this\row\indent > 0 And data_idx = 0
@@ -2255,8 +2395,8 @@ Procedure _draw_rows(*this._s_WIDGET, rx.l, ry.l)
                      
                      ;
                      ; --- НОВАЯ ЛОГИКА ВЫДЕЛЕНИЯ (ТОЛЬКО ДЛЯ ПЕРВОЙ КОЛОНКИ) ---
-                     If *this\row\active[1] And data_idx = 0 ; Выделение обычно только в основной колонке
-                        If *row\mask & #__mask_edit
+                     If *this\row\active[1]
+                        If *row\mask & #__mask_edit And data_idx = 0 ; Выделение обычно только в основной колонке
                            Protected sel_x = col_x + offset + *row\sel_x
                            
                            ; Рисуем бокс (условие с +7 можно оставить, если нужно визуально подсветить конец строки)
@@ -2276,35 +2416,28 @@ Procedure _draw_rows(*this._s_WIDGET, rx.l, ry.l)
                      offset = *this\text\padding\x + (*row\Level * *this\row\indent)
                      If (*row\mask & #__mask_node) : offset + 15 : EndIf
                      
-                     If ListSize(*row\tokens()) > 0 And data_idx = 0
+                     If ListSize(*row\tokens()) > 0 And data_idx = 0 ; Раскрашиваем только первую колонку
                         Protected cur_x = col_x + offset
-                        
                         ForEach *row\tokens()
-                           ; 1. Устанавливаем шрифт токена (берем из кэша)
-                           If *row\tokens()\font
-                              DrawingFont(*row\tokens()\font) ; Используем сохраненный ID
-                           Else
-                              DrawingFont(Font_Editor_Normal) ; Твой стандартный ID
-                           EndIf
-                           
-                           ; 2. Берем текст
                            Protected segment.s = Mid(txt, *row\tokens()\pos, *row\tokens()\len)
-                           
-                           ; 3. Рисуем
+                           ; ВАЖНО: Устанавливаем шрифт ТЕКУЩЕГО токена
+                           If *row\tokens()\font
+                              DrawingFont((*row\tokens()\font))
+                           Else
+                              DrawingFont((Font_Editor_Normal))
+                           EndIf
                            DrawText(cur_x, dy + 5, segment, *row\tokens()\color)
-                           
-                           ; 4. Сдвигаем X (БЕЗ TextWidth, берем из кэша токена!)
-                           cur_x + *row\tokens()\Width 
+                           cur_x + TextWidth(segment) ; Сдвигаем X для следующего токена
                         Next
                      Else
-                        ; Если токенов нет — рисуем одной строкой
-                        DrawingFont(Font_Editor_Normal)
+                        ; Если токенов нет — рисуем как раньше
+                        DrawingFont((Font_Editor_Normal))
                         DrawText(col_x + offset, dy + 5, txt, #COLOR_TEXT_NORMAL)
                      EndIf
                      
                      ;
                      If *row\mask & #__mask_edit 
-                        ; --- РИСУЕМ КАРЕТКУ (КУРСОР) ---
+                ; --- РИСУЕМ КАРЕТКУ (КУРСОР) ---
                         If *this\mask & #__mask_active 
                            If *row\mask & #__mask_active 
                               Line(col_x + offset + *this\row\edit\caret_x, dy + 2, 1, *row\height - 4, $000000)
@@ -2348,154 +2481,6 @@ Procedure _draw_rows(*this._s_WIDGET, rx.l, ry.l)
       EndIf
    Until NextElement(*this\__items( )) = 0 
 EndProcedure
-Procedure draw_rows(*this._s_WIDGET, rx.l, ry.l)
-   If Not *this\visible\first : ProcedureReturn : EndIf
-   
-   ; 1. Реактивный скролл (делаем один раз перед циклом)
-   If *this\row\active[0] And 
-      *this\row\active[0]\mask & (#__mask_change | #__mask_update)
-      update_edit(*this, *this\row\active[0])
-   EndIf
-   
-   Protected._s_rows *row
-   Protected *v._s_BAR = *this\scroll\v
-   Protected *h._s_BAR = *this\scroll\h
-   Protected dx = rx - *h\pos
-   
-   ChangeCurrentElement(*this\__items(), *this\visible\first)
-   Repeat 
-      *row = @*this\__items()
-      If Not *row : Break : EndIf
-      
-      ; --- ЛОГИКА ОБНОВЛЕНИЯ (Ленивая) ---
-      If *row\mask & (#__mask_change | #__mask_update)
-         If *row <> *this\row\active[0] ; Активную уже обновили выше
-            update_edit(*this, *row)
-         EndIf
-      EndIf
-      
-      Protected dy = ry + (*row\y - *v\pos)
-      
-      ; --- 1. ФОН СТРОКИ ---
-      Protected color = #COLOR_BACK_NORMAL
-      If *row\mask & #__mask_active 
-         If *row\mask & #__mask_edit 
-            color = #COLOR_BACK_ACTIVED 
-         Else
-            color = #COLOR_BACK_SELECTED 
-         EndIf
-      ElseIf *row\mask & #__mask_hover
-         color = #COLOR_BACK_HOVER 
-      EndIf
-      Box(rx + 1, dy, *this\width - 2, *row\height - 1, color)
-      
-      ; --- 2. ЦИКЛ ПО КОЛОНКАМ ---
-      PushListPosition(*this\__columns())
-      ForEach *this\__columns()
-         Protected col_x = dx + *this\__columns()\x
-         Protected col_w = *this\__columns()\Width
-         Protected data_idx = *this\__columns()\id
-         
-         If col_x + col_w > rx And col_x < rx + *this\Width
-            ; Клиппинг
-            Protected clip_x = Max(col_x, *this\clip\x) 
-            Protected clip_y = Max(dy, *this\clip\y)
-            Protected clip_w = Min(col_x + col_w, *this\clip\x + *this\clip\width) - clip_x
-            Protected clip_h = Min(dy + *row\height, *this\clip\y + *this\clip\height) - clip_y
-            
-            If clip_w > 0 And clip_h > 0
-               ClipOutput(clip_x, clip_y, clip_w, clip_h)
-               
-               If data_idx <= ArraySize(*row\Str())
-                  Protected txt.s = *row\Str(data_idx)
-                  Protected offset = *this\text\padding\x
-                  
-                  ; --- РИСУЕМ ТЕКСТ (ПОВЕРХ) ---
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  
-                  ; 1. ПЕРЕСЧИТЫВАЕМ OFFSET (Твоя оригинальная логика дерева)
-                  If *this\row\indent > 0 And data_idx = 0
-                     offset = *this\text\padding\x + (*row\Level * *this\row\indent)
-                     
-                     If (*row\mask & #__mask_node)
-                        Protected tx = col_x + offset
-                        Protected ty = dy + (*row\height / 2) - 4
-                        FrontColor($888888)
-                        
-                        If *row\mask & #__mask_collapsed
-                           Line(tx, ty, 1, 9) : Line(tx, ty, 5, 4) : Line(tx, ty + 8, 5, -4)
-                        Else
-                           Line(tx, ty + 2, 9, 1) : Line(tx, ty + 2, 4, 5) : Line(tx + 8, ty + 2, -4, 5)
-                        EndIf
-                        offset + 15
-                     EndIf
-                  EndIf
-                  
-                  ; 2. РИСУЕМ ВЫДЕЛЕНИЕ (Под текстом)
-                  If *this\row\active[1] And data_idx = 0
-                     If *row\mask & #__mask_edit
-                        Protected s_x = col_x + offset + *row\sel_x
-                        If *this\row\active[1]\y > *this\row\active[0]\y And *row <> *this\row\active[1] Or 
-                           (Len(txt) = *row\sel_end And *row\y < *this\row\active[0]\y)
-                           Box(s_x, dy + 2, *row\sel_w + 7, *row\height - 4, #COLOR_BACK_SELECTED)
-                        Else
-                           Box(s_x, dy + 2, *row\sel_w, *row\height - 4, #COLOR_BACK_SELECTED)
-                        EndIf
-                     EndIf
-                  EndIf
-                  
-                  ; 3. РИСУЕМ ТОКЕНЫ И СЧИТАЕМ CARET_X
-                  If ListSize(*row\tokens()) > 0 And data_idx = 0
-                     Protected cur_x = col_x + offset
-                     Protected last_font = -1
-                     
-                     ForEach *row\tokens()
-                        ; ОПТИМИЗАЦИЯ ШРИФТА
-                        If last_font <> *row\tokens()\font
-                           last_font = *row\tokens()\font
-                           If last_font : DrawingFont(last_font) : Else : DrawingFont(Font_Editor_Normal) : EndIf
-                        EndIf
-                        
-                        ; РИСУЕМ (Используем твой макрос Mid/PeekS)
-                        DrawText(cur_x, dy + 5, Mid(txt, *row\tokens()\pos, *row\tokens()\len), *row\tokens()\color)
-                        
-                        cur_x + *row\tokens()\Width 
-                     Next
-                  Else
-                     ; Если токенов нет
-                     DrawingFont(Font_Editor_Normal)
-                     DrawText(col_x + offset, dy + 5, txt, #COLOR_TEXT_NORMAL)
-                  EndIf
-                  
-                  ; 4. РИСУЕМ КАРЕТКУ
-                  If *row\mask & #__mask_edit 
-                     If *this\mask & #__mask_active And *row\mask & #__mask_active 
-                        Line(col_x + offset + *this\row\edit\caret_x, dy + 2, 1, *row\height - 4, $000000)
-                     EndIf
-                  Else
-                     ; --- ЛИНИЯ ПОД МЫШЬЮ (DRAG) ---
-                     If *this\mask & #__mask_drag And *row\mask & #__mask_hover And Not *row\mask & #__mask_active 
-                        Protected mid_y = dy + (*row\Height / 2)
-                        Line(*this\clip\x+2, mid_y, *this\clip\width-4, 1, $FF0000)
-                        Line(*this\clip\x+2, mid_y-3, 1, 7, $FF0000)
-                        Line(*this\clip\x + *this\clip\width - 2, mid_y-3, 1, 7, $FF0000)
-                     EndIf
-                  EndIf
-               EndIf
-               
-               Clip(*this) ; Сброс клипа для следующей итерации
-            EndIf
-         EndIf
-      Next
-      PopListPosition(*this\__columns())
-      
-      ; Разделитель строк
-      Line(rx, dy + *row\height - 1, *this\Width, 1, #COLOR_LINE)
-      
-      If *row = *this\visible\last : Break : EndIf
-   Until NextElement(*this\__items()) = 0 
-EndProcedure
-
 Procedure draw_container(*this._s_WIDGET, rx.l, ry.l)
    Protected border_color.i = $D0D0D0
    Protected bg_color.i = $F9F9F9 ; Чуть светлее или темнее основного фона
@@ -2553,6 +2538,21 @@ Procedure Draw(*root._s_ROOT)
          EndIf
          
          ;
+         If *this\mask & #__mask_change
+            ; Пробегаем по всем строкам данных и обновляем только помеченные
+            PushListPosition(*this\row\__s())
+            ForEach *this\row\__s()
+               If *this\row\__s()\mask & #__mask_change
+                  update_token(*this, @*this\row\__s())
+                  *this\row\__s()\mask &~ #__mask_change
+               EndIf
+            Next
+            PopListPosition(*this\row\__s())
+            
+            *this\mask | #__mask_update ; Сигнал для update_rows (пересчитать скролл)
+            *this\mask &~ #__mask_change
+         EndIf
+
          ; Расчет геометрии (если нужно)
          If *this\mask & #__mask_update
             If *this\tabbar
@@ -2567,6 +2567,12 @@ Procedure Draw(*root._s_ROOT)
             EndIf
             
             *this\mask &~ #__mask_update
+         EndIf
+         
+         ;
+         If *this\mask & #__mask_edit
+            update_edit(*this)
+            *this\mask &~ #__mask_edit
          EndIf
          
          ; Ограничиваем рисование областью виджета
@@ -2613,6 +2619,7 @@ Procedure Draw(*root._s_ROOT)
          
          ; Сбрасываем флаг перерисовки после завершения
          *this\mask &~ #__mask_redraw
+         
          StopEnum()
       EndIf
       
@@ -3252,7 +3259,7 @@ Procedure hide_tab(*this._s_WIDGET, Index.l, state.b = #True)
          ; Если скрыли активную — прыгаем на первую попавшуюся видимую
          If *this\tabpage = Index : tab_state(*this, 0) : EndIf
       Else
-         *this\__tabs()\mask &~ #__mask_hidden
+         *this\__tabs()\mask & ~#__mask_hidden
       EndIf
       ; Помечаем, что геометрия шапки изменилась (нужен пересчет X табов)
       *this\mask | #__mask_update | #__mask_redraw
@@ -3268,9 +3275,9 @@ Procedure disable_tab(*this._s_WIDGET, Index.l, state.b = #True)
    If SelectElement(*this\__tabs(), Index)
       If state
          *this\__tabs()\mask | #__mask_disabled
-         *this\__tabs()\mask &~ #__mask_hover ; Сразу гасим ховер, если он был
+         *this\__tabs()\mask & ~#__mask_hover ; Сразу гасим ховер, если он был
       Else
-         *this\__tabs()\mask &~ #__mask_disabled
+         *this\__tabs()\mask & ~#__mask_disabled
       EndIf
       *this\mask | #__mask_redraw
    EndIf
@@ -3419,7 +3426,7 @@ Procedure tab_events(*this._s_WIDGET, event)
          If *hover_tab <> *tab
             ; 1. Уходим со старой вкладки
             If *hover_tab
-               *hover_tab\mask &~ #__mask_hover
+               *hover_tab\mask & ~#__mask_hover
             EndIf
             ; 2. Заходим на новую
             If *tab
@@ -3636,13 +3643,16 @@ Procedure row_events(*this._s_WIDGET,  event)
                   PushListPosition(*this\__items())
                   ForEach *this\__items()
                      Protected *current_row._s_rows = *this\__items()
-                     If *current_row\y >= min_y And 
-                        *current_row\y <= max_y
-                        ; Если строка в физическом диапазоне между кликом и курсором
-                        *current_row\mask | (#__mask_edit | #__mask_update)
-                     Else
-                        ; Снимаем выделение, если строка вышла из диапазона
-                        *current_row\mask &~ (#__mask_edit | #__mask_update)
+                     
+                     If *current_row <> *pressed_row
+                        If *current_row\y >= min_y And 
+                           *current_row\y <= max_y
+                           ; Если строка в физическом диапазоне между кликом и курсором
+                           *current_row\mask | #__mask_edit
+                        Else
+                           ; Снимаем выделение, если строка вышла из диапазона
+                           *current_row\mask &~ #__mask_edit
+                        EndIf
                      EndIf
                   Next
                   PopListPosition(*this\__items())
@@ -3655,6 +3665,8 @@ Procedure row_events(*this._s_WIDGET,  event)
                      *row\mask | #__mask_active
                      *this\row\active[0] = *row
                   EndIf
+                  ;
+                  *this\mask | #__mask_edit
                EndIf
             EndIf
             
@@ -3668,7 +3680,7 @@ Procedure row_events(*this._s_WIDGET,  event)
                   Protected caret = edit_make_caret(*this)
                   If *this\row\edit\caret[0] <> caret 
                      *this\row\edit\caret[0] = caret 
-                     *this\mask | (#__mask_redraw)
+                     *this\mask | (#__mask_edit | #__mask_redraw)
                   EndIf
                EndIf
             Else
@@ -3730,6 +3742,7 @@ Procedure row_events(*this._s_WIDGET,  event)
                   *this\row\edit\caret[1] = *this\row\edit\caret[0]
                   ;
                   *hover_row\mask | #__mask_edit
+                  *this\mask | #__mask_edit
                EndIf
                
                ; 4. Если это папка (узел) — переключаем схлопывание
@@ -3764,7 +3777,7 @@ Procedure row_events(*this._s_WIDGET,  event)
                      *this\row\edit\caret[0] = Len
                   EndIf
                   If *this\row\edit\caret[0] <> *this\row\edit\caret[1]
-                     *this\mask | (#__mask_redraw)
+                     *this\mask | (#__mask_edit | #__mask_redraw)
                   EndIf
                EndIf
             EndIf
@@ -4504,8 +4517,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1856
-; FirstLine = 1643
-; Folding = ---------------------------f-8-----------------8----------------------------------n----------------------------
+; CursorPosition = 4517
+; FirstLine = 4491
+; Folding = -------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
