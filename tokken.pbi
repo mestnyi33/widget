@@ -822,7 +822,7 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                         *this\row\active[1] = *this\row\active[0]
                         *this\row\edit\caret[0] = Len(*this\row\active[0]\Str(0))
                         
-                        *this\row\active[0]\mask | (#__mask_active | #__mask_edit)
+                        *this\row\active[0]\mask | (#__mask_active | #__mask_edit | #__mask_change)
                         *this\row\active[0]\Str(0) + txt
                         
                         NextElement(*this\__rows())
@@ -843,10 +843,10 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                   Else
                      *row\Str(0) = Left(txt, pos - 1) + Mid(txt, pos + 1)
                      *this\row\edit\caret[0] - 1
+                     *row\mask | #__mask_change 
                   EndIf
                   
                   *this\row\edit\caret[1] = *this\row\edit\caret[0]
-                  *row\mask | #__mask_change 
                EndIf
                
                
@@ -877,35 +877,34 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                If *row
                   txt = *row\Str(0)
                   pos = *this\row\edit\caret[0]
-                  Protected Y = *row\y + *row\Height
                   
                   PushListPosition(*this\__rows())
                   ChangeCurrentElement(*this\__rows(), *row)
-                  AddElement(*this\__rows())
-                  *this\__rows()\Level = *row\Level 
-                  *this\__rows()\Str(0) = Mid(txt, pos + 1)
-                  *this\__rows()\y = Y
-                  *this\__rows()\Height = *this\row\Height
-                  *v\max + *this\row\Height ; Временно увеличиваем, чтобы автоскролл пропустил значение
-                  
-                  *row\Str(0) = Left(txt, pos)
-                  *row\mask &~ (#__mask_active | #__mask_edit)
-                  
-                  *row = @*this\__rows()
-                  *row\mask | (#__mask_active | #__mask_edit)
+                  If AddElement(*this\__rows())
+                     *this\__rows()\Level = *row\Level 
+                     *this\__rows()\Height = *row\Height
+                     *this\__rows()\y = *row\y + *row\Height
+                     *this\__rows()\Str(0) = Mid(txt, pos + 1)
+                     *this\__rows()\mask | (#__mask_active | #__mask_edit | #__mask_update)
+                     ;
+                     *row\Str(0) = Left(txt, pos)
+                     *row\mask &~ (#__mask_active | #__mask_edit)
+                     *row = @*this\__rows()
+                     *v\max + *row\Height ; Временно увеличиваем, чтобы автоскролл пропустил значение
+                  EndIf
                   PopListPosition(*this\__rows())
                   
-                  *this\row\active[0] = *row
                   *this\row\edit\caret[0] = 0
+                  *this\row\active[0] = *row
                   
                   *this\row\active[1] = *this\row\active[0]
                   *this\row\edit\caret[1] = *this\row\edit\caret[0]
-                  *this\mask | (#__mask_update)
                   
                   ; auto_scroll_y(*this)
                   If *v\pos < (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
                      *v\pos = (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
                   EndIf
+                  *this\mask | (#__mask_update)
                EndIf
                
             Case #PB_Shortcut_Up ; --- ВВЕРХ (по рулону) ---
@@ -921,10 +920,11 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                   Else
                      *row\mask &~ (#__mask_edit)
                      *this\row\active[1] = *row
+                  ;*this\row\edit\caret[1] = *this\row\edit\caret[0]
                   EndIf
                   *row\mask &~ (#__mask_active)
                   *row = @*this\__items()
-                  *row\mask | (#__mask_active | #__mask_edit)
+                  *row\mask | (#__mask_active | #__mask_edit | #__mask_update)
                   *this\row\active[0] = *row
                   
                   ; Проверка автоскролла по Y
@@ -950,10 +950,11 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                   Else
                      *row\mask &~ (#__mask_edit)
                      *this\row\active[1] = *row
+                  ;*this\row\edit\caret[1] = *this\row\edit\caret[0]
                   EndIf
                   *row\mask &~ (#__mask_active)
                   *row = @*this\__items()
-                  *row\mask | (#__mask_active | #__mask_edit)
+                  *row\mask | (#__mask_active | #__mask_edit | #__mask_update)
                   *this\row\active[0] = *row
                   
                   ; Проверка автоскролла по Y
@@ -986,7 +987,6 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                   Else
                      ; 2. Просто двигаемся влево внутри текста
                      *this\row\edit\caret[0] - 1
-                     *row\mask | #__mask_update
                   EndIf
                   If (keyboard()\key[1] & #PB_Canvas_Shift)
                      If *this\row\active[0] <> *row
@@ -1002,7 +1002,14 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                         *this\row\edit\caret[1] = *this\row\edit\caret[0]
                      EndIf
                   EndIf
-                  
+                  *row\mask | #__mask_update
+                  ; Проверка автоскролла по Y
+                  If *v\pos > (*row\y - *this\column\height)
+                     *v\pos = (*row\y - *this\column\height)
+                     ;                   EndIf
+                     ;                   If auto_scroll_y(*this)
+                     *this\mask | #__mask_update
+                  EndIf
                   
             Case #PB_Shortcut_Right
                   If *this\row\edit\caret[0] > Len(*row\Str(0))
@@ -1039,7 +1046,15 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                         *this\row\edit\caret[1] = *this\row\edit\caret[0] 
                      EndIf
                   EndIf
-               
+                  *row\mask | #__mask_update
+                  ; Проверка автоскролла по Y
+                  If *v\pos < (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
+                     *v\pos = (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
+                     ;                   EndIf
+                     ;                   If auto_scroll_y(*this)
+                     *this\mask | #__mask_update
+                  EndIf
+                  
             Case #PB_Shortcut_Home
                   ; 1. Если зажат CTRL — прыгаем в начало документа
                   If (keyboard()\key[1] & #PB_Canvas_Control)
@@ -4046,14 +4061,14 @@ Procedure Close( *root._s_ROOT )
 EndProcedure
 
 
-Procedure.i Open(window, X, Y, Width, Height, title.s="", flags.q = 0)
+Procedure.i Open(window, X, Y, Width, Height, title.s="", flags.q = #PB_Window_ScreenCentered)
    Protected *root._s_ROOT = AllocateStructure(_s_ROOT)
    
    If IsWindow(window)
       *root\Canvas\window = window
       *root\Canvas\gadget = CanvasGadget(#PB_Any, X, Y, Width, Height, #PB_Canvas_Keyboard)
    Else
-      *root\Canvas\window = OpenWindow(#PB_Any, X, Y, Width, Height, title, #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
+      *root\Canvas\window = OpenWindow(#PB_Any, X, Y, Width, Height, title, #PB_Window_SystemMenu|flags)
       *root\Canvas\gadget = CanvasGadget(#PB_Any, 0, 0, Width, Height, #PB_Canvas_Keyboard)
    EndIf
    SetOsData(GadgetID(*root\Canvas\gadget), *root)
@@ -4236,8 +4251,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 1621
-; FirstLine = 1361
-; Folding = ---------------------------f-8-----------------------------------------------9---------------------------
+; CursorPosition = 951
+; FirstLine = 924
+; Folding = ----------------------------8f-----------------------------------------------n----------------------------
 ; EnableXP
 ; DPIAware

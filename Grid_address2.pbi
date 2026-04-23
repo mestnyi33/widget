@@ -3854,9 +3854,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Root( ) = 0
    End ; Завершение программы
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 3855
-; FirstLine = 3829
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 1362
+; FirstLine = 1428
 ; Folding = ---------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
