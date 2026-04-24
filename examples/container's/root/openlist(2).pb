@@ -24,18 +24,18 @@ CompilerIf #PB_Compiler_IsMainFile
   *g2\class="last"
   
   Debug ""+*g1\PrevRoot( )\class +" "+ *g1\NextRoot( )\class
-  If *g2\afterroot
-     Debug "1"+*g1\afterroot\class 
-  EndIf
-  If *g2\beforeroot
-     Debug "2"+*g1\beforeroot\class
-  EndIf
+;   If *g2\afterroot
+;      Debug "1"+*g1\afterroot\class 
+;   EndIf
+;   If *g2\beforeroot
+;      Debug "2"+*g1\beforeroot\class
+;   EndIf
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 18
-; FirstLine = 1
+; CursorPosition = 31
+; FirstLine = 7
 ; Folding = -
 ; EnableXP
 ; DPIAware
