@@ -121,6 +121,12 @@ EndEnumeration
                              ; #__mask_caret     = 1 << 15
 #__mask_tokken = 1 << 15
 
+#TREE_Padding = 5
+#TREE_ButtonSize = 9
+#TREE_Indent   = 20 ; Шаг вложенности
+#TREE_LineOffset = #TREE_Indent - #TREE_ButtonSize/2 ; - (#TREE_ButtonSize%2) ; Отступ линии от текста
+
+
 ; ==============================================================================
 ;- СТРУКТУРЫ ДАННЫХ
 ; ==============================================================================
@@ -206,7 +212,7 @@ EndStructure
 
 Structure _s_ROWS Extends _s_COORDINATE
    Array str.s(0)        ; Динамический массив ячеек данных
-   Level.i               ; Уровень вложенности для дерева
+   sublevel.i               ; Уровень вложенности для дерева
    mask.q                ; Состояние строки (#__mask_active, #__mask_node...)
    List tokens._s_TOKEN(); Список раскрашенных сегментов
    
@@ -613,6 +619,11 @@ EndProcedure
 
 Procedure.l ChangeColor(*row._s_ROWS)
    Protected color = #COLOR_BACK_NORMAL
+   ; Фон (Зебра / Hover / Select)
+   If (*row\Y/*row\Height) % 2 = 0 
+      color = $FAFAFA
+   EndIf
+   
    If *row\mask & #__mask_active 
       If *row\mask & #__mask_edit 
          color = #COLOR_BACK_ACTIVED 
@@ -622,6 +633,7 @@ Procedure.l ChangeColor(*row._s_ROWS)
    ElseIf *row\mask & #__mask_hover
       color = #COLOR_BACK_HOVER 
    EndIf
+   
    ProcedureReturn color
 EndProcedure
 
@@ -653,7 +665,7 @@ Procedure auto_scroll_x(*this._s_WIDGET)
    Protected._s_BAR *h = *this\scroll\h  
    Protected._s_ROWS *active = *this\row\active[0]
    
-   Protected offset = *this\text\padding\x + (*active\Level * *this\row\indent)
+   Protected offset = *this\text\padding\x + (*active\sublevel * *this\row\indent)
    If (*active\mask & #__mask_node) : offset + 15 : EndIf
    Protected cx = *this\row\edit\caret_x + offset
    Protected view_w = *this\width - Bool(*v\max > 0) * *this\fs[3]
@@ -670,7 +682,7 @@ Procedure.i edit_make_caret(*this._s_WIDGET)
    
    If *row
       *row\mask | #__mask_update
-      Protected offset = *this\text\padding\x + (*row\Level * *this\row\indent)
+      Protected offset = *this\text\padding\x + (*row\sublevel * *this\row\indent)
       If (*row\mask & #__mask_node) : offset + 15 : EndIf
       Protected dx = *this\real\x + offset - *this\scroll\h\pos
       mouse_x = mouse()\x - dx
@@ -921,7 +933,7 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                   PushListPosition(*this\__rows())
                   ChangeCurrentElement(*this\__rows(), *row)
                   If AddElement(*this\__rows())
-                     *this\__rows()\Level = *row\Level 
+                     *this\__rows()\sublevel = *row\sublevel 
                      *this\__rows()\Height = *row\Height
                      *this\__rows()\y = *row\y + *row\Height
                      *this\__rows()\Str(0) = Mid(txt, pos + 1)
@@ -1691,7 +1703,7 @@ Procedure update_edit(*this._s_WIDGET, *row._s_ROWS)
             ;*h\max + (*this\row\edit\caret_x-edit_caret_x)
             
             ; СКРОЛЛИНГ
-            Protected offset = *this\text\padding\x + (*active\Level * *this\row\indent)
+            Protected offset = *this\text\padding\x + (*active\sublevel * *this\row\indent)
             If (*active\mask & #__mask_node) : offset + 15 : EndIf
             Protected cx = *this\row\edit\caret_x + offset
             Protected view_w = *this\width - Bool(*v\max > 0) * *this\fs[3]
@@ -1707,12 +1719,36 @@ Procedure update_edit(*this._s_WIDGET, *row._s_ROWS)
    EndIf
 EndProcedure
 
+Procedure update_nodes(*this._s_WIDGET)
+   PushListPosition(*this\__rows( ))
+   ForEach *this\__rows( )
+      Protected current_level = *this\__rows( )\sublevel
+      *this\__rows( )\mask &~ #__mask_node ; Сбрасываем старый флаг
+      
+      ; Заглядываем в следующую строку
+      If NextElement(*this\__rows( ))
+         If *this\__rows( )\sublevel > current_level
+            ; Предыдущий элемент — это родитель (узел)
+            PreviousElement(*this\__rows( ))
+            *this\__rows( )\mask | #__mask_node
+            NextElement(*this\__rows( ))
+         Else
+            PreviousElement(*this\__rows( ))
+         EndIf
+      EndIf
+   Next
+   PopListPosition(*this\__rows( ))
+EndProcedure
+
 Procedure update_rows(*this._s_WIDGET)
    If Not *this : ClearList(*this\__items( )) : ProcedureReturn : EndIf
    Protected._s_ROWS *row
    Protected._s_BAR *v = *this\scroll\v
    Protected._s_BAR *h = *this\scroll\h
    
+   If *this\Type = #__type_Tree
+      update_nodes(*this)
+   EndIf
    ClearList(*this\__items( ))
    *this\visible\first = 0
    *this\visible\last = 0
@@ -1729,10 +1765,10 @@ Procedure update_rows(*this._s_WIDGET)
       ; --- 1. ЛОГИКА СХЛОПЫВАНИЯ ---
       If *this\row\indent
          If skip_level <> -1
-            If *row\Level > skip_level : Continue : Else : skip_level = -1 : EndIf
+            If *row\sublevel > skip_level : Continue : Else : skip_level = -1 : EndIf
          EndIf
          If (*row\mask & #__mask_node) And (*row\mask & #__mask_collapsed)
-            skip_level = *row\Level
+            skip_level = *row\sublevel
          EndIf
       EndIf
       
@@ -1747,7 +1783,7 @@ Procedure update_rows(*this._s_WIDGET)
       *row\y = cur_y
       
       ; Расчет горизонтального отступа
-      Protected offset = *this\text\padding\x + (*row\Level * *this\row\indent)
+      Protected offset = *this\text\padding\x + (*row\sublevel * *this\row\indent)
       If (*row\mask & #__mask_node) : offset + 15 : EndIf
       
       ; Общая ширина строки для скроллбара
@@ -1801,27 +1837,6 @@ Procedure update_tab(*this._s_WIDGET)
    PopListPosition(*this\__tabs())
 EndProcedure
 
-Procedure update_nodes(*this._s_WIDGET)
-   PushListPosition(*this\__rows( ))
-   ForEach *this\__rows( )
-      Protected current_level = *this\__rows( )\Level
-      *this\__rows( )\mask &~ #__mask_node ; Сбрасываем старый флаг
-      
-      ; Заглядываем в следующую строку
-      If NextElement(*this\__rows( ))
-         If *this\__rows( )\Level > current_level
-            ; Предыдущий элемент — это родитель (узел)
-            PreviousElement(*this\__rows( ))
-            *this\__rows( )\mask | #__mask_node
-            NextElement(*this\__rows( ))
-         Else
-            PreviousElement(*this\__rows( ))
-         EndIf
-      EndIf
-   Next
-   PopListPosition(*this\__rows( ))
-EndProcedure
-
 Procedure update_columns(*this._s_WIDGET)
    Protected._s_BAR *v = *this\scroll\v
    Protected._s_BAR *h = *this\scroll\h
@@ -1842,7 +1857,7 @@ Procedure update_columns(*this._s_WIDGET)
             
             ; Если это первая колонка, учитываем отступ дерева
             If col_idx = 0 And *this\row\indent > 0
-               text_w + (*this\__rows()\Level * *this\row\indent) + 20 ; + иконка
+               text_w + (*this\__rows()\sublevel * *this\row\indent) + 20 ; + иконка
             EndIf
             
             If text_w > max_w : max_w = text_w : EndIf
@@ -1874,7 +1889,7 @@ EndProcedure
 
 Procedure update_level(*this._s_WIDGET, new_level.l)
    Protected *child._s_WIDGET
-   *this\Level = new_level
+   *this\level = new_level
    
    ; Рекурсивно обновляем всех детей
    *child = *this\first
@@ -2229,7 +2244,7 @@ Procedure draw_rows(*this._s_WIDGET, rx.l, ry.l)
                   
                   ; 1. ПЕРЕСЧИТЫВАЕМ OFFSET (Твоя оригинальная логика дерева)
                   If *this\row\indent > 0 And data_idx = 0
-                     offset = *this\text\padding\x + (*row\Level * *this\row\indent)
+                     offset = *this\text\padding\x + (*row\sublevel * *this\row\indent)
                      
                      If (*row\mask & #__mask_node)
                         Protected tx = col_x + offset
@@ -2244,7 +2259,7 @@ Procedure draw_rows(*this._s_WIDGET, rx.l, ry.l)
                         offset + 15
                      EndIf
                   EndIf
-                  
+                    
                   ; 2. РИСУЕМ ВЫДЕЛЕНИЕ (Под текстом)
                   If *this\row\active[1] And data_idx = 0
                      If *row\mask & #__mask_edit
@@ -2848,7 +2863,7 @@ Procedure.i SetParent(*this._s_WIDGET, *parent._s_WIDGET, tabpage.l = #PB_Defaul
    If Not *r\first : *r\first = *new : EndIf
    If Not is_integral_(*new) : *new\tabindex = tabpage : EndIf
    
-   If *parent : update_level(*new, *parent\Level + 1) : Else : update_level(*new, 0) : EndIf
+   If *parent : update_level(*new, *parent\level + 1) : Else : update_level(*new, 0) : EndIf
    
    hidden(*new, *parent, 0)
    If *parent : *parent\mask | #__mask_redraw : EndIf
@@ -2952,7 +2967,7 @@ Procedure add_row(*this._s_WIDGET, Text.s = "", Index.i = -1, Level.i = 0, *star
       InsertElement(*this\__rows())
    EndIf
    
-   *this\__rows()\Level = Level
+   *this\__rows()\sublevel = Level
    Protected i, TotalCols = ListSize(*this\__columns()) - 1
    ReDim *this\__rows()\Str(TotalCols)
    
@@ -4235,15 +4250,26 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;                  
    If *t
-      add_row(*t, "tree node")
-      add_row(*t, "Александр" + chr + "31" + chr + "Москва",1)
-      add_row(*t, "Елена" + chr + "24" + chr + "Владивосток",1)
-      add_row(*t, "Дмитрий" + chr + "45" + chr + "Тула",1)
-      
-      add_row(*t, "tree node")
-      add_row(*t, "Александр" + chr + "31" + chr + "Москва",1)
-      add_row(*t, "Елена" + chr + "24" + chr + "Владивосток",1)
-      add_row(*t, "Дмитрий" + chr + "45" + chr + "Тула",1)
+;       add_row(*t, "tree node")
+;       add_row(*t, "Александр" + chr + "31" + chr + "Москва",1)
+;       add_row(*t, "Елена" + chr + "24" + chr + "Владивосток",1)
+;       add_row(*t, "Дмитрий" + chr + "45" + chr + "Тула",1)
+;       
+;       add_row(*t, "tree node")
+;       add_row(*t, "Александр" + chr + "31" + chr + "Москва",1)
+;       add_row(*t, "Елена" + chr + "24" + chr + "Владивосток",1)
+;       add_row(*t, "Дмитрий" + chr + "45" + chr + "Тула",1)
+      AddItem(*T, 0, "Tree_0", -1 )
+AddItem(*T, 1, "Tree_1_1", 0, 1) 
+AddItem(*T, 4, "Tree_1_1_2", -1, 2) 
+AddItem(*T, 5, "Tree_1_1_3", -1, 2) 
+AddItem(*T, 6, "Tree_1_1_3_1", -1, 3) 
+AddItem(*T, 8, "Tree_1_1_3_1_1", -1, 4) 
+AddItem(*T, 7, "Tree_1_1_3_2", -1, 3) 
+AddItem(*T, 2, "Tree_1_1_1", -1, 1) 
+AddItem(*T, 3, "Tree_1_1_1_1", -1, 4) 
+AddItem(*T, 9, "Tree_1",-1 )
+
    EndIf
    
    ;
@@ -4351,8 +4377,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 3706
-; FirstLine = 3367
-; Folding = ----------------2b888f-80------------------------------------------------------------------------------------
+; CursorPosition = 2364
+; FirstLine = 2062
+; Folding = ----------------r4444-+48-------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
