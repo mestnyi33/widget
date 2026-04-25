@@ -3683,27 +3683,29 @@ Procedure scroll_events(*this._s_WIDGET, event)
          EndIf
          
       Case #PB_EventType_MouseMove
-         If is_drag_v
-            Protected view_h.f = *this\height - *this\column\height - fsh
-            Protected track_v.f = view_h - *v\thumb_h
-            If track_v > 0
-               *v\pos = (((my - *this\column\height) - drag_start_pos) * *v\max) / track_v
+         If *this\mask & #__mask_press
+            If is_drag_v
+               Protected view_h.f = *this\height - *this\column\height - fsh
+               Protected track_v.f = view_h - *v\thumb_h
+               If track_v > 0
+                  *v\pos = (((my - *this\column\height) - drag_start_pos) * *v\max) / track_v
+               EndIf
+               
+               If *v\pos < 0 : *v\pos = 0 : EndIf
+               If *v\pos > *v\max : *v\pos = *v\max : EndIf
+               *this\mask | #__mask_update | #__mask_redraw
+               
+            ElseIf is_drag_h
+               Protected view_w.f = *this\width - *this\fs[1] - fsv
+               Protected track_h.f = view_w - *h\thumb_w
+               If track_h > 0
+                  *h\pos = (((mx - *this\fs[1]) - drag_start_pos) * *h\max) / track_h
+               EndIf
+               
+               If *h\pos < 0 : *h\pos = 0 : EndIf
+               If *h\pos > *h\max : *h\pos = *h\max : EndIf
+               *this\mask | #__mask_redraw
             EndIf
-            
-            If *v\pos < 0 : *v\pos = 0 : EndIf
-            If *v\pos > *v\max : *v\pos = *v\max : EndIf
-            *this\mask | #__mask_update | #__mask_redraw
-            
-         ElseIf is_drag_h
-            Protected view_w.f = *this\width - *this\fs[1] - fsv
-            Protected track_h.f = view_w - *h\thumb_w
-            If track_h > 0
-               *h\pos = (((mx - *this\fs[1]) - drag_start_pos) * *h\max) / track_h
-            EndIf
-            
-            If *h\pos < 0 : *h\pos = 0 : EndIf
-            If *h\pos > *h\max : *h\pos = *h\max : EndIf
-            *this\mask | #__mask_redraw
          EndIf
          
          If in_v Or in_h Or is_drag_v Or is_drag_h
@@ -4348,9 +4350,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Root( ) = 0
    End ; Завершение программы
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1979
-; FirstLine = 1641
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 3706
+; FirstLine = 3367
 ; Folding = ----------------2b888f-80------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
