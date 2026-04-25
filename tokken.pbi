@@ -1509,7 +1509,7 @@ Procedure update_token(*this._s_WIDGET, *row._s_ROWS)
             If word <> correct
                ; Добавляем флаг #PB_String_NoZero, чтобы не портить остаток строки
                PokeS(@txt + (start - 1) * SizeOf(Character), correct, Len(correct), #PB_String_NoZero)
-               *row\Str(0) = txt 
+               ; *row\Str(0) = txt 
                word = correct
             EndIf
             cur_color = Theme\Keywords()\color
@@ -1546,6 +1546,10 @@ Procedure update_token(*this._s_WIDGET, *row._s_ROWS)
       
       If is_comment : Break : EndIf 
    Wend
+   
+   If *row\Str(0) <> txt 
+      *row\Str(0) = txt 
+   EndIf
    
    ; Финальные замеры строки сохраняем в структуру строки
    *row\width  = row_width ; Чистая ширина текста
@@ -1904,37 +1908,39 @@ Procedure draw_scroll(*this._s_WIDGET, vertical.b, rx.l, ry.l)
    Protected *v._s_BAR = @*this\scroll\v
    Protected *h._s_BAR = @*this\scroll\h
    
-   ; Локальные координаты мыши относительно виджета
    Protected mx = mouse()\x - rx
    Protected my = mouse()\y - ry
    Protected is_hover.b = #False
    
-   ; 2. Проверяем попадание в зону любого из скроллбаров
-   
    ; Цвета
-   Protected color_bg = $F0F0F0     ; Фон полосы
-   Protected color_thumb = $CDCDCD  ; Базовый цвет (серый)
+   Protected color_bg = $F0F0F0     
+   Protected color_thumb = $CDCDCD  
+   
+   ; Определяем наличие "соседа" для корректной отрисовки длины
+   Protected fsv.l = 0 : If *v\max > 0 : fsv = *this\fs[3] : EndIf
+   Protected fsh.l = 0 : If *h\max > 0 : fsh = *this\fs[4] : EndIf
    
    If vertical
-      ; --- ВЕРТИКАЛЬНЫЙ СКРОЛЛ ---
       If *v\max > 0
-         If Not *this\mask & #__mask_drag
-            is_hover = Bool(mx > (*this\width - *this\fs[3]) And mx =< *this\Width)
+         If Not (*this\mask & #__mask_drag)
+            is_hover = Bool(mx > (*this\width - *this\fs[3]) And mx <= *this\width And 
+                            my > *this\column\height And my <= (*this\height - fsh))
          EndIf
          
-         Protected.f view_h = *this\height - *this\column\height - *this\fs[4]
+         Protected.f view_h = *this\height - *this\column\height - fsh
          Protected.f total_h = *v\max + view_h
+         
+         ; Сохраняем высоту ползунка в структуру
          *v\thumb_h = view_h * (view_h / total_h)
          If *v\thumb_h < 20 : *v\thumb_h = 22 : EndIf
          
          Protected.f scroll_ratio = *v\pos / *v\max
          Protected thumb_y = ry + *this\column\height + scroll_ratio * (view_h - *v\thumb_h)
          
-         ; --- ЦВЕТОВАЯ ИНДИКАЦИЯ ---
          If *v\is_drag 
-            color_thumb = $808080 ; Темный (нажат)
+            color_thumb = $808080 
          ElseIf is_hover
-            color_thumb = $A0A0A0 ; Средний (наведен)
+            color_thumb = $A0A0A0 
          EndIf
          
          DrawingMode(#PB_2DDrawing_Default)
@@ -1943,21 +1949,22 @@ Procedure draw_scroll(*this._s_WIDGET, vertical.b, rx.l, ry.l)
       EndIf
       
    Else
-      ; --- ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ ---
       If *h\max > 0
-         If Not *this\mask & #__mask_drag
-            is_hover = Bool(my > (*this\height - *this\fs[4]) And my =< *this\height)
+         If Not (*this\mask & #__mask_drag)
+            is_hover = Bool(my > (*this\height - *this\fs[4]) And my <= *this\height And 
+                            mx > *this\fs[1] And mx <= (*this\width - fsv))
          EndIf
          
-         Protected.f view_w = *this\width - *this\fs[1] - *this\fs[3]
+         Protected.f view_w = *this\width - *this\fs[1] - fsv
          Protected.f total_w = *h\max + view_w
-         Protected thumb_w = view_w * (view_w / total_w)
-         If thumb_w < 20 : thumb_w = 22 : EndIf
+         
+         ; Сохраняем ширину ползунка в структуру (УБРАНО Protected thumb_w)
+         *h\thumb_w = view_w * (view_w / total_w)
+         If *h\thumb_w < 20 : *h\thumb_w = 22 : EndIf
          
          Protected.f scroll_ratio_h = *h\pos / *h\max
-         Protected thumb_x = rx + *this\fs[1] + scroll_ratio_h * (view_w - thumb_w)
+         Protected thumb_x = rx + *this\fs[1] + scroll_ratio_h * (view_w - *h\thumb_w)
          
-         ; --- ЦВЕТОВАЯ ИНДИКАЦИЯ ---
          If *h\is_drag 
             color_thumb = $808080
          ElseIf is_hover
@@ -1966,7 +1973,7 @@ Procedure draw_scroll(*this._s_WIDGET, vertical.b, rx.l, ry.l)
          
          DrawingMode(#PB_2DDrawing_Default)
          Box(rx + *this\fs[1], ry + *this\height - *this\fs[4], view_w, *this\fs[4], color_bg)
-         Box(thumb_x, ry + *this\height - *this\fs[4] + 3, thumb_w, *this\fs[4] - 6, color_thumb)
+         Box(thumb_x, ry + *this\height - *this\fs[4] + 3, *h\thumb_w, *this\fs[4] - 6, color_thumb)
       EndIf
    EndIf
 EndProcedure
@@ -3610,16 +3617,24 @@ Procedure scroll_events(*this._s_WIDGET, event)
    Protected mx = mouse()\x - *this\real\x
    Protected my = mouse()\y - *this\real\y
    
-   ; 2. Проверяем попадание в зону любого из скроллбаров
-   Protected in_v.b 
-   Protected in_h.b
+   ; Определяем наличие "соседа" для корректного расчета длины трека
+   Protected fsv.l = 0 : If *v\max > 0 : fsv = *this\fs[3] : EndIf
+   Protected fsh.l = 0 : If *h\max > 0 : fsh = *this\fs[4] : EndIf
    
-   If Not *this\mask & #__mask_drag
+   ; Проверяем попадание в зону любого из скроллбаров
+   Protected in_v.b = #False
+   Protected in_h.b = #False
+   
+   If Not (*this\mask & #__mask_drag)
       If *v\max > 0
-         in_v = Bool(mx > (*this\width - *this\fs[3]) And mx =< *this\Width)
+         ; Вертикальный: от колонки до низа (минус горизонтальный, если он есть)
+         in_v = Bool(mx > (*this\width - *this\fs[3]) And mx <= *this\width And 
+                     my > *this\column\height And my <= (*this\height - fsh))
       EndIf
       If *h\max > 0
-         in_h = Bool(my > (*this\height - *this\fs[4]) And my =< *this\height)
+         ; Горизонтальный: от номеров строк до края (минус вертикальный, если он есть)
+         in_h = Bool(my > (*this\height - *this\fs[4]) And my <= *this\height And 
+                     mx > *this\fs[1] And mx <= (*this\width - fsv))
       EndIf
    EndIf
    
@@ -3648,56 +3663,55 @@ Procedure scroll_events(*this._s_WIDGET, event)
       Case #PB_EventType_LeftButtonDown
          If in_v
             is_drag_v = #True : *v\is_drag = #True
-            drag_start_pos = my
+            ; Расчет точки хвата (абсолютный)
+            Protected view_h_down.f = *this\height - *this\column\height - fsh
+            Protected track_v_down.f = view_h_down - *v\thumb_h
+            Protected current_thumb_y = 0
+            If *v\max > 0 : current_thumb_y = (*v\pos * track_v_down) / *v\max : EndIf
+            drag_start_pos = (my - *this\column\height) - current_thumb_y
             ProcedureReturn #True 
             
          ElseIf in_h
             is_drag_h = #True : *h\is_drag = #True
-            drag_start_pos = mx
+            ; Расчет точки хвата (абсолютный)
+            Protected view_w_down.f = *this\width - *this\fs[1] - fsv
+            Protected track_h_down.f = view_w_down - *h\thumb_w
+            Protected current_thumb_x = 0
+            If *h\max > 0 : current_thumb_x = (*h\pos * track_h_down) / *h\max : EndIf
+            drag_start_pos = (mx - *this\fs[1]) - current_thumb_x
             ProcedureReturn #True 
          EndIf
          
       Case #PB_EventType_MouseMove
          If is_drag_v
-            Protected dy = my - drag_start_pos
-            ; РАБОЧАЯ ОБЛАСТЬ (Трек минус ползунок)
-            Protected.f track_v = (*this\height - *this\fs[4]) - *v\thumb_h ;  - *this\column\height
+            Protected view_h.f = *this\height - *this\column\height - fsh
+            Protected track_v.f = view_h - *v\thumb_h
             If track_v > 0
-               Protected.f ratio = *v\max / track_v
-               *v\pos + (dy * ratio)
-               drag_start_pos = my
+               *v\pos = (((my - *this\column\height) - drag_start_pos) * *v\max) / track_v
             EndIf
             
             If *v\pos < 0 : *v\pos = 0 : EndIf
             If *v\pos > *v\max : *v\pos = *v\max : EndIf
-            *this\mask | #__mask_update ; При скролле update не нужен, только redraw
+            *this\mask | #__mask_update | #__mask_redraw
             
          ElseIf is_drag_h
-            Protected dx = mx - drag_start_pos
-            ; РАБОЧАЯ ОБЛАСТЬ (Ширина минус отступы и ползунок)
-            Protected.f track_h = (*this\width - *this\fs[1] - *this\fs[3]) - *h\thumb_w
+            Protected view_w.f = *this\width - *this\fs[1] - fsv
+            Protected track_h.f = view_w - *h\thumb_w
             If track_h > 0
-               Protected.f ratio_h = *h\max / track_h
-               *h\pos + (dx * ratio_h)
-               drag_start_pos = mx
+               *h\pos = (((mx - *this\fs[1]) - drag_start_pos) * *h\max) / track_h
             EndIf
             
             If *h\pos < 0 : *h\pos = 0 : EndIf
             If *h\pos > *h\max : *h\pos = *h\max : EndIf
+            *this\mask | #__mask_redraw
          EndIf
          
-         ; Блокируем события для строк, если мы над скроллом или тащим его
          If in_v Or in_h Or is_drag_v Or is_drag_h
-            
-            ; change cursor
-            If in_v Or in_h
-               If *this\mask & #__mask_cursor
-                  If Not *this\mask & #__mask_drag 
-                     row_events(*this,  #PB_EventType_MouseLeave)
-                  EndIf
+            If (in_v Or in_h) And (*this\mask & #__mask_cursor)
+               If Not (*this\mask & #__mask_drag) 
+                  row_events(*this, #PB_EventType_MouseLeave)
                EndIf
             EndIf
-            
             *this\mask | #__mask_redraw
             ProcedureReturn #True 
          EndIf
@@ -4335,8 +4349,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1510
-; FirstLine = 1185
-; Folding = ----------------2b888f-80-----------------------------------------------------------------------------------
+; CursorPosition = 1979
+; FirstLine = 1641
+; Folding = ----------------2b888f-80------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
