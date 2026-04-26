@@ -298,15 +298,13 @@ Global *MyList = ListIcon(10, 10, 620, 300, "Имя (Left)", 200)
 AddColumn(*MyList, -1, "Возраст (Center)", 120, 0, #ALIGN_CENTER)
 AddColumn(*MyList, -1, "Город (Right)", 180, -1, #ALIGN_RIGHT)
 
-AddColumn(*MyList, 1, "add", 180, -1)
-
 AddItem(*MyList, -1, "Александр" + Chr(10) + "31" + Chr(10) + "Москва", 0)
 AddItem(*MyList, -1, "Елена" + Chr(10) + "24" + Chr(10) + "Владивосток")
 AddItem(*MyList, -1, "Дмитрий" + Chr(10) + "45" + Chr(10) + "Тула")
 
 Define i
 For i = 1 To 5;000
-  AddItem(*MyList, -1, "Пользователь " + Str(i) + Chr(10) + Str(Random(60, 18)))
+  AddItem(*MyList, -1, "Пользователь " + Str(i) + Chr(10) + Str(Random(60, 18)) + Chr(10) + "неизвестно")
 Next
 
 ; Кнопки для теста новых функций
@@ -331,8 +329,8 @@ Repeat
   EndSelect
 Until Event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 331
-; FirstLine = 304
+; CursorPosition = 306
+; FirstLine = 290
 ; Folding = ----------
 ; EnableXP
 ; DPIAware
