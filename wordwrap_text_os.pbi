@@ -8,8 +8,8 @@ Procedure DrawWinAPIWrap(CanvasGadget, Text$)
   rect\top = 20
   rect\right = GadgetWidth(CanvasGadget) - 20
   rect\bottom = GadgetHeight(CanvasGadget) - 20
-  
-  If StartDrawing(CanvasOutput(CanvasGadget))
+  DrawText_Context=StartDrawing(CanvasOutput(CanvasGadget))
+  If DrawText_Context
     ; Очищаем фон
     Box(0, 0, OutputWidth(), OutputHeight(), $FFFFFF)
     
@@ -18,7 +18,7 @@ Procedure DrawWinAPIWrap(CanvasGadget, Text$)
     DrawingMode(#PB_2DDrawing_Transparent)
     
     ; Получаем HDC (Handle Device Context) текущего сеанса рисования
-    Protected DrawText_Context = ImageContext() ; Или просто вызвать DrawText_
+;     Protected DrawText_Context = ImageContext() ; Или просто вызвать DrawText_
     
     ; В современных версиях PureBasic (начиная с 5.30+) переменная DrawText_Context была заменена на специальную функцию
     ; hdc = GetGadgetContext(#Gadget) или системную переменную *DrawingInfo\Context.
@@ -54,9 +54,8 @@ If OpenWindow(0, 0, 0, 400, 300, "Windows API WordWrap", #PB_Window_SystemMenu |
   Until Event = #PB_Event_CloseWindow
 EndIf
 
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 20
-; FirstLine = 15
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 10
 ; Folding = -
 ; EnableXP
 ; DPIAware
