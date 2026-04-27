@@ -179,26 +179,26 @@ Structure _s_KEYBOARD  ; Ok
 EndStructure
 
 Structure _s_CARET
-   start.l   ; Индекс начала выделения (символ)
-   stop.l    ; Индекс конца выделения (символ)
-   
-   ; --- НОВЫЕ ПОЛЯ ДЛЯ КЕША ---
-   X.l       ; X-смещение начала выделения в пикселях
-   Width.l       ; Ширина выделения в пикселях
+   start.l           ; Индекс начала выделения (символ)
+   stop.l            ; Индекс конца выделения (символ)
+   X.l               ; X-смещение начала выделения в пикселях
 EndStructure
-Structure _s_SEL Extends _s_CARET : EndStructure
+Structure _s_SEL Extends _s_CARET 
+   Width.l           ; Ширина выделения в пикселях
+EndStructure
 
-Structure _s_HEADER ; ЗАГОЛОВОК
-   ID.l             ; <--- Номер элемента в списке данных строки (0, 1, 2...) 
-   X.l              ; Относительный X вкладки в шапке
-   Width.l          ; Ширина вкладки
-   tx.l
+Structure _s_COLUMNS ; ЗАГОЛОВОК
+   ID.l              ; <--- Номер элемента в списке данных строки (0, 1, 2...) 
+   X.l               ; Относительный X вкладки в шапке
+   Width.l           ; Ширина вкладки
    title.s
-   mask.q           ; Маска конкретной вкладки
+   mask.q            ; Маска конкретной вкладки
    align.q
 EndStructure
+Structure _s_TABS Extends _s_COLUMNS 
+   tx.l
+EndStructure
 
-Structure _s_COLUMNS Extends _s_HEADER : EndStructure
 Structure _s_COLUMN
    spacing.a ; РАССТОЯНИЕ
    Height.l  ; Высота шапки (заголовков)
@@ -207,7 +207,6 @@ Structure _s_COLUMN
    List __s._s_COLUMNS( )
 EndStructure
 
-Structure _s_TABS Extends _s_HEADER : EndStructure
 Structure _s_TAB
    spacing.a             ; РАССТОЯНИЕ МЕЖДУ ВКЛАДКАМИ
                          ;
@@ -231,11 +230,10 @@ Structure _s_TOKEN
    pos.l    ; Позиция начала в строке (от 1)
    len.l    ; Длина куска
    color.l  ; Цвет ($BBGGRR)
-   font.i   ; Сюда пишем FontID(Ваш_Шрифт)
-            ;
    X.l
    Width.l  ; <--- КЭШ: Ширина сегмента в пикселях
    Height.l ; <--- КЭШ: Высота сегмента в пикселях
+   font.i   ; Сюда пишем FontID(Ваш_Шрифт)
 EndStructure
 
 ; Структура темы оформления
@@ -304,7 +302,6 @@ Structure _s_WIDGET Extends _s_COORDINATE
    mask.q                ; Состояние виджета (#__mask_update, #__mask_active...)
    
    haschildren.l
-   
    
    tabindex.l ; Номер страницы родителя к которому будеть привязан          
    tabpage.l  ; Активная страница (используется если у родителя есть таб бар)
@@ -4490,8 +4487,8 @@ AddItem(*T, 9, "Tree_1",-1 )
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 2070
-; FirstLine = 2058
+; CursorPosition = 312
+; FirstLine = 294
 ; Folding = ----------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
