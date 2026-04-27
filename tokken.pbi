@@ -396,7 +396,7 @@ AddOperator("+-*/=<>()[]{},", $888888)
 ; --- Структурные разделители (Маджента) ---
 AddOperator(".\", $FF00FF)
 
-
+Global test_cursor 
 ; ==============================================================================
 ;- МАКРОС 
 ; ==============================================================================
@@ -1455,6 +1455,108 @@ Procedure Resize(*this._s_WIDGET, X.l, Y.l, Width.l, Height.l)
 EndProcedure
 
 ;-
+Procedure add_column(*this._s_WIDGET, Title.s, Width.i)
+   If Not *this : ProcedureReturn : EndIf
+   *this\column\height = 25
+   
+   AddElement(*this\__columns( ))
+   *this\__columns( )\Title = Title
+   *this\__columns( )\width = Width
+   ; Мы не ставим x здесь, его поставит update_columns( ) перед отрисовкой
+   
+   ; Запоминаем текущий порядковый номер (0 для первой, 1 для второй и т.д.)
+   *this\__columns( )\id = ListSize(*this\__columns( )) - 1 
+   
+   ; ГЛАВНОЕ: поднимаем флаги, чтобы redraw понял, что нужно пересчитать геометрию
+   *this\mask | #__mask_update | #__mask_redraw
+   ProcedureReturn @*this\__columns( )
+EndProcedure
+
+Procedure add_row(*this._s_WIDGET, Text.s = "", Index.i = -1, Level.i = 0, *start = 0, len.i = -1)
+   Protected._s_ROWS *row
+   If Not *this : ProcedureReturn : EndIf
+   
+   ; --- 1. Позиционирование (как мы обсуждали ранее) ---
+   If Index < 0 Or Index > ListSize(*this\__rows()) - 1
+      LastElement(*this\__rows())
+      AddElement(*this\__rows())
+   Else
+      SelectElement(*this\__rows(), Index)
+      InsertElement(*this\__rows())
+   EndIf
+   *row = @*this\__rows()
+   
+   *row\sublevel = Level
+   Protected i, TotalCols = ListSize(*this\__columns()) - 1
+   ReDim *row\Str(TotalCols)
+   
+   ; --- 2. Быстрый разбор ---
+   ; Если передали указатель - берем его, иначе адрес строки Text
+   If Not *start : *start = @Text : EndIf
+   
+   Protected *ptr.Character = *start
+   Protected *colStart = *start
+   Protected count.i = 0
+   
+   ; Если длина не указана - ищем конец строки (0 или LF)
+   While i <= TotalCols
+      ; Условие остановки: либо дошли до конца переданной длины, либо до спецсимвола
+      If (len <> -1 And (*ptr - *start) >> 1 >= len) Or *ptr\c = 0
+         *row\Str(i) = PeekS(*colStart, (*ptr - *colStart) >> 1)
+         Break
+      EndIf
+      
+      ; Разбор колонок через '|'
+      If *ptr\c = #LF 
+         *row\Str(i) = PeekS(*colStart, (*ptr - *colStart) >> 1)
+         *colStart = *ptr + SizeOf(Character)
+         i + 1
+      EndIf
+      
+      *ptr + SizeOf(Character)
+   Wend
+   
+   ;*row\sel = AllocateStructure(_s_SEL)
+   *row\mask | #__mask_change
+   *this\mask | (#__mask_update | #__mask_redraw | #__mask_change)
+EndProcedure
+
+Procedure add_tab(*this._s_WIDGET, Text.s)
+   If Not *this : ProcedureReturn : EndIf
+   
+   ; 1. Добавляем элемент в список вкладок Таббара
+   AddElement(*this\__tabs())
+   *this\__tabs()\title = Text
+   
+   ; 2. Обновляем индекс в самом виджете (он главный "дирижер")
+   *this\__tabs()\id = ListSize(*this\__tabs()) - 1
+   If *this\__tabs()\id = 0
+      *this\__tabs()\mask | #__mask_active
+      *this\tab\active = @*this\__tabs()
+   EndIf
+   
+   ; 3. Обновляем ширины текста и перерисовываем
+   If is_integral_(*this)
+      If *this\parent
+         *this\parent\tabpage = *this\__tabs()\id
+         *this\parent\mask | #__mask_update | #__mask_redraw
+      EndIf
+   Else
+      *this\mask | #__mask_update | #__mask_redraw
+   EndIf
+EndProcedure
+
+Procedure add_token(*row._s_ROWS, pos.l, len.l, color.l, font.i=0)
+   If Not *row : ProcedureReturn : EndIf
+   
+   AddElement(*row\tokens())
+   *row\tokens()\pos   = pos
+   *row\tokens()\len   = len
+   *row\tokens()\color = color
+   *row\tokens()\font  = font  ; Записываем FontID(шрифта)
+EndProcedure
+
+;-
 ; Процедура для добавления ключевых слов
 Procedure AddKeyword(word.s, color.l, font.i = 0)
    ; Если шрифт не указан, используем стандартный
@@ -1478,14 +1580,81 @@ Procedure AddOperator(chars.s, color.l)
    Next
 EndProcedure
 
-Procedure add_token(*row._s_ROWS, pos.l, len.l, color.l, font.i=0)
-   If Not *row : ProcedureReturn : EndIf
+;-
+Procedure.i AddColumn(*this._s_WIDGET, position.l, Text.s, Width.l, img.i = -1, Align.a = #__align_left)
+;   If position = -1 : AddElement(*this\Columns()) : Else : SelectElement(*this\Columns(), position) : InsertElement(*this\Columns()) : EndIf
+;   *this\Columns()\Title = Text : *this\Columns()\Width = Width : *this\Columns()\img = img : *this\Columns()\Align = Align
+;   Protected colIdx = ListIndex(*this\Columns())
+;   ForEach *this\Items() : SelectElement(*this\Items()\ColText(), colIdx) : InsertElement(*this\Items()\ColText()) : Next
+;    ProcedureReturn colIdx
+   Protected._s_COLUMNS *coumn
+   *coumn = add_column(*this, Text, Width)
+   *coumn\Align = Align
+   ProcedureReturn *coumn
+EndProcedure
+
+Procedure   AddItem( *this._s_WIDGET, Item.l, Text.s, img.i = - 1, Flag.q = 0 )
+   If *this\type = #__type_Panel Or 
+      *this\type = #__type_TabBar
+      ProcedureReturn add_tab(*this\tabbar, Text)
+   EndIf
+   If *this\type = #__type_Tree Or
+      *this\type = #__type_ListIcon Or
+      *this\type = #__type_Editor
+      ProcedureReturn add_row(*this, Text, Item, Flag)
+   EndIf
+EndProcedure
+
+Procedure SetText(*this._s_WIDGET, Text.s)
+   If Not *this : ProcedureReturn : EndIf
+   Protected *start, *ptr.Character = @Text
+   ClearList(*this\__rows())
    
-   AddElement(*row\tokens())
-   *row\tokens()\pos   = pos
-   *row\tokens()\len   = len
-   *row\tokens()\color = color
-   *row\tokens()\font  = font  ; Записываем FontID(шрифта)
+   If *ptr
+      *start = *ptr
+      
+      ;
+      Repeat
+   If *ptr\c = #LF Or *ptr\c = 0
+      add_row(*this, "", -1, 0, *start, (*ptr - *start) >> 1)
+      
+      If *ptr\c
+         *start = *ptr + SizeOf(Character)
+      Else
+         Break
+      EndIf
+   EndIf
+   *ptr + SizeOf(Character)
+ForEver
+
+      
+      ;       ; Цикл работает, пока символ не равен 0 (конец строки)
+      ;       While *ptr\c 
+      ;          If *ptr\c = #LF ; Нашли LF
+      ;             AddElement(*this\__rows())
+      ;             ReDim *this\__rows()\Str(TotalCols)
+      ;             *this\__rows()\Str(0) = PeekS(*start, (*ptr - *start) >> 1)
+      ;             
+      ;             *ptr + SizeOf(Character)
+      ;             *start = *ptr
+      ;          Else
+      ;             *ptr + SizeOf(Character)
+      ;          EndIf
+      ;       Wend
+      ;       
+      ;       ; Добавляем последний хвост, который остался после последнего LF 
+      ;       ; (или если текст вообще без LF)
+      ;       AddElement(*this\__rows())
+      ;       ReDim *this\__rows()\Str(TotalCols)
+      ;       *this\__rows()\Str(0) = PeekS(*start)
+   EndIf
+   
+   ; Сбрасываем старое состояние
+   *this\row\active[0] = 0
+   *this\row\active[1] = 0
+   
+   ; Даем команду на пересчет координат и перерисовку
+   *this\mask | #__mask_update | #__mask_redraw
 EndProcedure
 
 ;-
@@ -3016,176 +3185,6 @@ Procedure tab_state(*this._s_WIDGET, tabpage.l)
    Stop(*g, *this)
 EndProcedure
 
-;-
-Procedure add_column(*this._s_WIDGET, Title.s, Width.i)
-   If Not *this : ProcedureReturn : EndIf
-   *this\column\height = 25
-   
-   AddElement(*this\__columns( ))
-   *this\__columns( )\Title = Title
-   *this\__columns( )\width = Width
-   ; Мы не ставим x здесь, его поставит update_columns( ) перед отрисовкой
-   
-   ; Запоминаем текущий порядковый номер (0 для первой, 1 для второй и т.д.)
-   *this\__columns( )\id = ListSize(*this\__columns( )) - 1 
-   
-   ; ГЛАВНОЕ: поднимаем флаги, чтобы redraw понял, что нужно пересчитать геометрию
-   *this\mask | #__mask_update | #__mask_redraw
-   ProcedureReturn @*this\__columns( )
-EndProcedure
-
-Procedure add_row(*this._s_WIDGET, Text.s = "", Index.i = -1, Level.i = 0, *start = 0, len.i = -1)
-   Protected._s_ROWS *row
-   If Not *this : ProcedureReturn : EndIf
-   
-   ; --- 1. Позиционирование (как мы обсуждали ранее) ---
-   If Index < 0 Or Index > ListSize(*this\__rows()) - 1
-      LastElement(*this\__rows())
-      AddElement(*this\__rows())
-   Else
-      SelectElement(*this\__rows(), Index)
-      InsertElement(*this\__rows())
-   EndIf
-   *row = @*this\__rows()
-   
-   *row\sublevel = Level
-   Protected i, TotalCols = ListSize(*this\__columns()) - 1
-   ReDim *row\Str(TotalCols)
-   
-   ; --- 2. Быстрый разбор ---
-   ; Если передали указатель - берем его, иначе адрес строки Text
-   If Not *start : *start = @Text : EndIf
-   
-   Protected *ptr.Character = *start
-   Protected *colStart = *start
-   Protected count.i = 0
-   
-   ; Если длина не указана - ищем конец строки (0 или LF)
-   While i <= TotalCols
-      ; Условие остановки: либо дошли до конца переданной длины, либо до спецсимвола
-      If (len <> -1 And (*ptr - *start) >> 1 >= len) Or *ptr\c = 0
-         *row\Str(i) = PeekS(*colStart, (*ptr - *colStart) >> 1)
-         Break
-      EndIf
-      
-      ; Разбор колонок через '|'
-      If *ptr\c = #LF 
-         *row\Str(i) = PeekS(*colStart, (*ptr - *colStart) >> 1)
-         *colStart = *ptr + SizeOf(Character)
-         i + 1
-      EndIf
-      
-      *ptr + SizeOf(Character)
-   Wend
-   
-   ;*row\sel = AllocateStructure(_s_SEL)
-   *row\mask | #__mask_change
-   *this\mask | (#__mask_update | #__mask_redraw | #__mask_change)
-EndProcedure
-
-Procedure add_tab(*this._s_WIDGET, Text.s)
-   If Not *this : ProcedureReturn : EndIf
-   
-   ; 1. Добавляем элемент в список вкладок Таббара
-   AddElement(*this\__tabs())
-   *this\__tabs()\title = Text
-   
-   ; 2. Обновляем индекс в самом виджете (он главный "дирижер")
-   *this\__tabs()\id = ListSize(*this\__tabs()) - 1
-   If *this\__tabs()\id = 0
-      *this\__tabs()\mask | #__mask_active
-      *this\tab\active = @*this\__tabs()
-   EndIf
-   
-   ; 3. Обновляем ширины текста и перерисовываем
-   If is_integral_(*this)
-      If *this\parent
-         *this\parent\tabpage = *this\__tabs()\id
-         *this\parent\mask | #__mask_update | #__mask_redraw
-      EndIf
-   Else
-      *this\mask | #__mask_update | #__mask_redraw
-   EndIf
-EndProcedure
-
-;-
-Procedure.i AddColumn(*this._s_WIDGET, position.l, Text.s, Width.l, img.i = -1, Align.a = #__align_left)
-;   If position = -1 : AddElement(*this\Columns()) : Else : SelectElement(*this\Columns(), position) : InsertElement(*this\Columns()) : EndIf
-;   *this\Columns()\Title = Text : *this\Columns()\Width = Width : *this\Columns()\img = img : *this\Columns()\Align = Align
-;   Protected colIdx = ListIndex(*this\Columns())
-;   ForEach *this\Items() : SelectElement(*this\Items()\ColText(), colIdx) : InsertElement(*this\Items()\ColText()) : Next
-;    ProcedureReturn colIdx
-   Protected._s_COLUMNS *coumn
-   *coumn = add_column(*this, Text, Width)
-   *coumn\Align = Align
-   ProcedureReturn *coumn
-EndProcedure
-
-Procedure   AddItem( *this._s_WIDGET, Item.l, Text.s, img.i = - 1, Flag.q = 0 )
-   If *this\type = #__type_Panel Or 
-      *this\type = #__type_TabBar
-      ProcedureReturn add_tab(*this\tabbar, Text)
-   EndIf
-   If *this\type = #__type_Tree Or
-      *this\type = #__type_ListIcon Or
-      *this\type = #__type_Editor
-      ProcedureReturn add_row(*this, Text, Item, Flag)
-   EndIf
-EndProcedure
-
-Procedure SetText(*this._s_WIDGET, Text.s)
-   If Not *this : ProcedureReturn : EndIf
-   Protected *start, *ptr.Character = @Text
-   ClearList(*this\__rows())
-   
-   If *ptr
-      *start = *ptr
-      
-      ;
-      While #True
-         If *ptr\c = 10 Or *ptr\c = 0
-            ; Передаем только адрес начала и количество символов
-            add_row(*this, "", -1, 0, *start, (*ptr - *start) >> 1)
-            ;
-            ;             AddElement(*this\__rows())
-            ;             ReDim *this\__rows()\Str(TotalCols)
-            ;             *this\__rows()\Str(0) = PeekS(*start, (*ptr - *start) >> 1)
-            
-            If *ptr\c = 0 : Break : EndIf
-            *start = *ptr + SizeOf(Character)
-         EndIf
-         *ptr + SizeOf(Character)
-      Wend
-      
-      ;       ; Цикл работает, пока символ не равен 0 (конец строки)
-      ;       While *ptr\c 
-      ;          If *ptr\c = 10 ; Нашли LF
-      ;             AddElement(*this\__rows())
-      ;             ReDim *this\__rows()\Str(TotalCols)
-      ;             *this\__rows()\Str(0) = PeekS(*start, (*ptr - *start) >> 1)
-      ;             
-      ;             *ptr + SizeOf(Character)
-      ;             *start = *ptr
-      ;          Else
-      ;             *ptr + SizeOf(Character)
-      ;          EndIf
-      ;       Wend
-      ;       
-      ;       ; Добавляем последний хвост, который остался после последнего LF 
-      ;       ; (или если текст вообще без LF)
-      ;       AddElement(*this\__rows())
-      ;       ReDim *this\__rows()\Str(TotalCols)
-      ;       *this\__rows()\Str(0) = PeekS(*start)
-   EndIf
-   
-   ; Сбрасываем старое состояние
-   *this\row\active[0] = 0
-   *this\row\active[1] = 0
-   
-   ; Даем команду на пересчет координат и перерисовку
-   *this\mask | #__mask_update | #__mask_redraw
-EndProcedure
-
 
 ;-
 ; Скрыть/Показать вкладку
@@ -3446,14 +3445,14 @@ Procedure column_events(*this._s_WIDGET, event)
                      ;Debug " in "
                      If Not *this\mask & #__mask_cursor
                         *this\mask | #__mask_cursor
-                        Debug "col set cursor"
+                        If test_cursor : Debug "col set cursor" : EndIf
                         SetGadgetAttribute( *this\root\Canvas\gadget, #PB_Canvas_Cursor, #PB_Cursor_LeftRight)
                      EndIf
                   Else
                      ;Debug " out "
                      If *this\mask & #__mask_cursor
                         *this\mask &~ #__mask_cursor
-                        Debug "col reset cursor2"
+                        If test_cursor : Debug "col reset cursor2" : EndIf
                         SetGadgetAttribute( *this\root\Canvas\gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
                      EndIf
                   EndIf
@@ -3516,7 +3515,7 @@ Procedure row_events(*this._s_WIDGET,  event)
          EndIf
          If *this\mask & #__mask_cursor
             *this\mask &~ #__mask_cursor
-            Debug "reset cursor"
+            If test_cursor : Debug "reset cursor" : EndIf
             SetGadgetAttribute( *this\root\Canvas\gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
          EndIf
          
@@ -3629,13 +3628,13 @@ Procedure row_events(*this._s_WIDGET,  event)
                If *row
                   If Not *this\mask & #__mask_cursor
                      *this\mask | #__mask_cursor
-                     Debug "set cursor"
+                     If test_cursor : Debug "set cursor" : EndIf
                      SetGadgetAttribute( *this\root\Canvas\gadget, #PB_Canvas_Cursor, #PB_Cursor_IBeam)
                   EndIf
                Else
                   If *this\mask & #__mask_cursor
                      *this\mask &~ #__mask_cursor
-                     Debug "reset cursor2"
+                     If test_cursor : Debug "reset cursor2" : EndIf
                      SetGadgetAttribute( *this\root\Canvas\gadget, #PB_Canvas_Cursor, #PB_Cursor_Default)
                   EndIf
                EndIf
@@ -4486,9 +4485,9 @@ AddItem(*T, 9, "Tree_1",-1 )
    Root( ) = 0
    End ; Завершение программы
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 312
-; FirstLine = 294
-; Folding = ----------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 1628
+; FirstLine = 1601
+; Folding = -----------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
