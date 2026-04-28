@@ -1582,13 +1582,8 @@ EndProcedure
 
 ;-
 Procedure.i AddColumn(*this._s_WIDGET, position.l, Text.s, Width.l, img.i = -1, Align.a = #__align_left)
-;   If position = -1 : AddElement(*this\Columns()) : Else : SelectElement(*this\Columns(), position) : InsertElement(*this\Columns()) : EndIf
-;   *this\Columns()\Title = Text : *this\Columns()\Width = Width : *this\Columns()\img = img : *this\Columns()\Align = Align
-;   Protected colIdx = ListIndex(*this\Columns())
-;   ForEach *this\Items() : SelectElement(*this\Items()\ColText(), colIdx) : InsertElement(*this\Items()\ColText()) : Next
-;    ProcedureReturn colIdx
    Protected._s_COLUMNS *coumn
-   *coumn = add_column(*this, Text, Width)
+   *coumn = add_column(*this, Text, Width);, img.i = -1)
    *coumn\Align = Align
    ProcedureReturn *coumn
 EndProcedure
@@ -1609,44 +1604,24 @@ Procedure SetText(*this._s_WIDGET, Text.s)
    If Not *this : ProcedureReturn : EndIf
    Protected *start, *ptr.Character = @Text
    ClearList(*this\__rows())
-   
    If *ptr
       *start = *ptr
-      
-      ;
       Repeat
-   If *ptr\c = #LF Or *ptr\c = 0
-      add_row(*this, "", -1, 0, *start, (*ptr - *start) >> 1)
+         If *ptr\c = #LF Or *ptr\c = 0
+            add_row(*this, "", -1, 0, *start, (*ptr - *start) >> 1)
+            
+            ; AddElement(*this\__rows())
+            ; ReDim *this\__rows()\Str(TotalCols)
+            ; *this\__rows()\Str(0) = PeekS(*start, (*ptr - *start) >> 1)
       
-      If *ptr\c
-         *start = *ptr + SizeOf(Character)
-      Else
-         Break
-      EndIf
-   EndIf
-   *ptr + SizeOf(Character)
-ForEver
-
-      
-      ;       ; Цикл работает, пока символ не равен 0 (конец строки)
-      ;       While *ptr\c 
-      ;          If *ptr\c = #LF ; Нашли LF
-      ;             AddElement(*this\__rows())
-      ;             ReDim *this\__rows()\Str(TotalCols)
-      ;             *this\__rows()\Str(0) = PeekS(*start, (*ptr - *start) >> 1)
-      ;             
-      ;             *ptr + SizeOf(Character)
-      ;             *start = *ptr
-      ;          Else
-      ;             *ptr + SizeOf(Character)
-      ;          EndIf
-      ;       Wend
-      ;       
-      ;       ; Добавляем последний хвост, который остался после последнего LF 
-      ;       ; (или если текст вообще без LF)
-      ;       AddElement(*this\__rows())
-      ;       ReDim *this\__rows()\Str(TotalCols)
-      ;       *this\__rows()\Str(0) = PeekS(*start)
+            If *ptr\c
+               *start = *ptr + SizeOf(Character)
+            Else
+               Break
+            EndIf
+         EndIf
+         *ptr + SizeOf(Character)
+      ForEver
    EndIf
    
    ; Сбрасываем старое состояние
@@ -2023,17 +1998,14 @@ Procedure update_rows(*this._s_WIDGET)
    Protected view_w = *this\width - v_bar_w
    Protected view_h = *this\height - *this\column\height - h_bar_h
    
-   If ListSize(*this\__columns()) = 1
-   If max_w < *this\width
-      max_w = *this\width
-   EndIf
-   EndIf
-   
-   *h\max = max_w - view_w : If *h\max < 0 : *h\max = 0 : EndIf
    *v\max = (cur_y - *this\column\height) - view_h : If *v\max < 0 : *v\max = 0 : EndIf
-   
-   ; Синхронизация единственной колонки (если надо)
-   If ListSize(*this\__columns()) = 1
+   If ListSize(*this\__columns()) <= 1
+      If max_w < *this\width
+         max_w = *this\width
+      EndIf
+      *h\max = max_w - view_w : If *h\max < 0 : *h\max = 0 : EndIf
+      
+      ; Синхронизация единственной колонки (если надо)
       FirstElement(*this\__columns())
       *this\__columns()\Width = max_w 
    EndIf
@@ -3167,6 +3139,7 @@ Procedure Hide(*this._s_WIDGET, state.b)
    *this\mask | #__mask_redraw
 EndProcedure
 
+;-
 Procedure tab_state(*this._s_WIDGET, tabpage.l)
    Protected *g._s_WIDGET ; Локальный указатель для этого уровня рекурсии
    If Not *this : ProcedureReturn : EndIf
@@ -3185,8 +3158,6 @@ Procedure tab_state(*this._s_WIDGET, tabpage.l)
    Stop(*g, *this)
 EndProcedure
 
-
-;-
 ; Скрыть/Показать вкладку
 Procedure hide_tab(*this._s_WIDGET, Index.l, state.b = #True)
    If Not *this Or *this\Type <> #__type_Panel : ProcedureReturn : EndIf
@@ -4317,9 +4288,9 @@ CompilerIf #PB_Compiler_IsMainFile
    *e = Editor(10, 10, 265, 430)
    *e1 = Editor(285, 10, 265, 430)
    AddItem(*p, -1, "Вкладка B") 
-   *t = Tree(300-15, 10, 280, 480)
+   *t = Tree(300-15, 10, 280, 280)
    AddItem(*p, -1, "Вкладка C") 
-   *g = ListIcon(590-15, 10, 280, 480, "Имя", 120)
+   *g = ListIcon(570, 10, 260, 280, "Имя", 120)
    
    AddItem(*p, -1, "test (grid)") 
    Global *MyList = ListIcon(10, 10, 620, 300, "Имя (Left)", 200)
@@ -4485,9 +4456,9 @@ AddItem(*T, 9, "Tree_1",-1 )
    Root( ) = 0
    End ; Завершение программы
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 1628
-; FirstLine = 1601
-; Folding = -----------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 4292
+; FirstLine = 4035
+; Folding = -------------------------------------------4---------4-----------------------------------------------------------
 ; EnableXP
 ; DPIAware

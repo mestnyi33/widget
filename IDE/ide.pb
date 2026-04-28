@@ -1717,7 +1717,7 @@ EndProcedure
 Procedure new_widget_events( )
    Protected *new
    Protected __item
-   Protected *g._s_CONTAINER = EventWidget( )
+   Protected *g._s_PARENT = EventWidget( )
    Protected __event = WidgetEvent( )
    Static anchors_group_show
    
@@ -2729,7 +2729,8 @@ Procedure   ide_events( )
                *g\text\mode &~ #__text_numeric
                *g\text\mode &~ #__text_editable
                
-               name$ = *g\edit_caret( )\word ; GetWord( text$, len, caret ) 
+               ;name$ = *g\edit_caret( )\word ; GetWord( text$, len, caret ) 
+               name$ = GetWord( text$, len, caret ) 
                
                If name$
                   object = MakeID( name$, ide_design_MDI )
@@ -2750,7 +2751,9 @@ Procedure   ide_events( )
                   
                   ;argument =  CountString( Left( text$, caret ), "," ) + 1 
                   argument = GetArgIndex( text$, len, caret ) 
-                  name$ = *g\edit_caret( )\word
+                  ; name$ = *g\edit_caret( )\word
+                  name$ = GetWord( text$, len, caret ) 
+                  
                   If name$ <> GetClass( object )
                      If CountString( text$, "(" )
                         name$ = Trim( StringField( text$, 1, "(" ))
@@ -2775,7 +2778,8 @@ Procedure   ide_events( )
                      *g\text\mode | #__text_editable 
                   EndIf
                   
-                  If GetClass( object ) = *g\edit_caret( )\word ; GetWord( text$, len, caret )
+                  ;If GetClass( object ) = *g\edit_caret( )\word ; GetWord( text$, len, caret )
+                  If GetClass( object ) = GetWord( text$, len, caret )
                      *g\text\mode | #__text_editable
                      *g\text\mode | #__text_upper
                   Else
@@ -2795,8 +2799,8 @@ Procedure   ide_events( )
       ;
       If __event = #__event_Change
          If object
-            ReplaceArg( object, argument, *g\edit_caret( )\word ) 
-            ; ReplaceArg( object, argument, GetWord( *line\text\string, *line\text\len, *g\edit_caret_1( ) - *line\text\pos )  )
+            ; ReplaceArg( object, argument, *g\edit_caret( )\word ) 
+            ReplaceArg( object, argument, GetWord( *line\text\Str(0), *line\text\len, *g\edit_caret_1( ) - *line\text\pos )  )
          EndIf
       EndIf
    EndIf
@@ -3328,8 +3332,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1719
-; FirstLine = 1469
+; CursorPosition = 2802
+; FirstLine = 2442
 ; Folding = -4--4---r-f-tf----------3BC----------+-+8-----------Svt----f+-
 ; EnableXP
 ; DPIAware

@@ -172,26 +172,31 @@ CompilerIf Not Defined(Structures, #PB_Module)
          _padding.b
       EndStructure
       ;--     CARET
-      Structure _s_CARET Extends _s_COORDINATE
-         pos.i[3]
-         word.s ; слово под кареткой
+      Structure _s_CARET
+         X.l               ; X-смещение начала выделения в пикселях
+         Y.l
+         Width.l           ; Ширина выделения в пикселях
+         Height.l
          
-         ; mode.i
-         ; time.l
-         ; change.b
+         start.l           ; Индекс начала выделения (символ)
+         stop.l            ; Индекс конца выделения (символ)
+      EndStructure
+      Structure _s_SEL Extends _s_CARET 
+      EndStructure
+      
+      Structure _s_CARET1 Extends _s_COORDINATE ; TEMP
+         pos.i[3]
+         ;word.s ; слово под кареткой
       EndStructure
       ;--     TEXT
       Structure _s_TEXTINFO Extends _s_COORDINATE
          pos.i
          len.i
-         ;String.s
          Array str.s(0) 
       EndStructure
-      Structure _s_EDIT Extends _s_TEXTINFO
-         caret._s_caret
-      EndStructure
       Structure _s_TEXTITEM Extends _s_TEXTINFO
-         edit._s_EDIT[3]
+         caret._s_caret1 ; TEMP
+         edit._s_TEXTINFO[3]
          change.b
       EndStructure
     
@@ -352,11 +357,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROWS
       Structure _s_ROWS Extends _s_ITEMS
+         mask.q
+         sel._s_SEL
+         
          *buttonbox._s_BOX ;  buttonbox\
          *checkBox._s_BOX  ;  checkbox\
          
          ; edit
-         margin._s_EDIT
+         margin._s_TEXTINFO
          
          StructureUnion
             *_last._s_rows            
@@ -388,12 +396,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROW
       Structure _s_ROW
+         caret._s_CARET
+         *active._s_ROWS[2]
+   
          state.i
          Index.i
          
          autoscroll.b
          sublevelpos.a
          sublevelsize.a
+         
          
          ;
          *focused._s_rows         ; focused item
@@ -735,8 +747,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 655
-; FirstLine = 630
-; Folding = ---0-------
+; CursorPosition = 411
+; FirstLine = 395
+; Folding = -----------
 ; Optimizer
 ; EnableXP
