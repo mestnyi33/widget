@@ -2722,7 +2722,7 @@ Procedure   ide_events( )
             *line._s_ROWS  = __data
             text$ = *line\text\Str(0)
             len = *line\text\len
-            caret = *g\row\caret\start - *line\text\pos
+            caret = *g\caret\start - *line\text\pos
             
             ;
             If text$
@@ -2800,7 +2800,7 @@ Procedure   ide_events( )
       If __event = #__event_Change
          If object
             ; ReplaceArg( object, argument, *g\edit_caret( )\word ) 
-            ReplaceArg( object, argument, GetWord( *line\text\Str(0), *line\text\len, *g\row\caret\start - *line\text\pos )  )
+            ReplaceArg( object, argument, GetWord( *line\text\Str(0), *line\text\len, *g\caret\start - *line\text\pos )  )
          EndIf
       EndIf
    EndIf
@@ -3331,10 +3331,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; IDE Options = PureBasic 6.30 (Windows - x64)
 ; CursorPosition = 2802
-; FirstLine = 2441
+; FirstLine = 2412
 ; Folding = -4--4---r-f-tf----------3BC----------+-+8-----------Svt----f+-
 ; EnableXP
 ; DPIAware
-; Executable = ../../2_621.exe
+; Executable = ..\..\2_621.exe

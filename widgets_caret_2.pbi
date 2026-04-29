@@ -8383,7 +8383,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             CaretLeftPos = 0
             If *rowLine = *this\row\active[1]
-               CaretRightPos = *this\row\caret\stop
+               CaretRightPos = *this\caret\stop
             Else
                CaretRightPos = *rowLine\text\len
                *rowLine\selector  = lastselectlen
@@ -8392,7 +8392,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ElseIf mode = #__sel_to_last
             
             If *rowLine = *this\row\active[1]
-               CaretLeftPos = *this\row\caret\stop
+               CaretLeftPos = *this\caret\stop
             Else
                CaretLeftPos = 0
             EndIf
@@ -8403,14 +8403,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
          ElseIf mode = #__sel_to_line
-            CaretLeftPos = *this\row\caret\start
+            CaretLeftPos = *this\caret\start
             If *rowLine\index < *this\row\active[1]\index
                *rowLine\selector = lastselectlen
                CaretRightPos = *rowLine\text\len
             ElseIf *rowLine\index > *this\row\active[1]\index
                CaretRightPos = 0
             Else
-               CaretRightPos = *this\row\caret\stop
+               CaretRightPos = *this\caret\stop
             EndIf
             
             If CaretLeftPos > CaretRightPos
@@ -8421,13 +8421,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;          If *rowLine = *this\row\active[1] Or *rowLine = *this\row\active[0]
 ;             If  *this\row\active[0]\index > *this\row\active[1]\index
 ;                CaretLeftPos = 0
-;                CaretRightPos = *this\row\caret\start
+;                CaretRightPos = *this\caret\start
 ;             ElseIf  *this\row\active[0]\index < *this\row\active[1]\index
-;                CaretLeftPos = *this\row\caret\start
+;                CaretLeftPos = *this\caret\start
 ;                CaretRightPos = *rowLine\text\len
 ;             Else
-;                CaretLeftPos = *this\row\caret\stop
-;                CaretRightPos = *this\row\caret\start
+;                CaretLeftPos = *this\caret\stop
+;                CaretRightPos = *this\caret\start
 ;             EndIf
 ;          Else
 ;             CaretLeftPos = 0
@@ -8510,33 +8510,33 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *rowLine = #PB_All
             *rowLine                 = *this\row\active[0]
             *this\row\active[1]  = #Null
-            *this\row\caret\start = 0
-            *this\row\caret\stop = 0
+            *this\caret\start = 0
+            *this\caret\stop = 0
             PushListPosition( *lines( ) )
             ForEach *lines( )
                edit_sel_string_( *this, *lines( ), #__sel_to_last )
             Next
             ;*this\row\active[1] = *lines( )
             PopListPosition( *lines( ) )
-            *this\row\caret\start = 0
-            *this\row\caret\stop = *this\text\len
+            *this\caret\start = 0
+            *this\caret\stop = *this\text\len
             *this\row\active[1]  = *this\row\active[0]
          EndIf
          
          If *rowLine
-            If *this\row\caret\start > *this\row\caret\stop
-               *this\edit_text_2( )\pos = *rowLine\text\pos + *this\row\caret\stop
-               *this\edit_text_3( )\pos = *rowLine\text\pos + *this\row\caret\start
-               *this\row\caret\x    = *rowLine\edit_text_3( )\x - 1
+            If *this\caret\start > *this\caret\stop
+               *this\edit_text_2( )\pos = *rowLine\text\pos + *this\caret\stop
+               *this\edit_text_3( )\pos = *rowLine\text\pos + *this\caret\start
+               *this\caret\x    = *rowLine\edit_text_3( )\x - 1
             Else
-               *this\edit_text_2( )\pos = *rowLine\text\pos + *this\row\caret\start
-               *this\edit_text_3( )\pos = *rowLine\text\pos + *this\row\caret\stop
-               *this\row\caret\x    = *rowLine\edit_text_2( )\x - 1
+               *this\edit_text_2( )\pos = *rowLine\text\pos + *this\caret\start
+               *this\edit_text_3( )\pos = *rowLine\text\pos + *this\caret\stop
+               *this\caret\x    = *rowLine\edit_text_2( )\x - 1
             EndIf
             
-            *this\row\caret\x + *rowLine\x ;+ *this\padding\x  ; мешает при выделении текста коретка 
-            *this\row\caret\height = *rowLine\text\height
-            *this\row\caret\y      = *rowLine\y
+            *this\caret\x + *rowLine\x ;+ *this\padding\x  ; мешает при выделении текста коретка 
+            *this\caret\height = *rowLine\text\height
+            *this\caret\y      = *rowLine\y
             
             ;
             *this\edit_text_1( )\len = *this\edit_text_2( )\pos
@@ -8599,7 +8599,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure.s edit_make_insert_text( *this._s_WIDGET, Text.s )
          Protected String.s, i.i, Len.i
          If *this\row
-            Define caret = *this\row\caret\start
+            Define caret = *this\caret\start
          EndIf
          
          With *this
@@ -8710,15 +8710,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If Chr.s
                If *this\row\active[0]
-                  If *this\row\caret\start > *this\row\caret\stop
-                     *this\row\caret\start = *this\row\caret\stop
+                  If *this\caret\start > *this\caret\stop
+                     *this\caret\start = *this\caret\stop
                   EndIf
                   
-                  *this\row\caret\start + Len( Chr.s )
-                  *this\row\caret\stop = *this\row\caret\start
+                  *this\caret\start + Len( Chr.s )
+                  *this\caret\stop = *this\caret\start
                   
                   If *this\edit_text_2( )\len
-                     If *this\row\caret\stop > *this\row\active[0]\text\pos
+                     If *this\caret\stop > *this\row\active[0]\text\pos
                         Debug "edit_key_change_text() bug insert "
                         *this\LineIndex( ) - CountString( *this\edit_text_2( )\Str(0), #LF$) 
                      EndIf
@@ -8751,10 +8751,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else
             If key = #PB_Shortcut_X
                If *this\edit_text_2( )\len
-                  If *this\row\caret\start > *this\row\caret\stop
-                     *this\row\caret\start = *this\row\caret\stop
+                  If *this\caret\start > *this\caret\stop
+                     *this\caret\start = *this\caret\stop
                   Else
-                     *this\row\caret\stop = *this\row\caret\start
+                     *this\caret\stop = *this\caret\start
                   EndIf
                Else
                   *this\notify = key
@@ -8764,14 +8764,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; key_backup
             If key = #PB_Shortcut_Back
                If *this\edit_text_1( )\Str(0)
-                  If *this\row\caret\start > *this\row\caret\stop
-                     *this\row\caret\start = *this\row\caret\stop
+                  If *this\caret\start > *this\caret\stop
+                     *this\caret\start = *this\caret\stop
                   EndIf
                   If Not *this\edit_text_2( )\len
                      *this\edit_text_1( )\Str(0) = Left( *this\edit_text_1( )\Str(0), *this\edit_text_1( )\len - 1 )
-                     *this\row\caret\start - 1
+                     *this\caret\start - 1
                   EndIf
-                  *this\row\caret\stop    = *this\row\caret\start
+                  *this\caret\stop    = *this\caret\start
                Else
                   *this\notify = key
                EndIf
@@ -8784,10 +8784,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\edit_text_3( )\Str(0) = Right( *this\edit_text_3( )\Str(0), *this\edit_text_3( )\len - 1 )
                   EndIf
                   ;
-                  If *this\row\caret\start > *this\row\caret\stop
-                     *this\row\caret\start = *this\row\caret\stop
+                  If *this\caret\start > *this\caret\stop
+                     *this\caret\start = *this\caret\stop
                   Else
-                     *this\row\caret\stop = *this\row\caret\start
+                     *this\caret\stop = *this\caret\start
                   EndIf
                Else
                   *this\notify = key
@@ -8796,11 +8796,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If key = #PB_Shortcut_Return
                If *this\text\multiline
-                  If *this\row\caret\start > *this\row\caret\stop
-                     *this\row\caret\start = *this\row\caret\stop
+                  If *this\caret\start > *this\caret\stop
+                     *this\caret\start = *this\caret\stop
                   EndIf
-                  *this\row\caret\start    + Len( #LF$ )
-                  *this\row\caret\stop    = *this\row\caret\start
+                  *this\caret\start    + Len( #LF$ )
+                  *this\caret\stop    = *this\caret\start
                Else
                   *this\notify = key
                EndIf
@@ -8824,7 +8824,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\LineIndex( ) = *this\row\active[0]\lindex
                      EndIf
                   Else
-                     If *this\row\caret\stop < *this\row\active[0]\text\pos
+                     If *this\caret\stop < *this\row\active[0]\text\pos
                         *this\LineIndex( ) - 1
                      EndIf
                   EndIf
@@ -9012,8 +9012,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                state = *this\row\active[0]\text\len
             EndIf
             
-            *this\row\caret\start = State 
-            *this\row\caret\stop = State 
+            *this\caret\start = State 
+            *this\caret\stop = State 
             
             ;
             edit_sel_string_( *this, *this\row\active[0])
@@ -9029,7 +9029,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             state = *this\text\len
          EndIf
          
-         If *this\row\caret\start <> State
+         If *this\caret\start <> State
             PushListPosition( *this\__lines( ) )
             ForEach *this\__lines( )
                If *this\__lines( )\text\pos <= state And
@@ -9059,8 +9059,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             PopListPosition( *this\__lines( ) )
             
             ;
-            *this\row\caret\start = State
-            *this\row\caret\stop = State
+            *this\caret\start = State
+            *this\caret\stop = State
             ;
             If *this\row\active[0]
                edit_sel_string_( *this, *this\row\active[0])
@@ -10762,9 +10762,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          If *this\type = #__type_Editor
             If item = - 1
-               ProcedureReturn *this\row\caret\stop
+               ProcedureReturn *this\caret\stop
             Else
-               ProcedureReturn *this\row\caret\start
+               ProcedureReturn *this\caret\start
             EndIf
             
          EndIf
@@ -10938,12 +10938,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   GetCaret( *this._s_WIDGET )
-         ProcedureReturn *this\row\caret\start
+         ProcedureReturn *this\caret\start
       EndProcedure
       
       Procedure   SetCaret( *this._s_WIDGET, position.i )
-         *this\row\caret\start = position
-         *this\row\caret\stop = position
+         *this\caret\start = position
+         *this\caret\stop = position
       EndProcedure
       
       Procedure.s GetText( *this._s_WIDGET );, column.l = 0 )
@@ -11051,11 +11051,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If is_integral_( *this )
                      If *this\parent\type = #__type_Spin
                         If *this\focus
-                           *this\row\caret\stop = 0
+                           *this\caret\stop = 0
                         Else
-                           *this\row\caret\stop = *this\text\len
+                           *this\caret\stop = *this\text\len
                         EndIf
-                        *this\row\caret\start = *this\text\len 
+                        *this\caret\start = *this\text\len 
                      EndIf
                   EndIf
                   
@@ -14297,8 +14297,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\TextChange( ) = - 1
                *this\text\Str(0)   = ""
                ;          
-               *this\row\caret\start = 0
-               *this\row\caret\stop = 0
+               *this\caret\start = 0
+               *this\caret\stop = 0
                *this\LineIndex( ) = 0
                ;
                *this\countitems = 0
@@ -16889,7 +16889,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\row\caret\start = 0
+                              *this\caret\start = 0
                            Else
                               If *row\lindex > 0
                                  *row\ColorState( )  = #__s_0
@@ -16897,13 +16897,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *row\ColorState( )  = #__s_1
                                  *this\row\active[0] = *row
                                  
-                                 If *this\row\caret\start > *row\text\len
-                                    *this\row\caret\start = *row\text\len
+                                 If *this\caret\start > *row\text\len
+                                    *this\caret\start = *row\text\len
                                  Else
-                                    *this\row\caret\start = 0
+                                    *this\caret\start = 0
                                  EndIf
                               Else
-                                 *this\row\caret\start = 0
+                                 *this\caret\start = 0
                               EndIf
                            EndIf
                            
@@ -16919,7 +16919,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *this\row\active[1]\press = #True
                               EndIf
                               
-                              *this\row\caret\stop = *this\row\caret\start
+                              *this\caret\stop = *this\caret\start
                            EndIf
                            
                            *row\mask | (#__mask_update)
@@ -16944,7 +16944,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\row\caret\start = *row\text\len
+                              *this\caret\start = *row\text\len
                            Else
                               If *row\lindex < ( *this\countitems - 1 )
                                  *row\ColorState( )  = #__s_0
@@ -16952,13 +16952,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *row\ColorState( )  = #__s_1
                                  *this\row\active[0] = *row
                                  
-                                 If *this\row\caret\start > *row\text\len
-                                    *this\row\caret\start = *row\text\len
+                                 If *this\caret\start > *row\text\len
+                                    *this\caret\start = *row\text\len
                                  Else
-                                    *this\row\caret\start = 0
+                                    *this\caret\start = 0
                                  EndIf
                               Else
-                                 *this\row\caret\start = *row\text\len
+                                 *this\caret\start = *row\text\len
                               EndIf
                            EndIf
                            
@@ -16974,19 +16974,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *this\row\active[1]\press = #True
                               EndIf
                               
-                              *this\row\caret\stop = *this\row\caret\start
+                              *this\caret\stop = *this\caret\start
                            EndIf
                            
                            *row\mask | (#__mask_update)
                         EndIf
                         
                      Case #PB_Shortcut_Left     ; Ok
-                        If *row And *this\row\caret\start > 0
-                           If *this\row\caret\start > *row\text\len
-                              *this\row\caret\start = *row\text\len
+                        If *row And *this\caret\start > 0
+                           If *this\caret\start > *row\text\len
+                              *this\caret\start = *row\text\len
                            EndIf
                            
-                           If *this\row\caret\start = 0
+                           If *this\caret\start = 0
                               If *row\lindex > 0
                                  *row\ColorState( ) = #__s_0
                                  *row               = SelectElement( *lines( ), *row\lindex - 1 )
@@ -16996,27 +16996,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\row\caret\start = edit_sel_start_word( *this, *this\row\caret\start - 1, *this\row\active[0] )
+                              *this\caret\start = edit_sel_start_word( *this, *this\caret\start - 1, *this\row\active[0] )
                            Else
-                              *this\row\caret\start - 1
+                              *this\caret\start - 1
                            EndIf
                            
                            If Not keyboard( )\key[1] & #PB_Canvas_Shift
                               edit_sel_reset_( *this, *lines( ))
                               
-                              *this\row\caret\stop = *this\row\caret\start
+                              *this\caret\stop = *this\caret\start
                            EndIf
                            
                            *row\mask | (#__mask_update)
                         EndIf
                         
                      Case #PB_Shortcut_Right    ; Ok
-                        If *row And *this\row\caret\start < *row\text\len
-                           If *this\row\caret\start > *row\text\len
-                              *this\row\caret\start = *row\text\len
+                        If *row And *this\caret\start < *row\text\len
+                           If *this\caret\start > *row\text\len
+                              *this\caret\start = *row\text\len
                            EndIf
                            
-                           If *this\row\caret\start = *row\text\len
+                           If *this\caret\start = *row\text\len
                               If *row\lindex < *this\countitems - 1
                                  
                                  If keyboard( )\key[1] & #PB_Canvas_Shift
@@ -17043,15 +17043,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\row\caret\start = edit_sel_stop_word( *this, *this\row\caret\start + 1, *row )
+                              *this\caret\start = edit_sel_stop_word( *this, *this\caret\start + 1, *row )
                            Else
-                              *this\row\caret\start + 1
+                              *this\caret\start + 1
                            EndIf
                            
                            If Not keyboard( )\key[1] & #PB_Canvas_Shift
                               edit_sel_reset_( *this, *lines( ))
                               
-                              *this\row\caret\stop = *this\row\caret\start
+                              *this\caret\stop = *this\caret\start
                            EndIf
                            
                            *row\mask | (#__mask_update)
@@ -17062,8 +17062,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *row\mask & (#__mask_update) = 0
                               *row\mask | (#__mask_update)
                               ;
-                              *this\row\caret\start = 0
-                              *this\row\caret\stop  = *this\row\caret\start
+                              *this\caret\start = 0
+                              *this\caret\stop  = *this\caret\start
                               ;
                               If keyboard( )\key[1] & #PB_Canvas_Control
                                  *this\LineIndex( ) = 0
@@ -17079,8 +17079,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *row\mask & (#__mask_update) = 0
                               *row\mask | (#__mask_update)
                               ;
-                              *this\row\caret\start = *row\text\len
-                              *this\row\caret\stop = *this\row\caret\start
+                              *this\caret\start = *row\text\len
+                              *this\caret\stop = *this\caret\start
                               ;
                               If keyboard( )\key[1] & #PB_Canvas_Control
                                  *this\LineIndex( ) = *this\countitems - 1
@@ -17096,12 +17096,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            edit_select_line_( *this, *lines( ), *row, first_index )
                            
                            If first_index = 0
-                              *this\row\caret\start = 0
+                              *this\caret\start = 0
                            Else
-                              *this\row\caret\start = 0
+                              *this\caret\start = 0
                            EndIf
                            
-                           *this\row\caret\stop = *this\row\caret\start
+                           *this\caret\stop = *this\caret\start
                            *this\LineIndex( )   = *row\lindex
                            
                            ;  row_scroll_y_( *this, *row, - *this\inner_height( ) )
@@ -17114,12 +17114,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            edit_select_line_( *this, *lines( ), *row, last_index )
                            
                            If last_index = (*this\countitems - 1)
-                              *this\row\caret\start = *this\text\len
+                              *this\caret\start = *this\text\len
                            Else
-                              *this\row\caret\start = 0
+                              *this\caret\start = 0
                            EndIf
                            
-                           *this\row\caret\stop = *this\row\caret\start
+                           *this\caret\stop = *this\caret\start
                            *this\LineIndex( )   = *row\lindex
                            
                            ; row_scroll_y_( *this, *row, + *this\inner_height( ) )
@@ -17371,7 +17371,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                            If *this\row\active[0] <> *rowLine
                               *this\row\active[0] = *rowLine
-                              *this\row\caret\start = edit_make_caret_position( *this, *rowLine )
+                              *this\caret\start = edit_make_caret_position( *this, *rowLine )
                               
                               ; это на тот случай если резко выделили строки
                               ; чтобы не пропустить некоторые из них
@@ -17428,17 +17428,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\row\active[1] And *this\row\active[0] And *this\LineEntered( )
                      
                      Define caret = edit_make_caret_position( *this, *this\LineEntered( ) )
-                     If *this\row\caret\start <> caret
-                        *this\row\caret\start = caret
+                     If *this\caret\start <> caret
+                        *this\caret\start = caret
                         edit_sel_string_( *this, *this\LineEntered( ) )
                         edit_sel_text_( *this, *lines( ), *this\LineEntered( ) )
                      EndIf
                   EndIf
                   ;                 Else
                   ;                    If *this\LineEntered( )
-                  ;                       If *this\row\caret\start <> caret
-                  ;                          *this\row\caret\start = caret
-                  ;                          *this\row\caret\stop = *this\row\caret\start
+                  ;                       If *this\caret\start <> caret
+                  ;                          *this\caret\start = caret
+                  ;                          *this\caret\stop = *this\caret\start
                   ;                          
                   ;                          edit_sel_string_( *this, *this\LineEntered( ) )
                   ;                          edit_sel_text_( *this, *lines( ), *this\LineEntered( ) )
@@ -17472,8 +17472,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\LineState( ) = 0
                      *this\LineIndex( ) = 0
                      
-                     *this\row\caret\start = 0
-                     *this\row\caret\stop = 0
+                     *this\caret\start = 0
+                     *this\caret\stop = 0
                      
                      ; select first and last items
                      ;*this\row\active[0]      = SelectElement( *lines( ), 0 )
@@ -17553,14 +17553,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If MouseClick( ) = 1
                         Define caret = edit_make_caret_position( *this, *this\LineEntered( ) )
                         
-                        If *this\row\caret\start <> caret
-                           *this\row\caret\start = caret
-                           *this\row\caret\stop = *this\row\caret\start
+                        If *this\caret\start <> caret
+                           *this\caret\start = caret
+                           *this\caret\stop = *this\caret\start
                            
                            *this\LineIndex( )            = *this\LineEntered( )\lindex ;????
                            
                            ;
-                           ;*this\row\caret\word = GetWord( *this\LineEntered( )\text\Str(0), *this\LineEntered( )\text\len, *this\row\caret\pos )
+                           ;*this\caret\word = GetWord( *this\LineEntered( )\text\Str(0), *this\LineEntered( )\text\len, *this\caret\pos )
                            ;
                            edit_sel_reset_( *this, *lines( ))
                            
@@ -17576,8 +17576,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If event = #__event_Left2Click
                ; Debug "edit - Left2Click"
                If *this\LineEntered( )
-                  *this\row\caret\start = edit_sel_stop_word( *this, *this\row\caret\start, *this\LineEntered( ) )
-                  *this\row\caret\stop = edit_sel_start_word( *this, *this\row\caret\start + 1, *this\LineEntered( ) )
+                  *this\caret\start = edit_sel_stop_word( *this, *this\caret\start, *this\LineEntered( ) )
+                  *this\caret\stop = edit_sel_start_word( *this, *this\caret\start + 1, *this\LineEntered( ) )
                   ;
                   edit_sel_string_( *this, *this\LineEntered( ) )
                   edit_sel_text_( *this, *lines( ), *this\LineEntered( ) )
@@ -17588,8 +17588,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If event = #__event_Left3Click
                ; Debug "edit - Left3Click"
                If *this\LineEntered( )
-                  *this\row\caret\stop = *this\LineEntered( )\text\pos
-                  *this\row\caret\start = *this\LineEntered( )\text\pos + *this\LineEntered( )\text\len
+                  *this\caret\stop = *this\LineEntered( )\text\pos
+                  *this\caret\start = *this\LineEntered( )\text\pos + *this\LineEntered( )\text\len
                   ;
                   edit_sel_string_( *this, *this\LineEntered( ) )
                   edit_sel_text_( *this, *lines( ), *this\LineEntered( ) )
@@ -22039,7 +22039,7 @@ EndProcedure
                         
                         ; to right select
                         If ( ( *this\LineEntered( ) And *this\row\active[1] And *this\LineEntered( )\lindex > *this\row\active[1]\lindex ) Or
-                             ( *this\LineEntered( ) = *this\row\active[1] And *this\row\caret\start > *this\row\caret\stop ))
+                             ( *this\LineEntered( ) = *this\row\active[1] And *this\caret\start > *this\caret\stop ))
                            
                            If *lines( )\edit_text_2( )\Str(0)
                               DrawRotatedText( sel_text_x2, Text_Y, *lines( )\edit_text_2( )\Str(0), *this\text\rotate, *lines( )\color\front[*this\ColorState( )] )
@@ -22125,40 +22125,40 @@ EndProcedure
                   
                   ;
                   If *this\scroll\v And Not *this\scroll\v\hide
-                     If *this\scroll_y( ) + *this\row\caret\y < 0 Or
-                        *this\scroll_y( ) + *this\row\caret\y + *this\row\caret\height > *this\inner_height( )
+                     If *this\scroll_y( ) + *this\caret\y < 0 Or
+                        *this\scroll_y( ) + *this\caret\y + *this\caret\height > *this\inner_height( )
                         
                         If test_edit_text
-                           If *this\scroll_y( ) + *this\row\caret\y < 0
+                           If *this\scroll_y( ) + *this\caret\y < 0
                               Debug "       key - scroll UP"
-                           ElseIf *this\scroll_y( ) + *this\row\caret\y + *this\row\caret\height > *this\inner_height( )
+                           ElseIf *this\scroll_y( ) + *this\caret\y + *this\caret\height > *this\inner_height( )
                               Debug "       key - scroll DOWN"
                            EndIf
                         EndIf
                         
-                        make_scrollbar_pos( *this\scroll\v, *this\row\caret\y, *this\row\caret\height ) ; ok
+                        make_scrollbar_pos( *this\scroll\v, *this\caret\y, *this\caret\height ) ; ok
                      EndIf
                   EndIf
                   
                   ;
                   If *this\scroll\h And Not *this\scroll\h\hide
-                     If *this\scroll_x( ) + *this\row\caret\x < 0 Or
-                        *this\scroll_x( ) + *this\row\caret\x + *this\row\caret\width  > *this\inner_width( )
+                     If *this\scroll_x( ) + *this\caret\x < 0 Or
+                        *this\scroll_x( ) + *this\caret\x + *this\caret\width  > *this\inner_width( )
                         
                         If test_edit_text
-                           If *this\scroll_x( ) + *this\row\caret\x < 0
+                           If *this\scroll_x( ) + *this\caret\x < 0
                               Debug "       key - scroll LEFT"
-                           ElseIf *this\scroll_x( ) + *this\row\caret\x + *this\row\caret\width > *this\inner_width( )
+                           ElseIf *this\scroll_x( ) + *this\caret\x + *this\caret\width > *this\inner_width( )
                               Debug "       key - scroll RIGHT"
                            EndIf
                         EndIf
                         
-                        make_scrollbar_pos( *this\scroll\h, *this\row\caret\x, *this\row\caret\width ) ; ok
+                        make_scrollbar_pos( *this\scroll\h, *this\caret\x, *this\caret\width ) ; ok
                      EndIf
                   EndIf
                   ;
                   ; text change
-                  ;*this\row\caret\word = GetWord( *this\row\active[0]\text\Str(0), *this\row\active[0]\text\len, *this\row\caret\pos[1]-*this\row\active[0]\text\pos )
+                  ;*this\caret\word = GetWord( *this\row\active[0]\text\Str(0), *this\row\active[0]\text\len, *this\caret\pos[1]-*this\row\active[0]\text\pos )
                   *this\text\string$ = *this\text\Str(0)
                   DoEvents( *this, #__event_Change, *this\row\active[0]\lindex, *this\row\active[0])
                EndIf
@@ -22207,7 +22207,7 @@ EndProcedure
             ;If *this\text\mode & #__text_editable 
             If *this\focus = 2
                __draw_mode( #PB_2DDrawing_XOr )
-               draw_box_( X + *this\row\caret\x, Y + *this\row\caret\y, *this\row\caret\width, *this\row\caret\height, $FFFFFFFF )
+               draw_box_( X + *this\caret\x, Y + *this\caret\y, *this\caret\width, *this\caret\height, $FFFFFFFF )
             EndIf
             ;EndIf
             
@@ -23301,8 +23301,8 @@ EndProcedure
             
             *this\row.allocate( ROW )
             
-            *this\row\caret\start = - 1
-            *this\row\caret\stop = - 1
+            *this\caret\start = - 1
+            *this\caret\stop = - 1
             *this\LineState( ) = - 1
             
             *this\lineColor = $FFC0C0C0
@@ -23806,10 +23806,10 @@ EndProcedure
                   *this\color\fore = 0
                   
                   If *this\text\mode & #__text_editable
-                     *this\row\caret\width = DPIScaled(1)
+                     *this\caret\width = DPIScaled(1)
                      *this\color\back[0] = $FFFFFFFF
                   Else
-                     *this\row\caret\width = 0
+                     *this\caret\width = 0
                      *this\color\back[0] = $FFF0F0F0
                   EndIf
                EndIf
@@ -24246,10 +24246,10 @@ EndProcedure
                   *this\color\fore = 0
                   
                   If *this\text\mode & #__text_editable
-                     *this\row\caret\width = DPIScaled(1)
+                     *this\caret\width = DPIScaled(1)
                      *this\color\back[0] = $FFFFFFFF
                   Else
-                     *this\row\caret\width = 0
+                     *this\caret\width = 0
                      *this\color\back[0] = $FFF0F0F0
                   EndIf
                EndIf
@@ -28597,9 +28597,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 9600
-; FirstLine = 9582
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 24251
+; FirstLine = 24220
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

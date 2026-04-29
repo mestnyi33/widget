@@ -347,11 +347,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          color._s_color
          
          *popupbar._s_WIDGET
-         StructureUnion
-            *_parent._s_ROWS
-            *parent._s_ROWS
-         EndStructureUnion
          
+         *parent._s_ROWS
          *data  ; set/get item data
       EndStructure
       
@@ -367,11 +364,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          margin._s_TEXTINFO
          
          StructureUnion
-            *_last._s_rows            
-            *last._s_rows             ; if parent - \last\child ; if child - \parent\last\child
+            *_last._s_ROWS            
+            *last._s_ROWS             ; if parent - \last\child ; if child - \parent\last\child
          EndStructureUnion
          
-         *_groupbar._s_rows ; option group row
+         *_groupbar._s_ROWS ; option group row
       EndStructure
       
       ;--     COLUMN
@@ -381,24 +378,20 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Hide.b
          Text._s_TEXT
          picture._s_PICTURE
-       ;  List rows._s_rows( )
       EndStructure
       
-      Structure _s_COLUMNs
-         List columns._s_COLUMN( )
+      Structure _s_COLUMNS
+         List __s._s_COLUMN( )
       EndStructure
       
-      Structure _s_VISIBLEITEMS
-         *first._s_rows           ; first draw-elemnt in the list
-         *last._s_rows            ; last draw-elemnt in the list
-         List *_s._s_rows( )      ; all draw-elements
+      Structure _s_VISIBLE_ROWS
+         *first._s_ROWS           ; first draw-elemnt in the list
+         *last._s_ROWS            ; last draw-elemnt in the list
+         List *__s._s_ROWS( )     ; Развернутый рулон (указатели)
       EndStructure
       
       ;--     ROW
       Structure _s_ROW
-         caret._s_CARET
-         *active._s_ROWS[2]
-   
          state.i
          Index.i
          
@@ -406,25 +399,20 @@ CompilerIf Not Defined(Structures, #PB_Module)
          sublevelpos.a
          sublevelsize.a
          
-         
          ;
-         *focused._s_rows         ; focused item
-         *pressed._s_rows         ; mouse button pushed item
-         *entered._s_rows         ; mouse entered item
-         *leaved._s_rows          ; mouse leaved item
+         *active._s_ROWS[2]
+         *entered._s_ROWS         ; mouse entered item
          
-         *first._s_rows           ; first elemnt in the list
-         *last._s_rows            ; last elemnt in the list
-         *new._s_rows             ; new added last element
+         *first._s_ROWS           ; first elemnt in the list
+         *last._s_ROWS            ; last elemnt in the list
+         *new._s_ROWS             ; new added last element
          
-         visible._s_VISIBLEITEMS
-         
+         visible._s_VISIBLE_ROWS
          margin._s_margin
          
          *tt._s_tt
          ;
-         List rows._s_rows( )
-         List *items._s_rows()   ; Развернутый рулон (указатели)
+         List __s._s_ROWS( )
       EndStructure
       
       ;--     PAGE
@@ -587,6 +575,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          flagmask.q
          eventmask.q
          
+            
+         caret._s_CARET
          tt._s_tt                 ; notification = уведомление
          menu._s_POPUP
          mode._s_mode               ; drawing mode
@@ -746,9 +736,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 411
-; FirstLine = 395
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 350
+; FirstLine = 324
 ; Folding = -----------
 ; Optimizer
 ; EnableXP

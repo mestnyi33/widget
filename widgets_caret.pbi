@@ -486,8 +486,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro LineEntered( ): row\entered: EndMacro ; Returns mouse entered widget
-      Macro LinePressed( ): row\pressed: EndMacro ; Returns key focus item address
-      Macro LineFocused( ): row\focused: EndMacro ; Returns key focus item address
+      Macro LinePressed( ): row\active[1]: EndMacro ; Returns key focus item address
+      Macro LineFocused( ): row\active[0]: EndMacro ; Returns key focus item address
                                                   ;
       Macro LineState( ): row\state: EndMacro     ; *this\ Returns key focused line index   ; 11 count
       Macro LineIndex( ): row\index: EndMacro     ; *this\ Returns mouse pressed line index ; 23 count
@@ -512,8 +512,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro __items( ): row\items( ) : EndMacro    ; row\items( )
       Macro RowLeaved( ): row\leaved: EndMacro           ; Returns mouse leaved item address
       Macro RowEntered( ): row\entered: EndMacro         ; Returns mouse entered item address
-      Macro RowPressed( ): row\pressed: EndMacro         ; Returns mouse press item address
-      Macro RowFocused( ): row\focused: EndMacro         ; Returns key focus item address
+      Macro RowPressed( ): row\active[1]: EndMacro         ; Returns mouse press item address
+      Macro RowFocused( ): row\active[0]: EndMacro         ; Returns key focus item address
       ;
       Macro RowVisibleList( ): row\visible\_s( ): EndMacro
       Macro RowFirstVisible( ): row\visible\first: EndMacro
@@ -17985,7 +17985,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *rowleaved = *this\RowEntered( )
                EndIf
                ;
-               *this\RowLeaved( )  = *this\RowEntered( )
                *this\RowEntered( ) = *row
                ; 
                ;\\ leave state
@@ -28730,9 +28729,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 505
-; FirstLine = 490
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 17987
+; FirstLine = 17983
 ; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
