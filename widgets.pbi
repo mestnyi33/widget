@@ -9755,6 +9755,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\padding\x = DPIScaled(3)
             EndIf
          EndIf
+         If *this\type = #__type_Editor
+            If vertical
+               *this\padding\y = DPIScaled(3)
+            Else
+               *this\padding\x = DPIScaled(3)
+            EndIf
+         EndIf
          If *this\type = #__type_Text
             If vertical
                *this\padding\y = DPIScaled(2)
@@ -17372,22 +17379,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\row\caret\start = 0
+                              *this\row\caret\start = *row\text\pos
                            Else
-                              If *row\lindex > 0
-                                 *row\ColorState( )  = #__s_0
-                                 *row                = SelectElement( *lines( ), *row\lindex - 1 )
-                                 *row\ColorState( )  = #__s_1
-                                 *this\row\active[0] = *row
-                                 
-                                 If *this\row\caret\start > *row\text\len
-                                    *this\row\caret\start = *row\text\len
-                                 Else
-                                    *this\row\caret\start = 0
-                                 EndIf
-                              Else
-                                 *this\row\caret\start = 0
-                              EndIf
+                              *this\row\caret\start - *row\text\pos
+                              *row\ColorState( )  = #__s_0
+                              *row                = SelectElement( *lines( ), *row\lindex - 1 )
+                              *row\ColorState( )  = #__s_1
+                              *this\row\caret\start + *row\text\pos 
+                              *this\row\active[0] = *row
                            EndIf
                            
                            If keyboard( )\key[1] & #PB_Canvas_Shift = #False
@@ -17427,22 +17426,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                            
                            If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\row\caret\start = *row\text\len
+                              *this\row\caret\start = *row\text\pos+*row\text\len
                            Else
-                              If *row\lindex < ( *this\countitems - 1 )
-                                 *row\ColorState( )  = #__s_0
-                                 *row                = SelectElement( *lines( ), *row\lindex + 1 )
-                                 *row\ColorState( )  = #__s_1
-                                 *this\row\active[0] = *row
-                                 
-                                 If *this\row\caret\start > *row\text\len
-                                    *this\row\caret\start = *row\text\len
-                                 Else
-                                    *this\row\caret\start = 0
-                                 EndIf
-                              Else
-                                 *this\row\caret\start = *row\text\len
-                              EndIf
+                              *this\row\caret\start - *row\text\pos
+                              *row\ColorState( )  = #__s_0
+                              *row                = SelectElement( *lines( ), *row\lindex + 1 )
+                              *row\ColorState( )  = #__s_1
+                              *this\row\caret\start + *row\text\pos
+                              *this\row\active[0] = *row
                            EndIf
                            
                            If Not keyboard( )\key[1] & #PB_Canvas_Shift
@@ -29079,10 +29070,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 29080
-; FirstLine = 29038
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 17341
+; FirstLine = 17336
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------d-f-t2---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

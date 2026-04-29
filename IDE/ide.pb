@@ -2722,7 +2722,7 @@ Procedure   ide_events( )
             *line._s_ROWS  = __data
             text$ = *line\text\Str(0)
             len = *line\text\len
-            caret = *g\edit_caret_1( ) - *line\text\pos
+            caret = *g\row\caret\start - *line\text\pos
             
             ;
             If text$
@@ -2800,7 +2800,7 @@ Procedure   ide_events( )
       If __event = #__event_Change
          If object
             ; ReplaceArg( object, argument, *g\edit_caret( )\word ) 
-            ReplaceArg( object, argument, GetWord( *line\text\Str(0), *line\text\len, *g\edit_caret_1( ) - *line\text\pos )  )
+            ReplaceArg( object, argument, GetWord( *line\text\Str(0), *line\text\len, *g\row\caret\start - *line\text\pos )  )
          EndIf
       EndIf
    EndIf
@@ -3333,7 +3333,7 @@ DataSection
 EndDataSection
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
 ; CursorPosition = 2802
-; FirstLine = 2442
+; FirstLine = 2441
 ; Folding = -4--4---r-f-tf----------3BC----------+-+8-----------Svt----f+-
 ; EnableXP
 ; DPIAware

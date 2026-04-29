@@ -1309,68 +1309,74 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_rows, event.i)
                
             Case #PB_Shortcut_C, #PB_Shortcut_X ; --- COPY / CUT ---
                If keyboard()\key[1] & #PB_Canvas_Control
+                  Protected *first_s._s_ROWS = *this\row\active[0]
+                  Protected *last_s._s_ROWS  = *this\row\active[1]
+                  
+                  ; Нормализуем: чтобы first всегда был ВЫШЕ по списку, чем last
+                  If *first_s\y > *last_s\y
+                     Swap *first_s, *last_s
+                  EndIf
+                  
                   Protected Clip.s = ""
                   PushListPosition(*this\__rows())
-                  ForEach *this\__rows()
+                  ChangeCurrentElement(*this\__rows(), *first_s)
+                  Repeat
                      If *this\__rows()\mask & #__mask_edit
                         Clip + Mid(*this\__rows()\Str(0), *this\__rows()\sel\start + 1, *this\__rows()\sel\stop - *this\__rows()\sel\start) + #LF$
                      EndIf
-                  Next
+                  Until Not NextElement(*this\__rows())
                   PopListPosition(*this\__rows())
                   If Clip : SetClipboardText(RTrim(Clip, #LF$)) : EndIf
                   If keyboard()\key = #PB_Shortcut_X : edit_reset_selection(*this) : EndIf
                EndIf
-               
+            
             Case #PB_Shortcut_V ; --- PASTE ---
                If keyboard()\key[1] & #PB_Canvas_Control
-                  ; 1. Если есть выделение — удаляем его перед вставкой
                   edit_reset_selection(*this)
                   
-                  txt = GetClipboardText()
+                  txt.s = GetClipboardText()
                   If txt = "" : ProcedureReturn 0 : EndIf
                   
-                  ; 2. Приводим все переносы к одному виду (LF)
+                  ; Предварительная очистка переносов (делаем один раз)
                   txt = ReplaceString(txt, #CRLF$, #LF$)
                   txt = ReplaceString(txt, #CR$, #LF$)
                   
-                  ;
                   *row = *this\row\active[0]
                   pos = *this\row\caret\start
                   Protected head.s = Left(*row\Str(0), pos)
                   Protected tail.s = Mid(*row\Str(0), pos + 1)
                   
-                  ; Разбираем текст из буфера на строки
-                  Protected count = CountString(txt, #LF$) + 1
+                  ; Подготовка к циклу
                   PushListPosition(*this\__rows())
                   ChangeCurrentElement(*this\__rows(), *row)
                   
-                  For i = 1 To count
-                     Protected current_line.s = StringField(txt, i, #LF$)
-                     
-                     If i = 1
-                        ; Первая строка из буфера клеится к "голове" текущей строки
-                        *row\Str(0) = head + current_line
-                        If count = 1
-                           ; Если в буфере была всего одна строка — клеим и "хвост"
-                           *row\Str(0) + tail
-                           *this\row\caret\start = Len(head + current_line)
-                        EndIf
-                     Else
-                        ; Остальные строки добавляем как новые элементы
-                        *row\mask &~ (#__mask_active | #__mask_edit)
-                        *row = AddElement(*this\__rows())
-                        *row\mask | (#__mask_active | #__mask_edit)
-                        
-                        If i = count
-                           ; Последняя строка из буфера получает "хвост" старой строки
-                           *row\Str(0) = current_line + tail
-                           *this\row\caret\start = Len(current_line)
+                  Protected *p.Character = @txt
+                  Protected *start = *p
+                  
+                  ; МГНОВЕННЫЙ ПАРСИНГ ЧЕРЕЗ УКАЗАТЕЛИ
+                  Repeat
+                     If *p\c = #LF Or *p\c = 0
+                        If *start = @txt ; Это первая строка
+                           *row\Str(0) = head + PeekS(*start, (*p - *start) >> 1)
                         Else
-                           *row\Str(0) = current_line
+                           *row\mask &~ (#__mask_active | #__mask_edit)
+                           *row = AddElement(*this\__rows())
+                           *row\Str(0) = PeekS(*start, (*p - *start) >> 1)
                         EndIf
+                        
+                        *row\mask | #__mask_change
+                        
+                        If *p\c = 0 : Break : EndIf ; Выход, если конец текста
+                        
+                        *start = *p + SizeOf(Character)
                      EndIf
-                     *row\mask | #__mask_change 
-                  Next
+                     *p + SizeOf(Character)
+                  ForEver
+                  
+                  ; Приклеиваем хвост к последней добавленной строке
+                  *this\row\caret\start = Len(*row\Str(0))
+                  *row\Str(0) + tail
+                  
                   PopListPosition(*this\__rows())
                   
                   *this\row\active[0] = *row
@@ -1667,7 +1673,6 @@ Procedure update_token(*this._s_WIDGET, *row._s_ROWS)
       ProcedureReturn 
    EndIf
    
-   
    While *c\c
       start = pos
       Protected cur_font = Font_Editor_Normal 
@@ -1957,13 +1962,13 @@ Procedure update_rows(*this._s_WIDGET)
          EndIf
       EndIf
       
-      ; --- 2. ОБНОВЛЕНИЕ ДАННЫХ (Ленивое) ---
-      If *row\mask & #__mask_change 
-         update_token(*this, *row)
-         *row\mask &~ #__mask_change
-         *row\mask | #__mask_update    ; А вот координаты каретки теперь надо пересчитать!
-      EndIf
-      
+;       ; --- 2. ОБНОВЛЕНИЕ ДАННЫХ (Ленивое) ---
+;       If *row\mask & #__mask_change 
+;          update_token(*this, *row)
+;          *row\mask &~ #__mask_change
+;          *row\mask | #__mask_update    ; А вот координаты каретки теперь надо пересчитать!
+;       EndIf
+;       
       ; --- 3. ГЕОМЕТРИЯ (Просто чтение готового) ---
       *row\y = cur_y
       
@@ -1980,11 +1985,25 @@ Procedure update_rows(*this._s_WIDGET)
       Protected r_bottom = r_top + *row\height 
       
       If r_bottom > view_top And r_top < view_bottom 
+;          ; [ПЕРЕНЕСЕНО СЮДА] --- ОБНОВЛЕНИЕ ДАННЫХ ТОЛЬКО ДЛЯ ВИДИМЫХ ---
+;          If *row\mask & #__mask_change 
+;             update_token(*this, *row)
+;             *row\mask &~ #__mask_change
+;             *row\mask | #__mask_update
+;          EndIf
+         
          AddElement(*this\__items())
          *this\__items() = *row
          
          If Not *this\visible\first : *this\visible\first = *row : EndIf
          *this\visible\last = *row
+      EndIf
+      
+      ; --- 2. ОБНОВЛЕНИЕ ДАННЫХ (Ленивое) ---
+      If *row\mask & #__mask_change 
+         update_token(*this, *row)
+         *row\mask &~ #__mask_change
+         *row\mask | #__mask_update    ; А вот координаты каретки теперь надо пересчитать!
       EndIf
       
       cur_y + *row\height 
@@ -4457,8 +4476,8 @@ AddItem(*T, 9, "Tree_1",-1 )
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 4292
-; FirstLine = 4035
-; Folding = -------------------------------------------4---------4-----------------------------------------------------------
+; CursorPosition = 1352
+; FirstLine = 1297
+; Folding = ----------------------------3------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
