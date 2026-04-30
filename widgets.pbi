@@ -482,7 +482,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro TabState( ): Tab_state: EndMacro      
       
       ;-
-                                                  ;
+      ;
       ;-\\
       Macro edit_text_1( ): Text\edit[0]: EndMacro
       Macro edit_text_2( ): Text\edit[1]: EndMacro
@@ -1707,7 +1707,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Declare.b bar_update( *this, mode.b = 1 )
       Declare.b bar_PageChange( *this, state.l, mode.b = 1 )
       
-      Declare.l UpdateDraw_Rows( *this, List rows._s_ROWS( ))
+      Declare.l UpdateDraw_Rows( *this, List rows._s_ROW( ))
       Declare.b bar_UpdateDraw_TabItems( *this, List *tabs._s_ITEMS( ) )
       
       Declare   make_mdi_max( *this, X.l, Y.l, Width.l, Height.l )
@@ -2000,21 +2000,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Declare   IsPopupChild( *this, *parent )
       
-      Declare   DoEvent_Lines( *this, List *lines._s_ROWS( ), event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
+      Declare   DoEvent_Lines( *this, List *lines._s_ROW( ), event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       Declare   DoEvent_Rows( *this, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       
       Declare.b bar_draw_tab( *this )
       Declare   make_scrollbar_area( *this )
       
-      Declare.l UpdateDraw_VisibleRows( *this, List rows._s_ROWS( ), visible_height.l = 0 )
-      Declare   Draw_TreeRows( *this, List *rows._s_ROWS( ), _i_=0 )
+      Declare.l UpdateDraw_VisibleRows( *this, List rows._s_ROW( ), visible_height.l = 0 )
+      Declare   Draw_TreeRows( *this, List *rows._s_ROW( ), _i_=0 )
       Declare   UpdateDraw_Content( *this )
       Declare   Draw_Content( *this._s_WIDGET, state )
       Declare   ReParent( *this, *parent )
       
       Declare   edit_SetState( *this, State.i )
       Declare   edit_SetItemState( *this, Item.l, State.i )
-      Declare   edit_AddItem( *this, List *lines._s_ROWS( ), position, *text.Character, string_len )
+      Declare   edit_AddItem( *this, List *lines._s_ROW( ), position, *text.Character, string_len )
       Declare.s edit_make_insert_text( *this, Text.s )
       
       Declare   make_content_area( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, indent )
@@ -2792,7 +2792,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure   make_multiline_text( *this._s_WIDGET, List *lines._s_ROWS( ), indent )
+      Procedure   make_multiline_text( *this._s_WIDGET, List *lines._s_ROW( ), indent )
          Protected textchange.b = 1
          Protected *str.Character
          Protected *end.Character
@@ -2928,7 +2928,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *end\c = #LF
                   AddElement( *lines( ))
                   *lines( ) = *this\__lines( )
-                  ; *lines.allocate( ROWS, ( ))
+                  ; *lines.allocate( ROW, ( ))
                   
                   *lines( )\text\len    = ( *end - *str ) >> #PB_Compiler_Unicode
                   *lines( )\text\Str(0) = PeekS ( *str, *lines( )\text\len )
@@ -7537,7 +7537,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure   AddBarItem( *this._s_WIDGET, item, Text.s, img = - 1 )
          If *this
-            Protected._s_ROWS  *item, *tab
+            Protected._s_ROW  *item, *tab
             ; get the address of the last item
             ; to make it the parent of the current item
             If *this\menu\parent
@@ -7565,7 +7565,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   BarSeparator( )
-         Protected *item._s_ROWS 
+         Protected *item._s_ROW 
          *item = BarButton( #PB_Ignore, - 1, 0, "" )
          *item\sublevel = - 1
       EndProcedure
@@ -8109,7 +8109,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
-      Procedure   ChangePopupBar( *this._s_WIDGET, *tab._s_ROWS )
+      Procedure   ChangePopupBar( *this._s_WIDGET, *tab._s_ROW )
          ;
          ; hide popup bar
          If PopupBar( ) And PopupBar( ) <> *this And PopupBar( ) <> *tab\popupbar
@@ -8319,7 +8319,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          CompilerEndIf
       EndMacro
       
-      Procedure.i edit_sel_start_word( *this._s_WIDGET, caret, *rowLine._s_ROWS )
+      Procedure.i edit_sel_start_word( *this._s_WIDGET, caret, *rowLine._s_ROW )
          Protected result.i, i.i, char.i
          caret - *rowLine\text\pos
          
@@ -8342,7 +8342,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure.i edit_sel_stop_word( *this._s_WIDGET, caret, *rowLine._s_ROWS )
+      Procedure.i edit_sel_stop_word( *this._s_WIDGET, caret, *rowLine._s_ROW )
          Protected result.i, i.i, char.i
          caret - *rowLine\text\pos
          
@@ -8364,7 +8364,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn result
       EndProcedure
       
-      Procedure   edit_sel_string_( *this._s_WIDGET, *rowLine._s_ROWS, mode.l = #__sel_to_line )
+      Procedure   edit_sel_string_( *this._s_WIDGET, *rowLine._s_ROW, mode.l = #__sel_to_line )
          Protected CaretLeftPos, CaretRightPos, lastselectlen = *this\mode\fullselection
          If test_edit_text
             Debug "edit_sel_row_text - " + *rowLine\lindex + " " + mode
@@ -8511,7 +8511,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn #True
       EndProcedure
       
-      Procedure   edit_sel_text_( *this._s_WIDGET, List *lines._s_ROWS( ), *rowLine._s_ROWS )
+      Procedure   edit_sel_text_( *this._s_WIDGET, List *lines._s_ROW( ), *rowLine._s_ROW )
          ; edit sel all items
          If *rowLine = #PB_All
             *rowLine                 = *this\row\active[0]
@@ -8581,7 +8581,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure.l edit_make_caret_position( *this._s_WIDGET, *rowLine._s_ROWS )
+      Procedure.l edit_make_caret_position( *this._s_WIDGET, *rowLine._s_ROW )
          ; Get caret position
          Protected i.l, mouse_x.l, caret_x.l, caret.l = - 1
          Protected Distance.d, MinDistance.d = Infinity( )
@@ -9004,8 +9004,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       
       ;-
-      Procedure   edit_AddLine( *this._s_WIDGET, List *lines._s_ROWS( ), position, *text.Character, string_len, count )
-         Protected *rowLine._s_ROWS
+      Procedure   edit_AddLine( *this._s_WIDGET, List *lines._s_ROW( ), position, *text.Character, string_len, count )
+         Protected *rowLine._s_ROW
          Protected add_index = - 1, add_y, add_pos, add_height
          
          If position < 0 Or position > ListSize( *lines( )) - 1
@@ -9076,7 +9076,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\text\len + string_len + Len( #LF$ )
       EndProcedure
       
-      Procedure   edit_AddItem( *this._s_WIDGET, List *lines._s_ROWS( ), position, *text.Character, string_len )
+      Procedure   edit_AddItem( *this._s_WIDGET, List *lines._s_ROW( ), position, *text.Character, string_len )
          ; edit_AddLine(*this, *lines( ), position, *text, string_len, 0);CountString( *this\text\str(0), #LF$ ) )
          
          Protected add_index = - 1, add_pos
@@ -9100,7 +9100,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\
-         *lines.allocate( ROWS, ( ))
+         *lines.allocate( ROW, ( ))
          ;*lines( ) = *this\__lines( )
          ;
          *lines( )\lindex      = position
@@ -9355,8 +9355,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Next
          EndIf
          If *this\row
-            Protected._s_ROWS *row
-            Protected._s_ROWS *select_row = SelectElement( *this\__rows( ), item )
+            Protected._s_ROW *row
+            Protected._s_ROW *select_row = SelectElement( *this\__rows( ), item )
             *select_row\hide = state
             ;
             If *select_row\childrens
@@ -10076,7 +10076,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.l SetItemColor( *this._s_WIDGET, Item.l, ColorType.l, color.i, Column.l = 0, ColorState.b = 0 )
          Protected result, alpha.a 
-         Protected._s_ROWS *row
+         Protected._s_ROW *row
          ;
          If *this\row And *this\countitems
             If Item = #PB_All
@@ -10335,8 +10335,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure   ChangeStatus( *this._s_WIDGET, *row._s_ROWS )
-         Protected._s_ROWS *select_row
+      Procedure   ChangeStatus( *this._s_WIDGET, *row._s_ROW )
+         Protected._s_ROW *select_row
          Protected count = ListSize( *this\__rows( ))
          If count
             If *row\index < 0 Or
@@ -10517,7 +10517,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ; - Web( )         : perform some action on the gadget. See WebGadget For further descriptions.
          
          Protected result
-         Protected *row._s_ROWS
+         Protected *row._s_ROW
          
          ;\\ custom object
          If *this = 0
@@ -10739,7 +10739,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;\\ example file "D&D-items"
                      If MouseDrag( )
                         If *this\drop
-                           Protected._s_ROWS *press_row = *this\RowPressed( )
+                           Protected._s_ROW *press_row = *this\RowPressed( )
                            
                            If *press_row
                               *row\rindex = State
@@ -10917,7 +10917,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.l GetItemState( *this._s_WIDGET, Item.l )
-         Protected._s_ROWS *row 
+         Protected._s_ROW *row 
          Protected result
          
          ;
@@ -10974,7 +10974,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.b SetItemState( *this._s_WIDGET, Item.l, State.b )
-         Protected._s_ROWS *select_row, *row
+         Protected._s_ROW *select_row, *row
          Protected result
          
          If *this\type = #__type_Editor
@@ -11065,7 +11065,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure   Chang__itemstate( *this._s_WIDGET, Item.l, State.b )
          If Not (item < 0 Or item > ListSize( *this\__rows( )))
             Protected result
-            Protected._s_ROWS *select_row
+            Protected._s_ROW *select_row
             If ListSize( *this\__rows( ))
                PushListPosition( *this\__rows( ))
                *select_row = SelectElement( *this\__rows( ), item )
@@ -13688,16 +13688,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure Column_Sync(*this._s_WIDGET)
-         ;ClearList(*this\__items( ))
+         ClearList(*this\__items( ))
          ForEach *this\__rows( )
             If Not *this\__rows( )\Hide
-               ;AddElement(*this\__items( ))
-               ;*this\__items( ) = @*this\__rows( )
+               *this\__items( ) = AddElement(*this\__items( ))
             EndIf
          Next
       EndProcedure
       
-      Procedure Column_DragItem(*this._s_WIDGET, List rows._s_rows(), *Source, *Target)
+      Procedure Column_DragItem(*this._s_WIDGET, List rows._s_ROW(), *Source, *Target)
          ; 1. Проверяем, что мы не бросили элемент сам на себя
          If *Source = *Target : ProcedureReturn : EndIf
          
@@ -13715,7 +13714,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure Column_UpdateLayout(*this._s_WIDGET)
          Protected cur_x = 0
          ForEach *this\__Columns()
-            If Not *this\__Columns()\Hide
+            If Not *this\__Columns()\mask & #__mask_hidden
                *this\__Columns()\X = cur_x
                cur_x + *this\__Columns()\Width
             EndIf
@@ -13791,11 +13790,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             ;*columns\title = Text.s
-            *columns\text\Str(0) = Text.s
+            *columns\title = Text.s
             *columns\width = DPIScaled( Width )
             ;\\
             If *this\type = #__type_listicon
-                *columns\height = *this\columnsHeight
+                ;*columns\height = *this\columnsHeight
             EndIf
              
             *columns\x = *this\scroll_width( )
@@ -13806,11 +13805,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn *columns
       EndProcedure
       
-      Procedure.i AddItems( *this._s_WIDGET, List rows._S_ROWS( ), position.l, Text.s, img.i = -1, sublevel.i = 0 )
+      Procedure.i AddItems( *this._s_WIDGET, List rows._s_ROW( ), position.l, Text.s, img.i = -1, sublevel.i = 0 )
          Protected last
-         Protected *rowLast._s_ROWS 
-         Protected *row._s_ROWS
-         Protected *rowParent._s_ROWS
+         Protected *rowLast._s_ROW 
+         Protected *row._s_ROW
+         Protected *rowParent._s_ROW
          
          If *this
                ;{ Генерируем идентификатор
@@ -14061,11 +14060,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *this\type = #__type_ListIcon
-;             Protected String.s
-;             ForEach *this\__columns( )
-;                String = StringField( Text, ListIndex( *this\__columns( )) + 1, #LF$)
-;                AddItems( *this, *this\__rows( ), Item, String, img, Flag )
-;             Next
             Column_AddItem( *this, item, Text )
          EndIf
          
@@ -14295,9 +14289,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             Protected removecount = 1
-            Protected *rowFocused._s_ROWS
-            Protected *row._s_ROWS = *this\__rows( )
-            Protected *rowParent._s_ROWS = *row\parent
+            Protected *rowFocused._s_ROW
+            Protected *row._s_ROW = *this\__rows( )
+            Protected *rowParent._s_ROW = *row\parent
             
             If test_delete
                Debug " "+ Item +" remove ["+ *row\text\Str(0) +"]"
@@ -14492,7 +14486,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If *this\RowFocused( )
                   *this\RowFocused( )\ColorState( ) = 0
-                  ClearStructure(*this\RowFocused( ), _s_ROWS)
+                  ClearStructure(*this\RowFocused( ), _s_ROW)
                   *this\RowFocused( ) = 0
                EndIf
                
@@ -14515,7 +14509,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *this\ComboBar( )\RowFocused( )
                      *this\ComboBar( )\RowFocused( )\ColorState( ) = 0
-                     ClearStructure(*this\ComboBar( )\RowFocused( ), _s_ROWS)
+                     ClearStructure(*this\ComboBar( )\RowFocused( ), _s_ROW)
                      *this\ComboBar( )\RowFocused( ) = 0
                   EndIf
                   
@@ -16340,7 +16334,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.q Flag( *this._s_WIDGET, Flag.q = #Null, state.b = #PB_Default )
-         Protected._s_ROWS *row
+         Protected._s_ROW *row
          Protected result.q
          ;
          ;
@@ -17019,7 +17013,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
-      Procedure   _DoEvent_KeyLines( *this._s_WIDGET, List *lines._s_ROWS( ), event.l )
+      Procedure   _DoEvent_KeyLines( *this._s_WIDGET, List *lines._s_ROW( ), event.l )
          Static _caret_last_pos_, DoubleClick.i
          Protected i.i, caret.i
          
@@ -17333,14 +17327,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndWith
          
       EndProcedure
-      Procedure   DoEvent_KeyLines( *this._s_WIDGET, List *lines._s_ROWS( ), event.l )
+      Procedure   DoEvent_KeyLines( *this._s_WIDGET, List *lines._s_ROW( ), event.l )
          Static _caret_last_pos_, DoubleClick.i
          Protected i.i, caret.i
          
          Protected Item.i, String.s
          Protected _line_, _step_ = 1, _caret_min_ = 0, _line_first_ = 0, _line_last_ = *this\countitems - 1
          Protected page_height = *this\inner_height( )
-         Protected._s_ROWS *row = *this\row\active[0]
+         Protected._s_ROW *row = *this\row\active[0]
          
          With *this
             Select event
@@ -17670,9 +17664,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
-      Procedure   DoEvent_Lines( *this._s_WIDGET, List *lines._s_ROWS( ), event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
+      Procedure   DoEvent_Lines( *this._s_WIDGET, List *lines._s_ROW( ), event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
          Protected dragged, highlighted  = 0
-         Protected Repaint, *rowLine._s_ROWS
+         Protected Repaint, *rowLine._s_ROW
          mouse_x - *this\inner_x( )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
          
@@ -18104,7 +18098,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure   DoEvent_KeyRows( *this._s_WIDGET, event.l )
          Protected result, from = - 1
-         Static cursor_change, Down, *row_selected._s_ROWS
+         Static cursor_change, Down, *row_selected._s_ROW
          
          With *this
             Select event
@@ -18225,10 +18219,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure   DoEvent_Rows( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
          Protected Repaint, dragged = Bool( MouseDragStart( ) And *this\mask & #__mask_press ) ; 
-         Protected._s_ROWS *row
-         Protected._s_ROWS *hover_row
-         Protected._s_ROWS *press_row = *this\RowPressed( )
-         Protected._s_ROWS *active_row = *this\RowFocused( )
+         Protected._s_ROW *row
+         Protected._s_ROW *hover_row
+         Protected._s_ROW *press_row = *this\RowPressed( )
+         Protected._s_ROW *active_row = *this\RowFocused( )
          
          If *this\type = #__type_ListIcon
             mouse_x - *this\inner_x( ) - *this\scroll_x( )
@@ -18332,7 +18326,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                 
-               Protected *rowleaved._s_ROWS
+               Protected *rowleaved._s_ROW
                If *this\RowEntered( )
                   *rowleaved = *this\RowEntered( )
                EndIf
@@ -18855,10 +18849,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected *bar._s_BAR = *this\bar
          Protected._s_BUTTONS *BB1, *BB2, *SB
          Protected mode_type = 0
-         Static *lasttab._s_ROWS
+         Static *lasttab._s_ROW
          Static ToolBar
          
-         Protected *Tab._s_ROWS 
+         Protected *Tab._s_ROW 
          If *this\parent
             Protected *EnteredTAB._s_ITEMS = parentTabEntered( *this )
          EndIf
@@ -19032,7 +19026,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             ;EndIf
          Else
-           *Tab._s_ROWS = *EnteredTAB
+           *Tab._s_ROW = *EnteredTAB
             If *this\type = #__type_ToolBar
                If event = #__event_Down
                   If *tab And *tab\childrens  
@@ -20052,7 +20046,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             Root( )\canvas\enter = 0
             ;
-            MouseMask( ) = #__mouse_leave
+            MouseMask( ) = 0
             CanvasMouseX( ) = - 1
             CanvasMouseY( ) = - 1
          EndIf
@@ -20866,27 +20860,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          ;\\ do reset data
          ;
-         If MouseMask( ) = #__mouse_leave
-            MouseMask( ) = 0
-         Else
-            If MouseMask( ) & #__mask_left
-               MouseMask( ) &~ #__mask_left
-            EndIf
-            If MouseMask( ) & #__mask_top
-               MouseMask( ) &~ #__mask_top
-            EndIf
-            If MouseMask( ) & #__mask_right
-               MouseMask( ) &~ #__mask_right
-            EndIf
-            If MouseMask( ) & #__mask_bottom
-               MouseMask( ) &~ #__mask_bottom
-            EndIf
-            If MouseMask( ) & #__mask_release
-               MouseMask( ) &~ #__mask_release
-            EndIf
-            If MouseMask( ) & #__mask_update
-               MouseMask( ) &~ #__mask_update
-            EndIf
+         If MouseMask( ) & #__mask_left
+            MouseMask( ) &~ #__mask_left
+         EndIf
+         If MouseMask( ) & #__mask_top
+            MouseMask( ) &~ #__mask_top
+         EndIf
+         If MouseMask( ) & #__mask_right
+            MouseMask( ) &~ #__mask_right
+         EndIf
+         If MouseMask( ) & #__mask_bottom
+            MouseMask( ) &~ #__mask_bottom
+         EndIf
+         If MouseMask( ) & #__mask_release
+            MouseMask( ) &~ #__mask_release
+         EndIf
+         If MouseMask( ) & #__mask_update
+            MouseMask( ) &~ #__mask_update
          EndIf
          
          ProcedureReturn #PB_Event_Gadget
@@ -21144,7 +21134,7 @@ EndProcedure
          EndIf
       EndProcedure
       
-      Procedure.l UpdateDraw_Rows( *this._s_WIDGET, List rows._s_ROWS( ))
+      Procedure.l UpdateDraw_Rows( *this._s_WIDGET, List rows._s_ROW( ))
          Protected state.b, X.l, Y.l
          
          If Not *this\hide
@@ -21312,7 +21302,7 @@ EndProcedure
          
       EndProcedure
      
-      Procedure.l UpdateDraw_VisibleRows( *this._s_WIDGET, List rows._s_ROWS( ), visible_height.l = 0 )
+      Procedure.l UpdateDraw_VisibleRows( *this._s_WIDGET, List rows._s_ROW( ), visible_height.l = 0 )
          Protected result, scroll_y = *this\scroll\v\bar\page\pos
          Protected visible_y.l = 0
          
@@ -22145,7 +22135,7 @@ EndProcedure
          Draw_Frames( *this, state )
       EndProcedure
       
-      Procedure   Draw_TreeRows( *this._s_WIDGET, List *rows._s_ROWS( ), _i_=0 )
+      Procedure   Draw_TreeRows( *this._s_WIDGET, List *rows._s_ROW( ), _i_=0 )
          Protected state.b, X.l, Y.l, _box_x_.l, _box_y_.l, minus.l = 7
          Protected bs = Bool( *this\fs )
          Protected _scroll_x_ = *this\scroll\h\bar\page\pos
@@ -22415,7 +22405,7 @@ EndProcedure
          
       EndProcedure
       
-      Procedure   Draw_EditorItems( *this._s_WIDGET, List *lines._s_ROWS( ) )
+      Procedure   Draw_EditorItems( *this._s_WIDGET, List *lines._s_ROW( ) )
          Protected Y, Text_x, Text_y, visible_y, visible_height
          
          
@@ -22715,7 +22705,8 @@ EndProcedure
       EndProcedure
       
       Procedure   Draw_ListIcon( *this._s_WIDGET )
-         Protected state.b, X.l, Y.l, scroll_x, scroll_y
+         Protected *column._s_COLUMN
+         Protected column_index.i, state.b, X.l, Y.l, scroll_x, scroll_y
          
          If Not *this\hide
             If *this\ResizeChange( ) Or *this\TextChange( )
@@ -22755,45 +22746,43 @@ EndProcedure
             ;\\
                ;\\
             ForEach *this\__columns( )
-               Y                           = *this\frame_y( ) + *this\fs + *this\__columns( )\y
-               X                           = *this\frame_x( ) + *this\fs + *this\__columns( )\x
+               *column = @*this\__columns( )
+               column_index = ListIndex( *this\__columns( ))
+               Y                           = *this\frame_y( ) + *this\fs ;+ *column\y
+               X                           = *this\frame_x( ) + *this\fs + *column\x
                X                           + *this\scroll_x( ) + sublevelwidth
                ;
-               *this\__columns( )\text\height = *this\text\height
-               *this\__columns( )\text\y      = (*this\ColumnsHeight - *this\__columns( )\text\height) / 2
-               *this\__columns( )\text\x      = *this\padding\x
-               
                
                ;\\ Draw columns selector back
                If *this\color\back
                   draw_mode_alpha_( #PB_2DDrawing_Default )
-                  If ListIndex( *this\__columns( )) = 0
-                     draw_roundbox_( X - sublevelwidth, Y, *this\__columns( )\width + sublevelwidth, *this\ColumnsHeight, *this\round, *this\round, *this\color\frame )
+                  If column_index = 0
+                     draw_roundbox_( X - sublevelwidth, Y, *column\width + sublevelwidth, *this\ColumnsHeight, *this\round, *this\round, *this\color\frame )
                   Else
-                     draw_roundbox_( X, Y, *this\__columns( )\width, *this\ColumnsHeight, *this\round, *this\round, *this\color\frame )
+                     draw_roundbox_( X, Y, *column\width, *this\ColumnsHeight, *this\round, *this\round, *this\color\frame )
                   EndIf
                EndIf
                
-                  Draw_TreeRows( *this, *this\__items( ), ListIndex( *this\__columns( )))
+                  Draw_TreeRows( *this, *this\__items( ), column_index)
                   
-                  ;\\ Draw columns img
-               If *this\__columns( )\picture\imageID
-                  draw_mode_alpha_( #PB_2DDrawing_Transparent )
-                  DrawAlphaImage( *this\__columns( )\picture\imageID, X + *this\__columns( )\picture\x, Y + *this\__columns( )\picture\y, *this\color\ialpha )
-               EndIf
+;                   ;\\ Draw columns img
+;                If *column\picture\imageID
+;                   draw_mode_alpha_( #PB_2DDrawing_Transparent )
+;                   DrawAlphaImage( *column\picture\imageID, X + *column\picture\x, Y + *column\picture\y, *this\color\ialpha )
+;                EndIf
                
                ;\\ Draw columns text
-               If *this\__columns( )\text\Str(0)
+               If *column\title
                   __draw_mode( #PB_2DDrawing_Transparent )
-                  __draw_rotatedtext( *this\__columns( ), X, Y, *this\text\rotate, *this\color\front )
+                  DrawRotatedText( X + *this\padding\x, Y + (*this\ColumnsHeight - *this\text\height) / 2, *column\title, *this\text\rotate, *this\color\front ) 
                EndIf
                
                ;\\ draw vertical grid line
                If *this\mode\GridLines
-                  If ListIndex( *this\__columns( ) ) = 0
+                  If column_index = 0
                      draw_box_( X, *this\inner_y( ), *this\mode\GridLines, *this\scroll_height( ), *this\LIneColor )
                   EndIf
-                  draw_box_( X + *this\__columns( )\width - 1, *this\inner_y( ), *this\mode\GridLines, *this\scroll_height( ), *this\LIneColor )
+                  draw_box_( X + *column\width - 1, *this\inner_y( ), *this\mode\GridLines, *this\scroll_height( ), *this\LIneColor )
                EndIf
             Next
             ;
@@ -23783,7 +23772,7 @@ EndProcedure
             *this\type = #__type_CheckBox Or
             *this\type = #__type_HyperLink
             
-            *this\row.allocate( ROW )
+            *this\row.allocate( ROWS )
             
             *this\caret\start = - 1
             *this\caret\stop = - 1
@@ -23837,7 +23826,7 @@ EndProcedure
             *this\type = #__type_ListIcon Or
             *this\type = #__type_ExplorerList
             ;
-            *this\row.allocate( ROW )
+            *this\row.allocate( ROWS )
             ;
             *this\TabState( )         = - 1
             *this\LineState( ) = - 1
@@ -28607,7 +28596,7 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
       AddItem(*g, a, Str(a) + "_Column_1" + #LF$ + Str(a) + "_Column_2" + #LF$ + Str(a) + "_Column_3" + #LF$ + Str(a) + "_Column_4", 0)
    Next
    
-   ;SetState(*btn_panel, 2)
+   SetState(*btn_panel, 2)
    CloseList( ) ; close panel lists
    
    *g = String(10, 200, 200, 50, "string gadget text text 1234567890 text text long long very long", #__flag_Textpassword | #__flag_TextRight)
@@ -29081,10 +29070,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 510
-; FirstLine = 510
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-R6+0n+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------x0----
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 13689
+; FirstLine = 13517
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-R6+0n+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fc-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

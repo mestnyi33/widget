@@ -120,7 +120,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          bottom.b
       EndStructure
       ;--     STATE
-      Structure _s_ROWSTATE
+      Structure _s_STATE
          font.i
          fontID.i
          
@@ -143,7 +143,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     BOX
-      Structure _s_BOX Extends _s_ROWSTATE
+      Structure _s_BOX Extends _s_STATE
          X.l
          Y.l
          Width.l
@@ -274,7 +274,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          size.a
          mode.a
       EndStructure
-      ;
       ;--     TRANSFORM
       Structure _s_TRANSFORM 
          Index.a                             ; a_index( )
@@ -291,28 +290,29 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     MOUSE
       Structure _s_MOUSE Extends _s_POINT
-         mask.q 
+         steps.a
          click.a                 ; mouse clicked count
          buttons.a               ; canvas mouse clicked button
-         wheeldirection.b
-         steps.a
+         ; direction.b
          
          press._s_POINT
          anchors._s_TRANSFORM    ; a_anchors( )
          
-         *drag                   ;
          *cursor                 ; current visible cursor
+         *drag                   ;
          
-         *selector._s_SELECTOR   ; mouse select frame
          *drop._s_DROPMOUSE           ;
-         *button._s_BUTTONS[3]  
+         *selector._s_SELECTOR   ; mouse select frame
+         
          *item._s_ITEMS[3]
+         *button._s_BUTTONS[3]  
          *widget._s_WIDGET[3]    
          ; widget[0] = Leaved( ) - Returns mouse leaved widget
          ; widget[1] = Entered( ) - Returns mouse entered widget
          ; widget[2] = Pressed( ) - Returns mouse button pushed widget
+         mask.q 
       EndStructure
-      ;;--     margin
+      ;;--    margin
       Structure _s_margin Extends _s_COORDINATE
          color._s_color
          Hide.b
@@ -326,18 +326,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
             rindex.i ; row
             tindex.i ; tab
          EndStructureUnion
-         OffsetMove.i
-         OffsetMoveMin.i
-         OffsetMoveMax.i
-         
          
          selector.a  ; selected lines last selector size
-         ;separator.b
          
-         change.b
-         Drawing.b
-         
-         ;*columnaddress
          columnindex.u
          childrens.w ; Row( )\ ; rows( )\ ; row\
          sublevel.w
@@ -348,50 +339,47 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *popupbar._s_WIDGET
          
-         *parent._s_ROWS
+         *parent._s_ROW
          *data  ; set/get item data
       EndStructure
       
-      ;--     ROWS
-      Structure _s_ROWS Extends _s_ITEMS
+      ;--     COLUMN
+      Structure _s_COLUMN 
+         ID.i
+         X.l 
+         Width.l 
+         title.s
          mask.q
-         sel._s_SEL
+      EndStructure
+      Structure _s_COLUMNS
+         *active._s_COLUMN 
+         List __s._s_COLUMN( )
+      EndStructure
+      
+      ;--     ROW
+      Structure _s_ROW Extends _s_ITEMS
+         mask.q
+         ;sel._s_SEL
          
-         *buttonbox._s_BOX ;  buttonbox\
          *checkBox._s_BOX  ;  checkbox\
+         *buttonBox._s_BOX ;  buttonbox\
          
          ; edit
          margin._s_TEXTINFO
          
          StructureUnion
-            *_last._s_ROWS            
-            *last._s_ROWS             ; if parent - \last\child ; if child - \parent\last\child
+            *_last._s_ROW            
+            *last._s_ROW             ; if parent - \last\child ; if child - \parent\last\child
          EndStructureUnion
          
-         *_groupbar._s_ROWS ; option group row
+         *_groupbar._s_ROW ; option group row
       EndStructure
-      
-      ;--     COLUMN
-      Structure _s_COLUMN Extends _s_COORDINATE
-         ;X.l : Width.l 
-         ;title.s
-         Hide.b
-         Text._s_TEXT
-         picture._s_PICTURE
+      Structure _s_VISIBLE_ROW
+         *first._s_ROW           ; first draw-elemnt in the list
+         *last._s_ROW            ; last draw-elemnt in the list
+         List *__s._s_ROW( )     ; Развернутый рулон (указатели)
       EndStructure
-      
-      Structure _s_COLUMNS
-         List __s._s_COLUMN( )
-      EndStructure
-      
-      Structure _s_VISIBLE_ROWS
-         *first._s_ROWS           ; first draw-elemnt in the list
-         *last._s_ROWS            ; last draw-elemnt in the list
-         List *__s._s_ROWS( )     ; Развернутый рулон (указатели)
-      EndStructure
-      
-      ;--     ROW
-      Structure _s_ROW
+      Structure _s_ROWS
          state.i
          Index.i
          
@@ -400,19 +388,19 @@ CompilerIf Not Defined(Structures, #PB_Module)
          sublevelsize.a
          
          ;
-         *active._s_ROWS[2]
-         *entered._s_ROWS         ; mouse entered item
+         *active._s_ROW[2]
+         *entered._s_ROW         ; mouse entered item
          
-         *first._s_ROWS           ; first elemnt in the list
-         *last._s_ROWS            ; last elemnt in the list
-         *new._s_ROWS             ; new added last element
+         *first._s_ROW           ; first elemnt in the list
+         *last._s_ROW            ; last elemnt in the list
+         *new._s_ROW             ; new added last element
          
-         visible._s_VISIBLE_ROWS
+         visible._s_VISIBLE_ROW
          margin._s_margin
          
          *tt._s_tt
          ;
-         List __s._s_ROWS( )
+         List __s._s_ROW( )
       EndStructure
       
       ;--     PAGE
@@ -596,8 +584,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          ;                        ;
          *root._s_ROOT
-         *column._s_COLUMNs             ; multi-text; buttons; lists; - gadgets
-         *row._s_ROW              ; multi-text; buttons; lists; - gadgets
+         *column._s_COLUMNS             ; multi-text; buttons; lists; - gadgets
+         *row._s_ROWS              ; multi-text; buttons; lists; - gadgets
          *bar._s_BAR
          *drop._s_DROP
          *align._s_ALIGN
@@ -612,8 +600,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *groupbar._s_WIDGET      ; = Option( ) group widget
          *stringbar._s_WIDGET     ; = Spin( ) string box widget
          
-;          *first._s_WIDGET  ; это в лист будем переносить так как он нужен только для родителя 
-;          *last._s_WIDGET    ; это в лист будем переносить так как он нужен только для родителя
+         ; это в лист будем переносить так как он нужен только для родителя
+         *first._s_PARENT ; Первый ребенок в списке
+         *last._s_PARENT  ; Последний ребенок
+         ;
          *next._s_PARENT
          *prev._s_PARENT
          
@@ -622,7 +612,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; parent[0] - Родитель ; Иерархия - физический (где лежит) 
          ; parent[1] - Владелец ; Иерархия - логический (кто открыл)
          tabindex.l;[2]          ; [1] - это в лист будем переносить так как он нужен только для родителя
-        
+         tab_state.l
+         List *__tabs._s_ITEMS( )
+         
          ;
          *gadget._s_WIDGET[3]
          ; \root\gadget[0] - active gadget
@@ -637,13 +629,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ; \cursor[1]     ; current cursor
          ; \cursor[2]     ; change cursor 1
          ; \cursor[3]     ; change cursor 2
-         
-         *first._s_PARENT ; Первый ребенок в списке
-         *last._s_PARENT  ; Последний ребенок
-         
-         List *__tabs._s_ITEMS( )
-         tab_state.l
-       
       EndStructure
       
       ; Промежуточный тип для тех, кто имеет детей (Панель, Группа, Сплиттер)
@@ -736,9 +721,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 350
-; FirstLine = 324
-; Folding = -----------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 143
+; FirstLine = 120
+; Folding = -----6P6---
 ; Optimizer
 ; EnableXP

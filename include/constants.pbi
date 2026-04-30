@@ -315,37 +315,35 @@
       #__text_invert    = 1 << 6 ; Будет 64 (2^6)
       #__text_vertical  = 1 << 7 ; Будет 128(2^7)
       
-      
-      #__mouse_leave    = -1             ; -1  leave
-      #__mouse_enter    = 1 << 0         ; 1   enter
+      ; ==============================================================================
+      ; МАСКИ - Единые битовые константы (Quad)
+      ; ==============================================================================
+      #__mask_none      = 0
+      #__mask_update    = 1 << 0         ; Флаг: Требуется пересчет геометрии (для всех) (TextWidth и т.д.) нужно пересчитать координаты X для каретки/выделения.
       
       #__mask_left      = 1 << #__left   ; 2   move to left
       #__mask_top       = 1 << #__top    ; 4   move to top
       #__mask_right     = 1 << #__right  ; 8   move to right
       #__mask_bottom    = 1 << #__bottom ; 16  move to bottom
+      #__mask_center    = 1 << 5
       
-      #__mask_press     = 1 << 5         ; 32  button press
-      #__mask_dragstart = 1 << 6         ; 64
-      #__mask_release   = 1 << 8         ; 256 button release
+      #__mask_hover     = 1 << 6
+      #__mask_press     = 1 << 7         ; 64  button press
+      #__mask_release   = 1 << 8         ; 128 button release
+      #__mask_dragstart = 1 << 9         ; 256
+      #__mask_drag      = 1 << 10        ; Состояние перетаскивания Объект в процессе перетаскивания
+      #__mask_active    = 1 << 11        ; Виджет в фокусе / Строка выбрана / Окно активно
+      #__mask_redraw    = 1 << 12        ; Флаг: Требуется перерисовка
       
-      #__mask_focus     = 1 << 9         ; 512
-      #__mask_lostfocus = 1 << 10        ; 1024
-      
-      ; Единые битовые константы (Quad)
-      #__mask_none      = 0
-      #__mask_active    = 1 << 11  ; Виджет в фокусе / Строка выбрана / Окно активно
-      #__mask_node      = 1 << 1   ; Виджет-контейнер / Строка-узел (папка)
-      #__mask_collapsed = 1 << 2   ; Виджет свернут / Строка-ветка скрыта
-      #__mask_hidden    = 1 << 3   ; Объект полностью скрыт
-      #__mask_disable   = 1 << 4   ; Объект заблокирован (Read-only)
-      #__mask_update    = 1 << 7   ; Нужен пересчет геометрии (для всех)
-      #__mask_redraw    = 1 << 6   ; Нужна перерисовка
-      #__mask_drag      = 1 << 7   ; Объект в процессе перетаскивания
-      #__mask_shift     = 1 << 8   ; Режим диапазона
-      #__mask_ctrl      = 1 << 9   ; Режим инверсии
-      
-      ; #__mouse_move   = 1 << 8 ; 256 enter frame
-      ; #__mouse_wheel  = 1 << 9 ; 512 wheel
+      #__mask_hidden    = 1 << 16        ; Объект полностью скрыт
+      #__mask_disable   = 1 << 17        ; Объект заблокирован
+      #__mask_tokken    = 1 << 18
+      #__mask_edit      = 1 << 19        ; Выделение (Строка)
+      #__mask_change    = 1 << 20        ; текст изменился, надо перепарсить токены.
+      #__mask_cursor    = 1 << 21
+      #__mask_resize    = 1 << 22
+      #__mask_node      = 1 << 23        ; Является узлом (Строка) / Деревом (Виджет)
+      #__mask_collapsed = 1 << 24        ; Свернуто (Узел/Ветка)
       
       ;
       ;-\\ create-type
@@ -777,8 +775,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 345
-; FirstLine = 329
+; CursorPosition = 346
+; FirstLine = 333
 ; Folding = ----
 ; Optimizer
 ; EnableXP

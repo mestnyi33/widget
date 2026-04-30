@@ -86,40 +86,29 @@ EndEnumeration
 #__flag_integral        = 1 << 62
 
 ; ==============================================================================
-      ; МАСКИ - Единые битовые константы (Quad)
-      ; ==============================================================================
-      #__mask_none      = 0
-      #__mask_update    = 1 << 0         ; Флаг: Требуется пересчет геометрии (для всех) (TextWidth и т.д.) нужно пересчитать координаты X для каретки/выделения.
-      
-      #__mask_left      = 1 << 1   ; 2   move to left
-      #__mask_top       = 1 << 2    ; 4   move to top
-      #__mask_right     = 1 << 3  ; 8   move to right
-      #__mask_bottom    = 1 << 4 ; 16  move to bottom
-      #__mask_center    = 1 << 5
-      
-      #__mask_hover     = 1 << 6
-      #__mask_press     = 1 << 7         ; 64  button press
-      #__mask_release   = 1 << 8         ; 128 button release
-      #__mask_dragstart = 1 << 9         ; 256
-      #__mask_drag      = 1 << 10        ; Состояние перетаскивания Объект в процессе перетаскивания
-      #__mask_active    = 1 << 11        ; Виджет в фокусе / Строка выбрана / Окно активно
-      #__mask_redraw    = 1 << 12        ; Флаг: Требуется перерисовка
-      
-      #__mask_hidden    = 1 << 16        ; Объект полностью скрыт
-      #__mask_disable   = 1 << 17        ; Объект заблокирован
-      #__mask_tokken    = 1 << 18
-      #__mask_edit      = 1 << 19        ; Выделение (Строка)
-      #__mask_change    = 1 << 20        ; текст изменился, надо перепарсить токены.
-      #__mask_cursor    = 1 << 21
-      #__mask_resize    = 1 << 22
-      #__mask_node      = 1 << 23        ; Является узлом (Строка) / Деревом (Виджет)
-      #__mask_collapsed = 1 << 24        ; Свернуто (Узел/Ветка)
-      #__mask_scroll = 1<<25
-      
+; МАСКИ (Quad #__mask_*)
+; ==============================================================================
+#__mask_redraw    = 1 << 1   ; Флаг: Требуется перерисовка
+#__mask_update    = 1 << 2   ; Флаг: Требуется пересчет геометрии (TextWidth и т.д.) нужно пересчитать координаты X для каретки/выделения.
+#__mask_hover     = 1 << 3
+#__mask_press     = 1 << 4
+#__mask_active    = 1 << 5   ; Фокус (Виджет) 
+#__mask_hidden    = 1 << 6
+#__mask_disabled  = 1 << 7
+#__mask_drag      = 1 << 8   ; Состояние перетаскивания
+#__mask_edit      = 1 << 9   ; Выделение (Строка)
+#__mask_change    = 1 << 10  ; текст изменился, надо перепарсить токены.
+#__mask_cursor    = 1 << 11
+#__mask_resize    = 1 << 12
+#__mask_node      = 1 << 13  ; Является узлом (Строка) / Деревом (Виджет)
+#__mask_collapsed = 1 << 14  ; Свернуто (Узел/Ветка)
+                             ; #__mask_caret     = 1 << 15
+#__mask_tokken = 1 << 15
+
 ; --- Константы ---
-#__align_left    = #__flag_Left ; (бинарно 0001)
-#__align_right   = #__flag_Right ; (бинарно 0010)
-#__align_center  = #__flag_Center ; (бинарно 0100)
+#__align_left    = 1 ; (бинарно 0001)
+#__align_right   = 2 ; (бинарно 0010)
+#__align_center  = 4 ; (бинарно 0100)
 ; и так далее
 
 ; ==========================================================
@@ -189,7 +178,6 @@ Structure _s_KEYBOARD  ; Ok
    *active._s_WIDGET   ; keyboard focus element ; GetActive( )\
 EndStructure
 
-
 Structure _s_CARET
    start.l           ; Индекс начала выделения (символ)
    stop.l            ; Индекс конца выделения (символ)
@@ -205,21 +193,24 @@ Structure _s_COLUMN ; ЗАГОЛОВОК
    Width.l           ; Ширина вкладки
    title.s
    mask.q            ; Маска конкретной вкладки
+   align.q
 EndStructure
+Structure _s_TAB Extends _s_COLUMN 
+   tx.l
+EndStructure
+
 Structure _s_COLUMNS
+   Height.l  ; Высота шапки (заголовков)
    *active._s_COLUMN 
    List __s._s_COLUMN( )
 EndStructure
 
-Structure _s_TAB Extends _s_COLUMN 
-   tx.l              ; КЕШ - позиции текста
-EndStructure
 Structure _s_TABS
-   align.a               ; Выравнивание (0-лево, 1-центр, 2-право)
-   indent.a              ; ОТСТУП ВКЛАДОК
    spacing.a             ; РАССТОЯНИЕ МЕЖДУ ВКЛАДКАМИ
                          ;
+   indent.a              ; ОТСТУП ВКЛАДОК
    totalwidth.l          ; Общая ширина всех вкладок (уже считаем в update_tab)
+   align.q               ; Выравнивание (0-лево, 1-центр, 2-право)
                          ;
    *active._s_TAB 
    List __s._s_TAB()  ; Заголовки вкладок
@@ -278,79 +269,17 @@ Structure _s_ROWS
    List __s._s_ROW()        ; Строки данных
 EndStructure
 
-;--     BOX
-      Structure _s_STATE
-;          font.i
-;          fontID.i
-;          
-;           press.b
-;           visible.b
-;           checked.b
-;          
-;          StructureUnion
-;             _enter.b 
-;             enter.b  
-;          EndStructureUnion
-;          StructureUnion
-;             _focus.b  
-;             focus.b
-;          EndStructureUnion
-         
-         Hide.b[2]
-         Disable.b[2]
-         round.a
-      EndStructure
-      Structure _s_BOX Extends _s_STATE
-         X.l
-         Y.l
-         Width.l
-         Height.l
-      EndStructure
-      Structure _s_BUTTONS Extends _s_BOX
-         ;color._s_color
-         ;arrow._s_arrow
-         size.w
-      EndStructure
-      ;--     PAGE
-Structure _s_PAGE
-   pos.l
-   len.l
-   End.l
-EndStructure
-;--     BAR
-Structure _s_BAR
-   max.l
-   min.l[3]   ; fixed min[1&2] bar size
-   fixed.l[3] ; fixed bar[1&2] position (splitter)
-   
-   change.w
-   
-   invert.b
-   vertical.b
-   direction.b
-   
-   mirror.b 
-   ;;; orient.b ; Поддерживаемые ориентации
-   
-   percent.f
-   
-   page._s_page
-   area._s_page
-   thumb._s_page
-   
-   Button._s_buttons[3]
-EndStructure
-Structure _s_BAR_WIDGET Extends _s_COORDINATE
-   mask.q
-   bar._s_BAR
-;    is_drag.b
-;    thumb_w.l
-;    thumb_h.l
+Structure _s_BAR Extends _s_COORDINATE
+   pos.i 
+   max.i
+   is_drag.b
+   thumb_w.l
+   thumb_h.l
 EndStructure
 
 Structure _s_SCROLL Extends _s_COORDINATE
-   v._s_BAR_WIDGET
-   h._s_BAR_WIDGET
+   v._s_BAR
+   h._s_BAR
 EndStructure
 
 Structure _s_WIDGET Extends _s_COORDINATE
@@ -707,7 +636,7 @@ Procedure.l ChangeColor(Type.l, mask.q, colortype.l, Index.l=-1)
          ElseIf colortype = #PB_Gadget_FrontColor
             color = $000000
          EndIf
-      ElseIf mask & #__mask_disable
+      ElseIf mask & #__mask_disabled
          If colortype = #PB_Gadget_BackColor
             color = $D0D0D0 
          ElseIf colortype = #PB_Gadget_FrontColor
@@ -751,40 +680,40 @@ EndProcedure
 
 ;-
 Procedure auto_scroll_y(*this._s_WIDGET)
-   Protected._s_BAR_WIDGET *v = *this\scroll\v
-   Protected._s_BAR_WIDGET *h = *this\scroll\h  
+   Protected._s_BAR *v = *this\scroll\v
+   Protected._s_BAR *h = *this\scroll\h  
    Protected._s_ROW *active = *this\row\active[0]
    Protected result, h = *this\fs[2] ; *this\column\height
    
    ; Проверка автоскролла по Y
-   If *v\bar\page\pos < (*active\y + *active\height) - *v\bar\page\len
-      *v\bar\page\pos = (*active\y + *active\height) - *v\bar\page\len
+   If *v\pos < (*active\y + *active\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
+      *v\pos = (*active\y + *active\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
       result = 1
-   ElseIf *v\bar\page\pos > (*active\y - h)
-      *v\bar\page\pos = (*active\y - h)
+   ElseIf *v\pos > (*active\y - h)
+      *v\pos = (*active\y - h)
       result = -1
    EndIf
    
-   If *v\bar\page\pos < 0 : *v\bar\page\pos = 0 : EndIf
-   If *v\bar\page\pos > *v\bar\max : *v\bar\page\pos = *v\bar\max : EndIf
+   If *v\pos < 0 : *v\pos = 0 : EndIf
+   If *v\pos > *v\max : *v\pos = *v\max : EndIf
    
    ProcedureReturn result
 EndProcedure
 
 ; СКРОЛЛИНГ
 Procedure auto_scroll_x(*this._s_WIDGET)
-   Protected._s_BAR_WIDGET *v = *this\scroll\v
-   Protected._s_BAR_WIDGET *h = *this\scroll\h  
+   Protected._s_BAR *v = *this\scroll\v
+   Protected._s_BAR *h = *this\scroll\h  
    Protected._s_ROW *active = *this\row\active[0]
    
    Protected offset = *this\padding\x + (*active\sublevel * *this\row\indent)
    If (*active\mask & #__mask_node) : offset + 15 : EndIf
    Protected cx = *this\caret\x + offset
-   Protected view_w = *h\bar\page\len
+   Protected view_w = *this\width - Bool(*v\max > 0) * *this\fs[3]
    
-   If *h\bar\page\pos < cx - view_w + *this\padding\x : *h\bar\page\pos = cx - view_w + *this\padding\x
-      ElseIf *h\bar\page\pos > cx - *this\padding\x : *h\bar\page\pos = cx - *this\padding\x : EndIf
-   If *h\bar\page\pos < 0 : *h\bar\page\pos = 0 : ElseIf *h\bar\page\pos > *h\bar\max : *h\bar\page\pos = *h\bar\max : EndIf
+   If *h\pos < cx - view_w + *this\padding\x : *h\pos = cx - view_w + *this\padding\x
+      ElseIf *h\pos > cx - *this\padding\x : *h\pos = cx - *this\padding\x : EndIf
+   If *h\pos < 0 : *h\pos = 0 : ElseIf *h\pos > *h\max : *h\pos = *h\max : EndIf
 EndProcedure
 
 Procedure.i edit_make_caret(*this._s_WIDGET)
@@ -796,7 +725,7 @@ Procedure.i edit_make_caret(*this._s_WIDGET)
       *row\mask | #__mask_update
       Protected offset = *this\padding\x + (*row\sublevel * *this\row\indent)
       If (*row\mask & #__mask_node) : offset + 15 : EndIf
-      Protected dx = *this\real\x + offset - *this\scroll\h\bar\page\pos
+      Protected dx = *this\real\x + offset - *this\scroll\h\pos
       mouse_x = mouse()\x - dx
       
       Protected txt.s = *row\Str(0)
@@ -939,8 +868,8 @@ EndProcedure
 
 Procedure edit_key_events(*this._s_WIDGET, *row._s_ROW, event.i)
    If Not *this Or Not *row : ProcedureReturn : EndIf
-   Protected._s_BAR_WIDGET *v = *this\scroll\v
-   Protected._s_BAR_WIDGET *h = *this\scroll\h
+   Protected._s_BAR *v = *this\scroll\v
+   Protected._s_BAR *h = *this\scroll\h
    Protected txt.s, pos.i, i.i
    Protected h = *this\fs[2] ; *this\column\height
                         
@@ -978,7 +907,7 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_ROW, event.i)
                      ; Слияние с предыдущей строкой
                      ChangeCurrentElement(*this\__rows(), *row)
                      If PreviousElement(*this\__rows())
-                        *v\bar\max - *row\Height
+                        *v\max - *row\Height
                         *row = @*this\__rows()
                         *this\row\active[0] = *row
                         *this\row\active[1] = *row
@@ -991,11 +920,11 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_ROW, event.i)
                         DeleteElement(*this\__rows())
                         
                         ; auto_scroll_y(*this)
-                        If *v\bar\page\pos > (*row\y - h)
-                           *v\bar\page\pos = (*row\y - h)
+                        If *v\pos > (*row\y - h)
+                           *v\pos = (*row\y - h)
                         Else
-                           If *v\bar\page\pos > *v\bar\max 
-                              *v\bar\page\pos = *v\bar\max
+                           If *v\pos > *v\max 
+                              *v\pos = *v\max
                            EndIf
                         EndIf
                      EndIf
@@ -1056,7 +985,7 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_ROW, event.i)
                      *row\mask | (#__mask_change)
                      *row\mask &~ (#__mask_active | #__mask_edit)
                      *row = @*this\__rows()
-                     *v\bar\max + *row\Height ; Временно увеличиваем, чтобы автоскролл пропустил значение
+                     *v\max + *row\Height ; Временно увеличиваем, чтобы автоскролл пропустил значение
                      *row\mask | (#__mask_change)
                      *this\mask | (#__mask_update)
                   EndIf
@@ -1069,8 +998,8 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_ROW, event.i)
                   *this\caret\stop = 0
                   
                   ; auto_scroll_y(*this)
-                  If *v\bar\page\pos < (*row\y + *row\height) - *v\bar\page\len
-                     *v\bar\page\pos = (*row\y + *row\height) - *v\bar\page\len
+                  If *v\pos < (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
+                     *v\pos = (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
                   EndIf
                EndIf
                
@@ -1101,8 +1030,8 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_ROW, event.i)
                      *this\row\active[0]\mask | (#__mask_active | #__mask_edit | #__mask_update)
                      
                      ; Проверка автоскролла по Y
-                     If *v\bar\page\pos > (*row\y - h)
-                        *v\bar\page\pos = (*row\y - h)
+                     If *v\pos > (*row\y - h)
+                        *v\pos = (*row\y - h)
                         *this\mask | #__mask_update
                      EndIf
                   EndIf
@@ -1136,8 +1065,8 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_ROW, event.i)
                      *this\row\active[0]\mask | (#__mask_active | #__mask_edit | #__mask_update)
                      
                      ; Проверка автоскролла по Y
-                     If *v\bar\page\pos < (*row\y + *row\height) - *v\bar\page\len
-                        *v\bar\page\pos = (*row\y + *row\height) - *v\bar\page\len
+                     If *v\pos < (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
+                        *v\pos = (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
                         *this\mask | #__mask_update
                      EndIf
                   EndIf
@@ -1162,8 +1091,8 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_ROW, event.i)
                         *this\caret\start = Len(*row\Str(0))
                         
                         ; Проверка автоскролла по Y
-                        If *v\bar\page\pos > (*row\y - h)
-                           *v\bar\page\pos = (*row\y - h)
+                        If *v\pos > (*row\y - h)
+                           *v\pos = (*row\y - h)
                            *this\mask | #__mask_update
                         EndIf
                      EndIf
@@ -1208,8 +1137,8 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_ROW, event.i)
                         *this\caret\start = 0
                         
                         ; Проверка автоскролла по Y
-                        If *v\bar\page\pos < (*row\y + *row\height) - *v\bar\page\len
-                           *v\bar\page\pos = (*row\y + *row\height) - *v\bar\page\len
+                        If *v\pos < (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
+                           *v\pos = (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
                            *this\mask | #__mask_update
                         EndIf
                      EndIf
@@ -1246,8 +1175,8 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_ROW, event.i)
                         *this\row\active[0] = *row
                         
                         ; Проверка автоскролла по Y
-                        If *v\bar\page\pos > (*row\y - h)
-                           *v\bar\page\pos = (*row\y - h)
+                        If *v\pos > (*row\y - h)
+                           *v\pos = (*row\y - h)
                            *this\mask | #__mask_update
                         EndIf
                      EndIf
@@ -1276,8 +1205,8 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_ROW, event.i)
                         *this\row\active[1] = *row
                         
                         ; Проверка автоскролла по Y
-                        If *v\bar\page\pos < (*row\y + *row\height) - *v\bar\page\len
-                           *v\bar\page\pos = (*row\y + *row\height) - *v\bar\page\len
+                        If *v\pos < (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
+                           *v\pos = (*row\y + *row\height) - (*this\height - Bool(*h\max > 0) * *this\fs[4])
                            *this\mask | #__mask_update
                         EndIf
                      EndIf
@@ -1298,7 +1227,7 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_ROW, event.i)
             Case #PB_Shortcut_PageUp, #PB_Shortcut_PageDown
                If *row
                   ; 1. Определяем высоту страницы
-                  Protected page_h.l = *v\bar\page\len
+                  Protected page_h.l = *this\height - h - Bool(*h\max > 0) * *this\fs[4]
                   Protected current_h.l = 0
                   
                   PushListPosition(*this\__rows())
@@ -1337,23 +1266,23 @@ Procedure edit_key_events(*this._s_WIDGET, *row._s_ROW, event.i)
                   ; 4. Синхронизируем скролл
                   If keyboard()\key = #PB_Shortcut_PageUp 
                      ; Синхронизируем скролл (по пикселям)
-                     ; *v\bar\page\pos - page_h
+                     ; *v\pos - page_h
                      ;
                      ; Для PageUp: ставим новую активную строку по верхней границе (учитывая шапку)
-                     *v\bar\page\pos = *row\y - h
+                     *v\pos = *row\y - h
                      
                   Else 
                      ; Синхронизируем скролл (по пикселям)
-                     ; *v\bar\page\pos + page_h
+                     ; *v\pos + page_h
                      ;
                      ; Для PageDown: ставим новую строку так, чтобы её НИЗ был у НИЖНЕГО края виджета
                      ; Это предотвращает "прыжки" лишнего пустого пространства
-                     *v\bar\page\pos = (*row\y + *row\height) - h - page_h
+                     *v\pos = (*row\y + *row\height) - h - page_h
                   EndIf
                   
                   ; И финальная страховка
-                  If *v\bar\page\pos < 0 : *v\bar\page\pos = 0 : EndIf
-                  If *v\bar\page\pos > *v\bar\max : *v\bar\page\pos = *v\bar\max : EndIf
+                  If *v\pos < 0 : *v\pos = 0 : EndIf
+                  If *v\pos > *v\max : *v\pos = *v\max : EndIf
                   
                   PopListPosition(*this\__rows())
                   *this\mask | #__mask_update
@@ -1534,29 +1463,6 @@ Procedure Resize(*this._s_WIDGET, X.l, Y.l, Width.l, Height.l)
 EndProcedure
 
 ;-
-; -- Установка полной длины контента
-Procedure set_bar_max(*bar._s_BAR, max.l)
-   If *bar\max <> max
-      *bar\max = max
-   EndIf
-EndProcedure
-
-; -- Установка минимального размера (если нужно для сплиттеров)
-Procedure set_bar_min(*bar._s_BAR, min.l)
-   If *bar\min <> min 
-      *bar\min = min
-   EndIf
-EndProcedure
-
-; -- Установка размера видимого окна
-Procedure set_bar_page_len(*bar._s_BAR, len.l)
-   If *bar\page\len <> len
-      *bar\page\len = len
-   EndIf
-EndProcedure
-
-; -- Финальный пересчет позиций и размеров ползунка
-
 Procedure add_column(*this._s_WIDGET, Title.s, Width.i)
    If Not *this : ProcedureReturn : EndIf
    *this\fs[2] = 25 ; *this\column\height = 25
@@ -1683,10 +1589,10 @@ Procedure AddOperator(chars.s, color.l)
 EndProcedure
 
 ;-
-Procedure.i AddColumn(*this._s_WIDGET, position.l, Text.s, Width.l, img.i = -1, mask.q = #__mask_left)
+Procedure.i AddColumn(*this._s_WIDGET, position.l, Text.s, Width.l, img.i = -1, Align.a = #__align_left)
    Protected._s_COLUMN *coumn
    *coumn = add_column(*this, Text, Width);, img.i = -1)
-   *coumn\mask | mask
+   *coumn\Align = Align
    ProcedureReturn *coumn
 EndProcedure
 
@@ -1735,148 +1641,6 @@ Procedure SetText(*this._s_WIDGET, Text.s)
 EndProcedure
 
 ;-
-Procedure update_scroll(*this._s_WIDGET, *bar._s_BAR)
-   Protected.i ThumbPos
-   Protected.i btn1_size = 0;*bar\button[1]\size ; размер верхней кнопки
-   Protected.i btn2_size = 0;*bar\button[2]\size ; размер нижней кнопки
-   Protected.i min_thumb = 20;*bar\button[0]\size ; минимальный размер ползунка
-
-   If Not *bar\area\len : ProcedureReturn : EndIf
-   
-   If *this\Scroll\v\bar = *bar
-      btn1_size = 25
-   EndIf
-   
-   ; 1. Определяем границы трека (Area)
-   *bar\area\pos = btn1_size
-   If *bar\area\pos > *bar\area\len : *bar\area\pos = *bar\area\len : EndIf
-   
-   ; thumb\end — это доступная длина трека за вычетом кнопок
-   *bar\thumb\end = *bar\area\len - btn2_size - btn1_size
-   If *bar\thumb\end < 0 : *bar\thumb\end = 0 : EndIf
-
-   ; 2. Расчет длины ползунка (Thumb Len)
-   If *bar\page\len
-      ; Пропорция: (Трек / Контент) * Окно
-      *bar\thumb\len = Round((*bar\thumb\end / (*bar\max - *bar\min)) * *bar\page\len, #PB_Round_Nearest)
-   Else
-      *bar\thumb\len = min_thumb
-   EndIf
-
-   ; Ограничения размера ползунка
-   If *bar\thumb\len > *bar\thumb\end
-      *bar\thumb\len = *bar\thumb\end
-   ElseIf *bar\thumb\len < min_thumb
-      If *bar\thumb\end > min_thumb : *bar\thumb\len = min_thumb : Else : *bar\thumb\len = 0 : EndIf
-   EndIf
-
-   ; 3. Расчет лимитов и ПЕРЦЕНТА
-   ; page\end — это максимальная дистанция прокрутки
-   If *bar\max > *bar\page\len
-      *bar\page\end = *bar\max - *bar\page\len
-   Else
-      *bar\page\end = *bar\page\len - *bar\max ; для корректного деления
-   EndIf
-
-   ; ВАЖНО: Percent связывает свободный путь ползунка со свободным путем контента
-   Protected scroll_dist = *bar\page\end - *bar\min
-   Protected track_dist = *bar\thumb\end - *bar\thumb\len
-   
-   If scroll_dist <> 0
-      *bar\percent = track_dist / scroll_dist
-   Else
-      *bar\percent = track_dist ; если скроллить нечего
-   EndIf
-
-   ; Конечная точка трека для ползунка
-   *bar\area\end = *bar\area\len - *bar\thumb\len - btn2_size
-   If *bar\area\end < 0 : *bar\area\end = 0 : EndIf
-
-   ; 4. Контроль выхода за границы
-   If *bar\page\end And *bar\page\pos > *bar\page\end
-      *bar\page\pos = *bar\page\end
-   EndIf
-   If *bar\page\pos < *bar\min : *bar\page\pos = *bar\min : EndIf
-
-   ; 5. Финальный расчет экранной позиции (Thumb Pos)
-   ThumbPos = Round((*bar\page\pos - *bar\min) * *bar\percent, #PB_Round_Nearest)
-   
-   If *bar\invert
-      ThumbPos = *bar\area\end - ThumbPos
-   Else
-      ThumbPos = *bar\area\pos + ThumbPos
-   EndIf
-
-   ; Ограничиваем пиксели, чтобы не вылезти на кнопки
-   If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
-   If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
-
-   *bar\thumb\pos = ThumbPos
-EndProcedure
-Procedure _update_scroll(*this._s_WIDGET, *bar._s_BAR)
-   Protected ThumbPos.i
-   ; Ссылки на кнопки (Thumb, Up, Down)
-   Protected *SB._s_buttons  = *bar\button[0] 
-   Protected *BB1._s_buttons = *bar\button[1] 
-   Protected *BB2._s_buttons = *bar\button[2] 
-   
-   If Not *bar\max : ProcedureReturn : EndIf
-
-   ; 1. Настройка области трека (Area)
-   *bar\area\pos = *BB1\size
-   *bar\thumb\end = *bar\area\len - *BB2\size - *BB1\size
-   If *bar\thumb\end < 0 : *bar\thumb\end = 0 : EndIf
-
-   ; --- ВОТ ТВОЙ РАСЧЕТ THUMB LEN ---
-   If *bar\page\len
-      ; Длина ползунка = (Доступный трек / Весь контент) * Видимое окно
-      *bar\thumb\len = Round((*bar\thumb\end / (*bar\max - *bar\min)) * *bar\page\len, #PB_Round_Nearest)
-   Else
-      *bar\thumb\len = *SB\size
-   EndIf
-
-   ; Ограничения: чтобы ползунок не был меньше минимального и не длиннее трека
-   If *bar\thumb\len > *bar\thumb\end : *bar\thumb\len = *bar\thumb\end : EndIf
-   If *bar\thumb\len < *SB\size And *bar\thumb\end > *SB\size : *bar\thumb\len = *SB\size : EndIf
-   ; --------------------------------
-
-   ; 2. Расчет лимитов прокрутки
-   *bar\page\end = *bar\max - *bar\page\len
-   If *bar\page\end < 0 : *bar\page\end = 0 : EndIf
-
-   ; 3. Расчет коэффициента PERCENT
-   ; (Сколько пикселей ползунка приходится на 1 пиксель контента)
-   Protected scroll_dist = *bar\page\end - *bar\min
-   Protected track_dist  = *bar\thumb\end - *bar\thumb\len
-   
-   If scroll_dist > 0
-      *bar\percent = track_dist / scroll_dist
-   Else
-      *bar\percent = 1 ; Защита от деления на 0
-   EndIf
-
-   *bar\area\end = *bar\area\len - *bar\thumb\len - *BB2\size
-
-   ; 4. Коррекция позиции (pos)
-   If *bar\page\pos > *bar\page\end : *bar\page\pos = *bar\page\end : EndIf
-   If *bar\page\pos < *bar\min : *bar\page\pos = *bar\min : EndIf
-   
-   ; 5. Финальный расчет пиксельной позиции (thumb\pos)
-   ThumbPos = Round((*bar\page\pos - *bar\min) * *bar\percent, #PB_Round_Nearest)
-   
-   If *bar\invert
-      ThumbPos = *bar\area\end - ThumbPos
-   Else
-      ThumbPos = *bar\area\pos + ThumbPos
-   EndIf
-
-   ; Защита: не даем ползунку «наезжать» на кнопки стрелок
-   If ThumbPos < *bar\area\pos : ThumbPos = *bar\area\pos : EndIf
-   If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
-
-   *bar\thumb\pos = ThumbPos
-EndProcedure
-
 Procedure update_token(*this._s_WIDGET, *row._s_ROW)
    If Not *row : ProcedureReturn : EndIf
    
@@ -1999,8 +1763,8 @@ EndProcedure
 
 Procedure update_sel(*this._s_WIDGET, *row._s_ROW)
    Protected *active._s_ROW = *this\row\active[0]
-   Protected._s_BAR_WIDGET *v = *this\scroll\v
-   Protected._s_BAR_WIDGET *h = *this\scroll\h  
+   Protected._s_BAR *v = *this\scroll\v
+   Protected._s_BAR *h = *this\scroll\h  
    
    ; 1. Ленивое обновление токенов
    If *row\mask & #__mask_change 
@@ -2128,17 +1892,17 @@ Procedure update_sel(*this._s_WIDGET, *row._s_ROW)
             EndIf
             
             
-            ;*h\bar\max + (*this\caret\x-edit_caret_x)
+            ;*h\max + (*this\caret\x-edit_caret_x)
             
             ; СКРОЛЛИНГ
             Protected offset = *this\padding\x + (*active\sublevel * *this\row\indent)
             If (*active\mask & #__mask_node) : offset + 15 : EndIf
             Protected cx = *this\caret\x + offset
-            Protected view_w = *h\bar\page\len
+            Protected view_w = *this\width - Bool(*v\max > 0) * *this\fs[3]
             
-            If *h\bar\page\pos < cx - view_w + *this\padding\x : *h\bar\page\pos = cx - view_w + *this\padding\x
-               ElseIf *h\bar\page\pos > cx - *this\padding\x : *h\bar\page\pos = cx - *this\padding\x : EndIf
-            If *h\bar\page\pos < 0 : *h\bar\page\pos = 0 : ElseIf *h\bar\page\pos > *h\bar\max : *h\bar\page\pos = *h\bar\max : EndIf
+            If *h\pos < cx - view_w + *this\padding\x : *h\pos = cx - view_w + *this\padding\x
+               ElseIf *h\pos > cx - *this\padding\x : *h\pos = cx - *this\padding\x : EndIf
+            If *h\pos < 0 : *h\pos = 0 : ElseIf *h\pos > *h\max : *h\pos = *h\max : EndIf
             
             ; Debug *this\caret\x
          EndIf
@@ -2171,8 +1935,8 @@ EndProcedure
 Procedure update_rows(*this._s_WIDGET)
    If Not *this : ClearList(*this\__items( )) : ProcedureReturn : EndIf
    Protected._s_ROW *row
-   Protected._s_BAR_WIDGET *v = *this\scroll\v
-   Protected._s_BAR_WIDGET *h = *this\scroll\h
+   Protected._s_BAR *v = *this\scroll\v
+   Protected._s_BAR *h = *this\scroll\h
    
    If *this\Type = #__type_Tree
       update_nodes(*this)
@@ -2184,7 +1948,7 @@ Procedure update_rows(*this._s_WIDGET)
    Protected max_w = 0 
    Protected h = *this\fs[2] ; *this\column\height 
    Protected cur_y = h
-   Protected view_top = *v\bar\page\pos
+   Protected view_top = *v\pos
    Protected view_bottom = view_top + *this\height - h
    Protected skip_level = -1 ; Заменил Static на Protected для многопоточности/многооконности
    
@@ -2253,17 +2017,15 @@ Procedure update_rows(*this._s_WIDGET)
    Protected h_bar_h = 0 : If max_w > (*this\width - v_bar_w) : h_bar_h = *this\fs[4] : EndIf
    
    ; Пересчет максов
-   Protected view_w ;= *this\width - v_bar_w
-   Protected view_h ;= *this\height - h_bar_h - h
-   *v\bar\page\len = *this\height - h_bar_h - h
-   *h\bar\page\len = *this\width - v_bar_w
+   Protected view_w = *this\width - v_bar_w
+   Protected view_h = *this\height - h_bar_h - h
    
-   *v\bar\max = (cur_y - h) - view_h : If *v\bar\max < 0 : *v\bar\max = 0 : EndIf
+   *v\max = (cur_y - h) - view_h : If *v\max < 0 : *v\max = 0 : EndIf
    If ListSize(*this\__columns()) <= 1
       If max_w < *this\width
          max_w = *this\width
       EndIf
-      *h\bar\max = max_w - view_w : If *h\bar\max < 0 : *h\bar\max = 0 : EndIf
+      *h\max = max_w - view_w : If *h\max < 0 : *h\max = 0 : EndIf
       
       ; Синхронизация единственной колонки (если надо)
       FirstElement(*this\__columns())
@@ -2313,12 +2075,11 @@ Procedure update_tab(*this._s_WIDGET)
    
    *this\tab\totalwidth = tw_all
    
-   ; 2. СЧИТАЕМ СТАРТОВЫЙ ОТСТУП 
-   Protected start_offset = 0 
-   ; Выравнивание (0-лево, 1-центр, 2-право)
-   If *this\tab\align = 2
+   ; 2. СЧИТАЕМ СТАРТОВЫЙ ОТСТУП
+   Protected start_offset = 0
+   If *this\tab\align & #__align_right
       start_offset = *this\Width - tw_all - *this\tab\indent - 1
-   ElseIf *this\tab\align = 1
+   ElseIf *this\tab\align & #__align_center
       start_offset = (*this\Width - tw_all) / 2
    Else
       start_offset = *this\tab\indent
@@ -2336,8 +2097,8 @@ Procedure update_tab(*this._s_WIDGET)
 EndProcedure
 
 Procedure update_columns(*this._s_WIDGET)
-   Protected._s_BAR_WIDGET *v = *this\scroll\v
-   Protected._s_BAR_WIDGET *h = *this\scroll\h
+   Protected._s_BAR *v = *this\scroll\v
+   Protected._s_BAR *h = *this\scroll\h
    Protected cur_x = 0
    
    ; --- 1. АВТОПОДБОР ШИРИНЫ (SCAN-PASS) ---
@@ -2374,15 +2135,15 @@ Procedure update_columns(*this._s_WIDGET)
    ; Вычисляем макс для горизонтального скролла:
    ; (Общая ширина) - (Ширина виджета - место под вертикальный скролл)
    Protected v_bar_w = 0
-   If *this\scroll\v\bar\max > *this\scroll\v\bar\page\len : v_bar_w = *this\fs : EndIf
+   If *this\scroll\v\max > 0 : v_bar_w = *this\fs : EndIf
    
-   *h\bar\max = cur_x ;- (*this\width - v_bar_w)
+   *h\max = cur_x - (*this\width - v_bar_w)
    
    ; Если контент уже виджета, сбрасываем макс в 0
-   If *h\bar\max < 0 : *h\bar\max = 0 : EndIf
+   If *h\max < 0 : *h\max = 0 : EndIf
    
    ; Если скролл уехал дальше нового максимума (например, при уменьшении ширины)
-   If *h\bar\page\pos > *h\bar\max : *h\bar\page\pos = *h\bar\max : EndIf
+   If *h\pos > *h\max : *h\pos = *h\max : EndIf
 EndProcedure
 
 Procedure update_level(*this._s_WIDGET, new_level.l)
@@ -2400,45 +2161,77 @@ EndProcedure
 
 ;-
 Procedure draw_scroll(*this._s_WIDGET, vertical.b, rx.l, ry.l)
-   Protected *bw._s_BAR_WIDGET
-   If vertical : *bw = @*this\scroll\v : Else : *bw = @*this\scroll\h : EndIf
+   Protected *v._s_BAR = @*this\scroll\v
+   Protected *h._s_BAR = @*this\scroll\h
+   Protected h = *this\fs[2] ; *this\column\height 
    
-   Protected *bar._s_BAR = @*bw\bar
-   ; Если скроллить нечего — не рисуем
-   If *bar\max <= *bar\page\len : ProcedureReturn : EndIf
+   Protected mx = mouse()\x - rx
+   Protected my = mouse()\y - ry
+   Protected is_hover.b = #False
    
-   ; 1. Определяем цвета на основе масок состояния
+   ; Цвета
    Protected color_bg = $F0F0F0     
    Protected color_thumb = $CDCDCD  
    
-   If *bw\mask & #__mask_drag 
-      color_thumb = $808080 ; Цвет при перетаскивании
-   ElseIf *bw\mask & #__mask_hover
-      color_thumb = $A0A0A0 ; Цвет при наведении
-   EndIf
-   
-   DrawingMode(#PB_2DDrawing_Default)
+   ; Определяем наличие "соседа" для корректной отрисовки длины
+   Protected fsv.l = 0 : If *v\max > 0 : fsv = *this\fs[3] : EndIf
+   Protected fsh.l = 0 : If *h\max > 0 : fsh = *this\fs[4] : EndIf
    
    If vertical
-      ; Координата X для вертикального скролла (всегда справа)
-      Protected x_v = rx + *this\width - *this\fs[3]
-      
-      ; Фон трека (используем уже рассчитанные в update_bar area\pos и area\len)
-      Box(x_v, ry + *bar\area\pos, *this\fs[3], *bar\area\len, color_bg)
-      
-      ; Ползунок (используем готовые thumb\pos и thumb\len)
-      ; +3 и -6 это внутренние отступы, чтобы ползунок был чуть уже трека
-      Box(x_v + 3, ry + *bar\thumb\pos, *this\fs[3] - 6, *bar\thumb\len, color_thumb)
+      If *v\max > 0
+         If Not (*this\mask & #__mask_drag)
+            is_hover = Bool(mx > (*this\width - *this\fs[3]) And mx <= *this\width And 
+                            my > h And my <= (*this\height - fsh))
+         EndIf
+         
+         Protected.f view_h = *this\height - h - fsh
+         Protected.f total_h = *v\max + view_h
+         
+         ; Сохраняем высоту ползунка в структуру
+         *v\thumb_h = view_h * (view_h / total_h)
+         If *v\thumb_h < 20 : *v\thumb_h = 22 : EndIf
+         
+         Protected.f scroll_ratio = *v\pos / *v\max
+         Protected thumb_y = ry + h + scroll_ratio * (view_h - *v\thumb_h)
+         
+         If *v\is_drag 
+            color_thumb = $808080 
+         ElseIf is_hover
+            color_thumb = $A0A0A0 
+         EndIf
+         
+         DrawingMode(#PB_2DDrawing_Default)
+         Box(rx + *this\width - *this\fs[3] - 1, ry + h, *this\fs[3], view_h, color_bg)
+         Box(rx + *this\width - *this\fs[3] + 3, thumb_y, *this\fs[3] - 6, *v\thumb_h, color_thumb)
+      EndIf
       
    Else
-      ; Координата Y для горизонтального скролла (всегда снизу)
-      Protected y_h = ry + *this\height - *this\fs[4]
-      
-      ; Фон трека
-      Box(rx + *bar\area\pos, y_h, *bar\area\len, *this\fs[4], color_bg)
-      
-      ; Ползунок
-      Box(rx + *bar\thumb\pos, y_h + 3, *bar\thumb\len, *this\fs[4] - 6, color_thumb)
+      If *h\max > 0
+         If Not (*this\mask & #__mask_drag)
+            is_hover = Bool(my > (*this\height - *this\fs[4]) And my <= *this\height And 
+                            mx > *this\fs[1] And mx <= (*this\width - fsv))
+         EndIf
+         
+         Protected.f view_w = *this\width - *this\fs[1] - fsv
+         Protected.f total_w = *h\max + view_w
+         
+         ; Сохраняем ширину ползунка в структуру (УБРАНО Protected thumb_w)
+         *h\thumb_w = view_w * (view_w / total_w)
+         If *h\thumb_w < 20 : *h\thumb_w = 22 : EndIf
+         
+         Protected.f scroll_ratio_h = *h\pos / *h\max
+         Protected thumb_x = rx + *this\fs[1] + scroll_ratio_h * (view_w - *h\thumb_w)
+         
+         If *h\is_drag 
+            color_thumb = $808080
+         ElseIf is_hover
+            color_thumb = $A0A0A0
+         EndIf
+         
+         DrawingMode(#PB_2DDrawing_Default)
+         Box(rx + *this\fs[1], ry + *this\height - *this\fs[4]-1, view_w, *this\fs[4], color_bg)
+         Box(thumb_x, ry + *this\height - *this\fs[4] + 3, *h\thumb_w, *this\fs[4] - 6, color_thumb)
+      EndIf
    EndIf
 EndProcedure
 
@@ -2449,7 +2242,7 @@ Procedure draw_button(*this._s_WIDGET, rx.l, ry.l)
    
    ; --- ЦВЕТОВАЯ СХЕМА ---
    
-   If *this\mask & #__mask_disable
+   If *this\mask & #__mask_disabled
       c1 = $F5F5F5 : c2 = $E0E0E0 : border = $D0D0D0 ; Серый (выключен)
       
    ElseIf *this\mask & #__mask_press
@@ -2568,7 +2361,7 @@ Procedure draw_panel(*this._s_WIDGET, rx.l, ry.l)
 EndProcedure
 
 Procedure draw_columns(*this._s_WIDGET, rx.l, ry.l)
-   Protected dx = rx - *this\scroll\h\bar\page\pos 
+   Protected dx = rx - *this\scroll\h\pos 
    Protected h = *this\fs[2] ; *this\column\height 
    
    ; 1. Рисуем фон всей шапки (статично)
@@ -2597,9 +2390,9 @@ Procedure draw_columns(*this._s_WIDGET, rx.l, ry.l)
             EndIf
             
             Define tx, tw = TextWidth(*column\Title)
-            If *column\mask & #__mask_right
+            If *column\align & #__align_right
                tx = col_x + *column\Width - tw - *this\padding\x
-            ElseIf *column\mask & #__mask_center
+            ElseIf *column\align & #__align_center
                tx = col_x + (*column\Width - tw) / 2
             Else
                tx = col_x + *this\padding\x
@@ -2635,9 +2428,9 @@ Procedure draw_rows(*this._s_WIDGET, rx.l, ry.l)
    
    Protected._s_ROW *row
    Protected._s_COLUMN *column
-   Protected *v._s_BAR_WIDGET = *this\scroll\v
-   Protected *h._s_BAR_WIDGET = *this\scroll\h
-   Protected dx = rx - *h\bar\page\pos
+   Protected *v._s_BAR = *this\scroll\v
+   Protected *h._s_BAR = *this\scroll\h
+   Protected dx = rx - *h\pos
    
    ChangeCurrentElement(*this\__items(), *this\row\visible\first)
    Repeat 
@@ -2649,7 +2442,7 @@ Procedure draw_rows(*this._s_WIDGET, rx.l, ry.l)
          update_sel(*this, *row)
       EndIf
       
-      Protected dy = ry + (*row\y - *v\bar\page\pos)
+      Protected dy = ry + (*row\y - *v\pos)
       
       ; --- 1. ФОН СТРОКИ ---
       Box(rx + 1, dy, *this\width - 2, *row\height - 1, ChangeColor(*this\Type, *row\mask, #PB_Gadget_BackColor, ListIndex(*this\__items())))
@@ -2742,9 +2535,9 @@ Procedure draw_rows(*this._s_WIDGET, rx.l, ry.l)
                      text_y = dy + (*row\height - TextHeight("Ay")) / 2
                      
                      Define tx, tw = TextWidth(txt)
-                     If *column\mask & #__mask_right
+                     If *column\align & #__align_right
                         tx = col_x + *column\Width - tw - *this\padding\x
-                     ElseIf *column\mask & #__mask_center
+                     ElseIf *column\align & #__align_center
                         tx = col_x + (*column\Width - tw) / 2
                      Else
                         tx = col_x + offset
@@ -2869,34 +2662,7 @@ Procedure Draw(*root._s_ROOT)
                EndIf
             EndIf
             
-            ; После update_rows у нас изменились max/page_len, 
-            ; поэтому ОБЯЗАТЕЛЬНО взводим маску скролла для пересчета ползунков
-            *this\mask | #__mask_scroll
             *this\mask &~ #__mask_update
-         EndIf
-         
-         ; --- 2. Расчет геометрии скроллбаров (кнопки, ползунки, проценты) ---
-         ; В секции расчетов в Procedure Draw()
-                  ; --- Расчет геометрии скроллбаров ---
-         If (*this\mask & #__mask_scroll) And *this\Scroll
-           
-            ; 1. Для вертикального скроллбара
-            If *this\Scroll\v\bar\max > *this\scroll\v\bar\page\len
-               ; Длина = Высота виджета - Шапка - Место под горизонтальный скролл (если он есть)
-               *this\Scroll\v\bar\area\len = *this\height - *this\fs-*this\fs[4] ; - *this\fs[2];
-               
-               update_scroll(*this, @*this\Scroll\v\bar)
-            EndIf
-            
-            ; 2. Для горизонтального скроллбара
-            If *this\Scroll\h\bar\max > *this\scroll\h\bar\page\len
-               ; Длина = Ширина виджета - Место под вертикальный скролл (если он есть)
-               *this\Scroll\h\bar\area\len = *this\width - *this\fs-*this\fs[3] ; - *this\fs[1]
-               
-               update_scroll(*this, @*this\Scroll\h\bar)
-            EndIf
-            
-            *this\mask &~ #__mask_scroll
          EndIf
          
          ; Ограничиваем рисование областью виджета
@@ -2933,10 +2699,10 @@ Procedure Draw(*root._s_ROOT)
          
          ; Теперь рисуем скроллбары поверх всего, в границах виджета
          If *this\Scroll
-            If *this\Scroll\v\bar\max > *this\scroll\v\bar\page\len
+            If *this\Scroll\v\max > 0
                draw_scroll(*this, 1, rx, ry) ; Вертикальный
             EndIf
-            If *this\Scroll\h\bar\max > *this\scroll\h\bar\page\len
+            If *this\Scroll\h\max > 0
                draw_scroll(*this, 0, rx, ry) ; Горизонтальный
             EndIf
          EndIf
@@ -2969,14 +2735,14 @@ EndProcedure
 
 ;-
 Procedure swap_column(*this._s_WIDGET, *pressed_column._s_COLUMN, *hover_column._s_COLUMN, mx.i)
-   Protected._s_BAR_WIDGET *h = *this\scroll\h
+   Protected._s_BAR *h = *this\scroll\h
    Protected mode
    
    ; Проверяем: есть ли что тащить, над чем висим, и что это разные колонки
    If *pressed_column And *hover_column And *hover_column <> *pressed_column
       ; 1. Находим экранный X левой границы колонки, над которой мышь
       ; Формула: X виджета + X колонки во внутреннем списке - Смещение скролла
-      Protected col_left_x = *this\real\x + *hover_column\x - *h\bar\page\pos
+      Protected col_left_x = *this\real\x + *hover_column\x - *h\pos
       
       ; 2. Находим середину этой колонки
       Protected col_middle_x = col_left_x + (*hover_column\width / 2)
@@ -3009,15 +2775,15 @@ EndProcedure
 
 Procedure swap_row(*this._s_WIDGET, *pressed_row._s_ROW, *hover_row._s_ROW, my.i)
    Protected mode
-   Protected._s_BAR_WIDGET *v = *this\scroll\v
-   Protected._s_BAR_WIDGET *h = *this\scroll\h
+   Protected._s_BAR *v = *this\scroll\v
+   Protected._s_BAR *h = *this\scroll\h
    
    ; Если есть что тащить, над чем висеть и это разные строки
    If *pressed_row And *hover_row And *hover_row <> *pressed_row
       
       ; 1. Находим экранный Y верхней границы строки, над которой мышь
       ; Формула: Y виджета + Y строки в списке - Смещение скролла
-      Protected row_top_y = *this\real\y + *hover_row\y - *v\bar\page\pos
+      Protected row_top_y = *this\real\y + *hover_row\y - *v\pos
       
       ; 2. Находим середину этой строки
       Protected row_middle_y = row_top_y + (*hover_row\height / 2)
@@ -3442,10 +3208,10 @@ Procedure disable_tab(*this._s_WIDGET, Index.l, state.b = #True)
    PushListPosition(*this\__tabs())
    If SelectElement(*this\__tabs(), Index)
       If state
-         *this\__tabs()\mask | #__mask_disable
+         *this\__tabs()\mask | #__mask_disabled
          *this\__tabs()\mask &~ #__mask_hover ; Сразу гасим ховер, если он был
       Else
-         *this\__tabs()\mask &~ #__mask_disable
+         *this\__tabs()\mask &~ #__mask_disabled
       EndIf
       *this\mask | #__mask_redraw
    EndIf
@@ -3470,7 +3236,7 @@ Procedure.i hover_tab(*this._s_WIDGET, mx.l, my.l)
          
          ; Проверяем конкретную вкладку
          If mx >= tx + *this\__tabs()\x And mx <= tx + *this\__tabs()\x + *this\__tabs()\width
-            If Not (*this\__tabs()\mask & #__mask_disable)
+            If Not (*this\__tabs()\mask & #__mask_disabled)
                *found_tab = @*this\__tabs()
             EndIf
             Break 
@@ -3509,7 +3275,7 @@ EndProcedure
 Procedure.i hover_row(*this._s_WIDGET, my.i)
    Protected *res
    ; Локальная координата внутри виджета
-   my = (my - *this\real\y) + *this\scroll\v\bar\page\pos
+   my = (my - *this\real\y) + *this\scroll\v\pos
    
    ; Становимся на первую видимую строку
    PushListPosition(*this\__items())
@@ -3561,8 +3327,8 @@ EndProcedure
 ;-
 Procedure key_events(*this._s_WIDGET, event.i)
    If Not *this : ProcedureReturn : EndIf
-   Protected._s_BAR_WIDGET *v = *this\scroll\v
-   Protected._s_BAR_WIDGET *h = *this\scroll\h
+   Protected._s_BAR *v = *this\scroll\v
+   Protected._s_BAR *h = *this\scroll\h
    
    ; Нам нужно знать, какая строка сейчас активна (фокус)
    Protected *row._s_ROW = *this\row\active[0]
@@ -3574,10 +3340,68 @@ EndProcedure
 
 
 ;-
-Declare row_events(*this._s_WIDGET,  event)
+Procedure tab_events(*this._s_WIDGET, event)
+   Protected._s_TAB *tab
+   Static._s_TAB *hover_tab
+   Static._s_TAB *pressed_tab
+   
+   Select event
+      Case #PB_EventType_MouseLeave
+         ; Если мышь совсем ушла с виджета
+         If *hover_tab
+            *this\mask | #__mask_redraw
+            *hover_tab\mask &~ #__mask_hover
+            *hover_tab = 0
+         EndIf
+         
+      Case #PB_EventType_MouseMove
+         *tab = hover_tab(*this, mouse( )\x, mouse( )\y)
+         If *hover_tab <> *tab
+            ; 1. Уходим со старой вкладки
+            If *hover_tab
+               *hover_tab\mask &~ #__mask_hover
+            EndIf
+            ; 2. Заходим на новую
+            If *tab
+               *tab\mask | #__mask_hover
+            EndIf
+            ; 3. Запоминаем текущий для следующего раза
+            *hover_tab = *tab
+            *this\mask | #__mask_redraw
+         EndIf
+         
+      Case #PB_EventType_LeftButtonUp
+         If *pressed_tab
+            *pressed_tab\mask &~ #__mask_press
+            *pressed_tab = 0
+         EndIf
+         
+      Case #PB_EventType_LeftButtonDown
+         If *hover_tab
+            *pressed_tab = *hover_tab
+            *hover_tab\mask | #__mask_press
+            
+            ; set active tab
+            If activate(*hover_tab, *this\tab\active)
+               PushListPosition(*this\__tabs())
+               ChangeCurrentElement(*this\__tabs(), *hover_tab)
+               Protected new_index = ListIndex(*this\__tabs())
+               PopListPosition(*this\__tabs())
+               
+               Debug "КЛИК ПО ТАБУ: " + Str(new_index) + " : " + Str(*hover_tab\id) + " НА ПАНЕЛИ: " + *this\parent\class
+               
+               ; ВЫЗЫВАЕМ ПЕРЕКЛЮЧЕНИЕ У ПАНЕЛИ
+               tab_state(*this\parent, new_index) 
+               *this\mask | #__mask_redraw
+            EndIf
+         EndIf
+         
+   EndSelect
+EndProcedure
+
 Procedure column_events(*this._s_WIDGET, event)
-   Protected._s_BAR_WIDGET *v = *this\scroll\v
-   Protected._s_BAR_WIDGET *h = *this\scroll\h
+   Protected._s_BAR *v = *this\scroll\v
+   Protected._s_BAR *h = *this\scroll\h
    Protected._s_COLUMN *column
    
    Static._s_COLUMN *hover_column
@@ -3637,7 +3461,7 @@ Procedure column_events(*this._s_WIDGET, event)
                If *this\mask & #__mask_active
                   If *pressed_column
                      If *pressed_column\mask & #__mask_resize ; Режим Resize
-                        resize_column(*this, *pressed_column, mouse( )\x - (*this\real\x + *pressed_column\x - *h\bar\page\pos))
+                        resize_column(*this, *pressed_column, mouse( )\x - (*this\real\x + *pressed_column\x - *h\pos))
                      Else ; Режим Swap
                         swap_column(*this, *pressed_column, *hover_column, mouse( )\x)
                      EndIf
@@ -3674,101 +3498,6 @@ Procedure column_events(*this._s_WIDGET, event)
    
 EndProcedure
 
-Procedure scroll_events(*this._s_WIDGET, event)
-   Protected *v._s_BAR_WIDGET = @*this\scroll\v
-   Protected *h._s_BAR_WIDGET = @*this\scroll\h
-   Protected mx = mouse()\x - *this\real\x
-   Protected my = mouse()\y - *this\real\y
-   
-   ; 1. ПРОВЕРКА HOVER (используем уже готовые area из структуры)
-   If mx > *h\bar\area\len And my > *v\bar\area\pos And my < (*v\bar\area\pos + *v\bar\area\len)
-      *v\mask | (#__mask_hover)
-   Else
-      *v\mask &~ (#__mask_hover)
-   EndIf
-   If my > *v\bar\area\len And mx > *h\bar\area\pos And mx < (*h\bar\area\pos + *h\bar\area\len)
-      *h\mask | (#__mask_hover)
-   Else
-      *h\mask &~ (#__mask_hover)
-   EndIf
-   
-   ; Сбрасываем Hover-маски перед проверкой
-   
-   Static drag_start_offset.l ; Смещение мыши относительно начала ползунка
-   
-   Select event
-      Case #PB_EventType_MouseLeave
-         *v\mask &~ (#__mask_hover)
-         *h\mask &~ (#__mask_hover)
-         *this\mask | #__mask_redraw
-         
-      Case #PB_EventType_MouseWheel
-         If *v\bar\max > *v\bar\page\len
-            Protected delta = GetGadgetAttribute(*this\root\Canvas\gadget, #PB_Canvas_WheelDelta)
-            *v\bar\page\pos - (delta * (*this\row\height * 3))
-            
-            ; Взводим маску скролла для пересчета в Draw()
-            *this\mask | #__mask_scroll | #__mask_redraw
-            ProcedureReturn #True
-         EndIf
-         
-      Case #PB_EventType_LeftButtonDown
-         If *v\mask & #__mask_hover
-            *v\mask | #__mask_drag
-            ; Если кликнули по ползунку - запоминаем офсет, если мимо - центрируем
-            If my >= *v\bar\thumb\pos And my <= (*v\bar\thumb\pos + *v\bar\thumb\len)
-               drag_start_offset = my - *v\bar\thumb\pos
-            Else
-               drag_start_offset = *v\bar\thumb\len / 2
-               ; Сразу вызываем перемещение, так как кликнули мимо ползунка (прыжок)
-               PostEvent(#PB_EventType_MouseMove) 
-            EndIf
-            ProcedureReturn #True 
-            
-         ElseIf *h\mask & #__mask_hover
-            *h\mask | #__mask_drag
-            If mx >= *h\bar\thumb\pos And mx <= (*h\bar\thumb\pos + *h\bar\thumb\len)
-               drag_start_offset = mx - *h\bar\thumb\pos
-            Else
-               drag_start_offset = *h\bar\thumb\len / 2
-            EndIf
-            ProcedureReturn #True 
-         EndIf
-         
-      Case #PB_EventType_LeftButtonUp
-         *v\mask &~ #__mask_drag
-         *h\mask &~ #__mask_drag
-         *this\mask | #__mask_redraw
-         
-      Case #PB_EventType_MouseMove
-         ; ОБРАТНЫЙ ПЕРЕСЧЕТ: из пикселей в PagePos через Percent
-         ; Используем формулу: (ТекущийПиксель - Начало - Офсет) / Коэффициент
-         If *v\mask & #__mask_drag
-            If *v\bar\percent <> 0
-               *v\bar\page\pos = ((my - *v\bar\area\pos) - drag_start_offset) / *v\bar\percent
-            EndIf
-            *this\mask | #__mask_scroll | #__mask_redraw
-            
-         ElseIf *h\mask & #__mask_drag
-            If *h\bar\percent <> 0
-               *h\bar\page\pos = ((mx - *h\bar\area\pos) - drag_start_offset) / *h\bar\percent
-            EndIf
-            *this\mask | #__mask_scroll | #__mask_redraw
-         EndIf
-         
-         ; Если мы просто водим мышкой или тащим - поглощаем событие
-         If (*v\mask | *h\mask) & (#__mask_hover | #__mask_drag)
-            If (*v\mask | *h\mask) & (#__mask_hover) And (*this\mask & #__mask_cursor)
-               If Not (*this\mask & #__mask_drag) 
-                  row_events(*this, #PB_EventType_MouseLeave)
-               EndIf
-            EndIf
-            *this\mask | #__mask_redraw
-            ProcedureReturn #True 
-         EndIf
-   EndSelect
-EndProcedure
-
 Procedure row_events(*this._s_WIDGET,  event)
    Protected._s_ROW *row
    Static._s_ROW *hover_row
@@ -3799,25 +3528,25 @@ Procedure row_events(*this._s_WIDGET,  event)
             
             ; Вертикальный автоскролл
             If my < h                                         + *this\row\Height
-               *this\scroll\v\bar\page\pos - scroll_speed : scroll_changed = #True
-            ElseIf my > *this\scroll\v\bar\page\len - *this\row\Height 
-               *this\scroll\v\bar\page\pos + scroll_speed : scroll_changed = #True
+               *this\scroll\v\pos - scroll_speed : scroll_changed = #True
+            ElseIf my > *this\height - Bool(*this\scroll\h\max>0) * *this\fs[4] - *this\row\Height 
+               *this\scroll\v\pos + scroll_speed : scroll_changed = #True
             EndIf
             
             ; Горизонтальный автоскролл
-            If mx < *this\fs[1]                               + *this\row\Height
-               *this\scroll\h\bar\page\pos - scroll_speed : scroll_changed = #True
-            ElseIf mx > *this\scroll\h\bar\page\len - *this\row\Height
-               *this\scroll\h\bar\page\pos + scroll_speed : scroll_changed = #True
+            If mx < *this\fs[1]                                                + *this\row\Height
+               *this\scroll\h\pos - scroll_speed : scroll_changed = #True
+            ElseIf mx > *this\width - Bool(*this\scroll\v\max>0) * *this\fs[3] - *this\row\Height
+               *this\scroll\h\pos + scroll_speed : scroll_changed = #True
             EndIf
             
             If scroll_changed
                ; Ограничители
-               If *this\scroll\v\bar\page\pos < 0 : *this\scroll\v\bar\page\pos = 0 : EndIf
-               If *this\scroll\h\bar\page\pos < 0 : *this\scroll\h\bar\page\pos = 0 : EndIf
+               If *this\scroll\v\pos < 0 : *this\scroll\v\pos = 0 : EndIf
+               If *this\scroll\h\pos < 0 : *this\scroll\h\pos = 0 : EndIf
                
-               If *this\scroll\v\bar\page\pos > *this\scroll\v\bar\max : *this\scroll\v\bar\page\pos = *this\scroll\v\bar\max : EndIf
-               If *this\scroll\h\bar\page\pos > *this\scroll\h\bar\max : *this\scroll\h\bar\page\pos = *this\scroll\h\bar\max : EndIf
+               If *this\scroll\v\pos > *this\scroll\v\max : *this\scroll\v\pos = *this\scroll\v\max : EndIf
+               If *this\scroll\h\pos > *this\scroll\h\max : *this\scroll\h\pos = *this\scroll\h\max : EndIf
                
                ; Пересобираем рулон и перерисовываем, чтобы edit_make_caret ниже 
                ; получил актуальные координаты строк после сдвига
@@ -3986,62 +3715,112 @@ Procedure row_events(*this._s_WIDGET,  event)
    EndSelect
 EndProcedure
 
-Procedure tab_events(*this._s_WIDGET, event)
-   Protected._s_TAB *tab
-   Static._s_TAB *hover_tab
-   Static._s_TAB *pressed_tab
+Procedure scroll_events(*this._s_WIDGET, event)
+   Protected *v._s_BAR = @*this\scroll\v
+   Protected *h._s_BAR = @*this\scroll\h
+   Protected mx = mouse()\x - *this\real\x
+   Protected my = mouse()\y - *this\real\y
+   Protected h = *this\fs[2] ; *this\column\height
+   
+   ; Определяем наличие "соседа" для корректного расчета длины трека
+   Protected fsv.l = 0 : If *v\max > 0 : fsv = *this\fs[3] : EndIf
+   Protected fsh.l = 0 : If *h\max > 0 : fsh = *this\fs[4] : EndIf
+   
+   ; Проверяем попадание в зону любого из скроллбаров
+   Protected in_v.b = #False
+   Protected in_h.b = #False
+   
+   If Not (*this\mask & #__mask_drag)
+      If *v\max > 0
+         ; Вертикальный: от колонки до низа (минус горизонтальный, если он есть)
+         in_v = Bool(mx > (*this\width - *this\fs[3]) And mx <= *this\width And 
+                     my > h And my <= (*this\height - fsh))
+      EndIf
+      If *h\max > 0
+         ; Горизонтальный: от номеров строк до края (минус вертикальный, если он есть)
+         in_h = Bool(my > (*this\height - *this\fs[4]) And my <= *this\height And 
+                     mx > *this\fs[1] And mx <= (*this\width - fsv))
+      EndIf
+   EndIf
+   
+   Static is_drag_v, is_drag_h, drag_start_pos
    
    Select event
       Case #PB_EventType_MouseLeave
-         ; Если мышь совсем ушла с виджета
-         If *hover_tab
-            *this\mask | #__mask_redraw
-            *hover_tab\mask &~ #__mask_hover
-            *hover_tab = 0
-         EndIf
+         *this\mask | #__mask_redraw
          
-      Case #PB_EventType_MouseMove
-         *tab = hover_tab(*this, mouse( )\x, mouse( )\y)
-         If *hover_tab <> *tab
-            ; 1. Уходим со старой вкладки
-            If *hover_tab
-               *hover_tab\mask &~ #__mask_hover
-            EndIf
-            ; 2. Заходим на новую
-            If *tab
-               *tab\mask | #__mask_hover
-            EndIf
-            ; 3. Запоминаем текущий для следующего раза
-            *hover_tab = *tab
-            *this\mask | #__mask_redraw
+      Case #PB_EventType_MouseWheel
+         If *v\max > 0
+            Protected delta = GetGadgetAttribute(*this\root\Canvas\gadget, #PB_Canvas_WheelDelta)
+            *v\pos - (delta * (*this\row\height * 3))
+            
+            If *v\pos < 0 : *v\pos = 0 : EndIf
+            If *v\pos > *v\max : *v\pos = *v\max : EndIf
+            
+            *this\mask | (#__mask_update | #__mask_redraw)
          EndIf
          
       Case #PB_EventType_LeftButtonUp
-         If *pressed_tab
-            *pressed_tab\mask &~ #__mask_press
-            *pressed_tab = 0
-         EndIf
+         is_drag_v = #False : *v\is_drag = #False
+         is_drag_h = #False : *h\is_drag = #False
          
       Case #PB_EventType_LeftButtonDown
-         If *hover_tab
-            *pressed_tab = *hover_tab
-            *hover_tab\mask | #__mask_press
+         If in_v
+            is_drag_v = #True : *v\is_drag = #True
+            ; Расчет точки хвата (абсолютный)
+            Protected view_h_down.f = *this\height - h - fsh
+            Protected track_v_down.f = view_h_down - *v\thumb_h
+            Protected current_thumb_y = 0
+            If *v\max > 0 : current_thumb_y = (*v\pos * track_v_down) / *v\max : EndIf
+            drag_start_pos = (my - h) - current_thumb_y
+            ProcedureReturn #True 
             
-            ; set active tab
-            If activate(*hover_tab, *this\tab\active)
-               PushListPosition(*this\__tabs())
-               ChangeCurrentElement(*this\__tabs(), *hover_tab)
-               Protected new_index = ListIndex(*this\__tabs())
-               PopListPosition(*this\__tabs())
+         ElseIf in_h
+            is_drag_h = #True : *h\is_drag = #True
+            ; Расчет точки хвата (абсолютный)
+            Protected view_w_down.f = *this\width - *this\fs[1] - fsv
+            Protected track_h_down.f = view_w_down - *h\thumb_w
+            Protected current_thumb_x = 0
+            If *h\max > 0 : current_thumb_x = (*h\pos * track_h_down) / *h\max : EndIf
+            drag_start_pos = (mx - *this\fs[1]) - current_thumb_x
+            ProcedureReturn #True 
+         EndIf
+         
+      Case #PB_EventType_MouseMove
+         If *this\mask & #__mask_press
+            If is_drag_v
+               Protected view_h.f = *this\height - h - fsh
+               Protected track_v.f = view_h - *v\thumb_h
+               If track_v > 0
+                  *v\pos = (((my - h) - drag_start_pos) * *v\max) / track_v
+               EndIf
                
-               Debug "КЛИК ПО ТАБУ: " + Str(new_index) + " : " + Str(*hover_tab\id) + " НА ПАНЕЛИ: " + *this\parent\class
+               If *v\pos < 0 : *v\pos = 0 : EndIf
+               If *v\pos > *v\max : *v\pos = *v\max : EndIf
+               *this\mask | #__mask_update | #__mask_redraw
                
-               ; ВЫЗЫВАЕМ ПЕРЕКЛЮЧЕНИЕ У ПАНЕЛИ
-               tab_state(*this\parent, new_index) 
+            ElseIf is_drag_h
+               Protected view_w.f = *this\width - *this\fs[1] - fsv
+               Protected track_h.f = view_w - *h\thumb_w
+               If track_h > 0
+                  *h\pos = (((mx - *this\fs[1]) - drag_start_pos) * *h\max) / track_h
+               EndIf
+               
+               If *h\pos < 0 : *h\pos = 0 : EndIf
+               If *h\pos > *h\max : *h\pos = *h\max : EndIf
                *this\mask | #__mask_redraw
             EndIf
          EndIf
          
+         If in_v Or in_h Or is_drag_v Or is_drag_h
+            If (in_v Or in_h) And (*this\mask & #__mask_cursor)
+               If Not (*this\mask & #__mask_drag) 
+                  row_events(*this, #PB_EventType_MouseLeave)
+               EndIf
+            EndIf
+            *this\mask | #__mask_redraw
+            ProcedureReturn #True 
+         EndIf
    EndSelect
 EndProcedure
 
@@ -4188,23 +3967,23 @@ Procedure canvas_events( )
             
             If eventtype = #PB_EventType_MouseWheel
                Protected delta = GetGadgetAttribute(Entered( )\root\Canvas\gadget, #PB_Canvas_WheelDelta)
-               Protected._s_BAR_WIDGET *v = Entered( )\scroll\v
-               Protected._s_BAR_WIDGET *h = Entered( )\scroll\h
+               Protected._s_BAR *v = Entered( )\scroll\v
+               Protected._s_BAR *h = Entered( )\scroll\h
                
                ; Если зажат Shift крутим по горизонтали
                If (keyboard()\key[1] & #PB_Canvas_Shift)
-                  If *h\bar\max > 0
-                     *h\bar\page\pos - (delta * 30)
-                     If *h\bar\page\pos < 0 : *h\bar\page\pos = 0 : EndIf
-                     If *h\bar\page\pos > *h\bar\max : *h\bar\page\pos = *h\bar\max : EndIf
+                  If *h\max > 0
+                     *h\pos - (delta * 30)
+                     If *h\pos < 0 : *h\pos = 0 : EndIf
+                     If *h\pos > *h\max : *h\pos = *h\max : EndIf
                      Entered( )\mask | #__mask_redraw
                   EndIf
                Else
                   ; Обычный вертикальный скролл
-                  If *v\bar\max > 0
-                     *v\bar\page\pos - (delta * 30)
-                     If *v\bar\page\pos < 0 : *v\bar\page\pos = 0 : EndIf
-                     If *v\bar\page\pos > *v\bar\max : *v\bar\page\pos = *v\bar\max : EndIf
+                  If *v\max > 0
+                     *v\pos - (delta * 30)
+                     If *v\pos < 0 : *v\pos = 0 : EndIf
+                     If *v\pos > *v\max : *v\pos = *v\max : EndIf
                      Entered( )\mask | (#__mask_update | #__mask_redraw)
                   EndIf
                EndIf
@@ -4302,7 +4081,7 @@ Procedure.i Create(*parent._s_WIDGET, class.s, Type.i, X, Y, Width, Height, titl
          
       Case #__type_TabBar
          this\tab._s_TABS = AllocateStructure(_s_TABS)
-         this\tab\align = 0 ; Выравнивание (0-лево, 1-центр, 2-право)
+         this\tab\align = #__align_left
          this\tab\indent = 5 ; Начальный отступ (чтобы первый таб не прилипал к рамке)
          this\tab\spacing = 5; По умолчанию минимальный зазор
          this\padding\X = 10
@@ -4543,8 +4322,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    AddItem(*p, -1, "test (grid)") 
    Global *MyList = ListIcon(10, 10, 620, 300, "Имя (Left)", 200)
-   AddColumn(*MyList, -1, "Возраст (Center)", 150, 0, #__mask_center)
-   AddColumn(*MyList, -1, "Город (Right)", 180, -1, #__mask_right)
+   AddColumn(*MyList, -1, "Возраст (Center)", 150, 0, #__ALIGN_CENTER)
+   AddColumn(*MyList, -1, "Город (Right)", 180, -1, #__ALIGN_RIGHT)
    
    AddItem(*MyList, -1, "Александр" + #LF$ + "31" + #LF$ + "Москва", 0)
    AddItem(*MyList, -1, "Елена" + #LF$ + "24" + #LF$ + "Владивосток")
@@ -4706,8 +4485,8 @@ AddItem(*T, 9, "Tree_1",-1 )
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 3683
-; FirstLine = 3656
-; Folding = ---0---------------------------------------------------------------------------------------------4-+------------------
+; CursorPosition = 4485
+; FirstLine = 4457
+; Folding = -----------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
