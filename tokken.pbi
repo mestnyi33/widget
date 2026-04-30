@@ -1734,20 +1734,20 @@ Procedure SetText(*this._s_WIDGET, Text.s)
 EndProcedure
 
 ;-
-Procedure update_scroll(*this._s_WIDGET, *bar._s_BAR)
+Procedure update_scroll(*this._s_WIDGET, *bar._s_BAR, len, offset.l = 0)
    Protected.i ThumbPos
    Protected.i btn1_size = 0;*bar\button[1]\size ; размер верхней кнопки
    Protected.i btn2_size = 0;*bar\button[2]\size ; размер нижней кнопки
    Protected.i min_thumb = 20;*bar\button[0]\size ; минимальный размер ползунка
    
-   If Not *bar\area\len : ProcedureReturn : EndIf
-   
-   If *this\scroll\v\bar = *bar
-      btn1_size = 25
+   If *bar\area\len <> len - offset
+      *bar\area\len = len - offset
    EndIf
    
+   If Not *bar\area\len : ProcedureReturn : EndIf
+   
    ; 1. Определяем границы трека (Area)
-   *bar\area\pos = btn1_size
+   *bar\area\pos = btn1_size + offset
    If *bar\area\pos > *bar\area\len : *bar\area\pos = *bar\area\len : EndIf
    
    ; thumb\end — это доступная длина трека за вычетом кнопок
@@ -1770,33 +1770,28 @@ Procedure update_scroll(*this._s_WIDGET, *bar._s_BAR)
    EndIf
    
    ; 3. Расчет лимитов и ПЕРЦЕНТА
-   ; page\end — это максимальная дистанция прокрутки
+   ; это максимальная дистанция прокрутки
    If *bar\max > *bar\page\len
       *bar\page\end = *bar\max - *bar\page\len
    Else
       *bar\page\end = *bar\page\len - *bar\max ; для корректного деления
    EndIf
    
-   ; ВАЖНО: Percent связывает свободный путь ползунка со свободным путем контента
    Protected scroll_dist = *bar\page\end - *bar\min  ; универсальностью
-                                                     ; Protected scroll_dist = *bar\max - *bar\page\len ; профессиональной
-   Protected track_dist = *bar\thumb\end - *bar\thumb\len 
    
    If scroll_dist <> 0
-      *bar\percent = track_dist / scroll_dist
+      *bar\percent = (*bar\thumb\end - *bar\thumb\len) / scroll_dist
    Else
-      *bar\percent = track_dist ; если скроллить нечего
-                                ; *bar\percent = 0
+      ; *bar\percent = (*bar\thumb\end - *bar\thumb\len) ; если скроллить нечего
+      *bar\percent = 0
    EndIf
    
    ; Конечная точка трека для ползунка
-   *bar\area\end = *bar\area\len - *bar\thumb\len - btn2_size
+   *bar\area\end = *bar\area\pos + (*bar\thumb\end - *bar\thumb\len)
    If *bar\area\end < 0 : *bar\area\end = 0 : EndIf
    
    ; 4. Контроль выхода за границы
-   If *bar\page\end And *bar\page\pos > *bar\page\end
-      *bar\page\pos = *bar\page\end
-   EndIf
+   If *bar\page\end And *bar\page\pos > *bar\page\end : *bar\page\pos = *bar\page\end : EndIf
    If *bar\page\pos < *bar\min : *bar\page\pos = *bar\min : EndIf
    
    ; 5. Финальный расчет экранной позиции (Thumb Pos)
@@ -1813,15 +1808,6 @@ Procedure update_scroll(*this._s_WIDGET, *bar._s_BAR)
    If ThumbPos > *bar\area\end : ThumbPos = *bar\area\end : EndIf
    
    *bar\thumb\pos = ThumbPos
-   
-   
-   ;    Debug "--- Тест Скроллбара ---"
-   ;    Debug "Весь контент (max): " + Str(*bar\max)
-   ;    Debug "Окно (page\len): " + Str(*bar\page\len)
-   ;    Debug "Дистанция прокрутки: " + Str(*bar\max - *bar\page\len)
-   ;    Debug "Длина ползунка (thumb\len): " + Str(*bar\thumb\len)
-   ;    Debug "Коэффициент (percent): " + StrF(*bar\percent, 4)
-   
 EndProcedure
 
 Procedure update_token(*this._s_WIDGET, *row._s_ROW)
@@ -2829,9 +2815,7 @@ Procedure Draw(*root._s_ROOT)
          ; 1. Расчет геометрии для вертикального скроллбара
          If *v And (*v\mask & #__mask_update)
             If *v\bar\max > *v\bar\page\len 
-               *v\bar\area\len = *this\height - *this\fs - *this\fs[4]
-               
-               update_scroll(*this, @*v\bar)
+               update_scroll(*this, @*v\bar, *this\height - *this\fs - *this\fs[4], *this\fs[2])
             EndIf
             *v\mask &~ #__mask_update
          EndIf
@@ -2839,9 +2823,7 @@ Procedure Draw(*root._s_ROOT)
          ; 2. Расчет геометрии для горизонтального скроллбара
          If *h And (*h\mask & #__mask_update)
             If *h\bar\max > *h\bar\page\len
-               *h\bar\area\len = *this\width - *this\fs - *this\fs[3]
-               
-               update_scroll(*this, @*h\bar)
+               update_scroll(*this, @*h\bar, *this\width - *this\fs - *this\fs[3])
             EndIf
             *h\mask &~ #__mask_update
          EndIf
@@ -3646,17 +3628,32 @@ Procedure scroll_events(*this._s_WIDGET, event)
    Static drag_start_offset.l ; Смещение мыши относительно начала ползунка
    
    ; 1. ПРОВЕРКА HOVER (используем уже готовые area из структуры)
-   If mx > (*this\Width - *this\fs[3]) And my > *v\bar\area\pos And my < (*v\bar\area\pos + *v\bar\area\len)
-      *v\mask | (#__mask_hover)
+   If *this\mask & #__mask_drag
+;       If *v\mask & #__mask_hover
+;          *v\mask | #__mask_drag
+;       EndIf
+;       If *h\mask & #__mask_hover
+;          *h\mask | #__mask_drag
+;       EndIf
    Else
-      *v\mask &~ (#__mask_hover)
+      If mx > (*this\Width - *this\fs[3]) And my > *v\bar\area\pos And my < (*v\bar\area\pos + *v\bar\area\len)
+         If Not *v\mask & (#__mask_hover)
+            *v\mask | (#__mask_hover)
+            *this\mask | (#__mask_redraw)
+         EndIf
+      Else
+         *v\mask &~ (#__mask_hover)
+      EndIf
+      If my > (*this\Height - *this\fs[4]) And mx > *h\bar\area\pos And mx < (*h\bar\area\pos + *h\bar\area\len)
+         If Not *h\mask & (#__mask_hover)
+            *h\mask | (#__mask_hover)
+            *this\mask | (#__mask_redraw)
+         EndIf
+      Else
+         *h\mask &~ (#__mask_hover)
+      EndIf
    EndIf
-   If my > (*this\Height - *this\fs[4]) And mx > *h\bar\area\pos And mx < (*h\bar\area\pos + *h\bar\area\len)
-      *h\mask | (#__mask_hover)
-   Else
-      *h\mask &~ (#__mask_hover)
-   EndIf
-   
+
    Select event
       Case #PB_EventType_MouseLeave
          *v\mask &~ (#__mask_hover)
@@ -3664,6 +3661,7 @@ Procedure scroll_events(*this._s_WIDGET, event)
          *this\mask | #__mask_redraw
          
       Case #PB_EventType_LeftButtonDown
+         *this\mask | #__mask_redraw
          If *v\mask & #__mask_hover
             *v\mask | #__mask_drag
             ; Если кликнули по ползунку - запоминаем офсет, если мимо - центрируем
@@ -3688,7 +3686,7 @@ Procedure scroll_events(*this._s_WIDGET, event)
          *v\mask &~ #__mask_drag
          *h\mask &~ #__mask_drag
          *this\mask | #__mask_redraw
-         
+         Debug *this\class
       Case #PB_EventType_MouseMove
          ; ОБРАТНЫЙ ПЕРЕСЧЕТ: из пикселей в PagePos через Percent
          ; Используем формулу: (ТекущийПиксель - Начало - Офсет) / Коэффициент
@@ -3714,7 +3712,6 @@ Procedure scroll_events(*this._s_WIDGET, event)
                   row_events(*this, #PB_EventType_MouseLeave)
                EndIf
             EndIf
-            *this\mask | (#__mask_redraw)
             ProcedureReturn #True 
          EndIf
    EndSelect
@@ -4166,10 +4163,11 @@ Procedure canvas_events( )
                If GetActive( ) <> Pressed( )
                   SetActive(Pressed( ))
                EndIf
+               do_events(Entered( ), eventtype)
             EndIf
             
-            If eventtype = #PB_EventType_MouseMove
-               If Pressed( )
+            If Pressed( )
+               If eventtype = #PB_EventType_MouseMove
                   If Pressed( )\mask & #__mask_press
                      If Not Pressed( )\mask & #__mask_drag
                         Pressed( )\mask | #__mask_drag
@@ -4178,27 +4176,35 @@ Procedure canvas_events( )
                      EndIf
                      ;
                      do_events(Pressed( ), eventtype)
+                     If Entered( )
+                        If Entered( ) <> Pressed( )
+                           do_events(Entered( ), eventtype)
+                        EndIf
+                     EndIf
                   EndIf
                EndIf
-            EndIf
-            
-            If Entered( )\root
-               do_events(Entered( ), eventtype)
-            EndIf
-            
-            If eventtype = #PB_EventType_LeftButtonUp
-               If Pressed( )
+               
+               If eventtype = #PB_EventType_LeftButtonUp
+                  do_events(Pressed( ), eventtype)
                   Pressed( )\mask &~ #__mask_press
                   Pressed( )\mask &~ #__mask_drag
+               EndIf
+               
+               If Pressed( )\mask & #__mask_redraw
+                  Draw(Pressed( )\root) 
+                  Pressed( )\mask &~ #__mask_redraw
+               EndIf
+               
+               If Not Pressed( )\mask & #__mask_press
                   Pressed( ) = 0
+               EndIf
+            Else
+               If Entered( )\root
+                  do_events(Entered( ), eventtype)
                EndIf
             EndIf
          EndIf
          
-         ;          If Entered( )\mask & #__mask_cursor
-         ;             Debug "cursor"
-         ;             Entered( )\mask &~ #__mask_cursor
-         ;          EndIf
          If Entered( )\mask & #__mask_redraw
             Draw(Entered( )\root)
             Entered( )\mask &~ #__mask_redraw
@@ -4655,8 +4661,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 3648
-; FirstLine = 3639
-; Folding = --------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 4166
+; FirstLine = 3965
+; Folding = -----------------------------------------0-----------v---------------------------------------------------8-----------
 ; EnableXP
 ; DPIAware
