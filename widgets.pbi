@@ -5904,6 +5904,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             ; get area end
             *bar\area\end = *bar\area\len - *bar\thumb\len - *BB2\size
+            ;*bar\area\end = *bar\area\pos + (*bar\thumb\end - *bar\thumb\len)
             If *bar\area\end < 0
                *bar\area\end = 0
             EndIf 
@@ -6236,6 +6237,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             *bar\area\end = *bar\thumb\end - *bar\min[2]
+            ;*bar\area\end = *bar\area\pos + (*bar\thumb\end - *bar\thumb\len)
             If *bar\area\end < 0
                *bar\area\end = 0
             EndIf 
@@ -6585,6 +6587,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             *bar\area\end = *bar\area\len - *bar\thumb\len - *BB2\size
+            ;*bar\area\end = *bar\area\pos + (*bar\thumb\end - *bar\thumb\len)
             If *bar\area\end < 0
                *bar\area\end = 0
             EndIf 
@@ -6661,6 +6664,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             *bar\area\end = *bar\thumb\end - *BB2\size
+            ;*bar\area\end = *bar\area\pos + (*bar\thumb\end - *bar\thumb\len)
             If *bar\area\end < 0
                *bar\area\end = 0
             EndIf 
@@ -6820,6 +6824,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *bar\page\end = *bar\max 
          ;
          *bar\area\end = *bar\max - *bar\min
+         ;*bar\area\end = *bar\area\pos + (*bar\thumb\end - *bar\thumb\len)
          If *bar\area\end < *bar\max
             *bar\area\end = *bar\max
          EndIf
@@ -29071,8 +29076,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 13689
-; FirstLine = 13517
+; CursorPosition = 5906
+; FirstLine = 5891
 ; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------n-R6+0n+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------fc-----
 ; EnableXP
 ; DPIAware

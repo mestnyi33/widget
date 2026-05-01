@@ -513,7 +513,7 @@ Procedure   PropertiesButton_Free( *this._s_WIDGET )
 EndProcedure
 
 Procedure   PropertiesButton_Hide( *this._s_WIDGET )
-   Protected._s_ROWS *row
+   Protected._s_ROW *row
    If *this
       *row = *this\parent\RowFocused( ) 
       If *row
@@ -524,7 +524,7 @@ EndProcedure
 
 Procedure   PropertiesButton_Resize( *this._s_WIDGET )
    If *this
-      Protected *row._s_ROWS
+      Protected *row._s_ROW
       Protected *second._s_WIDGET = *this\parent
       ; Debug *second\class
       
@@ -979,7 +979,7 @@ EndProcedure
 Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
    Protected._s_WIDGET *first = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
    Protected._s_WIDGET *second = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
-   Protected._s_ROWS *row
+   Protected._s_ROW *row
    Protected state
    
    ;
@@ -1079,7 +1079,7 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=
    Protected *first._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
    Protected *second._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
    Protected *this._s_WIDGET
-   Protected._s_ROWS *row
+   Protected._s_ROW *row
    
    Protected first_text$ = StringField(Text.s, 1, Chr(10))
    Protected second_text$ = StringField(Text.s, 2, Chr(10))
@@ -1179,7 +1179,7 @@ EndProcedure
 
 Procedure   Properties_Events( )
    Static *test
-   Protected._s_ROWS *row
+   Protected._s_ROW *row
    Protected._s_WIDGET *g = EventWidget( )
    Protected __event = WidgetEvent( )
    Protected __item = WidgetEventItem( )
@@ -2585,7 +2585,7 @@ Procedure   ide_menu_events(  )
 EndProcedure
 
 Procedure   ide_events( )
-   Protected._s_ROWS *row
+   Protected._s_ROW *row
    Protected._s_WIDGET *this, *g = EventWidget( )
    Protected __event = WidgetEvent( )
    Protected __item = WidgetEventItem( )
@@ -2714,12 +2714,12 @@ Procedure   ide_events( )
    If *g = ide_design_CODE                      Or *g = ide_debug_VIEW ; TEMP
       Static argument, object  
       Protected name$, text$, len, caret
-      Protected *line._s_ROWS
+      Protected *line._s_ROW
       
       ;
       If __event = #__event_Down
          If __data
-            *line._s_ROWS  = __data
+            *line._s_ROW  = __data
             text$ = *line\text\Str(0)
             len = *line\text\len
             caret = *g\caret\start - *line\text\pos
@@ -3331,10 +3331,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 2802
-; FirstLine = 2412
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 2721
+; FirstLine = 2340
 ; Folding = -4--4---r-f-tf----------3BC----------+-+8-----------Svt----f+-
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2_621.exe
+; Executable = ../../2_621.exe
