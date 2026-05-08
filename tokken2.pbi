@@ -1,4 +1,73 @@
-﻿EnableExplicit
+﻿Procedure.l update_wrap(*this._s_WIDGET, *row._s_ROW, MaxWidth.l)
+   Protected row_h = *row\height 
+   Protected txt.s = *row\txt(0)\string
+   DrawingFont(*this\font)
+   
+   ;If row_h <= 0 : DrawingFont(*this\font) : row_h = TextHeight("Ag") + (*this\padding\y * 2) : EndIf
+   
+   If txt = "" Or MaxWidth <= 0 : ProcedureReturn row_h : EndIf
+   If TextWidth(txt) <= MaxWidth : ProcedureReturn row_h : EndIf
+   
+   Protected *p.Character = @txt
+   Protected *lineStart.Character = @txt
+   Protected *lastSpace.Character = 0
+   Protected current_row_w.l = 0  ; Накопитель ширины для текущего этажа
+   Protected line_y.l = 0
+   Protected char_w.l
+
+   Repeat
+      ; 1. Получаем ширину ОДНОГО текущего символа
+      char_w = TextWidth(Chr(*p\c)) 
+      
+      ; 2. Проверяем: влезет ли он?
+      If *p\c = 0 Or (current_row_w + char_w) > (MaxWidth * 0.95) ; Запас 5%
+         AddElement(*row\__wraps())
+         *row\__wraps()\height = row_h
+         *row\__wraps()\y = line_y : line_y + row_h 
+         *row\__wraps()\pos = ((*lineStart - @txt) / SizeOf(Character)) + 1
+         
+         If *p\c = 0
+            *row\__wraps()\len = (*p - *lineStart) / SizeOf(Character)
+            *row\__wraps()\text = PeekS(*lineStart, *row\__wraps()\len)
+            *row\__wraps()\Width = current_row_w
+            Break
+            
+         ElseIf *lastSpace > *lineStart
+            *row\__wraps()\len = (*lastSpace - *lineStart) / SizeOf(Character)
+            *row\__wraps()\text = PeekS(*lineStart, *row\__wraps()\len)
+            *row\__wraps()\Width = TextWidth(*row\__wraps()\text)
+            
+            *lineStart = *lastSpace + SizeOf(Character)
+            *p = *lineStart
+            *lastSpace = 0
+            current_row_w = 0 
+            Continue ; Теперь прыгаем в начало цикла, line_y уже обновлен
+            
+         Else
+            ; ... жесткий перенос ...
+            *row\__wraps()\len = (*p - *lineStart) / SizeOf(Character)
+            If *row\__wraps()\len = 0 : *row\__wraps()\len = 1 : *p + SizeOf(Character) : EndIf
+            
+            *row\__wraps()\text = PeekS(*lineStart, *row\__wraps()\len)
+            *row\__wraps()\Width = current_row_w
+            
+            *lineStart = *p
+            current_row_w = 0
+            Continue
+         EndIf
+      EndIf
+
+      ; Если символ влез — запоминаем пробел и плюсуем ширину
+      If *p\c = ' ' : *lastSpace = *p : EndIf
+      current_row_w + char_w
+      *p + SizeOf(Character)
+   ForEver
+
+   *row\height = line_y
+   ProcedureReturn line_y
+EndProcedure
+
+EnableExplicit
 
 ; Прототип функции, которую ты будешь привязывать через Bind
 Prototype.i ProtoOnEvent(*this, Type.i)
@@ -4745,8 +4814,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1763
-; FirstLine = 1275
-; Folding = ---------------f-------------------------------------------------------------------------------------------------------
+; CursorPosition = 69
+; FirstLine = 41
+; Folding = -----------------+------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
