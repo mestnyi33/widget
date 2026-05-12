@@ -1,5 +1,5 @@
-﻿;XIncludeFile "../../../widgets.pbi" 
-XIncludeFile "../../../panel.pbi" 
+﻿XIncludeFile "../../../widgets.pbi" 
+;XIncludeFile "../../../tokken.pbi" 
 ;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile   
    EnableExplicit  
@@ -143,7 +143,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      Case #last                  
                         Debug "Жмем Last для: " + *this\class
                         Define *temp._s_WIDGET = GetLast(*this)
-   Debug "Его последний потомок: " + *temp\class
+                        Debug "Его последний потомок: " + *temp\class
    
                         If SetPosition(*this, #PB_List_Last)  
                            DisableGadget(#after,1)      
@@ -180,8 +180,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 132
-; FirstLine = 117
+; CursorPosition = 145
+; FirstLine = 153
 ; Folding = ---
 ; EnableXP
 ; DPIAware

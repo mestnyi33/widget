@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 75
-; FirstLine = 48
+; CursorPosition = 78
+; FirstLine = 49
 ; Folding = V--
 ; EnableXP

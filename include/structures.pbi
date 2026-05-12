@@ -318,6 +318,19 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Hide.b
       EndStructure
       
+      ;--     COLUMN
+      Structure _s_COLUMN 
+         ID.i
+         X.l 
+         Width.l 
+         title.s
+         mask.q
+      EndStructure
+      Structure _s_COLUMNS
+         *active._s_COLUMN 
+         List __s._s_COLUMN( )
+      EndStructure
+      
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
          StructureUnion
@@ -343,17 +356,59 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *data  ; set/get item data
       EndStructure
       
-      ;--     COLUMN
-      Structure _s_COLUMN 
-         ID.i
-         X.l 
-         Width.l 
-         title.s
-         mask.q
+      Structure _s_TAB Extends _s_COLUMN 
+         tx.l 
+         
+         font.i
+         fontID.i
+         
+          press.b
+          visible.b
+          checked.b
+         
+         StructureUnion
+            _enter.b 
+            enter.b  
+         EndStructureUnion
+         StructureUnion
+            _focus.b  
+            focus.b
+         EndStructureUnion
+         
+         Hide.b
+         Disable.b
+         round.a
+         
+         Y.l
+         Height.l
+         
+         childrens.w ; Row( )\ ; rows( )\ ; row\
+         
+         StructureUnion
+            Index.i
+            tindex.i ; tab
+         EndStructureUnion
+         
+         Text._s_TEXTITEM
+         picture._s_PICTURE
+         color._s_color
+         *popupbar._s_WIDGET
+         *data  ; set/get item data
       EndStructure
-      Structure _s_COLUMNS
-         *active._s_COLUMN 
-         List __s._s_COLUMN( )
+      Structure _s_TABS
+         align.a               ; Выравнивание (0-лево, 1-центр, 2-право)
+         indent.a              ; ОТСТУП ВКЛАДОК
+         spacing.a             ; РАССТОЯНИЕ МЕЖДУ ВКЛАДКАМИ
+                               ;
+         totalwidth.l          ; Общая ширина всех вкладок (уже считаем в update_tab)
+                               ;
+         *pressed2._s_ITEMS
+         *active2._s_ITEMS
+         *entered2._s_ITEMS
+         
+         *active._s_TAB 
+         *entered._s_TAB
+         List __s._s_TAB()  ; Заголовки вкладок
       EndStructure
       
       ;--     ROW
@@ -586,6 +641,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *root._s_ROOT
          *column._s_COLUMNS             ; multi-text; buttons; lists; - gadgets
          *row._s_ROWS              ; multi-text; buttons; lists; - gadgets
+         Tab._s_TABS
+         tabindex.l;[2]          ; [1] - это в лист будем переносить так как он нужен только для родителя
+         tabpage.l  ; Активная страница (используется если у родителя есть таб бар)
+      List *__tabs._s_ITEMS()  ; Заголовки вкладок
+      
          *bar._s_BAR
          *drop._s_DROP
          *align._s_ALIGN
@@ -611,9 +671,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *parent._s_PARENT;[2]   ; [1] - это в лист будем переносить так как он нужен только для родителя  
          ; parent[0] - Родитель ; Иерархия - физический (где лежит) 
          ; parent[1] - Владелец ; Иерархия - логический (кто открыл)
-         tabindex.l;[2]          ; [1] - это в лист будем переносить так как он нужен только для родителя
-         tab_state.l
-         List *__tabs._s_ITEMS( )
          
          ;
          *gadget._s_WIDGET[3]
@@ -637,9 +694,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
 ;          *last._s_PARENT  ; Последний ребенок
          *opened._s_PARENT
          openeditem.l
-         *tab_entered._s_ITEMS
-         *tab_pressed._s_ITEMS
-         *tab_selected._s_ITEMS
        EndStructure
       
       ; Промежуточный тип для тех, кто имеет детей (Панель, Группа, Сплиттер)
@@ -722,8 +776,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 143
-; FirstLine = 120
-; Folding = -----6P6---
+; CursorPosition = 405
+; FirstLine = 349
+; Folding = -----6-k---
 ; Optimizer
 ; EnableXP

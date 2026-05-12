@@ -25,21 +25,11 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    ;test_edit_text = 1
    
-   Define g, *g, Text.s, m.s=#LF$
-   
-   Text.s = "This is a long line." + m.s +
-            "Who should show." + m.s +
-            m.s +
-            m.s +
-            "I have to write the text in the box or not." + m.s +
-            m.s +
-            m.s +
-            "The string must be very long." + m.s +
-            "Otherwise it will not work."
-   
+   Define g, *g, Text.s
    Define time = ElapsedMilliseconds()
    Define File$, length, *mem, bytes, bytesCompress, bytesUnCompress, Format = #PB_UTF8
-   Define file$ = "../../../widgets.pbi"
+   
+   File$ = "../../../widgets.pbi"
    ;File$ = OpenFileRequester("Выберите файл", GetCurrentDirectory() + "AkelPad.ini", "Все файлы (*.*)|*.*", 0)
    
    If Asc(File$)
@@ -54,8 +44,8 @@ CompilerIf #PB_Compiler_IsMainFile
             Text = PeekS(*mem, length, Format)
          EndIf
          
-;          ; 2 вариант
-;          Text = ReadString(0, #PB_File_IgnoreEOL) 
+         ;          ; 2 вариант
+         ;          Text = ReadString(0, #PB_File_IgnoreEOL) 
          
          CloseFile(0)
       EndIf
@@ -76,8 +66,6 @@ CompilerIf #PB_Compiler_IsMainFile
       SetText(*g, Text.s)
       
       Splitter(8, 8, 306, 276, g, *g, #__flag_autosize)
-      
-      ReDraw( root( ))
       
       Debug ""+CountGadgetItems( g ) +" - count gadget items"
       Debug ""+CountItems( *g ) +" - count widget items"
@@ -106,9 +94,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 70
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 69
+; FirstLine = 59
 ; Folding = --
 ; EnableXP
 ; DPIAware

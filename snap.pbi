@@ -2978,30 +2978,39 @@ Procedure draw_container(*this._s_WIDGET, rx.l, ry.l)
    DrawingMode(#PB_2DDrawing_Default)
 EndProcedure
 
-Procedure Draw(*root._s_ROOT)
-   Protected._s_WIDGET *this
-   Protected color.l
-   
-   If StartDrawing(CanvasOutput(*root\Canvas\gadget))
-      ; 1. Фон всего холста
-      Box(0, 0, OutputWidth( ), OutputHeight( ), *root\color) 
-      
-      ; Проверка, что у родителя вообще есть дети
-      If *root\first
-         ChangeCurrentElement(widgets(), *root\first)
-         Repeat 
-            ; 2. ВЫХОД: Конец всей родительской ветки
-            If widgets() = *root\next
-               Break
+Procedure Draw(*this._s_WIDGET)
+   If *this
+      ; Debug *this\class
+      If *this\parent
+         ; --- ЛОКАЛЬНАЯ ОТРИСОВКА ---
+         If *this\mask & #__mask_redraw
+            *this\mask &~ #__mask_redraw
+            
+            If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
+               ; 1. Фон всего холста
+                  Box(0, 0, OutputWidth( ), OutputHeight( ), $ffffff) 
+                  
+                  ; 1. Восстанавливаем фон из снимка
+               If IsImage(*this\root\canvas\snap\img[0])
+                  DrawAlphaImage(ImageID(*this\root\canvas\snap\img[0]), 0, 0)
+               EndIf
+               
+               ; 2. Рисуем только себя
+               ; (внутренняя логика Draw сама применит Clip, отрисует текст и т.д.)
+               Draw(*this) 
+               
+               ; 3. Если есть верхние слои — накрываем ими
+               If IsImage(*this\root\canvas\snap\img[1])
+                  DrawAlphaImage(ImageID(*this\root\canvas\snap\img[1]), 0, 0)
+               EndIf
+               
+               ; 4. Обновляем снимок, чтобы следующий кадр учитывал текущие изменения
+               GrabDrawingImage(*this\root\canvas\snap\img[0], 0, 0, OutputWidth(), OutputHeight())
+               
+               StopDrawing()
             EndIf
-            *this = @widgets()
-            
-            If *this\tabindex = -1 : Continue : EndIf
-            If *this\mask & #__mask_hidden : Continue : EndIf
-            ;Debug ""+ *this\class +" "+ *root\last\class
-            If *this\font : DrawingFont(*this\font) : EndIf 
-            
-            ; Считаем реальные координаты
+         Else
+            Protected color.l
             Protected rx = *this\real\x
             Protected ry = *this\real\y
             Protected._s_BAR_WIDGET *v = *this\scroll\v
@@ -3014,6 +3023,9 @@ Procedure Draw(*root._s_ROOT)
             Else
                color = *this\color
             EndIf
+            
+            If *this\font : DrawingFont(*this\font) : EndIf 
+            ; Debug ""+ *this\class
             
             ; не уверень что нужно
             If *this\mask & #__mask_change
@@ -3117,13 +3129,39 @@ Procedure Draw(*root._s_ROOT)
                Box(rx, ry, *this\Width, *this\height , $CCCCCC) ; Цвет рамки
             EndIf
             
-            ; Сбрасываем флаг перерисовки после завершения
-            *this\mask &~ #__mask_redraw
-            
-         Until Not NextElement(widgets())
+         EndIf
+      Else
+         If *this\first
+            If *this\mask & #__mask_redraw
+               *this\mask &~ #__mask_redraw
+               If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
+                  ; 1. Фон всего холста
+                  Box(0, 0, OutputWidth( ), OutputHeight( ), *this\color) 
+                  
+                  ; Проверка, что у родителя вообще есть дети
+                  ChangeCurrentElement(widgets(), *this\first)
+                  Repeat 
+                     ; 2. ВЫХОД: Конец всей родительской ветки
+                     If widgets() = *this\next
+                        Break
+                     EndIf
+                     
+                     If widgets()\tabindex = -1 : Continue : EndIf
+                     If widgets()\mask & #__mask_hidden : Continue : EndIf
+                     widgets()\mask &~ #__mask_redraw
+                     Draw(@widgets())
+                  Until Not NextElement(widgets())
+                  
+                  If Not IsImage(*this\root\canvas\snap\img[0])
+                     CreateImage(*this\root\canvas\snap\img[0], OutputWidth(), OutputHeight(), 32, #PB_Image_Transparent)
+                  EndIf
+                  GrabDrawingImage(*this\root\canvas\snap\img[0], 0, 0, OutputWidth(), OutputHeight())
+                  StopDrawing()
+               EndIf
+               ProcedureReturn 0
+            EndIf
+         EndIf
       EndIf
-      
-      StopDrawing()
    EndIf
 EndProcedure
 
@@ -4380,6 +4418,7 @@ Procedure canvas_events( )
             do_events(Leaved( ), #PB_EventType_MouseLeave)
             If Leaved( )\mask & #__mask_redraw
                Draw(Leaved( )\root) ; Перерисовываем для отображения рамок
+               Leaved( )\mask &~ #__mask_redraw
             EndIf
          EndIf
          
@@ -4453,7 +4492,7 @@ Procedure canvas_events( )
                EndIf
                
                If Pressed( )\mask & #__mask_redraw
-                  Draw(Pressed( )\root) 
+                  Draw(Pressed( )) 
                   Pressed( )\mask &~ #__mask_redraw
                EndIf
                
@@ -4468,7 +4507,7 @@ Procedure canvas_events( )
          EndIf
          
          If Entered( )\mask & #__mask_redraw
-            Draw(Entered( )\root)
+            Draw(Entered( ))
             Entered( )\mask &~ #__mask_redraw
          EndIf
       EndIf
@@ -4916,8 +4955,8 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 3128
-; FirstLine = 3099
-; Folding = -----------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 3180
+; FirstLine = 3161
+; Folding = --------------------------------------------------------------------8----------------------------------------------------------
 ; EnableXP
 ; DPIAware

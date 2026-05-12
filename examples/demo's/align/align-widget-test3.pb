@@ -1,5 +1,5 @@
 ﻿
-IncludePath "../../"
+IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 
@@ -278,7 +278,6 @@ CompilerIf #PB_Compiler_IsMainFile
             ; update parent children's coordinate
             ;*this\parent\align\update = 1
             Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            ; PostEventReDraw( *this\root )
          EndIf
       EndIf
    EndProcedure
@@ -332,9 +331,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 299
-; FirstLine = 280
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 1
 ; Folding = ----------
 ; EnableXP
 ; DPIAware

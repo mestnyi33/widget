@@ -4,6 +4,16 @@ DeclareModule key
    Declare Set(handle.i, KeyName.s, Value.i)
    Declare.i Get(handle.i, KeyName.s)
    Declare Remove(handle.i, KeyName.s)
+   
+   Macro SetData(handle, Value)
+      Set(handle, "MyOSDATA", Value)
+   EndMacro
+   Macro GetData(handle)
+      Get(handle, "MyOSDATA")
+   EndMacro
+   Macro RemoveData(handle)
+      Remove(handle, "MyOSDATA")
+   EndMacro
 EndDeclareModule
 
 ; --- РЕАЛИЗАЦИЯ МОДУЛЯ ---
@@ -88,8 +98,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 81
-; FirstLine = 55
-; Folding = --
+; CursorPosition = 16
+; Folding = ---
 ; EnableXP
 ; DPIAware

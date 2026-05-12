@@ -606,43 +606,6 @@ Macro is_integral_(_this_)
 EndMacro
 
 ;-
-Macro StartEnum(_parent_ptr_, _tabpage_ = #PB_All)
-   ; Проверка, что у родителя вообще есть дети
-   Bool(_parent_ptr_ And _parent_ptr_\first )
-   ; PushListPosition(widgets())
-   ChangeCurrentElement(widgets(), _parent_ptr_\first)
-   Repeat 
-      ; 2. ВЫХОД: Конец всей родительской ветки
-      If widgets() = _parent_ptr_\next Or (_parent_ptr_\areabar And widgets() = _parent_ptr_\areabar\next)
-         Break
-      EndIf
-      
-      ; 3. ФИЛЬТР: Пропускаем чужие табы, но оставляем наш и -1
-      If _tabpage_ <> #PB_All
-         ; Если это прямой потомок
-         If widgets()\parent = _parent_ptr_ Or widgets()\parent = _parent_ptr_\areabar
-            ; Если таб не совпал и это не универсальный (-1) — ПРЫГАЕМ
-            If widgets()\tabindex <> _tabpage_ And widgets()\tabindex <> -1
-               ; Прыжок к следующему соседу через его детей
-               If widgets()\next
-                  ChangeCurrentElement(widgets(), widgets()\next)
-                  PreviousElement(widgets())
-                  Continue ; Проверяем нового соседа
-               Else
-                  Break ; Больше детей нет
-               EndIf
-            EndIf
-         EndIf
-      EndIf
-      
-      ; --- ТВОЙ КОД ---
-   EndMacro
-   
-   Macro StopEnum()
-   Until Not NextElement(widgets())
-   ; PopListPosition(widgets())
-EndMacro
-
 Macro Start(_ptr_, _parent_)
    _ptr_ = _parent_\first
    While _ptr_
@@ -651,9 +614,12 @@ Macro Start(_ptr_, _parent_)
    EndMacro
    
    Macro Stop(_ptr_, _parent_)
-      _ptr_ = _ptr_\next
       ; Если вышли за пределы ветки этого родителя — обнуляем указатель
-      If _ptr_ = _parent_\next : _ptr_ = 0 : EndIf
+      If _ptr_\next = _parent_\next 
+         _ptr_ = 0 
+      Else
+         _ptr_ = _ptr_\next
+      EndIf
    Wend
 EndMacro
 
@@ -3005,23 +2971,10 @@ Procedure draw_container(*this._s_WIDGET, rx.l, ry.l)
    DrawingMode(#PB_2DDrawing_Default)
 EndProcedure
 
-Procedure Draw(*root._s_ROOT)
-   Protected *r._s_ROOT = *root ; Сохраняем входную точку в локальную переменную
-   Protected color.l
-   
-   If StartDrawing(CanvasOutput(*r\Canvas\gadget))
-      ; 1. Фон всего холста
-      Box(0, 0, OutputWidth( ), OutputHeight( ), *r\color) 
-      
-      ; Прыгаем в начало секции этого холста
-      If StartEnum(*r)
-         Protected *this._s_WIDGET = @widgets()
-         If *this\tabindex = -1 : Continue : EndIf
-         If *this\mask & #__mask_hidden : Continue : EndIf
-         ;Debug ""+ *this\class +" "+ *r\last\class
-         If *this\font : DrawingFont(*this\font) : EndIf 
-         
-         ; Считаем реальные координаты
+Procedure Draw(*this._s_WIDGET)
+   If *this
+      If *this\parent
+         Protected color.l
          Protected rx = *this\real\x
          Protected ry = *this\real\y
          Protected._s_BAR_WIDGET *v = *this\scroll\v
@@ -3035,6 +2988,9 @@ Procedure Draw(*root._s_ROOT)
             color = *this\color
          EndIf
          
+         If *this\font : DrawingFont(*this\font) : EndIf 
+         ; Debug ""+ *this\class
+       
          ; не уверень что нужно
          If *this\mask & #__mask_change
             ; Пробегаем по всем строкам данных и обновляем только помеченные
@@ -3075,7 +3031,7 @@ Procedure Draw(*root._s_ROOT)
             *this\mask &~ #__mask_update
          EndIf
          
-         ; 1. Расчет геометрии для вертикального скроллбара
+         ; Расчет геометрии для вертикального скроллбара
          If *v And (*v\mask & #__mask_update)
             If *v\bar\max > *v\bar\page\len 
                update_scroll(*this, @*v\bar, *this\height - *this\fs - Bool(*h\bar\max>*h\bar\page\len) * *this\fs[4], *this\fs[2])
@@ -3083,7 +3039,7 @@ Procedure Draw(*root._s_ROOT)
             *v\mask &~ #__mask_update
          EndIf
          
-         ; 2. Расчет геометрии для горизонтального скроллбара
+         ; Расчет геометрии для горизонтального скроллбара
          If *h And (*h\mask & #__mask_update)
             If (*this\mask & #__mask_wordwrap) = 0
                If *h\bar\max > *h\bar\page\len
@@ -3106,16 +3062,16 @@ Procedure Draw(*root._s_ROOT)
             draw_tab(*this, rx, ry)
          ElseIf *this\Type = #__type_AreaBar
             
-         Else
+         Else 
             ; --- СЛОИ ОТРИСОВКИ ---
+            ; Слой 1: Фон и данные строк
             If *this\row
-               ; Слой 1: Фон и данные строк
                DrawingMode(#PB_2DDrawing_Default)
                draw_rows(*this, rx, ry) 
             EndIf
             
+            ; Слой 2: Шапка и вертикальные линии сетки
             If *this\column And *this\fs[2]
-               ; Слой 2: Шапка и вертикальные линии сетки
                DrawingMode(#PB_2DDrawing_Default)
                draw_columns(*this, rx, ry) 
             EndIf
@@ -3139,28 +3095,51 @@ Procedure Draw(*root._s_ROOT)
          
          ; Сбрасываем флаг перерисовки после завершения
          *this\mask &~ #__mask_redraw
-         StopEnum()
+      Else
+         If *this\first
+            ; 1. Фон всего холста
+            Box(0, 0, OutputWidth( ), OutputHeight( ), *this\color) 
+            
+            ; Проверка, что у родителя вообще есть дети
+            ChangeCurrentElement(widgets(), *this\first)
+            Repeat 
+               ; 2. ВЫХОД: Конец всей родительской ветки
+               If widgets() = *this\next
+                  Break
+               EndIf
+               
+               If widgets()\tabindex = -1 : Continue : EndIf
+               If widgets()\mask & #__mask_hidden : Continue : EndIf
+               Draw(@widgets())
+            Until Not NextElement(widgets())
+            
+         EndIf
       EndIf
-      
-      StopDrawing()
    EndIf
 EndProcedure
 
-Procedure ReDraw(*root._s_ROOT)
-   If Not *root : ProcedureReturn : EndIf
-   Protected *r._s_ROOT = *root ; Сохраняем входную точку в локальную переменную
-   
-   ; 1. Отматываем в самое начало (к первому/нижнему окну)
-   While *r\PrevRoot( )
-      *r = *r\PrevRoot( )
-   Wend
-   
-   ; 2. Рисуем все элементы по порядку (снизу вверх)
-   While *r
-      ; Debug "Отрисовка холста: " + *r + " (Имя: " + widgets()\name + ")"
-      Draw(*r)
-      *r = *r\NextRoot( ) ; Переходим к следующему
-   Wend
+Procedure ReDraw( *root._s_ROOT = #PB_Any )
+   If *root > 0
+      If StartDrawing(CanvasOutput(*root\root\canvas\gadget))
+         Draw(*root)
+         StopDrawing( )
+      EndIf
+   Else
+      *root = Root( ) ; Сохраняем в локальную переменную
+      
+      ; 1. Отматываем в самое начало (к первому/нижнему окну)
+      While *root\PrevRoot( ) : *root = *root\PrevRoot( ) : Wend
+      
+      ; 2. Рисуем все элементы по порядку (снизу вверх)
+      While *root
+         ; Debug "Отрисовка холста: " + *root + " (Имя: " + widgets()\name + ")"
+         If StartDrawing(CanvasOutput(*root\canvas\gadget))
+            Draw(*root)
+            StopDrawing( )
+         EndIf
+         *root = *root\NextRoot( ) ; Переходим к следующему
+      Wend
+   EndIf
 EndProcedure
 
 ;-
@@ -3438,18 +3417,18 @@ Procedure.i GetParent( *this._s_WIDGET )
 EndProcedure
 
 Procedure.i SetParent(*this._s_WIDGET, *parent._s_WIDGET, tabpage.l = #PB_Default)
-   Protected *r._s_ROOT, *new._s_WIDGET, *insert_after._s_WIDGET
+   Protected *root._s_ROOT, *new._s_WIDGET, *insert_after._s_WIDGET
    
    ; --- 1. КОНТЕКСТ ---
    If *parent 
-      *r = *parent\root 
-      If Not *r
-         *r = *parent
+      *root = *parent\root 
+      If Not *root
+         *root = *parent
       EndIf
    Else 
-      *r = Root() 
+      *root = Root() 
    EndIf
-   If Not *r : ProcedureReturn 0 : EndIf
+   If Not *root : ProcedureReturn 0 : EndIf
    
    ; Страница и AreaBar
    If *parent And tabpage = #PB_Default : tabpage = *parent\tabpage : EndIf
@@ -3460,7 +3439,7 @@ Procedure.i SetParent(*this._s_WIDGET, *parent._s_WIDGET, tabpage.l = #PB_Defaul
       *insert_after = GetLast(*parent, tabpage)
    Else
       ; Если родитель - Root, ищем физический "хвост" всего холста
-      *insert_after = GetLast(*r, #PB_Default)
+      *insert_after = GetLast(*root, #PB_Default)
    EndIf
    
    ; --- 3. ФИЗИЧЕСКИЙ ПЕРЕНОС / СОЗДАНИЕ ---
@@ -3485,8 +3464,8 @@ Procedure.i SetParent(*this._s_WIDGET, *parent._s_WIDGET, tabpage.l = #PB_Defaul
       
       If *insert_after\address
          *physical_addr = *insert_after\address
-      ElseIf *r\first And *r\first <> *this
-         *physical_addr = *r\first\address
+      ElseIf *root\first And *root\first <> *this
+         *physical_addr = *root\first\address
          move_mode = #PB_List_Before
       EndIf
       
@@ -3515,7 +3494,7 @@ Procedure.i SetParent(*this._s_WIDGET, *parent._s_WIDGET, tabpage.l = #PB_Defaul
    
    ; --- 4. ЛОГИЧЕСКИЕ СВЯЗИ ---
    *new\parent = *parent
-   *new\root   = *r
+   *new\root   = *root
    *new\next   = #Null
    
    If *parent
@@ -3533,7 +3512,7 @@ Procedure.i SetParent(*this._s_WIDGET, *parent._s_WIDGET, tabpage.l = #PB_Defaul
    EndIf
    
    ; --- 5. ФИНАЛИЗАЦИЯ ---
-   If Not *r\first : *r\first = *new : EndIf
+   If Not *root\first : *root\first = *new : EndIf
    If Not is_integral_(*new) : *new\tabindex = tabpage : EndIf
    
    If *parent : update_level(*new, *parent\level + 1) : Else : update_level(*new, 0) : EndIf
@@ -4375,7 +4354,7 @@ Procedure canvas_events( )
          
          key_events( GetActive(), eventtype )
          If GetActive( )\mask & #__mask_redraw
-            Draw(GetActive( )\root)
+            ReDraw(GetActive( )\root)
             GetActive( )\mask &~ #__mask_redraw
          EndIf
       EndIf
@@ -4401,7 +4380,7 @@ Procedure canvas_events( )
             Leaved( )\mask &~ #__mask_hover
             do_events(Leaved( ), #PB_EventType_MouseLeave)
             If Leaved( )\mask & #__mask_redraw
-               Draw(Leaved( )\root) ; Перерисовываем для отображения рамок
+               ReDraw(Leaved( )\root) ; Перерисовываем для отображения рамок
             EndIf
          EndIf
          
@@ -4475,7 +4454,7 @@ Procedure canvas_events( )
                EndIf
                
                If Pressed( )\mask & #__mask_redraw
-                  Draw(Pressed( )\root) 
+                  ReDraw(Pressed( )\root) 
                   Pressed( )\mask &~ #__mask_redraw
                EndIf
                
@@ -4490,7 +4469,7 @@ Procedure canvas_events( )
          EndIf
          
          If Entered( )\mask & #__mask_redraw
-            Draw(Entered( )\root)
+            ReDraw(Entered( )\root)
             Entered( )\mask &~ #__mask_redraw
          EndIf
       EndIf
@@ -4653,14 +4632,16 @@ Procedure Free(*this._s_WIDGET)
    
    ; 4. ОЧИСТКА ПАМЯТИ ВНУТРИ ВИДЖЕТА
    ; Если у виджета были списки (вкладки в TabBar или строки в ListIcon)
-   ClearList(*this\__tabs())
-   ClearList(*this\__rows())
+   If *this\tab
+      ClearList(*this\__tabs())
+   EndIf
+   If *this\row
+      ClearList(*this\__rows())
+   EndIf
    
    ; 5. УДАЛЕНИЕ САМОГО ВИДЖЕТА ИЗ ГЛОБАЛЬНОГО СПИСКА
-   PushListPosition(widgets())
    ChangeCurrentElement(widgets(), *this)
    DeleteElement(widgets())
-   PopListPosition(widgets())
    
    ; 6. БЕЗОПАСНОСТЬ: Обнуляем глобальные указатели, если удалили активный виджет
    If *this = Entered() : Entered() = 0 : EndIf
@@ -4689,7 +4670,7 @@ Procedure Close( *root._s_ROOT )
          Close(*root)              ; Теперь удаляем текущий
          *root = *next             ; Переходим к запомненному адресу
       Wend
-      
+      Root( ) = 0
    Else
       ; ...
       If Entered( ) And Entered( )\root = *root : Entered( ) = 0 : EndIf
@@ -4713,7 +4694,9 @@ Procedure Close( *root._s_ROOT )
       
       ; 3. Удаляем все виджеты один за другим через их персональный free( )
       ForEach widgets( )
-         Free(@widgets( ))
+         If *root = @widgets( )
+            Free(@widgets( ))
+         EndIf
       Next
       
       ; 4. ОЧИСТКА ПАМЯТИ
@@ -4907,12 +4890,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    
    ; Отрисовываем всё, что создали
-   ReDraw(Root( ))
-   
-;    ;    Debug *e\Scroll\v\bar\max
-;    ;    Debug *e0\Scroll\v\bar\max
-;    Debug "e0 "+*e0\Scroll\v\bar\page\len
-;    Debug "e1 "+*e1\Scroll\v\bar\page\len
+   ReDraw( )
    
    ;-  2. ГЛАВНЫЙ ЦИКЛ СОБЫТИЙ
    Repeat
@@ -4929,8 +4907,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ForEver
    
    ; --- ВОТ ЗДЕСЬ ВЫЗЫВАЕМ CLOSE ---
-   Close(Root( )) 
-   Root( ) = 0
+   Close( #PB_All ) 
    End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
@@ -4940,8 +4917,8 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 4872
-; FirstLine = 4279
-; Folding = +------------8--------------------------v----v0---------+----4---d80-------------------------------------------------------0-
+; CursorPosition = 3123
+; FirstLine = 2301
+; Folding = +-----------v+-----------------0--------8-8--b---------v-----0--f4e-2Xb8----------------------------------------------------+-
 ; EnableXP
 ; DPIAware

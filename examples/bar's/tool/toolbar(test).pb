@@ -71,6 +71,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open( 1, 300, 200, 650, 200, "ToolBar example", #PB_Window_SizeGadget )
+      SetClass( Root( ), "ide_root")
       a_init(Root( ))
       ide_toolbar = CreateBar( Root( ), #PB_ToolBar_Small )
       SetClass( ide_toolbar, "ide_toolbar")
@@ -193,8 +194,8 @@ DataSection
 EndDataSection
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 141
-; FirstLine = 137
+; CursorPosition = 73
+; FirstLine = 60
 ; Folding = --
 ; EnableXP
 ; DPIAware

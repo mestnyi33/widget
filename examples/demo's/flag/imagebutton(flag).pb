@@ -245,7 +245,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Splitter_3 = Widget::Splitter(10, 10, Width, Height, Splitter_2, #Null, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
       
       
-      ;     ;ReDraw(root())
       ;     ;  Flag_(*this, #__flag_ImageTop|#__flag_ImageLeft, 1)
       ;     
       
@@ -261,9 +260,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 30
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 247
+; FirstLine = 235
 ; Folding = ----
 ; EnableXP
 ; DPIAware

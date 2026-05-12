@@ -41,9 +41,6 @@ CompilerIf #PB_Compiler_IsMainFile
 ;             If #__type_button = EventWidget( )\type
 ;                ProcedureReturn #True
 ;             Else
-;                If is_root_(EventWidget( ))
-;                   ReDraw( EventWidget( )\root )
-;                EndIf
 ;                ProcedureReturn #False
 ;             EndIf
             
@@ -126,8 +123,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ; Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 118
-; FirstLine = 102
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 43
+; FirstLine = 38
 ; Folding = --
 ; EnableXP

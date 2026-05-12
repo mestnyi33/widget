@@ -51,11 +51,6 @@ Procedure EventsHandler( )
          EndIf
          
    EndSelect
-   
-   If Repaint            
-      
-      ; ReDraw( EventWidget( )\root )
-   EndIf
 EndProcedure
 
 ;\\
@@ -104,9 +99,9 @@ Bind( #PB_All, @EventsHandler( ), #__event_MouseLeave )
 
 ;\\
 WaitClose( )
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 14
-; FirstLine = 10
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 53
+; FirstLine = 35
 ; Folding = --
 ; EnableXP
 ; DPIAware

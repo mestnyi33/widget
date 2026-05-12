@@ -41,9 +41,6 @@ CompilerIf #PB_Compiler_IsMainFile
 ;             If #__type_button = EventWidget( )\type
 ;                ProcedureReturn #True
 ;             Else
-;                If is_root_(EventWidget( ))
-;                   ReDraw( EventWidget( )\root )
-;                EndIf
 ;                ProcedureReturn #False
 ;             EndIf
   
@@ -106,23 +103,23 @@ CompilerIf #PB_Compiler_IsMainFile
                                            #PB_Window_MaximizeGadget )
    
    SetClass(Root( ), "window_2_root" )
-   Container( 10,10,240,140 ) : SetClass(widget( ), "window_2_root_container" )
+   Container( 10,10,240,140 ) : SetClass(Widget( ), "window_2_root_container" )
    Button(10,10,200,50,"button_message")
-   SetClass(widget( ), "button_message" )
+   SetClass(Widget( ), "button_message" )
    Button(10,65,200,50,"window_2_root_butt_2")
-   SetClass(widget( ), "window_2_root_butt_2" )
+   SetClass(Widget( ), "window_2_root_butt_2" )
    
    ;\\
    Bind( #PB_All, @CallBack( ) )
    ; Message( "message", "test", #__message_ScreenCentered )
    
    ;\\
-   WaitQuit( root( ) )
+   WaitQuit( Root( ) )
    ;WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 70
-; FirstLine = 66
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 43
+; FirstLine = 37
 ; Folding = --
 ; EnableXP

@@ -87,7 +87,6 @@ Global ColorType
 ;                   a_anchors( )\grid_image = a_grid_image( mouse( )\steps - 1, a_anchors( )\grid_type, $FF000000, 0,0);*this\fs, *this\fs )
 ;                   SetBackgroundImage( a_focused( )\parent, a_anchors( )\grid_image )
 ;                   Resize( a_focused( )\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-;                   ;ReDraw( a_focused( )\root )
             EndSelect
       EndSelect
    EndProcedure
@@ -95,7 +94,7 @@ Global ColorType
    
    If Open(0, 0, 0, 230+230+15, 230, "anchor-demos", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       Container( 10,10,220,210 )
-      a_init( widget( ),5 )
+      a_init( Widget( ),5 )
       
       Define *a1._s_widget = Image( 5,5,60,60, -1 )
       Define *a2._s_widget = Container( 50,45,135,95, #__flag_nogadgets )
@@ -115,7 +114,7 @@ Global ColorType
       Bind( ID(3), @events_widgets( ), #__event_Focus )
       
       Define Y = 20
-      Window( 235,10,230,185, "preferences", #PB_Window_TitleBar ) : SetFrame( widget( ), 1) : Y - 25
+      Window( 235,10,230,185, "preferences", #PB_Window_TitleBar ) : SetFrame( Widget( ), 1) : Y - 25
       ;Container( 235,10,230,210, #PB_Container_BorderLess )
       ;Frame( 0,0,230,210, " preferences " )
       
@@ -173,9 +172,9 @@ Global ColorType
    
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 120
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 89
+; FirstLine = 85
 ; Folding = --
 ; EnableXP
 ; DPIAware
