@@ -346,7 +346,10 @@
       #__mask_resize    = 1 << 22
       #__mask_node      = 1 << 23        ; Является узлом (Строка) / Деревом (Виджет)
       #__mask_collapsed = 1 << 24        ; Свернуто (Узел/Ветка)
-     
+      
+      #__mask_inner = 1 << 25
+      #__mask_inner2 = 1 << 26
+      
       ;
       ;-\\ create-type
       #__type_Root          = - 1
@@ -776,9 +779,9 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 340
-; FirstLine = 323
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 350
+; FirstLine = 335
 ; Folding = ----
 ; Optimizer
 ; EnableXP

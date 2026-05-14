@@ -106,7 +106,7 @@ EndEnumeration
 #__mask_redraw    = 1 << 12        ; Флаг: Требуется перерисовка
 
 #__mask_hidden    = 1 << 16        ; Объект полностью скрыт
-#__mask_disabledd   = 1 << 17        ; Объект заблокирован
+#__mask_disabled   = 1 << 17        ; Объект заблокирован
 #__mask_tokken    = 1 << 18
 #__mask_edit      = 1 << 19        ; Выделение (Строка)
 #__mask_change    = 1 << 20        ; текст изменился, надо перепарсить токены.
@@ -4917,9 +4917,9 @@ CompilerEndIf
 ; Folding = --v---------------------------------------f-----0--4u--44Pv83--+0-----------------0-------------4--------------+---------n-
 ; EnableXP
 ; DPIAware
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 3663
-; FirstLine = 2827
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 108
+; FirstLine = 94
 ; Folding = ------+-----v+-----------------0--------8-8--b---------v-----0--f4e-2Xb8---------------------------------------------------f--
 ; EnableXP
 ; DPIAware

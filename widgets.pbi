@@ -899,7 +899,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro MouseDragStart(  ): Bool( MouseMask( ) & #__mask_dragstart ): EndMacro                                       ; Returns mouse data
       ; Macro MouseRelease( ): Bool( Not ( MouseButtons( ) And Not MousePress( ))): EndMacro 
       Macro MouseRelease( ): Bool( MouseMask( ) & #__mask_release ): EndMacro 
-      Macro MouseEnter( _this_, _mode_ = 2 ): _this_\enter = _mode_: EndMacro
+      Macro MouseEnter( _this_, _mode_ = 2 ): (Bool(_this_\mask & #__mask_inner2)*2) = _mode_: EndMacro
       Macro MousePressX( ): mouse( )\press\x: EndMacro                                            ; Returns mouse buttons press [x]-coordinate
       Macro MousePressY( ): mouse( )\press\y: EndMacro                                            ; Returns mouse buttons press [y]-coordinate
       Macro MouseMoveX( ): DPIUnscaledX( CanvasMouseX( ) - MousePressX( )): EndMacro              ; Returns mouse x
@@ -3149,8 +3149,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Macro set_state_list_( _address_, _state_ )
          If _state_ > 0
             If *this\mode\clickSelect
-               If _address_\_enter = #False
-                  _address_\_enter = #True
+               If Not _address_\mask & #__mask_hover
+                  _address_\mask | #__mask_hover
                EndIf
             Else
                If _address_\press = #False
@@ -3160,7 +3160,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If _address_\press = #True
                _address_\ColorState( ) = #__s_2
-            ElseIf _address_\_enter
+            ElseIf _address_\mask & #__mask_hover
                _address_\ColorState( ) = #__s_1
             EndIf
             
@@ -3171,8 +3171,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            If _address_\_enter
-               _address_\_enter = #False
+            If _address_\mask & #__mask_hover
+               _address_\mask &~ #__mask_hover
             EndIf
             
             If _address_\press = #False
@@ -3471,7 +3471,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this = *this\parent
             EndIf
             
-            If *this\enter > 0
+            If *this\mask & #__mask_hover > 0
                ;\\ first - draw backgraund color
                draw_mode_alpha_( #PB_2DDrawing_Default )
                If MouseEnter( *this, 2 )
@@ -4000,14 +4000,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;
                a_index( ) = 0
                ;
-               If MouseEnter( *this, - 1 )
+               If *this\mask & #__mask_inner
                   If ( is_mouse_enter( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_frame] ) And
                        is_mouse_enter( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ))
                      
-                     *this\enter = 1
+                     *this\mask | #__mask_hover
                      DoEvents( *this, #__event_MouseEnter, #PB_All, @"[?+a_enter]" )
                   Else
-                     *this\enter = 0
+                     *this\mask &~ #__mask_hover
                   EndIf   
                EndIf
             EndIf
@@ -4022,8 +4022,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   a_entered( )\repaint_set( )
                EndIf
                
-               If MouseEnter( a_entered( ), - 1 )
-                  a_entered( )\enter = 0
+               If a_entered( )\mask & #__mask_inner
+                  a_entered( )\mask &~ #__mask_hover
                EndIf
                
                If a_entered( )\anchors\group\show
@@ -4066,7 +4066,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If a_index( ) <> a_index
                   a_index( ) = a_index
                   ;
-                  If *this\enter > 0
+                  If *this\mask & #__mask_hover
                      If *this = Entered( )
                         DoEvents( *this, #__event_MouseLeave, #PB_All, @"[?-a_leave]"  )
                      EndIf
@@ -4074,7 +4074,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   ChangeCursor( *this, a_anchors( )\cursor[a_index] )
                   *this\repaint_set( )
-                  *this\enter = - 1
+                  *this\mask | #__mask_inner
                EndIf
             EndIf
             ; 
@@ -7103,7 +7103,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                Protected *activedTAB._s_TAB = *this\parentTabSelected( )
                If *activedTAB
-                  If *activedTAB\_enter = #False
+                  If Not *activedTAB\mask & #__mask_hover
                      If *activedTAB\ScrollToActive( - 1 )
                         *activedTAB\ScrollToActive( 1 )
                         ;Debug " tab max - " + *bar\max + " " + " " + *bar\page\pos + " " + *bar\page\end
@@ -7832,7 +7832,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Else
                   Break
                EndIf 
-               If *this\enter
+               If *this\mask & #__mask_hover
                   ; Debug "e - "+*this\class
                   Break
                Else
@@ -7887,7 +7887,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *display\Combo( )\arrow\direction = #__right
                      If *display\ColorState( ) = 2
                         *display\Combo( )\ColorState( ) = 0
-                        If *display\Combo( )\enter
+                        If *display\Combo( )\mask & #__mask_hover
                            *display\ColorState( ) = 1
                         Else
                            *display\ColorState( ) = 0
@@ -9339,7 +9339,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ; reset color state
-         If _this_\enter
+         If _this_\mask & #__mask_hover
             If _this_\mask & #__mask_disabled
                If _this_\ColorState( ) <> #__s_0
                   _this_\ColorState( ) = #__s_0
@@ -10007,7 +10007,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   Else
                      If *this\mask & #__mask_press
-                        If *this\enter
+                        If *this\mask & #__mask_hover
                            If MouseDrag( ) <> #PB_Drag_Leave
                               MouseDrag( ) = #PB_Drag_Leave
                               ; Debug "press #PB_Drag_Leave"
@@ -10488,7 +10488,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *select_row
                *select_row\ColorState( ) = *row\ColorState( )
                *select_row\_focus = *row\_focus
-               ;             *select_row\_enter = *row\_enter
+               ;             *select_row\mask = *row\mask
                ;             *select_row\_press = *row\_press
                If *row\_focus
                   *this\RowFocused( ) = *select_row
@@ -10678,7 +10678,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If state
                      *this\ColorState( ) = #__s_2
                   Else
-                     If *this\enter
+                     If *this\mask & #__mask_hover
                         *this\ColorState( ) = #__s_1
                      Else
                         *this\ColorState( ) = #__s_0
@@ -16759,14 +16759,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *this = a_entered( )
                         EndIf
                         
-                        ;Debug "a "+a_index( ) +" "+ *this\enter
+                        ;Debug "a "+a_index( ) +" "+ bool(*this\mask & #__mask_hover)
                      EndIf
                   Else
                      If a_index( )
-                        ; Debug "a out to parent border "+a_entered( )\enter 
+                        ; Debug "a out to parent border "+a_entered( )\mask & #__mask_hover 
                         
-                        If MouseEnter( a_entered( ), - 1 )
-                           a_entered( )\enter = 0
+                        If a_entered( )\mask & #__mask_inner
+                           a_entered( )\mask &~ #__mask_hover
                         EndIf
                         a_index( ) = 0
                      EndIf
@@ -16781,8 +16781,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If a_index( ) Or ( Entered( ) And
                                Entered( ) <> *this )
                ;
-               If EnteredButton( )\_enter
-                  EnteredButton( )\_enter = 0
+               If EnteredButton( )\mask & #__mask_hover
+                  EnteredButton( )\mask &~ #__mask_hover
                   
                   If EnteredButton( )\ColorState( ) = #__s_1
                      EnteredButton( )\ColorState( ) = #__s_0
@@ -16846,8 +16846,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\ do buttons events entered & leaved
                   If EnteredButton( ) <> *EnteredButton
                      If EnteredButton( ) 
-                        If EnteredButton( )\_enter
-                           EnteredButton( )\_enter = 0
+                        If EnteredButton( )\mask & #__mask_hover
+                           EnteredButton( )\mask &~ #__mask_hover
                            ;
                            If EnteredButton( )\ColorState( ) = #__s_1
                               EnteredButton( )\ColorState( ) = #__s_0
@@ -16861,16 +16861,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      If EnteredButton( ) And 
                         EnteredButton( )\mask & #__mask_disabled = 0 And
-                        EnteredButton( )\_enter = 0
-                        EnteredButton( )\_enter = 1
+                        EnteredButton( )\mask & #__mask_hover = 0
+                        EnteredButton( )\mask | #__mask_hover
                         ;
                         If EnteredButton( )\ColorState( ) = #__s_0
                            EnteredButton( )\ColorState( ) = #__s_1
                         EndIf
                         ;
                         If EnteredButton( ) = *BB0
-                           If EnteredButton( )\_enter > 0
-                              EnteredButton( )\_enter = - 1
+                           If EnteredButton( )\mask & #__mask_hover > 0
+                              EnteredButton( )\mask | #__mask_inner
                            EndIf
                         EndIf
                         ;
@@ -16899,22 +16899,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             ;
             If Leaved( ) And Not ( *this And *this\parent = Leaved( ) And is_integral_( *this ) )
-               If Leaved( )\enter > 0
-                  Leaved( )\enter = 0
+               If Leaved( )\mask & #__mask_hover > 0
+                  Leaved( )\mask &~ #__mask_hover
                   ;
                   If is_integral_( Leaved( ) )
                      If Leaved( )\parent And
-                        Leaved( )\parent\enter
+                        Leaved( )\parent\mask & #__mask_hover
                         
                         If Leaved( )\parent = *this
                            If is_mouse_enter( Leaved( )\parent, mouse_x, mouse_y, [#__c_inner] ) And
                               is_mouse_enter( Leaved( )\parent, mouse_x, mouse_y, [#__c_draw] )
-                              MouseEnter( Leaved( )\parent, 2 )
+                              Leaved( )\parent\mask | #__mask_inner2
                            Else
-                              Leaved( )\parent\enter = 1
+                              Leaved( )\parent\mask | #__mask_hover
                            EndIf
                         Else
-                           Leaved( )\parent\enter = 0
+                           Leaved( )\parent\mask &~ #__mask_hover
                         EndIf
                      EndIf
                   Else
@@ -16930,8 +16930,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               ;
                               If *parent 
                                  If *parent\anchors And 
-                                    *parent\enter = - 2
-                                    *parent\enter = 0
+                                    *parent\mask & #__mask_inner
+                                    *parent\mask &~ #__mask_hover
                                  EndIf
                               EndIf
                            EndIf
@@ -16943,11 +16943,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   If is_integral_( Leaved( ) ) 
                      If Leaved( )\parent
-                        If Leaved( )\parent\enter = 0
+                        If Not Leaved( )\parent\mask & #__mask_hover
                            DoEvents( Leaved( )\parent, #__event_MouseLeave, -1, @"[?-leave]" )
                         Else
                            If a_index( )
-                              Leaved( )\parent\enter = - 1
+                              Leaved( )\parent\mask | #__mask_inner
                               DoEvents( Leaved( )\parent, #__event_MouseLeave, -1, @"[?-a-leave]" )
                            Else
                               DoChangeCursor( Leaved( )\parent )
@@ -16960,19 +16960,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             ;
-            If *this And *this\enter = 0 
+            If *this And Not *this\mask & #__mask_hover 
                ;
                If is_integral_( *this ) 
                   If *this\parent  
-                     If *this\parent\enter = 0
-                        *this\parent\enter = 1
+                     If Not *this\parent\mask & #__mask_hover
+                        *this\parent\mask | #__mask_hover
                         ;
                         If Not MousePress( )
                            If *this\parent\anchors
                               a_enter( *this\parent, 1 ) 
                               
                               If a_index( )
-                                 *this\parent\enter = - 1
+                                 *this\parent\mask | #__mask_inner
                               EndIf
                            EndIf
                         EndIf
@@ -16982,7 +16982,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         ;
                      ElseIf MouseEnter( *this\parent, 2 )
-                        *this\parent\enter = 1
+                        *this\parent\mask | #__mask_hover
                      EndIf
                   EndIf
                Else
@@ -17001,7 +17001,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               ;
                               If *parent
                                  If *parent\anchors
-                                    MouseEnter( *parent, - 1 )
+                                    *parent\mask | #__mask_inner
                                     a_enter( *parent, - 1 ) 
                                  EndIf
                               EndIf
@@ -17012,7 +17012,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                ;
                If Not a_index( )
-                  *this\enter = 1
+                  *this\mask | #__mask_hover
                   DoEvents( *this, #__event_MouseEnter, -1, @"[?+enter]" )
                EndIf
             EndIf
@@ -17110,11 +17110,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;               If *this\RowFocused( ) <> *this\RowLastVisible( )
                      ;                 ;                 If *this\RowEntered( )
-                     ;                 ;                   *this\RowEntered( )\_enter = 0
+                     ;                 ;                   *this\RowEntered( )\mask &~ #__mask_hover
                      ;                 ;                   *this\RowEntered( )\ColorState( ) = 0
                      ;                 ;                 EndIf
                      ;                 ;                 *this\RowEntered( ) = *this\RowLastVisible( )
-                     ;                 ;                 *this\RowEntered( )\_enter = 1
+                     ;                 ;                 *this\RowEntered( )\mask | #__mask_hover
                      ;                 ;                 *this\RowEntered( )\ColorState( ) = 1
                      ;
                      ;                 If *this\RowFocused( )
@@ -17525,7 +17525,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not ( *this\LineEntered( ) And
                         *this\LineEntered( )\visible And
                         *this\LineEntered( )\mask & #__mask_hidden = 0 And
-                        ( ( *this\enter And is_mouse_enter( *this\LineEntered( ), mouse_x, mouse_y )) Or
+                        ( ( *this\mask & #__mask_hover And is_mouse_enter( *this\LineEntered( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *this\LineEntered( )\y, *this\LineEntered( )\height, mouse_y )) ))
                   
                   ; search entered item
@@ -17533,7 +17533,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Repeat
                      If *this\__items( )\visible And
                         *this\__items( )\mask & #__mask_hidden = 0 And
-                        ( ( *this\enter And is_mouse_enter( *this\__items( ), mouse_x, mouse_y )) Or
+                        ( ( *this\mask & #__mask_hover And is_mouse_enter( *this\__items( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *this\__items( )\y, *this\__items( )\height, mouse_y )) )
                         *rowLine = *this\__items( )
                         Break
@@ -17546,7 +17546,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If Not ( *this\LineEntered( ) And
                         *this\LineEntered( )\visible And
                         *this\LineEntered( )\mask & #__mask_hidden = 0 And
-                        ( ( *this\enter And is_mouse_enter( *this\LineEntered( ), mouse_x, mouse_y )) Or
+                        ( ( *this\mask & #__mask_hover And is_mouse_enter( *this\LineEntered( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *this\LineEntered( )\y, *this\LineEntered( )\height, mouse_y )) ))
                   
                   ; search entered item
@@ -17554,7 +17554,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Repeat
                      If *lines( )\visible And
                         *lines( )\mask & #__mask_hidden = 0 And
-                        ( ( *this\enter And is_mouse_enter( *lines( ), mouse_x, mouse_y )) Or
+                        ( ( *this\mask & #__mask_hover And is_mouse_enter( *lines( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *lines( )\y, *lines( )\height, mouse_y )) )
                         *rowLine = *lines( )
                         Break
@@ -17594,7 +17594,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             Else
                If event = #__event_MouseMove
-                  If *this\enter = #False
+                  If Not *this\mask & #__mask_hover
                      *rowLine = #Null
                   EndIf
                EndIf
@@ -17604,8 +17604,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\LineEntered( ) <> *rowLine 
                ; leave state
                If *this\LineEntered( )
-                  If *this\LineEntered( )\_enter
-                     *this\LineEntered( )\_enter = #False
+                  If *this\LineEntered( )\mask & #__mask_hover
+                     *this\LineEntered( )\mask &~ #__mask_hover
                      
                      If *this\LineEntered( )\ColorState( ) = #__s_1
                         *this\LineEntered( )\ColorState( ) = #__s_0
@@ -17668,10 +17668,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ; enter state
                If Not a_index( )
-                  If *this\enter
+                  If *this\mask & #__mask_hover
                      If *rowLine And 
-                        *rowLine\_enter = 0
-                        *rowLine\_enter = 1
+                        *rowLine\mask & #__mask_hover = 0
+                        *rowLine\mask | #__mask_hover
                         
                         If *rowLine\ColorState( ) = #__s_0
                            *rowLine\ColorState( ) = #__s_1
@@ -17915,7 +17915,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\row\active[1]\press = #False
                         
                         If *this\row\active[1]\_focus = 0
-                           If *this\row\active[1]\_enter
+                           If *this\row\active[1]\mask & #__mask_hover
                               *this\row\active[1]\ColorState( ) = #__s_1
                            Else
                               *this\row\active[1]\ColorState( ) = #__s_0
@@ -18178,8 +18178,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; not mouse button up event
                If Not MouseRelease( )
                   If *rowleaved And 
-                     *rowleaved\_enter
-                     *rowleaved\_enter = 0
+                     *rowleaved\mask & #__mask_hover
+                     *rowleaved\mask &~ #__mask_hover
                      
                      
                      If Not EnteredButton( ) And 
@@ -18248,8 +18248,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\
-                  If *hover_row\_enter = 0
-                     *hover_row\_enter = 1
+                  If *hover_row\mask & #__mask_hover = 0
+                     *hover_row\mask | #__mask_hover
                      
                      If Not EnteredButton( ) And 
                         ( *this\mask & #__mask_press And Not mouse( )\drop ) And 
@@ -18288,17 +18288,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\drop
                If mouse( )\drop
                   If *this\RowEntered( ) And
-                     *this\RowEntered( )\_enter
+                     *this\RowEntered( )\mask & #__mask_hover
                      
                      If ( mouse_y - *this\RowEntered( )\y ) > *this\RowEntered( )\height / 2
-                        If *this\RowEntered( )\_enter <> 1
-                           *this\RowEntered( )\_enter = 1
+                        If *this\RowEntered( )\mask & #__mask_hover <> 1
+                           *this\RowEntered( )\mask | #__mask_hover
                            ; Debug "-1 (+1)"
                            *this\repaint_set( )
                         EndIf
                      Else
-                        If *this\RowEntered( )\_enter <> - 1
-                           *this\RowEntered( )\_enter = - 1
+                        If Not *this\RowEntered( )\mask & #__mask_inner
+                           *this\RowEntered( )\mask | #__mask_inner
                            ; Debug "+1 (-1)"
                            *this\repaint_set( )
                         EndIf
@@ -18374,7 +18374,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ; change collapsed/expanded button state
                         If *this\mode\buttons
                            If *hover_row\buttonbox
-                              If *hover_row\buttonbox\_enter
+                              If *hover_row\buttonbox\mask & #__mask_hover
                                  If *hover_row\buttonbox\checked
                                     ; развернул список
                                     If SetItemState( *this, *hover_row\rindex, (GetItemState(*this, *hover_row\rindex) &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded )
@@ -18392,7 +18392,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         ; change box ( option&check )
                         If *hover_row\checkbox
-                           If *hover_row\checkbox\_enter
+                           If *hover_row\checkbox\mask & #__mask_hover
                               ;
                               ; change option box state
                               If *this\mode\optionboxes
@@ -18431,7 +18431,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If *row\ColorState( ) <> #__s_0
                                     *row\ColorState( ) = #__s_0
                                     
-                                    If Not *row\_enter
+                                    If Not *row\mask & #__mask_hover
                                        If *row\_focus <> 0
                                           *row\_focus = 0
                                        EndIf
@@ -18492,13 +18492,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If event = #__event_Drop ; Ok
                ;           If *this\RowEntered( )
-               ;             Debug "drop e - "+*this\RowEntered( ) +" "+ *this\RowEntered( )\text\str(0) +" "+ *this\RowEntered( )\press +" "+ *this\RowEntered( )\_enter +" "+ *this\RowEntered( )\_focus
+               ;             Debug "drop e - "+*this\RowEntered( ) +" "+ *this\RowEntered( )\text\str(0) +" "+ *this\RowEntered( )\press +" "+ *this\RowEntered( )\mask & #__mask_hover +" "+ *this\RowEntered( )\_focus
                ;           endif
                ;           If *press_row
-               ;             Debug "drop p - "+*press_row +" "+ *press_row\text\str(0) +" "+ *press_row\press +" "+ *press_row\_enter +" "+ *press_row\_focus
+               ;             Debug "drop p - "+*press_row +" "+ *press_row\text\str(0) +" "+ *press_row\press +" "+ *press_row\mask & #__mask_hover +" "+ *press_row\_focus
                ;           endif 
                ;           If *this\RowFocused( )
-               ;             Debug "drop f - "+*this\RowFocused( ) +" "+ *this\RowFocused( )\text\str(0) +" "+ *this\RowFocused( )\press +" "+ *this\RowFocused( )\_enter +" "+ *this\RowFocused( )\_focus
+               ;             Debug "drop f - "+*this\RowFocused( ) +" "+ *this\RowFocused( )\text\str(0) +" "+ *this\RowFocused( )\press +" "+ *this\RowFocused( )\mask & #__mask_hover +" "+ *this\RowFocused( )\_focus
                ;           EndIf
             EndIf
             
@@ -18639,7 +18639,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            Not ( *this\type = #__type_Track Or
                                  ( *this\type = #__type_Splitter And PressedButton( ) <> *SB ))
                            
-                           If PressedButton( )\_enter
+                           If PressedButton( )\mask & #__mask_hover
                               PressedButton( )\ColorState( ) = #__s_1
                            Else
                               PressedButton( )\ColorState( ) = #__s_0
@@ -18728,8 +18728,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *EnteredTAB <> *tab 
                      ;\\ leaved tabs
                      If *EnteredTAB 
-                        If *EnteredTAB\_enter
-                           *EnteredTAB\_enter = 0
+                        If *EnteredTAB\mask & #__mask_hover
+                           *EnteredTAB\mask &~ #__mask_hover
                            
                            If *EnteredTAB\ColorState( ) = #__s_1
                               *EnteredTAB\ColorState( ) = #__s_0
@@ -18753,10 +18753,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      parentTabEntered( *this ) = *tab
                      ;
                      If *tab
-                        If *this\enter 
+                        If *this\mask & #__mask_hover 
                            ;\\ entered tabs
-                           If Not *tab\_enter And Not *tab\mask & #__mask_disabled
-                              *tab\_enter = 1
+                           If Not *tab\mask & #__mask_hover And Not *tab\mask & #__mask_disabled
+                              *tab\mask | #__mask_hover
                               
                               If *tab\ColorState( ) = #__s_0
                                  *tab\ColorState( ) = #__s_1
@@ -19019,7 +19019,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *PressedTAB\press = #True
                      *PressedTAB\press = #False
                      
-                     If *PressedTAB\_enter
+                     If *PressedTAB\mask & #__mask_hover
                         *PressedTAB\ColorState( ) = #__s_1
                      Else
                         *PressedTAB\ColorState( ) = #__s_0
@@ -19085,8 +19085,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\parent
                If *this\parent\Stringbar
                   If *this\parent\Combo( )
-                     If *this\parent\Combo( )\enter = 1
-                        *this\parent\Combo( )\enter = 0
+                     If *this\parent\Combo( )\mask & #__mask_hover
+                        *this\parent\Combo( )\mask &~ #__mask_hover
                         If *this\ColorState( ) = 1
                            *this\ColorState( ) = 0
                         EndIf
@@ -19098,16 +19098,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          If *this\Combo( )
             If is_mouse_enter( *this\Combo( ), CanvasMouseX( ), CanvasMouseY( ) )
-               If *this\Combo( )\enter = 0
-                  *this\Combo( )\enter = 1
+               If Not *this\Combo( )\mask & #__mask_hover
+                  *this\Combo( )\mask | #__mask_hover
                   If *this\ColorState( ) = 0
                      *this\ColorState( ) = 1
                   EndIf
                   *this\repaint_set( )
                EndIf
             Else
-               If *this\Combo( )\enter = 1
-                  *this\Combo( )\enter = 0
+               If *this\Combo( )\mask & #__mask_hover
+                  *this\Combo( )\mask &~ #__mask_hover
                   If *this\ColorState( ) = 1
                      *this\ColorState( ) = 0
                   EndIf
@@ -19118,25 +19118,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          ;\\ update [entered position and current cursor] state
-         If *this\enter > 0
+         If *this\mask & #__mask_hover > 0
             If Bool( is_mouse_enter( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ) And
                      is_mouse_enter( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_inner] ) And
                      Not ( *this\type = #__type_Splitter And is_mouse_enter( *this\bar\button, CanvasMouseX( ), CanvasMouseY( ) ) = 0 ) And
                      Not ( *this\type = #__type_HyperLink And is_mouse_enter( *this, CanvasMouseX( ) - *this\frame_x( ), CanvasMouseY( ) - *this\frame_y( ), [#__c_Required] ) = 0 ))
                ;
-               If *this\enter = 1
-                  *this\enter = 2
+               If *this\mask | #__mask_hover
+                  *this\mask | #__mask_inner2
                   MouseMask( ) | #__mask_update
                   DoChangeCursor( *this )
                   *this\repaint_set( )
                EndIf
             Else
-               If *this\enter = 1
+               If *this\mask | #__mask_hover
                   If event = #__event_MouseEnter
                      DoChangeCursor( *this )
                   EndIf
                Else
-                  *this\enter = 1
+                  *this\mask | #__mask_hover
                   MouseMask( ) | #__mask_update
                   DoChangeCursor( *this )
                   *this\repaint_set( )
@@ -19144,7 +19144,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          If event = #__event_Up 
-            If *this\enter
+            If *this\mask & #__mask_hover
                If a_index( )
                   a_enter( *this, 3 )
                EndIf
@@ -19170,10 +19170,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\type = #__type_Tree Or
                *this\type = #__type_ListView
                If *this\RowEntered( ) And
-                  *this\RowEntered( )\_enter
+                  *this\RowEntered( )\mask & #__mask_hover
                   ;
                   If event = #__event_Drop
-                     If *this\RowEntered( )\_enter < 0
+                     If *this\RowEntered( )\mask & #__mask_hover < 0
                         *button = *this\RowEntered( )\rindex
                         *data   = CanvasMouseX( ) | CanvasMouseY( ) << 16
                      Else
@@ -19189,7 +19189,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *Button = *this\RowEntered( )\rindex
                         
                         If *this\RowEntered( )\buttonbox And 
-                           *this\RowEntered( )\buttonbox\_enter
+                           *this\RowEntered( )\buttonbox\mask & #__mask_hover
                            *Data   = *this\RowEntered( )\buttonbox\checked
                         Else
                            *Data   = *this\RowEntered( )
@@ -19325,7 +19325,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Not ( *this\Toggle( ) And *this\Toggle( )\checked)
                      Select event
                         Case #__event_MouseEnter
-                           If *this\enter 
+                           If *this\mask & #__mask_hover 
                               If *this\mask & #__mask_press
                                  *this\ColorState( ) = #__s_2
                               Else
@@ -19339,7 +19339,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            ; EndIf
                            
                         Case #__event_Down
-                           If *this\enter 
+                           If *this\mask & #__mask_hover 
                               If MouseButtons( ) & #PB_Canvas_LeftButton
                                  *this\ColorState( ) = #__s_2
                               EndIf
@@ -19351,7 +19351,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            
                         Case #__event_Up
                            If MouseButtons( ) & #PB_Canvas_LeftButton
-                              If *this\enter
+                              If *this\mask & #__mask_hover
                                  *this\ColorState( ) = #__s_1
                               Else
                                  *this\ColorState( ) = #__s_0
@@ -19367,7 +19367,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   If event = #__event_Up
                      If MouseButtons( ) & #PB_Canvas_LeftButton
-                        If *this\enter 
+                        If *this\mask & #__mask_hover 
                            If *this\Toggle( )
                               SetState( *this, Bool( *this\Toggle( )\checked ! 1 ))
                            EndIf
@@ -19797,7 +19797,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; в макос при потере фокуса окна не теряется фокус гаджета по этому нужен deactive app
                If PopupBar( )
                   ; скрываем при потере фокуса 
-                  If Not PopupBar( )\enter
+                  If Not PopupBar( )\mask & #__mask_hover
                      ; только если не в окне выбора итема всплывающего меню
                      If DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent ) < 0
                         PopupBar( ) = 0
@@ -20360,7 +20360,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ mouse-entered-widget move event
             If Entered( ) And
-               Entered( )\enter
+               Entered( )\mask & #__mask_hover
                DoEvents( Entered( ), event )
             EndIf
          EndIf
@@ -20523,7 +20523,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;  
                   ; Это должно сработат только внутри настоящего контейнера
                   ; например (Window;Container;Panel;ScrollArea) а не (Splitter;Frame)
-                  If Entered( )\container > 0 And Not a_index( ) And Entered( )\enter = 2
+                  If Entered( )\container > 0 And Not a_index( ) And Entered( )\mask & #__mask_hover = 2
                      mouse( )\selector.allocate( SELECTOR )
                      mouse( )\selector\x = MousePressX( ) 
                      mouse( )\selector\y = MousePressY( )
@@ -22370,7 +22370,7 @@ EndProcedure
                               DrawRotatedText( Text_x, Text_Y, *lines( )\edit_text_1( )\Str(0) + *lines( )\edit_text_2( )\Str(0), *this\text\rotate, *lines( )\color\front[*this\ColorState( )] )
                            EndIf
                            
-                           If *lines( )\_enter
+                           If *lines( )\mask & #__mask_hover
                               If *lines( )\edit_text_1( )\width
                                  draw_box_( Text_x, Text_Y+2, *lines( )\edit_text_1( )\width, *lines( )\text\height-2, *lines( )\color\back[1] )
                               EndIf
@@ -22897,7 +22897,7 @@ EndProcedure
                      EndIf  
                      
                      ;\\
-                     If *this\enter
+                     If *this\mask & #__mask_hover
                         ;\\ draw entered anchors
                         If Not *this\haschildren 
                            If *this\anchors And *this\anchors\mode
@@ -23062,7 +23062,7 @@ EndProcedure
                            ;\\ draw entered widget anchors   widgets( )\parent\tabbar And 
                            If Not MousePress( )
                               If a_entered( ) And
-                                 a_entered( )\enter And 
+                                 a_entered( )\mask & #__mask_hover And 
                                  a_entered( )\haschildren And
                                  a_entered( ) <> a_focused( ) ; Not ( a_anchors( ) And a_focused( ) = a_entered( ) )
                                                               ;
@@ -23129,7 +23129,7 @@ EndProcedure
                            ;\\ draw entered parent anchors
                            If Not MousePress( )
                               If a_entered( ) And 
-                                 a_entered( )\enter And 
+                                 a_entered( )\mask & #__mask_hover And 
                                  a_entered( )\haschildren And
                                  a_entered( ) <> a_focused( ) ; Not ( a_anchors( ) And a_focused( ) = a_entered( ) )
                                  
@@ -28677,7 +28677,7 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
             ;          Case #__event_StatusChange
             ;                Debug 77
             If EventWidget( ) <> Root( )
-               If EventWidget( )\enter
+               If EventWidget( )\mask & #__mask_hover
                   If EventWidget( )\color\frame <> colorframe1
                      Repaint                    = 1
                      EventWidget( )\color\frame = colorframe1
@@ -28881,10 +28881,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 25081
-; FirstLine = 24691
-; Folding = ------------------------------------------------------------------------------------------------------------------------f0-----------------------------------------------------------------------------------------------------------------------------------------------------------------f+Hl84f7-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------------------------------------------------------------------f-+4+-+4---------------------------------------------------------------------------------------------------------------------------------j8----
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 18290
+; FirstLine = 18136
+; Folding = ------------------------------------------------------------------------------------------------------------------------f0-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-Hl84f7-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------------------------------------------------------------------f-+-+--4---------------------------------------------------------------------------------------------------------------------------------j8----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

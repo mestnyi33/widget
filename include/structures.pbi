@@ -128,10 +128,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
           visible.b
           checked.b
          
-         StructureUnion
-            _enter.b 
             enter.b  
-         EndStructureUnion
          StructureUnion
             _focus.b  
             focus.b
@@ -778,8 +775,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 140
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 131
 ; FirstLine = 121
 ; Folding = -----6-k---
 ; Optimizer
