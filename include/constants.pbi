@@ -335,8 +335,10 @@
       #__mask_active    = 1 << 11        ; Виджет в фокусе / Строка выбрана / Окно активно
       #__mask_redraw    = 1 << 12        ; Флаг: Требуется перерисовка
       
-      #__mask_hidden    = 1 << 16        ; Объект полностью скрыт
-      #__mask_disable   = 1 << 17        ; Объект заблокирован
+      #__mask_hide      = 1 << 14        ; Объект скрыт изначально (базовый флаг)
+      #__mask_disable   = 1 << 15        ; Объект заблокирован изначально (базовый флаг)
+      #__mask_hidden    = 1 << 16        ; Фактическое текущее состояние скрытия
+      #__mask_disabled  = 1 << 17        ; Фактическое текущее состояние блокировки
       #__mask_tokken    = 1 << 18
       #__mask_edit      = 1 << 19        ; Выделение (Строка)
       #__mask_change    = 1 << 20        ; текст изменился, надо перепарсить токены.
@@ -344,7 +346,7 @@
       #__mask_resize    = 1 << 22
       #__mask_node      = 1 << 23        ; Является узлом (Строка) / Деревом (Виджет)
       #__mask_collapsed = 1 << 24        ; Свернуто (Узел/Ветка)
-      
+     
       ;
       ;-\\ create-type
       #__type_Root          = - 1
@@ -775,8 +777,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 346
-; FirstLine = 333
+; CursorPosition = 340
+; FirstLine = 323
 ; Folding = ----
 ; Optimizer
 ; EnableXP

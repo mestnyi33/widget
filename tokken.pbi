@@ -106,7 +106,7 @@ EndEnumeration
 #__mask_redraw    = 1 << 12        ; Флаг: Требуется перерисовка
 
 #__mask_hidden    = 1 << 16        ; Объект полностью скрыт
-#__mask_disable   = 1 << 17        ; Объект заблокирован
+#__mask_disabledd   = 1 << 17        ; Объект заблокирован
 #__mask_tokken    = 1 << 18
 #__mask_edit      = 1 << 19        ; Выделение (Строка)
 #__mask_change    = 1 << 20        ; текст изменился, надо перепарсить токены.
@@ -156,7 +156,7 @@ Procedure.l ChangeColor(Type.l, mask.q, colortype.l, Index.l=-1)
          ElseIf colortype = #PB_Gadget_FrontColor
             color = $000000
          EndIf
-      ElseIf mask & #__mask_disable
+      ElseIf mask & #__mask_disabled
          If colortype = #PB_Gadget_BackColor
             color = $D0D0D0 
          ElseIf colortype = #PB_Gadget_FrontColor
@@ -2502,7 +2502,7 @@ Procedure draw_button(*this._s_WIDGET, rx.l, ry.l)
    
    ; --- ЦВЕТОВАЯ СХЕМА ---
    
-   If *this\mask & #__mask_disable
+   If *this\mask & #__mask_disabled
       c1 = $F5F5F5 : c2 = $E0E0E0 : border = $D0D0D0 ; Серый (выключен)
       
    ElseIf *this\mask & #__mask_press
@@ -3132,11 +3132,12 @@ Procedure ReDraw( *root._s_ROOT = #PB_Any )
       
       ; 2. Рисуем все элементы по порядку (снизу вверх)
       While *root
-         ; Debug "Отрисовка холста: " + *root + " (Имя: " + widgets()\name + ")"
-         If StartDrawing(CanvasOutput(*root\canvas\gadget))
-            Draw(*root)
-            StopDrawing( )
-         EndIf
+;          ; Debug "Отрисовка холста: " + *root + " (Имя: " + widgets()\name + ")"
+;          If StartDrawing(CanvasOutput(*root\canvas\gadget))
+;             Draw(*root)
+;             StopDrawing( )
+;          EndIf
+         ReDraw(*root)
          *root = *root\NextRoot( ) ; Переходим к следующему
       Wend
    EndIf
@@ -3632,10 +3633,10 @@ Procedure disable_tab(*this._s_WIDGET, Index.l, state.b = #True)
    PushListPosition(*this\__tabs())
    If SelectElement(*this\__tabs(), Index)
       If state
-         *this\__tabs()\mask | #__mask_disable
+         *this\__tabs()\mask | #__mask_disabled
          *this\__tabs()\mask &~ #__mask_hover ; Сразу гасим ховер, если он был
       Else
-         *this\__tabs()\mask &~ #__mask_disable
+         *this\__tabs()\mask &~ #__mask_disabled
       EndIf
       *this\mask | #__mask_redraw
    EndIf
@@ -3660,7 +3661,7 @@ Procedure.i hover_tab(*this._s_WIDGET, mx.l, my.l)
          
          ; Проверяем конкретную вкладку
          If mx >= tx + *this\__tabs()\x And mx <= tx + *this\__tabs()\x + *this\__tabs()\width
-            If Not (*this\__tabs()\mask & #__mask_disable)
+            If Not (*this\__tabs()\mask & #__mask_disabled)
                *found_tab = @*this\__tabs()
             EndIf
             Break 
@@ -4917,8 +4918,8 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 3123
-; FirstLine = 2301
-; Folding = +-----------v+-----------------0--------8-8--b---------v-----0--f4e-2Xb8----------------------------------------------------+-
+; CursorPosition = 3663
+; FirstLine = 2827
+; Folding = ------+-----v+-----------------0--------8-8--b---------v-----0--f4e-2Xb8---------------------------------------------------f--
 ; EnableXP
 ; DPIAware

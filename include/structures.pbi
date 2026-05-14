@@ -136,10 +136,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
             _focus.b  
             focus.b
          EndStructureUnion
+         round.a
          
+         ; TEMP
          Hide.b[2]
          Disable.b[2]
-         round.a
       EndStructure
       
       ;--     BOX
@@ -148,6 +149,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Y.l
          Width.l
          Height.l
+         mask.q
       EndStructure
       ;--     ARROW
       Structure _s_ARROW
@@ -170,6 +172,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Hide.b
          round.b
          _padding.b
+         mask.q
       EndStructure
       ;--     CARET
       Structure _s_CARET
@@ -413,7 +416,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ROW
       Structure _s_ROW Extends _s_ITEMS
-         mask.q
+         ;mask.q
          ;sel._s_SEL
          
          *checkBox._s_BOX  ;  checkbox\
@@ -776,8 +779,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 405
-; FirstLine = 349
+; CursorPosition = 140
+; FirstLine = 121
 ; Folding = -----6-k---
 ; Optimizer
 ; EnableXP

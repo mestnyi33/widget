@@ -478,8 +478,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndWith
    EndProcedure
    
-   Procedure Canvas_Draw(Canvas.i, List imgs.canvasitem())
-      ;If StartDrawing(CanvasOutput(canvas))
+   Procedure Canvas_Draw()
       DrawingMode(#PB_2DDrawing_Default)
       Box(0, 0, OutputWidth(), OutputHeight(), RGB(255,255,255))
       
@@ -490,8 +489,8 @@ CompilerIf #PB_Compiler_IsMainFile
          DrawImage(ImageID(imgs()\img), imgs()\x, imgs()\y) ; draw all imgs with z-order
       Next
       
-      Widget::Draw(*this\scroll\v)
-      Widget::Draw(*this\scroll\h)
+     ; Widget::Draw(*this\scroll\v)
+     ; Widget::Draw(*this\scroll\h)
       
       UnclipOutput()
       DrawingMode(#PB_2DDrawing_Outlined)
@@ -500,8 +499,6 @@ CompilerIf #PB_Compiler_IsMainFile
       Box(*this\scroll_x( ), *this\scroll_y( ), *this\scroll_width( ), *this\scroll_height( ), RGB(255,0,255))
       Box(*this\scroll\h\x, *this\scroll\v\y, *this\scroll\h\bar\page\len, *this\scroll\v\bar\page\len, RGB(255,255,0))
       
-      ;   StopDrawing()
-      ;EndIf
    EndProcedure
    
    Procedure Canvas_CallBack()
@@ -566,11 +563,6 @@ CompilerIf #PB_Compiler_IsMainFile
          ; Canvas_Draw(Canvas, imgs()) 
       EndIf
    EndProcedure
-   Procedure events_draw()
-      Canvas_Draw(MyCanvas, imgs()) 
-   EndProcedure
-   
-   
    
    Procedure events_scrolls()
       Select WidgetEvent( ) ;   WidgetEvent( ) ; 
@@ -608,7 +600,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    MyCanvas = GetCanvasGadget(Open(0, 10, 10)) 
    BindGadgetEvent(MyCanvas, @Canvas_CallBack())
-   Bind(Root( ), @events_draw(), #__event_Draw)
+   Bind(Root( ), @Canvas_Draw(), #__event_Draw)
    
    ;    *this\frame_y() = 100
    ;    *this\inner_y() = 100
@@ -629,6 +621,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; Folding = ----------------
+; CursorPosition = 565
+; FirstLine = 480
+; Folding = ------------z--
 ; EnableXP
 ; DPIAware

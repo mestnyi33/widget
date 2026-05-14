@@ -6,8 +6,26 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    EnableExplicit
    
-   Procedure Test( *root._s_ROOT, X,Y,w,h, title.s )
+   Procedure all_events()
+      
+      Select Events()
+         Case #__event_mouseenter
+            If Widget()\parent
+               Debug "[yes] - "+Widget()\root\class
+            Else
+               Debug "[no] - "+Widget()\root\class
+            EndIf
+      EndSelect
+      
+   EndProcedure
+   
+   Procedure Test( *root._s_ROOT, X,Y,w,h, title.s, parent=0 )
+      If parent
+         ;*root\parent = parent
+         ;SetParent(*root, parent)
+      EndIf
       SetFrame(*root,1)
+      SetClass(*root,title )
       OpenList(*root)
       Button(X,Y,w,h, title.s)
       CloseList()
@@ -20,7 +38,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;Draw(*r)
    
    *r = Open(#PB_Any, 350, 200, 200, 200, "Окно 2")
-   Test(*r, 100,100,80,40,"Квадрат окна 2")
+   Test(*r, 100,100,80,40,"Квадрат окна 2", *r)
    ;Draw(*r)
    
    ; В одном окне
@@ -37,16 +55,17 @@ CompilerIf #PB_Compiler_IsMainFile
    Test(*r2, 20,20,60,60,"Квадрат 2")
    Test(*r3, 20,20,60,60,"Квадрат 3")
    Test(*r4, 20,20,60,60,"Квадрат 4")
-   Test(*r5, 40,40,120,120,"Квадрат 5")
+   Test(*r5, 40,40,120,120,"Квадрат 5", *r4)
    
    ;SetBackgroundColor( *r5, $fff0f0)
    
-   ReDraw(Root( ))
+   ReDraw( )
+   Bind(#PB_All, @all_events())
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 9
-; FirstLine = 6
-; Folding = -
+; CursorPosition = 24
+; FirstLine = 3
+; Folding = --
 ; EnableXP
 ; DPIAware

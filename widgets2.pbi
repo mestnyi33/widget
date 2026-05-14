@@ -833,7 +833,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
 
       Macro is_mouse_enter( _address_, _mouse_x_, _mouse_y_, _mode_ = )
-         Bool( Not _address_\mask & #__mask_hidden And is_atpoint_( _address_, _mouse_x_, _mouse_y_, _mode_ ))
+         Bool( Not _address_\hide And is_atpoint_( _address_, _mouse_x_, _mouse_y_, _mode_ ))
       EndMacro
       
       
@@ -1167,7 +1167,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If StartEnum( _this_\parent )
                ;
-               If widgets( )\anchors And Not widgets( )\mask & #__mask_hidden And widgets( ) <> _this_ And widgets( )\level = _this_\level
+               If widgets( )\anchors And Not widgets( )\hide And widgets( ) <> _this_ And widgets( )\level = _this_\level
                   ;\\ left-line
                   If _this_\frame_x( ) = widgets( )\frame_x( )
                      If a_anchors( )\line[#__a_line_left]\y > widgets( )\frame_y( )
@@ -1519,7 +1519,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Macro __draw_roundbox( _address_, _color_type_ )
          ;__draw_box( _address_, _color_type_)
-         If Not _address_\mask & #__mask_hidden
+         If Not _address_\hide
             draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
             draw_roundbox_( _address_\x, _address_\y + 1, _address_\width, _address_\height - 2, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
             draw_roundbox_( _address_\x + 1, _address_\y, _address_\width - 2, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
@@ -1528,7 +1528,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Macro __draw_close_button( _address_, _size_ )
          ; close button
-         If Not _address_\mask & #__mask_hidden
+         If Not _address_\hide
             If _address_\ColorState( )
                Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
                Line( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
@@ -1542,7 +1542,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro __draw_maximize_button( _address_, _size_ )
-         If Not _address_\mask & #__mask_hidden
+         If Not _address_\hide
             If _address_\ColorState( )
                Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
                Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
@@ -1556,7 +1556,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro __draw_minimize_button( _address_, _size_ )
-         If Not _address_\mask & #__mask_hidden
+         If Not _address_\hide
             If _address_\ColorState( )
                Line( _address_\x + 1 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
                Line( _address_\x + 0 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
@@ -1570,7 +1570,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro __draw_help_button( _address_, _size_ )
-         If Not _address_\mask & #__mask_hidden
+         If Not _address_\hide
             draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height,
                             _address_\round, _address_\round, _address_\color\frame[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
          EndIf
@@ -1603,7 +1603,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Macro __draw_bar_buttons( _this_ )
          ; background buttons draw
-         If Not _this_\bar\button[1]\mask & #__mask_hidden
+         If Not _this_\bar\button[1]\hide
             If _this_\bar\button[1]\color\fore <> - 1
                draw_mode_alpha_( #PB_2DDrawing_Gradient )
                __draw_gradient(_this_\bar\vertical, _this_\bar\button[1], 0,0, _this_\bar\button[1]\ColorState( ))
@@ -1613,7 +1613,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ; draw_roundbox_( _this_\bar\button[1]\x, _this_\bar\button[1]\y, _this_\bar\button[1]\width, _this_\bar\button[1]\height, _this_\bar\button[1]\round, _this_\bar\button[1]\round, _this_\bar\button[1]\color\frame[_this_\bar\button[1]\ColorState( )] & $FFFFFF | _this_\bar\button[1]\AlphaState24( ) )
             EndIf
          EndIf
-         If Not _this_\bar\button[2]\mask & #__mask_hidden
+         If Not _this_\bar\button[2]\hide
             If _this_\bar\button[2]\color\fore <> - 1
                draw_mode_alpha_( #PB_2DDrawing_Gradient )
                __draw_gradient(_this_\bar\vertical, _this_\bar\button[2], 0,0, _this_\bar\button[2]\ColorState( ))
@@ -1644,7 +1644,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ; frame buttons draw
-         If Not _this_\bar\button[1]\mask & #__mask_hidden
+         If Not _this_\bar\button[1]\hide
             If _this_\bar\button[1]\arrow\size
                If _this_\flagmask & #__spin_Plus 
                   __draw_plus( _this_\bar\button[1], Bool( _this_\bar\invert ) )
@@ -1655,7 +1655,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             __draw_box(_this_\bar\button[1], color\frame)
             ; draw_roundbox_( _this_\bar\button[1]\x, _this_\bar\button[1]\y, _this_\bar\button[1]\width, _this_\bar\button[1]\height, _this_\bar\button[1]\round, _this_\bar\button[1]\round, _this_\bar\button[1]\color\frame[_this_\bar\button[1]\ColorState( )] & $FFFFFF | _this_\bar\button[1]\AlphaState24( ) )
          EndIf
-         If Not _this_\bar\button[2]\mask & #__mask_hidden
+         If Not _this_\bar\button[2]\hide
             If _this_\bar\button[2]\arrow\size
                If _this_\flagmask & #__spin_Plus 
                   __draw_plus( _this_\bar\button[2], Bool( Not _this_\bar\invert ) )
@@ -2053,7 +2053,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else ; horizontal center
             _this_\scroll_x( ) = ( _this_\inner_width( ) - _size_ ) / 2
          EndIf
-         If _this_\scroll And _this_\scroll\h And Not _this_\scroll\h\mask & #__mask_hidden
+         If _this_\scroll And _this_\scroll\h And Not _this_\scroll\h\hide
             If _this_\scroll\h\bar\page\pos <> - _this_\scroll_x( )
                bar_PageChange( _this_\scroll\h, - _this_\scroll_x( ))
             EndIf
@@ -2073,7 +2073,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else ; vertical center
             _this_\scroll_y( ) = ( _this_\inner_height( ) - _size_ ) / 2
          EndIf
-         If _this_\scroll And _this_\scroll\v And Not _this_\scroll\v\mask & #__mask_hidden
+         If _this_\scroll And _this_\scroll\v And Not _this_\scroll\v\hide
             If _this_\scroll\v\bar\page\pos <> - _this_\scroll_y( )
                bar_PageChange( _this_\scroll\v, - _this_\scroll_y( ))
             EndIf
@@ -2600,8 +2600,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\screen_width( ) = 0 And 
                *this\screen_height( ) = 0
-               \v\mask | #__mask_hidden 
-               \h\mask | #__mask_hidden 
+               \v\hide = #True
+               \h\hide = #True
                ProcedureReturn 0
             EndIf
             
@@ -2615,7 +2615,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             \v\bar\page\len = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\frame_height( ))
             \h\bar\page\len = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\frame_width( ))
             
-            iheight = Height - ( Bool( Not \h\mask & #__mask_hide And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( )) 
+            iheight = Height - ( Bool( Not \h\hide[1] And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( )) 
             If \v\bar\page\len <> iheight
                \v\bar\page\len = iheight
                If Not \v\bar\max
@@ -2630,7 +2630,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;                EndIf
             EndIf
             
-            iwidth = Width - ( Bool( Not \v\mask & #__mask_hide And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( )) 
+            iwidth = Width - ( Bool( Not \v\hide[1] And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( )) 
             If \h\bar\page\len <> iwidth
                \h\bar\page\len = iwidth
                If Not \h\bar\max
@@ -2657,11 +2657,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;             
-            If Not \v\mask & #__mask_hide
+            If Not \v\hide[1]
                If \v\bar\max > \v\bar\page\len
-                  Height = ( \v\bar\page\len + Bool( Not \h\mask & #__mask_hide And \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
+                  Height = ( \v\bar\page\len + Bool( Not \h\hide[1] And \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
                   If \v\frame_height( ) <> Height
-                     ;\v\mask & #__mask_hidden = \v\mask & #__mask_hide
+                     ;\v\hide = \v\hide[1]
                      resize_v = 1
                   EndIf
                   
@@ -2676,7 +2676,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  If resize_v ; And Not \v\mask & #__mask_hidden
+                  If resize_v ; And Not \v\hide
                      If test_resize_area
                         Debug "         v "+\v\frame_x( ) +" "+ x1 ; \v\frame_y( ) +" "+ Str(*this\frame_y( ) + Y)
                      EndIf
@@ -2686,8 +2686,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                Else
-                  If Not \v\mask & #__mask_hidden
-                     \v\mask | #__mask_hidden
+                  If \v\hide <> #True
+                     \v\hide = #True
                      ;// reset page pos then hide scrollbar
                      If \v\bar\page\pos > \v\bar\min
                         bar_PageChange( \v, \v\bar\min, #False )
@@ -2695,7 +2695,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
 ;             Else
-;                If \v\mask & #__mask_hidden
+;                If \v\hide
 ;                   If \v\frame_height( ) <> *this\container_height( )
 ;                      Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\container_height( ))
 ;                   EndIf
@@ -2703,11 +2703,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;
-            If Not \h\mask & #__mask_hide
+            If Not \h\hide[1]
                If \h\bar\max > \h\bar\page\len
-                  Width = ( \h\bar\page\len + Bool( Not \v\mask & #__mask_hide And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\frame_width( ) / 4 ))
+                  Width = ( \h\bar\page\len + Bool( Not \v\hide[1] And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\frame_width( ) / 4 ))
                   If \h\frame_width( ) <> Width
-                     ;\h\mask & #__mask_hidden = \h\mask & #__mask_hide
+                     ;\h\hide = \h\hide[1]
                      resize_h    = 1
                   EndIf
                   
@@ -2721,7 +2721,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  If resize_h ;And Not \h\mask & #__mask_hidden
+                  If resize_h ;And Not \h\hide
                      If test_resize_area
                         Debug "         h "+\h\frame_y( ) +" "+ y1
                      EndIf
@@ -2730,8 +2730,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      bar_update( \h, 100 )
                   EndIf
                Else
-                  If Not \h\mask & #__mask_hidden
-                     \h\mask | #__mask_hidden
+                  If \h\hide <> #True
+                     \h\hide = #True
                      ;// reset page pos then hide scrollbar
                      If \h\bar\page\pos > \h\bar\min
                         bar_PageChange( \h, \h\bar\min, #False )
@@ -2739,7 +2739,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
 ;             Else
-;                If \h\mask & #__mask_hidden
+;                If \h\hide
 ;                   If \h\frame_width( ) <> *this\container_width( )
 ;                      Resize( \h, #PB_Ignore, #PB_Ignore, *this\container_width( ), #PB_Ignore)
 ;                   EndIf
@@ -3953,7 +3953,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure a_enter( *this._s_WIDGET, *data )
          Protected i, a_index
          
-         If Not (*this And *this\parent And Not *this\parent\mask & #__mask_hidden);
+         If Not (*this And *this\parent And Not *this\parent\hide);
             ProcedureReturn 0
          EndIf
          
@@ -4445,7 +4445,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If Not a_anchors( )\group\show
                      If mouse( )\selector
                         If StartEnum( *this )
-                           If widgets( )\anchors And Not widgets( )\mask & #__mask_hidden 
+                           If widgets( )\anchors And Not widgets( )\hide 
                               If widgets( )\anchors\group\show = #False
                                  If widgets( )\level = *this\level + 1
                                     If is_intersect_( widgets( ), mouse( )\selector, [#__c_frame] )
@@ -4761,7 +4761,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected layout = pos * 2
             Protected childrens.b, qqq = DPIScaled(40)
             ;
-            If Not *this\mask & #__mask_hidden 
+            If Not *this\hide 
                If (*this\ResizeChange( ) Or *this\TabChange( ))
                   *bar\max = 0
                   *this\scroll_width( ) = 0
@@ -4777,7 +4777,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         ForEach *this\__tabs( ) : *tab = @*this\__tabs( )
                            
-                           If *tab\mask & #__mask_hidden
+                           If *tab\hide
                               Continue
                            Else
                               draw_font( *tab, GetFontID( *this ), *tab\TextChange( ))
@@ -4815,7 +4815,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   ForEach *this\__tabs( ) : *tab = @*this\__tabs( )
                      
-                     If *tab\mask & #__mask_hidden
+                     If *tab\hide
                         Continue
                      Else
                         draw_font( *tab, GetFontID( *this ), *tab\TextChange( ))
@@ -5037,7 +5037,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ draw disable state
-         If _address_\mask & #__mask_disabled
+         If _address_\disable
             ; Debug "disable item"
             draw_mode_alpha_( #PB_2DDrawing_Default )
             draw_box_(  _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, $AAE4E4E4 )
@@ -5065,7 +5065,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ForEach *this\__tabs( ) : *tab = @*this\__tabs( )
             Protected tab_index = ListIndex( *this\__tabs( ) )
             
-            If *tab\mask & #__mask_hidden 
+            If *tab\hide 
                *tab\visible = 0
                Continue
             EndIf
@@ -5111,11 +5111,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         ; Debug *this\parent\class
                         ;                     ;
-                        ;Debug ""+*BB1\mask & #__mask_hidden +" "+ Str( *BB1\x ) +" "+ Str( x + *tab\x ) +" - "+ *SB\width
-                        ;Debug ""+*BB2\mask & #__mask_hidden +" "+ Str( *BB2\x ) +" "+ Str( x + *tab\x )
+                        ;Debug ""+*BB1\hide +" "+ Str( *BB1\x ) +" "+ Str( x + *tab\x ) +" - "+ *SB\width
+                        ;Debug ""+*BB2\hide +" "+ Str( *BB2\x ) +" "+ Str( x + *tab\x )
                         ;                         
-                        ;                         If (( *BB2\x + *BB2\width < x + *tab\x ) Or ( *BB2\mask & #__mask_hidden And *BB2\x + *BB2\width > x + *tab\x )) Or
-                        ;                            (( *BB1\x > x + *tab\x + *tab\width ) Or ( *BB1\mask & #__mask_hidden And *BB1\x < x + *tab\x + *tab\width )) 
+                        ;                         If (( *BB2\x + *BB2\width < x + *tab\x ) Or ( *BB2\hide And *BB2\x + *BB2\width > x + *tab\x )) Or
+                        ;                            (( *BB1\x > x + *tab\x + *tab\width ) Or ( *BB1\hide And *BB1\x < x + *tab\x + *tab\width )) 
                         bar_draw_item_( *this\bar\vertical, *tab, X, Y, 0, round, Bool( Not( is_bar_( *this ) And Not constants::BinaryFlag( *this\flagmask, #__flag_BarButtons ))) )
                         ;                         EndIf
                      EndIf
@@ -5253,7 +5253,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf               
             
             ;\\
-            If Not *this\mask & #__mask_hidden And *this\AlphaState( )
+            If Not *this\hide And *this\AlphaState( )
                If is_integral_( *this )
                   If ChangeFontID( *this, CurrentFontID( ))
                   EndIf
@@ -5320,28 +5320,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   If *bar\vertical
                      ; to top
-                     If Not *BB2\mask & #__mask_hidden
+                     If Not *BB2\hide
                         fabe_pos = *this\frame_y( ) + ( fabe_len ) - pf
                         LinearGradient( *this\frame_x( ) - pf, fabe_pos, *this\frame_x( ) - pf, fabe_pos - fabe_out )
                         draw_roundbox_( *this\frame_x( ) - pf, fabe_pos, size2, - fabe_len, round, round )
                      EndIf
                      
                      ; to bottom
-                     If Not *BB1\mask & #__mask_hidden
+                     If Not *BB1\hide
                         fabe_pos = *this\frame_y( ) + *this\frame_height( ) - ( fabe_len ) + pf
                         LinearGradient( *this\frame_x( ) - pf, fabe_pos, *this\frame_x( ) - pf, fabe_pos + fabe_out )
                         draw_roundbox_( *this\frame_x( ) - pf, fabe_pos, size2, fabe_len, round, round )
                      EndIf
                   Else
                      ; to left
-                     If Not *BB2\mask & #__mask_hidden
+                     If Not *BB2\hide
                         fabe_pos = *this\frame_x( ) + ( fabe_len ) - pf
                         LinearGradient( fabe_pos, *this\frame_y( ) - pf, fabe_pos - fabe_out, *this\frame_y( ) - pf )
                         draw_roundbox_( fabe_pos, *this\frame_y( ) - pf, - fabe_len, size2, round, round )
                      EndIf
                      
                      ; to right
-                     If Not *BB1\mask & #__mask_hidden
+                     If Not *BB1\hide
                         fabe_pos = *this\frame_x( ) + *this\frame_width( ) - ( fabe_len ) + pf
                         LinearGradient( fabe_pos, *this\frame_y( ) - pf, fabe_pos + fabe_out, *this\frame_y( ) - pf )
                         draw_roundbox_( fabe_pos, *this\frame_y( ) - pf, fabe_len, size2, round, round )
@@ -5783,16 +5783,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             draw_box_( *SB\x, *SB\y, *SB\width, *SB\height, *this\color\back[*SB\ColorState( )] & $ffffff | 210 << 24 )
             
             ; draw the first\second background
-            If Not *SB1\mask & #__mask_hidden : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
-            If Not *SB2\mask & #__mask_hidden : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
+            If Not *SB1\hide : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
+            If Not *SB2\hide : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
          EndIf
          
          __draw_mode( #PB_2DDrawing_Outlined )
          
          If Not *this\flagmask & #__flag_Transparent
             ; draw the frame
-            If Not *SB1\mask & #__mask_hidden : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
-            If Not *SB2\mask & #__mask_hidden : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
+            If Not *SB1\hide : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
+            If Not *SB2\hide : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
          EndIf
          
          ;
@@ -5912,16 +5912,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;
             If *bar\page\len
-               If Not *this\mask & #__mask_hide ; And is_integral_( *this )
-                  If Bool(*this\mask & #__mask_hidden) <> Bool( *bar\page\len >= *bar\max  )
-                     ; Применяем новое состояние к маске
-                     If Bool( *bar\page\len >= *bar\max )
-                        *this\mask | #__mask_hidden
-                     Else
-                        *this\mask & ~#__mask_hidden
-                     EndIf
+               If Not *this\hide[1] ; And is_integral_( *this )
+                  If *this\hide <> Bool( *bar\page\len >= *bar\max  )
+                     *this\hide = Bool( *bar\page\len >= *bar\max )
                      ;
-                     If *this\mask & #__mask_hidden
+                     If *this\hide
                         If *bar\page\pos <> *bar\min
                            Debug " ["+ *this\class +"] scroll-hide "+ *bar\page\pos
                            *bar\page\pos = *bar\min
@@ -5934,12 +5929,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ; hide state
             If is_integral_( *this )
                If *bar\max > *bar\page\len
-                  If Not *this\mask & #__mask_hide
-                     *this\mask &~ #__mask_hidden 
+                  If Not *this\hide[1]
+                     *this\hide = 0
                   EndIf
                Else
-                  If Not *this\mask & #__mask_hidden
-                     *this\mask | #__mask_hidden
+                  If *this\hide = 0
+                     *this\hide = 1
                      ; 
                      *bar\page\pos = 0
                   EndIf
@@ -5973,7 +5968,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          
-         ;          If *this\mask & #__mask_hidden
+         ;          If *this\hide
          ;             Debug "["+ *this\class +"] "+;mode +" >< "+;*bar\PageChange( ) +" >< "+
          ;                   *bar\percent +" >< "+
          ;                   *bar\min +" "+
@@ -5992,14 +5987,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          ;\\ disable/enable buttons(left&top)-tab(right&bottom)
          If bar_in_start_( *bar )
-            If *BB1\mask & #__mask_disabled = #False
-               *BB1\mask | #__mask_disabled
+            If *BB1\disable = #False
+               *BB1\disable = #True
                ;
                *BB1\ColorState( ) = #__s_3
             EndIf
          Else
-            If *BB1\mask & #__mask_disabled
-               *BB1\mask &~ #__mask_disabled
+            If *BB1\disable = #True
+               *BB1\disable = #False
                ;
                *BB1\ColorState( ) = #__s_0
             EndIf
@@ -6007,14 +6002,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          ;\\ disable/enable buttons(right&bottom)-tab(left&top)
          If bar_in_stop_( *bar )
-            If *BB2\mask & #__mask_disabled = #False
-               *BB2\mask | #__mask_disabled
+            If *BB2\disable = #False
+               *BB2\disable = #True
                ;
                *BB2\ColorState( ) = #__s_3
             EndIf
          Else
-            If *BB2\mask & #__mask_disabled
-               *BB2\mask &~ #__mask_disabled
+            If *BB2\disable = #True
+               *BB2\disable = #False
                ;
                *BB2\ColorState( ) = #__s_0
             EndIf
@@ -6025,14 +6020,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *BB1\ColorState( ) = #__s_3 And
                *BB2\ColorState( ) = #__s_3
                
-               If *SB\mask & #__mask_disabled = #False
-                  *SB\mask | #__mask_disabled
+               If *SB\disable = #False
+                  *SB\disable = #True
                   
                   *SB\ColorState( ) = #__s_3
                EndIf
             Else
-               If *SB\mask & #__mask_disabled
-                  *SB\mask &~ #__mask_disabled
+               If *SB\disable = #True
+                  *SB\disable = #False
                   
                   *SB\ColorState( ) = #__s_0
                EndIf
@@ -6367,8 +6362,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ disable/enable
             ;\\ buttons(left&top)-tab(right&bottom)
             If bar_in_start_( *bar )
-               If *BB1\mask & #__mask_disabled = #False
-                  *BB1\mask | #__mask_disabled
+               If *BB1\disable = #False
+                  *BB1\disable = #True
                   
                   ;\\
                   If *this\cursor[3]
@@ -6380,8 +6375,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             Else
-               If *BB1\mask & #__mask_disabled
-                  *BB1\mask &~ #__mask_disabled
+               If *BB1\disable = #True
+                  *BB1\disable = #False
                   
                   ;\\
                   If *this\cursor[1]
@@ -6396,8 +6391,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ buttons(right&bottom)-tab(left&top)
             If bar_in_stop_( *bar )
-               If *BB2\mask & #__mask_disabled = #False
-                  *BB2\mask | #__mask_disabled
+               If *BB2\disable = #False
+                  *BB2\disable = #True
                   ;
                   If *this\cursor[2]
                      If *this\mask & #__mask_press 
@@ -6408,8 +6403,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
             Else
-               If *BB2\mask & #__mask_disabled
-                  *BB2\mask &~ #__mask_disabled
+               If *BB2\disable = #True
+                  *BB2\disable = #False
                   ;
                   If *this\cursor[1]
                      If *this\mask & #__mask_press 
@@ -6617,23 +6612,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ disable/enable buttons(left&top)-tab(right&bottom)
          If bar_in_start_( *bar )
-            If *BB1\mask & #__mask_disabled = #False
-               *BB1\mask | #__mask_disabled
+            If *BB1\disable = #False
+               *BB1\disable = #True
             EndIf
          Else
-            If *BB1\mask & #__mask_disabled
-               *BB1\mask &~ #__mask_disabled
+            If *BB1\disable = #True
+               *BB1\disable = #False
             EndIf
          EndIf
          
          ;\\ disable/enable buttons(right&bottom)-tab(left&top)
          If bar_in_stop_( *bar )
-            If *BB2\mask & #__mask_disabled = #False
-               *BB2\mask | #__mask_disabled
+            If *BB2\disable = #False
+               *BB2\disable = #True
             EndIf
          Else
-            If *BB2\mask & #__mask_disabled
-               *BB2\mask &~ #__mask_disabled
+            If *BB2\disable = #True
+               *BB2\disable = #False
             EndIf
          EndIf
          
@@ -6707,28 +6702,28 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;\\ disable/enable buttons(left&top)-tab(right&bottom)
          If bar_in_start_( *bar )
-            If *BB1\mask & #__mask_disabled = #False
-               *BB1\mask | #__mask_disabled
+            If *BB1\disable = #False
+               *BB1\disable = #True
             EndIf
          Else
-            If *BB1\mask & #__mask_disabled
-               *BB1\mask &~ #__mask_disabled
+            If *BB1\disable = #True
+               *BB1\disable = #False
             EndIf
          EndIf
          
          ;\\ disable/enable buttons(right&bottom)-tab(left&top)
          If bar_in_stop_( *bar )
-            If *BB2\mask & #__mask_disabled = #False
-               *BB2\mask | #__mask_disabled
+            If *BB2\disable = #False
+               *BB2\disable = #True
             EndIf
          Else
-            If *BB2\mask & #__mask_disabled
-               *BB2\mask &~ #__mask_disabled
+            If *BB2\disable = #True
+               *BB2\disable = #False
             EndIf
          EndIf
          
          ;\\
-         If *BB1\mask & #__mask_disabled Or *BB2\mask & #__mask_disabled Or 
+         If *BB1\disable Or *BB2\disable Or 
             constants::BinaryFlag( *this\flagmask, #PB_TrackBar_Ticks )
             If *bar\vertical 
                If *bar\invert
@@ -6854,14 +6849,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          ;\\ disable/enable (buttons(left&top)-tab(right&bottom))
          If bar_in_start_( *bar )
-            If *BB1\mask & #__mask_disabled = #False
-               *BB1\mask | #__mask_disabled
+            If *BB1\disable = #False
+               *BB1\disable = #True
                
                *BB1\ColorState( ) = #__s_3
             EndIf
          Else
-            If *BB1\mask & #__mask_disabled
-               *BB1\mask &~ #__mask_disabled
+            If *BB1\disable = #True
+               *BB1\disable = #False
                
                *BB1\ColorState( ) = #__s_0
             EndIf
@@ -6869,14 +6864,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          ;\\ disable/enable (buttons(right&bottom)-tab(left&top))
          If bar_in_stop_( *bar )
-            If *BB2\mask & #__mask_disabled = #False
-               *BB2\mask | #__mask_disabled
+            If *BB2\disable = #False
+               *BB2\disable = #True
                ;
                *BB2\ColorState( ) = #__s_3
             EndIf
          Else
-            If *BB2\mask & #__mask_disabled
-               *BB2\mask &~ #__mask_disabled
+            If *BB2\disable = #True
+               *BB2\disable = #False
                ;
                *BB2\ColorState( ) = #__s_0
             EndIf
@@ -7148,34 +7143,34 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\ disable/enable buttons(left&top)-tab(right&bottom)
             If bar_in_start_( *bar )
-               If Not *BB1\mask & #__mask_disabled 
-                  *BB1\mask | #__mask_disabled
+               If *BB1\disable = #False
+                  *BB1\disable = #True
                   ;
-                  *BB1\mask | #__mask_hidden
+                  *BB1\hide = 1
                   *BB1\ColorState( ) = #__s_3
                EndIf
             Else
-               If *BB1\mask & #__mask_disabled
-                  *BB1\mask &~ #__mask_disabled
+               If *BB1\disable = #True
+                  *BB1\disable = #False
                   ;
-                  *BB1\mask &~ #__mask_hidden
+                  *BB1\hide = 0
                   *BB1\ColorState( ) = #__s_0
                EndIf
             EndIf
             
             ;\\ disable/enable buttons(right&bottom)-tab(left&top)
             If bar_in_stop_( *bar )
-               If Not *BB2\mask & #__mask_disabled 
-                  *BB2\mask | #__mask_disabled
+               If *BB2\disable = #False
+                  *BB2\disable = #True
                   ;
-                  *BB2\mask | #__mask_hidden 
+                  *BB2\hide = 1
                   *BB2\ColorState( ) = #__s_3
                EndIf
             Else
-               If *BB2\mask & #__mask_disabled
-                  *BB2\mask &~ #__mask_disabled
+               If *BB2\disable = #True
+                  *BB2\disable = #False
                   ;
-                  *BB2\mask &~ #__mask_hidden 
+                  *BB2\hide = 0
                   *BB2\ColorState( ) = #__s_0
                EndIf
             EndIf
@@ -7184,17 +7179,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *bar\vertical
                *this\inner_x( )      = *this\frame_x( )
                *this\inner_width( )  = *this\frame_width( ) - 1
-               *this\inner_y( )      = *this\frame_y( ) + Bool( *BB2\mask & #__mask_hidden = #False ) * ( *BB2\size + *this\fs )
-               *this\inner_height( ) = *this\frame_y( ) + *this\frame_height( ) - *this\inner_y( ) - Bool( *BB1\mask & #__mask_hidden = #False ) * ( *BB1\size + *this\fs )
+               *this\inner_y( )      = *this\frame_y( ) + Bool( *BB2\hide = #False ) * ( *BB2\size + *this\fs )
+               *this\inner_height( ) = *this\frame_y( ) + *this\frame_height( ) - *this\inner_y( ) - Bool( *BB1\hide = #False ) * ( *BB1\size + *this\fs )
             Else
                *this\inner_y( )      = *this\frame_y( )
                *this\inner_height( ) = *this\frame_height( ) - 1
-               *this\inner_x( )      = *this\frame_x( ) + Bool( *BB2\mask & #__mask_hidden = #False ) * ( *BB2\size + *this\fs )
-               *this\inner_width( )  = *this\frame_x( ) + *this\frame_width( ) - *this\inner_x( ) - Bool( *BB1\mask & #__mask_hidden = #False ) * ( *BB1\size + *this\fs )
+               *this\inner_x( )      = *this\frame_x( ) + Bool( *BB2\hide = #False ) * ( *BB2\size + *this\fs )
+               *this\inner_width( )  = *this\frame_x( ) + *this\frame_width( ) - *this\inner_x( ) - Bool( *BB1\hide = #False ) * ( *BB1\size + *this\fs )
             EndIf
             
             ;
-            If *BB2\size And Not *BB2\mask & #__mask_hidden
+            If *BB2\size And Not *BB2\hide
                If *bar\vertical
                   ; Top button coordinate on vertical scroll bar
                   ;  *BB2\x = *this\frame_x( ) + ( *this\frame_width( ) - *BB2\size )/2
@@ -7212,7 +7207,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
             EndIf
             
-            If *BB1\size And Not *BB1\mask & #__mask_hidden
+            If *BB1\size And Not *BB1\hide
                If *bar\vertical
                   ; Botom button coordinate on vertical scroll bar
                   ;  *BB1\x = *this\frame_x( ) + ( *this\frame_width( ) - *BB1\size )/2
@@ -7278,7 +7273,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         If Not *bar\button\mask & #__mask_disabled 
+         If Not *bar\button\disable 
             If ScrollPos < *bar\min
                If *bar\max > *bar\page\len
                   ScrollPos = *bar\min
@@ -7481,9 +7476,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             size = *this\TitleBarHeight + *this\MenuBarHeight + *this\ToolBarHeight
             ;
             If position = 0
-               *box\mask | #__mask_hidden 
+               *box\hide = 1
             Else
-               *box\mask &~ #__mask_hidden
+               *box\hide = 0
             EndIf
             ;
             *box\text\invert = 0
@@ -7621,13 +7616,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\type = #__type_toolbar
             ForEach *this\__tabs( ) : *tab = *this\__tabs( )
                If *tab\tindex = _baritem_
-                  If _state_
-                     *Tab\mask | #__mask_disabled 
-                  Else
-                     *Tab\mask &~ #__mask_disabled 
-                  EndIf
-                  
-                     ; *this\WidgetChange( )       = #True
+                  *tab\disable = _state_
+                  ; *this\WidgetChange( )       = #True
                   *this\TabChange( )          = #True
                   
                   Break
@@ -7641,13 +7631,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *pw
                   ForEach *pw\__tabs( )
                      If *pw\__tabs( )\tindex = _baritem_
-                        If _state_
-                           *pw\__tabs( )\mask | #__mask_disabled 
-                        Else
-                           *pw\__tabs( )\mask &~ #__mask_disabled 
-                        EndIf
-                  
-                  ; *pw\WidgetChange( )       = #True
+                        *pw\__tabs( )\disable = _state_
+                        ; *pw\WidgetChange( )       = #True
                         *pw\TabChange( )          = #True
                         
                         Break 2
@@ -7655,13 +7640,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Next
                Else
                   If *tab\tindex = _baritem_
-                     If _state_
-                     *Tab\mask | #__mask_disabled 
-                  Else
-                     *Tab\mask &~ #__mask_disabled 
-                  EndIf
-                  
-                  ; *this\WidgetChange( )       = #True
+                     *tab\disable = _state_
+                     ; *this\WidgetChange( )       = #True
                      *this\TabChange( )          = #True
                      
                      
@@ -7879,7 +7859,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ ComboBox
             If *display\type = #__type_ComboBox
                If *display\Combo( )
-                  If *this\mask & #__mask_hidden
+                  If *this\hide
                      *display\Combo( )\arrow\direction = #__bottom
                      *display\Combo( )\ColorState( ) = 2
                      *display\ColorState( ) = 2
@@ -7897,11 +7877,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                ;\\ hide current popup bar
-               Hide( *this, *this\mask & #__mask_hidden ! 1 )
+               Hide( *this, *this\hide ! 1 )
                
-               If *this\mask & #__mask_hidden
+               If *this\hide
                   If test_display
-                     Debug "comboBar - hide "+*this\class +" "+ Bool(*this\mask & #__mask_hidden)
+                     Debug "comboBar - hide "+*this\class +" "+ *this\hide
                   EndIf
                   ;
                   
@@ -7925,7 +7905,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   PostEventsRepaint( *this\root )
                EndIf
             Else
-               If *this\mask & #__mask_hidden
+               If *this\hide
                   If test_display
                      Debug "menuBar - show "+*this\class
                   EndIf
@@ -7986,7 +7966,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\
-            If Not *this\mask & #__mask_hidden 
+            If Not *this\hide 
                PopupBar( ) = *this
                
                ;\\ 
@@ -8167,7 +8147,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          ;
          ; show popup bar
-         If *pw And *pw\mask & #__mask_hidden
+         If *pw And *pw\hide
             If *this\bar\vertical
                ; Debug "  show POPUPMENUBARS "+EventString(event)
                DisplayPopupBar( *pw, *this )
@@ -9267,80 +9247,53 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro HideState( _this_, _parent_ )
-         ; 1. Расчет финального скрытия с учетом родителя и вкладок (Tabbar) в одно выражение
-         If Bool( ( _this_\mask & #__mask_hide ) Or 
-                  ( _parent_ And (( _parent_\mask & #__mask_hidden ) Or ( _this_\tabindex <> #PB_Ignore And _parent_\tabbar And _parent_\tabbar\type = #__type_TabBar And _parent_\tabbar\TabState( ) <> _this_\tabindex ) ) ) )
-            _this_\mask | #__mask_hidden
-         Else
-            _this_\mask & ~#__mask_hidden
+         _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide Or ( _parent_\tabbar And _parent_\tabbar\type = #__type_TabBar And _parent_\tabbar\TabState( ) <> _this_\tabindex ))))
+         
+         If _this_\tabindex = #PB_Ignore
+            _this_\hide = Bool( _this_\hide[1] Or ( _parent_ And ( _parent_\hide )))
          EndIf
          
-         ; 2. Обновление дочернего элемента Tabbar
          If _this_\tabbar
-            If _this_\mask & #__mask_hidden
-               _this_\tabbar\mask | #__mask_hidden
+            If _this_\hide
+               _this_\tabbar\hide = - 1
             Else
-               If _this_\tabbar\mask & #__mask_hide
-                  _this_\tabbar\mask | #__mask_hidden
-               Else
-                  _this_\tabbar\mask & ~#__mask_hidden
-               EndIf
+               _this_\tabbar\hide = _this_\tabbar\hide[1]
             EndIf
          EndIf
-         
-         ; 3. Обновление дочернего элемента Stringbar
          If _this_\Stringbar
-            If _this_\mask & #__mask_hidden
-               _this_\Stringbar\mask | #__mask_hidden
+            If _this_\hide
+               _this_\Stringbar\hide = - 1
             Else
-               If _this_\Stringbar\mask & #__mask_hide
-                  _this_\Stringbar\mask | #__mask_hidden
-               Else
-                  _this_\Stringbar\mask & ~#__mask_hidden
-               EndIf
+               _this_\Stringbar\hide = _this_\Stringbar\hide[1]
             EndIf
          EndIf
-         
-         ; 4. Обновление дочерних скроллбаров (v и h)
          If _this_\scroll
             If _this_\scroll\v
-               If Bool( ( _this_\mask & #__mask_hidden ) Or _this_\scroll\v\bar\max <= _this_\scroll\v\bar\page\len )
-                  _this_\scroll\v\mask | #__mask_hidden
+               If _this_\hide Or _this_\scroll\v\bar\max <= _this_\scroll\v\bar\page\len
+                  _this_\scroll\v\hide = - 1
                Else
-                  If _this_\scroll\v\mask & #__mask_hide
-                     _this_\scroll\v\mask | #__mask_hidden
-                  Else
-                     _this_\scroll\v\mask & ~#__mask_hidden
-                  EndIf
+                  _this_\scroll\v\hide = _this_\scroll\v\hide[1]
                EndIf
             EndIf
-            
             If _this_\scroll\h
-               If Bool( ( _this_\mask & #__mask_hidden ) Or _this_\scroll\h\bar\max <= _this_\scroll\h\bar\page\len )
-                  _this_\scroll\h\mask | #__mask_hidden
+               If _this_\hide Or _this_\scroll\h\bar\max <= _this_\scroll\h\bar\page\len
+                  _this_\scroll\h\hide = - 1
                Else
-                  If _this_\scroll\h\mask & #__mask_hide
-                     _this_\scroll\h\mask | #__mask_hidden
-                  Else
-                     _this_\scroll\h\mask & ~#__mask_hidden
-                  EndIf
+                  _this_\scroll\h\hide = _this_\scroll\h\hide[1]
                EndIf
             EndIf
          EndIf
          
+         ; Чтобы обновить границы отоброжения (clip-coordinate)
+         ;_this_\resize\clip = #True
       EndMacro
-
+      
       Macro DisableState( _this_, _parent_ )
-         ; 1. Расчет финального состояния на основе базовой маски и маски родителя
-         If Bool( ( _this_\mask & #__mask_disable ) Or ( _parent_ And ( _parent_\mask & #__mask_disabled ) ) )
-            _this_\mask | #__mask_disabled
-         Else
-            _this_\mask & ~#__mask_disabled
-         EndIf
+         _this_\disable = Bool( _this_\disable[1] Or ( _parent_ And _parent_\disable ))
          
          ; reset color state
          If _this_\enter
-            If _this_\mask & #__mask_disabled
+            If _this_\disable
                If _this_\ColorState( ) <> #__s_0
                   _this_\ColorState( ) = #__s_0
                EndIf
@@ -9351,60 +9304,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          
-         ; 2. Обновление дочернего элемента Tabbar
+         ;
          If _this_\tabbar
-            If _this_\mask & #__mask_disabled
-               _this_\tabbar\mask | #__mask_disabled
+            If _this_\disable
+               _this_\tabbar\disable = - 1
             Else
-               ; Если родитель активен, состояние зависит от личной маски таббара
-               If _this_\tabbar\mask & #__mask_disable
-                  _this_\tabbar\mask | #__mask_disabled
-               Else
-                  _this_\tabbar\mask & ~#__mask_disabled
-               EndIf
+               _this_\tabbar\disable = _this_\tabbar\disable[1]
             EndIf
          EndIf
-         
-         ; 3. Обновление дочернего элемента Stringbar
          If _this_\Stringbar
-            If _this_\mask & #__mask_disabled
-               _this_\Stringbar\mask | #__mask_disabled
+            If _this_\disable
+               _this_\Stringbar\disable = - 1
             Else
-               If _this_\Stringbar\mask & #__mask_disable
-                  _this_\Stringbar\mask | #__mask_disabled
-               Else
-                  _this_\Stringbar\mask & ~#__mask_disabled
-               EndIf
+               _this_\Stringbar\disable = _this_\Stringbar\disable[1]
             EndIf
          EndIf
-         
-         ; 4. Обновление дочерних скроллбаров (v и h)
          If _this_\scroll
             If _this_\scroll\v
-               If _this_\mask & #__mask_disabled
-                  _this_\scroll\v\mask | #__mask_disabled
+               If _this_\disable
+                  _this_\scroll\v\disable = - 1
                Else
-                  If _this_\scroll\v\mask & #__mask_disable
-                     _this_\scroll\v\mask | #__mask_disabled
-                  Else
-                     _this_\scroll\v\mask & ~#__mask_disabled
-                  EndIf
+                  _this_\scroll\v\disable = _this_\scroll\v\disable[1]
                EndIf
             EndIf
             If _this_\scroll\h
-               If _this_\mask & #__mask_disabled
-                  _this_\scroll\h\mask | #__mask_disabled
+               If _this_\disable
+                  _this_\scroll\h\disable = - 1
                Else
-                  If _this_\scroll\h\mask & #__mask_disable
-                     _this_\scroll\h\mask | #__mask_disabled
-                  Else
-                     _this_\scroll\h\mask & ~#__mask_disabled
-                  EndIf
+                  _this_\scroll\h\disable = _this_\scroll\h\disable[1]
                EndIf
             EndIf
          EndIf
       EndMacro
-
+      
       ;-
       Procedure.b HideItem( *this._s_widget, item.l, state.b )
          If *this\type = #__type_MenuBar Or
@@ -9415,12 +9347,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                PushListPosition(*this\__tabs( ))
                ForEach *this\__tabs( )
                   If *this\__tabs( )\tindex = item
-                     ; Установка базового флага скрытия для вкладки панели
-                     If state
-                        *this\__tabs( )\mask | #__mask_hide
-                     Else
-                        *this\__tabs( )\mask & ~#__mask_hide
-                     EndIf
+                     ;SelectElement( *this\__tabs( ), item )
+                     *this\__tabs( )\hide = state
                      *this\TabChange( ) = #True
                      Break
                   EndIf
@@ -9433,46 +9361,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\tabbar
             ForEach *this\tabbar\__tabs( )
                If *this\tabbar\__tabs( )\tindex = item
-                  ; Установка базового флага скрытия для вкладки таббара
-                  If state
-                     *this\tabbar\__tabs( )\mask | #__mask_hide
-                  Else
-                     *this\tabbar\__tabs( )\mask & ~#__mask_hide
-                  EndIf
+                  ;SelectElement( *this\tabbar\__tabs( ), item )
+                  *this\tabbar\__tabs( )\hide = state
                   *this\tabbar\TabChange( ) = #True
                   Break
                EndIf
             Next
          EndIf
-         
          If *this\row
             Protected._s_ROW *row
             Protected._s_ROW *select_row = SelectElement( *this\__rows( ), item )
-            
-            ; Установка базового флага скрытия для выбранной строки
-            If state
-               *select_row\mask | #__mask_hide
-            Else
-               *select_row\mask & ~#__mask_hide
-            EndIf
-            
-            ; Если у строки есть дочерние элементы — каскадно обновляем их
+            *select_row\hide = state
+            ;
             If *select_row\childrens
                PushListPosition( *this\__rows( ))
                While NextElement( *this\__rows( ))
                   *row = @*this\__rows( )
-                  ; Исправлен синтаксис оператора (<= вместо =<)
-                  If *row\sublevel <= *select_row\sublevel
+                  If *row\sublevel =< *select_row\sublevel
                      Break
                   EndIf
                   If *row\parent
-                     ; Проверяем, скрыт ли родитель или раскрыта ли кнопка дерева (чекбокс)
-                     ; Для дочерних строк вычисляем финальное состояние #__mask_hidden
-                     If Bool( *row\parent\buttonbox\checked Or ( *row\parent\mask & #__mask_hidden ) )
-                        *row\mask | #__mask_hidden
-                     Else
-                        *row\mask & ~#__mask_hidden
-                     EndIf
+                     *row\hide = Bool( *row\parent\buttonbox\checked | *row\parent\hide )
                   EndIf
                Wend
                PopListPosition( *this\__rows( ))
@@ -9482,19 +9391,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\TextChange( ) = - 6
          EndIf
       EndProcedure
-
+      
       Procedure.b DisableItem( *this._s_widget, item.l, state.b )
          If *this\type = #__type_panel
             If *this\tabbar
                ForEach *this\tabbar\__tabs( )
                   If *this\tabbar\__tabs( )\tindex = item
                      ; SelectElement( *this\tabbar\__tabs( ), item )
-                      If state
-                     *this\tabbar\__tabs( )\mask | #__mask_disabled 
-                  Else
-                     *this\tabbar\__tabs( )\mask &~ #__mask_disabled 
-                  EndIf
-                  *this\tabbar\TabChange( ) = #True
+                     *this\tabbar\__tabs( )\disable = state
+                     *this\tabbar\TabChange( ) = #True
                      Break
                   EndIf
                Next
@@ -9509,12 +9414,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ForEach *this\__tabs( )
                   If *this\__tabs( )\tindex = item
                      ;SelectElement( *this\__tabs( ), item )
-                     If state
-                     *this\__tabs( )\mask | #__mask_disabled 
-                  Else
-                     *this\__tabs( )\mask &~ #__mask_disabled 
-                  EndIf
-                 *this\TabChange( ) = #True
+                     *this\__tabs( )\disable = state
+                     *this\TabChange( ) = #True
                      Break
                   EndIf
                Next
@@ -9524,67 +9425,42 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.b Hide( *this._s_PARENT, state.b = #PB_Default, flags.q = 0 )
-         ; 1. Если состояние не передано — возвращаем 1 или 0 (был ли скрыт изначально)
-         If state = #PB_Default 
-            If *this\mask & #__mask_hide
-               ProcedureReturn 1
-            Else
-               ProcedureReturn 0
-            EndIf
-         EndIf
+         If State = #PB_Default : ProcedureReturn *this\hide[1] : EndIf
          
-         ; 2. Получаем текущее базовое состояние для проверки изменений
-         Protected CurrentState.b = Bool(*this\mask & #__mask_hide)
-         
-         If CurrentState <> state
-            ; Изменяем базовый флаг скрытия в маске
-            If state
-               *this\mask | #__mask_hide
-            Else
-               *this\mask & ~#__mask_hide
-            EndIf
+         If *this\hide[1] <> state
+            *this\hide[1] = state
             
-            ; Пересчитываем фактическую видимость текущего элемента
             HideState( *this, *this\parent )
-            
-            ; 3. Если есть дочерние элементы — каскадно обновляем их видимость
+            ;
             If *this\haschildren
+               ; hide all children's except those whose parent-item is selected
                If StartEnum( *this )
                   HideState( widgets( ), widgets( )\parent )
                   StopEnum( )
                EndIf
             EndIf
-            
             ProcedureReturn 1
          EndIf
       EndProcedure
-
+      
       Procedure.b Disable( *this._s_PARENT, State.b = #PB_Default )
-         ; Если состояние не передано — возвращаем истину, если установлена базовая маска блокировки
-         If State = #PB_Default 
-            If *this\mask & #__mask_disable
-               ProcedureReturn 1
-            Else
-               ProcedureReturn 0
-            EndIf
-         EndIf
+         If State = #PB_Default : ProcedureReturn *this\disable[1] : EndIf
          
-         ; Получаем текущее базовое состояние (0 или 1) для проверки на изменение
-         Protected CurrentState.b = Bool(*this\mask & #__mask_disable)
-         
-         If CurrentState <> State
-            ; Переключаем бит базовой блокировки в зависимости от значения State
-            If State
-               *this\mask | #__mask_disable
-            Else
-               *this\mask & ~#__mask_disable
-            EndIf
+         If *this\disable[1] <> State
+            *this\disable[1] = State
             
-            ; Пересчитываем финальное состояние для текущего элемента
+            ;             ;
+            ;             ; reset color state
+            ;             If *this\mask & #__mask_press
+            ;                If *this\ColorState( ) 
+            ;                   *this\ColorState( ) = #__s_0
+            ;                EndIf
+            ;             EndIf
+            ;
             DisableState( *this, *this\parent )
-            
-            ; Если есть дочерние элементы — каскадно обновляем их
+            ;
             If *this\haschildren
+               ; disable all children's except those whose parent-item is selected
                If StartEnum( *this )
                   DisableState( widgets( ), widgets( )\parent )
                   StopEnum( )
@@ -9594,7 +9470,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ProcedureReturn 1
          EndIf
       EndProcedure
-
       
       Procedure.l Type( *this._s_WIDGET ) ; Returns created widget type
          ProcedureReturn *this\type
@@ -9990,7 +9865,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure   DoChangeCursor( *this._s_WIDGET )
          If MousePress( )
             If mouse( )\drop
-               If Not *this\mask & #__mask_disabled
+               If Not *this\disable
                   If *this\drop And MouseEnter( *this, 2 ) And 
                      *this\drop\format = mouse( )\drop\format And
                      *this\drop\actions & mouse( )\drop\actions And
@@ -10038,7 +9913,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          Else
             If Not a_index( )
-               If Not *this\mask & #__mask_disabled And
+               If Not *this\disable And
                   MouseEnter( *this, 2 ) And *this\cursor
                   
                   If GetCursor( ) <> *this\cursor
@@ -11171,11 +11046,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            Break
                         EndIf
                         If *row\parent
-                           If Bool( *row\parent\buttonbox\checked | *row\parent\mask & #__mask_hidden )
-                              *row\mask | #__mask_hidden 
-                           Else
-                              *row\mask &~ #__mask_hidden 
-                           EndIf
+                           *row\hide = Bool( *row\parent\buttonbox\checked | *row\parent\hide )
                         EndIf
                      Wend
                      PopListPosition( *this\__rows( ))
@@ -11852,11 +11723,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                   Case #PB_Splitter_FirstGadget
                      *this\split_1( )         = value
-                     If Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
-                        *this\bar\button[1]\mask | #__mask_hidden
-                     Else
-                        *this\bar\button[1]\mask &~ #__mask_hidden 
-                     EndIf
+                     *this\bar\button[1]\hide = Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
                      
                      If IsGadget( *this\split_1( ) )
                         Debug "bar_is_first_gadget_ " + IsGadget( *this\split_1( ) )
@@ -11872,11 +11739,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                   Case #PB_Splitter_SecondGadget
                      *this\split_2( )         = value
-                     If Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
-                        *this\bar\button[2]\mask | #__mask_hidden
-                     Else
-                        *this\bar\button[2]\mask &~ #__mask_hidden 
-                     EndIf
+                     *this\bar\button[2]\hide = Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
                      
                      If IsGadget( *this\split_2( ) )
                         Debug "bar_is_second_gadget_ " + IsGadget( *this\split_2( ) )
@@ -11995,13 +11858,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               If value
                                  *BB1\size = - 1
                                  *BB2\size = - 1
-                                 *BB1\mask &~ #__mask_hidden 
-                                 *BB2\mask &~ #__mask_hidden 
+                                 *BB1\hide = 0
+                                 *BB2\hide = 0
                               Else
                                  *BB1\size = 0
                                  *BB2\size = 0
-                                 *BB1\mask | #__mask_hidden 
-                                 *BB2\mask | #__mask_hidden 
+                                 *BB1\hide = 1
+                                 *BB2\hide = 1
                               EndIf
                            EndIf
                            
@@ -12227,9 +12090,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   ;
                   If Not *active\anchors
-                     If *active\mask & #__mask_disabled 
+                     If *active\disable 
                         If *active\window And 
-                           *active\window\mask & #__mask_disabled 
+                           *active\window\disable 
                            ProcedureReturn 0
                         Else
                            ; 
@@ -12936,7 +12799,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         
                         HideState( *D( ), *D( )\parent )
-                        ;Debug *D( )\mask & #__mask_hide
+                        ;Debug *D( )\hide[1]
                         
                      Wend
                      PopListPosition( widgets( ) )
@@ -13841,7 +13704,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure Column_Sync(*this._s_WIDGET)
          ClearList(*this\__items( ))
          ForEach *this\__rows( )
-            If Not *this\__rows( )\mask & #__mask_hidden
+            If Not *this\__rows( )\Hide
                *this\__items( ) = AddElement(*this\__items( ))
             EndIf
          Next
@@ -14085,7 +13948,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      If *this\mode\collapsed  
                         *rowParent\buttonbox\checked = 1
-                        *row\mask | #__mask_hidden
+                        *row\hide                    = 1
                      EndIf
                   EndIf
                EndIf
@@ -16606,11 +16469,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *row = @*this\__rows( )
                            If *row\parent
                               *row\parent\buttonbox\checked = state
-                              If state
-                                 *row\mask | #__mask_hidden
-                              Else
-                                 *row\mask &~ #__mask_hidden
-                              EndIf
+                              *row\hide                           = state
                            EndIf
                         Next
                         PopListPosition( *this\__rows( ))
@@ -16652,7 +16511,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;
                   Repeat
                      If *list( )\address And
-                        *list( )\mask & #__mask_hidden = 0 And
+                        *list( )\hide = 0 And
                         *list( )\root = *root And 
                         is_mouse_enter( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
                         is_mouse_enter( *list( ), mouse_x, mouse_y, [#__c_draw] )
@@ -16687,31 +16546,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\ is integral
          If *this
             ;\\ is integral string bar
-            If *this\Stringbar And Not *this\Stringbar\mask & #__mask_hidden And
+            If *this\Stringbar And Not *this\Stringbar\hide And
                is_mouse_enter( *this\Stringbar, mouse_x, mouse_y, [#__c_frame] ) And
                is_mouse_enter( *this\Stringbar, mouse_x, mouse_y, [#__c_draw] )
                *this = *this\Stringbar
             EndIf
             ;\\ is integral tab bar
-            If *this\tabbar And Not *this\tabbar\mask & #__mask_hidden And
+            If *this\tabbar And Not *this\tabbar\hide And
                is_mouse_enter( *this\tabbar, mouse_x, mouse_y, [#__c_frame] ) And
                is_mouse_enter( *this\tabbar, mouse_x, mouse_y, [#__c_draw] )
                *this = *this\tabbar
             EndIf
             ;\\ is integral tab bar
-            If *this\menubar And Not *this\menubar\mask & #__mask_hidden And
+            If *this\menubar And Not *this\menubar\hide And
                is_mouse_enter( *this\menubar, mouse_x, mouse_y, [#__c_frame] ) And
                is_mouse_enter( *this\menubar, mouse_x, mouse_y, [#__c_draw] )
                *this = *this\menubar
             EndIf
             ;\\ is integral scroll bar's
             If *this\scroll
-               If *this\scroll\v And Not *this\scroll\v\mask & #__mask_hidden And
+               If *this\scroll\v And Not *this\scroll\v\hide And
                   is_mouse_enter( *this\scroll\v, mouse_x, mouse_y, [#__c_frame] ) And
                   is_mouse_enter( *this\scroll\v, mouse_x, mouse_y, [#__c_draw] )
                   *this = *this\scroll\v
                EndIf
-               If *this\scroll\h And Not *this\scroll\h\mask & #__mask_hidden And
+               If *this\scroll\h And Not *this\scroll\h\hide And
                   is_mouse_enter( *this\scroll\h, mouse_x, mouse_y, [#__c_frame] ) And
                   is_mouse_enter( *this\scroll\h, mouse_x, mouse_y, [#__c_draw] )
                   *this = *this\scroll\h
@@ -16835,11 +16694,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\ get at-point-button address
-                  If *BB1 And *BB1\mask & #__mask_hidden = 0 And is_mouse_enter( *BB1, mouse_x, mouse_y )
+                  If *BB1 And *BB1\hide = 0 And is_mouse_enter( *BB1, mouse_x, mouse_y )
                      *EnteredButton = *BB1
-                  ElseIf *BB2 And *BB2\mask & #__mask_hidden = 0 And is_mouse_enter( *BB2, mouse_x, mouse_y )
+                  ElseIf *BB2 And *BB2\hide = 0 And is_mouse_enter( *BB2, mouse_x, mouse_y )
                      *EnteredButton = *BB2
-                  ElseIf *BB0 And *BB0\mask & #__mask_hidden = 0 And is_mouse_enter( *BB0, mouse_x, mouse_y )
+                  ElseIf *BB0 And *BB0\hide = 0 And is_mouse_enter( *BB0, mouse_x, mouse_y )
                      *EnteredButton = *BB0
                   EndIf
                   
@@ -16860,7 +16719,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EnteredButton( ) = *EnteredButton
                      ;
                      If EnteredButton( ) And 
-                        EnteredButton( )\mask & #__mask_disabled = 0 And
+                        EnteredButton( )\disable = 0 And
                         EnteredButton( )\_enter = 0
                         EnteredButton( )\_enter = 1
                         ;
@@ -17524,7 +17383,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If ListSize( *this\__items( ) )
                If Not ( *this\LineEntered( ) And
                         *this\LineEntered( )\visible And
-                        *this\LineEntered( )\mask & #__mask_hidden = 0 And
+                        *this\LineEntered( )\hide = 0 And
                         ( ( *this\enter And is_mouse_enter( *this\LineEntered( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *this\LineEntered( )\y, *this\LineEntered( )\height, mouse_y )) ))
                   
@@ -17532,7 +17391,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   LastElement( *this\__items( ))
                   Repeat
                      If *this\__items( )\visible And
-                        *this\__items( )\mask & #__mask_hidden = 0 And
+                        *this\__items( )\hide = 0 And
                         ( ( *this\enter And is_mouse_enter( *this\__items( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *this\__items( )\y, *this\__items( )\height, mouse_y )) )
                         *rowLine = *this\__items( )
@@ -17545,7 +17404,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ElseIf ListSize( *lines( ) )
                If Not ( *this\LineEntered( ) And
                         *this\LineEntered( )\visible And
-                        *this\LineEntered( )\mask & #__mask_hidden = 0 And
+                        *this\LineEntered( )\hide = 0 And
                         ( ( *this\enter And is_mouse_enter( *this\LineEntered( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *this\LineEntered( )\y, *this\LineEntered( )\height, mouse_y )) ))
                   
@@ -17553,7 +17412,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   LastElement( *lines( ))
                   Repeat
                      If *lines( )\visible And
-                        *lines( )\mask & #__mask_hidden = 0 And
+                        *lines( )\hide = 0 And
                         ( ( *this\enter And is_mouse_enter( *lines( ), mouse_x, mouse_y )) Or
                           ( dragged And is_inside_( *lines( )\y, *lines( )\height, mouse_y )) )
                         *rowLine = *lines( )
@@ -17977,9 +17836,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     ; select prev rows
                                    *row_selected = SelectElement( *this\__rows( ), *this\RowFocused( )\rindex - 1 )
                                    If *row_selected
-                                      If *row_selected\mask & #__mask_hidden
+                                      If *row_selected\hide
                                           While PreviousElement( *this\__rows( ) )
-                                             If Not *this\__rows( )\mask & #__mask_hidden
+                                             If Not *this\__rows( )\hide
                                                 Break
                                              EndIf
                                           Wend
@@ -18012,9 +17871,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     ; select next rows
                                     *row_selected = SelectElement( *this\__rows( ), *this\RowFocused( )\rindex + 1 )
                                     If *row_selected
-                                       If *row_selected\mask & #__mask_hidden
+                                       If *row_selected\hide
                                           While NextElement( *this\__rows( ) )
-                                             If Not *this\__rows( )\mask & #__mask_hidden
+                                             If Not *this\__rows( )\hide
                                                 Break
                                              EndIf
                                           Wend
@@ -18082,14 +17941,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If ListSize( *this\__items( ) )
                      If *this\RowEntered( ) And
                         *this\RowEntered( )\visible And
-                        Not *this\RowEntered( )\mask & #__mask_hidden And
+                        Not *this\RowEntered( )\hide And
                         is_mouse_enter( *this\RowEntered( ), mouse_x, mouse_y )
                         *hover_row = *this\RowEntered( )
                      Else
                         LastElement( *this\__items( ))
                         Repeat
                            If *this\__items( )\visible And
-                              Not *this\__items( )\mask & #__mask_hidden And
+                              Not *this\__items( )\hide And
                               is_mouse_enter( *this\__items( ), mouse_x, mouse_y )
                               *hover_row = *this\__items( )
                               Break
@@ -18100,7 +17959,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ElseIf ListSize( *this\__rows( ) )
                      If *this\RowEntered( ) And
                         *this\RowEntered( )\visible And
-                        Not *this\RowEntered( )\mask & #__mask_hidden And
+                        Not *this\RowEntered( )\hide And
                         is_mouse_enter( *this\RowEntered( ), mouse_x, mouse_y )
                         *hover_row = *this\RowEntered( )
                      Else
@@ -18108,7 +17967,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Repeat
                            *row = @*this\__rows( )
                            If *row\visible And
-                              Not *row\mask & #__mask_hidden And
+                              Not *row\hide And
                               is_mouse_enter( *row, mouse_x, mouse_y )
                               *hover_row = *row
                               Break
@@ -18582,7 +18441,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If MouseButtons( ) & #PB_Canvas_LeftButton
                   If *button And
                      *button\press = #False And
-                     *button\mask & #__mask_disabled = #False And
+                     *button\disable = #False And
                      *button\ColorState( ) <> #__s_3 ; change the color state of non-disabled buttons
                                                               ;
                      *button\press    = #True
@@ -18631,7 +18490,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      PressedButton( )\press = #True
                      PressedButton( )\press = #False
                      
-                     If PressedButton( )\mask & #__mask_disabled = #False And
+                     If PressedButton( )\disable = #False And
                         PressedButton( )\ColorState( ) <> #__s_3
                         
                         ; change color state
@@ -18705,7 +18564,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If ListSize( *this\__tabs( ) )
                         If *EnteredTAB And
                            *EnteredTAB\visible And
-                           *EnteredTAB\mask & #__mask_hidden = 0 And
+                           *EnteredTAB\hide = 0 And
                            is_mouse_enter( *EnteredTAB, mouse_bar_x, mouse_bar_y )
                            
                            *tab = *EnteredTAB
@@ -18714,7 +18573,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            LastElement( *this\__tabs( ))
                            Repeat
                               If *this\__tabs( )\visible And
-                                 *this\__tabs( )\mask & #__mask_hidden = 0 And
+                                 *this\__tabs( )\hide = 0 And
                                  is_mouse_enter( *this\__tabs( ), mouse_bar_x, mouse_bar_y )
                                  *tab = @*this\__tabs( )
                                  Break
@@ -18745,7 +18604,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                      ;
-                     If *tab And *tab\mask & #__mask_disabled
+                     If *tab And *tab\disable
                         *tab = 0    
                      EndIf  
                      
@@ -18755,7 +18614,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *tab
                         If *this\enter 
                            ;\\ entered tabs
-                           If Not *tab\_enter And Not *tab\mask & #__mask_disabled
+                           If Not *tab\_enter And Not *tab\disable
                               *tab\_enter = 1
                               
                               If *tab\ColorState( ) = #__s_0
@@ -18939,7 +18798,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   If *this\type = #__type_MenuBar
-                     If *EnteredTAB And Not *EnteredTAB\mask & #__mask_disabled 
+                     If *EnteredTAB And Not *EnteredTAB\disable 
                         If Not *activeTAB
                            If *activeTAB <> *EnteredTAB
                               If *activeTAB
@@ -18964,7 +18823,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  If Not ( *EnteredTAB And *EnteredTAB\mask & #__mask_disabled And *EnteredTAB\childrens )
+                  If Not ( *EnteredTAB And *EnteredTAB\disable And *EnteredTAB\childrens )
                      *PressedTAB = *EnteredTAB
                      
                      ;                                              ;
@@ -19003,7 +18862,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   ;\\
                   If *this\type = #__type_TabBar  
-                     If Not *EnteredTAB\mask & #__mask_disabled
+                     If Not *EnteredTAB\disable
                         If Not MouseDragStart( )
                            If GetState( *this ) <> *EnteredTAB\index 
                               If SetState( *this, *EnteredTAB\index ) 
@@ -19203,7 +19062,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          ;\\
-         If Not (*this\mask & #__mask_disabled And Not *this\anchors)  
+         If Not (*this\disable And Not *this\anchors)  
             
             ;\\ repaint state
             Select event
@@ -19467,7 +19326,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;\\ mouse wheel verticl
                If MouseDirection( ) > 0
                   ; Debug "wheelY " + *data
-                  If Not *this\mask & #__mask_hidden
+                  If Not *this\hide
                      If *this\scroll And *this\scroll\v  
                         If *this\scroll\v\bar\page\end
                            If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
@@ -19483,7 +19342,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\ mouse wheel horizontal
                Else
                   ; Debug "wheelX " + *data
-                  If Not *this\mask & #__mask_hidden
+                  If Not *this\hide
                      If *this\scroll And *this\scroll\h 
                         ;Debug *this\scroll\h\bar\page\end
                         If *this\scroll\h\bar\page\end
@@ -19548,7 +19407,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          ;\\ send-widget-events
-         If Not (*this\mask & #__mask_disabled And Not *this\anchors)  
+         If Not (*this\disable And Not *this\anchors)  
             If event = #__event_left2Click Or
                event = #__event_left3Click
                ;
@@ -20982,7 +20841,7 @@ EndProcedure
       Procedure.l UpdateDraw_Rows( *this._s_WIDGET, List rows._s_ROW( ))
          Protected state.b, X.l, Y.l
          
-         If Not *this\mask & #__mask_hidden
+         If Not *this\hide
             ;\\ update coordinate
             ; Debug "   " + #PB_Compiler_Procedure + "( )"
             
@@ -21007,7 +20866,7 @@ EndProcedure
             ForEach rows( )
                ;*this\__rows( )\rindex = ListIndex( rows( ))
                
-               If rows( )\mask & #__mask_hidden
+               If rows( )\hide
                   rows( )\visible = 0
                   Continue
                EndIf
@@ -21167,7 +21026,7 @@ EndProcedure
          Protected i
                
          ForEach rows( )
-            rows( )\visible = Bool( Not rows( )\mask & #__mask_hidden And
+            rows( )\visible = Bool( Not rows( )\hide And
                                      (( rows( )\y - scroll_y ) < visible_y + visible_height ) And
                                      ( rows( )\y + rows( )\height - scroll_y ) > visible_y )
             
@@ -21177,7 +21036,7 @@ EndProcedure
             If rows( )\color\back = $FFF8F8F8
                rows( )\color\back = 0
             EndIf
-            If Not rows( )\mask & #__mask_hidden
+            If Not rows( )\hide
                If rows( )\color\back = 0
                   If rows( )\visible
                      If i%2 = 0
@@ -22079,7 +21938,7 @@ EndProcedure
                   EndIf
                   
                   ; for the tree vertical line
-                  If *this\__rows( )\_last And Not *this\__rows( )\_last\mask & #__mask_hidden And *this\__rows( )\_last\sublevel
+                  If *this\__rows( )\_last And Not *this\__rows( )\_last\hide And *this\__rows( )\_last\sublevel
                      Define iy = (Y + *this\__rows( )\height / 2 )
                      Define iheight = (*this\__rows( )\_last\y - *this\__rows( )\y) 
                      ;
@@ -22104,7 +21963,7 @@ EndProcedure
                   EndIf
                   
                   ; for the tree horizontal line
-                  If *this\__rows( )\visible And Not *this\__rows( )\mask & #__mask_hidden And Not ( *this\__rows( )\childrens And Not *this\__rows( )\sublevel)
+                  If *this\__rows( )\visible And Not *this\__rows( )\hide And Not ( *this\__rows( )\childrens And Not *this\__rows( )\sublevel)
                      Line((X + *this\__rows( )\buttonbox\x + *this\__rows( )\buttonbox\width / 2), (Y + *this\__rows( )\height / 2), *this\row\sublevelsize/2-DPIScaled(2), 1, $FF000000 ) ;*this\LineColor )
                   EndIf
                Next
@@ -22143,7 +22002,7 @@ EndProcedure
                   If *rows( )\columnindex <> ListIndex( *this\__columns( ))
                      Continue
                   EndIf
-                  If *rows( )\visible And Not *rows( )\mask & #__mask_hidden
+                  If *rows( )\visible And Not *rows( )\hide
                      If *this\mode\Buttons And *rows( )\childrens 
                         
                         ;If Not ( *this\mode\optionboxes )
@@ -22181,7 +22040,7 @@ EndProcedure
       Procedure   Draw_Tree( *this._s_WIDGET )
          Protected state.b, X.l, Y.l, scroll_x, scroll_y
          
-         If Not *this\mask & #__mask_hidden
+         If Not *this\hide
             If *this\TextChange( )
                ;Debug ""+ *this\class +" "+ *this\TextChange( )
             EndIf
@@ -22270,7 +22129,7 @@ EndProcedure
          PushListPosition( *lines( ))
          ForEach *lines( )
             ; update visible lines 
-            *lines( )\visible = Bool( Not *lines( )\mask & #__mask_hidden And
+            *lines( )\visible = Bool( Not *lines( )\hide And
                                       (( *lines( )\y + *this\scroll_y( ) ) < visible_y + visible_height ) And
                                       ( *lines( )\y + *lines( )\height + *this\scroll_y( ) ) > visible_y )
             
@@ -22425,7 +22284,7 @@ EndProcedure
          Protected update = Bool(*this\TextChange( ) Or *this\ResizeChange( ))
          Protected UnderLineSize, state
          
-         If Not *this\mask & #__mask_hidden
+         If Not *this\hide
             If is_integral_( *this )
                Clip( *this, [#__c_draw] )
             EndIf               
@@ -22443,7 +22302,7 @@ EndProcedure
                   EndIf
                   
                   ;
-                  If *this\scroll\v And Not *this\scroll\v\mask & #__mask_hidden
+                  If *this\scroll\v And Not *this\scroll\v\hide
                      If *this\scroll_y( ) + *this\caret\y < 0 Or
                         *this\scroll_y( ) + *this\caret\y + *this\caret\height > *this\inner_height( )
                         
@@ -22460,7 +22319,7 @@ EndProcedure
                   EndIf
                   
                   ;
-                  If *this\scroll\h And Not *this\scroll\h\mask & #__mask_hidden
+                  If *this\scroll\h And Not *this\scroll\h\hide
                      If *this\scroll_x( ) + *this\caret\x < 0 Or
                         *this\scroll_x( ) + *this\caret\x + *this\caret\width  > *this\inner_width( )
                         
@@ -22553,7 +22412,7 @@ EndProcedure
          Protected *column._s_COLUMN
          Protected column_index.i, state.b, X.l, Y.l, scroll_x, scroll_y
          
-         If Not *this\mask & #__mask_hidden
+         If Not *this\hide
             If *this\ResizeChange( ) Or *this\TextChange( )
                ForEach *this\__columns( )
                   UpdateDraw_Rows( *this, *this\__rows( ))
@@ -22667,7 +22526,7 @@ EndProcedure
             EndIf
             
             ;\\ draw belowe drawing
-            If Not *this\mask & #__mask_hidden
+            If Not *this\hide
                ;\\ draw clip out transform widgets frame
                If *this\root\drawmode & 1<<2
                   If ( *this\anchors And Not *this\anchors\mode & #__a_zoom ) Or test_clip
@@ -22795,17 +22654,17 @@ EndProcedure
                      EndIf
                      If *this\scroll 
                         ;\\ draw area scrollbars
-                        If *this\scroll\v And Not *this\scroll\v\mask & #__mask_hidden And 
+                        If *this\scroll\v And Not *this\scroll\v\hide And 
                            ( *this\scroll\v\clip_width( ) > 0 And *this\scroll\v\clip_height( ) > 0 )
                            bar_draw_scroll( *this\scroll\v )
                         EndIf
-                        If *this\scroll\h And Not *this\scroll\h\mask & #__mask_hidden And
+                        If *this\scroll\h And Not *this\scroll\h\hide And
                            ( *this\scroll\h\clip_width( ) > 0 And *this\scroll\h\clip_height( ) > 0 )
                            bar_draw_scroll( *this\scroll\h )
                         EndIf
                         
                         ;\\
-                        If test_draw_area = 1 And Not *this\mask & #__mask_hidden
+                        If test_draw_area = 1 And Not *this\hide
                            ;If Not *this\haschildren
                            draw_mode_alpha_( #PB_2DDrawing_Outlined )
                            
@@ -22830,7 +22689,7 @@ EndProcedure
                      EndIf
                      
                      ;\\ draw disable state
-                     If *this\mask & #__mask_disabled
+                     If *this\disable
                         draw_mode_alpha_( #PB_2DDrawing_Default )
                         draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $AAE4E4E4 )
                      EndIf
@@ -22906,7 +22765,7 @@ EndProcedure
                         EndIf
                         
                         ;\\ draw drag & drop
-                        If Not *this\mask & #__mask_disabled
+                        If Not *this\disable
                            If Not mouse( )\selector  
                               DropDraw( *this )
                            EndIf
@@ -22952,7 +22811,7 @@ EndProcedure
             
             ;\\ reset values
             If *this\WidgetChange( ) <> 0
-               If Not *this\mask & #__mask_hidden
+               If Not *this\hide
                   *this\WidgetChange( ) = 0
                EndIf
             EndIf
@@ -23013,7 +22872,7 @@ EndProcedure
                If Not ( *root\autosize And *root\haschildren = 0 )
                   
                   If StartEnum( *root )
-                     If widgets( )\parent And Not widgets( )\parent\mask & #__mask_hidden 
+                     If widgets( )\parent And Not widgets( )\parent\hide 
                         If Not ( widgets( )\parent\tabbar And widgets( )\parent\tabbar\TabState( ) <> widgets( )\tabindex) Or widgets( )\tabindex = #PB_Ignore
                            ;
                            If test_focus_draw = 1
@@ -23160,7 +23019,7 @@ EndProcedure
                   If *root\drawmode & 1<<2
                      ;\\
                      If a_focused( ) And
-                        a_focused( )\mask & #__mask_hidden = 0 And
+                        a_focused( )\hide = 0 And
                         a_focused( )\anchors And
                         a_focused( )\anchors\mode And
                         a_focused( )\root = *root
@@ -23872,16 +23731,8 @@ EndProcedure
                *this\split_1( ) = *param_1
                *this\split_2( ) = *param_2
                ;
-               If Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
-                  *this\bar\button[1]\mask | #__mask_hidden 
-               Else
-                  *this\bar\button[1]\mask &~ #__mask_hidden 
-               EndIf
-               If Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
-                  *this\bar\button[2]\mask | #__mask_hidden 
-               Else
-                  *this\bar\button[2]\mask &~ #__mask_hidden 
-               EndIf
+               *this\bar\button[1]\hide = Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
+               *this\bar\button[2]\hide = Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
                ;
                If IsGadget( *this\split_1( ) )
                   Debug "bar_is_first_gadget_ " + IsGadget( *this\split_1( ) )
@@ -24100,8 +23951,8 @@ EndProcedure
             
             bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__bar_button_size, 0)
             
-            *this\scroll\v\mask | #__mask_hidden 
-            *this\scroll\h\mask | #__mask_hidden 
+            *this\scroll\v\hide  = 1
+            *this\scroll\h\hide  = 1
             *this\scroll\v\width = 0
             *this\scroll\h\height = 0
             
@@ -24408,16 +24259,8 @@ EndProcedure
                *this\split_1( ) = *param_1
                *this\split_2( ) = *param_2
                ;
-               If Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
-                  *this\bar\button[1]\mask | #__mask_hidden 
-               Else
-                  *this\bar\button[1]\mask &~ #__mask_hidden 
-               EndIf
-               If Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
-                  *this\bar\button[2]\mask | #__mask_hidden 
-               Else
-                  *this\bar\button[2]\mask &~ #__mask_hidden 
-               EndIf
+               *this\bar\button[1]\hide = Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
+               *this\bar\button[2]\hide = Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
                ;
                If IsGadget( *this\split_1( ) )
                   Debug "bar_is_first_gadget_ " + IsGadget( *this\split_1( ) )
@@ -25052,36 +24895,20 @@ EndProcedure
          *this\caption\color    = _get_colors_( )
          *this\caption\_padding = DPIScaled(4)
          
-         If constants::BinaryFlag( *this\flagmask, #PB_Window_SystemMenu, #False )
-            *this\CloseButton( )\mask | #__mask_hidden    
-         Else
-            *this\CloseButton( )\mask &~ #__mask_hidden    
-         EndIf
-         If constants::BinaryFlag( *this\flagmask, #PB_Window_MaximizeGadget, #False )
-            *this\MaximizeButton( )\mask | #__mask_hidden    
-         Else
-            *this\MaximizeButton( )\mask &~ #__mask_hidden    
-         EndIf
-         If constants::BinaryFlag( *this\flagmask, #PB_Window_MinimizeGadget, #False )
-            *this\MinimizeButton( )\mask | #__mask_hidden    
-         Else
-            *this\MinimizeButton( )\mask &~ #__mask_hidden    
-         EndIf
-         *this\HelpButton( )\mask | #__mask_hidden
+         *this\CloseButton( )\hide    = constants::BinaryFlag( *this\flagmask, #PB_Window_SystemMenu, #False )
+         *this\MaximizeButton( )\hide = constants::BinaryFlag( *this\flagmask, #PB_Window_MaximizeGadget, #False )
+         *this\MinimizeButton( )\hide = constants::BinaryFlag( *this\flagmask, #PB_Window_MinimizeGadget, #False )
+         *this\HelpButton( )\hide     = 1
          
-         If *this\MaximizeButton( )\mask & #__mask_hidden = 0 Or
-            *this\MinimizeButton( )\mask & #__mask_hidden = 0 Or
-            *this\CloseButton( )\mask & #__mask_hidden = 0
-            *this\caption\mask &~ #__mask_hidden
+         If *this\MaximizeButton( )\hide = 0 Or
+            *this\MinimizeButton( )\hide = 0 Or
+            *this\CloseButton( )\hide = 0
+            *this\caption\hide = 0
          Else
-            If constants::BinaryFlag( *this\flagmask, #PB_Window_TitleBar, #False )
-               *this\caption\mask | #__mask_hidden
-            Else
-               *this\caption\mask &~ #__mask_hidden 
-            EndIf
+            *this\caption\hide = constants::BinaryFlag( *this\flagmask, #PB_Window_TitleBar, #False )
          EndIf
          
-         If *this\caption\mask & #__mask_hidden
+         If *this\caption\hide
             *this\TitleBarHeight = 0
             *this\fs[2] = 0
          Else
@@ -25820,7 +25647,7 @@ EndProcedure
          
          
          ;\\ resize parent vertical&horizontal scrollbars
-         If *this\parent And            ;   Not *this\parent\mask & #__mask_hidden And Not *this\mask & #__mask_hidden And ;???
+         If *this\parent And            ;   Not *this\parent\hide And Not *this\hide And ;???
             *this\parent\scroll And
             *this\parent\scroll\v And
             *this\parent\scroll\h
@@ -26057,7 +25884,7 @@ EndProcedure
                EndIf
                
                ; caption title bar
-               If Not *this\caption\mask & #__mask_hidden
+               If Not *this\caption\hide
                   *this\caption\x      = *this\frame_x( ) + *this\fs
                   *this\caption\y      = *this\frame_y( ) + *this\fs
                   *this\caption\width  = *this\frame_width( ) - *this\fs * 2
@@ -26068,14 +25895,14 @@ EndProcedure
                   EndIf
                   
                   ; caption close button
-                  If Not *this\CloseButton( )\mask & #__mask_hidden
+                  If Not *this\CloseButton( )\hide
                      *this\CloseButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\CloseButton( )\width + *this\caption\_padding )
                      *this\CloseButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\CloseButton( )\height ) / 2
                   EndIf
                   
                   ; caption maximize button
-                  If Not *this\MaximizeButton( )\mask & #__mask_hidden
-                     If *this\CloseButton( )\mask & #__mask_hidden
+                  If Not *this\MaximizeButton( )\hide
+                     If *this\CloseButton( )\hide
                         *this\MaximizeButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\MaximizeButton( )\width + *this\caption\_padding )
                      Else
                         *this\MaximizeButton( )\x = *this\CloseButton( )\x - ( *this\MaximizeButton( )\width + *this\caption\_padding )
@@ -26084,8 +25911,8 @@ EndProcedure
                   EndIf
                   
                   ; caption minimize button
-                  If Not *this\MinimizeButton( )\mask & #__mask_hidden
-                     If *this\MaximizeButton( )\mask & #__mask_hidden
+                  If Not *this\MinimizeButton( )\hide
+                     If *this\MaximizeButton( )\hide
                         *this\MinimizeButton( )\x = *this\CloseButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
                      Else
                         *this\MinimizeButton( )\x = *this\MaximizeButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
@@ -26094,10 +25921,10 @@ EndProcedure
                   EndIf
                   
                   ; caption help button
-                  If Not *this\HelpButton( )\mask & #__mask_hidden
-                     If Not *this\MinimizeButton( )\mask & #__mask_hidden
+                  If Not *this\HelpButton( )\hide
+                     If Not *this\MinimizeButton( )\hide
                         *this\HelpButton( )\x = *this\MinimizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
-                     ElseIf Not *this\MaximizeButton( )\mask & #__mask_hidden
+                     ElseIf Not *this\MaximizeButton( )\hide
                         *this\HelpButton( )\x = *this\MaximizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
                      Else
                         *this\HelpButton( )\x = *this\CloseButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
@@ -26106,13 +25933,13 @@ EndProcedure
                   EndIf
                   
                   ; title bar width
-                  If Not *this\HelpButton( )\mask & #__mask_hidden
+                  If Not *this\HelpButton( )\hide
                      *this\caption\width = *this\HelpButton( )\x - *this\caption\x - *this\caption\_padding
-                  ElseIf Not *this\MinimizeButton( )\mask & #__mask_hidden
+                  ElseIf Not *this\MinimizeButton( )\hide
                      *this\caption\width = *this\MinimizeButton( )\x - *this\caption\x - *this\caption\_padding
-                  ElseIf Not *this\MaximizeButton( )\mask & #__mask_hidden
+                  ElseIf Not *this\MaximizeButton( )\hide
                      *this\caption\width = *this\MaximizeButton( )\x - *this\caption\x - *this\caption\_padding
-                  ElseIf Not *this\CloseButton( )\mask & #__mask_hidden
+                  ElseIf Not *this\CloseButton( )\hide
                      *this\caption\width = *this\CloseButton( )\x - *this\caption\x - *this\caption\_padding
                   EndIf
                EndIf
@@ -28882,9 +28709,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 25081
-; FirstLine = 24691
-; Folding = ------------------------------------------------------------------------------------------------------------------------f0-----------------------------------------------------------------------------------------------------------------------------------------------------------------f+Hl84f7-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------------------------------------------------------------------f-+4+-+4---------------------------------------------------------------------------------------------------------------------------------j8----
+; CursorPosition = 28709
+; FirstLine = 28679
+; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
-; Executable = widgets-.app.exe
