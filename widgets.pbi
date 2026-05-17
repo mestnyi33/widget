@@ -832,7 +832,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
 
-      Macro is_mouse_enter( _address_, _mouse_x_, _mouse_y_, _mode_ = )
+      Macro is_hover( _address_, _mouse_x_, _mouse_y_, _mode_ = )
          Bool( Not _address_\mask & #__mask_hidden And is_atpoint_( _address_, _mouse_x_, _mouse_y_, _mode_ ))
       EndMacro
       
@@ -876,10 +876,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       ;       Macro MouseInner( _this_, _mouse_x_, _mouse_y_ )
-      ;          Bool( is_mouse_enter( _this_, _mouse_x_, _mouse_y_, [#__c_draw] ) And
-      ;                is_mouse_enter( _this_, _mouse_x_, _mouse_y_, [#__c_inner] ) And
-      ;                Not ( _this_\type = #__type_Splitter And is_mouse_enter( _this_\bar\button, _mouse_x_, _mouse_y_ ) = 0 ) And
-      ;                Not ( _this_\type = #__type_HyperLink And is_mouse_enter( _this_, _mouse_x_ - _this_\frame_x( ), _mouse_y_ - _this_\frame_y( ), [#__c_Required] ) = 0 ))
+      ;          Bool( is_hover( _this_, _mouse_x_, _mouse_y_, [#__c_draw] ) And
+      ;                is_hover( _this_, _mouse_x_, _mouse_y_, [#__c_inner] ) And
+      ;                Not ( _this_\type = #__type_Splitter And is_hover( _this_\bar\button, _mouse_x_, _mouse_y_ ) = 0 ) And
+      ;                Not ( _this_\type = #__type_HyperLink And is_hover( _this_, _mouse_x_ - _this_\frame_x( ), _mouse_y_ - _this_\frame_y( ), [#__c_Required] ) = 0 ))
       ;       EndMacro
       Macro MouseButtons( ) 
          mouse( )\buttons
@@ -1995,7 +1995,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;-
       Declare   IsPopupChild( *this, *parent )
       
-      Declare   DoEvent_Lines( *this, List *lines._s_ROW( ), event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
+      Declare   DoEvent_Lines( *this, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       Declare   DoEvent_Rows( *this, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       
       Declare.b bar_draw_tab( *this )
@@ -2009,7 +2009,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Declare   edit_SetState( *this, State.i )
       Declare   edit_SetItemState( *this, Item.l, State.i )
-      Declare   edit_AddItem( *this, List *lines._s_ROW( ), position, *text.Character, string_len )
+      Declare   edit_AddItem( *this, position, *text.Character, string_len )
       Declare.s edit_make_insert_text( *this, Text.s )
       
       Declare   make_content_area( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, indent )
@@ -2787,7 +2787,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       ;-
-      Procedure   make_multiline_text( *this._s_WIDGET, List *lines._s_ROW( ), indent )
+      Procedure   make_multiline_text( *this._s_WIDGET, indent )
          Protected textchange.b = 1
          Protected *str.Character
          Protected *end.Character
@@ -2917,74 +2917,74 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; Перед циклом создания линий
          Protected CurrentTotalPos.l = 0 
+         Protected._s_ROW *line
          ;
-            ClearList( *lines( ))
+            ClearList( *this\__lines( ))
             While *end\c
                If *end\c = #LF
-                  AddElement( *lines( ))
-                  *lines( ) = *this\__lines( )
-                  ; *lines.allocate( ROW, ( ))
+                  AddElement( *this\__lines( ))
+                  *line = @*this\__lines( )
                   
-                  *lines( )\text\len    = ( *end - *str ) >> #PB_Compiler_Unicode
-                  *lines( )\text\Str(0) = PeekS ( *str, *lines( )\text\len )
+                  *line\text\len    = ( *end - *str ) >> #PB_Compiler_Unicode
+                  *line\text\Str(0) = PeekS ( *str, *line\text\len )
                   
                   ; drawing item font
-                  draw_font( *lines( ), 0, *lines( )\TextChange( ));, GetFontID( *this ) )
+                  draw_font( *line, 0, *line\TextChange( ));, GetFontID( *this ) )
                   
                   
                   
                   ;; editor
-                  *lines( )\lindex = ListIndex( *lines( ))
+                  *line\lindex = ListIndex( *this\__lines( ))
                   ; --- ВОТ ЭТО НУЖНО ДОБАВИТЬ ---
-                  *lines( )\text\pos = CurrentTotalPos ; Устанавливаем начало строки
-                  CurrentTotalPos + *lines( )\text\len + 1 ; Прибавляем длину строки и 1 (для #LF$)
+                  *line\text\pos = CurrentTotalPos ; Устанавливаем начало строки
+                  CurrentTotalPos + *line\text\len + 1 ; Прибавляем длину строки и 1 (для #LF$)
                                                            ; ------------------------------
 ;                                     ;
-;                                     If *this\LineState( ) = *lines( )\lindex
-;                                        *this\row\active[0] = *lines( )
+;                                     If *this\LineState( ) = *line\lindex
+;                                        *this\row\active[0] = *line
 ;                                     EndIf
                   ; Сделай так:
                   ; Проверяем, попадает ли глобальная каретка в диапазон этой строки
                   Protected current_pos = *this\caret\start
                   If current_pos>= 0
                      
-                     If current_pos >= *lines()\text\pos And current_pos <= (*lines()\text\pos + *lines()\text\len)
-                       ;  Debug ""+current_pos +" "+ *lines()\text\pos +" "+ Str(*lines()\text\pos + *lines()\text\len)
-                        *this\row\active[0] = *lines()
-                        *this\LineState() = *lines()\lindex ; Обновляем индекс для порядка, но не базируемся на нем
+                     If current_pos >= *line\text\pos And current_pos <= (*line\text\pos + *line\text\len)
+                       ;  Debug ""+current_pos +" "+ *line\text\pos +" "+ Str(*line\text\pos + *line\text\len)
+                        *this\row\active[0] = *line
+                        *this\LineState() = *line\lindex ; Обновляем индекс для порядка, но не базируемся на нем
                      EndIf
                   EndIf
                   
-                  *lines( )\height = *lines( )\text\height
-                  *lines( )\width  = *this\inner_width( )
-                  *lines( )\color  = _get_colors_( )
+                  *line\height = *line\text\height
+                  *line\width  = *this\inner_width( )
+                  *line\color  = _get_colors_( )
                   ;
-                  If *lines( )\lindex <> *this\countitems - 1 
+                  If *line\lindex <> *this\countitems - 1 
                      gridlines = *this\mode\gridlines
                   EndIf
                   
                   ; make line position
                   If *this\text\vertical
-                     If *this\scroll_height( ) < *lines( )\text\width + *this\padding\y * 2 ;+ *this\mode\fullselection
-                        *this\scroll_height( ) = *lines( )\text\width + *this\padding\y * 2 ;+ *this\mode\fullselection
+                     If *this\scroll_height( ) < *line\text\width + *this\padding\y * 2 ;+ *this\mode\fullselection
+                        *this\scroll_height( ) = *line\text\width + *this\padding\y * 2 ;+ *this\mode\fullselection
                      EndIf
                      
                      If *this\text\rotate = 90
-                        *lines( )\x = *this\scroll_width( ) - *this\padding\x
+                        *line\x = *this\scroll_width( ) - *this\padding\x
                      ElseIf *this\text\rotate = 270
-                        *lines( )\x = ( *this\inner_width( ) - *this\scroll_width( ) - *lines( )\text\width ) + *this\padding\x
+                        *line\x = ( *this\inner_width( ) - *this\scroll_width( ) - *line\text\width ) + *this\padding\x
                      EndIf
                      
                      *this\scroll_width( ) + *this\text\height + gridlines
                   Else ; horizontal
-                     If *this\scroll_width( ) < *lines( )\text\width + *this\padding\x * 2 ;+ *this\mode\fullselection
-                        *this\scroll_width( ) = *lines( )\text\width + *this\padding\x * 2 ;+ *this\mode\fullselection
+                     If *this\scroll_width( ) < *line\text\width + *this\padding\x * 2 ;+ *this\mode\fullselection
+                        *this\scroll_width( ) = *line\text\width + *this\padding\x * 2 ;+ *this\mode\fullselection
                      EndIf
                      
                      If *this\text\rotate = 0
-                        *lines( )\y = *this\scroll_height( ) - *this\padding\y
+                        *line\y = *this\scroll_height( ) - *this\padding\y
                      ElseIf *this\text\rotate = 180
-                        *lines( )\y = ( *this\inner_height( ) - *this\scroll_height( ) - *lines( )\text\height ) + *this\padding\y
+                        *line\y = ( *this\inner_height( ) - *this\scroll_height( ) - *line\text\height ) + *this\padding\y
                      EndIf
                      
                      *this\scroll_height( ) + *this\text\height + gridlines
@@ -3002,14 +3002,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             Protected *txt._s_TEXT
             ;
-            ForEach *lines( )
-               *txt = *lines( )\text
+            ForEach *this\__lines( )
+               *line = @*this\__lines( )
+               *txt = *line\text
                *txt\pos = *this\text\pos
                *this\text\pos + *txt\len + 1 ; Len( #LF$ )
                
                If *this\text\vertical
                   If *this\text\rotate = 270
-                     *lines( )\x - ( *this\inner_width( ) - *this\scroll_width( ))
+                     *line\x - ( *this\inner_width( ) - *this\scroll_width( ))
                      *txt\x = *txt\width
                   Else
                      *txt\x = 0
@@ -3017,7 +3018,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   make_content_align_y( *txt, *this\scroll_height( ), *txt\width, *this\text\rotate, *this\area_align, *this\padding\y )
                Else
                   If *this\text\rotate = 180
-                     *lines( )\y - ( *this\inner_height( ) - *this\scroll_height( ))
+                     *line\y - ( *this\inner_height( ) - *this\scroll_height( ))
                      *txt\y = *txt\height
                   Else
                      *txt\y = 0
@@ -3153,12 +3154,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   _address_\mask | #__mask_hover
                EndIf
             Else
-               If _address_\press = #False
-                  _address_\press = #True
+               If _address_\mask & #__mask_press = #False
+                  _address_\mask | #__mask_press
                EndIf
             EndIf
             
-            If _address_\press = #True
+            If _address_\mask & #__mask_press 
                _address_\ColorState( ) = #__s_2
             ElseIf _address_\mask & #__mask_hover
                _address_\ColorState( ) = #__s_1
@@ -3166,8 +3167,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
          ElseIf _address_
             If Not *this\mode\clickSelect
-               If _address_\press = #True
-                  _address_\press = #False
+               If _address_\mask & #__mask_press
+                  _address_\mask &~ #__mask_press
                EndIf
             EndIf
             
@@ -3175,7 +3176,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                _address_\mask &~ #__mask_hover
             EndIf
             
-            If _address_\press = #False
+            If _address_\mask & #__mask_press = #False
                _address_\ColorState( ) = #__s_0
             EndIf
          EndIf
@@ -3248,7 +3249,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       ;       CompilerCase #PB_OS_Windows
       ;         _get_colors_( )\Front         = GetSysColor_(#COLOR_WINDOWTEXT)
       ;         _get_colors_( )\Back          = GetSysColor_(#COLOR_WINDOW)
-      ;         _get_colors_( )\focus         = GetSysColor_(#COLOR_HIGHLIGHT)
+      ;         _get_colors_( )\Focus         = GetSysColor_(#COLOR_HIGHLIGHT)
       ;         _get_colors_( )\Gadget        = GetSysColor_(#COLOR_mENU)
       ;         _get_colors_( )\Button        = GetSysColor_(#COLOR_3DLIGHT)
       ;         _get_colors_( )\Border        = GetSysColor_(#COLOR_WINDOWFRAME)
@@ -3959,7 +3960,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ; at point index
          If *this\anchors  
-            If is_mouse_enter( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] )
+            If is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] )
                For i = 1 To #__a_moved  
                   If *this\anchors\id[i] And
                      is_atpoint_( *this\anchors\id[i], CanvasMouseX( ), CanvasMouseY( ) )
@@ -4001,8 +4002,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                a_index( ) = 0
                ;
                If *this\mask & #__mask_inner
-                  If ( is_mouse_enter( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_frame] ) And
-                       is_mouse_enter( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ))
+                  If ( is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_frame] ) And
+                       is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ))
                      
                      *this\mask | #__mask_hover
                      DoEvents( *this, #__event_MouseEnter, #PB_All, @"[?+a_enter]" )
@@ -4201,8 +4202,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      a_focused( ) = *this
                      ;
                      If *deactive
-                        If *deactive\focus <> #__s_0 
-                           *deactive\focus = #__s_0
+                        If *deactive\mask & #__mask_active
+                           *deactive\mask &~ #__mask_active
                            If *deactive\anchors\group\show
                               a_group_show( *deactive, #__event_LostFocus )
                            EndIf
@@ -4210,8 +4211,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                      EndIf
                      ;
-                     If *this\focus <> #__s_2 
-                        *this\focus = #__s_2
+                     If *this\mask & #__mask_active = 0
+                        *this\mask | #__mask_active
                         If *this\anchors\group\show
                            a_group_show( *this, #__event_Focus )
                         EndIf
@@ -4234,8 +4235,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   a_focused( ) = #Null
                   a_entered( ) = #Null
                   ;
-                  If *this\focus <> #__s_0 
-                     *this\focus = #__s_0
+                  If *this\mask & #__mask_active 
+                     *this\mask &~ #__mask_active
                      If *this\anchors\group\show
                         a_group_show( *this, #__event_LostFocus )
                      EndIf
@@ -5066,7 +5067,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected tab_index = ListIndex( *this\__tabs( ) )
             
             If *tab\mask & #__mask_hidden 
-               *tab\visible = 0
+               *tab\mask &~ #__mask_visible
                Continue
             EndIf
             ;
@@ -5074,16 +5075,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; real visible items
             If vertical
-               *tab\visible = Bool( (( Y + *tab\y + *tab\height ) > *this\inner_y( ) And
-                                         ( Y + *tab\y ) < ( *this\inner_y( ) + *this\inner_height( ) ) ))
+               *tab\mask = ( *tab\mask & ~#__mask_visible ) | ( Bool( ( Y + *tab\y + *tab\height ) > *this\inner_y( ) And ( Y + *tab\y ) < ( *this\inner_y( ) + *this\inner_height( ) ) ) * #__mask_visible )
             Else
-               *tab\visible = Bool( (( X + *tab\x + *tab\width ) > *this\inner_x( ) And
-                                         ( X + *tab\x ) < ( *this\inner_x( ) + *this\inner_width( ) ) ))
+               *tab\mask = ( *tab\mask & ~#__mask_visible ) | ( Bool( ( X + *tab\x + *tab\width ) > *this\inner_x( ) And ( X + *tab\x ) < ( *this\inner_x( ) + *this\inner_width( ) ) ) * #__mask_visible )
             EndIf
             ;
             ; Draw separator
             ;no &~ entered &~ focused
-            If *tab\visible 
+            If *tab\mask & #__mask_visible 
                If *tab\tindex = #PB_Ignore
                   draw_roundbox_( X + *tab\x, Y + *tab\y, *tab\width, *tab\height, 0, 0, *tab\color\frame[0] & $FFFFFF | *tab\AlphaState24( ) )
                Else
@@ -5107,7 +5106,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      bar_draw_item_( *this\bar\vertical, *tab, X, Y, 2, round )
                   Else
                      If *tab <> *EnteredTAB
-                        ; And Not (*tab <> *this\TabSelected( ) And *tab\_focus) 
+                        ; And Not (*tab <> *this\TabSelected( ) And *tab\mask & #__mask_active) 
                         
                         ; Debug *this\parent\class
                         ;                     ;
@@ -5129,9 +5128,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          ; draw mouse-enter visible item
          If *EnteredTAB
-            If *EnteredTAB\_focus = 0 And
+            If *EnteredTAB\mask & #__mask_active = 0 And
                *EnteredTAB\checked = 0 And
-               *EnteredTAB\visible 
+               *EnteredTAB\mask & #__mask_visible 
                ;
                If *EnteredTAB\tindex <> #PB_Ignore
                   draw_font( *EnteredTAB, GetFontID( *this ), *EnteredTAB\TextChange( ))
@@ -5143,15 +5142,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          ; draw key-focus visible item
          If *activeTAB And
-            *activeTAB\_focus And 
-            *activeTAB\visible
+            *activeTAB\mask & #__mask_active And 
+            *activeTAB\mask & #__mask_visible
             ;   
             If *activeTAB\tindex <> #PB_Ignore
                draw_font( *activeTAB, GetFontID( *this ), *activeTAB\TextChange( ))
                ;
                If is_integral_( *this )
                   ;                   If *this\parent
-                  ;                      If Not *activeTAB\press
+                  ;                      If Not *activeTAB\mask & #__mask_press
                   ;                         draw_mode_alpha_( #PB_2DDrawing_Default )
                   ;                         draw_roundbox_( X + *activeTAB\x,
                   ;                                         Y + *activeTAB\y,
@@ -5176,7 +5175,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\parent
                   Protected color = *this\parent\color\frame
                   Protected color2 = *this\parent\color\frame
-                  If *this\parent\focus = 2
+                  If *this\parent\mask & #__mask_active 
                      color2 = *this\parent\color\frame[2] 
                   EndIf
                   color2 = $ff0000ff & $FFFFFF | *tab\AlphaState24( )
@@ -7813,7 +7812,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; the last selected item highlighted
                   ;
                   ; If *activedTAB 
-                  ;    *activedTAB\_focus = 0
+                  ;    *activedTAB\mask &~ #__mask_active
                   ;    *activedTAB\checked = 0
                   ;    *activedTAB = 0
                   ; EndIf
@@ -7838,7 +7837,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Else
                   ; Debug *this\class
                   If *activedTAB 
-                     *activedTAB\_focus = 0
+                     *activedTAB\mask &~ #__mask_active
                      *activedTAB\checked = 0
                      *activedTAB = 0
                   EndIf
@@ -8064,10 +8063,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If mode ; linux type
                   X = CanvasMouseX( ) - Width / 2
                   
-                  If ListSize( *this\__rows( ) ) And *this\RowFocused( )\_focus
+                  If ListSize( *this\__rows( ) ) And *this\RowFocused( )\mask & #__mask_active
                      Y = CanvasMouseY( ) - row_y_( *this, *this\RowFocused( ) ) - *this\RowFocused( )\height / 2
                   EndIf
-                  If ListSize( *this\__tabs( ) ) And *activedTAB\_focus
+                  If ListSize( *this\__tabs( ) ) And *activedTAB\mask & #__mask_active
                      Y = CanvasMouseY( ) - row_y_( *this, *activedTAB ) - *activedTAB\height / 2
                   EndIf
                Else
@@ -8156,7 +8155,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   HidePopupBar( PopupBar( ) )
                EndIf
                
-            ElseIf *tab\childrens And ( *tab\_focus Or *tab\checked )
+            ElseIf *tab\childrens And ( *tab\mask & #__mask_active Or *tab\checked )
                If test_display
                   Debug "2?   "+HidePopupBar( PopupBar( ) )
                Else
@@ -8171,7 +8170,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\bar\vertical
                ; Debug "  show POPUPMENUBARS "+EventString(event)
                DisplayPopupBar( *pw, *this )
-            ElseIf ( *tab\_focus Or *tab\checked )
+            ElseIf ( *tab\mask & #__mask_active Or *tab\checked )
                ; Debug "  show TOOLBAR "+EventString(event)
                DisplayPopupBar( *pw, *this )
             EndIf
@@ -8305,14 +8304,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro edit_select_line_( _this_, _lines_, _address_, _index_ )
-         _address_\_focus = 0
+         _address_\mask &~ #__mask_active
          _address_\ColorState( ) = 0
          
          _address_ = SelectElement( _lines_, _index_ )
          
          If _address_
             _address_\ColorState( ) = 1
-            _address_\_focus = 1
+            _address_\mask | #__mask_active
          EndIf
       EndMacro
       
@@ -8324,7 +8323,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ForEach _lines_
                   If _lines_\edit_text_2( )\width <> 0
                      ; Debug " remove - " +" "+ _lines_\text\str(0)
-                     edit_sel_string_( _this_, _lines_, #__sel_to_remove )
+                     edit_sel_string_( _this_, @_lines_, #__sel_to_remove )
                   EndIf
                Next
                PopListPosition( _lines_ )
@@ -8333,6 +8332,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Macro edit_sel_end_( _char_ )
+         ; Макрос объединяет пять условий через оператор Or (ИЛИ):
+         ;' ' до '/': пробел, восклицательный знак, кавычки, решетка, доллар, процент, 
+         ;амперсанд, апостроф, скобки, звездочка, плюс, запятая, минус, точка, косая черта.
+         ;':' до '@': двоеточие, точка с запятой, знаки сравнения, знак вопроса, коммерческое ат.
+         ;'[' до '^': открывающая квадратная скобка, обратный слэш, закрывающая квадратная скобка, знак вставки (карет).
+         ;'{' до '~': фигурные скобки, вертикальная черта, тильда._char_ = ''`: обратный апостроф (гравис).
+         ; Обратите внимание, что этот символ дублируется, так как он уже входит в диапазон третьего условия в некоторых кодировках или добавлен отдельно для надежности.
          Bool(( _char_ >= ' ' And _char_ <= '/' ) Or               ; ! " # $ % & ' ( ) * + , - .
               ( _char_ >= ':' And _char_ <= '@' ) Or               ;   ; < = > ?
               ( _char_ >= '[' And _char_ <= '^' ) Or               ; \ ] ^ _ `
@@ -8354,48 +8360,41 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndMacro
       
       Procedure.i edit_sel_start_word( *this._s_WIDGET, caret, *rowLine._s_ROW )
-         Protected result.i, i.i, char.i
-         caret - *rowLine\text\pos
-         
-         ; | <<<<<< left edge of the word
-         char = Asc( Mid( *rowLine\text\Str(0), caret + 1, 1 ))
-         If edit_sel_end_( char )
-            result = *rowLine\text\pos + caret
-         Else
-            result = *rowLine\text\pos
+         Protected result.i = 0, i.i, char.i
+         caret - *rowLine\text\pos 
+         If caret > 0 
+            ; Цикл идет от позиции курсора (в терминах 1-индексации) назад до первого символа
             For i = caret To 1 Step - 1
                char = Asc( Mid( *rowLine\text\Str(0), i, 1 ))
                If edit_sel_end_( char )
-                  result = *rowLine\text\pos + i
+                  result = i
                   Break
                EndIf
             Next
+            ProcedureReturn *rowLine\text\pos + result
+         Else
+            ; Если кликнули в самое начало строки, сразу возвращаем эту позицию
+            ProcedureReturn *rowLine\text\pos 
          EndIf
-         ;Debug result - *rowLine\text\pos
-         
-         ProcedureReturn result
       EndProcedure
       
       Procedure.i edit_sel_stop_word( *this._s_WIDGET, caret, *rowLine._s_ROW )
-         Protected result.i, i.i, char.i
+         Protected result.i = *rowLine\text\len, i.i, char.i
          caret - *rowLine\text\pos
-         
-         ; >>>>>> | right edge of the word
-         char = Asc( Mid( *rowLine\text\Str(0), caret, 1 ))
-         If edit_sel_end_( char )
-            result.i = *rowLine\text\pos + caret
-         Else
-            result.i = *rowLine\text\pos + *rowLine\text\len
-            For i = caret + 1 To *rowLine\text\len
+         If caret < *rowLine\text\len 
+            ; Начинаем поиск с символа, на который указывает курсор (caret + 1 для Mid)
+            For i = ( caret + 1 ) To *rowLine\text\len
                char = Asc( Mid( *rowLine\text\Str(0), i, 1 ))
                If edit_sel_end_( char )
-                  result = *rowLine\text\pos + ( i - 1 )
+                  result = ( i - 1 )
                   Break
                EndIf
             Next
+            ProcedureReturn *rowLine\text\pos + result
+         Else
+            ; Если курсор уже в самом конце, дальше искать не нужно
+            ProcedureReturn *rowLine\text\pos + *rowLine\text\len 
          EndIf
-         
-         ProcedureReturn result
       EndProcedure
       
       Procedure   edit_sel_string_( *this._s_WIDGET, *rowLine._s_ROW, mode.l = #__sel_to_line )
@@ -8412,7 +8411,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          *this\repaint_set( )
          ;\\ *rowLine\ColorState( ) = #__s_2
-         *rowLine\_focus = 1
+         *rowLine\mask | #__mask_active
          *rowLine\selector = 0
          
          If mode = #__sel_to_remove
@@ -8420,7 +8419,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             CaretLeftPos         = 0
             CaretRightPos        = 0
             *rowLine\ColorState( ) = #__s_0
-            *rowLine\_focus = 0
+            *rowLine\mask &~ #__mask_active
             
          ElseIf mode = #__sel_to_set
             
@@ -8545,19 +8544,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn #True
       EndProcedure
       
-      Procedure   edit_sel_text_( *this._s_WIDGET, List *lines._s_ROW( ), *rowLine._s_ROW )
+      Procedure   edit_sel_text_( *this._s_WIDGET, *rowLine._s_ROW )
          ; edit sel all items
          If *rowLine = #PB_All
             *rowLine                 = *this\row\active[0]
             *this\row\active[1]  = #Null
             *this\caret\start = 0
             *this\caret\stop = 0
-            PushListPosition( *lines( ) )
-            ForEach *lines( )
-               edit_sel_string_( *this, *lines( ), #__sel_to_last )
+            PushListPosition( *this\__lines( ) )
+            ForEach *this\__lines( )
+               edit_sel_string_( *this, @*this\__lines( ), #__sel_to_last )
             Next
-            ;*this\row\active[1] = *lines( )
-            PopListPosition( *lines( ) )
+            ;*this\row\active[1] = *this\__lines( )
+            PopListPosition( *this\__lines( ) )
             *this\caret\start = 0
             *this\caret\stop = *this\text\len
             *this\row\active[1]  = *this\row\active[0]
@@ -8614,6 +8613,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndProcedure
       
+      Procedure   edit_sel_(*this._s_WIDGET, *row._s_ROW, mode=#__sel_to_line)
+         If *row > 0
+            edit_sel_string_( *this, *row, mode )
+         EndIf
+         edit_sel_text_( *this, *row )
+      EndProcedure 
+      
       ;-
       Procedure.l edit_make_caret_position( *this._s_WIDGET, *rowLine._s_ROW )
          ; Get caret position
@@ -8636,9 +8642,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   Break
                EndIf
             Next
-         EndIf
          
-         ProcedureReturn caret
+            ProcedureReturn *rowLine\text\pos + caret
+         EndIf
       EndProcedure
       
       Procedure.s edit_make_insert_text( *this._s_WIDGET, Text.s )
@@ -9110,45 +9116,46 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\text\len + string_len + Len( #LF$ )
       EndProcedure
       
-      Procedure   edit_AddItem( *this._s_WIDGET, List *lines._s_ROW( ), position, *text.Character, string_len )
-         ; edit_AddLine(*this, *lines( ), position, *text, string_len, 0);CountString( *this\text\str(0), #LF$ ) )
+      Procedure   edit_AddItem( *this._s_WIDGET, position, *text.Character, string_len )
+         ; edit_AddLine(*this, *this\__lines( ), position, *text, string_len, 0);CountString( *this\text\str(0), #LF$ ) )
          
-         Protected add_index = - 1, add_pos
+   Protected._s_ROW *line
+   Protected add_index = - 1, add_pos
          
-         If position < 0 Or position > ListSize( *lines( )) - 1
-            LastElement( *lines( ))
-            AddElement( *lines( ))
-            position = ListIndex( *lines( ))
+         If position < 0 Or position > ListSize( *this\__lines( )) - 1
+            LastElement( *this\__lines( ))
+            AddElement( *this\__lines( ))
+            position = ListIndex( *this\__lines( ))
          Else
-            SelectElement( *lines( ), position )
-            add_index  = *lines( )\lindex
-            add_pos    = *lines( )\text\pos
-            InsertElement( *lines( ))
+            *line = SelectElement( *this\__lines( ), position )
+            add_index  = *line\lindex
+            add_pos    = *line\text\pos
+            InsertElement( *this\__lines( ))
             
-            PushListPosition( *lines( ))
-            While NextElement( *lines( ))
-               *lines( )\lindex = ListIndex( *lines( ) )
-               *lines( )\text\pos + string_len + Len( #LF$ )
+            PushListPosition( *this\__lines( ))
+            While NextElement( *this\__lines( ))
+               *line = @*this\__lines( )
+               *line\lindex = ListIndex( *this\__lines( ) )
+               *line\text\pos + string_len + Len( #LF$ )
             Wend
-            PopListPosition(*lines( ))
+            PopListPosition(*this\__lines( ))
          EndIf
          
          ;\\
-         *lines.allocate( ROW, ( ))
-         ;*lines( ) = *this\__lines( )
+         *line = @*this\__lines( )
          ;
-         *lines( )\lindex      = position
-         *lines( )\text\len    = string_len
+         *line\lindex      = position
+         *line\text\len    = string_len
          If *text
-            *lines( )\text\Str(0) = PeekS ( *text, string_len )
+            *line\text\Str(0) = PeekS ( *text, string_len )
          EndIf
          
          If add_index >= 0
-            *lines( )\text\pos = add_pos
+            *line\text\pos = add_pos
          Else
-            *lines( )\text\pos = *this\text\len 
+            *line\text\pos = *this\text\len 
             If position > 0
-               *lines( )\text\pos + 1
+               *line\text\pos + 1
             EndIf
          EndIf
          
@@ -9156,17 +9163,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          *this\text\len + string_len + Len( #LF$ )
          
          
-         ; Debug ""+*lines( )\lindex +" "+ *lines( )\text\pos
+         ; Debug ""+*line\lindex +" "+ *line\text\pos
          
          ; insert line 
-         If *lines( )\text\pos = 0
+         If *line\text\pos = 0
             If *this\text\Str(0)
-               *this\text\Str(0) = InsertString( *this\text\Str(0), *lines( )\text\Str(0) + #LF$, 1)
+               *this\text\Str(0) = InsertString( *this\text\Str(0), *line\text\Str(0) + #LF$, 1)
             Else
-               *this\text\Str(0) = InsertString( *this\text\Str(0), *lines( )\text\Str(0), 1)
+               *this\text\Str(0) = InsertString( *this\text\Str(0), *line\text\Str(0), 1)
             EndIf
          Else
-            *this\text\Str(0) = InsertString( *this\text\Str(0), #LF$ + *lines( )\text\Str(0), *lines( )\text\pos )
+            *this\text\Str(0) = InsertString( *this\text\Str(0), #LF$ + *line\text\Str(0), *line\text\pos )
          EndIf
          
          ;
@@ -9182,8 +9189,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *this\row\active[0] <> *this\__lines( )
                If *this\row\active[0]
-                  If *this\row\active[0]\_focus <> 0
-                     *this\row\active[0]\_focus = 0
+                  If *this\row\active[0]\mask & #__mask_active
+                     *this\row\active[0]\mask &~ #__mask_active
                   EndIf
                   
                   ;*this\row\active[0]\ColorState( ) = #__s_0
@@ -9191,8 +9198,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                *this\row\active[0] = *this\__lines( )
                
-               If *this\row\active[0]\_focus = 0
-                  *this\row\active[0]\_focus = 1
+               If *this\row\active[0]\mask & #__mask_active = 0
+                  *this\row\active[0]\mask | #__mask_active
                EndIf
                
                ;
@@ -9209,8 +9216,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\caret\stop = State + *this\row\active[0]\text\pos
             
             ;
-            edit_sel_string_( *this, *this\row\active[0])
-            edit_sel_text_( *this, *this\__lines( ), *this\row\active[0])
+            edit_sel_( *this, *this\row\active[0])
             row_scroll_y_( *this, *this\row\active[0])
             ProcedureReturn #True
          EndIf
@@ -9230,8 +9236,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   
                   If *this\row\active[0] <> *this\__lines( )
                      If *this\row\active[0]
-                        If *this\row\active[0]\_focus <> 0
-                           *this\row\active[0]\_focus = 0
+                        If *this\row\active[0]\mask & #__mask_active
+                           *this\row\active[0]\mask &~ #__mask_active
                         EndIf
                         
                         *this\row\active[0]\ColorState( ) = #__s_0
@@ -9240,8 +9246,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      *this\row\active[0]      = *this\__lines( )
                      *this\LineState( ) = *this\__lines( )\lindex
                      
-                     If *this\row\active[0]\_focus = 0
-                        *this\row\active[0]\_focus = 1
+                     If *this\row\active[0]\mask & #__mask_active = 0
+                        *this\row\active[0]\mask | #__mask_active
                      EndIf
                      
                      *this\row\active[0]\ColorState( ) = #__s_2
@@ -9256,8 +9262,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *this\caret\stop = State
             ;
             If *this\row\active[0]
-               edit_sel_string_( *this, *this\row\active[0])
-               edit_sel_text_( *this, *this\__lines( ), *this\row\active[0])
+               edit_sel_( *this, *this\row\active[0])
                row_scroll_y_( *this, *this\row\active[0])
             EndIf
             ProcedureReturn #True
@@ -10487,10 +10492,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             *select_row = SelectElement( *this\__rows( ), *row\index )
             If *select_row
                *select_row\ColorState( ) = *row\ColorState( )
-               *select_row\_focus = *row\_focus
+               *select_row\mask = *row\mask
                ;             *select_row\mask = *row\mask
                ;             *select_row\_press = *row\_press
-               If *row\_focus
+               If *row\mask & #__mask_active
                   *this\RowFocused( ) = *select_row
                EndIf
             EndIf
@@ -10861,8 +10866,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If state = - 1
                   ;\\ reset all selected items
                   If *this\RowFocused( ) And 
-                     *this\RowFocused( )\_focus
-                     *this\RowFocused( )\_focus = 0
+                     *this\RowFocused( )\mask & #__mask_active
+                     *this\RowFocused( )\mask &~ #__mask_active
                      *this\RowFocused( )\ColorState( ) = #__s_0
                      DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                      *this\RowFocused( ) = #Null
@@ -10922,8 +10927,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\RowFocused( ) <> *row
                        ;\\ reset selected items
                         If *this\RowFocused( ) And 
-                           *this\RowFocused( )\_focus
-                           *this\RowFocused( )\_focus = #__s_0
+                           *this\RowFocused( )\mask & #__mask_active
+                           *this\RowFocused( )\mask &~ #__mask_active
                            *this\RowFocused( )\ColorState( ) = #__s_0
                            DoEvents( *this, #__event_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                         EndIf
@@ -10933,9 +10938,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         ;                         ; click select mode
                         ;                         If *this\mode\clickSelect  
-                        ;                            *row\_focus ! 1
+                        ;                            *row\mask & #__mask_active ! 1
                         ;                         Else
-                        *row\_focus = 1
+                        *row\mask | #__mask_active
                         ;                         EndIf
                         
                         DoEvents( *this, #__event_Change, *row\rindex, *row)
@@ -11002,7 +11007,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *this\TabChange( ) = #True
                
                If *this\parentTabSelected( )
-                  *this\parentTabSelected( )\_focus = 0
+                  *this\parentTabSelected( )\mask &~ #__mask_active
                   *this\parentTabSelected( )       = #Null
                EndIf
                
@@ -11075,7 +11080,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If SelectItem( *this, Item )
                *row = @*this\__rows( )
-               If *row\_focus ; ColorState( )
+               If *row\mask & #__mask_active ; ColorState( )
                   result | #PB_Tree_Selected
                EndIf
                ;
@@ -11133,17 +11138,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                *select_row = @*this\__rows( )
                ;
                If State & #PB_Tree_Selected
-                  If *select_row\_focus = 0
-                     *select_row\_focus = 1
-                     If *this\focus
+                  If *select_row\mask & #__mask_active = 0
+                     *select_row\mask | #__mask_active
+                     If *this\mask & #__mask_active
                         *select_row\ColorState( ) = #__s_2
                      Else
                         *select_row\ColorState( ) = #__s_3
                      EndIf
                   EndIf
                Else
-                  If *select_row\_focus = 1
-                     *select_row\_focus = 0
+                  If *select_row\mask & #__mask_active
+                     *select_row\mask &~ #__mask_active
                      *select_row\ColorState( ) = #__s_0
                   EndIf
                EndIf
@@ -11219,11 +11224,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      result = 1
                   EndIf
                   ;
-                  If *select_row\_focus <> state
-                     *select_row\_focus = state
+                  ; Проверяем, отличается ли текущий статус активности от нового состояния
+                  If Bool(*select_row\mask & #__mask_active) <> state
+                     
+                     ; Записываем новое состояние в маску активности
                      If state
-                        *this\RowFocused( ) = *select_row
+                        *select_row\mask | #__mask_active
+                        *this\RowFocused( ) = *select_row ; Если строка стала активной, запоминаем её в фокус
+                     Else
+                        *select_row\mask & ~#__mask_active
                      EndIf
+                     
                      result = 1
                   EndIf
                   ;
@@ -11369,7 +11380,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\row\active[0]
                   If is_integral_( *this )
                      If *this\parent\type = #__type_Spin
-                        If *this\focus
+                        If *this\mask & #__mask_active
                            *this\caret\stop = 0
                         Else
                            *this\caret\stop = *this\text\len
@@ -11378,8 +11389,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   EndIf
                   
-                  edit_sel_string_( *this, *this\row\active[0] )
-                  edit_sel_text_( *this, *this\__lines( ), *this\row\active[0] )
+                  edit_sel_( *this, *this\row\active[0] )
                EndIf
             EndIf
             
@@ -12119,48 +12129,66 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       Procedure.i SetActive( *this._s_WIDGET )
          Macro DoActivate( _this_ )
-            If _this_\focus <> #__s_2
+            ; Проверяем, свободен ли еще бит фокуса (чтобы не активировать повторно)
+            If Not ( _this_\mask & #__mask_active )
                If test_focus_set
-                  Debug " ["+ _this_\focus +"] DoActivate "+_this_\class
+                  Debug "   ["+ Bool(_this_\mask & #__mask_active) +"] DoActivate "+_this_\class
                EndIf
-               _this_\focus = #__s_2
-               ; widget( ) = _this_
-               DoEvents( _this_, #__event_Focus )
+               
+               ; Включаем (взводим) бит активности у текущего виджета
+               _this_\mask | #__mask_active
+               
+               ; Передаем фокус дочернему Stringbar
                If _this_\Stringbar
-                  If _this_\Stringbar\focus <> _this_\focus
-                     _this_\Stringbar\focus = _this_\focus
-                     DoEvents( _this_\Stringbar, #__event_Focus )
-                  EndIf
+                  ; Принудительно включаем бит активности у Stringbar
+                  _this_\Stringbar\mask | #__mask_active
+                  DoEvents( _this_\Stringbar, #__event_Focus )
                EndIf
+               
+               ; Проверяем интеграцию с родителем
                If is_integral_( _this_ )
-                  If _this_\parent\focus <> _this_\focus
-                     _this_\parent\focus = _this_\focus
+                  ; Если у родителя бит активности еще не включен — включаем его
+                  If Not ( _this_\parent\mask & #__mask_active )
+                     _this_\parent\mask | #__mask_active
                      DoEvents( _this_\parent, #__event_Focus )
                   EndIf
                EndIf
+               
+               ; Отправляем событие активации самому виджету
+               DoEvents( _this_, #__event_Focus )
             EndIf
          EndMacro
          Macro DoDeactivate( _this_ )
-            If _this_\focus = #__s_2
+            ; Проверяем, активен ли сейчас бит фокуса у виджета
+            If _this_\mask & #__mask_active
                If test_focus_set
-                  Debug "   ["+ _this_\focus +"] DoDeactivate "+_this_\class
+                  ; Выведет 1, если бит установлен
+                  Debug "   ["+ Bool(_this_\mask & #__mask_active) +"] DoDeactivate "+_this_\class
                EndIf
-               _this_\focus = #__s_3
                
+               ; Сбрасываем (выключаем) бит активности у текущего виджета
+               _this_\mask & ~#__mask_active
+               
+               ; Отправляем событие дочернему Stringbar
                If _this_\Stringbar
-                  _this_\Stringbar\focus = _this_\focus
+                  ; Гарантированно выключаем бит активности у Stringbar, так как родитель деактивирован
+                  _this_\Stringbar\mask & ~#__mask_active
                   DoEvents( _this_\Stringbar, #__event_LostFocus )
                EndIf
+               
+               ; Проверяем интеграцию с родителем
                If is_integral_( _this_ )
-                  If _this_\parent\focus <> _this_\focus
-                     _this_\parent\focus = _this_\focus
+                  ; Если у родителя бит активности все еще включен — выключаем его
+                  If _this_\parent\mask & #__mask_active
+                     _this_\parent\mask & ~#__mask_active
                      DoEvents( _this_\parent, #__event_LostFocus )
                   EndIf
                EndIf
-               ; widget( ) = _this_
+               
+               ; Отправляем событие деактивации самому виджету
                DoEvents( _this_, #__event_LostFocus )
             EndIf
-         EndMacro               
+         EndMacro
          Macro DoActivateWindows( _this_ )
             If Not is_root_( _this_ ) And _this_\address And Not _this_\anchors
                PushListPosition( widgets( ) )
@@ -14149,12 +14177,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   add_image( *row\picture, img, *this\picturesize )
                   
                   If *this\RowFocused( )
-                     ;                      *this\RowFocused( )\_focus = 0
+                     ;                      *this\RowFocused( )\mask &~ #__mask_active
                      ;                      *this\RowFocused( )\ColorState( ) = #__s_0
                      ;                      
                      ;                      *this\RowFocused( )             = *row
-                     ;                      *this\RowFocused( )\_focus = 1
-                     ;                      *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\focus = 0 )
+                     ;                      *this\RowFocused( )\mask | #__mask_active
+                     ;                      *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\mask & #__mask_active = 0 )
                      SetState( *this, position )
                   EndIf
                   
@@ -14207,7 +14235,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
          
          If *this\type = #__type_Editor
-            ProcedureReturn edit_AddItem( *this, *this\__lines( ), item, @text, Len(Text) )
+            ProcedureReturn edit_AddItem( *this, item, @text, Len(Text) )
          EndIf
          
          If *this\type = #__type_ListIcon
@@ -14536,7 +14564,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;
             If *this\RowFocused( ) = *row 
-               *this\RowFocused( )\_focus = 0 
+               *this\RowFocused( )\mask &~ #__mask_active 
                *this\RowFocused( )\ColorState( ) = 0
                
                PushListPosition( *this\__rows( ))
@@ -14569,8 +14597,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      ;
                      *this\RowFocused( ) = *rowFocused
-                     *rowFocused\_focus = *this\focus
-                     *rowFocused\ColorState( ) = *this\focus
+                     *rowFocused\mask = *this\mask
+                     If *this\mask & #__mask_active
+                        *rowFocused\ColorState( ) = #__s_2
+                     EndIf
                      ;
                      DoEvents( *this, #__event_StatusChange, *row\rindex, *row)
                      DoEvents( *this, #__event_StatusChange, *rowFocused\rindex, *rowFocused)
@@ -16654,8 +16684,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *list( )\address And
                         *list( )\mask & #__mask_hidden = 0 And
                         *list( )\root = *root And 
-                        is_mouse_enter( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
-                        is_mouse_enter( *list( ), mouse_x, mouse_y, [#__c_draw] )
+                        is_hover( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
+                        is_hover( *list( ), mouse_x, mouse_y, [#__c_draw] )
                         
                         ;\\ если переместили виджет то его исключаем
                         If MouseDragStart( ) 
@@ -16677,8 +16707,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             ;\\ root no enumWidget
             If Not *this
-               If is_mouse_enter( *root, mouse_x, mouse_y, [#__c_frame] ) And
-                  is_mouse_enter( *root, mouse_x, mouse_y, [#__c_draw] )
+               If is_hover( *root, mouse_x, mouse_y, [#__c_frame] ) And
+                  is_hover( *root, mouse_x, mouse_y, [#__c_draw] )
                   *this = *root
                EndIf
             EndIf
@@ -16688,32 +16718,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this
             ;\\ is integral string bar
             If *this\Stringbar And Not *this\Stringbar\mask & #__mask_hidden And
-               is_mouse_enter( *this\Stringbar, mouse_x, mouse_y, [#__c_frame] ) And
-               is_mouse_enter( *this\Stringbar, mouse_x, mouse_y, [#__c_draw] )
+               is_hover( *this\Stringbar, mouse_x, mouse_y, [#__c_frame] ) And
+               is_hover( *this\Stringbar, mouse_x, mouse_y, [#__c_draw] )
                *this = *this\Stringbar
             EndIf
             ;\\ is integral tab bar
             If *this\tabbar And Not *this\tabbar\mask & #__mask_hidden And
-               is_mouse_enter( *this\tabbar, mouse_x, mouse_y, [#__c_frame] ) And
-               is_mouse_enter( *this\tabbar, mouse_x, mouse_y, [#__c_draw] )
+               is_hover( *this\tabbar, mouse_x, mouse_y, [#__c_frame] ) And
+               is_hover( *this\tabbar, mouse_x, mouse_y, [#__c_draw] )
                *this = *this\tabbar
             EndIf
             ;\\ is integral tab bar
             If *this\menubar And Not *this\menubar\mask & #__mask_hidden And
-               is_mouse_enter( *this\menubar, mouse_x, mouse_y, [#__c_frame] ) And
-               is_mouse_enter( *this\menubar, mouse_x, mouse_y, [#__c_draw] )
+               is_hover( *this\menubar, mouse_x, mouse_y, [#__c_frame] ) And
+               is_hover( *this\menubar, mouse_x, mouse_y, [#__c_draw] )
                *this = *this\menubar
             EndIf
             ;\\ is integral scroll bar's
             If *this\scroll
                If *this\scroll\v And Not *this\scroll\v\mask & #__mask_hidden And
-                  is_mouse_enter( *this\scroll\v, mouse_x, mouse_y, [#__c_frame] ) And
-                  is_mouse_enter( *this\scroll\v, mouse_x, mouse_y, [#__c_draw] )
+                  is_hover( *this\scroll\v, mouse_x, mouse_y, [#__c_frame] ) And
+                  is_hover( *this\scroll\v, mouse_x, mouse_y, [#__c_draw] )
                   *this = *this\scroll\v
                EndIf
                If *this\scroll\h And Not *this\scroll\h\mask & #__mask_hidden And
-                  is_mouse_enter( *this\scroll\h, mouse_x, mouse_y, [#__c_frame] ) And
-                  is_mouse_enter( *this\scroll\h, mouse_x, mouse_y, [#__c_draw] )
+                  is_hover( *this\scroll\h, mouse_x, mouse_y, [#__c_frame] ) And
+                  is_hover( *this\scroll\h, mouse_x, mouse_y, [#__c_draw] )
                   *this = *this\scroll\h
                EndIf
             EndIf
@@ -16820,7 +16850,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            mouse_x = CanvasMouseX( ) - *this\inner_x( ) - *this\RowEntered( )\x - *this\scroll_x( )
                            mouse_y = CanvasMouseY( ) - *this\inner_y( ) - *this\RowEntered( )\y - *this\scroll_y( )
                            ;                            If*BB1 And *BB2
-                           ;                               Debug ""+""+ is_mouse_enter( *BB1, mouse_x, mouse_y ) +" "+ is_mouse_enter( *BB2, mouse_x, mouse_y )
+                           ;                               Debug ""+""+ is_hover( *BB1, mouse_x, mouse_y ) +" "+ is_hover( *BB2, mouse_x, mouse_y )
                            ;                            EndIf
                         EndIf
                      EndIf
@@ -16835,11 +16865,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\ get at-point-button address
-                  If *BB1 And *BB1\mask & #__mask_hidden = 0 And is_mouse_enter( *BB1, mouse_x, mouse_y )
+                  If *BB1 And *BB1\mask & #__mask_hidden = 0 And is_hover( *BB1, mouse_x, mouse_y )
                      *EnteredButton = *BB1
-                  ElseIf *BB2 And *BB2\mask & #__mask_hidden = 0 And is_mouse_enter( *BB2, mouse_x, mouse_y )
+                  ElseIf *BB2 And *BB2\mask & #__mask_hidden = 0 And is_hover( *BB2, mouse_x, mouse_y )
                      *EnteredButton = *BB2
-                  ElseIf *BB0 And *BB0\mask & #__mask_hidden = 0 And is_mouse_enter( *BB0, mouse_x, mouse_y )
+                  ElseIf *BB0 And *BB0\mask & #__mask_hidden = 0 And is_hover( *BB0, mouse_x, mouse_y )
                      *EnteredButton = *BB0
                   EndIf
                   
@@ -16881,7 +16911,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;\\
                   If Not EnteredButton( )
                      If *this\caption
-                        *this\caption\interact = is_mouse_enter( *this\caption, CanvasMouseX( ), CanvasMouseY( ) )
+                        *this\caption\interact = is_hover( *this\caption, CanvasMouseX( ), CanvasMouseY( ) )
                      EndIf
                   EndIf
                EndIf
@@ -16907,8 +16937,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         Leaved( )\parent\mask & #__mask_hover
                         
                         If Leaved( )\parent = *this
-                           If is_mouse_enter( Leaved( )\parent, mouse_x, mouse_y, [#__c_inner] ) And
-                              is_mouse_enter( Leaved( )\parent, mouse_x, mouse_y, [#__c_draw] )
+                           If is_hover( Leaved( )\parent, mouse_x, mouse_y, [#__c_inner] ) And
+                              is_hover( Leaved( )\parent, mouse_x, mouse_y, [#__c_draw] )
                               Leaved( )\parent\mask | #__mask_inner2
                            Else
                               Leaved( )\parent\mask | #__mask_hover
@@ -17021,7 +17051,119 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ProcedureReturn *this
       EndProcedure
       
+      ; get at point items
+      Procedure hower_line( *this._S_WIDGET, *hover_line._s_ROW, mouse_x, mouse_y )
+         Protected._s_ROW *rowLine, *__line, *visible_line
+         Protected dragged = MouseDragStart( )
+         
+         If ListSize( *this\__items( ) )
+            If *hover_line And *hover_line\mask & #__mask_visible And *hover_line\mask & #__mask_hidden = 0 And
+               (( *this\mask & #__mask_hover And is_hover( *hover_line, mouse_x, mouse_y )) Or
+                ( dragged And is_inside_( *hover_line\y, *hover_line\height, mouse_y )) )
+               ;
+               *rowLine = *hover_line
+            Else
+               ; search entered item
+               LastElement( *this\__items( ))
+               Repeat
+                  *visible_line = *this\__items( )
+                  If *visible_line\mask & #__mask_visible And *visible_line\mask & #__mask_hidden = 0 And
+                     (( *this\mask & #__mask_hover And is_hover( *visible_line, mouse_x, mouse_y )) Or
+                      ( dragged And is_inside_( *visible_line\y, *visible_line\height, mouse_y )) )
+                     ;
+                     *rowLine = *visible_line
+                     Break
+                  EndIf
+               Until PreviousElement( *this\__items( )) = #False
+            EndIf
+         ElseIf ListSize( *this\__lines( ) )
+            If *hover_line And
+               *hover_line\mask & #__mask_visible And *hover_line\mask & #__mask_hidden = 0 And
+               (( *this\mask & #__mask_hover And is_hover( *hover_line, mouse_x, mouse_y )) Or
+                ( dragged And is_inside_( *hover_line\y, *hover_line\height, mouse_y )) )
+               ;
+               *rowLine = *hover_line
+            Else
+               ; search entered item
+               LastElement( *this\__lines( ))
+               Repeat
+                  *__line = @*this\__lines( )
+                  If *__line\mask & #__mask_visible And *__line\mask & #__mask_hidden = 0 And
+                     (( *this\mask & #__mask_hover And is_hover( *__line, mouse_x, mouse_y )) Or
+                      ( dragged And is_inside_( *__line\y, *__line\height, mouse_y )) )
+                     ;
+                     *rowLine = *__line
+                     Break
+                  EndIf
+               Until PreviousElement( *this\__lines( )) = #False
+            EndIf
+         EndIf
+         
+         If dragged
+            If Not *rowLine 
+               If CanvasMouseY( ) < MousePressY( ) + *this\inner_y( ) And CanvasMouseY( ) <= *this\inner_y( )
+                  If *this\RowFirstVisible( ) And Not bar_in_start_( *this\scroll\v\bar )
+                     ChangeCurrentElement( *this\__lines( ), *this\RowFirstVisible( ))
+                     *rowLine = PreviousElement( *this\__lines( ) )
+                     If *rowLine : row_scroll_y_( *this, *rowLine ) : EndIf
+                  EndIf
+               ElseIf CanvasMouseY( ) > MousePressY( ) + *this\inner_y( ) And CanvasMouseY( ) > *this\inner_y( ) + *this\inner_height( )
+                  If *this\RowLastVisible( ) And Not bar_in_stop_( *this\scroll\v\bar )
+                     ChangeCurrentElement( *this\__lines( ), *this\RowLastVisible( ))
+                     *rowLine = NextElement( *this\__lines( ) )
+                     If *rowLine : row_scroll_y_( *this, *rowLine ) : EndIf
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+         ProcedureReturn *rowLine
+      EndProcedure
       
+      Procedure hover_row(*this._s_WIDGET, *hover_row._s_ROW,  mouse_x, mouse_y, dragged)
+         Protected._s_ROW *result_row, *visible_row, *__row
+         If ListSize( *this\__items( ) )
+            If *hover_row And
+               *hover_row\mask & #__mask_visible And
+               *hover_row\mask & #__mask_hidden = 0 And
+               is_hover( *hover_row, mouse_x, mouse_y )
+               *result_row = *hover_row
+            Else
+               LastElement( *this\__items( ))
+               Repeat
+                  *visible_row = *this\__items( )
+                  If *visible_row\mask & #__mask_visible And
+                     *visible_row\mask & #__mask_hidden = 0 And
+                     is_hover( *visible_row, mouse_x, mouse_y )
+                     *result_row = *visible_row
+                     Break
+                  EndIf
+               Until PreviousElement( *this\__items( )) = #False
+            EndIf
+            
+         ElseIf ListSize( *this\__rows( ) )
+            If *hover_row And
+               *hover_row\mask & #__mask_visible And
+               *hover_row\mask & #__mask_hidden = 0 And
+               is_hover( *hover_row, mouse_x, mouse_y )
+               *result_row = *hover_row
+            Else
+               LastElement( *this\__rows( ))
+               Repeat
+                  *__row = @*this\__rows( )
+                  If *__row\mask & #__mask_visible And
+                     *__row\mask & #__mask_hidden = 0 And
+                     is_hover( *__row, mouse_x, mouse_y )
+                     *result_row = *__row
+                     Break
+                  EndIf
+               Until PreviousElement( *this\__rows( )) = #False
+            EndIf
+         EndIf
+         
+         ProcedureReturn *result_row
+      EndProcedure
+
       ;-
       ;- EVENTs
       ;-
@@ -17119,14 +17261,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;
                      ;                 If *this\RowFocused( )
                      ;                   ; Debug "scroll v bottom "+ scroll_y +" "+ *this\RowLastVisible( )\rindex +" "+ *this\RowFocused( )\rindex
-                     ;                   *this\RowFocused( )\_focus = 0
+                     ;                   *this\RowFocused( )\mask &~ #__mask_active
                      ;                   *this\RowFocused( )\ColorState( ) = 0
                      ;                 EndIf
                      ;
                      ;                 ; edit_sel__( *this, *this\RowLastVisible( ), *this\row\active[1], *this\RowFocused( ), 0, *this\RowFocused( )\text\len )
                      ;                 *this\RowFocused( ) = *this\RowLastVisible( )
                      ;                 ;*this\RowFocused( ) = SelectElement( *this\__rows( ), *this\RowLastVisible( )\rindex )
-                     ;                 *this\RowFocused( )\_focus = 1
+                     ;                 *this\RowFocused( )\mask | #__mask_active
                      ;                 *this\RowFocused( )\ColorState( ) = 1
                      ;                 *this\RowFocused( )\repaint_set( )
                      ;
@@ -17168,7 +17310,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
       EndProcedure
       
-      Procedure   DoEvent_KeyLines( *this._s_WIDGET, List *lines._s_ROW( ), event.l )
+      Procedure   DoEvent_KeyLines( *this._s_WIDGET, event.l )
          Static _caret_last_pos_, DoubleClick.i
          Protected i.i, caret.i
          
@@ -17203,16 +17345,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If keyboard( )\key[1] & #PB_Canvas_Shift
                               If *this\row\active[0] = *this\row\active[1]
                                  ;Debug " le top remove - Pressed  " +" "+ *this\row\active[0]\text\str(0)
-                                 edit_sel_string_( *this, *this\row\active[0], #__sel_to_first )
-                                 edit_sel_text_( *this, *lines( ), *this\row\active[0])
+                                 edit_sel_( *this, *this\row\active[0], #__sel_to_first )
                               ElseIf *this\row\active[0]\lindex > *this\row\active[1]\lindex
                                  ;Debug "  le top remove - " +" "+ *this\row\active[0]\text\str(0)
-                                 edit_sel_string_( *this, *this\row\active[0], #__sel_to_remove )
-                                 edit_sel_text_( *this, *lines( ), SelectElement(*lines( ), *this\row\active[0]\lindex - 1))
+                                 edit_sel_( *this, *this\row\active[0], #__sel_to_remove )
                               Else
                                  ;Debug " ^le bottom  set - " +" "+ *this\row\active[0]\text\str(0)
-                                 edit_sel_string_( *this, *this\row\active[0], #__sel_to_set )
-                                 edit_sel_text_( *this, *lines( ), *this\row\active[0])
+                                 edit_sel_( *this, *this\row\active[0], #__sel_to_set )
                               EndIf
                            EndIf
                            
@@ -17221,22 +17360,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            Else
                               *this\caret\start - *row\text\pos
                               *row\ColorState( )  = #__s_0
-                              *row                = SelectElement( *lines( ), *row\lindex - 1 )
+                              *row                = SelectElement( *this\__lines( ), *row\lindex - 1 )
                               *row\ColorState( )  = #__s_1
                               *this\caret\start + *row\text\pos 
                               *this\row\active[0] = *row
                            EndIf
                            
                            If keyboard( )\key[1] & #PB_Canvas_Shift = #False
-                              edit_sel_reset_( *this, *lines( ))
+                              edit_sel_reset_( *this, *this\__lines( ))
                               
                               If *this\row\active[1] <> *row
                                  If *this\row\active[1] And
-                                    *this\row\active[1]\press
-                                    *this\row\active[1]\press = #False
+                                    *this\row\active[1]\mask & #__mask_press
+                                    *this\row\active[1]\mask &~ #__mask_press
                                  EndIf
                                  *this\row\active[1]       = *row
-                                 *this\row\active[1]\press = #True
+                                 *this\row\active[1]\mask | #__mask_press
                               EndIf
                               
                               *this\caret\stop = *this\caret\start
@@ -17250,16 +17389,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If keyboard( )\key[1] & #PB_Canvas_Shift
                               If *this\row\active[0] = *this\row\active[1]
                                  ;Debug " le bottom  set - Pressed  " +" "+ *this\row\active[0]\text\str(0)
-                                 edit_sel_string_( *this, *this\row\active[0], #__sel_to_last )
-                                 edit_sel_text_( *this, *lines( ), *this\row\active[0])
+                                 edit_sel_( *this, *this\row\active[0], #__sel_to_last )
                               ElseIf *this\row\active[0]\lindex < *this\row\active[1]\lindex
                                  ;Debug "  ^le top remove - " +" "+ *this\row\active[0]\text\str(0)
-                                 edit_sel_string_( *this, *this\row\active[0], #__sel_to_remove )
-                                 edit_sel_text_( *this, *lines( ), SelectElement( *lines( ), *this\row\active[0]\lindex + 1))
+                                 edit_sel_( *this, *this\row\active[0], #__sel_to_remove )
                               Else
                                  ;Debug " le bottom  set - " +" "+ *this\row\active[0]\text\str(0)
-                                 edit_sel_string_( *this, *this\row\active[0], #__sel_to_set )
-                                 edit_sel_text_( *this, *lines( ), *this\row\active[0])
+                                 edit_sel_( *this, *this\row\active[0], #__sel_to_set )
                               EndIf
                            EndIf
                            
@@ -17268,22 +17404,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            Else
                               *this\caret\start - *row\text\pos
                               *row\ColorState( )  = #__s_0
-                              *row                = SelectElement( *lines( ), *row\lindex + 1 )
+                              *row                = SelectElement( *this\__lines( ), *row\lindex + 1 )
                               *row\ColorState( )  = #__s_1
                               *this\caret\start + *row\text\pos
                               *this\row\active[0] = *row
                            EndIf
                            
                            If Not keyboard( )\key[1] & #PB_Canvas_Shift
-                              edit_sel_reset_( *this, *lines( ))
+                              edit_sel_reset_( *this, *this\__lines( ))
                               
                               If *this\row\active[1] <> *row
                                  If *this\row\active[1] And
-                                    *this\row\active[1]\press
-                                    *this\row\active[1]\press = #False
+                                    *this\row\active[1]\mask & #__mask_press
+                                    *this\row\active[1]\mask &~ #__mask_press
                                  EndIf
-                                 *this\row\active[1]       = *row
-                                 *this\row\active[1]\press = #True
+                                 *this\row\active[1]      = *row
+                                 *this\row\active[1]\mask | #__mask_press
                               EndIf
                               
                               *this\caret\stop = *this\caret\start
@@ -17301,20 +17437,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this\caret\start = *row\text\pos
                               If *row\lindex > 0
                                  *row\ColorState( ) = #__s_0
-                                 *row               = SelectElement( *lines( ), *row\lindex - 1 )
+                                 *row               = SelectElement( *this\__lines( ), *row\lindex - 1 )
                                  *row\ColorState( ) = #__s_1
                                  *this\row\active[0] = *row
                               EndIf
                            EndIf
                            
                            If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\caret\start = *row\text\pos+edit_sel_start_word( *this, *this\caret\start - 1-*row\text\pos, *this\row\active[0] )
+                             ; *this\caret\start = *row\text\pos+edit_sel_start_word( *this, *this\caret\start - 1-*row\text\pos, *this\row\active[0] )
+                              *this\caret\start = edit_sel_start_word( *this, *this\caret\start - 1, *this\row\active[0] )
                            Else
                               *this\caret\start - 1
                            EndIf
                            
                            If Not keyboard( )\key[1] & #PB_Canvas_Shift
-                              edit_sel_reset_( *this, *lines( ))
+                              edit_sel_reset_( *this, *this\__lines( ))
                               
                               *this\caret\stop = *this\caret\start
                            EndIf
@@ -17334,34 +17471,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If keyboard( )\key[1] & #PB_Canvas_Shift
                                     If *this\row\active[0] = *this\row\active[1]
                                        ;Debug " le bottom  set - Pressed  " +" "+ *this\row\active[0]\text\str(0)
-                                       edit_sel_string_( *this, *this\row\active[0], #__sel_to_last )
-                                       edit_sel_text_( *this, *lines( ), *this\row\active[0])
+                                       edit_sel_( *this, *this\row\active[0], #__sel_to_last )
                                     ElseIf *this\row\active[0]\lindex < *this\row\active[1]\lindex
                                        ;Debug "  ^le top remove - " +" "+ *this\row\active[0]\text\str(0)
-                                       edit_sel_string_( *this, *this\row\active[0], #__sel_to_remove )
-                                       edit_sel_text_( *this, *lines( ), SelectElement( *lines( ), *this\row\active[0]\lindex + 1))
+                                       edit_sel_( *this, *this\row\active[0], #__sel_to_remove )
                                     Else
                                        ;Debug " le bottom  set - " +" "+ *this\row\active[0]\text\str(0)
-                                       edit_sel_string_( *this, *this\row\active[0], #__sel_to_set )
-                                       edit_sel_text_( *this, *lines( ), *this\row\active[0])
+                                       edit_sel_( *this, *this\row\active[0], #__sel_to_set )
                                     EndIf
                                  EndIf
                                  
                                  *row\ColorState( )  = #__s_0
-                                 *row                = SelectElement( *lines( ), *row\lindex + 1 )
+                                 *row                = SelectElement( *this\__lines( ), *row\lindex + 1 )
                                  *row\ColorState( )  = #__s_1
                                  *this\row\active[0] = *row
                               EndIf
                            EndIf
                            
                            If keyboard( )\key[1] & #PB_Canvas_Alt
-                              *this\caret\start = *row\text\pos+edit_sel_stop_word( *this, *this\caret\start + 1-*row\text\pos, *row )
+                             ; *this\caret\start = *row\text\pos+edit_sel_stop_word( *this, *this\caret\start + 1-*row\text\pos, *row )
+                              *this\caret\start = edit_sel_stop_word( *this, *this\caret\start + 1, *row )
                            Else
                               *this\caret\start + 1
                            EndIf
                            
                            If Not keyboard( )\key[1] & #PB_Canvas_Shift
-                              edit_sel_reset_( *this, *lines( ))
+                              edit_sel_reset_( *this, *this\__lines( ))
                               
                               *this\caret\stop = *this\caret\start
                            EndIf
@@ -17404,7 +17539,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Case #PB_Shortcut_PageUp 
                         Protected first_index = *this\RowFirstVisible( )\rindex
                         If *row\lindex <> first_index
-                           edit_select_line_( *this, *lines( ), *row, first_index )
+                           edit_select_line_( *this, *this\__lines( ), *row, first_index )
                            
                            If first_index = 0
                               *this\caret\start = 0
@@ -17422,7 +17557,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      Case #PB_Shortcut_PageDown 
                         Protected last_index = *this\RowLastVisible( )\rindex
                         If *this\row\active[0]\lindex <> last_index
-                           edit_select_line_( *this, *lines( ), *row, last_index )
+                           edit_select_line_( *this, *this\__lines( ), *row, last_index )
                            
                            If last_index = (*this\countitems - 1)
                               *this\caret\start = *this\text\len
@@ -17456,10 +17591,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this\edit_text_2( )\len <> *this\text\len
                               
                               ; select first and last items
-                              *this\row\active[0]      = SelectElement( *lines( ), 0 )
+                              *this\row\active[0]      = SelectElement( *this\__lines( ), 0 )
                               *this\LineIndex( ) = *this\countitems - 1
                               
-                              edit_sel_text_( *this, *lines( ), #PB_All )
+                              edit_sel_( *this, #PB_All )
                            EndIf
                         EndIf
                         
@@ -17498,162 +17633,74 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If *this\row\active[0] And *this\row\active[1] 
             If *this\row\active[0]\mask & (#__mask_update)
                *this\row\active[0]\mask &~ (#__mask_update)
-               edit_sel_string_( *this, *this\row\active[0] )
-               edit_sel_text_( *this, *lines( ), *this\row\active[0] )
+               edit_sel_( *this, *this\row\active[0] )
             EndIf
          EndIf
-         
       EndProcedure
       
-      Procedure   DoEvent_Lines( *this._s_WIDGET, List *lines._s_ROW( ), event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-         Protected dragged, highlighted  = 0
-         Protected Repaint, *rowLine._s_ROW
+      
+      Procedure   DoEvent_Lines( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
+         Protected Repaint, dragged = Bool( MouseDragStart( ) And *this\mask & #__mask_press ) 
+         Protected._s_ROW *line, *row_line, *visible_line, *hover_line = *this\LineEntered( )
+         
          mouse_x - *this\inner_x( )
          mouse_y - *this\inner_y( ) - *this\scroll_y( )
-         
-         If *this\mask & #__mask_press
-            If MouseDragStart( )
-               dragged = 1
-               highlighted = 1
-            EndIf
-         EndIf
          
          ;
          If *this\row
             ; get at point items
-            If ListSize( *this\__items( ) )
-               If Not ( *this\LineEntered( ) And
-                        *this\LineEntered( )\visible And
-                        *this\LineEntered( )\mask & #__mask_hidden = 0 And
-                        ( ( *this\mask & #__mask_hover And is_mouse_enter( *this\LineEntered( ), mouse_x, mouse_y )) Or
-                          ( dragged And is_inside_( *this\LineEntered( )\y, *this\LineEntered( )\height, mouse_y )) ))
-                  
-                  ; search entered item
-                  LastElement( *this\__items( ))
-                  Repeat
-                     If *this\__items( )\visible And
-                        *this\__items( )\mask & #__mask_hidden = 0 And
-                        ( ( *this\mask & #__mask_hover And is_mouse_enter( *this\__items( ), mouse_x, mouse_y )) Or
-                          ( dragged And is_inside_( *this\__items( )\y, *this\__items( )\height, mouse_y )) )
-                        *rowLine = *this\__items( )
-                        Break
-                     EndIf
-                  Until PreviousElement( *this\__items( )) = #False
-               Else
-                  *rowLine = *this\LineEntered( )
-               EndIf
-            ElseIf ListSize( *lines( ) )
-               If Not ( *this\LineEntered( ) And
-                        *this\LineEntered( )\visible And
-                        *this\LineEntered( )\mask & #__mask_hidden = 0 And
-                        ( ( *this\mask & #__mask_hover And is_mouse_enter( *this\LineEntered( ), mouse_x, mouse_y )) Or
-                          ( dragged And is_inside_( *this\LineEntered( )\y, *this\LineEntered( )\height, mouse_y )) ))
-                  
-                  ; search entered item
-                  LastElement( *lines( ))
-                  Repeat
-                     If *lines( )\visible And
-                        *lines( )\mask & #__mask_hidden = 0 And
-                        ( ( *this\mask & #__mask_hover And is_mouse_enter( *lines( ), mouse_x, mouse_y )) Or
-                          ( dragged And is_inside_( *lines( )\y, *lines( )\height, mouse_y )) )
-                        *rowLine = *lines( )
-                        Break
-                     EndIf
-                  Until PreviousElement( *lines( )) = #False
-               Else
-                  *rowLine = *this\LineEntered( )
-               EndIf
-            EndIf
-            
-            ;
-            If dragged
-               If *rowLine = #Null
-                  If CanvasMouseY( ) < MousePressY( ) + *this\inner_y( ) And CanvasMouseY( ) <= *this\inner_y( )
-                     If *this\RowFirstVisible( ) And Not bar_in_start_( *this\scroll\v\bar )
-                        ChangeCurrentElement( *lines( ), *this\RowFirstVisible( ))
-                        *rowLine = PreviousElement( *lines( ) )
-                        
-                        If *rowLine
-                           row_scroll_y_( *this, *rowLine )
-                        EndIf
-                     Else
-                        ; *rowLine = *this\RowFirstVisible( )
-                     EndIf
-                  ElseIf CanvasMouseY( ) > MousePressY( ) + *this\inner_y( ) And CanvasMouseY( ) > *this\inner_y( ) + *this\inner_height( )
-                     If *this\RowLastVisible( ) And Not bar_in_stop_( *this\scroll\v\bar )
-                        ChangeCurrentElement( *lines( ), *this\RowLastVisible( ))
-                        *rowLine = NextElement( *lines( ) )
-                        
-                        If *rowLine
-                           row_scroll_y_( *this, *rowLine )
-                        EndIf
-                     Else
-                        ; *rowLine = *this\RowLastVisible( )
-                     EndIf
-                  EndIf
-               EndIf
-            Else
-               If event = #__event_MouseMove
-                  If Not *this\mask & #__mask_hover
-                     *rowLine = #Null
-                  EndIf
-               EndIf
-            EndIf
+            *line = hower_line( *this, *hover_line, mouse_x, mouse_y)
             
             ; change enter/leave state
-            If *this\LineEntered( ) <> *rowLine 
+            If *hover_line <> *line 
                ; leave state
-               If *this\LineEntered( )
-                  If *this\LineEntered( )\mask & #__mask_hover
-                     *this\LineEntered( )\mask &~ #__mask_hover
+               If *hover_line
+                  If *hover_line\mask & #__mask_hover
+                     *hover_line\mask &~ #__mask_hover
                      
-                     If *this\LineEntered( )\ColorState( ) = #__s_1
-                        *this\LineEntered( )\ColorState( ) = #__s_0
+                     If *hover_line\ColorState( ) = #__s_1
+                        *hover_line\ColorState( ) = #__s_0
                      EndIf
                      
-                     If highlighted
+                     If dragged 
                         ;Debug "le - "
                         
-                        If *this\LineEntered( ) And *this\row\active[1]
-                           If mouse_y > ( *this\LineEntered( )\y + *this\LineEntered( )\height / 2 )
-                              If *this\LineEntered( ) = *this\row\active[1]
+                        If *hover_line And *this\row\active[1]
+                           If mouse_y > ( *hover_line\y + *hover_line\height / 2 )
+                              If *hover_line = *this\row\active[1]
                                  If test_edit_text
-                                    Debug " le bottom  set - Pressed  " +" "+ *this\LineEntered( )\text\Str(0)
+                                    Debug " le bottom  set - Pressed  " +" "+ *hover_line\text\Str(0)
                                  EndIf
-                                 edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_last )
-                                 edit_sel_text_( *this, *lines( ), *this\LineEntered( ))
-                              ElseIf *this\LineEntered( )\lindex < *this\row\active[1]\lindex
+                                 edit_sel_( *this, *hover_line, #__sel_to_last )
+                              ElseIf *hover_line\lindex < *this\row\active[1]\lindex
                                  If test_edit_text
-                                    Debug "  ^le top remove - " +" "+ *this\LineEntered( )\text\Str(0)
+                                    Debug "  ^le top remove - " +" "+ *hover_line\text\Str(0)
                                  EndIf
-                                 edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_remove )
-                                 edit_sel_text_( *this, *lines( ), SelectElement(*lines( ), *this\LineEntered( )\lindex + 1))
+                                 edit_sel_string_( *this, *hover_line, #__sel_to_remove )
+                                 edit_sel_text_( *this, SelectElement(*this\__lines( ), *hover_line\lindex + 1))
                               Else
                                  If test_edit_text
-                                    Debug " le bottom  set - " +" "+ *this\LineEntered( )\text\Str(0)
+                                    Debug " le bottom  set - " +" "+ *hover_line\text\Str(0)
                                  EndIf
-                                 edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_set )
-                                 edit_sel_text_( *this, *lines( ), *this\LineEntered( ))
+                                 edit_sel_( *this, *hover_line, #__sel_to_set )
                               EndIf
                            Else
-                              If *this\LineEntered( ) = *this\row\active[1]
+                              If *hover_line = *this\row\active[1]
                                  If test_edit_text
-                                    Debug " le top remove - Pressed  " +" "+ *this\LineEntered( )\text\Str(0)
+                                    Debug " le top remove - Pressed  " +" "+ *hover_line\text\Str(0)
                                  EndIf
-                                 edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_first )
-                                 edit_sel_text_( *this, *lines( ), *this\LineEntered( ))
-                              ElseIf *this\LineEntered( )\lindex > *this\row\active[1]\lindex
+                                 edit_sel_( *this, *hover_line, #__sel_to_first )
+                              ElseIf *hover_line\lindex > *this\row\active[1]\lindex
                                  If test_edit_text
-                                    Debug "  le top remove - " +" "+ *this\LineEntered( )\text\Str(0)
+                                    Debug "  le top remove - " +" "+ *hover_line\text\Str(0)
                                  EndIf
-                                 edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_remove )
-                                 edit_sel_text_( *this, *lines( ), SelectElement(*lines( ), *this\LineEntered( )\lindex - 1))
+                                 edit_sel_string_( *this, *hover_line, #__sel_to_remove )
+                                 edit_sel_text_( *this, SelectElement(*this\__lines( ), *hover_line\lindex - 1))
                               Else
                                  If test_edit_text
-                                    Debug " ^le bottom  set - " +" "+ *this\LineEntered( )\text\Str(0)
+                                    Debug " ^le bottom  set - " +" "+ *hover_line\text\Str(0)
                                  EndIf
-                                 edit_sel_string_( *this, *this\LineEntered( ), #__sel_to_set )
-                                 edit_sel_text_( *this, *lines( ), *this\LineEntered( ))
+                                 edit_sel_( *this, *hover_line, #__sel_to_set )
                               EndIf
                            EndIf
                         EndIf
@@ -17663,162 +17710,79 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                
-               ; Debug "lines "+*rowLine+" "+*this\LineEntered( )
-               *this\LineEntered( ) = *rowLine
+               ; Debug "lines "+*line+" "+*hover_line
+               *hover_line = *line
+               *this\LineEntered( ) = *line
                
                ; enter state
-               If Not a_index( )
-                  If *this\mask & #__mask_hover
-                     If *rowLine And 
-                        *rowLine\mask & #__mask_hover = 0
-                        *rowLine\mask | #__mask_hover
-                        
-                        If *rowLine\ColorState( ) = #__s_0
-                           *rowLine\ColorState( ) = #__s_1
-                        EndIf
-                        
-                        If highlighted
-                           ; Debug "en - "
-                           
-                           If *this\row\active[0] <> *rowLine
-                              *this\row\active[0] = *rowLine
-                              *this\caret\start = *rowLine\text\pos + edit_make_caret_position( *this, *rowLine )
-                              
-                              ; это на тот случай если резко выделили строки
-                              ; чтобы не пропустить некоторые из них
-                              If *this\text\multiLine 
-                                 If *this\row\active[1]
-                                    PushListPosition( *lines( ) )
-                                    ForEach *lines( ) 
-                                       ;*lines( ) = *this\__lines( ) ; ???
-                                       ;
-                                       ;If *lines( )\visible
-                                       If Bool(( *this\row\active[1]\lindex <= *lines( )\lindex And *rowLine\lindex >= *lines( )\lindex ) Or ; верх
-                                               ( *this\row\active[1]\lindex >= *lines( )\lindex And *rowLine\lindex <= *lines( )\lindex ))   ; вниз
-                                          
-                                          If *lines( )\lindex <> *this\row\active[1]\lindex And
-                                             *lines( )\lindex <> *rowLine\lindex
-                                          Else
-                                             Continue
-                                          EndIf
-                                          
-                                          
-                                          Debug ""+*lines( )\lindex +" - "+ Str(*lines( )\edit_text_2( )\width-*lines( )\selector) +" "+ *lines( )\text\width
-                                          If Not *lines( )\edit_text_2( )\width ; -*lines( )\selector <> *lines( )\text\width
-                                                                                       ;Debug *lines( )\lindex
-                                             edit_sel_string_( *this, *lines( ), #__sel_to_set )
-                                             ;  *this\repaint_set( )
-                                          EndIf
-                                          
-                                       Else
-                                          
-                                          ;If Not *lines( )\press
-                                          If *lines( )\edit_text_2( )\width <> 0
-                                             edit_sel_string_( *this, *lines( ), #__sel_to_remove )
-                                          EndIf
-                                          ;EndIf
-                                          
-                                       EndIf
-                                       ;EndIf
-                                    Next
-                                    PopListPosition( *lines( ) )
-                                 EndIf
-                              EndIf
-                              
-                              ;\\ 
-                              edit_sel_string_( *this, *rowLine )
-                              edit_sel_text_( *this, *lines( ), *rowLine )
-                           EndIf 
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               ;
-            Else
-               If highlighted
-                  If *this\row\active[1] And *this\row\active[0] And *this\LineEntered( )
+               If *this\mask & #__mask_hover And Not a_index( )
+                  If *line And 
+                     *line\mask & #__mask_hover = 0
+                     *line\mask | #__mask_hover
                      
-                     Define caret = edit_make_caret_position( *this, *this\LineEntered( ) )
-                     If *this\caret\start <> *this\LineEntered( )\text\pos + caret
-                        *this\caret\start = *this\LineEntered( )\text\pos + caret
-                        edit_sel_string_( *this, *this\LineEntered( ) )
-                        edit_sel_text_( *this, *lines( ), *this\LineEntered( ) )
+                     If dragged
+                        *this\row\active[0] = *line
+                     EndIf
+                     
+                     If *line\ColorState( ) = #__s_0
+                        *line\ColorState( ) = #__s_1
                      EndIf
                   EndIf
-                  ;                 Else
-                  ;                    If *this\LineEntered( )
-                  ;                       If *this\caret\start <> *this\LineEntered( )\text\pos + caret
-                  ;                          *this\caret\start = *this\LineEntered( )\text\pos + caret
-                  ;                          *this\caret\stop = *this\caret\start
-                  ;                          
-                  ;                          edit_sel_string_( *this, *this\LineEntered( ) )
-                  ;                          edit_sel_text_( *this, *lines( ), *this\LineEntered( ) )
-                  ;                       EndIf
-                  ;                    EndIf  
                EndIf
             EndIf
             
-            
             ;
-            If event = #__event_Focus
-               If *this\text\multiline
-                  PushListPosition( *lines( ) )
-                  ForEach *lines( )
-                     If *lines( )\_focus
-                        If *lines( )\ColorState( ) = #__s_3
-                           *lines( )\ColorState( ) = #__s_2
-                           
-                           *this\repaint_set( )
-                        EndIf
-                     EndIf
-                  Next
-                  PopListPosition( *lines( ) )
-               Else
-                  If Not MousePress( )
-                     
-                     *this\row\active[0]      = SelectElement( *lines( ), 0 )
-                     *this\row\active[1]      = *this\row\active[0]     
-                     *this\LineEntered( )      = *this\row\active[0]     
-                     
-                     *this\LineState( ) = 0
-                     *this\LineIndex( ) = 0
-                     
-                     *this\caret\start = 0
-                     *this\caret\stop = 0
-                     
-                     ; select first and last items
-                     ;*this\row\active[0]      = SelectElement( *lines( ), 0 )
-                     *this\LineState( ) = 0
-                     *this\LineIndex( ) = 0
-                     
-                     edit_sel_text_( *this, *lines( ), #PB_All )
-                     
-                     ;                   
-                     ; *this\WidgetChange( ) = 1
-                     ;
-                     *this\TextChange( ) =- 99
-                     
-                     ;                   *this\row\active[0]      = 0
-                     ;                   *this\row\active[1]      = *this\row\active[0]     
-                     ;                   *this\LineEntered( )      = *this\row\active[0]     
-                  EndIf
+            If dragged
+               If *this\row\active[0]
+                  Define caret = edit_make_caret_position( *this, *this\row\active[0] )
                   
-               EndIf
-            EndIf
-            
-            ;
-            If event = #__event_LostFocus
-               PushListPosition( *lines( ) )
-               ForEach *lines( )
-                  If *lines( )\_focus
-                     If *lines( )\ColorState( ) = #__s_2
-                        *lines( )\ColorState( ) = #__s_3
-                        
-                        *this\repaint_set( )
+                  If *this\caret\start <> caret
+                     *this\caret\start = caret
+                     ; это на тот случай если резко выделили строки
+                     ; чтобы не пропустить некоторые из них
+                     If *this\text\multiLine 
+                        If *this\row\active[1]
+                           PushListPosition( *this\__lines( ) )
+                           ForEach *this\__lines( ) 
+                              *row_line = @*this\__lines( )
+                              ;
+                              ;If *row_line\mask & #__mask_visible
+                              If Bool(( *this\row\active[1]\lindex <= *row_line\lindex And *this\row\active[0]\lindex >= *row_line\lindex ) Or ; верх
+                                      ( *this\row\active[1]\lindex >= *row_line\lindex And *this\row\active[0]\lindex <= *row_line\lindex ))   ; вниз
+                                 
+                                 If *row_line\lindex <> *this\row\active[1]\lindex And
+                                    *row_line\lindex <> *this\row\active[0]\lindex
+                                 Else
+                                    Continue
+                                 EndIf
+                                 
+                                 
+                                 Debug ""+*row_line\lindex +" - "+ Str(*row_line\edit_text_2( )\width-*row_line\selector) +" "+ *row_line\text\width
+                                 If Not *row_line\edit_text_2( )\width ; -*row_line\selector <> *row_line\text\width
+                                                                       ;Debug *row_line\lindex
+                                    edit_sel_string_( *this, *row_line, #__sel_to_set )
+                                    ;  *this\repaint_set( )
+                                 EndIf
+                                 
+                              Else
+                                 
+                                 ;If Not *row_line\mask & #__mask_press
+                                 If *row_line\edit_text_2( )\width <> 0
+                                    edit_sel_string_( *this, *row_line, #__sel_to_remove )
+                                 EndIf
+                                 ;EndIf
+                                 
+                              EndIf
+                              ;EndIf
+                           Next
+                           PopListPosition( *this\__lines( ) )
+                        EndIf
                      EndIf
-                  EndIf
-               Next
-               PopListPosition( *lines( ) )
+                     
+                     ;\\ 
+                     edit_sel_( *this, *this\row\active[0] )
+                  EndIf 
+               EndIf 
             EndIf
             
             ;
@@ -17827,56 +17791,54 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; windows type
                   If Not *this\text\multiline
                      If *this\text\len <> *this\edit_text_2( )\len
-                        *this\LineEntered( )      = SelectElement( *lines( ), 0 )
+                        *hover_line      = SelectElement( *this\__lines( ), 0 )
                      EndIf
                   EndIf
                   
-                  If *this\LineEntered( )
-                     *this\row\active[1] = *this\LineEntered( )
+                  If *hover_line
+                     *this\row\active[1] = *hover_line
                      
-                     If *this\row\active[1]\press = #False
-                        *this\row\active[1]\press = #True
+                     If *hover_line\mask & #__mask_press = #False
+                        *hover_line\mask | #__mask_press
                      EndIf
                      
-                     If *this\row\active[0] <> *this\LineEntered( )
-                        PushListPosition( *lines( ) )
-                        ForEach *lines( )
-                           If *lines( )\_focus <> 0
-                              *lines( )\_focus = 0
-                           EndIf
+                     If *this\row\active[0] <> *hover_line
+                        PushListPosition( *this\__lines( ) )
+                        ForEach *this\__lines( )
+                           *row_line = @*this\__lines( )
+                           *row_line\mask &~ #__mask_active
                            
-                           If *lines( )\ColorState( ) <> #__s_0
-                              *lines( )\ColorState( ) = #__s_0
+                           If *row_line\ColorState( ) <> #__s_0
+                              *row_line\ColorState( ) = #__s_0
                            EndIf
                         Next
-                        PopListPosition( *lines( ) )
+                        PopListPosition( *this\__lines( ) )
                         
-                        *this\row\active[0]      = *this\LineEntered( )
-                        *this\LineState( ) = *this\row\active[0]\lindex
+                        *this\LineState( ) = *hover_line\lindex
                         
-                        If *this\row\active[0]\_focus = 0
-                           *this\row\active[0]\_focus = 1
+                        If *hover_line\mask & #__mask_active = 0
+                           *hover_line\mask | #__mask_active
                         EndIf
-                        *this\row\active[0]\ColorState( ) = #__s_2
+                        *hover_line\ColorState( ) = #__s_2
+                        *this\row\active[0] = *hover_line
                      EndIf
                      
                      
                      If MouseClick( ) = 1
-                        Define caret = edit_make_caret_position( *this, *this\LineEntered( ) )
+                        Define caret = edit_make_caret_position( *this, *hover_line )
                         
-                        If *this\caret\start <> *this\LineEntered( )\text\pos + caret
-                           *this\caret\start = *this\LineEntered( )\text\pos + caret
+                        If *this\caret\start <> caret
+                           *this\caret\start = caret
                            *this\caret\stop = *this\caret\start
                            
-                           *this\LineIndex( )            = *this\LineEntered( )\lindex ;????
+                           *this\LineIndex( )            = *hover_line\lindex ;????
                            
                            ;
-                           ;*this\caret\word = GetWord( *this\LineEntered( )\text\Str(0), *this\LineEntered( )\text\len, *this\caret\pos )
+                           ;*this\caret\word = GetWord( *hover_line\text\Str(0), *hover_line\text\len, *this\caret\pos )
                            ;
-                           edit_sel_reset_( *this, *lines( ))
+                           edit_sel_reset_( *this, *this\__lines( ))
                            
-                           edit_sel_string_( *this, *this\LineEntered( ) )
-                           edit_sel_text_( *this, *lines( ), *this\LineEntered( ) )
+                           edit_sel_( *this, *hover_line )
                         EndIf
                      EndIf
                   EndIf
@@ -17886,24 +17848,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;
             If event = #__event_Left2Click
                ; Debug "edit - Left2Click"
-               If *this\LineEntered( )
-                  *this\caret\start = edit_sel_stop_word( *this, *this\caret\start, *this\LineEntered( ) )
-                  *this\caret\stop = edit_sel_start_word( *this, *this\caret\start + 1, *this\LineEntered( ) )
+               If *hover_line
+                  *this\caret\start = edit_sel_stop_word( *this, *this\caret\start, *hover_line )
+                  *this\caret\stop = edit_sel_start_word( *this, *this\caret\start, *hover_line )
                   ;
-                  edit_sel_string_( *this, *this\LineEntered( ) )
-                  edit_sel_text_( *this, *lines( ), *this\LineEntered( ) )
+                  edit_sel_( *this, *hover_line )
                EndIf
             EndIf
             
             ;
             If event = #__event_Left3Click
                ; Debug "edit - Left3Click"
-               If *this\LineEntered( )
-                  *this\caret\stop = *this\LineEntered( )\text\pos
-                  *this\caret\start = *this\LineEntered( )\text\pos + *this\LineEntered( )\text\len
+               If *hover_line
+                  *this\caret\stop = *hover_line\text\pos
+                  *this\caret\start = *hover_line\text\pos + *hover_line\text\len
                   ;
-                  edit_sel_string_( *this, *this\LineEntered( ) )
-                  edit_sel_text_( *this, *lines( ), *this\LineEntered( ) )
+                  edit_sel_( *this, *hover_line )
                EndIf
             EndIf
             
@@ -17911,10 +17871,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If event = #__event_Up
                If MouseButtons( ) & #PB_Canvas_LeftButton
                   If *this\row\active[1]
-                     If *this\row\active[1]\press = #True
-                        *this\row\active[1]\press = #False
-                        
-                        If *this\row\active[1]\_focus = 0
+                     If *this\row\active[1]\mask & #__mask_press
+                        *this\row\active[1]\mask &~ #__mask_press
+                        ;
+                        If Not *this\row\active[1]\mask & #__mask_active
                            If *this\row\active[1]\mask & #__mask_hover
                               *this\row\active[1]\ColorState( ) = #__s_1
                            Else
@@ -17931,7 +17891,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                event = #__event_KeyDown Or
                event = #__event_KeyUp
                
-               DoEvent_KeyLines( *this, *lines( ), event )
+               DoEvent_KeyLines( *this, event )
             EndIf
          EndIf
          
@@ -18061,7 +18021,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
       Procedure   DoEvent_Rows( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
          Protected Repaint, dragged = Bool( MouseDragStart( ) And *this\mask & #__mask_press ) ; 
          Protected._s_ROW *row
-         Protected._s_ROW *hover_row
+         Protected._s_ROW *e_row ; *this\RowEntered( )
+         Protected._s_ROW *visible_row
+         Protected._s_ROW *rowleaved
          Protected._s_ROW *press_row = *this\RowPressed( )
          Protected._s_ROW *active_row = *this\RowFocused( )
          
@@ -18079,44 +18041,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\ search at point entered items
             If Not mouse( )\drop Or *this\drop
                If MouseEnter( *this, 2 )
-                  If ListSize( *this\__items( ) )
-                     If *this\RowEntered( ) And
-                        *this\RowEntered( )\visible And
-                        Not *this\RowEntered( )\mask & #__mask_hidden And
-                        is_mouse_enter( *this\RowEntered( ), mouse_x, mouse_y )
-                        *hover_row = *this\RowEntered( )
-                     Else
-                        LastElement( *this\__items( ))
-                        Repeat
-                           If *this\__items( )\visible And
-                              Not *this\__items( )\mask & #__mask_hidden And
-                              is_mouse_enter( *this\__items( ), mouse_x, mouse_y )
-                              *hover_row = *this\__items( )
-                              Break
-                           EndIf
-                        Until PreviousElement( *this\__items( )) = #False
-                     EndIf
-                     
-                  ElseIf ListSize( *this\__rows( ) )
-                     If *this\RowEntered( ) And
-                        *this\RowEntered( )\visible And
-                        Not *this\RowEntered( )\mask & #__mask_hidden And
-                        is_mouse_enter( *this\RowEntered( ), mouse_x, mouse_y )
-                        *hover_row = *this\RowEntered( )
-                     Else
-                        LastElement( *this\__rows( ))
-                        Repeat
-                           *row = @*this\__rows( )
-                           If *row\visible And
-                              Not *row\mask & #__mask_hidden And
-                              is_mouse_enter( *row, mouse_x, mouse_y )
-                              *hover_row = *row
-                              Break
-                           EndIf
-                        Until PreviousElement( *this\__rows( )) = #False
-                     EndIf
-                  EndIf
-                  
+                  *e_row = hover_row( *this, *this\RowEntered( ), mouse_x, mouse_y, dragged)
                Else
                   
                   If dragged 
@@ -18127,13 +18052,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                                  ;
                      ;                                  If *this\RowFirstVisible( ) And Not bar_in_start_( *this\scroll\v\bar )
                      ;                                     ChangeCurrentElement( *this\__rows( ), *this\RowFirstVisible( ))
-                     ;                                     *hover_row = PreviousElement( *this\__rows( ) )
+                     ;                                     *e_row = PreviousElement( *this\__rows( ) )
                      ;                                     
-                     ;                                     If *hover_row
-                     ;                                        row_scroll_y_( *this, *hover_row )
+                     ;                                     If *e_row
+                     ;                                        row_scroll_y_( *this, *e_row )
                      ;                                     EndIf
                      ;                                  Else
-                     ;                                     *hover_row = *this\RowFirstVisible( )
+                     ;                                     *e_row = *this\RowFirstVisible( )
                      ;                                  EndIf
                      ;                               ElseIf CanvasMouseY( ) >= mouse( )\delta\y + *this\inner_y( ) And
                      ;                                      CanvasMouseY( ) >= *this\inner_y( ) + *this\inner_height( )
@@ -18141,13 +18066,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                                  If *this\RowLastVisible( ) And Not bar_in_stop_( *this\scroll\v\bar )
                      ;                                     ChangeCurrentElement( *this\__rows( ), *this\RowLastVisible( ))
                      ;                                     NextElement( *this\__rows( ) )
-                     ;                                     ;*hover_row = *this\__rows( )
-                     ;                                     If *hover_row And *this\scroll\v
-                     ;                                        Debug *hover_row\height
-                     ; ;                                      row_scroll_y_( *this, *hover_row )
+                     ;                                     ;*e_row = *this\__rows( )
+                     ;                                     If *e_row And *this\scroll\v
+                     ;                                        Debug *e_row\height
+                     ; ;                                      row_scroll_y_( *this, *e_row )
                      ;                                     EndIf
                      ;                                  Else
-                     ;                                     *hover_row = *this\RowLastVisible( )
+                     ;                                     *e_row = *this\RowLastVisible( )
                      ;                                  EndIf
                      ;                               EndIf
                      ;                            EndIf
@@ -18158,7 +18083,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             
             ;\\ change enter/leave state
-            If *this\RowEntered( ) <> *hover_row
+            If *this\RowEntered( ) <> *e_row
                If MouseDrag( ) 
                   If *this\drop
                      ;
@@ -18167,12 +18092,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                EndIf
                 
-               Protected *rowleaved._s_ROW
                If *this\RowEntered( )
                   *rowleaved = *this\RowEntered( )
                EndIf
                ;
-               *this\RowEntered( ) = *hover_row
+               *this\RowEntered( ) = *e_row
                ; 
                ;\\ leave state
                ; not mouse button up event
@@ -18199,7 +18123,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *rowleaved\ColorState( ) = #__s_0
                         EndIf
                         ; 
-                        If *rowleaved\_focus
+                        If *rowleaved\mask & #__mask_active
                            If *rowleaved\ColorState( ) <> #__s_2
                               *rowleaved\ColorState( ) = #__s_3
                               *this\repaint_set( )
@@ -18214,17 +18138,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;
                ;\\ enter state
-               If *hover_row
+               If *e_row
                   ;\\
                   If *this\mode\multiSelect
-                     If *press_row And *press_row\press
+                     If *press_row And *press_row\mask & #__mask_press
                         ; multi select rows
                         PushListPosition( *this\__rows( ))
                         ForEach *this\__rows( )
                            *row = @*this\__rows( )
-                           If *row\visible
-                              If Bool(( *press_row\rindex >= *row\rindex And *hover_row\rindex <= *row\rindex ) Or ; верх
-                                      ( *press_row\rindex <= *row\rindex And *hover_row\rindex >= *row\rindex ))   ; вниз
+                           If *row\mask & #__mask_visible
+                              If Bool(( *press_row\rindex >= *row\rindex And *e_row\rindex <= *row\rindex ) Or ; верх
+                                      ( *press_row\rindex <= *row\rindex And *e_row\rindex >= *row\rindex ))   ; вниз
                                  
                                  If *row\ColorState( ) <> #__s_2
                                     *row\ColorState( ) = #__s_2
@@ -18233,7 +18157,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  
                               Else
                                  
-                                 If Not *row\press
+                                 If Not *row\mask & #__mask_press
                                     If *row\ColorState( ) <> #__s_0
                                        *row\ColorState( ) = #__s_0
                                        *this\repaint_set( )
@@ -18248,31 +18172,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   ;\\
-                  If *hover_row\mask & #__mask_hover = 0
-                     *hover_row\mask | #__mask_hover
+                  If *e_row\mask & #__mask_hover = 0
+                     *e_row\mask | #__mask_hover
                      
                      If Not EnteredButton( ) And 
                         ( *this\mask & #__mask_press And Not mouse( )\drop ) And 
                         ( *this\mode\clickSelect = 0 Or ( *this\mode\clickSelect And *this\mode\multiSelect ))
                         
-                        If *hover_row\ColorState( ) <> #__s_2
-                           *hover_row\ColorState( ) = #__s_2
+                        If *e_row\ColorState( ) <> #__s_2
+                           *e_row\ColorState( ) = #__s_2
                         EndIf
                         
                      Else
-                        If *hover_row\ColorState( ) = #__s_0
-                           *hover_row\ColorState( ) = #__s_1
+                        If *e_row\ColorState( ) = #__s_0
+                           *e_row\ColorState( ) = #__s_1
                         EndIf
                         ;
-                        If *hover_row\_focus
-                           If *hover_row\ColorState( ) <> #__s_2
-                              *hover_row\ColorState( ) = #__s_1
+                        If *e_row\mask & #__mask_active
+                           If *e_row\ColorState( ) <> #__s_2
+                              *e_row\ColorState( ) = #__s_1
                            EndIf
                         EndIf
                      EndIf
                      
-                     ; Debug "status-enter-item"  ;;; Not ( Not *this\mask & #__mask_press And *hover_row = *this\RowFocused( ) )
-                     DoEvents( *this, #__event_StatusChange, *hover_row\rindex, *hover_row )
+                     ; Debug "status-enter-item"  ;;; Not ( Not *this\mask & #__mask_press And *e_row = *this\RowFocused( ) )
+                     DoEvents( *this, #__event_StatusChange, *e_row\rindex, *e_row )
                   EndIf
                Else
                   ; Debug "status-leave-items"
@@ -18326,7 +18250,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                ;\\
                If *this\RowFocused( ) And 
-                  *this\RowFocused( )\_focus  And
+                  *this\RowFocused( )\mask & #__mask_active  And
                   *this\RowFocused( )\ColorState( ) = #__s_3
                   *this\RowFocused( )\ColorState( ) = #__s_2
                   ;
@@ -18369,21 +18293,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If event = #__event_Down
                If MouseButtons( ) & #PB_Canvas_LeftButton
-                  If *hover_row 
+                  If *e_row 
                      If EnteredButton( )
                         ; change collapsed/expanded button state
                         If *this\mode\buttons
-                           If *hover_row\buttonbox
-                              If *hover_row\buttonbox\mask & #__mask_hover
-                                 If *hover_row\buttonbox\checked
+                           If *e_row\buttonbox
+                              If *e_row\buttonbox\mask & #__mask_hover
+                                 If *e_row\buttonbox\checked
                                     ; развернул список
-                                    If SetItemState( *this, *hover_row\rindex, (GetItemState(*this, *hover_row\rindex) &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded )
-                                       Post( *this, #__event_StatusChange, *hover_row\rindex, #PB_Tree_Expanded )
+                                    If SetItemState( *this, *e_row\rindex, (GetItemState(*this, *e_row\rindex) &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded )
+                                       Post( *this, #__event_StatusChange, *e_row\rindex, #PB_Tree_Expanded )
                                     EndIf
                                  Else
                                     ; свернул список
-                                    If SetItemState( *this, *hover_row\rindex, (GetItemState(*this, *hover_row\rindex) &~ #PB_Tree_Expanded) | #PB_Tree_Collapsed )
-                                       Post( *this, #__event_StatusChange, *hover_row\rindex, #PB_Tree_Collapsed )
+                                    If SetItemState( *this, *e_row\rindex, (GetItemState(*this, *e_row\rindex) &~ #PB_Tree_Expanded) | #PB_Tree_Collapsed )
+                                       Post( *this, #__event_StatusChange, *e_row\rindex, #PB_Tree_Collapsed )
                                     EndIf
                                  EndIf
                               EndIf
@@ -18391,39 +18315,41 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         
                         ; change box ( option&check )
-                        If *hover_row\checkbox
-                           If *hover_row\checkbox\mask & #__mask_hover
+                        If *e_row\checkbox
+                           If *e_row\checkbox\mask & #__mask_hover
                               ;
                               ; change option box state
                               If *this\mode\optionboxes
-                                 If *hover_row\_groupbar
-                                    If *hover_row\parent 
-                                       If *hover_row\_groupbar\parent And
-                                          *hover_row\_groupbar\checkbox\checked
-                                          *hover_row\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                                 If *e_row\_groupbar
+                                    If *e_row\parent 
+                                       If *e_row\_groupbar\parent And
+                                          *e_row\_groupbar\checkbox\checked
+                                          *e_row\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
                                        EndIf
                                     EndIf
                                     ;
-                                    If *hover_row\_groupbar\_groupbar <> *hover_row
-                                       If *hover_row\_groupbar\_groupbar
-                                          *hover_row\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                                    If *e_row\_groupbar\_groupbar <> *e_row
+                                       If *e_row\_groupbar\_groupbar
+                                          *e_row\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
                                        EndIf
-                                       *hover_row\_groupbar\_groupbar = *hover_row
+                                       *e_row\_groupbar\_groupbar = *e_row
                                     EndIf
                                  EndIf
                               EndIf
                               ;
                               ; change checked box state
-                              set_check_state_( *hover_row\checkbox\checked, *this\mode\threestate )
+                              set_check_state_( *e_row\checkbox\checked, *this\mode\threestate )
                            EndIf
                         EndIf
                      Else
                         ;
                         If *this\mode\clickSelect
-                           *hover_row\press ! 1
+                           ; Инвертируем (переключаем) состояние бита: если был 0 -> станет 1, если был 1 -> станет 0
+                           *e_row\mask ! #__mask_press
                         Else
-                           *hover_row\press = 1
-                           ;
+                           ; Принудительно включаем бит нажатия
+                           *e_row\mask | #__mask_press
+
                            If *this\mode\multiSelect
                               PushListPosition( *this\__rows( ) )
                               ForEach *this\__rows( )
@@ -18432,8 +18358,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     *row\ColorState( ) = #__s_0
                                     
                                     If Not *row\mask & #__mask_hover
-                                       If *row\_focus <> 0
-                                          *row\_focus = 0
+                                       If *row\mask & #__mask_active
+                                          *row\mask &~ #__mask_active
                                        EndIf
                                     EndIf
                                  EndIf
@@ -18442,15 +18368,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                         ;
-                        *press_row = *hover_row
-                        *this\RowPressed( ) = *hover_row
+                        *press_row = *e_row
+                        *this\RowPressed( ) = *e_row
                         ;
-                        If *hover_row\press
-                           If *hover_row\ColorState( ) <> #__s_2
-                              *hover_row\ColorState( ) = #__s_2
+                        If *e_row\mask & #__mask_press
+                           If *e_row\ColorState( ) <> #__s_2
+                              *e_row\ColorState( ) = #__s_2
                               
                               If *this\RowFocused( ) 
-                                 If *this\RowFocused( ) <> *hover_row  
+                                 If *this\RowFocused( ) <> *e_row  
                                     If *this\RowFocused( )\ColorState( ) = #__s_2
                                        *this\RowFocused( )\ColorState( ) = #__s_3
                                        ;
@@ -18461,12 +18387,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                               ;
                               ; Debug "status-press-change"
-                              DoEvents(*this, #__event_StatusChange, *hover_row\rindex, *hover_row )
+                              DoEvents(*this, #__event_StatusChange, *e_row\rindex, *e_row )
                            EndIf
                         Else
-                           *hover_row\ColorState( ) = #__s_1
+                           *e_row\ColorState( ) = #__s_1
                            ; Debug "status-press-change"
-                           DoEvents(*this, #__event_StatusChange, *hover_row\rindex, *hover_row )
+                           DoEvents(*this, #__event_StatusChange, *e_row\rindex, *e_row )
                         EndIf
                      EndIf
                   EndIf
@@ -18492,13 +18418,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If event = #__event_Drop ; Ok
                ;           If *this\RowEntered( )
-               ;             Debug "drop e - "+*this\RowEntered( ) +" "+ *this\RowEntered( )\text\str(0) +" "+ *this\RowEntered( )\press +" "+ *this\RowEntered( )\mask & #__mask_hover +" "+ *this\RowEntered( )\_focus
+               ;             Debug "drop e - "+*this\RowEntered( ) +" "+ *this\RowEntered( )\text\str(0) +" "+ *this\RowEntered( )\mask & #__mask_press +" "+ *this\RowEntered( )\mask & #__mask_hover +" "+ *this\RowEntered( )\mask & #__mask_active
                ;           endif
                ;           If *press_row
-               ;             Debug "drop p - "+*press_row +" "+ *press_row\text\str(0) +" "+ *press_row\press +" "+ *press_row\mask & #__mask_hover +" "+ *press_row\_focus
+               ;             Debug "drop p - "+*press_row +" "+ *press_row\text\str(0) +" "+ *press_row\mask & #__mask_press +" "+ *press_row\mask & #__mask_hover +" "+ *press_row\mask & #__mask_active
                ;           endif 
                ;           If *this\RowFocused( )
-               ;             Debug "drop f - "+*this\RowFocused( ) +" "+ *this\RowFocused( )\text\str(0) +" "+ *this\RowFocused( )\press +" "+ *this\RowFocused( )\mask & #__mask_hover +" "+ *this\RowFocused( )\_focus
+               ;             Debug "drop f - "+*this\RowFocused( ) +" "+ *this\RowFocused( )\text\str(0) +" "+ *this\RowFocused( )\mask & #__mask_press +" "+ *this\RowFocused( )\mask & #__mask_hover +" "+ *this\RowFocused( )\mask & #__mask_active
                ;           EndIf
             EndIf
             
@@ -18521,7 +18447,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                         ;
-                        *press_row\press = 0
+                        *press_row\mask &~ #__mask_press
                      EndIf
                   EndIf
                EndIf
@@ -18581,11 +18507,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If event = #__event_Down
                If MouseButtons( ) & #PB_Canvas_LeftButton
                   If *button And
-                     *button\press = #False And
+                     *button\mask & #__mask_press = #False And
                      *button\mask & #__mask_disabled = #False And
                      *button\ColorState( ) <> #__s_3 ; change the color state of non-disabled buttons
                                                               ;
-                     *button\press    = #True
+                     *button\mask | #__mask_press 
                      PressedButton( ) = *button
                      ;
                      If Not ( *this\type = #__type_Track Or
@@ -18594,8 +18520,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                      ; Debug "[scroll increment] "+*this\scroll\increment
                      ; left&top button
-                     If ( *BB2\press And *bar\invert ) Or
-                        ( *BB1\press And Not *bar\invert )
+                     If ( *BB2\mask & #__mask_press And *bar\invert ) Or
+                        ( *BB1\mask & #__mask_press And Not *bar\invert )
                         
                         If *this\type = #__type_Spin 
                            If bar_PageChange( *this, *bar\page\pos - increment )
@@ -18608,8 +18534,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         EndIf
                         
                         ; right&bottom button
-                     ElseIf ( *BB1\press And *bar\invert ) Or
-                            ( *BB2\press And Not *bar\invert )
+                     ElseIf ( *BB1\mask & #__mask_press And *bar\invert ) Or
+                            ( *BB2\mask & #__mask_press And Not *bar\invert )
                         
                         If *this\type = #__type_Spin 
                            If bar_PageChange( *this, *bar\page\pos + increment )
@@ -18628,8 +18554,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If event = #__event_Up
                If MouseButtons( ) & #PB_Canvas_LeftButton
                   If PressedButton( ) And
-                     PressedButton( )\press = #True
-                     PressedButton( )\press = #False
+                     PressedButton( )\mask & #__mask_press
+                     PressedButton( )\mask &~ #__mask_press
                      
                      If PressedButton( )\mask & #__mask_disabled = #False And
                         PressedButton( )\ColorState( ) <> #__s_3
@@ -18655,7 +18581,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             ;
             If event = #__event_MouseMove
-               If *SB\press
+               If *SB\mask & #__mask_press
                   If *bar\vertical
                      If bar_ThumbChange( *this, ( CanvasMouseY( ) - MousePressY( )), increment )
                         result = #True
@@ -18704,18 +18630,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      If ListSize( *this\__tabs( ) )
                         If *EnteredTAB And
-                           *EnteredTAB\visible And
+                           *EnteredTAB\mask & #__mask_visible And
                            *EnteredTAB\mask & #__mask_hidden = 0 And
-                           is_mouse_enter( *EnteredTAB, mouse_bar_x, mouse_bar_y )
+                           is_hover( *EnteredTAB, mouse_bar_x, mouse_bar_y )
                            
                            *tab = *EnteredTAB
                         Else
                            ; search entered item
                            LastElement( *this\__tabs( ))
                            Repeat
-                              If *this\__tabs( )\visible And
+                              If *this\__tabs( )\mask & #__mask_visible And
                                  *this\__tabs( )\mask & #__mask_hidden = 0 And
-                                 is_mouse_enter( *this\__tabs( ), mouse_bar_x, mouse_bar_y )
+                                 is_hover( *this\__tabs( ), mouse_bar_x, mouse_bar_y )
                                  *tab = @*this\__tabs( )
                                  Break
                               EndIf
@@ -18770,23 +18696,23 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If *activeTAB <> *tab
                                     If *this\type = #__type_MenuBar ;Or Not ToolBar
                                        If *activeTAB
-                                          *activeTAB\_focus = 0
+                                          *activeTAB\mask &~ #__mask_active
                                           *activeTAB = *tab
                                           *this\parentTabSelected( ) = *tab
                         ; Debug " menubar focus change "
-                                          *activeTAB\_focus = 1
+                                          *activeTAB\mask | #__mask_active
                                        EndIf
                                     EndIf
                                     If ToolBar > 0
                                        If *activeTAB
-                                          ; *activeTAB\_focus = 0
+                                          ; *activeTAB\mask &~ #__mask_active
                                           *activeTAB\checked = 0
                                           *activeTAB = *tab
                                        *this\parentTabSelected( ) = *tab
                         EndIf
                                        If *tab\childrens  
                                           ; Debug " toolbar focus change "
-                                          ; *tab\_focus = 1
+                                          ; *tab\mask | #__mask_active
                                           *activeTAB = *tab
                                           *this\parentTabSelected( ) = *tab
                                           *activeTAB\checked = 1
@@ -18794,13 +18720,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     EndIf
                                     If *this\type = #__type_PopupBar 
                                        If *activeTAB
-                                          ; *activeTAB\_focus = 0
+                                          ; *activeTAB\mask &~ #__mask_active
                                           *activeTAB\checked = 0
                                        EndIf
                                        ; Debug " popupbar focus change "
                                        *activeTAB = *tab
                                        *this\parentTabSelected( ) = *tab
-                                       ; *activeTAB\_focus = 1
+                                       ; *activeTAB\mask | #__mask_active
                                        *activeTAB\checked = 1
                                     EndIf
                                  Else
@@ -18838,7 +18764,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                     If is_inside_( GadgetY + *this\y, *this\height + PopupBar()\height , DesktopMouseY( ) ) And
                                        is_inside_( GadgetX + *this\x, *activeTAB\x+*activeTAB\width, DesktopMouseX( ) )
                                     Else
-                                       *activeTAB\_focus = 0
+                                       *activeTAB\mask &~ #__mask_active
                                        *activeTAB\checked = 0
                                        *activeTAB = 0
                                        *this\parentTabSelected( ) = 0
@@ -18873,7 +18799,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If is_inside_( GadgetY1 +*this\y, *this\height + PopupBar()\height , DesktopMouseY( ) ) And
                               is_inside_( GadgetX1 +*this\x, *activeTAB\x+*activeTAB\width, DesktopMouseX( ) )
                            Else
-                              *activeTAB\_focus = 0
+                              *activeTAB\mask &~ #__mask_active
                               *activeTAB\checked = 0
                               *activeTAB = 0
                               If test_display
@@ -18887,7 +18813,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      EndIf
                   Else
                      If *this\menu\display
-                        *activeTAB\_focus = 0
+                        *activeTAB\mask &~ #__mask_active
                         *activeTAB\checked = 0
                         *activeTAB = 0
                      EndIf
@@ -18903,7 +18829,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ToolBar ! 1
                         If ToolBar
                            ; Debug " toolbar focus change "
-                           ; *EnteredTAB\_focus = 1
+                           ; *EnteredTAB\mask | #__mask_active
                            *activeTAB = *EnteredTAB
                            *activeTAB\checked = 1
                            
@@ -18943,17 +18869,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If Not *activeTAB
                            If *activeTAB <> *EnteredTAB
                               If *activeTAB
-                                 *activeTAB\_focus = 0
+                                 *activeTAB\mask &~ #__mask_active
                                  ; *activeTAB\checked = 0
                                  *activeTAB = 0 
                               EndIf
                               ;
                               *activeTAB = *EnteredTAB
-                              *activeTAB\_focus ! 1
+                              *activeTAB\mask & #__mask_active ! 1
                               ; *activeTAB\checked ! 1
                            Else
                               ; *activeTAB\checked = 0
-                              *activeTAB\_focus = 0 
+                              *activeTAB\mask &~ #__mask_active 
                               *activeTAB = 0
                            EndIf
                            ;
@@ -18969,13 +18895,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      
                      ;                                              ;
                      If Not ( *button And 
-                              *button\press And 
+                              *button\mask & #__mask_press And 
                               ( *button = *this\bar\button[1] Or 
                                 *button = *this\bar\button[2] ) )
                         ;
                         If *EnteredTAB And
-                           *EnteredTAB\press = #False
-                           *EnteredTAB\press = #True
+                           *EnteredTAB\mask & #__mask_press = #False
+                           *EnteredTAB\mask | #__mask_press
                            
                            *EnteredTAB\ColorState( ) = #__s_2
                            *this\repaint_set( )
@@ -18995,7 +18921,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *EnteredTAB\childrens 
                      If Not PopupBar( )
                         If *activeTAB
-                           *activeTAB\_focus = 0
+                           *activeTAB\mask &~ #__mask_active
                            *activeTAB = 0
                         EndIf
                      EndIf
@@ -19016,8 +18942,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                EndIf
                
                If *PressedTAB
-                  If *PressedTAB\press = #True
-                     *PressedTAB\press = #False
+                  If *PressedTAB\mask & #__mask_press
+                     *PressedTAB\mask | #__mask_press 
                      
                      If *PressedTAB\mask & #__mask_hover
                         *PressedTAB\ColorState( ) = #__s_1
@@ -19097,7 +19023,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
          EndIf
          If *this\Combo( )
-            If is_mouse_enter( *this\Combo( ), CanvasMouseX( ), CanvasMouseY( ) )
+            If is_hover( *this\Combo( ), CanvasMouseX( ), CanvasMouseY( ) )
                If Not *this\Combo( )\mask & #__mask_hover
                   *this\Combo( )\mask | #__mask_hover
                   If *this\ColorState( ) = 0
@@ -19119,10 +19045,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;
          ;\\ update [entered position and current cursor] state
          If *this\mask & #__mask_hover > 0
-            If Bool( is_mouse_enter( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ) And
-                     is_mouse_enter( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_inner] ) And
-                     Not ( *this\type = #__type_Splitter And is_mouse_enter( *this\bar\button, CanvasMouseX( ), CanvasMouseY( ) ) = 0 ) And
-                     Not ( *this\type = #__type_HyperLink And is_mouse_enter( *this, CanvasMouseX( ) - *this\frame_x( ), CanvasMouseY( ) - *this\frame_y( ), [#__c_Required] ) = 0 ))
+            If Bool( is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ) And
+                     is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_inner] ) And
+                     Not ( *this\type = #__type_Splitter And is_hover( *this\bar\button, CanvasMouseX( ), CanvasMouseY( ) ) = 0 ) And
+                     Not ( *this\type = #__type_HyperLink And is_hover( *this, CanvasMouseX( ) - *this\frame_x( ), CanvasMouseY( ) - *this\frame_y( ), [#__c_Required] ) = 0 ))
                ;
                If *this\mask | #__mask_hover
                   *this\mask | #__mask_inner2
@@ -19162,7 +19088,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;          ; TEMP
          ;          If event = #__event_leftup
-         ;              Debug " "+ Bool(*this = a_entered( )) +" "+ EventString(event) +" "+ *this\class +" "+ a_index( ) +" "+ *this\press
+         ;              Debug " "+ Bool(*this = a_entered( )) +" "+ EventString(event) +" "+ *this\class +" "+ a_index( ) +" "+ bool(*this\mask & #__mask_press)
          ;          EndIf
          
          ;\\ TEMP [before post-widget-events drop]
@@ -19243,7 +19169,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If *this\type = #__type_Editor Or
                *this\type = #__type_String
                
-               DoEvent_Lines( *this, *this\__lines( ), event, CanvasMouseX( ), CanvasMouseY( ) )
+               DoEvent_Lines( *this, event, CanvasMouseX( ), CanvasMouseY( ) )
                
             Else
                If is_items_( *this )
@@ -19438,8 +19364,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Case #__type_Tree, #__type_ListView, #__type_ListIcon
                   If event = #__event_Change
                      If *this\RowFocused( )
-                        If *this\RowFocused( )\_focus
-                           If *this\focus = 2
+                        If *this\RowFocused( )\mask & #__mask_active
+                           If *this = GetActive( )
                               If *this\RowFocused( )\ColorState( ) <> #__s_2
                                  *this\RowFocused( )\ColorState( ) = #__s_2
                                  *this\repaint_set( ) ; 5
@@ -19750,7 +19676,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If test_canvas_events
                Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
-            If GetActive( ) And GetActive( )\focus <> #__s_2
+            If GetActive( ) And GetActive( )\mask & #__mask_active = 0
                If Entered( ) And Entered( )\mask & #__mask_press
                   If Entered( )\root\canvas\gadget = eventgadget
                      If test_focus_set
@@ -20971,7 +20897,7 @@ EndProcedure
          Protected indent = DPIScaled(10)
          ;
          If *this\text\multiLine Or ( *this\type = #__type_Editor Or *this\type = #__type_String )
-            make_multiline_text( *this, *this\__lines( ), indent )
+            make_multiline_text( *this, indent )
          Else
             If make_content_area( *this, *this\text, *this\picture, indent )
                make_content_align( *this, *this\text, *this\picture, *this\scroll_width( ), *this\scroll_height( ), indent )
@@ -21008,7 +20934,7 @@ EndProcedure
                ;*this\__rows( )\rindex = ListIndex( rows( ))
                
                If rows( )\mask & #__mask_hidden
-                  rows( )\visible = 0
+                  rows( )\mask &~ #__mask_visible
                   Continue
                EndIf
                ;\\ init drawing item font
@@ -21167,10 +21093,11 @@ EndProcedure
          Protected i
                
          ForEach rows( )
-            rows( )\visible = Bool( Not rows( )\mask & #__mask_hidden And
-                                     (( rows( )\y - scroll_y ) < visible_y + visible_height ) And
-                                     ( rows( )\y + rows( )\height - scroll_y ) > visible_y )
-            
+            rows()\mask = ( rows()\mask & ~#__mask_visible ) | 
+                          ( Bool( Not ( rows()\mask & #__mask_hidden ) And
+                                  (( rows()\y - scroll_y ) < visible_y + visible_height ) And 
+                                  ( rows()\y + rows()\height - scroll_y ) > visible_y ) * #__mask_visible )
+
             ;;Debug ""+*this\class +" "+ visible_height  +" "+ rows( )\height
             
             
@@ -21179,7 +21106,7 @@ EndProcedure
             EndIf
             If Not rows( )\mask & #__mask_hidden
                If rows( )\color\back = 0
-                  If rows( )\visible
+                  If rows( )\mask & #__mask_visible
                      If i%2 = 0
                         rows( )\color\back = $FFF8F8F8
                      EndIf
@@ -21190,7 +21117,7 @@ EndProcedure
             EndIf
                
 ;                If rows( )\childrens 
-;                If rows( )\visible
+;                If rows( )\mask & #__mask_visible
 ;                   If rows( )\parent
 ;                      rows( )\color\back = $FFF4F4F4
 ;                   Else
@@ -21204,7 +21131,7 @@ EndProcedure
 ;             EndIf
             
             ;\\ add new draw list
-            If rows( )\visible And
+            If rows( )\mask & #__mask_visible And
                AddElement( *this\__items( ))
                *this\__items( ) = rows( )
                
@@ -21992,7 +21919,7 @@ EndProcedure
             If *rows( )\columnindex <> ListIndex( *this\__columns( ))
                Continue
             EndIf
-            If Not *rows( )\visible
+            If Not *rows( )\mask & #__mask_visible
                Continue
             EndIf
             
@@ -22104,7 +22031,7 @@ EndProcedure
                   EndIf
                   
                   ; for the tree horizontal line
-                  If *this\__rows( )\visible And Not *this\__rows( )\mask & #__mask_hidden And Not ( *this\__rows( )\childrens And Not *this\__rows( )\sublevel)
+                  If *this\__rows( )\mask & #__mask_visible And Not *this\__rows( )\mask & #__mask_hidden And Not ( *this\__rows( )\childrens And Not *this\__rows( )\sublevel)
                      Line((X + *this\__rows( )\buttonbox\x + *this\__rows( )\buttonbox\width / 2), (Y + *this\__rows( )\height / 2), *this\row\sublevelsize/2-DPIScaled(2), 1, $FF000000 ) ;*this\LineColor )
                   EndIf
                Next
@@ -22124,7 +22051,7 @@ EndProcedure
                   If *rows( )\columnindex <> ListIndex( *this\__columns( ))
                      Continue
                   EndIf
-                  If *rows( )\visible And *rows( )\checkbox And (*this\mode\CheckBoxes Or *this\mode\OptionBoxes)
+                  If *rows( )\mask & #__mask_visible And *rows( )\checkbox And (*this\mode\CheckBoxes Or *this\mode\OptionBoxes)
                      X = row_x_( *this, *rows( ) ) - _scroll_x_
                      Y = row_y_( *this, *rows( ) ) - _scroll_y_
                      
@@ -22143,7 +22070,7 @@ EndProcedure
                   If *rows( )\columnindex <> ListIndex( *this\__columns( ))
                      Continue
                   EndIf
-                  If *rows( )\visible And Not *rows( )\mask & #__mask_hidden
+                  If *rows( )\mask & #__mask_visible And Not *rows( )\mask & #__mask_hidden
                      If *this\mode\Buttons And *rows( )\childrens 
                         
                         ;If Not ( *this\mode\optionboxes )
@@ -22249,8 +22176,9 @@ EndProcedure
          EndIf
          
       EndProcedure
-      
-      Procedure   Draw_EditorItems( *this._s_WIDGET, List *lines._s_ROW( ) )
+         
+      Procedure   Draw_EditorItems( *this._s_WIDGET, c_state = 0 )
+         Protected._s_ROW *row_line, *hover_line = *this\LineEntered( )
          Protected Y, Text_x, Text_y, visible_y, visible_height
          
          
@@ -22267,155 +22195,131 @@ EndProcedure
          
          ;
          Clip( *this, [#__c_idraw] )
-         PushListPosition( *lines( ))
-         ForEach *lines( )
+         PushListPosition( *this\__lines( ))
+         ForEach *this\__lines( )
+            *row_line = @*this\__lines( )
             ; update visible lines 
-            *lines( )\visible = Bool( Not *lines( )\mask & #__mask_hidden And
-                                      (( *lines( )\y + *this\scroll_y( ) ) < visible_y + visible_height ) And
-                                      ( *lines( )\y + *lines( )\height + *this\scroll_y( ) ) > visible_y )
+            *row_line\mask = ( *row_line\mask & ~#__mask_visible ) |
+                         ( Bool( Not ( *row_line\mask & #__mask_hidden ) And
+                                 (( *row_line\y + *this\scroll_y() ) < visible_y + visible_height ) And 
+                                 ( *row_line\y + *row_line\height + *this\scroll_y() ) > visible_y ) * #__mask_visible )
             
             
             ; Draw selections
-            If *lines( )\visible
+            If *row_line\mask & #__mask_visible
                If Not *this\RowFirstVisible( )
-                  *this\RowFirstVisible( ) = *lines( )
+                  *this\RowFirstVisible( ) = *row_line
                EndIf
-               *this\RowLastVisible( ) = *lines( )
+               *this\RowLastVisible( ) = *row_line
                
                
-               ;\\
-               If *this\focus > 1
-                  *this\ColorState( ) = *this\focus
-               EndIf
+               Y      = row_y_( *this, *row_line ) + *this\scroll_y( )
+               Text_x = row_x_( *this, *row_line ) + *this\scroll_x( ) + *row_line\text\x
+               Text_Y = Y + *row_line\text\y 
                
-               Y      = row_y_( *this, *lines( ) ) + *this\scroll_y( )
-               Text_x = row_x_( *this, *lines( ) ) + *this\scroll_x( ) + *lines( )\text\x
-               Text_Y = Y + *lines( )\text\y 
-               
-               
-               
-               Protected sel_text_x1 = edit_string_x_( *this, *lines( ), [0] ) + *this\scroll_x( )
-               Protected sel_text_x2 = edit_string_x_( *this, *lines( ), [1] ) + *this\scroll_x( )
-               Protected sel_text_x3 = edit_string_x_( *this, *lines( ), [2] ) + *this\scroll_x( )
+               Protected sel_text_x1 = edit_string_x_( *this, *row_line, [0] ) + *this\scroll_x( )
+               Protected sel_text_x2 = edit_string_x_( *this, *row_line, [1] ) + *this\scroll_x( )
+               Protected sel_text_x3 = edit_string_x_( *this, *row_line, [2] ) + *this\scroll_x( )
                
                Protected sel_x = *this\inner_x( ) + *this\text\x
                Protected sel_width = *this\inner_width( ) - *this\text\y * 2
-               Protected text_sel_width = *lines( )\edit_text_2( )\width
+               Protected text_sel_width = *row_line\edit_text_2( )\width
                
                ; Draw lines
                ; Если для итема установили задный
                ; фон отличный от заднего фона едитора
-               If *lines( )\color\back
+               If *row_line\color\back
                   ;                     draw_mode_alpha_( #PB_2DDrawing_Default )
-                  ;                     draw_roundbox_( sel_x,Y,sel_width ,*lines( )\height, *lines( )\round,*lines( )\round, *lines( )\color\back[0] )
+                  ;                     draw_roundbox_( sel_x,Y,sel_width ,*row_line\height, *row_line\round,*row_line\round, *row_line\color\back[0] )
                   
                   If *this\color\back And
-                     *this\color\back <> *lines( )\color\back
+                     *this\color\back <> *row_line\color\back
                      ; Draw margin back color
                      If *this\MarginLine( )\width > 0
                         ; то рисуем вертикальную линию на границе поля нумерации и начало итема
                         draw_mode_alpha_( #PB_2DDrawing_Default )
-                        draw_box_( *this\MarginLine( )\x, *lines( )\y, *this\MarginLine( )\width, *lines( )\height, *this\MarginLine( )\color\back )
-                        Line( *this\inner_x( ) + *this\MarginLine( )\width, *lines( )\y, 1, *lines( )\height, *this\color\back ) ; $FF000000 );
+                        draw_box_( *this\MarginLine( )\x, *row_line\y, *this\MarginLine( )\width, *row_line\height, *this\MarginLine( )\color\back )
+                        Line( *this\inner_x( ) + *this\MarginLine( )\width, *row_line\y, 1, *row_line\height, *this\color\back ) ; $FF000000 );
                      EndIf
                   EndIf
                EndIf
                
                ;\\
-               If *this\focus = 2
-                  If *lines( ) = *this\row\active[1] Or 
-                     *lines( ) = *this\row\active[0]
-                     
-                     draw_mode_alpha_( #PB_2DDrawing_Default )
-                     draw_roundbox_( Text_x, Y, *lines( )\text\width, *lines( )\height, *lines( )\round, *lines( )\round, *lines( )\color\back[1] )
+               draw_mode_alpha_( #PB_2DDrawing_Default )
+               If c_state = #__s_2
+                  If *row_line = *this\row\active[1] Or 
+                     *row_line = *this\row\active[0]
+                     draw_roundbox_( Text_x, Y, *row_line\text\width, *row_line\height, *row_line\round, *row_line\round, *row_line\color\back[1] )
                   EndIf
                EndIf
                
                ; Draw text string
-               draw_mode_alpha_( #PB_2DDrawing_Default )
-               If *lines( )\color\front[2] = *this\color\front 
-                  If text_sel_width
-                     draw_box_( sel_text_x2, Y, text_sel_width, *lines( )\height, *lines( )\color\back[*this\ColorState( )] )
+               If text_sel_width
+                  If *row_line\color\front[2] = *this\color\front 
+                     draw_box_( sel_text_x2, Y, text_sel_width, *row_line\height, *row_line\color\back[c_state] )
                   EndIf
                EndIf 
                
-               If *lines( )\text\Str(0)
-                  ;                   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                  ;                      ; GetDC_(*this\root\canvas\gadgetID)
-                  ;                      SetBkMode_(DrawingDC, #TRANSPARENT)
-                  ;                      SetTextColor_(DrawingDC, *lines( )\color\front & $FFFFFF | *lines( )\AlphaColor24( ) )
-                  ;                      TextOut_(DrawingDC, Text_x, Text_Y, *lines( )\text\Str(0),Len(*lines( )\text\Str(0)))
-                  ;                   CompilerElse
-                  DrawRotatedText( Text_x, Text_Y, *lines( )\text\Str(0), *this\text\rotate, *lines( )\color\front )
-                  ;                   CompilerEndIf
+               If *row_line\text\Str(0)
+                  DrawRotatedText( Text_x, Text_Y, *row_line\text\Str(0), *this\text\rotate, *row_line\color\front )
                EndIf
                
-               If *lines( )\color\front[2] <> *this\color\front
-                  If text_sel_width
-                     draw_box_( sel_text_x2, Y, text_sel_width, *lines( )\height, *lines( )\color\back[*this\ColorState( )] )
+               If text_sel_width
+                  If *row_line\color\front[2] <> *this\color\front
+                     draw_box_( sel_text_x2, Y, text_sel_width, *row_line\height, *row_line\color\back[c_state] )
                      
                      If *this\mask & #__mask_press And #PB_Compiler_OS = #PB_OS_MacOS
                         
                         ; to right select
-                        If ( ( *this\LineEntered( ) And *this\row\active[1] And *this\LineEntered( )\lindex > *this\row\active[1]\lindex ) Or
-                             ( *this\LineEntered( ) = *this\row\active[1] And *this\caret\start > *this\caret\stop ))
+                        If ( ( *hover_line And *this\row\active[1] And *hover_line\lindex > *this\row\active[1]\lindex ) Or
+                             ( *hover_line = *this\row\active[1] And *this\caret\start > *this\caret\stop ))
                            
-                           If *lines( )\edit_text_2( )\Str(0)
-                              DrawRotatedText( sel_text_x2, Text_Y, *lines( )\edit_text_2( )\Str(0), *this\text\rotate, *lines( )\color\front[*this\ColorState( )] )
+                           If *row_line\edit_text_2( )\Str(0)
+                              DrawRotatedText( sel_text_x2, Text_Y, *row_line\edit_text_2( )\Str(0), *this\text\rotate, *row_line\color\front[c_state] )
                            EndIf
                            
                            ; to left select
                         Else
-                           If *lines( )\edit_text_2( )\Str(0)
-                              DrawRotatedText( Text_x, Text_Y, *lines( )\edit_text_1( )\Str(0) + *lines( )\edit_text_2( )\Str(0), *this\text\rotate, *lines( )\color\front[*this\ColorState( )] )
+                           If *row_line\edit_text_2( )\Str(0)
+                              DrawRotatedText( Text_x, Text_Y, *row_line\edit_text_1( )\Str(0) + *row_line\edit_text_2( )\Str(0), *this\text\rotate, *row_line\color\front[c_state] )
                            EndIf
                            
-                           If *lines( )\mask & #__mask_hover
-                              If *lines( )\edit_text_1( )\width
-                                 draw_box_( Text_x, Text_Y+2, *lines( )\edit_text_1( )\width, *lines( )\text\height-2, *lines( )\color\back[1] )
+                           If *row_line\mask & #__mask_hover
+                              If *row_line\edit_text_1( )\width
+                                 draw_box_( Text_x, Text_Y+2, *row_line\edit_text_1( )\width, *row_line\text\height-2, *row_line\color\back[1] )
                               EndIf
                            EndIf
                            
-                           If *lines( )\edit_text_1( )\Str(0)
-                              DrawRotatedText( Text_x, Text_Y, *lines( )\edit_text_1( )\Str(0), *this\text\rotate, *lines( )\color\front )
+                           If *row_line\edit_text_1( )\Str(0)
+                              DrawRotatedText( Text_x, Text_Y, *row_line\edit_text_1( )\Str(0), *this\text\rotate, *row_line\color\front )
                            EndIf
                         EndIf
                         
                      Else
-                        If *lines( )\edit_text_2( )\Str(0)
-                           DrawRotatedText( sel_text_x2, Text_Y, *lines( )\edit_text_2( )\Str(0), *this\text\rotate, *lines( )\color\front[*this\ColorState( )] )
+                        If *row_line\edit_text_2( )\Str(0)
+                           DrawRotatedText( sel_text_x2, Text_Y, *row_line\edit_text_2( )\Str(0), *this\text\rotate, *row_line\color\front[c_state] )
                         EndIf
                      EndIf
                   EndIf
                EndIf
                
-               ;                ;\\
-               ;                If *lines( ) = *this\LineEntered( ) 
-               ;                   ;draw_mode_alpha_( #PB_2DDrawing_XOr | #PB_2DDrawing_Outlined )
-               ;                   draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               ;                   draw_roundbox_( Mouse()\x, Y, 20, *lines( )\height, *lines( )\round, *lines( )\round, *lines( )\color\frame[1] )
-               ; ;                   draw_roundbox_( Text_x-2, Y, *lines( )\text\width+2 + 7, *lines( )\height, *lines( )\round, *lines( )\round, *lines( )\color\frame[1] )
-               ; ;                   draw_roundbox_( Text_x-1, Y+1, *lines( )\text\width + 7 , *lines( )\height-2, *lines( )\round, *lines( )\round, $ffffffff )
-               ; ;                   draw_roundbox_( Text_x, Y+2, *lines( )\text\width-2 + 7 , *lines( )\height-4, *lines( )\round, *lines( )\round, *lines( )\color\frame[1] )
-               ;                EndIf
-               
                ; Draw margin text
                If *this\MarginLine( )\width > 0
                   __draw_mode( #PB_2DDrawing_Transparent )
-                  DrawRotatedText( *lines( )\margin\x + Bool( *this\text\vertical ) * *this\scroll_x( ),
-                                   *lines( )\margin\y + Bool( Not *this\text\vertical ) * *this\scroll_y( ),
-                                   *lines( )\margin\Str(0), *this\text\rotate, *this\MarginLine( )\color\front )
+                  DrawRotatedText( *row_line\margin\x + Bool( *this\text\vertical ) * *this\scroll_x( ),
+                                   *row_line\margin\y + Bool( Not *this\text\vertical ) * *this\scroll_y( ),
+                                   *row_line\margin\Str(0), *this\text\rotate, *this\MarginLine( )\color\front )
                EndIf
                
                ; Horizontal line
                If *this\mode\GridLines And
-                  *this\LineColor And *this\LineColor <> *lines( )\color\back
+                  *this\LineColor And *this\LineColor <> *row_line\color\back
                   draw_mode_alpha_( #PB_2DDrawing_Default )
-                  draw_box_( row_x_( *this, *lines( ) ), Y + *lines( )\height, *lines( )\width, *this\mode\GridLines, *this\LineColor )
+                  draw_box_( row_x_( *this, *row_line ), Y + *row_line\height, *row_line\width, *this\mode\GridLines, *this\LineColor )
                EndIf
             EndIf
          Next
-         PopListPosition( *lines( )) ;
+         PopListPosition( *this\__lines( )) ;
          Clip( *this, [#__c_draw] )
       EndProcedure
       
@@ -22430,12 +22334,20 @@ EndProcedure
                Clip( *this, [#__c_draw] )
             EndIf               
             
+            ;\\
+         If *this = GetActive( )
+            *this\ColorState( ) = #__s_2
+         Else
+            *this\ColorState( ) = #__s_3
+         EndIf
+         Protected c_state = *this\ColorState( ) 
+         
+      
             ;
             ; then change text update cursor pos
             If *this\text\mode & #__text_editable And *this\TextChange( ) =- 99 And *this\LineState( ) >= 0
                If *this\row\active[0]
-                  edit_sel_string_( *this, *this\row\active[0] )
-                  edit_sel_text_( *this, *this\__lines( ), *this\row\active[0] )
+                  edit_sel_( *this, *this\row\active[0] )
                   
                   If test_edit_text
                      Debug "----- " + *this\text\Str(0)
@@ -22507,7 +22419,7 @@ EndProcedure
                *this\RowLastVisible( )  = 0
                
                ;\\
-               Draw_EditorItems( *this, *this\__lines( ) )
+               Draw_EditorItems( *this, c_state )
             EndIf
             ;                Else
             ;                   __draw_rotatedtext( *this, X, Y, *this\text\rotate, *this\color\front[state], UnderLineSize )
@@ -22524,7 +22436,7 @@ EndProcedure
             
             ; Draw caret
             ;If *this\text\mode & #__text_editable 
-            If *this\focus = 2
+            If c_state = #__s_2
                __draw_mode( #PB_2DDrawing_XOr )
                draw_box_( X + *this\caret\x, Y + *this\caret\y, *this\caret\width, *this\caret\height, $FFFFFFFF )
             EndIf
@@ -22537,8 +22449,8 @@ EndProcedure
                If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, $FF0000FF ) : EndIf  ; Сглаживание краев ) ))
             ElseIf *this\fs
                __draw_mode( #PB_2DDrawing_Outlined )
-               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
-               If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[*this\ColorState( )] ) : EndIf  ; Сглаживание краев ) ))
+               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[c_state] )
+               If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[c_state] ) : EndIf  ; Сглаживание краев ) ))
             EndIf
             
             ;\\
@@ -22837,7 +22749,7 @@ EndProcedure
                      
                      ;\\ draw focus state TEMP
                      If test_focus_draw = 2
-                        If *this\focus = 2 And Not (is_window_(*this) And Not *this\parent )
+                        If *this\mask & #__mask_active And Not (is_window_(*this) And Not *this\parent )
                            UnclipOutput( )
                            draw_mode_alpha_( #PB_2DDrawing_Outlined )
                            draw_box_( *this\frame_x( )+1, *this\frame_y( )+1, *this\frame_width( )-2, *this\frame_height( )-2, $fffff0000 )
@@ -22875,7 +22787,7 @@ EndProcedure
                   If *this\root\drawmode & 1<<2
                      ;\\
                      If test_focus_draw = 1 Or test_focus_draw = 3
-                        If *this\focus = 2
+                        If *this\mask & #__mask_active
                            __draw_mode(#PB_2DDrawing_Outlined)
                            If Not *this\haschildren 
                               If *this = GetActive( )
@@ -22884,7 +22796,7 @@ EndProcedure
                                  draw_focus_frame( *this, $ff00ff00)
                               EndIf
                            EndIf
-                        ElseIf *this\focus = 3 And test_focus_draw <> 3
+                        ElseIf *this\mask & #__mask_active = 3 And test_focus_draw <> 3
                            __draw_mode(#PB_2DDrawing_Outlined)
                            draw_focus_frame( *this, $FFBFBFC3)
                         EndIf
@@ -23019,7 +22931,7 @@ EndProcedure
                            If test_focus_draw = 1
                               ;\\ draw active containers frame
                               If GetActive( )
-                                 If GetActive( )\focus = 2 And 
+                                 If GetActive( )\mask & #__mask_active And 
                                     GetActive( )\haschildren 
                                     ;
                                     If GetActive( )\AfterWidget( ) = widgets( )  
@@ -23031,7 +22943,7 @@ EndProcedure
                                  ;
                                  ;\\ draw active parent frame
                                  If ActiveWindow( )  
-                                    If ActiveWindow( )\focus = 2 And 
+                                    If ActiveWindow( )\mask & #__mask_active And 
                                        ActiveWindow( )\haschildren And  
                                        ActiveWindow( ) <> GetActive( )
                                        ;
@@ -23044,7 +22956,7 @@ EndProcedure
                                     ;
                                     ;\\ draw active child frame
                                     If ActiveGadget( ) And
-                                       ActiveGadget( )\focus = 2 And 
+                                       ActiveGadget( )\mask & #__mask_active And 
                                        ActiveGadget( )\haschildren And  
                                        ActiveGadget( ) <> GetActive( ) 
                                        
@@ -23080,7 +22992,7 @@ EndProcedure
                            If test_focus_draw = 1
                               ;\\ draw active containers frame
                               If GetActive( ) 
-                                 If GetActive( )\focus = 2 And 
+                                 If GetActive( )\mask & #__mask_active And 
                                     GetActive( )\haschildren 
                                     ;
                                     If Not GetActive( )\AfterWidget( ) 
@@ -23094,7 +23006,7 @@ EndProcedure
                                  ;
                                  ;\\ draw active parent frame
                                  If ActiveWindow( )  
-                                    If ActiveWindow( )\focus = 2 And 
+                                    If ActiveWindow( )\mask & #__mask_active And 
                                        ActiveWindow( )\haschildren And  
                                        ActiveWindow( ) <> GetActive( ) 
                                        ;
@@ -23109,7 +23021,7 @@ EndProcedure
                                     ; 
                                     ;\\ draw active child frame
                                     If ActiveGadget( ) And
-                                       ActiveGadget( )\focus = 2 And 
+                                       ActiveGadget( )\mask & #__mask_active And 
                                        ActiveGadget( )\haschildren And  
                                        ActiveGadget( ) <> GetActive( ) 
                                        
@@ -27155,7 +27067,7 @@ EndProcedure
          
          ;          ; Так как мы отрезали событие
          ;          If GetActive( )
-         ;             If Not GetActive( )\focus
+         ;             If Not GetActive( )\mask & #__mask_active
          ;                SetActive( GetActive( ))
          ;             EndIf
          ;          EndIf
@@ -28881,10 +28793,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 18290
-; FirstLine = 18136
-; Folding = ------------------------------------------------------------------------------------------------------------------------f0-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-Hl84f7-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------------------------------------------------------------------f-+-+--4---------------------------------------------------------------------------------------------------------------------------------j8----
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 17593
+; FirstLine = 17323
+; Folding = ------------------------------------------------------------------------------------------------------------------------f0---------------------------------------------------------------------------------------------------f----+---------------------------------------------------------0fUuf-6------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------------0---+--84-----------------------------------------------------------------------------------------------------------------------------------------------------------0-----f---------------------------------------------------------------------------------------------------------------------------------Pu-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
