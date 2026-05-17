@@ -4,22 +4,27 @@ DeclareModule key
    Declare Set(handle.i, KeyName.s, Value.i)
    Declare.i Get(handle.i, KeyName.s)
    Declare Remove(handle.i, KeyName.s)
-   
-   Macro SetData(handle, Value)
-      Set(handle, "MyOSDATA", Value)
-   EndMacro
-   Macro GetData(handle)
-      Get(handle, "MyOSDATA")
-   EndMacro
-   Macro RemoveData(handle)
-      Remove(handle, "MyOSDATA")
-   EndMacro
+   ;
+   Declare SetData(handle.i, Value.i)
+   Declare.i GetData(handle.i)
+   Declare RemoveData(handle.i)
 EndDeclareModule
 
 ; --- РЕАЛИЗАЦИЯ МОДУЛЯ ---
 Module key
    EnableExplicit
    
+      
+   Procedure SetData(handle, Value)
+      ProcedureReturn Set(handle, "MyOSDATA", Value)
+   EndProcedure
+   Procedure GetData(handle)
+      ProcedureReturn Get(handle, "MyOSDATA")
+   EndProcedure
+   Procedure RemoveData(handle)
+      ProcedureReturn Remove(handle, "MyOSDATA")
+   EndProcedure
+
    ; Блок импорта системных функций (вне модуля)
    CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_MacOS
@@ -98,7 +103,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 16
+; CursorPosition = 7
 ; Folding = ---
 ; EnableXP
 ; DPIAware

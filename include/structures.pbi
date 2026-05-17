@@ -765,7 +765,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Sticky._s_STICKY              ; sticky( )\
          event._s_EVENT
          
-         Map *__roots._s_ROOT( )   
+         ;Map *__roots._s_ROOT( )   
          List *__widgets._s_WIDGET( )  ; __widgets( )
       EndStructure
       ;}
@@ -778,8 +778,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 131
-; FirstLine = 117
+; CursorPosition = 767
+; FirstLine = 672
 ; Folding = -----9fy---
 ; Optimizer
 ; EnableXP

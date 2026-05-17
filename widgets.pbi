@@ -156,6 +156,9 @@ CompilerIf Not Defined( colors, #PB_Module )
 CompilerEndIf
 
 ;
+CompilerIf Not Defined( key, #PB_Module )
+   XIncludeFile "include/os/key.pbi"
+CompilerEndIf
 CompilerIf Not Defined( ID, #PB_Module )
    XIncludeFile "include/os/id.pbi"
 CompilerEndIf
@@ -368,11 +371,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                PB(ResizeGadget)(_event_gadget_,_x_,_y_,_width_,_height_)
                ;
                If PB(GadgetType)(_event_gadget_) = #PB_GadgetType_Canvas
-                  PushMapPosition( roots( ) )
-                  If Widget::ChangeCurrentCanvas( GadgetID( _event_gadget_ ), 0 )
-                     Widget::Resize( Widget::roots( ), 0, 0, _width_, _height_)
-                  EndIf
-                  PopMapPosition( roots( ) )
+                  Widget::ChangeCurrentCanvas( GadgetID( _event_gadget_ ))
+                  Widget::Resize( Widget::Root( ), 0, 0, _width_, _height_)
                EndIf
             EndMacro
          CompilerEndIf
@@ -671,19 +671,27 @@ CompilerIf Not Defined( Widget, #PB_Module )
          EndIf
       EndMacro
       
-      ;-
-      Macro repaint_set( )
-        mask | #__mask_redraw ;  Root\Repaint = 0
+;       Procedure CallRoots( *root._s_ROOT, *procedure ) 
+;          ; 2. Отматываем в самое начало (к первому/нижнему окну)
+;          While *root\PrevRoot( ) : *root = *root\PrevRoot( ) : Wend
+;          
+;          ; 3. Рисуем все элементы по порядку (снизу вверх)
+;          While *root 
+;             If CallFunctionFast( *procedure, *root )
+;                ProcedureReturn 
+;             EndIf
+;             *Root = *root\NextRoot( ) 
+;          Wend
+;       EndProcedure
+;       ;-
+      Macro repaint_set( _address_ )
+        _address_\mask | #__mask_redraw ;  Root\Repaint = 0
       EndMacro
       
       Macro Repaint( _address_ = 0 )
          If _address_
             If _address_ = #PB_All
-               PushMapPosition( roots( ))
-               ForEach roots( )
-                  ReDraw( roots( ) )
-               Next
-               PopMapPosition( roots( ))
+              ; CallRoots(Root( ), @ReDraw( ))
             Else
                ReDraw( _address_ )
             EndIf
@@ -698,9 +706,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Else
             If _root_\canvas\repaint = 0
                _root_\canvas\repaint = 1
-               ; Debug #PB_Compiler_Procedure
-               ; PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, *root\canvas\gadgetID )
-               PostEvent( #PB_Event_Gadget, _root_\canvas\window, _root_\canvas\gadget, #PB_EventType_Refresh )
+               PostEvent( #PB_Event_Repaint, _root_\canvas\window, #PB_All, #PB_All, _root_\canvas\gadgetID )
             EndIf
          EndIf
       EndMacro
@@ -716,6 +722,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Post( _this_, #__event_Resize )
       EndMacro
       Macro PostEventsRepaint( _root_ )
+         
       EndMacro
       
       
@@ -915,14 +922,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
 ;       Macro IsCanvas(_gadget_)
 ;          FindMapElement( Widget::gadgets( ), Str(_gadget_))
 ;       EndMacro
-      Macro ChangeCurrentCanvas( _canvasID_, _change_root_ = 1 )
-         FindMapElement( Widget::roots( ), Str( _canvasID_ ) )
-         If _change_root_ = 1
-            Widget::Root( ) = Widget::roots( )
-            ;             CanvasMouseX( ) = mouse::GadgetMouseX( widget::root( )\canvas\gadget )
-            ;             CanvasMouseY( ) = mouse::GadgetMouseY( widget::root( )\canvas\gadget )
-         EndIf
-         ;Debug ""+ #PB_Compiler_Procedure + " ChangeCurrentCanvas "+widget::root( )\class
+      Macro ChangeCurrentCanvas( _canvasID_ )
+         Widget::Root( ) = key::GetData(_canvasID_)
       EndMacro
       
       
@@ -3996,7 +3997,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If *this\anchors\state <> #__s_0
                   *this\anchors\state = #__s_0
                   ;
-                  *this\repaint_set( )
+                  repaint_set( *this )
                EndIf
                ;
                a_index( ) = 0
@@ -4020,7 +4021,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                If a_entered( )\anchors\state <> #__s_0
                   a_entered( )\anchors\state = #__s_0
                   ;
-                  a_entered( )\repaint_set( )
+                  repaint_set( a_entered( ) )
                EndIf
                
                If a_entered( )\mask & #__mask_inner
@@ -4074,7 +4075,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf   
                   ;
                   ChangeCursor( *this, a_anchors( )\cursor[a_index] )
-                  *this\repaint_set( )
+                  repaint_set( *this )
                   *this\mask | #__mask_inner
                EndIf
             EndIf
@@ -4504,7 +4505,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         *this\anchors\state = #__s_0
                      EndIf
                      ;
-                     *this\repaint_set( )
+                     repaint_set( *this )
                   EndIf
                   
                   ;                  
@@ -4698,11 +4699,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          If *this\anchors
             If event = #__event_MouseEnter
-               *this\repaint_set( )
+               repaint_set( *this )
             EndIf
             
             If event = #__event_MouseLeave
-               *this\repaint_set( )
+               repaint_set( *this )
             EndIf
          EndIf
          
@@ -7866,7 +7867,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ProcedureReturn 0
             EndIf
             
-            *display\repaint_set( )
+            repaint_set( *display )
             *enteredTAB = TabEntered( *display )
             *activedTAB = *this\parentTabSelected( )
                   
@@ -8132,7 +8133,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                PostEventsRepaint( *this\root )
                
                If Not ( Root( ) And Root( )\canvas\gadget = *display\root\canvas\gadget )
-                  ChangeCurrentCanvas( GadgetID( *display\root\canvas\gadget ) )
+                  ChangeCurrentCanvas( GadgetID( *display\root\canvas\gadget ))
                EndIf 
                DoEvents( *this, #__event_Focus )
                ProcedureReturn #True
@@ -8409,7 +8410,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          edit_redraw_font( *this )
          
-         *this\repaint_set( )
+         repaint_set( *this )
          ;\\ *rowLine\ColorState( ) = #__s_2
          *rowLine\mask | #__mask_active
          *rowLine\selector = 0
@@ -8803,7 +8804,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   *this\row\active[1] = 0
                   *this\LineEntered( ) = 0
                   
-                  *this\repaint_set( )
+                  repaint_set( *this )
                EndIf
             Else
                *this\notify = 1
@@ -10352,13 +10353,20 @@ CompilerIf Not Defined( Widget, #PB_Module )
             SetBackgroundImage( *this, - 1 )
          EndIf
          
-         PushMapPosition( roots( ) )
-         ForEach roots( )
-            If roots( )\picture\image = img
+         ; 1. Сохраняем в локальную переменную
+         Protected._s_ROOT *root = *this\root
+         
+         ; 2. Отматываем в самое начало (к первому/нижнему окну)
+         While *root\PrevRoot( ) : *root = *root\PrevRoot( ) : Wend
+         
+         ; 3. Рисуем все элементы по порядку (снизу вверх)
+         While *root 
+            If *root\picture\image = img
                ProcedureReturn 0
             EndIf
-         Next
-         PopMapPosition( roots( ) )
+            *Root = *root\NextRoot( ) 
+         Wend
+            
          ;
          PushListPosition( widgets( ) )
          ForEach widgets( )
@@ -16819,9 +16827,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   
                   If Entered( )
-                     Entered( )\repaint_set( )
+                     repaint_set( Entered( ))
                   Else
-                     *this\repaint_set( )
+                     repaint_set( *this )
                   EndIf
                   EnteredButton( ) = #Null
                EndIf
@@ -16883,7 +16891,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EnteredButton( )\ColorState( ) = #__s_0
                            EndIf
                            ;
-                           *this\repaint_set( )
+                           repaint_set( *this )
                         EndIf
                      EndIf
                      ;
@@ -16904,7 +16912,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            EndIf
                         EndIf
                         ;
-                        *this\repaint_set( )
+                        repaint_set( *this )
                      EndIf
                   EndIf
                   
@@ -17270,12 +17278,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      ;                 ;*this\RowFocused( ) = SelectElement( *this\__rows( ), *this\RowLastVisible( )\rindex )
                      ;                 *this\RowFocused( )\mask | #__mask_active
                      ;                 *this\RowFocused( )\ColorState( ) = 1
-                     ;                 *this\RowFocused( )\repaint_set( )
+                     ;                 repaint_set( *this\RowFocused( ) )
                      ;
                      ;                 Debug *this\RowFocused( )\rindex
                      ;                 edit_set_sel_( *this, *this\RowFocused( ), *this\row\active[1] )
                      ;
-                     ;                 *this\repaint_set( )
+                     ;                 repaint_set( *this )
                      ;               EndIf
                      
                      ;                 result = 1
@@ -17762,7 +17770,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If Not *row_line\edit_text_2( )\width ; -*row_line\selector <> *row_line\text\width
                                                                        ;Debug *row_line\lindex
                                     edit_sel_string_( *this, *row_line, #__sel_to_set )
-                                    ;  *this\repaint_set( )
+                                    ;  repaint_set( *this )
                                  EndIf
                                  
                               Else
@@ -18127,7 +18135,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *rowleaved\mask & #__mask_active
                            If *rowleaved\ColorState( ) <> #__s_2
                               *rowleaved\ColorState( ) = #__s_3
-                              *this\repaint_set( )
+                              repaint_set( *this )
                            EndIf
                         EndIf
                      EndIf
@@ -18153,7 +18161,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  
                                  If *row\ColorState( ) <> #__s_2
                                     *row\ColorState( ) = #__s_2
-                                    *this\repaint_set( )
+                                    repaint_set( *this )
                                  EndIf
                                  
                               Else
@@ -18161,7 +18169,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  If Not *row\mask & #__mask_press
                                     If *row\ColorState( ) <> #__s_0
                                        *row\ColorState( ) = #__s_0
-                                       *this\repaint_set( )
+                                       repaint_set( *this )
                                     EndIf
                                  EndIf
                                  
@@ -18219,13 +18227,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\RowEntered( )\mask & #__mask_hover <> 1
                            *this\RowEntered( )\mask | #__mask_hover
                            ; Debug "-1 (+1)"
-                           *this\repaint_set( )
+                           repaint_set( *this )
                         EndIf
                      Else
                         If Not *this\RowEntered( )\mask & #__mask_inner
                            *this\RowEntered( )\mask | #__mask_inner
                            ; Debug "+1 (-1)"
-                           *this\repaint_set( )
+                           repaint_set( *this )
                         EndIf
                      EndIf
                   EndIf
@@ -18668,7 +18676,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                               EndIf
                            EndIf
                            ;
-                           *this\repaint_set( )
+                           repaint_set( *this )
                         EndIf
                      EndIf
                      ;
@@ -18689,7 +18697,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                                  *tab\ColorState( ) = #__s_1
                               EndIf
                               ;
-                              *this\repaint_set( )
+                              repaint_set( *this )
                               ;
                               ;\\ show popup bar
                               If is_bar_( *this ) 
@@ -18905,13 +18913,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            *EnteredTAB\mask | #__mask_press
                            
                            *EnteredTAB\ColorState( ) = #__s_2
-                           *this\repaint_set( )
+                           repaint_set( *this )
                         EndIf
                      EndIf
                   EndIf
                ;EndIf
                   
-                ; *this\repaint_set( )
+                ; repaint_set( *this )
                   *this\parentTabSelected( ) =  *activeTAB
                EndIf
          EndIf
@@ -19017,7 +19025,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\ColorState( ) = 1
                            *this\ColorState( ) = 0
                         EndIf
-                        *this\repaint_set( )
+                        repaint_set( *this )
                      EndIf
                   EndIf
                EndIf
@@ -19030,7 +19038,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\ColorState( ) = 0
                      *this\ColorState( ) = 1
                   EndIf
-                  *this\repaint_set( )
+                  repaint_set( *this )
                EndIf
             Else
                If *this\Combo( )\mask & #__mask_hover
@@ -19038,35 +19046,39 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   If *this\ColorState( ) = 1
                      *this\ColorState( ) = 0
                   EndIf
-                  *this\repaint_set( )
+                  repaint_set( *this )
                EndIf
             EndIf
          EndIf
          
          ;
          ;\\ update [entered position and current cursor] state
-         If *this\mask & #__mask_hover > 0
+         If *this\mask & #__mask_hover 
             If Bool( is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ) And
                      is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_inner] ) And
                      Not ( *this\type = #__type_Splitter And is_hover( *this\bar\button, CanvasMouseX( ), CanvasMouseY( ) ) = 0 ) And
                      Not ( *this\type = #__type_HyperLink And is_hover( *this, CanvasMouseX( ) - *this\frame_x( ), CanvasMouseY( ) - *this\frame_y( ), [#__c_Required] ) = 0 ))
                ;
-               If *this\mask | #__mask_hover
-                  *this\mask | #__mask_inner2
-                  MouseMask( ) | #__mask_update
-                  DoChangeCursor( *this )
-                  *this\repaint_set( )
+               If *this\mask & #__mask_hover
+                  If *this\mask & #__mask_inner2 = 0
+                     *this\mask | #__mask_inner2
+                     ;
+                     MouseMask( ) | (#__mask_update)
+                     DoChangeCursor( *this )
+                     repaint_set( *this )
+                  EndIf
                EndIf
             Else
-               If *this\mask | #__mask_hover
+               If *this\mask & #__mask_hover = 0
+                  *this\mask | #__mask_hover
+                  ;
+                  MouseMask( ) | (#__mask_update)
+                  DoChangeCursor( *this )
+                  repaint_set( *this )
+               Else
                   If event = #__event_MouseEnter
                      DoChangeCursor( *this )
                   EndIf
-               Else
-                  *this\mask | #__mask_hover
-                  MouseMask( ) | #__mask_update
-                  DoChangeCursor( *this )
-                  *this\repaint_set( )
                EndIf
             EndIf
          EndIf
@@ -19138,7 +19150,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                     #__event_StatusChange
                   
                   If *this\row
-                     *this\repaint_set( )
+                     repaint_set( *this )
                   EndIf
                   
                Case #__event_Drop,
@@ -19162,8 +19174,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ;                     #__event_Right2Click,
                   ;                     #__event_Right3Click,
                   
-                  *this\repaint_set( )
-                  
+                  repaint_set( *this )
             EndSelect
             
             ;\\ items events
@@ -19187,7 +19198,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ;\\
             If DoEvent_Bar( *this, event, EnteredButton( ))
-               *this\repaint_set( )
+               repaint_set( *this )
             EndIf
             
             
@@ -19339,7 +19350,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         If *this\ColorState( ) <> #__s_1
                            *this\ColorState( ) = #__s_1
                         EndIf
-                        *this\repaint_set( )
+                        repaint_set( *this )
                      Else
                         If *this\ColorState( ) <> #__s_0
                            *this\ColorState( ) = #__s_0
@@ -19369,18 +19380,18 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            If *this = GetActive( )
                               If *this\RowFocused( )\ColorState( ) <> #__s_2
                                  *this\RowFocused( )\ColorState( ) = #__s_2
-                                 *this\repaint_set( ) ; 5
+                                 repaint_set( *this ) ; 5
                               EndIf
                            Else
                               If *this\RowFocused( )\ColorState( ) <> #__s_3
                                  *this\RowFocused( )\ColorState( ) = #__s_3
-                                 *this\repaint_set( ) ; 5
+                                 repaint_set( *this ) ; 5
                               EndIf
                            EndIf
                         Else
                            If *this\RowFocused( )\ColorState( ) <> #__s_1
                               *this\RowFocused( )\ColorState( ) = #__s_1
-                              *this\root\repaint_set( ) ; 5
+                              repaint_set( *this ) ; 5
                            EndIf
                         EndIf
                      EndIf
@@ -19398,12 +19409,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      If *this\scroll And *this\scroll\v  
                         If *this\scroll\v\bar\page\end
                            If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
-                              *this\repaint_set( )
+                              repaint_set( *this )
                            EndIf
                         EndIf
                      Else
                         ;                         If *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
-                        ;                            *this\repaint_set( )
+                        ;                            repaint_set( *this )
                         ;                         EndIf
                      EndIf
                   EndIf
@@ -19415,12 +19426,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         ;Debug *this\scroll\h\bar\page\end
                         If *this\scroll\h\bar\page\end
                            If bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - *data, 2 )
-                              *this\repaint_set( )
+                              repaint_set( *this )
                            EndIf
                         EndIf
                      Else
                         ;                         If *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
-                        ;                            *this\repaint_set( )
+                        ;                            repaint_set( *this )
                         ;                         EndIf
                      EndIf
                   EndIf
@@ -19517,20 +19528,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "Close... " + window
          
          If IsGadget(Canvas)
-            If ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
-               Post( Root( ), #__event_Close )
-            EndIf
+            ChangeCurrentCanvas( PB(GadgetID)(Canvas))
+            Post( Root( ), #__event_Close )
          Else
             Debug "not canvas then close"
          EndIf
          
          ;\\
-         If Not MapSize( roots( ))
-            If __gui\event\loop
-               PostQuit( )
-            Else
-               Debug "Exit..."
-            EndIf
+         If __gui\event\loop
+            PostQuit( )
+         Else
+            Debug "Exit..."
          EndIf
       EndProcedure
       
@@ -19540,7 +19548,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected Canvas = PB(GetWindowData)( window )
             ;
             If IsGadget( Canvas )
-               ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
+               ChangeCurrentCanvas( PB(GadgetID)(Canvas))
                If PopupBar( )\root\canvas\gadget = Canvas
                    Debug "Active... " + window
                EndIf
@@ -19554,7 +19562,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
             Protected Canvas = PB(GetWindowData)( window )
             ;
             If IsGadget( Canvas )
-               ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
+               ChangeCurrentCanvas( PB(GadgetID)(Canvas))
                If PopupBar( )\root\canvas\gadget = Canvas
                   Debug "Deactive... " + window
                EndIf
@@ -19581,7 +19589,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "Restore... " + window
          ;
          If IsGadget( Canvas )
-            ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
+            ChangeCurrentCanvas( PB(GadgetID)(Canvas))
             SetState( Root( ), #PB_Window_Normal )
          EndIf
       EndProcedure
@@ -19592,7 +19600,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "Maximize... " + window
          ;
          If IsGadget( Canvas )
-            ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
+            ChangeCurrentCanvas( PB(GadgetID)(Canvas))
             SetState( Root( ), #PB_Window_Maximize )
          EndIf
       EndProcedure
@@ -19603,7 +19611,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Debug "Minimize... " + window
          ;
          If IsGadget( Canvas )
-            ChangeCurrentCanvas( PB(GadgetID)(Canvas) )
+            ChangeCurrentCanvas( PB(GadgetID)(Canvas))
             SetState( Root( ), #PB_Window_Minimize )
          EndIf
       EndProcedure
@@ -19615,39 +19623,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   EventRepaint( )
-         ProcedureReturn 
-         
          If EventData( )
-            ; Debug "???? "+MapKey(roots( ))
-            
-            ; bug PB
-            If MapKey(roots( )) = ""
-               ResetMap(roots( ))
-               NextMapElement(roots( ))
-            EndIf
-            
-            ;PushMapPosition(roots( ))
-            If MapSize( roots( ))
-               If EventData( ) <> roots( )\canvas\gadgetID
-                  ChangeCurrentCanvas( EventData( ), 0 )
-                  ; root( ) = roots( )
-               EndIf
+            ChangeCurrentCanvas( EventData( ))
+            If Root( )\canvas\repaint = 1
+               Root( )\canvas\repaint = 0
                
-               If roots( )\canvas\repaint = 1
-                  roots( )\canvas\repaint = 0
-                  
-                  If test_draw_repaint
-                     Debug "   REPAINT " + roots( )\class ;+" "+ Popup( )\x +" "+ Popup( )\y +" "+ Popup( )\width +" "+ Popup( )\height
-                  EndIf
-                  
-                  ;
-                  ReDraw( roots( ) )
-               EndIf
+               ;If test_draw_repaint
+                  Debug "   REPAINT " + Root( )\class 
+               ;EndIf
+               
+               ReDraw( Root( ))
             EndIf
-            ; PopMapPosition(roots())
-         Else
-            ; Debug "repaint os []"
-            ; Repaint( ) 
          EndIf
       EndProcedure
       
@@ -19655,16 +19641,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          Protected *root._s_ROOT, Repaint, event, mouse_x , mouse_y
          ;
          ;\\
-         ;
-         If eventtype = #PB_EventType_Refresh
-            If ChangeCurrentCanvas( GadgetID( eventgadget ))
-               If roots( )\canvas\repaint = 1
-                  roots( )\canvas\repaint = 0
-                  ReDraw( roots( ) )
-               EndIf
-            EndIf
-         EndIf
-         
          If eventtype = #PB_EventType_DragStart Or
             eventtype = #PB_EventType_LeftClick Or
             eventtype = #PB_EventType_LeftDoubleClick
@@ -19686,25 +19662,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      SetActive( Entered( ))
                   EndIf
                Else
-                  PushMapPosition( roots( ) )
-                  ForEach roots( )
-                     If roots( )\canvas\gadget = eventgadget
-                        If roots( )\active 
-                           If test_focus_set
-                              Debug "CANVAS - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
-                           EndIf
-                           ;                            If keyboard( )\deactive
-                           ;                               ; Debug "deactive keyboard( ) "+keyboard( )\deactive\class +" "+ roots( )\active\class
-                           ;                            EndIf
-                           ChangeCurrentCanvas( GadgetID(eventgadget) )
-                           CanvasMouseX( ) = mouse::GadgetMouseX( eventgadget )
-                           CanvasMouseY( ) = mouse::GadgetMouseY( eventgadget )
-                           SetActive( roots( )\active )
-                        EndIf
-                        Break
+                  ChangeCurrentCanvas( GadgetID(eventgadget))
+                  If Root( )\active 
+                     If test_focus_set
+                        Debug "CANVAS - Focus " + GetActive( )\root\canvas\gadget + " " + eventgadget
                      EndIf
-                  Next
-                  PopMapPosition( roots( ) )
+                     CanvasMouseX( ) = mouse::GadgetMouseX( eventgadget )
+                     CanvasMouseY( ) = mouse::GadgetMouseY( eventgadget )
+                     SetActive( Root( )\active )
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -19741,13 +19707,11 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
             ; PB(ResizeGadget)( eventgadget, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
-            PushMapPosition( roots( ) )
-            ChangeCurrentCanvas( GadgetID( eventgadget ), 0)
-            If Resize( roots( ), 0, 0, DPIScaledX(PB(GadgetWidth)( eventgadget )), DPIScaledY(PB(GadgetHeight)( eventgadget )), 0 )
+             ChangeCurrentCanvas( GadgetID( eventgadget ))
+            If Resize( Root( ), 0, 0, DPIScaledX(PB(GadgetWidth)( eventgadget )), DPIScaledY(PB(GadgetHeight)( eventgadget )), 0 )
                ; Debug "resize - canvas ["+eventgadget+"]"
-               ReDraw( roots( ) )
+               ReDraw( Root( ) )
             EndIf
-            PopMapPosition( roots( ) )
             ProcedureReturn #PB_Event_Gadget
          EndIf
          
@@ -19757,9 +19721,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             If Entered( )
                If eventdata < 0
-                  MouseMask( ) | #__mask_left
+                  MouseMask( ) | (#__mask_update|#__mask_left)
                ElseIf eventdata > 0
-                  MouseMask( ) | #__mask_right
+                  MouseMask( ) | (#__mask_update|#__mask_right)
                EndIf
                If is_scrollbars_( Entered( ) )
                   DoEvents( Entered( )\parent, #__event_MouseWheel, #PB_All, eventdata )
@@ -19776,9 +19740,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             EndIf
             If Entered( )
                If eventdata < 0
-                  MouseMask( ) | #__mask_top
+                  MouseMask( ) | (#__mask_update|#__mask_top)
                ElseIf eventdata > 0
-                  MouseMask( ) | #__mask_bottom
+                  MouseMask( ) | (#__mask_update|#__mask_bottom)
                EndIf
                If is_scrollbars_( Entered( ) )
                   DoEvents( Entered( )\parent, #__event_MouseWheel, #PB_All, eventdata )
@@ -19793,15 +19757,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If test_canvas_events
                Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
-            ;Debug " #PB_EventType_MouseEnter "+eventgadget
-            If Not ( Root( ) And Root( )\canvas\gadget = eventgadget )
-               ChangeCurrentCanvas( GadgetID( eventgadget ) )
-            EndIf
+            ; Debug " #PB_EventType_MouseEnter "+eventgadget
+            ChangeCurrentCanvas( GadgetID( eventgadget ))
             ;
             Root( )\canvas\enter = 1
             ;
-            MouseMask( ) = #__mask_update
-            ;
+            MouseMask( ) | (#__mask_update|#__mask_hover)
             CanvasMouseX( ) = mouse::GadgetMouseX( eventgadget )
             CanvasMouseY( ) = mouse::GadgetMouseY( eventgadget )
          EndIf
@@ -19810,15 +19771,16 @@ CompilerIf Not Defined( Widget, #PB_Module )
             If test_canvas_events
                Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
-            ;Debug " #PB_EventType_MouseLeave "+eventgadget
+            
             If Pressed( ) And
                Pressed( )\root <> Root( )
-               ChangeCurrentCanvas( GadgetID( Pressed( )\root\canvas\gadget ) )
+               ChangeCurrentCanvas( GadgetID( Pressed( )\root\canvas\gadget ))
             EndIf
             ;
             Root( )\canvas\enter = 0
             ;
-            MouseMask( ) = 0
+            MouseMask( ) | (#__mask_update)
+            MouseMask( ) &~ #__mask_hover
             CanvasMouseX( ) = - 1
             CanvasMouseY( ) = - 1
          EndIf
@@ -19830,7 +19792,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
                Debug " " + PBEventString(eventtype) +" "+ eventgadget
             EndIf
             ;
-            MouseMask( ) | #__mask_press
+            MouseMask( ) | (#__mask_update|#__mask_press)
             ;
             If eventtype = #PB_EventType_LeftButtonDown 
                event           = #__event_LeftDown
@@ -19903,14 +19865,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            mouse( )\selector\width + DPIScaled( 1 ) 
                         EndIf
                         ;
-                        Pressed( )\repaint_set( )
+                        repaint_set( Pressed( ) )
                      EndIf
                   EndIf
                   ;
                   If CanvasMouseX( ) > mouse_x
-                     MouseMask( ) | #__mask_left
+                     MouseMask( ) | (#__mask_update|#__mask_left)
                   ElseIf CanvasMouseX( ) < mouse_x
-                     MouseMask( ) | #__mask_right
+                     MouseMask( ) | (#__mask_update|#__mask_right)
                   EndIf
                   CanvasMouseX( ) = mouse_x
                EndIf
@@ -19941,14 +19903,14 @@ CompilerIf Not Defined( Widget, #PB_Module )
                            mouse( )\selector\height + DPIScaled( 1 ) 
                         EndIf   
                         ;
-                        Pressed( )\repaint_set( )
+                        repaint_set( Pressed( ))
                      EndIf
                   EndIf
                   ;
                   If CanvasMouseY( ) > mouse_y
-                     MouseMask( ) | #__mask_top
+                     MouseMask( ) | (#__mask_update|#__mask_top)
                   ElseIf CanvasMouseY( ) < mouse_y
-                     MouseMask( ) | #__mask_bottom
+                     MouseMask( ) | (#__mask_update|#__mask_bottom)
                   EndIf
                   CanvasMouseY( ) = mouse_y
                EndIf
@@ -19973,10 +19935,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
                CanvasMouseY( )       = mouse::GadgetMouseY( eventgadget )
             EndIf
             ;
-            MouseMask( ) | #__mask_release
-            If MouseMask( ) & #__mask_press
-               MouseMask( ) &~ #__mask_press
-            EndIf
+            MouseMask( ) | (#__mask_update|#__mask_release)
+            MouseMask( ) &~ #__mask_press
          EndIf
          
          If eventtype = #PB_EventType_KeyDown Or
@@ -20230,7 +20190,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          If event = #__event_MouseMove
             If Pressed( ) And Pressed( )\mask & #__mask_press 
                If Not MouseDragStart( )
-                  MouseMask( ) | #__mask_dragstart
+                  MouseMask( ) | (#__mask_update|#__mask_dragstart)
                   DoEvents( Pressed( ), #__event_DragStart )
                EndIf
             EndIf
@@ -20623,34 +20583,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             MousePressX( ) = 0
             MousePressY( ) = 0
             MouseButtons( ) = 0
-            If MouseDragStart( )
-              MouseMask( ) &~ #__mask_dragstart
-            EndIf
             mouse( )\selector = 0
          EndIf
          
          ;
          ;\\ do reset data
          ;
-         If MouseMask( ) & #__mask_left
-            MouseMask( ) &~ #__mask_left
-         EndIf
-         If MouseMask( ) & #__mask_top
-            MouseMask( ) &~ #__mask_top
-         EndIf
-         If MouseMask( ) & #__mask_right
-            MouseMask( ) &~ #__mask_right
-         EndIf
-         If MouseMask( ) & #__mask_bottom
-            MouseMask( ) &~ #__mask_bottom
-         EndIf
-         If MouseMask( ) & #__mask_release
-            MouseMask( ) &~ #__mask_release
-         EndIf
-         If MouseMask( ) & #__mask_update
-            MouseMask( ) &~ #__mask_update
-         EndIf
-         
+         MouseMask( ) &~ (#__mask_update|#__mask_release|#__mask_dragstart|
+                          #__mask_left|#__mask_top|#__mask_right|#__mask_bottom)
+            
          ProcedureReturn #PB_Event_Gadget
          
       EndProcedure
@@ -24623,10 +24564,10 @@ EndProcedure
       
       ;-
       Procedure   Open( window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, Flag.q = #Null, *parentID = #Null, Canvas = #PB_Ignore )
-         Protected result, w, g, canvasflag = #PB_Canvas_Keyboard, UseGadgetList, *root._s_ROOT 
+         Protected result, w, g, canvasflag = #PB_Canvas_Keyboard, UseGadgetList
          
          ; init
-         If Not MapSize( roots( ) )
+         If Not Root( )
             CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
                Events::SetCallback( @EventHandler( ) )
             CompilerEndIf
@@ -24669,10 +24610,10 @@ EndProcedure
             EndIf
             ;
             If Canvas = #PB_Ignore
-               ; then bug in windows
-               If Window = #PB_Any
-                  Window = 300 + MapSize( roots( ) )
-               EndIf
+;                ; then bug in windows
+;                If Window = #PB_Any
+;                   Window = 300 + MapSize( roots( ) )
+;                EndIf
                ;
                w = OpenWindow( Window, X, Y, Width, Height, title$, Flag, *parentID )
                If Window = #PB_Any 
@@ -24756,20 +24697,17 @@ EndProcedure
             UseGadgetList( UseGadgetList )
          EndIf
          
-         ;
-         If Not FindMapElement( roots( ), Str( g ) ) ; ChangeCurrentCanvas(g)
-            result     = AddMapElement( roots( ), Str( g ) )
-            roots( )   = AllocateStructure( _s_ROOT )
-            *root      = roots( )
+         Protected._s_ROOT *root
+         *root = AllocateStructure( _s_ROOT );
+         If *root
+            key::SetData( g, *root )
             If Root( )
+               *root\PrevRoot( ) = Root( )
                Root( )\NextRoot( ) = *root
-               Root( )\NextRoot( )\PrevRoot( ) = Root( )
             EndIf
-            Root( ) = *root 
-            ;Root( )    = @roots( )
+            Root() = *root
             
             ;
-            ;*root\address   = result
             *root\type      = #__type_Root
             *root\container = 1
             *root\class     = "root"
@@ -24866,7 +24804,7 @@ EndProcedure
                EndIf
                ;
                PostEvent( #PB_Event_SizeWindow, window, Canvas ) ; Bug PB
-               PostEventsRepaint( *root )
+               PostRepaint( *root )
             EndIf
          EndIf
          
@@ -24886,32 +24824,8 @@ EndProcedure
          EndIf
          
          
-         If MapSize( roots( ) )
-            ;             If Not ListSize( widgets( ) ) And
-            ;                constants::BinaryFlag( Flag, #__flag_autosize ) 
-            ;                
-            ;                X              = 0
-            ;                Y              = 0
-            ;                Width          = *root\width
-            ;                Height         = *root\height
-            ;                *root\autosize = #True
-            ;                *this          = *root
-            ;                
-            ;                ;                   Protected w = WindowID(*root\canvas\window )
-            ;                ;                   
-            ;                ;                   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-            ;                ;                   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-            ;                ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_BORDER) 
-            ;                ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_CAPTION) 
-            ;                ;                      SetWindowLongPtr_(w,#GWL_STYLE,GetWindowLongPtr_(w,#GWL_STYLE)&~#WS_SIZEBOX) 
-            ;                ;                      SetWindowLongPtr_(w,#GWL_EXSTYLE,GetWindowLongPtr_(w,#GWL_EXSTYLE) | #WS_EX_TOOLWINDOW)
-            ;                ;                   CompilerElse
-            ;                ;                      ;  
-            ;                ;                   CompilerEndIf
-            ;             Else
+         If Root( )
             *this.allocate( WINDOW )
-            ;             EndIf
-            ;             ;\\ open root list
          Else
             *this = Open( #PB_Any, X, Y, Width + fs * 2, Height + fs * 2 + barHeight, Text,  #PB_Window_BorderLess, *parent )
             X     = 0
@@ -25788,7 +25702,7 @@ EndProcedure
          ;\\
          If ( Change_x Or Change_y Or Change_width Or Change_height ) 
             *this\ResizeChange( ) = 1
-            *this\repaint_set( )
+            repaint_set( *this )
             
             ;
             ;\\ if the integral scroll bars
@@ -26493,9 +26407,17 @@ EndProcedure
                      Select result 
                         Case #PB_All
                            If Not PostQuit( )
-                              ForEach roots( ) 
-                                 PostFree( roots( ))
-                              Next
+                              ; 1. Сохраняем в локальную переменную
+                              Protected._s_ROOT *root = *this\root
+                              
+                              ; 2. Отматываем в самое начало (к первому/нижнему окну)
+                              While *root\PrevRoot( ) : *root = *root\PrevRoot( ) : Wend
+                              
+                              ; 3. Рисуем все элементы по порядку (снизу вверх)
+                              While *root 
+                                 PostFree( *root )
+                                 *Root = *root\NextRoot( ) 
+                              Wend
                            EndIf
                         Default
                            PostFree( *this )
@@ -26516,7 +26438,7 @@ EndProcedure
             WidgetEventData( )   = __data
             
             If event = #__event_Change
-               *this\repaint_set( ) ; - 2
+               repaint_set( *this ) ; - 2
             EndIf
             
             
@@ -26530,11 +26452,17 @@ EndProcedure
          ;
          If *this < 0
             ;
-            PushMapPosition(roots( ))
-            ForEach roots( )
-               Bind( roots( ), *callback, event, item )
-            Next
-            PopMapPosition(roots( ))
+            ; 1. Сохраняем в локальную переменную
+            Protected._s_ROOT *root = Root( )
+            
+            ; 2. Отматываем в самое начало (к первому/нижнему окну)
+            While *root\PrevRoot( ) : *root = *root\PrevRoot( ) : Wend
+            
+            ; 3. Рисуем все элементы по порядку (снизу вверх)
+            While *root 
+               Bind( *root, *callback, event, item )
+               *Root = *root\NextRoot( ) 
+            Wend
             ProcedureReturn #PB_All
             ;
          Else
@@ -26594,16 +26522,22 @@ EndProcedure
       EndProcedure
       
       Procedure.i Unbind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
-   If *this < 0
-      PushMapPosition(roots( ))
-      ForEach roots( )
-         Unbind( roots( ), *callback, event, item )
-      Next
-      PopMapPosition(roots( ))
-      ProcedureReturn #PB_All
-   Else
-      ; Используем ResetList + While NextElement для безопасного удаления в цикле
-      ResetList( __gui\event\binds( ) )
+         If *this < 0
+            ; 1. Сохраняем в локальную переменную
+            Protected._s_ROOT *root = Root( )
+            
+            ; 2. Отматываем в самое начало (к первому/нижнему окну)
+            While *root\PrevRoot( ) : *root = *root\PrevRoot( ) : Wend
+            
+            ; 3. Рисуем все элементы по порядку (снизу вверх)
+            While *root 
+               Unbind( *root, *callback, event, item )
+               *Root = *root\NextRoot( ) 
+            Wend
+            ProcedureReturn #PB_All
+         Else
+            ; Используем ResetList + While NextElement для безопасного удаления в цикле
+            ResetList( __gui\event\binds( ) )
       
       If *callback = #PB_All
          While NextElement( __gui\event\binds( ) )
@@ -26712,7 +26646,7 @@ EndProcedure
          
          ; Repeat : Until WaitWindowEvent( 1 ) = #PB_Event_CloseWindow
          Repeat 
-            If MapSize( roots( ))
+            If Root( )
                WaitWindowEvent( 1 ) 
             Else
                Break
@@ -26920,26 +26854,35 @@ EndProcedure
          Protected canvaswindow = Root( )\canvas\window
          Protected canvasgadget = Root( )\canvas\gadget
          ;
-         ForEach roots( ) 
-            window = roots( )\canvas\window
+         ; 1. Сохраняем в локальную переменную
+         Protected._s_ROOT *nextRoot, *r = Root( )
+         
+         ; 2. Отматываем в самое начало (к первому/нижнему окну)
+         While *r\PrevRoot( ) : *r = *r\PrevRoot( ) : Wend
+         
+         ; 3. Рисуем все элементы по порядку (снизу вверх)
+         *nextRoot = *r
+         While *nextRoot 
+            window = *nextRoot\canvas\window
             If *root = #PB_All
-               canvasgadget = roots( )\canvas\gadget
-               Delete( roots( ))
-               PostFree( roots( ))
-               DeleteMapElement( roots( ))
+               canvasgadget = *nextRoot\canvas\gadget
+               Delete( *nextRoot )
+               PostFree( *nextRoot )
+               ;DeleteMapElement( *nextRoot )
                If window <> canvaswindow
                   FreeGadget( canvasgadget )
                   CloseWindow( window )
                EndIf
             Else
                If window = *root\canvas\window 
-                  Delete( roots( ))
-                  PostFree( roots( ))
-                  DeleteMapElement( roots( ))
-                  result = MapSize( roots( ))
+                  Delete( *nextRoot )
+                  PostFree( *nextRoot )
+                  ;DeleteMapElement( *nextRoot )
+                  result = 1
                EndIf
             EndIf
-         Next
+            *nextRoot = *nextRoot\NextRoot( ) 
+         Wend
          ;
          If result
             window =- 1
@@ -26957,14 +26900,17 @@ EndProcedure
                   CloseWindow( canvaswindow ) 
                CompilerEndIf
             Else
-               ForEach roots( ) 
-                  If parent::IsChild( WindowID( roots( )\canvas\window ), hParent )
-                     window = roots( )\canvas\window
-                     Delete( roots( ))
-                     PostFree( roots( ))
-                     DeleteMapElement( roots( ) )
+               ; 3. Рисуем все элементы по порядку (снизу вверх)
+               *nextRoot = *r
+               While *NextRoot 
+                  If parent::IsChild( WindowID( *nextRoot\canvas\window ), hParent )
+                     window = *nextRoot\canvas\window
+                     Delete( *nextRoot)
+                     PostFree( *nextRoot)
+                     ; DeleteMapElement( *nextRoot )
                   EndIf
-               Next 
+                  *nextRoot = *nextRoot\NextRoot( ) 
+               Wend
                If IsWindow( window )
                   CloseWindow( window ) 
                EndIf
@@ -27003,9 +26949,17 @@ EndProcedure
             
          ElseIf *this < 0
             Debug "[all] - free"
-            ForEach roots( ) 
-               Delete( roots( ))
-            Next
+            ; 1. Сохраняем в локальную переменную
+            Protected._s_ROOT *r = Root( )
+            
+            ; 2. Отматываем в самое начало (к первому/нижнему окну)
+            While *r\PrevRoot( ) : *r = *r\PrevRoot( ) : Wend
+            
+            ; 3. Рисуем все элементы по порядку (снизу вверх)
+            While *r 
+               Delete( *r )
+               *r = *r\NextRoot( ) 
+            Wend
          EndIf
       EndProcedure
       
@@ -28794,10 +28748,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 19620
-; FirstLine = 19109
-; Folding = ------------------------------------------------------------------------------------------------------------------------f0---------------------------------------------------------------------------------------------------f----+---------------------------------------------------------0fUuf-6------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4--------------0---+--84-----------------------------------------------------------------------------------------------------------------------------------------------------------0-----f---------------------------------------------------------------------------------------------------------------------------------Pu-----
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 20591
+; FirstLine = 19754
+; Folding = -------------------------------------------------------------------------------------------------------------------------7----------------------------------------------------------------------------------------------------+---0---------------------------------------------------------8-oc-+z--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------0---------------v--------------8------4v------------------------------------------0-------------------v-+0-------v------------------------------------------------------------------------------8------+-------------------------------------------f+-----------------------------------------------------------------------------------Pu-----
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
