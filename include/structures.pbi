@@ -119,34 +119,26 @@ CompilerIf Not Defined(Structures, #PB_Module)
          right.b
          bottom.b
       EndStructure
-      ;--     STATE
-      Structure _s_STATE
-         font.i
-         fontID.i
-         
-          press.b
-          visible.b
-          checked.b
-         
-            enter.b  
-         StructureUnion
-            _focus.b  
-            focus.b
-         EndStructureUnion
-         round.a
-         
-         ; TEMP
-         Hide.b[2]
-         Disable.b[2]
-      EndStructure
       
       ;--     BOX
-      Structure _s_BOX Extends _s_STATE
+      Structure _s_BOX 
+         ; TEMP
+         press.b
+         StructureUnion
+            enter.b  
+            _enter.b  
+         EndStructureUnion
+         mask.q
+         Hide.b[2]
+         Disable.b[2]
+         
+         checked.b
+         round.a
+         
          X.l
          Y.l
          Width.l
          Height.l
-         mask.q
       EndStructure
       ;--     ARROW
       Structure _s_ARROW
@@ -333,12 +325,21 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
+         font.i
+         fontID.i
+         visible.b
+         StructureUnion
+            focus.b
+            _focus.b
+         EndStructureUnion
          StructureUnion
             Index.i
             lindex.i ; line
             rindex.i ; row
             tindex.i ; tab
          EndStructureUnion
+         
+         
          
          selector.a  ; selected lines last selector size
          
@@ -543,6 +544,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     WIDGET
       Structure _s_WIDGET 
+         font.i
+         fontID.i
+         
          ColumnsHeight.i : RowHeight.i : ScrollSize.i
          ScrollV.i : ScrollH.i : State.i
          
@@ -605,8 +609,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Width.l[constants::#__c]
          ;                        ;*Draw.DrawFunc          ; Function to Draw
          
-         font.i
-         fontID.i
          ; placing layout
          StructureUnion
             Index.i
@@ -775,9 +777,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
 ; CursorPosition = 131
-; FirstLine = 121
-; Folding = -----6-k---
+; FirstLine = 117
+; Folding = -----9fy---
 ; Optimizer
 ; EnableXP

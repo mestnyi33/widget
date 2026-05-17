@@ -349,6 +349,8 @@
       
       #__mask_inner = 1 << 25
       #__mask_inner2 = 1 << 26
+      #__mask_visible = 1 << 27
+      #__mask_checked = 1 << 28
       
       ;
       ;-\\ create-type
@@ -779,8 +781,8 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 350
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 352
 ; FirstLine = 335
 ; Folding = ----
 ; Optimizer
