@@ -673,7 +673,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Macro repaint_set( )
-        mask | #__mask_redraw ;  Root\Repaint = 0
+        Root\mask | #__mask_redraw ;  Root\Repaint = 0
       EndMacro
       
       Macro Repaint( _address_ = 0 )
@@ -19575,9 +19575,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;             EndIf
             
             ;\\ post repaint canvas
-            If *this\mask & #__mask_redraw 
+            If *this\root\mask & #__mask_redraw 
                PostRepaint( *this\root )
-               *this\mask &~ #__mask_redraw
+               *this\root\mask &~ #__mask_redraw
             EndIf
          EndIf
          
@@ -28882,8 +28882,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 18290
-; FirstLine = 18136
+; CursorPosition = 19577
+; FirstLine = 19387
 ; Folding = ------------------------------------------------------------------------------------------------------------------------f0-----------------------------------------------------------------------------------------------------------------------------------------------------------------f-Hl84f7-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f----------------------------------------------------------------------------------------------------------------------------f-+-+--4---------------------------------------------------------------------------------------------------------------------------------j8----
 ; EnableXP
 ; DPIAware
