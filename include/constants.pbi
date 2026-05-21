@@ -339,19 +339,23 @@
       #__mask_disable   = 1 << 15        ; Объект заблокирован изначально (базовый флаг)
       #__mask_hidden    = 1 << 16        ; Фактическое текущее состояние скрытия
       #__mask_disabled  = 1 << 17        ; Фактическое текущее состояние блокировки
-      #__mask_tokken    = 1 << 18
-      #__mask_edit      = 1 << 19        ; Выделение (Строка)
-      #__mask_change    = 1 << 20        ; текст изменился, надо перепарсить токены.
-      #__mask_cursor    = 1 << 21
-      #__mask_resize    = 1 << 22
-      #__mask_node      = 1 << 23        ; Является узлом (Строка) / Деревом (Виджет)
-      #__mask_collapsed = 1 << 24        ; Свернуто (Узел/Ветка)
+      ;#__mask_cursor    = 1 << 18
+      ;
+      #__mask_resize    = 1 << 19
+      #__mask_minimize  = 1 << 30
+      #__mask_maximize  = 1 << 31
+      
+      #__maskrow_edit      = 1 << 21        ; Выделение (Строка)
+      #__maskrow_change    = 1 << 22        ; текст изменился, надо перепарсить токены.
+      #__maskrow_node      = 1 << 23        ; Является узлом (Строка) / Деревом (Виджет)
+      #__maskrow_collapsed = 1 << 24        ; Свернуто (Узел/Ветка)
       
       #__mask_inner = 1 << 25
       #__mask_inner2 = 1 << 26
       #__mask_visible = 1 << 27
-      #__mask_checked = 1 << 28
+      ;#__mask_checked = 1 << 28
       
+      ;#__mask_tokken    = 1 << 20
       ;
       ;-\\ create-type
       #__type_Root          = - 1
@@ -782,8 +786,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 352
-; FirstLine = 335
+; CursorPosition = 341
+; FirstLine = 336
 ; Folding = ----
 ; Optimizer
 ; EnableXP

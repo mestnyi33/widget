@@ -655,32 +655,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
          PopListPosition( widgets( ))
          Widget( ) = *before_start_enumerate_widget
       EndMacro
-;       Macro StartEnum( _parent_, _item_ = #PB_All, _mode_ = 0 )
-;          Bool(_parent_\FirstWidget( ))
-;          *before_start_enumerate_widget = Widget( )
-;          
-;          ; Встаем на первого ребенка, используя твой макрос FirstWidget()
-;          Widget( ) = _parent_\FirstWidget( )
-;          
-;          ; Крутим цикл, пока цепочка не упрется в законный 0 на конце
-;          While Widget( ) <> 0
-;             
-;             ; Твоя родная логика фильтрации вкладок по tabindex
-;             If _item_ = #PB_All Or Widget( )\tabindex = _item_
-;                ; [Сюда компилятор подставит тело твоего цикла]
-;             EndMacro
-;             
-;             Macro StopEnum( )
-;             EndIf
-;             
-;             ; Шагаем к следующему брату, используя твой макрос AfterWidget()
-;             ; (В новой схеме у последнего ребенка AfterWidget() вернет 0)
-;             Widget( ) = Widget( )\AfterWidget( )
-;          Wend
-;          
-;          Widget( ) = *before_start_enumerate_widget
-;       EndMacro
-
+     
       ;-
       Macro StartDraw( _root_ )
          Bool(Widget::__GUI\DrawingRoot <> _root_)
@@ -1184,15 +1159,15 @@ CompilerIf Not Defined( Widget, #PB_Module )
             ;\\
             If StartEnum( _this_\parent )
                ;
-               If Widget()\anchors And Not Widget()\mask & #__mask_hidden And Widget() <> _this_ And Widget()\level = _this_\level
+               If widgets( )\anchors And Not widgets( )\mask & #__mask_hidden And widgets( ) <> _this_ And widgets( )\level = _this_\level
                   ;\\ left-line
-                  If _this_\frame_x( ) = Widget()\frame_x( )
-                     If a_anchors( )\line[#__a_line_left]\y > Widget()\frame_y( )
-                        a_anchors( )\line[#__a_line_left]\y = Widget()\frame_y( )
+                  If _this_\frame_x( ) = widgets( )\frame_x( )
+                     If a_anchors( )\line[#__a_line_left]\y > widgets( )\frame_y( )
+                        a_anchors( )\line[#__a_line_left]\y = widgets( )\frame_y( )
                      EndIf
-                     If _this_\frame_y( ) + _this_\frame_height( ) < Widget()\frame_y( ) + Widget()\frame_height( )
-                        If a_anchors( )\line[#__a_line_left]\height < Widget()\frame_y( ) + Widget()\frame_height( ) 
-                           a_anchors( )\line[#__a_line_left]\height = Widget()\frame_y( ) + Widget()\frame_height( )
+                     If _this_\frame_y( ) + _this_\frame_height( ) < widgets( )\frame_y( ) + widgets( )\frame_height( )
+                        If a_anchors( )\line[#__a_line_left]\height < widgets( )\frame_y( ) + widgets( )\frame_height( ) 
+                           a_anchors( )\line[#__a_line_left]\height = widgets( )\frame_y( ) + widgets( )\frame_height( )
                         EndIf
                      Else
                         If a_anchors( )\line[#__a_line_left]\height < _this_\frame_y( ) + _this_\frame_height( ) 
@@ -1202,13 +1177,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   ;
                   ;\\ top-line
-                  If _this_\frame_y( ) = Widget()\frame_y( )
-                     If a_anchors( )\line[#__a_line_top]\x > Widget()\frame_x( )
-                        a_anchors( )\line[#__a_line_top]\x = Widget()\frame_x( )
+                  If _this_\frame_y( ) = widgets( )\frame_y( )
+                     If a_anchors( )\line[#__a_line_top]\x > widgets( )\frame_x( )
+                        a_anchors( )\line[#__a_line_top]\x = widgets( )\frame_x( )
                      EndIf
-                     If _this_\frame_x( ) + _this_\frame_width( ) <= Widget()\frame_x( ) + Widget()\frame_width( ) 
-                        If a_anchors( )\line[#__a_line_top]\width < Widget()\frame_x( ) + Widget()\frame_width( ) 
-                           a_anchors( )\line[#__a_line_top]\width = Widget()\frame_x( ) + Widget()\frame_width( )
+                     If _this_\frame_x( ) + _this_\frame_width( ) <= widgets( )\frame_x( ) + widgets( )\frame_width( ) 
+                        If a_anchors( )\line[#__a_line_top]\width < widgets( )\frame_x( ) + widgets( )\frame_width( ) 
+                           a_anchors( )\line[#__a_line_top]\width = widgets( )\frame_x( ) + widgets( )\frame_width( )
                         EndIf
                      Else
                         If a_anchors( )\line[#__a_line_top]\width < _this_\frame_x( ) + _this_\frame_width( ) 
@@ -1218,13 +1193,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   ;
                   ;\\ right-line
-                  If _this_\frame_x( ) + _this_\frame_width( ) = Widget()\frame_x( ) + Widget()\frame_width( )
-                     If a_anchors( )\line[#__a_line_right]\y > Widget()\frame_y( )
-                        a_anchors( )\line[#__a_line_right]\y = Widget()\frame_y( )
+                  If _this_\frame_x( ) + _this_\frame_width( ) = widgets( )\frame_x( ) + widgets( )\frame_width( )
+                     If a_anchors( )\line[#__a_line_right]\y > widgets( )\frame_y( )
+                        a_anchors( )\line[#__a_line_right]\y = widgets( )\frame_y( )
                      EndIf
-                     If _this_\frame_y( ) + _this_\frame_height( ) < Widget()\frame_y( ) + Widget()\frame_height( )
-                        If a_anchors( )\line[#__a_line_right]\height < Widget()\frame_y( ) + Widget()\frame_height( ) 
-                           a_anchors( )\line[#__a_line_right]\height = Widget()\frame_y( ) + Widget()\frame_height( )
+                     If _this_\frame_y( ) + _this_\frame_height( ) < widgets( )\frame_y( ) + widgets( )\frame_height( )
+                        If a_anchors( )\line[#__a_line_right]\height < widgets( )\frame_y( ) + widgets( )\frame_height( ) 
+                           a_anchors( )\line[#__a_line_right]\height = widgets( )\frame_y( ) + widgets( )\frame_height( )
                         EndIf
                      Else
                         If a_anchors( )\line[#__a_line_right]\height < _this_\frame_y( ) + _this_\frame_height( ) 
@@ -1234,13 +1209,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   EndIf
                   ;
                   ;\\ bottom-line
-                  If _this_\frame_y( ) + _this_\frame_height( ) = Widget()\frame_y( ) + Widget()\frame_height( )
-                     If a_anchors( )\line[#__a_line_bottom]\x > Widget()\frame_x( )
-                        a_anchors( )\line[#__a_line_bottom]\x = Widget()\frame_x( )
+                  If _this_\frame_y( ) + _this_\frame_height( ) = widgets( )\frame_y( ) + widgets( )\frame_height( )
+                     If a_anchors( )\line[#__a_line_bottom]\x > widgets( )\frame_x( )
+                        a_anchors( )\line[#__a_line_bottom]\x = widgets( )\frame_x( )
                      EndIf
-                     If _this_\frame_x( ) + _this_\frame_width( ) < Widget()\frame_x( ) + Widget()\frame_width( )
-                        If a_anchors( )\line[#__a_line_bottom]\width < Widget()\frame_x( ) + Widget()\frame_width( ) 
-                           a_anchors( )\line[#__a_line_bottom]\width = Widget()\frame_x( ) + Widget()\frame_width( )
+                     If _this_\frame_x( ) + _this_\frame_width( ) < widgets( )\frame_x( ) + widgets( )\frame_width( )
+                        If a_anchors( )\line[#__a_line_bottom]\width < widgets( )\frame_x( ) + widgets( )\frame_width( ) 
+                           a_anchors( )\line[#__a_line_bottom]\width = widgets( )\frame_x( ) + widgets( )\frame_width( )
                         EndIf
                      Else
                         If a_anchors( )\line[#__a_line_bottom]\width < _this_\frame_x( ) + _this_\frame_width( ) 
@@ -2335,26 +2310,25 @@ CompilerIf Not Defined( Widget, #PB_Module )
       
       ;-
       Procedure   make_mdi_area( *this._s_PARENT, X.l, Y.l, Width.l, Height.l ) ; Ok
-         Protected._s_WIDGET *e
          *this\scroll_x( )      = 0;X
          *this\scroll_y( )      = 0;Y
          *this\scroll_width( )  = Width
          *this\scroll_height( ) = Height
          
          ;\\
-         If StartEnum( *this ) : *e = Widget()
-            If *this = *e\parent
-               If *this\scroll_x( ) > *e\container_x( )
-                  *this\scroll_x( ) = *e\container_x( )
+         If StartEnum( *this )
+            If *this = widgets( )\parent
+               If *this\scroll_x( ) > widgets( )\container_x( )
+                  *this\scroll_x( ) = widgets( )\container_x( )
                EndIf
-               If *this\scroll_y( ) > *e\container_y( )
-                  *this\scroll_y( ) = *e\container_y( )
+               If *this\scroll_y( ) > widgets( )\container_y( )
+                  *this\scroll_y( ) = widgets( )\container_y( )
                EndIf
-               If *this\scroll_width( ) < *e\container_x( ) + *e\frame_width( )
-                  *this\scroll_width( ) = *e\container_x( ) + *e\frame_width( )
+               If *this\scroll_width( ) < widgets( )\container_x( ) + widgets( )\frame_width( )
+                  *this\scroll_width( ) = widgets( )\container_x( ) + widgets( )\frame_width( )
                EndIf
-               If *this\scroll_height( ) < *e\container_y( ) + *e\frame_height( )
-                  *this\scroll_height( ) = *e\container_y( ) + *e\frame_height( )
+               If *this\scroll_height( ) < widgets( )\container_y( ) + widgets( )\frame_height( )
+                  *this\scroll_height( ) = widgets( )\container_y( ) + widgets( )\frame_height( )
                EndIf
             EndIf
             StopEnum( )
@@ -2548,9 +2522,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
          ;\\
          If result
             ;                If StartEnum( *this )
-            ;                   If *this = *e\parent
-            ;                      ; Reclip( *e )
-            ;                      Resize( *e, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+            ;                   If *this = widgets( )\parent
+            ;                      ; Reclip( widgets( ) )
+            ;                      Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
             ;                   EndIf
             ;                   StopEnum( )
             ;                EndIf
@@ -4123,7 +4097,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure a_align( *g._s_WIDGET, align )
-         Protected._s_WIDGET *e
          Protected.l X,Y,Width,Height
          Protected *parent._s_PARENT
          
@@ -4144,22 +4117,21 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             If *parent
                If StartEnum( *parent )
-                  *e = Widget( )
-                  If *e\anchors\group\show 
+                  If widgets( )\anchors\group\show 
                      Select align
                         Case 1
-                           Resize( *e, (X-*e\parent\x[#__c_inner]), #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+                           Resize( widgets( ), (X-widgets( )\parent\x[#__c_inner]), #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
                         Case 3
-                           Resize( *e, (X-*e\parent\x[#__c_inner])+Width-*e\width[#__c_frame], #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+                           Resize( widgets( ), (X-widgets( )\parent\x[#__c_inner])+Width-widgets( )\width[#__c_frame], #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
                         Case 2
-                           Resize( *e, #PB_Ignore, (Y-*e\parent\y[#__c_inner]), #PB_Ignore, #PB_Ignore, 0 )
+                           Resize( widgets( ), #PB_Ignore, (Y-widgets( )\parent\y[#__c_inner]), #PB_Ignore, #PB_Ignore, 0 )
                         Case 4
-                           Resize( *e, #PB_Ignore, (Y-*e\parent\y[#__c_inner])+Height-*e\height[#__c_frame], #PB_Ignore, #PB_Ignore, 0 )
+                           Resize( widgets( ), #PB_Ignore, (Y-widgets( )\parent\y[#__c_inner])+Height-widgets( )\height[#__c_frame], #PB_Ignore, #PB_Ignore, 0 )
                            
                         Case 5
-                           Resize( *e, #PB_Ignore, #PB_Ignore, Width, #PB_Ignore, 0 )
+                           Resize( widgets( ), #PB_Ignore, #PB_Ignore, Width, #PB_Ignore, 0 )
                         Case 6
-                           Resize( *e, #PB_Ignore, #PB_Ignore, #PB_Ignore, Height, 0 )
+                           Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, Height, 0 )
                            
                      EndSelect
                   EndIf
@@ -4291,32 +4263,31 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure a_update( *this._s_PARENT )
-         Protected._s_WIDGET *e
          ;
          a_anchors( )\group\x = *this\x+*this\width 
          a_anchors( )\group\y = *this\y+*this\height 
          a_anchors( )\group\width = 0
          a_anchors( )\group\height = 0
          ;
-         If StartEnum( *this ) : *e = Widget()
-            If *e\anchors\group\show
-               If a_anchors( )\group\x > *e\x[#__c_frame]
-                  a_anchors( )\group\x = *e\x[#__c_frame]
+         If StartEnum( *this )
+            If widgets( )\anchors\group\show
+               If a_anchors( )\group\x > widgets( )\x[#__c_frame]
+                  a_anchors( )\group\x = widgets( )\x[#__c_frame]
                EndIf
-               If a_anchors( )\group\y > *e\y[#__c_frame] 
-                  a_anchors( )\group\y = *e\y[#__c_frame] 
+               If a_anchors( )\group\y > widgets( )\y[#__c_frame] 
+                  a_anchors( )\group\y = widgets( )\y[#__c_frame] 
                EndIf
             EndIf
             StopEnum( )
          EndIf
          ;
-         If StartEnum( *this ) : *e = Widget()
-            If *e\anchors\group\show
-               If a_anchors( )\group\width < (*e\x[#__c_frame] + *e\width[#__c_frame]) - a_anchors( )\group\x
-                  a_anchors( )\group\width = (*e\x[#__c_frame] + *e\width[#__c_frame]) - a_anchors( )\group\x
+         If StartEnum( *this )
+            If widgets( )\anchors\group\show
+               If a_anchors( )\group\width < (widgets( )\x[#__c_frame] + widgets( )\width[#__c_frame]) - a_anchors( )\group\x
+                  a_anchors( )\group\width = (widgets( )\x[#__c_frame] + widgets( )\width[#__c_frame]) - a_anchors( )\group\x
                EndIf
-               If a_anchors( )\group\height < (*e\y[#__c_frame] + *e\height[#__c_frame]) - a_anchors( )\group\y
-                  a_anchors( )\group\height = (*e\y[#__c_frame] + *e\height[#__c_frame]) - a_anchors( )\group\y
+               If a_anchors( )\group\height < (widgets( )\y[#__c_frame] + widgets( )\height[#__c_frame]) - a_anchors( )\group\y
+                  a_anchors( )\group\height = (widgets( )\y[#__c_frame] + widgets( )\height[#__c_frame]) - a_anchors( )\group\y
                EndIf
             EndIf
             StopEnum( )
@@ -4324,32 +4295,32 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          ;
          ;\\
-         If StartEnum( *this ) : *e = Widget()
-            If *e\anchors And *e\anchors\group\show
+         If StartEnum( *this )
+            If widgets( )\anchors And widgets( )\anchors\group\show
                ;
-               *e\anchors\group\x = *e\x[#__c_container] 
-               *e\anchors\group\y = *e\y[#__c_container]
-               *e\anchors\group\width = *e\width[#__c_frame] 
-               *e\anchors\group\height = *e\height[#__c_frame]
+               widgets( )\anchors\group\x = widgets( )\x[#__c_container] 
+               widgets( )\anchors\group\y = widgets( )\y[#__c_container]
+               widgets( )\anchors\group\width = widgets( )\width[#__c_frame] 
+               widgets( )\anchors\group\height = widgets( )\height[#__c_frame]
                
                
                ;                Define position = 0
-               ;                a_setpos( *e, position )
+               ;                a_setpos( widgets( ), position )
                
                ;                ;
-               ;                a_size( *e\anchors\id,
-               ;                        *e\anchors\size, 
-               ;                        *e\anchors\mode )
+               ;                a_size( widgets( )\anchors\id,
+               ;                        widgets( )\anchors\size, 
+               ;                        widgets( )\anchors\mode )
                ;                
                ;                ;
-               ;                a_move( *e,
-               ;                        *e\anchors\id,
-               ;                        *e\screen_x( ),
-               ;                        *e\screen_y( ),
-               ;                        *e\screen_width( ),
-               ;                        *e\screen_height( ) )
+               ;                a_move( widgets( ),
+               ;                        widgets( )\anchors\id,
+               ;                        widgets( )\screen_x( ),
+               ;                        widgets( )\screen_y( ),
+               ;                        widgets( )\screen_width( ),
+               ;                        widgets( )\screen_height( ) )
                
-               Resize( *e, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+               Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                
             EndIf
             StopEnum( )
@@ -4387,7 +4358,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure a_doevents( *this._s_PARENT, event.l )
-         Protected._s_WIDGET *e
          Protected mouse_x.l = CanvasMouseX( )
          Protected mouse_y.l = CanvasMouseY( )
          
@@ -4418,13 +4388,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                      a_anchors( )\group\show = #False
                      
                      ; reset show group anchors
-                     If StartEnum( a_main( )) : *e = Widget()
-                        If *e\anchors 
-                           If *e\anchors\group\show 
+                     If StartEnum( a_main( ) )
+                        If widgets( )\anchors 
+                           If widgets( )\anchors\group\show 
                               
-                              Debug "reset f "+*e\class +" "+ *this\class
-                              *e\anchors\group\show = #False
-                              a_group_show( *e, #__event_free )
+                              Debug "reset f "+widgets( )\class +" "+ *this\class
+                              widgets( )\anchors\group\show = #False
+                              a_group_show( widgets( ), #__event_free )
                               
                            EndIf
                         EndIf
@@ -4443,13 +4413,13 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         a_anchors( )\group\show = #False
                         
                         ; reset show group anchors
-                        If StartEnum( a_main( )) : *e = Widget()
-                           If *e\anchors And
-                              *e\anchors\group\show 
+                        If StartEnum( a_main( ) )
+                           If widgets( )\anchors And
+                              widgets( )\anchors\group\show 
                               
-                              Debug "reset d "+*e\class +" "+ *this\class
-                              *e\anchors\group\show = #False
-                              a_group_show( *e, #__event_free )
+                              Debug "reset d "+widgets( )\class +" "+ *this\class
+                              widgets( )\anchors\group\show = #False
+                              a_group_show( widgets( ), #__event_free )
                               
                            EndIf
                            StopEnum( )
@@ -4467,17 +4437,17 @@ CompilerIf Not Defined( Widget, #PB_Module )
                   ; show group anchors
                   If Not a_anchors( )\group\show
                      If mouse( )\selector
-                        If StartEnum( *this ) : *e = Widget()
-                           If *e\anchors And Not *e\mask & #__mask_hidden 
-                              If *e\anchors\group\show = #False
-                                 If *e\level = *this\level + 1
-                                    If is_intersect_( *e, mouse( )\selector, [#__c_frame] )
+                        If StartEnum( *this )
+                           If widgets( )\anchors And Not widgets( )\mask & #__mask_hidden 
+                              If widgets( )\anchors\group\show = #False
+                                 If widgets( )\level = *this\level + 1
+                                    If is_intersect_( widgets( ), mouse( )\selector, [#__c_frame] )
                                        
-                                       Debug "set "+*e\class
+                                       Debug "set "+widgets( )\class
                                        a_anchors( )\group\show + 1
-                                       *e\anchors\group\show = #True
+                                       widgets( )\anchors\group\show = #True
                                        
-                                       a_group_show( *e, #__event_Change )
+                                       a_group_show( widgets( ), #__event_Change )
                                        
                                     EndIf
                                  EndIf
@@ -4496,13 +4466,12 @@ CompilerIf Not Defined( Widget, #PB_Module )
                         
                         
                         If StartEnum( *this )
-                           *e = Widget( )
-                           If *e\anchors And 
-                              *e\anchors\group\show 
+                           If widgets( )\anchors And 
+                              widgets( )\anchors\group\show 
                               
-                              Debug "reset u "+*e\class +" "+ *this\class
-                              *e\anchors\group\show = #False
-                              a_group_show( *e, #__event_free )
+                              Debug "reset u "+widgets( )\class +" "+ *this\class
+                              widgets( )\anchors\group\show = #False
+                              a_group_show( widgets( ), #__event_free )
                               
                            EndIf
                            StopEnum( )
@@ -4641,22 +4610,22 @@ CompilerIf Not Defined( Widget, #PB_Module )
                ;Debug " " + mw + " " + mh
                Protected mx1 = mx, my1 = my, mh1 = mh, mw1 = mw
                If *this\anchors\group\show
-                  If StartEnum( *this\parent ) : *e = Widget()
-                     If *e\anchors\group\show 
+                  If StartEnum( *this\parent )
+                     If widgets( )\anchors\group\show 
                         If mx1 <> #PB_Ignore
-                           mx1 = mx+(*e\anchors\group\x-*this\anchors\group\x)
+                           mx1 = mx+(widgets( )\anchors\group\x-*this\anchors\group\x)
                         EndIf
                         If my1 <> #PB_Ignore
-                           my1 = my+(*e\anchors\group\y-*this\anchors\group\y)
+                           my1 = my+(widgets( )\anchors\group\y-*this\anchors\group\y)
                         EndIf
                         If mw1 <> #PB_Ignore
-                           mw1 = mw+(*e\anchors\group\width-*this\anchors\group\width)
+                           mw1 = mw+(widgets( )\anchors\group\width-*this\anchors\group\width)
                         EndIf
                         If mh1 <> #PB_Ignore
-                           mh1 = mh+(*e\anchors\group\height-*this\anchors\group\height)
+                           mh1 = mh+(widgets( )\anchors\group\height-*this\anchors\group\height)
                         EndIf
                         ;
-                        Resize( *e, mx1, my1, mw1, mh1, 0 )
+                        Resize( widgets( ), mx1, my1, mw1, mh1, 0 )
                      EndIf
                      StopEnum( )
                      ;
@@ -9560,7 +9529,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure.b Hide( *this._s_PARENT, state.b = #PB_Default, flags.q = 0 )
-         Protected._s_WIDGET *e
          ; 1. Если состояние не передано — возвращаем 1 или 0 (был ли скрыт изначально)
          If state = #PB_Default 
             If *this\mask & #__mask_hide
@@ -9586,8 +9554,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; 3. Если есть дочерние элементы — каскадно обновляем их видимость
             If *this\haschildren
-               If StartEnum( *this ) : *e = Widget()
-                  HideState( *e, *e\parent )
+               If StartEnum( *this )
+                  HideState( widgets( ), widgets( )\parent )
                   StopEnum( )
                EndIf
             EndIf
@@ -9597,7 +9565,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
 
       Procedure.b Disable( *this._s_PARENT, State.b = #PB_Default )
-         Protected._s_WIDGET *e
          ; Если состояние не передано — возвращаем истину, если установлена базовая маска блокировки
          If State = #PB_Default 
             If *this\mask & #__mask_disable
@@ -9623,8 +9590,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
             
             ; Если есть дочерние элементы — каскадно обновляем их
             If *this\haschildren
-               If StartEnum( *this ) : *e = Widget()
-                  DisableState( *e, *e\parent )
+               If StartEnum( *this )
+                  DisableState( widgets( ), widgets( )\parent )
                   StopEnum( )
                EndIf
             EndIf
@@ -10694,7 +10661,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
          
          Protected result
          Protected *row._s_ROW
-         Protected._s_WIDGET *e
          
          ;\\ custom object
          If *this = 0
@@ -11056,10 +11022,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                If is_integral_( *this )
                   If *this\parent\haschildren
-                     If StartEnum( *this\parent ) : *e = Widget()
+                     If StartEnum( *this\parent )
                         ; hide all children's except those whose parent-item is selected
-                        HideState( *e, *e\parent )
-                        DisableState( *e, *e\parent )
+                        HideState( widgets( ), widgets( )\parent )
+                        DisableState( widgets( ), widgets( )\parent )
                         StopEnum( )
                      EndIf
                   EndIf
@@ -14417,7 +14383,6 @@ CompilerIf Not Defined( Widget, #PB_Module )
       EndProcedure
       
       Procedure   UpdateButtons( *this._s_WIDGET, change.b = 0 )
-         Protected._s_WIDGET *e
          If change = #PB_All
             Repaint( ) 
          EndIf
@@ -14428,9 +14393,9 @@ CompilerIf Not Defined( Widget, #PB_Module )
                
                *this\parent\align = 0 
                
-               If StartEnum( *this\parent ) : *e = Widget()
-                  If *e\tabindex = #PB_Ignore
-                     SetAlign( *e, 0, 0,1,#__align_auto,0, 0 )          
+               If StartEnum( *this\parent )
+                  If widgets( )\tabindex = #PB_Ignore
+                     SetAlign( widgets( ), 0, 0,1,#__align_auto,0, 0 )          
                   EndIf
                   StopEnum( )
                EndIf
@@ -22804,16 +22769,10 @@ EndProcedure
                *this\mask &~ #__mask_resize
             EndIf
          EndWith
-         
-;          Protected._s_WIDGET *e
-;          If Start( *e, *this )
-;             Draw(*e)
-;             Stop( *e, *this )
-;          EndIf
       EndProcedure
       
       Procedure ReDraw( *root._s_ROOT = 0 )
-         Protected._s_WIDGET *e
+         Protected._s_WIDGET *this
          If *Root > 0
             If StartDraw(*root\root)
               
@@ -22840,13 +22799,14 @@ EndProcedure
                Draw( *root )
                
                ;
-               If ( *root\autosize And *root\haschildren = 0 ) =0;= 99
+               If Not ( *root\autosize And *root\haschildren = 0 )
                   ; Debug *Root\first
                   
-                  ;If Start( *e, *Root )
-                  If StartEnum( *Root ) : *e = Widget()
-                     If *e\parent And Not *e\parent\mask & #__mask_hidden 
-                        If Not ( *e\parent\tabbar And *e\parent\tabbar\TabState( ) <> *e\tabindex) Or *e\tabindex = #PB_Ignore
+                  ;If Start( *this, *Root )
+                  If StartEnum( *Root ) : *this = Widget()
+                     Debug *this
+                     If *this\parent And Not *this\parent\mask & #__mask_hidden 
+                        If Not ( *this\parent\tabbar And *this\parent\tabbar\TabState( ) <> *this\tabindex) Or *this\tabindex = #PB_Ignore
                            ;
                            If test_focus_draw = 1
                               ;\\ draw active containers frame
@@ -22854,7 +22814,7 @@ EndProcedure
                                  If GetActive( )\mask & #__mask_active And 
                                     GetActive( )\haschildren 
                                     ;
-                                    If GetActive( )\AfterWidget( ) = *e  
+                                    If GetActive( )\AfterWidget( ) = *this  
                                        Clip( GetActive( ), [#__c_draw] )
                                        __draw_mode(#PB_2DDrawing_Outlined)
                                        draw_focus_frame( GetActive( ), $ff0000ff) ; $ffff0000)
@@ -22867,7 +22827,7 @@ EndProcedure
                                        ActiveWindow( )\haschildren And  
                                        ActiveWindow( ) <> GetActive( )
                                        ;
-                                       If ActiveWindow( )\AfterWidget( ) = *e  
+                                       If ActiveWindow( )\AfterWidget( ) = *this  
                                           Clip( ActiveWindow( ), [#__c_draw] )
                                           __draw_mode(#PB_2DDrawing_Outlined)
                                           draw_focus_frame( ActiveWindow( ), $ff00ff00)
@@ -22880,7 +22840,7 @@ EndProcedure
                                        ActiveGadget( )\haschildren And  
                                        ActiveGadget( ) <> GetActive( ) 
                                        
-                                       If ActiveGadget( )\AfterWidget( ) = *e  
+                                       If ActiveGadget( )\AfterWidget( ) = *this  
                                           Clip( ActiveGadget( ), [#__c_draw] )
                                           __draw_mode(#PB_2DDrawing_Outlined)
                                           draw_focus_frame( ActiveGadget( ), $ff00ff00)
@@ -22891,21 +22851,21 @@ EndProcedure
                            EndIf
                            ;
                            ;
-                           ;\\ draw entered widget anchors   *e\parent\tabbar And 
+                           ;\\ draw entered widget anchors   *this\parent\tabbar And 
                            If Not MousePress( )
                               If a_entered( ) And
                                  a_entered( )\mask & #__mask_hover And 
                                  a_entered( )\haschildren And
                                  a_entered( ) <> a_focused( ) ; Not ( a_anchors( ) And a_focused( ) = a_entered( ) )
                                                               ;
-                                 If a_entered( )\AfterWidget( ) = *e  
+                                 If a_entered( )\AfterWidget( ) = *this  
                                     Clip( a_entered( ), [#__c_draw] )
                                     a_draw( a_entered( ), a_entered( )\anchors\state )
                                  EndIf
                               EndIf
                            EndIf
                            
-                           Draw( *e)
+                           Draw( *this)
                            ;
                            
                            ; 
@@ -22916,7 +22876,7 @@ EndProcedure
                                     GetActive( )\haschildren 
                                     ;
                                     If Not GetActive( )\AfterWidget( ) 
-                                       If *e = GetLast( GetActive( ) )
+                                       If *this = GetLast( GetActive( ) )
                                           Clip( GetActive( ), [#__c_draw] )
                                           __draw_mode(#PB_2DDrawing_Outlined)
                                           draw_focus_frame( GetActive( ), $ff0000ff) ; $ffff0000)
@@ -22931,7 +22891,7 @@ EndProcedure
                                        ActiveWindow( ) <> GetActive( ) 
                                        ;
                                        If Not ActiveWindow( )\AfterWidget( ) 
-                                          If *e = GetLast( ActiveWindow( ) )
+                                          If *this = GetLast( ActiveWindow( ) )
                                              Clip( ActiveWindow( ), [#__c_draw] )
                                              __draw_mode(#PB_2DDrawing_Outlined)
                                              draw_focus_frame( ActiveWindow( ), $ff00ff00)
@@ -22946,7 +22906,7 @@ EndProcedure
                                        ActiveGadget( ) <> GetActive( ) 
                                        
                                        If Not ActiveGadget( )\AfterWidget( ) 
-                                          If *e = GetLast( ActiveGadget( ) )
+                                          If *this = GetLast( ActiveGadget( ) )
                                              Clip( ActiveGadget( ), [#__c_draw] )
                                              __draw_mode(#PB_2DDrawing_Outlined)
                                              draw_focus_frame( ActiveGadget( ), $ff00ff00)
@@ -22966,10 +22926,10 @@ EndProcedure
                                  a_entered( ) <> a_focused( ) ; Not ( a_anchors( ) And a_focused( ) = a_entered( ) )
                                  
                                  If Not a_entered( )\AfterWidget( ) 
-                                    If *e = GetLast( a_entered( ) )
-                                       ; Debug ""+*e\parent\class +" "+ *e\class +" "+ a_entered( )\class +" ("+ *e\text\str(0) +") "+ IsChild( *e, a_entered( ) )
+                                    If *this = GetLast( a_entered( ) )
+                                       ; Debug ""+*this\parent\class +" "+ *this\class +" "+ a_entered( )\class +" ("+ *this\text\str(0) +") "+ IsChild( *this, a_entered( ) )
                                        
-                                       ; If IsChild( *e, a_entered( ) )
+                                       ; If IsChild( *this, a_entered( ) )
                                        Clip( a_entered( ), [#__c_draw] )
                                        a_draw( a_entered( ), a_entered( )\anchors\state )
                                        ; EndIf
@@ -22981,8 +22941,7 @@ EndProcedure
                         EndIf
                      EndIf
                      ;                       
-                     StopEnum( ) 
-                     ;Stop( *e, *Root )
+                     StopEnum( ) ; Stop( *this, *Root )
                   EndIf
                   
                EndIf
@@ -25226,7 +25185,6 @@ EndProcedure
          Protected.l Change_x, Change_y, Change_width, Change_height
          Protected.l ix, iy, iwidth, iheight
          Protected.b result
-         Protected._s_WIDGET *e
          
          ;\\
          If *this\autosize 
@@ -25627,10 +25585,9 @@ EndProcedure
                         If make_area_max( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
                            ;\\
                            If StartEnum( *this\parent )
-                              *e = Widget()
-                              If *this\parent = *e\parent And *this <> *e
-                                 ; Reclip( *e )
-                                 Resize( *e, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
+                              If *this\parent = widgets( )\parent And *this <> widgets( )
+                                 ; Reclip( widgets( ) )
+                                 Resize( widgets( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
                               EndIf
                               StopEnum( )
                            EndIf
@@ -28683,9 +28640,8 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 22842
-; FirstLine = 21799
-; Folding = --------------------8----------+-----------------------------------------------------------------------------------------2---------------------------------------------------------------------------------------8--c-------------0---------------------------------------------------------4-R---n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-+------------------------f-f---f---0--8---08------------------4-0fv-8v0000-----------------------------------------------------------------------------+--------------------------------------------------P------------------------------------------------------------------------------------j8----
+; CursorPosition = 142
+; FirstLine = 138
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
-; Executable = widgets-.app.exe

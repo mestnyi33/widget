@@ -517,7 +517,7 @@ Procedure   PropertiesButton_Hide( *this._s_WIDGET )
    If *this
       *row = *this\parent\RowFocused( ) 
       If *row
-         Hide(*this, *row\hide)
+         Hide(*this, Bool(*row\mask & #__mask_hidden))
       EndIf
    EndIf
 EndProcedure
@@ -606,8 +606,8 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
             Case #_pi_fontstyle
                AddItem(*this, -1, "None")         
                If *this\ComboBar( )
-                  *this\ComboBar( )\mode\Checkboxes = 1
-                  *this\ComboBar( )\mode\optionboxes = 1
+                  *this\ComboBar( )\flagmask | #__flag_Checkboxes
+                  *this\ComboBar( )\flagmask | #__flag_optionboxes
                   ;    SetFlag_( *this\ComboBar( ), #__flag_CheckBoxes|#__flag_OptionBoxes )
                EndIf
                AddItem(*this, -1, "Bold")        ; Шрифт будет выделен жирным
@@ -2692,7 +2692,8 @@ Procedure   ide_events( )
          ;
          If __item = - 1
             SetText( ide_help_VIEW, "help for the inspector" )
-         ElseIf *row\enter Or *row\focus
+         ElseIf *row\mask & #__mask_hover Or 
+                *row\mask & #__mask_active
             If *g = ide_all_ELEMENTS
                SetText( ide_help_VIEW, ide_help_VIEW_elements(GetItemText( *g, __item )) )
             EndIf
@@ -3332,9 +3333,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 2721
-; FirstLine = 2340
-; Folding = -4--4---r-f-tf----------3BC----------+-+8-----------Svt----f+-
+; CursorPosition = 2695
+; FirstLine = 2387
+; Folding = -4--4---8-f-tf----------3BC----------+-+8-----------Svt----f+-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2_621.exe

@@ -558,10 +558,11 @@ Procedure   MakeID( class$, *rootParent._s_PARENT )
    EndIf
    
    Protected result
+   Protected._s_WIDGET *e
    
-   If StartEnum( *rootParent )
-      If Trim(UCase(GetClass( Widget( ))), "#") = Trim(UCase(class$), "#")
-         result = Widget( )
+   If StartEnum( *rootParent ) : *e = Widget()
+      If Trim(UCase(GetClass( *e)), "#") = Trim(UCase(class$), "#")
+         result = *e
          Break
       EndIf
       StopEnum( )
@@ -1616,8 +1617,7 @@ Procedure.s Generate_Code( *mdi._s_PARENT ) ;
          result$ + "UseWidgets( )" + #LF$
       EndIf
       
-      If StartEnum( *mdi )
-         *w = widgets( )
+      If StartEnum( *mdi ) : *w = Widget( )
          id$ = GetClass( *w )
          Image = GetImage( *w )
          
@@ -1805,8 +1805,7 @@ Procedure.s Generate_Code( *mdi._s_PARENT ) ;
       EndIf
       
       ;result$ + ";- " + #LF$
-      If StartEnum( *mdi )
-         *g = widgets( )
+      If StartEnum( *mdi ) : *g = Widget( )
          ;If Not is_window_( *g )
          Events$ = GetEventsString( *g )
          If Events$
@@ -1816,8 +1815,7 @@ Procedure.s Generate_Code( *mdi._s_PARENT ) ;
          StopEnum( )
       EndIf
       
-      If StartEnum( *mdi )
-         *w = widgets( )
+      If StartEnum( *mdi ) : *w = Widget( )
          If *w\parent = *mdi
             Continue
          EndIf
@@ -1828,8 +1826,7 @@ Procedure.s Generate_Code( *mdi._s_PARENT ) ;
             ;\\ 
             result$ + Generate_CodeObject( *mdi, *w, Space(( Level(*w) - parentlevel ) * codeindent ))
             
-            If StartEnum( *w )
-               *g = widgets( )
+            If StartEnum( *w ) : *g = Widget( )
                If Type( GetParent(*g)) = #__type_Splitter
                Else
                   result$ + Generate_CodeObject( *mdi, *g, Space(( Level(*g) - parentlevel ) * codeindent ))
@@ -1857,8 +1854,7 @@ Procedure.s Generate_Code( *mdi._s_PARENT ) ;
       EndIf
       
       Protected win
-      If StartEnum( *mdi )
-         *w = widgets( )
+      If StartEnum( *mdi ) : *w = Widget( )
          If *w\parent <> *mdi
             Continue
          EndIf
@@ -1868,8 +1864,7 @@ Procedure.s Generate_Code( *mdi._s_PARENT ) ;
                result$ + Generate_CodeObject( *mdi, *w, Space(( Level(*w) - parentlevel ) * codeindent ))
                
                ;
-               If StartEnum( *w )
-                  *g = widgets( )
+               If StartEnum( *w ) : *g = Widget( )
                   If is_window_( *g )
                      win = *g
                      result$ + Space$ + "Open_" + Trim( GetClass( *g ), "#" ) + "( )" + #LF$
@@ -1909,8 +1904,7 @@ Procedure.s Generate_Code( *mdi._s_PARENT ) ;
       ; result$ + "  Open_" + Trim( GetClass( *mainWindow ), "#" ) + "( )" + #lf$
       
       Define CountWindow
-      If StartEnum( *mdi )
-         *w = widgets( )
+      If StartEnum( *mdi ) : *w = Widget( )
          If is_window_( *w )
             CountWindow + 1
             If *w\parent = *mdi
@@ -1933,8 +1927,7 @@ Procedure.s Generate_Code( *mdi._s_PARENT ) ;
          result$ + Space$ + Space$ + "EVENT = WaitWindowEvent( )" + #LF$
          result$ + Space$ + Space$ + "" + #LF$
          result$ + Space$ + Space$ + "Select EventWindow( )" + #LF$
-         If StartEnum( *mdi )
-            *w = widgets( )
+         If StartEnum( *mdi ) : *w = Widget( )
             If is_window_( *w )
                result$ + Space$ + Space$ + Space$ + "Case " + GetClass( *w ) + #LF$
             EndIf
@@ -2054,8 +2047,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1590
-; FirstLine = 1488
+; CursorPosition = 1807
+; FirstLine = 1669
 ; Folding = -f-----f-------------------9--------r+f------8fAw--8--
 ; EnableXP
 ; DPIAware

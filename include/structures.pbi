@@ -25,7 +25,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Prototype EventFunc( ) ;*this=#Null, *event=#PB_All, *item=#PB_Any, *data=#NUL )
       
       ;{
-      ;-- STRUCTUREs
+      ;--     STRUCTUREs
       Structure _s_ANIMATION
          Min.i
          Max.i
@@ -33,41 +33,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Delay.i
          Enter.i
          Leave.i
-      EndStructure
-      ;--     MODE
-      Structure _s_mode
-         optionboxes.b
-         checkboxes.b
-         AlwaysSelection.b
-         lines.b
-         buttons.b
-         gridLines.b
-         fullSelection.b
-         clickSelect.b
-         multiSelect.b
-         collapsed.b
-         threeState.b
-      EndStructure
-      ;--     SIZE
-      Structure _s_SIZE
-         Width.l
-         Height.l
-      EndStructure
-      ;--     POINT
-      Structure _s_POINT
-         Y.l
-         X.l
-      EndStructure
-      ;--     COORDINATE
-      Structure _s_COORDINATE Extends _s_SIZE
-         X.l
-         Y.l
-      EndStructure
-      ;--     RESIZEINFO
-      Structure _s_RESIZEINFO Extends _s_COORDINATE
-         change.b
-         minimize.b
-         maximize.b
       EndStructure
       ;--     D&D
       Structure _s_DROP
@@ -85,6 +50,21 @@ CompilerIf Not Defined(Structures, #PB_Module)
          X.l
          Width.l
          Height.l
+      EndStructure
+      ;--     SIZE
+      Structure _s_SIZE
+         Width.l
+         Height.l
+      EndStructure
+      ;--     POINT
+      Structure _s_POINT
+         Y.l
+         X.l
+      EndStructure
+      ;--     COORDINATE
+      Structure _s_COORDINATE Extends _s_SIZE
+         X.l
+         Y.l
       EndStructure
       ;--     KEYBOARD
       Structure _s_KEYBOARD  ; Ok
@@ -119,26 +99,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          right.b
          bottom.b
       EndStructure
-      
       ;--     BOX
-      Structure _s_BOX 
-         ; TEMP
-         press.b
-         StructureUnion
-            enter.b  
-            _enter.b  
-         EndStructureUnion
+      Structure _s_BOX Extends _s_COORDINATE
          mask.q
-         Hide.b[2]
-         Disable.b[2]
-         
          checked.b
          round.a
-         
-         X.l
-         Y.l
-         Width.l
-         Height.l
       EndStructure
       ;--     ARROW
       Structure _s_ARROW
@@ -152,33 +117,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          arrow._s_arrow
          size.w
       EndStructure
-      ;--     CAPTION
-      Structure _s_caption Extends _s_COORDINATE
-         Button._s_buttons[5]
-         color._s_color
-         
-         interact.b
-         Hide.b
-         round.b
-         _padding.b
-         mask.q
-      EndStructure
       ;--     CARET
-      Structure _s_CARET
-         X.l               ; X-смещение начала выделения в пикселях
-         Y.l
-         Width.l           ; Ширина выделения в пикселях
-         Height.l
-         
+      Structure _s_CARET Extends _s_COORDINATE
          start.l           ; Индекс начала выделения (символ)
          stop.l            ; Индекс конца выделения (символ)
       EndStructure
       Structure _s_SEL Extends _s_CARET 
-      EndStructure
-      
-      Structure _s_CARET1 Extends _s_COORDINATE ; TEMP
-         pos.i[3]
-         ;word.s ; слово под кареткой
       EndStructure
       ;--     TEXT
       Structure _s_TEXTINFO Extends _s_COORDINATE
@@ -187,11 +131,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Array str.s(0) 
       EndStructure
       Structure _s_TEXTITEM Extends _s_TEXTINFO
-         caret._s_caret1 ; TEMP
          edit._s_TEXTINFO[3]
          change.b
       EndStructure
-    
+      ;
       Structure _s_TEXT Extends _s_TEXTITEM
          mode.a    
          
@@ -204,18 +147,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          string$ 
          multistring.s
-         
-         ; char.c
-         ; short._s_EDIT ; ".."
-         ; short._s_TEXT ; сокращенный текст
-         ;
-         ;       ;--     syntax
-         ;       Structure _s_syntax
-         ;          List *word._s_EDIT( )
-         ;       EndStructure
-         ; syntax._s_syntax
       EndStructure
-      
       ;--     FONTS
       Structure _s_FONTS
          key$
@@ -225,7 +157,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          font.i
          style.q
       EndStructure
-      
       ;--     IMAGES
       Structure _s_IMAGEs
          key$
@@ -234,7 +165,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *data
          *image
       EndStructure
-      
       ;--     PICTURE
       Structure _s_PICTURE Extends _s_COORDINATE
          align._s_align
@@ -243,7 +173,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          change.b 
          rotate.d
       EndStructure
-      
       ;--     SELECTOR
       Structure _s_SELECTOR Extends _s_COORDINATE
          backcolor.i
@@ -442,7 +371,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          autoscroll.b
          sublevelpos.a
          sublevelsize.a
-         
+         sellastsize.a
          ;
          *active._s_ROW[2]
          *entered._s_ROW         ; mouse entered item
@@ -521,7 +450,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *parent._s_WIDGET
       EndStructure
       
-     
+     ;--     CAPTION
+      Structure _s_caption Extends _s_COORDINATE
+         Button._s_buttons[5]
+         color._s_color
+         
+         interact.b
+         Hide.b
+         round.b
+         _padding.b
+         mask.q
+      EndStructure
+      
       ;--     BOUNDS
       Structure _s_BOUNDATTACH
          mode.a
@@ -624,13 +564,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          caret._s_CARET
          tt._s_tt                 ; notification = уведомление
          menu._s_POPUP
-         mode._s_mode               ; drawing mode
          bounds._s_BOUNDS
          area_align._s_align
          Text._s_TEXT
          Scroll._s_SCROLL            ; vertical & horizontal scrollbars
-         Resize._s_RESIZEINFO                 
-         color._s_COLOR[4]
+         
+         color._s_COLOR
          padding._s_POINT
          caption._s_caption
          picture._s_PICTURE[4]
@@ -765,7 +704,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Sticky._s_STICKY              ; sticky( )\
          event._s_EVENT
          
-         ;Map *__roots._s_ROOT( )   
          List *__widgets._s_WIDGET( )  ; __widgets( )
       EndStructure
       ;}
@@ -778,8 +716,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 767
-; FirstLine = 672
-; Folding = -----9fy---
+; CursorPosition = 706
+; FirstLine = 627
+; Folding = ----z-p---
 ; Optimizer
 ; EnableXP
