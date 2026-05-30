@@ -64,24 +64,24 @@ CompilerIf #PB_Compiler_IsMainFile
                EndIf
             EndIf
             
-            If window <> *eventWidget\root\canvas\window
-               window = *eventWidget\root\canvas\window
-               defWidth = Width(Root())
-               defHeight = Height(Root())
-               Width = defWidth
-               Height = defHeight
-               
-               AddWindowTimer(window, 1, 10)
-               StickyWindow( window, 1 )
-               ;SetActiveWindow( window )
-            EndIf
-         Case #__event_MouseLeave
-            If Not is_mouse_enter( *EventWidget\root, CanvasMouseX( ), CanvasMouseY( ) )
-               RemoveWindowTimer(window, 1)
-               StickyWindow( window, 0 )
-               ResizeWindow(window, #PB_Ignore, #PB_Ignore, defWidth, defHeight)
-               window = -1
-            EndIf
+;             If window <> *eventWidget\root\canvas\window
+;                window = *eventWidget\root\canvas\window
+;                defWidth = Width(Root())
+;                defHeight = Height(Root())
+;                Width = defWidth
+;                Height = defHeight
+;                
+;                AddWindowTimer(window, 1, 10)
+;                StickyWindow( window, 1 )
+;                ;SetActiveWindow( window )
+;             EndIf
+;          Case #__event_MouseLeave
+;             If Not *EventWidget\mask & #__mask_hover
+;                RemoveWindowTimer(window, 1)
+;                StickyWindow( window, 0 )
+;                ResizeWindow(window, #PB_Ignore, #PB_Ignore, defWidth, defHeight)
+;                window = -1
+;             EndIf
             
       EndSelect
    EndProcedure
@@ -537,7 +537,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1
-; Folding = --L5-
+; CursorPosition = 83
+; FirstLine = 61
+; Folding = --C+
 ; EnableXP
 ; DPIAware

@@ -605,8 +605,18 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *first._s_PARENT ; Первый ребенок в списке
          *last._s_PARENT  ; Последний ребенок
          ;
-         *next._s_PARENT
-         *prev._s_PARENT
+         *next._s_PARENT[3]
+         *prev._s_PARENT[3]
+         
+         ; НОВЫЕ ПОЛИМОРФНЫЕ УКАЗАТЕЛИ
+         ;next[0]  ; все Цепочка отрисовки (шаг вперед по Z-Order)
+         ;prev[0]  ; все Цепочка мыши (шаг назад по Z-Order для Hit-Test)
+         
+         ;next[1]  ; выдимие Цепочка отрисовки (шаг вперед по Z-Order)
+         ;prev[1]  ; выдимие Цепочка мыши (шаг назад по Z-Order для Hit-Test)
+         
+         ;next[2]  ; Цепочка братьев
+         ;prev[2]  ; Цепочка братьев
          
          *window._s_PARENT
          *parent._s_PARENT;[2]   ; [1] - это в лист будем переносить так как он нужен только для родителя  
@@ -716,8 +726,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 706
-; FirstLine = 627
+; CursorPosition = 607
+; FirstLine = 542
 ; Folding = ----z-p---
 ; Optimizer
 ; EnableXP

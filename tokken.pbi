@@ -618,12 +618,11 @@ Macro Start(_ptr_, _parent_)
    EndMacro
    
    Macro Stop(_ptr_, _parent_)
-      ; Если вышли за пределы ветки этого родителя — обнуляем указатель
-      If _ptr_\next = _parent_\next 
-         _ptr_ = 0 
-      Else
-         _ptr_ = _ptr_\next
+      If Not _ptr_\next
+         Break
       EndIf
+      
+      _ptr_ = _ptr_\next
    Wend
 EndMacro
 
@@ -4922,8 +4921,8 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 120
-; FirstLine = 109
+; CursorPosition = 625
+; FirstLine = 565
 ; Folding = ------+-----v------------------0-------------b---------v--------f4e-44b8---------------------------------------------------f--
 ; EnableXP
 ; DPIAware
