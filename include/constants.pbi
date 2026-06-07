@@ -356,6 +356,7 @@
       ;#__mask_checked = 1 << 28
       
       ;#__mask_tokken    = 1 << 20
+      #__mask_intersect    = 1 << 30
       ;
       ;-\\ create-type
       #__type_Root          = - 1
@@ -785,8 +786,8 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 341
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 358
 ; FirstLine = 336
 ; Folding = ----
 ; Optimizer

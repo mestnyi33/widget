@@ -2988,7 +2988,7 @@ Procedure Draw(*this._s_WIDGET)
             
             If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
                ; 1. Фон всего холста
-                  Box(0, 0, OutputWidth( ), OutputHeight( ), $ffffff) 
+               Box(0, 0, OutputWidth( ), OutputHeight( ), $ffffff) 
                   
                   ; 1. Восстанавливаем фон из снимка
                If IsImage(*this\root\canvas\snap\img[0])
@@ -3005,7 +3005,7 @@ Procedure Draw(*this._s_WIDGET)
                EndIf
                
                ; 4. Обновляем снимок, чтобы следующий кадр учитывал текущие изменения
-               GrabDrawingImage(*this\root\canvas\snap\img[0], 0, 0, OutputWidth(), OutputHeight())
+              ; GrabDrawingImage(*this\root\canvas\snap\img[0], 0, 0, OutputWidth(), OutputHeight())
                
                StopDrawing()
             EndIf
@@ -3154,8 +3154,8 @@ Procedure Draw(*this._s_WIDGET)
                   
                   If Not IsImage(*this\root\canvas\snap\img[0])
                      CreateImage(*this\root\canvas\snap\img[0], OutputWidth(), OutputHeight(), 32, #PB_Image_Transparent)
-                  EndIf
                   GrabDrawingImage(*this\root\canvas\snap\img[0], 0, 0, OutputWidth(), OutputHeight())
+                  EndIf
                   StopDrawing()
                EndIf
                ProcedureReturn 0
@@ -4954,9 +4954,9 @@ CompilerEndIf
 ; Folding = --v---------------------------------------f-----0--4u--44Pv83--+0-----------------0-------------4--------------+---------n-
 ; EnableXP
 ; DPIAware
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 3180
-; FirstLine = 3161
-; Folding = --------------------------------------------------------------------8----------------------------------------------------------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 3007
+; FirstLine = 2974
+; Folding = --------------------------------------------------------------------87rt0------------------------------------------------------
 ; EnableXP
 ; DPIAware

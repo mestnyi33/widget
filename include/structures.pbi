@@ -651,6 +651,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_WINDOW Extends _s_PARENT
       EndStructure
       
+      Structure _s_SNAP
+         img.i[2]
+         *active._s_WIDGET
+      EndStructure
       ;--     CANVAS
       Structure _s_CANVAS
          Repaint.b
@@ -662,6 +666,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *next._s_ROOT
          *prev._s_ROOT
+         snap._s_SNAP
       EndStructure
       
       ;--     ROOT
@@ -725,9 +730,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 607
-; FirstLine = 542
-; Folding = ----z-p---
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 654
+; FirstLine = 579
+; Folding = ----z-p----
 ; Optimizer
 ; EnableXP

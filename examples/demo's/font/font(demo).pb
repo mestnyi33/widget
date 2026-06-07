@@ -153,10 +153,10 @@ If Open(0, 322+50, 0, 322+50, 220)
 		CloseGadgetList()
 	EndIf
 	
-	;SetGadgetItemFont(1, 2, 5)
+	;SetGadgetItemFont(1, 2, (5))
 	SetGadgetItemText(1, 2, Text+"_2 (18)")
 	
-	;SetGadgetItemFont(1, 4, 6)
+	;SetGadgetItemFont(1, 4, (6))
 	SetGadgetItemText(1, 4, Text+"_4 (25)")
 	
 	
@@ -205,47 +205,36 @@ If Open(0, 322+50, 0, 322+50, 220)
 		CloseList()
 	EndIf
 	
-	SetItemFont(*g, 2, 5)
+	SetItemFont(*g, 2, (5))
 	SetItemText(*g, 2, Text+"_2 (18)")
 	
-	SetItemFont(*g, 4, 6)
+	SetItemFont(*g, 4, (6))
 	SetItemText(*g, 4, Text+"_4 (25)")
 	
 	Button(10, 145, 60, 24,"remove")
-	SetFont(Button(75, 145, 100, 24,"add (18)"), 5)
-	SetFont(Button(180, 145, 100, 24,"add (25)"), 6)
-	SetFont(Button(285, 145, 60, 24,"clear"), #Font18R)
+	SetFont(Button(75, 145, 100, 24,"add (18)"), (5))
+	SetFont(Button(180, 145, 100, 24,"add (25)"), (6))
+	SetFont(Button(285, 145, 60, 24,"clear"), (#Font18R))
 	
 	AddItem (*p, -1,"Panel 2")
-	SetFont(Button(10, 15, 100, 24,"Button 2_1"), 5)
+	SetFont(Button(10, 15, 100, 24,"Button 2_1"), (5))
 	Button(115, 15, 100, 24,"Button 2_2")
 	
 	AddItem (*p, -1,"Panel 3")
 	Button(10, 15, 100, 24,"Button 3_1")
 	*b = Button(10, 15+24+10, 100, 24,"auto resize button when changing font");, #PB_Button_MultiLine)
-	If SetFont(*b, 5)
-	  ; Repaint( *b )
-	EndIf
+	SetFont(*b, (5))
 	;SetState(ID(0), 2)
 	
-	;   ; bug set font - FIXED SetFont() ; *this\root\text\fontID[1] =- 1 
-	; set auto font size
-	Define iw = 2 + (*b\bs+*b\text\x)*4 
-	
-; 	Macro Repaint( )
-; 		Drawing( Root( ) )
-; 	EndMacro
-	
-	
-	;Debug Width(*b, #__c_required)
-	
+	;
+	;Repaint(*b)
 	Debug ""+*b\text\width +" "+ *b\text\height +" "+ *b\Width[#__c_required] +" "+ *b\Height[#__c_required] ; mac = 121 29 ; win 70 16
 	Resize(*b, #PB_Ignore, #PB_Ignore, Width(*b, #__c_required), Height(*b, #__c_required))
 
 	CloseList()
 	
-	SetItemFont(*p, 1, 6)
-	SetItemFont(*p, 2, #Font18R)
+	SetItemFont(*p, 1, (6))
+	SetItemFont(*p, 2, (#Font18R))
 	
 	For i = 0 To 1
 		Bind(ID(i), @events_widgets())
@@ -267,9 +256,9 @@ If Open(0, 322+50, 0, 322+50, 220)
 	
 	Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 203
-; FirstLine = 159
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 226
+; FirstLine = 185
 ; Folding = v---
 ; EnableXP
 ; DPIAware
