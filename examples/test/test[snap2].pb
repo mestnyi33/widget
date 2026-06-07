@@ -6,49 +6,6 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
-   Procedure Restore_Views( *this._s_PARENT )
-      If Not *this Or Not *this\parent : ProcedureReturn : EndIf
-      
-      Protected._s_PARENT *parent = *this\parent
-      Protected._s_PARENT *exLast = GetLast( *this )
-      
-      ; 1. Восстанавливаем оригинальный вход в родительскую ветку
-      *parent\next[1] = *parent\next[0]
-      *this\prev[1]   = *this\prev[0]
-      
-      ; 2. Находим честного видимого соседа, который должен идти за хвостом нашей матрешки
-      Protected._s_PARENT *nextVisible = *exLast\next[0]
-      While *nextVisible
-         If Not (*nextVisible\mask & #__mask_hide) And Not (*nextVisible\mask & #__mask_hidden)
-            Break
-         EndIf
-         *nextVisible = *nextVisible\next[0]
-      Wend
-      
-      *exLast\next[1] = *nextVisible
-      If *nextVisible
-         *nextVisible\prev[1] = *exLast
-      EndIf
-      
-      ; 3. ИСПРАВЛЕНО: Восстанавливаем обратную связь для честного соседа, который шел за РОДИТЕЛЕМ
-      Protected._s_PARENT *parentLast = GetLast( *parent, 0 )
-      If *parentLast
-         Protected._s_PARENT *parentOldNext = *parentLast\next[0]
-         While *parentOldNext
-            If Not (*parentOldNext\mask & #__mask_hide) And Not (*parentOldNext\mask & #__mask_hidden)
-               Break
-            EndIf
-            *parentOldNext = *parentOldNext\next[0]
-         Wend
-         
-         ; ВАЖНО: Восстанавливаем prev[1] родительского соседа на родительский хвост, 
-         ; а не оставляем его привязанным к изолированному *exLast
-         If *parentOldNext
-            *parentOldNext\prev[1] = *parentLast
-         EndIf
-      EndIf
-   EndProcedure
-   
    Procedure.i Update_Views( *this._s_PARENT )
       If Not *this Or Not *this\parent : ProcedureReturn #False : EndIf
       
@@ -87,33 +44,6 @@ CompilerIf #PB_Compiler_IsMainFile
       ; =========================================================================
       ; ШАГ 2: ПЕРЕСЕЧЕНИЙ НЕТ — УМНОЕ ПЕРЕНАПРАВЛЕНИЕ СКВОЗНОГО Z-ORDER [1]
       ; =========================================================================
-      Protected._s_PARENT *exLast = GetLast( *this ) ; Хвост нашей матрешки в слое [1]
-      
-      ; Находим, кто честно должен идти в Z-Order СРАЗУ ЗА ВСЕМ НАШИМ РОДИТЕЛЕМ (брат родителя)
-      Protected._s_PARENT *parentLast = *parent\next[2]
-      Protected._s_PARENT *oldNext = #Null
-      
-      If *parentLast
-         *oldNext = *parentLast\next[0] ; Встаем на честного соседа за родителем
-      EndIf
-      
-      ; Пропускаем скрытых братьев родителя, ищем первого реально видимого
-      While *oldNext
-         If Not (*oldNext\mask & #__mask_hide) And Not (*oldNext\mask & #__mask_hidden)
-            Break ; Нашли живого видимого брата родителя!
-         EndIf
-         *oldNext = *oldNext\next[0]
-      Wend
-      
-      ; А) Корень/Родитель перенаправляет свою входную дверь прямо на нас
-      *parent\next[1] = *this
-      *this\prev[1]   = *parent 
-      
-      ; Б) СОХРАНЯЕМ ТРАНЗИТ: Хвост нашей матрешки связывается с видимым братом родителя!
-      *exLast\next[1] = *oldNext
-      If *oldNext
-         *oldNext\prev[1] = *exLast
-      EndIf
       
       ProcedureReturn #True
    EndProcedure
@@ -136,8 +66,7 @@ CompilerIf #PB_Compiler_IsMainFile
                
                ; Отключаем активный снапшот на холсте корня
                *root\canvas\snap\active = #Null
-               
-               Restore_Views( *oldWidget )
+              
             EndIf
             
             ; 2. Теперь обрабатываем новый элемент, на который наступили
@@ -165,15 +94,11 @@ CompilerIf #PB_Compiler_IsMainFile
             *oldWidget = *newWidget
             
             ; --- ВАШ ВЕЛИКОЛЕПНЫЙ ОТЛАДОЧНЫЙ ЦИКЛ ПРОВЕРКИ ---
-            Debug "---------- НАВЕЛИ ------------ " + GetClass(g)
-            Define *e._s_WIDGET = *root\next[1] 
-            While *e
-               Debug "  " + *e\class + " " + *e\text\Str(0)
-               *e = *e\next[1] 
-            Wend
-            
+            If *root\canvas\snap\active
+               Debug "[]-" + *root\canvas\snap\active\class
+            EndIf
             ; Сигнал графическому движку перерисовать Canvas
-            PostRepaint( Root() ) 
+            ;PostRepaint( Root() ) 
          EndIf
          
       EndIf
@@ -195,8 +120,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 195
-; FirstLine = 151
-; Folding = -----
+; CursorPosition = 97
+; FirstLine = 71
+; Folding = ---
 ; EnableXP
 ; DPIAware

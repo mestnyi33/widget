@@ -12634,68 +12634,6 @@ Module Widget
       
       ProcedureReturn #Null
    EndProcedure
-   Procedure.i _GetPosition( *this._s_PARENT, position.l, tabindex.l = #PB_Default )
-      Protected._s_WIDGET *first, *last
-      
-      If tabindex = #PB_Default
-         Select position
-            Case #PB_List_First    : ProcedureReturn *this\FirstWidget( )
-            Case #PB_List_Before   : ProcedureReturn *this\prev[2]
-            Case #PB_List_After    : ProcedureReturn *this\next[2]
-            Case #PB_List_Last     : ProcedureReturn *this\LastWidget( )
-         EndSelect
-      Else
-         If position = #PB_List_First
-            *first = *this\FirstWidget( ) 
-            ;
-            If *this\tabbar 
-               If *this\haschildren
-                  If *first And *first\tabindex < tabindex
-                     PushListPosition( widgets( ) )
-                     ChangeCurrentElement( widgets( ), *first\address )
-                     *first = *this
-                     While NextElement( widgets( ) )
-                        If widgets( )\parent = *this 
-                           If widgets( )\tabindex >= tabindex
-                              *first = widgets( )
-                              Break
-                           EndIf
-                        EndIf
-                     Wend
-                     PopListPosition( widgets( ) )
-                  EndIf
-               EndIf
-            EndIf
-            ;
-            ProcedureReturn *first
-         EndIf
-         
-         If position = #PB_List_Last
-            *last = *this\LastWidget( ) 
-            ;
-            If *this\tabbar 
-               If *this\haschildren
-                  If *last And *last\tabindex > tabindex
-                     PushListPosition( widgets( ) )
-                     ChangeCurrentElement( widgets( ), *last\address )
-                     *last = *this
-                     While PreviousElement( widgets( ) )
-                        If widgets( )\parent = *this 
-                           If widgets( )\tabindex =< tabindex
-                              *last = widgets( )
-                              Break
-                           EndIf
-                        EndIf
-                     Wend
-                     PopListPosition( widgets( ) )
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
-         ProcedureReturn *last
-      EndIf
-   EndProcedure
    
    Procedure   SetPosition( *this._s_WIDGET, position.l, *widget._s_WIDGET = #Null ) ; Ok
       Protected *last._s_WIDGET
@@ -12953,7 +12891,7 @@ Module Widget
          ; ШАГ 1: ПОЛНАЯ ИЗОЛЯЦИЯ (Вырезаем матрешку из всех трех цепочек)
          ; =========================================================================
          Protected._s_PARENT *exFirst = *this
-         Protected._s_PARENT *exLast  = GetLast( *this, #PB_Default ) ; Крайний Z-потомок
+         Protected._s_PARENT *exLast  = GetLast( *this, tabindex ) ; Крайний Z-потомок
          
          ; А) Вырезаем из абсолютного Z-Order [0]
          If *exFirst\prev[0] : *exFirst\prev[0]\next[0] = *exLast\next[0]  : EndIf
@@ -13237,333 +13175,7 @@ Module Widget
       Widget( ) = *this
       ProcedureReturn *this
    EndProcedure
-   
-   Procedure   _SetParent( *this._s_WIDGET, *parent._s_PARENT, tabindex.l = #PB_Default )
-      Protected parent, ReParent.b, X, Y
-      Protected._s_WIDGET *after, *last, *lastParent, NewList *D( ), NewList *C( )
-      If Not *this > 0 Or *this = *parent : ProcedureReturn 0 : EndIf
-      
-      If *parent > 0
-         If *this\parent = *parent
-            If *this\tabindex = tabindex
-               ProcedureReturn 0
-            EndIf
-         EndIf
-         ;
-         If *parent\child 
-            If Not *parent\container 
-               tabindex = #PB_Ignore
-               *parent = *parent\parent
-            EndIf
-         EndIf
-         ;
-         If tabindex = #PB_Default ; < 0
-            If *parent\tabbar And *parent\tabbar\type = #__type_TabBar
-               tabindex = *parent\openeditem
-            Else
-               tabindex = 0
-            EndIf
-         EndIf
-         
-         ; =========================================================================
-         ; ШАГ 1: ПОЛНАЯ ИЗОЛЯЦИЯ (ВЫРЕЗАЕМ *this ИЗ ВСЕХ ТРЕХ ЦЕПОЧЕК ОДНОВРЕМЕННО)
-         ; =========================================================================
-         Protected._s_PARENT *exFirst = *this
-         Protected._s_PARENT *exLast  = GetLast( *this, #PB_Default ) ; Находим крайнего ребенка матрешки
-         
-         ; А) Вырезаем весь диапазон матрешки из абсолютного Z-Order [0]
-         If *exFirst\prev[0] : *exFirst\prev[0]\next[0] = *exLast\next[0]  : EndIf
-         If *exLast\next[0]  : *exLast\next[0]\prev[0]  = *exFirst\prev[0] : EndIf
-         
-         ; Б) Вырезаем весь диапазон матрешки из видимого Z-Order [1]
-         If *exFirst\prev[1] : *exFirst\prev[1]\next[1] = *exLast\next[1]  : EndIf
-         If *exLast\next[1]  : *exLast\next[1]\prev[1]  = *exFirst\prev[1] : EndIf
-         
-         ; В) Вырезаем элемент из локального списка братьев старого родителя [2]
-         If *this\prev[2] : *this\prev[2]\next[2] = *this\next[2] : EndIf
-         If *this\next[2] : *this\next[2]\prev[2] = *this\prev[2] : EndIf
-         
-         ; Г) Корректируем First/Last указатели у СТАРОГО родителя
-         If *this\parent 
-            If *this\parent\FirstWidget( ) = *this : *this\parent\FirstWidget( ) = *this\next[2] : EndIf
-            If *this\parent\LastWidget( ) = *this  : *this\parent\LastWidget( ) = *this\prev[2] : EndIf
-         EndIf
-         
-         ; Полностью изолируем внешние маркеры извлеченного блока во всех трех цепочках
-         *exFirst\prev[0] = #Null : *exLast\next[0] = #Null
-         *exFirst\prev[1] = #Null : *exLast\next[1] = #Null
-         *this\prev[2]    = #Null : *this\next[2]    = #Null
-         
-         ; =========================================================================
-         ; ШАГ 2: ВЫЧИСЛЯЕМ ПОЗИЦИЮ В ЧИСТОЙ СТРУКТУРЕ (Без риска споткнуться о себя)
-         ; =========================================================================
-         *this\tabindex = tabindex
-         *after = #Null
-         *last = #Null
-         
-         If *parent
-            ; Вызываем GetPosition. Так как *this уже вырезан, вернется идеальный сосед.
-            *after = GetPosition( *parent, #PB_List_Last, tabindex )
-            
-            If *after
-               *last = GetLast( *after )
-            Else
-               ; Если вкладка пустая, точкой вставки Z-Order становится сам родитель
-               *last = *parent
-            EndIf
-         EndIf
-         
-         ; =========================================================================
-         ; ШАГ 3: ВСТРОЙКА В ЛОКАЛЬНЫЙ СПИСОК НОВОГО РОДИТЕЛЯ [2]
-         ; =========================================================================
-         If *parent
-            ; Определяем, становится ли элемент новым абсолютным хвостом родителя
-            If *after = #Null Or *after\next[2] = #Null
-               If *parent\tabbar And *parent\tabbar\type = #__type_TabBar
-                  If *this\tabindex = *parent\tabbar\countitems - 1
-                     *parent\LastWidget( ) = *this
-                  EndIf
-               Else
-                  *parent\LastWidget( ) = *this
-               EndIf
-            EndIf
-            
-            ; Прошиваем локальные указатели в цепочке [2]
-            If *after
-               *this\next[2] = *after\next[2]
-               *this\prev[2] = *after
-               If *after\next[2] : *after\next[2]\prev[2] = *this : EndIf
-               *after\next[2] = *this
-            Else
-               ; Если вкладка пустая — добавляем в самое начало локального списка родителя
-               *this\next[2] = *parent\FirstWidget( )
-               If *parent\FirstWidget( ) : *parent\FirstWidget( )\prev[2] = *this : EndIf
-               *parent\FirstWidget( ) = *this
-            EndIf
-            
-            If *parent\FirstWidget( ) = #Null : *parent\FirstWidget( ) = *this : EndIf
-         EndIf
-         
-         ; =========================================================================
-         ; ШАГ 4: СИНХРОННАЯ И СИММЕТРИЧНАЯ ВСТРОЙКА В Z-ORDER ЦЕПОЧКИ И
-         ; =========================================================================
-         If *last
-            ; 1. Вшиваем в абсолютный Z-Order [0]
-            Protected *oldNext0._s_PARENT = *last\next[0]
-            
-            *last\next[0]    = *exFirst
-            *exFirst\prev[0] = *last
-            
-            *exLast\next[0]  = *oldNext0
-            If *oldNext0
-               *oldNext0\prev[0] = *exLast
-            EndIf
-            
-            ; Фикс: Если мы привязались к самому родителю, нам нужно явно 
-            ; обновить обратную связь для правильного prev-обхода
-            If *last = *parent
-               ; Если после панели в Z-Order кто-то стоял, его prev[0] теперь должен 
-               ; указывать не на Панель, а на крайнего ребенка нашей кнопки (*exLast)
-               If *oldNext0 : *oldNext0\prev[0] = *exLast : EndIf
-            EndIf
-            
-            ; 2. Вшиваем в видимый Z-Order [1]
-            Protected *oldNext1._s_PARENT = *last\next[1]
-            
-            *last\next[1]    = *exFirst
-            *exFirst\prev[1] = *last
-            
-            *exLast\next[1]  = *oldNext1
-            If *oldNext1
-               *oldNext1\prev[1] = *exLast
-            EndIf
-            
-            If *last = *parent
-               If *oldNext1 : *oldNext1\prev[1] = *exLast : EndIf
-            EndIf
-         EndIf
-         
-         ; 
-         If tabindex = #PB_Ignore
-         Else
-            HideState( *this, *parent )
-            DisableState( *this, *parent )
-         EndIf
-         
-         ;
-         If *parent\type = #__type_Splitter
-            If tabindex > 0
-               If tabindex % 2
-                  ;*parent\FirstWidget( ) = *this
-                  *parent\split_1( )    = *this
-                  bar_update( *parent, 1 )
-                  If IsGadget( *parent\split_1( ) )
-                     ProcedureReturn 0
-                  EndIf
-               Else
-                  ;*parent\LastWidget( ) = *this
-                  *parent\split_2( )    = *this
-                  bar_update( *parent, 1 )
-                  If IsGadget( *parent\split_2( ) )
-                     ProcedureReturn 0
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         ;
-         ;\\
-         PushListPosition( widgets( ) )
-         If *this And
-            *this\parent
-            *lastParent = *this\parent
-            
-            ;
-            If *this\address 
-               ChangeCurrentElement( widgets( ), *this\address )
-               AddElement( *D( ) ) : *D( ) = widgets( )
-               
-               If *this\haschildren
-                  PushListPosition( widgets( ) )
-                  While NextElement( widgets( ) )
-                     If Not IsChild( widgets( ), *this )
-                        Break
-                     EndIf
-                     
-                     AddElement( *D( ) )
-                     *D( ) = widgets( )
-                     
-                     ; ChangeParent
-                     If *parent\window
-                        *D( )\window = *parent\window
-                     Else
-                        *D( )\window = *parent
-                     EndIf
-                     If *parent\root
-                        *D( )\root = *parent\root
-                     Else
-                        *D( )\root = *parent
-                     EndIf
-                     ;; Debug " children's - "+ *D( )\data +" - "+ *this\data
-                     
-                     ;\\ integrall children's
-                     If *D( )\scroll
-                        If *D( )\scroll\v
-                           *D( )\scroll\v\root   = *D( )\root
-                           *D( )\scroll\v\window = *D( )\window
-                        EndIf
-                        If *D( )\scroll\h
-                           *D( )\scroll\h\root   = *D( )\root
-                           *D( )\scroll\h\window = *D( )\window
-                        EndIf
-                     EndIf
-                     
-                     HideState( *D( ), *D( )\parent )
-                     ;Debug *D( )\mask & #__mask_hide
-                     
-                  Wend
-                  PopListPosition( widgets( ) )
-               EndIf
-               
-               ;\\ move with a parent and his children's
-               If *last
-                  PushListPosition( widgets( ) )
-                  LastElement( *D( ) )
-                  Repeat
-                     ChangeCurrentElement( widgets( ), *D( )\address )
-                     MoveElement( widgets( ), #PB_List_After, *last\address )
-                  Until PreviousElement( *D( ) ) = #False
-                  PopListPosition( widgets( ) )
-               EndIf
-               ;
-               ReParent = #True
-            EndIf
-            ;
-         Else
-            ;
-            If *last And *last\address
-               ChangeCurrentElement( widgets( ) , *last\address )
-            Else
-               LastElement( widgets( ) )
-            EndIf
-            AddElement( widgets( ) ) : widgets( ) = *this
-            *this\layer   = ListIndex( widgets( ) )
-            *this\createindex   = ListIndex( widgets( ) )
-            *this\address = @widgets( )
-         EndIf
-         PopListPosition( widgets( ) )
-         ;
-         ;\\
-         ReParent( *this, *parent )
-         ;
-         ;\\ a_new( )
-         If a_anchors( ) And a_main( ) And IsChild( *this, a_main( ))
-            If *this\parent\type = #__type_Splitter
-               ; Debug ""+*this\class +" "+ *this\parent\class
-               a_free( *this )
-            Else
-               If Not *this\autosize
-                  If Not *this\anchors
-                     If *this\parent\anchors 
-                        a_create( *this, #__a_full )
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         ;
-         ;\\
-         If ReParent
-            If is_drag_move( )
-               ; *this\resize\clip = #True
-               
-               X = *this\frame_x( ) - *parent\inner_x( )
-               Y = *this\frame_y( ) - *parent\inner_y( )
-               
-               If *this\anchors > 0
-                  X + ( X % mouse( )\steps )
-                  X = ( X / mouse( )\steps ) * mouse( )\steps
-                  
-                  Y + ( Y % mouse( )\steps )
-                  Y = ( Y / mouse( )\steps ) * mouse( )\steps
-               EndIf
-               
-               *this\container_x( ) = X
-               *this\container_y( ) = Y
-            Else
-               ;\\ resize
-               X = *this\container_x( )
-               Y = *this\container_y( )
-               
-               ;\\ for the scrollarea container childrens
-               ;\\ if new parent - scrollarea container
-               If *parent\scroll And
-                  *parent\scroll\v And *parent\scroll\h
-                  X - *parent\scroll\h\bar\page\pos
-                  Y - *parent\scroll\v\bar\page\pos
-               EndIf
-               
-               ;\\ if last parent - scrollarea container
-               If *LastParent\scroll And
-                  *LastParent\scroll\v And *LastParent\scroll\h
-                  X + *LastParent\scroll\h\bar\page\pos
-                  Y + *LastParent\scroll\v\bar\page\pos
-               EndIf
-               
-               Resize( *this, X - *parent\scroll_x( ), Y - *parent\scroll_y( ), #PB_Ignore, #PB_Ignore, 0 )
-            EndIf
-            
-            ;\\
-            PostEventsRepaint( *parent\root )
-            If *parent\root <> *lastParent\root
-               PostRepaint( *lastParent\root )
-            EndIf
-         EndIf
-      EndIf
-      
-      Widget( ) = *this
-      ProcedureReturn *this
-   EndProcedure
-   
+  
    ;-
    Procedure.i SetAttach( *this._s_WIDGET, *parent._s_PARENT, mode.a )
       If *parent
@@ -17654,6 +17266,14 @@ Module Widget
             ; Фиксируем активный изолированный элемент в структуре холста
             *root\canvas\snap\active = *this
             
+            If IsImage(*root\canvas\snap\img[0])
+               FreeImage(*root\canvas\snap\img[0])
+            EndIf
+            
+            If StartDrawing(CanvasOutput(*root\canvas\gadget))
+               *root\canvas\snap\img[0] = GrabDrawingImage(#PB_Any, *root\x, *root\y, *root\width, *root\height)
+               StopDrawing()
+            EndIf
          EndIf
          
          *oldWidget = *this
@@ -23254,14 +22874,9 @@ Module Widget
       Protected._s_WIDGET *e
       If *root > 0
          If StartDraw(*root\root)
-            If *root\canvas\snap\active
-               If IsImage(*root\canvas\snap\img[0])
-                  FreeImage(*root\canvas\snap\img[0])
-               EndIf
-               
-               *root\canvas\snap\img[0] = GrabDrawingImage(#PB_Any, *root\x, *root\y, *root\width, *root\height)
-               
-               If IsImage(*root\canvas\snap\img[0])
+            
+            If IsImage(*root\canvas\snap\img[0])
+               If *root\canvas\snap\active
                   DrawingMode(#PB_2DDrawing_Transparent)
                   DrawAlphaImage(ImageID(*root\canvas\snap\img[0]), *root\x,*root\y ) 
                   ; Box(*e\x, *e\y, *e\width, *e\height, *e\parent\color\back )
@@ -23526,6 +23141,12 @@ Module Widget
                   EndIf
                EndIf
                
+               
+;                If test_snap 
+;                   If Not IsImage(*root\canvas\snap\img[0])
+;                      *root\canvas\snap\img[0] = GrabDrawingImage(#PB_Any, *root\x, *root\y, *root\width, *root\height)
+;                   EndIf
+;                EndIf
             EndIf
             ;
             StopDraw( )
@@ -29163,9 +28784,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 23267
-; FirstLine = 23252
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 22918
+; FirstLine = 22576
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+4----8-f----v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-----------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
