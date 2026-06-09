@@ -22894,17 +22894,31 @@ Module Widget
                EndIf
                If *root\root\drawmode & 1<<2
                   ; Box( 0,0, OutputWidth( ), OutputHeight( ), *root\color\back )
-                  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-                     FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ))
-                  CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-                     If GetWindowColor( *root\root\canvas\window ) = - 1
-                        FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetSysColor_(#COLOR_BTNFACE) )
+                  Protected BufferSize = DrawingBufferPitch() * OutputHeight()
+                  Protected FillByte.b = 0 ; Изначально 0 (чистая прозрачность, идеальная для macOS)
+                  
+                  CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+                     ; Для Windows вычисляем байт цвета
+                     Protected WinColorWin = GetWindowColor(*root\canvas\window)
+                     If WinColorWin <> -1
+                        FillByte = Red(WinColorWin)
                      Else
-                        FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), GetWindowColor( *root\root\canvas\window ) )
+                        CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+                           FillByte = Red(GetSysColor_(#COLOR_BTNFACE))
+                        CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+                           ; Для Linux вычисляем байт цвета темы GTK
+                           Protected *style.GtkStyle = gtk_widget_get_style_(WindowID(*root\canvas\window))
+                           If *style 
+                              FillByte = *style\bg\red >> 8 
+                           Else 
+                              FillByte = $F0
+                           EndIf
+                        CompilerEndIf
                      EndIf
-                  CompilerElse
-                     FillMemory( DrawingBuffer( ), DrawingBufferPitch( ) * OutputHeight( ), $f0 )
                   CompilerEndIf
+                  
+                  ; Мгновенное заполнение памяти
+                  FillMemory(DrawingBuffer(), BufferSize, FillByte)
                EndIf
                
                Draw( *root )
@@ -28783,10 +28797,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 22918
-; FirstLine = 22576
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+4----8-f----v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------f-----------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 22907
+; FirstLine = 22517
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+4----8-f----v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

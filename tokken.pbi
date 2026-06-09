@@ -570,7 +570,7 @@ Macro hidden( _this_, _parent_, _tabpage_ )
          ; 2. ЛОГИКА СТРАНИЦ
          If is_integral_(_this_)
             ; Системные виджеты всегда видны
-            _this_\mask &~ #__mask_hidden
+            _this_\mask &~ #__mask_hidden 
             
          Else
             ; СЛУЧАЙ А: Мы лежим в AreaBar (смотрим на дедушку)
@@ -4921,8 +4921,8 @@ CompilerEndIf
 ; EnableXP
 ; DPIAware
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 625
-; FirstLine = 565
+; CursorPosition = 573
+; FirstLine = 514
 ; Folding = ------+-----v------------------0-------------b---------v--------f4e-44b8---------------------------------------------------f--
 ; EnableXP
 ; DPIAware
