@@ -13,13 +13,14 @@ Global.l colorback = colors::*this\blue\fore,
 ;\\
 Procedure EventsHandler( )
 
-   
+      
    Select WidgetEvent( )
       Case #__event_MouseEnter, ;#__event_MouseMove,
            #__event_MouseLeave
          
          If EventWidget( ) <> Root( )
-            If EventWidget( )\enter 
+            If EventWidget( )\mask & #__mask_hover
+          Debug 555
                If EventWidget( )\color\frame <> colorframe1 
                   EventWidget( )\color\frame = colorframe1
                   Repaint = 1 
@@ -100,8 +101,8 @@ Bind( #PB_All, @EventsHandler( ), #__event_MouseLeave )
 ;\\
 WaitClose( )
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 53
-; FirstLine = 35
+; CursorPosition = 21
+; FirstLine = 14
 ; Folding = --
 ; EnableXP
 ; DPIAware
