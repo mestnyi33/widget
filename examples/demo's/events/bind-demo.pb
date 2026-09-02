@@ -5,45 +5,50 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
+   Global *win_1, *but_1, *but_2, *but_3
    
-   Procedure events_widget( )
-      ;ClearDebugOutput( )
-      Debug ""+#PB_Compiler_Procedure +"( PROCEDURE )"
+   Procedure widget_events( )
+      Debug ""+#PB_Compiler_Procedure +"( Procedure )"
       
-      If Index( EventWidget( ) ) = 1
+      If *but_1 = EventWidget( )
          ProcedureReturn #PB_Ignore ; no send to (window & root) - event
       EndIf
    EndProcedure
    
-   Procedure events_window( )
+   Procedure window_events( )
       Debug "  "+#PB_Compiler_Procedure +"( PROCEDURE )"
       
-      If Index( EventWidget( ) ) = 2
+      If *but_2 = EventWidget( )
          ProcedureReturn #PB_Ignore ; no send to (root) - event
       EndIf
    EndProcedure
    
-   Procedure events_root( )
+   Procedure root_events( )
       Debug "    "+#PB_Compiler_Procedure +"( PROCEDURE )"
    EndProcedure
    
    ;\\
    If OpenWindow(0, 0, 0, 500, 500, "Demo bind events", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      If Open(0, 10,10, 480, 480)
-         Bind(#PB_All, @events_root(), #__event_Down )
-         Bind(Window(80, 100, 300, 280, "Window_2", #PB_Window_SystemMenu), @events_window(), #__event_Down)
+      If Open(0, 30,30, 440, 440)
+         *win_1 = Window(65,  70, 300, 290, "press mouse buttons to see", #PB_Window_SystemMenu)
+         *but_1 = Button(30,  30, 240, 70, "post event for one procedure")
+         *but_2 = Button(30, 110, 240, 70, "post event for to two procedure")
+         *but_3 = Button(30, 190, 240, 70, "post event for all procedures")
          
-         Bind(Button(10,  10, 280, 80, "post event for one procedure"), @events_widget(), #__event_Down)
-         Bind(Button(10, 100, 280, 80, "post event for to two procedure"), @events_widget(), #__event_Down)
-         Bind(Button(10, 190, 280, 80, "post event for all procedures"), @events_widget(), #__event_Down)
+         Bind(#PB_All, @root_events(), #__event_Down )
+         Bind(*win_1, @window_events(), #__event_Down)
+         ;
+         Bind(*but_1, @widget_events(), #__event_Down)
+         Bind(*but_2, @widget_events(), #__event_Down)
+         Bind(*but_3, @widget_events(), #__event_Down)
       EndIf
       
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 13
-; FirstLine = 11
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 30
+; FirstLine = 24
 ; Folding = --
 ; EnableXP
 ; DPIAware

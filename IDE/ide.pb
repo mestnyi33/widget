@@ -235,7 +235,7 @@ XIncludeFile #ide_path + "widgets.pbi"
 ; EndProcedure
 
 
-XIncludeFile #ide_path + "include/newcreate/anchorbox.pbi"
+XIncludeFile #ide_path + "include/helper/anchorbox.pbi"
 XIncludeFile #ide_path + "IDE/include/helper/imageeditor.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    XIncludeFile #ide_path + "IDE/code.pbi"
@@ -991,7 +991,7 @@ Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
    EndIf
    
    ; чтобы не виделялся
-   If MouseDragStart( )
+   If MouseDrag( )
       If *this\RowFocused( ) = *row 
          *row\focus = 1
          *row\ColorState( ) = #__s_2
@@ -1225,7 +1225,7 @@ Procedure   Properties_Events( )
          
       Case #__event_Up
          If Not EnteredButton( )
-            If MouseDragStart( ) 
+            If MouseDrag( ) 
                *row = *g\RowEntered( )
                If *row 
                   If *row\data
@@ -1815,7 +1815,7 @@ Procedure new_widget_events( )
          ;
       Case #__event_LeftUp
          If IsContainer(*g)
-            If Not MouseDragStart( )
+            If Not MouseDrag( )
                If GetState( ide_all_ELEMENTS) > 0
                   new_widget_add( *g, GetText( ide_all_ELEMENTS ), GetMouseX(*g), GetMouseY(*g))
                EndIf
@@ -1899,14 +1899,14 @@ Procedure new_widget_events( )
                      If GetState( ide_all_ELEMENTS ) = 1
                         If *g = ide_design_MDI  
                         Else
-                           If MouseDrag( ) = #PB_Drag_Enter
-                              MouseDrag( ) = #PB_Drag_Leave
+                           If Drag( ) = #PB_Drag_Enter
+                              Drag( ) = #PB_Drag_Leave
                            EndIf
                         EndIf
                      Else
                         If *g = ide_design_MDI  
-                           If MouseDrag( ) = #PB_Drag_Enter
-                              MouseDrag( ) = #PB_Drag_Leave
+                           If Drag( ) = #PB_Drag_Enter
+                              Drag( ) = #PB_Drag_Leave
                            EndIf
                         Else
                         EndIf
@@ -3332,10 +3332,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 226
-; FirstLine = 204
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 1908
+; FirstLine = 1641
 ; Folding = -4--4---8-f-tf----------3BC----------+-+8-----------yvt----f+-
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2_621.exe
+; Executable = ../../2_621.exe

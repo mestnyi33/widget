@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    Procedure events_widgets()
-      Protected repaint
+      Protected Repaint
       
       Select WidgetEvent( )
          Case #__event_MouseEnter,
@@ -33,34 +33,34 @@ CompilerIf #PB_Compiler_IsMainFile
                If \enter > 0
                   If \color\frame <> colorframe1 
                      \color\frame = colorframe1
-                     repaint = 1 
+                     Repaint = 1 
                   EndIf
                   
                   If \enter = 2
                      If \color\back <> colorback1 
                         \color\back = colorback1
-                        repaint = 1 
+                        Repaint = 1 
                      EndIf
                   Else
                      If \color\back <> colorback
                         \color\back = colorback
-                        repaint = 1 
+                        Repaint = 1 
                      EndIf
                   EndIf
                Else   
                   If \color\back <> colorback 
                      \color\back = colorback
-                     repaint = 1
+                     Repaint = 1
                   EndIf
                   If \color\frame <> colorframe1 
                      \color\frame = colorframe1
-                     repaint = 1 
+                     Repaint = 1 
                   EndIf
                EndIf
             EndWith 
       EndSelect
       
-      If repaint                                              
+      If Repaint                                              
        ;  Debug "change state"
       EndIf
    EndProcedure
@@ -71,9 +71,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ;
       ;\\
       ;
-      Open(0, 10, 10, 240, 240 ) : SetFrame(root(), 1 ) : SetText(root()," root_1")
+      Open(0, 10, 10, 240, 240 ) : SetFrame(Root(), 1 ) : SetText(Root()," root_1")
       If editable
-         a_init(root(),0)
+         a_init(Root(),0)
       EndIf
       
       SetText(Container(30, 30, 180, 180), "1" )
@@ -89,8 +89,8 @@ CompilerIf #PB_Compiler_IsMainFile
                        Container(0,0,0,0, #__Flag_NoGadgets), 
                        Container(0,0,0,0, #__Flag_NoGadgets),
                        #PB_Splitter_Vertical), "8" ) 
-      SetText(widget( )\FirstWidget( ), "     9")
-      SetText(widget( )\LastWidget( ), "10")
+      SetText(Widget( )\FirstWidget( ), "     9")
+      SetText(Widget( )\LastWidget( ), "10")
       
       CloseList()
       CloseList()
@@ -110,9 +110,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ;
       ;\\
       ;
-      Open(0, 260, 10, 240, 240) : SetFrame(root(), 1 ) : SetText(root()," root_2")
+      Open(0, 260, 10, 240, 240) : SetFrame(Root(), 1 ) : SetText(Root()," root_2")
       If editable
-         a_init(root(),0)
+         a_init(Root(),0)
       EndIf
       
       SetText(Container(30, 30, 180, 180), "1" )
@@ -128,8 +128,8 @@ CompilerIf #PB_Compiler_IsMainFile
                        Container(0,0,0,0, #__Flag_NoGadgets), 
                        Container(0,0,0,0, #__Flag_NoGadgets),
                        #PB_Splitter_Vertical), "8" ) 
-      SetText(widget( )\FirstWidget( ), "     9")
-      SetText(widget( )\LastWidget( ), "10")
+      SetText(Widget( )\FirstWidget( ), "     9")
+      SetText(Widget( )\LastWidget( ), "10")
       
       CloseList()
       CloseList()
@@ -149,9 +149,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ;
       ;\\
       ;
-      Open(0, 10, 260, 240, 240) : SetFrame(root(), 1 ) : SetText(root()," root_3")
+      Open(0, 10, 260, 240, 240) : SetFrame(Root(), 1 ) : SetText(Root()," root_3")
       If editable
-         a_init(root(),0)
+         a_init(Root(),0)
       EndIf
       ;
       SetText(Container(30, 30, 180, 180), "1" )
@@ -167,8 +167,8 @@ CompilerIf #PB_Compiler_IsMainFile
                        Container(0,0,0,0, #__Flag_NoGadgets), 
                        Container(0,0,0,0, #__Flag_NoGadgets),
                        #PB_Splitter_Vertical), "8" ) 
-      SetText(widget( )\FirstWidget( ), "     9")
-      SetText(widget( )\LastWidget( ), "10")
+      SetText(Widget( )\FirstWidget( ), "     9")
+      SetText(Widget( )\LastWidget( ), "10")
       
       CloseList()
       CloseList()
@@ -234,8 +234,7 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 13
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 16
 ; Folding = ---
 ; EnableXP

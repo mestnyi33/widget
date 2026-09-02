@@ -125,6 +125,34 @@ EndDeclareModule
 Module func
    #__sOC = SizeOf(Character)
    
+   ; Процедура принудительного обновления гаджета на экране (Windows, Mac, Linux)
+   Procedure RedrawGadget(Gadget.i)
+      If IsGadget(Gadget)
+         CompilerSelect #PB_Compiler_OS
+               
+            CompilerCase #PB_OS_MacOS
+               ; Для macOS: вызываем нативный метод display у NSView
+               CocoaMessage(0, GadgetID(Gadget), "display")
+               
+            CompilerCase #PB_OS_Windows
+               ; Для Windows: инвалидируем область окна и принудительно обновляем через WinAPI
+               ; UpdateWindow_ заставляет ОС перерисовать элемент мгновенно, минуя очередь WM_PAINT
+               InvalidateRect_(GadgetID(Gadget), #Null, #True)
+               UpdateWindow_(GadgetID(Gadget))
+               
+            CompilerCase #PB_OS_Linux
+               ; Для Linux: используем нативные функции библиотеки GTK3
+               ; gtk_widget_queue_draw_area помечает область, а gdk_window_process_updates выводит пиксели
+               Protected *Widget = GadgetID(Gadget)
+               Protected *Window = gtk_widget_get_window_(*Widget)
+               gtk_widget_queue_draw_(*Widget)
+               If *Window
+                  gdk_window_process_updates_(*Window, #True)
+               EndIf
+               
+         CompilerEndSelect
+      EndIf
+   EndProcedure
    
    ;-
    Procedure.s InvertCase( Text.s )  
@@ -505,8 +533,8 @@ CompilerEndIf
 ;     gtk_main_()
 ;   EndIf
 ; EndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 206
-; FirstLine = 163
-; Folding = -v-------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 129
+; FirstLine = 142
+; Folding = ----------
 ; EnableXP

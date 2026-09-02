@@ -2382,10 +2382,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 1317
-; FirstLine = 1304
+; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
+; CursorPosition = 630
+; FirstLine = 618
 ; Folding = ------------------------8---------------
-; Optimizer
 ; EnableXP
 ; DPIAware
+; Optimizer

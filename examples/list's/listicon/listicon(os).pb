@@ -59,7 +59,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       ; чтобы не виделялся
-      If MouseDragStart( )
+      If MouseDrag( )
          If *this\RowFocused( ) = *row 
             *row\focus = 1
             *row\ColorState( ) = #__s_2
@@ -386,9 +386,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 288
-; FirstLine = 222
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 66
+; FirstLine = 79
 ; Folding = --4------
 ; EnableXP
 ; DPIAware

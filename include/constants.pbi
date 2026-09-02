@@ -350,8 +350,8 @@
       #__maskrow_node      = 1 << 23        ; Является узлом (Строка) / Деревом (Виджет)
       #__maskrow_collapsed = 1 << 24        ; Свернуто (Узел/Ветка)
       
-      #__mask_inner = 1 << 25
-      #__mask_inner2 = 1 << 26
+      #__mask_hover_a = 1 << 25
+      #__mask_hover_in = 1 << 26
       #__mask_visible = 1 << 27
       ;#__mask_checked = 1 << 28
       
@@ -786,9 +786,9 @@
    
    ;UseModule Constants
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 358
-; FirstLine = 336
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 352
+; FirstLine = 338
 ; Folding = ----
 ; Optimizer
 ; EnableXP

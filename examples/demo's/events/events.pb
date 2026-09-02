@@ -1,4 +1,4 @@
-﻿IncludePath "../../"
+﻿IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -10,12 +10,13 @@ CompilerIf #PB_Compiler_IsMainFile
    Global._s_WIDGET *first, *second, *focus
    
    Procedure   TestEvents( )
-      Protected item 
+      Protected item, *i
       
       If WidgetEvent( ) = #__event_Focus  
          Debug ""
          Debug "focus "+EventWidget( )\class
          item = GetData( EventWidget( ))
+         *i = WidgetEventData()
          ChangeItemState( *first, item, 2 )
          ChangeItemState( *second, item, 2 )
       EndIf
@@ -57,7 +58,7 @@ CompilerIf #PB_Compiler_IsMainFile
       If WidgetEvent( ) = #__event_LostFocus  
          *row = WidgetEventData( )
          
-         Debug "   all lostfocus "+*g\class +" "+ *row\ColorState( )
+         Debug "   all lostfocus "+*g\class ;+" "+ *row\ColorState( )
       EndIf
       
       If WidgetEvent( ) = #__event_Down 
@@ -96,7 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                        #PB_Window_MaximizeGadget )
    
    SetClass(Root( ), "window_0_root" )
-   ;Container( 10,10,240,140 ) : SetClass(Widget( ), "window_0_root_container" )
+   ; Container( 10,10,240,140 ) : SetClass(Widget( ), "window_0_root_container" )
    *focus = Button( 160, 10, 140, 40, "reset focus") 
    *first = Tree( 10,60,140,140 )
    *second = Tree( 160,60,140,140 )
@@ -107,12 +108,10 @@ CompilerIf #PB_Compiler_IsMainFile
       AddItem(*second, -1, "["+Str(i)+"]item")
    Next
    
-   Bind( #PB_All, @CallBack( ))
-   
-   WaitClose( )
+   WaitClose( @CallBack( ))
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 99
-; FirstLine = 38
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 26
+; FirstLine = 8
 ; Folding = ---
 ; EnableXP

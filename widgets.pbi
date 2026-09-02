@@ -897,11 +897,10 @@ CompilerIf Not Defined( Widget, #PB_Module )
    EndMacro ; Returns mouse [move/wheel] direction                 
    Macro MouseClick( ): mouse( )\click: EndMacro                                               ; Returns mouse click count
    Macro MouseMask( ): mouse( )\mask: EndMacro                                                 ; Returns mouse data
-   Macro MouseDrag( ): mouse( )\drag: EndMacro                                                 ; Returns mouse data
-   Macro MouseDragStart(  ): Bool( MouseMask( ) & #__mask_dragstart ): EndMacro                ; Returns mouse data
+   Macro MouseDrag( ): Bool( MouseMask( ) & #__mask_dragstart ): EndMacro                ; Returns mouse data
                                                                                                ; Macro MouseRelease( ): Bool( Not ( MouseButtons( ) And Not MousePress( ))): EndMacro 
    Macro MouseRelease( ): Bool( MouseMask( ) & #__mask_release ): EndMacro 
-   Macro MouseEnter( _this_, _mode_ = 2 ): (Bool(_this_\mask & #__mask_inner2)*2) = _mode_: EndMacro
+   Macro MouseEnter( _this_, _mode_ = 2 ): (Bool(_this_\mask & #__mask_hover_in)*2) = _mode_: EndMacro
    Macro MousePressX( ): mouse( )\press\x: EndMacro                                            ; Returns mouse buttons press [x]-coordinate
    Macro MousePressY( ): mouse( )\press\y: EndMacro                                            ; Returns mouse buttons press [y]-coordinate
    Macro MouseMoveX( ): DPIUnscaledX( CanvasMouseX( ) - MousePressX( )): EndMacro              ; Returns mouse x
@@ -909,16 +908,19 @@ CompilerIf Not Defined( Widget, #PB_Module )
    Macro GetMouseX( _this_ ): DPIUnscaledX( CanvasMouseX( ) - _this_\x[#__c_inner] ): EndMacro ; Returns mouse x
    Macro GetMouseY( _this_ ): DPIUnscaledY( CanvasMouseY( ) - _this_\y[#__c_inner] ): EndMacro ; Returns mouse y
    
-   
    ;-
    Macro CanvasMouseX( ): mouse( )\x: EndMacro                                  ; Returns mouse x
    Macro CanvasMouseY( ): mouse( )\y: EndMacro                                  ; Returns mouse y
                                                                                 ;-
+   Macro Drag( ): mouse( )\drag: EndMacro                                                 ; Returns mouse data
+   Macro Drop( ): mouse( )\drop: EndMacro                                                 ; Returns mouse data
                                                                                 ;       Macro IsCanvas(_gadget_)
                                                                                 ;          FindMapElement( Widget::gadgets( ), Str(_gadget_))
                                                                                 ;       EndMacro
    Macro ChangeCurrentCanvas( _canvasID_ )
-      Widget::Root( ) = key::GetData(_canvasID_)
+      If key::GetData(_canvasID_)
+         Widget::Root( ) = key::GetData(_canvasID_)
+      EndIf
    EndMacro
    
    
@@ -1806,7 +1808,7 @@ CompilerIf Not Defined( Widget, #PB_Module )
    Declare.b SetState( *this, state.i )
    Declare.l GetItemState( *this, Item.l )
    Declare.b SetItemState( *this, Item.l, State.b )
-   Declare   Chang__itemstate( *this, Item.l, State.b )
+   Declare   ChangeItemState( *this, Item.l, State.b )
    
    Declare.i GetData( *this )
    Declare.i SetData( *this, *data )
@@ -3451,7 +3453,7 @@ Module Widget
    Procedure DropDraw( *this._s_WIDGET )
       Protected j = 5, s = j/2
       
-      If mouse( )\drop
+      If Drop( )
          ;\\ if you drag to the widget-dropped
          If is_scrollbars_( *this )
             *this = *this\parent
@@ -3462,7 +3464,7 @@ Module Widget
             draw_mode_alpha_( #PB_2DDrawing_Default )
             If MouseEnter( *this, 2 )
                If *this\drop
-                  If MouseDrag( ) = #PB_Drag_Enter
+                  If Drag( ) & #PB_Drag_Enter
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $1000ff00 )
                      
                      If *this\row
@@ -3486,7 +3488,7 @@ Module Widget
             __draw_mode( #PB_2DDrawing_Outlined )
             If MouseEnter( *this, 2 )
                If *this\drop
-                  If MouseDrag( ) = #PB_Drag_Enter
+                  If Drag( ) & #PB_Drag_Enter
                      draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff00ff00 )
                      
                      If *this\row
@@ -3511,19 +3513,19 @@ Module Widget
    EndProcedure
    
    Procedure.l DropX( )
-      ProcedureReturn mouse( )\drop\x
+      ProcedureReturn Drop( )\x
    EndProcedure
    
    Procedure.l DropY( )
-      ProcedureReturn mouse( )\drop\y
+      ProcedureReturn Drop( )\y
    EndProcedure
    
    Procedure.l DropWidth( )
-      ProcedureReturn mouse( )\drop\width
+      ProcedureReturn Drop( )\width
    EndProcedure
    
    Procedure.l DropHeight( )
-      ProcedureReturn mouse( )\drop\height
+      ProcedureReturn Drop( )\height
    EndProcedure
    
    Procedure.i DropType( )
@@ -3536,37 +3538,37 @@ Module Widget
       ; #PB_Drop_image  : Перетащено изображение.  (для получения изображения воспользуйтесь функцией EventDropimage())
       ; #PB_Drop_Files  : Перетащены имена файлов. (для получения имён воспользуйтесь функцией EventDropFiles())
       ; #PB_Drop_Private: Завершена "внутренняя" операция. (чтобы узнать её тип, воспользуйтесь функцией EventDropPrivate())
-      ProcedureReturn mouse( )\drop\format
+      ProcedureReturn Drop( )\format
    EndProcedure
    
    Procedure.i DropAction( )
       ; эта функция возвращает действие, которое следует выполнить с данными.
       ; после того, как произошло событие ( event-DROP )
-      ProcedureReturn mouse( )\drop\actions
+      ProcedureReturn Drop( )\actions
    EndProcedure
    
    Procedure.i DropPrivate( )
       ; эта функция возвращает 'PrivateType', который был сброшен.
       ; после того, как произошло событие ( event-DROP ) с форматом #PB_Drop_Private (формат можно получить с помощью DropType( ))
-      ProcedureReturn mouse( )\drop\private
+      ProcedureReturn Drop( )\private
    EndProcedure
    
    Procedure.s DropFiles( )
       ; эта функция возвращает имена файлов, который был сброшен.
       ; после того, как произошло событие ( event-DROP ) с форматом #PB_Drop_Files (формат можно получить с помощью DropType( ))
-      ; ProcedureReturn mouse( )\drop\files\s
+      ; ProcedureReturn Drop( )\files\s
    EndProcedure
    
    Procedure.s DropText( )
       ; эта функция возвращает текст, который был сброшен.
       ; после того, как произошло событие ( event-DROP ) с форматом #PB_Drop_Text (формат можно получить с помощью DropType( ))
-      ProcedureReturn mouse( )\drop\str$
+      ProcedureReturn Drop( )\str$
    EndProcedure
    
    Procedure.i DropImage( img.i = #PB_Any, Depth.i = 24 )
       ; эта функция возвращает изображения, который был сброшен.
       ; после того, как произошло событие ( event-DROP ) с форматом #PB_Drop_image (формат можно получить с помощью DropType( ))
-      If mouse( )\drop\imageID
+      If Drop( )\imageID
          If img = #PB_Any
             img = CreateImage( #PB_Any, DropWidth( ), DropHeight( ) )
          EndIf
@@ -3574,9 +3576,9 @@ Module Widget
          If IsImage( img ) And
             StartDrawing( ImageOutput( img ))
             If Depth = 32
-               DrawAlphaImage( mouse( )\drop\imageID, 0, 0 )
+               DrawAlphaImage( Drop( )\imageID, 0, 0 )
             Else
-               DrawImage( mouse( )\drop\imageID, 0, 0 )
+               DrawImage( Drop( )\imageID, 0, 0 )
             EndIf
             StopDrawing( )
             
@@ -3605,14 +3607,14 @@ Module Widget
       ; #PB_Drag_Update        ; = 2     ; 2          ; 2     ; Мышь была перемещена внутри (объекта) или изменено предполагаемое действие.
       ; #PB_Drag_Leave         ; = 3     ; 3          ; 3     : Мышь покинула (объект) (Формат, Действие, x, y здесь равны 0)
       ; #PB_Drag_Finish        ; = 4     ; 4          ; 4     : Перетаскивание завершено.
-      ;
+      
       If IsGadget(*this)
          ProcedureReturn PB(EnableGadgetDrop)(*this, Format, Actions, PrivateType )
       EndIf
       
       If Not *this\drop
          ;Debug "Enable dropped - " + *this\class
-         *this\drop.allocate( DROP )
+         *this\drop.allocate( Drop )
       EndIf
       
       *this\drop\format  = Format
@@ -3623,64 +3625,67 @@ Module Widget
    Procedure.i DragDropText( Text.s, Actions.b = #PB_Drag_Copy )
       ;Debug "  drag text - " + Text
       
-      If Not mouse( )\drop
-         mouse( )\drop.allocate( DROPMOUSE )
+      If Not Drop( )
+         Drop( ).allocate( DROPMOUSE )
       EndIf
-      mouse( )\drop\format  = #PB_Drop_Text
-      mouse( )\drop\actions = Actions
-      mouse( )\drop\str$  = Text
+      Drop( )\format  = #PB_Drop_Text
+      Drop( )\actions = Actions
+      Drop( )\str$  = Text
       
-      SetCursor( #PB_All, cursor::#__cursor_Drag )
-      MouseDrag( ) = #PB_Drag_Update
+      ; SetCursor( #PB_All, cursor::#__cursor_Drag )
+      mouse( )\cursor = cursor::#__cursor_Drag
       
-      ProcedureReturn mouse( )\drop
+      ProcedureReturn Drop( )
    EndProcedure
    
    Procedure.i DragDropImage( img.i, Actions.b = #PB_Drag_Copy )
       ;Debug "  drag img - " + img
       
-      If Not mouse( )\drop
-         mouse( )\drop.allocate( DROPMOUSE )
+      If Not Drop( )
+         Drop( ).allocate( DROPMOUSE )
       EndIf
-      mouse( )\drop\format  = #PB_Drop_Image
-      mouse( )\drop\actions = Actions
+      Drop( )\format  = #PB_Drop_Image
+      Drop( )\actions = Actions
       
       If IsImage( img )
-         mouse( )\drop\imageID = ImageID( img )
-         mouse( )\drop\width   = ImageWidth( img )
-         mouse( )\drop\height  = ImageHeight( img )
+         Drop( )\imageID = ImageID( img )
+         Drop( )\width   = ImageWidth( img )
+         Drop( )\height  = ImageHeight( img )
       EndIf
       
-      SetCursor( #PB_All, cursor::#__cursor_Drag )
-      ProcedureReturn mouse( )\drop
+      ; SetCursor( #PB_All, cursor::#__cursor_Drag )
+      mouse( )\cursor = cursor::#__cursor_Drag
+      ProcedureReturn Drop( )
    EndProcedure
    
    Procedure.i DragDropFiles( Files.s, Actions.b = #PB_Drag_Copy )
       ;         ;Debug "  drag files - " + Files
       ;
-      ;         If Not mouse( )\drop
-      ;           mouse( )\drop.allocate( DROPMOUSE )
+      ;         If Not Drop( )
+      ;           Drop( ).allocate( DROPMOUSE )
       ;         EndIf
-      ;         mouse( )\drop\format  = #PB_Drop_Files
-      ;         mouse( )\drop\actions = Actions
-      ;         mouse( )\drop\files  = Files
+      ;         Drop( )\format  = #PB_Drop_Files
+      ;         Drop( )\actions = Actions
+      ;         Drop( )\files  = Files
       
-      SetCursor( #PB_All, cursor::#__cursor_Drag )
-      ProcedureReturn mouse( )\drop
+      ; SetCursor( #PB_All, cursor::#__cursor_Drag )
+      mouse( )\cursor = cursor::#__cursor_Drag
+      ProcedureReturn Drop( )
    EndProcedure
    
    Procedure.i DragDropPrivate( PrivateType.i, Actions.b = #PB_Drag_Copy )
       ; Debug "  drag PrivateType - " + PrivateType +" - Actions - "+ Actions
       
-      If Not mouse( )\drop
-         mouse( )\drop.allocate( DROPMOUSE )
+      If Not Drop( )
+         Drop( ).allocate( DROPMOUSE )
       EndIf
-      mouse( )\drop\format  = #PB_Drop_Private
-      mouse( )\drop\actions = Actions
-      mouse( )\drop\private = PrivateType
+      Drop( )\format  = #PB_Drop_Private
+      Drop( )\actions = Actions
+      Drop( )\private = PrivateType
       
-      SetCursor( #PB_All, cursor::#__cursor_Drag )
-      ProcedureReturn mouse( )\drop
+      ; SetCursor( #PB_All, cursor::#__cursor_Drag )
+      mouse( )\cursor = cursor::#__cursor_Drag
+      ProcedureReturn Drop( )
    EndProcedure
    
    ;-
@@ -3986,7 +3991,7 @@ Module Widget
             ;
             a_index( ) = 0
             ;
-            If *this\mask & #__mask_inner
+            If *this\mask & #__mask_hover_a
                If ( is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_frame] ) And
                     is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ))
                   
@@ -4008,7 +4013,7 @@ Module Widget
                repaint_set( a_entered( ) )
             EndIf
             
-            If a_entered( )\mask & #__mask_inner
+            If a_entered( )\mask & #__mask_hover_a
                a_entered( )\mask &~ #__mask_hover
             EndIf
             
@@ -4059,8 +4064,8 @@ Module Widget
                EndIf   
                ;
                ChangeCursor( *this, a_anchors( )\cursor[a_index] )
+               *this\mask | #__mask_hover_a
                repaint_set( *this )
-               *this\mask | #__mask_inner
             EndIf
          EndIf
          ; 
@@ -4496,7 +4501,7 @@ Module Widget
                EndIf
                
                ;                  
-               If MouseDragStart( )
+               If MouseDrag( )
                   If a_anchors( )\grid_image
                      If *this\parent And 
                         *this\parent\anchors
@@ -6358,7 +6363,7 @@ Module Widget
                ;\\
                If *this\cursor[3]
                   If *this\mask & #__mask_press 
-                     If SetCursor( *this, *this\cursor[3] )
+                     If GetCursor( ) <> *this\cursor[3] ; SetCursor( *this, *this\cursor[3] )
                         ChangeCursor( *this, *this\cursor[3] )
                      EndIf
                   EndIf
@@ -6371,7 +6376,7 @@ Module Widget
                ;\\
                If *this\cursor[1]
                   If *this\mask & #__mask_press 
-                     If SetCursor( *this, *this\cursor[1] )
+                     If GetCursor( ) <> *this\cursor[1] ; SetCursor( *this, *this\cursor[1] )
                         ChangeCursor( *this, *this\cursor[1] )
                      EndIf
                   EndIf
@@ -6386,7 +6391,7 @@ Module Widget
                ;
                If *this\cursor[2]
                   If *this\mask & #__mask_press 
-                     If SetCursor( *this, *this\cursor[2] )
+                     If GetCursor( ) <> *this\cursor[2] ; SetCursor( *this, *this\cursor[2] )
                         ChangeCursor( *this, *this\cursor[2] )
                      EndIf
                   EndIf
@@ -6398,7 +6403,7 @@ Module Widget
                ;
                If *this\cursor[1]
                   If *this\mask & #__mask_press 
-                     If SetCursor( *this, *this\cursor[1] )
+                     If GetCursor( ) <> *this\cursor[1] ; SetCursor( *this, *this\cursor[1] )
                         ChangeCursor( *this, *this\cursor[1] )
                      EndIf
                   EndIf
@@ -10046,9 +10051,6 @@ Module Widget
                Debug "setCURSOR( " + *cursor +" )"
             EndIf
             *this\cursor[Type] = *cursor
-            If Type
-               ; *this\cursor[Type] = *cursor
-            EndIf
             ProcedureReturn 1
          EndIf
       Else
@@ -10060,7 +10062,6 @@ Module Widget
       Protected result.i
       Static cursor_change_widget
       ;
-      StopDraw( )
       If *cursor 
          cursor_change_widget = *this
       Else
@@ -10084,6 +10085,7 @@ Module Widget
          EndIf
       EndIf
       ;
+      ; StopDraw( )
       Cursor::Set( *this\root\canvas\gadget, *cursor ) 
       ; StartDraw( *this\root )
       ;
@@ -10092,16 +10094,16 @@ Module Widget
    
    Procedure   DoChangeCursor( *this._s_WIDGET )
       If MousePress( )
-         If mouse( )\drop
-            If Not *this\mask & #__mask_disabled
+         If Not *this\mask & #__mask_disabled
+            If Drop( )
                If *this\drop And MouseEnter( *this, 2 ) And 
-                  *this\drop\format = mouse( )\drop\format And
-                  *this\drop\actions & mouse( )\drop\actions And
-                  ( *this\drop\private = mouse( )\drop\private Or
-                    *this\drop\private & mouse( )\drop\private )
+                  *this\drop\format = Drop( )\format And
+                  *this\drop\actions & Drop( )\actions And
+                  ( *this\drop\private = Drop( )\private Or
+                    *this\drop\private & Drop( )\private )
                   ;
-                  If MouseDrag( ) <> #PB_Drag_Enter
-                     MouseDrag( ) = #PB_Drag_Enter
+                  If Drag( ) & #PB_Drag_Enter = 0
+                     Drag( ) | #PB_Drag_Enter
                      ; Debug "#PB_Drag_Enter"
                      
                      If GetCursor( ) = cursor::#__cursor_Drag
@@ -10111,8 +10113,8 @@ Module Widget
                Else
                   If *this\mask & #__mask_press
                      If *this\mask & #__mask_hover
-                        If MouseDrag( ) <> #PB_Drag_Leave
-                           MouseDrag( ) = #PB_Drag_Leave
+                        If Drag( ) & #PB_Drag_Leave = 0
+                           Drag( ) | #PB_Drag_Leave
                            ; Debug "press #PB_Drag_Leave"
                            
                            If *this\row
@@ -10127,8 +10129,9 @@ Module Widget
                         EndIf
                      EndIf
                   Else
-                     If MouseDrag( ) = #PB_Drag_Enter
-                        MouseDrag( ) = #PB_Drag_Leave
+                     If Drag( ) & #PB_Drag_Enter
+                        Drag( ) &~ #PB_Drag_Enter
+                        Drag( ) | #PB_Drag_Leave
                         ; Debug "#PB_Drag_Leave"
                         
                         If GetCursor( ) = cursor::#__cursor_Drop
@@ -10145,11 +10148,13 @@ Module Widget
                MouseEnter( *this, 2 ) And *this\cursor
                
                If GetCursor( ) <> *this\cursor
+                  Debug "do change cursor"
                   ChangeCursor( *this, *this\cursor )
                EndIf
             Else
-               If GetCursor( ) <> 0
-                  ; Debug "reset cursor"
+           ; Debug "reset cur "+GetCursor( )
+            If GetCursor( ) <> 0
+                  Debug "do reset cursor"
                   ChangeCursor( *this, 0 )
                EndIf
             EndIf
@@ -10585,6 +10590,7 @@ Module Widget
    
    ;-
    Procedure   ChangeStatus( *this._s_WIDGET, *row._s_ROW )
+      If Not *row : ProcedureReturn : EndIf
       Protected._s_ROW *select_row
       Protected count = ListSize( *this\__rows( ))
       If count
@@ -10987,7 +10993,7 @@ Module Widget
                
                If *row
                   ;\\ example file "D&D-items"
-                  If MouseDrag( )
+                  If Drag( ) & #PB_Drag_Enter
                      If *this\drop
                         Protected._s_ROW *press_row = *this\RowPressed( )
                         
@@ -11316,7 +11322,7 @@ Module Widget
       ProcedureReturn result
    EndProcedure
    
-   Procedure   Chang__itemstate( *this._s_WIDGET, Item.l, State.b )
+   Procedure   ChangeItemState( *this._s_WIDGET, Item.l, State.b )
       If Not (item < 0 Or item > ListSize( *this\__rows( )))
          Protected result
          Protected._s_ROW *select_row
@@ -16739,16 +16745,16 @@ Module Widget
                      is_hover( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
                      is_hover( *list( ), mouse_x, mouse_y, [#__c_draw] )
                      
-                     ;\\ если переместили виджет то его исключаем
-                     If MouseDragStart( ) 
-                        If is_drag_move( )
-                           If Pressed( ) = *list( )
-                              Continue
-                           EndIf
-                           Entered( ) = *list( )
-                           ProcedureReturn 0
-                        EndIf
-                     EndIf
+;                      ;\\ если переместили виджет то его исключаем
+;                      If MouseDrag( ) 
+;                         If is_drag_move( )
+;                            If Pressed( ) = *list( )
+;                               Continue
+;                            EndIf
+;                            Entered( ) = *list( )
+;                            ProcedureReturn 0
+;                         EndIf
+;                      EndIf
                      
                      *this = *list( )
                      Break
@@ -16812,8 +16818,8 @@ Module Widget
             a_entered( )\anchors\id[a_index( )] And
             a_entered( )\anchors\state
             ;
-            If Not MouseDragStart( )
-               If *this
+            If *this
+               If Not MouseDrag( )
                   If *this <> a_entered( ) And 
                      *this\root = a_entered( )\root 
                      ;
@@ -16847,7 +16853,7 @@ Module Widget
                   If a_index( )
                      ; Debug "a out to parent border "+a_entered( )\mask & #__mask_hover 
                      
-                     If a_entered( )\mask & #__mask_inner
+                     If a_entered( )\mask & #__mask_hover_a
                         a_entered( )\mask &~ #__mask_hover
                      EndIf
                      a_index( ) = 0
@@ -16942,15 +16948,13 @@ Module Widget
                      EnteredButton( )\mask & #__mask_disabled = 0 And
                      EnteredButton( )\mask & #__mask_hover = 0
                      EnteredButton( )\mask | #__mask_hover
+;                      ;
+;                      If EnteredButton( ) = *BB0
+;                         EnteredButton( )\mask | #__mask_hover_a
+;                      EndIf
                      ;
                      If EnteredButton( )\ColorState( ) = #__s_0
                         EnteredButton( )\ColorState( ) = #__s_1
-                     EndIf
-                     ;
-                     If EnteredButton( ) = *BB0
-                        If EnteredButton( )\mask & #__mask_hover > 0
-                           EnteredButton( )\mask | #__mask_inner
-                        EndIf
                      EndIf
                      ;
                      repaint_set( *this )
@@ -16972,9 +16976,9 @@ Module Widget
          mouse()\item[0] = 0   ; Обнуляем текущую вкладку
          
          ; Debug ""+*root +" "+ Entered( ) +" "+ *this +" "+ Leaved( )
+         Protected *parent._s_WIDGET 
          Leaved( ) = Entered( )
          Entered( ) = *this
-         Protected *parent._s_WIDGET 
          ;
          ;
          If Leaved( ) And Not ( *this And *this\parent = Leaved( ) And is_integral_( *this ) )
@@ -16988,7 +16992,7 @@ Module Widget
                      If Leaved( )\parent = *this
                         If is_hover( Leaved( )\parent, mouse_x, mouse_y, [#__c_inner] ) And
                            is_hover( Leaved( )\parent, mouse_x, mouse_y, [#__c_draw] )
-                           Leaved( )\parent\mask | #__mask_inner2
+                           Leaved( )\parent\mask | #__mask_hover_in
                         Else
                            Leaved( )\parent\mask | #__mask_hover
                         EndIf
@@ -17009,7 +17013,7 @@ Module Widget
                            ;
                            If *parent 
                               If *parent\anchors And 
-                                 *parent\mask & #__mask_inner
+                                 *parent\mask & #__mask_hover_a
                                  *parent\mask &~ #__mask_hover
                               EndIf
                            EndIf
@@ -17026,7 +17030,7 @@ Module Widget
                         DoEvents( Leaved( )\parent, #__event_MouseLeave, -1, @"[?-leave]" )
                      Else
                         If a_index( )
-                           Leaved( )\parent\mask | #__mask_inner
+                           Leaved( )\parent\mask | #__mask_hover_a
                            DoEvents( Leaved( )\parent, #__event_MouseLeave, -1, @"[?-a-leave]" )
                         Else
                            DoChangeCursor( Leaved( )\parent )
@@ -17034,7 +17038,7 @@ Module Widget
                      EndIf
                   EndIf
                EndIf
-               
+               ;
             EndIf
          EndIf
          ;
@@ -17051,7 +17055,7 @@ Module Widget
                            a_enter( *this\parent, 1 ) 
                            
                            If a_index( )
-                              *this\parent\mask | #__mask_inner
+                              *this\parent\mask | #__mask_hover_a
                            EndIf
                         EndIf
                      EndIf
@@ -17080,7 +17084,7 @@ Module Widget
                            ;
                            If *parent
                               If *parent\anchors
-                                 *parent\mask | #__mask_inner
+                                 *parent\mask | #__mask_hover_a
                                  a_enter( *parent, - 1 ) 
                               EndIf
                            EndIf
@@ -17103,7 +17107,7 @@ Module Widget
    ; get at point items
    Procedure hower_line( *this._S_WIDGET, *hover_line._s_ROW, mouse_x, mouse_y )
       Protected._s_ROW *rowLine, *__line, *visible_line
-      Protected dragged = MouseDragStart( )
+      Protected dragged = MouseDrag( )
       
       If ListSize( *this\__items( ) )
          If *hover_line And *hover_line\mask & #__mask_visible And
@@ -17730,7 +17734,7 @@ Module Widget
    
    
    Procedure   DoEvent_Lines( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-      Protected Repaint, dragged = Bool( MouseDragStart( ) And *this\mask & #__mask_press ) 
+      Protected Repaint, dragged = Bool( MouseDrag( ) And *this\mask & #__mask_press ) 
       Protected._s_ROW *line, *row_line, *visible_line, *hover_line = *this\LineEntered( )
       
       mouse_x - *this\inner_x( )
@@ -18079,7 +18083,7 @@ Module Widget
    
    
    Procedure   DoEvent_Rows( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-      Protected Repaint, dragged = Bool( MouseDragStart( ) And *this\mask & #__mask_press ) ; 
+      Protected Repaint, dragged = Bool( MouseDrag( ) And *this\mask & #__mask_press ) ; 
       Protected._s_ROW *row
       Protected._s_ROW *e_row ; *this\RowEntered( )
       Protected._s_ROW *visible_row
@@ -18099,7 +18103,7 @@ Module Widget
          ;Debug ""+*this\class +" "+ EventString(event)
          
          ;\\ search at point entered items
-         If Not mouse( )\drop Or *this\drop
+         If Not Drop( ) Or *this\drop
             If MouseEnter( *this, 2 )
                *e_row = hover_row( *this, *this\RowEntered( ), mouse_x, mouse_y, dragged)
             Else
@@ -18167,7 +18171,7 @@ Module Widget
                   
                   
                   If Not EnteredButton( ) And 
-                     ( *this\mask & #__mask_press And Not mouse( )\drop ) And 
+                     ( *this\mask & #__mask_press And Not Drop( ) ) And 
                      *this\flagmask & #__flag_RowMultiSelect = 0 And 
                      *this\flagmask & #__flag_RowClickSelect = 0
                      ;
@@ -18236,7 +18240,7 @@ Module Widget
                   *e_row\mask | #__mask_hover
                   
                   If Not EnteredButton( ) And 
-                     ( *this\mask & #__mask_press And Not mouse( )\drop ) And 
+                     ( *this\mask & #__mask_press And Not Drop( ) ) And 
                      ( *this\flagmask & #__flag_RowClickSelect = 0 Or ( *this\flagmask & #__flag_RowClickSelect And *this\flagmask & #__flag_RowMultiSelect ))
                      
                      If *e_row\ColorState( ) <> #__s_2
@@ -18270,19 +18274,19 @@ Module Widget
          ;
          ;\\ DD drop state
          If *this\drop
-            If mouse( )\drop
+            If Drop( )
                If *this\RowEntered( ) And
                   *this\RowEntered( )\mask & #__mask_hover
                   
                   If ( mouse_y - *this\RowEntered( )\y ) > *this\RowEntered( )\height / 2
-                     If *this\RowEntered( )\mask & #__mask_hover <> 1
+                     If Not *this\RowEntered( )\mask & #__mask_hover 
                         *this\RowEntered( )\mask | #__mask_hover
                         ; Debug "-1 (+1)"
                         repaint_set( *this )
                      EndIf
                   Else
-                     If Not *this\RowEntered( )\mask & #__mask_inner
-                        *this\RowEntered( )\mask | #__mask_inner
+                     If Not *this\RowEntered( )\mask & #__mask_hover
+                        *this\RowEntered( )\mask | #__mask_hover
                         ; Debug "+1 (-1)"
                         repaint_set( *this )
                      EndIf
@@ -18552,7 +18556,7 @@ Module Widget
             *this\type = #__type_TabBar
             ;
             If PressedButton( ) = *SB
-               If MouseDragStart( )
+               If MouseDrag( )
                   increment = 0
                EndIf
             Else
@@ -18990,8 +18994,8 @@ Module Widget
                
                ;\\
                If *this\type = #__type_TabBar  
-                  If Not *EnteredTAB\mask & #__mask_disabled
-                     If Not MouseDragStart( )
+                  If Not MouseDrag( )
+                     If Not *EnteredTAB\mask & #__mask_disabled
                         If GetState( *this ) <> *EnteredTAB\index 
                            If SetState( *this, *EnteredTAB\index ) 
                               result = #True
@@ -19054,6 +19058,47 @@ Module Widget
    ;          PostQuit()
    ;          Debug 88888
    ;       EndProcedure
+   Procedure DoCursor( *this._s_WIDGET )
+      Protected result
+      
+      If Bool( is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ) And
+               is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_inner] ) And
+               Not ( *this\type = #__type_Splitter And is_hover( *this\bar\button, CanvasMouseX( ), CanvasMouseY( ) ) = 0 ) And
+               Not ( *this\type = #__type_HyperLink And is_hover( *this, CanvasMouseX( ) - *this\frame_x( ), CanvasMouseY( ) - *this\frame_y( ), [#__c_Required] ) = 0 ))
+         
+         If *this\bar And *this\bar\button[1] And *this\bar\button[1]\mask & #__mask_disabled
+            If GetCursor( ) <> *this\cursor[3]
+               result = ChangeCursor( *this, *this\cursor[3] )
+            EndIf
+            
+         ElseIf *this\bar And *this\bar\button[2] And *this\bar\button[2]\mask & #__mask_disabled
+            If GetCursor( ) <> *this\cursor[2]
+               result = ChangeCursor( *this, *this\cursor[2] )
+            EndIf
+            
+         Else
+            If *this\cursor
+               If GetCursor( ) <> *this\cursor
+                  result = ChangeCursor( *this, *this\cursor )
+               EndIf
+            Else
+               If GetCursor( ) <> *this\cursor[1]
+                  result = ChangeCursor( *this, *this\cursor[1] )
+               EndIf
+            EndIf
+         EndIf   
+         
+      ElseIf GetCursor( ) <> 0 Or *this\cursor 
+         If GetCursor( ) <> *this\cursor
+            result = ChangeCursor( *this, *this\cursor )
+         EndIf
+      EndIf
+      
+      If result 
+         MouseMask( ) | (#__mask_update)
+         ProcedureReturn 1
+      EndIf
+   EndProcedure
    
    Procedure   DoEvents( *this._s_WIDGET, event.l, *button = #PB_All, *data = #Null )
       If Not *this
@@ -19103,56 +19148,43 @@ Module Widget
          EndIf
       EndIf
       
-      ;
       ;\\ update [entered position and current cursor] state
-      If *this\mask & #__mask_hover 
-         If Bool( is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ) And
-                  is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_inner] ) And
-                  Not ( *this\type = #__type_Splitter And is_hover( *this\bar\button, CanvasMouseX( ), CanvasMouseY( ) ) = 0 ) And
-                  Not ( *this\type = #__type_HyperLink And is_hover( *this, CanvasMouseX( ) - *this\frame_x( ), CanvasMouseY( ) - *this\frame_y( ), [#__c_Required] ) = 0 ))
-            ;
-            If *this\mask & #__mask_hover
-               If *this\mask & #__mask_inner2 = 0
-                  *this\mask | #__mask_inner2
-                  ;
-                  MouseMask( ) | (#__mask_update)
-                  DoChangeCursor( *this )
-                  repaint_set( *this )
-               EndIf
-            EndIf
-         Else
-            If *this\mask & #__mask_hover = 0
-               *this\mask | #__mask_hover
-               ;
-               MouseMask( ) | (#__mask_update)
-               DoChangeCursor( *this )
-               repaint_set( *this )
+      If  MouseRelease( )
+         If event = #__event_UP 
+            If *this\mask & #__mask_hover ; BUG
+               Debug " UP-enter"
             Else
-               If event = #__event_MouseEnter
-                  DoChangeCursor( *this )
-               EndIf
+               Debug " UP-leave"
             EndIf
-         EndIf
-         
-         ;             If *this\mask & #__mask_redraw
-         ;                Debug "e - "+ *this\class
-         ;                
-         ;                update_views( *this,  *this\parent )
-         ;             EndIf
-      EndIf
-      If event = #__event_Up 
-         If *this\mask & #__mask_hover
+            
             If a_index( )
                a_enter( *this, 3 )
             EndIf
-            DoChangeCursor( *this )
-         Else
-            If Entered( )
-               DoChangeCursor( Entered( ) )
+            DoCursor( Entered( ))
+         EndIf
+      Else
+         If *this\mask & #__mask_hover
+            If Not MousePress( )
+               If *this\mask & #__mask_hover_a
+                  If a_index( )
+                     
+                  Else
+                     DoCursor( *this )
+                  EndIf   
+               Else
+                  If DoCursor( *this )
+                     Debug EventString(event)
+                  EndIf
+               EndIf
             EndIf
          EndIf
       EndIf
       
+      ;       
+      If MouseMask( ) & (#__mask_update)
+         
+         ;  Debug "UPDTATE mouse"
+      EndIf
       ;          
       ;\\ Do anchors events
       a_doevents( *this, event )
@@ -19539,11 +19571,10 @@ Module Widget
             EndIf
          EndIf
          
-         
       EndIf
       
-      ;\\ send-widget-events
       If Not (*this\mask & #__mask_disabled And Not *this\anchors)  
+         ;\\ send-widget-events
          If event = #__event_left2Click Or
             event = #__event_left3Click
             ;
@@ -19817,7 +19848,6 @@ Module Widget
          If test_canvas_events
             Debug " " + PBEventString(eventtype) +" "+ eventgadget
          EndIf
-         ; Debug " #PB_EventType_MouseEnter "+eventgadget
          ChangeCurrentCanvas( GadgetID( eventgadget ))
          ;
          Root( )\canvas\enter = 1
@@ -19898,9 +19928,15 @@ Module Widget
             ;
             If CanvasMouseX( ) <> mouse_x : event = #__event_MouseMove
                If CanvasMouseX( ) > mouse_x
-                  MouseMask( ) | (#__mask_update | #__mask_left)
+                  If MouseMask( ) & #__mask_left = 0
+                     MouseMask( ) &~ #__mask_right
+                     MouseMask( ) | (#__mask_update|#__mask_left)
+                  EndIf
                Else
-                  MouseMask( ) | (#__mask_update | #__mask_right)
+                  If MouseMask( ) & #__mask_right = 0
+                     MouseMask( ) &~ #__mask_left
+                     MouseMask( ) | (#__mask_update|#__mask_right)
+                  EndIf
                EndIf
                ;
                If Pressed( ) And mouse( )\selector 
@@ -19930,9 +19966,15 @@ Module Widget
             ;
             If CanvasMouseY( ) <> mouse_y : event = #__event_MouseMove
                If CanvasMouseY( ) > mouse_y
-                  MouseMask( ) | (#__mask_update|#__mask_top)
+                  If MouseMask( ) & #__mask_top = 0
+                     MouseMask( ) &~ #__mask_bottom
+                     MouseMask( ) | (#__mask_update|#__mask_top)
+                  EndIf
                Else
-                  MouseMask( ) | (#__mask_update|#__mask_bottom)
+                  If MouseMask( ) & #__mask_bottom = 0
+                     MouseMask( ) &~ #__mask_top
+                     MouseMask( ) | (#__mask_update|#__mask_bottom)
+                  EndIf
                EndIf
                ;
                If Pressed( ) And mouse( )\selector 
@@ -20263,8 +20305,8 @@ Module Widget
       If event = #__event_MouseMove
          If Pressed( ) 
             If Pressed( )\mask & #__mask_press 
-               ;\\ mouse-pressed-widget move event
-               If MouseDragStart( ) 
+               ;\\ mouse pressed-move event
+               If MouseDrag( ) 
                   If Pressed( ) <> Entered( )
                      If Root( ) <> Pressed( )\root
                         CanvasMouseX( ) = mouse::GadgetMouseX( Pressed( )\root\canvas\gadget )
@@ -20504,9 +20546,9 @@ Module Widget
             ;\\ do up&click events
             If Pressed( )\mask & #__mask_press
                ;\\ do drop events
-               If mouse( )\drop
-                  If MouseDrag( ) = #PB_Drag_Enter
-                     MouseDrag( ) = #PB_Drag_Finish
+               If Drop( )
+                  If Drag( ) & #PB_Drag_Enter
+                     Drag( ) | #PB_Drag_Finish
                   EndIf
                   ;
                   If is_drag_move( )
@@ -20518,23 +20560,23 @@ Module Widget
                      If IsContainer( Pressed( ) ) 
                         If Pressed( )\drop
                            If mouse( )\selector
-                              mouse( )\drop\x = DPIUnscaledX( mouse( )\selector\x - Pressed( )\inner_x( ) - Pressed( )\scroll_x( ) )
-                              mouse( )\drop\y = DPIUnscaledY( mouse( )\selector\y - Pressed( )\inner_y( ) - Pressed( )\scroll_y( ) )
+                              Drop( )\x = DPIUnscaledX( mouse( )\selector\x - Pressed( )\inner_x( ) - Pressed( )\scroll_x( ) )
+                              Drop( )\y = DPIUnscaledY( mouse( )\selector\y - Pressed( )\inner_y( ) - Pressed( )\scroll_y( ) )
                               
-                              mouse( )\drop\width  = DPIUnscaledX( mouse( )\selector\width )
-                              mouse( )\drop\height = DPIUnscaledY( mouse( )\selector\height )
+                              Drop( )\width  = DPIUnscaledX( mouse( )\selector\width )
+                              Drop( )\height = DPIUnscaledY( mouse( )\selector\height )
                               
                               DoEvents( Pressed( ), #__event_Drop )
                            EndIf
                         EndIf
                         
                      ElseIf Entered( )\drop
-                        If MouseDrag( ) = #PB_Drag_Finish
-                           mouse( )\drop\x = DPIUnscaledX( CanvasMouseX( ) - Entered( )\inner_x( ) - Entered( )\scroll_x( ) )
-                           mouse( )\drop\y = DPIUnscaledY( CanvasMouseY( ) - Entered( )\inner_y( ) - Entered( )\scroll_y( ) )
+                        If Drag( ) & #PB_Drag_Finish
+                           Drop( )\x = DPIUnscaledX( CanvasMouseX( ) - Entered( )\inner_x( ) - Entered( )\scroll_x( ) )
+                           Drop( )\y = DPIUnscaledY( CanvasMouseY( ) - Entered( )\inner_y( ) - Entered( )\scroll_y( ) )
                            
-                           mouse( )\drop\width  = #PB_Ignore
-                           mouse( )\drop\height = #PB_Ignore
+                           Drop( )\width  = #PB_Ignore
+                           Drop( )\height = #PB_Ignore
                            
                            DoEvents( Entered( ), #__event_Drop )
                         EndIf
@@ -20542,12 +20584,12 @@ Module Widget
                   EndIf
                   
                   ;\\ reset
-                  FreeStructure( mouse( )\drop )
-                  mouse( )\drop = #Null
+                  FreeStructure( Drop( ) )
+                  Drop( ) = #Null
                EndIf
                
                ;\\ do enter&leave events
-               If MouseDrag( )
+               If Drag( )
                   If Entered( ) <> Pressed( )
                      GetAtPoint( Root( ), CanvasMouseX( ), CanvasMouseY( ), widgets( ) )
                      
@@ -20556,13 +20598,14 @@ Module Widget
                         GetAtPoint( Pressed( )\root, CanvasMouseX( ), CanvasMouseY( ), widgets( ) )
                      EndIf
                   EndIf
-                  MouseDrag( ) = 0
+                  Drag( ) = 0
                EndIf
                
                ;
                Pressed( )\mask &~ #__mask_press
+                     
                ;\\
-               DoEvents( Pressed( ), #__event_Up )
+               DoEvents( Pressed( ), #__event_UP )
                
                ;\\ do up left&right events
                If MouseClick( ) = 1
@@ -20570,7 +20613,7 @@ Module Widget
                EndIf
                
                ;\\ do click left&right events
-               If Not MouseDragStart( )
+               If Not MouseDrag( )
                   If MouseClick( ) = 1
                      ;\\ do 1-click
                      If Pressed( ) = Entered( )
@@ -20630,8 +20673,10 @@ Module Widget
       ;
       ;\\ do reset data
       ;
-      MouseMask( ) &~ (#__mask_update|#__mask_release|#__mask_dragstart|
-                       #__mask_left|#__mask_top|#__mask_right|#__mask_bottom)
+      MouseMask( ) &~ (#__mask_update) 
+      If Not MouseButtons( )
+         MouseMask( ) &~ (#__mask_release|#__mask_dragstart) 
+      EndIf
       
       ProcedureReturn #PB_Event_Gadget
       
@@ -20641,13 +20686,13 @@ Module Widget
       ; ProcedureReturn EventHandler( EventGadget( ), EventType( ), EventData( ) )
       
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-         Static down, move, leave, drag, double, gadgetID, enterID, focus
+         Static down, move, leave, Drag, double, gadgetID, enterID, focus
          
          If EventType( ) = #PB_EventType_LeftButtonDown
             down = 1
             EventHandler( EventGadget( ), EventType( ), EventData( ))
          ElseIf EventType( ) = #PB_EventType_LeftButtonUp
-            drag = 0
+            Drag = 0
             move = 1
             EventHandler( EventGadget( ), EventType( ), EventData( ))
          ElseIf EventType( ) = #PB_EventType_LeftDoubleClick
@@ -20687,7 +20732,7 @@ Module Widget
             EventHandler( EventGadget( ), EventType( ), EventData( ))
             
          ElseIf EventType( ) = #PB_EventType_MouseLeave
-            If drag
+            If Drag
                ; drag = 0
             Else
                If leave = 1
@@ -20703,13 +20748,13 @@ Module Widget
             If down 
                If down = 3
                   down = 0
-                  drag = 1
+                  Drag = 1
                   EventHandler( EventGadget( ), #PB_EventType_DragStart, EventData( ))
                Else
                   down + 1
                EndIf
             Else
-               If drag 
+               If Drag 
                   enterID = mouse::Gadget( mouse::Window( ))
                   ;
                   If gadgetID <> enterID 
@@ -20790,7 +20835,7 @@ Module Widget
          EndIf
          
       CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
-         Static leave, drag, gadgetID, enterID, leaveID
+         Static leave, Drag, gadgetID, enterID, leaveID
          
          If EventType( ) = #PB_EventType_Focus
             EventHandler( EventGadget( ), EventType( ), EventData( ))
@@ -20805,7 +20850,7 @@ Module Widget
             EndIf
          ElseIf EventType( ) = #PB_EventType_DragStart
             EventHandler( EventGadget( ), EventType( ), EventData( ))
-            drag = 1
+            Drag = 1
          ElseIf EventType( ) = #PB_EventType_LeftButtonUp
             EventHandler( EventGadget( ), EventType( ), EventData( ))
             If leave 
@@ -20817,8 +20862,8 @@ Module Widget
                EndIf
             EndIf
          ElseIf EventType( ) = #PB_EventType_MouseEnter
-            If drag = 1
-               drag = 0
+            If Drag = 1
+               Drag = 0
             Else
                If enterID
                   leaveID = enterID
@@ -23863,9 +23908,6 @@ Module Widget
              *this\type = #__type_String
          *this\cursor[1] = cursor::#__cursor_IBeam
       EndIf
-      If *this\cursor[1]
-         *this\cursor[0] = *this\cursor[1]
-      EndIf
       
       ; create integrall childrens   
       If *this\type = #__type_ComboBox
@@ -24392,9 +24434,6 @@ Module Widget
             *this\cursor[2] = cursor::#__cursor_SplitLeft
             *this\cursor[3] = cursor::#__cursor_SplitRight
          EndIf
-      EndIf
-      If *this\cursor[1]
-         *this\cursor[0] = *this\cursor[1]
       EndIf
       
       ;\\
@@ -28798,9 +28837,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 22907
-; FirstLine = 22517
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8+4----8-f----v---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8------------------------------------0----------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 20608
+; FirstLine = 18668
+; Folding = ---------------------------------------------------------------------------------------------Z4r07------------------------------------------------------------f----------v---0----8-----------------------------------------------------------------------------------------f-------------------------8----------------------------------------------40v----4--+---f-----------------------------------------------------------------------------------------------------------------------4B-8u4+5e--zf4----------------------------------------------------------------44--0----------8-+8r--------e----+8-+---v--------0vG9+------------------------------0----------------------------f-------+----------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

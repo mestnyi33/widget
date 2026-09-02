@@ -1,84 +1,117 @@
-﻿IncludePath "../../../"
-XIncludeFile "widgets.pbi"
+﻿XIncludeFile "../../../widgets.pbi"
+UseWidgets( )
 
-;- EXAMPLE
 CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
-   UseWidgets( )
-   ;test_draw_contex = 0
    
-   Global i, *test._s_widget
+   Define bh = 140,h = bh*4 + 2, size = 100
+   Define *r1, *g11, *g12, *g13, *g14, *g15
+   Define *r2, *g21, *g22, *g23, *g24, *g25
    
    Procedure EventsHandler( )
-      Protected event = WidgetEvent( ) 
-      Protected *this._s_widget = EventWidget( )
+      Static Drag, deltax, deltay
       
-      ;\\
-      If event = #__event_MouseMove
-         If *this\parent
-            If is_integral_(*this)
-             ;  Debug " -- "+*this\class +" ("+ *this\enter +") ("+ *this\parent\enter +") " + WidgetEventData( )
-            EndIf
-         EndIf
+      If EventWidget( ) <> Root( )
+         Select WidgetEvent( )
+            Case #__event_down
+               deltax = CanvasMouseX( ) - EventWidget( )\x
+               deltay = CanvasMouseY( ) - EventWidget( )\y
+               SetColor(EventWidget( ), #__FrameColor, $ffff0000)
+               
+            Case #__event_dragstart
+               Drag = EventWidget( )
+               
+            Case #__event_up : Debug "up "+EventWidget( )\class ;+" "+ Entered( )\class+" "+Pressed( )\class
+               Drag = 0
+               If EventWidget( )\enter
+                  SetColor(EventWidget( ), #__FrameColor, $ff0000ff)
+               Else
+                  SetColor(EventWidget( ), #__FrameColor, $ff00ff00)
+               EndIf
+               
+            Case #__event_mouseenter : Debug "enter "+EventWidget( )\class 
+               If Not EventWidget( )\mask & #__mask_press
+                  SetColor(EventWidget( ), #__FrameColor, $ff0000ff)
+               EndIf
+               
+            Case #__event_mouseleave : Debug "leave "+EventWidget( )\class 
+               If Not EventWidget( )\mask & #__mask_press
+                  SetColor(EventWidget( ), #__FrameColor, $ff00ff00)
+               EndIf
+               
+            Case #__event_mousemove
+               If Drag
+                  Resize(Drag, MouseMoveX( ), MouseMoveY( ), #PB_Ignore, #PB_Ignore)
+               EndIf
+               
+            Case #__event_keyup
+               Drag = 0
+            Case #__event_keydown
+               ;Debug " "+eventwidget( ) +" "+ Entered( )+" "+Pressed( )
+               Drag = Entered( )
+               
+               If Drag
+                  Resize(Drag,X(Drag)+1, #PB_Ignore, #PB_Ignore, #PB_Ignore)
+               EndIf
+               
+         EndSelect
       EndIf
       
-      If event = #__event_MouseEnter
-         If *this\parent
-            Debug " -enter- "+*this\class +" ("+ *this\enter +") ("+ *this\parent\enter +") " + WidgetEventData( )
-         EndIf
-      EndIf
-      
-      ;\\
-      If event = #__event_MouseLeave
-         If *this\parent
-            Debug " -leave- "+*this\class +" ("+ *this\enter +") ("+ *this\parent\enter +") " + WidgetEventData( )
-         EndIf
-      EndIf
    EndProcedure
    
-   If OpenWindow(0, 0, 0, 500, 500, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-      If Open(0, 10,10, 480, 480)
-         a_init( root( ) )
-         Bind(#PB_All, @EventsHandler( ))
-         Window(80, 100, 300, 280, "Window_2")
-         ; Bind(widget(), @EventsHandler( ))
-        
-         ;\\
-         *test = Tree(10, 10, 135, 80)
-         SetFrame(*test, 0)
-         ;a_set( *test, #__a_full, 12 )
-         For i = 0 To 6
-            AddItem( *test, -1, "item-"+Str(i) )
-         Next i
-;          For i = 0 To 2;6
-;             AddItem( *test, -1, "1234567890ssssssssssssssssyuuyfythjgjyftd-item-"+Str(i) )
-;          Next i
-         *test = Splitter(10+145, 10, 135, 80, Button(10, 10, 80, 50,"01"), Button(50, 50, 80, 50,"02") )
-   
-         ;\\
-         ; *test = Splitter( 10, 100, 280, 80, Button( 0,0,0,0,"1"),Button( 0,0,0,0,"2") )
-         *test = ScrollArea(10, 100, 135, 80, 200,200,1, #__flag_Borderflat|#__flag_noGadgets)
-         SetBackColor(*test, $FE9CA784)
-         SetFrame(*test, 10)
-         *test = ScrollArea(10+145, 100, 135, 80, 200,200,1, #__flag_Borderless|#__flag_noGadgets)
-         SetBackColor(*test, $FFAC86DB)
-         SetFrame(*test, 0)
-         
-         ;\\
-         *test = Button( 10, 190, 135, 80, "")
-         *test = Panel( 10+145, 190, 135, 80)
-         For i = 0 To 6
-            AddItem( *test, -1, "tab-"+Str(i) )
-         Next i
-         
-      EndIf
+   If OpenWindow(0, 0, 0, 685, 60+h, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
-      WaitClose( )
+      ;\\
+      *r1 = Open(0, 5, 5, 335, 60+h-10)
+      Define X = 50, Y = 50
+      ;*g11 = Container( X+10,Y+10,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g11,"*g11")
+      *g11 = Tree( X+10,Y+10,size,size ) : SetClass(*g11,"*g11") 
+      Define i
+      For i=0 To 10
+         AddItem(*g11, -1, "item-"+Str(i)) 
+      Next
+      *g12 = Container( X+30,Y+30,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g12,"*g12") 
+      *g13 = Container( X+50,Y+50,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g13,"*g13") 
+      *g14 = Container( X+70,Y+70,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g14,"*g14") 
+      ;*g15 = Container( x+90,y+90,size,size, #__flag_Borderflat|#__flag_noGadgets ) : setclass(*g15,"*g15") 
+      *g15 = Tree( X+90,Y+90,size,size ) : SetClass(*g15,"*g15") 
+      Define i
+      For i=0 To 10
+         AddItem(*g15, -1, "item-"+Str(i)) 
+      Next
+      
+      
+      
+      ;\\
+      *r2 = Open(0, 345, 5, 335, 60+h-10, "", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      Define X = 0, Y = 0
+      ;*g21 = Container( X+10,Y+10,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g21,"*g21")
+      *g21 = Tree( X+10,Y+10,size,size ) : SetClass(*g21,"*g21") : AddItem(*g21, -1, "item-1") : AddItem(*g21, -1, "item-2") : AddItem(*g21, -1, "item-3")
+      *g22 = Container( X+30,Y+30,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g22,"*g22") 
+      *g23 = Container( X+50,Y+50,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g23,"*g23") 
+      *g24 = Container( X+70,Y+70,size,size, #__flag_Borderflat|#__flag_noGadgets ) : SetClass(*g24,"*g24") 
+      ;*g25 = Container( x+90,y+90,size,size, #__flag_Borderflat|#__flag_noGadgets ) : setclass(*g25,"*g25") 
+      *g25 = Tree( X+90,Y+90,size,size ) : SetClass(*g25,"*g25") : AddItem(*g25, -1, "item-1") : AddItem(*g25, -1, "item-2") : AddItem(*g25, -1, "item-3")
+      
+      
+      ;\\
+      Bind(#PB_All, @EventsHandler( ), #__event_down)
+      Bind(#PB_All, @EventsHandler( ), #__event_dragstart)
+      Bind(#PB_All, @EventsHandler( ), #__event_up)
+      
+      Bind(#PB_All, @EventsHandler( ), #__event_mouseenter)
+      Bind(#PB_All, @EventsHandler( ), #__event_mousemove)
+      Bind(#PB_All, @EventsHandler( ), #__event_mouseleave)
+      
+      Bind(#PB_All, @EventsHandler( ), #__event_keydown)
+      Bind(#PB_All, @EventsHandler( ), #__event_keyup)
+      
+      Repeat : Until WaitWindowEvent( ) = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 4
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 53
+; FirstLine = 49
 ; Folding = --
 ; EnableXP
 ; DPIAware

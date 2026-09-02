@@ -277,7 +277,7 @@ EndEnumeration
       EndIf
       
       ; чтобы не виделялся
-      If MouseDragStart( )
+      If MouseDrag( )
          If *this\RowFocused( ) = *row 
             *row\focus = 1
             *row\ColorState( ) = #__s_2
@@ -635,8 +635,8 @@ EndEnumeration
       
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
 ; CursorPosition = 279
-; FirstLine = 179
+; FirstLine = 194
 ; Folding = -806--------0
 ; EnableXP

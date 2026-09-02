@@ -42,20 +42,20 @@
 ;
 ; V1.0, 2012/02/15
 ; Initial release
-
-CompilerSelect #PB_Compiler_OS
-  CompilerCase #PB_OS_Linux
-    #ZLIB_Filename = #PB_Compiler_Home + "purelibraries/linux/libraries/zlib.a"
-  CompilerCase #PB_OS_MacOS
-    #ZLIB_Filename = "/usr/lib/libz.dylib"
-  CompilerCase #PB_OS_Windows
-    #ZLIB_Filename = "zlib.lib"
-CompilerEndSelect
-
-ImportC #ZLIB_Filename
-  compressBound.l(sourceLen)
-  compress2(*dest, *destLen, *source, sourceLen, level)
-EndImport
+; 
+; CompilerSelect #PB_Compiler_OS
+;   CompilerCase #PB_OS_Linux
+;     #ZLIB_Filename = #PB_Compiler_Home + "purelibraries/linux/libraries/zlib.a"
+;   CompilerCase #PB_OS_MacOS
+;     #ZLIB_Filename = "/usr/lib/libz.dylib"
+;   CompilerCase #PB_OS_Windows
+;     #ZLIB_Filename = "zlib.lib"
+; CompilerEndSelect
+; 
+; ImportC #ZLIB_Filename
+;   compressBound.l(sourceLen)
+;   compress2(*dest, *destLen, *source, sourceLen, Level)
+; EndImport
 
 UsePNGImageDecoder()
 UseJPEGImageDecoder()
@@ -141,227 +141,365 @@ Procedure.s MakeValidName(Name.s)
   ProcedureReturn tmp
 EndProcedure
 
-Procedure.s MemToData(*mem.ascii, msize, label.s, quads_per_line = 5, packed = #False)
- 
-  Protected.i *cmpr, *buffer, bpos, bsize, orig_size, reg_b
-  Protected.b q_minus_one
-  Protected.s result
- 
-  Protected.i *brieflz, *lzma, *zip, BriefLPackSize, LZMAPackSize, ZipPackSize, PackType ; neu, Jörg Burbach - quadworks.de
-  Protected.s PackLabel
- 
-  EnableASM
-   
-  If packed
-    packed = #False
-    If msize
-      orig_size = compressBound(msize)
-      *cmpr = AllocateMemory(orig_size)
-     
+Procedure.s MemToData(*mem, msize, label.s, quads_per_line = 5, packed = #False)
+  Protected *cmpr, *buffer
+  Protected.i orig_size, PackType
+  Protected.s PackLabel, TextOutput = "", LineStr = ""
+  
+  Protected *brieflz, *lzma, *zip
+  Protected.i BriefLPackSize, LZMAPackSize, ZipPackSize
+  Protected.i i, FullQuads, Remainder, QuadCount
+  Protected.q QuadVal
+  Protected *readPtr
+  
+  If packed And msize > 0
+    orig_size = msize
+    PackType = 0
+    PackLabel = "None"
+    
+    ; Выделяем временные буферы для тестов сжатия
+    *brieflz = AllocateMemory(msize + 1024)
+    *lzma    = AllocateMemory(msize + 1024)
+    *zip     = AllocateMemory(msize + 1024)
+    
+    ; Тестируем все доступные алгоритмы
+    BriefLPackSize = CompressMemory(*mem, msize, *brieflz, msize + 1024, #PB_PackerPlugin_BriefLZ)
+    LZMAPackSize   = CompressMemory(*mem, msize, *lzma,    msize + 1024, #PB_PackerPlugin_Lzma)
+    ZipPackSize    = CompressMemory(*mem, msize, *zip,     msize + 1024, #PB_PackerPlugin_Zip)
+    
+    ; Ищем, кто сжал лучше всех и при этом не превысил оригинальный размер
+    Protected BestSize.i = msize
+    
+    If BriefLPackSize > 0 And BriefLPackSize < BestSize
+      BestSize = BriefLPackSize
+      PackType = #PB_PackerPlugin_BriefLZ
+      PackLabel = "BriefLZ"
+    EndIf
+    
+    If LZMAPackSize > 0 And LZMAPackSize < BestSize
+      BestSize = LZMAPackSize
+      PackType = #PB_PackerPlugin_Lzma
+      PackLabel = "LZMA"
+    EndIf
+    
+    If ZipPackSize > 0 And ZipPackSize < BestSize
+      BestSize = ZipPackSize
+      PackType = #PB_PackerPlugin_Zip
+      PackLabel = "ZIP"
+    EndIf
+    
+    ; Если хоть один алгоритм реально сжал файл, фиксируем результат
+    If PackType > 0
+      *cmpr = AllocateMemory(BestSize)
       If *cmpr
-        If compress2(*cmpr, @orig_size, *mem, msize, 9) = 0 And orig_size < msize
-          *mem = *cmpr
-          Swap orig_size, msize
-          packed = #True
-        Else
-          FreeMemory(*cmpr)
-        EndIf
+        Select PackType
+          Case #PB_PackerPlugin_BriefLZ: CopyMemory(*brieflz, *cmpr, BestSize)
+          Case #PB_PackerPlugin_Lzma:    CopyMemory(*lzma,    *cmpr, BestSize)
+          Case #PB_PackerPlugin_Zip:     CopyMemory(*zip,     *cmpr, BestSize)
+        EndSelect
+        *mem = *cmpr
+        msize = BestSize
+      Else
+        PackType = 0 ; Сброс, если не удалось выделить память
       EndIf
-     
-      ; added 2013-04-27, Jörg Burbach - quadworks.de
-      ; added ZIP, LZMA and BriefLZ compression to check which one works best
-     
-      PackType = 0
-     
-      *lzma = AllocateMemory(orig_size)
-      *brieflz = AllocateMemory(orig_size)
-      *zip = AllocateMemory(orig_size)
-     
-      BriefLPackSize = CompressMemory(*mem,orig_size,*brieflz,orig_size,#PB_PackerPlugin_BriefLZ)
-      LZMAPackSize = CompressMemory(*mem,orig_size,*lzma,orig_size,#PB_PackerPlugin_Lzma)
-      ZipPackSize = CompressMemory(*mem,orig_size,*brieflz,orig_size,#PB_PackerPlugin_Zip)
-
-      If BriefLPackSize < msize And BriefLPackSize < msize And BriefLPackSize > 0   ; BriefLz rocks
-        msize = BriefLPackSize
-        CopyMemory(*brieflz,*cmpr,msize)
-        packed = #True
-        PackLabel = "BriefLZ"
-        PackType = #PB_PackerPlugin_BriefLZ
-      ElseIf LZMAPackSize < msize And LZMAPackSize < BriefLPackSize And LZMAPackSize > 0 ; LZMA won the race
-        msize = LZMAPackSize
-        CopyMemory(*lzma,*cmpr,msize)
-        packed = #True
-        PackLabel = "LZMA"
-        PackType = #PB_PackerPlugin_Lzma
-      ElseIf ZipPackSize <= msize And ZipPackSize < BriefLPackSize And ZipPackSize > 0 ; ZIP has captured the flag
-        msize = ZipPackSize
-        CopyMemory(*zip,*cmpr,msize)
-        packed = #True
-        PackLabel = "ZIP"
-        PackType = #PB_PackerPlugin_Zip
-      ElseIf packed = #True
-        PackType = 1
-        PackLabel = "ZLIB"       ; ZLib is the best
-      EndIf
-     
-      FreeMemory(*lzma)
-      FreeMemory(*brieflz)
-      FreeMemory(*zip)
-     
-      Debug "ZIP: " + Str(ZipPackSize)
-      Debug "LZMA: " + Str(LZMAPackSize)     
-      Debug "BriefLZ: " + Str(BriefLPackSize)
-     
-      ; Jörg Burbach - quadworks.de
-     
-    EndIf
-  EndIf
- 
-  q_minus_one = (quads_per_line - 1) & 15
-  quads_per_line = q_minus_one + 1
-  bsize = msize / (quads_per_line * 8) + 2
-  bsize = bsize * (quads_per_line * 18 + 12) + Len(label) * 4 + 128 ; *4, was *2 - Jörg Burbach - quadworks.de
-  *buffer = AllocateMemory(bsize)
-  If *mem And *buffer
-    bpos = *buffer
-    bpos + PokeS(bpos, "DataSection" + Chr(10), -1, #PB_Ascii)
-   
-    ; added 2013-04-27, Jörg Burbach - quadworks.de
-    If packed
-      bpos + PokeS(bpos, "  " + label + "_packtype:  Data.i " + Str(PackType)  + " ; Packed with " + PackLabel + Chr(10), -1, #PB_Ascii)
-    EndIf
-    ; Jörg Burbach - quadworks.de
-   
-    bpos + PokeS(bpos, "  " + label + "_start: " + Chr(10), -1, #PB_Ascii)
-    If packed
-      bpos + PokeS(bpos, "    ; compressed size : " + Str(msize) + " bytes" + Chr(10), -1, #PB_Ascii)
-      bpos + PokeS(bpos, "    ; original size : " + Str(orig_size) + " bytes" + Chr(10), -1, #PB_Ascii)
     Else
-      bpos + PokeS(bpos, "    ; size : " + Str(msize) + " bytes" + Chr(10), -1, #PB_Ascii)
+      packed = #False
     EndIf
-   
-    !movdqu xmm0, [md_xm]
-    !pshufd xmm2, xmm0, 00000000b
-    !pshufd xmm3, xmm0, 01010101b
-    !pshufd xmm4, xmm0, 10101010b
-    !pshufd xmm5, xmm0, 11111111b
-    CompilerIf #PB_Compiler_Processor = #PB_Processor_x86
-      mov eax, *mem
-      mov edx, bpos
-      mov ecx, msize
-      !shr ecx, 3
-      !jz md_cont2
-      !movdqu xmm6, [md_dq]
-      mov reg_b, ebx
-      mov bh, q_minus_one
-      !xor bl, bl
-      !md_loop1:
-      !sub bl, 1
-      !jnc md_no_newline
-      !mov bl,bh
-      !movdqu [edx], xmm6
-      !add edx, 12
-      !md_no_newline:
-      !movq xmm0, [eax]
-    CompilerElse
-      mov rax, *mem
-      mov rdx, bpos
-      mov rcx, msize
-      !shr rcx, 3 
-      !jz md_cont2
-      !mov r8, [md_dq]
-      !mov r9, [md_dq + 8]
-      mov reg_b, rbx
-      mov bh, q_minus_one
-      !xor bl, bl
-      !md_loop1:
-      !sub bl, 1
-      !jnc md_no_newline
-      !mov bl,bh
-      !mov [rdx], r8
-      !mov [rdx + 8], r9
-      !add rdx, 12
-      !md_no_newline:
-      !movq xmm0, [rax]
-    CompilerEndIf
-    !pshuflw xmm0, xmm0, 00011011b
-    !movq xmm1, xmm0
-    !psrlw xmm0, 4
-    !punpcklbw xmm0, xmm1
-    !pshuflw xmm0, xmm0, 10110001b
-    !pshufhw xmm0, xmm0, 10110001b
-    !pand xmm0, xmm2
-    !por xmm0, xmm3
-    !movdqa xmm1, xmm0
-    !pcmpgtb xmm1, xmm4
-    !pand xmm1, xmm5
-    !paddb xmm0, xmm1
-    CompilerIf #PB_Compiler_Processor = #PB_Processor_x86
-      !movdqu [edx], xmm0
-      !dec ecx
-      !jz md_eol
-      !and bl, bl
-      !jz md_eol
-      !mov word [edx + 16], ',$'
-      !add edx, 18
-      !jmp md_cont1
-      !md_eol:
-      !mov byte [edx + 16], 10
-      !add edx, 17
-      !md_cont1:
-      !add eax, 8
-      !and ecx, ecx
-      !jnz md_loop1
-      mov ebx, reg_b
-      mov bpos, edx
-      mov *mem, eax
-    CompilerElse
-      !movdqu [rdx], xmm0
-      !dec rcx
-      !jz md_eol
-      !and bl, bl
-      !jz md_eol
-      !mov word [rdx + 16], ',$'
-      !add rdx, 18
-      !jmp md_cont1
-      !md_eol:
-      !mov byte [rdx + 16], 10
-      !add rdx, 17
-      !md_cont1:
-      !add rax, 8
-      !and rcx, rcx
-      !jnz md_loop1
-      mov rbx, reg_b
-      mov bpos, rdx
-      mov *mem, rax
-    CompilerEndIf     
-    !md_cont2:
-   
-    msize & 7
-    If msize
-      bpos + PokeS(bpos, "    Data.b $", -1, #PB_Ascii)
-      While msize
-        bpos + PokeS(bpos, RSet(Hex(*mem\a), 2, "0") + ",$", -1, #PB_Ascii)
-        *mem + 1 : msize - 1 
-      Wend
-      bpos - 1 : PokeB(bpos - 1, 10)
-    EndIf
-    bpos + PokeS(bpos, "  " + label + "_end:" + Chr(10), -1, #PB_Ascii)
-    PokeS(bpos, "EndDataSection" + Chr(10), -1, #PB_Ascii)
-    result = PeekS(*buffer, -1, #PB_Ascii)
-    FreeMemory(*buffer)
+    
+    ; Освобождаем тестовые буферы
+    If *brieflz : FreeMemory(*brieflz) : EndIf
+    If *lzma    : FreeMemory(*lzma)    : EndIf
+    If *zip     : FreeMemory(*zip)     : EndIf
   EndIf
- 
-  If packed
+  
+  ; --- НАЧАЛО ГЕНЕРАЦИИ ТЕКСТА НА ЧИСТОМ PUREBASIC ---
+  TextOutput + "DataSection" + #LF$
+  
+  If PackType > 0
+    TextOutput + "  " + label + "_packtype:  Data.i " + Str(PackType)  + " ; Packed with " + PackLabel + #LF$
+  EndIf
+  
+  TextOutput + "  " + label + "_start:" + #LF$
+  If PackType > 0
+    TextOutput + "    ; compressed size : " + Str(msize) + " bytes" + #LF$
+    TextOutput + "    ; original size : " + Str(orig_size) + " bytes" + #LF$
+  Else
+    TextOutput + "    ; size : " + Str(msize) + " bytes" + #LF$
+  EndIf
+  
+  ; Нарезаем данные на 8-байтовые блоки (Data.q)
+  FullQuads = msize / 8
+  Remainder = msize % 8
+  QuadCount = 0
+  *readPtr = *mem
+  
+  If FullQuads > 0
+    LineStr = "    Data.q $"
+    For i = 1 To FullQuads
+      QuadVal = PeekQ(*readPtr)
+      LineStr + RSet(Hex(QuadVal, #PB_Quad), 16, "0")
+      QuadCount + 1
+      
+      ; Формируем перенос строки по количеству колонок
+      If QuadCount = quads_per_line Or i = FullQuads
+        LineStr + #LF$
+        TextOutput + LineStr
+        If i < FullQuads
+          LineStr = "    Data.q $"
+        EndIf
+        QuadCount = 0
+      Else
+        LineStr + ",$"
+      EndIf
+      *readPtr + 8
+    Next
+  EndIf
+  
+  ; Дописываем хвостик из одиночных байт (Data.b), если размер не кратен 8
+  If Remainder > 0
+    LineStr = "    Data.b $"
+    For i = 1 To Remainder
+      LineStr + RSet(Hex(PeekB(*readPtr) & $FF), 2, "0")
+      If i < Remainder
+        LineStr + ",$"
+      EndIf
+      *readPtr + 1
+    Next
+    LineStr + #LF$
+    TextOutput + LineStr
+  EndIf
+  
+  TextOutput + "  " + label + "_end:" + #LF$
+  TextOutput + "EndDataSection" + #LF$
+  
+  ; Очищаем буфер сжатых данных, если он создавался
+  If PackType > 0 And *cmpr
     FreeMemory(*cmpr)
   EndIf
- 
-  DisableASM
-  ProcedureReturn result
- 
-  !md_xm: dd 0x0f0f0f0f, 0x30303030, 0x39393939, 0x07070707
-  !md_dq: db '    Data.q $',0,0,0,0 ; len = 12
- 
+  
+  ProcedureReturn TextOutput
+EndProcedure
+Procedure.s MemToData2(*mem.ascii, msize, label.s, quads_per_line = 5, packed = #False)
+;  
+;   Protected.i *cmpr, *buffer, bpos, bsize, orig_size, reg_b
+;   Protected.b q_minus_one
+;   Protected.s result
+;  
+;   Protected.i *brieflz, *lzma, *zip, BriefLPackSize, LZMAPackSize, ZipPackSize, PackType ; neu, Jörg Burbach - quadworks.de
+;   Protected.s PackLabel
+;  
+;   EnableASM
+;    
+;   If packed
+;     packed = #False
+;     If msize
+;       orig_size = compressBound(msize)
+;       *cmpr = AllocateMemory(orig_size)
+;      
+;       If *cmpr
+;         If compress2(*cmpr, @orig_size, *mem, msize, 9) = 0 And orig_size < msize
+;           *mem = *cmpr
+;           Swap orig_size, msize
+;           packed = #True
+;         Else
+;           FreeMemory(*cmpr)
+;         EndIf
+;       EndIf
+;      
+;       ; added 2013-04-27, Jörg Burbach - quadworks.de
+;       ; added ZIP, LZMA and BriefLZ compression to check which one works best
+;      
+;       PackType = 0
+;      
+;       *lzma = AllocateMemory(orig_size)
+;       *brieflz = AllocateMemory(orig_size)
+;       *zip = AllocateMemory(orig_size)
+;      
+;       BriefLPackSize = CompressMemory(*mem,orig_size,*brieflz,orig_size,#PB_PackerPlugin_BriefLZ)
+;       LZMAPackSize = CompressMemory(*mem,orig_size,*lzma,orig_size,#PB_PackerPlugin_Lzma)
+;       ZipPackSize = CompressMemory(*mem,orig_size,*brieflz,orig_size,#PB_PackerPlugin_Zip)
+; 
+;       If BriefLPackSize < msize And BriefLPackSize < msize And BriefLPackSize > 0   ; BriefLz rocks
+;         msize = BriefLPackSize
+;         CopyMemory(*brieflz,*cmpr,msize)
+;         packed = #True
+;         PackLabel = "BriefLZ"
+;         PackType = #PB_PackerPlugin_BriefLZ
+;       ElseIf LZMAPackSize < msize And LZMAPackSize < BriefLPackSize And LZMAPackSize > 0 ; LZMA won the race
+;         msize = LZMAPackSize
+;         CopyMemory(*lzma,*cmpr,msize)
+;         packed = #True
+;         PackLabel = "LZMA"
+;         PackType = #PB_PackerPlugin_Lzma
+;       ElseIf ZipPackSize <= msize And ZipPackSize < BriefLPackSize And ZipPackSize > 0 ; ZIP has captured the flag
+;         msize = ZipPackSize
+;         CopyMemory(*zip,*cmpr,msize)
+;         packed = #True
+;         PackLabel = "ZIP"
+;         PackType = #PB_PackerPlugin_Zip
+;       ElseIf packed = #True
+;         PackType = 1
+;         PackLabel = "ZLIB"       ; ZLib is the best
+;       EndIf
+;      
+;       FreeMemory(*lzma)
+;       FreeMemory(*brieflz)
+;       FreeMemory(*zip)
+;      
+;       Debug "ZIP: " + Str(ZipPackSize)
+;       Debug "LZMA: " + Str(LZMAPackSize)     
+;       Debug "BriefLZ: " + Str(BriefLPackSize)
+;      
+;       ; Jörg Burbach - quadworks.de
+;      
+;     EndIf
+;   EndIf
+;  
+;   q_minus_one = (quads_per_line - 1) & 15
+;   quads_per_line = q_minus_one + 1
+;   bsize = msize / (quads_per_line * 8) + 2
+;   bsize = bsize * (quads_per_line * 18 + 12) + Len(label) * 4 + 128 ; *4, was *2 - Jörg Burbach - quadworks.de
+;   *buffer = AllocateMemory(bsize)
+;   If *mem And *buffer
+;     bpos = *buffer
+;     bpos + PokeS(bpos, "DataSection" + Chr(10), -1, #PB_Ascii)
+;    
+;     ; added 2013-04-27, Jörg Burbach - quadworks.de
+;     If packed
+;       bpos + PokeS(bpos, "  " + label + "_packtype:  Data.i " + Str(PackType)  + " ; Packed with " + PackLabel + Chr(10), -1, #PB_Ascii)
+;     EndIf
+;     ; Jörg Burbach - quadworks.de
+;    
+;     bpos + PokeS(bpos, "  " + label + "_start: " + Chr(10), -1, #PB_Ascii)
+;     If packed
+;       bpos + PokeS(bpos, "    ; compressed size : " + Str(msize) + " bytes" + Chr(10), -1, #PB_Ascii)
+;       bpos + PokeS(bpos, "    ; original size : " + Str(orig_size) + " bytes" + Chr(10), -1, #PB_Ascii)
+;     Else
+;       bpos + PokeS(bpos, "    ; size : " + Str(msize) + " bytes" + Chr(10), -1, #PB_Ascii)
+;     EndIf
+;    
+;     !movdqu xmm0, [md_xm]
+;     !pshufd xmm2, xmm0, 00000000b
+;     !pshufd xmm3, xmm0, 01010101b
+;     !pshufd xmm4, xmm0, 10101010b
+;     !pshufd xmm5, xmm0, 11111111b
+;     CompilerIf #PB_Compiler_Processor = #PB_Processor_x86
+;       mov eax, *mem
+;       mov edx, bpos
+;       mov ecx, msize
+;       !shr ecx, 3
+;       !jz md_cont2
+;       !movdqu xmm6, [md_dq]
+;       mov reg_b, ebx
+;       mov bh, q_minus_one
+;       !xor bl, bl
+;       !md_loop1:
+;       !sub bl, 1
+;       !jnc md_no_newline
+;       !mov bl,bh
+;       !movdqu [edx], xmm6
+;       !add edx, 12
+;       !md_no_newline:
+;       !movq xmm0, [eax]
+;     CompilerElse
+;       mov rax, *mem
+;       mov rdx, bpos
+;       mov rcx, msize
+;       !shr rcx, 3 
+;       !jz md_cont2
+;       !mov r8, [md_dq]
+;       !mov r9, [md_dq + 8]
+;       mov reg_b, rbx
+;       mov bh, q_minus_one
+;       !xor bl, bl
+;       !md_loop1:
+;       !sub bl, 1
+;       !jnc md_no_newline
+;       !mov bl,bh
+;       !mov [rdx], r8
+;       !mov [rdx + 8], r9
+;       !add rdx, 12
+;       !md_no_newline:
+;       !movq xmm0, [rax]
+;     CompilerEndIf
+;     !pshuflw xmm0, xmm0, 00011011b
+;     !movq xmm1, xmm0
+;     !psrlw xmm0, 4
+;     !punpcklbw xmm0, xmm1
+;     !pshuflw xmm0, xmm0, 10110001b
+;     !pshufhw xmm0, xmm0, 10110001b
+;     !pand xmm0, xmm2
+;     !por xmm0, xmm3
+;     !movdqa xmm1, xmm0
+;     !pcmpgtb xmm1, xmm4
+;     !pand xmm1, xmm5
+;     !paddb xmm0, xmm1
+;     CompilerIf #PB_Compiler_Processor = #PB_Processor_x86
+;       !movdqu [edx], xmm0
+;       !dec ecx
+;       !jz md_eol
+;       !and bl, bl
+;       !jz md_eol
+;       !mov word [edx + 16], ',$'
+;       !add edx, 18
+;       !jmp md_cont1
+;       !md_eol:
+;       !mov byte [edx + 16], 10
+;       !add edx, 17
+;       !md_cont1:
+;       !add eax, 8
+;       !and ecx, ecx
+;       !jnz md_loop1
+;       mov ebx, reg_b
+;       mov bpos, edx
+;       mov *mem, eax
+;     CompilerElse
+;       !movdqu [rdx], xmm0
+;       !dec rcx
+;       !jz md_eol
+;       !and bl, bl
+;       !jz md_eol
+;       !mov word [rdx + 16], ',$'
+;       !add rdx, 18
+;       !jmp md_cont1
+;       !md_eol:
+;       !mov byte [rdx + 16], 10
+;       !add rdx, 17
+;       !md_cont1:
+;       !add rax, 8
+;       !and rcx, rcx
+;       !jnz md_loop1
+;       mov rbx, reg_b
+;       mov bpos, rdx
+;       mov *mem, rax
+;     CompilerEndIf     
+;     !md_cont2:
+;    
+;     msize & 7
+;     If msize
+;       bpos + PokeS(bpos, "    Data.b $", -1, #PB_Ascii)
+;       While msize
+;         bpos + PokeS(bpos, RSet(Hex(*mem\a), 2, "0") + ",$", -1, #PB_Ascii)
+;         *mem + 1 : msize - 1 
+;       Wend
+;       bpos - 1 : PokeB(bpos - 1, 10)
+;     EndIf
+;     bpos + PokeS(bpos, "  " + label + "_end:" + Chr(10), -1, #PB_Ascii)
+;     PokeS(bpos, "EndDataSection" + Chr(10), -1, #PB_Ascii)
+;     result = PeekS(*buffer, -1, #PB_Ascii)
+;     FreeMemory(*buffer)
+;   EndIf
+;  
+;   If packed
+;     FreeMemory(*cmpr)
+;   EndIf
+;  
+;   DisableASM
+;   ProcedureReturn result
+;  
+;   !md_xm: dd 0x0f0f0f0f, 0x30303030, 0x39393939, 0x07070707
+;   !md_dq: db '    Data.q $',0,0,0,0 ; len = 12
+;  
 EndProcedure
 
 Procedure LoadFileInMemory()
@@ -447,7 +585,7 @@ Procedure ShowPreview()
 EndProcedure
 
 Procedure LoadDroppedFile()
-  Protected x, y, f.f
+  Protected X, Y, f.f
  
   SetGadgetText(#frmMain_TxtFile, "-- please wait --" + Chr(10) + "working")
   LoadFileInMemory()
@@ -455,21 +593,21 @@ Procedure LoadDroppedFile()
   Select UCase(GetExtensionPart(File))
     Case "BMP", "PNG", "JPG"
       If LoadImage(#imgTemp, File)
-        x = ImageWidth(#imgTemp)
-        y = ImageHeight(#imgTemp)
-        If x > y
-          f = y / x
-          x = 132
-          y = x * f
-        ElseIf y > x
-          f = x / y
-          y = 132
-          x = y * f
+        X = ImageWidth(#imgTemp)
+        Y = ImageHeight(#imgTemp)
+        If X > Y
+          f = Y / X
+          X = 132
+          Y = X * f
+        ElseIf Y > X
+          f = X / Y
+          Y = 132
+          X = Y * f
         Else
-          x = 132
-          y = 132
+          X = 132
+          Y = 132
         EndIf
-        If ResizeImage(#imgTemp, x, y)
+        If ResizeImage(#imgTemp, X, Y)
           SetGadgetState(#frmMain_Image, 0)
           SetGadgetState(#frmMain_Image, ImageID(#imgTemp))
         EndIf
@@ -1905,7 +2043,8 @@ CompilerElse
     drop_smallpng_end:
   EndDataSection
 CompilerEndIf
-
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; Folding = ------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 2044
+; FirstLine = 2028
+; Folding = -------------
 ; EnableXP

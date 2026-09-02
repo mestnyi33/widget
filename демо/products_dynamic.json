@@ -1,0 +1,19 @@
+[
+  {
+    "Price"          : 55,
+    "Name"           : "книга",
+    "ExtraProperties": {
+        "ttyyyy": "нннннн"
+      }
+  },
+  {
+    "Price"          : 999,
+    "Name"           : "ггшш",
+    "ExtraProperties": {}
+  },
+  {
+    "Price"          : 999,
+    "Name"           : "07077",
+    "ExtraProperties": {}
+  }
+]

@@ -220,7 +220,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          anchors._s_TRANSFORM    ; a_anchors( )
          
          *cursor                 ; current visible cursor
-         *drag                   ;
+         drag.b                   ;
          
          *drop._s_DROPMOUSE           ;
          *selector._s_SELECTOR   ; mouse select frame
@@ -730,9 +730,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 654
-; FirstLine = 579
-; Folding = ----z-p----
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 222
+; FirstLine = 200
+; Folding = ----8-p----
 ; Optimizer
 ; EnableXP

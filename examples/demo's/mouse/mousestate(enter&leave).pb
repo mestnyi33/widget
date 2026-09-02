@@ -1,107 +1,83 @@
-﻿; #__from_mouse_state = 1
+﻿XIncludeFile "../../../widgets.pbi"
+;XIncludeFile "../../../test.pbi"
 
-XIncludeFile "../../../widgets.pbi" 
-UseWidgets( )
+; ;bug когда переходишь с якорья который находится под обЬектом не убираются якорья
 
-Declare EventsHandler( )
-
-Global.l colorback = colors::*this\blue\fore,
-       colorframe = colors::*this\blue\frame, 
-       colorback1 = $ff00ff00,
-       colorframe1 = $ff0000ff
-
-;\\
-Procedure EventsHandler( )
-
+CompilerIf #PB_Compiler_IsMainFile
+   EnableExplicit
+   UseWidgets( )
+   
+   Global object, object1, object2, object3, parent
       
-   Select WidgetEvent( )
-      Case #__event_MouseEnter, ;#__event_MouseMove,
-           #__event_MouseLeave
-         
-         If EventWidget( ) <> Root( )
-            If EventWidget( )\mask & #__mask_hover
-               If EventWidget( )\color\frame <> colorframe1 
-                  EventWidget( )\color\frame = colorframe1
-                  Repaint = 1 
-               EndIf
-               If EventWidget( )\color\back <> colorback1 
-                  EventWidget( )\color\back = colorback1
-                  Repaint = 1 
-               EndIf
-               
-               If Repaint
-                  Debug "" + GetData( EventWidget( ) ) + " change frame&back color"
-               EndIf
-               
-            Else 
-               If EventWidget( )\color\back = colorback1
-                  EventWidget( )\color\back = colorback
-                  Repaint = 1
-               EndIf
-               If EventWidget( )\color\frame = colorframe1 
-                  EventWidget( )\color\frame = colorframe
-                  Repaintrepaint = 1 
-               EndIf
-               
-               If Repaint
-                  Debug "" + GetData( EventWidget( ) ) + " return frame&back color"
-               EndIf
-               
-            EndIf
-         EndIf
-         
-   EndSelect
-EndProcedure
+   ;\\
+   Procedure EventsHandler( )
+      Select WidgetEvent( )
+         Case #__event_MouseEnter
+            Debug "enter " + EventWidget( )\class
+           
+         Case #__event_MouseLeave
+            Debug "leave " + EventWidget( )\class
+            
+      EndSelect
+   EndProcedure
+   
+   ;\\
+   Open(0, 0, 0, 600, 600, "Demo bounds", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+   a_init(Root(), 4)
+   
+   ;\\
+   parent = Window(50, 50, 450, 450, "parent", #PB_Window_SystemMenu|#PB_Window_SizeGadget)
+   SetColor(parent, #PB_Gadget_BackColor, $FFAC97DB)
+   SetFrame(parent, 20 )
+   
+   ;\\
+   object = ScrollArea(50, 50, 150, 150, 300,300,1, #__flag_noGadgets) : SetFrame( object, 30)
+   object1 = Button(125, 140, 150, 150, "Button")
+   object2 = Splitter(250, 50, 150, 150, Button(10, 10, 80, 50,"01"), Button(50, 50, 80, 50,"02") )
+   object3 = ScrollArea(0, 250, 150, 150, 300,300,1, #__flag_noGadgets) : SetFrame( object3, 0)
+   
 
-;\\
-Open( 0, 0, 0, 260, 260, "enter&leave demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
-;a_init( root( ) )
-
-;\\
-Define *w._S_WIDGET = ScrollArea( 30, 30, 200, 200, 300,300,1, #__flag_BorderFlat )
-SetData( *w, 1 )
-SetData( *w\scroll\v, -1 )
-SetData( *w\scroll\h, -2 )
-
-SetData( Container( 70, 10, 70, 200, #__Flag_NoGadgets|#__flag_BorderFlat ), 2 ) 
-SetData( Container( 40, 20, 200, 200, #__flag_BorderFlat ), 3 )
-SetData( Container( 20, 20, 200, 200, #__flag_BorderFlat ), 4 )
-
-SetData( Container( 5, 30, 200, 30, #__Flag_NoGadgets|#__flag_BorderFlat ), 5 ) 
-SetData( Container( 5, 45, 200, 30, #__Flag_NoGadgets|#__flag_BorderFlat ), 6 ) 
-SetData( Container( 5, 60, 200, 30, #__Flag_NoGadgets|#__flag_BorderFlat ), 7 ) 
-
-Define w1 = Container( 0,0,0,0, #__Flag_NoGadgets|#__flag_BorderFlat )
-Define w2 = Container( 0,0,0,0, #__Flag_NoGadgets|#__flag_BorderFlat )
-SetData( w1, 101 )
-SetData( w2, 102 )
-SetData( Splitter( 5, 80, 200, 50, w1, w2, #PB_Splitter_Vertical|#__flag_BorderFlat ), 8 ) 
-
-CloseList( )
-CloseList( )
-SetData( Container( 10, 45, 70, 200, #__flag_BorderFlat ), 11 ) 
-SetData( Container( 10, 10, 70, 30, #__Flag_NoGadgets|#__flag_BorderFlat ), 12 ) 
-SetData( Container( 10, 20, 70, 30, #__Flag_NoGadgets|#__flag_BorderFlat ), 13 ) 
-SetData( Container( 10, 30, 170, 130, #__Flag_NoGadgets|#__flag_BorderFlat ), 14 ) 
-SetData( Container( 10, 45, 70, 200, #__flag_BorderFlat ), 11 ) 
-SetData( Container( 10, 5, 70, 200, #__flag_BorderFlat ), 11 ) 
-SetData( Container( 10, 5, 70, 200, #__flag_BorderFlat ), 11 ) 
-SetData( Container( 10, 10, 70, 30, #__Flag_NoGadgets|#__flag_BorderFlat ), 12 ) 
-CloseList( )
-CloseList( )
-CloseList( )
-CloseList( )
-
-;\\
-Bind( #PB_All, @EventsHandler( ), #__event_MouseEnter )
-Bind( #PB_All, @EventsHandler( ), #__event_MouseMove )
-Bind( #PB_All, @EventsHandler( ), #__event_MouseLeave )
-
-;\\
-WaitClose( )
+   ;\\
+   Define anchor_size = 30
+   a_set(parent, #__a_full|#__a_zoom, anchor_size/2)
+   a_set(object, #__a_full, anchor_size)
+   a_set(object1, #__a_full, anchor_size)
+   a_set(object2, #__a_full, anchor_size)
+   a_set(object3, #__a_full, anchor_size)
+   
+   ;\\
+   DisableExplicit
+   Splitter_1 = Widget::Splitter(0, 0, 0, 0, Button_2, Button_3, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+   Widget::SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
+   Widget::SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 40)
+   Button_4   = Progress(0, 0, 0, 0, 0, 100) : SetState(Button_4, 50) ; No need to specify size or coordinates
+   Splitter_2 = Widget::Splitter(0, 0, 0, 0, Splitter_1, Button_4)
+   Button_5   = Button(0, 0, 0, 0, "Button 5") ; as they will be sized automatically
+   Splitter_3 = Widget::Splitter(0, 0, 0, 0, Button_5, Splitter_2)
+   Splitter_4 = Widget::Splitter(0, 0, 0, 0, Splitter_0, Splitter_3, #PB_Splitter_Vertical)
+   Splitter_5 = Widget::Splitter(180, 310, 250, 120, 0, Splitter_4, #PB_Splitter_Vertical)
+   ;
+   SetState(Splitter_5, 50)
+   SetState(Splitter_4, 50)
+   SetState(Splitter_3, 40)
+   SetState(Splitter_1, 50)
+   ;
+   SetClass( Splitter_1, "Splitter_1")
+   SetClass( Splitter_2, "Splitter_2")
+   SetClass( Splitter_3, "Splitter_3")
+   SetClass( Splitter_4, "Splitter_4")
+   SetClass( Splitter_5, "Splitter_5")
+   
+   ;\\
+   Bind( #PB_All, @EventsHandler( ), #__event_MouseEnter )
+   Bind( #PB_All, @EventsHandler( ), #__event_MouseLeave )
+  
+   ;\\
+   WaitClose( )
+CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 21
-; FirstLine = 8
-; Folding = --
+; CursorPosition = 76
+; FirstLine = 53
+; Folding = -
 ; EnableXP
 ; DPIAware

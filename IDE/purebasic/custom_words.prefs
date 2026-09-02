@@ -67,7 +67,7 @@ MouseButtonPressY
 MouseWheelDirection
 MouseWheelData
 
-MouseDragStart
+;MouseDragStart
 MouseDrag
 MouseMask
 MouseDirection
@@ -193,6 +193,8 @@ BarPosition
 HBar
 VBar
 
+Drag
+Drop
 EnableDrop
 DropX
 DropY

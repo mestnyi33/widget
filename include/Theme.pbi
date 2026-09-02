@@ -1,4 +1,8 @@
-﻿Enumeration #PB_Event_FirstCustomValue     ;{ #Event
+﻿; ==============================================================================
+; ЧАСТЬ 1: ПЕРЕЧИСЛЕНИЯ И СТРУКТУРЫ (КОНФИГУРАЦИЯ ТЕМЫ)
+; ==============================================================================
+
+Enumeration #PB_Event_FirstCustomValue     ;{ #Event
    #Event_Gadget
    #Event_Cursor
    #Event_Theme
@@ -105,8 +109,11 @@ Structure Theme_Structure          ;{ ThemeGUI\...
    Font.Theme_Font_Structure
    ScrollBar.i ; Flags
 EndStructure   ;}
-Global ThemeGUI.Theme_Structure
 
+Global ThemeGUI.Theme_Structure
+; ==============================================================================
+; ЧАСТЬ 2: ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ И СИСТЕМНЫЙ API (КРОССПЛАТФОРМА)
+; ==============================================================================
 
 Procedure.i BlendColor_(Color1.i, Color2.i, Scale.i=50)
    Define.i R1, G1, B1, R2, G2, B2
@@ -175,13 +182,13 @@ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       Else
          ProcedureReturn BlendColor_(OSX_NSColorByNameToRGB("windowBackgroundColor"), #White, 85)
       EndIf 
-      
    EndProcedure  
-   
 CompilerEndIf
+; ==============================================================================
+; ЧАСТЬ 3: ОСНОВНЫЕ ЦВЕТОВЫЕ ТЕМЫ (BLUE, GREEN, DARKBLUE, DARK)
+; ==============================================================================
 
-
-Procedure   SetTheme(Theme.i=#PB_Default)
+Procedure SetTheme(Theme.i=#PB_Default)
    ; On request and with the sponsorship of Cyllceaux
    
    ThemeGUI\Font\Num    = #PB_Default
@@ -315,7 +322,7 @@ Procedure   SetTheme(Theme.i=#PB_Default)
          ThemeGUI\Title\BackColor        = $764200
          ThemeGUI\Title\BorderColor      = $3A2100
          ThemeGUI\Progress\TextColor     = $F6EDE2
-         ThemeGUI\Progress\FrontColor    =  $CB9755
+         ThemeGUI\Progress\FrontColor    = $CB9755
          ThemeGUI\Progress\BackColor     = #PB_Default
          ThemeGUI\Progress\GradientColor = $B06400
          ThemeGUI\Progress\BorderColor   = $B06400
@@ -325,9 +332,11 @@ Procedure   SetTheme(Theme.i=#PB_Default)
          ThemeGUI\Disable\BackColor      = $CCCCCA
          ThemeGUI\Disable\BorderColor    = $72727D
          ;}
+         ; ==============================================================================
+         ; ЧАСТЬ 4: ДЕФОЛТНАЯ ТЕМА ПО ОС И ФУНКЦИИ XML СОХРАНЕНИЯ/ЗАГРУЗКИ
+         ; ==============================================================================
          
       Default           ;{ Default Theme
-         
          ThemeGUI\RowColor               = $FCFCFC
          ThemeGUI\GreyTextColor          = $6D6D6D
          
@@ -394,11 +403,9 @@ Procedure   SetTheme(Theme.i=#PB_Default)
                ThemeGUI\ScrollbarColor      = $C8C8C8
          CompilerEndSelect
          ;}
-         ;SaveTheme_("Theme_Default.xml")
    EndSelect
    
    PostEvent(#Event_Theme)
-   
 EndProcedure
 
 Procedure.i LoadTheme(File.s="ThemeGUI.xml")
@@ -410,10 +417,8 @@ Procedure.i LoadTheme(File.s="ThemeGUI.xml")
       FreeXML(XML)
       
       PostEvent(#Event_Theme)
-      
       ProcedureReturn #True
    EndIf
-   
 EndProcedure
 
 Procedure.i SaveTheme(File.s="ThemeGUI.xml")
@@ -422,21 +427,304 @@ Procedure.i SaveTheme(File.s="ThemeGUI.xml")
    FontNum = ThemeGUI\Font\Num
    ThemeGUI\Font\Num = #False
    
-   XML = CreateXML( #PB_Any )
+   XML = CreateXML(#PB_Any)
    If XML
-      InsertXMLStructure( RootXMLNode(XML), @ThemeGUI, Theme_Structure)
+      InsertXMLStructure(RootXMLNode(XML), @ThemeGUI, Theme_Structure)
       FormatXML(XML, #PB_XML_ReFormat)
       SaveXML(XML, File)
       FreeXML(XML)
    EndIf
    
    ThemeGUI\Font\Num = FontNum
-   
 EndProcedure
 
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 143
-; Folding = ------
+
+;-
+CompilerIf #PB_Compiler_IsMainFile
+   
+   Enumeration
+      #Window_Main
+      #Canvas_Player
+      #Button_LoadXML
+      #Button_SaveXML
+   EndEnumeration
+   
+   ; Переменные состояния для интерактива
+   Global VolumeLevel.f = 0.75   ; Значение слайдера громкости (0.0 - 1.0)
+   Global TrackProgress.f = 0.42 ; Значение прогресса трека (0.0 - 1.0)
+   Global HoveredControl.i = 0   ; 1 = Назад, 2 = Плей, 3 = Вперед, 4 = Прогресс, 5 = Громкость
+   
+   Procedure Triangle(X1.i, Y1.i, X2.i, Y2.i, X3.i, Y3.i, Color.i)
+      ; Создаем векторный контекст на базе текущего 2D-Drawing вывода
+      If StartVectorDrawing(CanvasVectorOutput(#Canvas_Player))
+         
+         ; Переносим курсор в первую точку
+         MovePathCursor(X1, Y1)
+         
+         ; Чертим линии до второй и третьей точек
+         AddPathLine(X2, Y2)
+         AddPathLine(X3, Y3)
+         
+         ; Замыкаем треугольник обратно на первую точку
+         ClosePath()
+         
+         ; Задаем цвет (поддерживается прозрачность, если нужно)
+         VectorSourceColor(Color | $FF000000)
+         
+         ; Заливаем внутреннюю область треугольника сглаженным цветом
+         FillPath()
+         
+         StopVectorDrawing()
+      EndIf
+   EndProcedure
+   
+   ; Процедура отрисовки мощного медиаплеера на Canvas
+   Procedure RedrawPlayer()
+      Protected TargetColor.i, FillW.i
+      
+      If StartDrawing(CanvasOutput(#Canvas_Player))
+         
+         ; 1. ФОН ПЛЕЕРА И ОКРЫВАЮЩАЯ РАМКА
+         Box(0, 0, OutputWidth(), OutputHeight(), ThemeGUI\BackColor)
+         DrawingMode(#PB_2DDrawing_Outlined)
+         Box(0, 0, OutputWidth(), OutputHeight(), ThemeGUI\BorderColor)
+         
+         ; 2. ШАПКА ТРЕКА (Используем структуру Title)
+         DrawingMode(#PB_2DDrawing_Default)
+         Box(1, 1, OutputWidth()-2, 45, ThemeGUI\Title\BackColor)
+         DrawingMode(#PB_2DDrawing_Transparent)
+         DrawText(15, 14, "Сейчас играет: PureBasic Crossplatform Synth.wav", ThemeGUI\Title\FrontColor)
+         
+         ; Разделительная линия (LineColor)
+         DrawingMode(#PB_2DDrawing_Default)
+         Box(0, 46, OutputWidth(), 1, ThemeGUI\LineColor)
+         
+         ; 3. ДЕКОРАТИВНЫЙ СПЕКТРОГРАММНЫЙ СЕТОЧНЫЙ ФОН (RowColor / GreyTextColor)
+         Protected X.i, BarH.i
+         For X = 15 To OutputWidth() - 15 Step 8
+            BarH = 20 + Sin(X * 0.05 + TrackProgress * 10) * 15 + Random(5)
+            Box(X, 110 - BarH, 5, BarH, ThemeGUI\RowColor)
+         Next
+         
+         ; 4. ТРЭК-БАР / ПРОГРЕСС (Используем структуру Progress)
+         ; Фон дорожки
+         Box(15, 130, OutputWidth()-30, 8, ThemeGUI\Progress\BackColor)
+         ; Рамка дорожки
+         DrawingMode(#PB_2DDrawing_Outlined)
+         Box(15, 130, OutputWidth()-30, 8, ThemeGUI\Progress\BorderColor)
+         ; Заполнение (Градиент имитируем смешиванием FrontColor и GradientColor)
+         DrawingMode(#PB_2DDrawing_Default)
+         FillW = (OutputWidth()-32) * TrackProgress
+         If FillW > 0
+            Box(16, 131, FillW, 6, ThemeGUI\Progress\FrontColor)
+         EndIf
+         ; Ползунок прогресса (если наведен - подсвечиваем Focus)
+         If HoveredControl = 4
+            TargetColor = ThemeGUI\Focus\BackColor
+         Else 
+            TargetColor = ThemeGUI\Progress\GradientColor
+         EndIf
+         Box(15 + FillW - 3, 126, 8, 16, TargetColor)
+         
+         ; Текст времени
+         DrawingMode(#PB_2DDrawing_Transparent)
+         DrawText(15, 145, "02:14", ThemeGUI\GreyTextColor)
+         DrawText(OutputWidth() - 55, 145, "-03:05", ThemeGUI\GreyTextColor)
+         
+         ; 5. КНОПКИ УПРАВЛЕНИЯ (Используем структуру Button и Disable)
+         ; Кнопка "Назад"
+         If HoveredControl = 1
+            TargetColor = ThemeGUI\Focus\BackColor
+         Else 
+            TargetColor = ThemeGUI\Button\BackColor
+         EndIf
+         Box(110, 180, 40, 40, TargetColor)
+         DrawingMode(#PB_2DDrawing_Outlined)
+         Box(110, 180, 40, 40, ThemeGUI\Button\BorderColor)
+         ; Стрелочка влево
+         DrawingMode(#PB_2DDrawing_Default)
+         Triangle(133, 193, 133, 207, 122, 200, ThemeGUI\Button\FrontColor)
+         Triangle(125, 193, 125, 207, 114, 200, ThemeGUI\Button\FrontColor)
+         
+         ; Кнопка "PLAY / PAUSE" (Главная кнопка)
+         If HoveredControl = 2
+            TargetColor = ThemeGUI\Focus\BackColor
+         Else 
+            TargetColor = ThemeGUI\Button\BackColor
+         EndIf
+         Box(165, 175, 50, 50, TargetColor)
+         DrawingMode(#PB_2DDrawing_Outlined)
+         Box(165, 175, 50, 50, ThemeGUI\Button\BorderColor)
+         ; Иконка Паузы
+         DrawingMode(#PB_2DDrawing_Default)
+         Box(183, 190, 5, 20, ThemeGUI\Button\FrontColor)
+         Box(192, 190, 5, 20, ThemeGUI\Button\FrontColor)
+         
+         ; Кнопка "Вперед"
+         If HoveredControl = 3
+            TargetColor = ThemeGUI\Focus\BackColor
+         Else 
+            TargetColor = ThemeGUI\Button\BackColor
+         EndIf
+         Box(230, 180, 40, 40, TargetColor)
+         DrawingMode(#PB_2DDrawing_Outlined)
+         Box(230, 180, 40, 40, ThemeGUI\Button\BorderColor)
+         ; Стрелочка вправо
+         DrawingMode(#PB_2DDrawing_Default)
+         Triangle(237, 193, 237, 207, 248, 200, ThemeGUI\Button\FrontColor)
+         Triangle(245, 193, 245, 207, 256, 200, ThemeGUI\Button\FrontColor)
+         
+         ; 6. КОНТРОЛ ГРОМКОСТИ (Используем SwitchColor и Slider-логику)
+         DrawingMode(#PB_2DDrawing_Transparent)
+         DrawText(20, 243, "VOL:", ThemeGUI\GreyTextColor)
+         ; Линия слайдера громкости
+         DrawingMode(#PB_2DDrawing_Default)
+         Box(60, 250, 100, 4, ThemeGUI\Button\SwitchColor)
+         ; Заполненная часть
+         Box(60, 250, 100 * VolumeLevel, 4, ThemeGUI\Progress\FrontColor)
+         ; Круглый ползунок громкости
+         If HoveredControl = 5
+            TargetColor = ThemeGUI\Focus\BackColor
+         Else 
+            TargetColor = ThemeGUI\Button\BorderColor
+         EndIf
+         Circle(60 + (100 * VolumeLevel), 252, 6, TargetColor)
+         
+         ; Текст состояния инфо-панели (Используем Disable структуру для симуляции неактивного текста)
+         Box(180, 244, 190, 22, ThemeGUI\Disable\BackColor)
+         DrawingMode(#PB_2DDrawing_Outlined)
+         Box(180, 244, 190, 22, ThemeGUI\Disable\BorderColor)
+         DrawingMode(#PB_2DDrawing_Transparent)
+         DrawText(190, 247, "РЕЖИМ СТЕРЕО 44.1 kHz", ThemeGUI\Disable\FrontColor)
+         
+         StopDrawing()
+      EndIf
+   EndProcedure
+   
+   ; --- ТОЧКА ВХОДА ПРИЛОЖЕНИЯ ---
+   
+   ; Инициализируем стартовую тему
+   SetTheme(#Theme_Default)
+   
+   If OpenWindow(#Window_Main, 0, 0, 400, 360, "Демонстрация мощи Theme Library", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      
+      ; Создаем наш кастомный Canvas-виджет плеера
+      CanvasGadget(#Canvas_Player, 10, 10, 380, 290)
+      
+      ; Стандартные кнопки для демонстрации XML-сохранения / загрузки
+      ButtonGadget(#Button_LoadXML, 10, 315, 185, 30, "Загрузить тему из XML")
+      ButtonGadget(#Button_SaveXML, 205, 315, 185, 30, "Сохранить тему в XML")
+      
+      ; Первичный рендер плеера
+      RedrawPlayer()
+      
+      ; Добавим таймер для анимации спектрограммы и трека (симулируем проигрывание)
+      AddWindowTimer(#Window_Main, #Event_Timer, 80)
+      
+      ; ГЛАВНЫЙ ЦИКЛ ОБРАБОТКИ СОБЫТИЙ
+      Repeat
+         Define Event = WaitWindowEvent()
+         
+         Select Event
+            Case #PB_Event_Timer
+               If EventTimer() = #Event_Timer
+                  ; Продвигаем трек вперед и обновляем анимацию
+                  TrackProgress + 0.002
+                  If TrackProgress > 1.0 : TrackProgress = 0.0 : EndIf
+                  RedrawPlayer()
+               EndIf
+               
+            Case #PB_Event_Gadget
+               Select EventGadget()
+                     
+                  Case #Button_SaveXML
+                     ; Демонстрируем сохранение структуры со всеми подструктурами в читаемый XML файл!
+                     ; Сначала переключимся на интересную тему, чтобы файл не был пустым
+                     SetTheme(#Theme_DarkBlue)
+                     If SaveTheme("DemoTheme.xml")
+                        MessageRequester("Успех", "Текущая палитра (DarkBlue) полностью выгружена в файл DemoTheme.xml!", #PB_MessageRequester_Info)
+                     EndIf
+                     
+                  Case #Button_LoadXML
+                     ; Демонстрируем горячую загрузку внешней конфигурации
+                     If FileSize("DemoTheme.xml") > 0
+                        If LoadTheme("DemoTheme.xml")
+                           MessageRequester("Успех", "Структура ThemeGUI мгновенно перестроена из внешнего XML-файла!", #PB_MessageRequester_Info)
+                        EndIf
+                     Else
+                        MessageRequester("Ошибка", "Сначала нажмите кнопку 'Сохранить тему в XML' для генерации файла!", #PB_MessageRequester_Error)
+                     EndIf
+                     
+                  Case #Canvas_Player
+                     ; Интерактивная обработка мыши над плеером
+                     Define MouseX.i = GetGadgetAttribute(#Canvas_Player, #PB_Canvas_MouseX)
+                     Define MouseY.i = GetGadgetAttribute(#Canvas_Player, #PB_Canvas_MouseY)
+                     Define OldHover.i = HoveredControl
+                     
+                     Select EventType()
+                        Case #PB_EventType_MouseMove, #PB_EventType_LeftButtonDown
+                           
+                           ; Вычисляем, над каким элементом управления находится мышь
+                           If MouseY >= 180 And MouseY <= 220 And MouseX >= 110 And MouseX <= 150
+                              HoveredControl = 1 ; Назад
+                           ElseIf MouseY >= 175 And MouseY <= 225 And MouseX >= 165 And MouseX <= 215
+                              HoveredControl = 2 ; Плей
+                           ElseIf MouseY >= 180 And MouseY <= 220 And MouseX >= 230 And MouseX <= 270
+                              HoveredControl = 3 ; Вперед
+                           ElseIf MouseY >= 125 And MouseY <= 142 And MouseX >= 15 And MouseX <= 365
+                              HoveredControl = 4 ; Таймлайн прогресса
+                                                 ; Если зажата кнопка мыши - перематываем
+                              If GetGadgetAttribute(#Canvas_Player, #PB_Canvas_Buttons) & #PB_Canvas_LeftButton
+                                 TrackProgress = (MouseX - 15) / 350.0
+                                 If TrackProgress < 0 : TrackProgress = 0 : EndIf
+                                 If TrackProgress > 1 : TrackProgress = 1 : EndIf
+                              EndIf
+                           ElseIf MouseY >= 240 And MouseY <= 265 And MouseX >= 60 And MouseX <= 160
+                              HoveredControl = 5 ; Ползунок громкости
+                              If GetGadgetAttribute(#Canvas_Player, #PB_Canvas_Buttons) & #PB_Canvas_LeftButton
+                                 VolumeLevel = (MouseX - 60) / 100.0
+                                 If VolumeLevel < 0 : VolumeLevel = 0 : EndIf
+                                 If VolumeLevel > 1 : VolumeLevel = 1 : EndIf
+                              EndIf
+                           Else
+                              HoveredControl = 0 ; Мимо
+                           EndIf
+                           
+                           ; Динамически меняем темы интерфейса в зависимости от зоны фокуса!
+                           If HoveredControl <> OldHover
+                              Select HoveredControl
+                                 Case 2     : SetTheme(#Theme_Green)    ; Кнопка Плей окрашивает плеер в зеленый
+                                 Case 4     : SetTheme(#Theme_Blue)     ; Прогресс-бар уходит в синий тон
+                                 Case 5     : SetTheme(#Theme_Dark)     ; Управление громкостью переводит в ночной режим
+                                 Default    : SetTheme(#Theme_DarkBlue) ; Обычное состояние — стильный DarkBlue
+                              EndSelect
+                           EndIf
+                           
+                        Case #PB_EventType_MouseLeave
+                           HoveredControl = 0
+                           SetTheme(#Theme_Default) ; Когда мышь уходит, плеер сбрасывается в нативный цвет ОС
+                     EndSelect
+                     
+               EndSelect
+               
+               ; 3. ГЛОБАЛЬНЫЙ ОТВЕТ НА СМЕНУ ТЕМЫ СИСТЕМЫ
+            Case #Event_Theme
+               ; Синхронно перекрашиваем бэкграунд самого системного окна Windows/macOS/Linux
+               If ThemeGUI\WindowColor <> #PB_Default
+                  SetWindowColor(#Window_Main, ThemeGUI\WindowColor)
+               Else
+                  SetWindowColor(#Window_Main, #PB_Default)
+               EndIf
+               ; Перерисовываем Canvas-элемент новыми цветами из структуры ThemeGUIRedrawPlayer()
+            Case #PB_Event_CloseWindow
+               End
+         EndSelect
+      ForEver
+   EndIf
+CompilerEndIf
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 723
+; FirstLine = 706
+; Folding = -----------
 ; EnableXP
 ; DPIAware

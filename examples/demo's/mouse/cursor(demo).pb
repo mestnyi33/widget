@@ -24,7 +24,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure events_widgets( )
-      Protected drop, source, selectedIndex, selectedText$
+      Protected Drop, source, selectedIndex, selectedText$
       
       Select WidgetEvent( )
          Case #__event_DragStart      
@@ -58,11 +58,11 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open(0, 0, 0, 420, 280, "SplitterGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      SetBackColor(widget(), $FFAC97DB)
+      SetBackColor(Widget(), $FFAC97DB)
       
       ;\\
       form1 = Window(200,10,200,110,"form1")
-         a_init(widget( ))
+         a_init(Widget( ))
          btn1 = Button(10,10,80,50, "btn1") 
          SetCursor( btn1, #PB_Cursor_Hand )
          btn2 = Button(60,40,80,50, "btn2") 
@@ -71,19 +71,19 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList( )
       
       ;\\
-      Splitter_1 = Splitter(10, 10, 180, 120, -1, -1, #PB_Splitter_Vertical) : SetClass( widget(), "1")
+      Splitter_1 = Splitter(10, 10, 180, 120, -1, -1, #PB_Splitter_Vertical) : SetClass( Widget(), "1")
       SetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 60)
       SetAttribute(Splitter_1, #PB_Splitter_SecondMinimumSize, 60)
-      Splitter_2 = Splitter(10, 10, 180, 120, Splitter_1, -1) : SetClass( widget(), "2")
+      Splitter_2 = Splitter(10, 10, 180, 120, Splitter_1, -1) : SetClass( Widget(), "2")
       ;SetFrame( Splitter_1, 20)
       
-      Button_0 = Button(10,140,110,80, "drag", #__flag_Textleft) : SetClass( widget(), GetText(widget()))
-      Button_1 = Button(60,150,80,40, "disable") : SetClass( widget(), GetText(widget()))
-      Button_2 = Button(100,140,110,80, "Ibeam") : SetClass( widget(), GetText(widget())) 
-      Button_3 = String(160,140,110,80, "framestring") : SetClass( widget(), GetText(widget())) 
+      Button_0 = Button(10,140,110,80, "drag", #__flag_Textleft) : SetClass( Widget(), GetText(Widget()))
+      Button_1 = Button(60,150,80,40, "disable") : SetClass( Widget(), GetText(Widget()))
+      Button_2 = Button(100,140,110,80, "Ibeam") : SetClass( Widget(), GetText(Widget())) 
+      Button_3 = String(160,140,110,80, "framestring") : SetClass( Widget(), GetText(Widget())) 
       SetFrame( Button_3, 20)
-      Button_4 = String(230,140,110,80, "string") : SetClass( widget(), GetText(widget())) 
-      Button_5 = Button(300,140,110,80, "drop", #__flag_TextRight) : SetClass( widget(), GetText(widget())) 
+      Button_4 = String(230,140,110,80, "string") : SetClass( Widget(), GetText(Widget())) 
+      Button_5 = Button(300,140,110,80, "drop", #__flag_TextRight) : SetClass( Widget(), GetText(Widget())) 
       
       Disable( Button_1, 1 )
       
@@ -107,9 +107,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 25
-; FirstLine = 42
-; Folding = --
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 91
+; FirstLine = 62
+; Folding = -1
 ; EnableXP
 ; DPIAware

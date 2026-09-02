@@ -1,5 +1,5 @@
 ﻿
-IncludePath "../../"
+IncludePath "../../../"
 XIncludeFile "widgets.pbi"
 
 
@@ -7,6 +7,7 @@ CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   UseWidgets( )
   
+  Global title$
   
   ;\\
   Procedure CallBack( )
@@ -15,7 +16,7 @@ CompilerIf #PB_Compiler_IsMainFile
     Select WidgetEvent( )
       Case #__event_LeftClick
         Select GetText( EventWidget( ) )
-          Case "window_2_root_butt_1"
+          Case "window_2_butt_1"
             Message( "message", "test WaitQuit ( ) and PostQuit ( )", #__message_ScreenCentered )
             
         EndSelect
@@ -50,49 +51,44 @@ CompilerIf #PB_Compiler_IsMainFile
   EndProcedure
   
  ;\\
-  Open(0, 0, 0, 300, 200, "window_0", #PB_Window_SystemMenu |
+  title$ = "window_0"
+  Open(0, 0, 0, 300, 200, title$, #PB_Window_SystemMenu |
                                       #PB_Window_SizeGadget |
                                       #PB_Window_MinimizeGadget |
                                       #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_0_root" )
-  Container( 10,10,240,140 ) : SetClass(Widget( ), "window_0_root_container" )
-  Button(10,10,200,50,"window_0_root_butt_1")
-  SetClass(Widget( ), "window_0_root_butt_1" )
-  Button(10,65,200,50,"window_0_root_butt_2")
-  SetClass(Widget( ), "window_0_root_butt_2" )
+  SetClass(Root( ), title$+"_root" )
+  SetClass(Container( 10,10,240,140 ), title$+"_container" )
+  SetClass(Button(10,10,200,50,title$+"_butt_1"), title$+"_butt_1" )
+  SetClass(Button(10,65,200,50,title$+"_butt_2"), title$+"_butt_2" )
   
   ;\\
-  Open(1, 200, 100, 300, 200, "window_1", #PB_Window_SystemMenu |
+  title$ = "window_1"
+  Open(1, 200, 100, 300, 200, title$, #PB_Window_SystemMenu |
                                           #PB_Window_SizeGadget |
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
   
-  SetClass(Root( ), "window_1_root" )
-  Container( 10,10,240,140 ) : SetClass(Widget( ), "window_1_root_container" )
-  Button(10,10,200,50,"window_1_root_butt_1")
-  SetClass(Widget( ), "window_1_root_butt_1" )
-  Button(10,65,200,50,"window_1_root_butt_2")
-  SetClass(Widget( ), "window_1_root_butt_2" )
+  SetClass(Root( ), title$+"_root" )
+  SetClass(Container( 10,10,240,140 ), title$+"_container" )
+  SetClass(Button(10,10,200,50,title$+"_butt_1"), title$+"_butt_1" )
+  SetClass(Button(10,65,200,50,title$+"_butt_2"), title$+"_butt_2" )
   
   ;\\
-  Open(2, 400, 200, 300, 200, "window_2", #PB_Window_SystemMenu |
+  title$ = "window_2"
+  Open(2, 400, 200, 300, 200, title$, #PB_Window_SystemMenu |
                                           #PB_Window_SizeGadget |
                                           #PB_Window_MinimizeGadget |
                                           #PB_Window_MaximizeGadget )
-  
-  SetClass(Root( ), "window_2_root" )
-  Container( 10,10,240,140 ) : SetClass(Widget( ), "window_2_root_container" )
-  Button(10,10,200,50,"window_2_root_butt_1")
-  SetClass(Widget( ), "window_2_root_butt_1" )
-  Button(10,65,200,50,"window_2_root_butt_2")
-  SetClass(Widget( ), "window_2_root_butt_2" )
+  SetClass(Root( ), title$+"_root" )
+  SetClass(Container( 10,10,240,140 ), title$+"_container" )
+  SetClass(Button(10,10,200,50,title$+"_butt_1"), title$+"_butt_1" )
+  SetClass(Button(10,65,200,50,title$+"_butt_2"), title$+"_butt_2" )
   
   ;\\
-  WaitClose( @CallBack( ) )
+  WaitClose( @CallBack( ))
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 12
-; FirstLine = 8
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 18
 ; Folding = -
 ; EnableXP
