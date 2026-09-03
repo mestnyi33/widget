@@ -1670,6 +1670,8 @@ CompilerIf Not Defined( Widget, #PB_Module )
    ;-  
    ;-\\  DECLARE_globals
    ;-  
+   Declare   Draw_Editor( *this._s_WIDGET )
+   
    Declare.l DropX( )
    Declare.l DropY( )
    Declare.l DropWidth( )
@@ -3458,7 +3460,7 @@ Module Widget
             *this = *this\parent
          EndIf
          
-         If *this\mask & #__mask_hover > 0
+         If *this\mask & #__mask_hover
             ;\\ first - draw backgraund color
             draw_mode_alpha_( #PB_2DDrawing_Default )
             If MouseEnter( *this, 2 )
@@ -18991,6 +18993,7 @@ Module Widget
    
    Procedure   DoDrag( *this._s_WIDGET )
       If Drag( ) And *this And Not *this\mask & #__mask_disabled
+        
          If *this\drop 
             
             If Drag( )\enter = 0
@@ -19138,7 +19141,22 @@ Module Widget
          EndIf
       Else
          If MousePress( )
-            DoDrag( Entered( ))
+;             If Entered( )
+;                If Bool( is_hover( Entered( ), CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ) And
+;                         is_hover( Entered( ), CanvasMouseX( ), CanvasMouseY( ), [#__c_inner] ) And
+;                         Not ( Entered( )\type = #__type_Splitter And is_hover( Entered( )\bar\button, CanvasMouseX( ), CanvasMouseY( ) ) = 0 ) And
+;                         Not ( Entered( )\type = #__type_HyperLink And is_hover( Entered( ), CanvasMouseX( ) - Entered( )\frame_x( ), CanvasMouseY( ) - Entered( )\frame_y( ), [#__c_Required] ) = 0 ))
+;                   Entered( )\mask | #__mask_hover_in
+;                Else
+;                   Entered( )\mask &~ #__mask_hover_in
+;                EndIf
+;                Debug Bool(MouseEnter( Entered( ), 2 ));;Bool(Entered( )\mask &~ #__mask_hover_in)
+;             EndIf
+            
+            
+            If *this\mask & #__mask_hover 
+               DoDrag( Entered( ))  ;  *this ) ;     
+            EndIf
          Else
             If *this\mask & #__mask_hover
                If *this\mask & #__mask_hover_a
@@ -22395,7 +22413,8 @@ Module Widget
          
          ; Draw back color
          draw_mode_alpha_( #PB_2DDrawing_Default )
-         draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back )
+        ; draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back )
+         draw_roundbox_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), *this\round, *this\round, *this\color\back )
          
          ; Draw margin back color
          If *this\MarginLine( )\width > 0
@@ -28808,10 +28827,10 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 3634
-; FirstLine = 3621
-; Folding = ---------------------------------------------------------------------------------------------s82e0-----------------------------------------------------------------------4---+----0----------------------------------------------------------------------------------------------------------------+----------------------------------------------d-8----0-v----4-----------------------------------------------------------------------------------------------------------------------dw-u8tPu---940---------------------------------------------------------------8-44--+----------0f-02-------fv---f-0f----4--------+XDe-------------------------------+----------------------------v------f-----------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 19009
+; FirstLine = 17979
+; Folding = ---------------------------------------------------------------------------------------------s82e0-----------------------------------------------------------------------4---+----0----------------------------------------------------------------------------------------------------------------+----------------------------------------------d-8----0-v----4-----------------------------------------------------------------------------------------------------------------------dw-u8tPu---940-----------------------------------------------------------------44--0----------8-+8r--------e----+8-+---v--------0vG9+------------------------------0----------------------------f-------+----------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -19,7 +19,12 @@ CompilerIf #PB_Compiler_IsMainFile
          If *e = Button_4
             Box(\x,\y,\width,\height, $F674FE)
          EndIf
-         Box(\x[#__c_inner],\y[#__c_inner],\width[#__c_inner],\height[#__c_inner], $FFFFFF)
+;          Box(\x[#__c_inner],\y[#__c_inner],\width[#__c_inner],\height[#__c_inner], $FFFFFF)
+;          
+;          DrawText(\x[#__c_inner],\y[#__c_inner], GetText(*e), $ff000000)
+         
+         ;DrawString(*e)
+         Draw_Editor( *e )
       EndWith
    EndProcedure
    
@@ -82,8 +87,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Button_2 = Button(100,140,110,80, "Ibeam") : SetClass( Widget(), GetText(Widget())) 
       Button_3 = String(160,140,110,80, "framestring") : SetClass( Widget(), GetText(Widget())) 
       SetFrame( Button_3, 20)
-      Button_4 = String(230,140,110,80, "string") : SetClass( Widget(), GetText(Widget())) 
-      Button_5 = Button(300,140,110,80, "drop", #__flag_TextRight) : SetClass( Widget(), GetText(Widget())) 
+      Button_4 = String(230,140,110,80, "drop1") : SetClass( Widget(), GetText(Widget())) 
+      Button_5 = Button(300,140,110,80, "drop2", #__flag_TextRight) : SetClass( Widget(), GetText(Widget())) 
       
       Disable( Button_1, 1 )
       
@@ -92,13 +97,15 @@ CompilerIf #PB_Compiler_IsMainFile
       SetCursor( Button_2, #PB_Cursor_IBeam )
       
       EnableDrop(Button_1, #PB_Drop_Text, #PB_Drag_Copy)
-      ;EnableDrop(Button_4, #PB_Drop_Text, #PB_Drag_Copy)
+      EnableDrop(Button_4, #PB_Drop_Text, #PB_Drag_Copy)
       EnableDrop(Button_5, #PB_Drop_Text, #PB_Drag_Copy)
       ;
       Bind( #PB_All, @events_widgets( ), #__event_DragStart )
       Bind( #PB_All, @events_widgets( ), #__event_Drop )
-      Bind(Button_3, @CustomDrawing(), #__event_Draw)
-      Bind(Button_4, @CustomDrawing(), #__event_Draw)
+      ;SetColor(Button_3, #__framecolor, $74F6FE)
+      ;SetColor(Button_3, #__backcolor, $74F6FE)
+       Bind(Button_3, @CustomDrawing(), #__event_Draw)
+       Bind(Button_4, @CustomDrawing(), #__event_Draw)
       
       ;\\ change current cursor
       ; Bind( #PB_All, @events_widgets( ), #__event_CursorChange )
@@ -107,9 +114,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 55
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 107
+; FirstLine = 82
 ; Folding = -1
 ; EnableXP
 ; DPIAware
