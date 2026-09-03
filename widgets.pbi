@@ -3632,7 +3632,8 @@ Module Widget
       Drag( )\str$  = Text
       
       ; SetCursor( #PB_All, cursor::#__cursor_Drag )
-      mouse( )\cursor = cursor::#__cursor_Drag
+      ;mouse( )\cursor = cursor::#__cursor_Drag
+      ChangeCursor( Entered( ), cursor::#__cursor_Drag)
       
       ProcedureReturn Drag( )
    EndProcedure
@@ -18989,38 +18990,34 @@ Module Widget
    ;       EndProcedure
    
    Procedure   DoDrag( *this._s_WIDGET )
-      If MousePress( ) And *this
-         If Not *this\mask & #__mask_disabled
-            If Drag( )
-               If *this\drop 
-                  
-                  If Drag( )\enter = 0
-                     If *this\drop\format = Drag( )\format And
-                        *this\drop\actions & Drag( )\actions And
-                        ( *this\drop\private = Drag( )\private Or
-                          *this\drop\private & Drag( )\private )
-                        ;
-                        If GetCursor( ) = cursor::#__cursor_Drag
-                           Debug "drop enter"
-                           ChangeCursor( Pressed( ), cursor::#__cursor_Drop )
-                        EndIf
-                        Drag( )\enter = 1
-                     Else
-                        
-                        Debug "no drop enter"
-                        
-                     EndIf
+      If Drag( ) And *this And Not *this\mask & #__mask_disabled
+         If *this\drop 
+            
+            If Drag( )\enter = 0
+               If *this\drop\format = Drag( )\format And
+                  *this\drop\actions & Drag( )\actions And
+                  ( *this\drop\private = Drag( )\private Or
+                    *this\drop\private & Drag( )\private )
+                  ;
+                  If GetCursor( ) = cursor::#__cursor_Drag
+                     Debug "drop enter"
+                     ChangeCursor( Pressed( ), cursor::#__cursor_Drop )
                   EndIf
-                  
+                  Drag( )\enter = 1
                Else
-                  If Drag( )\enter = 1
-                     Drag( )\enter = 0
-                     ;
-                     If GetCursor( ) = cursor::#__cursor_Drop
-                        Debug "no drop"
-                        ChangeCursor( Pressed( ), cursor::#__cursor_Drag )
-                     EndIf
-                  EndIf
+                  
+                  ; Debug "no drop enter"
+                  
+               EndIf
+            EndIf
+            
+         Else
+            If Drag( )\enter = 1
+               Drag( )\enter = 0
+               ;
+               If GetCursor( ) = cursor::#__cursor_Drop
+                  Debug "no drop"
+                  ChangeCursor( Pressed( ), cursor::#__cursor_Drag )
                EndIf
             EndIf
          EndIf
@@ -28812,9 +28809,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 18996
-; FirstLine = 17908
-; Folding = ---------------------------------------------------------------------------------4-----------s82e0-----------------------------------------------------------------------4---+----0----------------------------------------------------------------------------------------------------------------+----------------------------------------------d-8----0-v----4-----------------------------------------------------------------------------------------------------------------------dw-u8tPu---940---------------------------------------------------------------v-ff--8----------4-04X--------0+---04-0---f--------8fN50------------------------------8-----------------------------+------0----------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 3634
+; FirstLine = 3621
+; Folding = ---------------------------------------------------------------------------------------------s82e0-----------------------------------------------------------------------4---+----0----------------------------------------------------------------------------------------------------------------+----------------------------------------------d-8----0-v----4-----------------------------------------------------------------------------------------------------------------------dw-u8tPu---940---------------------------------------------------------------8-44--+----------0f-02-------fv---f-0f----4--------+XDe-------------------------------+----------------------------v------f-----------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

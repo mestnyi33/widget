@@ -92,7 +92,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetCursor( Button_2, #PB_Cursor_IBeam )
       
       EnableDrop(Button_1, #PB_Drop_Text, #PB_Drag_Copy)
-      EnableDrop(Button_4, #PB_Drop_Text, #PB_Drag_Copy)
+      ;EnableDrop(Button_4, #PB_Drop_Text, #PB_Drag_Copy)
       EnableDrop(Button_5, #PB_Drop_Text, #PB_Drag_Copy)
       ;
       Bind( #PB_All, @events_widgets( ), #__event_DragStart )
@@ -107,9 +107,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 91
-; FirstLine = 62
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 89
+; FirstLine = 55
 ; Folding = -1
 ; EnableXP
 ; DPIAware
