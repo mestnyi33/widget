@@ -133,7 +133,7 @@ Procedure widget_events( )
               img = CreateImage(#PB_Any, EventWidget( )\__rows( )\text\width, EventWidget( )\__rows( )\text\height, 32, #PB_Image_Transparent )
               StartDrawing(ImageOutput(img))
               DrawingMode( #PB_2DDrawing_AllChannels)
-              DrawText(0, 0, EventWidget( )\__rows( )\text\string, $ff000000)
+              DrawText(0, 0, EventWidget( )\__rows( )\text\Str(0), $ff000000)
               StopDrawing()
               
               If IsImage(img)
@@ -357,7 +357,7 @@ Procedure widget_events( )
             ;ClearDebugOutput()
             Define *this._s_widget = Gadget_TargetItem
             ForEach *this\__rows( )
-              Debug ""+ *this\__rows( )\index +" "+ ListIndex(*this\__rows( )) +" "+ *this\__rows( )\text\string +""
+              Debug ""+ *this\__rows( )\index +" "+ ListIndex(*this\__rows( )) +" "+ *this\__rows( )\text\Str(0) +""
             Next
           EndIf
           
@@ -511,7 +511,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1
+; CursorPosition = 359
+; FirstLine = 339
 ; Folding = -----
 ; EnableXP
 ; DPIAware

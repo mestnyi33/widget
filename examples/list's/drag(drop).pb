@@ -12,55 +12,56 @@ CompilerIf #PB_Compiler_IsMainFile
    Global._s_WIDGET *g, *first, *drop, *second
    
    Procedure GetRowStatus( *this._s_WIDGET, *row._s_ROWS )
-      ;Debug ""+MousePress( *g ) +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
-      
-      If *row\focus And *row\press  
-         If *row\ColorState( )
-            ;Debug "focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-            ProcedureReturn 3
-         Else
-            ;Debug "lost focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-            ProcedureReturn - 3
-         EndIf
-      ElseIf MousePress(*this) And *row\enter  
-         ;Debug "press enter "+*this\class +" "+ *row\index +" "+ *row\ColorState( ) +" "+ *row\press
-         ProcedureReturn 2
-      ElseIf *row\focus 
-         If *row\enter 
-            If MouseButtons( )
-               ;Debug ""+*g\press +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
-               ;Debug "focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-               ProcedureReturn 3
-            Else
-               ;Debug "enter focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-               ProcedureReturn 4
-            EndIf
-         Else
-            If Not *row\ColorState( ) 
-               ; Debug *row\focus ; bug должен быть 3
-               ;Debug "lost focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-               ProcedureReturn - 3
-            Else
-               If Not MousePress(*this)
-                  ;Debug "leave from focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-                  ProcedureReturn - 4
-               Else
-                 ; Debug "deactive "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-               EndIf
-            EndIf
-         EndIf
-      ElseIf *row\enter
-         ;Debug "enter "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-         ProcedureReturn 1
-      Else
-         If MousePress(*this)
-            ;Debug "press leave "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-            ProcedureReturn - 2
-         Else
-            ;Debug "leave "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
-            ProcedureReturn - 1
-         EndIf
-      EndIf
+;       ;Debug ""+MousePress( *g ) +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
+;       
+;       If *row\focus And *row\press  
+;          If *row\ColorState( )
+;             ;Debug "focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+;             ProcedureReturn 3
+;          Else
+;             ;Debug "lost focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+;             ProcedureReturn - 3
+;          EndIf
+;       ElseIf MousePress(*this) And *row\enter  
+;          ;Debug "press enter "+*this\class +" "+ *row\index +" "+ *row\ColorState( ) +" "+ *row\press
+;          ProcedureReturn 2
+;       ElseIf *row\focus 
+;          If *row\enter 
+;             If MouseButtons( )
+;                ;Debug ""+*g\press +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
+;                ;Debug "focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+;                ProcedureReturn 3
+;             Else
+;                ;Debug "enter focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+;                ProcedureReturn 4
+;             EndIf
+;          Else
+;             If Not *row\ColorState( ) 
+;                ; Debug *row\focus ; bug должен быть 3
+;                ;Debug "lost focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+;                ProcedureReturn - 3
+;             Else
+;                If Not MousePress(*this)
+;                   ;Debug "leave from focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+;                   ProcedureReturn - 4
+;                Else
+;                  ; Debug "deactive "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+;                EndIf
+;             EndIf
+;          EndIf
+;       ElseIf *row\enter
+;          ;Debug "enter "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+;          ProcedureReturn 1
+;       Else
+;          If MousePress(*this)
+;             ;Debug "press leave "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+;             ProcedureReturn - 2
+;          Else
+;             ;Debug "leave "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
+;             ProcedureReturn - 1
+;          EndIf
+;       EndIf
+;       
    EndProcedure
    
    Procedure all_events()
@@ -148,9 +149,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 109
-; Folding = ---
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 63
+; FirstLine = 43
+; Folding = --
 ; EnableXP
 ; DPIAware

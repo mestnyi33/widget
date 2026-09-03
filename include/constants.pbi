@@ -330,9 +330,9 @@
       #__mask_hover     = 1 << 6
       #__mask_press     = 1 << 7         ; 64  button press
       #__mask_release   = 1 << 8         ; 128 button release
-      #__mask_dragstart = 1 << 9         ; 256
-      #__mask_drag      = 1 << 10        ; Состояние перетаскивания Объект в процессе перетаскивания
-      #__mask_active    = 1 << 11        ; Виджет в фокусе / Строка выбрана / Окно активно
+      #__mask_focus     = 1 << 9         ; Виджет в фокусе / Строка выбрана / Окно активно
+      #__mask_active    = 1 << 10        ; Виджет в фокусе / Строка выбрана / Окно активно
+      #__mask_drag      = 1 << 11        ; Состояние перетаскивания Объект в процессе перетаскивания
       #__mask_redraw    = 1 << 12        ; Флаг: Требуется перерисовка
       
       #__mask_hide      = 1 << 14        ; Объект скрыт изначально (базовый флаг)
@@ -787,8 +787,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 352
-; FirstLine = 338
+; CursorPosition = 332
+; FirstLine = 325
 ; Folding = ----
 ; Optimizer
 ; EnableXP
