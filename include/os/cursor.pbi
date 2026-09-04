@@ -239,7 +239,15 @@ Module Cursor
    Global NewMap cursors.i( )
    
    ;-
-   Procedure GetMemory( GadgetID )
+   Procedure FreeData( GadgetID )
+      CompilerSelect #PB_Compiler_OS
+         CompilerCase #PB_OS_Windows : ProcedureReturn RemoveProp_(GadgetID, "__cursor")
+         CompilerCase #PB_OS_MacOS   : ProcedureReturn objc_setAssociatedObject_(GadgetID, "__cursor", #Null, 0)
+         CompilerCase #PB_OS_Linux   : ProcedureReturn g_object_set_data_(GadgetID, "__cursor", #Null)
+      CompilerEndSelect
+   EndProcedure
+   
+   Procedure GetData( GadgetID )
       CompilerSelect #PB_Compiler_OS
          CompilerCase #PB_OS_Windows : ProcedureReturn GetProp_(GadgetID, "__cursor")
          CompilerCase #PB_OS_MacOS   : ProcedureReturn objc_getAssociatedObject_(GadgetID, "__cursor")
@@ -247,7 +255,7 @@ Module Cursor
       CompilerEndSelect
    EndProcedure
    
-   Procedure SetMemory( GadgetID, *memory )
+   Procedure SetData( GadgetID, *memory )
       CompilerSelect #PB_Compiler_OS
          CompilerCase #PB_OS_Windows : SetProp_(GadgetID, "__cursor", *memory)
          CompilerCase #PB_OS_MacOS   : objc_setAssociatedObject_(GadgetID, "__cursor", *memory, 0)
@@ -295,7 +303,7 @@ Module Cursor
    EndProcedure
    
    Procedure   Change( GadgetID.i, state.b )
-      Protected result, *cursor._s_cursor = GetMemory(GadgetID)
+      Protected result, *cursor._s_cursor = GetData(GadgetID)
       If *cursor And
          *cursor\hcursor
          
@@ -364,7 +372,7 @@ Module Cursor
    
    Procedure Free( GadgetID.i )
       ; 1. Автоматически извлекаем структуру, привязанную к гаджету
-      Protected *memory._s_cursor = GetMemory(GadgetID)
+      Protected *memory._s_cursor = GetData(GadgetID)
       If *memory
          Protected *hcursor = *memory\hcursor
          If *hcursor > 0 
@@ -388,7 +396,7 @@ Module Cursor
             EndIf
             
             ; Зачищаем ассоциацию в ОС, чтобы GetMemory больше ничего не возвращал
-            SetMemory(GadgetID, #NUL)
+            SetData(GadgetID, #NUL)
             
             ; Полностью удаляем саму структуру памяти из кучи
             FreeStructure(*memory)
@@ -477,7 +485,7 @@ Module Cursor
             If handle <> PressedID
                If PressedID  
                   If handle
-                     *cursor = GetMemory(handle)
+                     *cursor = GetData(handle)
                      If Not ( *cursor And *cursor\hcursor )
                         Cursor::change(PressedID, 0)
                      EndIf
@@ -501,7 +509,7 @@ Module Cursor
                ; Debug ""+#PB_Compiler_Procedure+" "+EnteredID +" "+ handle
                If EnteredID
                   If handle
-                     *cursor = GetMemory(EnteredID)
+                     *cursor = GetData(EnteredID)
                      If *cursor And *cursor\hcursor = - 1
                         If Not CocoaMessage(0, *cursor\windowID, "areCursorRectsEnabled")
                            CocoaMessage(0, *cursor\windowID, "enableCursorRects")
@@ -510,7 +518,7 @@ Module Cursor
                      EndIf
                      
                      ;
-                     *cursor = GetMemory(handle)
+                     *cursor = GetData(handle)
                      If Not ( *cursor And *cursor\hcursor ) 
                         Cursor::change(EnteredID, 0)
                      EndIf
@@ -823,7 +831,7 @@ Module Cursor
             ; Создаем новую структуру под новый курсор с чистого листа:
             *memory = AllocateStructure( _s_cursor )
             *memory\windowID = ID::GetWindowID( GadgetID )
-            SetMemory( GadgetID, *memory ) 
+            SetData( GadgetID, *memory ) 
             
             With *memory
                ; Выделяем новый хэндл в зависимости от типа
@@ -963,7 +971,7 @@ Module Cursor
                Debug "event( DESTROY ) "+hwnd
                ;       Case #WM_NCDESTROY
                ;         Debug "event( NC_DESTROY ) "+hwnd
-               RemoveProp_(hwnd, "#__cursor")
+               FreeData(hwnd)
                RemoveProp_(hwnd, "#__oldproc_cursor")
                
             Case #WM_SETCURSOR
@@ -1223,10 +1231,12 @@ Module Cursor
             ; Создаем новую структуру под новый курсор с чистого листа:
             *memory = AllocateStructure( _s_cursor )
             *memory\windowID = ID::GetWindowID( GadgetID )
-            SetMemory( GadgetID, *memory ) 
+            SetData( GadgetID, *memory ) 
             
             ; Сохраняем вашу оригинальную Windows-логику сабклассинга (Window Proc) для нового гаджета
-            SetProp_( GadgetID, "#__oldproc_cursor", SetWindowLongPtr_(GadgetID, #GWL_WNDPROC, @Proc( )))
+            If Not GetProp_(GadgetID, "#__oldproc_cursor")
+               SetProp_( GadgetID, "#__oldproc_cursor", SetWindowLongPtr_(GadgetID, #GWL_WNDPROC, @Proc( )))
+            EndIf
             
             With *memory
                ; Выделяем новый хэндл в зависимости от типа
@@ -1617,7 +1627,7 @@ Module Cursor
             ; Создаем новую структуру под новый курсор с чистого листа:
             *memory = AllocateStructure( _s_cursor )
             *memory\windowID = ID::GetWindowID( GadgetID )
-            SetMemory( GadgetID, *memory ) 
+            SetData( GadgetID, *memory ) 
             
             With *memory
                ; Выделяем новый хэндл в зависимости от типа
@@ -1775,7 +1785,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    
    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      XIncludeFile "ClipGadgets.pbi"
+      XIncludeFile "win\ClipGadgets.pbi"
    CompilerEndIf
    
    UseModule constants
@@ -2349,10 +2359,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 399
-; FirstLine = 361
-; Folding = -------+------------------8-----------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 975
+; FirstLine = 964
+; Folding = --------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
