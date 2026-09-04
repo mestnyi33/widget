@@ -77,6 +77,7 @@ DeclareModule Cursor
    Declare   Image( Type.a = 0 )
    Declare   Set( Gadget.i, *cursor ) ;, x.i = 0, y.i = 0)
    Declare   Free( GadgetID.i )
+   Declare   Move( X.l, Y.l )
    Declare   Change( GadgetID.i, state.b )
    Declare.i Create( ImageID.i, X.l = 0, Y.l = 0 )
    
@@ -239,6 +240,40 @@ Module Cursor
    Global NewMap cursors.i( )
    
    ;-
+   ;- IMPORT
+   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      ImportC ""
+         SetAnimatedThemeCursor(CursorType.i, AnimationStep.i)
+         ;SetThemeCursor(CursorType.i)
+         CGCursorIsVisible( )
+         CGWarpMouseCursorPosition(X.d, Y.d) 
+         
+         CFRunLoopGetCurrent( )
+         CFRunLoopAddCommonMode(rl, mode)
+         
+         GetCurrentProcess(*psn)
+         CGEventTapCreateForPSN(*psn, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
+         CGEventTapCreate(tap.i, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
+      EndImport
+   CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+      ImportC ""
+         gtk_widget_get_window(*widget.GtkWidget)
+         gdk_cursor_get_cursor_type(*cursor.GDKCursor)
+         gdk_window_get_cursor(*widget.GtkWidget)
+         g_object_set_data(*Widget.GtkWidget, strData.p-utf8, *userdata)
+         ;
+         gdk_x11_display_get_xdisplay(*display)
+         XWarpPointer(*display, src_w, dest_w, src_x, src_y, src_width, src_height, dest_x, dest_y)
+      EndImport
+      ;     ImportC "" ; -gtk"
+      ;     g_object_set_data_(*Widget.GtkWidget, strData.p-utf8, *userdata) As "g_object_set_data"
+      ;     g_object_get_data_(*Widget.GtkWidget, strData.p-utf8) As "g_object_get_data"
+      ;   EndImport
+      
+      
+   CompilerEndIf
+   
+   ;-
    Procedure FreeData( GadgetID )
       CompilerSelect #PB_Compiler_OS
          CompilerCase #PB_OS_Windows : ProcedureReturn RemoveProp_(GadgetID, "__cursor")
@@ -370,7 +405,7 @@ Module Cursor
       EndIf
    EndProcedure
    
-   Procedure Free( GadgetID.i )
+   Procedure   Free( GadgetID.i )
       ; 1. Автоматически извлекаем структуру, привязанную к гаджету
       Protected *memory._s_cursor = GetData(GadgetID)
       If *memory
@@ -406,6 +441,27 @@ Module Cursor
       EndIf
    EndProcedure
    
+   Procedure   Move(X.l, Y.l)
+      CompilerSelect #PB_Compiler_OS
+            
+         CompilerCase #PB_OS_Windows
+            SetCursorPos_(X, Y)
+            
+         CompilerCase #PB_OS_MacOS
+            CGWarpMouseCursorPosition(X, Y)
+            
+         CompilerCase #PB_OS_Linux
+            Protected *gdk_display = gdk_display_get_default_()
+            If *gdk_display
+               Protected *x_display = gdk_x11_display_get_xdisplay(*gdk_display)
+               If *x_display
+                  XWarpPointer(*x_display, 0, 0, 0, 0, 0, 0, X, Y)
+               EndIf
+            EndIf
+            
+      CompilerEndSelect
+   EndProcedure
+   
    ;-   
    ;- 🍏 >>> [MACOS] <<<
    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
@@ -430,20 +486,6 @@ Module Cursor
       #kThemeResizeRightCursor             = 16
       #kThemeResizeLeftRightCursor         = 17
       
-      ImportC ""
-         SetAnimatedThemeCursor(CursorType.i, AnimationStep.i)
-         ;SetThemeCursor(CursorType.i)
-         CGCursorIsVisible( )
-      EndImport
-      
-      ImportC ""
-         CFRunLoopGetCurrent( )
-         CFRunLoopAddCommonMode(rl, mode)
-         
-         GetCurrentProcess(*psn)
-         CGEventTapCreateForPSN(*psn, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
-         CGEventTapCreate(tap.i, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
-      EndImport
       
       Global eventTap, psn, EnteredID 
       
@@ -1436,18 +1478,6 @@ Module Cursor
       
       ; gdk_cursor_get_image( GdkCursor *cursor);  Возвращает GdkPixbuf с изображением, используемым для отображения курсора.
       
-      ImportC ""
-         gtk_widget_get_window(*widget.GtkWidget)
-         gdk_cursor_get_cursor_type(*cursor.GDKCursor)
-         gdk_window_get_cursor(*widget.GtkWidget)
-         g_object_set_data(*Widget.GtkWidget, strData.p-utf8, *userdata)
-      EndImport
-      ;     ImportC "" ; -gtk"
-      ;     g_object_set_data_(*Widget.GtkWidget, strData.p-utf8, *userdata) As "g_object_set_data"
-      ;     g_object_get_data_(*Widget.GtkWidget, strData.p-utf8) As "g_object_get_data"
-      ;   EndImport
-      
-      
       Procedure   Draw( Type.a )
          Protected Image
          Protected X = 0
@@ -2359,10 +2389,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 975
-; FirstLine = 964
-; Folding = --------------------------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 2376
+; FirstLine = 2370
+; Folding = ---------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
