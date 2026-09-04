@@ -1891,33 +1891,61 @@ Procedure new_widget_events( )
          EndSelect
          ;
       Case #__event_MouseMove
-         If IsContainer(*g) 
-            If MouseEnter(*g)
-               If GetState( ide_all_ELEMENTS ) > 0 
+         If GetState( ide_all_ELEMENTS ) > 0 
+            If IsContainer(*g) 
+               If MouseEnter(*g)
                   If MousePress( )
                      ; disable drop 
                      If GetState( ide_all_ELEMENTS ) = 1
                         If *g = ide_design_MDI  
                         Else
-                           If Drag( ) = #PB_Drag_Enter
-                              Drag( ) = #PB_Drag_Leave
+                           If Drag( )\enter = 1
+                              Drag( )\enter = 0
                            EndIf
                         EndIf
                      Else
                         If *g = ide_design_MDI  
-                           If Drag( ) = #PB_Drag_Enter
-                              Drag( ) = #PB_Drag_Leave
+                           If Drag( )\enter = 1
+                              Drag( )\enter = 0
                            EndIf
                         Else
                         EndIf
                      EndIf
                   Else
-                     If GetCursor( ) < 255
-                        Debug " mouse enter to change cursor " 
-                        ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_all_ELEMENTS, GetState( ide_all_ELEMENTS ) ) ) ))
-                        a_set(*g)
-                     EndIf
+;                      If GetCursor( ) < 255
+;                         Debug " mouse enter to change cursor " 
+;                         ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_all_ELEMENTS, GetState( ide_all_ELEMENTS ) ) ) ))
+;                         a_set(*g)
+;                      EndIf
                   EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+         ; enter
+      Case #__event_MouseEnter
+         If GetState( ide_all_ELEMENTS ) > 0 
+            If Not MousePress( )
+               If IsContainer(*g) 
+                 If *g\anchors
+                     SetCursor( *g, Cursor::Create( ImageID( GetItemData( ide_all_ELEMENTS, GetState( ide_all_ELEMENTS )))))
+                 EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+         ; leave
+      Case #__event_MouseLeave
+         If GetState( ide_all_ELEMENTS ) > 0 
+            If Not MousePress( )
+               If IsContainer(*g) 
+                  ; Передаем ID Canvas-гаджета и текущий курсор виджета
+                  ; Функция Free сама зачистит GetMemory у Канваса и удалит курсор из ОС
+                  ;If Cursor::Free( *g\root\canvas\gadgetID, GetCursor(*g) )
+                     ; Сбрасываем курсоры в самой системе виджетов на дефолтные
+                     SetCursor( *g, *g\cursor[1] )
+                  ;   ChangeCursor( *g, 0 )
+                  ;EndIf
                EndIf
             EndIf
          EndIf
@@ -3333,9 +3361,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1908
-; FirstLine = 1641
-; Folding = -4--4---8-f-tf----------3BC----------+-+8-----------yvt----f+-
+; CursorPosition = 1945
+; FirstLine = 1671
+; Folding = -4--4---8-f-tf----------3BC----------+-+80-----------yvt----f+-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2_621.exe

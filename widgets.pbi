@@ -16978,6 +16978,7 @@ Module Widget
          If *this And Not *this\mask & #__mask_hover 
             ;
             If is_integral_( *this ) 
+               
                If *this\parent  
                   If Not *this\parent\mask & #__mask_hover
                      *this\parent\mask | #__mask_hover
@@ -17000,6 +17001,7 @@ Module Widget
                      *this\parent\mask | #__mask_hover
                   EndIf
                EndIf
+               
             Else
                If Not MousePress( )
                   If Not a_index( )
@@ -19003,9 +19005,10 @@ Module Widget
                     *this\drop\private & Drag( )\private )
                   ;
                   If GetCursor( ) = cursor::#__cursor_Drag
-                     Debug "drop enter"
+                     ; Debug "drop enter"
                      ChangeCursor( Pressed( ), cursor::#__cursor_Drop )
                   EndIf
+                  repaint_set( *this )
                   Drag( )\enter = 1
                Else
                   
@@ -19019,15 +19022,16 @@ Module Widget
                Drag( )\enter = 0
                ;
                If GetCursor( ) = cursor::#__cursor_Drop
-                  Debug "no drop"
+                  ; Debug "no drop"
                   ChangeCursor( Pressed( ), cursor::#__cursor_Drag )
                EndIf
+               repaint_set( *this )
             EndIf
          EndIf
       EndIf
    EndProcedure
    
-   Procedure DoCursor( *this._s_WIDGET )
+   Procedure   DoCursor( *this._s_WIDGET )
       Protected result
       
       If Bool( is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ) And
@@ -19137,23 +19141,12 @@ Module Widget
             If a_index( )
                a_enter( *this, 3 )
             EndIf
-            DoCursor( Entered( ))
+            If Entered( )
+               DoCursor( Entered( ))
+            EndIf
          EndIf
       Else
          If MousePress( )
-;             If Entered( )
-;                If Bool( is_hover( Entered( ), CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ) And
-;                         is_hover( Entered( ), CanvasMouseX( ), CanvasMouseY( ), [#__c_inner] ) And
-;                         Not ( Entered( )\type = #__type_Splitter And is_hover( Entered( )\bar\button, CanvasMouseX( ), CanvasMouseY( ) ) = 0 ) And
-;                         Not ( Entered( )\type = #__type_HyperLink And is_hover( Entered( ), CanvasMouseX( ) - Entered( )\frame_x( ), CanvasMouseY( ) - Entered( )\frame_y( ), [#__c_Required] ) = 0 ))
-;                   Entered( )\mask | #__mask_hover_in
-;                Else
-;                   Entered( )\mask &~ #__mask_hover_in
-;                EndIf
-;                Debug Bool(MouseEnter( Entered( ), 2 ));;Bool(Entered( )\mask &~ #__mask_hover_in)
-;             EndIf
-            
-            
             If *this\mask & #__mask_hover 
                DoDrag( Entered( ))  ;  *this ) ;     
             EndIf
@@ -19166,9 +19159,7 @@ Module Widget
                      DoCursor( *this )
                   EndIf   
                Else
-                  If DoCursor( *this )
-                     ; Debug EventString(event)
-                  EndIf
+                  DoCursor( *this )
                EndIf
             EndIf
          EndIf
@@ -19588,7 +19579,6 @@ Module Widget
             EndIf
          EndIf
          ;             EndIf
-         
          ;\\ post repaint canvas
          If *this\mask & #__mask_redraw 
             If test_snap
@@ -28828,9 +28818,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 19009
-; FirstLine = 17979
-; Folding = ---------------------------------------------------------------------------------------------s82e0-----------------------------------------------------------------------4---+----0----------------------------------------------------------------------------------------------------------------+----------------------------------------------d-8----0-v----4-----------------------------------------------------------------------------------------------------------------------dw-u8tPu---940-----------------------------------------------------------------44--0----------8-+8r--------e----+8-+---v--------0vG9+------------------------------0----------------------------f-------+----------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 19170
+; FirstLine = 18084
+; Folding = ---------------------------------------------------------------------------------------------s82e0-----------------------------------------------------------------------4---+----0---------------------------------------------------------------------------------------00-----------------------+----------------------------------------------d-8----0-v----4-----------------------------------------------------------------------------------------------------------------------dw-+-vvv-4--4--------------------------------------------------------------f-0-44--0----------8-+8r----v+84ev34-+8++------------0vG9+------------------------------0----------------------------f-------+----------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

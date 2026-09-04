@@ -69,13 +69,14 @@ DeclareModule Cursor
       windowID.i
    EndStructure
    
-   Declare   isHiden( )
    ;Declare   Hide( state.b )
-   Declare   Free( *cursor )
    ;Declare   Get( )
    ;Declare   Clip( x.l,y.l,width.l,height.l )
+   ;
+   Declare   isHiden( )
    Declare   Image( Type.a = 0 )
-   Declare   Set( Gadget.i, *cursor );, x.i = 0, y.i = 0)
+   Declare   Set( Gadget.i, *cursor ) ;, x.i = 0, y.i = 0)
+   Declare   Free( GadgetID.i )
    Declare   Change( GadgetID.i, state.b )
    Declare.i Create( ImageID.i, X.l = 0, Y.l = 0 )
    
@@ -235,7 +236,7 @@ DeclareModule Cursor
 EndDeclareModule
 
 Module Cursor
-   Global NewMap images.i( )
+   Global NewMap cursors.i( )
    
    ;-
    Procedure GetMemory( GadgetID )
@@ -267,30 +268,30 @@ Module Cursor
    EndProcedure
    
    ;-
-   Procedure New( Type.a, ImageID.i )
-      If Not FindMapElement(images( ), Str(Type))
-         AddMapElement(images( ), Str(Type))
-         images( ) = ImageID
+   Procedure New( Type.a, *hcursor )
+      If Not FindMapElement(cursors( ), Str(Type))
+         AddMapElement(cursors( ), Str(Type))
+         cursors( ) = *hcursor
       EndIf
       
-      ProcedureReturn ImageID
+      ProcedureReturn *hcursor
    EndProcedure
    
    Procedure.i Create( ImageID.i, X.l = 0, Y.l = 0 )
-      Protected *ic
+      Protected *hcursor
       CompilerSelect #PB_Compiler_OS
          CompilerCase #PB_OS_MacOS
             Protected Hotspot.NSPoint : Hotspot\x = X : Hotspot\y = Y
-            *ic = CocoaMessage(0, CocoaMessage(0, 0, "NSCursor alloc"), "initWithImage:", ImageID, "hotSpot:@", @Hotspot)
+            *hcursor = CocoaMessage(0, CocoaMessage(0, 0, "NSCursor alloc"), "initWithImage:", ImageID, "hotSpot:@", @Hotspot)
          CompilerCase #PB_OS_Windows
             Protected iconinfo.ICONINFO
             iconinfo\fIcon = #False : iconinfo\xHotspot = X : iconinfo\yHotspot = Y
             iconinfo\hbmMask = ImageID : iconinfo\hbmColor = ImageID
-            *ic = CreateIconIndirect_(@iconinfo)
+            *hcursor = CreateIconIndirect_(@iconinfo)
          CompilerCase #PB_OS_Linux
-            *ic = gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, X, Y)
+            *hcursor = gdk_cursor_new_from_pixbuf_(gdk_display_get_default_(), ImageID, X, Y)
       CompilerEndSelect
-      ProcedureReturn *ic
+      ProcedureReturn *hcursor
    EndProcedure
    
    Procedure   Change( GadgetID.i, state.b )
@@ -361,43 +362,44 @@ Module Cursor
       EndIf
    EndProcedure
    
-      
-   Procedure Free( *cursor )
-      If *cursor > 255
-         CompilerSelect #PB_Compiler_OS
-            CompilerCase #PB_OS_Windows : DestroyIcon_(*cursor)
-            CompilerCase #PB_OS_MacOS   : CocoaMessage(0, *cursor, "release")
-            CompilerCase #PB_OS_Linux   : g_object_unref_(*cursor)
-         CompilerEndSelect
-         ForEach images()
-            If images() = *cursor : DeleteMapElement(images()) : Break : EndIf
-         Next
+   Procedure Free( GadgetID.i )
+      ; 1. Автоматически извлекаем структуру, привязанную к гаджету
+      Protected *memory._s_cursor = GetMemory(GadgetID)
+      If *memory
+         Protected *hcursor = *memory\hcursor
+         If *hcursor > 0 
+            
+            ; Карта сама решает: если курсор там есть, значит мы его создали сами!
+            If *memory\Type
+               If FindMapElement(cursors(), Str(*memory\Type))
+                  DeleteMapElement(cursors())
+                  ;
+                  CompilerSelect #PB_Compiler_OS
+                     CompilerCase #PB_OS_Windows : DestroyIcon_(*hcursor)
+                     CompilerCase #PB_OS_MacOS   : CocoaMessage(0, *hcursor, "release")
+                     CompilerCase #PB_OS_Linux   : g_object_unref_(*hcursor)
+                  CompilerEndSelect
+               Else
+                  ; В Linux любой хэндл, созданный через gdk_cursor_new, — это живой объект X-сервера.
+                  CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+                     g_object_unref_(*hcursor)
+                  CompilerEndIf
+               EndIf
+            EndIf
+            
+            ; Зачищаем ассоциацию в ОС, чтобы GetMemory больше ничего не возвращал
+            SetMemory(GadgetID, #NUL)
+            
+            ; Полностью удаляем саму структуру памяти из кучи
+            FreeStructure(*memory)
+            
+            ProcedureReturn #True
+         EndIf
       EndIf
    EndProcedure
-;    Procedure   Free(*cursor) 
-;          ; Debug "cursor-free "+*cursor
-;          
-;          If *cursor >= 0 And *cursor <= 255
-;             If FindMapElement(images( ), Str(*cursor))
-;                DeleteMapElement(images( ));, Str(*cursor))
-;             EndIf
-;          Else
-;             If MapSize(images( ))
-;                ForEach images( )
-;                   If *cursor = images( )
-;                      DeleteMapElement(images( ))
-;                   EndIf
-;                Next
-;             EndIf
-;             
-;             ; CocoaMessage(0, *cursor, "autorelease")
-;             
-;             ProcedureReturn CocoaMessage(0, *cursor, "release")
-;          EndIf
-;       EndProcedure
-      
+   
    ;-   
-   ;- >>> [MACOS] <<<
+   ;- 🍏 >>> [MACOS] <<<
    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS 
       #test_cursor = 0
       
@@ -805,87 +807,73 @@ Module Cursor
          ProcedureReturn Image
       EndProcedure
       
-      Procedure   Set( Gadget.i, *cursor )
+      Procedure Set( Gadget.i, *cursor )
          Protected *memory._s_cursor
          
-         With *memory
-            If IsGadget( Gadget )
-               Protected GadgetID = GadgetID( Gadget )
-               
-               CompilerIf #test_cursor
-                  Debug " ::setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
-               CompilerEndIf
-               
-               *memory = GetMemory( GadgetID )
-               
-               If *memory
-                  ; Если уже был кастомный курсор — удаляем старый системный объект!
-                 ; If *memory\hcursor > 255 : Free(*memory\hcursor) : EndIf
+         If IsGadget( Gadget )
+            Protected GadgetID = GadgetID( Gadget )
+            
+            CompilerIf #test_cursor
+               Debug " ::setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
+            CompilerEndIf
+            
+            ; удалит старый хэндл из ОС и полностью уничтожит старую структуру!
+            Free( GadgetID )
+            
+            ; Создаем новую структуру под новый курсор с чистого листа:
+            *memory = AllocateStructure( _s_cursor )
+            *memory\windowID = ID::GetWindowID( GadgetID )
+            SetMemory( GadgetID, *memory ) 
+            
+            With *memory
+               ; Выделяем новый хэндл в зависимости от типа
+               If *cursor > 255
+                  \type = 0
+                  \hcursor = *cursor 
                Else
-                  *memory = AllocateStructure( _s_cursor )
-                  \windowID = ID::GetWindowID( GadgetID )
-                  SetMemory( GadgetID, *memory ) 
-               EndIf
-               
-               If \type <> *cursor
-                  If \hcursor > 0
-                     Select \type
-                        Case #__cursor_Drag, #__cursor_Drop,
-                             #__cursor_Arrows, #__cursor_LeftRight, #__cursor_UpDown,
-                             #__cursor_Diagonal1, #__cursor_LeftUp, #__cursor_RightDown, 
-                             #__cursor_Diagonal2, #__cursor_RightUp, #__cursor_LeftDown
-                           cursor::Free( \hcursor )
-                     EndSelect
-                  EndIf
                   \type = *cursor
+                  ;           ; if ishidden cursor show cursor
+                  ;           If isHiden( )
+                  ;             CocoaMessage(0, 0, "NSCursor unhide")
+                  ;           EndIf
                   
-                  ;\\
-                  If *cursor > 255
-                     \hcursor = *cursor 
-                  Else
-                     ;           ; if ishidden cursor show cursor
-                     ;           If isHiden( )
-                     ;             CocoaMessage(0, 0, "NSCursor unhide")
-                     ;           EndIf
-                     
-                     Select *cursor
-                        Case #__cursor_Invisible : \hcursor = - 1
-                        Case #__cursor_Busy 
-                           SetAnimatedThemeCursor(#kThemeWatchCursor, 0)
-                           
-                        Case #__cursor_Default        : \hcursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
-                        Case #__cursor_IBeam          : \hcursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
-                        Case #__cursor_Denied         : \hcursor = CocoaMessage(0, 0, "NSCursor disappearingItemCursor")
-                           
-                        Case #__cursor_Hand           : \hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
-                        Case #__cursor_Cross          : \hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
-                           
-                        Case #__cursor_SplitLeft      : \hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftCursor")
-                        Case #__cursor_SplitRight     : \hcursor = CocoaMessage(0, 0, "NSCursor resizeRightCursor")
-                        Case #__cursor_SplitLeftRight : \hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
-                           
-                        Case #__cursor_SplitUp        : \hcursor = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
-                        Case #__cursor_SplitDown      : \hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
-                        Case #__cursor_SplitUpDown    : \hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
-                           
-                        Case #__cursor_Arrows, #__cursor_LeftRight, #__cursor_UpDown,
-                             #__cursor_Diagonal1, #__cursor_LeftUp, #__cursor_RightDown, 
-                             #__cursor_Diagonal2, #__cursor_RightUp, #__cursor_LeftDown 
-                           
-                           \hcursor = New( *cursor, Draw( *cursor ) )
-                           
-                        Case #__cursor_Drag : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
-                           ;Case #__cursor_Drop      : \hcursor = CocoaMessage(0, 0, "NSCursor dragCopyCursor")
-                        Case #__cursor_Drop : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
-                           
-                        Case #__cursor_Grab      : \hcursor = CocoaMessage(0, 0, "NSCursor openHandCursor")
-                        Case #__cursor_Grabbing  : \hcursor = CocoaMessage(0, 0, "NSCursor closedHandCursor")
-                           
-                     EndSelect 
-                  EndIf
+                  Select \type
+                     Case #__cursor_Invisible      : \hcursor = - 1
+                     Case #__cursor_Busy 
+                        SetAnimatedThemeCursor(#kThemeWatchCursor, 0)
+                        
+                     Case #__cursor_Default        : \hcursor = CocoaMessage(0, 0, "NSCursor arrowCursor")
+                     Case #__cursor_IBeam          : \hcursor = CocoaMessage(0, 0, "NSCursor IBeamCursor")
+                     Case #__cursor_Denied         : \hcursor = CocoaMessage(0, 0, "NSCursor disappearingItemCursor")
+                        
+                     Case #__cursor_Hand           : \hcursor = CocoaMessage(0, 0, "NSCursor pointingHandCursor")
+                     Case #__cursor_Cross          : \hcursor = CocoaMessage(0, 0, "NSCursor crosshairCursor")
+                        
+                     Case #__cursor_SplitLeft      : \hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftCursor")
+                     Case #__cursor_SplitRight     : \hcursor = CocoaMessage(0, 0, "NSCursor resizeRightCursor")
+                     Case #__cursor_SplitLeftRight : \hcursor = CocoaMessage(0, 0, "NSCursor resizeLeftRightCursor")
+                        
+                     Case #__cursor_SplitUp        : \hcursor = CocoaMessage(0, 0, "NSCursor resizeUpCursor")
+                     Case #__cursor_SplitDown      : \hcursor = CocoaMessage(0, 0, "NSCursor resizeDownCursor")
+                     Case #__cursor_SplitUpDown    : \hcursor = CocoaMessage(0, 0, "NSCursor resizeUpDownCursor")
+                        
+                     Case #__cursor_Grab           : \hcursor = CocoaMessage(0, 0, "NSCursor openHandCursor")
+                     Case #__cursor_Grabbing       : \hcursor = CocoaMessage(0, 0, "NSCursor closedHandCursor")
+                        
+                     Case #__cursor_Drag           : \hcursor = New( \type, Create(ImageID(Image( \type ))) )
+                        ;Case #__cursor_Drop       : \hcursor = CocoaMessage(0, 0, "NSCursor dragCopyCursor")
+                     Case #__cursor_Drop           : \hcursor = New( \type, Create(ImageID(Image( \type ))) )
+                        
+                     Case #__cursor_Arrows, #__cursor_LeftRight, #__cursor_UpDown,
+                          #__cursor_Diagonal1, #__cursor_LeftUp, #__cursor_RightDown, 
+                          #__cursor_Diagonal2, #__cursor_RightUp, #__cursor_LeftDown 
+                        
+                        \hcursor = New( \type, Draw( \type ) )
+                        
+                  EndSelect 
                EndIf
                
-               
+               ; Применяем курсор на экран
                If \hcursor And 
                   ( GadgetID = mouse::Gadget( \windowID ) Or
                     CocoaMessage(0, 0, "NSEvent pressedMouseButtons") )
@@ -893,8 +881,9 @@ Module Cursor
                   cursor::Change( GadgetID, 1 )
                   ProcedureReturn #True
                EndIf
-            EndIf
-         EndWith
+            EndWith
+         EndIf
+         ProcedureReturn #False
       EndProcedure
       
       Procedure   Get( )
@@ -934,7 +923,7 @@ Module Cursor
    CompilerEndIf
    
    ;-
-   ;- >>> [WINDOWS] <<<
+   ;- 🪟 >>> [WINDOWS] <<<
    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
       #test_cursor = 0
       #SM_CXCURSOR = 13
@@ -1222,79 +1211,69 @@ Module Cursor
       Procedure   Set( Gadget.i, *cursor )
          Protected *memory._s_cursor
          
-         With *memory
-            If IsGadget( Gadget )
-               Protected GadgetID = GadgetID( Gadget )
-               CompilerIf #test_cursor
-                  Debug " :: setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
-               CompilerEndIf
-               
-               *memory = GetMemory( GadgetID )
-               
-               If Not *memory
-                  *memory = AllocateStructure( _s_cursor )
-                  \windowID = ID::GetWindowID( GadgetID )
-                  SetMemory( GadgetID, *memory ) 
-                  SetProp_( GadgetID, "#__oldproc_cursor", SetWindowLongPtr_(GadgetID, #GWL_WNDPROC, @Proc( )))
+         If IsGadget( Gadget )
+            Protected GadgetID = GadgetID( Gadget )
+            CompilerIf #test_cursor
+               Debug " :: setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
+            CompilerEndIf
+            
+            ; удалит старый хэндл из ОС и полностью уничтожит старую структуру!
+            Free( GadgetID )
+            
+            ; Создаем новую структуру под новый курсор с чистого листа:
+            *memory = AllocateStructure( _s_cursor )
+            *memory\windowID = ID::GetWindowID( GadgetID )
+            SetMemory( GadgetID, *memory ) 
+            
+            ; Сохраняем вашу оригинальную Windows-логику сабклассинга (Window Proc) для нового гаджета
+            SetProp_( GadgetID, "#__oldproc_cursor", SetWindowLongPtr_(GadgetID, #GWL_WNDPROC, @Proc( )))
+            
+            With *memory
+               ; Выделяем новый хэндл в зависимости от типа
+               If *cursor > 255
+                  \type = 0
+                  \hcursor = *cursor 
                Else
-                  ; Если уже был кастомный курсор — удаляем старый системный объект!
-                  If *memory\hcursor > 255 : Free(*memory\hcursor) : EndIf
-               EndIf
-               
-               If \type <> *cursor
-                  If \hcursor > 0
-                     Select \type
-                        Case #__cursor_Drag, #__cursor_Drop,
-                             #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
-                             #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight
-                           cursor::Free( \hcursor )
-                     EndSelect
-                  EndIf
                   \type = *cursor
                   
-                  ;\\
-                  If *cursor > 255
-                     \hcursor = *cursor 
-                  Else
-                     Select *cursor
-                        Case #__cursor_Invisible : \hcursor =- 1
-                        Case #__cursor_Busy      : \hcursor = LoadCursor_(0,#IDC_WAIT)
-                           
-                        Case #__cursor_Default   : \hcursor = LoadCursor_(0,#IDC_ARROW)
-                        Case #__cursor_IBeam     : \hcursor = LoadCursor_(0,#IDC_IBEAM)
-                        Case #__cursor_Denied    : \hcursor = LoadCursor_(0,#IDC_NO)
-                           
-                        Case #__cursor_Hand      : \hcursor = LoadCursor_(0,#IDC_HAND)
-                        Case #__cursor_Cross     : \hcursor = LoadCursor_(0,#IDC_CROSS)
-                        Case #__cursor_Arrows    : \hcursor = LoadCursor_(0,#IDC_SIZEALL)
-                           
-                        Case #__cursor_UpDown    : \hcursor = LoadCursor_(0,#IDC_SIZENS)
-                        Case #__cursor_LeftRight : \hcursor = LoadCursor_(0,#IDC_SIZEWE)
-                           
-                        Case #__cursor_Diagonal1,
-                             #__cursor_LeftUp,
-                             #__cursor_RightDown 
-                           \hcursor = LoadCursor_(0,#IDC_SIZENWSE)
-                           
-                        Case #__cursor_Diagonal2,
-                             #__cursor_RightUp,
-                             #__cursor_LeftDown 
-                           \hcursor = LoadCursor_(0,#IDC_SIZENESW)
-                           
-                           ;\\  custom cursors
-                        Case #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
-                             #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight
-                           
-                           \hcursor = New( *cursor, Draw( *cursor ) )
-                           
-                        Case #__cursor_Drag : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
-                        Case #__cursor_Drop : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
-                           
-                        Case #__cursor_Grab      : \hcursor = LoadCursor_(0,#IDC_ARROW)
-                        Case #__cursor_Grabbing  : \hcursor = LoadCursor_(0,#IDC_ARROW)
-                           
-                     EndSelect 
-                  EndIf
+                  Select \type
+                     Case #__cursor_Invisible : \hcursor =- 1
+                     Case #__cursor_Busy      : \hcursor = LoadCursor_(0,#IDC_WAIT)
+                        
+                     Case #__cursor_Default   : \hcursor = LoadCursor_(0,#IDC_ARROW)
+                     Case #__cursor_IBeam     : \hcursor = LoadCursor_(0,#IDC_IBEAM)
+                     Case #__cursor_Denied    : \hcursor = LoadCursor_(0,#IDC_NO)
+                        
+                     Case #__cursor_Hand      : \hcursor = LoadCursor_(0,#IDC_HAND)
+                     Case #__cursor_Cross     : \hcursor = LoadCursor_(0,#IDC_CROSS)
+                     Case #__cursor_Arrows    : \hcursor = LoadCursor_(0,#IDC_SIZEALL)
+                        
+                     Case #__cursor_UpDown    : \hcursor = LoadCursor_(0,#IDC_SIZENS)
+                     Case #__cursor_LeftRight : \hcursor = LoadCursor_(0,#IDC_SIZEWE)
+                        
+                     Case #__cursor_Diagonal1,
+                          #__cursor_LeftUp,
+                          #__cursor_RightDown 
+                        \hcursor = LoadCursor_(0,#IDC_SIZENWSE)
+                        
+                     Case #__cursor_Diagonal2,
+                          #__cursor_RightUp,
+                          #__cursor_LeftDown 
+                        \hcursor = LoadCursor_(0,#IDC_SIZENESW)
+                        
+                     Case #__cursor_Grab       : \hcursor = LoadCursor_(0,#IDC_ARROW)
+                     Case #__cursor_Grabbing   : \hcursor = LoadCursor_(0,#IDC_ARROW)
+                        
+                        ;\\  custom cursors
+                     Case #__cursor_SplitUpDown, #__cursor_SplitUp, #__cursor_SplitDown,
+                          #__cursor_SplitLeftRight, #__cursor_SplitLeft, #__cursor_SplitRight
+                        
+                        \hcursor = New( \type, Draw( \type ) )
+                        
+                     Case #__cursor_Drag : \hcursor = New( \type, Create(ImageID(Image( \type ))) )
+                     Case #__cursor_Drop : \hcursor = New( \type, Create(ImageID(Image( \type ))) )
+                        
+                  EndSelect 
                EndIf
                
                If \hcursor And 
@@ -1309,9 +1288,9 @@ Module Cursor
       Procedure   Get( )
          Protected result.i
          Protected cursor_info.CURSORINFO 
-            cursor_info\cbSize = SizeOf(CURSORINFO)
-            GetCursorInfo_(@cursor_info)
-            
+         cursor_info\cbSize = SizeOf(CURSORINFO)
+         GetCursorInfo_(@cursor_info)
+         
          If Bool(cursor_info\flags & #CURSOR_SHOWING)
             result = #__cursor_Invisible
          Else
@@ -1348,7 +1327,7 @@ Module Cursor
    CompilerEndIf
    
    ;-
-   ;- >>> [LINUX] <<<
+   ;- 🐧 >>> [LINUX] <<<
    CompilerIf #PB_Compiler_OS = #PB_OS_Linux
       ; https://www.manpagez.com/html/gdk/gdk-3.12.0/gdk3-Cursors.php#GdkCursorType
       ; LINUX:
@@ -1626,82 +1605,70 @@ Module Cursor
       Procedure Set( Gadget.i, *cursor )
          Protected *memory._s_cursor
          
-         With *memory
-            If IsGadget( Gadget )
-               Protected GadgetID = GadgetID( Gadget )
-               CompilerIf #test_cursor
-                  Debug " ::setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
-               CompilerEndIf
-               
-               *memory = GetMemory(GadgetID)
-               
-               If Not *memory
-                  *memory = AllocateStructure(_s_cursor)
-                  \windowID = ID::GetWindowID(GadgetID)
-                  SetMemory(GadgetID, *memory) 
+         If IsGadget( Gadget )
+            Protected GadgetID = GadgetID( Gadget )
+            CompilerIf #test_cursor
+               Debug " ::setCursor "+ GadgetType( Gadget ) +" "+ *cursor ; +" "+ GadgetID +"="+ mouse::Gadget( ID::GetWindowID(GadgetID) ) +" mousebuttonsstate-"+ CocoaMessage(0, 0, "NSEvent pressedMouseButtons")
+            CompilerEndIf
+            
+            ; удалит старый хэндл из ОС и полностью уничтожит старую структуру!
+            Free( GadgetID )
+            
+            ; Создаем новую структуру под новый курсор с чистого листа:
+            *memory = AllocateStructure( _s_cursor )
+            *memory\windowID = ID::GetWindowID( GadgetID )
+            SetMemory( GadgetID, *memory ) 
+            
+            With *memory
+               ; Выделяем новый хэндл в зависимости от типа
+               If *cursor > 255
+                  \type = 0
+                  \hcursor = *cursor 
                Else
-                  ; Если уже был кастомный курсор — удаляем старый системный объект!
-                  If *memory\hcursor > 255 : Free(*memory\hcursor) : EndIf
-               EndIf
-               
-               If \type <> *cursor
-                  If \hcursor > 0
-                     Select \type
-                        Case #__cursor_Drag, #__cursor_Drop,
-                             #__cursor_LeftRight, #__cursor_UpDown, 
-                             #__cursor_Diagonal1, #__cursor_Diagonal2 
-                           cursor::Free( \hcursor )
-                     EndSelect
-                  EndIf
                   \type = *cursor
                   
-                  ;\\
-                  If *cursor > 255
-                     \hcursor = *cursor 
-                  Else
-                     Select *cursor
-                           ;;Case #__cursor_Invisible : \hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_( ), #GDK_BLANK_CURSOR)
-                        Case #__cursor_Invisible      : \hcursor = gdk_cursor_new_(#GDK_BLANK_CURSOR); GDK_UR_ANGLE ; GDK_TOP_RIGHT_CORNER ; GDK_LL_ANGLE ; GDK_BOTTOM_LEFT_CORNER
-                        Case #__cursor_Busy           : \hcursor = gdk_cursor_new_(#GDK_WATCH)
-                           
-                        Case #__cursor_Default        : \hcursor = gdk_cursor_new_(#GDK_LEFT_PTR) ; GDK_LEFT_PTR ; GDK_RIGHT_PTR ; GDK_CENTER_PTR
-                        Case #__cursor_Cross          : \hcursor = gdk_cursor_new_(#GDK_CROSS)    ; GDK_TCROSS ; GDK_CROSS ; GDK_CROSSHAIR ; GDK_PLUS
-                        Case #__cursor_IBeam          : \hcursor = gdk_cursor_new_(#GDK_XTERM)
-                           
-                        Case #__cursor_Hand           : \hcursor = gdk_cursor_new_(#GDK_HAND2) ; GDK_HAND1 ; GDK_HAND2
-                        Case #__cursor_Denied         : \hcursor = gdk_cursor_new_(#GDK_X_CURSOR)
-                        Case #__cursor_Arrows         : \hcursor = gdk_cursor_new_(#GDK_FLEUR)
-                           
-                        Case #__cursor_SplitLeft      : \hcursor = gdk_cursor_new_(#GDK_SB_LEFT_ARROW) 
-                        Case #__cursor_SplitRight     : \hcursor = gdk_cursor_new_(#GDK_SB_RIGHT_ARROW)
-                        Case #__cursor_SplitLeftRight : \hcursor = gdk_cursor_new_(#GDK_SB_H_DOUBLE_ARROW)
-                           
-                        Case #__cursor_SplitUp        : \hcursor = gdk_cursor_new_(#GDK_SB_UP_ARROW) 
-                        Case #__cursor_SplitDown      : \hcursor = gdk_cursor_new_(#GDK_SB_DOWN_ARROW) 
-                        Case #__cursor_SplitUpDown    : \hcursor = gdk_cursor_new_(#GDK_SB_V_DOUBLE_ARROW)
-                           
-                        Case #__cursor_Left           : \hcursor = gdk_cursor_new_(#GDK_LEFT_SIDE) ; GDK_LEFT_TEE ; GDK_LEFT_SIDE ; #GDK_SB_LEFT_ARROW
-                        Case #__cursor_Right          : \hcursor = gdk_cursor_new_(#GDK_RIGHT_SIDE); GDK_RIGHT_TEE ; GDK_RIGHT_SIDE ; #GDK_SB_RIGHT_ARROW
-                        Case #__cursor_Up             : \hcursor = gdk_cursor_new_(#GDK_TOP_SIDE)  ; GDK_TOP_TEE ; GDK_TOP_SIDE ; GDK_SB_UP_ARROW 
-                        Case #__cursor_Down           : \hcursor = gdk_cursor_new_(#GDK_BOTTOM_SIDE) ; GDK_BOTTOM_TEE ; GDK_BOTTOM_SIDE ; GDK_SB_DOWN_ARROW
-                           
-                        Case #__cursor_LeftUp         : \hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_( ), #GDK_TOP_LEFT_CORNER);gdk_cursor_new_(#GDK_TOP_LEFT_CORNER)
-                        Case #__cursor_RightUp        : \hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_( ), #GDK_TOP_RIGHT_CORNER)
-                        Case #__cursor_LeftDown       : \hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_( ), #GDK_BOTTOM_LEFT_CORNER)
-                        Case #__cursor_RightDown      : \hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_( ), #GDK_BOTTOM_RIGHT_CORNER)
-                           
-                        Case #__cursor_LeftRight, #__cursor_UpDown, 
-                             #__cursor_Diagonal1, #__cursor_Diagonal2 
-                           
-                           \hcursor = New( *cursor, Draw( *cursor ) )
-                           
-                        Case #__cursor_Drag          : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
-                        Case #__cursor_Drop          : \hcursor = New( *cursor, Create(ImageID(Image( *cursor ))) )
-                           
-                        Case #__cursor_Grab          : \hcursor = gdk_cursor_new_(#GDK_ARROW)
-                        Case #__cursor_Grabbing      : \hcursor = gdk_cursor_new_(#GDK_ARROW)
-                     EndSelect 
-                  EndIf
+                  Select \type
+                        ;;Case #__cursor_Invisible : \hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_( ), #GDK_BLANK_CURSOR)
+                     Case #__cursor_Invisible      : \hcursor = gdk_cursor_new_(#GDK_BLANK_CURSOR); GDK_UR_ANGLE ; GDK_TOP_RIGHT_CORNER ; GDK_LL_ANGLE ; GDK_BOTTOM_LEFT_CORNER
+                     Case #__cursor_Busy           : \hcursor = gdk_cursor_new_(#GDK_WATCH)
+                        
+                     Case #__cursor_Default        : \hcursor = gdk_cursor_new_(#GDK_LEFT_PTR) ; GDK_LEFT_PTR ; GDK_RIGHT_PTR ; GDK_CENTER_PTR
+                     Case #__cursor_Cross          : \hcursor = gdk_cursor_new_(#GDK_CROSS)    ; GDK_TCROSS ; GDK_CROSS ; GDK_CROSSHAIR ; GDK_PLUS
+                     Case #__cursor_IBeam          : \hcursor = gdk_cursor_new_(#GDK_XTERM)
+                        
+                     Case #__cursor_Hand           : \hcursor = gdk_cursor_new_(#GDK_HAND2) ; GDK_HAND1 ; GDK_HAND2
+                     Case #__cursor_Denied         : \hcursor = gdk_cursor_new_(#GDK_X_CURSOR)
+                     Case #__cursor_Arrows         : \hcursor = gdk_cursor_new_(#GDK_FLEUR)
+                        
+                     Case #__cursor_SplitLeft      : \hcursor = gdk_cursor_new_(#GDK_SB_LEFT_ARROW) 
+                     Case #__cursor_SplitRight     : \hcursor = gdk_cursor_new_(#GDK_SB_RIGHT_ARROW)
+                     Case #__cursor_SplitLeftRight : \hcursor = gdk_cursor_new_(#GDK_SB_H_DOUBLE_ARROW)
+                        
+                     Case #__cursor_SplitUp        : \hcursor = gdk_cursor_new_(#GDK_SB_UP_ARROW) 
+                     Case #__cursor_SplitDown      : \hcursor = gdk_cursor_new_(#GDK_SB_DOWN_ARROW) 
+                     Case #__cursor_SplitUpDown    : \hcursor = gdk_cursor_new_(#GDK_SB_V_DOUBLE_ARROW)
+                        
+                     Case #__cursor_Left           : \hcursor = gdk_cursor_new_(#GDK_LEFT_SIDE) ; GDK_LEFT_TEE ; GDK_LEFT_SIDE ; #GDK_SB_LEFT_ARROW
+                     Case #__cursor_Right          : \hcursor = gdk_cursor_new_(#GDK_RIGHT_SIDE); GDK_RIGHT_TEE ; GDK_RIGHT_SIDE ; #GDK_SB_RIGHT_ARROW
+                     Case #__cursor_Up             : \hcursor = gdk_cursor_new_(#GDK_TOP_SIDE)  ; GDK_TOP_TEE ; GDK_TOP_SIDE ; GDK_SB_UP_ARROW 
+                     Case #__cursor_Down           : \hcursor = gdk_cursor_new_(#GDK_BOTTOM_SIDE) ; GDK_BOTTOM_TEE ; GDK_BOTTOM_SIDE ; GDK_SB_DOWN_ARROW
+                        
+                     Case #__cursor_LeftUp         : \hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_( ), #GDK_TOP_LEFT_CORNER);gdk_cursor_new_(#GDK_TOP_LEFT_CORNER)
+                     Case #__cursor_RightUp        : \hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_( ), #GDK_TOP_RIGHT_CORNER)
+                     Case #__cursor_LeftDown       : \hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_( ), #GDK_BOTTOM_LEFT_CORNER)
+                     Case #__cursor_RightDown      : \hcursor = gdk_cursor_new_for_display_(gdk_display_get_default_( ), #GDK_BOTTOM_RIGHT_CORNER)
+                        
+                     Case #__cursor_Grab           : \hcursor = gdk_cursor_new_(#GDK_ARROW)
+                     Case #__cursor_Grabbing       : \hcursor = gdk_cursor_new_(#GDK_ARROW)
+                        
+                     Case #__cursor_LeftRight, #__cursor_UpDown, 
+                          #__cursor_Diagonal1, #__cursor_Diagonal2 
+                        
+                        \hcursor = New( \type, Draw( \type ) )
+                        
+                     Case #__cursor_Drag           : \hcursor = New( \type, Create(ImageID(Image( \type ))) )
+                     Case #__cursor_Drop           : \hcursor = New( \type, Create(ImageID(Image( \type ))) )
+                  EndSelect 
                EndIf
                
                If \hcursor And 
@@ -1760,7 +1727,7 @@ Module Cursor
             ProcedureReturn Bool(cursor_info\flags & #CURSOR_SHOWING)
          CompilerCase #PB_OS_MacOS   : ProcedureReturn Bool( CGCursorIsVisible( ) = 0 )
          CompilerCase #PB_OS_Linux   : 
-        ProcedureReturn 0;Bool( gdk_cursor_get_cursor_type(gdk_window_get_cursor( gdk_display_get_default_( ) )) = #GDK_BLANK_CURSOR )
+            ProcedureReturn 0;Bool( gdk_cursor_get_cursor_type(gdk_window_get_cursor( gdk_display_get_default_( ) )) = #GDK_BLANK_CURSOR )
       CompilerEndSelect
    EndProcedure
    
@@ -2382,10 +2349,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 5.46 LTS (MacOS X - x64)
-; CursorPosition = 630
-; FirstLine = 618
-; Folding = ------------------------8---------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 399
+; FirstLine = 361
+; Folding = -------+------------------8-----------
+; Optimizer
 ; EnableXP
 ; DPIAware
-; Optimizer

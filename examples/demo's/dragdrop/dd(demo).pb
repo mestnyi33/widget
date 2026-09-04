@@ -1,5 +1,4 @@
 ﻿XIncludeFile "../../../widgets.pbi" 
-;XIncludeFile "../../../temp.pbi" 
 
 EnableExplicit
 UseWidgets( )
@@ -76,16 +75,7 @@ If StartDrawing( ImageOutput( #ImageGadget_Source ) )
   
   StopDrawing( )
 EndIf  
-;ResizeImage(#ImageGadget_Source, DPIScaled(ImageWidth(#ImageGadget_Source)), DPIScaled(ImageHeight(#ImageGadget_Source)))
-; CopyImage( #ImageGadget_Source, #ImageGadget_Target )
-; If StartDrawing( ImageOutput( #ImageGadget_Target ) )
-;               DrawingFont( font )
-;               
-;               Box( 5,5,OutputWidth(),30, $FFFFFF)
-;               DrawText( 5, 5, "EventDrop image", $000000, $FFFFFF )        
-;               
-;               StopDrawing( )
-;            EndIf  
+
 ;            
 CreateImage( #ImageGadget_Target, 136, 136 )
 If StartDrawing( ImageOutput( #ImageGadget_Target ) )
@@ -419,22 +409,11 @@ EndProcedure
 
 If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )   
   ; Create and fill the Gadget_Source s
-  ;
   Gadget_SourceText = ListIconWidget( 10, 10, 140, 140, "Drag Text here", 130 )   
   Gadget_SourceImage = Image( 160, 10, 140, 140, ( #ImageGadget_Source ), #PB_Image_Border ) 
   Gadget_SourceFiles = ExplorerList( 310, 10, 290, 140, GetHomeDirectory( ), #PB_Explorer_MultiSelect )
   Gadget_SourcePrivate = ListIconWidget( 610, 10, 140, 140, "Drag private stuff here", 260 )
   Gadget_SourceItem = ListIconWidget( 760, 10, 140, 290, "Drag item here", 130 )   
-  
-  SetFrame( Gadget_SourceText, 1 )
-  SetFrame( Gadget_SourceImage, 1 )
-  SetFrame( Gadget_SourceFiles, 1 )
-  SetFrame( Gadget_SourcePrivate, 1 )
-  SetFrame( Gadget_SourceItem, 1 )
-  
-    
-  ;\\   
-  SetCursor( Gadget_SourceText, #PB_Cursor_Hand )
   
   ;\\
   AddItem( Gadget_SourceText, -1, "hello world" )
@@ -461,7 +440,6 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   AddItem( Gadget_SourcePrivate, -1, "Private type 2" )
   
   ; Create the Gadget_Target s
-  ;
   Gadget_TargetText = ListIconWidget( 10, 160, 140, 140, "Drop Text here", 130 )
   Gadget_TargetImage = Image( 160, 160, 140, 140, ( #ImageGadget_Target ), #PB_Image_Border ) 
   Gadget_TargetFiles = ListIconWidget( 310, 160, 140, 140, "Drop Files here", 130 )
@@ -469,24 +447,32 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   Gadget_TargetPrivate2 = ListIconWidget( 610, 160, 140, 140, "Drop Private Type 2 here", 130 )
   Gadget_TargetItem = Gadget_SourceItem
   
+  ; TODO
+;   SetFrame( Gadget_SourceText, 1 )
+;   SetFrame( Gadget_SourceImage, 1 )
+;   SetFrame( Gadget_SourceFiles, 1 )
+;   SetFrame( Gadget_SourcePrivate, 1 )
+;   SetFrame( Gadget_SourceItem, 1 )
   
-  SetFrame( Gadget_TargetText, 1 )
-  SetFrame( Gadget_TargetImage, 1 )
-  SetFrame( Gadget_TargetFiles, 1 )
-  ;SetFrame( Gadget_TargetPrivate1, 1 )
-  SetFrame( Gadget_TargetPrivate2, 1 )
+;   ;SetFrame( Gadget_TargetImage, 10 )
+;   SetFrame( Gadget_TargetText, 1 )
+;   SetFrame( Gadget_TargetImage, 1 )
+;   SetFrame( Gadget_TargetFiles, 1 )
+;   ;SetFrame( Gadget_TargetPrivate1, 1 )
+;   SetFrame( Gadget_TargetPrivate2, 1 )
+  
+  ;\\   
+  SetCursor( Gadget_SourceText, #PB_Cursor_Hand )
   
   ; Now enable the dropping on the Gadget_Target s
-  ;
   EnableDrop( Gadget_TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
   EnableDrop( Gadget_TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
   EnableDrop( Gadget_TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
   EnableDrop( Gadget_TargetItem,     #PB_Drop_Private, #PB_Drag_Move, #PrivateType_0 )
   EnableDrop( Gadget_TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_1 )
   EnableDrop( Gadget_TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_2 )
-  
+    
   ; Bind( -1, @widget_events( ) )
-  ;
   Bind( Gadget_SourceImage, @widget_events( ), #__event_DragStart )
   Bind( Gadget_TargetImage, @widget_events( ), #__event_Drop )
   
@@ -501,7 +487,6 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
   Bind( Gadget_TargetPrivate2, @widget_events( ), #__event_Drop )
   
   ; main loop
-  ;
   WaitClose( )
   ;   
   ;   Repeat
@@ -511,8 +496,8 @@ EndIf
 
 End
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 359
-; FirstLine = 339
+; CursorPosition = 1
+; FirstLine = 459
 ; Folding = -----
 ; EnableXP
 ; DPIAware
