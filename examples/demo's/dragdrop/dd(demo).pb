@@ -27,6 +27,7 @@ Global Gadget_SourceText,
        Gadget_TargetPrivate1,
        Gadget_TargetPrivate2
 
+Global test_drag = 1
 Global i, Event, font = LoadFont( 0, "Aria", (13) )
 
 ; Macro EnableDrop( this, Format, Actions, PrivateType = 0 )
@@ -495,9 +496,8 @@ If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )
 EndIf
 
 End
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1
-; FirstLine = 459
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 29
 ; Folding = -----
 ; EnableXP
 ; DPIAware
