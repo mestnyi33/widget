@@ -27,70 +27,70 @@ Module AnchorBox
    Global FULL_state
    
    Procedure Events( )
-      Protected *this.Structures::_s_widget = widget::EventWidget( )
-      ;       If *button = widget::EventWidget( )
-      ;          Debug "box "+widget::ClassFromEvent( widget::WidgetEvent( )) +" "+ widget::GetClass( widget::EventWidget( ))
+      Protected *this.Structures::_s_widget = widgets::EventWidget( )
+      ;       If *button = widgets::EventWidget( )
+      ;          Debug "box "+widgets::ClassFromEvent( widgets::WidgetEvent( )) +" "+ widgets::GetClass( widgets::EventWidget( ))
       ;       EndIf
       
-      Select widget::WidgetEvent( )
+      Select widgets::WidgetEvent( )
          Case constants::#__event_LeftClick 
-            If widget::IsContainer( *this )
+            If widgets::IsContainer( *this )
                ProcedureReturn #PB_Ignore
             EndIf
             
             If *this = *button
                
-               Protected a = *this\menu\parent ; widget::GetData(*this)
+               Protected a = *this\menu\parent ; widgets::GetData(*this)
                If a
                   
-                  If widget::GetState(*this)
-                     widget::Hide(a, #False )
+                  If widgets::GetState(*this)
+                     widgets::Hide(a, #False )
                      ;   
-                     Define Y = widget::Y(*this)
-                     Debug ""+*this\class +" "+ widget::Y(*this)+" "+Y
+                     Define Y = widgets::Y(*this)
+                     Debug ""+*this\class +" "+ widgets::Y(*this)+" "+Y
                      
-;                      If widget::GetParent( a ) = widget::GetParent( *this )
-;                         widget::Resize(a, widget::X(*this,constants::#__c_container), widget::Y(*this,constants::#__c_container)+widget::Height(*this), widget::Width(*this), widget::Width(*this) )
+;                      If widgets::GetParent( a ) = widgets::GetParent( *this )
+;                         widgets::Resize(a, widgets::X(*this,constants::#__c_container), widgets::Y(*this,constants::#__c_container)+widgets::Height(*this), widgets::Width(*this), widgets::Width(*this) )
 ;                      Else
-;                         Debug ""+widget::X(*this) +" "+ widget::Y(*this)
+;                         Debug ""+widgets::X(*this) +" "+ widgets::Y(*this)
 ;                         
-;                         widget::Resize(a, widget::X(*this), widget::Height(*this), widget::Width(*this), widget::Width(*this) )
-                        widget::Resize(a, widget::X(*this), Y+widget::Height(*this), widget::Width(*this), widget::Width(*this) )
+;                         widgets::Resize(a, widgets::X(*this), widgets::Height(*this), widgets::Width(*this), widgets::Width(*this) )
+                        widgets::Resize(a, widgets::X(*this), Y+widgets::Height(*this), widgets::Width(*this), widgets::Width(*this) )
 ;                      EndIf
                   Else
-                     widget::Hide(a, #True )
+                     widgets::Hide(a, #True )
                   EndIf
                EndIf
                
             Else
                ;\\
                If CENTER = *this
-                  FULL_state = Bool( widget::GetState( *this ) = 0 )
+                  FULL_state = Bool( widgets::GetState( *this ) = 0 )
                   If Not FULL_state
-                     widget::SetText(*button, "CENTER")
+                     widgets::SetText(*button, "CENTER")
                   EndIf
                Else
-                  widget::SetState( CENTER,0 )
+                  widgets::SetState( CENTER,0 )
                EndIf
                
                ;
                If LTBUTTON = *this
-                  FULL_state = Bool( widget::GetState( *this ) = 0 )
+                  FULL_state = Bool( widgets::GetState( *this ) = 0 )
                EndIf
                If RTBUTTON = *this
-                  FULL_state = Bool( widget::GetState( *this ) = 0 )
+                  FULL_state = Bool( widgets::GetState( *this ) = 0 )
                EndIf
                If RBBUTTON = *this
-                  FULL_state = Bool( widget::GetState( *this ) = 0 )
+                  FULL_state = Bool( widgets::GetState( *this ) = 0 )
                EndIf
                If LBBUTTON = *this
-                  FULL_state = Bool( widget::GetState( *this ) = 0 )
+                  FULL_state = Bool( widgets::GetState( *this ) = 0 )
                EndIf
                
                ;
                If CHANGE_state
                   CHANGE_state = 0
-                  widget::SetState( *this,1 )
+                  widgets::SetState( *this,1 )
                   
                   ;                   If LTBUTTON = *this Or 
                   ;                      RTBUTTON = *this Or 
@@ -104,142 +104,142 @@ Module AnchorBox
                ;
                If LTBUTTON = *this
                   If FULL_state
-                     widget::SetState( *this,1 )
+                     widgets::SetState( *this,1 )
                      CHANGE_state = 1
                   Else
-                     widget::SetText(*button, "LEFT&TOP")
+                     widgets::SetText(*button, "LEFT&TOP")
                   EndIf
                Else
-                  widget::SetState( LTBUTTON,FULL_state )
+                  widgets::SetState( LTBUTTON,FULL_state )
                EndIf
                If RTBUTTON = *this
                   If FULL_state
-                     widget::SetState( *this,1 )
+                     widgets::SetState( *this,1 )
                      CHANGE_state = 1
                   Else
-                     widget::SetText(*button, "RIGHT&TOP")
+                     widgets::SetText(*button, "RIGHT&TOP")
                   EndIf
                Else
-                  widget::SetState( RTBUTTON,FULL_state )
+                  widgets::SetState( RTBUTTON,FULL_state )
                EndIf
                If RBBUTTON = *this
                   If FULL_state
-                     widget::SetState( *this,1 )
+                     widgets::SetState( *this,1 )
                      CHANGE_state = 1
                   Else
-                     widget::SetText(*button, "RIGHT&BOTTOM")
+                     widgets::SetText(*button, "RIGHT&BOTTOM")
                   EndIf
                Else
-                  widget::SetState( RBBUTTON,FULL_state )
+                  widgets::SetState( RBBUTTON,FULL_state )
                EndIf
                If LBBUTTON = *this
                   If FULL_state
-                     widget::SetState( *this,1 )
+                     widgets::SetState( *this,1 )
                      CHANGE_state = 1
                   Else
-                     widget::SetText(*button, "LEFT&BOTTOM")
+                     widgets::SetText(*button, "LEFT&BOTTOM")
                   EndIf
                Else
-                  widget::SetState( LBBUTTON,FULL_state )
+                  widgets::SetState( LBBUTTON,FULL_state )
                EndIf
                
                ;
                If LBUTTON = *this
-                  If widget::GetState(*this) 
-                     widget::SetText(*button, "LEFT")
+                  If widgets::GetState(*this) 
+                     widgets::SetText(*button, "LEFT")
                   Else
-                     widget::SetState( *this,1 )
+                     widgets::SetState( *this,1 )
                      CHANGE_state = 1
-                     widget::SetState( TBUTTON,0 )
-                     widget::SetState( RTBUTTON,0 )
-                     widget::SetState( RBUTTON,0 )
-                     widget::SetState( RBBUTTON,0 )
-                     widget::SetState( BBUTTON,0 )
+                     widgets::SetState( TBUTTON,0 )
+                     widgets::SetState( RTBUTTON,0 )
+                     widgets::SetState( RBUTTON,0 )
+                     widgets::SetState( RBBUTTON,0 )
+                     widgets::SetState( BBUTTON,0 )
                      ;
-                     widget::SetState( LTBUTTON,1 )
-                     widget::SetState( LBBUTTON,1 )
-                     widget::SetText(*button, "FULLLEFT")
+                     widgets::SetState( LTBUTTON,1 )
+                     widgets::SetState( LBBUTTON,1 )
+                     widgets::SetText(*button, "FULLLEFT")
                      ProcedureReturn #PB_Ignore
                   EndIf
                Else
-                  widget::SetState( LBUTTON,FULL_state )
+                  widgets::SetState( LBUTTON,FULL_state )
                EndIf
                If TBUTTON = *this
-                  If widget::GetState(*this) 
-                     widget::SetText(*button, "TOP")
+                  If widgets::GetState(*this) 
+                     widgets::SetText(*button, "TOP")
                   Else
-                     widget::SetState( *this,1 )
+                     widgets::SetState( *this,1 )
                      CHANGE_state = 1
-                     widget::SetState( LBUTTON,0 )
-                     widget::SetState( LBBUTTON,0 )
-                     widget::SetState( RBUTTON,0 )
-                     widget::SetState( RBBUTTON,0 )
-                     widget::SetState( BBUTTON,0 )
+                     widgets::SetState( LBUTTON,0 )
+                     widgets::SetState( LBBUTTON,0 )
+                     widgets::SetState( RBUTTON,0 )
+                     widgets::SetState( RBBUTTON,0 )
+                     widgets::SetState( BBUTTON,0 )
                      ;
-                     widget::SetState( LTBUTTON,1 )
-                     widget::SetState( RTBUTTON,1 )
-                     widget::SetText(*button, "FULLTOP")
+                     widgets::SetState( LTBUTTON,1 )
+                     widgets::SetState( RTBUTTON,1 )
+                     widgets::SetText(*button, "FULLTOP")
                      ProcedureReturn #PB_Ignore
                   EndIf
                Else
-                  widget::SetState( TBUTTON,FULL_state )
+                  widgets::SetState( TBUTTON,FULL_state )
                EndIf
                If RBUTTON = *this
-                  If widget::GetState(*this) 
-                     widget::SetText(*button, "RIGHT")
+                  If widgets::GetState(*this) 
+                     widgets::SetText(*button, "RIGHT")
                   Else
-                     widget::SetState( *this,1 )
+                     widgets::SetState( *this,1 )
                      CHANGE_state = 1
-                     widget::SetState( TBUTTON,0 )
-                     widget::SetState( LTBUTTON,0 )
-                     widget::SetState( LBUTTON,0 )
-                     widget::SetState( LBBUTTON,0 )
-                     widget::SetState( BBUTTON,0 )
+                     widgets::SetState( TBUTTON,0 )
+                     widgets::SetState( LTBUTTON,0 )
+                     widgets::SetState( LBUTTON,0 )
+                     widgets::SetState( LBBUTTON,0 )
+                     widgets::SetState( BBUTTON,0 )
                      ;
-                     widget::SetState( RTBUTTON,1 )
-                     widget::SetState( RBBUTTON,1 )
-                     widget::SetText(*button, "FULLRIGHT")
+                     widgets::SetState( RTBUTTON,1 )
+                     widgets::SetState( RBBUTTON,1 )
+                     widgets::SetText(*button, "FULLRIGHT")
                      ProcedureReturn #PB_Ignore
                   EndIf
                Else
-                  widget::SetState( RBUTTON,FULL_state )
+                  widgets::SetState( RBUTTON,FULL_state )
                EndIf
                If BBUTTON = *this
-                  If widget::GetState(*this) 
-                     widget::SetText(*button, "BOTTOM")
+                  If widgets::GetState(*this) 
+                     widgets::SetText(*button, "BOTTOM")
                   Else
-                     widget::SetState( *this,1 )
+                     widgets::SetState( *this,1 )
                      CHANGE_state = 1
-                     widget::SetState( LBUTTON,0 )
-                     widget::SetState( LTBUTTON,0 )
-                     widget::SetState( RBUTTON,0 )
-                     widget::SetState( RTBUTTON,0 )
-                     widget::SetState( TBUTTON,0 )
+                     widgets::SetState( LBUTTON,0 )
+                     widgets::SetState( LTBUTTON,0 )
+                     widgets::SetState( RBUTTON,0 )
+                     widgets::SetState( RTBUTTON,0 )
+                     widgets::SetState( TBUTTON,0 )
                      ;
-                     widget::SetState( LBBUTTON,1 )
-                     widget::SetState( RBBUTTON,1 )
-                     widget::SetText(*button, "FULLBOTTOM")
+                     widgets::SetState( LBBUTTON,1 )
+                     widgets::SetState( RBBUTTON,1 )
+                     widgets::SetText(*button, "FULLBOTTOM")
                      ProcedureReturn #PB_Ignore
                   EndIf
                Else
-                  widget::SetState( BBUTTON,FULL_state )
+                  widgets::SetState( BBUTTON,FULL_state )
                EndIf
                
                If FULL_state
-                  widget::SetText(*button, "FULL")
+                  widgets::SetText(*button, "FULL")
                EndIf
                
-               If widget::a_focused( )
-                  Select widget::GetText(*button)
-                     Case "LEFT" : widget::SetAlign(widget::a_focused( ), 0, 1,0,0,0 )
-                     Case "TOP" : widget::SetAlign(widget::a_focused( ), 0, 0,1,0,0 )
-                     Case "RIGHT" : widget::SetAlign(widget::a_focused( ), 0, 0,0,1,0 )
-                     Case "BOTTOM" : widget::SetAlign(widget::a_focused( ), 0, 0,0,0,1 )
+               If widgets::a_focused( )
+                  Select widgets::GetText(*button)
+                     Case "LEFT" : widgets::SetAlign(widgets::a_focused( ), 0, 1,0,0,0 )
+                     Case "TOP" : widgets::SetAlign(widgets::a_focused( ), 0, 0,1,0,0 )
+                     Case "RIGHT" : widgets::SetAlign(widgets::a_focused( ), 0, 0,0,1,0 )
+                     Case "BOTTOM" : widgets::SetAlign(widgets::a_focused( ), 0, 0,0,0,1 )
                         
-                     Case "LEFT&TOP" : widget::SetAlign(widget::a_focused( ), 0, 1,1,0,0 )
-                     Case "LEFT&BOTTOM" : widget::SetAlign(widget::a_focused( ), 0, 1,0,0,1 )
-                     Case "RIGHT&TOP" : widget::SetAlign(widget::a_focused( ), 0, 0,1,1,0 )
-                     Case "RIGHT&BOTTOM" : widget::SetAlign(widget::a_focused( ), 0, 0,0,1,1 )
+                     Case "LEFT&TOP" : widgets::SetAlign(widgets::a_focused( ), 0, 1,1,0,0 )
+                     Case "LEFT&BOTTOM" : widgets::SetAlign(widgets::a_focused( ), 0, 1,0,0,1 )
+                     Case "RIGHT&TOP" : widgets::SetAlign(widgets::a_focused( ), 0, 0,1,1,0 )
+                     Case "RIGHT&BOTTOM" : widgets::SetAlign(widgets::a_focused( ), 0, 0,0,1,1 )
                   EndSelect
                EndIf
                
@@ -253,91 +253,91 @@ Module AnchorBox
    
    Procedure Create( *parent, X,Y,Width,Height )
       Protected *a.Structures::_s_widget 
-      Protected flag = constants::#__flag_NoFocus
+      Protected Flag = constants::#__flag_NoFocus
       
       If *parent
-         widget::OpenList( *parent )
+         widgets::OpenList( *parent )
       EndIf
-      *Button = widget::Button(X,Y,Width, Height, "LEFT&TOP",flag|#PB_Button_Toggle)
-      *a = widget::Container(0,0,size*8,size*8, flag) 
-      widget::SetBackgroundColor( *a, $A3E9ED )
+      *Button = widgets::Button(X,Y,Width, Height, "LEFT&TOP",Flag|#PB_Button_Toggle)
+      *a = widgets::Container(0,0,size*8,size*8, Flag) 
+      widgets::SetBackgroundColor( *a, $A3E9ED )
       ;
-      LBUTTON = widget::Button(0, 0, size, size, "",flag|#PB_Button_Toggle,radius)
-      LTBUTTON = widget::Button(0, 0, size, size, "",flag|#PB_Button_Toggle,radius)
-      TBUTTON = widget::Button(0, 0, size, size, "",flag|#PB_Button_Toggle,radius)
+      LBUTTON = widgets::Button(0, 0, size, size, "",Flag|#PB_Button_Toggle,radius)
+      LTBUTTON = widgets::Button(0, 0, size, size, "",Flag|#PB_Button_Toggle,radius)
+      TBUTTON = widgets::Button(0, 0, size, size, "",Flag|#PB_Button_Toggle,radius)
       ;
-      RTBUTTON = widget::Button(0, 0, size, size, "",flag|#PB_Button_Toggle,radius)
-      RBUTTON = widget::Button(0, 0, size, size, "",flag|#PB_Button_Toggle,radius)
-      RBBUTTON = widget::Button(0, 0, size, size, "",flag|#PB_Button_Toggle,radius)
+      RTBUTTON = widgets::Button(0, 0, size, size, "",Flag|#PB_Button_Toggle,radius)
+      RBUTTON = widgets::Button(0, 0, size, size, "",Flag|#PB_Button_Toggle,radius)
+      RBBUTTON = widgets::Button(0, 0, size, size, "",Flag|#PB_Button_Toggle,radius)
       ;
-      BBUTTON = widget::Button(0, 0, size, size, "",flag|#PB_Button_Toggle,radius)
-      LBBUTTON = widget::Button(0, 0, size, size, "",flag|#PB_Button_Toggle,radius)
-      CENTER = widget::Button(0, 0, size, size, "",flag|#PB_Button_Toggle,radius)
+      BBUTTON = widgets::Button(0, 0, size, size, "",Flag|#PB_Button_Toggle,radius)
+      LBBUTTON = widgets::Button(0, 0, size, size, "",Flag|#PB_Button_Toggle,radius)
+      CENTER = widgets::Button(0, 0, size, size, "",Flag|#PB_Button_Toggle,radius)
       
       Define pos = - radius
       ;
-      widget::SetAlign( LBUTTON, constants::#__align_auto, pos,0,0,0)
-      widget::SetAlign( TBUTTON, constants::#__align_auto, 0,pos,0,0)
-      widget::SetAlign( RBUTTON, constants::#__align_auto, 0,0,pos,0)
-      widget::SetAlign( BBUTTON, constants::#__align_auto, 0,0,0,pos)
-      widget::SetAlign( CENTER, constants::#__align_center, 0,0,0,0)
-      widget::SetAlign( LTBUTTON, constants::#__align_auto, pos,pos,0,0)
-      widget::SetAlign( RTBUTTON, constants::#__align_auto, 0,pos,pos,0)
-      widget::SetAlign( RBBUTTON, constants::#__align_auto, 0,0,pos,pos)
-      widget::SetAlign( LBBUTTON, constants::#__align_auto, pos,0,0,pos)
+      widgets::SetAlign( LBUTTON, constants::#__align_auto, pos,0,0,0)
+      widgets::SetAlign( TBUTTON, constants::#__align_auto, 0,pos,0,0)
+      widgets::SetAlign( RBUTTON, constants::#__align_auto, 0,0,pos,0)
+      widgets::SetAlign( BBUTTON, constants::#__align_auto, 0,0,0,pos)
+      widgets::SetAlign( CENTER, constants::#__align_center, 0,0,0,0)
+      widgets::SetAlign( LTBUTTON, constants::#__align_auto, pos,pos,0,0)
+      widgets::SetAlign( RTBUTTON, constants::#__align_auto, 0,pos,pos,0)
+      widgets::SetAlign( RBBUTTON, constants::#__align_auto, 0,0,pos,pos)
+      widgets::SetAlign( LBBUTTON, constants::#__align_auto, pos,0,0,pos)
       
-      ;widget::SetState( TBUTTON,1 )
-      widget::SetState( LTBUTTON,1 )
-      ;widget::SetState( LBUTTON,1 )
+      ;widgets::SetState( TBUTTON,1 )
+      widgets::SetState( LTBUTTON,1 )
+      ;widgets::SetState( LBUTTON,1 )
       ;
-      widget::CloseList( )
+      widgets::CloseList( )
       If *parent
-         ;  widget::CloseList( )
+         ;  widgets::CloseList( )
       EndIf
       
       ;
       *Button\menu\parent = *a
-      widget::Bind(*button, @Events( ) )
+      widgets::Bind(*button, @Events( ) )
       
-      widget::Bind(LTBUTTON, @Events( ) )
-      widget::Bind(LBUTTON, @Events( ) )
-      widget::Bind(RTBUTTON, @Events( ) )
-      widget::Bind(TBUTTON, @Events( ) )
-      widget::Bind(CENTER, @Events( ) )
-      widget::Bind(RBUTTON, @Events( ) )
-      widget::Bind(RBBUTTON, @Events( ) )
-      widget::Bind(BBUTTON, @Events( ) )
-      widget::Bind(LBBUTTON, @Events( ) )
+      widgets::Bind(LTBUTTON, @Events( ) )
+      widgets::Bind(LBUTTON, @Events( ) )
+      widgets::Bind(RTBUTTON, @Events( ) )
+      widgets::Bind(TBUTTON, @Events( ) )
+      widgets::Bind(CENTER, @Events( ) )
+      widgets::Bind(RBUTTON, @Events( ) )
+      widgets::Bind(RBBUTTON, @Events( ) )
+      widgets::Bind(BBUTTON, @Events( ) )
+      widgets::Bind(LBBUTTON, @Events( ) )
       
       ;             ;
-      ;             widget::Bind(LTBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;             widget::Bind(LBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;             widget::Bind(RTBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;             widget::Bind(TBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;             widget::Bind(CENTER, @Events( ), constants::#__event_LeftClick )
-      ;             widget::Bind(RBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;             widget::Bind(RBBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;             widget::Bind(BBUTTON, @Events( ), constants::#__event_LeftClick )
-      ;             widget::Bind(LBBUTTON, @Events( ), constants::#__event_LeftClick )
+      ;             widgets::Bind(LTBUTTON, @Events( ), constants::#__event_LeftClick )
+      ;             widgets::Bind(LBUTTON, @Events( ), constants::#__event_LeftClick )
+      ;             widgets::Bind(RTBUTTON, @Events( ), constants::#__event_LeftClick )
+      ;             widgets::Bind(TBUTTON, @Events( ), constants::#__event_LeftClick )
+      ;             widgets::Bind(CENTER, @Events( ), constants::#__event_LeftClick )
+      ;             widgets::Bind(RBUTTON, @Events( ), constants::#__event_LeftClick )
+      ;             widgets::Bind(RBBUTTON, @Events( ), constants::#__event_LeftClick )
+      ;             widgets::Bind(BBUTTON, @Events( ), constants::#__event_LeftClick )
+      ;             widgets::Bind(LBBUTTON, @Events( ), constants::#__event_LeftClick )
       ;             ;
-      ;             widget::Bind(LTBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;             widget::Bind(LBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;             widget::Bind(RTBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;             widget::Bind(TBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;             widget::Bind(CENTER, @Events( ), constants::#__event_Left2Click )
-      ;             widget::Bind(RBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;             widget::Bind(RBBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;             widget::Bind(BBUTTON, @Events( ), constants::#__event_Left2Click )
-      ;             widget::Bind(LBBUTTON, @Events( ), constants::#__event_Left2Click )
+      ;             widgets::Bind(LTBUTTON, @Events( ), constants::#__event_Left2Click )
+      ;             widgets::Bind(LBUTTON, @Events( ), constants::#__event_Left2Click )
+      ;             widgets::Bind(RTBUTTON, @Events( ), constants::#__event_Left2Click )
+      ;             widgets::Bind(TBUTTON, @Events( ), constants::#__event_Left2Click )
+      ;             widgets::Bind(CENTER, @Events( ), constants::#__event_Left2Click )
+      ;             widgets::Bind(RBUTTON, @Events( ), constants::#__event_Left2Click )
+      ;             widgets::Bind(RBBUTTON, @Events( ), constants::#__event_Left2Click )
+      ;             widgets::Bind(BBUTTON, @Events( ), constants::#__event_Left2Click )
+      ;             widgets::Bind(LBBUTTON, @Events( ), constants::#__event_Left2Click )
       ;       
-      ;      ; widget::Bind(#PB_All, @Events( ) )
+      ;      ; widgets::Bind(#PB_All, @Events( ) )
       
       ;
-      widget::Hide(*a, #True )
-      widget::SetData(*a, *Button)
+      widgets::Hide(*a, #True )
+      widgets::SetData(*a, *Button)
       If *parent
-         widget::CloseList( )
-         ; widget::OpenList( widget::root( ) )
+         widgets::CloseList( )
+         ; widgets::OpenList( widgets::root( ) )
       EndIf
       
       ;
@@ -347,20 +347,20 @@ EndModule
 
 
 CompilerIf #PB_Compiler_IsMainFile
-   If widget::Open( #PB_Any, 0, 0, 222+222, 205+70+100, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
-      ; widget::a_init(widget::root())
+   If widgets::Open( #PB_Any, 0, 0, 222+222, 205+70+100, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered ) 
+      ; widgets::a_init(widgets::root())
       
-     ; widget::Container(50,50,300,200)
-      widget::Tree(50,50,300,200)
-      AnchorBox::Create(widget::widget( ), 30,30,250,30)
+     ; widgets::Container(50,50,300,200)
+      widgets::Tree(50,50,300,200)
+      AnchorBox::Create(widgets::Widget( ), 30,30,250,30)
       
    EndIf
    
-   widget::WaitClose( )
+   widgets::WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 298
-; FirstLine = 294
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 358
+; FirstLine = 342
 ; Folding = --------
 ; EnableXP
 ; DPIAware

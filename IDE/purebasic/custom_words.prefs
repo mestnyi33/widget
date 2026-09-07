@@ -210,6 +210,13 @@ DragDropText
 DragDropImage
 DragDropFiles
 DragDropPrivate
+DragText
+DragImage
+DragFiles
+DragPrivate
+DoDrag
+DoDrop
+DropDraw
 
 SetCursor
 GetCursor

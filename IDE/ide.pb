@@ -228,10 +228,10 @@ XIncludeFile #ide_path + "widgets.pbi"
 ;XIncludeFile #ide_path + "temp.pbi"
 ; XIncludeFile "C:\Users\user\Downloads\Compressed\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widget-edb230c0138ebd33deacbac9440577a00b5affa7\widgets.pbi"
 ; Procedure.i GetFontColor( *this.structures::_s_WIDGET )
-;    ProcedureReturn widget::GetColor( *this, constants::#__FrontColor )
+;    ProcedureReturn GetColor( *this, constants::#__FrontColor )
 ; EndProcedure
 ; Procedure   SetFontColor( *this.structures::_s_WIDGET, color.i )
-;    ProcedureReturn widget::SetColor( *this, constants::#__FrontColor, color )
+;    ProcedureReturn SetColor( *this, constants::#__FrontColor, color )
 ; EndProcedure
 
 
@@ -1928,7 +1928,8 @@ Procedure new_widget_events( )
             If Not MousePress( )
                If IsContainer(*g) 
                  If *g\anchors
-                     SetCursor( *g, Cursor::Create( ImageID( GetItemData( ide_all_ELEMENTS, GetState( ide_all_ELEMENTS )))))
+                    Debug "ë-cursor "+GetState( ide_all_ELEMENTS )
+                    SetCursor( *g, Cursor::Create( ImageID( GetItemData( ide_all_ELEMENTS, GetState( ide_all_ELEMENTS )))))
                  EndIf
                EndIf
             EndIf
@@ -3361,9 +3362,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1945
-; FirstLine = 1671
-; Folding = -4--4---8-f-tf----------3BC----------+-+80-----------yvt----f+-
+; CursorPosition = 230
+; FirstLine = 226
+; Folding = -4--4---8-f-tf----------3BC----------+--80-----------yvt----f+-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2_621.exe

@@ -5,7 +5,8 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    EnableExplicit
-   
+   Global test_canvas_events = 1
+
    Procedure all_events()
       
       Select Events()
@@ -64,8 +65,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 24
-; FirstLine = 3
+; CursorPosition = 7
+; FirstLine = 2
 ; Folding = --
 ; EnableXP
 ; DPIAware
