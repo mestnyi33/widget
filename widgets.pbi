@@ -4,7 +4,16 @@ CompilerEndIf
 
 Module widgets
    UseModule DD
+    
+   Global NewMap typeCount( )
    
+   Global bar_button_padding = 1
+   Global bar_toggle_size = 0 ; DPIScaled(2)
+   Global bar_splitter_size = DPIScaled(#__bar_splitter_size)
+   Global dpi_scale_two = DPIScaled(2)
+   
+   
+   ;-
    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
       Prototype DwmSetWindowAttribute(hwnd, dwAttribute, *pvAttribute, cbAttribute)
       Prototype DwmExtendFrameIntoClientArea(hWnd, *pMarInset)
@@ -34,15 +43,6 @@ Module widgets
       CompilerEndIf
    EndProcedure
    
-   Global NewMap typeCount( )
-   
-   
-   Global bar_button_padding = 1
-   Global bar_toggle_size = 0 ; DPIScaled(2)
-   Global bar_splitter_size = DPIScaled(#__bar_splitter_size)
-   Global dpi_scale_two = DPIScaled(2)
-   
-   
    ;-
    ;-\\ DECLARE PRIVATEs
    ;-
@@ -68,8 +68,7 @@ Module widgets
    Declare   make_content_area( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, indent )
    Declare   make_content_align( *this._s_WIDGET, *txt._s_TEXT, *img._s_PICTURE, Width, Height, indent )
    
-   
-   
+   ;
    ;-
    Macro row_x_( _this_, _address_ )
       ( _this_\inner_x( ) + _address_\x )  ; + _this_\scroll_x( )
@@ -26520,9 +26519,9 @@ CompilerIf #PB_Compiler_IsMainFile  ; = 99
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 25050
-; FirstLine = 25046
-; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 68
+; FirstLine = 47
+; Folding = 8-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
