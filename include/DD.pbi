@@ -748,7 +748,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    Procedure ListIconWidget( X,Y,Width,Height, title.s, titleWidth )
-      ; ProcedureReturn ListIcon(x,y,width,height, title.s, titleWidth)
+      ; ProcedureReturn ListIcon(X,Y,Width,Height, title.s, titleWidth)
       
       ;\\
       Text(X,Y,Width,20,title, #__flag_Textinline) : SetColor( Widget( ), #PB_Gadget_BackColor, $FFC2C2C2)
@@ -840,9 +840,9 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
    End
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 823
-; FirstLine = 743
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 750
+; FirstLine = 735
 ; Folding = ----------------
 ; EnableXP
 ; DPIAware
