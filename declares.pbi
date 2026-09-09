@@ -139,14 +139,15 @@ CompilerIf #PB_Compiler_Version < 520
 CompilerEndIf
 
 ;
-CompilerIf Not Defined( lng, #PB_Module )
-   XIncludeFile "include/lng.pbi"
-CompilerEndIf
 CompilerIf Not Defined( constants, #PB_Module )
-   XIncludeFile "include/constants.pbi"
+   XIncludeFile "constants.pbi"
 CompilerEndIf
 CompilerIf Not Defined( structures, #PB_Module )
-   XIncludeFile "include/structures.pbi"
+   XIncludeFile "structures.pbi"
+CompilerEndIf
+;
+CompilerIf Not Defined( lng, #PB_Module )
+   XIncludeFile "include/lng.pbi"
 CompilerEndIf
 CompilerIf Not Defined( func, #PB_Module )
    XIncludeFile "include/func.pbi"
@@ -1958,9 +1959,9 @@ CompilerIf Not Defined( DD, #PB_Module )
 CompilerEndIf
 
 
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 192
-; FirstLine = 157
-; Folding = AAcgA-PBu----------PMA9------DA5--PAQAAAw-
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 148
+; FirstLine = 114
+; Folding = 9AcgA-PBu----------PMA9------DA5--PAQAAAw-
 ; EnableXP
 ; DPIAware
