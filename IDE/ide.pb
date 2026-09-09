@@ -265,57 +265,94 @@ Procedure RunPreview(SourceCode$)
    If SourceCode$ = "" : ProcedureReturn : EndIf
    Protected TempFileName$, hTempFile
    Protected CompilerPath$, CompilPreview, CompilPreviewOutput$
+   Protected PreviewProgramName$, Flags$, PreviewRunning
    
+   ; АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ ПУТИ ПОД ВСЕ ОС
    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
       CompilerPath$ = #PB_Compiler_Home + "Compilers\pbcompiler.exe"
-   CompilerElse
-      CompilerPath$ = #PB_Compiler_Home + "pbcompiler"
+   CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
+      ; На macOS #PB_Compiler_Home обычно указывает внутрь пакета Contents/Resources/
+      CompilerPath$ = #PB_Compiler_Home + "compilers/pbcompiler"
+   CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+      ; На Linux папка compilers лежит в корне установленного PureBasic
+      CompilerPath$ = #PB_Compiler_Home + "compilers/pbcompiler"
    CompilerEndIf
    
-   If FileSize(CompilerPath$)
-      TempFileName$ = "~preview.pb"
-      hTempFile = CreateFile(#PB_Any, TempFileName$, #PB_UTF8)
-      If hTempFile
-         WriteStringFormat(hTempFile, #PB_UTF8)
-         WriteStringN(hTempFile, SourceCode$)
-         CloseFile(hTempFile)
-         ;
-         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-            PreviewProgramName$ = GetPathPart(TempFileName$) + GetFilePart(TempFileName$, #PB_FileSystem_NoExtension) + ".exe"
-            CompilPreview = RunProgram(CompilerPath$, #DQUOTE$ + TempFileName$ +#DQUOTE$+ " /EXE " +#DQUOTE$+ PreviewProgramName$ +#DQUOTE$ + " /XP /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
-         CompilerElse
-            PreviewProgramName$ = GetPathPart(TempFileName$) + GetFilePart(TempFileName$, #PB_FileSystem_NoExtension)
-            CompilPreview = RunProgram(CompilerPath$, #DQUOTE$ + TempFileName$ +#DQUOTE$+ " -e " +#DQUOTE$+ PreviewProgramName$ +#DQUOTE$ + " /DPIAWARE", "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read)
-         CompilerEndIf
+   ; Проверка наличия компилятора
+   If FileSize(CompilerPath$) <= 0
+      MessageRequester("Preview Error", "pbcompiler was not found.", #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+      ProcedureReturn
+   EndIf
    
-         If CompilPreview
-            ; WaitProgram(CompilPreview)
-            While ProgramRunning(CompilPreview)
-               If AvailableProgramOutput(CompilPreview)
-                  CompilPreviewOutput$ = ReadProgramString(CompilPreview)
-               EndIf
-            Wend
-            ;
-            If ProgramExitCode(CompilPreview)
-               KillProgram(CompilPreview)
-               CloseProgram(CompilPreview)
-               MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler " + GetFilePart(TempFileName$) + " -e " + GetFilePart(PreviewProgramName$) + #CRLF$+#CRLF$+ CompilPreviewOutput$, #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+   ; Запись временного файла в безопасную системную директорию (работает на Windows, Mac и Linux)
+   TempFileName$ = GetTemporaryDirectory() + "preview_temp.pb"
+   PreviewProgramName$ = GetTemporaryDirectory() + "preview_app"
+   
+   hTempFile = CreateFile(#PB_Any, TempFileName$, #PB_UTF8)
+   If hTempFile
+      ; --- АВТОМАТИЧЕСКОЕ ДОПОЛНЕНИЕ КОДА ПРЕВЬЮ + САМООЧИСТКА ---
+      SourceCode$ = "  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS" + #CRLF$ +
+                    "    CocoaMessage(0, CocoaMessage(0, 0, " + Chr(34) + "NSApplication sharedApplication" + Chr(34) + "), " + Chr(34) + "activateIgnoringOtherApps:" + Chr(34) + ", #True)" + #CRLF$ +
+                    "  CompilerEndIf" + #CRLF$ +
+                    "" + SourceCode$ + #CRLF$ +
+                    "" + #CRLF$ ;+
+;                     "; --- БЛОК АВТОМАТИЧЕСКОЙ САМООЧИСТКИ ПОСЛЕ ЦИКЛА ---" + #CRLF$ +
+;       "CompilerIf #PB_Compiler_OS = #PB_OS_Windows" + #CRLF$ +
+;                                                       "  ; Трюк для Windows: удаление через командную строку после закрытия .exe" + #CRLF$ +
+;       "  RunProgram(" + Chr(34) + "cmd.exe" + Chr(34) + ", " + Chr(34) + "/c ping 127.0.0.1 -n 2 > nul & del " + #DQUOTE$ + PreviewProgramName$ + #DQUOTE$ + Chr(34) + ", " + Chr(34) + Chr(34) + ", #PB_Program_Hide)" + #CRLF$ +
+;                         "CompilerElse" + #CRLF$ +
+;                         "  ; На Mac и Linux файл можно удалить напрямую" + #CRLF$ +
+;       "  DeleteFile(" + Chr(34) + PreviewProgramName$ + Chr(34) + ")" + #CRLF$ +
+;                         "CompilerEndIf"
+      
+      WriteStringFormat(hTempFile, #PB_UTF8)
+      WriteStringN(hTempFile, SourceCode$)
+      CloseFile(hTempFile)
+      
+      ; Формирование флагов сборки под конкретную ОС
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+         PreviewProgramName$ + ".exe"
+         Flags$ = #DQUOTE$ + TempFileName$ + #DQUOTE$ + " /EXE " + #DQUOTE$ + PreviewProgramName$ + #DQUOTE$ + " /XP /DPIAWARE"
+      CompilerElse
+         ; Для macOS и Linux используется одинаковый синтаксис -o
+         Flags$ = #DQUOTE$ + TempFileName$ + #DQUOTE$ + " -o " + #DQUOTE$ + PreviewProgramName$ + #DQUOTE$
+      CompilerEndIf
+   
+      CompilPreview = RunProgram(CompilerPath$, Flags$, "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read | #PB_Program_Error)
+      
+      If CompilPreview
+         ; Безопасное чтение логов без зависания процесса (кроссплатформенно)
+         While ProgramRunning(CompilPreview)
+            If AvailableProgramOutput(CompilPreview)
+               CompilPreviewOutput$ + ReadProgramString(CompilPreview) + #CRLF$
             Else
-               KillProgram(CompilPreview)
-               CloseProgram(CompilPreview)
-               If FileSize(PreviewProgramName$)
-                  DeleteFile(TempFileName$)
-                  PreviewRunning = RunProgram(PreviewProgramName$, "", "", #PB_Program_Open)
-               Else
-                  MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler " + GetFilePart(TempFileName$) + " -e " + GetFilePart(PreviewProgramName$), #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
-               EndIf
+               Delay(10)
             EndIf
+         Wend
+         ; Дочитываем поток ошибок (критично для C-бэкенда в PureBasic 6.xx)
+         CompilPreviewOutput$ + ReadProgramError(CompilPreview)
+         
+         If ProgramExitCode(CompilPreview) <> 0
+            CloseProgram(CompilPreview)
+            DeleteFile(TempFileName$)
+            MessageRequester("Preview Error", "Fail to compile:" + #CRLF$ + CompilPreviewOutput$, #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
          Else
-            MessageRequester("Preview Error", "Fail to compile:" +#CRLF$+ "PBcompiler " + GetFilePart(TempFileName$) + " -e " + GetFilePart(PreviewProgramName$), #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+            CloseProgram(CompilPreview)
+            DeleteFile(TempFileName$)
+            
+            ; Запуск готового превью
+            If FileSize(PreviewProgramName$) > 0
+               PreviewRunning = RunProgram(PreviewProgramName$, "", "", #PB_Program_Open)
+               
+               ; Обратите внимание: на Unix-системах (Mac/Linux) скомпилированный файл 
+               ; останется во временной папке, пока запущено превью.
+            Else
+               MessageRequester("Preview Error", "Compiled file not found.", #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
+            EndIf
          EndIf
+      Else
+         MessageRequester("Preview Error", "Failed to start compiler.", #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
       EndIf
-   Else
-      MessageRequester("Preview Error", "PBcompiler.exe was not found in Compilers folder", #PB_MessageRequester_Error | #PB_MessageRequester_Ok)
    EndIf
 EndProcedure
 
@@ -3362,9 +3399,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 230
-; FirstLine = 226
-; Folding = -4--4---8-f-tf----------3BC----------+--80-----------yvt----f+-
+; CursorPosition = 303
+; FirstLine = 293
+; Folding = ----4---8-f-tf----------3BC----------+--80-----------4vt----f+-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2_621.exe
