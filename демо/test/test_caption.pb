@@ -52,23 +52,23 @@ CompilerIf #PB_Compiler_IsMainFile
       
       AddCaption(*first, 100,30, "caption1")
       AddCaption(*second, 100,30, "caption2")
-      ;Bind(Splitter(10, 10, 310, 310, *first, *second, #PB_Splitter_Vertical), @all_events(), #__event_Change)
+      Bind(Splitter(10, 10, 310, 310, *first, *second, #PB_Splitter_Vertical), @all_events(), #__event_Change)
       ;Bind(Splitter(10, 10, 310, 310, 0, 0, #PB_Splitter_Vertical), @all_events(), #__event_Change)
-      Define._s_WIDGET *cont = Container(10, 100, 310, 210)
-      SetParent(*first, *cont)
-      SetParent(*second, *cont)
+;       Define._s_WIDGET *cont = Container(10, 100, 310, 210)
+;       SetParent(*first, *cont)
+;       SetParent(*second, *cont)
       
 ;       Resize( *first, #PB_Ignore, #PB_Ignore, 80, #PB_Ignore )
 ;       Resize( *second, #PB_Ignore, #PB_Ignore, 140, #PB_Ignore )
       
       
-      Debug "--- enumerate all gadgets ---"
-      If StartEnum( Root( ) )
-         If Not is_window_( Widget(  ) )
-            Debug "     gadget - "+ Index( Widget( ) ) +" "+ Level( Widget( ) ) +" "+ Widget( )\class +" "+ hextw(Widget())
-         EndIf
-         StopEnum( )
-      EndIf
+;       Debug "--- enumerate all gadgets ---"
+;       If StartEnum( Root( ) )
+;          If Not is_window_( Widget(  ) )
+;             Debug "     gadget - "+ Index( Widget( ) ) +" "+ Level( Widget( ) ) +" "+ Widget( )\class +" "+ hextw(Widget())
+;          EndIf
+;          StopEnum( )
+;       EndIf
       
       For a = 0 To CountItems
          AddItem(*first, -1, "item "+Str(a), -1, 0)
@@ -77,14 +77,14 @@ CompilerIf #PB_Compiler_IsMainFile
          AddItem(*second, -1, "item - "+Str(a), -1, 0)
       Next
       
-      Repaint( )
+      ;Repaint( )
       
       WaitClose()
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 28
-; FirstLine = 23
+; CursorPosition = 37
+; FirstLine = 30
 ; Folding = --
 ; EnableXP
 ; DPIAware

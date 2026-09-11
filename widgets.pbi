@@ -4268,7 +4268,7 @@ Module widgets
                *SB\width  = *bar\thumb\len
             EndIf
          EndIf
-         ProcedureReturn 
+         
          ; Splitter first-child auto resize
          If IsGadget( *this\split_1( ) )
             ;             If is_root_container_( *this )
@@ -4288,10 +4288,10 @@ Module widgets
             
          Else
             If *this\split_1( ) > 0 And *this\split_1( ) <> *this
-               If *this\split_1( )\frame_x( ) <> *BB1\x Or
-                  *this\split_1( )\frame_y( ) <> *BB1\y Or
-                  *this\split_1( )\frame_width( ) <> *BB1\width Or
-                  *this\split_1( )\frame_height( ) <> *BB1\height
+;                If *this\split_1( )\frame_x( ) <> *BB1\x Or
+;                   *this\split_1( )\frame_y( ) <> *BB1\y Or
+;                   *this\split_1( )\frame_width( ) <> *BB1\width Or
+;                   *this\split_1( )\frame_height( ) <> *BB1\height
                   
                   If *this\split_1( )\type = #__type_window
                      Resize( *this\split_1( ),
@@ -4306,9 +4306,7 @@ Module widgets
                              *BB1\width, *BB1\height, 0 )
                   EndIf
                   
-               Else
-                  Resize( *this\split_1( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
-               EndIf
+;                EndIf
             EndIf
          EndIf
          
@@ -4331,10 +4329,10 @@ Module widgets
             
          Else
             If *this\split_2( ) > 0 And *this\split_2( ) <> *this
-               If *this\split_2( )\frame_x( ) <> *BB2\x Or
-                  *this\split_2( )\frame_y( ) <> *BB2\y Or
-                  *this\split_2( )\frame_width( ) <> *BB2\width Or
-                  *this\split_2( )\frame_height( ) <> *BB2\height
+;                If *this\split_2( )\frame_x( ) <> *BB2\x Or
+;                   *this\split_2( )\frame_y( ) <> *BB2\y Or
+;                   *this\split_2( )\frame_width( ) <> *BB2\width Or
+;                   *this\split_2( )\frame_height( ) <> *BB2\height
                   
                   If *this\split_2( )\type = #__type_window
                      Resize( *this\split_2( ),
@@ -4349,9 +4347,7 @@ Module widgets
                              *BB2\width, *BB2\height, 0 )
                   EndIf
                   
-               Else
-                  Resize( *this\split_2( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
-               EndIf
+;                EndIf
             EndIf
          EndIf
          
@@ -8382,6 +8378,31 @@ Module widgets
    EndProcedure
    
    ;-
+   Procedure   ChangeStatus( *this._s_WIDGET, *row._s_ROW )
+      If Not *row : ProcedureReturn : EndIf
+      Protected._s_ROW *select_row
+      Protected count = ListSize( *this\__rows( ))
+      If count
+         If *row\index < 0 Or
+            *row\index > count
+            ProcedureReturn 0
+         EndIf
+         ;
+         PushListPosition( *this\__rows( ))
+         *select_row = SelectElement( *this\__rows( ), *row\index )
+         If *select_row
+            *select_row\ColorState( ) = *row\ColorState( )
+            *select_row\mask = *row\mask
+            ;             *select_row\mask = *row\mask
+            ;             *select_row\_press = *row\_press
+            If *row\mask & #__mask_active
+               *this\RowFocused( ) = *select_row
+            EndIf
+         EndIf
+         PopListPosition( *this\__rows( ) )
+      EndIf
+   EndProcedure
+   
    Procedure.i GetState( *this._s_WIDGET )
       ; This is a universal function which works For almost all gadgets: 
       ; 
@@ -9122,31 +9143,6 @@ Module widgets
             PopListPosition( *this\__rows( ) )
          EndIf
          ProcedureReturn result
-      EndIf
-   EndProcedure
-   
-   Procedure   ChangeStatus( *this._s_WIDGET, *row._s_ROW )
-      If Not *row : ProcedureReturn : EndIf
-      Protected._s_ROW *select_row
-      Protected count = ListSize( *this\__rows( ))
-      If count
-         If *row\index < 0 Or
-            *row\index > count
-            ProcedureReturn 0
-         EndIf
-         ;
-         PushListPosition( *this\__rows( ))
-         *select_row = SelectElement( *this\__rows( ), *row\index )
-         If *select_row
-            *select_row\ColorState( ) = *row\ColorState( )
-            *select_row\mask = *row\mask
-            ;             *select_row\mask = *row\mask
-            ;             *select_row\_press = *row\_press
-            If *row\mask & #__mask_active
-               *this\RowFocused( ) = *select_row
-            EndIf
-         EndIf
-         PopListPosition( *this\__rows( ) )
       EndIf
    EndProcedure
    
@@ -10372,7 +10368,7 @@ Module widgets
          
          While *v And *v <> *this
             ; Идем НАЗАД строго по цепочке локальных братьев [Индекс 2]
-            If *v\tabindex = tabindex 
+            If *v\tabindex = tabindex Or ( *v\tabindex = #PB_Ignore And tabindex <= 0 )
                ; Как только нашли последнего ребенка на этой вкладке, 
                ; возвращаем ЕГО крайнюю глубокую z-order точку!
                ProcedureReturn GetLast( *v, #PB_Default )
@@ -17596,15 +17592,13 @@ Module widgets
          If test_canvas_events
             Debug " " + PBEventString(eventtype) +" "+ eventgadget
          EndIf
-         If IsGadget(eventgadget)
-            ChangeCurrentCanvas( GadgetID( eventgadget ))
-            ;
-            Root( )\canvas\enter = 1
-            ;
-            MouseMask( ) | (#__mask_update|#__mask_hover)
-            CanvasMouseX( ) = mouse::GadgetMouseX( eventgadget )
-            CanvasMouseY( ) = mouse::GadgetMouseY( eventgadget )
-         EndIf
+         ChangeCurrentCanvas( GadgetID( eventgadget ))
+         ;
+         Root( )\canvas\enter = 1
+         ;
+         MouseMask( ) | (#__mask_update|#__mask_hover)
+         CanvasMouseX( ) = mouse::GadgetMouseX( eventgadget )
+         CanvasMouseY( ) = mouse::GadgetMouseY( eventgadget )
       EndIf
       
       If eventtype = #PB_EventType_MouseLeave
@@ -18367,23 +18361,16 @@ Module widgets
             Else
                Debug " УДАЛЕНО пока было нажато"
             EndIf
-         EndIf
-         
-         ;\\
-         If MouseDrag( )
-            If Entered( )
-               DoEvents( Entered( ), #__event_DragStop )
-            ElseIf Pressed( )
-               DoEvents( Pressed( ), #__event_DragStop )
-            EndIf
+            
+            ;
+            Pressed( ) = 0
          EndIf
          
          ;\\ reset mouse states
-         mouse( )\selector = 0
-         MouseButtons( ) = 0
          MousePressX( ) = 0
          MousePressY( ) = 0
-         Pressed( ) = 0
+         MouseButtons( ) = 0
+         mouse( )\selector = 0
       EndIf
       
       ;
@@ -20820,6 +20807,7 @@ Module widgets
                         EndIf
                      EndIf
                      
+                     
                      ;                       
                      StopEnum( ) 
                      ;Stop( *e, *Root )
@@ -22902,6 +22890,70 @@ Module widgets
          If Opened( )\openeditem = #PB_Ignore
             Opened( )\openeditem = 0
          EndIf      
+         Protected *prev._s_PARENT = Opened( )\opened
+         ; Если у текущего элемента есть записанный "путь назад"
+         If *prev
+            If *prev\root
+               *prevRoot = *prev\root
+            Else
+               *prevRoot = *prev
+            EndIf
+            
+            ; Проверяем, нужно ли переключить системное окно PB назад
+            ; (если родитель находится на другом холсте)
+            If *prevRoot
+               If Opened( )\root <> *prevRoot
+                  ; Указываем PureBasic, в каком окне теперь создавать гаджеты
+                  UseGadgetList( WindowID( *prevRoot\canvas\window ))
+                  ; Обновляем глобальный указатель на текущий активный холст
+                  ChangeCurrentCanvas( GadgetID( *prevRoot\canvas\gadget ))
+               EndIf
+            EndIf
+            
+            ; Делаем шаг назад по логической цепочке
+            Opened( ) = *prev
+         EndIf
+      EndIf
+      
+      ; Возвращаем новый текущий контекст
+      ProcedureReturn Opened( )
+   EndProcedure
+   Procedure.i _OpenList( *parent._s_PARENT, item.l = 0 )
+      If Not *parent : ProcedureReturn #False : EndIf
+      Protected *prev._s_PARENT = Opened( )
+      
+      ; 2. ПОДДЕРЖКА ВКЛАДОК (TabBar)
+      ; Гарантируем, что индекс не отрицательный
+      If Item < 0 : Item = 0 : EndIf
+      *parent\openeditem = Item
+      
+      ; 3. ПЕРЕКЛЮЧЕНИЕ СИСТЕМНОГО КОНТЕКСТА
+      If *prev <> *parent
+         If *prev
+            ; 1. ЛОГИЧЕСКАЯ СВЯЗЬ (Путь назад)
+            ; Если уже есть открытый контекст — запоминаем его как "предыдущий"
+            *parent\opened = *prev
+            
+            ; Если мы переходим на другой холст (другое окно)
+            If *prev\root <> *parent\root And *parent\root
+               ; Указываем PureBasic, в каком окне теперь создавать гаджеты
+               UseGadgetList( WindowID( *parent\root\canvas\window ))
+               ; Обновляем глобальный указатель на текущий активный холст
+               ChangeCurrentCanvas( GadgetID( *parent\root\canvas\gadget ))
+            EndIf
+         EndIf
+         
+         ; Устанавливаем новый текущий активный элемент (куда будут падать виджеты)
+         Opened( ) = *parent
+      EndIf        
+      
+      ; Возвращаем указатель на того, кто был активен до этого (удобно для проверок)
+      ProcedureReturn *prev
+   EndProcedure
+   
+   Procedure.i _CloseList( )
+      Protected *prevRoot._s_ROOT
+      If Opened( )
          Protected *prev._s_PARENT = Opened( )\opened
          ; Если у текущего элемента есть записанный "путь назад"
          If *prev
@@ -25961,9 +26013,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 10348
-; FirstLine = 829
-; Folding = iAAAAAAAAvHAAAAAAwEAAAAAAAAAAw8BAAAIQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbAAAAAMAAAAAAAEAgFAQAAAgZBwAAADAAAMAAAAAAAYAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgY8AAAAQAAAAAAAAAwDAAAAAAAAAAAAAAAAAg--PAAAAAAAAAAAAAAAAA9-DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw--fIAAAAAu9vBAAAAAAAg-B9PAAAAAAAAAAAAAAAAAAAgAAAAAAACAg4DA+AAAAAAAAAAAAAAAAA+-----5---------------BAAAAAAAAAAAAAAA5AAAg-BAAAAAAAAAAAAAAAAAAAAAAAAAAAUABMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAwBAAAA5iAeFAAAAAAAAcAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAADAAAAAAAAA5BYAAAAAAACAAAAARAAAAAAAAAAAAAAEAAAAAAAAAAAAAAgEIwAIAAAAAAg4vBA9---DAAAAAAAAAAAAAA-DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5AC5b-PwAAAAAA+---------
+; CursorPosition = 4308
+; FirstLine = 4248
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

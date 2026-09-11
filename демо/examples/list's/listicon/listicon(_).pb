@@ -166,9 +166,10 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure AddCaption( *this._s_PARENT, Width, Height, Text.s, Flag.q = #__align_auto ) 
       Protected *g._s_WIDGET
       *this\fs[2] = Height
-      OpenList(*this,#PB_Ignore)
+      OpenList(*this, #PB_Ignore)
       *g = Button( 0,0,Width,Height, Text.s, #__flag_Left )
       CloseList( )
+      ; SetParent( *g, *this, #PB_Ignore )
       If Flag & #__align_auto
          SetAlign( *g, 0, #__align_auto,1,#__align_auto,0, 0 )              
       EndIf
@@ -419,8 +420,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 236
-; FirstLine = 216
+; CursorPosition = 171
+; FirstLine = 163
 ; Folding = ---------
 ; EnableXP
 ; DPIAware
