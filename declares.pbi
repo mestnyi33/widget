@@ -1715,7 +1715,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Declare.b Draw_Arrow( direction.a, X.l, Y.l, size.a, mode.b = 1, framesize.a = 0, Color.i = $ff000000 )
    Declare   Draw_Button( *this )
    Declare   Draw_Editor( *this )
-   Declare.l UpdateDraw_Rows( *this, List rows._s_ROW( ))
+   Declare.l UpdateDraw_Rows( *this )
    
    ;-
    Declare.l Level( *this )
@@ -1937,10 +1937,9 @@ CompilerEndIf
 CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
-
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1750
-; FirstLine = 862
+; CursorPosition = 1717
+; FirstLine = 829
 ; Folding = 9AcgA-PBu----------PMA9------DA5--PAQAAAw-
 ; EnableXP
 ; DPIAware
