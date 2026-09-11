@@ -64,82 +64,6 @@
       Views( _this_, _parent_ )
    EndMacro
    
-   Macro DisableState( _this_, _parent_ )
-      ; 1. Расчет финального состояния на основе базовой маски и маски родителя
-      If Bool( ( _this_\mask & #__mask_disable ) Or ( _parent_ And ( _parent_\mask & #__mask_disabled ) ) )
-         _this_\mask | #__mask_disabled
-      Else
-         _this_\mask & ~#__mask_disabled
-      EndIf
-      
-      ; reset color state
-      If _this_\mask & #__mask_hover
-         If _this_\mask & #__mask_disabled
-            If _this_\ColorState( ) <> #__s_0
-               _this_\ColorState( ) = #__s_0
-            EndIf
-         Else
-            If _this_\ColorState( ) <> #__s_1
-               _this_\ColorState( ) = #__s_1
-            EndIf
-         EndIf
-      EndIf
-      
-      ; 2. Обновление дочернего элемента Tabbar
-      If _this_\tabbar
-         If _this_\mask & #__mask_disabled
-            _this_\tabbar\mask | #__mask_disabled
-         Else
-            ; Если родитель активен, состояние зависит от личной маски таббара
-            If _this_\tabbar\mask & #__mask_disable
-               _this_\tabbar\mask | #__mask_disabled
-            Else
-               _this_\tabbar\mask & ~#__mask_disabled
-            EndIf
-         EndIf
-      EndIf
-      
-      ; 3. Обновление дочернего элемента Stringbar
-      If _this_\Stringbar
-         If _this_\mask & #__mask_disabled
-            _this_\Stringbar\mask | #__mask_disabled
-         Else
-            If _this_\Stringbar\mask & #__mask_disable
-               _this_\Stringbar\mask | #__mask_disabled
-            Else
-               _this_\Stringbar\mask & ~#__mask_disabled
-            EndIf
-         EndIf
-      EndIf
-      
-      ; 4. Обновление дочерних скроллбаров (v и h)
-      If _this_\scroll
-         If _this_\scroll\v
-            If _this_\mask & #__mask_disabled
-               _this_\scroll\v\mask | #__mask_disabled
-            Else
-               If _this_\scroll\v\mask & #__mask_disable
-                  _this_\scroll\v\mask | #__mask_disabled
-               Else
-                  _this_\scroll\v\mask & ~#__mask_disabled
-               EndIf
-            EndIf
-         EndIf
-         If _this_\scroll\h
-            If _this_\mask & #__mask_disabled
-               _this_\scroll\h\mask | #__mask_disabled
-            Else
-               If _this_\scroll\h\mask & #__mask_disable
-                  _this_\scroll\h\mask | #__mask_disabled
-               Else
-                  _this_\scroll\h\mask & ~#__mask_disabled
-               EndIf
-            EndIf
-         EndIf
-      EndIf
-   EndMacro
-   
-   ;-
    Procedure.b HideItem( *this._s_widget, item.l, state.b )
       If *this\type = #__type_MenuBar Or
          *this\type = #__type_PopupBar Or
@@ -217,46 +141,6 @@
       EndIf
    EndProcedure
    
-   Procedure.b DisableItem( *this._s_widget, item.l, state.b )
-      If *this\type = #__type_panel
-         If *this\tabbar
-            ForEach *this\tabbar\__tabs( )
-               If *this\tabbar\__tabs( )\tindex = item
-                  ; SelectElement( *this\tabbar\__tabs( ), item )
-                  If state
-                     *this\tabbar\__tabs( )\mask | #__mask_disabled 
-                  Else
-                     *this\tabbar\__tabs( )\mask &~ #__mask_disabled 
-                  EndIf
-                  *this\tabbar\TabChange( ) = #True
-                  Break
-               EndIf
-            Next
-         EndIf
-      EndIf
-      If *this\type = #__type_MenuBar Or
-         *this\type = #__type_PopupBar Or
-         *this\type = #__type_ToolBar
-         ;
-         If *this\__tabs( )
-            PushListPosition(*this\__tabs( ))
-            ForEach *this\__tabs( )
-               If *this\__tabs( )\tindex = item
-                  ;SelectElement( *this\__tabs( ), item )
-                  If state
-                     *this\__tabs( )\mask | #__mask_disabled 
-                  Else
-                     *this\__tabs( )\mask &~ #__mask_disabled 
-                  EndIf
-                  *this\TabChange( ) = #True
-                  Break
-               EndIf
-            Next
-            PopListPosition(*this\__tabs( ))
-         EndIf
-      EndIf
-   EndProcedure
-   
    Procedure.b Hide( *this._s_PARENT, state.b = #PB_Default, flags.q = 0 )
       Protected._s_WIDGET *e
       ; 1. Если состояние не передано — возвращаем 1 или 0 (был ли скрыт изначально)
@@ -289,134 +173,6 @@
       EndIf
    EndProcedure
    
-   Procedure.b Disable( *this._s_PARENT, State.b = #PB_Default )
-      Protected._s_WIDGET *e
-      ; Если состояние не передано — возвращаем истину, если установлена базовая маска блокировки
-      If State = #PB_Default 
-         If *this\mask & #__mask_disable
-            ProcedureReturn 1
-         Else
-            ProcedureReturn 0
-         EndIf
-      EndIf
-      
-      ; Получаем текущее базовое состояние (0 или 1) для проверки на изменение
-      If State <> Bool(*this\mask & #__mask_disable)
-         ; Переключаем бит базовой блокировки в зависимости от значения State
-         If State
-            *this\mask | #__mask_disable
-         Else
-            *this\mask & ~#__mask_disable
-         EndIf
-         
-         ; Пересчитываем финальное состояние для текущего элемента
-         DisableState( *this, *this\parent )
-         
-         ; Если есть дочерние элементы — каскадно обновляем их
-         If *this\haschildren
-            If StartEnum( *this ) : *e = Widget()
-               DisableState( *e, *e\parent )
-               StopEnum( )
-            EndIf
-         EndIf
-         
-         ProcedureReturn 1
-      EndIf
-   EndProcedure
-   
-   
-   Procedure.l Type( *this._s_WIDGET ) ; Returns created widget type
-      ProcedureReturn *this\type
-   EndProcedure
-   
-   Procedure.l Level( *this._s_WIDGET )
-      ProcedureReturn *this\level
-   EndProcedure
-   
-   Procedure.l Index( *this._s_WIDGET )
-      ProcedureReturn *this\createindex
-   EndProcedure
-   
-   Procedure.i ID( Index )
-      Protected.i result
-      If Index >= 0
-         PushListPosition( widgets( ) )
-         ForEach widgets( )
-            If Index( widgets( ) ) = Index
-               result = widgets( )
-               Break
-            EndIf
-         Next
-         PopListPosition( widgets( ) )
-      EndIf
-      ProcedureReturn result
-   EndProcedure
-   
-   Procedure.l X( *this._s_WIDGET, mode.l = #PB_Default )
-      If mode < 0
-         If is_window_( *this )
-            mode = #__c_frame
-         Else
-            mode = #__c_container
-            If *this\parent
-               ProcedureReturn DPIUnscaledX( *this\x[mode] )-DPIUnscaledX(*this\parent\scroll_x( ))
-            EndIf
-         EndIf
-      EndIf
-      ProcedureReturn DPIUnscaledX( *this\x[mode] ) 
-   EndProcedure
-   
-   Procedure.l Y( *this._s_WIDGET, mode.l = #PB_Default )
-      If mode < 0
-         If is_window_( *this )
-            mode = #__c_frame
-         Else
-            mode = #__c_container
-            If *this\parent
-               ProcedureReturn DPIUnscaledY( *this\y[mode] )-DPIUnscaledY(*this\parent\scroll_y( ))
-            EndIf
-         EndIf
-      EndIf
-      ProcedureReturn DPIUnscaledY( *this\y[mode] )
-   EndProcedure
-   
-   Procedure.l Width( *this._s_WIDGET, mode.l = #PB_Default )
-      If mode < 0
-         If is_window_( *this )
-            mode = #__c_inner
-         Else
-            mode = #__c_frame
-         EndIf
-      EndIf
-      If mode = #__c_Required
-         If *this\mask & #__mask_redraw
-            *this\mask &~ #__mask_redraw
-            Repaint( *this )
-         EndIf
-         ProcedureReturn DPIUnscaledY( *this\width[mode] + *this\fs * 2 )
-      Else
-         ProcedureReturn DPIUnscaledX( *this\width[mode] ) 
-      EndIf
-   EndProcedure
-   
-   Procedure.l Height( *this._s_WIDGET, mode.l = #PB_Default )
-      If mode < 0
-         If is_window_( *this )
-            mode = #__c_inner
-         Else
-            mode = #__c_frame
-         EndIf
-      EndIf
-      If mode = #__c_Required
-         If *this\mask & #__mask_redraw
-            *this\mask &~ #__mask_redraw
-            Repaint( *this )
-         EndIf
-         ProcedureReturn DPIUnscaledY( *this\height[mode] + *this\fs * 2 )
-      Else
-         ProcedureReturn DPIUnscaledY( *this\height[mode] ) 
-      EndIf
-   EndProcedure
    
    Procedure   IsChild( *this._s_WIDGET, *parent._s_WIDGET )
       Protected result
@@ -439,24 +195,6 @@
       EndIf
       ;
       ProcedureReturn result
-   EndProcedure
-   
-   Procedure IsPopupChild( *this._s_WIDGET, *parent._s_WIDGET )
-      While *this\menu\parent
-         If *this\menu\parent = *parent
-            ; Debug *this\class
-            ProcedureReturn *this
-         EndIf
-         *this = *this\menu\parent
-      Wend
-   EndProcedure
-   
-   Procedure.b IsContainer( *this._s_WIDGET )
-      ProcedureReturn *this\container
-   EndProcedure
-   
-   Procedure   IsChildrens( *this._s_WIDGET )
-      ProcedureReturn *this\haschildren
    EndProcedure
    
    ;-
@@ -1162,8 +900,8 @@
    EndProcedure
    
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 461
-; FirstLine = 578
-; Folding = ----------------------------------
+; CursorPosition = 66
+; FirstLine = 66
+; Folding = --4-----------------------
 ; EnableXP
 ; DPIAware
