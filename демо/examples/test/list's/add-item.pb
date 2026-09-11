@@ -26,11 +26,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    
    
-   Procedure.i AddItems( *this._s_WIDGET, List *rows._S_ROWS( ), position.l, Text.s, Image.i = -1, sublevel.i = 0 )
+   Procedure.i AddItems( *this._s_WIDGET, List *rows._s_ROW( ), position.l, Text.s, Image.i = -1, sublevel.i = 0 )
       Protected last
-      Protected *rowLast._s_ROWS 
+      Protected *rowLast._s_ROW 
       Protected *row.allocate(ROWS)
-      Protected *rowParent._s_ROWS
+      Protected *rowParent._s_ROW
       
       If *this
          If *row
@@ -345,9 +345,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 230
-; FirstLine = 229
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 28
+; FirstLine = 24
 ; Folding = -------
 ; EnableXP
 ; DPIAware

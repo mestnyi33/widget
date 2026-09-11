@@ -239,7 +239,7 @@
          #__event_KeyUp
          ;
          #__event_DragStart
-         #__event_Drag
+         #__event_DragStop
          #__event_Drop
          ;
          #__event_Draw
@@ -787,8 +787,8 @@
    ;UseModule Constants
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 332
-; FirstLine = 325
+; CursorPosition = 241
+; FirstLine = 232
 ; Folding = ----
 ; Optimizer
 ; EnableXP

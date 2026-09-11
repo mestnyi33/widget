@@ -1668,31 +1668,9 @@ CompilerIf Not Defined( widgets, #PB_Module )
       EndIf
    EndMacro     
    
-   ;-
-   
    ;-  
    ;-\\  DECLARE_globals
    ;-  
-   Declare   Draw_Editor( *this._s_WIDGET )
-   
-;    Declare.l DropX( )
-;    Declare.l DropY( )
-;    Declare.l DropWidth( )
-;    Declare.l DropHeight( )
-;    
-;    Declare.s DropFiles( )
-;    Declare.s DropText( )
-;    Declare.i DropType( )
-;    Declare.i DropAction( )
-;    Declare.i DropPrivate( )
-;    Declare.i DropImage( img.i = -1, Depth.i = 24 )
-;    
-;    Declare.i DragDropText( Text.S, Actions.b = #PB_Drag_Copy )
-;    Declare.i DragDropImage( img.i, Actions.b = #PB_Drag_Copy )
-;    Declare.i DragDropPrivate( Type.i, Actions.b = #PB_Drag_Copy )
-;    Declare.i DragDropFiles( Files.s, Actions.b = #PB_Drag_Copy )
-;    Declare.i EnableDrop( *this, Format.l, Actions.b, PrivateType.i = 0 )
-   
    Declare a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
    Declare a_init( *this, grid_size.a = 7, grid_type.b = 0 )
    Declare a_set( *this, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
@@ -1704,8 +1682,6 @@ CompilerIf Not Defined( widgets, #PB_Module )
    ; Declare   make_mdi_size( *this, scroll_x, scroll_y, scroll_width, scroll_height )
    Declare.b bar_update( *this, mode.b = 1 )
    Declare.b bar_PageChange( *this, state.l, mode.b = 1 )
-   
-   Declare.l UpdateDraw_Rows( *this, List rows._s_ROW( ))
    Declare.b bar_UpdateDraw_TabItems( *this )
    
    Declare   make_mdi_max( *this, X.l, Y.l, Width.l, Height.l )
@@ -1734,11 +1710,16 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Declare.s ClassFromType( Type )
    Declare.s EventString( event.i )
    
-   Declare.b Draw_Arrow( direction.a, X.l, Y.l, size.a, mode.b = 1, framesize.a = 0, Color.i = $ff000000 )
-   Declare   Draw_Button( *this._s_WIDGET )
    Declare.b Draw( *this )
-   Declare   ReDraw( *this._s_ROOT = 0 )
+   Declare   ReDraw( *root = 0 )
+   Declare.b Draw_Arrow( direction.a, X.l, Y.l, size.a, mode.b = 1, framesize.a = 0, Color.i = $ff000000 )
+   Declare   Draw_Button( *this )
+   Declare   Draw_Editor( *this )
+   Declare.l UpdateDraw_Rows( *this, List rows._s_ROW( ))
    
+   ;-
+   Declare.l Level( *this )
+   Declare.i CountType( *this, mode.b = 0 )
    Declare   IsChild( *this, *parent )
    Declare   IsChildrens( *this )
    Declare.b IsContainer( *this )
@@ -1759,6 +1740,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Declare   ReClip( *this._s_WIDGET )
    Declare   ResizeRootWindow( *this, X.l, Y.l, Width.l, Height.l )
    Declare.b Resize( *this, ix.l, iy.l, iwidth.l, iheight.l, scale.b = 1 )
+   ;
    Declare   Alignment( *this, align.q, mode.q = 0 )
    Declare.i SetAlign( *this, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0, update.b = 1 )
    Declare.i SetAttach( *this, *parent, mode.a )
@@ -1766,7 +1748,8 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Declare   SetMoveBounds( *this, MinimumX.l = #PB_Ignore, MinimumY.l = #PB_Ignore, MaximumX.l = #PB_Ignore, MaximumY.l = #PB_Ignore )
    Declare   SetSizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
    
-   
+   Declare   ChangeItemState( *this, Item.l, State.b )
+   Declare   ChangeStatus( *this, *row )
    Declare.l CountItems( *this )
    Declare.l ClearItems( *this )
    Declare   PushItem( *this )
@@ -1783,12 +1766,10 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Declare.i GetCanvasGadget( *this )
    Declare.i GetCanvasWindow( *this )
    
-   Declare.l Level( *this )
-   Declare.i CountType( *this, mode.b = 0 )
-   
    Declare.i SetFocus( *this )
    Declare.i SetActive( *this )
    Declare   SetForeground( *window )
+   Declare   SetTextXY( *this, X.l, Y.l )
    
    Declare.l GetRound( *this )
    Declare   SetRound( *this, round.l )
@@ -1799,38 +1780,23 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Declare.s GetClass( *this )
    Declare   SetClass( *this, class.s )
    
-   Declare   SetTextXY( *this, X.l, Y.l )
    Declare   GetCaret( *this, mode.a = 0 )
    Declare   SetCaret( *this, position.i )
+   
    Declare.s GetText( *this )
    Declare   SetText( *this, Text.s )
    Declare.s GetItemText( *this, Item.l, Column.l = 0 )
    Declare.l SetItemText( *this, Item.l, Text.s, Column.l = 0 )
    
-   Declare   ChangeStatus( *this, *row )
    Declare.i GetState( *this )
    Declare.b SetState( *this, state.i )
    Declare.l GetItemState( *this, Item.l )
    Declare.b SetItemState( *this, Item.l, State.b )
-   Declare   ChangeItemState( *this, Item.l, State.b )
    
    Declare.i GetData( *this )
    Declare.i SetData( *this, *data )
    Declare.i GetItemData( *this, item.l )
    Declare.i SetItemData( *this, item.l, *data )
-   ;
-   Declare.i GetFont( *this )
-   Declare.i SetFont( *this, Font.i )
-   Declare.i GetFontColor( *this )
-   Declare   SetFontColor( *this, color.i )
-   Declare.i GetItemFont( *this, Item.l )
-   Declare.i SetItemFont( *this, Item.l, Font.i )
-   
-   Declare   SetBackgroundColor( *this, color.i )
-   Declare.i GetColor( *this, ColorType.l, ColorState.a = 0 )
-   Declare.l SetColor( *this, ColorType.l, color.i, ColorState.b = 0 )
-   Declare.l GetItemColor( *this, Item.l, ColorType.l, Column.l = 0, ColorState.a = 0 )
-   Declare.l SetItemColor( *this, Item.l, ColorType.l, color.i, Column.l = 0, ColorState.b = 0 )
    
    Declare.i GetAttribute( *this, Attribute.l )
    Declare.i SetAttribute( *this, Attribute.l, value )
@@ -1840,6 +1806,20 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Declare.i GetCursor( *this = #PB_All, Type.a = 0 )
    Declare   SetCursor( *this, *cursor, Type.a = 0 )
    Declare   ChangeCursor( *this, *cursor )
+   ;
+   Declare.i GetFont( *this )
+   Declare.i SetFont( *this, Font.i )
+   Declare.i GetItemFont( *this, Item.l )
+   Declare.i SetItemFont( *this, Item.l, Font.i )
+   
+   Declare.i GetFontColor( *this )
+   Declare   SetFontColor( *this, color.i )
+   
+   Declare   SetBackgroundColor( *this, color.i )
+   Declare.i GetColor( *this, ColorType.l, ColorState.a = 0 )
+   Declare.l SetColor( *this, ColorType.l, color.i, ColorState.b = 0 )
+   Declare.l GetItemColor( *this, Item.l, ColorType.l, Column.l = 0, ColorState.a = 0 )
+   Declare.l SetItemColor( *this, Item.l, ColorType.l, color.i, Column.l = 0, ColorState.b = 0 )
    
    Declare   SetBackgroundImage( *this, img )
    Declare   RemoveImage( *this, img )
@@ -1958,10 +1938,9 @@ CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
 
-
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 148
-; FirstLine = 114
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 1750
+; FirstLine = 862
 ; Folding = 9AcgA-PBu----------PMA9------DA5--PAQAAAw-
 ; EnableXP
 ; DPIAware

@@ -119,8 +119,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure SetItemPosition(*this._s_widget, Tab.i, Position.i) ; Code OK, Hilfe OK
       
       
-      ;   Protected *NewItem._s_rows = ItemID(*this, Position)
-      ;   Protected *Item._s_rows = ItemID(*this, Tab)
+      ;   Protected *NewItem._s_ROW = ItemID(*this, Position)
+      ;   Protected *Item._s_ROW = ItemID(*this, Tab)
       ;   
       ;   If *Item And *Item <> *this\NewTabItem
       ;     If *NewItem And *NewItem <> *this\NewTabItem
@@ -550,8 +550,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    Procedure SetItemPosition(*this._s_widget, Tab.i, Position.i) ; Code OK, Hilfe OK
       
       
-      ;   Protected *NewItem._s_rows = ItemID(*this, Position)
-      ;   Protected *Item._s_rows = ItemID(*this, Tab)
+      ;   Protected *NewItem._s_ROW = ItemID(*this, Position)
+      ;   Protected *Item._s_ROW = ItemID(*this, Tab)
       ;   
       ;   If *Item And *Item <> *this\NewTabItem
       ;     If *NewItem And *NewItem <> *this\NewTabItem
@@ -865,8 +865,8 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       
    ForEver
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 232
-; FirstLine = 224
-; Folding = --vv----
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 553
+; FirstLine = 463
+; Folding = --v-----
 ; EnableXP

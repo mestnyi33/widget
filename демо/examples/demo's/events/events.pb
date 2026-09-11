@@ -44,7 +44,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure CallBack( )
-      Protected._s_ROWS *row
+      Protected._s_ROW *row
       Protected._s_WIDGET *g
       
       *g = EventWidget( )
@@ -111,7 +111,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( @CallBack( ))
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 26
-; FirstLine = 8
+; CursorPosition = 46
+; FirstLine = 42
 ; Folding = ---
 ; EnableXP

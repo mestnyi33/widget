@@ -30,7 +30,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndSelect
             
          Case #__event_StatusChange
-            Protected._s_ROWS *row 
+            Protected._s_ROW *row 
             ;
             If PushItem( EventWidget( ))
                If SelectItem( EventWidget( ), WidgetEventItem( ))
@@ -77,9 +77,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 54
-; FirstLine = 21
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 32
+; FirstLine = 28
 ; Folding = -7-
 ; EnableXP
 ; DPIAware

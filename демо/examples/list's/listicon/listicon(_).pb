@@ -46,7 +46,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
       Protected._s_WIDGET *first = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
       Protected._s_WIDGET *second = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
-      Protected._s_ROWS *row
+      Protected._s_ROW *row
       Protected state
       
       ;
@@ -113,7 +113,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEvent( )
          Case #__event_StatusChange
-            Protected._s_ROWS *row = WidgetEventData( )
+            Protected._s_ROW *row = WidgetEventData( )
             
             If StartEnum( *area )
                If *g = widgets()
@@ -163,15 +163,16 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   Procedure AddCaption( *this._s_WIDGET, Width, Height, Text.s, Flag.q = #__align_auto ) 
+   Procedure AddCaption( *this._s_PARENT, Width, Height, Text.s, Flag.q = #__align_auto ) 
       Protected *g._s_WIDGET
       *this\fs[2] = Height
+      OpenList(*this,#PB_Ignore)
       *g = Button( 0,0,Width,Height, Text.s, #__flag_Left )
-      
-      SetParent( *g, *this, #PB_Ignore )
+      CloseList( )
       If Flag & #__align_auto
          SetAlign( *g, 0, #__align_auto,1,#__align_auto,0, 0 )              
       EndIf
+      
    EndProcedure
    
    Procedure ListIcon_(X,Y,Width,Height,firstcolumntitle.s, firstcolumnwidth, flags.q=0 )
@@ -418,8 +419,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 56
+; CursorPosition = 236
+; FirstLine = 216
 ; Folding = ---------
 ; EnableXP
 ; DPIAware

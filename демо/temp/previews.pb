@@ -1,8 +1,8 @@
-EnableExplicit
+ÔªøEnableExplicit
 
-; --- —“–” “”–€ ---
+; --- √ë√í√ê√ì√ä√í√ì√ê√õ ---
 
-; ƒÎˇ ÓÍÓÌ Ë „‡‰ÊÂÚÓ‚ (Ò „ÂÓÏÂÚËÂÈ)
+; √Ñ√´√ø √Æ√™√Æ√≠ √® √£√†√§√¶√•√≤√Æ√¢ (√± √£√•√Æ√¨√•√≤√∞√®√•√©)
 Structure ControlParams
   ID.i
   X.i
@@ -16,7 +16,7 @@ Structure ControlParams
   Param3.i
 EndStructure
 
-; ƒÎˇ ÒÂ‚ËÒÌ˚ı ÙÛÌÍˆËÈ Ë ÍÓÏ‡Ì‰ ÛÔ‡‚ÎÂÌËˇ
+; √Ñ√´√ø √±√•√∞√¢√®√±√≠√ª√µ √¥√≥√≠√™√∂√®√© √® √™√Æ√¨√†√≠√§ √≥√Ø√∞√†√¢√´√•√≠√®√ø
 Structure FunctionParams
   ID.i
   Value.i
@@ -26,39 +26,39 @@ Structure FunctionParams
 EndStructure
 
 
-; --- œ–Œ÷≈ƒ”–€ œ¿–—»Õ√¿ ---
+; --- √è√ê√é√ñ√Ö√Ñ√ì√ê√õ √è√Ä√ê√ë√à√ç√É√Ä ---
 
-; Œ˜ËÒÚÍ‡ ÒÚÓÍ (ÓÒÚ‡ÂÚÒˇ ·ÂÁ ËÁÏÂÌÂÌËÈ)
+; √é√∑√®√±√≤√™√† √±√≤√∞√Æ√™ (√Æ√±√≤√†√•√≤√±√ø √°√•√ß √®√ß√¨√•√≠√•√≠√®√©)
 Procedure.s CleanArg(Value$)
   Value$ = Trim(Value$)
   Value$ = RemoveString(Value$, Chr(34))
   ProcedureReturn Value$
 EndProcedure
 
-; ”ÏÌ˚È ‚˚˜ËÒÎËÚÂÎ¸ ‡„ÛÏÂÌÚÓ‚. œÓÌËÏ‡ÂÚ ˜ËÒÎ‡, ÍÓÌÒÚ‡ÌÚ˚ Ë ÙÛÌÍˆËË RGB/RGBA
+; √ì√¨√≠√ª√© √¢√ª√∑√®√±√´√®√≤√•√´√º √†√∞√£√≥√¨√•√≠√≤√Æ√¢. √è√Æ√≠√®√¨√†√•√≤ √∑√®√±√´√†, √™√Æ√≠√±√≤√†√≠√≤√ª √® √¥√≥√≠√™√∂√®√® RGB/RGBA
 Procedure.i EvaluateArg(Value$)
   Value$ = Trim(Value$)
-  Value$ = RemoveString(Value$, Chr(34)) ; ”·Ë‡ÂÏ Í‡‚˚˜ÍË, ÂÒÎË ÓÌË ÔÓÒÍÓ˜ËÎË
+  Value$ = RemoveString(Value$, Chr(34)) ; √ì√°√®√∞√†√•√¨ √™√†√¢√ª√∑√™√®, √•√±√´√® √Æ√≠√® √Ø√∞√Æ√±√™√Æ√∑√®√´√®
   Protected LowVal$ = LCase(Value$)
   
-  ; 1. Œ¡–¿¡Œ“ ¿ —»—“≈ÃÕ€’  ŒÕ—“¿Õ“ PUREBASIC
+  ; 1. √é√Å√ê√Ä√Å√é√í√ä√Ä √ë√à√ë√í√Ö√å√ç√õ√ï √ä√é√ç√ë√í√Ä√ç√í PUREBASIC
   If Left(LowVal$, 4) = "#pb_"
     Select LowVal$
-      ;  ÓÌÒÚ‡ÌÚ˚ ÚËÔÓ‚ ˆ‚ÂÚ‡ „‡‰ÊÂÚÓ‚
+      ; √ä√Æ√≠√±√≤√†√≠√≤√ª √≤√®√Ø√Æ√¢ √∂√¢√•√≤√† √£√†√§√¶√•√≤√Æ√¢
       Case "#pb_gadget_frontcolor" : ProcedureReturn 0
       Case "#pb_gadget_backcolor"  : ProcedureReturn 1
       Case "#pb_gadget_linecolor"  : ProcedureReturn 2
         
-      ;  ÓÌÒÚ‡ÌÚ˚ ÙÎ‡„Ó‚ ÓÍÓÌ (‰Îˇ ÔËÏÂ‡, ÏÓÊÌÓ ‡Ò¯ËˇÚ¸)
+      ; √ä√Æ√≠√±√≤√†√≠√≤√ª √¥√´√†√£√Æ√¢ √Æ√™√Æ√≠ (√§√´√ø √Ø√∞√®√¨√•√∞√†, √¨√Æ√¶√≠√Æ √∞√†√±√∏√®√∞√ø√≤√º)
       Case "#pb_window_systemmenu"     : ProcedureReturn #PB_Window_SystemMenu
       Case "#pb_window_screencentered" : ProcedureReturn #PB_Window_ScreenCentered
         
-      ;  ÓÌÒÚ‡ÌÚ˚ ÔÓÁËˆËÈ ‰Îˇ AddGadgetItem
+      ; √ä√Æ√≠√±√≤√†√≠√≤√ª √Ø√Æ√ß√®√∂√®√© √§√´√ø AddGadgetItem
       Case "#pb_any" : ProcedureReturn #PB_Any
     EndSelect
   EndIf
   
-  ; 2. Œ¡–¿¡Œ“ ¿ ƒ»Õ¿Ã»◊≈— »’ ‘”Õ ÷»… ÷¬≈“¿
+  ; 2. √é√Å√ê√Ä√Å√é√í√ä√Ä √Ñ√à√ç√Ä√å√à√ó√Ö√ë√ä√à√ï √î√ì√ç√ä√ñ√à√â √ñ√Ç√Ö√í√Ä
   Protected BracketPos = FindString(LowVal$, "(")
   If BracketPos
     Protected Func$ = Trim(Left(LowVal$, BracketPos - 1))
@@ -81,8 +81,8 @@ Procedure.i EvaluateArg(Value$)
     EndSelect
   EndIf
   
-  ; 3. Œ¡€◊ÕŒ≈ ◊»—ÀŒ (ËÎË ·ËÚÓ‚˚Â Ï‡ÒÍË, ÂÒÎË ÓÌË ÒÍÎÂÂÌ˚ Í‡Í ÒÚÓÍË)
-  ; ≈ÒÎË ‚ ÒÚÓÍÂ ÓÒÚ‡ÎÒˇ ‡Á‰ÂÎËÚÂÎ¸ "|" ÓÚ ÍÓÌÒÚ‡ÌÚ, Ò˜ËÚ‡ÂÏ Ëı ÒÛÏÏÛ
+  ; 3. √é√Å√õ√ó√ç√é√Ö √ó√à√ë√ã√é (√®√´√® √°√®√≤√Æ√¢√ª√• √¨√†√±√™√®, √•√±√´√® √Æ√≠√® √±√™√´√•√•√≠√ª √™√†√™ √±√≤√∞√Æ√™√®)
+  ; √Ö√±√´√® √¢ √±√≤√∞√Æ√™√• √Æ√±√≤√†√´√±√ø √∞√†√ß√§√•√´√®√≤√•√´√º "|" √Æ√≤ √™√Æ√≠√±√≤√†√≠√≤, √±√∑√®√≤√†√•√¨ √®√µ √±√≥√¨√¨√≥
   If FindString(Value$, "|")
     Protected i, Sum = 0, PartsCount = CountString(Value$, "|") + 1
     For i = 1 To PartsCount
@@ -93,7 +93,7 @@ Procedure.i EvaluateArg(Value$)
   
   ProcedureReturn Val(Value$)
 EndProcedure
-; œ‡ÒÂ π1: ƒÎˇ ˝ÎÂÏÂÌÚÓ‚ ÛÔ‡‚ÎÂÌËˇ (¬‡¯ ÓÔÚËÏËÁËÓ‚‡ÌÌ˚È ‚‡Ë‡ÌÚ)
+; √è√†√∞√±√•√∞ ¬π1: √Ñ√´√ø √Ω√´√•√¨√•√≠√≤√Æ√¢ √≥√Ø√∞√†√¢√´√•√≠√®√ø (√Ç√†√∏ √Æ√Ø√≤√®√¨√®√ß√®√∞√Æ√¢√†√≠√≠√ª√© √¢√†√∞√®√†√≠√≤)
 Procedure ParseControlParams(Args$, *Result.ControlParams)
   Protected Tail$, CleanTail$, LastQuote, Pos
   Protected.s arg1, arg2, arg3, arg4, arg5
@@ -141,37 +141,37 @@ Procedure ParseControlParams(Args$, *Result.ControlParams)
   EndIf
 EndProcedure
 
-; œ‡ÒÂ π2: ”ÌË‚ÂÒ‡Î¸Ì˚È ‡Á·Ó ‰Îˇ ÙÛÌÍˆËÈ (AddGadgetItem, SetGadgetText Ë Ú.‰.)
+; √è√†√∞√±√•√∞ ¬π2: √ì√≠√®√¢√•√∞√±√†√´√º√≠√ª√© √∞√†√ß√°√Æ√∞ √§√´√ø √¥√≥√≠√™√∂√®√© (AddGadgetItem, SetGadgetText √® √≤.√§.)
 Procedure ParseFunctionParams(Args$, *Result.FunctionParams)
   Protected FirstQ, LastQ
   
-  ; œÓ ÛÏÓÎ˜‡ÌË˛ Ó·ÌÛÎˇÂÏ ÒÚÛÍÚÛÛ
+  ; √è√Æ √≥√¨√Æ√´√∑√†√≠√®√æ √Æ√°√≠√≥√´√ø√•√¨ √±√≤√∞√≥√™√≤√≥√∞√≥
   *Result\Id = 0 : *Result\Value = 0 : *Result\Text$ = "" : *Result\Param1 = 0 : *Result\Param2 = 0
   
-  ; œÂ‚˚Â ‰‚‡ Ô‡‡ÏÂÚ‡ Û ÙÛÌÍˆËÈ ÔÓ˜ÚË ‚ÒÂ„‰‡ ˜ËÒÎ‡ (ID „‡‰ÊÂÚ‡, ÔÓÁËˆËˇ/ÒÓÒÚÓˇÌËÂ)
+  ; √è√•√∞√¢√ª√• √§√¢√† √Ø√†√∞√†√¨√•√≤√∞√† √≥ √¥√≥√≠√™√∂√®√© √Ø√Æ√∑√≤√® √¢√±√•√£√§√† √∑√®√±√´√† (ID √£√†√§√¶√•√≤√†, √Ø√Æ√ß√®√∂√®√ø/√±√Æ√±√≤√Æ√ø√≠√®√•)
   *Result\Id    = Val(CleanArg(StringField(Args$, 1, ",")))
   *Result\Value = Val(CleanArg(StringField(Args$, 2, ",")))
   
-  ; ¡ÂÁÓÔ‡ÒÌÓ ‚˚Ú‡ÒÍË‚‡ÂÏ ÚÂÍÒÚ ËÁ Í‡‚˚˜ÂÍ, ÂÒÎË ÓÌ ‚ÓÓ·˘Â ÂÒÚ¸ ‚ ‡„ÛÏÂÌÚ‡ı
+  ; √Å√•√ß√Æ√Ø√†√±√≠√Æ √¢√ª√≤√†√±√™√®√¢√†√•√¨ √≤√•√™√±√≤ √®√ß √™√†√¢√ª√∑√•√™, √•√±√´√® √Æ√≠ √¢√Æ√Æ√°√π√• √•√±√≤√º √¢ √†√∞√£√≥√¨√•√≠√≤√†√µ
   FirstQ = FindString(Args$, Chr(34))
   LastQ  = FindString(Args$, Chr(34), FirstQ + 1)
   If FirstQ And LastQ
     *Result\Text$ = Mid(Args$, FirstQ + 1, LastQ - FirstQ - 1)
     
-    ; ≈ÒÎË ÔÓÒÎÂ Í‡‚˚˜ÂÍ ÂÒÚ¸ Â˘Â Ô‡‡ÏÂÚ˚ ˜ÂÂÁ Á‡ÔˇÚÛ˛
+    ; √Ö√±√´√® √Ø√Æ√±√´√• √™√†√¢√ª√∑√•√™ √•√±√≤√º √•√π√• √Ø√†√∞√†√¨√•√≤√∞√ª √∑√•√∞√•√ß √ß√†√Ø√ø√≤√≥√æ
     Protected Tail$ = Trim(Mid(Args$, LastQ + 1))
     If Left(Tail$, 1) = "," : Tail$ = Mid(Tail$, 2) : EndIf
     *Result\Param1 = Val(CleanArg(StringField(Tail$, 1, ",")))
     *Result\Param2 = Val(CleanArg(StringField(Tail$, 2, ",")))
   Else
-    ; ≈ÒÎË Í‡‚˚˜ÂÍ Ò ÚÂÍÒÚÓÏ ÌÂÚ, ‰Ó·Ë‡ÂÏ ÓÒÚ‡‚¯ËÂÒˇ Ô‡‡ÏÂÚ˚ Í‡Í ˜ËÒÎ‡
+    ; √Ö√±√´√® √™√†√¢√ª√∑√•√™ √± √≤√•√™√±√≤√Æ√¨ √≠√•√≤, √§√Æ√°√®√∞√†√•√¨ √Æ√±√≤√†√¢√∏√®√•√±√ø √Ø√†√∞√†√¨√•√≤√∞√ª √™√†√™ √∑√®√±√´√†
     *Result\Param1 = Val(CleanArg(StringField(Args$, 3, ",")))
     *Result\Param2 = Val(CleanArg(StringField(Args$, 4, ",")))
   EndIf
 EndProcedure
 
 
-; ‘ÛÌÍˆËˇ ‚ËÁÛ‡ÎËÁ‡ˆËË ÔÂ‚¸˛ (‚ÓÁ‚‡˘‡ÂÚ ‚ÌÛÚÂÌÌËÈ ID ÒÓÁ‰‡ÌÌÓ„Ó ÓÍÌ‡)
+; √î√≥√≠√™√∂√®√ø √¢√®√ß√≥√†√´√®√ß√†√∂√®√® √Ø√∞√•√¢√º√æ (√¢√Æ√ß√¢√∞√†√π√†√•√≤ √¢√≠√≥√≤√∞√•√≠√≠√®√© ID √±√Æ√ß√§√†√≠√≠√Æ√£√Æ √Æ√™√≠√†)
 Procedure.i ExecuteGuiPreview(Code$)
   Protected Count, i, Line$, Cmd$, Args$
   Protected PreviewWindowID = 0
@@ -181,7 +181,7 @@ Procedure.i ExecuteGuiPreview(Code$)
   Code$ = ReplaceString(Code$, #CRLF$, #LF$)
   Count = CountString(Code$, #LF$) + 1
   
-  ; —Óı‡ÌˇÂÏ ÚÂÍÛ˘ÂÂ ÒÓÒÚÓˇÌËÂ ÒÓÁ‰‡ÌËˇ „‡‰ÊÂÚÓ‚ IDE
+  ; √ë√Æ√µ√∞√†√≠√ø√•√¨ √≤√•√™√≥√π√•√• √±√Æ√±√≤√Æ√ø√≠√®√• √±√Æ√ß√§√†√≠√®√ø √£√†√§√¶√•√≤√Æ√¢ IDE
   Protected OldGadgetList = UseGadgetList(0)
   
   For i = 1 To Count
@@ -200,9 +200,9 @@ Procedure.i ExecuteGuiPreview(Code$)
       If Right(Args$, 1) = ")" : Args$ = Left(Args$, Len(Args$) - 1) : EndIf
       If FindString(Args$, ")") : Args$ = StringField(Args$, 1, ")") : EndIf
       
-      ; --- “≈œ≈–‹ œ¿–—»Ã ¬—® ◊≈–≈« ŒƒÕ” ‘”Õ ÷»ﬁ ---
+      ; --- √í√Ö√è√Ö√ê√ú √è√Ä√ê√ë√à√å √Ç√ë¬® √ó√Ö√ê√Ö√á √é√Ñ√ç√ì √î√ì√ç√ä√ñ√à√û ---
       Select Cmd$
-         ; √ÛÔÔ‡ ¿: ¬ËÁÛ‡Î¸Ì˚Â ÍÓÌÚÓÎ˚ Ò „ÂÓÏÂÚËÂÈ
+         ; √É√∞√≥√Ø√Ø√† √Ä: √Ç√®√ß√≥√†√´√º√≠√ª√• √™√Æ√≠√≤√∞√Æ√´√ª √± √£√•√Æ√¨√•√≤√∞√®√•√©
          Case "openwindow",
               "buttongadget", 
               "stringgadget",
@@ -211,7 +211,7 @@ Procedure.i ExecuteGuiPreview(Code$)
               "scrollareagadget"
             ParseControlParams(Args$, @G)
             
-            ; √ÛÔÔ‡ ¡: ‘ÛÌÍˆËË ÛÔ‡‚ÎÂÌËˇ Ë ‰ËÌ‡ÏË˜ÂÒÍÓ„Ó Ì‡ÔÓÎÌÂÌËˇ
+            ; √É√∞√≥√Ø√Ø√† √Å: √î√≥√≠√™√∂√®√® √≥√Ø√∞√†√¢√´√•√≠√®√ø √® √§√®√≠√†√¨√®√∑√•√±√™√Æ√£√Æ √≠√†√Ø√Æ√´√≠√•√≠√®√ø
          Case "addgadgetitem", 
               "setgadgettext", 
               "setgadgetstate", 
@@ -221,16 +221,16 @@ Procedure.i ExecuteGuiPreview(Code$)
       EndSelect
       
       If Cmd$ = "openwindow"
-        ; ≈ÒÎË ˝ÚÓ ÓÍÌÓ, ÔËÏÂÌˇÂÏ Á‡˘ËÚÌ˚Â ÁÌ‡˜ÂÌËˇ ÔÓ ÛÏÓÎ˜‡ÌË˛, ÂÒÎË Ô‡ÒÂ ‚˚‰‡Î ÌÛÎË
+        ; √Ö√±√´√® √Ω√≤√Æ √Æ√™√≠√Æ, √Ø√∞√®√¨√•√≠√ø√•√¨ √ß√†√π√®√≤√≠√ª√• √ß√≠√†√∑√•√≠√®√ø √Ø√Æ √≥√¨√Æ√´√∑√†√≠√®√æ, √•√±√´√® √Ø√†√∞√±√•√∞ √¢√ª√§√†√´ √≠√≥√´√®
         If G\W = 0 : G\W = 300 : EndIf
         If G\H = 0 : G\H = 150 : EndIf
-        If G\Text$ = "" : G\Text$ = "œÂ‚¸˛ ÍÓ‰‡" : EndIf
+        If G\Text$ = "" : G\Text$ = "√è√∞√•√¢√º√æ √™√Æ√§√†" : EndIf
         
-        ; —ÓÁ‰‡ÂÏ ËÁÓÎËÓ‚‡ÌÌÓÂ ÓÍÌÓ (ÙÎ‡„Ë ÏÓÊÌÓ ÓÒÚ‡‚ËÚ¸ ÙËÍÒËÓ‚‡ÌÌ˚ÏË)
+        ; √ë√Æ√ß√§√†√•√¨ √®√ß√Æ√´√®√∞√Æ√¢√†√≠√≠√Æ√• √Æ√™√≠√Æ (√¥√´√†√£√® √¨√Æ√¶√≠√Æ √Æ√±√≤√†√¢√®√≤√º √¥√®√™√±√®√∞√Æ√¢√†√≠√≠√ª√¨√®)
         PreviewWindowID = OpenWindow(#PB_Any, G\X, G\Y, G\W, G\H, G\Text$, #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
         
       Else
-        ; ƒÎˇ ‚ÒÂı ÓÒÚ‡Î¸Ì˚ı ÍÓÏ‡Ì‰ ÔÓ‚ÂˇÂÏ, ˜ÚÓ ÓÍÌÓ ÔÂ‚¸˛ ÛÊÂ ÒÓÁ‰‡ÌÓ
+        ; √Ñ√´√ø √¢√±√•√µ √Æ√±√≤√†√´√º√≠√ª√µ √™√Æ√¨√†√≠√§ √Ø√∞√Æ√¢√•√∞√ø√•√¨, √∑√≤√Æ √Æ√™√≠√Æ √Ø√∞√•√¢√º√æ √≥√¶√• √±√Æ√ß√§√†√≠√Æ
         If PreviewWindowID
           UseGadgetList(WindowID(PreviewWindowID))
           
@@ -241,19 +241,19 @@ Procedure.i ExecuteGuiPreview(Code$)
             Case "panelgadget"      : PanelGadget(G\Id, G\X, G\Y, G\W, G\H)
             Case "scrollareagadget" : ScrollAreaGadget(G\Id, G\X, G\Y, G\W, G\H, G\Flag, G\Param1, G\Param2)
               
-            ; ƒËÌ‡ÏË˜ÂÒÍÓÂ Ì‡ÔÓÎÌÂÌËÂ
+            ; √Ñ√®√≠√†√¨√®√∑√•√±√™√Æ√• √≠√†√Ø√Æ√´√≠√•√≠√®√•
             Case "addgadgetitem"   : AddGadgetItem(F\Id, F\Value, F\Text$)
             Case "setgadgettext"   : SetGadgetText(F\Id, F\Text$)
             Case "setgadgetstate"  : SetGadgetState(F\Id, F\Value)
               
-            ; ÕŒ¬¿ﬂ  ŒÃ¿Õƒ¿: ”ÒÚ‡ÌÓ‚Í‡ ˆ‚ÂÚ‡
-            ; —ËÌÚ‡ÍÒËÒ PB: SetGadgetColor(#Gadget, ColorType, Color)
-            ; ¬ Ì‡¯ÂÈ ÒÚÛÍÚÛÂ: F\Id = #Gadget, F\Value = ColorType, F\Param1 = Color (ÂÁÛÎ¸Ú‡Ú RGB/ÁÌ‡˜ÂÌËÂ)
+            ; √ç√é√Ç√Ä√ü √ä√é√å√Ä√ç√Ñ√Ä: √ì√±√≤√†√≠√Æ√¢√™√† √∂√¢√•√≤√†
+            ; √ë√®√≠√≤√†√™√±√®√± PB: SetGadgetColor(#Gadget, ColorType, Color)
+            ; √Ç √≠√†√∏√•√© √±√≤√∞√≥√™√≤√≥√∞√•: F\Id = #Gadget, F\Value = ColorType, F\Param1 = Color (√∞√•√ß√≥√´√º√≤√†√≤ RGB/√ß√≠√†√∑√•√≠√®√•)
             Case "setgadgetcolor"  : SetGadgetColor(F\Id, F\Value, F\Param1)
               
-            ; ÕŒ¬¿ﬂ  ŒÃ¿Õƒ¿: ”ÒÚ‡ÌÓ‚Í‡ ¯ËÙÚ‡
-            ; —ËÌÚ‡ÍÒËÒ PB: SetGadgetFont(#Gadget, FontID)
-            ; ¬ Ì‡¯ÂÈ ÒÚÛÍÚÛÂ: F\Id = #Gadget, F\Value = FontID
+            ; √ç√é√Ç√Ä√ü √ä√é√å√Ä√ç√Ñ√Ä: √ì√±√≤√†√≠√Æ√¢√™√† √∏√∞√®√¥√≤√†
+            ; √ë√®√≠√≤√†√™√±√®√± PB: SetGadgetFont(#Gadget, FontID)
+            ; √Ç √≠√†√∏√•√© √±√≤√∞√≥√™√≤√≥√∞√•: F\Id = #Gadget, F\Value = FontID
             Case "setgadgetfont"   : SetGadgetFont(F\Id, F\Value)
                
             Case "closegadgetlist"
@@ -266,91 +266,90 @@ Procedure.i ExecuteGuiPreview(Code$)
     EndIf
   Next i
   
-  ; ¬ÓÁ‚‡˘‡ÂÏ ÍÓÌÚÂÍÒÚ ÒÓÁ‰‡ÌËˇ „‡‰ÊÂÚÓ‚ Ó·‡ÚÌÓ ‚ IDE
+  ; √Ç√Æ√ß√¢√∞√†√π√†√•√¨ √™√Æ√≠√≤√•√™√±√≤ √±√Æ√ß√§√†√≠√®√ø √£√†√§√¶√•√≤√Æ√¢ √Æ√°√∞√†√≤√≠√Æ √¢ IDE
   If OldGadgetList : UseGadgetList(OldGadgetList) : EndIf
   
-  ; ≈ÒÎË ÓÍÌÓ ÛÒÔÂ¯ÌÓ ÒÓÁ‰‡ÌÓ, ‰ÂÎ‡ÂÏ Â„Ó ‡ÍÚË‚Ì˚Ï ÔÓ‚Âı IDE
+  ; √Ö√±√´√® √Æ√™√≠√Æ √≥√±√Ø√•√∏√≠√Æ √±√Æ√ß√§√†√≠√Æ, √§√•√´√†√•√¨ √•√£√Æ √†√™√≤√®√¢√≠√ª√¨ √Ø√Æ√¢√•√∞√µ IDE
   If PreviewWindowID
     SetActiveWindow(PreviewWindowID)
   EndIf
   
   ProcedureReturn PreviewWindowID
 EndProcedure
-; --- ƒ≈ÃŒÕ—“–¿÷»ﬂ ÷» À¿ –¿¡Œ“€ ¬ IDE ---
+; --- √Ñ√Ö√å√é√ç√ë√í√ê√Ä√ñ√à√ü √ñ√à√ä√ã√Ä √ê√Ä√Å√é√í√õ √Ç IDE ---
 
 #MainWindow = 10
 #BtnLaunchPreview = 10
 #EditorField = 20
 
-; ŒÚÍ˚‚‡ÂÏ „Î‡‚ÌÓÂ ÓÍÌÓ ‚‡¯ÂÈ IDE
-OpenWindow(#MainWindow, 50, 50, 500, 400, " ÓÌÒÚÛÍÚÓ ËÌÚÂÙÂÈÒ‡ (IDE)", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+; √é√≤√™√∞√ª√¢√†√•√¨ √£√´√†√¢√≠√Æ√• √Æ√™√≠√Æ √¢√†√∏√•√© IDE
+OpenWindow(#MainWindow, 50, 50, 500, 400, "√ä√Æ√≠√±√≤√∞√≥√™√≤√Æ√∞ √®√≠√≤√•√∞√¥√•√©√±√† (IDE)", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 EditorGadget(#EditorField, 10, 10, 480, 320)
-ButtonGadget(#BtnLaunchPreview, 10, 340, 480, 50, "œŒ—ÃŒ“–≈“‹ »Õ“≈–‘≈…— (œ–¿¬ ¿  Œƒ¿)")
+ButtonGadget(#BtnLaunchPreview, 10, 340, 480, 50, "√è√é√ë√å√é√í√ê√Ö√í√ú √à√ç√í√Ö√ê√î√Ö√â√ë (√è√ê√Ä√Ç√ä√Ä √ä√é√Ñ√Ä)")
 
-; «‡ÔÓÎÌˇÂÏ ÔÓÎÂ Â‰‡ÍÚÓ‡ Ì‡˜‡Î¸Ì˚Ï ÍÓ‰ÓÏ
-Define DefaultCode$ = "If OpenWindow(0, 100, 100, 300, 150, " + Chr(34) + "“ÂÒÚÓ‚ÓÂ ŒÍÌÓ" + Chr(34) + ", #PB_Window_SystemMenu)" + #CRLF$ +
-                      "  ButtonGadget(1, 20, 30, 260, 35, " + Chr(34) + "Õ‡ÊÏË ÏÂÌˇ" + Chr(34) + ")" + #CRLF$ +
-                      "  StringGadget(2, 20, 80, 260, 30, " + Chr(34) + "“ÂÍÒÚ..." + Chr(34) + ")" + #CRLF$ +
+; √á√†√Ø√Æ√´√≠√ø√•√¨ √Ø√Æ√´√• √∞√•√§√†√™√≤√Æ√∞√† √≠√†√∑√†√´√º√≠√ª√¨ √™√Æ√§√Æ√¨
+Define DefaultCode$ = "If OpenWindow(0, 100, 100, 300, 150, " + Chr(34) + "√í√•√±√≤√Æ√¢√Æ√• √é√™√≠√Æ" + Chr(34) + ", #PB_Window_SystemMenu)" + #CRLF$ +
+                      "  ButtonGadget(1, 20, 30, 260, 35, " + Chr(34) + "√ç√†√¶√¨√® √¨√•√≠√ø" + Chr(34) + ")" + #CRLF$ +
+                      "  StringGadget(2, 20, 80, 260, 30, " + Chr(34) + "√í√•√™√±√≤..." + Chr(34) + ")" + #CRLF$ +
                       "EndIf"
                       
-                      ; ¬ ˝ÚÓÏ ÚÂÒÚÂ ÔÓ‚ÂˇÂÏ Ò‡ÁÛ: ŒÍÌÓ,  ÌÓÔÍÛ, œ‡ÌÂÎ¸ (5 Ô‡‡ÏÂÚÓ‚) Ë ‚ÍÎ‡‰ÍË AddGadgetItem
-Define DefaultCode$ = "If OpenWindow(0, 100, 100, 360, 250, " + Chr(34) + "“ÂÒÚ Ô‡ÌÂÎÂÈ Ë ÍÌÓÔÓÍ" + Chr(34) + ", #PB_Window_SystemMenu)" + #CRLF$ +
+                      ; √Ç √Ω√≤√Æ√¨ √≤√•√±√≤√• √Ø√∞√Æ√¢√•√∞√ø√•√¨ √±√∞√†√ß√≥: √é√™√≠√Æ, √ä√≠√Æ√Ø√™√≥, √è√†√≠√•√´√º (5 √Ø√†√∞√†√¨√•√≤√∞√Æ√¢) √® √¢√™√´√†√§√™√® AddGadgetItem
+Define DefaultCode$ = "If OpenWindow(0, 100, 100, 360, 250, " + Chr(34) + "√í√•√±√≤ √Ø√†√≠√•√´√•√© √® √™√≠√Æ√Ø√Æ√™" + Chr(34) + ", #PB_Window_SystemMenu)" + #CRLF$ +
                           "  PanelGadget(1, 10, 10, 340, 180)" + #CRLF$ +
-                          "    AddGadgetItem(1, -1, " + Chr(34) + "¬ÍÎ‡‰Í‡ 1" + Chr(34) + ")" + #CRLF$ +
-                          "      ButtonGadget(2, 20, 30, 150, 40, " + Chr(34) + " ÌÓÔÍ‡ Ì‡ Ú‡·Â 1" + Chr(34) + ")" + #CRLF$ +
-                          "      StringGadget(3, 20, 90, 200, 30, " + Chr(34) + "“ÂÍÒÚ..." + Chr(34) + ")" + #CRLF$ +
-                          "    AddGadgetItem(1, -1, " + Chr(34) + "¬ÍÎ‡‰Í‡ 2" + Chr(34) + ")" + #CRLF$ +
-                          "      TextGadget(4, 20, 30, 200, 20, " + Chr(34) + " ÓÌÚÂÌÚ ‚ÚÓÓÈ ‚ÍÎ‡‰ÍË" + Chr(34) + ")" + #CRLF$ +
+                          "    AddGadgetItem(1, -1, " + Chr(34) + "√Ç√™√´√†√§√™√† 1" + Chr(34) + ")" + #CRLF$ +
+                          "      ButtonGadget(2, 20, 30, 150, 40, " + Chr(34) + "√ä√≠√Æ√Ø√™√† √≠√† √≤√†√°√• 1" + Chr(34) + ")" + #CRLF$ +
+                          "      StringGadget(3, 20, 90, 200, 30, " + Chr(34) + "√í√•√™√±√≤..." + Chr(34) + ")" + #CRLF$ +
+                          "    AddGadgetItem(1, -1, " + Chr(34) + "√Ç√™√´√†√§√™√† 2" + Chr(34) + ")" + #CRLF$ +
+                          "      TextGadget(4, 20, 30, 200, 20, " + Chr(34) + "√ä√Æ√≠√≤√•√≠√≤ √¢√≤√Æ√∞√Æ√© √¢√™√´√†√§√™√®" + Chr(34) + ")" + #CRLF$ +
                           "  CloseGadgetList()" + #CRLF$ +
-                          "  ButtonGadget(5, 10, 200, 340, 40, " + Chr(34) + "Œ·˘‡ˇ ÍÌÓÔÍ‡ ‚ÌËÁÛ" + Chr(34) + ")" + #CRLF$ +
+                          "  ButtonGadget(5, 10, 200, 340, 40, " + Chr(34) + "√é√°√π√†√ø √™√≠√Æ√Ø√™√† √¢√≠√®√ß√≥" + Chr(34) + ")" + #CRLF$ +
                           "EndIf"
 
 SetGadgetText(#EditorField, DefaultCode$)
 
 Define CurrentPreview = 0
 
-; √Î‡‚Ì˚È ˆËÍÎ Ó·‡·ÓÚÍË ÒÓ·˚ÚËÈ IDE
+; √É√´√†√¢√≠√ª√© √∂√®√™√´ √Æ√°√∞√†√°√Æ√≤√™√® √±√Æ√°√ª√≤√®√© IDE
 Repeat
   Define Event = WaitWindowEvent()
   Define EventWindow = EventWindow()
   
   Select Event
     Case #PB_Event_Gadget
-      ; 1. œÓ‚ÂˇÂÏ ÒÓ·˚ÚËˇ Ì‡ „Î‡‚ÌÓÏ ÓÍÌÂ IDE
+      ; 1. √è√∞√Æ√¢√•√∞√ø√•√¨ √±√Æ√°√ª√≤√®√ø √≠√† √£√´√†√¢√≠√Æ√¨ √Æ√™√≠√• IDE
       If EventWindow = #MainWindow
         If EventGadget() = #BtnLaunchPreview
           
-          ; ≈ÒÎË ÔÓÎ¸ÁÓ‚‡ÚÂÎ¸ Á‡·˚Î Á‡Í˚Ú¸ ÒÚ‡ÓÂ ÔÂ‚¸˛ ó Á‡Í˚‚‡ÂÏ Â„Ó ÔËÌÛ‰ËÚÂÎ¸ÌÓ
+          ; √Ö√±√´√® √Ø√Æ√´√º√ß√Æ√¢√†√≤√•√´√º √ß√†√°√ª√´ √ß√†√™√∞√ª√≤√º √±√≤√†√∞√Æ√• √Ø√∞√•√¢√º√æ ¬ó √ß√†√™√∞√ª√¢√†√•√¨ √•√£√Æ √Ø√∞√®√≠√≥√§√®√≤√•√´√º√≠√Æ
           If CurrentPreview And IsWindow(CurrentPreview)
             CloseWindow(CurrentPreview)
           EndIf
           
-          ; ¡ÂÂÏ ÚÂÍÛ˘ËÈ ËÁÏÂÌÂÌÌ˚È ÚÂÍÒÚ ËÁ Â‰‡ÍÚÓ‡ Ë Á‡ÔÛÒÍ‡ÂÏ ÔÂ‚¸˛
+          ; √Å√•√∞√•√¨ √≤√•√™√≥√π√®√© √®√ß√¨√•√≠√•√≠√≠√ª√© √≤√•√™√±√≤ √®√ß √∞√•√§√†√™√≤√Æ√∞√† √® √ß√†√Ø√≥√±√™√†√•√¨ √Ø√∞√•√¢√º√æ
           Define UserCode$ = GetGadgetText(#EditorField)
           CurrentPreview = ExecuteGuiPreview(UserCode$)
           
         EndIf
         
-      ; 2. œÓ‚ÂˇÂÏ ÒÓ·˚ÚËˇ ‚ÌÛÚË ÓÍÌ‡ œ–≈¬‹ﬁ
+      ; 2. √è√∞√Æ√¢√•√∞√ø√•√¨ √±√Æ√°√ª√≤√®√ø √¢√≠√≥√≤√∞√® √Æ√™√≠√† √è√ê√Ö√Ç√ú√û
       ElseIf EventWindow = CurrentPreview
-        ; «‰ÂÒ¸ ÏÓÊÌÓ ÓÚÒÎÂÊË‚‡Ú¸ ËÌÚÂ‡ÍÚË‚ÌÓÒÚ¸ ÍÌÓÔÓÍ ËÁ ÔÂ‚¸˛, ÂÒÎË ÔÓÚÂ·ÛÂÚÒˇ
-        ; Õ‡ÔËÏÂ: If EventGadget() = 1 : Debug "Õ‡Ê‡Ú‡ ÍÌÓÔÍ‡ ËÁ ÔÂ‚¸˛!" : EndIf
+        ; √á√§√•√±√º √¨√Æ√¶√≠√Æ √Æ√≤√±√´√•√¶√®√¢√†√≤√º √®√≠√≤√•√∞√†√™√≤√®√¢√≠√Æ√±√≤√º √™√≠√Æ√Ø√Æ√™ √®√ß √Ø√∞√•√¢√º√æ, √•√±√´√® √Ø√Æ√≤√∞√•√°√≥√•√≤√±√ø
+        ; √ç√†√Ø√∞√®√¨√•√∞: If EventGadget() = 1 : Debug "√ç√†√¶√†√≤√† √™√≠√Æ√Ø√™√† √®√ß √Ø√∞√•√¢√º√æ!" : EndIf
       EndIf
       
     Case #PB_Event_CloseWindow
-      ;  ÓÂÍÚÌÓ ‡Á‰ÂÎˇÂÏ Á‡Í˚ÚËÂ ÓÍÓÌ
+      ; √ä√Æ√∞√∞√•√™√≤√≠√Æ √∞√†√ß√§√•√´√ø√•√¨ √ß√†√™√∞√ª√≤√®√• √Æ√™√Æ√≠
       If EventWindow = #MainWindow
-        End ; «‡Í˚ÎË IDE -> ¬˚ıÓ‰ ËÁ ÔÓ„‡ÏÏ˚
+        End ; √á√†√™√∞√ª√´√® IDE -> √Ç√ª√µ√Æ√§ √®√ß √Ø√∞√Æ√£√∞√†√¨√¨√ª
       ElseIf EventWindow = CurrentPreview
-        CloseWindow(CurrentPreview) ; «‡Í˚ÎË œÂ‚¸˛ -> œÓÒÚÓ ÛÌË˜ÚÓÊ‡ÂÏ Â„Ó, IDE ÊË‚ÂÚ
+        CloseWindow(CurrentPreview) ; √á√†√™√∞√ª√´√® √è√∞√•√¢√º√æ -> √è√∞√Æ√±√≤√Æ √≥√≠√®√∑√≤√Æ√¶√†√•√¨ √•√£√Æ, IDE √¶√®√¢√•√≤
         CurrentPreview = 0
       EndIf
       
   EndSelect
 ForEver
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 94
-; FirstLine = 74
+; CursorPosition = 349
 ; Folding = -------
 ; EnableXP
 ; DPIAware

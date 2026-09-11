@@ -134,7 +134,7 @@ EndStructure
 
 ; Sortierter Eintrag fur die Textkurzung
 Structure _s_SortedItem
-  *Item._s_rows  ; Registerkarte
+  *Item._s_ROW  ; Registerkarte
   Characters.i   ; Anzahl der Buchstaben
 EndStructure
 
@@ -180,7 +180,7 @@ Structure _s_itemLayout
 EndStructure
 
 ; Registerkarte
-Structure _s_rows
+Structure _s_ROW
   Text.s                                  ; Text
   ShortText.s                             ; verkurzter Text
   color._s_color                          ; Farbattribute
@@ -198,7 +198,7 @@ Structure _s_rows
   Visible.i                               ; Sichtbar und wird gezeichnet (TEMP)
   Face.i                                  ; Aussehen (TEMP)
   Layout._s_itemLayout                    ; Layout der Karte (TEMP)
-  *PreviousSelectedItem._s_rows           ; Zuvor ausgewahlter Tab
+  *PreviousSelectedItem._s_ROW           ; Zuvor ausgewahlter Tab
 EndStructure
 
 ; Tooltips
@@ -212,7 +212,7 @@ EndStructure
 
 ; Editierte Karte
 Structure _s_Editor
-  *Item._s_rows  ; Zu Bearbeitende Karte
+  *Item._s_ROW  ; Zu Bearbeitende Karte
   OldText.s      ; Alter Text vor dem Bearbeiten
   Cursor.i       ; Cursor-Position
   Selection.i    ; Textmarkierungslange
@@ -238,16 +238,16 @@ Structure _s_widget
   FontID.i                          ; Schrift
   DataValue.i                       ; Benutzer-Daten-Wert
   Attributes.i                      ; Attribute
-  List		Item._s_rows()            ; Registerkarten
-  NewTabItem._s_rows                ; "Neu"-Registerkarte
-  *SelectedItem._s_rows             ; ausgewahlte Registerkarte
-  *MoveItem._s_rows                 ; bewegte Registerkarte
-  *HoverItem._s_rows                ; hervorgehobene Registerkarte
+  List		Item._s_ROW()            ; Registerkarten
+  NewTabItem._s_ROW                ; "Neu"-Registerkarte
+  *SelectedItem._s_ROW             ; ausgewahlte Registerkarte
+  *MoveItem._s_ROW                 ; bewegte Registerkarte
+  *HoverItem._s_ROW                ; hervorgehobene Registerkarte
   HoverClose.i                      ; Schlie?enbutton hervorgehoben
   HoverCheck.i                      ; Checkbox hervorgehoben
   HoverArrow.i                      ; Navigationbutton hervorgehoben
-  *ReadyToMoveItem._s_rows          ; Registerkarte die bereit ist bewegt zu werden
-  *LockedItem._s_rows               ; Registerkarte angeschlagen wurde (fur Klicks)
+  *ReadyToMoveItem._s_ROW          ; Registerkarte die bereit ist bewegt zu werden
+  *LockedItem._s_ROW               ; Registerkarte angeschlagen wurde (fur Klicks)
   LockedClose.i                     ; Schlie?enbutton angeschlagen
   LockedCheck.i                     ; Schlie?enbutton angeschlagen
   LockedArrow.i                     ; Navigationsbutton angeschlagen
@@ -429,7 +429,7 @@ EndProcedure
 
 
 ; Gibt die Ressourcen einer Registerkarte wieder frei.
-Procedure ClearItem(*this._s_widget, *Item._s_rows) ; Code OK
+Procedure ClearItem(*this._s_widget, *Item._s_ROW) ; Code OK
   
   If *Item\Image
     FreeImage(*Item\Image)
@@ -443,7 +443,7 @@ EndProcedure
 
 
 ; Wahlt die angegebene Karte aus und aktualisiert die Select-Hierarchie
-Procedure SelectItem(*this._s_widget, *Item._s_rows) ; Code OK
+Procedure SelectItem(*this._s_widget, *Item._s_ROW) ; Code OK
   
   If *this\Attributes & #__tab_MultiSelect = #False
     ForEach *this\Item()
@@ -464,7 +464,7 @@ EndProcedure
 
 
 ; Wahlt die angegebene Karte ab und aktualisiert die Select-Hierarchie
-Procedure UnselectItem(*this._s_widget, *Item._s_rows) ; Code OK
+Procedure UnselectItem(*this._s_widget, *Item._s_ROW) ; Code OK
   
   *Item\Selected = #False
   ForEach *this\Item()
@@ -488,7 +488,7 @@ EndProcedure
 
 
 ; Entfernt die Registerkarte und aktualisiert die Select-Hierarchie
-Procedure RemoveItem(*this._s_widget, *Item._s_rows) ; Code OK
+Procedure RemoveItem(*this._s_widget, *Item._s_ROW) ; Code OK
   
   ClearItem(*this, *Item)
   
@@ -766,7 +766,7 @@ EndProcedure
 
 
 ; Gibt die Lange der Registerkate zuruck.
-Procedure.i ItemLength(*this._s_widget, *Item._s_rows) ; Code OK
+Procedure.i ItemLength(*this._s_widget, *Item._s_ROW) ; Code OK
   
   Protected TextLength.i = TextWidth(*Item\ShortText)
   Protected Length.i = 2 * includes\PaddingX
@@ -901,7 +901,7 @@ EndProcedure
 
 
 ; Rotiert das Image abhangig von der Leistenausrichtung 
-Procedure RotateImage(*this._s_widget, *Item._s_rows) ; Code OK
+Procedure RotateImage(*this._s_widget, *Item._s_ROW) ; Code OK
   
   Protected LastX.i = ImageWidth(*Item\Image)-1
   Protected LastY.i = ImageHeight(*Item\Image)-1
@@ -956,7 +956,7 @@ EndProcedure
 
 
 ; (Er-)setz ein neues Icon fur die Karte
-Procedure ReplaceImage(*this._s_widget, *Item._s_rows, NewImageID.i=#Null) ; Code OK
+Procedure ReplaceImage(*this._s_widget, *Item._s_ROW, NewImageID.i=#Null) ; Code OK
   
   If *Item\Image
     FreeImage(*Item\Image)
@@ -984,7 +984,7 @@ EndProcedure
 
 
 ; Berechnet das Layout einer Karte
-Procedure ItemLayout(*this._s_widget, *Item._s_rows)
+Procedure ItemLayout(*this._s_widget, *Item._s_ROW)
   
   Protected TextAreaLength.i = *Item\Length - 2 * includes\PaddingX
   Protected NextSelected.i, PreviousSelected.i
@@ -1277,7 +1277,7 @@ EndProcedure
 
 
 ; Zeichnet eine Karte
-Procedure DrawItem(*this._s_widget, *Item._s_rows)
+Procedure DrawItem(*this._s_widget, *Item._s_ROW)
   
   Protected X.i, Y.i, LayoutX.i, LayoutY.i, LayoutWidth.i, LayoutHeight.i, Padding.i
   Protected Color.i, Width.i, Height.i, Text.s, Len.i, Angle.i
@@ -1978,7 +1978,7 @@ Procedure Update(*this._s_widget)
   Protected ShowLength.i, X.i
   Protected OldAttributes.i
   Protected Difference.f, Factor.f, Position.i, Length.i, MaxWidth.i, MousePosition.i
-  Protected *Item._s_rows, Row.i, Rows.i=1
+  Protected *Item._s_ROW, Row.i, Rows.i=1
   Protected *Current, *Last, AddLength.i, RowCount.i
   Protected Dim Row._s_row(0)
   
@@ -2655,7 +2655,7 @@ EndProcedure
 
 ; Fugt eine Registerkarte an die angegebenen Position ein.
 Procedure.i AddItem(*this._s_widget, Position.i, Text.s, ImageID.i=#Null, DataValue.i=#Null) ; Code OK, Hilfe OK
-  Protected *Item._s_rows
+  Protected *Item._s_ROW
   
   If Position = #__tab_item_NewTab
     *this\Attributes | #__tab_NewTab
@@ -2749,7 +2749,7 @@ EndProcedure
 ; Setz einen ToolTip fur die Registerkarte.
 Procedure Tab_ItemToolTip(*this._s_widget, Tab.i, Text.s) ; Code OK, Hilfe OK
   
-  Protected *Item._s_rows = ItemID(*this, Tab)
+  Protected *Item._s_ROW = ItemID(*this, Tab)
   
   If *Item
     *Item\ToolTip = Text
@@ -2919,7 +2919,7 @@ EndProcedure
 Procedure SetState(*this._s_widget, State.i) ; Code OK, Hilfe OK
   
   
-  Protected *Item._s_rows
+  Protected *Item._s_ROW
   
   ForEach *this\Item()
     *this\Item()\Selected = #False
@@ -2991,7 +2991,7 @@ EndProcedure
 Procedure SetItemAttribute(*this._s_widget, Tab.i, Attribute.i, Value.i)
   
   
-  Protected *Item._s_rows = ItemID(*this, Tab)
+  Protected *Item._s_ROW = ItemID(*this, Tab)
   
   If *Item And *Item <> *this\NewTabItem
     Select Attribute
@@ -3012,7 +3012,7 @@ EndProcedure
 ; Gibt den Status der angegebenen Registerkarte zuruck.
 Procedure.i GetItemAttribute(*this._s_widget, Tab.i, Attribute.i)
   
-  Protected *Item._s_rows = ItemID(*this, Tab)
+  Protected *Item._s_ROW = ItemID(*this, Tab)
   Protected State.i
   
   If *Item
@@ -3033,7 +3033,7 @@ EndProcedure
 ; Andert den Datenwert der angegebenen Registerkarte.
 Procedure SetItemData(*this._s_widget, Tab.i, DataValue.i) ; Code OK, Hilfe OK
   
-  Protected *Item._s_rows = ItemID(*this, Tab)
+  Protected *Item._s_ROW = ItemID(*this, Tab)
   
   If *Item
     *Item\DataValue = DataValue
@@ -3046,7 +3046,7 @@ EndProcedure
 ; Gibt den Datenwert der angegebenen Registerkarte zuruck.
 Procedure.i GetItemData(*this._s_widget, Tab.i) ; Code OK, Hilfe OK
   
-  Protected *Item._s_rows = ItemID(*this, Tab)
+  Protected *Item._s_ROW = ItemID(*this, Tab)
   
   If *Item
     ProcedureReturn *Item\DataValue
@@ -3059,7 +3059,7 @@ EndProcedure
 ; Andert die Farbe der angegebenen Registerkarte.
 Procedure SetItemColor(*this._s_widget, Tab.i, Type.i, Color.i) ; Code OK, Hilfe OK
   
-  Protected *Item._s_rows = ItemID(*this, Tab)
+  Protected *Item._s_ROW = ItemID(*this, Tab)
   
   If *Item
     Select Type
@@ -3084,7 +3084,7 @@ EndProcedure
 ; Gibt die Farbe der angegebenen Registerkarte zuruck.
 Procedure.i GetItemColor(*this._s_widget, Tab.i, Type.i) ; Code OK, Hilfe OK
   
-  Protected *Item._s_rows = ItemID(*this, Tab)
+  Protected *Item._s_ROW = ItemID(*this, Tab)
   
   If *Item
     Select Type
@@ -3103,7 +3103,7 @@ EndProcedure
 Procedure SetItemImage(*this._s_widget, Tab.i, ImageID.i) ; Code OK, Hilfe OK
   
   
-  Protected *Item._s_rows = ItemID(*this, Tab)
+  Protected *Item._s_ROW = ItemID(*this, Tab)
   
   If *Item
     ReplaceImage(*this, *Item, ImageID)
@@ -3118,8 +3118,8 @@ EndProcedure
 Procedure SetItemPosition(*this._s_widget, Tab.i, Position.i) ; Code OK, Hilfe OK
   
   
-  Protected *NewItem._s_rows = ItemID(*this, Position)
-  Protected *Item._s_rows = ItemID(*this, Tab)
+  Protected *NewItem._s_ROW = ItemID(*this, Position)
+  Protected *Item._s_ROW = ItemID(*this, Tab)
   
   If *Item And *Item <> *this\NewTabItem
     If *NewItem And *NewItem <> *this\NewTabItem
@@ -3182,7 +3182,7 @@ EndProcedure
 Procedure SetItemState(*this._s_widget, Tab.i, State.i, Mask.i=#__s_Disabled|#__s_Selected|#__s_Checked) ; Code OK, Hilfe OK
   
   
-  Protected *Item._s_rows = ItemID(*this, Tab)
+  Protected *Item._s_ROW = ItemID(*this, Tab)
   
   If *Item And *Item <> *this\NewTabItem
     If Mask & #__s_Disabled
@@ -3208,7 +3208,7 @@ EndProcedure
 ; Gibt den Status der angegebenen Registerkarte zuruck.
 Procedure.i GetItemState(*this._s_widget, Tab.i) ; Code OK, Hilfe OK
   
-  Protected *Item._s_rows = ItemID(*this, Tab)
+  Protected *Item._s_ROW = ItemID(*this, Tab)
   
   If *Item
     ProcedureReturn (*Item\Disabled*#__s_Disabled) | (*Item\Selected*#__s_Selected) | (*Item\Checked*#__s_Checked)
@@ -3221,7 +3221,7 @@ EndProcedure
 ; Andert den Text der angegebenen Registerkarte.
 Procedure SetItemText(*this._s_widget, Tab.i, Text.s) ; Code OK, Hilfe OK
   
-  Protected *Item._s_rows = ItemID(*this, Tab)
+  Protected *Item._s_ROW = ItemID(*this, Tab)
   
   If *Item
     *Item\Text      = Text
@@ -3236,7 +3236,7 @@ EndProcedure
 ; Gibt den Text der angegebenen Registerkarte zuruck.
 Procedure.s GetItemText(*this._s_widget, Tab.i) ; Code OK, Hilfe OK
   
-  Protected *Item._s_rows = ItemID(*this, Tab)
+  Protected *Item._s_ROW = ItemID(*this, Tab)
   
   If *Item
     ProcedureReturn *Item\Text
@@ -3546,9 +3546,9 @@ Repeat
   EndSelect
   
 ForEver
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 2662
-; FirstLine = 2571
-; Folding = Po--0--------------------------------------------------------------------4------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 3210
+; FirstLine = 3140
+; Folding = vq-----------------------------------------------------------------------4------
 ; Optimizer
 ; EnableXP

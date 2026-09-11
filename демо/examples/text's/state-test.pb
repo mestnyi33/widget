@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;-
    Procedure Properties_ButtonResize( *this._s_WIDGET )
-      Protected *row._s_ROWS
+      Protected *row._s_ROW
       *row = *this\RowFocused( )
       If *row
          If *row\data
@@ -77,7 +77,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure Properties_ButtonDisplay( item )
-      Protected *row._s_ROWS
+      Protected *row._s_ROW
       *row = *this\RowFocused( )
       If *row
          If *row\childrens
@@ -308,9 +308,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 188
-; FirstLine = 185
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 79
+; FirstLine = 75
 ; Folding = --------
 ; EnableXP
 ; DPIAware

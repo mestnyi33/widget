@@ -352,8 +352,8 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
    Enumeration   1 ; Images
-      #ImageGadget_Source
-      #ImageGadget_Target
+      #ImageGADGET_Source
+      #ImageGADGET_Target
    EndEnumeration
    
    #PrivateType_0 = 0
@@ -363,17 +363,17 @@ CompilerIf #PB_Compiler_IsMainFile
    Global ChildCount
    Global SourceItem, SourceLevel
    Global TargetItem, TargetLevel
-   Global Gadget_SourceText,
-          Gadget_SourceImage,
-          Gadget_SourceFiles,
-          Gadget_SourceItem,
-          Gadget_SourcePrivate,
-          Gadget_TargetText,
-          Gadget_TargetImage,
-          Gadget_TargetFiles,
-          Gadget_TargetItem,
-          Gadget_TargetPrivate1,
-          Gadget_TargetPrivate2
+   Global GADGET_SourceText,
+          GADGET_SourceImage,
+          GADGET_SourceFiles,
+          GADGET_SourceItem,
+          GADGET_SourcePrivate,
+          GADGET_TargetText,
+          GADGET_TargetImage,
+          GADGET_TargetFiles,
+          GADGET_TargetItem,
+          GADGET_TargetPrivate1,
+          GADGET_TargetPrivate2
    
    Global test_drag = 0
    Global i, Event, font = LoadFont( 0, "Aria", (13) )
@@ -412,8 +412,8 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    ; Create some images for the image demonstration
    ; 
-   CreateImage( #ImageGadget_Source, 136, 136 )
-   If StartDrawing( ImageOutput( #ImageGadget_Source ) )
+   CreateImage( #ImageGADGET_Source, 136, 136 )
+   If StartDrawing( ImageOutput( #ImageGADGET_Source ) )
       DrawingFont( font )
       
       Box( 0, 0, 136, 136, $FFFFFF )
@@ -426,8 +426,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf  
    
    ;            
-   CreateImage( #ImageGadget_Target, 136, 136 )
-   If StartDrawing( ImageOutput( #ImageGadget_Target ) )
+   CreateImage( #ImageGADGET_Target, 136, 136 )
+   If StartDrawing( ImageOutput( #ImageGADGET_Target ) )
       DrawingFont( font )
       
       Box( 0, 0, 136, 136, $FFFFFF )
@@ -435,15 +435,16 @@ CompilerIf #PB_Compiler_IsMainFile
       StopDrawing( )
    EndIf  
    
+   ;-
    Procedure widget_events( )
       Protected EventWidget.i = EventWidget( ),
-                EventType.i = WidgetEvent( );,
-                                            ;EventItem.i = WidgetEventItem( ), 
-                                            ;EventData.i = WidgetEventData( )
+                EventType.i = WidgetEvent( ),
+                EventItem.i = WidgetEventItem( ), 
+                EventData.i = WidgetEventData( )
       
       Protected i, Text$, Files$, Count
       
-      ; DragStart event on the Gadget_Source s, initiate a drag & drop
+      ; DragStart event on the GADGET_Source s, initiate a drag & drop
       ;
       Select EventType
          Case #__event_DragStart
@@ -456,11 +457,11 @@ CompilerIf #PB_Compiler_IsMainFile
             ; хочет начать перетаскивание. Мы сохраняем этот элемент для последующего использования
             ; и начинаем наше перетаскивание
             ;
-            Debug  "Drag - " + EventWidget
+            ; Debug  "Drag - " + GetClass(EventWidget)
             
             Select EventWidget
-               Case Gadget_SourceItem
-                  SourceItem = GetState(Gadget_SourceItem)
+               Case GADGET_SourceItem
+                  SourceItem = GetState(GADGET_SourceItem)
                   
                   If SourceItem =- 1
                      Debug " item не выбран"
@@ -476,24 +477,24 @@ CompilerIf #PB_Compiler_IsMainFile
                         StopDrawing()
                         
                         If IsImage(img)
-                           ChangeCursor( Gadget_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\__rows( )\text\width/2, EventWidget( )\__rows( )\text\height/2 ))
+                           ChangeCursor( GADGET_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\__rows( )\text\width/2, EventWidget( )\__rows( )\text\height/2 ))
                         EndIf
                      EndIf
                   EndIf
                   
-               Case Gadget_SourceText
-                  Text$ = GetItemText( Gadget_SourceText, GetState( Gadget_SourceText ) )
+               Case GADGET_SourceText
+                  Text$ = GetItemText( GADGET_SourceText, GetState( GADGET_SourceText ) )
                   DragDropText( Text$ )
                   
-               Case Gadget_SourceImage
-                  DragDropImage( #ImageGadget_Source )
+               Case GADGET_SourceImage
+                  DragDropImage( #ImageGADGET_Source )
                   
-               Case Gadget_SourceFiles
+               Case GADGET_SourceFiles
                   Files$ = ""       
-                  For i = 0 To CountItems( Gadget_SourceFiles )-1
-                     If GetItemState( Gadget_SourceFiles, i ) & #PB_Explorer_Selected
-                        ;; i = GetState( Gadget_SourceFiles )
-                        Files$ + GetText( Gadget_SourceFiles ) + GetItemText( Gadget_SourceFiles, i ) ; + Chr( 10 )
+                  For i = 0 To CountItems( GADGET_SourceFiles )-1
+                     If GetItemState( GADGET_SourceFiles, i ) & #PB_Explorer_Selected
+                        ;; i = GetState( GADGET_SourceFiles )
+                        Files$ + GetText( GADGET_SourceFiles ) + GetItemText( GADGET_SourceFiles, i ) ; + Chr( 10 )
                      EndIf
                   Next i 
                   
@@ -504,25 +505,26 @@ CompilerIf #PB_Compiler_IsMainFile
                   ; "Private" Drags only work within the program, everything else
                   ; also works with other applications ( Explorer, Word, etc )
                   ;
-               Case Gadget_SourcePrivate
-                  If GetState( Gadget_SourcePrivate ) = 0
+               Case GADGET_SourcePrivate
+                  If GetState( GADGET_SourcePrivate ) = 0
                      DragDropPrivate( 1 )
                   Else
                      DragDropPrivate( 2 )
                   EndIf
                   
-                  ChangeCursor( Gadget_SourcePrivate, #PB_Cursor_Hand) 
+                  ChangeCursor( GADGET_SourcePrivate, #PB_Cursor_Hand) 
                   
             EndSelect
             
-            ; Drop event on the Gadget_Target gadgets, receive the EventDrop data
+            ; Drop event on the GADGET_Target gadgets, receive the EventDrop data
             ;
          Case #__event_Drop
+            Protected Level, CountItems
             Debug  "Drop - " + EventWidget
             ; clearitems(EventWidget)
-            
+                  
             Select EventWidget
-               Case Gadget_TargetItem
+               Case GADGET_TargetItem
                   ;
                   ; Here we get a drop event. Make sure it is on the right gadget and of right type,
                   ; especially if you have multiple Drag & Drop stuff in your program.
@@ -530,20 +532,19 @@ CompilerIf #PB_Compiler_IsMainFile
                   ; Здесь мы получаем событие падения. Убедитесь, что он находится на правильном гаджете и имеет правильный тип,
                   ; особенно если в вашей программе есть несколько элементов Drag & Drop.
                   ;
-                  Protected Level, CountItems
                   
                   If DropType( ) = #PB_Drop_Private And
                      DropPrivate( ) = #PrivateType_0
-                     Debug "start drop - "+ GetState(Gadget_TargetItem) +" "+ GetText(Gadget_TargetItem) +" "+ GetItemText(Gadget_TargetItem, GetState(Gadget_TargetItem))
+                     Debug "start drop - "+ GetState(GADGET_TargetItem) +" "+ GetText(GADGET_TargetItem) +" "+ GetItemText(GADGET_TargetItem, GetState(GADGET_TargetItem))
                      
-                     TargetItem = GetState(Gadget_TargetItem)        
+                     TargetItem = GetState(GADGET_TargetItem)        
                      ;Debug "               - "+TargetItem
                      ; nothing to do if source and target are equal
                      ;
                      ; ничего не делать, если источник и цель равны
                      ;
                      If SourceItem <> TargetItem        
-                        CountItems = CountItems(Gadget_TargetItem) - 1
+                        CountItems = CountItems(GADGET_TargetItem) - 1
                         ; Find out to which index and sublevel to move the item
                         ;
                         ; Узнайте, на какой индекс и подуровень переместить элемент
@@ -555,11 +556,11 @@ CompilerIf #PB_Compiler_IsMainFile
                            TargetItem  = CountItems + 1
                            TargetLevel = 0
                            
-                        ElseIf Left( GetItemText(Gadget_TargetItem, TargetItem), 4 ) = "Item"      
+                        ElseIf Left( GetItemText(GADGET_TargetItem, TargetItem), 4 ) = "Item"      
                            ; if dropped on an "Item", move right after this item
                            ;
                            ; если упал на «предмет», переместиться сразу после этого предмета
-                           TargetLevel = GetItemAttribute(Gadget_TargetItem, TargetItem, #PB_Tree_SubLevel)
+                           TargetLevel = GetItemAttribute(GADGET_TargetItem, TargetItem, #PB_Tree_SubLevel)
                            TargetItem  + 1
                            
                         Else
@@ -568,9 +569,9 @@ CompilerIf #PB_Compiler_IsMainFile
                            ;
                            ; если вы попали в «Каталог», перейдите в каталог и в его конец
                            ; все это можно легко сделать, изучив подуровень
-                           TargetLevel = GetItemAttribute(Gadget_TargetItem, TargetItem, #PB_Tree_SubLevel) + 1
+                           TargetLevel = GetItemAttribute(GADGET_TargetItem, TargetItem, #PB_Tree_SubLevel) + 1
                            TargetItem + 1
-                           While GetItemAttribute(Gadget_TargetItem, TargetItem, #PB_Tree_SubLevel) >= TargetLevel
+                           While GetItemAttribute(GADGET_TargetItem, TargetItem, #PB_Tree_SubLevel) >= TargetLevel
                               TargetItem + 1
                            Wend
                         EndIf
@@ -587,10 +588,10 @@ CompilerIf #PB_Compiler_IsMainFile
                         ;
                         ; дочерние узлы следуют непосредственно за узлами с более высоким уровнем
                         ;
-                        SourceLevel = GetItemAttribute(Gadget_TargetItem, SourceItem, #PB_Tree_SubLevel)          
+                        SourceLevel = GetItemAttribute(GADGET_TargetItem, SourceItem, #PB_Tree_SubLevel)          
                         ChildCount  = 0
                         For i = SourceItem+1 To CountItems
-                           If GetItemAttribute(Gadget_TargetItem, i, #PB_Tree_SubLevel) > SourceLevel 
+                           If GetItemAttribute(GADGET_TargetItem, i, #PB_Tree_SubLevel) > SourceLevel 
                               ChildCount + 1
                            Else
                               Break
@@ -627,9 +628,9 @@ CompilerIf #PB_Compiler_IsMainFile
                               ; copy everything here (also colors and GetItemData() etc if you use that)                
                               ;
                               ; скопируйте все сюда (также цвета и GetItemData() и т. д., если вы используете это)
-                              Text$ = GetItemText(Gadget_TargetItem, SourceItem+i)              
-                              Level = GetItemAttribute(Gadget_TargetItem, SourceItem+i, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
-                              AddItem(Gadget_TargetItem, TargetItem+i, Text$, 0, Level)              
+                              Text$ = GetItemText(GADGET_TargetItem, SourceItem+i)              
+                              Level = GetItemAttribute(GADGET_TargetItem, SourceItem+i, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
+                              AddItem(GADGET_TargetItem, TargetItem+i, Text$, 0, Level)              
                            Next i
                            
                            ; We apply the state of each item AFTER all items are copied.
@@ -640,12 +641,12 @@ CompilerIf #PB_Compiler_IsMainFile
                            ; Это должно быть в отдельном цикле, иначе "расширенное" состояние элементов
                            ; не сохраняется, так как дочерние элементы еще не были добавлены в указанный выше цикл.
                            For i = 0 To ChildCount
-                              SetItemState(Gadget_TargetItem, TargetItem+i, GetItemState(Gadget_TargetItem, SourceItem+i))
+                              SetItemState(GADGET_TargetItem, TargetItem+i, GetItemState(GADGET_TargetItem, SourceItem+i))
                            Next i
                            
                            ; remove the source item. This automatically removes all children as well.
                            ; удалить исходный элемент. Это также автоматически удаляет всех детей.
-                           RemoveItem(Gadget_TargetItem, SourceItem)
+                           RemoveItem(GADGET_TargetItem, SourceItem)
                            
                            ; select the target. Note that the index is now 'ChildCount+1' less
                            ; because of the remove of the source which was before the target
@@ -653,7 +654,7 @@ CompilerIf #PB_Compiler_IsMainFile
                            ; выберите цель. Обратите внимание, что индекс теперь меньше на «ChildCount+1».
                            ; из-за удаления источника, который был до цели
                            ;Debug "---------------- "+Str(TargetItem - ChildCount - 1)
-                           SetState(Gadget_TargetItem, TargetItem - ChildCount - 1)
+                           SetState(GADGET_TargetItem, TargetItem - ChildCount - 1)
                            
                         ElseIf TargetItem <= SourceItem
                            ; 
@@ -666,9 +667,9 @@ CompilerIf #PB_Compiler_IsMainFile
                            ; вот почему мы читаем исходные элементы с "SourceItem+i*2"
                            ;
                            For i = 0 To ChildCount
-                              Text$ = GetItemText(Gadget_TargetItem, SourceItem+i*2)
-                              Level = GetItemAttribute(Gadget_TargetItem, SourceItem+i*2, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
-                              AddItem(Gadget_TargetItem, TargetItem+i, Text$, 0, Level)
+                              Text$ = GetItemText(GADGET_TargetItem, SourceItem+i*2)
+                              Level = GetItemAttribute(GADGET_TargetItem, SourceItem+i*2, #PB_Tree_SubLevel) - SourceLevel + TargetLevel
+                              AddItem(GADGET_TargetItem, TargetItem+i, Text$, 0, Level)
                            Next i
                            
                            ; Loop for the states. Note that here the index of the sourceitems is 
@@ -678,39 +679,39 @@ CompilerIf #PB_Compiler_IsMainFile
                            ; 'ChildCount+1' больше, чем раньше, из-за добавленных целей
                            ;
                            For i = 0 To ChildCount
-                              SetItemState(Gadget_TargetItem, TargetItem+i, GetItemState(Gadget_TargetItem, SourceItem+ChildCount+1+i))
+                              SetItemState(GADGET_TargetItem, TargetItem+i, GetItemState(GADGET_TargetItem, SourceItem+ChildCount+1+i))
                            Next i            
                            
                            ; remove source and select target. Here the target index is not affected by the remove as it is lower
                            ;
                            ; удалить источник и выбрать цель. Здесь целевой индекс не затрагивается удалением, так как он ниже
-                           RemoveItem(Gadget_TargetItem, SourceItem+ChildCount+1)          
-                           SetState(Gadget_TargetItem, TargetItem)
+                           RemoveItem(GADGET_TargetItem, SourceItem+ChildCount+1)          
+                           SetState(GADGET_TargetItem, TargetItem)
                            
                         EndIf
                         
                      EndIf      
-                     Debug "stop drop - "+ GetState(Gadget_TargetItem) +" "+ GetText(Gadget_TargetItem) +" "+ GetItemText(Gadget_TargetItem, GetState(Gadget_TargetItem))
+                     Debug "stop drop - "+ GetState(GADGET_TargetItem) +" "+ GetText(GADGET_TargetItem) +" "+ GetItemText(GADGET_TargetItem, GetState(GADGET_TargetItem))
                      
                      Debug ""
                      ;ClearDebugOutput()
-                     Define *this._s_widget = Gadget_TargetItem
+                     Define *this._s_widget = GADGET_TargetItem
                      ForEach *this\__rows( )
                         Debug ""+ *this\__rows( )\index +" "+ ListIndex(*this\__rows( )) +" "+ *this\__rows( )\text\Str(0) +""
                      Next
                   EndIf
                   
-               Case Gadget_TargetText
-                  ;;Debug "EventDropText - "+ DropText( )
+               Case GADGET_TargetText
+                  ; Debug "EventDropText - "+ DropText( )
                   ;           If EnteredItem( )
-                  ;             AddItem( Gadget_TargetText, EnteredItem( )\index, DropText( ) )
+                  ;             AddItem( GADGET_TargetText, EnteredItem( )\index, DropText( ) )
                   ;           Else
-                  AddItem( Gadget_TargetText, - 1, DropText( ) )
+                  AddItem( GADGET_TargetText, -1, DropText( ))
                   ;           EndIf
                   
-               Case Gadget_TargetImage
-                  If DropImage( #ImageGadget_Target )
-                     If StartDrawing( ImageOutput( #ImageGadget_Target ) )
+               Case GADGET_TargetImage
+                  If DropImage( #ImageGADGET_Target )
+                     If StartDrawing( ImageOutput( #ImageGADGET_Target ) )
                         DrawingFont( font )
                         
                         Box( 5,5,OutputWidth(),30, $FFFFFF)
@@ -719,22 +720,22 @@ CompilerIf #PB_Compiler_IsMainFile
                         StopDrawing( )
                      EndIf  
                      
-                     SetState( Gadget_TargetImage, ( #ImageGadget_Target ) )
+                     SetState( GADGET_TargetImage, ( #ImageGADGET_Target ) )
                   EndIf
                   
-               Case Gadget_TargetFiles
+               Case GADGET_TargetFiles
                   Files$ = DropFiles( )
                   Count  = CountString( Files$, Chr( 10 ) ) + 1
                   
                   For i = 1 To Count
-                     AddItem( Gadget_TargetFiles, -1, StringField( Files$, i, Chr( 10 ) ) )
+                     AddItem( GADGET_TargetFiles, -1, StringField( Files$, i, Chr( 10 ) ) )
                   Next i
                   
-               Case Gadget_TargetPrivate1
-                  AddItem( Gadget_TargetPrivate1, -1, "Private type 1 EventDrop" )
+               Case GADGET_TargetPrivate1
+                  AddItem( GADGET_TargetPrivate1, -1, "Private type 1 EventDrop" )
                   
-               Case Gadget_TargetPrivate2
-                  AddItem( Gadget_TargetPrivate2, -1, "Private type 2 EventDrop" )
+               Case GADGET_TargetPrivate2
+                  AddItem( GADGET_TargetPrivate2, -1, "Private type 2 EventDrop" )
                   
             EndSelect
             
@@ -746,8 +747,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   
-   Procedure ListIconWidget( X,Y,Width,Height, title.s, titleWidth )
+   Procedure ListIconWidget( X,Y,Width,Height, title.s, titleWidth, Flag.q=0 )
       ; ProcedureReturn ListIcon(X,Y,Width,Height, title.s, titleWidth)
       
       ;\\
@@ -757,92 +757,92 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open( 0, 50, 50, 760+150, 310, "Drag & Drop", #PB_Window_SystemMenu )   
-      ; Create and fill the Gadget_Source s
-      Gadget_SourceText = ListIconWidget( 10, 10, 140, 140, "Drag Text here", 130 )   
-      Gadget_SourceImage = Image( 160, 10, 140, 140, ( #ImageGadget_Source ), #PB_Image_Border ) 
-      Gadget_SourceFiles = ExplorerList( 310, 10, 290, 140, GetHomeDirectory( ), #PB_Explorer_MultiSelect )
-      Gadget_SourcePrivate = ListIconWidget( 610, 10, 140, 140, "Drag private stuff here", 260 )
-      Gadget_SourceItem = ListIconWidget( 760, 10, 140, 290, "Drag item here", 130 )   
+      ; Create and fill the GADGET_Source s
+      GADGET_SourceText = ListIconWidget( 10, 10, 140, 140, "Drag Text here", 130 )   
+      GADGET_SourceImage = Image( 160, 10, 140, 140, ( #ImageGADGET_Source ), #PB_Image_Border ) 
+      GADGET_SourceFiles = ExplorerList( 310, 10, 290, 140, GetHomeDirectory( ), #PB_Explorer_MultiSelect )
+      GADGET_SourcePrivate = ListIconWidget( 610, 10, 140, 140, "Drag private stuff here", 260 )
+      GADGET_SourceItem = ListIconWidget( 760, 10, 140, 290, "Drag item here", 130 )   
       
       ;\\
-      AddItem( Gadget_SourceText, -1, "hello world" )
-      AddItem( Gadget_SourceText, -1, "The quick brown fox jumped over the lazy dog" )
-      AddItem( Gadget_SourceText, -1, "abcdefg" )
-      AddItem( Gadget_SourceText, -1, "123456789" )
-      AddItem( Gadget_SourceText, -1, "123456789" )
-      AddItem( Gadget_SourceText, -1, "123456789" )
-      AddItem( Gadget_SourceText, -1, "123456789" )
-      AddItem( Gadget_SourceText, -1, "123456789" )
-      AddItem( Gadget_SourceText, -1, "123456789" )
-      AddItem( Gadget_SourceText, -1, "123456789" )
-      AddItem( Gadget_SourceText, -1, "123456789" )
+      AddItem( GADGET_SourceText, -1, "hello world" )
+      AddItem( GADGET_SourceText, -1, "The quick brown fox jumped over the lazy dog" )
+      AddItem( GADGET_SourceText, -1, "abcdefg" )
+      AddItem( GADGET_SourceText, -1, "123456789" )
+      AddItem( GADGET_SourceText, -1, "123456789" )
+      AddItem( GADGET_SourceText, -1, "123456789" )
+      AddItem( GADGET_SourceText, -1, "123456789" )
+      AddItem( GADGET_SourceText, -1, "123456789" )
+      AddItem( GADGET_SourceText, -1, "123456789" )
+      AddItem( GADGET_SourceText, -1, "123456789" )
+      AddItem( GADGET_SourceText, -1, "123456789" )
       
       For i = 0 To 20
          If i % 5 = 0
-            AddItem(Gadget_SourceItem, -1, "Directory" + Str(i), -1, 0)
+            AddItem(GADGET_SourceItem, -1, "Directory" + Str(i), -1, 0)
          Else
-            AddItem(Gadget_SourceItem, -1, "Item" + Str(i), -1, 1)
+            AddItem(GADGET_SourceItem, -1, "Item" + Str(i), -1, 1)
          EndIf
       Next i
       
-      AddItem( Gadget_SourcePrivate, -1, "Private type 1" )
-      AddItem( Gadget_SourcePrivate, -1, "Private type 2" )
+      AddItem( GADGET_SourcePrivate, -1, "Private type 1" )
+      AddItem( GADGET_SourcePrivate, -1, "Private type 2" )
       
-      ; Create the Gadget_Target s
-      Gadget_TargetText = ListIconWidget( 10, 160, 140, 140, "Drop Text here", 130 )
-      Gadget_TargetImage = Image( 160, 160, 140, 140, ( #ImageGadget_Target ), #PB_Image_Border ) 
-      Gadget_TargetFiles = ListIconWidget( 310, 160, 140, 140, "Drop Files here", 130 )
-      Gadget_TargetPrivate1 = ListIconWidget( 460, 160, 140, 140, "Drop Private Type 1 here", 130 )
-      Gadget_TargetPrivate2 = ListIconWidget( 610, 160, 140, 140, "Drop Private Type 2 here", 130 )
-      Gadget_TargetItem = Gadget_SourceItem
+      ; Create the GADGET_Target s
+      GADGET_TargetText = ListIconWidget( 10, 160, 140, 140, "Drop Text here", 130 )
+      GADGET_TargetImage = Image( 160, 160, 140, 140, ( #ImageGADGET_Target ), #PB_Image_Border ) 
+      GADGET_TargetFiles = ListIconWidget( 310, 160, 140, 140, "Drop Files here", 130 )
+      GADGET_TargetPrivate1 = ListIconWidget( 460, 160, 140, 140, "Drop Private Type 1 here", 130 )
+      GADGET_TargetPrivate2 = ListIconWidget( 610, 160, 140, 140, "Drop Private Type 2 here", 130 )
+      GADGET_TargetItem = GADGET_SourceItem
       
       ; TODO
-      ;   SetFrame( Gadget_SourceText, 1 )
-      ;   SetFrame( Gadget_SourceImage, 1 )
-      ;   SetFrame( Gadget_SourceFiles, 1 )
-      ;   SetFrame( Gadget_SourcePrivate, 1 )
-      ;   SetFrame( Gadget_SourceItem, 1 )
+      ;   SetFrame( GADGET_SourceText, 1 )
+      ;   SetFrame( GADGET_SourceImage, 1 )
+      ;   SetFrame( GADGET_SourceFiles, 1 )
+      ;   SetFrame( GADGET_SourcePrivate, 1 )
+      ;   SetFrame( GADGET_SourceItem, 1 )
       
-      ;   ;SetFrame( Gadget_TargetImage, 10 )
-      ;   SetFrame( Gadget_TargetText, 1 )
-      ;   SetFrame( Gadget_TargetImage, 1 )
-      ;   SetFrame( Gadget_TargetFiles, 1 )
-      ;   ;SetFrame( Gadget_TargetPrivate1, 1 )
-      ;   SetFrame( Gadget_TargetPrivate2, 1 )
+      ;   ;SetFrame( GADGET_TargetImage, 10 )
+      ;   SetFrame( GADGET_TargetText, 1 )
+      ;   SetFrame( GADGET_TargetImage, 1 )
+      ;   SetFrame( GADGET_TargetFiles, 1 )
+      ;   ;SetFrame( GADGET_TargetPrivate1, 1 )
+      ;   SetFrame( GADGET_TargetPrivate2, 1 )
       
       ;\\   
-      SetCursor( Gadget_SourceText, #PB_Cursor_Hand )
+      SetCursor( GADGET_SourceText, #PB_Cursor_Hand )
       
-      ; Now enable the dropping on the Gadget_Target s
-      EnableDrop( Gadget_TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
-      EnableDrop( Gadget_TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
-      EnableDrop( Gadget_TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
-      EnableDrop( Gadget_TargetItem,     #PB_Drop_Private, #PB_Drag_Move, #PrivateType_0 )
-      EnableDrop( Gadget_TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_1 )
-      EnableDrop( Gadget_TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_2 )
+      ; Now enable the dropping on the GADGET_Target s
+      EnableDrop( GADGET_TargetText,     #PB_Drop_Text,    #PB_Drag_Copy )
+      EnableDrop( GADGET_TargetImage,    #PB_Drop_Image,   #PB_Drag_Copy )
+      EnableDrop( GADGET_TargetFiles,    #PB_Drop_Files,   #PB_Drag_Copy )
+      EnableDrop( GADGET_TargetItem,     #PB_Drop_Private, #PB_Drag_Move, #PrivateType_0 )
+      EnableDrop( GADGET_TargetPrivate1, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_1 )
+      EnableDrop( GADGET_TargetPrivate2, #PB_Drop_Private, #PB_Drag_Copy, #PrivateType_2 )
       
       ;
-      Bind( Gadget_SourceImage, @widget_events( ), #__event_DragStart )
-      Bind( Gadget_TargetImage, @widget_events( ), #__event_Drop )
+      Bind( GADGET_SourceImage, @widget_events( ), #__event_DragStart )
+      Bind( GADGET_TargetImage, @widget_events( ), #__event_Drop )
       
-      Bind( Gadget_SourceText, @widget_events( ), #__event_DragStart )
-      Bind( Gadget_TargetText, @widget_events( ), #__event_Drop )
+      Bind( GADGET_SourceText, @widget_events( ), #__event_DragStart )
+      Bind( GADGET_TargetText, @widget_events( ), #__event_Drop )
       
-      Bind( Gadget_SourceItem, @widget_events( ), #__event_DragStart )
-      Bind( Gadget_TargetItem, @widget_events( ), #__event_Drop )
+      Bind( GADGET_SourceItem, @widget_events( ), #__event_DragStart )
+      Bind( GADGET_TargetItem, @widget_events( ), #__event_Drop )
       
-      Bind( Gadget_SourcePrivate, @widget_events( ), #__event_DragStart )
-      Bind( Gadget_TargetPrivate1, @widget_events( ), #__event_Drop )
-      Bind( Gadget_TargetPrivate2, @widget_events( ), #__event_Drop )
+      Bind( GADGET_SourcePrivate, @widget_events( ), #__event_DragStart )
+      Bind( GADGET_TargetPrivate1, @widget_events( ), #__event_Drop )
+      Bind( GADGET_TargetPrivate2, @widget_events( ), #__event_Drop )
       
       ; main loop
       WaitClose( )
     EndIf
    End
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 750
-; FirstLine = 735
-; Folding = ----------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 712
+; FirstLine = 517
+; Folding = -------------G0+
 ; EnableXP
 ; DPIAware

@@ -362,6 +362,7 @@ SetText
 SetState
 GetState
 
+ChangeItemState
 ChangeStatus
 GetStatus
 

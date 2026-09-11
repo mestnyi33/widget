@@ -10,39 +10,26 @@ CompilerIf #PB_Compiler_IsMainFile
    Global._s_WIDGET *g, *first, *second
    
    Procedure all_events()
-      Protected._s_ROWS *row
+      Protected._s_ROW *row
       *g = EventWidget( )
       *row = WidgetEventData( )
-      
-      Select WidgetEvent( )
-         Case #__event_LeftDown
-            If *row > 0
+      If *row > 0
+         Select WidgetEvent( )
+            Case #__event_LeftDown
                If SetState( *g, *row\index)
-                  DoEvents( *g, #__event_StatusChange, *row\rindex, *row )
+                  DoEvents( *g, #__event_StatusChange, *row\index, *row )
                EndIf
-            EndIf
-            
-         Case #__event_Change
-            If *row > 0
+               
+            Case #__event_Change
                Debug "  [+] change "+*g\class +" "+*row\index
-            EndIf
-            
-         Case #__event_StatusChange
-            If *row > 0
+               
+            Case #__event_StatusChange
                Select *g
                   Case *first  : ChangeStatus( *second, *row )
                   Case *second : ChangeStatus( *first, *row )
                EndSelect
-           EndIf
-            ;                
-            ;                         ForEach *second\__rows( )
-            ;                               Debug "[s] "+*second\__rows( )\focus +" "+ *second\__rows( )\index +" "+ *second\__rows( )\ColorState( )
-            ;                            Next
-            ;                          ForEach *first\__rows( )
-            ;                               Debug "[f] "+*first\__rows( )\focus +" "+ *first\__rows( )\index +" "+ *first\__rows( )\ColorState( )
-            ;                            Next
-            
-      EndSelect
+         EndSelect
+      EndIf
    EndProcedure
    
    If Open(1, 100, 50, 330, 330, "demo items status", #PB_Window_SystemMenu)
@@ -56,7 +43,9 @@ CompilerIf #PB_Compiler_IsMainFile
          AddItem(*second, -1, "item "+Str(a), -1, 0)
       Next
       
-      ;
+         Repaint( )
+      
+   ;
       Bind(*first, @all_events(), #__event_LeftDown)
       Bind(*second, @all_events(), #__event_LeftDown)
       
@@ -70,8 +59,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 59
-; FirstLine = 44
+; CursorPosition = 34
+; FirstLine = 29
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -169,7 +169,7 @@ EndProcedure
 
 Procedure   PropertiesButton_Resize( *second._s_WIDGET )
    Protected *this._s_WIDGET
-   Protected *row._s_ROWS
+   Protected *row._s_ROW
    
    *row = *second\RowFocused( )
    If *row
@@ -209,7 +209,7 @@ EndProcedure
 
 Procedure   PropertiesButton_Display( *second._s_WIDGET )
    Protected *this._s_WIDGET
-   Protected *row._s_ROWS
+   Protected *row._s_ROW
    Static *last._s_WIDGET
    
    *row = *second\RowFocused( )
@@ -315,7 +315,7 @@ EndProcedure
 
 ;-
 Procedure   PropertiesItems_StatusChange( *this._s_WIDGET, item, state )
-   Protected._s_ROWS *item = ItemID( *this, item )
+   Protected._s_ROW *item = ItemID( *this, item )
    If *item 
       *item\ColorState( ) = state
       ProcedureReturn *item
@@ -337,7 +337,7 @@ Procedure   PropertiesItems_Events( )
    Protected __data = WidgetEventData( )
    
    Protected item, state
-   Protected._s_ROWS *row
+   Protected._s_ROW *row
    
    Protected *first._s_WIDGET = GetAttribute( *g\parent, #PB_Splitter_FirstGadget)
    Protected *second._s_WIDGET = GetAttribute( *g\parent, #PB_Splitter_SecondGadget)
@@ -382,7 +382,7 @@ EndProcedure
 Procedure   Properties_StatusChange( *splitter._s_WIDGET, *this._s_WIDGET, item )
    Protected._s_WIDGET *first = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
    Protected._s_WIDGET *second = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
-   Protected._s_ROWS *row
+   Protected._s_ROW *row
    ;
    If PushItem( *this )
       If SelectItem( *this, Item)
@@ -585,8 +585,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 222
-; FirstLine = 218
+; CursorPosition = 384
+; FirstLine = 361
 ; Folding = ----------
 ; EnableXP
 ; DPIAware

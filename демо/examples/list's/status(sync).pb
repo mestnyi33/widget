@@ -11,10 +11,10 @@ CompilerIf #PB_Compiler_IsMainFile
    Global a, CountItems = 10
    Global._s_WIDGET *g, *first, *second
    
-   Procedure GetStatus( *this._s_WIDGET, *row._s_ROWS )
+   Procedure GetStatus( *this._s_WIDGET, *row._s_ROW )
       ;Debug ""+MousePress(*g) +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
       
-      If *row\focus And *row\press  
+      If *row\focus And *row\mask & #__mask_press  
          If *row\ColorState( )
             ;Debug "focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
             ProcedureReturn 3
@@ -22,11 +22,11 @@ CompilerIf #PB_Compiler_IsMainFile
             ;Debug "lost focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
             ProcedureReturn - 3
          EndIf
-      ElseIf MousePress(*this) And *row\enter  
+      ElseIf MousePress(*this) And *row\mask & #__mask_hover  
          ;Debug "press enter "+*this\class +" "+ *row\index +" "+ *row\ColorState( ) +" "+ *row\press
          ProcedureReturn 2
       ElseIf *row\focus 
-         If *row\enter 
+         If *row\mask & #__mask_hover 
             If MouseButtons( )
                ;Debug ""+*g\press +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
                ;Debug "focus "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
@@ -50,7 +50,7 @@ CompilerIf #PB_Compiler_IsMainFile
                EndIf
             EndIf
          EndIf
-      ElseIf *row\enter
+      ElseIf *row\mask & #__mask_hover
          ;Debug "enter "+*this\class +" "+ *row\index +" "+ *row\ColorState( )
          ProcedureReturn 1
       Else
@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   Procedure   _ChangeStatus( *this._s_WIDGET, *row._s_ROWS )
+   Procedure   _ChangeStatus( *this._s_WIDGET, *row._s_ROW )
          Protected count = ListSize( *this\__rows( ))
          If count
             If *row\index < 0 Or
@@ -82,8 +82,8 @@ CompilerIf #PB_Compiler_IsMainFile
                ;If *this\__rows( )\ColorState( ) <> *row\ColorState( )
                   *this\__rows( )\ColorState( ) = *row\ColorState( )
                   *this\__rows( )\focus = *row\focus
-                              *this\__rows( )\enter = *row\enter
-                              *this\__rows( )\press = *row\press
+                  *this\__rows( )\mask = *row\mask
+                  
                   If *row\focus
                      *this\RowFocused( ) = *this\__rows( )
                   EndIf
@@ -94,28 +94,18 @@ CompilerIf #PB_Compiler_IsMainFile
       EndProcedure
       
    Procedure all_events()
-      Protected._s_ROWS *row
+      Protected._s_ROW *row
       *g = EventWidget( )
       *row = WidgetEventData( )
       
       Select WidgetEvent( )
-         Case #__event_MouseLeave
-;             If MousePress( )
-;             Else
-;                Pressed( ) = 0
-;                *g\press = 0
-;             EndIf
-            
-         Case #__event_MouseEnter
-            If *g\RowFocused( ) > 0
-               Debug "  [+] enter "+*g\class +" "+*g\RowFocused( )\index
-            EndIf
-            
-            If MousePress( )
-               Pressed( ) = *g
-               *g\mask | #__mask_press
-            EndIf
-            
+         Case #__event_DragStop
+            *row = *g\rowentered()
+            Debug *row\index
+;                If SetState( *g, *row\index)
+;                   DoEvents( *g, #__event_StatusChange, *row\index, *row )
+;                EndIf
+               
          Case #__event_Change
             If *row > 0
                Debug "  [+] change "+*g\class +" "+*row\index
@@ -124,14 +114,8 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_StatusChange
             If *row > 0
                Select *g
-                  Case *first 
-                     ;If GetState( *second ) <> *row\index
-                     _ChangeStatus( *second, *row )
-                     ;EndIf
-                  Case *second 
-                     ;If GetState( *first ) <> *row\index
-                     _ChangeStatus( *first, *row )
-                     ;EndIf   
+                  Case *first  : ChangeStatus( *second, *row )
+                  Case *second : ChangeStatus( *first, *row )
                EndSelect
                
                ProcedureReturn 
@@ -148,15 +132,7 @@ CompilerIf #PB_Compiler_IsMainFile
                EndSelect
                
             EndIf
-            ;                
-            ;                         ForEach *second\__rows( )
-            ;                               Debug "[s] "+*second\__rows( )\focus +" "+ *second\__rows( )\index +" "+ *second\__rows( )\ColorState( )
-            ;                            Next
-            ;                          ForEach *first\__rows( )
-            ;                               Debug "[f] "+*first\__rows( )\focus +" "+ *first\__rows( )\index +" "+ *first\__rows( )\ColorState( )
-            ;                            Next
-            
-      EndSelect
+       EndSelect
    EndProcedure
    
    If Open(1, 100, 50, 330, 330, "demo items status", #PB_Window_SystemMenu)
@@ -170,11 +146,14 @@ CompilerIf #PB_Compiler_IsMainFile
          AddItem(*second, -1, "item "+Str(a), -1, 0)
       Next
       
-      Bind(*first, @all_events(), #__event_MouseEnter)
-      Bind(*second, @all_events(), #__event_MouseEnter)
+;       Bind(*first, @all_events(), #__event_MouseEnter)
+;       Bind(*second, @all_events(), #__event_MouseEnter)
+;       
+;       Bind(*first, @all_events(), #__event_MouseLeave)
+;       Bind(*second, @all_events(), #__event_MouseLeave)
       
-      Bind(*first, @all_events(), #__event_MouseLeave)
-      Bind(*second, @all_events(), #__event_MouseLeave)
+      Bind(*first, @all_events(), #__event_DragStop)
+      Bind(*second, @all_events(), #__event_DragStop)
       
       Bind(*first, @all_events(), #__event_StatusChange)
       Bind(*second, @all_events(), #__event_StatusChange)
@@ -185,9 +164,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 39
-; Folding = -----
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 155
+; FirstLine = 144
+; Folding = ----
 ; EnableXP
 ; DPIAware

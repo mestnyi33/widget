@@ -355,7 +355,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ProcedureReturn *new
   EndProcedure
   
-  Procedure   SetPositionItem( *this._S_widget, *currentRow._s_rows, position.l, *rowMoved._S_rows = #Null ) ; Ok
+  Procedure   SetPositionItem( *this._S_widget, *currentRow._s_ROW, position.l, *rowMoved._s_ROW = #Null ) ; Ok
                                                                                                              ;       If *rowMoved = #Null
                                                                                                              ;         Select Position 
                                                                                                              ;           Case #PB_List_First  : *rowMoved = *currentRow\parent_row( )\first\row
@@ -389,7 +389,7 @@ CompilerIf #PB_Compiler_IsMainFile
                                                                                                              ;         EndIf  
                                                                                                              ;         
                                                                                                              ;         If Position = #PB_List_Last Or Position = #PB_List_After
-                                                                                                             ;           Protected *last._S_rows = *rowMoved\_last\row ; GetLast( *rowMoved, *rowMoved\TabIndex( )) 
+                                                                                                             ;           Protected *last._s_ROW = *rowMoved\_last\row ; GetLast( *rowMoved, *rowMoved\TabIndex( )) 
                                                                                                              ;           
                                                                                                              ;           PushListPosition(  *this\__rows( ))
                                                                                                              ;           ChangeCurrentElement(  *this\__rows( ), *currentRow\address )
@@ -463,8 +463,8 @@ CompilerIf #PB_Compiler_IsMainFile
                                                                                                              ;       
   EndProcedure
   
-  Procedure.i Tree_MoveItem( *this._S_widget, position.l, sublevel.i = 0, *rowMoved._S_rows = #Null  )
-    Protected *rows._S_rows, last, *last_row._S_rows, *parent_row._S_rows
+  Procedure.i Tree_MoveItem( *this._S_widget, position.l, sublevel.i = 0, *rowMoved._s_ROW = #Null  )
+    Protected *rows._s_ROW, last, *last_row._s_ROW, *parent_row._s_ROW
      
     ;With *this
     If *this
@@ -701,8 +701,8 @@ CompilerIf #PB_Compiler_IsMainFile
 ;               
 ;               ; position = position2 + 1
               Protected *this._s_widget = id_inspector_tree
-              Protected *parent_row._S_rows = SelectElement( *this\__rows( ), position2 )
-              Protected *rows._S_rows = SelectElement( *this\__rows( ), position )
+              Protected *parent_row._s_ROW = SelectElement( *this\__rows( ), position2 )
+              Protected *rows._s_ROW = SelectElement( *this\__rows( ), position )
               
               *rows\sublevel = SubLevel2 + 1
               If *parent_row
@@ -843,9 +843,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
   
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 568
-; FirstLine = 525
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 391
+; FirstLine = 387
 ; Folding = ------------
 ; EnableXP
 ; DPIAware

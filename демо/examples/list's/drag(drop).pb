@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global a, CountItems = 10
    Global._s_WIDGET *g, *first, *drop, *second
    
-   Procedure GetRowStatus( *this._s_WIDGET, *row._s_ROWS )
+   Procedure GetRowStatus( *this._s_WIDGET, *row._s_ROW )
 ;       ;Debug ""+MousePress( *g ) +" "+ *row\press +" "+ MouseButtons( ) +" "+ MousePress( )
 ;       
 ;       If *row\focus And *row\press  
@@ -65,7 +65,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure all_events()
-      Protected._s_ROWS *row
+      Protected._s_ROW *row
       *g = EventWidget( )
       *row = WidgetEventData( )
       
@@ -150,8 +150,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 63
-; FirstLine = 43
+; CursorPosition = 67
+; FirstLine = 44
 ; Folding = --
 ; EnableXP
 ; DPIAware

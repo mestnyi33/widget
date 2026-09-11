@@ -46,8 +46,8 @@ Structure Tab
 EndStructure
 
 ;Global NewList Tabs.TAB()
-Global *TabSwap    ._s_ROWS
-Global *Tab        ._s_ROWS
+Global *TabSwap    ._s_ROW
+Global *Tab        ._s_ROW
 Global BarWi       .i
 Global MouseX      .i
 Global MouseY      .i
@@ -61,7 +61,7 @@ EndMacro
 
 Procedure DrawBar (*this._s_widget)
   Protected Y.i, X
-  Protected *Tab      ._s_ROWS
+  Protected *Tab      ._s_ROW
   ;ProcedureReturn 
   ;Calc Y
 ;   If *TabSwap = 0
@@ -528,9 +528,9 @@ If Open(#Window, 0, 0, 300, 500, "TreeGadget Drag & Drop", #PB_Window_ScreenCent
 EndIf
 
 End
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 516
-; FirstLine = 491
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 48
+; FirstLine = 44
 ; Folding = -----
 ; EnableXP
 ; DPIAware

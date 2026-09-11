@@ -4268,7 +4268,7 @@ Module widgets
                *SB\width  = *bar\thumb\len
             EndIf
          EndIf
-         
+         ProcedureReturn 
          ; Splitter first-child auto resize
          If IsGadget( *this\split_1( ) )
             ;             If is_root_container_( *this )
@@ -4306,6 +4306,8 @@ Module widgets
                              *BB1\width, *BB1\height, 0 )
                   EndIf
                   
+               Else
+                  Resize( *this\split_1( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
                EndIf
             EndIf
          EndIf
@@ -4347,6 +4349,8 @@ Module widgets
                              *BB2\width, *BB2\height, 0 )
                   EndIf
                   
+               Else
+                  Resize( *this\split_2( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
                EndIf
             EndIf
          EndIf
@@ -8378,31 +8382,6 @@ Module widgets
    EndProcedure
    
    ;-
-   Procedure   ChangeStatus( *this._s_WIDGET, *row._s_ROW )
-      If Not *row : ProcedureReturn : EndIf
-      Protected._s_ROW *select_row
-      Protected count = ListSize( *this\__rows( ))
-      If count
-         If *row\index < 0 Or
-            *row\index > count
-            ProcedureReturn 0
-         EndIf
-         ;
-         PushListPosition( *this\__rows( ))
-         *select_row = SelectElement( *this\__rows( ), *row\index )
-         If *select_row
-            *select_row\ColorState( ) = *row\ColorState( )
-            *select_row\mask = *row\mask
-            ;             *select_row\mask = *row\mask
-            ;             *select_row\_press = *row\_press
-            If *row\mask & #__mask_active
-               *this\RowFocused( ) = *select_row
-            EndIf
-         EndIf
-         PopListPosition( *this\__rows( ) )
-      EndIf
-   EndProcedure
-   
    Procedure.i GetState( *this._s_WIDGET )
       ; This is a universal function which works For almost all gadgets: 
       ; 
@@ -9143,6 +9122,31 @@ Module widgets
             PopListPosition( *this\__rows( ) )
          EndIf
          ProcedureReturn result
+      EndIf
+   EndProcedure
+   
+   Procedure   ChangeStatus( *this._s_WIDGET, *row._s_ROW )
+      If Not *row : ProcedureReturn : EndIf
+      Protected._s_ROW *select_row
+      Protected count = ListSize( *this\__rows( ))
+      If count
+         If *row\index < 0 Or
+            *row\index > count
+            ProcedureReturn 0
+         EndIf
+         ;
+         PushListPosition( *this\__rows( ))
+         *select_row = SelectElement( *this\__rows( ), *row\index )
+         If *select_row
+            *select_row\ColorState( ) = *row\ColorState( )
+            *select_row\mask = *row\mask
+            ;             *select_row\mask = *row\mask
+            ;             *select_row\_press = *row\_press
+            If *row\mask & #__mask_active
+               *this\RowFocused( ) = *select_row
+            EndIf
+         EndIf
+         PopListPosition( *this\__rows( ) )
       EndIf
    EndProcedure
    
@@ -10674,9 +10678,12 @@ Module widgets
             EndIf
          EndIf
          ;
-         If tabindex = #PB_Default ; < 0
+         If tabindex = #PB_Default
             If *parent\tabbar And *parent\tabbar\type = #__type_TabBar
                tabindex = *parent\openeditem
+            ElseIf *parent\openeditem = #PB_Ignore
+               tabindex = *parent\openeditem
+               Debug "tabindex " + tabindex
             Else
                tabindex = 0
             EndIf
@@ -10715,7 +10722,6 @@ Module widgets
          ; ШАГ 2: ВЫЧИСЛЯЕМ ПОЗИЦИЮ В ЧИСТОЙ СТРУКТУРЕ
          ; =========================================================================
          *this\tabindex = tabindex
-         
          *after  = #Null
          *last   = #Null ; Заменили *last, чтобы не путать со структурой
          
@@ -17590,13 +17596,15 @@ Module widgets
          If test_canvas_events
             Debug " " + PBEventString(eventtype) +" "+ eventgadget
          EndIf
-         ChangeCurrentCanvas( GadgetID( eventgadget ))
-         ;
-         Root( )\canvas\enter = 1
-         ;
-         MouseMask( ) | (#__mask_update|#__mask_hover)
-         CanvasMouseX( ) = mouse::GadgetMouseX( eventgadget )
-         CanvasMouseY( ) = mouse::GadgetMouseY( eventgadget )
+         If IsGadget(eventgadget)
+            ChangeCurrentCanvas( GadgetID( eventgadget ))
+            ;
+            Root( )\canvas\enter = 1
+            ;
+            MouseMask( ) | (#__mask_update|#__mask_hover)
+            CanvasMouseX( ) = mouse::GadgetMouseX( eventgadget )
+            CanvasMouseY( ) = mouse::GadgetMouseY( eventgadget )
+         EndIf
       EndIf
       
       If eventtype = #PB_EventType_MouseLeave
@@ -18359,16 +18367,23 @@ Module widgets
             Else
                Debug " УДАЛЕНО пока было нажато"
             EndIf
-            
-            ;
-            Pressed( ) = 0
+         EndIf
+         
+         ;\\
+         If MouseDrag( )
+            If Entered( )
+               DoEvents( Entered( ), #__event_DragStop )
+            ElseIf Pressed( )
+               DoEvents( Pressed( ), #__event_DragStop )
+            EndIf
          EndIf
          
          ;\\ reset mouse states
+         mouse( )\selector = 0
+         MouseButtons( ) = 0
          MousePressX( ) = 0
          MousePressY( ) = 0
-         MouseButtons( ) = 0
-         mouse( )\selector = 0
+         Pressed( ) = 0
       EndIf
       
       ;
@@ -20805,7 +20820,6 @@ Module widgets
                         EndIf
                      EndIf
                      
-                     
                      ;                       
                      StopEnum( ) 
                      ;Stop( *e, *Root )
@@ -22853,7 +22867,9 @@ Module widgets
       
       ; 2. ПОДДЕРЖКА ВКЛАДОК (TabBar)
       ; Гарантируем, что индекс не отрицательный
-      If Item < 0 : Item = 0 : EndIf
+      If Item <> #PB_Ignore
+         If Item < 0 : Item = 0 : EndIf
+      EndIf
       *parent\openeditem = Item
       
       ; 3. ПЕРЕКЛЮЧЕНИЕ СИСТЕМНОГО КОНТЕКСТА
@@ -22883,6 +22899,9 @@ Module widgets
    Procedure.i CloseList( )
       Protected *prevRoot._s_ROOT
       If Opened( )
+         If Opened( )\openeditem = #PB_Ignore
+            Opened( )\openeditem = 0
+         EndIf      
          Protected *prev._s_PARENT = Opened( )\opened
          ; Если у текущего элемента есть записанный "путь назад"
          If *prev
@@ -25942,9 +25961,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1247
-; FirstLine = 82
-; Folding = iAAAAAAAAvHAAAAAAAAAAAAAAAAAAw8BAAAIQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbAAAAAMAAAAAAAAAgBAAAAAAAAwAAADAAAMAAAAAAAYAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgYbAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAAAAAAAEwvBAAAAAAAg-B9PAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+-----5---------------BAAAAAAAAAAAAAAA5AAAg-BAAAAAAAAAAAAAAAAAAAAAAAAAAAUABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAYAAAAAAAAAAPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAGABAAAAAAYAAA5---HAAAAAAAAAAAAAA+HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw4+fgBAAAAA9---------
+; CursorPosition = 10348
+; FirstLine = 829
+; Folding = iAAAAAAAAvHAAAAAAwEAAAAAAAAAAw8BAAAIQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbAAAAAMAAAAAAAEAgFAQAAAgZBwAAADAAAMAAAAAAAYAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgY8AAAAQAAAAAAAAAwDAAAAAAAAAAAAAAAAAg--PAAAAAAAAAAAAAAAAA9-DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw--fIAAAAAu9vBAAAAAAAg-B9PAAAAAAAAAAAAAAAAAAAgAAAAAAACAg4DA+AAAAAAAAAAAAAAAAA+-----5---------------BAAAAAAAAAAAAAAA5AAAg-BAAAAAAAAAAAAAAAAAAAAAAAAAAAUABMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAwBAAAA5iAeFAAAAAAAAcAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAADAAAAAAAAA5BYAAAAAAACAAAAARAAAAAAAAAAAAAAEAAAAAAAAAAAAAAgEIwAIAAAAAAg4vBA9---DAAAAAAAAAAAAAA-DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5AC5b-PwAAAAAA+---------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

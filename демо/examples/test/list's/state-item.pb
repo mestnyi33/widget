@@ -78,7 +78,7 @@ EndEnumeration
    EndProcedure
    ;-
    Procedure   PropertiesButton_Hide( *this._s_WIDGET )
-      Protected._s_ROWS *row
+      Protected._s_ROW *row
       If *this
          *row = *this\parent\RowFocused( ) 
          If *row
@@ -95,7 +95,7 @@ EndEnumeration
    EndProcedure
    
    Procedure   PropertiesButton_Resize( *this._s_WIDGET  )
-      Protected._s_ROWS *row
+      Protected._s_ROW *row
       Protected result
       If *this
          *row = *this\parent\RowFocused( )
@@ -265,7 +265,7 @@ EndEnumeration
    Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
       Protected._s_WIDGET *first = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
       Protected._s_WIDGET *second = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
-      Protected._s_ROWS *row
+      Protected._s_ROW *row
       Protected state
       
       ;
@@ -330,7 +330,7 @@ EndEnumeration
       Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
       Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
       Protected *this._s_WIDGET
-      Protected._s_ROWS *row
+      Protected._s_ROW *row
       
       If mode
          *row = AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
@@ -360,7 +360,7 @@ EndEnumeration
    
    Procedure   Properties_Events( )
       Static *test  
-      Protected._s_ROWS *row
+      Protected._s_ROW *row
       Protected._s_WIDGET *g
       *g = EventWidget( )
       
@@ -636,7 +636,7 @@ EndEnumeration
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 279
-; FirstLine = 194
-; Folding = -806--------0
+; CursorPosition = 80
+; FirstLine = 76
+; Folding = ---6--------0
 ; EnableXP

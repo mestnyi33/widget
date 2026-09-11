@@ -64,7 +64,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure   PropertiesButton_Resize( *second._s_WIDGET )
-      Protected._s_ROWS *row = *second\RowFocused( )
+      Protected._s_ROW *row = *second\RowFocused( )
       Protected._s_WIDGET *this
       Protected result
       
@@ -93,7 +93,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure   PropertiesButton_Display( *second._s_WIDGET )
-      Protected._s_ROWS *row = *second\RowFocused( )
+      Protected._s_ROW *row = *second\RowFocused( )
       Protected._s_WIDGET *this
       
       If *row
@@ -101,7 +101,7 @@ CompilerIf #PB_Compiler_IsMainFile
          ;
          If *this 
             If Not *row\childrens
-               If *row\hide
+               If *row\mask & #__mask_hide
                   If Hide( *this ) = 0
                      Hide( *this, #True )
                   EndIf
@@ -176,11 +176,11 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                Case #_pi_fontstyle
                   AddItem(*this, -1, "None")         
-                  If *this\ComboBar( )
-                     *this\ComboBar( )\mode\Checkboxes = 1
-                     *this\ComboBar( )\mode\optionboxes = 1
-                     ;    Flag( *this\ComboBar( ), #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
-                  EndIf
+;                   If *this\ComboBar( )
+;                      *this\ComboBar( )\mode\Checkboxes = 1
+;                      *this\ComboBar( )\mode\optionboxes = 1
+;                      ;    Flag( *this\ComboBar( ), #__flag_CheckBoxes|#__flag_OptionBoxes, 1 )
+;                   EndIf
                   AddItem(*this, -1, "Bold")        ; Ўрифт будет выделен жирным
                   AddItem(*this, -1, "Italic")      ; Ўрифт будет набран курсивом
                   AddItem(*this, -1, "Underline")   ; Ўрифт будет подчеркнут (только дл€ Windows)
@@ -256,7 +256,7 @@ CompilerIf #PB_Compiler_IsMainFile
             PropertiesItems_StatusChange( *second, item, #__s_2 )
             
             ;
-            SetText( EventWidget( ), *first\RowFocused( )\text\string )
+            SetText( EventWidget( ), *first\RowFocused( )\text\Str(0) )
             
          Case #__event_MouseWheel
             If MouseDirection( ) > 0
@@ -268,7 +268,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;-
    Procedure   PropertiesItems_StatusChange( *this._s_WIDGET, item, state )
-      Protected._s_ROWS *row = ItemID( *this, item )
+      Protected._s_ROW *row = ItemID( *this, item )
       If *row 
          If state = #__s_2
                If *this\RowFocused( )
@@ -288,7 +288,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected._s_WIDGET *splitter = GetParent(*g)
       Protected._s_WIDGET *first = GetAttribute( *splitter, #PB_Splitter_FirstGadget)
       Protected._s_WIDGET *second = GetAttribute( *splitter, #PB_Splitter_SecondGadget)
-      Protected._s_ROWS *row
+      Protected._s_ROW *row
       Protected item, state
       
       Select WidgetEvent( )
@@ -363,7 +363,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure   Properties_StatusChange( *splitter._s_WIDGET, *this._s_WIDGET )
       Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
       Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
-      Protected._s_ROWS *row = ItemID( *this, WidgetEventItem( ))
+      Protected._s_ROW *row = ItemID( *this, WidgetEventItem( ))
       Protected item, state
       
       ;
@@ -657,9 +657,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 566
-; FirstLine = 550
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 365
+; FirstLine = 362
 ; Folding = ------------
 ; EnableXP
 ; DPIAware
