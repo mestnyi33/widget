@@ -37,7 +37,7 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList( )
       
       
-      Debug ""+roots( )\haschildren +" root childrens count"
+      Debug ""+Root( )\haschildren +" root childrens count"
       Debug ""+*g0\haschildren +" container childrens count"
       If *g
          Debug ""+*g\haschildren +" splitter childrens count"
@@ -62,7 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
      
       Debug ""
       Debug "---after free---"
-      Debug ""+roots( )\haschildren +" root childrens count"
+      Debug ""+Root( )\haschildren +" root childrens count"
       Debug ""+*g0\haschildren +" container childrens count"
       If *g
          Debug ""+*g\haschildren +" splitter childrens count"
@@ -72,12 +72,12 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
       Debug "---after close---"
       Debug ListSize(widgets())
-      Debug MapSize(roots())
+      ;Debug MapSize(Roots())
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 51
-; FirstLine = 47
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 74
+; FirstLine = 51
 ; Folding = --
 ; EnableXP
 ; DPIAware

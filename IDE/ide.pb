@@ -3399,9 +3399,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 303
-; FirstLine = 293
-; Folding = ----4---8-f-tf----------3BC----------+--80-----------4vt----f+-
+; CursorPosition = 1553
+; FirstLine = 1388
+; Folding = ----4---8-f-tf----------3BC----------+--80-----------4vtf---f+-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2_621.exe

@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    UsePNGImageDecoder()
    Declare CreateNewWindow( )
-   Global *window, *buttonOpen, *buttonClose, *buttonTest
+   Global._s_WIDGET *window, *buttonOpen, *buttonClose, *buttonTest
    
    ; disable window buttons events (MAXIMIZE|MINIMIZE|CLOSE)
    Procedure events_buttons()
@@ -53,9 +53,11 @@ CompilerIf #PB_Compiler_IsMainFile
                   HideGadget( *buttonClose, 1 )
                   
                   ;If *window
-                  Free( @*window )
-                  
-                  ;ReDraw( root())
+      ; PostEventsResize( *window )
+                   ;repaint_set( *window )
+                   Free( @*window )
+                   
+                   ; ReDraw( )
                   Debug "click "+*window
                   *window = 0
                   
@@ -78,7 +80,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Splitter( 10,90,100,100,*g1,*g2 )
       
-      Debug "" + root( )\haschildren
+      Debug "" + Root( )\haschildren
                   
       Bind( *window, @events_buttons( ) )
       ProcedureReturn *window
@@ -99,9 +101,9 @@ CompilerIf #PB_Compiler_IsMainFile
    ;
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 33
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 58
+; FirstLine = 46
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -226,7 +226,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;- 
    If Open(0, 0, 0, Width + 180, Height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ;gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
-      *this  = Widget::Button(100, 100, 250, 200, Text, multiline) : SetImage( *this, img ) 
+      *this  = Button(100, 100, 250, 200, Text, multiline) : SetImage( *this, img ) 
       
       Define Y  = 10
       Define bh = 24
@@ -241,11 +241,11 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       Define Container = Container( Width + 45, Y + bh * 1+10, 100, 100, #__flag_BorderLess | #__flag_Transparent) 
-      button_top       = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__flag_Invert,20)
-      button_left      = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__flag_Vertical|#__flag_Invert,20)
-      button_center    = Widget::Button(0,0,bh,bh, "O", #PB_Button_Toggle,20)
-      button_right     = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__flag_Vertical,20)
-      button_bottom    = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle,20)
+      button_top       = Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__flag_Invert,20)
+      button_left      = Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__flag_Vertical|#__flag_Invert,20)
+      button_center    = Button(0,0,bh,bh, "O", #PB_Button_Toggle,20)
+      button_right     = Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__flag_Vertical,20)
+      button_bottom    = Button(0,0,bh,bh, "v", #PB_Button_Toggle,20)
       
       SetAlign( button_left, #__align_auto, 1,0,0,0, 0)
       SetAlign( button_top, #__align_auto, 0,1,0,0, 0)
@@ -257,13 +257,13 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList( )
       
       ; flag
-      Button_type      = Widget::Button(Width + 45, Y, 100, p, "gadget", #PB_Button_Toggle)
-      button_default   = Widget::Button(Width + 45, Y + p * 5, 100, bh, "default", #PB_Button_Toggle)
-      button_toggle    = Widget::Button(Width + 45, Y + p * 6, 100, bh, "toggle", #PB_Button_Toggle)
-      button_multiline = Widget::Button(Width + 45, Y + p * 7, 100, bh, "multiline", #PB_Button_Toggle)
-      button_vertical  = Widget::Button(Width + 45, Y + p * 8, 100, bh, "vertical", #PB_Button_Toggle)
-      button_invert    = Widget::Button(Width + 45, Y + p * 9, 100, bh, "invert", #PB_Button_Toggle)
-      ;button_mirror    = Widget::Button(Width + 45, Y + p * 13, 100, bh, "mirror", #PB_Button_Toggle)
+      Button_type      = Button(Width + 45, Y, 100, p, "gadget", #PB_Button_Toggle)
+      button_default   = Button(Width + 45, Y + p * 5, 100, bh, "default", #PB_Button_Toggle)
+      button_toggle    = Button(Width + 45, Y + p * 6, 100, bh, "toggle", #PB_Button_Toggle)
+      button_multiline = Button(Width + 45, Y + p * 7, 100, bh, "multiline", #PB_Button_Toggle)
+      button_vertical  = Button(Width + 45, Y + p * 8, 100, bh, "vertical", #PB_Button_Toggle)
+      button_invert    = Button(Width + 45, Y + p * 9, 100, bh, "invert", #PB_Button_Toggle)
+      ;button_mirror    = Button(Width + 45, Y + p * 13, 100, bh, "mirror", #PB_Button_Toggle)
       
       Bind(#PB_All, @all_events())
       
@@ -282,10 +282,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       ;\\
-      Splitter_0 = Widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
-      Splitter_1 = Widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical)
-      Splitter_2 = Widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
-      Splitter_3 = Widget::Splitter(10, 10, Width, Height, Splitter_2, #Null, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+      Splitter_0 = Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
+      Splitter_1 = Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical)
+      Splitter_2 = Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
+      Splitter_3 = Splitter(10, 10, Width, Height, Splitter_2, #Null, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
       
       
       SetState(Splitter_3, 350 )
@@ -295,9 +295,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 98
-; FirstLine = 82
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 287
+; FirstLine = 263
 ; Folding = -----
 ; EnableXP
 ; DPIAware

@@ -169,11 +169,10 @@ CompilerIf #PB_Compiler_IsMainFile
       OpenList(*this, #PB_Ignore)
       *g = Button( 0,0,Width,Height, Text.s, #__flag_Left )
       CloseList( )
-      ; SetParent( *g, *this, #PB_Ignore )
       If Flag & #__align_auto
          SetAlign( *g, 0, #__align_auto,1,#__align_auto,0, 0 )              
       EndIf
-      
+      ProcedureReturn *g
    EndProcedure
    
    Procedure ListIcon_(X,Y,Width,Height,firstcolumntitle.s, firstcolumnwidth, flags.q=0 )
@@ -420,7 +419,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 171
+; CursorPosition = 175
 ; FirstLine = 163
 ; Folding = ---------
 ; EnableXP

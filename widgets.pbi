@@ -14498,16 +14498,16 @@ Module widgets
                      is_hover( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
                      is_hover( *list( ), mouse_x, mouse_y, [#__c_draw] )
                      
-                     ;                      ;\\ если переместили виджет то его исключаем
-                     ;                      If MouseDrag( ) 
-                     ;                         If is_drag_move( )
-                     ;                            If Pressed( ) = *list( )
-                     ;                               Continue
-                     ;                            EndIf
-                     ;                            Entered( ) = *list( )
-                     ;                            ProcedureReturn 0
-                     ;                         EndIf
-                     ;                      EndIf
+;                      ;\\ если переместили виджет то его исключаем
+;                      If MouseDrag( ) 
+;                         If is_drag_move( )
+;                            If Pressed( ) = *list( )
+;                               Continue
+;                            EndIf
+;                            Entered( ) = *list( )
+;                            ProcedureReturn 0
+;                         EndIf
+;                      EndIf
                      
                      *this = *list( )
                      Break
@@ -14701,10 +14701,10 @@ Module widgets
                      EnteredButton( )\mask & #__mask_disabled = 0 And
                      EnteredButton( )\mask & #__mask_hover = 0
                      EnteredButton( )\mask | #__mask_hover
-                     ;                      ;
-                     ;                      If EnteredButton( ) = *BB0
-                     ;                         EnteredButton( )\mask | #__mask_hover_a
-                     ;                      EndIf
+;                      ;
+;                      If EnteredButton( ) = *BB0
+;                         EnteredButton( )\mask | #__mask_hover_a
+;                      EndIf
                      ;
                      If EnteredButton( )\ColorState( ) = #__s_0
                         EnteredButton( )\ColorState( ) = #__s_1
@@ -19589,6 +19589,52 @@ EndProcedure
       Draw_Frames( *this, state )
    EndProcedure
    
+   Procedure draw_font2( *address._s_ROW, _font_id_ = 0, _update_ = 0, draw_font=0 )
+      If _font_id_
+         If Not GetFontID( *address )
+            SetFontID( *address, _font_id_ )
+            
+            *address\text\width = 0
+            *address\text\height = 0
+         EndIf
+      EndIf
+      ;
+      If draw_font
+         CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
+            If CurrentFontID( )
+               DrawingFont( CurrentFontID( ))
+            EndIf
+         CompilerEndIf
+      EndIf
+      
+      If GetFontID( *address ) And
+         CurrentFontID( ) <> GetFontID( *address )
+         ; Debug " draw current font - " + #PB_Compiler_Procedure + " " +  Str(*address) + " " + CurrentFontID( ) +" "+ GetFontID( *address )
+         CurrentFontID( ) = GetFontID( *address )
+         
+         DrawingFont( CurrentFontID( ))
+         
+         *address\text\width = 0
+         *address\text\height = 0
+      EndIf
+      ;
+      If Not ( *address\text\width And *address\text\height ) Or _update_
+         If *address\text\Str(0)
+            ;                CompilerIf #PB_Compiler_OS = #PB_OS_Windows ; BUG
+            ;                   *address\text\width = TextWidth( RemoveString( *address\text\str(0), #LF$ ))
+            ;                CompilerElse
+            *address\text\width = TextWidth( *address\text\Str(0) )
+            ;                CompilerEndIf
+         EndIf
+         
+         *address\text\height = TextHeight( "A" ) - Bool(#PB_Compiler_OS=#PB_OS_MacOS)
+         ;;Debug ""+*this\class +" "+ *address\index +" "+ *address\text\height
+         ; set rotate text value
+         ; *address\text\rotate = Bool( *address\text\invert ) * 180 + Bool( *address\text\vertical ) * 90
+         
+      EndIf
+   EndProcedure
+   
    Procedure   Draw_TreeRows( *this._s_WIDGET, _i_=0 )
       Protected state.b, X.l, Y.l, _box_x_.l, _box_y_.l, minus.l = 7
       Protected bs = Bool( *this\fs )
@@ -19597,6 +19643,7 @@ EndProcedure
       Protected gridlines = Bool(*this\flagmask & #__flag_gridLines)
       Protected *row._s_ROW
       Protected *i._s_ROW
+      
       ;
       PushListPosition( *this\__items( ))
       ForEach *this\__items( ) : *i = *this\__items( )
@@ -19606,6 +19653,8 @@ EndProcedure
          If Not *i\mask & #__mask_visible
             Continue
          EndIf
+         
+         Debug ""+*this\class +". "+Str(*i\text) +" "+ *i\text\Str(_i_)
          
          ;\\ init real drawing font
          draw_font( *i, 0, *i\TextChange( ))
@@ -24485,32 +24534,32 @@ EndProcedure
                   
                   ; [ОЧИСТКА ПАМЯТИ - МАШТАБИРУЕМАЯ "МАТРЕШКА"]
                   ; Удаляем BAR и его кнопки
-                  If widgets()\bar
+                  If *e\bar
                      Protected i
                      For i = 0 To 2
                         If EnteredButton( ) = *e\bar\button[i] : EnteredButton( ) = #Null : EndIf
-                        If widgets()\bar\button[i] : FreeStructure(widgets()\bar\button[i]) : EndIf
+                        If *e\bar\button[i] : FreeStructure(*e\bar\button[i]) : EndIf
                      Next
-                     FreeStructure(widgets()\bar) : widgets()\bar = #Null
+                     FreeStructure(*e\bar) : *e\bar = #Null
                   EndIf
                   
                   ; Удаляем ROW и его подсказку tt
-                  If widgets()\row
+                  If *e\row
                      ; Сброс кнопок баров
-                     If widgets()\row\tt : FreeStructure(widgets()\row\tt) : EndIf
-                     FreeStructure(widgets()\row) : widgets()\row = #Null
+                     If *e\row\tt : FreeStructure(*e\row\tt) : EndIf
+                     FreeStructure(*e\row) : *e\row = #Null
                   EndIf
                   
                   ;                   ; Удаляем колонки (указатели)
-                  ;                   ForEach widgets()\__columns( )
-                  ;                      ;  If widgets()\__columns( ) : FreeStructure(widgets()\__columns( )) : EndIf
+                  ;                   ForEach *e\__columns( )
+                  ;                      ;  If *e\__columns( ) : FreeStructure(*e\__columns( )) : EndIf
                   ;                   Next
                   
                   ; Удаляем вспомогательные аллокации
-                  If widgets()\combobutton : FreeStructure(widgets()\combobutton) : EndIf
-                  If widgets()\togglebox    : FreeStructure(widgets()\togglebox)    : EndIf
-                  If widgets()\bounds\attach : FreeStructure(widgets()\bounds\attach) : EndIf
-                  ;If widgets()\tt : FreeStructure(widgets()\tt) : EndIf
+                  If *e\combobutton : FreeStructure(*e\combobutton) : EndIf
+                  If *e\togglebox    : FreeStructure(*e\togglebox)    : EndIf
+                  If *e\bounds\attach : FreeStructure(*e\bounds\attach) : EndIf
+                  ;If *e\tt : FreeStructure(*e\tt) : EndIf
                   
                   ; --- [НОВОЕ: ВЫРЕЗАЕМ ИЗ ГЛОБАЛЬНЫХ ЦЕПОЧЕК Z-ORDER и ВИДИМОСТИ] ---
                   ; Сшиваем соседей между собой встык по новым индексам [0] и [1]
@@ -24575,17 +24624,18 @@ EndProcedure
                   
                   ;
                   If test_delete
-                     Debug " free() - " + *e\class
+                     Debug " free( ) - " + *e\class
                   EndIf
                   
-                  ; 3. Теперь безопасно удаляем сам виджет из общего списка
-                  DeleteElement(widgets(), 1) ; Флаг 1 переставит курсор на предыдущий элемент
-                  If *root : PostEventsRepaint( *root ) : EndIf
+                  ; 3. Теперь безопасно удаляем сам виджет из общего списка 
+                  ; Флаг 1 переставит курсор на предыдущий элемент
+                  DeleteElement( widgets( ), 1 ) 
+                  If *root : PostRepaint( *root ) : EndIf
                EndIf
                
                ;\\
                If *root\haschildren = 0 : Break : EndIf
-               If ListSize( widgets( ) ) = 0
+               If ListSize( widgets( )) = 0
                   Debug "bug "+ #PB_Compiler_Procedure +"( ) haschildren "+*root\haschildren
                   Break
                EndIf
@@ -25923,9 +25973,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 14961
-; FirstLine = 14378
-; Folding = ---------------------------------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------------------------t------------------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------8----------------------------------v4---------------------------------------------------------------------------------------------------------------fU7Q-u0-------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 24626
+; FirstLine = 23774
+; Folding = ---------------------------------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------------------------t------------------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------8----------------------------------v4-----------------------------------------------------------------------------------------------------------------jSH74t----------------------------------------------------------------------------------------------------------------------------------------4---------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

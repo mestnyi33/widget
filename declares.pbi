@@ -727,7 +727,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       Post( _this_, #__event_Resize )
    EndMacro
    Macro PostEventsRepaint( _root_ )
-      
+      ; PostRepaint( _root_ )
    EndMacro
    
    
@@ -1938,8 +1938,8 @@ CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1717
-; FirstLine = 829
-; Folding = 9AcgA-PBu----------PMA9------DA5--PAQAAAw-
+; CursorPosition = 729
+; FirstLine = 537
+; Folding = 9AcgA-PBu----------PcZ9------DA5--PAQAAAw-
 ; EnableXP
 ; DPIAware
