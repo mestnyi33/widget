@@ -18344,14 +18344,17 @@ Module widgets
          Pressed( ) = 0
       EndIf
       
-      ;
-      ;\\ do reset data
-      ;
-      MouseMask( ) &~ (#__mask_update) 
-      If Not MouseButtons( )
-         MouseMask( ) &~ (#__mask_release|#__mask_drag) 
-      EndIf
-      
+;       ;
+;       ;\\ do reset data
+;       ;
+;       MouseMask( ) &~ (#__mask_update) 
+;       If Not MouseButtons( )
+;          If MouseRelease()
+;             Debug "MouseRelease"
+;          EndIf
+;          MouseMask( ) &~ (#__mask_release|#__mask_drag) 
+;       EndIf
+;       
       ProcedureReturn #PB_Event_Gadget
       
    EndProcedure
@@ -19654,7 +19657,9 @@ EndProcedure
             Continue
          EndIf
          
-         Debug ""+*this\class +". "+Str(*i\text) +" "+ *i\text\Str(_i_)
+         ;If MouseRelease( )
+            Debug ""+*this\class +". "+Str(*i\text) +" "+ *i\text\Str(_i_)
+         ;EndIf
          
          ;\\ init real drawing font
          draw_font( *i, 0, *i\TextChange( ))
@@ -20915,6 +20920,7 @@ EndProcedure
             EndIf
             ;
             StopDraw( )
+            ;
             ResetEvents( *root )
          EndIf
       Else 
@@ -23969,6 +23975,7 @@ EndProcedure
    EndProcedure
    
    Procedure   ResetEvents( *this._s_WIDGET )
+      Protected result
       If ListSize( __GUI\event\queues( ))
          RemoveEvents( *this, #PB_All )
          ;             If ListSize( __GUI\event\binds( ))
@@ -23977,8 +23984,20 @@ EndProcedure
          ;                Next
          ;             EndIf
          
-         ProcedureReturn #True
+         result = #True
       EndIf
+      
+      ;
+      ;\\ do reset data
+      ;
+      MouseMask( ) &~ (#__mask_update) 
+      If Not MouseButtons( )
+         If MouseRelease()
+            Debug "last MouseRelease"
+         EndIf
+         MouseMask( ) &~ (#__mask_release|#__mask_drag) 
+      EndIf
+      ProcedureReturn result
    EndProcedure
    
    Procedure   AddEvents( *this._s_ROOT, event.l, *button = #PB_All, *data = #Null )
@@ -25972,10 +25991,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 24626
-; FirstLine = 23774
-; Folding = ---------------------------------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------------------------t------------------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------8----------------------------------v4-----------------------------------------------------------------------------------------------------------------jSH74t----------------------------------------------------------------------------------------------------------------------------------------4---------------------
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 19661
+; FirstLine = 18967
+; Folding = ---------------------------------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------------------------t------------------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------8----------------------------------v4---------------------------------------------------------------------------8-8-----------------------------------RpD083----------------------------------------------------------------------------------------------------------------------------------------v---------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
