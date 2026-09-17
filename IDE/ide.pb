@@ -1552,6 +1552,8 @@ Procedure new_widget_delete( *this._s_WIDGET  )
       ; we delete the object itself
       ; and all its children
       Free( @*this )
+      a_focused( ) = 0
+      a_entered( ) = 0
    EndIf
 EndProcedure
 
@@ -1766,13 +1768,12 @@ Procedure new_widget_events( )
       Case #__event_Free
          If Not ( ide_design_MDI = *g )
             ; Debug "  do free "+item
+            Define key$ = RemoveString( GetClass(*g), "#"+ClassFromType( Type(*g))+"_" )
             ; remove items 
             RemoveItem( ide_inspector_VIEW, GetData(*g)) 
-            
             ; after remove items 
             If *g = a_focused( )
-               Protected i, CountItems
-               CountItems = CountItems( ide_inspector_VIEW ) 
+               Protected i, CountItems = CountItems( ide_inspector_VIEW ) 
                If CountItems 
                   ; update widget data item
                   For i = 0 To CountItems - 1
@@ -1780,12 +1781,18 @@ Procedure new_widget_events( )
                   Next 
                   ;
                   ; set anchor focus
-                  a_set( GetItemData( ide_inspector_VIEW, GetState( ide_inspector_VIEW ) ) )
+                  Define active_item = GetState( ide_inspector_VIEW )
+                  If active_item >= 0
+                     Define *newFocus = GetItemData( ide_inspector_VIEW, active_item)
+                     If *newFocus
+                        a_set( *newFocus )
+                     EndIf
+                  EndIf
                EndIf
             EndIf
             
             ;
-            DeleteMapElement( GetObject( ), RemoveString( GetClass(*g), "#"+ClassFromType( Type(*g))+"_" ))
+            DeleteMapElement( GetObject( ), key$)
          EndIf
          ;
       Case #__event_Focus
@@ -2559,6 +2566,12 @@ Procedure   ide_menu_events(  )
       Case #_tb_widget_copy
          new_widget_copy( )
          
+      Case #_tb_widget_paste
+         new_widget_paste( )
+         
+      Case #_tb_widget_delete
+         new_widget_delete( a_focused( ))
+         
       Case #_tb_widget_cut
          ; new_widget_copy( )
          Protected *i = a_focused( )
@@ -2573,11 +2586,6 @@ Procedure   ide_menu_events(  )
          
          ;new_widget_delete( a_focused( ) )
          
-      Case #_tb_widget_paste
-         new_widget_paste( )
-         
-      Case #_tb_widget_delete
-         new_widget_delete( a_focused( ) )
          
          
       Case #_tb_group_select
@@ -2617,7 +2625,7 @@ Procedure   ide_menu_events(  )
          
          ;  RUN
       Case #_tb_file_run
-         Define Code.s = Generate_Code( ide_design_MDI ) ;GetText( ide_design_CODE )
+         Define Code.s = Generate_Code( ide_design_MDI )
          
          RunPreview( Code )
          
@@ -3399,9 +3407,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1553
-; FirstLine = 1388
-; Folding = ----4---8-f-tf----------3BC----------+--80-----------4vtf---f+-
+; CursorPosition = 1794
+; FirstLine = 1613
+; Folding = ----4---8-f-tf----------3BC----------8--v4-----------f-3+0---6-
 ; EnableXP
 ; DPIAware
 ; Executable = ../../2_621.exe

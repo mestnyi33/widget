@@ -826,366 +826,6 @@ Module widgets
    EndProcedure
    
    ;-
-   Procedure   make_multiline_text( *this._s_WIDGET, indent )
-      Protected textchange.b = 1
-      Protected *str.Character
-      Protected *end.Character
-      Protected String.s, String1.s, CountString
-      Protected IT, len.l, Position.l, Width, gridlines
-      Protected ColorFont = *this\color\front[*this\ColorState( )]
-      ; 
-      
-      ; *this\max
-      If *this\text\vertical
-         If *this\scroll_height( ) > *this\inner_height( )
-            textchange = 1
-         EndIf
-         Width = *this\inner_height( ) - *this\padding\x * 2
-         
-      Else
-         If *this\scroll_width( ) > *this\inner_width( )
-            textchange = 1
-         EndIf
-         
-         Width = *this\inner_width( ) - *this\padding\x * 2
-      EndIf
-      
-      If *this\text\multiLine
-         ; make multiline text
-         Protected text$ = *this\text\Str(0) + #LF$
-         
-         ;     text$ = ReplaceString( text$, #LFCR$, #LF$ )
-         ;     text$ = ReplaceString( text$, #CRLF$, #LF$ )
-         ;     text$ = ReplaceString( text$, #CR$, #LF$ )
-         
-         If *this\text\multiLine < 0
-            String = text$
-         Else
-            ; text wordwrap
-            ; <http://www.purebasic.fr/english/viewtopic.php?f = 12&t = 53800>
-            Protected.i i, start, found, length
-            Protected$ line$, DelimList$ = " " + Chr( 9 ), nl$ = #LF$
-            
-            *str.Character = @text$
-            *end.Character = @text$
-            
-            ; make word wrap
-            While *end\c
-               If *end\c = #LF
-                  start  = ( *end - *str ) >> #PB_Compiler_Unicode
-                  line$  = PeekS ( *str, start )
-                  length = start
-                  
-                  ; Get text len
-                  While length > 1
-                     If Width > TextWidth( RTrim( Left( line$, length ) ))
-                        Break 
-                     Else
-                        length - 1
-                     EndIf
-                  Wend
-                  
-                  While start > length
-                     For found = length To 1 Step - 1
-                        If FindString( " ", Mid( line$, found, 1 ))
-                           If Width - *this\padding\x * 2 < TextWidth( RTrim( Left( line$, found )))
-                              *this\countitems = 0
-                           EndIf
-                           start = found
-                           Break
-                        EndIf
-                     Next
-                     
-                     If Not found
-                        start = length
-                     EndIf
-                     
-                     String + Left( line$, start ) + nl$
-                     line$ = LTrim( Mid( line$, start + 1 ))
-                     start = Len( line$ )
-                     
-                     ; If length <> start
-                     length = start
-                     
-                     ; Get text len
-                     While length > 1
-                        If Width > TextWidth( RTrim( Left( line$, length ) ))
-                           Break
-                        Else
-                           length - 1
-                        EndIf
-                     Wend
-                     ; EndIf
-                  Wend
-                  
-                  String + line$ + nl$
-                  *str = *end + #__sOC
-               EndIf
-               
-               *end + #__sOC
-            Wend
-         EndIf
-         
-         CountString = CountString( String, #LF$ )
-      Else
-         String.s    = RemoveString( *this\text\Str(0), #LF$ ) + #LF$
-         CountString = 1
-      EndIf
-      
-      ;
-      If *this\countitems <> CountString
-         *this\countitems = CountString
-         textchange = 1
-      EndIf
-      
-      If textchange
-         *str.Character = @String
-         *end.Character = @String
-         
-         *this\text\pos = 0
-         *this\text\len = Len( *this\text\Str(0) )
-         
-         ;\\
-         *this\scroll_width( )  = *this\padding\x * 2 
-         *this\scroll_height( ) =  *this\padding\y * 2 
-         
-         ;
-         If Not *this\text\vertical And *this\picture\width And *this\text\Str(0) = ""
-            *this\scroll_width( )  = *this\picture\width + *this\padding\x * 2 
-         EndIf
-         
-         ; Перед циклом создания линий
-         Protected CurrentTotalPos.l = 0 
-         Protected._s_ROW *line
-         ;
-         ClearList( *this\__lines( ))
-         While *end\c
-            If *end\c = #LF
-               AddElement( *this\__lines( ))
-               *line = @*this\__lines( )
-               
-               *line\text\len    = ( *end - *str ) >> #PB_Compiler_Unicode
-               *line\text\Str(0) = PeekS ( *str, *line\text\len )
-               
-               ; drawing item font
-               draw_font( *line, 0, *line\TextChange( ));, GetFontID( *this ) )
-               
-               
-               
-               ;; editor
-               *line\lindex = ListIndex( *this\__lines( ))
-               ; --- ВОТ ЭТО НУЖНО ДОБАВИТЬ ---
-               *line\text\pos = CurrentTotalPos ; Устанавливаем начало строки
-               CurrentTotalPos + *line\text\len + 1 ; Прибавляем длину строки и 1 (для #LF$)
-                                                    ; ------------------------------
-                                                    ;                                     ;
-                                                    ;                                     If *this\LineState( ) = *line\lindex
-                                                    ;                                        *this\row\active[0] = *line
-                                                    ;                                     EndIf
-                                                    ; Сделай так:
-                                                    ; Проверяем, попадает ли глобальная каретка в диапазон этой строки
-               Protected current_pos = *this\caret\start
-               If current_pos>= 0
-                  
-                  If current_pos >= *line\text\pos And current_pos <= (*line\text\pos + *line\text\len)
-                     ;  Debug ""+current_pos +" "+ *line\text\pos +" "+ Str(*line\text\pos + *line\text\len)
-                     *this\row\active[0] = *line
-                     *this\LineState() = *line\lindex ; Обновляем индекс для порядка, но не базируемся на нем
-                  EndIf
-               EndIf
-               
-               *line\height = *line\text\height
-               *line\width  = *this\inner_width( )
-               *line\color  = _get_colors_( )
-               ;
-               If *line\lindex <> *this\countitems - 1 
-                  gridlines = Bool(*this\flagmask & #__flag_gridLines)
-               EndIf
-               
-               ; make line position
-               If *this\text\vertical
-                  If *this\scroll_height( ) < *line\text\width + *this\padding\y * 2 ;+ *this\row\sellastsize
-                     *this\scroll_height( ) = *line\text\width + *this\padding\y * 2 ;+ *this\row\sellastsize
-                  EndIf
-                  
-                  If *this\text\rotate = 90
-                     *line\x = *this\scroll_width( ) - *this\padding\x
-                  ElseIf *this\text\rotate = 270
-                     *line\x = ( *this\inner_width( ) - *this\scroll_width( ) - *line\text\width ) + *this\padding\x
-                  EndIf
-                  
-                  *this\scroll_width( ) + *this\text\height + gridlines
-               Else ; horizontal
-                  If *this\scroll_width( ) < *line\text\width + *this\padding\x * 2 ;+ *this\row\sellastsize
-                     *this\scroll_width( ) = *line\text\width + *this\padding\x * 2 ;+ *this\row\sellastsize
-                  EndIf
-                  
-                  If *this\text\rotate = 0
-                     *line\y = *this\scroll_height( ) - *this\padding\y
-                  ElseIf *this\text\rotate = 180
-                     *line\y = ( *this\inner_height( ) - *this\scroll_height( ) - *line\text\height ) + *this\padding\y
-                  EndIf
-                  
-                  *this\scroll_height( ) + *this\text\height + gridlines
-               EndIf
-               
-               *str = *end + #__sOC
-            EndIf
-            
-            *end + #__sOC
-         Wend
-         
-         If *this\row\active[0]
-            Debug *this\row\active[0]\text\Str(0)
-         EndIf
-         ;
-         Protected *txt._s_TEXT
-         ;
-         ForEach *this\__lines( )
-            *line = @*this\__lines( )
-            *txt = *line\text
-            *txt\pos = *this\text\pos
-            *this\text\pos + *txt\len + 1 ; Len( #LF$ )
-            
-            If *this\text\vertical
-               If *this\text\rotate = 270
-                  *line\x - ( *this\inner_width( ) - *this\scroll_width( ))
-                  *txt\x = *txt\width
-               Else
-                  *txt\x = 0
-               EndIf
-               make_content_align_y( *txt, *this\scroll_height( ), *txt\width, *this\text\rotate, *this\area_align, *this\padding\y )
-            Else
-               If *this\text\rotate = 180
-                  *line\y - ( *this\inner_height( ) - *this\scroll_height( ))
-                  *txt\y = *txt\height
-               Else
-                  *txt\y = 0
-               EndIf
-               make_content_align_x( *txt, *this\scroll_width( ), *txt\width, *this\text\rotate, *this\area_align, *this\padding\x )
-            EndIf
-            
-            ;pb bug
-            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-               If *this\text\rotate = 0   : *txt\y - 1 : EndIf
-               If *this\text\rotate = 90  : *txt\x - 2 : EndIf
-               If *this\text\rotate = 180 : *txt\y + 3 : EndIf
-               If *this\text\rotate = 270 : *txt\x + 2 : EndIf
-            CompilerEndIf
-            CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-               If *this\text\rotate = 0   : *txt\y - 1 : EndIf
-               If *this\text\rotate = 90  : *txt\x - 3 : EndIf
-               If *this\text\rotate = 180 : *txt\y + 2 : EndIf
-               If *this\text\rotate = 270 : *txt\x + 3 : EndIf
-            CompilerEndIf
-            
-            ;
-            If *this\area_align\left Or 
-               *this\area_align\top Or 
-               *this\area_align\right Or 
-               *this\area_align\bottom 
-               ;
-               If *this\area_align
-                  If *this\picture\width
-                     If *this\area_align\left
-                        *txt\x + indent + *this\picture\width
-                     EndIf
-                  EndIf
-                  If *this\area_align\top
-                     If *this\picture\height
-                        *txt\y + indent + *this\picture\height
-                     EndIf
-                  EndIf
-               EndIf
-            Else
-               ; center image and text
-               If *txt\Str(0) And *this\picture\width And *this\picture\height
-                  If *this\flagmask & #__flag_Vertical
-                     If *this\flagmask & #__flag_Invert
-                        *txt\y  + *this\picture\height + indent 
-                     EndIf
-                  Else
-                     If Not *this\flagmask & #__flag_Invert
-                        *txt\x + *this\picture\width + indent 
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-         Next
-      EndIf
-      
-      ;
-      If *this\area_align\left Or 
-         *this\area_align\top Or 
-         *this\area_align\right Or 
-         *this\area_align\bottom 
-         ;
-         ; make area size
-         If *this\area_align
-            If *this\text\Str(0)
-               If *this\picture\width
-                  If *this\area_align\left Or *this\area_align\right
-                     *this\scroll_width( ) + indent + *this\picture\width
-                  EndIf
-               EndIf
-               If *this\picture\height
-                  If *this\area_align\top Or *this\area_align\bottom 
-                     *this\scroll_height( ) + indent + *this\picture\height
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
-         ; make img align
-         If *this\picture
-            make_content_align_x( *this\picture, *this\scroll_width( ), *this\picture\width, *this\picture\rotate, *this\area_align, *this\padding\x )
-            make_content_align_y( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\area_align, *this\padding\y )
-         EndIf
-      Else
-         ;
-         If *this\text\Str(0) And *this\picture\height And *this\picture\width
-            ; make area size
-            If *this\flagmask & #__flag_Vertical
-               *this\scroll_height( ) + *this\picture\height + indent
-            Else
-               *this\scroll_width( ) + *this\picture\width + indent
-            EndIf
-            
-            ; make img align
-            If *this\picture
-               If *this\flagmask & #__flag_Vertical
-                  make_content_align_x( *this\picture, *this\scroll_width( ), *this\picture\width, *this\picture\rotate, *this\area_align, *this\padding\x )
-                  If *this\flagmask & #__flag_Invert
-                     *this\picture\y = *this\padding\y 
-                  Else
-                     *this\picture\y + *this\scroll_height( ) - *this\picture\height - *this\padding\y 
-                  EndIf
-               Else
-                  make_content_align_y( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\area_align, *this\padding\y )
-                  If *this\flagmask & #__flag_Invert
-                     *this\picture\x + *this\scroll_width( ) - *this\picture\width - *this\padding\x
-                  Else
-                     *this\picture\x = *this\padding\x 
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-      EndIf
-      
-      ;\\
-      make_scrollbar_max( *this )
-      
-      ; make horizontal scroll x
-      make_content_area_x( *this, *this\scroll_width( ))
-      
-      ; make vertical scroll y
-      make_content_area_y( *this, *this\scroll_height( ))
-      
-   EndProcedure
-   
-   
-   ;-
    Macro set_state_list_( _address_, _state_ )
       If _state_ > 0
          If *this\flagmask & #__flag_RowClickSelect
@@ -1954,6 +1594,7 @@ Module widgets
    EndProcedure
    
    Procedure a_set( *this._s_WIDGET, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
+      ; If Not *this : ProcedureReturn : EndIf
       Protected result
       ; Debug ""+*this\class
       ;
@@ -12385,7 +12026,7 @@ Module widgets
          
          ;
          DeleteElement( *this\__rows( ))
-         
+         *this\TextChange( ) = 1
          result = #True
       EndIf
       
@@ -14498,16 +14139,16 @@ Module widgets
                      is_hover( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
                      is_hover( *list( ), mouse_x, mouse_y, [#__c_draw] )
                      
-;                      ;\\ если переместили виджет то его исключаем
-;                      If MouseDrag( ) 
-;                         If is_drag_move( )
-;                            If Pressed( ) = *list( )
-;                               Continue
-;                            EndIf
-;                            Entered( ) = *list( )
-;                            ProcedureReturn 0
-;                         EndIf
-;                      EndIf
+                     ;                      ;\\ если переместили виджет то его исключаем
+                     ;                      If MouseDrag( ) 
+                     ;                         If is_drag_move( )
+                     ;                            If Pressed( ) = *list( )
+                     ;                               Continue
+                     ;                            EndIf
+                     ;                            Entered( ) = *list( )
+                     ;                            ProcedureReturn 0
+                     ;                         EndIf
+                     ;                      EndIf
                      
                      *this = *list( )
                      Break
@@ -14701,10 +14342,10 @@ Module widgets
                      EnteredButton( )\mask & #__mask_disabled = 0 And
                      EnteredButton( )\mask & #__mask_hover = 0
                      EnteredButton( )\mask | #__mask_hover
-;                      ;
-;                      If EnteredButton( ) = *BB0
-;                         EnteredButton( )\mask | #__mask_hover_a
-;                      EndIf
+                     ;                      ;
+                     ;                      If EnteredButton( ) = *BB0
+                     ;                         EnteredButton( )\mask | #__mask_hover_a
+                     ;                      EndIf
                      ;
                      If EnteredButton( )\ColorState( ) = #__s_0
                         EnteredButton( )\ColorState( ) = #__s_1
@@ -18270,7 +17911,7 @@ Module widgets
                
                ;
                Pressed( )\mask &~ #__mask_press
-                     
+               
                ;\\
                DoEvents( Pressed( ), #__event_UP )
                
@@ -18344,17 +17985,17 @@ Module widgets
          Pressed( ) = 0
       EndIf
       
-;       ;
-;       ;\\ do reset data
-;       ;
-;       MouseMask( ) &~ (#__mask_update) 
-;       If Not MouseButtons( )
-;          If MouseRelease()
-;             Debug "MouseRelease"
-;          EndIf
-;          MouseMask( ) &~ (#__mask_release|#__mask_drag) 
-;       EndIf
-;       
+      ;       ;
+      ;       ;\\ do reset data
+      ;       ;
+      ;       MouseMask( ) &~ (#__mask_update) 
+      ;       If Not MouseButtons( )
+      ;          If MouseRelease()
+      ;             Debug "MouseRelease"
+      ;          EndIf
+      ;          MouseMask( ) &~ (#__mask_release|#__mask_drag) 
+      ;       EndIf
+      ;       
       ProcedureReturn #PB_Event_Gadget
       
    EndProcedure
@@ -18576,11 +18217,371 @@ Module widgets
    ;-
    ;- UPDATEs
    ;-
+   Procedure   UpdateDraw_MultiLineText( *this._s_WIDGET, indent )
+      Protected textchange.b = 1
+      Protected *str.Character
+      Protected *end.Character
+      Protected String.s, String1.s, CountString
+      Protected IT, len.l, Position.l, Width, gridlines
+      Protected ColorFont = *this\color\front[*this\ColorState( )]
+      ; 
+      
+      ; *this\max
+      If *this\text\vertical
+         If *this\scroll_height( ) > *this\inner_height( )
+            textchange = 1
+         EndIf
+         Width = *this\inner_height( ) - *this\padding\x * 2
+         
+      Else
+         If *this\scroll_width( ) > *this\inner_width( )
+            textchange = 1
+         EndIf
+         
+         Width = *this\inner_width( ) - *this\padding\x * 2
+      EndIf
+      
+      If *this\text\multiLine
+         ; make multiline text
+         Protected text$ = *this\text\Str(0) + #LF$
+         
+         ;     text$ = ReplaceString( text$, #LFCR$, #LF$ )
+         ;     text$ = ReplaceString( text$, #CRLF$, #LF$ )
+         ;     text$ = ReplaceString( text$, #CR$, #LF$ )
+         
+         If *this\text\multiLine < 0
+            String = text$
+         Else
+            ; text wordwrap
+            ; <http://www.purebasic.fr/english/viewtopic.php?f = 12&t = 53800>
+            Protected.i i, start, found, length
+            Protected$ line$, DelimList$ = " " + Chr( 9 ), nl$ = #LF$
+            
+            *str.Character = @text$
+            *end.Character = @text$
+            
+            ; make word wrap
+            While *end\c
+               If *end\c = #LF
+                  start  = ( *end - *str ) >> #PB_Compiler_Unicode
+                  line$  = PeekS ( *str, start )
+                  length = start
+                  
+                  ; Get text len
+                  While length > 1
+                     If Width > TextWidth( RTrim( Left( line$, length ) ))
+                        Break 
+                     Else
+                        length - 1
+                     EndIf
+                  Wend
+                  
+                  While start > length
+                     For found = length To 1 Step - 1
+                        If FindString( " ", Mid( line$, found, 1 ))
+                           If Width - *this\padding\x * 2 < TextWidth( RTrim( Left( line$, found )))
+                              *this\countitems = 0
+                           EndIf
+                           start = found
+                           Break
+                        EndIf
+                     Next
+                     
+                     If Not found
+                        start = length
+                     EndIf
+                     
+                     String + Left( line$, start ) + nl$
+                     line$ = LTrim( Mid( line$, start + 1 ))
+                     start = Len( line$ )
+                     
+                     ; If length <> start
+                     length = start
+                     
+                     ; Get text len
+                     While length > 1
+                        If Width > TextWidth( RTrim( Left( line$, length ) ))
+                           Break
+                        Else
+                           length - 1
+                        EndIf
+                     Wend
+                     ; EndIf
+                  Wend
+                  
+                  String + line$ + nl$
+                  *str = *end + #__sOC
+               EndIf
+               
+               *end + #__sOC
+            Wend
+         EndIf
+         
+         CountString = CountString( String, #LF$ )
+      Else
+         String.s    = RemoveString( *this\text\Str(0), #LF$ ) + #LF$
+         CountString = 1
+      EndIf
+      
+      ;
+      If *this\countitems <> CountString
+         *this\countitems = CountString
+         textchange = 1
+      EndIf
+      
+      If textchange
+         *str.Character = @String
+         *end.Character = @String
+         
+         *this\text\pos = 0
+         *this\text\len = Len( *this\text\Str(0) )
+         
+         ;\\
+         *this\scroll_width( )  = *this\padding\x * 2 
+         *this\scroll_height( ) =  *this\padding\y * 2 
+         
+         ;
+         If Not *this\text\vertical And *this\picture\width And *this\text\Str(0) = ""
+            *this\scroll_width( )  = *this\picture\width + *this\padding\x * 2 
+         EndIf
+         
+         ; Перед циклом создания линий
+         Protected CurrentTotalPos.l = 0 
+         Protected._s_ROW *line
+         ;
+         ClearList( *this\__lines( ))
+         While *end\c
+            If *end\c = #LF
+               AddElement( *this\__lines( ))
+               *line = @*this\__lines( )
+               
+               *line\text\len    = ( *end - *str ) >> #PB_Compiler_Unicode
+               *line\text\Str(0) = PeekS ( *str, *line\text\len )
+               
+               ; drawing item font
+               draw_font( *line, 0, *line\TextChange( ));, GetFontID( *this ) )
+               
+               
+               
+               ;; editor
+               *line\lindex = ListIndex( *this\__lines( ))
+               ; --- ВОТ ЭТО НУЖНО ДОБАВИТЬ ---
+               *line\text\pos = CurrentTotalPos ; Устанавливаем начало строки
+               CurrentTotalPos + *line\text\len + 1 ; Прибавляем длину строки и 1 (для #LF$)
+                                                    ; ------------------------------
+                                                    ;                                     ;
+                                                    ;                                     If *this\LineState( ) = *line\lindex
+                                                    ;                                        *this\row\active[0] = *line
+                                                    ;                                     EndIf
+                                                    ; Сделай так:
+                                                    ; Проверяем, попадает ли глобальная каретка в диапазон этой строки
+               Protected current_pos = *this\caret\start
+               If current_pos>= 0
+                  
+                  If current_pos >= *line\text\pos And current_pos <= (*line\text\pos + *line\text\len)
+                     ;  Debug ""+current_pos +" "+ *line\text\pos +" "+ Str(*line\text\pos + *line\text\len)
+                     *this\row\active[0] = *line
+                     *this\LineState() = *line\lindex ; Обновляем индекс для порядка, но не базируемся на нем
+                  EndIf
+               EndIf
+               
+               *line\height = *line\text\height
+               *line\width  = *this\inner_width( )
+               *line\color  = _get_colors_( )
+               ;
+               If *line\lindex <> *this\countitems - 1 
+                  gridlines = Bool(*this\flagmask & #__flag_gridLines)
+               EndIf
+               
+               ; make line position
+               If *this\text\vertical
+                  If *this\scroll_height( ) < *line\text\width + *this\padding\y * 2 ;+ *this\row\sellastsize
+                     *this\scroll_height( ) = *line\text\width + *this\padding\y * 2 ;+ *this\row\sellastsize
+                  EndIf
+                  
+                  If *this\text\rotate = 90
+                     *line\x = *this\scroll_width( ) - *this\padding\x
+                  ElseIf *this\text\rotate = 270
+                     *line\x = ( *this\inner_width( ) - *this\scroll_width( ) - *line\text\width ) + *this\padding\x
+                  EndIf
+                  
+                  *this\scroll_width( ) + *this\text\height + gridlines
+               Else ; horizontal
+                  If *this\scroll_width( ) < *line\text\width + *this\padding\x * 2 ;+ *this\row\sellastsize
+                     *this\scroll_width( ) = *line\text\width + *this\padding\x * 2 ;+ *this\row\sellastsize
+                  EndIf
+                  
+                  If *this\text\rotate = 0
+                     *line\y = *this\scroll_height( ) - *this\padding\y
+                  ElseIf *this\text\rotate = 180
+                     *line\y = ( *this\inner_height( ) - *this\scroll_height( ) - *line\text\height ) + *this\padding\y
+                  EndIf
+                  
+                  *this\scroll_height( ) + *this\text\height + gridlines
+               EndIf
+               
+               *str = *end + #__sOC
+            EndIf
+            
+            *end + #__sOC
+         Wend
+         
+         ;          If *this\row\active[0]
+         ;             Debug *this\row\active[0]\text\Str(0)
+         ;          EndIf
+         ;
+         Protected *txt._s_TEXT
+         ;
+         ForEach *this\__lines( )
+            *line = @*this\__lines( )
+            *txt = *line\text
+            *txt\pos = *this\text\pos
+            *this\text\pos + *txt\len + 1 ; Len( #LF$ )
+            
+            If *this\text\vertical
+               If *this\text\rotate = 270
+                  *line\x - ( *this\inner_width( ) - *this\scroll_width( ))
+                  *txt\x = *txt\width
+               Else
+                  *txt\x = 0
+               EndIf
+               make_content_align_y( *txt, *this\scroll_height( ), *txt\width, *this\text\rotate, *this\area_align, *this\padding\y )
+            Else
+               If *this\text\rotate = 180
+                  *line\y - ( *this\inner_height( ) - *this\scroll_height( ))
+                  *txt\y = *txt\height
+               Else
+                  *txt\y = 0
+               EndIf
+               make_content_align_x( *txt, *this\scroll_width( ), *txt\width, *this\text\rotate, *this\area_align, *this\padding\x )
+            EndIf
+            
+            ;pb bug
+            CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+               If *this\text\rotate = 0   : *txt\y - 1 : EndIf
+               If *this\text\rotate = 90  : *txt\x - 2 : EndIf
+               If *this\text\rotate = 180 : *txt\y + 3 : EndIf
+               If *this\text\rotate = 270 : *txt\x + 2 : EndIf
+            CompilerEndIf
+            CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+               If *this\text\rotate = 0   : *txt\y - 1 : EndIf
+               If *this\text\rotate = 90  : *txt\x - 3 : EndIf
+               If *this\text\rotate = 180 : *txt\y + 2 : EndIf
+               If *this\text\rotate = 270 : *txt\x + 3 : EndIf
+            CompilerEndIf
+            
+            ;
+            If *this\area_align\left Or 
+               *this\area_align\top Or 
+               *this\area_align\right Or 
+               *this\area_align\bottom 
+               ;
+               If *this\area_align
+                  If *this\picture\width
+                     If *this\area_align\left
+                        *txt\x + indent + *this\picture\width
+                     EndIf
+                  EndIf
+                  If *this\area_align\top
+                     If *this\picture\height
+                        *txt\y + indent + *this\picture\height
+                     EndIf
+                  EndIf
+               EndIf
+            Else
+               ; center image and text
+               If *txt\Str(0) And *this\picture\width And *this\picture\height
+                  If *this\flagmask & #__flag_Vertical
+                     If *this\flagmask & #__flag_Invert
+                        *txt\y  + *this\picture\height + indent 
+                     EndIf
+                  Else
+                     If Not *this\flagmask & #__flag_Invert
+                        *txt\x + *this\picture\width + indent 
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+            
+         Next
+      EndIf
+      
+      ;
+      If *this\area_align\left Or 
+         *this\area_align\top Or 
+         *this\area_align\right Or 
+         *this\area_align\bottom 
+         ;
+         ; make area size
+         If *this\area_align
+            If *this\text\Str(0)
+               If *this\picture\width
+                  If *this\area_align\left Or *this\area_align\right
+                     *this\scroll_width( ) + indent + *this\picture\width
+                  EndIf
+               EndIf
+               If *this\picture\height
+                  If *this\area_align\top Or *this\area_align\bottom 
+                     *this\scroll_height( ) + indent + *this\picture\height
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+         ; make img align
+         If *this\picture
+            make_content_align_x( *this\picture, *this\scroll_width( ), *this\picture\width, *this\picture\rotate, *this\area_align, *this\padding\x )
+            make_content_align_y( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\area_align, *this\padding\y )
+         EndIf
+      Else
+         ;
+         If *this\text\Str(0) And *this\picture\height And *this\picture\width
+            ; make area size
+            If *this\flagmask & #__flag_Vertical
+               *this\scroll_height( ) + *this\picture\height + indent
+            Else
+               *this\scroll_width( ) + *this\picture\width + indent
+            EndIf
+            
+            ; make img align
+            If *this\picture
+               If *this\flagmask & #__flag_Vertical
+                  make_content_align_x( *this\picture, *this\scroll_width( ), *this\picture\width, *this\picture\rotate, *this\area_align, *this\padding\x )
+                  If *this\flagmask & #__flag_Invert
+                     *this\picture\y = *this\padding\y 
+                  Else
+                     *this\picture\y + *this\scroll_height( ) - *this\picture\height - *this\padding\y 
+                  EndIf
+               Else
+                  make_content_align_y( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\area_align, *this\padding\y )
+                  If *this\flagmask & #__flag_Invert
+                     *this\picture\x + *this\scroll_width( ) - *this\picture\width - *this\padding\x
+                  Else
+                     *this\picture\x = *this\padding\x 
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+      EndIf
+      
+      ;\\
+      make_scrollbar_max( *this )
+      
+      ; make horizontal scroll x
+      make_content_area_x( *this, *this\scroll_width( ))
+      
+      ; make vertical scroll y
+      make_content_area_y( *this, *this\scroll_height( ))
+      
+   EndProcedure
+   
    Procedure   UpdateDraw_Content( *this._s_WIDGET )
       Protected indent = DPIScaled(10)
       ;
       If *this\text\multiLine Or ( *this\type = #__type_Editor Or *this\type = #__type_String )
-         make_multiline_text( *this, indent )
+         If *this\row
+            UpdateDraw_MultiLineText( *this, indent )
+         EndIf
       Else
          If make_content_area( *this, *this\text, *this\picture, indent )
             make_content_align( *this, *this\text, *this\picture, *this\scroll_width( ), *this\scroll_height( ), indent )
@@ -18589,174 +18590,174 @@ Module widgets
    EndProcedure
    
    Procedure.l UpdateDraw_Rows( *this._s_WIDGET)
-   Protected state.b, X.l, Y.l
-   Protected *row._s_ROW
-   
-   If Not *this\mask & #__mask_hidden
-      ;\\ update coordinate
-      ; Debug "   " + #PB_Compiler_Procedure + "( )"
+      Protected state.b, X.l, Y.l
+      Protected *row._s_ROW
       
-      ;\\ if the item list has changed
-      If ListSize( *this\__columns( ) )
-         *this\scroll_height( ) = *this\ColumnsHeight
-      Else
-         *this\scroll_width( ) = 0
-         *this\scroll_height( ) = 0
-      EndIf
-      
-      ;*this\padding\x = 0
-      Protected padding_size = *this\padding\x
-      Protected button_size = DPIScaled(9)
-      Protected box_size = DPIScaled(13)
-      Protected bs = Bool( *this\fs )
-      Protected scroll_width
-      Protected button_pos = ( *this\row\sublevelsize - DPIScaled(11))
-      
-      ;\\
-      PushListPosition( *this\__rows( ))
-      ForEach *this\__rows( ) : *row = @*this\__rows( )
-         ;*row\rindex = ListIndex( *this\__rows( ))
+      If Not *this\mask & #__mask_hidden
+         ;\\ update coordinate
+         ; Debug "   " + #PB_Compiler_Procedure + "( )"
          
-         If *row\mask & #__mask_hidden
-            *row\mask &~ #__mask_visible
-            Continue
+         ;\\ if the item list has changed
+         If ListSize( *this\__columns( ) )
+            *this\scroll_height( ) = *this\ColumnsHeight
+         Else
+            *this\scroll_width( ) = 0
+            *this\scroll_height( ) = 0
          EndIf
-         ;\\ init drawing item font
-         draw_font( *row, GetFontID( *this ), *row\TextChange( ))
          
-         ;\\ draw items height
-         CompilerSelect #PB_Compiler_OS
-            CompilerCase #PB_OS_MacOS
-               *row\height = *row\text\height + 4
-            CompilerCase #PB_OS_Linux
-               CompilerIf Subsystem("qt")
-                  *row\height = *row\text\height - 1
-               CompilerElse
-                  *row\height = *row\text\height + 3
-               CompilerEndIf
-            CompilerCase #PB_OS_Windows
-               If *this\type = #__type_ListView
-                  *row\height = *row\text\height
-               Else
-                  *row\height = *row\text\height + 2
-               EndIf
-         CompilerEndSelect
+         ;*this\padding\x = 0
+         Protected padding_size = *this\padding\x
+         Protected button_size = DPIScaled(9)
+         Protected box_size = DPIScaled(13)
+         Protected bs = Bool( *this\fs )
+         Protected scroll_width
+         Protected button_pos = ( *this\row\sublevelsize - DPIScaled(11))
          
-         *row\y = *this\scroll_height( )
-         
-         If *row\columnindex = 0
-            ;\\ sublevel position
-            If *this\row\sublevelsize
-               If *this\flagmask & #__flag_optionboxes
-                  *this\row\sublevelpos = ( *row\sublevel * *this\row\sublevelsize ) + padding_size
-               Else
-                  *this\row\sublevelpos = ( *row\sublevel * *this\row\sublevelsize ) 
-                  ;If *this\flagmask & #__flag_nobuttons 
-                  *this\row\sublevelpos + ( *this\row\sublevelsize / 2 )
-                  ;EndIf
-               EndIf
-            Else
-               *this\row\sublevelpos = padding_size
-            EndIf
+         ;\\
+         PushListPosition( *this\__rows( ))
+         ForEach *this\__rows( ) : *row = @*this\__rows( )
+            ;*row\rindex = ListIndex( *this\__rows( ))
             
-            ;
-            If *this\flagmask & #__flag_optionboxes 
-               ;\\ check & option box coordinate
-               If *row\checkbox
-                  *row\checkbox\width = box_size
-                  *row\checkbox\height = box_size
-                  If *row\parent
-                     *this\row\sublevelpos - *this\row\sublevelsize
+            If *row\mask & #__mask_hidden
+               *row\mask &~ #__mask_visible
+               Continue
+            EndIf
+            ;\\ init drawing item font
+            draw_font( *row, GetFontID( *this ), *row\TextChange( ))
+            
+            ;\\ draw items height
+            CompilerSelect #PB_Compiler_OS
+               CompilerCase #PB_OS_MacOS
+                  *row\height = *row\text\height + 4
+               CompilerCase #PB_OS_Linux
+                  CompilerIf Subsystem("qt")
+                     *row\height = *row\text\height - 1
+                  CompilerElse
+                     *row\height = *row\text\height + 3
+                  CompilerEndIf
+               CompilerCase #PB_OS_Windows
+                  If *this\type = #__type_ListView
+                     *row\height = *row\text\height
+                  Else
+                     *row\height = *row\text\height + 2
                   EndIf
-                  *row\checkbox\x = *this\row\sublevelpos 
-                  *row\checkbox\y = *row\height - ( *row\height + *row\checkbox\height ) / 2
-                  *this\row\sublevelpos + box_size
+            CompilerEndSelect
+            
+            *row\y = *this\scroll_height( )
+            
+            If *row\columnindex = 0
+               ;\\ sublevel position
+               If *this\row\sublevelsize
+                  If *this\flagmask & #__flag_optionboxes
+                     *this\row\sublevelpos = ( *row\sublevel * *this\row\sublevelsize ) + padding_size
+                  Else
+                     *this\row\sublevelpos = ( *row\sublevel * *this\row\sublevelsize ) 
+                     ;If *this\flagmask & #__flag_nobuttons 
+                     *this\row\sublevelpos + ( *this\row\sublevelsize / 2 )
+                     ;EndIf
+                  EndIf
+               Else
+                  *this\row\sublevelpos = padding_size
                EndIf
                
-               ;\\ expanded & collapsed box coordinate
-               If *row\buttonbox 
-                  *row\buttonbox\width = button_size
-                  *row\buttonbox\height = button_size
-                  *row\buttonbox\x = *this\row\sublevelpos
-                  *row\buttonbox\y = *row\height - ( *row\height + *row\buttonbox\height ) / 2
-                  *this\row\sublevelpos + (button_pos + button_size)
-               EndIf
-            Else
-               ;\\ expanded & collapsed box coordinate
-               If *row\buttonbox 
-                  *row\buttonbox\width = button_size
-                  *row\buttonbox\height = button_size
-                  *row\buttonbox\x = *this\row\sublevelpos
-                  *row\buttonbox\y = *row\height - ( *row\height + *row\buttonbox\height ) / 2
-                  ;If *this\flagmask & #__flag_nobuttons
-                  *this\row\sublevelpos + (button_pos + button_size)
-                  ;EndIf
-               EndIf
-               
-               ;\\ check & option box coordinate
-               If *this\flagmask & #__flag_checkboxes ;Or *this\flagmask & #__flag_optionboxes
+               ;
+               If *this\flagmask & #__flag_optionboxes 
+                  ;\\ check & option box coordinate
                   If *row\checkbox
                      *row\checkbox\width = box_size
                      *row\checkbox\height = box_size
-                     *row\checkbox\x = *this\row\sublevelpos
+                     If *row\parent
+                        *this\row\sublevelpos - *this\row\sublevelsize
+                     EndIf
+                     *row\checkbox\x = *this\row\sublevelpos 
                      *row\checkbox\y = *row\height - ( *row\height + *row\checkbox\height ) / 2
                      *this\row\sublevelpos + box_size
                   EndIf
-               EndIf
-            EndIf
-            ;
-            ;\\ img position
-            If *row\picture\imageID
-               If *this\flagmask & #__flag_checkboxes Or 
-                  *this\flagmask & #__flag_optionboxes
-                  *this\row\sublevelpos + padding_size
+                  
+                  ;\\ expanded & collapsed box coordinate
+                  If *row\buttonbox 
+                     *row\buttonbox\width = button_size
+                     *row\buttonbox\height = button_size
+                     *row\buttonbox\x = *this\row\sublevelpos
+                     *row\buttonbox\y = *row\height - ( *row\height + *row\buttonbox\height ) / 2
+                     *this\row\sublevelpos + (button_pos + button_size)
+                  EndIf
+               Else
+                  ;\\ expanded & collapsed box coordinate
+                  If *row\buttonbox 
+                     *row\buttonbox\width = button_size
+                     *row\buttonbox\height = button_size
+                     *row\buttonbox\x = *this\row\sublevelpos
+                     *row\buttonbox\y = *row\height - ( *row\height + *row\buttonbox\height ) / 2
+                     ;If *this\flagmask & #__flag_nobuttons
+                     *this\row\sublevelpos + (button_pos + button_size)
+                     ;EndIf
+                  EndIf
+                  
+                  ;\\ check & option box coordinate
+                  If *this\flagmask & #__flag_checkboxes ;Or *this\flagmask & #__flag_optionboxes
+                     If *row\checkbox
+                        *row\checkbox\width = box_size
+                        *row\checkbox\height = box_size
+                        *row\checkbox\x = *this\row\sublevelpos
+                        *row\checkbox\y = *row\height - ( *row\height + *row\checkbox\height ) / 2
+                        *this\row\sublevelpos + box_size
+                     EndIf
+                  EndIf
                EndIf
                ;
-               *row\picture\x = *this\row\sublevelpos 
-               *row\picture\y = ( *row\height - *row\picture\height ) / 2
+               ;\\ img position
+               If *row\picture\imageID
+                  If *this\flagmask & #__flag_checkboxes Or 
+                     *this\flagmask & #__flag_optionboxes
+                     *this\row\sublevelpos + padding_size
+                  EndIf
+                  ;
+                  *row\picture\x = *this\row\sublevelpos 
+                  *row\picture\y = ( *row\height - *row\picture\height ) / 2
+               EndIf
+               ;
+               ;\\ 
+               *row\x = 0   
+            Else
+               *row\x = *this\__columns( )\x + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
             EndIf
             ;
-            ;\\ 
-            *row\x = 0   
-         Else
-            *row\x = *this\__columns( )\x + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
-         EndIf
-         ;
-         ;\\ text position
-         If *row\text\Str(0)
-            *row\text\x = padding_size
-            If *row\columnindex = 0
-               *row\text\x + *this\row\sublevelpos
-               ;
-               If *this\picturesize
-                  *row\text\x + *this\picturesize
+            ;\\ text position
+            If *row\text\Str(0)
+               *row\text\x = padding_size
+               If *row\columnindex = 0
+                  *row\text\x + *this\row\sublevelpos
+                  ;
+                  If *this\picturesize
+                     *row\text\x + *this\picturesize
+                  EndIf
                EndIf
+               *row\text\y = ( *row\height - *row\text\height ) / 2
             EndIf
-            *row\text\y = ( *row\height - *row\text\height ) / 2
-         EndIf
-         ;
-         ;\\ vertical scroll max value
-         *this\scroll_height( ) + *row\height + Bool(*row\rindex <> *this\countitems - 1) * Bool(*this\flagmask & #__flag_gridLines)
-         
-         ;\\ horizontal scroll max value
-         If *this\type = #__type_ListIcon
-            *row\picture\x - DPIScaled(8)
-            If *row\checkbox
-               *row\checkbox\x - box_size
+            ;
+            ;\\ vertical scroll max value
+            *this\scroll_height( ) + *row\height + Bool(*row\rindex <> *this\countitems - 1) * Bool(*this\flagmask & #__flag_gridLines)
+            
+            ;\\ horizontal scroll max value
+            If *this\type = #__type_ListIcon
+               *row\picture\x - DPIScaled(8)
+               If *row\checkbox
+                  *row\checkbox\x - box_size
+               EndIf
+               scroll_width = ( *this\__columns( )\x + *this\__columns( )\width + *this\row\sublevelpos + padding_size + *this\MarginLine( )\width )
+            Else
+               scroll_width = ( *row\x + *row\text\x + *row\text\width + *this\row\sellastsize + padding_size )
             EndIf
-            scroll_width = ( *this\__columns( )\x + *this\__columns( )\width + *this\row\sublevelpos + padding_size + *this\MarginLine( )\width )
-         Else
-            scroll_width = ( *row\x + *row\text\x + *row\text\width + *this\row\sellastsize + padding_size )
-         EndIf
-         If *this\scroll_width( ) < scroll_width 
-            *this\scroll_width( ) = scroll_width
-         EndIf
-      Next
-      PopListPosition( *this\__rows( ))
-   EndIf
+            If *this\scroll_width( ) < scroll_width 
+               *this\scroll_width( ) = scroll_width
+            EndIf
+         Next
+         PopListPosition( *this\__rows( ))
+      EndIf
+      
+   EndProcedure
    
-EndProcedure
-
    Procedure.l UpdateDraw_VisibleRows( *this._s_WIDGET, visible_height.l = 0 )
       Protected result, scroll_y = *this\scroll\v\bar\page\pos
       Protected visible_y.l = 0
@@ -18776,12 +18777,11 @@ EndProcedure
       EndIf
       
       Protected i
-      
       ForEach *this\__rows( ) : *row = @*this\__rows( )
          *row\mask = ( *row\mask & ~#__mask_visible ) | 
-                       ( Bool( Not ( *row\mask & #__mask_hidden ) And
-                               (( *row\y - scroll_y ) < visible_y + visible_height ) And 
-                               ( *row\y + *row\height - scroll_y ) > visible_y ) * #__mask_visible )
+                     ( Bool( Not ( *row\mask & #__mask_hidden ) And
+                             (( *row\y - scroll_y ) < visible_y + visible_height ) And 
+                             ( *row\y + *row\height - scroll_y ) > visible_y ) * #__mask_visible )
          
          ;;Debug ""+*this\class +" "+ visible_height  +" "+ rows( )\height
          
@@ -19311,9 +19311,11 @@ EndProcedure
             ;
             If *this\text\multiLine
                ;\\ draw items text
-               ForEach *this\__lines( )
-                  __draw_rotatedtext( *this\__lines( ), X + *this\__lines( )\x, Y + *this\__lines( )\y, *this\text\rotate, *this\color\front[state], UnderLineSize )
-               Next
+               If *this\row
+                  ForEach *this\__lines( )
+                     __draw_rotatedtext( *this\__lines( ), X + *this\__lines( )\x, Y + *this\__lines( )\y, *this\text\rotate, *this\color\front[state], UnderLineSize )
+                  Next
+               EndIf
             Else
                ;\\ draw text
                __draw_rotatedtext( *this, X, Y, *this\text\rotate, *this\color\front[state], UnderLineSize )
@@ -19639,6 +19641,8 @@ EndProcedure
    EndProcedure
    
    Procedure   Draw_TreeRows( *this._s_WIDGET, _i_=0 )
+      If Not *this\row : ProcedureReturn 0 : EndIf
+      
       Protected state.b, X.l, Y.l, _box_x_.l, _box_y_.l, minus.l = 7
       Protected bs = Bool( *this\fs )
       Protected _scroll_x_ = *this\scroll\h\bar\page\pos
@@ -19656,10 +19660,6 @@ EndProcedure
          If Not *i\mask & #__mask_visible
             Continue
          EndIf
-         
-         ;If MouseRelease( )
-            Debug ""+*this\class +". "+Str(*i\text) +" "+ *i\text\Str(_i_)
-         ;EndIf
          
          ;\\ init real drawing font
          draw_font( *i, 0, *i\TextChange( ))
@@ -25103,7 +25103,7 @@ EndMacro
 ;-
 ;-\\ EXAMPLE
 ;-
-CompilerIf #PB_Compiler_IsMainFile 
+CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
@@ -25991,10 +25991,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 19661
-; FirstLine = 18967
-; Folding = ---------------------------------------------------------------------------------------------------------------8----------------------------------------------------------------------------------------------------------------------------------------------t------------------------------------------------------------------------------------0---------------------------------------------------------------------------------------------------8----------------------------------v4---------------------------------------------------------------------------8-8-----------------------------------RpD083----------------------------------------------------------------------------------------------------------------------------------------v---------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 25992
+; FirstLine = 25968
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

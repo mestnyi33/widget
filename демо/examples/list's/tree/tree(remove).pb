@@ -1,123 +1,128 @@
-; macos 
-; 39 - widget add items time count - 5001
-;  1268 - gadget add items time count - 5001
-; 
-; 7 - remove widget items time count - 2500
-;  1242 - remove gadget items time count - 2500
-
-; windows
-; 67 - widget add items time count - 5001
-;  5111 - gadget add items time count - 5001
-; 
-; 6 - remove widget items time count - 2500
-; 19192 - remove gadget items time count - 2500
+﻿
+; widget add / remove visual test
+; gadget add / remove visual test
 
 XIncludeFile "../../../../widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
-  UseWidgets( )
+  UseWidgets()
   
-  Define count = 1000
-  Define gLN=count;5000;0      ;0; ���������� ������ 
-  Define LN=count;5000 ;0;0
+  ; Уменьшим количество для наглядности (чтобы не ждать слишком долго анимацию)
+  #ItemsCount = 200 
+  
   Global g, *w._S_widget
+  Global time, t_w_add, t_g_add, t_w_rem, t_g_rem
+  Global w_count, g_count
+  Global a
   
-  Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
-    Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,flag)
-    If gadget =- 1 : gadget = g : EndIf
+  Procedure TreeGadget_(gadget, X,Y,Width,Height,Flag=0)
+    Protected g_id = PB(TreeGadget)(gadget, X,Y,Width,Height,Flag)
+    If gadget = -1 : gadget = g_id : EndIf
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
       Define RowHeight.CGFloat = 19
-      ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
       CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
-    CompilerElse
     CompilerEndIf
     
     ProcedureReturn gadget
   EndProcedure
   
-  If OpenWindow(0, 100, 50, 530, 700, "TreeGadget", #PB_Window_SystemMenu)
+  Procedure ProcessEvents(DelayTime = 5)
+    ; Функция обрабатывает очередь событий ОС, чтобы окно перерисовывалось «на лету»
+    ; While WindowEvent() : Wend : Delay(DelayTime) ; Небольшая пауза для визуального эффекта замедления
+  EndProcedure
+  
+  If OpenWindow(0, 100, 50, 650, 700, "Тест: Ожидание запуска...", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     
-    TreeGadget_(g, 10, 10, 250, 680);, #PB_Tree_NoButtons|#PB_Tree_NoLines)    ;, #PB_ListView_MultiSelect
+    g = TreeGadget_(-1, 10, 10, 310, 680)
+    Open(0, 330, 10, 310, 680)
+    *w = Tree(0, 0, 310, 680)
     
-    Open(0, 270, 10, 250, 680)
-    *w=Tree(0, 0, 250, 680);, #PB_Tree_NoButtons|#PB_Tree_NoLines)  ; |#__Flag_GridLines|#PB_Flag_MultiSelect
+    SetWindowTitle(0, "ЭТАП 1: Идет добавление элементов...")
+    ProcessEvents(500) ; Пауза перед стартом
     
-    Define a=0
-    Define time = ElapsedMilliseconds()
-    For a = 0 To LN/2 Step 5 
-       AddItem (*w, a, "Item_"+Str(a), -1) 
-       AddItem (*w, a+1, "Item_"+Str(a+1), -1, 1) 
-       AddItem (*w, a+2, "Item_"+Str(a+2), -1, 2) 
-       AddItem (*w, a+3, "Item_"+Str(a+3), -1, 3) 
-       AddItem (*w, a+4, "Item_"+Str(a+4), -1, 4) 
+    ; ==========================================================
+    ; 1. НАГЛЯДНОЕ ДОБАВЛЕНИЕ ЭЛЕМЕНТОВ
+    ; ==========================================================
+    
+    time = ElapsedMilliseconds()
+    For a = 0 To #ItemsCount Step 5 
+       AddItem(*w, a, "Item_"+Str(a), -1) 
+       AddItem(*w, a+1, "Item_"+Str(a+1), -1, 1) 
+       AddItem(*w, a+2, "Item_"+Str(a+2), -1, 2) 
+       AddItem(*w, a+3, "Item_"+Str(a+3), -1, 3) 
+       AddItem(*w, a+4, "Item_"+Str(a+4), -1, 4) 
+       
+       ; Принудительно обновляем виджет на экране
+       ProcessEvents(2) 
     Next
-    Debug " "+Str(ElapsedMilliseconds()-time) + " - widget add items time count - " + CountItems(*w)
+    t_w_add = ElapsedMilliseconds() - time
+    w_count = CountItems(*w)
     
-    ; HideGadget(0, 1)
-    a=0
-    Define time = ElapsedMilliseconds()
-    For a = 0 To gLN/2 Step 5 
-       AddGadgetItem (g, a, "Item_"+Str(a), 0) 
-       AddGadgetItem (g, a+1, "Item_"+Str(a+1), 0, 1) 
-       AddGadgetItem (g, a+2, "Item_"+Str(a+2), 0, 2) 
-       AddGadgetItem (g, a+3, "Item_"+Str(a+3), 0, 3) 
-       AddGadgetItem (g, a+4, "Item_"+Str(a+4), 0, 4) 
-    Next : a = 0
-    For a=0 To CountGadgetItems(g) : SetGadgetItemState(g, a, #PB_Tree_Expanded) : Next
-    Debug " "+Str(ElapsedMilliseconds()-time) + " - gadget add items time count - " + CountGadgetItems(0)
+    time = ElapsedMilliseconds()
+    For a = 0 To #ItemsCount Step 5 
+       AddGadgetItem(g, a, "Item_"+Str(a), 0) 
+       AddGadgetItem(g, a+1, "Item_"+Str(a+1), 0, 1) 
+       AddGadgetItem(g, a+2, "Item_"+Str(a+2), 0, 2) 
+       AddGadgetItem(g, a+3, "Item_"+Str(a+3), 0, 3) 
+       AddGadgetItem(g, a+4, "Item_"+Str(a+4), 0, 4) 
+       
+       ; Принудительно обновляем стандартный гаджет на экране
+       ProcessEvents(2) 
+    Next
     
-    SetGadgetState(0, 2)
+    ; Разворачиваем дерево гаджета
+    For a = 0 To CountGadgetItems(g) 
+      SetGadgetItemState(g, a, #PB_Tree_Expanded) 
+    Next
+    t_g_add = ElapsedMilliseconds() - time
+    g_count = CountGadgetItems(g)
+    
+    SetGadgetState(g, 2)
     SetState(*w, 2)
     
-;     ;   Debug ""
-;     ;   a=0
-;     ;   Define time = ElapsedMilliseconds()
-;     ;   For a = 0 To LN : SetItemData(*w, a,a) : Next
-;     ;   For a = 0 To LN : SetItemText(*w, a,Str(a)) : Next
-;     ;   Debug " "+Str(ElapsedMilliseconds()-time) + " - widget set items time - " + CountItems(*w)
-;     ;   
-;     ;   a=0
-;     ;   Define time = ElapsedMilliseconds()
-;     ;   For a = 0 To gLN : SetGadgetItemData(0, a,a) : Next
-;     ;   For a = 0 To gLN : SetGadgetItemText(0, a,Str(a)) : Next
-;     ;   Debug " "+Str(ElapsedMilliseconds()-time) + " - gadget set items time - " + CountGadgetItems(0)
-;     
+    ; ==========================================================
+    ; ПАУЗА МЕЖДУ СТДИЯМИ
+    ; ==========================================================
+    SetWindowTitle(0, "ДОБАВЛЕНО! Ожидание 2 секунды перед удалением...")
+    ProcessEvents(2000) ; Замрем на 2 секунды, чтобы увидеть заполненные деревья
     
-    Debug ""
-    Define time = ElapsedMilliseconds()
-    Define count = CountItems(*w) : For a = 0 To count : RemoveItem(*w, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove widget items time count - " + CountItems(*w)
+    ; ==========================================================
+    ; 2. НАГЛЯДНОЕ УДАЛЕНИЕ ЭЛЕМЕНТОВ
+    ; ==========================================================
+    SetWindowTitle(0, "ЭТАП 2: Идет поштучное удаление...")
     
-    Define time = ElapsedMilliseconds()
-    count = CountGadgetItems(g) : For a = 0 To count : RemoveGadgetItem(g, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove gadget items time count - " + CountGadgetItems(g)
+    time = ElapsedMilliseconds()
+    For a = 0 To w_count 
+      RemoveItem(*w, a) 
+      ProcessEvents(5) ; Показываем процесс удаления из виджета
+    Next 
+    t_w_rem = ElapsedMilliseconds() - time
     
-; ;       Debug ""
-; ;       Define item = 3
-; ;       Debug ""+GetItemData(*w, item) +" "+ GetItemText(*w, item) + " - get widget item 3"
-; ;       Debug ""+GetGadgetItemData(0, item) +" "+ GetGadgetItemText(0, item) +" - get gadget item 3"
-; ;       
-; ;       item = 7
-; ;       SetItemData(*w, item, 555)
-; ;       SetGadgetItemData(0, item, 555)
-; ;       
-; ;       Debug ""+GetItemData(*w, item) +" "+ GetItemText(*w, item) + " - get widget item 7"
-; ;       Debug ""+GetGadgetItemData(0, item) +" "+ GetGadgetItemText(0, item) +" - get gadget item 7"
-; ;       
-;     ;   Debug ""
-;     ;   Define time = ElapsedMilliseconds()
-;     ;   Define count = CountItems(*w) : For a = count To 0 Step - 1 : RemoveItem(*w, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove widget items time count - " + CountItems(*w)
-;     ;   
-;     ;   Define time = ElapsedMilliseconds()
-;     ;   count = CountGadgetItems(0) : For a = count To 0 Step - 1 : RemoveGadgetItem(0, a) : Next : Debug Str(ElapsedMilliseconds()-time) + " - remove gadget items time count - " + CountGadgetItems(0)
-;     
+    time = ElapsedMilliseconds()
+    For a = 0 To g_count 
+      RemoveGadgetItem(g, a) 
+      ProcessEvents(5) ; Показываем процесс удаления из гаджета
+    Next 
+    t_g_rem = ElapsedMilliseconds() - time
     
-    Repeat : Define Event=WaitWindowEvent()
-    Until  Event= #PB_Event_CloseWindow
+    ; ==========================================================
+    ; ИТОГОВЫЙ РЕЗУЛЬТАТ
+    ; ==========================================================
+    Define title.s = "ГОТОВО! Добавление: W=" + Str(t_w_add) + "мс, G=" + Str(t_g_add) + "мс | " +
+                        "Удаление: W=" + Str(t_w_rem) + "мс, G=" + Str(t_g_rem) + "мс"
+    SetWindowTitle(0, title)
+    
+    Define title.s = "ДОБАВЛЕНИЕ:" + #LF$ +"   " + Str(t_w_add) + "мс - [W]" + #LF$ +"   " + Str(t_g_add) + "мс - [G]" + #LF$ +
+                        "УДАЛЕНИЕ:" + #LF$ +"   " + Str(t_w_rem) + "мс - [W]" + #LF$ +"   " + Str(t_g_rem) + "мс - [G]"
+    Debug "[РЕЗУЛЬТАТ] " +  #LF$ + title
+    WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 39
-; Folding = -
+
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 121
+; FirstLine = 97
+; Folding = --
 ; EnableXP

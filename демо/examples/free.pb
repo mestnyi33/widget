@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
    
    Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l, Height.l )
-      Protected *new._s_widget, Flag.q = 0
+      Protected *new._s_widget, Flag.q ;= #__flag_Textmultiline
       
       Protected newtype$
       Protected AddItem
@@ -127,13 +127,16 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open( 0, 0, 0, Width+205, Height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      ; a_init(Root())
+      
       *g_TYPE = ListView(Width+45, 10, 150, Height+10) 
       
-      ; For i=0 To 33-3 : AddItem(*g_TYPE, -1, ClassFromType(i)) : Next
-      AddItem(*g_TYPE, -1, "Panel")
-      AddItem(*g_TYPE, -1, "Button")
-      AddItem(*g_TYPE, -1, "ComboBox")
-      AddItem(*g_TYPE, -1, "Tree")
+      For i=0 To 33-3 : AddItem(*g_TYPE, -1, ClassFromType(i)) : Next
+;       ;AddItem(*g_TYPE, -1, "Panel")
+;       AddItem(*g_TYPE, -1, "Progress")
+;       AddItem(*g_TYPE, -1, "Button")
+;       ;AddItem(*g_TYPE, -1, "ComboBox")
+;       ;AddItem(*g_TYPE, -1, "Tree")
       
       SetState(*g_TYPE, 1)
       ;*g_FREE = Button(Width+45, Height-10, 150, 30, "free")
@@ -142,9 +145,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @all_events( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 125
-; FirstLine = 98
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 129
+; FirstLine = 117
 ; Folding = ---
 ; EnableXP
 ; DPIAware

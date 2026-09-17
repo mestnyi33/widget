@@ -13,6 +13,11 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected *new._s_widget
       ; flag.i | #__flag_NoFocus
       Protected newtype$
+;       text$=""
+;       Param1=0
+;       Param2=0
+;       Param3=0
+;       ;Flag.q = 0
       
       If *parent > 0 
          OpenList( *parent, CountItems( *parent ) - 1 )
@@ -207,8 +212,12 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure Add(Text.s)
-      ClearItems(*g_FLAG)
-      ClearItems(*g_FLAG2)
+      If *g_FLAG
+         ClearItems(*g_FLAG)
+      EndIf
+      If *g_FLAG2
+         ClearItems(*g_FLAG2)
+      EndIf
       
       If Text
          Protected i, sublevel, String.s, count = CountString(Text,"|")
@@ -224,8 +233,12 @@ CompilerIf #PB_Compiler_IsMainFile
                   sublevel = 0
             EndSelect
             
-            AddItem(*g_FLAG, -1, String, -1, sublevel)
-            AddItem(*g_FLAG2, -1, String, -1, sublevel)
+            If *g_FLAG
+               AddItem(*g_FLAG, -1, String, -1, sublevel)
+            EndIf
+            If *g_FLAG2
+               AddItem(*g_FLAG2, -1, String, -1, sublevel)
+            EndIf
          Next
       EndIf 
    EndProcedure
@@ -279,8 +292,9 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                   flag$ = MakeString( Flag, ClassFromType(Type))
                   Debug "flag["+Flag$+"]"
-                  SetCheckedText(*g_FLAG, flag$ )
-                  
+                  If *g_FLAG
+                     SetCheckedText(*g_FLAG, flag$ )
+                  EndIf
                Case *g_FLAG
                  ; Debug "checked["+GetCheckedText(*g_FLAG)+"]"
                   
@@ -290,7 +304,9 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_LeftClick
             If EnteredButton( )
                Type = Type(*g_OBJECT)
-               Define check_flag$ = GetCheckedText(*g_FLAG)
+               If *g_FLAG
+                  Define check_flag$ = GetCheckedText(*g_FLAG)
+               EndIf
                Debug "checked["+check_flag$+"]"
                ; pb flag
                Flag = MakeValue( check_flag$ )       
@@ -322,15 +338,15 @@ CompilerIf #PB_Compiler_IsMainFile
       Next
       SetState(*g_TYPE, 1)
       
-      *g_FLAG2 = ComboBox(Width+45, 215, 150, 25, #__flag_CheckBoxes|#__flag_optionboxes|#__flag_nobuttons|#__flag_nolines) 
-      *g_FLAG = Tree(Width+45, 245, 150, 200-25, #__flag_CheckBoxes|#__flag_optionboxes|#__flag_nobuttons|#__flag_nolines) 
+      ;*g_FLAG2 = ComboBox(Width+45, 215, 150, 25, #__flag_CheckBoxes|#__flag_optionboxes|#__flag_nobuttons|#__flag_nolines) 
+      ;*g_FLAG = Tree(Width+45, 245, 150, 200-25, #__flag_CheckBoxes|#__flag_optionboxes|#__flag_nobuttons|#__flag_nolines) 
       
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 169
-; FirstLine = 11
-; Folding = 0--r+--
+; CursorPosition = 282
+; FirstLine = 248
+; Folding = -----0--
 ; EnableXP
 ; DPIAware
