@@ -577,6 +577,25 @@ Procedure AddColumn(*this._s_WIDGET, title$, Width.l)
    *this\col\count + 1
 EndProcedure
 
+; =====================================================================
+; Новая процедура: Физически меняет ширину колонки по её визуальному индексу
+; =====================================================================
+Procedure ResizeColumn(*this._s_WIDGET, colVisualIndex.l, NewWidth.l)
+  ; Ограничиваем минимальную ширину, чтобы колонка не сжалась в 0 или ушла в минус
+  If NewWidth < 20 : NewWidth = 20 : EndIf
+  
+  ; Находим нужную колонку в списке по её визуальному индексу
+  If colVisualIndex >= 0 And colVisualIndex < *this\col\count
+    SelectElement(*this\col\_s(), colVisualIndex)
+    *this\col\_s()\Width = NewWidth
+    
+    ; Мгновенно перерисовываем таблицу с новыми размерами
+    ReDraw(*this)
+    ProcedureReturn #True
+  EndIf
+  ProcedureReturn #False
+EndProcedure
+
 Procedure Open(window.i, X.l,Y.l,Width.l,Height.l, title$, Flag.i=0)
    OpenWindow(window, X,Y,Width,Height, title$, Flag)
    CanvasGadget(0, 0,0,Width,Height, #PB_Canvas_Keyboard)
@@ -643,14 +662,15 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
 ;    RemoveColumn(*this, 3)
 ;    MoveColumn(*this, 1, 3)
 ;    MoveItem(*this, 1, 3)
+   ; ResizeColumn(*this, 2, 240)
    
    Repeat
    Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 644
-; FirstLine = 447
-; Folding = ------N-0-8-
+; CursorPosition = 664
+; FirstLine = 466
+; Folding = ------N-0-8--
 ; EnableXP
 ; DPIAware
