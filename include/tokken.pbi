@@ -1631,10 +1631,10 @@ EndProcedure
 
 ;-
 Procedure.i AddColumn(*this._s_WIDGET, position.l, Text.s, Width.l, img.i = -1, mask.q = #__mask_left)
-   Protected._s_COLS *coumn
-   *coumn = add_column(*this, Text, Width);, img.i = -1)
-   *coumn\mask | mask
-   ProcedureReturn *coumn
+   Protected._s_COLS *col
+   *col = add_column(*this, Text, Width);, img.i = -1)
+   *col\mask | mask
+   ProcedureReturn *col
 EndProcedure
 
 Procedure   AddItem( *this._s_WIDGET, Item.l, Text.s, img.i = - 1, Flag.q = 0 )
@@ -5324,8 +5324,8 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
 
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 4720
-; FirstLine = 4626
+; CursorPosition = 2955
+; FirstLine = 2846
 ; Folding = +--D5---------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

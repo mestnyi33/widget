@@ -16960,120 +16960,6 @@ Module widgets
    EndProcedure
    
    ;-
-   Procedure   EventClose( )
-      Protected window = PB(EventWindow)( )
-      Protected Canvas = PB(GetWindowData)( window )
-      Debug "Close... " + window
-      
-      If IsGadget(Canvas)
-         Post( key::GetData(PB(GadgetID)(Canvas)), #__event_Close )
-      Else
-         Debug "not canvas then close"
-      EndIf
-      
-      ;\\
-      If __GUI\event\loop
-         PostQuit( )
-      Else
-         Debug "Exit..."
-      EndIf
-   EndProcedure
-   
-   Procedure   EventActive( )
-      If PopupBar( )
-         Protected window = PB(EventWindow)( )
-         Protected Canvas = PB(GetWindowData)( window )
-         ;
-         If IsGadget( Canvas )
-            If PopupBar( )\root\canvas\gadget = Canvas
-               Debug "Active... " + window
-            EndIf
-         EndIf
-      EndIf
-   EndProcedure
-   
-   Procedure   EventDeactive( )
-      If PopupBar( )
-         Protected window = PB(EventWindow)( )
-         Protected Canvas = PB(GetWindowData)( window )
-         ;
-         If IsGadget( Canvas )
-            If PopupBar( )\root\canvas\gadget = Canvas
-               Debug "Deactive... " + window
-            EndIf
-         EndIf
-         
-         CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-            If gtk_window_is_active_( WindowID( window )) 
-               
-            EndIf
-         CompilerElse  
-            If GetActiveWindow( ) =- 1 
-               Debug "[APP] - Deactivate..."
-               If DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent ) < 0
-                  PopupBar( ) = 0
-               EndIf
-            EndIf
-         CompilerEndIf
-      EndIf
-   EndProcedure
-   
-   Procedure   EventRestore( )
-      Protected window = PB(EventWindow)( )
-      Protected Canvas = PB(GetWindowData)( window )
-      Debug "Restore... " + window
-      ;
-      If IsGadget( Canvas )
-         SetState( key::GetData(PB(GadgetID)(Canvas)), #PB_Window_Normal )
-      EndIf
-   EndProcedure
-   
-   Procedure   EventMaximize( )
-      Protected window = PB(EventWindow)( )
-      Protected Canvas = PB(GetWindowData)( window )
-      Debug "Maximize... " + window
-      ;
-      If IsGadget( Canvas )
-         SetState( key::GetData(PB(GadgetID)(Canvas)), #PB_Window_Maximize )
-      EndIf
-   EndProcedure
-   
-   Procedure   EventMinimize( )
-      Protected window = PB(EventWindow)( )
-      Protected Canvas = PB(GetWindowData)( window )
-      Debug "Minimize... " + window
-      ;
-      If IsGadget( Canvas )
-         SetState( key::GetData(PB(GadgetID)(Canvas)), #PB_Window_Minimize )
-      EndIf
-   EndProcedure
-   
-   Procedure   EventResize( )
-      Protected Canvas = PB(GetWindowData)( PB(EventWindow)( ))
-      ; Debug "Resize..." + Canvas ; PB(WindowWidth)( PB(EventWindow)( ))
-      PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( Canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( Canvas ) * 2 ) ; bug
-   EndProcedure
-   
-   Procedure   EventRepaint( )
-      Protected._s_ROOT *r
-      If EventData( )
-         *r = key::GetData(EventData( ))
-         If *r\canvas\repaint = 1
-            *r\canvas\repaint = 0
-            
-            ;                ;If test_draw_repaint
-            ;                If *r\mask & #__mask_active
-            ;                   Debug " [+]  REPAINT " + *r\class ;+" "+ Bool(*r\mask & #__mask_hidden)
-            ;                Else
-            ;                   Debug " [-]  REPAINT " + *r\class ;+" "+ Bool(*r\mask & #__mask_hidden)
-            ;                EndIf
-            ;                ;EndIf
-            
-            ReDraw(*r)
-         EndIf
-      EndIf
-   EndProcedure
-   
    Procedure   EventHandler( eventgadget = - 1, eventtype = - 1, eventdata = 0 )
       Protected._s_ROOT *r
       Protected *root._s_ROOT, Repaint, event, mouse_x , mouse_y
@@ -18000,7 +17886,121 @@ Module widgets
       
    EndProcedure
    
-   Procedure   CanvasEvents( )
+   Procedure   EventClose( )
+      Protected window = PB(EventWindow)( )
+      Protected Canvas = PB(GetWindowData)( window )
+      Debug "Close... " + window
+      
+      If IsGadget(Canvas)
+         Post( key::GetData(PB(GadgetID)(Canvas)), #__event_Close )
+      Else
+         Debug "not canvas then close"
+      EndIf
+      
+      ;\\
+      If __GUI\event\loop
+         PostQuit( )
+      Else
+         Debug "Exit..."
+      EndIf
+   EndProcedure
+   
+   Procedure   EventActive( )
+      If PopupBar( )
+         Protected window = PB(EventWindow)( )
+         Protected Canvas = PB(GetWindowData)( window )
+         ;
+         If IsGadget( Canvas )
+            If PopupBar( )\root\canvas\gadget = Canvas
+               Debug "Active... " + window
+            EndIf
+         EndIf
+      EndIf
+   EndProcedure
+   
+   Procedure   EventDeactive( )
+      If PopupBar( )
+         Protected window = PB(EventWindow)( )
+         Protected Canvas = PB(GetWindowData)( window )
+         ;
+         If IsGadget( Canvas )
+            If PopupBar( )\root\canvas\gadget = Canvas
+               Debug "Deactive... " + window
+            EndIf
+         EndIf
+         
+         CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+            If gtk_window_is_active_( WindowID( window )) 
+               
+            EndIf
+         CompilerElse  
+            If GetActiveWindow( ) =- 1 
+               Debug "[APP] - Deactivate..."
+               If DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent ) < 0
+                  PopupBar( ) = 0
+               EndIf
+            EndIf
+         CompilerEndIf
+      EndIf
+   EndProcedure
+   
+   Procedure   EventRestore( )
+      Protected window = PB(EventWindow)( )
+      Protected Canvas = PB(GetWindowData)( window )
+      Debug "Restore... " + window
+      ;
+      If IsGadget( Canvas )
+         SetState( key::GetData(PB(GadgetID)(Canvas)), #PB_Window_Normal )
+      EndIf
+   EndProcedure
+   
+   Procedure   EventMaximize( )
+      Protected window = PB(EventWindow)( )
+      Protected Canvas = PB(GetWindowData)( window )
+      Debug "Maximize... " + window
+      ;
+      If IsGadget( Canvas )
+         SetState( key::GetData(PB(GadgetID)(Canvas)), #PB_Window_Maximize )
+      EndIf
+   EndProcedure
+   
+   Procedure   EventMinimize( )
+      Protected window = PB(EventWindow)( )
+      Protected Canvas = PB(GetWindowData)( window )
+      Debug "Minimize... " + window
+      ;
+      If IsGadget( Canvas )
+         SetState( key::GetData(PB(GadgetID)(Canvas)), #PB_Window_Minimize )
+      EndIf
+   EndProcedure
+   
+   Procedure   EventResize( )
+      Protected Canvas = PB(GetWindowData)( PB(EventWindow)( ))
+      ; Debug "Resize..." + Canvas ; PB(WindowWidth)( PB(EventWindow)( ))
+      PB(ResizeGadget)( Canvas, #PB_Ignore, #PB_Ignore, PB(WindowWidth)( PB(EventWindow)( )) - PB(GadgetX)( Canvas ) * 2, PB(WindowHeight)( PB(EventWindow)( )) - PB(GadgetY)( Canvas ) * 2 ) ; bug
+   EndProcedure
+   
+   Procedure   EventRepaint( )
+      Protected._s_ROOT *r
+      If EventData( )
+         *r = key::GetData(EventData( ))
+         If *r\canvas\repaint = 1
+            *r\canvas\repaint = 0
+            
+            ;                ;If test_draw_repaint
+            ;                If *r\mask & #__mask_active
+            ;                   Debug " [+]  REPAINT " + *r\class ;+" "+ Bool(*r\mask & #__mask_hidden)
+            ;                Else
+            ;                   Debug " [-]  REPAINT " + *r\class ;+" "+ Bool(*r\mask & #__mask_hidden)
+            ;                EndIf
+            ;                ;EndIf
+            
+            ReDraw(*r)
+         EndIf
+      EndIf
+   EndProcedure
+   
+   Procedure   CanvasCallback( )
       ; ProcedureReturn EventHandler( EventGadget( ), EventType( ), EventData( ) )
       
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -22583,11 +22583,11 @@ Module widgets
          SetWindowData( Window, Canvas )
          
          ;
-         BindGadgetEvent( Canvas, @CanvasEvents( ))
+         BindGadgetEvent( Canvas, @CanvasCallback( ))
          CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
             Events::BindGadget( Canvas, @EventHandler( ))
          CompilerEndIf
-         ; BindEvent( #PB_Event_Gadget, @CanvasEvents( ), Window, Canvas )
+         ; BindEvent( #PB_Event_Gadget, @CanvasCallback( ), Window, Canvas )
          ;
          BindEvent( #PB_Event_ActivateWindow, @EventActive( ), Window )
          BindEvent( #PB_Event_DeactivateWindow, @EventDeactive( ), Window )
@@ -25992,8 +25992,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 25992
-; FirstLine = 25968
+; CursorPosition = 17888
+; FirstLine = 17868
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
