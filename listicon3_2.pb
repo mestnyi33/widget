@@ -31,7 +31,7 @@ EndStructure
 ; Описание одной ячейки данных
 Structure _s_TXT
    String.s          ; Текст или значение внутри ячейки
-   width.i  ; Здесь будет храниться вычисленная ширина текста заголовка в пикселях
+   Width.i  ; Здесь будет храниться вычисленная ширина текста заголовка в пикселях
    ColorText.i    ; Кастомный цвет текста для этой ячейки (-1, если стандартный)
    ColorBack.i    ; Кастомный цвет фона для этой ячейки (-1, если стандартный)
    ImageID.i      ; Ссылка на иконку внутри ячейки (если понадобится)
@@ -895,9 +895,9 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    Repeat
    Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 853
-; FirstLine = 786
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 597
+; FirstLine = 510
 ; Folding = --------+--------
 ; EnableXP
 ; DPIAware
