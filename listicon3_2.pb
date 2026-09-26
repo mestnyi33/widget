@@ -22,12 +22,16 @@ Structure _s_COLS
    Width.i     ; Текущая ширина колонки в пикселях
                ;MinWidth.i      ; Минимальная ширина (чтобы пользователь не сжал колонку в 0)
                align.b     ; Выравнивание текста в этой колонке (#__align_Left, и т.д.)
-               ;IsHidden.b      ; Флаг: скрыта ли колонка (на будущее)
+                           ;IsHidden.b      ; Флаг: скрыта ли колонка (на будущее)
+                 ; --- ДОБАВЛЯЕМ СЮДА ---
+  TitleWidth.i  ; Здесь будет храниться вычисленная ширина текста заголовка в пикселях
+
 EndStructure
 
 ; Описание одной ячейки данных
-Structure _s_CELLS
-   text$          ; Текст или значение внутри ячейки
+Structure _s_TXT
+   String.s          ; Текст или значение внутри ячейки
+   width.i  ; Здесь будет храниться вычисленная ширина текста заголовка в пикселях
    ColorText.i    ; Кастомный цвет текста для этой ячейки (-1, если стандартный)
    ColorBack.i    ; Кастомный цвет фона для этой ячейки (-1, если стандартный)
    ImageID.i      ; Ссылка на иконку внутри ячейки (если понадобится)
@@ -40,7 +44,7 @@ Structure _s_ROWS
    ColorBack.i     ; Кастомный цвет фона всей строки (например, для подсветки ошибок)
    Note$           ; Заметка для строки (ваше изначальное условие)
    
-   Array Cells._s_CELLS(0) ; Список ячеек, лежащих в исходном порядке (ID)
+   Array txt._s_TXT(0) ; Список ячеек, лежащих в исходном порядке (ID)
 EndStructure
 
 Structure _s_ROW             
@@ -78,7 +82,9 @@ Structure _s_WIDGET
    row._s_ROW
    col._s_COL
    
-   
+   ; --- ДОБАВЛЯЕМ СЮДА ---
+  FontHeight.i  ; Сюда мы один раз запишем высоту текста
+  
    ; --- ДОБАВИТЬ ЭТИ ПОЛЯ СЮДА ---
    IsResizing.b          ; Флаг: зажата ли граница колонки прямо сейчас
    ResizeColVisual.i     ; Какую именно колонку тянут (индекс)
@@ -102,139 +108,6 @@ Procedure.i GetTextX(ColumnX.i, ColumnWidth.i, TextWidth.i, AlignFlags.l, Offset
   EndIf
 EndProcedure
 
-Procedure DrawColumns(*this._s_WIDGET, W)
-   Protected X
-   Protected ColHeight = *this\col\height
-   DrawingMode(#PB_2DDrawing_Default)
-   ; Серый фон для шапки
-   Box(0, 0, W, ColHeight, RGB(230, 232, 236))
-   
-   X = *this\OffsetX ; Сбрасываем X для отрисовки шапки
-   ForEach *this\col\_s()
-      Protected *col._s_COLS = @*this\col\_s()
-      Protected ColumnWidth = *col\Width
-      Protected title$ = *col\Title$
-      
-      If X + ColumnWidth >= 0 And X <= W
-        ClipOutput(X, 0, ColumnWidth, *this\col\height)
-       ; Подсветка ховера или выделения строки
-         DrawingMode(#PB_2DDrawing_Default)
-         If ListIndex(*this\col\_s()) = *this\col\selected
-            Box(X, 0, ColumnWidth, ColHeight, RGB(220, 235, 255)) ; Выдетенная строка
-         ElseIf ListIndex(*this\col\_s()) = *this\col\hovered
-            If *this\row\hovered = -1
-               Box(X, 0, ColumnWidth, ColHeight, RGB(245, 247, 250)) ; Ховер строки
-            EndIf
-         EndIf
-         
-         ; Вертикальная граница между колонками в шапке
-         Line(X, 0, 1, ColHeight, RGB(190, 195, 200))
-         Line(X + ColumnWidth, 0, 1, ColHeight, RGB(190, 195, 200))
-         
-         ; Текст колонки
-         DrawingMode(#PB_2DDrawing_Transparent)
-         Protected text_x = GetTextX(X, ColumnWidth, TextWidth(title$), *col\align)
-         DrawText(text_x, (ColHeight - TextHeight("Y")) / 2, title$, RGB(40, 45, 55))
-      EndIf
-      
-      ; Сдвигаем X на ширину текущей колонки шапки
-      X + ColumnWidth + SplittSize
-   Next
-   
-   ; Нижняя разделительная черта шапки
-   Line(0, ColHeight - 1, W, 1, RGB(180, 185, 190))
-   
-EndProcedure
-
-Procedure _ReDraw(*this._s_WIDGET) 
-   Protected CanvasID.i = *this\CanvasID
-   Protected W = GadgetWidth(CanvasID)
-   Protected H = GadgetHeight(CanvasID)
-   Protected RowHeight = *this\row\height
-   Protected r, c, X, Y
-   
-   If StartDrawing(CanvasOutput(CanvasID))
-      
-      ; Белый фон для рабочей области таблицы
-      DrawingMode(#PB_2DDrawing_Default)
-      Box(0, 0, W, H, RGB(255, 255, 255))
-      
-      ; ----------------------------------------------------
-      ; ЭТАП 1: Рисуем строки данных (с учетом вертикального скролла)
-      ; Данные начинают рисоваться ПОД шапкой (смещаем на RowHeight)
-      ; ----------------------------------------------------
-      r = 0
-      ForEach *this\row\_s()
-         ; Y-координата строки: позиция + скролл + отступ под шапку
-         Y = r * RowHeight + *this\OffsetY + *this\col\height
-         ; Рисуем только то, что видно между Шапкой и Статус-баром
-         If Y >= *this\col\height And Y <= H - statusbarHeight
-            
-            ; Подсветка ховера или выделения строки
-            DrawingMode(#PB_2DDrawing_Default)
-            If r = *this\row\selected
-               Box(0, Y, W, RowHeight, RGB(220, 235, 255)) ; Выдетенная строка
-            ElseIf r = *this\row\hovered
-               Box(0, Y, W, RowHeight, RGB(245, 247, 250)) ; Ховер строки
-            EndIf
-            
-            ; --- СИНХРОННЫЙ РАСЧЕТ И ОТРИСОВКА ЯЧЕЕК СТРОКИ ---
-            X = *this\OffsetX ; Стартуем X от текущего горизонтального скролла
-            c = 0
-            
-            ForEach *this\col\_s() ; Бежим строго по текущему порядку колонок в шапке
-               Protected *col._s_COLS = @*this\col\_s()
-               Protected ColumnWidth = *col\Width
-               ClipOutput(X, *this\col\height, ColumnWidth, H - *this\col\height - statusbarHeight)
-            
-               ; По паспорту ID достаем из памяти строки нужную ячейку "на лету"
-               Protected text$ = *this\row\_s()\Cells(*col\ID)\text$
-               
-               ; Проверяем, видна ли ячейка на экране с учетом её индивидуальной ширины
-               If X + ColumnWidth >= 0 And X <= W
-                  
-                  ; Сетка ячейки
-                  DrawingMode(#PB_2DDrawing_Outlined)
-                  Box(X, Y, ColumnWidth + 1, RowHeight + 1, RGB(220, 220, 220))
-                  
-                  ; Рамка для фокуса на конкретной ячейке (визуальный индекс колонки `c`)
-                  If r = *this\row\selected And c = *this\col\selected
-                     Box(X + 1, Y + 1, ColumnWidth - 1, RowHeight - 1, RGB(0, 102, 204))
-                  EndIf
-                  
-                  ; Текст данных
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  Protected text_x = GetTextX(X, ColumnWidth, TextWidth(text$), *col\align)
-                  DrawText(text_x, Y + (RowHeight - TextHeight("Y")) / 2, text$, RGB(50, 50, 50))
-               EndIf
-               
-               ; Сдвигаем координату X на ширину ТЕКУЩЕЙ отрисованной колонки
-               X + ColumnWidth + SplittSize
-               c + 1
-            Next
-         EndIf
-         r + 1
-      Next
-      
-            ; ----------------------------------------------------
-      ; ЭТАП 2: ФИКСИРОВАННАЯ ШАПКА (Рисуется ПОВЕРХ строк, всегда на Y = 0)
-      ; Она сдвигается по горизонтали (OffsetX), но никогда по вертикали!
-      ; ----------------------------------------------------
-      DrawColumns(*this, W)
-      
-      ; ----------------------------------------------------
-      ; ЭТАП 3: Нижний Статус-бар (Всегда поверх всего в самом низу)
-      ; ----------------------------------------------------
-      DrawingMode(#PB_2DDrawing_Default)
-      Box(0, H - statusbarHeight, W, statusbarHeight, RGB(235, 235, 240))
-      Line(0, H - statusbarHeight, W, 1, RGB(180, 180, 180))
-      
-      DrawingMode(#PB_2DDrawing_Transparent)
-      DrawText(10, H - 22, "Классический Grid: Верхняя шапка зафиксирована, строки скроллятся.", RGB(100, 100, 100))
-      
-      StopDrawing()
-   EndIf
-EndProcedure
 Procedure ReDraw(*this._s_WIDGET) 
    Protected CanvasID.i = *this\CanvasID
    Protected W = GadgetWidth(CanvasID)
@@ -242,130 +115,192 @@ Procedure ReDraw(*this._s_WIDGET)
    Protected RowHeight = *this\row\height
    Protected ColHeight = *this\col\height
    Protected r, c, X, Y
+   Protected *row._s_ROWS 
    
    If StartDrawing(CanvasOutput(CanvasID))
+      ; [ОПТИМИЗАЦИЯ]: Берем готовое значение из структуры
+      If Not *this\FontHeight
+         ; Если вы используете кастомный шрифт, сначала примените его:
+         ; DrawingFont(GetGadgetFont(CanvasID)) 
+         
+         *this\FontHeight = TextHeight("Y")
+         
+;          ; Автоматически делаем высоту строки RowHeight кратной высоте шрифта (например, высота + отступы)
+;          *this\row\height = *this\FontHeight + 8 
+;          *this\col\height = *this\FontHeight + 10
+      EndIf
+      Protected FontHeight = *this\FontHeight
       
-      ; Очищаем всё белым цветом
+      ; Если вдруг виджет не инициализировался, делаем безопасную проверку
+      If FontHeight = 0 : FontHeight = 16 : EndIf 
+      
+      ; 1. Белый фон для всей рабочей области таблицы
       DrawingMode(#PB_2DDrawing_Default)
       Box(0, 0, W, H, RGB(255, 255, 255))
       
       ; ====================================================
-      ; ГЛАВНЫЙ И ЕДИНСТВЕННЫЙ ЦИКЛ ПО КОЛОНКАМ
+      ; ЭТАП 1: Рисуем строки данных (Снаружи) + Виртуальный скролл
       ; ====================================================
-      X = *this\OffsetX 
-      c = 0
-      ForEach *this\col\_s()
-         Protected *col._s_COLS = @*this\col\_s()
-         Protected ColumnWidth = *col\Width
-         Protected title$ = *col\Title$
+      ; Ограничиваем область рисования строк: строго между шапкой и статус-баром
+      ClipOutput(0, ColHeight, W, H - ColHeight - statusbarHeight)
+      
+      ; [ОПТИМИЗАЦИЯ]: Вычисляем индекс первой видимой строки на основе скролла OffsetY
+      Protected StartRow = Abs(*this\OffsetY) / RowHeight
+      
+      ; Вычисляем, сколько строк физически помещается на экране
+      Protected VisibleRowsCount = ((H - ColHeight - statusbarHeight) / RowHeight) + 1
+      Protected EndRow = StartRow + VisibleRowsCount
+      
+      ; Защита от выхода за пределы реального количества строк списка
+      Protected TotalRows = ListSize(*this\row\_s())
+      If EndRow > TotalRows - 1
+         EndRow = TotalRows - 1
+      EndIf
+      
+      ; Перемещаем указатель списка сразу на первую видимую строку (работает мгновенно)
+      *row = SelectElement(*this\row\_s(), StartRow)
+      If *row
          
-         ; Проверяем, видна ли колонка по горизонтали
-         If X + ColumnWidth >= 0 And X <= W
+         r = StartRow
+         For r = StartRow To EndRow
+            ; Вычисляем Y-координату для текущей строки данных
+            Y = r * RowHeight + *this\OffsetY + ColHeight
             
-            ; ------------------------------------------------
-            ; ЧАСТЬ 1: Рисуем данные этой колонки для всех строк
-            ; ------------------------------------------------
-            ; ВАЖНО: Ограничиваем область рисования строк, чтобы они не лезли на шапку и статус-бар
-            ClipOutput(X, ColHeight, ColumnWidth, H - ColHeight - statusbarHeight)
+            ; --- РИСУЕМ ФОН СТРОКИ (ЦЕЛЬНЫЙ BOX НА ВСЮ ШИРИНУ) ---
+            DrawingMode(#PB_2DDrawing_Default)
+            If r = *this\row\selected
+               Box(0, Y, W, RowHeight, RGB(220, 235, 255)) ; Выделенная строка
+            ElseIf r = *this\row\hovered
+               Box(0, Y, W, RowHeight, RGB(245, 247, 250)) ; Ховер строки
+            ElseIf r % 2 = 1
+               Box(0, Y, W, RowHeight, RGB(252, 252, 254)) ; Легкая "зебра" для читаемости
+            EndIf
             
-            r = 0
-            ForEach *this\row\_s()
-               Y = r * RowHeight + *this\OffsetY + ColHeight
+            ; --- ВНУТРЕННИЙ ЦИКЛ: КОЛОНКИ СТРОКИ ---
+            X = *this\OffsetX ; Стартуем X от текущего горизонтального скролла
+            c = 0
+            
+            ForEach *this\col\_s()
+               Protected *col._s_COLS = @*this\col\_s()
+               Protected ColumnWidth = *col\Width
                
-               ; Проверяем видимость ячейки по вертикали
-               If Y >= ColHeight And Y <= H - statusbarHeight
-                  
-                  ; Фон строки (Отрисуется полосками под каждой колонкой)
-                  DrawingMode(#PB_2DDrawing_Default)
-                  If r = *this\row\selected
-                     Box(X, Y, ColumnWidth, RowHeight, RGB(220, 235, 255))
-                  ElseIf r = *this\row\hovered
-                     Box(X, Y, ColumnWidth, RowHeight, RGB(245, 247, 250))
-                  EndIf
-                  
+               ; Отрисовываем ячейку только если она видна на экране по горизонтали
+               If X + ColumnWidth >= 0 And X <= W
                   ; Сетка ячейки
                   DrawingMode(#PB_2DDrawing_Outlined)
                   Box(X, Y, ColumnWidth + 1, RowHeight + 1, RGB(220, 220, 220))
                   
-                  ; Рамка фокуса ячейки
+                  ; Рамка активного фокуса на конкретной ячейке
                   If r = *this\row\selected And c = *this\col\selected
                      Box(X + 1, Y + 1, ColumnWidth - 1, RowHeight - 1, RGB(0, 102, 204))
                   EndIf
                   
-                  ; Текст ячейки
-                  DrawingMode(#PB_2DDrawing_Transparent)
-                  Protected cellText$ = *this\row\_s()\Cells(*col\ID)\text$
-                  Protected cell_x = GetTextX(X, ColumnWidth, TextWidth(cellText$), *col\align)
-                  DrawText(cell_x, Y + (RowHeight - TextHeight("Y")) / 2, cellText$, RGB(50, 50, 50))
+                  ; Текст данных ячейки
+                  Protected *txt._s_TXT = *row\txt(*col\ID)
+                  Protected text$ = *txt\string
+                  ; [ОПТИМИЗАЦИЯ]: Берем готовое значение из структуры
+                  If Not *txt\width
+                     If text$ <> ""
+                        *txt\width = TextWidth(text$)
+                     Else
+                        *txt\width = 1
+                     EndIf
+                  EndIf
+                  
+                  If text$ <> ""
+                   ; Локально зажимаем текст в рамки колонки (с отступом в 2 пикселя от краев)
+                     ClipOutput(X + 2, ColHeight, ColumnWidth - 3, H - ColHeight - statusbarHeight)
+                     
+                     DrawingMode(#PB_2DDrawing_Transparent)
+                     Protected text_x = GetTextX(X, ColumnWidth, *txt\width, *col\align)
+                     DrawText(text_x, Y + (RowHeight - FontHeight) / 2, text$, RGB(50, 50, 50))
+                     
+                     ; Возвращаем общую обрезку для области строк данных
+                     ClipOutput(0, ColHeight, W, H - ColHeight - statusbarHeight)
+                  EndIf
                EndIf
-               r + 1
+               
+               ; Смещаем X на ширину текущей колонки и разделителя
+               X + ColumnWidth + SplittSize
+               c + 1
             Next
             
-            ; Сбрасываем ограничение отрисовки, чтобы нарисовать шапку поверх
-            ClipOutput(X, 0, ColumnWidth, ColHeight)
-       
-            ; ------------------------------------------------
-            ; ЧАСТЬ 2: Рисуем шапку для этой колонки (ПОВЕРХ данных)
-            ; ------------------------------------------------
-            DrawingMode(#PB_2DDrawing_Default)
-            ; Базовый фон шапки для этой колонки
-            Box(X, 0, ColumnWidth, ColHeight, RGB(230, 232, 236))
+            ; [ИСПРАВЛЕНИЕ ОШИБКИ]: Переходим к следующей строке и синхронизируем указатель *row
+            *row = NextElement(*this\row\_s())
+            If *row = 0
+               Break
+            EndIf
+         Next
+      EndIf
+      
+      ; [КРИТИЧЕСКИЙ СБРОС]: Отменяем обрезку перед отрисовкой шапки поверх строк!
+      UnclipOutput()
+      
+      ; ====================================================
+      ; ЭТАП 2: ФИКСИРОВАННАЯ ШАПКА
+      ; ====================================================
+      DrawingMode(#PB_2DDrawing_Default)
+      ; Общий базовый серый фон для всей полосы шапки
+      Box(0, 0, W, ColHeight, RGB(230, 232, 236))
+      
+      X = *this\OffsetX ; Сбрасываем X для отрисовки колонок шапки с учетом скролла
+      ForEach *this\col\_s()
+         *col = @*this\col\_s()
+         ColumnWidth = *col\Width
+         
+         ; Отрисовываем элемент шапки, только если он виден на экране
+         If X + ColumnWidth >= 0 And X <= W
             
-            ; Подсветка ховера/выделения шапки
+            DrawingMode(#PB_2DDrawing_Default)
+            ; 1. СНАЧАЛА РИСУЕМ ФОН (Перезаписываем дефолтный серый, если активен ховер или селект)
             If ListIndex(*this\col\_s()) = *this\col\selected
-               Box(X, 0, ColumnWidth, ColHeight, RGB(220, 235, 255))
+              ; Box(X, 0, ColumnWidth, ColHeight, RGB(220, 235, 255)) ; Выделенная колонка
             ElseIf ListIndex(*this\col\_s()) = *this\col\hovered And *this\row\hovered = -1
-               Box(X, 0, ColumnWidth, ColHeight, RGB(245, 247, 250))
+               Box(X, 0, ColumnWidth, ColHeight, RGB(245, 247, 250)) ; Ховер колонки
             EndIf
             
-            ; Вертикальные разделители
+            ; 2. РИСУЕМ ТЕКСТ (Зажимаем обрезкой, чтобы длинный заголовок не вылезал на соседние колонки)
+            Protected title$ = *col\Title$
+            ; [ОПТИМИЗАЦИЯ]: Берем готовое значение из структуры
+            If Not *col\TitleWidth
+               If title$ <> ""
+                  *col\TitleWidth = TextWidth(title$)
+               Else
+                  *col\TitleWidth = 1
+               EndIf
+            EndIf
+            ClipOutput(X + 2, 0, ColumnWidth - 3, ColHeight)
+            DrawingMode(#PB_2DDrawing_Transparent)
+            Protected title_x = GetTextX(X, ColumnWidth, *col\TitleWidth, *col\align)
+            DrawText(title_x, (ColHeight - FontHeight) / 2, title$, RGB(40, 45, 55))
+            UnclipOutput() ; Сразу сбрасываем локальную обрезку текста
+            
+            ; 3. В САМЫЙ КОНЕЦ РИСУЕМ ЛИНИИ (Они лягут ПОВЕРХ любого ховера/выделения и не затрутся)
+            DrawingMode(#PB_2DDrawing_Default)
             Line(X, 0, 1, ColHeight, RGB(190, 195, 200))
             Line(X + ColumnWidth, 0, 1, ColHeight, RGB(190, 195, 200))
-            
-            ; Текст шапки
-            DrawingMode(#PB_2DDrawing_Transparent)
-            Protected text_x = GetTextX(X, ColumnWidth, TextWidth(title$), *col\align)
-            DrawText(text_x, (ColHeight - TextHeight("Y")) / 2, title$, RGB(40, 45, 55))
-            
          EndIf
          
+         ; Сдвигаем X на ширину текущей колонки шапки
          X + ColumnWidth + SplittSize
-         c + 1
       Next
       
-      ; Нижняя сплошная черта шапки (по всей ширине)
+      ; Нижняя сплошная разделительная черта шапки (рисуется поверх стыков)
       DrawingMode(#PB_2DDrawing_Default)
       Line(0, ColHeight - 1, W, 1, RGB(180, 185, 190))
       
       ; ====================================================
-      ; ЭТАП 3: Статус-бар
+      ; ЭТАП 3: Нижний Статус-бар (Всегда поверх всего в самом низу)
       ; ====================================================
+      DrawingMode(#PB_2DDrawing_Default)
       Box(0, H - statusbarHeight, W, statusbarHeight, RGB(235, 235, 240))
       Line(0, H - statusbarHeight, W, 1, RGB(180, 180, 180))
       
       DrawingMode(#PB_2DDrawing_Transparent)
-      DrawText(10, H - 22, "Grid: Цикл по колонкам -> внутри цикл по строкам.", RGB(100, 100, 100))
+      DrawText(10, H - statusbarHeight + (statusbarHeight - FontHeight) / 2, "Оптимизированный монолитный Grid: вертикальный скролл строк и шапки.", RGB(100, 100, 100))
       
       StopDrawing()
    EndIf
-EndProcedure
-
-
-; --- ОБРАБОТКА МЫШИ (Исправленная под динамические колонки) ---
-Procedure HowerColumnn(*this._s_WIDGET, X)
-   Protected HoverCol = -1
-   Protected currentX = *this\OffsetX
-   Protected visualCol = 0
-   ForEach *this\col\_s()
-      Protected ColumnWidth = *this\col\_s()\Width
-      If X >= currentX And X < currentX + ColumnWidth
-         HoverCol = visualCol
-         Break
-      EndIf
-      currentX + ColumnWidth + SplittSize
-      visualCol + 1
-   Next
-   ProcedureReturn HoverCol
 EndProcedure
 
 Procedure GetColumn(*this._s_WIDGET, col.l)
@@ -382,37 +317,33 @@ Procedure GetItem(*this._s_WIDGET, row.l)
    ProcedureReturn SelectElement(*this\row\_s(), row)
 EndProcedure
 
-Procedure GetCell( *this._s_WIDGET, *row._s_ROWS, col.l )
-   Protected *column._s_COLS = GetColumn(*this._s_WIDGET, col.l)
-   If *column
-      ProcedureReturn *row\Cells(*column\ID)
-   EndIf
-EndProcedure
-
-Procedure.s GetItemText(*this._s_WIDGET, row.l, col.l)
+Procedure GetRowCell(*this._s_WIDGET, row.l, col.l)
+   Protected *col._s_COLS
    Protected *row._s_ROWS = GetItem(*this, row)
    If *row
-      Protected *Cell._s_CELLS = GetCell(*this, *row, col.l)
-      If *Cell
-         ProcedureReturn *Cell\text$
+      *col = GetColumn(*this._s_WIDGET, col.l)
+      If *col
+         ProcedureReturn *row\txt(*col\ID)
       EndIf
    EndIf
 EndProcedure
 
-Procedure SetItemText(*this._s_WIDGET, row.l, col.l, text$)
-   Protected *row._s_ROWS = GetItem(*this, row)
-   If *row
-      Protected *Cell._s_CELLS = GetCell(*this, *row, col.l)
-      If *Cell
-         *Cell\text$ = text$
-         
-         ; 5. Автоматически перерисовываем Grid, чтобы пользователь сразу увидел новый текст
-         ; Передаем ID холста (в нашем коде это 0)
-         ReDraw(*this) 
-         ProcedureReturn #True ; Успешно
-      EndIf 
+Procedure.s GetItemText(*this._s_WIDGET, row.l, col.l)
+   Protected *txt._s_TXT = GetRowCell(*this, row, col.l)
+   If *txt
+      ProcedureReturn *txt\string
    EndIf
 EndProcedure
+
+Procedure SetItemText(*this._s_WIDGET, row.l, col.l, text$)
+   Protected *txt._s_TXT = GetRowCell(*this, row, col.l)
+   If *txt
+      *txt\string = text$
+      ReDraw(*this) 
+      ProcedureReturn #True ; Успешно
+   EndIf
+EndProcedure
+
 
 Procedure RemoveItem(*this._s_WIDGET, row.l)
    Protected *row._s_ROWS = GetItem(*this, row)
@@ -430,7 +361,7 @@ Procedure RemoveItem(*this._s_WIDGET, row.l)
       *this\row\hovered = -1
       
       ; 4. Физически удаляем строку из памяти.
-      ; PureBasic сам автоматически уничтожит вложенный массив Cells() для этой строки!
+      ; PureBasic сам автоматически уничтожит вложенный массив txt() для этой строки!
       DeleteElement(*this\row\_s())
       
       ; 5. Обновляем счетчик общего количества строк в таблице
@@ -446,7 +377,7 @@ EndProcedure
 
 Procedure ClearItems(*this._s_WIDGET)
    ; 1. Полностью очищаем список строк из оперативной памяти
-   ; PureBasic сам автоматически уничтожит все вложенные массивы Cells() и тексты ячеек!
+   ; PureBasic сам автоматически уничтожит все вложенные массивы txt() и тексты ячеек!
    ClearList(*this\row\_s())
    
    ; 2. Обнуляем счетчик общего количества строк
@@ -464,6 +395,7 @@ Procedure ClearItems(*this._s_WIDGET)
    ; 5. Мгновенно перерисовываем пустую таблицу на Canvas (передаем ID холста 0)
    ReDraw(*this)
 EndProcedure
+
 
 Procedure MoveItem(*this._s_WIDGET, FromIndex.l, ToIndex.l)
    If FromIndex = ToIndex : ProcedureReturn #True : EndIf ; Смещать не нужно
@@ -567,20 +499,37 @@ Procedure MoveColumn(*this._s_WIDGET, FromIndex.l, ToIndex.l)
    ProcedureReturn #False
 EndProcedure
 
+; --- ОБРАБОТКА МЫШИ (Исправленная под динамические колонки) ---
+Procedure HowerColumnn(*this._s_WIDGET, X)
+   Protected HoverCol = -1
+   Protected currentX = *this\OffsetX
+   Protected visualCol = 0
+   ForEach *this\col\_s()
+      Protected ColumnWidth = *this\col\_s()\Width
+      If X >= currentX And X < currentX + ColumnWidth
+         HoverCol = visualCol
+         Break
+      EndIf
+      currentX + ColumnWidth + SplittSize
+      visualCol + 1
+   Next
+   ProcedureReturn HoverCol
+EndProcedure
+
 Procedure RemoveColumn(*this._s_WIDGET, col.l)
-   Protected *Cell._s_CELLS
-   Protected *column._s_COLS = GetColumn(*this, col)
-   If *column
+   Protected *txt._s_TXT
+   Protected *col._s_COLS = GetColumn(*this, col)
+   If *col
       ; 3. Пробегаемся по ВСЕМ строкам таблицы и освобождаем память от текста в этой ячейке
       ForEach *this\row\_s()
-         *Cell = @*this\row\_s()\Cells(*column\ID)
+         *txt = @*this\row\_s()\txt(*col\ID)
          
          ; Присвоение пустой строки в PureBasic автоматически освобождает память,
          ; которую занимал текст этой конкретной ячейки в операционной системе
-         *Cell\text$ = ""
-         *Cell\ColorText = -1
-         *Cell\ColorBack = -1
-         *Cell\ImageID   = -1
+         *txt\string = ""
+         *txt\ColorText = -1
+         *txt\ColorBack = -1
+         *txt\ImageID   = -1
       Next
       
       ; 4. Физически удаляем саму колонку из списка шапки Columns()
@@ -662,7 +611,7 @@ Procedure.i GetTotalColumnsWidth(*this._s_WIDGET)
    ProcedureReturn TotalWidth
 EndProcedure
 
-Procedure AddColumn(*this._s_WIDGET, title$, Width.l, align.i=0)
+Procedure AddColumn(*this._s_WIDGET, position, title$, Width.l, img.i = -1, align.i= #__align_left)
    Protected *col._s_COLS
    *this\col\count = ListSize(*this\col\_s()) 
    *col = AddElement(*this\col\_s()) 
@@ -686,29 +635,30 @@ Procedure AddItem(*this._s_WIDGET, position.l, text$, Image.i=-1, sublevel.l=0)
       InsertElement(*this\row\_s())
    EndIf
    
+   Protected *row._s_ROWS = @*this\row\_s()
    ; Инициализируем базовые поля строки
-   *this\row\_s()\Note$ = ""
-   *this\row\_s()\ColorBack = -1 
+   *row\Note$ = ""
+   *row\ColorBack = -1 
    
    ; Меняем размер массива ячеек под количество колонок
-   ReDim *this\row\_s()\Cells(*this\col\count - 1)
+   ReDim *row\txt(*this\col\count - 1)
    
    ; 2. ОПТИМИЗИРОВАННЫЙ СВЕРХБЫСТРЫЙ ПАРСИНГ
    Protected *ptr.Character = @text$
    Protected *colStart = *ptr
    Protected currentCol = 0
-   Protected *Cell._s_CELLS
+   Protected *txt._s_TXT
    
    While currentCol < *this\col\count
       ; Если нашли разделитель ИЛИ строка уже давно закончилась, но массив надо заполнить
       If *ptr\c = 10 Or *ptr\c = 0
-         *Cell = @*this\row\_s()\Cells(currentCol)
+         *txt = @*row\txt(currentCol)
          
          ; Если старт совпадает с ptr (строка закончилась), PeekS автоматически запишет ""
-         *Cell\text$ = PeekS(*colStart, (*ptr - *colStart) >> 1)
-         *Cell\ColorText = -1 
-         *Cell\ColorBack = -1 
-         *Cell\ImageID = Image
+         *txt\string = PeekS(*colStart, (*ptr - *colStart) >> 1)
+         *txt\ColorText = -1 
+         *txt\ColorBack = -1 
+         *txt\ImageID = Image
          
          ; Сдвигаем указатель начала следующей колонки (безопасно, если не вышли за 0)
          If *ptr\c = 10
@@ -887,6 +837,7 @@ Procedure ListIcon(X.l,Y.l,Width.l,Height.l, title$, titlewidth.l, Flag.i=0)
    *this\row\height = 30
    *this\row\selected = -1
    *this\row\hovered  = -1
+   AddColumn(*this, -1, title$, titlewidth)
    ProcedureReturn *this
 EndProcedure
 
@@ -897,11 +848,10 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    *this\CanvasID = 0
    
    ; 1. Заполняем ШАПКУ таблицы (тот самый верхний фиксированный ряд)
-   AddColumn(*this, "ID товара", 120)
-   AddColumn(*this, "Наименование", 120)
-   AddColumn(*this, "Категория", 120, #__align_Center)
-   AddColumn(*this, "Цена", 120, #__align_Right)
-   AddColumn(*this, "Остаток", 120, #__align_Right)
+   AddColumn(*this, -1, "Наименование", 120, -1)
+   AddColumn(*this, -1, "Категория", 120, -1, #__align_Center)
+   AddColumn(*this, -1, "Цена", 120, -1, #__align_Right)
+   AddColumn(*this, -1, "Остаток", 120, -1, #__align_Right)
    
    ; 2. Заполняем обычные строки с данными (вниз)
    Define r.l
@@ -946,8 +896,8 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 305
-; FirstLine = 202
-; Folding = --+--------4-----
+; CursorPosition = 853
+; FirstLine = 786
+; Folding = --------+--------
 ; EnableXP
 ; DPIAware
