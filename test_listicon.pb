@@ -3,7 +3,7 @@ XIncludeFile "include/tokken.pbi"
 
 If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    Define *this._s_WIDGET = ListIcon(0, 0, 640, 480, "ID товара", 120)
-  ; *this\CanvasID = 0
+   ; *this\CanvasID = 0
    
    ; 1. Заполняем ШАПКУ таблицы (тот самый верхний фиксированный ряд)
    AddColumn(*this, -1, "Наименование", 120, -1)
@@ -42,11 +42,11 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    
    ReDraw(*this)
    
-      SetItemText(*this, 1, 3, "---- руб")
-      Debug GetItemText(*this, 1, 3)
+   SetItemText(*this, 1, 3, "---- руб")
+   Debug GetItemText(*this, 1, 3)
    ;    RemoveItem(*this, 1)
    ;    RemoveColumn(*this, 3)
-       MoveColumn(*this, 1, 3)
+   MoveColumn(*this, 1, 3)
    ;    MoveItem(*this, 1, 3)
    ; ResizeColumn(*this, 2, 240)
    
@@ -54,7 +54,7 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 49
+; CursorPosition = 50
 ; FirstLine = 30
 ; Folding = -
 ; EnableXP

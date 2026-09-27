@@ -398,7 +398,7 @@ Structure _s_WIDGET Extends _s_COORDINATE
    Type.l                ; EDIT или TREE
    color.l
    Level.l
-   
+   FontHeight.i
    mask.q                ; Состояние виджета (#__mask_update, #__mask_active...)
    
    haschildren.l
@@ -3320,7 +3320,202 @@ Procedure Draw(*this._s_WIDGET)
    EndIf
 EndProcedure
 
-Procedure ReDraw( *root._s_ROOT = #PB_Any )
+Procedure ReDraw(*this._s_WIDGET) 
+   Protected statusbarHeight
+   Protected CanvasID.i = *this\root\canvas\gadget
+   Protected W = GadgetWidth(CanvasID)
+   Protected H = GadgetHeight(CanvasID)
+   Protected RowHeight = *this\row\height
+   Protected ColHeight = *this\col\height
+   Protected r, c, X, Y
+   Protected *row._s_ROWS 
+   
+   If StartDrawing(CanvasOutput(CanvasID))
+      ; [ОПТИМИЗАЦИЯ]: Берем готовое значение из структуры
+      If Not *this\FontHeight
+         ; Если вы используете кастомный шрифт, сначала примените его:
+         ; DrawingFont(GetGadgetFont(CanvasID)) 
+         
+         *this\FontHeight = TextHeight("Y")
+         
+;          ; Автоматически делаем высоту строки RowHeight кратной высоте шрифта (например, высота + отступы)
+;          *this\row\height = *this\FontHeight + 8 
+;          *this\col\height = *this\FontHeight + 10
+      EndIf
+      Protected FontHeight = *this\FontHeight
+      
+      ; Если вдруг виджет не инициализировался, делаем безопасную проверку
+      If FontHeight = 0 : FontHeight = 16 : EndIf 
+      
+      ; 1. Белый фон для всей рабочей области таблицы
+      DrawingMode(#PB_2DDrawing_Default)
+      Box(0, 0, W, H, RGB(255, 255, 255))
+      
+      ; ====================================================
+      ; ЭТАП 1: Рисуем строки данных (Снаружи) + Виртуальный скролл
+      ; ====================================================
+      ; Ограничиваем область рисования строк: строго между шапкой и статус-баром
+      ClipOutput(0, ColHeight, W, H - ColHeight - statusbarHeight)
+      
+      ; [ОПТИМИЗАЦИЯ]: Вычисляем индекс первой видимой строки на основе скролла OffsetY
+      Protected StartRow = Abs(*this\scroll\y) / RowHeight
+      
+      ; Вычисляем, сколько строк физически помещается на экране
+      Protected VisibleRowsCount = ((H - ColHeight - statusbarHeight) / RowHeight) + 1
+      Protected EndRow = StartRow + VisibleRowsCount
+      
+      ; Защита от выхода за пределы реального количества строк списка
+      Protected TotalRows = ListSize(*this\row\_s())
+      If EndRow > TotalRows - 1
+         EndRow = TotalRows - 1
+      EndIf
+      
+      ; Перемещаем указатель списка сразу на первую видимую строку (работает мгновенно)
+      *row = SelectElement(*this\row\_s(), StartRow)
+      If *row
+         
+         r = StartRow
+         For r = StartRow To EndRow
+            ; Вычисляем Y-координату для текущей строки данных
+            Y = r * RowHeight + *this\scroll\y + ColHeight
+            
+            ; --- РИСУЕМ ФОН СТРОКИ (ЦЕЛЬНЫЙ BOX НА ВСЮ ШИРИНУ) ---
+            DrawingMode(#PB_2DDrawing_Default)
+            If r = *this\row\selected
+               Box(0, Y, W, RowHeight, RGB(220, 235, 255)) ; Выделенная строка
+            ElseIf r = *this\row\hovered
+               Box(0, Y, W, RowHeight, RGB(245, 247, 250)) ; Ховер строки
+            ElseIf r % 2 = 1
+               Box(0, Y, W, RowHeight, RGB(252, 252, 254)) ; Легкая "зебра" для читаемости
+            EndIf
+            
+            ; --- ВНУТРЕННИЙ ЦИКЛ: КОЛОНКИ СТРОКИ ---
+            X = *this\scroll\x ; Стартуем X от текущего горизонтального скролла
+            c = 0
+            
+            ForEach *this\col\_s()
+               Protected *col._s_COLS = @*this\col\_s()
+               Protected ColumnWidth = *col\Width
+               
+               ; Отрисовываем ячейку только если она видна на экране по горизонтали
+               If X + ColumnWidth >= 0 And X <= W
+                  ; Сетка ячейки
+                  DrawingMode(#PB_2DDrawing_Outlined)
+                  Box(X, Y, ColumnWidth + 1, RowHeight + 1, RGB(220, 220, 220))
+                  
+                  ; Рамка активного фокуса на конкретной ячейке
+                  If r = *this\row\selected And c = *this\col\selected
+                     Box(X + 1, Y + 1, ColumnWidth - 1, RowHeight - 1, RGB(0, 102, 204))
+                  EndIf
+                  
+                  ; Текст данных ячейки
+                  Protected *txt._s_TXT = *row\txt(*col\ID)
+                  Protected text$ = *txt\string
+                  ; [ОПТИМИЗАЦИЯ]: Берем готовое значение из структуры
+                  If Not *txt\width
+                     If text$ <> ""
+                        *txt\width = TextWidth(text$)
+                     Else
+                        *txt\width = 1
+                     EndIf
+                  EndIf
+                  
+                  If text$ <> ""
+                   ; Локально зажимаем текст в рамки колонки (с отступом в 2 пикселя от краев)
+                     ClipOutput(X + 2, ColHeight, ColumnWidth - 3, H - ColHeight - statusbarHeight)
+                     
+                     DrawingMode(#PB_2DDrawing_Transparent)
+                     Protected text_x = GetTextX(X, ColumnWidth, *txt\width, *col\align)
+                     DrawText(text_x, Y + (RowHeight - FontHeight) / 2, text$, RGB(50, 50, 50))
+                     
+                     ; Возвращаем общую обрезку для области строк данных
+                     ClipOutput(0, ColHeight, W, H - ColHeight - statusbarHeight)
+                  EndIf
+               EndIf
+               
+               ; Смещаем X на ширину текущей колонки и разделителя
+               X + ColumnWidth + SplittSize
+               c + 1
+            Next
+            
+            ; [ИСПРАВЛЕНИЕ ОШИБКИ]: Переходим к следующей строке и синхронизируем указатель *row
+            *row = NextElement(*this\row\_s())
+            If *row = 0
+               Break
+            EndIf
+         Next
+      EndIf
+      
+      ; [КРИТИЧЕСКИЙ СБРОС]: Отменяем обрезку перед отрисовкой шапки поверх строк!
+      UnclipOutput()
+      
+      ; ====================================================
+      ; ЭТАП 2: ФИКСИРОВАННАЯ ШАПКА
+      ; ====================================================
+      DrawingMode(#PB_2DDrawing_Default)
+      ; Общий базовый серый фон для всей полосы шапки
+      Box(0, 0, W, ColHeight, RGB(230, 232, 236))
+      
+      X = *this\scroll\x ; Сбрасываем X для отрисовки колонок шапки с учетом скролла
+      ForEach *this\col\_s()
+         *col = @*this\col\_s()
+         ColumnWidth = *col\Width
+         
+         ; Отрисовываем элемент шапки, только если он виден на экране
+         If X + ColumnWidth >= 0 And X <= W
+            
+            DrawingMode(#PB_2DDrawing_Default)
+            ; 1. СНАЧАЛА РИСУЕМ ФОН (Перезаписываем дефолтный серый, если активен ховер или селект)
+            If ListIndex(*this\col\_s()) = *this\col\selected
+              ; Box(X, 0, ColumnWidth, ColHeight, RGB(220, 235, 255)) ; Выделенная колонка
+            ElseIf ListIndex(*this\col\_s()) = *this\col\hovered And *this\row\hovered = -1
+               Box(X, 0, ColumnWidth, ColHeight, RGB(245, 247, 250)) ; Ховер колонки
+            EndIf
+            
+            ; 2. РИСУЕМ ТЕКСТ (Зажимаем обрезкой, чтобы длинный заголовок не вылезал на соседние колонки)
+            Protected title$ = *col\Title$
+            ; [ОПТИМИЗАЦИЯ]: Берем готовое значение из структуры
+            If Not *col\TitleWidth
+               If title$ <> ""
+                  *col\TitleWidth = TextWidth(title$)
+               Else
+                  *col\TitleWidth = 1
+               EndIf
+            EndIf
+            ClipOutput(X + 2, 0, ColumnWidth - 3, ColHeight)
+            DrawingMode(#PB_2DDrawing_Transparent)
+            Protected title_x = GetTextX(X, ColumnWidth, *col\TitleWidth, *col\align)
+            DrawText(title_x, (ColHeight - FontHeight) / 2, title$, RGB(40, 45, 55))
+            UnclipOutput() ; Сразу сбрасываем локальную обрезку текста
+            
+            ; 3. В САМЫЙ КОНЕЦ РИСУЕМ ЛИНИИ (Они лягут ПОВЕРХ любого ховера/выделения и не затрутся)
+            DrawingMode(#PB_2DDrawing_Default)
+            Line(X, 0, 1, ColHeight, RGB(190, 195, 200))
+            Line(X + ColumnWidth, 0, 1, ColHeight, RGB(190, 195, 200))
+         EndIf
+         
+         ; Сдвигаем X на ширину текущей колонки шапки
+         X + ColumnWidth + SplittSize
+      Next
+      
+      ; Нижняя сплошная разделительная черта шапки (рисуется поверх стыков)
+      DrawingMode(#PB_2DDrawing_Default)
+      Line(0, ColHeight - 1, W, 1, RGB(180, 185, 190))
+      
+      ; ====================================================
+      ; ЭТАП 3: Нижний Статус-бар (Всегда поверх всего в самом низу)
+      ; ====================================================
+      DrawingMode(#PB_2DDrawing_Default)
+      Box(0, H - statusbarHeight, W, statusbarHeight, RGB(235, 235, 240))
+      Line(0, H - statusbarHeight, W, 1, RGB(180, 180, 180))
+      
+      DrawingMode(#PB_2DDrawing_Transparent)
+      DrawText(10, H - statusbarHeight + (statusbarHeight - FontHeight) / 2, "Оптимизированный монолитный Grid: вертикальный скролл строк и шапки.", RGB(100, 100, 100))
+      
+      StopDrawing()
+   EndIf
+EndProcedure
+Procedure _ReDraw( *root._s_ROOT = #PB_Any )
    If *root > 0
       If StartDrawing(CanvasOutput(*root\root\canvas\gadget))
          Draw(*root)
@@ -3334,12 +3529,7 @@ Procedure ReDraw( *root._s_ROOT = #PB_Any )
       
       ; 2. Рисуем все элементы по порядку (снизу вверх)
       While *root
-;          ; Debug "Отрисовка холста: " + *root + " (Имя: " + widgets()\name + ")"
-;          If StartDrawing(CanvasOutput(*root\canvas\gadget))
-;             Draw(*root)
-;             StopDrawing( )
-;          EndIf
-         ReDraw(*root)
+         ReDraw( *root )
          *root = *root\NextRoot( ) ; Переходим к следующему
       Wend
    EndIf
@@ -4948,7 +5138,7 @@ Procedure ClearItems(*this._s_WIDGET)
    *this\col\hovered  = -1
    
    ; 4. Сбрасываем вертикальный скролл в самый верх
-   ; *this\OffsetY = 0
+   ; *this\scroll\y = 0
    
    ; 5. Мгновенно перерисовываем пустую таблицу на Canvas (передаем ID холста 0)
     *this\mask | (#__mask_update | #__mask_redraw | #__mask_change)
@@ -5402,9 +5592,9 @@ CompilerIf #PB_Compiler_IsMainFile
    Close( #PB_All ) 
    End ; Завершение программы
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 4196
-; FirstLine = 3797
-; Folding = +--Hw---------------------------------------8--------8----------------------v8+8--------------------------------------------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 383
+; FirstLine = 276
+; Folding = +--Hw---------------------------------------8--------8-------------------------4d-0-------------------------------------------------------
 ; EnableXP
 ; DPIAware

@@ -14,6 +14,8 @@ EnableExplicit
 ; =====================================================================
 ; 2. СТРУКТУРЫ ДАННЫХ ГРИДА
 ; =====================================================================
+Structure _s_POINT : X.l : Y.l : EndStructure
+Structure _s_COORDINATE Extends _s_POINT : Width.l : Height.l : EndStructure
 
 ; Описание одной колонки в шапке
 Structure _s_COLS
@@ -64,13 +66,19 @@ Structure _s_COL
    List _s._s_COLS() ; Список колонок шапки (управляет порядком вывода)
 EndStructure
 
+Structure _s_SCROLL Extends _s_COORDINATE
+;    v._s_BAR_WIDGET
+;    h._s_BAR_WIDGET
+EndStructure
+
 ; Главная управляющая структура вашего кастомного гаджета (Мозг)
 Structure _s_WIDGET
-   CanvasID.i      ; Номер CanvasGadget, на котором рисуется этот грид
+   *root._s_ROOT
    
    ; Позиция скроллинга
-   OffsetX.i       ; Текущий сдвиг по горизонтали
-   OffsetY.i       ; Текущий сдвиг по вертикали
+;    OffsetX.i       ; Текущий сдвиг по горизонтали
+;    OffsetY.i       ; Текущий сдвиг по вертикали
+   Scroll._s_SCROLL
    
    ; Настройки/Стили (Копии флагов вашего конструктора)
    GridLines.b     ; Включена ли сетка (#True/#False)
@@ -92,6 +100,20 @@ Structure _s_WIDGET
    ResizeStartWidth.i    ; Исходная ширина колонки до изменения размера
 EndStructure
 
+Structure _s_CANVAS Extends _s_COORDINATE
+   dpi.f
+   gadget.i              ; Системный номер CanvasGadget
+   window.i              ; Номер родительского окна
+   
+   *next._s_ROOT
+   *prev._s_ROOT
+EndStructure
+
+Structure _s_ROOT Extends _s_WIDGET
+   Canvas._s_CANVAS
+EndStructure
+
+Global *root._s_ROOT
 Global *this._s_WIDGET
 Global StatusBarHeight = 30
 Global SplittSize = 0
@@ -109,7 +131,7 @@ Procedure.i GetTextX(ColumnX.i, ColumnWidth.i, TextWidth.i, AlignFlags.l, Offset
 EndProcedure
 
 Procedure ReDraw(*this._s_WIDGET) 
-   Protected CanvasID.i = *this\CanvasID
+   Protected CanvasID.i = *this\root\canvas\gadget
    Protected W = GadgetWidth(CanvasID)
    Protected H = GadgetHeight(CanvasID)
    Protected RowHeight = *this\row\height
@@ -145,7 +167,7 @@ Procedure ReDraw(*this._s_WIDGET)
       ClipOutput(0, ColHeight, W, H - ColHeight - statusbarHeight)
       
       ; [ОПТИМИЗАЦИЯ]: Вычисляем индекс первой видимой строки на основе скролла OffsetY
-      Protected StartRow = Abs(*this\OffsetY) / RowHeight
+      Protected StartRow = Abs(*this\scroll\y) / RowHeight
       
       ; Вычисляем, сколько строк физически помещается на экране
       Protected VisibleRowsCount = ((H - ColHeight - statusbarHeight) / RowHeight) + 1
@@ -164,7 +186,7 @@ Procedure ReDraw(*this._s_WIDGET)
          r = StartRow
          For r = StartRow To EndRow
             ; Вычисляем Y-координату для текущей строки данных
-            Y = r * RowHeight + *this\OffsetY + ColHeight
+            Y = r * RowHeight + *this\scroll\y + ColHeight
             
             ; --- РИСУЕМ ФОН СТРОКИ (ЦЕЛЬНЫЙ BOX НА ВСЮ ШИРИНУ) ---
             DrawingMode(#PB_2DDrawing_Default)
@@ -177,7 +199,7 @@ Procedure ReDraw(*this._s_WIDGET)
             EndIf
             
             ; --- ВНУТРЕННИЙ ЦИКЛ: КОЛОНКИ СТРОКИ ---
-            X = *this\OffsetX ; Стартуем X от текущего горизонтального скролла
+            X = *this\scroll\x ; Стартуем X от текущего горизонтального скролла
             c = 0
             
             ForEach *this\col\_s()
@@ -243,7 +265,7 @@ Procedure ReDraw(*this._s_WIDGET)
       ; Общий базовый серый фон для всей полосы шапки
       Box(0, 0, W, ColHeight, RGB(230, 232, 236))
       
-      X = *this\OffsetX ; Сбрасываем X для отрисовки колонок шапки с учетом скролла
+      X = *this\scroll\x ; Сбрасываем X для отрисовки колонок шапки с учетом скролла
       ForEach *this\col\_s()
          *col = @*this\col\_s()
          ColumnWidth = *col\Width
@@ -390,7 +412,7 @@ Procedure ClearItems(*this._s_WIDGET)
    *this\col\hovered  = -1
    
    ; 4. Сбрасываем вертикальный скролл в самый верх
-   *this\OffsetY = 0
+   *this\scroll\y = 0
    
    ; 5. Мгновенно перерисовываем пустую таблицу на Canvas (передаем ID холста 0)
    ReDraw(*this)
@@ -502,7 +524,7 @@ EndProcedure
 ; --- ОБРАБОТКА МЫШИ (Исправленная под динамические колонки) ---
 Procedure HowerColumnn(*this._s_WIDGET, X)
    Protected HoverCol = -1
-   Protected currentX = *this\OffsetX
+   Protected currentX = *this\scroll\x
    Protected visualCol = 0
    ForEach *this\col\_s()
       Protected ColumnWidth = *this\col\_s()\Width
@@ -582,7 +604,7 @@ EndProcedure
 
 ; Вспомогательная функция: Проверяет, находится ли X мыши на правой границе какой-либо колонки
 Procedure GetColumnResizeBorder(*this._s_WIDGET, X.l)
-   Protected currentX = *this\OffsetX
+   Protected currentX = *this\scroll\x
    Protected visualCol = 0
    Protected ZoneWidth = 4 ; Чувствительность зоны клика (в пикселях)
    
@@ -695,8 +717,8 @@ Procedure CanvasCallback()
    Protected RowHeight = *this\row\height 
    
    ; Координаты клика/ховера по строкам рассчитываются с вычетом высоты шапки
-   Protected GridX = MouseX - *this\OffsetX
-   Protected GridY = MouseY - *this\OffsetY - *this\col\height
+   Protected GridX = MouseX - *this\scroll\x
+   Protected GridY = MouseY - *this\scroll\y - *this\col\height
    
    ; Точный расчет колонки под мышью по их ширине ---
    Protected HoverCol = HowerColumnn(*this, MouseX)
@@ -796,15 +818,15 @@ Procedure CanvasCallback()
             Protected MaxScrollX = GadgetWidth(CanvasID) - GetTotalColumnsWidth(*this)
             If MaxScrollX > 0 : MaxScrollX = 0 : EndIf ; Если всё влезает, лимит = 0
             
-            *this\OffsetX + (WheelDelta * 30) ; Крутим влево/вправо
+            *this\scroll\x + (WheelDelta * 30) ; Крутим влево/вправо
             
             ; Ограничиваем скролл рамками таблицы
-            If *this\OffsetX > 0 : *this\OffsetX = 0 : EndIf
-            If *this\OffsetX < MaxScrollX : *this\OffsetX = MaxScrollX : EndIf
+            If *this\scroll\x > 0 : *this\scroll\x = 0 : EndIf
+            If *this\scroll\x < MaxScrollX : *this\scroll\x = MaxScrollX : EndIf
          Else
             ; Твой стандартный вертикальный скролл
-            *this\OffsetY + (WheelDelta * *this\row\height)
-            If *this\OffsetY > 0 : *this\OffsetY = 0 : EndIf
+            *this\scroll\y + (WheelDelta * *this\row\height)
+            If *this\scroll\y > 0 : *this\scroll\y = 0 : EndIf
          EndIf
          ReDraw = #True
          
@@ -822,14 +844,20 @@ Procedure CanvasCallback()
 EndProcedure
 
 Procedure Open(window.i, X.l,Y.l,Width.l,Height.l, title$, Flag.i=0)
+   Protected gadget = 10
    OpenWindow(window, X,Y,Width,Height, title$, Flag)
-   CanvasGadget(0, 0,0,Width,Height, #PB_Canvas_Keyboard)
-   BindGadgetEvent(0, @CanvasCallback())
+   CanvasGadget(gadget, 0,0,Width,Height, #PB_Canvas_Keyboard)
+   BindGadgetEvent(gadget, @CanvasCallback())
+   *root = AllocateStructure(_s_ROOT)
+   *root\canvas\gadget = gadget
+   *root\canvas\window = window
+   
    ProcedureReturn 1
 EndProcedure
 
 Procedure ListIcon(X.l,Y.l,Width.l,Height.l, title$, titlewidth.l, Flag.i=0)
    Protected *this._s_WIDGET = AllocateStructure(_s_WIDGET)
+   *this\root = *root
    *this\col\height = 50
    *this\col\selected = -1
    *this\col\hovered = -1
@@ -845,7 +873,6 @@ EndProcedure
 
 If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    *this = ListIcon(0, 0, 640, 480, "ID товара", 120)
-   *this\CanvasID = 0
    
    ; 1. Заполняем ШАПКУ таблицы (тот самый верхний фиксированный ряд)
    AddColumn(*this, -1, "Наименование", 120, -1)
@@ -895,9 +922,9 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    Repeat
    Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 597
-; FirstLine = 510
-; Folding = --------+--------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 79
+; FirstLine = 67
+; Folding = --------f---------
 ; EnableXP
 ; DPIAware
