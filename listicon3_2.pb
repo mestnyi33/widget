@@ -17,26 +17,30 @@ EnableExplicit
 Structure _s_POINT : X.l : Y.l : EndStructure
 Structure _s_COORDINATE Extends _s_POINT : Width.l : Height.l : EndStructure
 
-; Описание одной колонки в шапке
-Structure _s_COLS
-   ID.i        ; Жесткий внутренний ID (паспорт) этой колонки в памяти ячеек
-   Title$      ; Название колонки (отображаемый текст)
-   Width.i     ; Текущая ширина колонки в пикселях
-               ;MinWidth.i      ; Минимальная ширина (чтобы пользователь не сжал колонку в 0)
-               align.b     ; Выравнивание текста в этой колонке (#__align_Left, и т.д.)
-                           ;IsHidden.b      ; Флаг: скрыта ли колонка (на будущее)
-                 ; --- ДОБАВЛЯЕМ СЮДА ---
-  TitleWidth.i  ; Здесь будет храниться вычисленная ширина текста заголовка в пикселях
-
+; Описание одной ячейки данных
+Structure _s_TITLE
+   String.s ; Текст или значение внутри ячейки
+   Width.i  ; Здесь будет храниться вычисленная ширина текста заголовка в пикселях
 EndStructure
 
 ; Описание одной ячейки данных
-Structure _s_TXT
-   String.s          ; Текст или значение внутри ячейки
-   Width.i  ; Здесь будет храниться вычисленная ширина текста заголовка в пикселях
+Structure _s_TXT Extends _s_TITLE
    ColorText.i    ; Кастомный цвет текста для этой ячейки (-1, если стандартный)
    ColorBack.i    ; Кастомный цвет фона для этой ячейки (-1, если стандартный)
    ImageID.i      ; Ссылка на иконку внутри ячейки (если понадобится)
+EndStructure
+
+; Описание одной колонки в шапке
+Structure _s_COLS
+   ID.i        ; Жесткий внутренний ID (паспорт) этой колонки в памяти ячеек
+   title._s_TITLE      ; Название колонки (отображаемый текст)
+   Width.i     ; Текущая ширина колонки в пикселях
+               ;MinWidth.i      ; Минимальная ширина (чтобы пользователь не сжал колонку в 0)
+   
+   align.b     ; Выравнивание текста в этой колонке (#__align_Left, и т.д.)
+                           ;IsHidden.b      ; Флаг: скрыта ли колонка (на будущее)
+                 ; --- ДОБАВЛЯЕМ СЮДА ---
+  
 EndStructure
 
 ; Описание одной строки таблицы
@@ -72,23 +76,20 @@ Structure _s_SCROLL Extends _s_COORDINATE
 EndStructure
 
 ; Главная управляющая структура вашего кастомного гаджета (Мозг)
-Structure _s_WIDGET
+Structure _s_WIDGET Extends _s_COORDINATE
    *root._s_ROOT
-   
-   ; Позиция скроллинга
-;    OffsetX.i       ; Текущий сдвиг по горизонтали
-;    OffsetY.i       ; Текущий сдвиг по вертикали
-   Scroll._s_SCROLL
    
    ; Настройки/Стили (Копии флагов вашего конструктора)
    GridLines.b     ; Включена ли сетка (#True/#False)
    CheckBoxes.b    ; Включены ли чекбоксы (#True/#False)
    FullRowSelect.b ; Выделять ли строку целиком (#True/#False)
    
-   
    ; Индексы состояний
    row._s_ROW
    col._s_COL
+   
+   ; Позиция скроллинга
+   Scroll._s_SCROLL
    
    ; --- ДОБАВЛЯЕМ СЮДА ---
   FontHeight.i  ; Сюда мы один раз запишем высоту текста
@@ -130,16 +131,14 @@ Procedure.i GetTextX(ColumnX.i, ColumnWidth.i, TextWidth.i, AlignFlags.l, Offset
   EndIf
 EndProcedure
 
-Procedure ReDraw(*this._s_WIDGET) 
-   Protected CanvasID.i = *this\root\canvas\gadget
-   Protected W = GadgetWidth(CanvasID)
-   Protected H = GadgetHeight(CanvasID)
+Procedure Draw(*this._s_WIDGET) 
+   Protected W = *this\Width
+   Protected H = *this\Height
    Protected RowHeight = *this\row\height
    Protected ColHeight = *this\col\height
    Protected r, c, X, Y
    Protected *row._s_ROWS 
    
-   If StartDrawing(CanvasOutput(CanvasID))
       ; [ОПТИМИЗАЦИЯ]: Берем готовое значение из структуры
       If Not *this\FontHeight
          ; Если вы используете кастомный шрифт, сначала примените его:
@@ -282,18 +281,18 @@ Procedure ReDraw(*this._s_WIDGET)
             EndIf
             
             ; 2. РИСУЕМ ТЕКСТ (Зажимаем обрезкой, чтобы длинный заголовок не вылезал на соседние колонки)
-            Protected title$ = *col\Title$
+            Protected title$ = *col\title\string
             ; [ОПТИМИЗАЦИЯ]: Берем готовое значение из структуры
-            If Not *col\TitleWidth
+            If Not *col\title\width
                If title$ <> ""
-                  *col\TitleWidth = TextWidth(title$)
+                  *col\title\width = TextWidth(title$)
                Else
-                  *col\TitleWidth = 1
+                  *col\title\width = 1
                EndIf
             EndIf
             ClipOutput(X + 2, 0, ColumnWidth - 3, ColHeight)
             DrawingMode(#PB_2DDrawing_Transparent)
-            Protected title_x = GetTextX(X, ColumnWidth, *col\TitleWidth, *col\align)
+            Protected title_x = GetTextX(X, ColumnWidth, *col\title\width, *col\align)
             DrawText(title_x, (ColHeight - FontHeight) / 2, title$, RGB(40, 45, 55))
             UnclipOutput() ; Сразу сбрасываем локальную обрезку текста
             
@@ -320,7 +319,11 @@ Procedure ReDraw(*this._s_WIDGET)
       
       DrawingMode(#PB_2DDrawing_Transparent)
       DrawText(10, H - statusbarHeight + (statusbarHeight - FontHeight) / 2, "Оптимизированный монолитный Grid: вертикальный скролл строк и шапки.", RGB(100, 100, 100))
-      
+ EndProcedure
+
+Procedure ReDraw(*this._s_WIDGET) 
+   If StartDrawing(CanvasOutput(*this\root\canvas\gadget))
+      Draw(*this)
       StopDrawing()
    EndIf
 EndProcedure
@@ -522,7 +525,7 @@ Procedure MoveColumn(*this._s_WIDGET, FromIndex.l, ToIndex.l)
 EndProcedure
 
 ; --- ОБРАБОТКА МЫШИ (Исправленная под динамические колонки) ---
-Procedure HowerColumnn(*this._s_WIDGET, X)
+Procedure HowerColumn(*this._s_WIDGET, X)
    Protected HoverCol = -1
    Protected currentX = *this\scroll\x
    Protected visualCol = 0
@@ -637,7 +640,7 @@ Procedure AddColumn(*this._s_WIDGET, position, title$, Width.l, img.i = -1, alig
    Protected *col._s_COLS
    *this\col\count = ListSize(*this\col\_s()) 
    *col = AddElement(*this\col\_s()) 
-   *col\Title$ = title$
+   *col\title\string = title$
    *col\Width = Width 
    *col\align = align
    *col\ID = *this\col\count
@@ -721,7 +724,7 @@ Procedure CanvasCallback()
    Protected GridY = MouseY - *this\scroll\y - *this\col\height
    
    ; Точный расчет колонки под мышью по их ширине ---
-   Protected HoverCol = HowerColumnn(*this, MouseX)
+   Protected HoverCol = HowerColumn(*this, MouseX)
    Protected HoverRow = GridY / RowHeight
    
    ; Если мышка находится в зоне шапки или статус-бара, отключаем ховер строк
@@ -855,8 +858,17 @@ Procedure Open(window.i, X.l,Y.l,Width.l,Height.l, title$, Flag.i=0)
    ProcedureReturn 1
 EndProcedure
 
+Procedure Resize(*this._s_WIDGET, X.l,Y.l,Width.l,Height.l)
+   *this\x=x
+   *this\y=y
+   *this\width=Width
+   *this\height=Height
+EndProcedure
+
 Procedure ListIcon(X.l,Y.l,Width.l,Height.l, title$, titlewidth.l, Flag.i=0)
    Protected *this._s_WIDGET = AllocateStructure(_s_WIDGET)
+   Resize(*this,X,Y,Width,Height)
+   
    *this\root = *root
    *this\col\height = 50
    *this\col\selected = -1
@@ -923,8 +935,8 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 79
-; FirstLine = 67
-; Folding = --------f---------
+; CursorPosition = 531
+; FirstLine = 443
+; Folding = f54------0---------
 ; EnableXP
 ; DPIAware

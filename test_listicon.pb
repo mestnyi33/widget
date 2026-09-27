@@ -2,14 +2,13 @@
 XIncludeFile "include/tokken.pbi"
 
 If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-   Define *this._s_WIDGET = ListIcon(0, 0, 640, 480, "ID товара", 120)
-   ; *this\CanvasID = 0
+   Define *g._s_WIDGET = ListIcon(0, 0, 640, 480, "ID товара", 120)
    
    ; 1. Заполняем ШАПКУ таблицы (тот самый верхний фиксированный ряд)
-   AddColumn(*this, -1, "Наименование", 120, -1)
-   AddColumn(*this, -1, "Категория", 120, -1, #__align_Center)
-   AddColumn(*this, -1, "Цена", 120, -1, #__align_Right)
-   AddColumn(*this, -1, "Остаток", 120, -1, #__align_Right)
+   AddColumn(*g, -1, "Наименование", 120, -1)
+   AddColumn(*g, -1, "Категория", 120, -1, #__align_Center)
+   AddColumn(*g, -1, "Цена", 120, -1, #__align_Right)
+   AddColumn(*g, -1, "Остаток", 120, -1, #__align_Right)
    
    ; 2. Заполняем обычные строки с данными (вниз)
    Define r.l
@@ -22,13 +21,13 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
       Str(Random(50, 5)) + " шт"
       
       ; Вызываем вашу новую функцию (добавляем всегда в конец: параметр -1)
-      AddItem(*this, -1, rowText$)
+      AddItem(*g, -1, rowText$)
    Next
    
    
    ;    Define a, LN=5000000, time = ElapsedMilliseconds() ; 25373 - add widget items time count - 
    ;     For a = 0 To LN
-   ;        AddItem (*this, -1, "Item "+Str(a), 0,0) 
+   ;        AddItem (*g, -1, "Item "+Str(a), 0,0) 
    ;        
    ;       If A & $f=$f
    ;         WindowEvent() ; ýòî íóæíî ÷òîáû íåìíîãî îáíîâëÿëñÿ
@@ -40,22 +39,20 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    ;     Next
    ;     Debug Str(ElapsedMilliseconds()-time) + " - add widget items time count - " ;+ CountItems(*w)
    
-   ReDraw(*this)
+   ReDraw(*g)
    
-   SetItemText(*this, 1, 3, "---- руб")
-   Debug GetItemText(*this, 1, 3)
-   ;    RemoveItem(*this, 1)
-   ;    RemoveColumn(*this, 3)
-   MoveColumn(*this, 1, 3)
-   ;    MoveItem(*this, 1, 3)
-   ; ResizeColumn(*this, 2, 240)
+   SetItemText(*g, 1, 3, "---- руб")
+   Debug GetItemText(*g, 1, 3)
+   ;    RemoveItem(*g, 1)
+   ;    RemoveColumn(*g, 3)
+   MoveColumn(*g, 1, 3)
+   ;    MoveItem(*g, 1, 3)
+   ; ResizeColumn(*g, 2, 240)
    
    Repeat
    Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 50
-; FirstLine = 30
 ; Folding = -
 ; EnableXP
 ; DPIAware
