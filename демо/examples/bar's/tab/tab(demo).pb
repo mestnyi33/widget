@@ -42,43 +42,43 @@ CompilerIf #PB_Compiler_IsMainFile
     If Open(0, 0, 0, 605+30, 140+200+140+140, "ScrollBarGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
     Define cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
     
-    Button_0 = Widget::Tab(0, 0, 0, 0)                  ; No need to specify size or coordinates
-    Widget::AddItem(Button_0, -1, "Tab_0")
-    Widget::AddItem(Button_0, -1, "Tab_1 (long)")
-    Widget::AddItem(Button_0, -1, "Tab_2")
-    Widget::AddItem(Button_0, -1, "Tab_3 (long)")
-    Widget::AddItem(Button_0, -1, "Tab_4")
-    Widget::AddItem(Button_0, -1, "Tab_5 (long)")
+    Button_0 = Tab(0, 0, 0, 0)                  ; No need to specify size or coordinates
+    AddItem(Button_0, -1, "Tab_0")
+    AddItem(Button_0, -1, "Tab_1 (long)")
+    AddItem(Button_0, -1, "Tab_2")
+    AddItem(Button_0, -1, "Tab_3 (long)")
+    AddItem(Button_0, -1, "Tab_4")
+    AddItem(Button_0, -1, "Tab_5 (long)")
     
-    Widget::SetState(Button_0, 5)
+    SetState(Button_0, 5)
     
-    Button_1 = Widget::Tab(0, 0, 0, 0, #__flag_Vertical)                  ; No need to specify size or coordinates
-    Widget::AddItem(Button_1, -1, "Tab_0")
-    Widget::AddItem(Button_1, -1, "Tab_1 (long)")
-    Widget::AddItem(Button_1, -1, "Tab_2")
-    Widget::AddItem(Button_1, -1, "Tab_3 (long)")
-    Widget::AddItem(Button_1, -1, "Tab_4")
-    Widget::AddItem(Button_1, -1, "Tab_5 (long)")
+    Button_1 = Tab(0, 0, 0, 0, #__flag_Vertical)                  ; No need to specify size or coordinates
+    AddItem(Button_1, -1, "Tab_0")
+    AddItem(Button_1, -1, "Tab_1 (long)")
+    AddItem(Button_1, -1, "Tab_2")
+    AddItem(Button_1, -1, "Tab_3 (long)")
+    AddItem(Button_1, -1, "Tab_4")
+    AddItem(Button_1, -1, "Tab_5 (long)")
     
-    Widget::SetState(Button_1, 3)
+    SetState(Button_1, 3)
     
-    Button_5 = Widget::Tab(0, 0, 0, 0)                  ; No need to specify size or coordinates
-    Widget::AddItem(Button_5, -1, "Tab_0")
-    Widget::AddItem(Button_5, -1, "Tab_1 (long)")
-    Widget::AddItem(Button_5, -1, "Tab_2")
+    Button_5 = Tab(0, 0, 0, 0)                  ; No need to specify size or coordinates
+    AddItem(Button_5, -1, "Tab_0")
+    AddItem(Button_5, -1, "Tab_1 (long)")
+    AddItem(Button_5, -1, "Tab_2")
     
-    Widget::SetState(Button_5, 1)
+    SetState(Button_5, 1)
     
     
-    ;Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed);|#PB_Splitter_Separator)
-    Splitter_3 = Widget::Splitter(0, 0, 0, 0, Button_1, Button_5);, #PB_Splitter_Separator)
-    Splitter_4 = Widget::Splitter(10, 10, 400, 300, Button_0, Splitter_3, #PB_Splitter_Vertical);|#PB_Splitter_Separator)
+    ;Splitter_0 = Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed);|#PB_Splitter_Separator)
+    Splitter_3 = Splitter(0, 0, 0, 0, Button_1, Button_5);, #PB_Splitter_Separator)
+    Splitter_4 = Splitter(10, 10, 400, 300, Button_0, Splitter_3, #PB_Splitter_Vertical);|#PB_Splitter_Separator)
     
-    ;     ; widget::SetState(Button_2, 5)
-    ;     widget::SetState(Splitter_0, 26)
-    ;     widget::SetState(Splitter_4, 220)
-    ;     widget::SetState(Splitter_3, 55)
-    ;     widget::SetState(Splitter_2, 15)
+    ;     ; SetState(Button_2, 5)
+    ;     SetState(Splitter_0, 26)
+    ;     SetState(Splitter_4, 220)
+    ;     SetState(Splitter_3, 55)
+    ;     SetState(Splitter_2, 15)
     
     Define *panel_1 = Panel(8, 8+350, 306, 203, #__flag_Vertical)
     AddItem (*panel_1, -1, "Panel 1")
@@ -110,9 +110,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 82
-; FirstLine = 25
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 80
+; FirstLine = 77
 ; Folding = --
 ; EnableXP
 ; DPIAware

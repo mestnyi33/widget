@@ -8794,7 +8794,7 @@ Module widgets
       EndIf
       
       If *this\text\mode & #__text_pass
-         ProcedureReturn *this\text\string$
+         ProcedureReturn *this\text\datastr
       Else
          ProcedureReturn *this\text\Str(0)
       EndIf
@@ -8859,7 +8859,7 @@ Module widgets
          ;
          If *this\text\multiline = 0
             If CountString( Text.s, #LF$ )
-               *this\text\multistring = Text.s
+               *this\text\multistr = Text.s
                Text.s = RemoveString( Text.s, #LF$ )
             EndIf
             Text.s = edit_make_insert_text( *this, Text.s )
@@ -13685,25 +13685,25 @@ Module widgets
          
          
          ; CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-         If *this\text\multistring = ""
+         If *this\text\multistr = ""
             If Not *this\text\multiLine
                If *this\text\Str(0)
-                  *this\text\multistring = *this\text\Str(0)
+                  *this\text\multistr = *this\text\Str(0)
                   If CountString( *this\text\Str(0), #LF$ )
                      *this\text\Str(0) = RemoveString( *this\text\Str(0), #LF$ )
                   EndIf
                EndIf
             EndIf
          EndIf
-         If *this\text\string$
+         If *this\text\datastr
             If *this\flagmask & #__flag_TextPassWord Or 
                *this\flagmask & #__flag_TextUpperCase Or 
                *this\flagmask & #__flag_TextLowerCase Or 
                *this\flagmask & #__flag_TextNumeric
-               *this\text\Str(0) = edit_make_insert_text( *this, *this\text\string$ )
+               *this\text\Str(0) = edit_make_insert_text( *this, *this\text\datastr )
             Else
-               *this\text\Str(0) = *this\text\string$
-               *this\text\string$ = ""
+               *this\text\Str(0) = *this\text\datastr
+               *this\text\datastr = ""
             EndIf
          EndIf
          
@@ -13836,9 +13836,9 @@ Module widgets
                If *this\flagmask & #__flag_TextMultiLine Or 
                   *this\flagmask & #__flag_TextWordWrap
                   ;
-                  If *this\text\multistring
-                     *this\text\Str(0) = *this\text\multistring 
-                     *this\text\multistring = ""
+                  If *this\text\multistr
+                     *this\text\Str(0) = *this\text\multistr 
+                     *this\text\multistr = ""
                   EndIf
                Else
                   *this\text\multiLine = 0
@@ -13852,8 +13852,8 @@ Module widgets
                *this\text\mode & #__text_lower Or
                *this\text\mode & #__text_numeric
                ;
-               If *this\text\string$ = ""
-                  *this\text\string$ = *this\text\Str(0)
+               If *this\text\datastr = ""
+                  *this\text\datastr = *this\text\Str(0)
                EndIf
                *this\text\Str(0) = edit_make_insert_text( *this, *this\text\Str(0) )
             EndIf
@@ -20125,7 +20125,7 @@ Module widgets
                ;
                ; text change
                ;*this\caret\word = GetWord( *this\row\active[0]\text\Str(0), *this\row\active[0]\text\len, *this\caret\pos[1]-*this\row\active[0]\text\pos )
-               *this\text\string$ = *this\text\Str(0)
+               *this\text\datastr = *this\text\Str(0)
                DoEvents( *this, #__event_Change, *this\row\active[0]\lindex, *this\row\active[0])
             EndIf
          EndIf
@@ -25992,8 +25992,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 17888
-; FirstLine = 17868
+; CursorPosition = 13840
+; FirstLine = 13826
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

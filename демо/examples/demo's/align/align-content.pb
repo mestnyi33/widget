@@ -1,4 +1,4 @@
-XIncludeFile "../../../widgets.pbi" 
+XIncludeFile "../../../../widgets.pbi" 
 ;XIncludeFile "../../../test.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -38,33 +38,33 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure _SetImage( *this._s_WIDGET, img )
       If *this = #PB_All
-         PushMapPosition( roots( ))
-         ForEach roots( ) 
-            If StartEnum( roots( ) )
-               If widgets( )\picture\image = img
-                  ; Debug widgets( )\class
-                  ; widgets( )\picturesize = ImageWidth(img)
-                  add_image( widgets( )\picture, img )
-               EndIf
-               StopEnum( )
-            EndIf    
-         Next 
-         PopMapPosition( roots( ))
+;          PushMapPosition( roots( ))
+;          ForEach roots( ) 
+;             If StartEnum( roots( ) )
+;                If widgets( )\picture\image = img
+;                   ; Debug widgets( )\class
+;                   ; widgets( )\picturesize = ImageWidth(img)
+;                   add_image( widgets( )\picture, img )
+;                EndIf
+;                StopEnum( )
+;             EndIf    
+;          Next 
+;          PopMapPosition( roots( ))
       EndIf
    EndProcedure
    
    Procedure _SetText( *this._s_WIDGET, txt$ )
       If *this = #PB_All
-         PushMapPosition( roots( ))
-         ForEach roots( ) 
-            If StartEnum( roots( ) )
-               If widgets( )\picture\image = 1
-                  SetText( widgets( ), txt$ )
-               EndIf
-               StopEnum( )
-            EndIf    
-         Next 
-         PopMapPosition( roots( ))
+;          PushMapPosition( roots( ))
+;          ForEach roots( ) 
+;             If StartEnum( roots( ) )
+;                If widgets( )\picture\image = 1
+;                   SetText( widgets( ), txt$ )
+;                EndIf
+;                StopEnum( )
+;             EndIf    
+;          Next 
+;          PopMapPosition( roots( ))
       EndIf
    EndProcedure
    
@@ -172,8 +172,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 10
-; Folding = 6+---
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 66
+; FirstLine = 25
+; Folding = 0---
 ; EnableXP
 ; DPIAware

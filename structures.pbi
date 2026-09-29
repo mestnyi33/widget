@@ -148,8 +148,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          align._s_align
          
-         string$ 
-         multistring.s
+         datastr.s 
+         multistr.s
       EndStructure
       ;--     FONTS
       Structure _s_FONTS
@@ -269,8 +269,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
             rindex.i ; row
             tindex.i ; tab
          EndStructureUnion
-         
-         
          
          selector.a  ; selected lines last selector size
          
@@ -587,7 +585,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Tab._s_TABS
          tabindex.l;[2]          ; [1] - это в лист будем переносить так как он нужен только для родителя
          tabpage.l  ; Активная страница (используется если у родителя есть таб бар)
-      List *__tabs._s_ITEMS()  ; Заголовки вкладок
+         List *__tabs._s_ITEMS()  ; Заголовки вкладок
       
          *bar._s_BAR
          *drop._s_DROP
@@ -732,9 +730,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 40
-; FirstLine = 24
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 129
+; FirstLine = 125
 ; Folding = ----8-p----
 ; Optimizer
 ; EnableXP

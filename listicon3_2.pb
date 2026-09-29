@@ -75,6 +75,15 @@ Structure _s_SCROLL Extends _s_COORDINATE
 ;    h._s_BAR_WIDGET
 EndStructure
 
+; Описание одной ячейки данных
+Structure _s_TEXT
+   String.s ; Текст или значение внутри ячейки
+   font.i
+   fontHeight.i
+   ;Width.i  ; Здесь будет храниться вычисленная ширина текста в пикселях
+   align.q
+EndStructure
+
 ; Главная управляющая структура вашего кастомного гаджета (Мозг)
 Structure _s_WIDGET Extends _s_COORDINATE
    *root._s_ROOT
@@ -90,10 +99,8 @@ Structure _s_WIDGET Extends _s_COORDINATE
    
    ; Позиция скроллинга
    Scroll._s_SCROLL
+   Text._s_TEXT
    
-   ; --- ДОБАВЛЯЕМ СЮДА ---
-  FontHeight.i  ; Сюда мы один раз запишем высоту текста
-  
    ; --- ДОБАВИТЬ ЭТИ ПОЛЯ СЮДА ---
    IsResizing.b          ; Флаг: зажата ли граница колонки прямо сейчас
    ResizeColVisual.i     ; Какую именно колонку тянут (индекс)
@@ -121,13 +128,13 @@ Global SplittSize = 0
 
 ; --- ФУНКЦИЯ ОТРИСОВКИ ---
 ; Возвращает точную координату X для текста с учетом выравнивания и ширины колонки
-Procedure.i GetTextX(ColumnX.i, ColumnWidth.i, TextWidth.i, AlignFlags.l, Offset.i = 10)
-  If AlignFlags & #__align_right
-    ProcedureReturn ColumnX + ColumnWidth - TextWidth - Offset
-  ElseIf AlignFlags & #__align_center
-    ProcedureReturn ColumnX + (ColumnWidth - TextWidth) / 2
+Procedure.i GetAlignPosition(contentSize.i, objectSize.i, alignFlags.l, Offset.i = 10)
+  If alignFlags & #__align_right
+    ProcedureReturn contentSize - objectSize - Offset
+  ElseIf alignFlags & #__align_center
+    ProcedureReturn (contentSize - objectSize) / 2
   Else
-    ProcedureReturn ColumnX + Offset
+    ProcedureReturn Offset
   EndIf
 EndProcedure
 
@@ -140,17 +147,17 @@ Procedure Draw(*this._s_WIDGET)
    Protected *row._s_ROWS 
    
       ; [ОПТИМИЗАЦИЯ]: Берем готовое значение из структуры
-      If Not *this\FontHeight
+      If Not *this\text\fontHeight
          ; Если вы используете кастомный шрифт, сначала примените его:
          ; DrawingFont(GetGadgetFont(CanvasID)) 
          
-         *this\FontHeight = TextHeight("Y")
+         *this\text\fontHeight = TextHeight("Y")
          
 ;          ; Автоматически делаем высоту строки RowHeight кратной высоте шрифта (например, высота + отступы)
-;          *this\row\height = *this\FontHeight + 8 
-;          *this\col\height = *this\FontHeight + 10
+;          *this\row\height = *this\text\fontHeight + 8 
+;          *this\col\height = *this\text\fontHeight + 10
       EndIf
-      Protected FontHeight = *this\FontHeight
+      Protected FontHeight = *this\text\fontHeight
       
       ; Если вдруг виджет не инициализировался, делаем безопасную проверку
       If FontHeight = 0 : FontHeight = 16 : EndIf 
@@ -233,8 +240,10 @@ Procedure Draw(*this._s_WIDGET)
                      ClipOutput(X + 2, ColHeight, ColumnWidth - 3, H - ColHeight - statusbarHeight)
                      
                      DrawingMode(#PB_2DDrawing_Transparent)
-                     Protected text_x = GetTextX(X, ColumnWidth, *txt\width, *col\align)
-                     DrawText(text_x, Y + (RowHeight - FontHeight) / 2, text$, RGB(50, 50, 50))
+                     Protected text_x = X + GetAlignPosition(ColumnWidth, *txt\width, *col\align)
+                     Protected text_y = Y + (RowHeight - FontHeight) / 2
+                     
+                     DrawText(text_x, text_y, text$, RGB(50, 50, 50))
                      
                      ; Возвращаем общую обрезку для области строк данных
                      ClipOutput(0, ColHeight, W, H - ColHeight - statusbarHeight)
@@ -292,8 +301,10 @@ Procedure Draw(*this._s_WIDGET)
             EndIf
             ClipOutput(X + 2, 0, ColumnWidth - 3, ColHeight)
             DrawingMode(#PB_2DDrawing_Transparent)
-            Protected title_x = GetTextX(X, ColumnWidth, *col\title\width, *col\align)
-            DrawText(title_x, (ColHeight - FontHeight) / 2, title$, RGB(40, 45, 55))
+            Protected title_x = X + GetAlignPosition(ColumnWidth, *col\title\width, *col\align)
+            Protected title_y = (ColHeight - FontHeight) / 2
+            
+            DrawText(title_x, title_y, title$, RGB(40, 45, 55))
             UnclipOutput() ; Сразу сбрасываем локальную обрезку текста
             
             ; 3. В САМЫЙ КОНЕЦ РИСУЕМ ЛИНИИ (Они лягут ПОВЕРХ любого ховера/выделения и не затрутся)
@@ -935,8 +946,8 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 531
-; FirstLine = 443
-; Folding = f54------0---------
+; CursorPosition = 304
+; FirstLine = 277
+; Folding = -6-----8-8--v------
 ; EnableXP
 ; DPIAware
