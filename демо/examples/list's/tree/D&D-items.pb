@@ -530,7 +530,7 @@ EndIf
 End
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
 ; CursorPosition = 48
-; FirstLine = 44
+; FirstLine = 33
 ; Folding = -----
 ; EnableXP
 ; DPIAware

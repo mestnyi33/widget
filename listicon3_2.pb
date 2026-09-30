@@ -946,8 +946,8 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 304
-; FirstLine = 277
+; CursorPosition = 139
+; FirstLine = 119
 ; Folding = -6-----8-8--v------
 ; EnableXP
 ; DPIAware

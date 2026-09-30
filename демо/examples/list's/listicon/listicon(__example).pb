@@ -1,0 +1,321 @@
+﻿; Debug #PB_ListIcon_CheckBoxes           ; = 1           ; = 2
+; Debug #PB_ListIcon_ThreeState           ; = 4           ; = 8
+; Debug #PB_ListIcon_MultiSelect          ; = 4           ; = 1
+; Debug #PB_ListIcon_AlwaysShowSelection  ; = 8           ; = 0
+; Debug #PB_ListIcon_GridLines            ; = 65536       ; = 16
+; Debug #PB_ListIcon_HeaderDragDrop       ; = 268435456   ; = 32
+; Debug #PB_ListIcon_FullRowSelect        ; = 1073741824  ; = 0
+; 
+; ; GetGadgetAttribute
+; Debug #PB_ListIcon_ColumnCount          ; = 3           ; = 3
+; ; SetGadgetAttribute & GetGadgetAttribute
+; Debug #PB_ListIcon_DisplayMode          ; = 2           ; = 2
+;   Debug #PB_ListIcon_LargeIcon          ; = 0           ; = 0
+;   Debug #PB_ListIcon_SmallIcon          ; = 1           ; = 1
+;   Debug #PB_ListIcon_List               ; = 2           ; = 2
+;   Debug #PB_ListIcon_Report             ; = 3           ; = 3
+;   
+;   ; SetGadgetItemAttribute & GetGadgetItemAttribute
+; Debug #PB_ListIcon_ColumnWidth          ; = 1           ; = 1
+; 
+; Debug #PB_ListIcon_Selected             ; = 1           ; = 1
+; Debug #PB_ListIcon_Checked              ; = 2           ; = 2
+; Debug #PB_ListIcon_Inbetween            ; = 4           ; = 4
+; 
+; ;ListIconGadget(
+
+;- 
+;- example list-icon
+;-
+; CocoaMessage(0, GadgetID(0), "setHeaderView:", 0)
+
+XIncludeFile "../../../../widgets.pbi"
+
+CompilerIf #PB_Compiler_IsMainFile
+   UseWidgets( )
+   EnableExplicit
+   
+   UsePNGImageDecoder()
+   ;Debug #PB_Compiler_Home+"examples/sources/Data/Toolbar/Paste.png"
+   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Èçìåíèòå ïóòü/èìÿ ôàéëà íà ñîáñòâåííîå èçîáðàæåíèå 32x32 ïèêñåëÿ
+      End
+   EndIf
+   
+   Define a,i
+   
+   Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
+      Protected._s_WIDGET *first = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+      Protected._s_WIDGET *second = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+      Protected._s_ROW *row
+      Protected state
+      
+      ;
+      If PushItem( *this )
+         If SelectItem( *this, Item)
+            *row = *this\__rows( )
+         EndIf
+         PopItem( *this)
+      EndIf
+      
+      ; ÷òîáû íå âèäåëÿëñÿ
+      If MouseDrag( )
+         If *this\RowFocused( ) = *row 
+            *row\focus = 1
+            *row\ColorState( ) = #__s_2
+         Else
+            *row\focus = 0
+            *row\ColorState( ) = #__s_0
+         EndIf
+         ProcedureReturn
+      EndIf
+      
+      ;
+      If *row\data
+         Select *this
+            Case *first 
+               If GetState( *second ) <> *row\index
+                  ChangeItemState( *second, *row\index, *row\ColorState( ))
+               EndIf
+            Case *second 
+               If GetState( *first ) <> *row\index
+                  ChangeItemState( *first, *row\index, *row\ColorState( ))
+               EndIf   
+         EndSelect
+         
+      Else
+         Select *this
+            Case *first 
+               If *second\RowFocused( )
+                  item = *second\RowFocused( )\index
+                  state = *second\RowFocused( )\ColorState( ) 
+               EndIf
+               
+            Case *second 
+               If *first\RowFocused( )
+                  item = *first\RowFocused( )\index
+                  state = *first\RowFocused( )\ColorState( ) 
+               EndIf
+         EndSelect
+         
+         If GetState( *this ) <> item
+            ChangeItemState( *this, item, state )
+         EndIf
+         
+         *row\focus = 0
+         *row\ColorState( ) = #__s_0
+      EndIf
+      
+   EndProcedure
+   
+   Procedure listicon_tree_events( )
+      Protected._s_WIDGET *g = EventWidget()
+      Protected._s_WIDGET *area = *g\parent\data
+      
+      Select WidgetEvent( )
+         Case #__event_StatusChange
+            Protected._s_ROW *row = WidgetEventData( )
+            
+            If StartEnum( *area )
+               If *g = widgets()
+                  Continue
+               EndIf
+               If widgets()\type = #__type_Tree
+                  ChangeStatus( widgets(), *row )
+               EndIf
+               StopEnum()
+            EndIf
+            
+         Case #__event_MouseWheel
+            If MouseDirection( ) > 0
+               SetAttribute( *area, #PB_ScrollArea_Y, GetAttribute( *area, #PB_ScrollArea_Y)-WidgetEventData())
+            Else
+               SetAttribute( *area, #PB_ScrollArea_X, GetAttribute( *area, #PB_ScrollArea_X)-WidgetEventData())
+            EndIf
+      EndSelect
+      
+   EndProcedure
+   
+   Procedure SetAttribute_( *this._s_WIDGET, attribute, value )
+      Select attribute
+         Case #PB_ScrollArea_InnerWidth
+            ;Repaint( )
+            If value < Width(*this)
+               value = Width(*this)
+            EndIf
+            If SetAttribute( *this, attribute, value )
+               If Not *this\flagmask & #__flag_AutoSize
+                  Resize(*this\firstWidget( ), #PB_Ignore, #PB_Ignore, value, #PB_Ignore)
+               EndIf
+            EndIf
+            
+         Case #PB_ScrollArea_InnerHeight
+            ;Repaint( )
+            If value < Height(*this)
+               value = Height(*this)
+            EndIf
+            If SetAttribute( *this, attribute, value )
+               If Not *this\flagmask & #__flag_AutoSize
+                  Resize(*this\firstWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, value)
+               EndIf
+            EndIf
+            
+      EndSelect
+      
+   EndProcedure
+   
+   Procedure AddCaption( *this._s_PARENT, Width, Height, Text.s, Flag.q = #__align_auto ) 
+      Protected *g._s_WIDGET
+      *this\fs[2] = Height
+      OpenList(*this, #PB_Ignore)
+      *g = Button( 0,0,Width,Height, Text.s, #__flag_Left )
+      CloseList( )
+      If Flag & #__align_auto
+         SetAlign( *g, 0, #__align_auto,1,#__align_auto,0, 0 )              
+      EndIf
+      ProcedureReturn *g
+   EndProcedure
+   
+   Procedure ListIcon_(X,Y,Width,Height,firstcolumntitle.s, firstcolumnwidth, flags.q=0 )
+      Protected._s_WIDGET *parent = ScrollArea(X,Y,Width,Height, Width,Height, 1 )
+      Protected._s_WIDGET *g1 = Tree(0,0,0,0, #__flag_NoLines|flags);|#__flag_BorderLess);|#__flag_Borderflat);|#__flag_BorderLess)
+      AddCaption( *g1, firstcolumnwidth, 30, firstcolumntitle.s ) 
+      Bind(*g1, @listicon_tree_events())
+      Hide(*g1\scroll\v, 1)
+      Hide(*g1\scroll\h, 1)
+      SetData(*g1, 1)
+      
+      ;Protected *this._s_WIDGET = Splitter( 0,0,Width,Height, *g1,-1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+      Protected *this._s_WIDGET = Splitter( 0,0,0,0, *g1,-1, #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed|#__flag_AutoSize|#__flag_BorderLess )
+      ;       ;
+      ;       *this\bar\button\size = DPIScaled(1)
+      ;       *this\bar\button\size + Bool( *this\bar\button\size % 2 )
+      ;       *this\bar\button\round = 0;  DPIScaled(1)
+      
+      If flags & #__flag_CheckBoxes
+         firstcolumnwidth + 25
+      EndIf
+      SetState( *this, firstcolumnwidth)
+      SetData(*this, *parent)
+      
+      
+      
+      CloseList( )
+      ProcedureReturn *parent
+   EndProcedure
+   
+   Procedure AddColumn_( *parent._s_WIDGET, position.l, Text.s, Width.l, Image.i = -1 )
+      Protected *this._s_WIDGET = *parent\FirstWidget( )
+      
+      If *this
+         Protected._s_WIDGET *g,*g1,*g2
+         Static X, parent
+         
+         If Not ( parent And IsChild( parent, *this ))
+            parent = *this
+         EndIf
+         
+         ;
+         Define *Tree._s_WIDGET=GetAttribute(*this, #PB_Splitter_FirstGadget)
+         *g2 = GetAttribute(parent, #PB_Splitter_SecondGadget)
+         
+         *g1 = Tree(0,0,0,0, #__flag_NoLines|(*Tree\flagmask&~#__flag_CheckBoxes)) ; 
+         Bind(*g1, @listicon_tree_events())
+         Hide(*g1\scroll\v, 1)
+         Hide(*g1\scroll\h, 1)
+         
+         ;
+         If position =- 1
+            Static c = 1
+            c + 1
+            SetData(*g1, c)
+         Else
+            SetData(*g1, position+1)
+         EndIf
+         
+         If *g2 > 0
+            AddCaption( *g1, Width, 30, Text.s ) 
+            *g = Splitter( 0,0,0,0, *g2, *g1, #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed|#__flag_BorderLess )
+            ;             ;
+            ;             *g\bar\button\size = DPIScaled(1)
+            ;             *g\bar\button\size + Bool( *g\bar\button\size % 2 )
+            ;             *g\bar\button\round = 0;  DPIScaled(1)
+            
+            SetAttribute( parent, #PB_Splitter_SecondGadget, *g )
+            SetData(*g, *parent)
+            SetState(*g, Width)
+            If position =- 1
+               c = 1  
+            EndIf
+            parent = *g
+         Else
+            SetAttribute( parent, #PB_Splitter_SecondGadget, *g1 )
+            AddCaption( *g1, Width, 30, Text.s ) 
+            X = GetState(*this)
+            parent = 0
+         EndIf
+         
+         X + Width
+         SetAttribute_( *parent, #PB_ScrollArea_InnerWidth, X )
+         
+         ProcedureReturn *g
+      EndIf
+   EndProcedure
+   
+   Procedure AddItem_( *parent._s_WIDGET, Item.l, Text.s, Image.i = - 1, Flag.q = 0 )
+      ;ProcedureReturn 
+      Protected *this._s_WIDGET
+      
+      If Type(*parent) = #__type_ScrollArea
+         *this = *parent\FirstWidget( )
+      Else
+         *this = *parent
+      EndIf
+      
+      If *this
+         Protected._s_WIDGET *g1 = GetAttribute(*this, #PB_Splitter_FirstGadget)
+         Protected._s_WIDGET *g2 = GetAttribute(*this, #PB_Splitter_SecondGadget)
+         
+         If Type(*g1) = #__type_tree
+            AddItem( *g1, Item, StringField(Text.s, GetData(*g1), #LF$), Image, Flag )
+         EndIf
+         If Type(*g2) = #__type_tree
+            AddItem( *g2, Item, StringField(Text.s, GetData(*g2), #LF$), -1, 0 )
+         Else
+            AddItem_( *g2, Item, Text.s, -1,0)
+         EndIf
+      EndIf
+      
+   EndProcedure
+   
+   If Open(0, 0, 0, 800, 450, "ListiconGadget", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+      Define *g = ListIcon_(270, 10, 260, 280, "Имя", 120)
+      ;       Procedure event_track(*this._s_WIDGET, state)
+      ;          Resize(*g, #PB_Ignore, #PB_Ignore, state, #PB_Ignore)
+      ;       EndProcedure
+      ;       Define *Track = Track(570, 300, 260, 30, 0, 260)
+      ;       SetState(*track, 260)
+      ;       Bind(*track, @event_track( ), #__event_Change)
+      If *g
+         AddColumn_(*g, -1,"возраст", 50)
+         
+         AddItem_(*g, -1,"grid node", -1)
+         AddItem_(*g, -1,"Александр" + #LF$ + "31", -1,1)
+         AddItem_(*g, -1,"Елена" + #LF$ + "24", -1,1)
+         AddItem_(*g, -1,"Дмитрий" + #LF$ + "45" , -1,1)
+         
+         AddItem_(*g, -1,"greed node", -1)
+         AddItem_(*g, -1,"Александр" + #LF$ + "31", -1,1)
+         AddItem_(*g, -1,"Елена" + #LF$ + "24", -1,1)
+         AddItem_(*g, -1,"Дмитрий" + #LF$ + "45", -1,1)
+      EndIf
+      
+      WaitClose( )
+      
+   EndIf
+CompilerEndIf
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 307
+; FirstLine = 287
+; Folding = --------
+; EnableXP
+; DPIAware
