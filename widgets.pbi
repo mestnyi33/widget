@@ -11618,12 +11618,12 @@ Module widgets
       ;          ;CompilerIf #PB_Compiler_DPIAware
       If IsImage( img )
          *this\picturesize = ImageWidth( img ) 
-         If *this\picturesize < 14
-            *this\picturesize = DPIScaled(16)
-         EndIf   
-         If *this\picturesize > 16
-            *this\picturesize = DPIScaled(16)
-         EndIf   
+;          If *this\picturesize < 14
+;             *this\picturesize = DPIScaled(16)
+;          EndIf   
+;          If *this\picturesize > 16
+;             *this\picturesize = DPIScaled(16)
+;          EndIf   
       EndIf
       ;          ;CompilerEndIf
       
@@ -25991,9 +25991,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 13840
-; FirstLine = 13826
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 11644
+; FirstLine = 11631
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

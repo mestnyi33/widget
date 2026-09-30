@@ -261,6 +261,36 @@ UsePNGImageDecoder( )
 
 Global PreviewRunning, PreviewProgramName$
 
+Procedure.i CatchImageDPI(ImageNumber, *MemoryAddress, MemorySize = #PB_Default)
+  Protected Image
+  Protected.d DPI = DesktopResolutionX()
+  
+  ; Корректный вызов CatchImage в зависимости от наличия размера
+  If MemorySize = #PB_Default
+    Image = CatchImage(ImageNumber, *MemoryAddress)
+  Else
+    Image = CatchImage(ImageNumber, *MemoryAddress, MemorySize)
+  EndIf
+  
+  ; Если изображение загружено и DPI экрана отличен от 100% (1.0)
+  If Image And DPI <> 1.0
+    Protected ImgID
+    
+    ; Если использовали #PB_Any, то возвращенное значение 'Image' — это и есть номер иконки в PB.
+    ; Если использовали конкретный номер (например 5), то 'Image' — это OS Handle, а номером является ImageNumber.
+    If ImageNumber = #PB_Any 
+      ImgID = Image 
+    Else 
+      ImgID = ImageNumber 
+    EndIf
+    
+    ; Ресайз без размытия (Nearest Neighbor / Raw)
+    ResizeImage(ImgID, ImageWidth(ImgID) * DPI, ImageHeight(ImgID) * DPI, #PB_Image_Raw)
+  EndIf
+  
+  ProcedureReturn Image
+EndProcedure
+
 Procedure RunPreview(SourceCode$)
    If SourceCode$ = "" : ProcedureReturn : EndIf
    Protected TempFileName$, hTempFile
@@ -1709,10 +1739,10 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateCopy )
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
             If is_window_( *new )
-               Protected *imagelogo = CatchImage( #PB_Any, ?imagelogo ); group_bottom )
-               CompilerIf #PB_Compiler_DPIAware
-                  ResizeImage(*imagelogo, DPIScaled(ImageWidth(*imagelogo)), DPIScaled(ImageHeight(*imagelogo)), #PB_Image_Raw)
-               CompilerEndIf
+               Protected *imagelogo = CatchImageDPI( #PB_Any, ?imagelogo ); group_bottom )
+;                CompilerIf #PB_Compiler_DPIAware
+;                   ResizeImage(*imagelogo, DPIScaled(ImageWidth(*imagelogo)), DPIScaled(ImageHeight(*imagelogo)), #PB_Image_Raw)
+;                CompilerEndIf
                
                ;                If AddImages( *imagelogo )
                ;                   ;images( )\file$ = ReplaceString( #PB_Compiler_Home, "\", "/" ) + "ide/include/images/group/group_bottom.png"
@@ -2391,28 +2421,22 @@ Procedure.i ide_all_ELEMENTS_ADD_ITEMS( *id, Directory$, Type )
    
    ClearItems( *id )
          
-   If Type = 0
-      Type = #PB_All
-   EndIf
+   If Type = 0 : Type = #PB_All : EndIf
    
+   ; Проверка пути к файлу темы
    If FileSize( ZipFile$ ) < 1
       CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-         ZipFile$ = #PB_Compiler_Home+"themes\SilkTheme.zip"
+         ZipFile$ = #PB_Compiler_Home + "themes\SilkTheme.zip"
       CompilerElse
-         ZipFile$ = #PB_Compiler_Home+"themes/SilkTheme.zip"
+         ZipFile$ = #PB_Compiler_Home + "themes/SilkTheme.zip"
       CompilerEndIf
       If FileSize( ZipFile$ ) < 1
-         MessageRequester( "Designer Error", "Themes\SilkTheme.zip Not found in the current directory" +#CRLF$+ "Or in PB_Compiler_Home\themes directory" +#CRLF$+#CRLF$+ "Exit now", #PB_MessageRequester_Error | #PB_MessageRequester_Ok )
+         MessageRequester( "Designer Error", "Themes\SilkTheme.zip Not found...", #PB_MessageRequester_Error | #PB_MessageRequester_Ok )
          End
       EndIf
    EndIf
-   ;   Directory$ = GetCurrentDirectory( )+"images/" ; "";
-   ;   Protected ZipFile$ = Directory$ + "images.zip"
-   
    
    If FileSize( ZipFile$ ) > 0
-      ; UsePNGImageDecoder( )
-      
       CompilerIf #PB_Compiler_Version > 522
          UseZipPacker( )
       CompilerEndIf
@@ -2424,115 +2448,91 @@ Procedure.i ide_all_ELEMENTS_ADD_ITEMS( *id, Directory$, Type )
          If ExaminePack( ZipFile )
             While NextPackEntry( ZipFile )
                
-               PackEntryName.S = PackEntryName( ZipFile )
-               ImageSize = PackEntrySize( ZipFile )
-               If ImageSize
-                  *memory = AllocateMemory( ImageSize )
-                  UncompressPackMemory( ZipFile, *memory, ImageSize )
-                  PackEntryName.S = ReplaceString( PackEntryName.S,".png","" )
+               If PackEntryType( ZipFile ) = #PB_Packer_File
+                  PackEntryName.s = PackEntryName( ZipFile )
+                  ImageSize = PackEntrySize( ZipFile )
                   
-                  If PackEntryName.S="application_form" 
-                     PackEntryName.S="vd_windowgadget"
-                  EndIf
-                  
-                  If PackEntryName.S="page_white_edit" 
-                     PackEntryName.S="vd_scintillagadget"
-                  EndIf
-                  
-                  Select PackEntryType( ZipFile )
-                     Case #PB_Packer_File
-                        If FindString( Left( PackEntryName.S, 3 ), "vd_" )
-                           PackEntryName.S = ReplaceString( PackEntryName.S,"vd_","" )
-                           PackEntryName.S = ReplaceString( PackEntryName.S,"gadget","" )
-                           PackEntryName.S = ReplaceString( PackEntryName.S,"bar","" )
-                           PackEntryName = LCase( PackEntryName.S )
+                  If ImageSize > 0
+                     *memory = AllocateMemory( ImageSize )
+                     If *memory
+                        UncompressPackMemory( ZipFile, *memory, ImageSize )
+                        
+                        ; Заменяем расширение
+                        PackEntryName.s = ReplaceString( PackEntryName.s, ".png", "" )
+                        
+                        ; Преобразование специфических имен под стандарт vd_
+                        If PackEntryName.s = "application_form" : PackEntryName.s = "vd_windowgadget"    : EndIf
+                        If PackEntryName.s = "page_white_edit"   : PackEntryName.s = "vd_scintillagadget" : EndIf
+                        
+                        ; Проверяем, относится ли файл к гаджетам дизайнера
+                        If FindString( Left( PackEntryName.s, 3 ), "vd_" )
+                           PackEntryName.s = ReplaceString( PackEntryName.s, "vd_", "" )
+                           PackEntryName.s = ReplaceString( PackEntryName.s, "gadget", "" )
+                           PackEntryName.s = ReplaceString( PackEntryName.s, "bar", "" )
+                           PackEntryName = LCase( PackEntryName.s )
                            
-                           name$ = UCase( Left( PackEntryName.S, 1 ) ) + 
-                                   Right( PackEntryName.S, Len( PackEntryName.S )-1 )
+                           ; Форматируем имя элемента (Первая буква заглавная)
+                           name$ = UCase( Left( PackEntryName.s, 1 ) ) + Right( PackEntryName.s, Len( PackEntryName.s ) - 1 )
                            
-                           
+                           ; Обработка курсора (добавляется жестко на позицию 0)
                            If FindString( PackEntryName, "cursor" )
-                              Image = CatchImage( #PB_Any, *memory, ImageSize )
-                              AddItem( *id, 0, name$, Image )
-                              SetItemData( *id, 0, Image )
-                              Image = #Null
-                              
-                           ElseIf FindString( PackEntryName, "window" ) Or
-                                  FindString( PackEntryName, "panel" ) Or
-                                  FindString( PackEntryName, "container" ) Or
-                                  FindString( PackEntryName, "scrollarea" ) Or
-                                  FindString( PackEntryName, "splitter" )
-                              
-                              If 1 = Type Or Type = #PB_All 
-                                 name$ = ReplaceString( name$,"area","Area", #PB_String_NoCase )
-                                 Image = CatchImage( #PB_Any, *memory, ImageSize )
-                                 AddItem( *id, -1, name$, Image )
-                                 SetItemData( *id, CountItems( *id )-1, Image )
+                              Image = CatchImageDPI( #PB_Any, *memory, ImageSize )
+                              If Image
+                                 AddItem( *id, 0, name$, Image )
+                                 SetItemData( *id, 0, Image )
+                              EndIf
+                              name$ = "" ; Обнуляем, чтобы не сработал общий AddItem в конце
+                               
+                           ; Группировка и фильтрация по Type
+                           ElseIf FindString( PackEntryName, "window" ) Or FindString( PackEntryName, "panel" ) Or FindString( PackEntryName, "container" ) Or FindString( PackEntryName, "scrollarea" ) Or FindString( PackEntryName, "splitter" )
+                              If Type = 1 Or Type = #PB_All 
+                                 name$ = ReplaceString( name$, "area", "Area", #PB_String_NoCase )
+                              Else
+                                 name$ = ""
                               EndIf
                               
-                           ElseIf FindString( PackEntryName, "button" ) Or
-                                  FindString( PackEntryName, "option" ) Or
-                                  FindString( PackEntryName, "checkbox" ) Or
-                                  FindString( PackEntryName, "combobox" )
-                              
-                              If 2 = Type Or Type = #PB_All 
-                                 name$ = ReplaceString( name$,"image","Image", #PB_String_NoCase )
-                                 name$ = ReplaceString( name$,"box","Box", #PB_String_NoCase )
-                                 Image = CatchImage( #PB_Any, *memory, ImageSize )
-                                 AddItem( *id, -1, name$, Image )
-                                 SetItemData( *id, CountItems( *id )-1, Image )
+                           ElseIf FindString( PackEntryName, "button" ) Or FindString( PackEntryName, "option" ) Or FindString( PackEntryName, "checkbox" ) Or FindString( PackEntryName, "combobox" )
+                              If Type = 2 Or Type = #PB_All 
+                                 name$ = ReplaceString( name$, "image", "Image", #PB_String_NoCase )
+                                 name$ = ReplaceString( name$, "box", "Box", #PB_String_NoCase )
+                              Else
+                                 name$ = ""
                               EndIf
                            
                            ElseIf FindString( PackEntryName, "image" )
-                              If Type = #PB_All 
-                                 Image = CatchImage( #PB_Any, *memory, ImageSize )
-                                 AddItem( *id, -1, name$, Image )
-                                 SetItemData( *id, CountItems( *id )-1, Image )
-                              EndIf
+                              If Type <> #PB_All : name$ = "" : EndIf
                            
-                           ElseIf FindString( PackEntryName, "string" ) Or
-                                  FindString( PackEntryName, "text" )
-                              
-                              If 3 = Type Or Type = #PB_All 
-                                 Image = CatchImage( #PB_Any, *memory, ImageSize )
-                                 AddItem( *id, -1, name$, Image )
-                                 SetItemData( *id, CountItems( *id )-1, Image )
-                              EndIf
+                           ElseIf FindString( PackEntryName, "string" ) Or FindString( PackEntryName, "text" )
+                              If Type <> 3 And Type <> #PB_All : name$ = "" : EndIf
                            
-                           ElseIf FindString( PackEntryName, "progress" ) Or
-                                  FindString( PackEntryName, "track" ) Or
-                                  FindString( PackEntryName, "spin" )
-                              
-                              If 4 = Type Or Type = #PB_All 
-                                 Image = CatchImage( #PB_Any, *memory, ImageSize )
-                                 AddItem( *id, -1, name$, Image )
-                                 SetItemData( *id, CountItems( *id )-1, Image )
-                              EndIf
+                           ElseIf FindString( PackEntryName, "progress" ) Or FindString( PackEntryName, "track" ) Or FindString( PackEntryName, "spin" )
+                              If Type <> 4 And Type <> #PB_All : name$ = "" : EndIf
                            
-                           ElseIf FindString( PackEntryName, "tree" ) Or
-                                  FindString( PackEntryName, "listview" )
-                              
-                              If Type = #PB_All 
-                                 Image = CatchImage( #PB_Any, *memory, ImageSize )
-                                 AddItem( *id, -1, name$, Image )
-                                 SetItemData( *id, CountItems( *id )-1, Image )
-                              EndIf
+                           ElseIf FindString( PackEntryName, "tree" ) Or FindString( PackEntryName, "listview" )
+                              If Type <> #PB_All : name$ = "" : EndIf
                               
                            Else
-                              ;                               Image = CatchImage( #PB_Any, *memory, ImageSize )
-                              ;                               AddItem( *id, -1, name$, Image )
-                              ;                               SetItemData( *id, CountItems( *id )-1, Image )
+                              name$ = ""
                            EndIf
                            
+                           ; Единая точка добавления для всех остальных элементов
+                           If name$
+                              Image = CatchImageDPI( #PB_Any, *memory, ImageSize )
+                              If Image
+                                 AddItem( *id, -1, name$, Image )
+                                 SetItemData( *id, CountItems( *id ) - 1, Image )
+                              EndIf
+                           EndIf
                         EndIf    
-                  EndSelect
-                  
-                  FreeMemory( *memory )
+                        
+                        FreeMemory( *memory )
+                     EndIf
+                  EndIf
                EndIf
+               
             Wend  
          EndIf
          
-         ; select cursor
          SetState( *id, 0 )
          ClosePack( ZipFile )
       EndIf
@@ -2910,28 +2910,31 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    BarItem( #_tb_file_open, lng(#lng_OPEN$) )
    BarItem( #_tb_file_save, lng(#lng_SAVE$) )
    BarSeparator( )
-   BarButton( #_tb_widget_copy, CatchImage( #PB_Any,?image_new_widget_copy ) )
-   BarButton( #_tb_widget_cut, CatchImage( #PB_Any,?image_new_widget_cut ) )
-   BarButton( #_tb_widget_paste, CatchImage( #PB_Any,?image_new_widget_paste ) )
+   
+   ; Загрузка иконок с автоматическим DPI масштабированием
+   BarButton( #_tb_widget_copy,   CatchImageDPI( #PB_Any, ?image_new_widget_copy ) )
+   BarButton( #_tb_widget_cut,    CatchImageDPI( #PB_Any, ?image_new_widget_cut ) )
+   BarButton( #_tb_widget_paste,  CatchImageDPI( #PB_Any, ?image_new_widget_paste ) )
    BarSeparator( )
-   BarButton( #_tb_widget_delete, CatchImage( #PB_Any,?image_new_widget_delete ) )
+   BarButton( #_tb_widget_delete, CatchImageDPI( #PB_Any, ?image_new_widget_delete ) )
    
    BarSeparator( )
-   BarButton( #_tb_group_select, CatchImage( #PB_Any,?image_group ), #PB_ToolBar_Toggle ) 
+   BarButton( #_tb_group_select,  CatchImageDPI( #PB_Any, ?image_group ), #PB_ToolBar_Toggle ) 
    ;
-   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_Image, CatchImage( #PB_Any,?image_group_un ) )
-   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_PressedImage, CatchImage( #PB_Any,?image_group ) )
+   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_Image, CatchImageDPI( #PB_Any, ?image_group_un ) )
+   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_PressedImage, CatchImageDPI( #PB_Any, ?image_group ) )
    ;
    BarSeparator( )
-   BarButton( #_tb_group_width, CatchImage( #PB_Any,?image_group_width ) )
-   BarButton( #_tb_group_height, CatchImage( #PB_Any,?image_group_height ) )
+   BarButton( #_tb_group_width,   CatchImageDPI( #PB_Any, ?image_group_width ) )
+   BarButton( #_tb_group_height,  CatchImageDPI( #PB_Any, ?image_group_height ) )
    BarSeparator( )
-   BarButton( #_tb_group_left, CatchImage( #PB_Any,?image_group_left ) )
-   BarButton( #_tb_group_right, CatchImage( #PB_Any,?image_group_right ) )
+   BarButton( #_tb_group_left,    CatchImageDPI( #PB_Any, ?image_group_left ) )
+   BarButton( #_tb_group_right,   CatchImageDPI( #PB_Any, ?image_group_right ) )
    BarSeparator( )
-   BarButton( #_tb_group_top, CatchImage( #PB_Any,?image_group_top ) )
-   BarButton( #_tb_group_bottom, CatchImage( #PB_Any,?image_group_bottom ) )
+   BarButton( #_tb_group_top,     CatchImageDPI( #PB_Any, ?image_group_top ) )
+   BarButton( #_tb_group_bottom,  CatchImageDPI( #PB_Any, ?image_group_bottom ) )
    BarSeparator( )
+
    BarItem( #_tb_file_run, "[RUN]" )
    BarSeparator( )
    ide_menu_LENGUAGE = OpenSubBar("[LENGUAGE]")
@@ -3406,10 +3409,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1794
-; FirstLine = 1613
-; Folding = ----4---8-f-tf----------3BC----------8--v4-----------f-3+0---6-
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 1744
+; FirstLine = 1730
+; Folding = ----------------------------------------------------------------
 ; EnableXP
 ; DPIAware
-; Executable = ../../2_621.exe
+; Executable = ..\..\2_621.exe

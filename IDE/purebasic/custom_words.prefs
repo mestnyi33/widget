@@ -1,3 +1,12 @@
+;Type
+;Is
+;ID
+;X
+;Y
+;Width
+;Height
+;Flag
+
 Clip
 ReClip
 UnClip
@@ -24,7 +33,6 @@ MakeString
 MakeValue
 MakeCompiler
 
-Flag
 SetFlag
 GetFlag
 RemoveFlag
@@ -78,12 +86,6 @@ GadgetMouseY
 GetMouseX
 GetMouseY
 
-mouse
-keyboard
-roots
-widgets
-address
-
 PressedButton
 EnteredButton
 
@@ -92,16 +94,22 @@ Pressed
 Entered
 Opened
 
+Root
+NextRoot
+PrevRoot
+
+Widget
+mouse
+keyboard
+roots
+widgets
+address
+
+UseWidgets
 FirstWidget
 LastWidget
 AfterWidget
 BeforeWidget
-
-UseWidgets
-Root
-NextRoot
-PrevRoot
-Widget
 
 EventWidget
 WidgetEvent
@@ -119,8 +127,7 @@ AddEvents
 ResetEvents
 RemoveEvents
 DoEvents
-
-           
+        
 GetWindow
 GetGadget
 GetRoot
@@ -273,19 +280,12 @@ RemoveColumn
 MoveColumn
 
 CountType
-;Type
-;Is
 ItemID
 ToolTip
 Hide
 Disable
 Index
 Level
-;ID
-;X
-;Y
-;Width
-;Height
 Resize
 ResizeRootWindow
 
@@ -397,12 +397,12 @@ Scroll
 Shortcut
 Spin
 Splitter
-String
-Text
+;String
+;Text
 Track
 Tree
 Web
-Tab
+;Tab
 
 
 
