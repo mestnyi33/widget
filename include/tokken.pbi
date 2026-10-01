@@ -1501,16 +1501,16 @@ Procedure Resize(*this._s_WIDGET, X.l, Y.l, Width.l, Height.l)
    Protected *g._s_WIDGET ; Наш локальный указатель для рекурсии
    
    If x <> #PB_Ignore
-      *this\X = X 
+      *this\X = DesktopScaledX(X)
    EndIf
    If y <> #PB_Ignore
-      *this\Y = Y
+      *this\Y = DesktopScaledY(Y)
    EndIf
    If Width <> #PB_Ignore
-      *this\Width = Width 
+      *this\Width = DesktopScaledX(Width)
    EndIf
    If Height <> #PB_Ignore
-      *this\Height = Height
+      *this\Height = DesktopScaledY(Height)
    EndIf
    
    ; 1. СЧИТАЕМ РЕАЛЬНЫЕ КООРДИНАТЫ
@@ -5277,7 +5277,7 @@ Procedure add_column(*this._s_WIDGET, Title.s, Width.i, Index = -1, img.i = -1, 
    
    *col\text\change = 1
    *col\text\string = Title 
-   *col\width = Width  
+   *col\width = DesktopScaledX(Width) 
    *col\img = img
    
    ; Запоминаем текущий порядковый номер (0 для первой, 1 для второй и т.д.)
@@ -5531,6 +5531,7 @@ EndProcedure
 
 ;-
 #__bar_button_size = 16
+
 Procedure.i Create(*parent._s_WIDGET, class.s, Type.i, X, Y, Width, Height, title.s, flags.q=0, param1=0,param2=0,param3=0)
    Protected this._s_WIDGET
    Protected *new._s_WIDGET 
@@ -5549,57 +5550,55 @@ Procedure.i Create(*parent._s_WIDGET, class.s, Type.i, X, Y, Width, Height, titl
       Type = #__type_Editor
       this\col._s_COLS = AllocateStructure(_s_COLS)
       this\row._s_ROW = AllocateStructure(_s_ROW)
-      this\row\indent = 20 ; (отступ веток)
+      this\row\indent = DesktopScaledX(20) ; (отступ веток)
       
-      this\col\totalHeight = 50
+      this\col\totalHeight = DesktopScaledY(50)
 ;       this\col\selected = -1
 ;       this\col\hovered = -1
       ;
-      this\row\height = 30
+      this\row\height = DesktopScaledX(30)
 ;       this\row\selected = -1
 ;       this\row\hovered  = -1
    
-      this\padding\X = 5
-      this\padding\y = 5
+      this\padding\X = DesktopScaledX(5)
+      this\padding\y = DesktopScaledY(5)
       
       If Type = #__type_ListIcon
          this\fs[2] = this\col\totalHeight
       Else
-         this\fs[2] = 25
+         this\fs[2] = DesktopScaledY(25)
       EndIf
       
-      this\fs[3] = #__bar_button_size ; Ширина вертикального скролла
-      this\fs[4] = #__bar_button_size ; Высота горизонтального скролла
-      this\fs = 1
+      this\fs[3] = DesktopScaledX(#__bar_button_size) ; Ширина вертикального скролла
+      this\fs[4] = DesktopScaledY(#__bar_button_size) ; Высота горизонтального скролла
+      this\fs = DesktopScaledX(1)
    EndIf
    
    ; --- В конструкторе или блоке создания ---
    Select this\Type
       Case #__type_Window
-         this\fs[2] = 25 ; Высота заголовка (Top)
-         this\fs[0] = 2  ; Общая рамка (Border)
+         this\fs[2] = DesktopScaledY(25) ; Высота заголовка (Top)
+         this\fs[0] = DesktopScaledY(2)  ; Общая рамка (Border)
          
       Case #__type_Panel
-         this\fs[0] = 1  ; Тонкая рамка вокруг контента
-         this\fs[2] = 25 ; Высота таббара (Top)
-                         ; Если табы слева, то this\fs[1] = 100
          Protected tabheight = 25
-         
+         this\fs[0] = DesktopScaledX(1)  ; Тонкая рамка вокруг контента
+        
       Case #__type_Container
-         this\fs[0] = 1  ; Тонкая рамка вокруг контента
+         this\fs[0] = DesktopScaledY(1)  ; Тонкая рамка вокруг контента
          
       Case #__type_TabBar
          this\tab._s_TABS = AllocateStructure(_s_TABS)
          this\tab\align = #__align_center ; Выравнивание (#__align_left-лево, #__align_center-центр, #__align_right-право)
-         this\tab\indent = 5; Начальный отступ (чтобы первый таб не прилипал к рамке)
-         this\tab\spacing = 5; По умолчанию минимальный зазор
-         this\padding\X = 10
+         this\tab\indent = DesktopScaledY(5); Начальный отступ (чтобы первый таб не прилипал к рамке)
+         this\tab\spacing = DesktopScaledY(5); По умолчанию минимальный зазор
+         this\padding\X = DesktopScaledY(10)
          
       Case #__type_Editor
          this\caret = AllocateStructure(_s_CARET)
          
       Case #__type_Button
-         this\padding\X = 5
+         this\padding\X = DesktopScaledX(5)
          
          If flags & #__flag_Left
             this\text\align = #__align_left
@@ -6024,9 +6023,10 @@ CompilerIf #PB_Compiler_IsMainFile
    Close( #PB_All ) 
    End ; Завершение программы
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 2927
-; FirstLine = 2917
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 5585
+; FirstLine = 5552
 ; Folding = P-----------------------------------------------------------------------------r------------------------------------------------------------------------B+
 ; EnableXP
 ; DPIAware
+; HideErrorLog
