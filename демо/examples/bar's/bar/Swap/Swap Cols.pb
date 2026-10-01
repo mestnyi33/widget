@@ -22,12 +22,14 @@ EndIf
 ; =====================================================================
 Structure _s_POINT : X.l : Y.l : EndStructure
 Structure _s_COORDINATE Extends _s_POINT : Width.l : Height.l : EndStructure
-Structure _s_TXT
+Structure _s_TXT Extends _s_COORDINATE
    Text.s
+   change.b
 EndStructure
 
-Structure _s_IMG
+Structure _s_IMG Extends _s_COORDINATE
    Image.i
+   change.b
 EndStructure
 
 Structure _s_TAB Extends _s_COORDINATE
@@ -64,6 +66,17 @@ EndStructure
 ; 3. ЛОГИКА АЛГОРИТМА И ОТРИСОВКИ
 ; =====================================================================
 
+Procedure.i GetAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i = 10)
+   If alignFlags & #__flag_Center
+      ProcedureReturn (contentSize - objectSize) / 2
+   ElseIf alignFlags & #__flag_Right
+      ProcedureReturn contentSize - objectSize - Offset
+   Else ; #__flag_Left
+      ProcedureReturn Offset
+   EndIf
+EndProcedure
+
+
 ; Функция линейного расчета базовых координат X
 Procedure UpdateTabs(*this._s_WIDGET)
    Protected *tabs._s_TABS = *this\tab
@@ -97,106 +110,135 @@ Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, align.a = #__flag_Left, 
       *tab\width  = DesktopScaledX(size)
    EndIf
    *tab\align     = align
-   *tab\txt\Text  = Text
-   *tab\img\Image = Image 
-EndProcedure
-
-Procedure.i GetAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i = 10)
-   If alignFlags & #__flag_Center
-      ProcedureReturn (contentSize - objectSize) / 2
-   ElseIf alignFlags & #__flag_Right
-      ProcedureReturn contentSize - objectSize - Offset
-   Else ; #__flag_Left
-      ProcedureReturn Offset
+   If Text
+      *Tab\txt\Text  = Text
+      *Tab\txt\change = 1
+   EndIf
+   If IsImage(Image)
+      *Tab\img\Image = Image 
+      *Tab\img\change = 1
    EndIf
 EndProcedure
 
-Procedure DrawTab(vertical.b, *Tab._s_TAB, currentDrawX.i, currentDrawY.i, gadgetWidth.i, gadgetHeight.i, isDragged.b)
-   Protected contentW.i, contentH.i, txtW.i, txtH.i, imgW.i, imgH.i
-   ; Масштабируем пиксельные отступы под системный DPI
-   Protected iconSpacing.i = DesktopScaledX(6) 
-   Protected padding.i = DesktopScaledX(8)
-   
-   Protected ImgX.i, ImgY.i, TxtX.i, TxtY.i, contentX.i, contentY.i
-   
-   ; Размеры текста из TextWidth() возвращаются с учетом DPI шрифта холста
-   If *tab\txt\Text
-      txtW = TextWidth(*tab\txt\Text)
-      txtH = TextHeight(*Tab\txt\Text)
-   EndIf
-   If IsImage(*tab\img\Image)
-      imgW = ImageWidth(*tab\img\Image)
-      imgH = ImageHeight(*tab\img\Image)
-   EndIf
-   
-   If (imgW+imgH)
-      contentW = imgW + iconSpacing + txtW
-      contentH = imgH + iconSpacing + txtH
-   Else
-      contentW = txtW
-      contentH = txtH
-   EndIf
-   
-   ; 1. ВНЕШНЕЕ ПОЗИЦИОНИРОВАНИЕ ВСЕГО БЛОКА ВНУТРИ ВКЛАДКИ
-   contentX = currentDrawX + GetAlignPosition(*tab\align, *tab\Width, contentW, padding)
-   contentY = currentDrawY + GetAlignPosition(*tab\align, *tab\Height, contentH, padding)
+Procedure UpdateTab(vertical.b, *Tab._s_TAB, gadgetWidth.i, gadgetHeight.i, isResize.b)
+   Protected contentX.i, contentY.i, contentW.i, contentH.i
    
    If vertical
-      *tab\Y = currentDrawY
       *tab\Width = gadgetWidth
    Else
-      *tab\X = currentDrawX
       *tab\Height = gadgetHeight
    EndIf
+   
+   ; 1. Замеры метрик (оставляем ленивое обновление, но убираем лишние вложенные проверки)
+   If *tab\txt\change
+      If *Tab\txt\Text <> ""
+         *tab\txt\Width = TextWidth(*tab\txt\Text)
+         *tab\txt\height = TextHeight(*Tab\txt\Text)
+      Else
+         *tab\txt\Width = 0 : *tab\txt\height = 0
+      EndIf
+   EndIf
+   
+   If *tab\img\change
+      If IsImage(*tab\img\Image)
+         *tab\img\width = ImageWidth(*tab\img\Image)
+         *tab\img\height = ImageHeight(*tab\img\Image)
+      Else
+         *tab\img\width = 0 : *tab\img\height = 0
+      EndIf
+   EndIf
+   
+   ; 2. ВНЕШНЕЕ ПОЗИЦИОНИРОВАНИЕ ВСЕГО БЛОКА
+   If *tab\txt\change Or *tab\img\change Or isResize
+      ; Заменили сложение (+), которое могло давать ложные срабатывания, на битовое ИЛИ или явную проверку флагов
+      If *tab\img\width Or *tab\img\height
+         Protected iconSpacing.i = DesktopScaledX(6) ; Масштабируем отступ только если есть иконка
+         contentW = *tab\img\width + iconSpacing + *tab\txt\width
+         contentH = *tab\img\height + iconSpacing + *tab\txt\height
+      Else
+         contentW = *tab\txt\width
+         contentH = *tab\txt\height
+      EndIf
+      
+      Protected padding.i = DesktopScaledX(8)
+      If vertical
+         contentY = GetAlignPosition(*tab\align, *tab\Height, contentH, padding)
+      Else
+         contentX = GetAlignPosition(*tab\align, *tab\Width, contentW, padding)
+      EndIf
+   EndIf
+
+   ; 3. ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ (Оптимизировано: убран Bool() из расчетов, так как наличие иконки проверено выше)
+   If *Tab\txt\change Or isResize
+      If vertical
+         *tab\txt\x = (gadgetWidth - *tab\txt\width) >> 1 ; Быстрое деление на 2 через битовый сдвиг
+         If *tab\align & #__flag_Bottom
+            *tab\txt\y = contentY
+         Else
+            *tab\txt\y = contentY + *Tab\img\height
+            If *tab\img\height : *tab\txt\y + iconSpacing : EndIf
+         EndIf
+      Else
+         *tab\txt\y = (gadgetHeight - *tab\txt\height) >> 1
+         If *tab\align & #__flag_Right
+            *tab\txt\x = contentX
+         Else
+            *tab\txt\x = contentX + *Tab\img\width
+            If *tab\img\width : *tab\txt\x + iconSpacing : EndIf
+         EndIf
+      EndIf
+      *Tab\txt\change = 0
+   EndIf
+   
+   If *tab\img\change Or isResize
+      If vertical
+         *tab\img\x = (gadgetWidth - *tab\img\width) >> 1
+         If *tab\align & #__flag_Bottom
+            *tab\img\y = contentY + *Tab\txt\height
+            If *tab\txt\height : *tab\img\y + iconSpacing : EndIf
+         Else
+            *tab\img\y = contentY
+         EndIf
+      Else
+         *tab\img\y = (gadgetHeight - *tab\img\height) >> 1
+         If *tab\align & #__flag_Right
+            *tab\img\x = contentX + *Tab\txt\width
+            If *tab\txt\width : *tab\img\x + iconSpacing : EndIf
+         Else
+            *tab\img\x = contentX
+         EndIf
+      EndIf
+      *Tab\img\change = 0
+   EndIf
+ 
+EndProcedure
+
+; Будущая рабочая процедура (когда все метрики уже посчитаны при создании)
+Procedure DrawTab(vertical.b, *Tab._s_TAB, isDragged.b)
+   Protected rx.i = *tab\x
+   Protected ry.i = *tab\y
+   
    If vertical
-      TxtX = (gadgetWidth - txtW) / 2
-      ImgX = (gadgetWidth - imgW) / 2
-      
-      ; 2. ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ ПОРЯДКА ЭЛЕМЕНТОВ
-      If *tab\align & #__flag_Bottom
-         ; Направление RIGHT: Текст слева, Иконка справа
-         TxtY = contentY
-         ImgY = contentY + txtH + Bool(txtH)*iconSpacing
-      Else
-         ; Направление LEFT / По умолчанию: Иконка слева, Текст справа
-         ImgY = contentY
-         TxtY = contentY + imgH + Bool(imgH)*iconSpacing
-      EndIf
-      
+      ry + *tab\offset
    Else
-      TxtY = (gadgetHeight - txtH) / 2
-      ImgY = (gadgetHeight - imgH) / 2
-      
-      ; 2. ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ ПОРЯДКА ЭЛЕМЕНТОВ
-      If *tab\align & #__flag_Right
-         ; Направление RIGHT: Текст слева, Иконка справа
-         TxtX = contentX
-         ImgX = contentX + txtW + Bool(txtW)*iconSpacing
-      Else
-         ; Направление LEFT / По умолчанию: Иконка слева, Текст справа
-         ImgX = contentX
-         TxtX = contentX + imgW + Bool(imgW)*iconSpacing
-      EndIf
+      rx + *tab\offset
    EndIf
    
-   
-   
-   ; 2. Вывод графики на Canvas
-   ; 2.1. Отрисовка фона вкладки
+   ; 1. ОТРИСОВКА ФОНА
    If isDragged
-      Box(*tab\X, *tab\Y, *tab\Width, *tab\Height, RGBA(255, 0, 0, 160)) ; Летящая
+      Box(rx, ry, *tab\Width, *tab\Height, $A00000FF)
    Else
-      Box(*Tab\X, *tab\Y, *tab\Width, *tab\Height, RGBA(128, 128, 128, 255)) ; Статичная
+      Box(rx, ry, *tab\Width, *tab\Height, $FF808080)
    EndIf
    
-   ; 2.2. Отрисовка рисунка вкладки
-   If IsImage(*tab\img\Image)
-      DrawAlphaImage(ImageID(*tab\img\Image), ImgX, ImgY)
+   ; 2. ОТРИСОВКА ИКОНКИ (Координаты уже намертво вшиты в структуру)
+   If *tab\img\width Or *tab\img\height
+      DrawAlphaImage(ImageID(*tab\img\Image), rx + *Tab\img\X, ry + *Tab\img\Y)
    EndIf
    
-   ; 2.3.. Отрисовка текста вкладки
-   If *tab\txt\Text
-      DrawText(TxtX, TxtY, *tab\txt\Text, RGBA(255, 255, 255, 255))
+   ; 3. ОТРИСОВКА ТЕКСТА
+   If *tab\txt\Text <> ""
+      DrawText(rx + *Tab\txt\X, ry + *Tab\txt\Y, *tab\txt\Text, $FFFFFFFF)
    EndIf
 EndProcedure
 
@@ -219,21 +261,17 @@ Procedure ReDrawTabs(gadget.i, *this._s_WIDGET)
    ForEach *this\tab\_s()
       *tab = @*this\tab\_s()
       If *tab <> *this\tab\dragged
-         If *this\tab\vertical 
-            DrawTab(1, *Tab, *tab\X, *tab\Y + *tab\offset, gWidth, gHeight, #False)
-         Else
-            DrawTab(0, *Tab, *tab\X + *tab\offset, *tab\Y, gWidth, gHeight, #False)
-         EndIf
+         UpdateTab(*this\tab\vertical, *Tab, gWidth, gHeight, #False)
+         ;
+         DrawTab(*this\tab\vertical, *Tab, #False)
       EndIf
    Next
    
    ; Слой 2: Летящая поверх
    If *this\tab\dragged
-      If *this\tab\vertical 
-         DrawTab(1, *this\tab\dragged, *this\tab\dragged\X, *this\tab\dragged\Y + *this\tab\dragged\offset, gWidth, gHeight, #True)
-      Else
-         DrawTab(0, *this\tab\dragged, *this\tab\dragged\X + *this\tab\dragged\offset, *this\tab\dragged\Y, gWidth, gHeight, #True)
-      EndIf
+      UpdateTab(*this\tab\vertical, *this\tab\dragged, gWidth, gHeight, #False)
+      ;
+      DrawTab(*this\tab\vertical, *this\tab\dragged, #True)
    EndIf
    
    StopDrawing()
@@ -474,8 +512,8 @@ If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Прим�
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 197
-; FirstLine = 171
-; Folding = ------------
+; CursorPosition = 217
+; FirstLine = 145
+; Folding = ---r34--------
 ; EnableXP
 ; DPIAware
