@@ -15,6 +15,7 @@ EndIf
 #__flag_Left   = 0
 #__flag_Center = 1
 #__flag_Right  = 2
+#__flag_Bottom  = 4
 
 ; =====================================================================
 ; 2. СТРУКТУРЫ ДАННЫХ
@@ -46,6 +47,7 @@ Structure _s_TABS
    *active._s_TAB   
    *dragged._s_TAB  ; Указатель на перетаскиваемую вкладку
    
+   vertical.b
    align.a               
    indent.a              
    spacing.a             
@@ -55,7 +57,6 @@ EndStructure
 
 Structure _s_WIDGET
    Tab._s_TABS
-   vertical.b
    dragOffSet.i     ; Точка захвата мыши
 EndStructure
 
@@ -73,7 +74,7 @@ Procedure UpdateTabs(*this._s_WIDGET)
       ForEach *this\tab\_s()
          *tab = @*this\tab\_s()
          *tab\offset = 0
-         If *this\vertical 
+         If *this\tab\vertical 
             *tab\Y = position : position + *tab\Height + *tabs\spacing
          Else
             *Tab\X = position : position + *tab\Width + *tabs\spacing
@@ -90,7 +91,7 @@ Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, align.a = #__flag_Left, 
    Protected *tab._s_TAB = @*this\tab\_s()
    
    *tab\ID        = ID
-   If *this\vertical 
+   If *this\tab\vertical 
       *tab\height = DesktopScaledY(size)
    Else
       *tab\width  = DesktopScaledX(size)
@@ -116,30 +117,19 @@ Procedure DrawTab(vertical.b, *Tab._s_TAB, currentDrawX.i, currentDrawY.i, gadge
    Protected iconSpacing.i = DesktopScaledX(6) 
    Protected padding.i = DesktopScaledX(8)
    
-   ; 1. Отрисовка фона вкладки
-   If vertical
-      If isDragged
-         Box(0, currentDrawY, gadgetWidth, *tab\Height, RGBA(255, 0, 0, 160)) ; Летящая
-      Else
-         Box(0, currentDrawY, gadgetWidth, *tab\Height, RGBA(128, 128, 128, 255)) ; Статичная
-      EndIf
-   Else
-      If isDragged
-         Box(currentDrawX, 0, *tab\Width, gadgetHeight, RGBA(255, 0, 0, 160)) ; Летящая
-      Else
-         Box(currentDrawX, 0, *tab\Width, gadgetHeight, RGBA(128, 128, 128, 255)) ; Статичная
-      EndIf
-   EndIf
+   Protected ImgX.i, ImgY.i, TxtX.i, TxtY.i, contentX.i, contentY.i
    
    ; Размеры текста из TextWidth() возвращаются с учетом DPI шрифта холста
-   txtW = TextWidth(*tab\txt\Text)
-   txtH = TextHeight(*Tab\txt\Text)
-   
+   If *tab\txt\Text
+      txtW = TextWidth(*tab\txt\Text)
+      txtH = TextHeight(*Tab\txt\Text)
+   EndIf
    If IsImage(*tab\img\Image)
-      ; ВНИМАНИЕ: картинка УЖЕ растянута через ResizeImage, 
-      ; поэтому берем ее реальную ширину и высоту БЕЗ DesktopScaled!
       imgW = ImageWidth(*tab\img\Image)
       imgH = ImageHeight(*tab\img\Image)
+   EndIf
+   
+   If (imgW+imgH)
       contentW = imgW + iconSpacing + txtW
       contentH = imgH + iconSpacing + txtH
    Else
@@ -147,52 +137,67 @@ Procedure DrawTab(vertical.b, *Tab._s_TAB, currentDrawX.i, currentDrawY.i, gadge
       contentH = txtH
    EndIf
    
-   Protected ImgX.i, ImgY.i, TxtX.i, TxtY.i, blockX.i, blockY.i
+   ; 1. ВНЕШНЕЕ ПОЗИЦИОНИРОВАНИЕ ВСЕГО БЛОКА ВНУТРИ ВКЛАДКИ
+   contentX = currentDrawX + GetAlignPosition(*tab\align, *tab\Width, contentW, padding)
+   contentY = currentDrawY + GetAlignPosition(*tab\align, *tab\Height, contentH, padding)
    
    If vertical
-      TxtX = (gadgetWidth - TextWidth(*Tab\txt\Text)) / 2
+      *tab\Y = currentDrawY
+      *tab\Width = gadgetWidth
+   Else
+      *tab\X = currentDrawX
+      *tab\Height = gadgetHeight
+   EndIf
+   If vertical
+      TxtX = (gadgetWidth - txtW) / 2
       ImgX = (gadgetWidth - imgW) / 2
       
-      ; 1. ВНЕШНЕЕ ПОЗИЦИОНИРОВАНИЕ ВСЕГО БЛОКА ВНУТРИ ВКЛАДКИ
-      blockY.i = currentDrawY + GetAlignPosition(*tab\align, *tab\Height, contentH, padding)
-      
       ; 2. ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ ПОРЯДКА ЭЛЕМЕНТОВ
-      If *tab\align & #__flag_Right
+      If *tab\align & #__flag_Bottom
          ; Направление RIGHT: Текст слева, Иконка справа
-         TxtY = blockY
-         ImgY = blockY + txtH + Bool(txtH)*iconSpacing
+         TxtY = contentY
+         ImgY = contentY + txtH + Bool(txtH)*iconSpacing
       Else
          ; Направление LEFT / По умолчанию: Иконка слева, Текст справа
-         ImgY = blockY
-         TxtY = blockY + imgH + Bool(imgH)*iconSpacing
+         ImgY = contentY
+         TxtY = contentY + imgH + Bool(imgH)*iconSpacing
       EndIf
       
    Else
-      TxtY = (gadgetHeight - TextHeight(*tab\txt\Text)) / 2
+      TxtY = (gadgetHeight - txtH) / 2
       ImgY = (gadgetHeight - imgH) / 2
-      
-      ; 1. ВНЕШНЕЕ ПОЗИЦИОНИРОВАНИЕ ВСЕГО БЛОКА ВНУТРИ ВКЛАДКИ
-      blockX.i = currentDrawX + GetAlignPosition(*tab\align, *tab\Width, contentW, padding)
       
       ; 2. ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ ПОРЯДКА ЭЛЕМЕНТОВ
       If *tab\align & #__flag_Right
          ; Направление RIGHT: Текст слева, Иконка справа
-         TxtX = blockX
-         ImgX = blockX + txtW + Bool(txtW)*iconSpacing
+         TxtX = contentX
+         ImgX = contentX + txtW + Bool(txtW)*iconSpacing
       Else
          ; Направление LEFT / По умолчанию: Иконка слева, Текст справа
-         ImgX = blockX
-         TxtX = blockX + imgW + Bool(imgW)*iconSpacing
+         ImgX = contentX
+         TxtX = contentX + imgW + Bool(imgW)*iconSpacing
       EndIf
    EndIf
    
-   ; Вывод графики на Canvas (с вертикальным центрованием по Y)
+   
+   
+   ; 2. Вывод графики на Canvas
+   ; 2.1. Отрисовка фона вкладки
+   If isDragged
+      Box(*tab\X, *tab\Y, *tab\Width, *tab\Height, RGBA(255, 0, 0, 160)) ; Летящая
+   Else
+      Box(*Tab\X, *tab\Y, *tab\Width, *tab\Height, RGBA(128, 128, 128, 255)) ; Статичная
+   EndIf
+   
+   ; 2.2. Отрисовка рисунка вкладки
    If IsImage(*tab\img\Image)
-      ; Отрисовываем картинку 1:1, так как ее физический размер уже правильный
       DrawAlphaImage(ImageID(*tab\img\Image), ImgX, ImgY)
    EndIf
    
-   DrawText(TxtX, TxtY, *tab\txt\Text, RGBA(255, 255, 255, 255))
+   ; 2.3.. Отрисовка текста вкладки
+   If *tab\txt\Text
+      DrawText(TxtX, TxtY, *tab\txt\Text, RGBA(255, 255, 255, 255))
+   EndIf
 EndProcedure
 
 ; Главная циклическая процедура отрисовки Canvas панели
@@ -214,7 +219,7 @@ Procedure ReDrawTabs(gadget.i, *this._s_WIDGET)
    ForEach *this\tab\_s()
       *tab = @*this\tab\_s()
       If *tab <> *this\tab\dragged
-         If *this\vertical 
+         If *this\tab\vertical 
             DrawTab(1, *Tab, *tab\X, *tab\Y + *tab\offset, gWidth, gHeight, #False)
          Else
             DrawTab(0, *Tab, *tab\X + *tab\offset, *tab\Y, gWidth, gHeight, #False)
@@ -224,7 +229,7 @@ Procedure ReDrawTabs(gadget.i, *this._s_WIDGET)
    
    ; Слой 2: Летящая поверх
    If *this\tab\dragged
-      If *this\vertical 
+      If *this\tab\vertical 
          DrawTab(1, *this\tab\dragged, *this\tab\dragged\X, *this\tab\dragged\Y + *this\tab\dragged\offset, gWidth, gHeight, #True)
       Else
          DrawTab(0, *this\tab\dragged, *this\tab\dragged\X + *this\tab\dragged\offset, *this\tab\dragged\Y, gWidth, gHeight, #True)
@@ -239,7 +244,7 @@ Procedure event_LeftButtonDown(*this._s_WIDGET, mx.i,my.i)
    Protected *current_tab._s_TAB
    Protected *tab._s_TAB
    
-   If *this\vertical
+   If *this\tab\vertical
       *this\dragOffSet = mY
    Else
       *this\dragOffSet = mx
@@ -248,7 +253,7 @@ Procedure event_LeftButtonDown(*this._s_WIDGET, mx.i,my.i)
    ; ЦИКЛ 1: Находим вкладку, на которую кликнули
    ForEach *this\tab\_s()
       *tab = @*this\tab\_s()
-      If *this\vertical
+      If *this\tab\vertical
          If my >= *tab\Y And mY < *tab\Y + *tab\Height
             *current_tab = *tab
             Break
@@ -268,7 +273,7 @@ Procedure event_LeftButtonDown(*this._s_WIDGET, mx.i,my.i)
       Protected accumulatedSize.i = *this\tab\indent 
       Protected isBeforeDragged.b = #True 
       Protected stepSize.i
-      If *this\vertical
+      If *this\tab\vertical
          stepSize = *current_tab\Height + *this\tab\spacing
       Else
          stepSize = *current_tab\Width + *this\tab\spacing
@@ -279,7 +284,7 @@ Procedure event_LeftButtonDown(*this._s_WIDGET, mx.i,my.i)
          
          If *tab = *current_tab
             isBeforeDragged = #False 
-            If *this\vertical
+            If *this\tab\vertical
                *tab\offset = mY - *this\dragOffSet
             Else
                *tab\offset = mx - *this\dragOffSet
@@ -287,7 +292,7 @@ Procedure event_LeftButtonDown(*this._s_WIDGET, mx.i,my.i)
             Continue ; Лимиты для dragged запишем сразу после цикла
          EndIf
          
-         If *this\vertical
+         If *this\tab\vertical
             ; 1. Сдвигаем базовый Y только для вкладок левее нажатой
             If isBeforeDragged
                *tab\y + stepSize
@@ -325,7 +330,7 @@ Procedure event_LeftButtonDown(*this._s_WIDGET, mx.i,my.i)
       Next
       
       ; Финальная запись лимитов и проверка границ для самой перетаскиваемой вкладки
-      If *this\vertical
+      If *this\tab\vertical
          *current_tab\minOffset = *this\tab\indent - *current_tab\y
          *current_tab\maxOffset = -*current_tab\y + accumulatedSize
       Else
@@ -350,7 +355,7 @@ Procedure event_MouseMove(*this._s_WIDGET, mx.i,my.i)
       ForEach *this\tab\_s()
          *tab = @*this\tab\_s()
          
-         If *this\vertical
+         If *this\tab\vertical
             If *tab = *current_tab
                *tab\offset = my - *this\dragOffSet
             Else
@@ -385,7 +390,7 @@ Procedure event_LeftButtonUp(*this._s_WIDGET)
       ; Переносим визуальный сдвиг в постоянную координату X и обнуляем offset
       ForEach *this\tab\_s()
          *tab = @*this\tab\_s()
-         If *this\vertical
+         If *this\tab\vertical
             *tab\Y + *tab\offset
          Else
             *Tab\X + *tab\offset
@@ -394,7 +399,7 @@ Procedure event_LeftButtonUp(*this._s_WIDGET)
       Next
       
       ; Сортируем список вкладок в памяти по их новым физическим координатам X
-      If *this\vertical
+      If *this\tab\vertical
          SortStructuredList(*this\tab\_s(), #PB_Sort_Ascending, OffsetOf(_s_TAB\Y), TypeOf(_s_TAB\Y))
       Else
          SortStructuredList(*this\tab\_s(), #PB_Sort_Ascending, OffsetOf(_s_TAB\X), TypeOf(_s_TAB\X))
@@ -415,7 +420,7 @@ EndProcedure
 ; =====================================================================
 
 Define MyThis._s_WIDGET
-MyThis\vertical = 1
+MyThis\tab\vertical = 1
 MyThis\tab\indent = DesktopScaledX(50) ; Отступ панели слева
 MyThis\tab\spacing = DesktopScaledX(2) ; Расстояние между вкладками
 
@@ -429,7 +434,7 @@ UpdateTabs(@MyThis)
 #Win = 0
 #Canvas = 0
 
-If MyThis\vertical
+If MyThis\tab\vertical
    Define h = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
    Define w = 240
 Else
@@ -468,9 +473,9 @@ If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Прим�
       
    Until Event = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 153
-; FirstLine = 148
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 197
+; FirstLine = 171
 ; Folding = ------------
 ; EnableXP
 ; DPIAware
