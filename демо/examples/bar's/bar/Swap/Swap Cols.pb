@@ -32,12 +32,14 @@ Structure _s_IMG Extends _s_COORDINATE
    change.b
 EndStructure
 
-Structure _s_TAB Extends _s_COORDINATE
+Structure _s_COL ;Extends _s_COORDINATE
+   x.l
+   width.l
    ID.i             ; Номер элемента в списке данных строки (0, 1, 2...) 
    txt._s_TXT       ; Имя поля заголовка
    img._s_IMG
    align.a          ; Выравнивание
-   mask.q           ; Маска конкретной вкладки
+   ;mask.q           ; Маска конкретной вкладки
    
    ; Поля для идеальной математики плавного сдвига
    offset.i        ; Динамический визуальный сдвиг
@@ -45,20 +47,20 @@ Structure _s_TAB Extends _s_COORDINATE
    maxOffset.i     ; Правый ограничитель хода
 EndStructure
 
-Structure _s_TABS
-   *active._s_TAB   
-   *dragged._s_TAB  ; Указатель на перетаскиваемую вкладку
+Structure _s_COLS
+   *active._s_COL   
+   *dragged._s_COL  ; Указатель на перетаскиваемую вкладку
    
-   vertical.b
+   ;vertical.b
    align.a               
-   indent.a              
+   ;indent.a              
    spacing.a             
    TotalSize.l          
-   List _s._s_TAB()  ; Заголовки вкладок
+   List _s._s_COL()  ; Заголовки вкладок
 EndStructure
 
 Structure _s_WIDGET
-   Tab._s_TABS
+   Col._s_COLS
    dragOffSet.i     ; Точка захвата мыши
 EndStructure
 
@@ -78,193 +80,189 @@ EndProcedure
 
 
 ; Функция линейного расчета базовых координат X
-Procedure UpdateTabs(*this._s_WIDGET)
-   Protected position.i = *this\tab\indent
-   Protected *tab._s_TAB
+Procedure UpdateCols(*this._s_WIDGET)
+   Protected position.i = 0;*this\col\indent
+   Protected *col._s_COL
    
-   If *this\tab\dragged = #Null
-      ForEach *this\tab\_s()
-         *tab = @*this\tab\_s()
-         If *this\tab\vertical 
-            *tab\Y = position : position + *tab\Height + *this\tab\spacing
-         Else
-            *tab\X = position : position + *tab\Width + *this\tab\spacing
-         EndIf
-         *tab\offset = 0
+   If *this\col\dragged = #Null
+      ForEach *this\col\_s()
+         *col = @*this\col\_s()
+;          If *this\col\vertical 
+;             *col\Y = position : position + *col\Height + *this\col\spacing
+;          Else
+            *col\X = position : position + *col\Width + *this\col\spacing
+;          EndIf
+         *col\offset = 0
       Next
-      *this\tab\TotalSize = position - *this\tab\spacing
+      *this\col\TotalSize = position - *this\col\spacing
    EndIf
 EndProcedure
 
-Procedure UpdateTab(vertical.b, *tab._s_TAB, gadgetWidth.i, gadgetHeight.i, isResize.b)
-   Protected contentX.i, contentY.i, contentW.i, contentH.i
-   
-   If vertical
-      *tab\Width = gadgetWidth
-   Else
-      *tab\Height = gadgetHeight
-   EndIf
-   
-   ; 1. Замеры метрик (оставляем ленивое обновление, но убираем лишние вложенные проверки)
-   If *tab\txt\change
-      If *tab\txt\Text <> ""
-         *tab\txt\Width = TextWidth(*tab\txt\Text)
-         *tab\txt\height = TextHeight(*tab\txt\Text)
-      Else
-         *tab\txt\Width = 0 : *tab\txt\height = 0
-      EndIf
-   EndIf
-   
-   If *tab\img\change
-      If IsImage(*tab\img\Image)
-         *tab\img\width = ImageWidth(*tab\img\Image)
-         *tab\img\height = ImageHeight(*tab\img\Image)
-      Else
-         *tab\img\width = 0 : *tab\img\height = 0
-      EndIf
-   EndIf
-   
-   ; 2. ВНЕШНЕЕ ПОЗИЦИОНИРОВАНИЕ ВСЕГО БЛОКА
-   If *tab\txt\change Or *tab\img\change Or isResize
-      ; Заменили сложение (+), которое могло давать ложные срабатывания, на битовое ИЛИ или явную проверку флагов
-      If *tab\img\width Or *tab\img\height
-         Protected iconSpacing.i = DesktopScaledX(6) ; Масштабируем отступ только если есть иконка
-         contentW = *tab\img\width + iconSpacing + *tab\txt\width
-         contentH = *tab\img\height + iconSpacing + *tab\txt\height
-      Else
-         contentW = *tab\txt\width
-         contentH = *tab\txt\height
-      EndIf
-      
-      Protected padding.i = DesktopScaledX(8)
-      If vertical
-         contentY = GetAlignPosition(*tab\align, *tab\Height, contentH, padding)
-      Else
-         contentX = GetAlignPosition(*tab\align, *tab\Width, contentW, padding)
-      EndIf
-   EndIf
-   
-   ; 3. ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ (Оптимизировано: убран Bool() из расчетов, так как наличие иконки проверено выше)
-   If *tab\txt\change Or isResize
-      If vertical
-         *tab\txt\x = (gadgetWidth - *tab\txt\width) >> 1 ; Быстрое деление на 2 через битовый сдвиг
-         If *tab\align & #__flag_Bottom
-            *tab\txt\y = contentY
-         Else
-            *tab\txt\y = contentY + *tab\img\height
-            If *tab\img\height : *tab\txt\y + iconSpacing : EndIf
-         EndIf
-      Else
-         *tab\txt\y = (gadgetHeight - *tab\txt\height) >> 1
-         If *tab\align & #__flag_Right
-            *tab\txt\x = contentX
-         Else
-            *tab\txt\x = contentX + *tab\img\width
-            If *tab\img\width : *tab\txt\x + iconSpacing : EndIf
-         EndIf
-      EndIf
-      *tab\txt\change = 0
-   EndIf
-   
-   If *tab\img\change Or isResize
-      If vertical
-         *tab\img\x = (gadgetWidth - *tab\img\width) >> 1
-         If *tab\align & #__flag_Bottom
-            *tab\img\y = contentY + *tab\txt\height
-            If *tab\txt\height : *tab\img\y + iconSpacing : EndIf
-         Else
-            *tab\img\y = contentY
-         EndIf
-      Else
-         *tab\img\y = (gadgetHeight - *tab\img\height) >> 1
-         If *tab\align & #__flag_Right
-            *tab\img\x = contentX + *tab\txt\width
-            If *tab\txt\width : *tab\img\x + iconSpacing : EndIf
-         Else
-            *tab\img\x = contentX
-         EndIf
-      EndIf
-      *tab\img\change = 0
-   EndIf
-   
-EndProcedure
 
 ; Процедура добавления вкладки
 ; Обновленная процедура добавления вкладки с поддержкой иконок и выравнивания
-Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, align.a = #__flag_Left, Image.i = 0)
-   Protected *tab._s_TAB = AddElement(*this\tab\_s())
+Procedure AddCol(*this._s_WIDGET, ID.i, Text.s, size.i, align.a = #__flag_Left, Image.i = 0)
+   Protected *col._s_COL = AddElement(*this\col\_s())
    
-   *tab\ID        = ID
-   *tab\align     = align
-   If *this\tab\vertical 
-      *tab\height = DesktopScaledY(size)
-   Else
-      *tab\width  = DesktopScaledX(size)
-   EndIf
+   *col\ID        = ID
+   *col\align     = align
+;    If *this\col\vertical 
+;       *col\height = DesktopScaledY(size)
+;    Else
+      *col\width  = DesktopScaledX(size)
+;    EndIf
    If Text
-      *tab\txt\text  = Text
-      *tab\txt\change = 1
+      *col\txt\text  = Text
+      *col\txt\change = 1
    EndIf
    If IsImage(Image)
-      *tab\img\image = Image 
-      *tab\img\change = 1
+      *col\img\image = Image 
+      *col\img\change = 1
    EndIf
 EndProcedure
 
 ; Будущая рабочая процедура (когда все метрики уже посчитаны при создании)
-Procedure DrawTab(vertical.b, *tab._s_TAB, isDragged.b)
-   Protected rx.i = *tab\x
-   Protected ry.i = *tab\y
+Procedure DrawCol(*col._s_COL, gadgetHeight.l, isDragged.b, isResize.b=0)
+   Protected rx.i = *col\x
+   Protected ry.i = 0;*col\y
+
+       Protected contentX.i, contentY.i, contentW.i, contentH.i
    
-   If vertical
-      ry + *tab\offset
-   Else
-      rx + *tab\offset
+;    If vertical
+;       *col\Width = gadgetWidth
+;    Else
+;       *col\Height = gadgetHeight
+;    EndIf
+   
+   ; 1. Замеры метрик (оставляем ленивое обновление, но убираем лишние вложенные проверки)
+   If *col\txt\change
+      If *col\txt\Text <> ""
+         *col\txt\Width = TextWidth(*col\txt\Text)
+         *col\txt\height = TextHeight(*col\txt\Text)
+      Else
+         *col\txt\Width = 0 : *col\txt\height = 0
+      EndIf
    EndIf
+   
+   If *col\img\change
+      If IsImage(*col\img\Image)
+         *col\img\width = ImageWidth(*col\img\Image)
+         *col\img\height = ImageHeight(*col\img\Image)
+      Else
+         *col\img\width = 0 : *col\img\height = 0
+      EndIf
+   EndIf
+   
+   ; 2. ВНЕШНЕЕ ПОЗИЦИОНИРОВАНИЕ ВСЕГО БЛОКА
+   If *col\txt\change Or *col\img\change Or isResize
+      ; Заменили сложение (+), которое могло давать ложные срабатывания, на битовое ИЛИ или явную проверку флагов
+      If *col\img\width Or *col\img\height
+         Protected iconSpacing.i = DesktopScaledX(6) ; Масштабируем отступ только если есть иконка
+         contentW = *col\img\width + iconSpacing + *col\txt\width
+         contentH = *col\img\height + iconSpacing + *col\txt\height
+      Else
+         contentW = *col\txt\width
+         contentH = *col\txt\height
+      EndIf
+      
+      Protected padding.i = DesktopScaledX(8)
+;       If vertical
+;          contentY = GetAlignPosition(*col\align, *col\Height, contentH, padding)
+;       Else
+         contentX = GetAlignPosition(*col\align, *col\Width, contentW, padding)
+;       EndIf
+   EndIf
+   
+   ; 3. ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ (Оптимизировано: убран Bool() из расчетов, так как наличие иконки проверено выше)
+   If *col\txt\change Or isResize
+;       If vertical
+;          *col\txt\x = (gadgetWidth - *col\txt\width) >> 1 ; Быстрое деление на 2 через битовый сдвиг
+;          If *col\align & #__flag_Bottom
+;             *col\txt\y = contentY
+;          Else
+;             *col\txt\y = contentY + *col\img\height
+;             If *col\img\height : *col\txt\y + iconSpacing : EndIf
+;          EndIf
+;       Else
+         *col\txt\y = (gadgetHeight - *col\txt\height) >> 1
+         If *col\align & #__flag_Right
+            *col\txt\x = contentX
+         Else
+            *col\txt\x = contentX + *col\img\width
+            If *col\img\width : *col\txt\x + iconSpacing : EndIf
+         EndIf
+;       EndIf
+      *col\txt\change = 0
+   EndIf
+   
+   If *col\img\change Or isResize
+;       If vertical
+;          *col\img\x = (gadgetWidth - *col\img\width) >> 1
+;          If *col\align & #__flag_Bottom
+;             *col\img\y = contentY + *col\txt\height
+;             If *col\txt\height : *col\img\y + iconSpacing : EndIf
+;          Else
+;             *col\img\y = contentY
+;          EndIf
+;       Else
+         *col\img\y = (gadgetHeight - *col\img\height) >> 1
+         If *col\align & #__flag_Right
+            *col\img\x = contentX + *col\txt\width
+            If *col\txt\width : *col\img\x + iconSpacing : EndIf
+         Else
+            *col\img\x = contentX
+         EndIf
+;       EndIf
+      *col\img\change = 0
+   EndIf
+   
+     ;
+         
+;    If vertical
+;       ry + *col\offset
+;    Else
+      rx + *col\offset
+;    EndIf
    
    ; 1. ОТРИСОВКА ФОНА
    If isDragged
-      Box(rx, ry, *tab\Width, *tab\Height, $A00000FF)
+      Box(rx, ry, *col\Width, gadgetHeight, $A00000FF)
    Else
-      Box(rx, ry, *tab\Width, *tab\Height, $FF808080)
+      Box(rx, ry, *col\Width, gadgetHeight, $FF808080)
    EndIf
    
    ; 2. ОТРИСОВКА ИКОНКИ (Координаты уже намертво вшиты в структуру)
-   If *tab\img\width Or *tab\img\height
-      DrawAlphaImage(ImageID(*tab\img\Image), rx + *tab\img\X, ry + *tab\img\Y)
+   If *col\img\width Or *col\img\height
+      DrawAlphaImage(ImageID(*col\img\Image), rx + *col\img\X, ry + *col\img\Y)
    EndIf
    
    ; 3. ОТРИСОВКА ТЕКСТА
-   If *tab\txt\Text <> ""
-      DrawText(rx + *tab\txt\X, ry + *tab\txt\Y, *tab\txt\Text, $FFFFFFFF)
+   If *col\txt\Text <> ""
+      DrawText(rx + *col\txt\X, ry + *col\txt\Y, *col\txt\Text, $FFFFFFFF)
    EndIf
 EndProcedure
 
-Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB, gWidth, gHeight)
-   Protected *tab._s_TAB
-   Protected vertical.b = *this\tab\vertical
+Procedure DrawCols(*this._s_WIDGET, *current_Col._s_COL, gWidth, gHeight)
+   Protected *col._s_COL
+   Protected vertical.b = 0;*this\col\vertical
    DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent)
    
    ; Слой 1: Статичные
-   ForEach *this\tab\_s()
-      *tab = @*this\tab\_s()
-      If *tab <> *current_tab
-         UpdateTab(vertical, *tab, gWidth, gHeight, #False)
-         ;
-         DrawTab(vertical, *tab, #False)
+   ForEach *this\col\_s()
+      *col = @*this\col\_s()
+      If *col <> *current_Col
+         DrawCol(*col, gHeight, #False)
       EndIf
    Next
    
    ; Слой 2: Летящая поверх
-   If *current_tab
-      UpdateTab(vertical, *current_tab, gWidth, gHeight, #False)
-      ;
-      DrawTab(vertical, *current_tab, #True)
+   If *current_Col
+      DrawCol(*current_Col, gHeight, #True)
    EndIf
 EndProcedure
 
 ; Главная циклическая процедура отрисовки Canvas панели
-Procedure ReDrawTabs(gadget.i, *this._s_WIDGET)
+Procedure ReDrawCols(gadget.i, *this._s_WIDGET)
    Protected gWidth.i = DesktopScaledX(GadgetWidth(gadget))
    Protected gHeight.i = DesktopScaledY(GadgetHeight(gadget))
    
@@ -275,174 +273,174 @@ Procedure ReDrawTabs(gadget.i, *this._s_WIDGET)
    DrawingMode(#PB_2DDrawing_AlphaBlend)
    Box(0, 0, gWidth, gHeight, RGBA(255, 255, 255, 255)) 
    
-   DrawTabs(*this, *this\tab\dragged, gWidth, gHeight)
+   DrawCols(*this, *this\col\dragged, gWidth, gHeight)
    
    StopDrawing()
 EndProcedure
 
-Procedure DoTabEvents(*this._s_WIDGET, event.i, mx.i, my.i)
-   Protected *current_tab._s_TAB
-   Protected *tab._s_TAB
-   Protected accumulatedSize.i = *this\tab\indent 
+Procedure DoColEvents(*this._s_WIDGET, event.i, mx.i, my.i)
+   Protected *current_Col._s_COL
+   Protected *col._s_COL
+   Protected accumulatedSize.i = 0;*this\col\indent 
    Protected isBeforeDragged.b = #True 
    Protected stepSize.i
    
    Select event
          
       Case #PB_EventType_LeftButtonDown
-         If *this\tab\vertical
-            *this\dragOffSet = mY
-         Else
+;          If *this\col\vertical
+;             *this\dragOffSet = mY
+;          Else
             *this\dragOffSet = mx
-         EndIf
+;          EndIf
          
          ; ЦИКЛ 1: Находим вкладку, на которую кликнули
-         ForEach *this\tab\_s()
-            *tab = @*this\tab\_s()
-            If *this\tab\vertical
-               If my >= *tab\Y And mY < *tab\Y + *tab\Height
-                  *current_tab = *tab
+         ForEach *this\col\_s()
+            *col = @*this\col\_s()
+;             If *this\col\vertical
+;                If my >= *col\Y And mY < *col\Y + *col\Height
+;                   *current_Col = *col
+;                   Break
+;                EndIf
+;             Else
+               If mx >= *col\X And mx < *col\X + *col\Width
+                  *current_Col = *col
                   Break
                EndIf
-            Else
-               If mx >= *tab\X And mx < *tab\X + *tab\Width
-                  *current_tab = *tab
-                  Break
-               EndIf
-            EndIf
+;             EndIf
          Next
          
-         *this\tab\dragged = *current_tab
+         *this\col\dragged = *current_Col
          
          ; ЦИКЛ 2: Выполняем раздвижку, лимиты и расчет стартового offset за один проход
-         If *current_tab
-            If *this\tab\vertical
-               stepSize = *current_tab\Height + *this\tab\spacing
-            Else
-               stepSize = *current_tab\Width + *this\tab\spacing
-            EndIf
+         If *current_Col
+;             If *this\col\vertical
+;                stepSize = *current_Col\Height + *this\col\spacing
+;             Else
+               stepSize = *current_Col\Width + *this\col\spacing
+;             EndIf
             
-            ForEach *this\tab\_s()
-               *tab = @*this\tab\_s()
+            ForEach *this\col\_s()
+               *col = @*this\col\_s()
                
-               If *tab = *current_tab
+               If *col = *current_Col
                   isBeforeDragged = #False 
-                  If *this\tab\vertical
-                     *tab\offset = mY - *this\dragOffSet
-                  Else
-                     *tab\offset = mx - *this\dragOffSet
-                  EndIf
+;                   If *this\col\vertical
+;                      *col\offset = mY - *this\dragOffSet
+;                   Else
+                     *col\offset = mx - *this\dragOffSet
+;                   EndIf
                   Continue ; Лимиты для dragged запишем сразу после цикла
                EndIf
                
-               If *this\tab\vertical
-                  ; 1. Сдвигаем базовый Y только для вкладок левее нажатой
-                  If isBeforeDragged
-                     *tab\y + stepSize
-                  EndIf
-                  
-                  ; 2. Расчет лимитов хода (использует уже обновленный *tab\Y)
-                  *tab\minOffset = accumulatedSize - *tab\y
-                  *tab\maxOffset = accumulatedSize - *tab\y + stepSize
-                  accumulatedSize + *tab\Height + *this\tab\spacing
-                  
-                  ; 3. Ваша оригинальная пропорция инициализации offset (использует обновленный *tab\X)
-                  *tab\offset = *tab\y - *current_tab\y - *current_tab\offset
-                  *tab\offset - stepSize
-                  *tab\offset * stepSize / (*tab\Height + *this\tab\spacing)
-               Else
+;                If *this\col\vertical
+;                   ; 1. Сдвигаем базовый Y только для вкладок левее нажатой
+;                   If isBeforeDragged
+;                      *col\y + stepSize
+;                   EndIf
+;                   
+;                   ; 2. Расчет лимитов хода (использует уже обновленный *col\Y)
+;                   *col\minOffset = accumulatedSize - *col\y
+;                   *col\maxOffset = accumulatedSize - *col\y + stepSize
+;                   accumulatedSize + *col\Height + *this\col\spacing
+;                   
+;                   ; 3. Ваша оригинальная пропорция инициализации offset (использует обновленный *col\X)
+;                   *col\offset = *col\y - *current_Col\y - *current_Col\offset
+;                   *col\offset - stepSize
+;                   *col\offset * stepSize / (*col\Height + *this\col\spacing)
+;                Else
                   ; 1. Сдвигаем базовый X только для вкладок левее нажатой
                   If isBeforeDragged
-                     *tab\X + stepSize
+                     *col\X + stepSize
                   EndIf
                   
-                  ; 2. Расчет лимитов хода (использует уже обновленный *tab\X)
-                  *tab\minOffset = accumulatedSize - *tab\X
-                  *tab\maxOffset = accumulatedSize - *tab\X + stepSize
-                  accumulatedSize + *tab\Width + *this\tab\spacing
+                  ; 2. Расчет лимитов хода (использует уже обновленный *col\X)
+                  *col\minOffset = accumulatedSize - *col\X
+                  *col\maxOffset = accumulatedSize - *col\X + stepSize
+                  accumulatedSize + *col\Width + *this\col\spacing
                   
-                  ; 3. Ваша оригинальная пропорция инициализации offset (использует обновленный *tab\X)
-                  *tab\offset = *tab\X - *current_tab\X - *current_tab\offset
-                  *tab\offset - stepSize
-                  *tab\offset * stepSize / (*tab\Width + *this\tab\spacing)
-               EndIf
+                  ; 3. Ваша оригинальная пропорция инициализации offset (использует обновленный *col\X)
+                  *col\offset = *col\X - *current_Col\X - *current_Col\offset
+                  *col\offset - stepSize
+                  *col\offset * stepSize / (*col\Width + *this\col\spacing)
+;                EndIf
                
                ; Ограничители хода
-               If *tab\offset < *tab\minOffset : *tab\offset = *tab\minOffset : EndIf
-               If *tab\offset > *tab\maxOffset : *tab\offset = *tab\maxOffset : EndIf
+               If *col\offset < *col\minOffset : *col\offset = *col\minOffset : EndIf
+               If *col\offset > *col\maxOffset : *col\offset = *col\maxOffset : EndIf
             Next
             
-            ; Финальная запись лимитов и проверка границ для самой перетаскиваемой вкладки
-            If *this\tab\vertical
-               *current_tab\minOffset = *this\tab\indent - *current_tab\y
-               *current_tab\maxOffset = -*current_tab\y + accumulatedSize
-            Else
-               *current_tab\minOffset = *this\tab\indent - *current_tab\X
-               *current_tab\maxOffset = -*current_tab\X + accumulatedSize
-            EndIf
+;             ; Финальная запись лимитов и проверка границ для самой перетаскиваемой вкладки
+;             If *this\col\vertical
+;                *current_Col\minOffset = *current_Col\y ; *this\col\indent - 
+;                *current_Col\maxOffset = -*current_Col\y + accumulatedSize
+;             Else
+               *current_Col\minOffset = -*current_Col\X  ; *this\col\indent - 
+               *current_Col\maxOffset = -*current_Col\X + accumulatedSize
+;             EndIf
             
-            If *current_tab\offset < *current_tab\minOffset : *current_tab\offset = *current_tab\minOffset : EndIf
-            If *current_tab\offset > *current_tab\maxOffset : *current_tab\offset = *current_tab\maxOffset : EndIf
+            If *current_Col\offset < *current_Col\minOffset : *current_Col\offset = *current_Col\minOffset : EndIf
+            If *current_Col\offset > *current_Col\maxOffset : *current_Col\offset = *current_Col\maxOffset : EndIf
             
             ProcedureReturn #True
          EndIf
          
       Case #PB_EventType_MouseMove
-         *current_tab = *this\tab\dragged
-         If *current_tab
-            ForEach *this\tab\_s()
-               *tab = @*this\tab\_s()
+         *current_Col = *this\col\dragged
+         If *current_Col
+            ForEach *this\col\_s()
+               *col = @*this\col\_s()
                
-               If *this\tab\vertical
-                  If *tab = *current_tab
-                     *tab\offset = my - *this\dragOffSet
+;                If *this\col\vertical
+;                   If *col = *current_Col
+;                      *col\offset = my - *this\dragOffSet
+;                   Else
+;                      *col\offset = *col\y - *current_Col\y - *current_Col\offset
+;                      *col\offset - (*current_Col\Height + *this\col\spacing)
+;                      *col\offset * (*current_Col\Height + *this\col\spacing) / (*col\Height + *this\col\spacing)
+;                   EndIf
+;                Else
+                  If *col = *current_Col
+                     *col\offset = mx - *this\dragOffSet
                   Else
-                     *tab\offset = *tab\y - *current_tab\y - *current_tab\offset
-                     *tab\offset - (*current_tab\Height + *this\tab\spacing)
-                     *tab\offset * (*current_tab\Height + *this\tab\spacing) / (*tab\Height + *this\tab\spacing)
+                     *col\offset = *col\X - *current_Col\X - *current_Col\offset
+                     *col\offset - (*current_Col\Width + *this\col\spacing)
+                     *col\offset * (*current_Col\Width + *this\col\spacing) / (*col\Width + *this\col\spacing)
                   EndIf
-               Else
-                  If *tab = *current_tab
-                     *tab\offset = mx - *this\dragOffSet
-                  Else
-                     *tab\offset = *tab\X - *current_tab\X - *current_tab\offset
-                     *tab\offset - (*current_tab\Width + *this\tab\spacing)
-                     *tab\offset * (*current_tab\Width + *this\tab\spacing) / (*tab\Width + *this\tab\spacing)
-                  EndIf
-               EndIf
+;                EndIf
                
-               If *tab\offset < *tab\minOffset : *tab\offset = *tab\minOffset : EndIf
-               If *tab\offset > *tab\maxOffset : *tab\offset = *tab\maxOffset : EndIf
+               If *col\offset < *col\minOffset : *col\offset = *col\minOffset : EndIf
+               If *col\offset > *col\maxOffset : *col\offset = *col\maxOffset : EndIf
             Next
             ProcedureReturn #True
          EndIf
          
       Case #PB_EventType_LeftButtonUp
-         *current_tab = *this\tab\dragged
-         If *current_tab
+         *current_Col = *this\col\dragged
+         If *current_Col
             ; Переносим визуальный сдвиг в постоянную координату X и обнуляем offset
-            ForEach *this\tab\_s()
-               *tab = @*this\tab\_s()
-               If *this\tab\vertical
-                  *tab\Y + *tab\offset
-               Else
-                  *tab\X + *tab\offset
-               EndIf
-               *tab\offset = 0
+            ForEach *this\col\_s()
+               *col = @*this\col\_s()
+;                If *this\col\vertical
+;                   *col\Y + *col\offset
+;                Else
+                  *col\X + *col\offset
+;                EndIf
+               *col\offset = 0
             Next
             
             ; Сортируем список вкладок в памяти по их новым физическим координатам X
-            If *this\tab\vertical
-               SortStructuredList(*this\tab\_s(), #PB_Sort_Ascending, OffsetOf(_s_TAB\Y), TypeOf(_s_TAB\Y))
-            Else
-               SortStructuredList(*this\tab\_s(), #PB_Sort_Ascending, OffsetOf(_s_TAB\X), TypeOf(_s_TAB\X))
-            EndIf
+;             If *this\col\vertical
+;                SortStructuredList(*this\col\_s(), #PB_Sort_Ascending, OffsetOf(_s_COL\Y), TypeOf(_s_COL\Y))
+;             Else
+               SortStructuredList(*this\col\_s(), #PB_Sort_Ascending, OffsetOf(_s_COL\X), TypeOf(_s_COL\X))
+;             EndIf
             
             ; Сбрасываем указатель перетаскивания
-            *this\tab\dragged = #Null
+            *this\col\dragged = #Null
             
             ; Вызываем ваши внутренние процедуры обновления состояния и перерисовки
-            UpdateTabs(*this)
+            UpdateCols(*this)
             ProcedureReturn #True
          EndIf
          
@@ -454,25 +452,25 @@ EndProcedure
 ; =====================================================================
 
 Define MyThis._s_WIDGET
-MyThis\tab\vertical = 0
-MyThis\tab\indent = DesktopScaledX(50) ; Отступ панели слева
-MyThis\tab\spacing = DesktopScaledX(2) ; Расстояние между вкладками
+; MyThis\col\vertical = 0
+;MyThis\col\indent = DesktopScaledX(50) ; Отступ панели слева
+MyThis\col\spacing = DesktopScaledX(2) ; Расстояние между вкладками
 
 ; Наполняем вашим тестовым набором
-AddTab(@MyThis, 0, "0 - 60", 60)
-AddTab(@MyThis, 1, "1 - 160", 160, #__flag_Center, 1)
-AddTab(@MyThis, 2, "2 - 150", 150, #__flag_Right, 1)
-AddTab(@MyThis, 3, "3 - 90", 90,0, 1)
+AddCol(@MyThis, 0, "0 - 60", 60)
+AddCol(@MyThis, 1, "1 - 160", 160, #__flag_Center, 1)
+AddCol(@MyThis, 2, "2 - 150", 150, #__flag_Right, 1)
+AddCol(@MyThis, 3, "3 - 90", 90,0, 1)
 ;
-UpdateTabs(@MyThis)
+UpdateCols(@MyThis)
 
-If MyThis\tab\vertical
-   Define h = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
-   Define w = 240
-Else
+; If MyThis\col\vertical
+;    Define h = DesktopUnscaledX(MyThis\col\TotalSize );+ MyThis\col\indent)
+;    Define w = 240
+; Else
    Define h = 40
-   Define w = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
-EndIf
+   Define w = DesktopUnscaledX(MyThis\col\TotalSize );+ MyThis\col\indent)
+; EndIf
  
 #Win = 0
 #Canvas = 0
@@ -480,7 +478,7 @@ EndIf
 If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Пример", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    CanvasGadget(#Canvas, 10, 10, w, h)
    
-   ReDrawTabs(#Canvas, @MyThis)
+   ReDrawCols(#Canvas, @MyThis)
    
    Repeat
       Define Event = WaitWindowEvent()
@@ -488,36 +486,36 @@ If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Прим�
       If Event = #PB_Event_Gadget And EventGadget() = #Canvas
          If EventType() = #PB_EventType_LeftDoubleClick
             HideWindow(#Win, 1)
-            MyThis\tab\vertical ! 1
-            ClearList(MyThis\Tab\_s())
-            AddTab(@MyThis, 0, "0 - 60", 60)
-            AddTab(@MyThis, 1, "1 - 160", 160, #__flag_Center, 1)
-            AddTab(@MyThis, 2, "2 - 150", 150, #__flag_Right, 1)
-            AddTab(@MyThis, 3, "3 - 90", 90,0, 1)
-            UpdateTabs(@MyThis)
-            If MyThis\tab\vertical
-               Define h = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
-               Define w = 240
-            Else
+;             MyThis\col\vertical ! 1
+            ClearList(MyThis\col\_s())
+            AddCol(@MyThis, 0, "0 - 60", 60)
+            AddCol(@MyThis, 1, "1 - 160", 160, #__flag_Center, 1)
+            AddCol(@MyThis, 2, "2 - 150", 150, #__flag_Right, 1)
+            AddCol(@MyThis, 3, "3 - 90", 90,0, 1)
+            UpdateCols(@MyThis)
+;             If MyThis\col\vertical
+;                Define h = DesktopUnscaledX(MyThis\col\TotalSize );+ MyThis\col\indent)
+;                Define w = 240
+;             Else
                Define h = 40
-               Define w = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
-            EndIf
+               Define w = DesktopUnscaledX(MyThis\col\TotalSize );+ MyThis\col\indent)
+;             EndIf
             ResizeWindow(#Win, #PB_Ignore, #PB_Ignore, w + 20, h + 20)
             ResizeGadget(#Canvas, #PB_Ignore, #PB_Ignore, w, h)
-            ReDrawTabs(#Canvas, @MyThis)
+            ReDrawCols(#Canvas, @MyThis)
             HideWindow(#Win, 0, #PB_Window_ScreenCentered)
          EndIf
          
-         If DoTabEvents( @MyThis, EventType(), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseX), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseY))
-            ReDrawTabs(#Canvas, @MyThis)
+         If DoColEvents( @MyThis, EventType(), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseX), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseY))
+            ReDrawCols(#Canvas, @MyThis)
          EndIf
       EndIf
       
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 456
-; FirstLine = 449
-; Folding = --------------
+; CursorPosition = 218
+; FirstLine = 106
+; Folding = --0-------
 ; EnableXP
 ; DPIAware
