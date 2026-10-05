@@ -203,7 +203,7 @@ Structure _s_COL ; ЗАГОЛОВОК
 EndStructure
 Structure _s_TAB Extends _s_COL
    Y.l
-   height.l
+   height.l 
 EndStructure
 
 Structure _s_COLS
@@ -6132,7 +6132,7 @@ CompilerIf #PB_Compiler_IsMainFile
   End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 196
+; CursorPosition = 205
 ; FirstLine = 196
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
