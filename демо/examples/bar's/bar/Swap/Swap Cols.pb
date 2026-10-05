@@ -98,7 +98,6 @@ Procedure UpdateCols(*this._s_WIDGET)
    EndIf
 EndProcedure
 
-
 ; Процедура добавления вкладки
 ; Обновленная процедура добавления вкладки с поддержкой иконок и выравнивания
 Procedure AddCol(*this._s_WIDGET, ID.i, Text.s, size.i, align.a = #__flag_Left, Image.i = 0)
@@ -514,8 +513,8 @@ If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Прим�
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 218
-; FirstLine = 106
+; CursorPosition = 99
+; FirstLine = 86
 ; Folding = --0-------
 ; EnableXP
 ; DPIAware
