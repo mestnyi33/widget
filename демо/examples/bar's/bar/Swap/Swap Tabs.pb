@@ -1,212 +1,530 @@
-; https://www.purebasic.fr/english/viewtopic.php?p=462631#p462631
-; http://forums.purebasic.com/english/viewtopic.php?p=462631&hilit=swap+tabs&sid=354dadea542b23efb68a54fa13ceb495#p462631
-EnableExplicit
+﻿EnableExplicit
 
-  #Win          = 0
-  #Bar          = 0
-  #TabsDistance = 2
+;-
+UsePNGImageDecoder()
+If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
+   End
+EndIf
+If DesktopResolutionX() > 1
+   ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
+EndIf
 
-  #ColTab = 8421504
-  #ColSwp = 255
-  #ColBar = 16777215
+; =====================================================================
+; 1. КОНСТАНТЫ И ФЛАГИ
+; =====================================================================
+#__flag_Left   = 0
+#__flag_Top  = 1
+#__flag_Right  = 2
+#__flag_Bottom  = 3
+#__flag_Center = 4
 
-  Structure TAB
-    Wi           .i
-    OffsetItem   .i
-    OffsetMove   .i
-    OffsetMoveMin.i
-    OffsetMoveMax.i
-    Text         .s
-  EndStructure
+; =====================================================================
+; 2. СТРУКТУРЫ ДАННЫХ
+; =====================================================================
+Structure _s_POINT : X.l : Y.l : EndStructure
+Structure _s_COORDINATE Extends _s_POINT : Width.l : Height.l : EndStructure
+Structure _s_TXT Extends _s_COORDINATE
+   Text.s
+   change.b
+EndStructure
 
-  Global NewList Tabs.TAB()
-  Global *TabSwap    .TAB
-  Define *Tab        .TAB
-  Define Event       .i
-  Define BarWi       .i
-  Define MouseX      .i
-  Define MouseY      .i
-  Define MouseDownX  .i
-  Define MouseDownY  .i
-  Define TabsWi      .i
+Structure _s_IMG Extends _s_COORDINATE
+   Image.i
+   change.b
+EndStructure
 
- ;Add tabs to list
-  AddElement (Tabs()) : Tabs()\Wi =  40 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\Wi
-  AddElement (Tabs()) : Tabs()\Wi = 140 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\Wi
-  AddElement (Tabs()) : Tabs()\Wi =  70 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\Wi
-  AddElement (Tabs()) : Tabs()\Wi = 130 : Tabs()\Text = "" + ListIndex (Tabs()) + " - " + Tabs()\Wi
+Structure _s_TAB Extends _s_COORDINATE
+   ID.i             ; Номер элемента в списке данных строки (0, 1, 2...) 
+   txt._s_TXT       ; Имя поля заголовка
+   img._s_IMG
+   align.a          ; Выравнивание
+   ; mask.q           ; Маска конкретной вкладки
+   
+   ; Поля для идеальной математики плавного сдвига
+   offset.i        ; Динамический визуальный сдвиг
+   minOffset.i     ; Левый ограничитель хода
+   maxOffset.i     ; Правый ограничитель хода
+EndStructure
 
- ;Calc bar width
-  ForEach Tabs()
-    BarWi + Tabs()\Wi + #TabsDistance
-  Next
-  BarWi - #TabsDistance
+Structure _s_TABS
+   *active._s_TAB   
+   *press._s_TAB  ; Указатель на перетаскиваемую вкладку
+   
+   vertical.b
+   
+   align.a               
+   indent.a 
+   spacing.a             
+   
+   TotalSize.i          
+   List _s._s_TAB()  ; Заголовки вкладок
+EndStructure
 
- ;Create window and bar
-  OpenWindow   (#Win,  0,  0, BarWi + 20, 40, "Swap Tabs", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-  CanvasGadget (#Bar, 10, 10, BarWi     , 20)
+Structure _s_WIDGET
+;    padding.a
+;    spacing.a             
+   Tab._s_TABS
+   dragOffSet.i     ; Точка захвата мыши
+EndStructure
 
-  Procedure DrawBar ()
-    Define OffsetItem.i
-    Define *Tab      .TAB
+; =====================================================================
+; 3. ЛОГИКА АЛГОРИТМА И ОТРИСОВКИ
+; =====================================================================
 
-   ;Calc OffsetItem
-    If *TabSwap = 0
-      ForEach Tabs() : *Tab = @Tabs()
-        *Tab\OffsetItem = OffsetItem
-        OffsetItem + *Tab\Wi + #TabsDistance
+Procedure.i GetAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i = 10)
+   If alignFlags & #__flag_Center
+      ProcedureReturn (contentSize - objectSize) / 2
+   ElseIf alignFlags & #__flag_Right
+      ProcedureReturn contentSize - objectSize - Offset
+   Else ; #__flag_Left
+      ProcedureReturn Offset
+   EndIf
+EndProcedure
+
+
+; Функция линейного расчета базовых координат X
+Procedure UpdateTabs(*this._s_WIDGET)
+   Protected position.i = *this\tab\indent
+   Protected *tab._s_TAB
+   
+   If *this\tab\press = #Null
+      ForEach *this\tab\_s()
+         *tab = @*this\tab\_s()
+         If *this\tab\vertical 
+            *tab\Y = position : position + *tab\Height + *this\tab\spacing
+         Else
+            *tab\X = position : position + *tab\Width + *this\tab\spacing
+         EndIf
+         *tab\offset = 0
       Next
-    EndIf
+      *this\tab\TotalSize = position - *this\tab\spacing
+   EndIf
+EndProcedure
 
-    StartDrawing (CanvasOutput (#Bar))
+; Процедура добавления вкладки
+; Обновленная процедура добавления вкладки с поддержкой иконок и выравнивания
+Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, align.a = #__flag_Left, Image.i = 0)
+   Protected *tab._s_TAB = AddElement(*this\tab\_s())
+   
+   *tab\ID        = ID
+   *tab\align     = align
+   If *this\tab\vertical 
+      *tab\height = DesktopScaledY(size)
+   Else
+      *tab\width  = DesktopScaledX(size)
+   EndIf
+   If Text
+      *tab\txt\text  = Text
+      *tab\txt\change = 1
+   EndIf
+   If IsImage(Image)
+      *tab\img\image = Image 
+      *tab\img\change = 1
+   EndIf
+EndProcedure
 
-     ;Draw background
-      DrawingMode (#PB_2DDrawing_Default)
-      Box (0, 0, GadgetWidth (#Bar), GadgetHeight (#Bar), #ColBar)
-
-     ;Draw tabs
-      ForEach  Tabs() : *Tab = @Tabs()
-        If *Tab <> *TabSwap
-          DrawingMode (#PB_2DDrawing_Default)
-          Box      (*Tab\OffsetItem + *Tab\OffsetMove, 0, *Tab\Wi, 20, #ColTab)
-          DrawingMode (#PB_2DDrawing_Transparent)
-          DrawText (*Tab\OffsetItem + *Tab\OffsetMove + 2, 2, *Tab\Text)
-        EndIf
-      Next
-
-     ;Draw swapping tab
-      If *TabSwap
-        DrawingMode (#PB_2DDrawing_AlphaBlend)
-        Box      (*TabSwap\OffsetItem + *TabSwap\OffsetMove, 0, *TabSwap\Wi, 20, $70000000 | #ColSwp)
-        DrawingMode (#PB_2DDrawing_Transparent)
-        DrawText (*TabSwap\OffsetItem + *TabSwap\OffsetMove + 2, 2, *TabSwap\Text)
+; Будущая рабочая процедура (когда все метрики уже посчитаны при создании)
+Procedure DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, isDragged.b, isResize.b=0)
+   Protected contentX.i, contentY.i, contentW.i, contentH.i
+   Protected rx.i = *tab\x
+   Protected ry.i = *tab\y
+   
+   If vertical
+      ry + *tab\offset
+      *tab\Width = gWidth
+   Else
+      rx + *tab\offset
+      *tab\Height = gHeight
+   EndIf
+   
+   ; UPDATE ROW
+   If *tab\txt\change Or *tab\img\change Or isResize
+      Protected padding.i = DesktopScaledX(8)
+      Protected iconSpacing.i = 0
+      
+      ; 1. Замеры метрик
+      If *tab\txt\change
+         If *tab\txt\Text <> ""
+            *tab\txt\Width = TextWidth(*tab\txt\Text)
+            *tab\txt\height = TextHeight(*tab\txt\Text)
+         Else
+            *tab\txt\Width = 0 : *tab\txt\height = 0
+         EndIf
       EndIf
-
-    StopDrawing ()
-
-  EndProcedure
-
- ;Draw bar
-  DrawBar ()
-
- ;Eventloop
-  Repeat
-
-    Event = WaitWindowEvent()
-        
-    If Event = #PB_Event_Gadget And EventGadget() = #Bar 
-
-      MouseX = GetGadgetAttribute(0, #PB_Canvas_MouseX)
-      MouseY = GetGadgetAttribute(0, #PB_Canvas_MouseY)
-
-     ;_________
-     ;Left down
-     ;?????????
-
-      If EventType() = #PB_EventType_LeftButtonDown
-
-       ;Store MouseDown
-        MouseDownX = MouseX
-        MouseDownY = MouseY
-
-       ;Find TabSwap
-        ForEach Tabs() : *Tab = @Tabs()
-          If MouseX >= *Tab\OffsetItem And MouseX < *Tab\OffsetItem + *Tab\Wi
-            *TabSwap = *Tab
-          EndIf
-        Next
-
-        If *TabSwap
-
-         ;Align all tabs to right (without TabSwap)
-          ForEach Tabs() : *Tab = @Tabs()
-            If *Tab = *TabSwap : Break : EndIf
-            *Tab\OffsetItem + *TabSwap\Wi + #TabsDistance
-          Next
-
-         ;Calc OffsetMoveMin/Max
-          ForEach Tabs() : *Tab = @Tabs()
-            If *Tab <> *TabSwap
-              *Tab\OffsetMoveMin = TabsWi - *Tab\OffsetItem
-              *Tab\OffsetMoveMax = TabsWi - *Tab\OffsetItem + *TabSwap\Wi + #TabsDistance
-              TabsWi + *Tab\Wi + #TabsDistance
-            EndIf
-          Next
-
-         ;Calc OffsetMoveMin/Max for TabSwap
-          *TabSwap\OffsetMoveMin = - *TabSwap\OffsetItem
-          *TabSwap\OffsetMoveMax = - *TabSwap\OffsetItem + TabsWi
-
-        EndIf
-
+      
+      If *tab\img\change
+         If IsImage(*tab\img\Image)
+            *tab\img\width = ImageWidth(*tab\img\Image)
+            *tab\img\height = ImageHeight(*tab\img\Image)
+         Else
+            *tab\img\width = 0 : *tab\img\height = 0
+         EndIf
       EndIf
-
-     ;__________
-     ;Mouse move
-     ;??????????
-
-      If EventType() = #PB_EventType_MouseMove
-        If *TabSwap
-          ForEach Tabs() : *Tab = @Tabs()
-
-           ;Calc OffsetMove
-            If *Tab = *TabSwap
-              *Tab\OffsetMove = MouseX - MouseDownX
+      
+      ; Расчет отступа, если присутствуют оба элемента
+      If (*tab\img\width Or *tab\img\height) And 
+         (*tab\txt\Width Or *tab\txt\height)
+         iconSpacing = DesktopScaledX(6)
+      EndIf
+      
+      ; 2. ВНЕШНЕЕ ПОЗИЦИОНИРОВАНИЕ ВСЕГО БЛОКА
+      If vertical
+         ; Вертикальный режим: складываем высоты, по ширине берем максимум
+         contentH = *tab\img\height + *tab\txt\height + iconSpacing
+         If *tab\img\width > *tab\txt\width
+            contentW = *tab\img\width
+         Else
+            contentW = *tab\txt\width
+         EndIf
+         contentY = GetAlignPosition(*tab\align, *tab\Height, contentH, padding)
+      Else
+         ; Горизонтальный режим: складываем ширину, по высоте берем максимум
+         contentW = *tab\img\width + *tab\txt\width + iconSpacing
+         If *tab\img\height > *tab\txt\height
+            contentH = *tab\img\height
+         Else
+            contentH = *tab\txt\height
+         EndIf
+         contentX = GetAlignPosition(*tab\align, *tab\Width, contentW, padding)
+      EndIf
+      
+      ; 3. ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ
+      If *tab\txt\change Or isResize
+         If vertical
+            *tab\txt\x = (gWidth - *tab\txt\width) >> 1
+            If *tab\align & #__flag_Bottom
+               *tab\txt\y = contentY
             Else
-              *Tab\OffsetMove = *Tab\OffsetItem - *TabSwap\OffsetItem - *TabSwap\OffsetMove
-              *Tab\OffsetMove - (*TabSwap\Wi + #TabsDistance)
-              *Tab\OffsetMove * (*TabSwap\Wi + #TabsDistance) / (*Tab\Wi + #TabsDistance)
+               *tab\txt\y = contentY + *tab\img\height
+               If *tab\img\height : *tab\txt\y + iconSpacing : EndIf
             EndIf
-
-           ;Limit OffsetMove to minimum
-            If *Tab\OffsetMove < *Tab\OffsetMoveMin
-              *Tab\OffsetMove = *Tab\OffsetMoveMin
+         Else
+            *tab\txt\y = (gHeight - *tab\txt\height) >> 1
+            If *tab\align & #__flag_Right
+               *tab\txt\x = contentX
+            Else
+               *tab\txt\x = contentX + *tab\img\width
+               If *tab\img\width : *tab\txt\x + iconSpacing : EndIf
             EndIf
-
-           ;Limit OffsetMove to maximum
-            If *Tab\OffsetMove > *Tab\OffsetMoveMax
-              *Tab\OffsetMove = *Tab\OffsetMoveMax
-            EndIf
-
-          Next
-        EndIf
-
-       ;Draw bar
-        DrawBar ()
-
+         EndIf
+         *tab\txt\change = 0
       EndIf
       
-      ;_______
-      ;Left up
-      ;???????
+      If *tab\img\change Or isResize
+         If vertical
+            *tab\img\x = (gWidth - *tab\img\width) >> 1
+            If *tab\align & #__flag_Bottom
+               *tab\img\y = contentY + *tab\txt\height
+               If *tab\txt\height : *tab\img\y + iconSpacing : EndIf
+            Else
+               *tab\img\y = contentY
+            EndIf
+         Else
+            *tab\img\y = (gHeight - *tab\img\height) >> 1
+            If *tab\align & #__flag_Right
+               *tab\img\x = contentX + *tab\txt\width
+               If *tab\txt\width : *tab\img\x + iconSpacing : EndIf
+            Else
+               *tab\img\x = contentX
+            EndIf
+         EndIf
+         *tab\img\change = 0
+      EndIf
+   EndIf
+   
+   ; DRAW ROW
+   ; 1. ОТРИСОВКА ФОНА
+   If isDragged
+      Box(rx, ry, *tab\Width, *tab\Height, $A00000FF)
+   Else
+      Box(rx, ry, *tab\Width, *tab\Height, $FF808080)
+   EndIf
+   
+   ; 2. ОТРИСОВКА ИКОНКИ
+   If *tab\img\width Or *tab\img\height
+      DrawAlphaImage(ImageID(*tab\img\Image), rx + *tab\img\X, ry + *tab\img\Y)
+   EndIf
+   
+   ; 3. ОТРИСОВКА ТЕКСТА
+   If *tab\txt\Text <> ""
+      DrawText(rx + *tab\txt\X, ry + *tab\txt\Y, *tab\txt\Text, $FFFFFFFF)
+   EndIf
+EndProcedure
+
+Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB, gWidth, gHeight)
+   Protected *tab._s_TAB
+   Protected vertical.b = *this\tab\vertical
+   DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent)
+   
+   ; Слой 1: Статичные
+   ForEach *this\tab\_s()
+      *tab = @*this\tab\_s()
+      If *tab <> *current_tab
+         DrawTab(*tab, gWidth, gHeight, vertical, #False)
+      EndIf
+   Next
+   
+   ; Слой 2: Летящая поверх
+   If *current_tab
+      DrawTab(*current_tab, gWidth, gHeight, vertical, #True)
+   EndIf
+EndProcedure
+
+; Главная циклическая процедура отрисовки Canvas панели
+Procedure ReDrawTabs(gadget.i, *this._s_WIDGET)
+   Protected gWidth.i = DesktopScaledX(GadgetWidth(gadget))
+   Protected gHeight.i = DesktopScaledY(GadgetHeight(gadget))
+   
+   If Not StartDrawing(CanvasOutput(gadget))
+      ProcedureReturn
+   EndIf
+   
+   DrawingMode(#PB_2DDrawing_AlphaBlend)
+   Box(0, 0, gWidth, gHeight, RGBA(255, 255, 255, 255)) 
+   
+   DrawTabs(*this, *this\tab\press, gWidth, gHeight)
+   
+   StopDrawing()
+EndProcedure
+
+Procedure DoTabEvents(*this._s_WIDGET, event.i, mx.i, my.i)
+   Protected *current_tab._s_TAB
+   Protected *tab._s_TAB
+   Protected accumulatedSize.i = *this\tab\indent 
+   Protected isBeforeDragged.b = #True 
+   Protected stepSize.i
+   
+   Select event
+         
+      Case #PB_EventType_LeftButtonDown
+         If *this\tab\vertical
+            *this\dragOffSet = mY
+         Else
+            *this\dragOffSet = mx
+         EndIf
+         
+         ; ЦИКЛ 1: Находим вкладку, на которую кликнули
+         ForEach *this\tab\_s()
+            *tab = @*this\tab\_s()
+            If *this\tab\vertical
+               If my >= *tab\Y And mY < *tab\Y + *tab\Height
+                  *current_tab = *tab
+                  Break
+               EndIf
+            Else
+               If mx >= *tab\X And mx < *tab\X + *tab\Width
+                  *current_tab = *tab
+                  Break
+               EndIf
+            EndIf
+         Next
+         
+         *this\tab\press = *current_tab
+         
+         ; ЦИКЛ 2: Выполняем раздвижку, лимиты и расчет стартового offset за один проход
+         If *current_tab
+            If *this\tab\vertical
+               stepSize = *current_tab\Height + *this\tab\spacing
+            Else
+               stepSize = *current_tab\Width + *this\tab\spacing
+            EndIf
+            
+            ForEach *this\tab\_s()
+               *tab = @*this\tab\_s()
+               
+               If *tab = *current_tab
+                  isBeforeDragged = #False 
+                  If *this\tab\vertical
+                     *tab\offset = mY - *this\dragOffSet
+                  Else
+                     *tab\offset = mx - *this\dragOffSet
+                  EndIf
+                  Continue ; Лимиты для dragged запишем сразу после цикла
+               EndIf
+               
+               If *this\tab\vertical
+                  ; 1. Сдвигаем базовый Y только для вкладок левее нажатой
+                  If isBeforeDragged
+                     *tab\y + stepSize
+                  EndIf
+                  
+                  ; 2. Расчет лимитов хода (использует уже обновленный *tab\Y)
+                  *tab\minOffset = accumulatedSize - *tab\y
+                  *tab\maxOffset = accumulatedSize - *tab\y + stepSize
+                  accumulatedSize + *tab\Height + *this\tab\spacing
+                  
+                  ; 3. Ваша оригинальная пропорция инициализации offset (использует обновленный *tab\X)
+                  *tab\offset = *tab\y - *current_tab\y - *current_tab\offset
+                  *tab\offset - stepSize
+                  *tab\offset * stepSize / (*tab\Height + *this\tab\spacing)
+               Else
+                  ; 1. Сдвигаем базовый X только для вкладок левее нажатой
+                  If isBeforeDragged
+                     *tab\X + stepSize
+                  EndIf
+                  
+                  ; 2. Расчет лимитов хода (использует уже обновленный *tab\X)
+                  *tab\minOffset = accumulatedSize - *tab\X
+                  *tab\maxOffset = accumulatedSize - *tab\X + stepSize
+                  accumulatedSize + *tab\Width + *this\tab\spacing
+                  
+                  ; 3. Ваша оригинальная пропорция инициализации offset (использует обновленный *tab\X)
+                  *tab\offset = *tab\X - *current_tab\X - *current_tab\offset
+                  *tab\offset - stepSize
+                  *tab\offset * stepSize / (*tab\Width + *this\tab\spacing)
+               EndIf
+               
+               ; Ограничители хода
+               If *tab\offset < *tab\minOffset : *tab\offset = *tab\minOffset : EndIf
+               If *tab\offset > *tab\maxOffset : *tab\offset = *tab\maxOffset : EndIf
+            Next
+            
+            ; Финальная запись лимитов и проверка границ для самой перетаскиваемой вкладки
+            If *this\tab\vertical
+               *current_tab\minOffset = *this\tab\indent - *current_tab\y
+               *current_tab\maxOffset = -*current_tab\y + accumulatedSize
+            Else
+               *current_tab\minOffset = *this\tab\indent - *current_tab\X
+               *current_tab\maxOffset = -*current_tab\X + accumulatedSize
+            EndIf
+            
+            If *current_tab\offset < *current_tab\minOffset : *current_tab\offset = *current_tab\minOffset : EndIf
+            If *current_tab\offset > *current_tab\maxOffset : *current_tab\offset = *current_tab\maxOffset : EndIf
+            
+            ProcedureReturn #True
+         EndIf
+         
+      Case #PB_EventType_MouseMove
+         *current_tab = *this\tab\press
+         If *current_tab
+            ForEach *this\tab\_s()
+               *tab = @*this\tab\_s()
+               
+               If *this\tab\vertical
+                  If *tab = *current_tab
+                     *tab\offset = my - *this\dragOffSet
+                  Else
+                     *tab\offset = *tab\y - *current_tab\y - *current_tab\offset
+                     *tab\offset - (*current_tab\Height + *this\tab\spacing)
+                     *tab\offset * (*current_tab\Height + *this\tab\spacing) / (*tab\Height + *this\tab\spacing)
+                  EndIf
+               Else
+                  If *tab = *current_tab
+                     *tab\offset = mx - *this\dragOffSet
+                  Else
+                     *tab\offset = *tab\X - *current_tab\X - *current_tab\offset
+                     *tab\offset - (*current_tab\Width + *this\tab\spacing)
+                     *tab\offset * (*current_tab\Width + *this\tab\spacing) / (*tab\Width + *this\tab\spacing)
+                  EndIf
+               EndIf
+               
+               If *tab\offset < *tab\minOffset : *tab\offset = *tab\minOffset : EndIf
+               If *tab\offset > *tab\maxOffset : *tab\offset = *tab\maxOffset : EndIf
+            Next
+            ProcedureReturn #True
+         EndIf
+         
+      Case #PB_EventType_LeftButtonUp
+         *current_tab = *this\tab\press
+         If *current_tab
+            ; Переносим визуальный сдвиг в постоянную координату X и обнуляем offset
+            ForEach *this\tab\_s()
+               *tab = @*this\tab\_s()
+               If *this\tab\vertical
+                  *tab\Y + *tab\offset
+               Else
+                  *tab\X + *tab\offset
+               EndIf
+               *tab\offset = 0
+            Next
+            
+            ; Сортируем список вкладок в памяти по их новым физическим координатам X
+            If *this\tab\vertical
+               SortStructuredList(*this\tab\_s(), #PB_Sort_Ascending, OffsetOf(_s_TAB\Y), TypeOf(_s_TAB\Y))
+            Else
+               SortStructuredList(*this\tab\_s(), #PB_Sort_Ascending, OffsetOf(_s_TAB\X), TypeOf(_s_TAB\X))
+            EndIf
+            
+            ; Сбрасываем указатель перетаскивания
+            *this\tab\press = #Null
+            
+            ; Вызываем ваши внутренние процедуры обновления состояния и перерисовки
+            UpdateTabs(*this)
+            ProcedureReturn #True
+         EndIf
+         
+   EndSelect
+EndProcedure
+
+; =====================================================================
+; 4. ДЕМОНСТРАЦИОННЫЙ ЗАПУСК
+; =====================================================================
+
+Define MyThis._s_WIDGET
+MyThis\tab\vertical = 0
+MyThis\tab\indent = DesktopScaledX(50) ; Отступ панели слева
+MyThis\tab\spacing = DesktopScaledX(2) ; Расстояние между вкладками
+
+; Наполняем вашим тестовым набором
+AddTab(@MyThis, 0, "0 - 60", 60)
+AddTab(@MyThis, 1, "1 - 160", 160, #__flag_Center, 1)
+AddTab(@MyThis, 2, "2 - 150", 150, #__flag_Right, 1)
+AddTab(@MyThis, 3, "3 - 90", 90,0, 1)
+;
+UpdateTabs(@MyThis)
+
+If MyThis\tab\vertical
+   Define h = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
+   Define w = 240
+Else
+   Define h = 40
+   Define w = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
+EndIf
+ 
+#Win = 0
+#Canvas = 0
+
+If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Пример", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+   CanvasGadget(#Canvas, 10, 10, w, h)
+   
+   ReDrawTabs(#Canvas, @MyThis)
+   
+   Repeat
+      Define Event = WaitWindowEvent()
       
-      If EventType() = #PB_EventType_LeftButtonUp
-        
-        ;Sum-up Offsets and sort list
-        ForEach Tabs()
-          Debug ""+Tabs()\OffsetItem +" "+ Tabs()\OffsetMove +" ("+ Tabs()\Text+")"
-          Tabs()\OffsetItem + Tabs()\OffsetMove
-          Tabs()\OffsetMove = 0
-        Next
-        SortStructuredList (Tabs(), #PB_Sort_Ascending, OffsetOf (Tab\OffsetItem), TypeOf (Tab\OffsetItem))
-        
-        ;Resets variables
-        TabsWi         = 0
-        *TabSwap       = 0
-        MouseDownX     = 0
-        MouseDownY     = 0
-        
-        ;Draw bar
-        DrawBar ()
-        
+      If Event = #PB_Event_Gadget And EventGadget() = #Canvas
+         If EventType() = #PB_EventType_LeftDoubleClick
+            HideWindow(#Win, 1)
+            MyThis\tab\vertical ! 1
+            ClearList(MyThis\Tab\_s())
+            AddTab(@MyThis, 0, "0 - 60", 60)
+            AddTab(@MyThis, 1, "1 - 160", 160, #__flag_Center, 1)
+            AddTab(@MyThis, 2, "2 - 150", 150, #__flag_Right, 1)
+            AddTab(@MyThis, 3, "3 - 90", 90,0, 1)
+            UpdateTabs(@MyThis)
+            If MyThis\tab\vertical
+               Define h = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
+               Define w = 240
+            Else
+               Define h = 40
+               Define w = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
+            EndIf
+            ResizeWindow(#Win, #PB_Ignore, #PB_Ignore, w + 20, h + 20)
+            ResizeGadget(#Canvas, #PB_Ignore, #PB_Ignore, w, h)
+            ReDrawTabs(#Canvas, @MyThis)
+            HideWindow(#Win, 0, #PB_Window_ScreenCentered)
+         EndIf
+         
+         If DoTabEvents( @MyThis, EventType(), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseX), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseY))
+            ReDrawTabs(#Canvas, @MyThis)
+         EndIf
       EndIf
       
-      
-    EndIf    
-    
-  Until Event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.73 LTS (MacOS X - x64)
-; Folding = ---
+   Until Event = #PB_Event_CloseWindow
+EndIf
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; FirstLine = 163
+; Folding = --------------
 ; EnableXP
 ; EnableOnError
 ; EnableUnicode
