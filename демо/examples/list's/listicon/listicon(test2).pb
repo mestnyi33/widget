@@ -320,7 +320,7 @@ CompilerIf #PB_Compiler_IsMainFile
     AddItem(*g, -1, "ListIcon_3", GetButtonIcon(#PB_ToolBarIcon_Cut))
     AddItem(*g, 0, "ListIcon_0", GetButtonIcon(#PB_ToolBarIcon_Open) )
    
-    Debug "["+ListSize(*g\columns()\items())+"] first column items count"
+    ;Debug "["+ListSize(*g\columns()\items())+"] first column items count"
     AddItem(*g, -1, "") 
     AddColumn(*g, 1,"Column_2",100) ; bad
     AddItem(*g, -1, Chr(10)+"") 
@@ -328,13 +328,13 @@ CompilerIf #PB_Compiler_IsMainFile
        AddItem(*g, -1, Chr(10)+"ListIcon_"+Str(i)) 
    Next
    
-   Debug "["+ListSize(*g\columns()\items())+"] second column items count"
+   ;Debug "["+ListSize(*g\columns()\items())+"] second column items count"
    
    Bind(*g, @all_events(), #__Event_Change|#__Event_LeftClick)
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 332
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 330
 ; FirstLine = 45
 ; Folding = 4----
 ; EnableXP

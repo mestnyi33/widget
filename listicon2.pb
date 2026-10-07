@@ -219,9 +219,8 @@ If OpenWindow(0, 100, 100, 640, 480, "PureBasic 2D Grid - Rows and Notes", #PB_W
   Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; IDE Options = PureBasic 6.40 (Windows - x64)
 ; CursorPosition = 131
 ; FirstLine = 123
-; Folding = ----
+; Folding = -----
 ; EnableXP
-; DPIAware

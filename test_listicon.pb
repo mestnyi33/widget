@@ -1,5 +1,6 @@
 ﻿;XIncludeFile "listicon3_2.pb"
-XIncludeFile "include/tokken.pbi"
+XIncludeFile "widgets_tokken.pbi"
+;XIncludeFile "include/tokken.pbi"
 
 If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    Define *g._s_WIDGET = ListIcon(0, 0, 640, 480, "ID товара", 120)
@@ -52,7 +53,7 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    Repeat
    Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 2
 ; Folding = -
 ; EnableXP
-; DPIAware

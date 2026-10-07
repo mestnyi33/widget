@@ -188,8 +188,8 @@ EndStructure
 
 Structure _s_COL ; ЗАГОЛОВОК
   ID.l           ; <--- Номер элемента в списке данных строки (0, 1, 2...) 
-  X.l            ; Относительный X вкладки в шапке
-  width.l        ; Ширина вкладки
+  pos.l            ; Относительный X вкладки в шапке
+  size.l        ; Ширина вкладки
   txt._s_TXT
   img._s_IMG
   
@@ -1471,9 +1471,9 @@ Procedure resize_column(*this._s_WIDGET, *col._s_COL, new_w.i)
     ; Устанавливаем минимальный порог, чтобы колонка не исчезла совсем
     If new_w < 20 : new_w = 20 : EndIf 
     
-    If *col\width <> new_w
+    If *col\size <> new_w
       ; Записываем новую ширину
-      *col\width = new_w
+      *col\size = new_w
       
       ; Поднимаем флаги: 
       ; 1. update — чтобы в redraw вызвался update_columns (пересчет X)
@@ -2471,7 +2471,7 @@ Procedure update_rows(*this._s_WIDGET)
     
     ; Синхронизация единственной колонки (если надо)
     FirstElement(*this\col\_s( ))
-    *this\col\_s( )\Width = max_w 
+    *this\col\_s( )\size = max_w 
   EndIf
   
   If  (*this\mask & #__maskflag_wordwrap) = 0
@@ -2503,21 +2503,21 @@ Procedure update_tab(*this._s_WIDGET)
     
     th = *this\txt\fontHeight
     tw = *tab\txt\Width
-    *tab\width = tw + *this\padding\x * 2
+    *tab\size = tw + *this\padding\x * 2
     
     ; horz Локальное выравнивание текста внутри таба
-    *tab\txt\x = GetAlignPosition(*tab\align, *tab\Width, tw, *this\padding\x)
+    *tab\txt\x = GetAlignPosition(*tab\align, *tab\size, tw, *this\padding\x)
     ; vert Локальное выравнивание текста внутри таба
     ; *tab\txt_y = GetAlignPosition(*tab\align, *tab\height, th, *this\padding\y)
     
     If IsImage(*tab\img\Image)
       Protected zazor = *this\padding\x/2
       Protected img_width = ImageWidth(*tab\img\Image)
-      *tab\width + img_width + zazor
+      *tab\size + img_width + zazor
       *tab\txt\x + img_width + zazor
     EndIf
     
-    tw_all + *tab\width
+    tw_all + *tab\size
     If count > 0 : tw_all + *this\tab\spacing : EndIf
     count + 1
   Next
@@ -2540,8 +2540,8 @@ Procedure update_tab(*this._s_WIDGET)
   Protected cur_x = start_offset
   ForEach *this\tab\_s( ) : *tab = @*this\tab\_s( )
     If *tab\mask & #__MASK_hidden : Continue : EndIf
-    *tab\x = cur_x
-    cur_x + *tab\width + *this\tab\spacing
+    *tab\pos = cur_x
+    cur_x + *tab\size + *this\tab\spacing
   Next
   
   PopListPosition(*this\tab\_s( ))
@@ -2562,19 +2562,19 @@ Procedure update_columns(*this._s_WIDGET)
     
     ; --- 1. АВТОПОДБОР ШИРИНЫ (SCAN-PASS) ---
     ; Условие: например, если ширина колонки = -1, считаем её автоматически
-    If *col\Width = -1
-      *col\Width = *col\txt\Width + *this\padding\x * 2
-      If *col\Width < 10 : *col\Width = 10 : EndIf
+    If *col\size = -1
+      *col\size = *col\txt\Width + *this\padding\x * 2
+      If *col\size < 10 : *col\size = 10 : EndIf
     EndIf
     
     ; --- 2. РАСЧЕТ ГЕОМЕТРИИ ---
-    *col\x = cur_x : cur_x + *col\Width
+    *col\pos = cur_x : cur_x + *col\size
   Next
   
   ; 3. cur_x теперь равен ОБЩЕЙ ширине всех колонок.
   *h\bar\max = cur_x 
   
-  If *col\Width = 0
+  If *col\size = 0
     ; --- 2. РАСЧЕТ ДОСТУПНОЙ ШИРИНЫ 
     Protected v_bar_w = *this\fs[3]
     Protected available_w = *this\width - v_bar_w
@@ -2582,7 +2582,7 @@ Procedure update_columns(*this._s_WIDGET)
     ; --- 3. ДОТЯГИВАНИЕ ПОСЛЕДНЕЙ КОЛОНКИ ДО КРАЯ СУЩЕСТВУЮЩЕЙ ЗОНЫ ---
     ; Растягиваем последнюю колонку строго до расчетной границы доступного места
     If cur_x < available_w 
-      *col\Width + (available_w - cur_x)
+      *col\size + (available_w - cur_x)
       *h\bar\max + (available_w - cur_x)
     EndIf
   EndIf
@@ -2611,11 +2611,11 @@ Procedure _update_columns(*this._s_WIDGET) ; scale
       *col\txt\change = 0
     EndIf
     
-    If *col\Width = -1
-      *col\Width = *col\txt\Width + *this\padding\x * 2
-      If *col\Width < 10 : *col\Width = 10 : EndIf
+    If *col\size = -1
+      *col\size = *col\txt\Width + *this\padding\x * 2
+      If *col\size < 10 : *col\size = 10 : EndIf
     EndIf
-    total_base_w + *col\Width
+    total_base_w + *col\size
   Next
   
   ; Шаг B. Вычисляем коэффициент пропорции
@@ -2628,16 +2628,16 @@ Procedure _update_columns(*this._s_WIDGET) ; scale
   ForEach *this\col\_s( ) : *col = @*this\col\_s( )
     ; Увеличиваем пропорционально
     If scale > 1.0
-      *col\Width = Round(*col\Width * scale, #PB_Round_Nearest)
+      *col\size = Round(*col\size * scale, #PB_Round_Nearest)
     EndIf
     
-    *col\x = cur_x 
-    cur_x + *col\Width
+    *col\pos = cur_x 
+    cur_x + *col\size
   Next
   
   ; Шаг D. Коррекция пикселей округления для самой последней колонки
   If cur_x < available_w And scale > 1.0
-    *col\Width + (available_w - cur_x)
+    *col\size + (available_w - cur_x)
     cur_x = available_w
   EndIf
   
@@ -2668,10 +2668,10 @@ Procedure swap_column(*this._s_WIDGET, *pressed_column._s_COL, *hover_column._s_
   If *pressed_column And *hover_column And *hover_column <> *pressed_column
     ; 1. Находим экранный X левой границы колонки, над которой мышь
     ; Формула: X виджета + X колонки во внутреннем списке - Смещение скролла
-    Protected col_left_x = *this\real\x + *hover_column\x - *h\bar\page\pos
+    Protected col_left_x = *this\real\x + *hover_column\pos - *h\bar\page\pos
     
     ; 2. Находим середину этой колонки
-    Protected col_middle_x = col_left_x + (*hover_column\width / 2)
+    Protected col_middle_x = col_left_x + (*hover_column\size / 2)
     
     ; Узнаем позиции в списке, чтобы понять: цель ПРАВЕЕ или ЛЕВЕЕ зажатой
     PushListPosition(*this\col\_s( ))
@@ -2846,8 +2846,8 @@ Procedure SwapColumn(*this._s_WIDGET, *pressed_column._s_COL, *hover_column._s_C
   
   If *pressed_column And *hover_column And *hover_column <> *pressed_column
     ; 1. Вычисляем физические координаты целевой колонки
-    Protected col_left_x = *this\real\x + *hover_column\x - *h\bar\page\pos
-    Protected col_middle_x = col_left_x + (*hover_column\width / 2)
+    Protected col_left_x = *this\real\x + *hover_column\pos - *h\bar\page\pos
+    Protected col_middle_x = col_left_x + (*hover_column\size / 2)
     
     ; 2. Узнаем индексы колонок в списке
     PushListPosition(*this\col\_s( ))
@@ -3265,7 +3265,7 @@ Procedure.i hover_tab(*this._s_WIDGET, mx.l, my.l)
       If *tab\mask & #__MASK_hidden : Continue : EndIf
       
       ; Проверяем конкретную вкладку
-      If mx >= tab_x + *tab\x And mx <= tab_x + *tab\x + *tab\width
+      If mx >= tab_x + *tab\pos And mx <= tab_x + *tab\pos + *tab\size
         If Not (*tab\mask & #__MASK_disabled)
           *found_tab = *tab
         EndIf
@@ -3290,8 +3290,8 @@ Procedure.i hover_column(*this._s_WIDGET, mx.i, my.i, h = #PB_Default)
     If (my >= 0 And my < h) Or h = #PB_Default
       PushListPosition(*this\col\_s( ))
       ForEach *this\col\_s( )
-        currentX = *this\col\_s( )\x
-        ColumnWidth = *this\col\_s( )\Width
+        currentX = *this\col\_s( )\pos
+        ColumnWidth = *this\col\_s( )\size
         ; Проверка на тело колонки
         If mx >= currentX And mx < (currentX + ColumnWidth)
           *res = @*this\col\_s( )
@@ -3492,7 +3492,7 @@ Procedure add_column(*this._s_WIDGET, Title.s, Width.i, Index = -1, img.i = -1, 
   
   *col\txt\change = 1
   *col\txt\string = Title 
-  *col\width = DesktopScaledX(Width) 
+  *col\size = DesktopScaledX(Width) 
   *col\img\Image = img
   
   ; Запоминаем текущий порядковый номер (0 для первой, 1 для второй и т.д.)
@@ -3949,8 +3949,8 @@ Procedure draw_property_rows(*this._s_WIDGET, rx.l, ry.l)
     PushListPosition(*this\col\_s( ))
     ForEach *this\col\_s( ) : *col = @*this\col\_s( )
       
-      Protected col_x = dx + *col\x
-      Protected ColumnWidth = *col\Width
+      Protected col_x = dx + *col\pos
+      Protected ColumnWidth = *col\size
       Protected data_idx = *col\id
       
       If col_x + ColumnWidth > rx And col_x < rx + width
@@ -4014,7 +4014,7 @@ Procedure draw_property_rows(*this._s_WIDGET, rx.l, ry.l)
     ; Вертикальная линия между колонками
     PushListPosition(*this\col\_s( ))
     FirstElement(*this\col\_s( ))
-    Line(dx + *this\col\_s( )\Width, dy, 1, RowHeight, #ROW_COLOR_LINE)
+    Line(dx + *this\col\_s( )\size, dy, 1, RowHeight, #ROW_COLOR_LINE)
     PopListPosition(*this\col\_s( ))
     
     ; Горизонтальная линия между строками
@@ -4199,8 +4199,8 @@ Procedure draw_row(*this._s_WIDGET, *row._s_ROW, rx, ry)
   PushListPosition(*this\col\_s( ))
   ForEach *this\col\_s( ) :*col = @*this\col\_s( )
     
-    Protected col_x = dx + *col\x
-    Protected ColumnWidth = *col\Width
+    Protected col_x = dx + *col\pos
+    Protected ColumnWidth = *col\size
     Protected data_idx = *col\id
     
     If col_x + ColumnWidth > rx And col_x < rx + width
@@ -4439,11 +4439,11 @@ Procedure draw_tab(*this._s_WIDGET, rx.l, ry.l)
     If *tab\mask & #__MASK_hidden : Continue : EndIf
     
     ; Координата на экране (сложение — это мгновенно)
-    Protected cur_x = rx + *tab\x + *this\scroll\x
+    Protected cur_x = rx + *tab\pos + *this\scroll\x
     color = GetDrawColor(*this\Type, *tab\mask, #PB_Gadget_BackColor)
     txtColor = GetDrawColor(*this\Type, *tab\mask, #PB_Gadget_FrontColor)
     
-    Box(cur_x, ry, *tab\width, *this\Height, color)
+    Box(cur_x, ry, *tab\size, *this\Height, color)
     
     ; Draw items img
     If IsImage(*tab\img\Image)
@@ -4454,12 +4454,12 @@ Procedure draw_tab(*this._s_WIDGET, rx.l, ry.l)
     ;DrawText(cur_x + *tab\txt\x, ry + *tab\txt_y, *tab\txt\string, txtColor, color)
     
     ; Рамка
-    Line(cur_x, ry, *tab\width, 1, $CCCCCC) 
+    Line(cur_x, ry, *tab\size, 1, $CCCCCC) 
     Line(cur_x, ry, 1, *this\Height, $CCCCCC)                   
-    Line(cur_x + *tab\width, ry, 1, *this\Height, $CCCCCC) 
+    Line(cur_x + *tab\size, ry, 1, *this\Height, $CCCCCC) 
     
     If *tab\mask & #__MASK_active
-      active_x = cur_x : active_w = *tab\width
+      active_x = cur_x : active_w = *tab\size
     EndIf
   Next
   PopListPosition(*this\tab\_s( ))
@@ -4509,8 +4509,8 @@ Procedure draw_columns(*this._s_WIDGET, rx.l, ry.l)
   
   ; 2. Заходим в цикл отрисовки колонок
   ForEach *this\col\_s( ) : *col = @*this\col\_s( )
-    Protected col_x = dx + *col\x
-    Protected ColumnWidth = *col\Width
+    Protected col_x = dx + *col\pos
+    Protected ColumnWidth = *col\size
     
     ; Проверка видимости колонки в окне виджета
     If (col_x + ColumnWidth) > *this\clip\x And col_x < (*this\clip\x + *this\clip\width)
@@ -4804,7 +4804,7 @@ Procedure do_events_cols(*this._s_WIDGET, event)
         If *col
           If Not *this\mask & #__MASK_drag 
             ; Проверка на край (для ресайза)
-            If Bool(Abs(mouse( )\x - (*this\real\x + *col\x + *col\Width)) < #COL_RESIZE_ZONE)
+            If Bool(Abs(mouse( )\x - (*this\real\x + *col\pos + *col\size)) < #COL_RESIZE_ZONE)
               ;Debug " in "
               If Not *this\mask & #__MASK_cursor
                 *this\mask | #__MASK_cursor
@@ -4827,7 +4827,7 @@ Procedure do_events_cols(*this._s_WIDGET, event)
           If *this\mask & #__MASK_active
             If *pressed_column
               If *pressed_column\mask & #__MASK_resize ; Режим Resize
-                resize_column(*this, *pressed_column, mouse( )\x - (*this\real\x + *pressed_column\x - *h\bar\page\pos))
+                resize_column(*this, *pressed_column, mouse( )\x - (*this\real\x + *pressed_column\pos - *h\bar\page\pos))
                 ;                      Else ; Режим Swap
                 ; ;                         swap_column(*this, *pressed_column, *hover_column, mouse( )\x)
                 ; ; ;                         ; После перемещения колонок, объект под мышью мог измениться, 
@@ -6131,9 +6131,9 @@ CompilerIf #PB_Compiler_IsMainFile
   Close( #PB_All ) 
   End ; Завершение программы
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 205
-; FirstLine = 196
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 4829
+; FirstLine = 4825
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

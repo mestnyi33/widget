@@ -899,9 +899,9 @@
       ProcedureReturn Opened( )
    EndProcedure
    
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 66
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 513
+; FirstLine = 483
 ; Folding = --4-----------------------
 ; EnableXP
 ; DPIAware

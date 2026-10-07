@@ -372,9 +372,8 @@ If OpenWindow(0, 0, 0, 650, 450, "Кастомный Tree + ListIcon на Canvas
   Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 106
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 106
+; FirstLine = 347
 ; Folding = ------
 ; EnableXP
-; DPIAware

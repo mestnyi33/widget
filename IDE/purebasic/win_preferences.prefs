@@ -137,7 +137,7 @@ ProceduresUpdate = 48
 ; Toolbar layout
 ; 
 [Toolbar]
-ItemCount = 23
+ItemCount = 24
 Icon_1 = Menu:New
 Action_1 = Menu:New
 Icon_2 = Menu:Open
@@ -184,6 +184,8 @@ Icon_22 = Menu:StepOut
 Action_22 = Menu:StepOut
 Icon_23 = Menu:Kill
 Action_23 = Menu:Kill
+Icon_24 = Standard:New
+Action_24 = 
 ; 
 ; Color settings
 ; 
@@ -250,7 +252,7 @@ BadBraceColor = RGB(255, 0, 0)
 BadBraceColor_Used = 1
 ProcedureBackColor = RGB(255, 255, 223)
 ProcedureBackColor_Used = 1
-CustomKeywordColor = RGB(48, 156, 58)
+CustomKeywordColor = RGB(0, 0, 102)
 CustomKeywordColor_Used = 1
 Debugger_WarningColor = RGB(255, 208, 0)
 Debugger_WarningColor_Used = 1
@@ -258,11 +260,11 @@ Debugger_WarningSymbolColor = RGB(255, 208, 0)
 Debugger_WarningSymbolColor_Used = 1
 IndentColor = RGB(0, 170, 170)
 IndentColor_Used = 1
-ModuleColor = RGB(146, 75, 114)
+ModuleColor = RGB(255, 128, 64)
 ModuleColor_Used = 1
 SelectionRepeatColor = RGB(176, 255, 167)
 SelectionRepeatColor_Used = 1
-PlainBackground = RGB(192, 192, 192)
+PlainBackground = RGB(255, 255, 223)
 PlainBackground_Used = 1
 ToolsPanel_FrontColor = RGB(0, 0, 0)
 ToolsPanel_BackColor = RGB(255, 255, 223)

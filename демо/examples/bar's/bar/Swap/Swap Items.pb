@@ -120,137 +120,6 @@ Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, align.a = #__flag_Left, 
 EndProcedure
 
 ; Будущая рабочая процедура (когда все метрики уже посчитаны при создании)
-Procedure _DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, isDragged.b, isResize.b=0)
-   Protected contentX.i, contentY.i, contentW.i, contentH.i
-   Protected rx.i, rw.i 
-   Protected ry.i, rh.i
-   
-   ; UPDATE ROW
-   If *tab\txt\change Or *tab\img\change Or isResize
-      Protected padding.i = DesktopScaledX(8)
-      Protected iconSpacing.i = 0
-      
-      ; 1. Замеры метрик
-      If *tab\txt\change
-         If *tab\txt\Text <> ""
-            *tab\txt\Width = TextWidth(*tab\txt\Text)
-            *tab\txt\height = TextHeight(*tab\txt\Text)
-         Else
-            *tab\txt\Width = 0 : *tab\txt\height = 0
-         EndIf
-      EndIf
-      
-      If *tab\img\change
-         If IsImage(*tab\img\Image)
-            *tab\img\width = ImageWidth(*tab\img\Image)
-            *tab\img\height = ImageHeight(*tab\img\Image)
-         Else
-            *tab\img\width = 0 : *tab\img\height = 0
-         EndIf
-      EndIf
-      
-      ; Расчет отступа, если присутствуют оба элемента
-      If (*tab\img\width Or *tab\img\height) And 
-         (*tab\txt\Width Or *tab\txt\height)
-         iconSpacing = DesktopScaledX(6)
-      EndIf
-      
-      ; 2. ВНЕШНЕЕ ПОЗИЦИОНИРОВАНИЕ ВСЕГО БЛОКА
-      If vertical
-         ; Вертикальный режим: складываем высоты, по ширине берем максимум
-         contentH = *tab\img\height + *tab\txt\height + iconSpacing
-         If *tab\img\width > *tab\txt\width
-            contentW = *tab\img\width
-         Else
-            contentW = *tab\txt\width
-         EndIf
-         contentY = GetAlignPosition(*tab\align, *tab\size, contentH, padding)
-      Else
-         ; Горизонтальный режим: складываем ширину, по высоте берем максимум
-         contentW = *tab\img\width + *tab\txt\width + iconSpacing
-         If *tab\img\height > *tab\txt\height
-            contentH = *tab\img\height
-         Else
-            contentH = *tab\txt\height
-         EndIf
-         contentX = GetAlignPosition(*tab\align, *tab\size, contentW, padding)
-      EndIf
-      
-      ; 3. ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ
-      If *tab\txt\change Or isResize
-         If vertical
-            *tab\txt\x = (gWidth - *tab\txt\width) >> 1
-            If *tab\align & #__flag_Bottom
-               *tab\txt\y = contentY
-            Else
-               *tab\txt\y = contentY + *tab\img\height
-               If *tab\img\height : *tab\txt\y + iconSpacing : EndIf
-            EndIf
-         Else
-            *tab\txt\y = (gHeight - *tab\txt\height) >> 1
-            If *tab\align & #__flag_Right
-               *tab\txt\x = contentX
-            Else
-               *tab\txt\x = contentX + *tab\img\width
-               If *tab\img\width : *tab\txt\x + iconSpacing : EndIf
-            EndIf
-         EndIf
-         *tab\txt\change = 0
-      EndIf
-      
-      If *tab\img\change Or isResize
-         If vertical
-            *tab\img\x = (gWidth - *tab\img\width) >> 1
-            If *tab\align & #__flag_Bottom
-               *tab\img\y = contentY + *tab\txt\height
-               If *tab\txt\height : *tab\img\y + iconSpacing : EndIf
-            Else
-               *tab\img\y = contentY
-            EndIf
-         Else
-            *tab\img\y = (gHeight - *tab\img\height) >> 1
-            If *tab\align & #__flag_Right
-               *tab\img\x = contentX + *tab\txt\width
-               If *tab\txt\width : *tab\img\x + iconSpacing : EndIf
-            Else
-               *tab\img\x = contentX
-            EndIf
-         EndIf
-         *tab\img\change = 0
-      EndIf
-   EndIf
-   
-   ;
-   If vertical
-      rx = 0
-      ry = *tab\pos + *tab\offset
-      rw = gWidth
-      rh = *tab\size
-   Else
-      rx = *tab\pos + *tab\offset
-      ry = 0
-      rw = *tab\size
-      rh = gHeight
-   EndIf
-   
-   ; DRAW ROW
-   ; 1. ОТРИСОВКА ФОНА
-   If isDragged
-      Box(rx, ry, rw, rh, $A00000FF)
-   Else
-      Box(rx, ry, rw, rh, $FF808080)
-   EndIf
-   
-   ; 2. ОТРИСОВКА ИКОНКИ
-   If *tab\img\width Or *tab\img\height
-      DrawAlphaImage(ImageID(*tab\img\Image), rx + *tab\img\X, ry + *tab\img\Y)
-   EndIf
-   
-   ; 3. ОТРИСОВКА ТЕКСТА
-   If *tab\txt\Text <> ""
-      DrawText(rx + *tab\txt\X, ry + *tab\txt\Y, *tab\txt\Text, $FFFFFFFF)
-   EndIf
-EndProcedure
 Procedure DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, isDragged.b, isResize.b=0)
    Protected contentX.i, contentY.i, contentW.i, contentH.i
    Protected txt_X.i, txt_Y.i, txt_W.i, txt_H.i
@@ -367,6 +236,16 @@ Procedure DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, isDragged.b, isR
          *tab\txt\height = txt_h
          *tab\txt\change = #False
       EndIf
+    Else
+      img_x = *tab\img\x 
+      img_y = *tab\img\y
+      img_w = *tab\img\width
+      img_h = *tab\img\height
+      
+      txt_x = *tab\txt\x 
+      txt_y = *tab\txt\y
+      txt_w = *tab\txt\width
+      txt_h = *tab\txt\height
    EndIf
    
    ;
@@ -382,17 +261,6 @@ Procedure DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, isDragged.b, isR
       rh = gHeight
    EndIf
    
-   img_x = *tab\img\x 
-   img_y = *tab\img\y
-   img_w = *tab\img\width
-   img_h = *tab\img\height
-   
-   txt_x = *tab\txt\x 
-   txt_y = *tab\txt\y
-   txt_w = *tab\txt\width
-   txt_h = *tab\txt\height
-   
- 
    ; DRAW ROW
    ; 1. ОТРИСОВКА ФОНА
    If isDragged
@@ -630,10 +498,10 @@ If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Прим�
       
    Until Event = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 383
-; FirstLine = 208
-; Folding = --t------f-------
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 248
+; FirstLine = 224
+; Folding = --0----------
 ; EnableXP
 ; EnableOnError
 ; EnableUnicode
