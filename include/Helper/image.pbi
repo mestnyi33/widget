@@ -70,14 +70,14 @@ Procedure IH_W_Open(ParentID.i=0, Flag.i=#PB_Window_TitleBar|#PB_Window_ScreenCe
    Protected i = 10, ii = 10
    IH_W = GetCanvasWindow(Open(#PB_Any, 398, 133, 376+ii+i*2, 226+i*2, "ImageHelper", Flag, ParentID))                                                  
    ;IH_G_Area = ScrollArea( 5, 5, 291, 191, 291-30, 191-30, #PB_ScrollArea_Flat)           
-   IH_G_View = Image(i, i, 271, 225, (0),#__flag_ImageCenter) 
+   IH_G_View = Image(i, i, 271, 225, (0),#__FLAG_Center) 
    SetBackgroundColor( IH_G_View, $FFB3FDFF )
    ;CloseList( )
-   IH_G_Open = Button(i+271+ii, i, 101, 25, "Open", #__flag_Imageleft )       : SetImage(IH_G_Open, (0))
-   IH_G_Save = Button(i+271+ii, i+30, 101, 25, "Save", #__flag_Imageleft )      : SetImage(IH_G_Save, (1))
-   IH_G_Copy = Button(i+271+ii, i+70, 101, 25, "Copy", #__flag_Imageleft )      : SetImage(IH_G_Copy, (2))
-   IH_G_Cut = Button(i+271+ii, i+100, 101, 25, "Cut", #__flag_Imageleft )        : SetImage(IH_G_Cut, (3))
-   IH_G_Paste = Button(i+271+ii, i+130, 101, 25, "Paste", #__flag_Imageleft )   : SetImage(IH_G_Paste, (4)) 
+   IH_G_Open = Button(i+271+ii, i, 101, 25, "Open" )       : SetImage(IH_G_Open, (0))
+   IH_G_Save = Button(i+271+ii, i+30, 101, 25, "Save" )      : SetImage(IH_G_Save, (1))
+   IH_G_Copy = Button(i+271+ii, i+70, 101, 25, "Copy" )      : SetImage(IH_G_Copy, (2))
+   IH_G_Cut = Button(i+271+ii, i+100, 101, 25, "Cut" )        : SetImage(IH_G_Cut, (3))
+   IH_G_Paste = Button(i+271+ii, i+130, 101, 25, "Paste" )   : SetImage(IH_G_Paste, (4)) 
    IH_G_Ok = Button(i+271+ii, i+170, 101, 25, "Ok")         ;: SetImage(IH_G_Ok, (0))
    IH_G_Cancel = Button(i+271+ii, i+200, 101, 25, "Cancel") ;: SetImage(IH_G_Cancel, (0))                                                            
    
@@ -132,9 +132,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    Wend
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 126
-; FirstLine = 63
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 79
+; FirstLine = 72
 ; Folding = ----
 ; EnableXP
 ; DPIAware

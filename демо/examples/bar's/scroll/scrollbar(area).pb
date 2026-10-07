@@ -12,7 +12,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global MyCanvas
    Global *current=#False
    Global currentItemXOffset.i, currentItemYOffset.i
-   Global Event.i, drag.i, hole.i
+   Global Event.i, Drag.i, hole.i
    Global X=200,Y=150, Width=320, Height=320
    
    Global *this.allocate( Widget )
@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
       _parent_\class = "Area"
       _parent_\fs = _frame_size_
       
-      _parent_\scroll\v = Widget::Scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__flag_Vertical|_flag_, 11 )
+      _parent_\scroll\v = Widget::Scroll( _x_+_width_-_scrollbar_size_, _y_, _scrollbar_size_, 0, 0, 0, 0, #__FLAG_Vertical|_flag_, 11 )
       _parent_\scroll\h = Widget::Scroll( _x_, _y_+_height_-_scrollbar_size_, 0,  _scrollbar_size_, 0, 0, 0, _flag_, 11 )
    EndMacro                                                  
    
@@ -379,18 +379,18 @@ CompilerIf #PB_Compiler_IsMainFile
                Case 2
                   If GetGadgetState(2)
                      SetGadgetText(2, "vertical bar")
-                     SetGadgetState(3, GetAttribute(*this\scroll\v, #__flag_Invert))
+                     SetGadgetState(3, GetAttribute(*this\scroll\v, #__FLAG_Invert))
                   Else
                      SetGadgetText(2, "horizontal bar")
-                     SetGadgetState(3, GetAttribute(*this\scroll\h, #__flag_Invert))
+                     SetGadgetState(3, GetAttribute(*this\scroll\h, #__FLAG_Invert))
                   EndIf
                   
                Case 3
                   If GetGadgetState(2)
-                     SetAttribute(*this\scroll\v, #__flag_Invert, Bool(GetGadgetState(3)))
+                     SetAttribute(*this\scroll\v, #__FLAG_Invert, Bool(GetGadgetState(3)))
                      SetWindowTitle(0, Str(GetState(*this\scroll\v)))
                   Else
-                     SetAttribute(*this\scroll\h, #__flag_Invert, Bool(GetGadgetState(3)))
+                     SetAttribute(*this\scroll\h, #__FLAG_Invert, Bool(GetGadgetState(3)))
                      SetWindowTitle(0, Str(GetState(*this\scroll\h)))
                   EndIf
                   Repaint( )
@@ -413,9 +413,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until Event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 357
-; FirstLine = 331
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 392
+; FirstLine = 368
 ; Folding = --------
 ; EnableXP
 ; DPIAware

@@ -53,13 +53,13 @@ If Open(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB_Window_Sy
   Next
   
   Scroll(10, 42+30*0, 250,  20, 30, 100, 0) 
-  SetState   (widget( ),  88)
+  SetState   (Widget( ),  88)
   
   Scroll(10, 42+30*1, 250,  20, 30, 100, 30) 
-  SetState   (widget( ),  50)
+  SetState   (Widget( ),  50)
   
   Scroll(10, 42+30*2, 250,  20, 100, 30, 30) 
-  SetState   (widget( ),  99) ; 50 - center 
+  SetState   (Widget( ),  99) ; 50 - center 
   
   ; disabled
   Scroll(10, 42+30*3, 250,  20, 30, 100, 100) 
@@ -75,7 +75,7 @@ If Open(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB_Window_Sy
 ;   Debug widget( )\bar\thumb\end
 ;   Debug widget( )\bar\thumb\change
 ;   Debug ""
-    SetState   (widget( ),  50)
+    SetState   (Widget( ),  50)
 ;   Debug " -- "
 ;   Debug widget( )\bar\page\pos
 ;   Debug widget( )\bar\page\len
@@ -90,45 +90,45 @@ If Open(OpenWindow(#PB_Any, 0, 0, 500+500, 340, "ScrollBarGadget", #PB_Window_Sy
 ;   Debug ""
 ;   
     
-  Scroll(10, 42+30*4, 250,  20, 30, 100, 0, #__flag_Invert) 
-  SetState   (widget( ),  88)
+  Scroll(10, 42+30*4, 250,  20, 30, 100, 0, #__FLAG_Invert) 
+  SetState   (Widget( ),  88)
   
-  Scroll(10, 42+30*5, 250,  20, 30, 100, 30, #__flag_Invert) 
-  SetState   (widget( ),  50)
+  Scroll(10, 42+30*5, 250,  20, 30, 100, 30, #__FLAG_Invert) 
+  SetState   (Widget( ),  50)
   
-  Scroll(10, 42+30*6, 250,  20, 100, 30, 30, #__flag_Invert) 
-  SetState   (widget( ),  99) ; 50 - center 
+  Scroll(10, 42+30*6, 250,  20, 100, 30, 30, #__FLAG_Invert) 
+  SetState   (Widget( ),  99) ; 50 - center 
   
   
   ; vertical
   Scroll(280+30*0, 10,  20, 250, 30, 100, 0, #PB_ScrollBar_Vertical) 
-  SetState   (widget( ),  88)
+  SetState   (Widget( ),  88)
   
   Scroll(280+30*1, 10,20, 250, 30, 100, 30, #PB_ScrollBar_Vertical) 
-  SetState   (widget( ),  50)
+  SetState   (Widget( ),  50)
   
   Scroll(280+30*2, 10,20, 250, 100, 30, 30, #PB_ScrollBar_Vertical) 
-  SetState   (widget( ),  99) ; 50 - center 
+  SetState   (Widget( ),  99) ; 50 - center 
   
   ; disabled
   Scroll(280+30*3, 10,20, 250, 30, 100, 100, #PB_ScrollBar_Vertical) 
-  SetState   (widget( ),  50)
+  SetState   (Widget( ),  50)
     
-  Scroll(280+30*4, 10,20, 250, 30, 100, 0, #PB_ScrollBar_Vertical|#__flag_Invert) 
-  SetState   (widget( ),  88)
+  Scroll(280+30*4, 10,20, 250, 30, 100, 0, #PB_ScrollBar_Vertical|#__FLAG_Invert) 
+  SetState   (Widget( ),  88)
   
-  Scroll(280+30*5, 10,20, 250, 30, 100, 30, #PB_ScrollBar_Vertical|#__flag_Invert) 
-  SetState   (widget( ),  50)
+  Scroll(280+30*5, 10,20, 250, 30, 100, 30, #PB_ScrollBar_Vertical|#__FLAG_Invert) 
+  SetState   (Widget( ),  50)
   
-  Scroll(280+30*6, 10,20, 250, 100, 30, 30, #PB_ScrollBar_Vertical|#__flag_Invert) 
-  SetState   (widget( ),  99) ; 50 - center 
+  Scroll(280+30*6, 10,20, 250, 100, 30, 30, #PB_ScrollBar_Vertical|#__FLAG_Invert) 
+  SetState   (Widget( ),  99) ; 50 - center 
   
   
   WaitClose( )
 EndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; IDE Options = PureBasic 6.40 (Windows - x64)
 ; CursorPosition = 122
-; FirstLine = 93
+; FirstLine = 98
 ; Folding = -
 ; EnableXP
 ; DPIAware

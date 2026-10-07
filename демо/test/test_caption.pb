@@ -22,18 +22,18 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   Procedure AddCaption( *this._s_PARENT, Width, Height, Text.s, Flag.q = #__align_auto ) 
+   Procedure AddCaption( *this._s_PARENT, Width, Height, Text.s, Flag.q = #__FLAG_auto ) 
       Protected *g._s_WIDGET
       *this\fs[2] = Height
       ;SetFrame(*this, 1)
       OpenList(*this,#PB_Ignore)
-      *g = Button( 0,0,Width,Height-Bool(*this\fs), Text.s, #__flag_Left )
+      *g = Button( 0,0,Width,Height-Bool(*this\fs), Text.s, #__FLAG_Left )
       CloseList( )
       
       ;*g\index + 2
       ;SetParent(*g, *this);,#PB_Ignore)
-      If Flag & #__align_auto
-         SetAlign( *g, 0, #__align_auto,1,#__align_auto,0, 0 )              
+      If Flag & #__FLAG_auto
+         SetAlign( *g, 0, #__FLAG_auto,1,#__FLAG_auto,0, 0 )              
       EndIf
       ;Resize( *this, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
    EndProcedure
@@ -46,9 +46,9 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
 
    If Open(1, 100, 50, 330, 330, "demo items status", #PB_Window_SystemMenu)
-      *first = Tree(10, 10, 150, 310, #__flag_nolines ) : SetClass(*first, "first")
+      *first = Tree(10, 10, 150, 310, #__FLAG_nolines ) : SetClass(*first, "first")
       
-      *second = Tree(170, 10, 150, 310, #__flag_nolines ) : SetClass(*second, "second")
+      *second = Tree(170, 10, 150, 310, #__FLAG_nolines ) : SetClass(*second, "second")
       
       AddCaption(*first, 100,30, "caption1")
       AddCaption(*second, 100,30, "caption2")
@@ -82,9 +82,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 37
-; FirstLine = 35
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 50
+; FirstLine = 27
 ; Folding = --
 ; EnableXP
 ; DPIAware

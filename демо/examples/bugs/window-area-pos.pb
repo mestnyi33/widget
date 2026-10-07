@@ -24,11 +24,11 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    Next
 ;    
 ;    For i=1 To 9
-;       SetAlign(ID(i), 0, #__align_auto,1,0,0 )   
+;       SetAlign(ID(i), 0, #__FLAG_auto,1,0,0 )   
 ;    Next
 ;    
 ;    For i1=i To i+9
-;       SetAlign(ID(i1), 0, #__align_auto,1,0,0 )   
+;       SetAlign(ID(i1), 0, #__FLAG_auto,1,0,0 )   
 ;    Next
 ;    
 ;    Repaint( )
@@ -38,9 +38,9 @@ CompilerIf #PB_Compiler_IsMainFile
 ;    Debug "scroll "+Root()\scroll_x() +" "+ Root()\scroll_y() +" "+ Root()\scroll_width() +" "+ Root()\scroll_height() 
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 14
-; FirstLine = 11
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 30
+; FirstLine = 13
 ; Folding = -
 ; EnableXP
 ; DPIAware

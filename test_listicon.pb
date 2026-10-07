@@ -7,9 +7,9 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    
    ; 1. Заполняем ШАПКУ таблицы (тот самый верхний фиксированный ряд)
    AddColumn(*g, -1, "Наименование", 120, -1)
-   AddColumn(*g, -1, "Категория", 120, -1, #__align_Center)
-   AddColumn(*g, -1, "Цена", 120, -1, #__align_Right)
-   AddColumn(*g, -1, "Остаток", 120, -1, #__align_Right)
+   AddColumn(*g, -1, "Категория", 120, -1, #__FLAG_Center)
+   AddColumn(*g, -1, "Цена", 120, -1, #__FLAG_Right)
+   AddColumn(*g, -1, "Остаток", 120, -1, #__FLAG_Right)
    
    ; 2. Заполняем обычные строки с данными (вниз)
    Define r.l
@@ -54,6 +54,7 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 2
+; CursorPosition = 11
+; FirstLine = 5
 ; Folding = -
 ; EnableXP

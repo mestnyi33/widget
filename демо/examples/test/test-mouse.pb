@@ -141,24 +141,24 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                   ;
                   If GetState(button_left)
-                     SetFlag(*this, #__flag_Left)
+                     SetFlag(*this, #__FLAG_Left)
                   Else
-                     RemoveFlag(*this, #__flag_Left)
+                     RemoveFlag(*this, #__FLAG_Left)
                   EndIf
                   If GetState(button_right) 
-                     SetFlag(*this, #__flag_Right)
+                     SetFlag(*this, #__FLAG_Right)
                   Else
-                     RemoveFlag(*this, #__flag_Right)
+                     RemoveFlag(*this, #__FLAG_Right)
                   EndIf
                   If GetState(button_bottom)
-                     SetFlag(*this, #__flag_Bottom)
+                     SetFlag(*this, #__FLAG_Bottom)
                   Else
-                     RemoveFlag(*this, #__flag_Bottom)
+                     RemoveFlag(*this, #__FLAG_Bottom)
                   EndIf
                   If GetState(button_top)
-                     SetFlag(*this, #__flag_Top)
+                     SetFlag(*this, #__FLAG_Top)
                   Else
-                     RemoveFlag(*this, #__flag_Top)
+                     RemoveFlag(*this, #__FLAG_Top)
                   EndIf
                   
                   ;
@@ -169,7 +169,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      
                      ;
                      If SetState(button_center,1) 
-                        SetFlag(*this, #__flag_Center)
+                        SetFlag(*this, #__FLAG_Center)
                      EndIf
                   EndIf
                    
@@ -183,27 +183,27 @@ CompilerIf #PB_Compiler_IsMainFile
                   
                Case button_multiline
                   If GetState(EventWidget)
-                     SetFlag(*this, #__flag_TextMultiline)
+                     SetFlag(*this, #__FLAG_TextMultiline)
                   Else
-                     RemoveFlag(*this, #__flag_TextMultiline)
+                     RemoveFlag(*this, #__FLAG_TextMultiline)
                   EndIf
                   
                Case button_invert    
                   If GetState(EventWidget)
-                     SetFlag(*this, #__flag_Invert)
+                     SetFlag(*this, #__FLAG_Invert)
                   Else
-                     RemoveFlag(*this, #__flag_Invert)
+                     RemoveFlag(*this, #__FLAG_Invert)
                   EndIf
                   
                Case button_vertical  
                   If GetState(EventWidget)
-                     SetFlag(*this, #__flag_Vertical)
+                     SetFlag(*this, #__FLAG_Vertical)
                   Else
-                     RemoveFlag(*this, #__flag_Vertical)
+                     RemoveFlag(*this, #__FLAG_Vertical)
                   EndIf
                   
-               Case button_default   : Flag = #__flag_button_Default
-               Case button_mirror    ;: flag = #__flag_TextMirror
+               Case button_default   : Flag = #__FLAG_button_Default
+               Case button_mirror    ;: flag = #__FLAG_TextMirror
                   Debug "≈Ÿ≈ Õ≈ –≈¿À»«Œ¬¿ÕŒ"
             EndSelect
             
@@ -233,18 +233,18 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind( *b32, @change_image_events( ), #__event_LeftClick )
       
       
-      Define Container = Container( Width + 45, Y + bh * 1+10, 100, 100, #__flag_BorderLess | #__flag_Transparent) 
-      button_top       = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__flag_Invert,20)
-      button_left      = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__flag_Vertical|#__flag_Invert,20)
+      Define Container = Container( Width + 45, Y + bh * 1+10, 100, 100, #__FLAG_BorderLess | #__FLAG_Transparent) 
+      button_top       = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__FLAG_Invert,20)
+      button_left      = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__FLAG_Vertical|#__FLAG_Invert,20)
       button_center    = Widget::Button(0,0,bh,bh, "O", #PB_Button_Toggle,20)
-      button_right     = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__flag_Vertical,20)
+      button_right     = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__FLAG_Vertical,20)
       button_bottom    = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle,20)
       
-      SetAlign( button_left, #__align_auto, 1,0,0,0, 0)
-      SetAlign( button_top, #__align_auto, 0,1,0,0, 0)
-      SetAlign( button_right, #__align_auto, 0,0,1,0, 0)
-      SetAlign( button_bottom, #__align_auto, 0,0,0,1, 0)
-      SetAlign( button_center, #__align_center, 0,0,0,0, 0)
+      SetAlign( button_left, #__FLAG_auto, 1,0,0,0, 0)
+      SetAlign( button_top, #__FLAG_auto, 0,1,0,0, 0)
+      SetAlign( button_right, #__FLAG_auto, 0,0,1,0, 0)
+      SetAlign( button_bottom, #__FLAG_auto, 0,0,0,1, 0)
+      SetAlign( button_center, #__FLAG_center, 0,0,0,0, 0)
       
       Resize(Container, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
       CloseList( )
@@ -263,14 +263,14 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;\\ set button toggled state
       SetState(button_toggle, Flag(*this, #PB_Button_Toggle ))
-      SetState(button_vertical, Flag(*this, #__flag_Vertical ))
-      SetState(button_invert, Flag(*this, #__flag_Invert ))
-      SetState(button_multiline, Flag(*this, #__flag_TextMultiLine ))
-      SetState(button_left, Flag(*this, #__flag_Left ))
-      SetState(button_Top, Flag(*this, #__flag_Top ))
-      SetState(button_Right, Flag(*this, #__flag_Right ))
-      SetState(button_Bottom, Flag(*this, #__flag_Bottom ))
-      SetState(button_center, Flag(*this, #__flag_TextCenter))
+      SetState(button_vertical, Flag(*this, #__FLAG_Vertical ))
+      SetState(button_invert, Flag(*this, #__FLAG_Invert ))
+      SetState(button_multiline, Flag(*this, #__FLAG_TextMultiLine ))
+      SetState(button_left, Flag(*this, #__FLAG_Left ))
+      SetState(button_Top, Flag(*this, #__FLAG_Top ))
+      SetState(button_Right, Flag(*this, #__FLAG_Right ))
+      SetState(button_Bottom, Flag(*this, #__FLAG_Bottom ))
+      SetState(button_center, Flag(*this, #__FLAG_TextCenter))
       Hide(Button_type, 1)
       
       
@@ -288,9 +288,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 220
-; FirstLine = 212
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 272
+; FirstLine = 249
 ; Folding = -----
 ; EnableXP
 ; DPIAware

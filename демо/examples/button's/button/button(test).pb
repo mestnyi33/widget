@@ -65,22 +65,22 @@ CompilerIf #PB_Compiler_IsMainFile
       ;*g = Progress(X,Y,Width,Height,txt$, Flag)
        
        
-;       If Flag & #__flag_Left
-;          Flag &~ #__flag_Left
+;       If Flag & #__FLAG_Left
+;          Flag &~ #__FLAG_Left
 ;       EndIf
-;       If Flag & #__flag_Top
-;          Flag &~ #__flag_Top
+;       If Flag & #__FLAG_Top
+;          Flag &~ #__FLAG_Top
 ;       EndIf
-;       If Flag & #__flag_Right
-;          Flag &~ #__flag_Right
+;       If Flag & #__FLAG_Right
+;          Flag &~ #__FLAG_Right
 ;       EndIf
-;       If Flag & #__flag_Bottom
-;          Flag &~ #__flag_Bottom
+;       If Flag & #__FLAG_Bottom
+;          Flag &~ #__FLAG_Bottom
 ;       EndIf
       
       Protected Center
-      ;If Flag & #__flag_Center
-      ;   Center = #__flag_Center
+      ;If Flag & #__FLAG_Center
+      ;   Center = #__FLAG_Center
       ;EndIf
       
       
@@ -98,25 +98,25 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open( 0, 0, 0, Width, 300, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       
-;       *g1 = Test( 10+size, 10, size2, size, "top button", #__flag_left )
-;       *g2 = Test( 10, 10+size, size, size2, "left button", #__flag_Bottom|#__flag_Vertical)
-;       *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__flag_Top|#__flag_Vertical|#__flag_Invert)
-;       *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__flag_Right|#__flag_Invert)
+;       *g1 = Test( 10+size, 10, size2, size, "top button", #__FLAG_left )
+;       *g2 = Test( 10, 10+size, size, size2, "left button", #__FLAG_Bottom|#__FLAG_Vertical)
+;       *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__FLAG_Top|#__FLAG_Vertical|#__FLAG_Invert)
+;       *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__FLAG_Right|#__FLAG_Invert)
 ;       
-;       *g1 = Test( 10+size, 10, size2, size, "top button", #__flag_Right )
-;       *g2 = Test( 10, 10+size, size, size2, "left button", #__flag_Top|#__flag_Vertical)
-;       *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__flag_Bottom|#__flag_Vertical|#__flag_Invert)
-;       *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__flag_Left|#__flag_Invert)
+;       *g1 = Test( 10+size, 10, size2, size, "top button", #__FLAG_Right )
+;       *g2 = Test( 10, 10+size, size, size2, "left button", #__FLAG_Top|#__FLAG_Vertical)
+;       *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__FLAG_Bottom|#__FLAG_Vertical|#__FLAG_Invert)
+;       *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__FLAG_Left|#__FLAG_Invert)
       
-      *g1 = Test( 10+size, 10, size2, size, "top button", #__flag_Center )
-      *g2 = Test( 10, 10+size, size, size2, "left button", #__flag_Center|#__flag_Vertical)
-      *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__flag_Center|#__flag_Vertical|#__flag_Invert)
-      *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__flag_Center|#__flag_Invert)
+      *g1 = Test( 10+size, 10, size2, size, "top button", #__FLAG_Center )
+      *g2 = Test( 10, 10+size, size, size2, "left button", #__FLAG_Center|#__FLAG_Vertical)
+      *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__FLAG_Center|#__FLAG_Vertical|#__FLAG_Invert)
+      *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__FLAG_Center|#__FLAG_Invert)
       
 ;       *g1 = Test( 10+size, 10, size2, size, "top button" )
-;       *g2 = Test( 10, 10+size, size, size2, "left button", #__flag_Vertical)
-;       *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__flag_Vertical|#__flag_Invert)
-;       *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__flag_Invert)
+;       *g2 = Test( 10, 10+size, size, size2, "left button", #__FLAG_Vertical)
+;       *g3 = Test( size2+10+size, 10+size, size, size2, "right button", #__FLAG_Vertical|#__FLAG_Invert)
+;       *g4 = Test( 10+size, size2+10+size, size2, size, "bottom button", #__FLAG_Invert)
       
       ;
       *b0 = Button( Width-40, 10, 30,30, "0")
@@ -132,9 +132,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 63
-; FirstLine = 20
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 118
+; FirstLine = 94
 ; Folding = --
 ; EnableXP
 ; DPIAware

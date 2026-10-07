@@ -7,9 +7,9 @@ EnableExplicit
 ; =====================================================================
 ; 1. КОНСТАНТЫ И ФЛАГИ (Для будущих настроек гаджета)
 ; =====================================================================
-#__align_Left   = 0
-#__align_Center = 1
-#__align_Right  = 2
+#__FLAG_Left   = 0
+#__FLAG_Center = 1
+#__FLAG_Right  = 2
 
 ; =====================================================================
 ; 2. СТРУКТУРЫ ДАННЫХ ГРИДА
@@ -129,9 +129,9 @@ Global SplittSize = 0
 ; --- ФУНКЦИЯ ОТРИСОВКИ ---
 ; Возвращает точную координату X для текста с учетом выравнивания и ширины колонки
 Procedure.i GetAlignPosition(contentSize.i, objectSize.i, alignFlags.l, Offset.i = 10)
-  If alignFlags & #__align_right
+  If alignFlags & #__FLAG_right
     ProcedureReturn contentSize - objectSize - Offset
-  ElseIf alignFlags & #__align_center
+  ElseIf alignFlags & #__FLAG_center
     ProcedureReturn (contentSize - objectSize) / 2
   Else
     ProcedureReturn Offset
@@ -647,7 +647,7 @@ Procedure.i GetTotalColumnsWidth(*this._s_WIDGET)
    ProcedureReturn TotalWidth
 EndProcedure
 
-Procedure AddColumn(*this._s_WIDGET, position, title$, Width.l, img.i = -1, align.i= #__align_left)
+Procedure AddColumn(*this._s_WIDGET, position, title$, Width.l, img.i = -1, align.i= #__FLAG_left)
    Protected *col._s_COLS
    *this\col\count = ListSize(*this\col\_s()) 
    *col = AddElement(*this\col\_s()) 
@@ -899,9 +899,9 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    
    ; 1. Заполняем ШАПКУ таблицы (тот самый верхний фиксированный ряд)
    AddColumn(*this, -1, "Наименование", 120, -1)
-   AddColumn(*this, -1, "Категория", 120, -1, #__align_Center)
-   AddColumn(*this, -1, "Цена", 120, -1, #__align_Right)
-   AddColumn(*this, -1, "Остаток", 120, -1, #__align_Right)
+   AddColumn(*this, -1, "Категория", 120, -1, #__FLAG_Center)
+   AddColumn(*this, -1, "Цена", 120, -1, #__FLAG_Right)
+   AddColumn(*this, -1, "Остаток", 120, -1, #__FLAG_Right)
    
    ; 2. Заполняем обычные строки с данными (вниз)
    Define r.l
@@ -946,7 +946,7 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    Until WaitWindowEvent() = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 946
-; FirstLine = 921
+; CursorPosition = 903
+; FirstLine = 880
 ; Folding = -------------------
 ; EnableXP

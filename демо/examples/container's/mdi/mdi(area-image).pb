@@ -13,24 +13,24 @@ CompilerIf #PB_Compiler_IsMainFile
       Static DragWidget
       
       Select WidgetEvent( )
-            ;       Case #__event_MouseEnter
+            ;       Case #__EVENT_MouseEnter
             ;         SetCursor( *ew, #PB_Cursor_Hand )
             ;         
-            ;       Case #__event_MouseLeave
+            ;       Case #__EVENT_MouseLeave
             ;         SetCursor( *ew, #PB_Cursor_Default )
             
-         Case #__event_LeftUp 
+         Case #__EVENT_LeftUp 
             DragWidget = #Null
             
-         Case #__event_LeftDown
+         Case #__EVENT_LeftDown
             DragWidget = *ew
             
-         Case #__event_MouseMove
+         Case #__EVENT_MouseMove
             If DragWidget = *ew
                Resize( *ew, MouseMoveX( ), MouseMoveY( ), #PB_Ignore, #PB_Ignore)
             EndIf
             
-         Case #__Event_Draw
+         Case #__EVENT_Draw
             
             ; Demo draw line on the element
             UnclipOutput()
@@ -65,19 +65,19 @@ CompilerIf #PB_Compiler_IsMainFile
       Width = ImageWidth( img )
       Height = ImageHeight( img )
       
-      *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess|#__flag_Transparent )
+      *this = AddItem( *mdi, -1, "", img, #__FLAG_BorderLess|#__FLAG_Transparent )
       *this\class = "image-"+Str(img)
       *this\cursor = #PB_Cursor_Hand
       *this\round = (round)
       
       Resize(*this, X, Y, Width, Height )
       
-      Bind( *this, @MDI_ImageEvents(), #__event_LeftUp )
-      Bind( *this, @MDI_ImageEvents(), #__event_LeftDown )
-      Bind( *this, @MDI_ImageEvents(), #__event_MouseMove )
-      Bind( *this, @MDI_ImageEvents(), #__event_MouseEnter )
-      Bind( *this, @MDI_ImageEvents(), #__event_MouseLeave )
-      Bind( *this, @MDI_ImageEvents(), #__Event_Draw )
+      Bind( *this, @MDI_ImageEvents(), #__EVENT_LeftUp )
+      Bind( *this, @MDI_ImageEvents(), #__EVENT_LeftDown )
+      Bind( *this, @MDI_ImageEvents(), #__EVENT_MouseMove )
+      Bind( *this, @MDI_ImageEvents(), #__EVENT_MouseEnter )
+      Bind( *this, @MDI_ImageEvents(), #__EVENT_MouseLeave )
+      Bind( *this, @MDI_ImageEvents(), #__EVENT_Draw )
       
       ProcedureReturn *this
    EndProcedure
@@ -97,19 +97,19 @@ CompilerIf #PB_Compiler_IsMainFile
          Case 2
             If GetGadgetState(2)
                   SetGadgetText(2, "vertical bar")
-              SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__bar_invert))
+              SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__FLAG_invert))
             Else
                 SetGadgetText(2, "horizontal bar")
-                SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__bar_invert))
+                SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__FLAG_invert))
             EndIf
             result = 1
             
          Case 3
             If GetGadgetState(2)
-               SetAttribute(*mdi\scroll\v, #__bar_invert, Bool(GetGadgetState(3)))
+               SetAttribute(*mdi\scroll\v, #__FLAG_invert, Bool(GetGadgetState(3)))
                SetWindowTitle(0, Str(GetState(*mdi\scroll\v)))
             Else
-               SetAttribute(*mdi\scroll\h, #__bar_invert, Bool(GetGadgetState(3)))
+               SetAttribute(*mdi\scroll\h, #__FLAG_invert, Bool(GetGadgetState(3)))
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
             result = 1
@@ -207,7 +207,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
    ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
    
-   *mdi = MDI(X,Y,Width,Height);, #__flag_autosize)
+   *mdi = MDI(X,Y,Width,Height);, #__FLAG_autosize)
                                ;a_init( *mdi )
    SetColor(*mdi, #PB_Gadget_BackColor, $ffffffff)
    ;SetColor(*mdi, #__FrameColor, $ffffffff)
@@ -239,8 +239,8 @@ CompilerIf #PB_Compiler_IsMainFile
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 198
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 111
+; FirstLine = 87
 ; Folding = ----
 ; EnableXP

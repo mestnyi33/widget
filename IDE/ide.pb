@@ -487,7 +487,7 @@ Procedure$  PropertiesButton_GetText( *this._s_WIDGET )
    
    For i = 0 To CountItems - 1
       If GetItemState(*this, i) & #PB_Tree_Checked  
-         Result$ + GetItemText(*this, i) + "|"  ; "#__Flag_"+ 
+         Result$ + GetItemText(*this, i) + "|"  ; "#__FLAG_"+ 
       EndIf
    Next
    
@@ -550,8 +550,8 @@ Procedure   PropertiesButton_Change( *this._s_WIDGET, item )
    If item = #_pi_flag
       Define class$ = ClassFromType( *object\type ) 
       Define flag$ = MakeString( *object\flagmask )
-      Define flag$ = RemoveString( flag$, "#__flag_Text") 
-      Define flag$ = RemoveString( flag$, "#__flag_") 
+      Define flag$ = RemoveString( flag$, "#__FLAG_Text") 
+      Define flag$ = RemoveString( flag$, "#__FLAG_") 
       Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, flag$)
       
       ;Debug flag$
@@ -617,14 +617,14 @@ EndProcedure
 Declare Properties_Change( *splitter._s_WIDGET )
 Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
    Protected Type = GetItemData( *parent, item )
-   Protected min, max, steps, Flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
+   Protected min, max, steps, Flag ;= #__FLAG_NoFocus ;| #__FLAG_Transparent ;| #__FLAG_child|#__FLAG_invert
    Protected *this._s_WIDGET
    Protected txt$ = GetItemText( *parent, item)
    
    
    Select Type
       Case #__type_Spin
-         Flag = #__flag_Invert ; #__spin_Plus
+         Flag = #__FLAG_Invert ; #__spin_Plus
          steps = 1 
          ;
          Select item
@@ -635,7 +635,7 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
                min = 0
                max = 255
             Default
-               ; flag = #__flag_invert ; #__spin_Plus
+               ; flag = #__FLAG_invert ; #__spin_Plus
                min = -2147483648
                max = 2147483647
                steps = 7 
@@ -668,14 +668,14 @@ Procedure   PropertiesButton_Create( *parent._s_WIDGET, item )
          Select item
             Case #_pi_flag
                Hide(*this\stringbar, 1)
-               SetFlag_( *this, #__flag_CheckBoxes|#__flag_optionboxes )
+               SetFlag_( *this, #__FLAG_CheckBoxes|#__FLAG_optionboxes )
                
             Case #_pi_fontstyle
                AddItem(*this, -1, "None")         
                If *this\ComboBar( )
-                  *this\ComboBar( )\flagmask | #__flag_Checkboxes
-                  *this\ComboBar( )\flagmask | #__flag_optionboxes
-                  ;    SetFlag_( *this\ComboBar( ), #__flag_CheckBoxes|#__flag_OptionBoxes )
+                  *this\ComboBar( )\flagmask | #__FLAG_Checkboxes
+                  *this\ComboBar( )\flagmask | #__FLAG_optionboxes
+                  ;    SetFlag_( *this\ComboBar( ), #__FLAG_CheckBoxes|#__FLAG_OptionBoxes )
                EndIf
                AddItem(*this, -1, "Bold")        ; Шрифт будет выделен жирным
                AddItem(*this, -1, "Italic")      ; Шрифт будет набран курсивом
@@ -771,17 +771,17 @@ Procedure   PropertiesButton_Events( )
    Protected._s_WIDGET *object = a_focused( )
                      
    Select __event
-      Case #__event_LostFocus
+      Case #__EVENT_LostFocus
          __item = GetData(*g) 
          PropertiesButton_ChangeItemState( *first, __item, 3 )
          PropertiesButton_ChangeItemState( *second, __item, 3 )
          
-      Case #__event_Focus
+      Case #__EVENT_Focus
          __item = GetData(*g) 
          PropertiesButton_ChangeItemState( *first, __item, 2 )
          PropertiesButton_ChangeItemState( *second, __item, 2 )
          
-      Case #__event_LeftClick
+      Case #__EVENT_LeftClick
          __item = GetData(*g) 
          ;
          Select __item
@@ -868,7 +868,7 @@ Procedure   PropertiesButton_Events( )
                
          EndSelect
          
-      Case #__event_Change
+      Case #__EVENT_Change
          __item = GetData(*g) 
          ;
          Select Type(*g)
@@ -940,8 +940,8 @@ Procedure   PropertiesButton_Events( )
                      SetFlag_( *object, Flag)
                      Define class$ = ClassFromType( *object\type ) 
 ;                      Define flag$ = MakeString( Flag )
-;                      Define flag$ = RemoveString( flag$, "#__flag_Text") 
-;                      Define flag$ = RemoveString( flag$, "#__flag_") 
+;                      Define flag$ = RemoveString( flag$, "#__FLAG_Text") 
+;                      Define flag$ = RemoveString( flag$, "#__FLAG_") 
                      Debug "----"+flag$
                      Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, flag$)
                      Properties_Updates( *object, "Flag" ) 
@@ -991,15 +991,15 @@ Procedure   PropertiesButton_Events( )
                
          EndSelect
          
-      Case #__event_MouseWheel
+      Case #__EVENT_MouseWheel
          If MouseDirection( ) > 0
             If Type(*g) = #__type_Spin
-               Debug "PropertiesButton__event_MouseWheel "+*g\class
+               Debug "PropertiesButton__EVENT_MouseWheel "+*g\class
                SetState(*g, GetState( *g ) - WidgetEventData( ))
             EndIf
          EndIf
          
-      Case #__event_CursorChange
+      Case #__EVENT_CursorChange
          ProcedureReturn 0
          
    EndSelect
@@ -1188,9 +1188,9 @@ EndProcedure
 
 Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    Protected position = 90
-   Protected tflag.q = #__flag_NoLines|#__flag_Transparent|#__flag_BorderLess;|#__flag_gridlines
+   Protected tflag.q = #__FLAG_NoLines|#__FLAG_Transparent|#__FLAG_BorderLess;|#__FLAG_gridlines
    Protected *first._s_WIDGET = Tree(0,0,0,0, tflag)
-   Protected *second._s_WIDGET = Tree(0,0,0,0, tflag|#__flag_NoButtons)
+   Protected *second._s_WIDGET = Tree(0,0,0,0, tflag|#__FLAG_NoButtons)
    ;    *first\padding\x = 10
    ;    *second\padding\x = 10
    Protected *g._s_WIDGET
@@ -1206,7 +1206,7 @@ Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    ;     ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
    ;     SetColor(*g, #PB_Gadget_BackColor,  $D4C8C8C8)
    
-   Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, Flag|#__flag_Transparent|#PB_Splitter_Vertical|#PB_Splitter_Separator )
+   Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, Flag|#__FLAG_Transparent|#PB_Splitter_Vertical|#PB_Splitter_Separator )
    SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
    SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
    ;
@@ -1238,8 +1238,8 @@ Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    Bind(*second, @Properties_Events( ))
    
    ; draw и resize отдельно надо включать пока поэтому вот так
-   Bind(*second, @Properties_Events( ), #__event_Resize)
-;  Bind(*second, @Properties_Events( ), #__event_Draw)
+   Bind(*second, @Properties_Events( ), #__EVENT_Resize)
+;  Bind(*second, @Properties_Events( ), #__EVENT_Draw)
          
    ProcedureReturn *splitter
 EndProcedure
@@ -1256,12 +1256,12 @@ Procedure   Properties_Events( )
    Protected *second._s_WIDGET = GetAttribute( *g\parent, #PB_Splitter_SecondGadget)
    
    Select WidgetEvent( )
-      Case #__event_FOCUS
+      Case #__EVENT_FOCUS
          If Not IsContainer(*g)
             If Not EnteredButton( )
                *row = WidgetEventData( )
                If *row
-                  If SetState( *g, *row\index ):DoEvents( *g, #__event_StatusChange, *row\rindex, *row )
+                  If SetState( *g, *row\index ):DoEvents( *g, #__EVENT_StatusChange, *row\rindex, *row )
                      If *row\data
                         *test = Properties_Display( *g\parent, *g, *row\index )
                      EndIf
@@ -1272,7 +1272,7 @@ Procedure   Properties_Events( )
          
          SetActive( *test)
          
-      Case #__event_Change
+      Case #__EVENT_Change
          If Not MousePress( ) 
             *row = WidgetEventData( )
             If *row
@@ -1290,7 +1290,7 @@ Procedure   Properties_Events( )
             EndIf
          EndIf
          
-      Case #__event_Up
+      Case #__EVENT_Up
          If Not EnteredButton( )
             If MouseDrag( ) 
                *row = *g\RowEntered( )
@@ -1303,7 +1303,7 @@ Procedure   Properties_Events( )
             EndIf
          EndIf
          
-      Case #__event_StatusChange
+      Case #__EVENT_StatusChange
          If *first = *g
             If WidgetEventData( ) = #PB_Tree_Expanded Or
                WidgetEventData( ) = #PB_Tree_Collapsed
@@ -1316,7 +1316,7 @@ Procedure   Properties_Events( )
          ;
          Properties_Status( *g\parent, *g, WidgetEventItem( ))
          
-      Case #__event_ScrollChange
+      Case #__EVENT_ScrollChange
          Select *g
             Case *first 
                If GetState( *second\scroll\v ) <> WidgetEventData( )
@@ -1330,7 +1330,7 @@ Procedure   Properties_Events( )
                PropertiesButton_Resize( *test ) 
          EndSelect
          
-      Case #__event_Resize
+      Case #__EVENT_Resize
          If *second = *g
             PropertiesButton_Resize( *test )
          EndIf
@@ -1589,7 +1589,7 @@ EndProcedure
 
 Procedure new_widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, Flag = 0 )
    Protected *new._s_widget
-   ; flag.i | #__flag_NoFocus
+   ; flag.i | #__FLAG_NoFocus
    
    If *parent 
       ; OpenList( *parent, CountItems( *parent ) - 1 )
@@ -1602,7 +1602,7 @@ Procedure new_widget_add( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore,
          
          ide_inspector_VIEW_ADD_ITEMS( *new )
          
-         If Not Flag & #__flag_NoFocus 
+         If Not Flag & #__FLAG_NoFocus 
             If IsContainer( *new )
                If is_window_( *new )
                   a_set(*new, #__a_full, (14))
@@ -1622,7 +1622,7 @@ EndProcedure
 
 Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Ignore, Height.l=#PB_Ignore, text$="", Param1=0, Param2=0, Param3=0, Flag.q = 0 )
    Protected *new._s_widget
-   ; flag.i | #__flag_NoFocus
+   ; flag.i | #__FLAG_NoFocus
    Protected newtype$
    
    If *parent > 0 
@@ -1752,7 +1752,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
                
                SetImage( *new, *imagelogo )
                
-               ;                If Not flag & #__flag_NoFocus 
+               ;                If Not flag & #__FLAG_NoFocus 
                ;                   a_set(*new, #__a_full, (14))
                ;                EndIf
                SetBackColor( *new, $FFECECEC )
@@ -1760,7 +1760,7 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
                Properties_Updates( *new, "Resize" )
                Bind( *new, @new_widget_events( ) )
             Else
-               ;                If Not flag & #__flag_NoFocus 
+               ;                If Not flag & #__FLAG_NoFocus 
                ;                   a_set(*new, #__a_full, (10))
                ;                EndIf
                ;                ;SetBackColor( *new, $FFF1F1F1 )
@@ -1769,12 +1769,12 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
             ; 
             *new\ChangeColor = 0
          Else
-            ;             If Not flag & #__flag_NoFocus 
+            ;             If Not flag & #__FLAG_NoFocus 
             ;                a_set(*new, #__a_full)
             ;             EndIf
          EndIf
          
-         Bind( *new, @new_widget_events( ), #__event_Resize )
+         Bind( *new, @new_widget_events( ), #__EVENT_Resize )
       EndIf
       
       CloseList( ) 
@@ -1792,10 +1792,10 @@ Procedure new_widget_events( )
    
    Select __event 
          ; disable buttons state
-      Case #__event_Close, #__event_Maximize, #__event_Minimize
+      Case #__EVENT_Close, #__EVENT_Maximize, #__EVENT_Minimize
          ProcedureReturn #False
          ;
-      Case #__event_Free
+      Case #__EVENT_Free
          If Not ( ide_design_MDI = *g )
             ; Debug "  do free "+item
             Define key$ = RemoveString( GetClass(*g), "#"+ClassFromType( Type(*g))+"_" )
@@ -1825,7 +1825,7 @@ Procedure new_widget_events( )
             DeleteMapElement( GetObject( ), key$)
          EndIf
          ;
-      Case #__event_Focus
+      Case #__EVENT_Focus
          __item = GetData(*g)
          ;
          If Not ( ide_design_MDI = *g )
@@ -1849,7 +1849,7 @@ Procedure new_widget_events( )
             EndIf
          EndIf
          ;
-      Case #__event_LeftDown
+      Case #__EVENT_LeftDown
          If ( ide_design_MDI = *g )
             If Not a_focused( )
                If GetState( ide_inspector_VIEW ) > 0
@@ -1887,7 +1887,7 @@ Procedure new_widget_events( )
             EndIf
          EndIf
          ;
-      Case #__event_LeftUp
+      Case #__EVENT_LeftUp
          If IsContainer(*g)
             If Not MouseDrag( )
                If GetState( ide_all_ELEMENTS) > 0
@@ -1915,7 +1915,7 @@ Procedure new_widget_events( )
          ;
          ;D&D
          ;
-      Case #__event_DragStart
+      Case #__EVENT_DragStart
          If is_drag_move( )
             If DragDropPrivate( #_DD_reParent )
                ChangeCursor( *g, #PB_Cursor_Arrows )
@@ -1938,7 +1938,7 @@ Procedure new_widget_events( )
             EndIf
          EndIf
          ;
-      Case #__event_Drop
+      Case #__EVENT_Drop
          Select DropPrivate( )
             Case #_DD_Group
                Debug " ----- DD_group ----- " + GetClass(*g)
@@ -1964,7 +1964,7 @@ Procedure new_widget_events( )
                
          EndSelect
          ;
-      Case #__event_MouseMove
+      Case #__EVENT_MouseMove
          If GetState( ide_all_ELEMENTS ) > 0 
             If IsContainer(*g) 
                If MouseEnter(*g)
@@ -1997,7 +1997,7 @@ Procedure new_widget_events( )
          EndIf
          
          ; enter
-      Case #__event_MouseEnter
+      Case #__EVENT_MouseEnter
          If GetState( ide_all_ELEMENTS ) > 0 
             If Not MousePress( )
                If IsContainer(*g) 
@@ -2010,7 +2010,7 @@ Procedure new_widget_events( )
          EndIf
          
          ; leave
-      Case #__event_MouseLeave
+      Case #__EVENT_MouseLeave
          If GetState( ide_all_ELEMENTS ) > 0 
             If Not MousePress( )
                If IsContainer(*g) 
@@ -2025,13 +2025,13 @@ Procedure new_widget_events( )
             EndIf
          EndIf
          ;
-      Case #__event_Resize
+      Case #__EVENT_Resize
          ; Debug  ""+GetFocus(*g)  +" "+ GetClass(*g)
          If a_focused( ) = *g
             Properties_Updates( *g, "Resize" )
          EndIf
          ;
-      Case #__event_CursorChange
+      Case #__EVENT_CursorChange
          ; Debug "CURSOR events"
          ProcedureReturn #PB_Cursor_Default
          ;
@@ -2039,10 +2039,10 @@ Procedure new_widget_events( )
    
    
    ;\\
-   If __event = #__event_Drop  Or 
-      __event = #__event_RightUp Or
-      __event = #__event_KeyUp Or
-      __event = #__event_LeftUp
+   If __event = #__EVENT_Drop  Or 
+      __event = #__EVENT_RightUp Or
+      __event = #__EVENT_KeyUp Or
+      __event = #__EVENT_LeftUp
       ;
       ; end new create
       If Not keyboard( )\key[1]
@@ -2667,7 +2667,7 @@ Procedure   ide_events( )
    ; Debug ""+EventString(__event) +" "+ GetClass(*g)
    
    Select __event
-      Case #__event_Focus
+      Case #__EVENT_Focus
          If is_root_(*g)
             If PreviewRunning And 
                IsProgram(PreviewRunning) And 
@@ -2685,11 +2685,11 @@ Procedure   ide_events( )
             PreviewProgramName$ = ""
          EndIf
          
-      Case #__event_Free
+      Case #__EVENT_Free
          Debug "  do free " + *g\class
          ProcedureReturn #True
          
-      Case #__event_Close
+      Case #__EVENT_Close
          If *g = ide_root
             If #PB_MessageRequester_Yes = Message( lng( #lng_MESSAGE$ ), 
                                                    lng( #lng_MESSAGE_EXIT_QUESTION$ ),
@@ -2700,7 +2700,7 @@ Procedure   ide_events( )
             EndIf
          EndIf
          
-      Case #__event_LeftClick
+      Case #__EVENT_LeftClick
          If *g = ide_inspector_PANELBUTTON
             If GetState( *g ) 
                SetState( ide_inspector_PANEL, 1 )
@@ -2713,7 +2713,7 @@ Procedure   ide_events( )
             UpdateButtons( ide_inspector_PANELBUTTON )
          EndIf
          
-      Case #__event_DragStart
+      Case #__EVENT_DragStart
          If *g = ide_all_ELEMENTS
             If __item >= 0
                SetState( *g, __item)
@@ -2725,7 +2725,7 @@ Procedure   ide_events( )
             EndIf
          EndIf
          
-      Case #__event_Change
+      Case #__EVENT_Change
          If *g = ide_inspector_VIEW
             If a_set( GetItemData( *g, GetState(*g) ))
             EndIf
@@ -2749,7 +2749,7 @@ Procedure   ide_events( )
             EndIf
          EndIf
          
-      Case #__event_StatusChange
+      Case #__EVENT_StatusChange
          *row = __data
          
          ; Debug ""+__item +" "+ __data
@@ -2792,7 +2792,7 @@ Procedure   ide_events( )
       Protected *line._s_ROW
       
       ;
-      If __event = #__event_Down
+      If __event = #__EVENT_Down
          If __data
             *line._s_ROW  = __data
             text$ = *line\text\Str(0)
@@ -2872,7 +2872,7 @@ Procedure   ide_events( )
       EndIf
       
       ;
-      If __event = #__event_Change
+      If __event = #__EVENT_Change
          If object
             ; ReplaceArg( object, argument, *g\edit_caret( )\word ) 
             ReplaceArg( object, argument, GetWord( *line\text\Str(0), *line\text\len, *g\caret\start - *line\text\pos )  )
@@ -2957,9 +2957,9 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ;
    ; gadgets
    ;
-   ide_element_PANEL = Panel( 0,0,0,0, #__flag_BorderLess ) : SetClass(ide_element_PANEL, "ide_element_PANEL" ) 
+   ide_element_PANEL = Panel( 0,0,0,0, #__FLAG_BorderLess ) : SetClass(ide_element_PANEL, "ide_element_PANEL" ) 
    AddItem( ide_element_PANEL, -1, "All")
-   ide_all_ELEMENTS = Tree( 0,0,0,0, #__flag_autosize | #__flag_NoButtons | #__flag_NoLines ) : SetClass(ide_all_ELEMENTS, "ide_all_ELEMENTS" )
+   ide_all_ELEMENTS = Tree( 0,0,0,0, #__FLAG_autosize | #__FLAG_NoButtons | #__FLAG_NoLines ) : SetClass(ide_all_ELEMENTS, "ide_all_ELEMENTS" )
    If ide_all_ELEMENTS
       ide_all_ELEMENTS_ADD_ITEMS( ide_all_ELEMENTS, GetCurrentDirectory( )+"Themes/", - 1 )
    EndIf
@@ -2971,15 +2971,15 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    BarPosition( ide_element_PANEL, 4, 20 )
    
    ;\\\ 
-   ide_design_PANEL = Panel( 0,0,0,0, #__flag_autosize ) : SetClass(ide_design_PANEL, "ide_design_PANEL" ) ; , #__flag_Vertical ) : OpenList( ide_design_PANEL )
+   ide_design_PANEL = Panel( 0,0,0,0, #__FLAG_autosize ) : SetClass(ide_design_PANEL, "ide_design_PANEL" ) ; , #__FLAG_Vertical ) : OpenList( ide_design_PANEL )
    AddItem( ide_design_PANEL, -1, lng(#lng_FORM$) )
-   ide_design_MDI = MDI( 0,0,0,0, #__flag_autosize|#__flag_BorderLess ) : SetClass(ide_design_MDI, "ide_design_MDI" ) ;: SetFrame(ide_design_MDI, 10)
+   ide_design_MDI = MDI( 0,0,0,0, #__FLAG_autosize|#__FLAG_BorderLess ) : SetClass(ide_design_MDI, "ide_design_MDI" ) ;: SetFrame(ide_design_MDI, 10)
    EnableDrop( ide_design_MDI, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateNew|#_DD_reParent|#_DD_CreateCopy|#_DD_Group )
    SetColor( ide_design_MDI, #PB_Gadget_BackColor, $FFD3D3D3 )
    a_init( ide_design_MDI);, 0 )
    
    AddItem( ide_design_PANEL, -1, lng(#lng_CODE$) )
-   ide_design_CODE = Editor( 0,0,0,0, #__flag_autosize|#__flag_BorderLess ) : SetClass(ide_design_CODE, "ide_design_CODE" ) ; bug then move anchors window
+   ide_design_CODE = Editor( 0,0,0,0, #__FLAG_autosize|#__FLAG_BorderLess ) : SetClass(ide_design_CODE, "ide_design_CODE" ) ; bug then move anchors window
    SetBackColor( ide_design_CODE, $FFDCF9F6)
    
    AddItem( ide_design_PANEL, -1, "V-"+lng(#lng_CODE$) )
@@ -2995,7 +2995,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
       ide_design_CODE = ide_debug_VIEW
    EndIf
    
-   Define Transparent ;= #__flag_Transparent
+   Define Transparent ;= #__FLAG_Transparent
    ;\\\ open inspector gadgets 
    ; ide_inspector_PANEL_open
    ide_inspector_PANEL = Panel( 0,0,0,0 ) : SetClass(ide_inspector_PANEL, "ide_inspector_PANEL" )
@@ -3005,7 +3005,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    
    ; ide_inspector_PANEL_item_2
    AddItem( ide_inspector_PANEL, -1, "properties", 0, 0 )  
-   ide_inspector_VIEW = Tree( 0,0,0,0, #__flag_Borderless ) : SetClass(ide_inspector_VIEW, "ide_inspector_VIEW" ) ;, #__flag_gridlines )
+   ide_inspector_VIEW = Tree( 0,0,0,0, #__FLAG_Borderless ) : SetClass(ide_inspector_VIEW, "ide_inspector_VIEW" ) ;, #__FLAG_gridlines )
    EnableDrop( ide_inspector_VIEW, #PB_Drop_Text, #PB_Drag_Link )
    
    ide_inspector_PROPERTIES = Properties_Create( 0,0,0,0 ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
@@ -3040,12 +3040,12 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorgreen,      "green",   #__type_Spin, 1 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorred,        "red",     #__type_Spin, 1 )
       EndIf
-   ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_inspector_PROPERTIES, #__flag_autosize) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
-   ; ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_PROPERTIES, ide_inspector_VIEW, #__flag_autosize) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
+   ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_inspector_PROPERTIES, #__FLAG_autosize) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
+   ; ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_PROPERTIES, ide_inspector_VIEW, #__FLAG_autosize) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
    
    ; ide_inspector_PANEL_item_3 
    AddItem( ide_inspector_PANEL, -1, "events", 0, 0 )  
-   ide_inspector_EVENTS = Properties_Create( 0,0,0,0, #__flag_autosize | #__flag_gridlines | #__flag_Borderless ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
+   ide_inspector_EVENTS = Properties_Create( 0,0,0,0, #__FLAG_autosize | #__FLAG_gridlines | #__FLAG_Borderless ) : SetClass(ide_inspector_PROPERTIES, "ide_inspector_PROPERTIES" )
    If ide_inspector_EVENTS
       Properties_AddItem( ide_inspector_EVENTS, -1,  "LEFT" )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_leftdown,  "Down", #__type_ComboBox, 1 )
@@ -3099,18 +3099,18 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    CloseList( )
    ;SetState( ide_inspector_PANEL, 1 )
    If ide_inspector_PANELBUTTON
-      AddButtons( ide_design_PANEL, ide_inspector_PANELBUTTON, #__flag_AutoSize|#__flag_Right )
-;       AddButtons( ide_design_PANEL, String(0,0,80,0, "1"), #__flag_Right )
+      AddButtons( ide_design_PANEL, ide_inspector_PANELBUTTON, #__FLAG_AutoSize|#__FLAG_Right )
+;       AddButtons( ide_design_PANEL, String(0,0,80,0, "1"), #__FLAG_Right )
 ;       Global ide_inspector_PANELCOMBO = ComboBox(0,0,0,0) 
 ;       AddItem(ide_inspector_PANELCOMBO, -1, "1")
 ;       AddItem(ide_inspector_PANELCOMBO, -1, "2")
 ;       AddItem(ide_inspector_PANELCOMBO, -1, "3")
 ;       SetState(ide_inspector_PANELCOMBO, 0)
-;       AddButtons( ide_design_PANEL, ide_inspector_PANELCOMBO, #__flag_AutoSize|#__flag_Right )
+;       AddButtons( ide_design_PANEL, ide_inspector_PANELCOMBO, #__FLAG_AutoSize|#__FLAG_Right )
       
       UpdateButtons( ide_inspector_PANELBUTTON )
-      Bind( ide_inspector_PANELBUTTON, @ide_events( ), #__event_LeftClick )
-      ; Bind( ide_inspector_PANELBUTTON, @ide_events( ), #__event_MouseEnter )
+      Bind( ide_inspector_PANELBUTTON, @ide_events( ), #__EVENT_LeftClick )
+      ; Bind( ide_inspector_PANELBUTTON, @ide_events( ), #__EVENT_MouseEnter )
       ;
       SetState( ide_inspector_PANELBUTTON, 0 )
       BarPosition( ide_inspector_PANEL, 0 )
@@ -3131,7 +3131,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ide_debug_SPLITTER = Splitter( 0,0,0,0, ide_design_PANEL, ide_debug_VIEW, #PB_Splitter_SecondFixed|Transparent ) : SetClass(ide_debug_SPLITTER, "ide_debug_SPLITTER" )
    ide_designer_SPLITTER = Splitter( 0,0,0,0, ide_help_SPLITTER, ide_debug_SPLITTER, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_designer_SPLITTER, "ide_designer_SPLITTER" )
    ide_SPLITTER = Splitter( 0,0,0,0, ide_designer_SPLITTER, ide_inspector_PANEL, #PB_Splitter_SecondFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_designer_SPLITTER, "ide_designer_SPLITTER" )
-   ide_main_SPLITTER = Splitter( 0,0,0,0, ide_TOOLBAR_container, ide_SPLITTER,#__flag_autosize | #PB_Splitter_FirstFixed|Transparent ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
+   ide_main_SPLITTER = Splitter( 0,0,0,0, ide_TOOLBAR_container, ide_SPLITTER,#__FLAG_autosize | #PB_Splitter_FirstFixed|Transparent ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
    
     
    ; set splitters default minimum size
@@ -3170,41 +3170,41 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    Bind( ide_design_MDI, @new_widget_events( ) )
    Bind( ide_inspector_VIEW, @ide_events( ) )
    ;
-   Bind( ide_inspector_PROPERTIES, @ide_events( ), #__event_Change )
-   Bind( ide_inspector_PROPERTIES, @ide_events( ), #__event_StatusChange )
+   Bind( ide_inspector_PROPERTIES, @ide_events( ), #__EVENT_Change )
+   Bind( ide_inspector_PROPERTIES, @ide_events( ), #__EVENT_StatusChange )
    ;
-   Bind( ide_inspector_EVENTS, @ide_events( ), #__event_Change )
-   Bind( ide_inspector_EVENTS, @ide_events( ), #__event_StatusChange )
+   Bind( ide_inspector_EVENTS, @ide_events( ), #__EVENT_Change )
+   Bind( ide_inspector_EVENTS, @ide_events( ), #__EVENT_StatusChange )
    ;
-   Bind( ide_design_PANEL, @ide_events( ), #__event_Change )
-   Bind( ide_design_PANEL, @ide_events( ), #__event_LeftClick )
-   Bind( ide_design_PANEL, @ide_events( ), #__event_Left2Click )
+   Bind( ide_design_PANEL, @ide_events( ), #__EVENT_Change )
+   Bind( ide_design_PANEL, @ide_events( ), #__EVENT_LeftClick )
+   Bind( ide_design_PANEL, @ide_events( ), #__EVENT_Left2Click )
    ;
-   Bind( ide_design_CODE, @ide_events( ), #__event_Down )
-   Bind( ide_design_CODE, @ide_events( ), #__event_Up )
-   Bind( ide_design_CODE, @ide_events( ), #__event_RightClick )
-   Bind( ide_design_CODE, @ide_events( ), #__event_Change )
-   Bind( ide_design_CODE, @ide_events( ), #__event_StatusChange )
+   Bind( ide_design_CODE, @ide_events( ), #__EVENT_Down )
+   Bind( ide_design_CODE, @ide_events( ), #__EVENT_Up )
+   Bind( ide_design_CODE, @ide_events( ), #__EVENT_RightClick )
+   Bind( ide_design_CODE, @ide_events( ), #__EVENT_Change )
+   Bind( ide_design_CODE, @ide_events( ), #__EVENT_StatusChange )
    ; TEMP
-   Bind( ide_debug_VIEW, @ide_events( ), #__event_Down )
-   Bind( ide_debug_VIEW, @ide_events( ), #__event_Up )
-   Bind( ide_debug_VIEW, @ide_events( ), #__event_Change )
-   Bind( ide_debug_VIEW, @ide_events( ), #__event_StatusChange )
+   Bind( ide_debug_VIEW, @ide_events( ), #__EVENT_Down )
+   Bind( ide_debug_VIEW, @ide_events( ), #__EVENT_Up )
+   Bind( ide_debug_VIEW, @ide_events( ), #__EVENT_Change )
+   Bind( ide_debug_VIEW, @ide_events( ), #__EVENT_StatusChange )
    ;
-   Bind( ide_element_PANEL, @ide_events( ), #__event_Change )
-   Bind( ide_element_PANEL, @ide_events( ), #__event_StatusChange )
+   Bind( ide_element_PANEL, @ide_events( ), #__EVENT_Change )
+   Bind( ide_element_PANEL, @ide_events( ), #__EVENT_StatusChange )
    ;
-   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_Change )
-   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_StatusChange )
-   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_Left2Click )
-   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_LeftClick )
-   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_MouseEnter )
-   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_MouseLeave )
-   Bind( ide_all_ELEMENTS, @ide_events( ), #__event_DragStart )
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__EVENT_Change )
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__EVENT_StatusChange )
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__EVENT_Left2Click )
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__EVENT_LeftClick )
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__EVENT_MouseEnter )
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__EVENT_MouseLeave )
+   Bind( ide_all_ELEMENTS, @ide_events( ), #__EVENT_DragStart )
    ;
-   Bind( ide_root, @ide_events( ), #__event_Close )
-   ; Bind( ide_root, @ide_events( ), #__event_Free )
-   Bind( ide_root, @ide_events( ), #__event_Focus )
+   Bind( ide_root, @ide_events( ), #__EVENT_Close )
+   ; Bind( ide_root, @ide_events( ), #__EVENT_Free )
+   Bind( ide_root, @ide_events( ), #__EVENT_Focus )
    
    
    ;
@@ -3410,8 +3410,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 1744
-; FirstLine = 1730
+; CursorPosition = 3133
+; FirstLine = 3110
 ; Folding = ----------------------------------------------------------------
 ; EnableXP
 ; DPIAware

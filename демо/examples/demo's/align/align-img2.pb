@@ -1,4 +1,4 @@
-IncludePath "../../../" : XIncludeFile "widgets.pbi"
+IncludePath "../../../../" : XIncludeFile "widgets.pbi"
 ;XIncludeFile "../../empty5.pb"
 
 ;- 
@@ -21,11 +21,11 @@ CompilerIf #PB_Compiler_IsMainFile
   EndIf
   
   Macro gadget(_id_, _x_,_y_,_width_,_height_,_text_,_flag_)
-    ;ComboBox(_x_,_y_,_width_,_height_,_flag_|#__flag_Textmultiline) : AddItem(widget( ), -1,"combo") : SetState(widget( ), 0) : SetImage(widget( ), 0)
+    ;ComboBox(_x_,_y_,_width_,_height_,_flag_|#__FLAG_Textmultiline) : AddItem(widget( ), -1,"combo") : SetState(widget( ), 0) : SetImage(widget( ), 0)
     ;   Image(_x_,_y_,_width_,_height_,(0),_flag_) : SetBackColor( widget( ), $FFB3FDFF )
          
-;    ButtonImage(_x_,_y_,_width_,_height_,(0),(_flag_&~));|#__flag_BorderLess)
-      Button(_x_,_y_,_width_,_height_,_text_, _flag_|#__flag_textmultiline )
+;    ButtonImage(_x_,_y_,_width_,_height_,(0),(_flag_&~));|#__FLAG_BorderLess)
+      Button(_x_,_y_,_width_,_height_,_text_, _flag_|#__FLAG_textmultiline )
 ;      SetImage( Widget(), (0))
   EndMacro
   
@@ -36,68 +36,68 @@ CompilerIf #PB_Compiler_IsMainFile
   
   If OpenWindow(0, 0, 0, 908, (Height+5)*5+20+110, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
   ;If OpenWindow(0, 0, 0, 458, (height)*3 + 30, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    Open(0);, 0, 0, 908, (height+5)*5+20+110, "", #__flag_Borderless)
+    Open(0);, 0, 0, 908, (height+5)*5+20+110, "", #__FLAG_Borderless)
     
-    Gadget(0, 8,  10, 140, Height, text_h,                        #__flag_ImageLeft|#__flag_ImageTop);
-    Gadget(1, 8,  (Height+5)*1+10, 140, Height, text_h,           #__flag_ImageLeft|#__flag_ImageCenter);
-    Gadget(2, 8,  (Height+5)*2+10, 140, Height, text_h,           #__flag_ImageLeft|#__flag_ImageBottom);
+    Gadget(0, 8,  10, 140, Height, text_h,                        #__FLAG_Left|#__FLAG_Top);
+    Gadget(1, 8,  (Height+5)*1+10, 140, Height, text_h,           #__FLAG_Left|#__FLAG_Center);
+    Gadget(2, 8,  (Height+5)*2+10, 140, Height, text_h,           #__FLAG_Left|#__FLAG_Bottom);
     
-    Gadget(3, 8+150,  10, 140, Height, text_h,                    #__flag_ImageCenter|#__flag_ImageTop);
-    Gadget(4, 8+150,  (Height+5)*1+10, 140, Height, text_h,       #__flag_ImageCenter);
-    Gadget(5, 8+150,  (Height+5)*2+10, 140, Height, text_h,       #__flag_ImageCenter|#__flag_ImageBottom);
+    Gadget(3, 8+150,  10, 140, Height, text_h,                    #__FLAG_Center|#__FLAG_Top);
+    Gadget(4, 8+150,  (Height+5)*1+10, 140, Height, text_h,       #__FLAG_Center);
+    Gadget(5, 8+150,  (Height+5)*2+10, 140, Height, text_h,       #__FLAG_Center|#__FLAG_Bottom);
     
-    Gadget(6, 8+300,  10, 140, Height, text_h,                    #__flag_ImageRight|#__flag_ImageTop);
-    Gadget(7, 8+300,  (Height+5)*1+10, 140, Height, text_h,       #__flag_ImageRight|#__flag_ImageCenter);
-    Gadget(8, 8+300,  (Height+5)*2+10, 140, Height, text_h,       #__flag_ImageRight|#__flag_ImageBottom);
+    Gadget(6, 8+300,  10, 140, Height, text_h,                    #__FLAG_Right|#__FLAG_Top);
+    Gadget(7, 8+300,  (Height+5)*1+10, 140, Height, text_h,       #__FLAG_Right|#__FLAG_Center);
+    Gadget(8, 8+300,  (Height+5)*2+10, 140, Height, text_h,       #__FLAG_Right|#__FLAG_Bottom);
     
     ; invert
-    Gadget(10, 8+450,  10, 140, Height, text_h,                  #__flag_invert|#__flag_ImageLeft|#__flag_ImageTop);
-    Gadget(11, 8+450,  (Height+5)*1+10, 140, Height, text_h,     #__flag_invert|#__flag_ImageLeft|#__flag_ImageCenter);
-    Gadget(12, 8+450,  (Height+5)*2+10, 140, Height, text_h,     #__flag_invert|#__flag_ImageLeft|#__flag_ImageBottom);
+    Gadget(10, 8+450,  10, 140, Height, text_h,                  #__FLAG_invert|#__FLAG_Left|#__FLAG_Top);
+    Gadget(11, 8+450,  (Height+5)*1+10, 140, Height, text_h,     #__FLAG_invert|#__FLAG_Left|#__FLAG_Center);
+    Gadget(12, 8+450,  (Height+5)*2+10, 140, Height, text_h,     #__FLAG_invert|#__FLAG_Left|#__FLAG_Bottom);
     
-    Gadget(13, 8+150+450,  10, 140, Height, text_h,              #__flag_invert|#__flag_ImageCenter|#__flag_ImageTop);
-    Gadget(14, 8+150+450,  (Height+5)*1+10, 140, Height, text_h, #__flag_invert|#__flag_ImageCenter);
-    Gadget(15, 8+150+450,  (Height+5)*2+10, 140, Height, text_h, #__flag_invert|#__flag_ImageCenter|#__flag_ImageBottom);
+    Gadget(13, 8+150+450,  10, 140, Height, text_h,              #__FLAG_invert|#__FLAG_Center|#__FLAG_Top);
+    Gadget(14, 8+150+450,  (Height+5)*1+10, 140, Height, text_h, #__FLAG_invert|#__FLAG_Center);
+    Gadget(15, 8+150+450,  (Height+5)*2+10, 140, Height, text_h, #__FLAG_invert|#__FLAG_Center|#__FLAG_Bottom);
     
-    Gadget(16, 8+300+450,  10, 140, Height, text_h,              #__flag_invert|#__flag_ImageRight|#__flag_ImageTop);
-    Gadget(17, 8+300+450,  (Height+5)*1+10, 140, Height, text_h, #__flag_invert|#__flag_ImageRight|#__flag_ImageCenter);
-    Gadget(18, 8+300+450,  (Height+5)*2+10, 140, Height, text_h, #__flag_invert|#__flag_ImageRight|#__flag_ImageBottom);
+    Gadget(16, 8+300+450,  10, 140, Height, text_h,              #__FLAG_invert|#__FLAG_Right|#__FLAG_Top);
+    Gadget(17, 8+300+450,  (Height+5)*1+10, 140, Height, text_h, #__FLAG_invert|#__FLAG_Right|#__FLAG_Center);
+    Gadget(18, 8+300+450,  (Height+5)*2+10, 140, Height, text_h, #__FLAG_invert|#__FLAG_Right|#__FLAG_Bottom);
     
     
     ; vertical
-    Gadget(20, 8,  (Height+5)*3+10, 140, Height, text_h,         #__flag_vertical|#__flag_ImageLeft|#__flag_ImageTop);
-    Gadget(21, 8,  (Height+5)*4+10, 140, Height, text_h,         #__flag_vertical|#__flag_ImageLeft|#__flag_ImageCenter);
-    Gadget(22, 8,  (Height+5)*5+10, 140, Height, text_h,         #__flag_vertical|#__flag_ImageLeft|#__flag_ImageBottom);
+    Gadget(20, 8,  (Height+5)*3+10, 140, Height, text_h,         #__FLAG_vertical|#__FLAG_Left|#__FLAG_Top);
+    Gadget(21, 8,  (Height+5)*4+10, 140, Height, text_h,         #__FLAG_vertical|#__FLAG_Left|#__FLAG_Center);
+    Gadget(22, 8,  (Height+5)*5+10, 140, Height, text_h,         #__FLAG_vertical|#__FLAG_Left|#__FLAG_Bottom);
     
-    Gadget(23, 8+150,  (Height+5)*3+10, 140, Height, text_h,     #__flag_vertical|#__flag_ImageCenter|#__flag_ImageTop);
-    Gadget(24, 8+150,  (Height+5)*4+10, 140, Height, text_h,     #__flag_vertical|#__flag_ImageCenter);
-    Gadget(25, 8+150,  (Height+5)*5+10, 140, Height, text_h,     #__flag_vertical|#__flag_ImageCenter|#__flag_ImageBottom);
+    Gadget(23, 8+150,  (Height+5)*3+10, 140, Height, text_h,     #__FLAG_vertical|#__FLAG_Center|#__FLAG_Top);
+    Gadget(24, 8+150,  (Height+5)*4+10, 140, Height, text_h,     #__FLAG_vertical|#__FLAG_Center);
+    Gadget(25, 8+150,  (Height+5)*5+10, 140, Height, text_h,     #__FLAG_vertical|#__FLAG_Center|#__FLAG_Bottom);
     
-    Gadget(26, 8+300,  (Height+5)*3+10, 140, Height, text_h,     #__flag_vertical|#__flag_ImageRight|#__flag_ImageTop);
-    Gadget(27, 8+300,  (Height+5)*4+10, 140, Height, text_h,     #__flag_vertical|#__flag_ImageRight|#__flag_ImageCenter);
-    Gadget(28, 8+300,  (Height+5)*5+10, 140, Height, text_h,     #__flag_vertical|#__flag_ImageRight|#__flag_ImageBottom);
+    Gadget(26, 8+300,  (Height+5)*3+10, 140, Height, text_h,     #__FLAG_vertical|#__FLAG_Right|#__FLAG_Top);
+    Gadget(27, 8+300,  (Height+5)*4+10, 140, Height, text_h,     #__FLAG_vertical|#__FLAG_Right|#__FLAG_Center);
+    Gadget(28, 8+300,  (Height+5)*5+10, 140, Height, text_h,     #__FLAG_vertical|#__FLAG_Right|#__FLAG_Bottom);
     
     ; invert vertical
-    Gadget(30, 8+450,  (Height+5)*3+10, 140, Height, text_h,     #__flag_vertical|#__flag_invert|#__flag_ImageLeft|#__flag_ImageTop);
-    Gadget(31, 8+450,  (Height+5)*4+10, 140, Height, text_h,     #__flag_vertical|#__flag_invert|#__flag_ImageLeft|#__flag_ImageCenter);
-    Gadget(32, 8+450,  (Height+5)*5+10, 140, Height, text_h,     #__flag_vertical|#__flag_invert|#__flag_ImageLeft|#__flag_ImageBottom);
+    Gadget(30, 8+450,  (Height+5)*3+10, 140, Height, text_h,     #__FLAG_vertical|#__FLAG_invert|#__FLAG_Left|#__FLAG_Top);
+    Gadget(31, 8+450,  (Height+5)*4+10, 140, Height, text_h,     #__FLAG_vertical|#__FLAG_invert|#__FLAG_Left|#__FLAG_Center);
+    Gadget(32, 8+450,  (Height+5)*5+10, 140, Height, text_h,     #__FLAG_vertical|#__FLAG_invert|#__FLAG_Left|#__FLAG_Bottom);
     
-    Gadget(33, 8+150+450,  (Height+5)*3+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__flag_ImageCenter|#__flag_ImageTop);
-    Gadget(34, 8+150+450,  (Height+5)*4+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__flag_ImageCenter);
-    Gadget(35, 8+150+450,  (Height+5)*5+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__flag_ImageCenter|#__flag_ImageBottom);
+    Gadget(33, 8+150+450,  (Height+5)*3+10, 140, Height, text_h, #__FLAG_vertical|#__FLAG_invert|#__FLAG_Center|#__FLAG_Top);
+    Gadget(34, 8+150+450,  (Height+5)*4+10, 140, Height, text_h, #__FLAG_vertical|#__FLAG_invert|#__FLAG_Center);
+    Gadget(35, 8+150+450,  (Height+5)*5+10, 140, Height, text_h, #__FLAG_vertical|#__FLAG_invert|#__FLAG_Center|#__FLAG_Bottom);
     
-    Gadget(36, 8+300+450,  (Height+5)*3+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__flag_ImageRight|#__flag_ImageTop);
-    Gadget(37, 8+300+450,  (Height+5)*4+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__flag_ImageRight|#__flag_ImageCenter);
-    Gadget(38, 8+300+450,  (Height+5)*5+10, 140, Height, text_h, #__flag_vertical|#__flag_invert|#__flag_ImageRight|#__flag_ImageBottom);
+    Gadget(36, 8+300+450,  (Height+5)*3+10, 140, Height, text_h, #__FLAG_vertical|#__FLAG_invert|#__FLAG_Right|#__FLAG_Top);
+    Gadget(37, 8+300+450,  (Height+5)*4+10, 140, Height, text_h, #__FLAG_vertical|#__FLAG_invert|#__FLAG_Right|#__FLAG_Center);
+    Gadget(38, 8+300+450,  (Height+5)*5+10, 140, Height, text_h, #__FLAG_vertical|#__FLAG_invert|#__FLAG_Right|#__FLAG_Bottom);
     
   EndIf
   
   Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 26
-; FirstLine = 22
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 90
+; FirstLine = 64
 ; Folding = -
 ; EnableXP
 ; DPIAware

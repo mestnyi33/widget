@@ -198,29 +198,29 @@ Procedure Open_EDITORIMAGES( Root, Flag = #PB_Window_TitleBar )
    OPTION_SMOOTH = Option( 140, 203, 120, 22, "Smooth", #__flag_transparent|#__flag_Borderless )
    Disable( OPTION_SMOOTH, #True )
       
-   BUTTON_OPEN = Button( 266, 7, 119, 22, "Загрузить", #__flag_ImageLeft )
+   BUTTON_OPEN = Button( 266, 7, 119, 22, "Загрузить", #__FLAG_Left )
    SetImage( BUTTON_OPEN, IMG_OPEN )
    
-   BUTTON_SAVE = Button( 266, 35, 119, 22, "Сохранить", #__flag_ImageLeft )
+   BUTTON_SAVE = Button( 266, 35, 119, 22, "Сохранить", #__FLAG_Left )
    Disable( BUTTON_SAVE, #True )
    SetImage( BUTTON_SAVE, IMG_SAVE )
    
-   BUTTON_COPY = Button( 266, 77, 119, 22, "Копировать", #__flag_ImageLeft )
+   BUTTON_COPY = Button( 266, 77, 119, 22, "Копировать", #__FLAG_Left )
    Disable( BUTTON_COPY, #True )
    SetImage( BUTTON_COPY, IMG_COPY )
    
-   BUTTON_CUT = Button( 266, 105, 119, 22, "Вырезать", #__flag_ImageLeft )
+   BUTTON_CUT = Button( 266, 105, 119, 22, "Вырезать", #__FLAG_Left )
    Disable( BUTTON_CUT, #True )
    SetImage( BUTTON_CUT, IMG_CUT )
    
-   BUTTON_PASTE = Button( 266, 133, 119, 22, "Вставить", #__flag_ImageLeft )
+   BUTTON_PASTE = Button( 266, 133, 119, 22, "Вставить", #__FLAG_Left )
    Disable( BUTTON_PASTE, #True )
    SetImage( BUTTON_PASTE, IMG_PASTE )
    
-   BUTTON_OK = Button( 266, 175, 119, 22, "Ок", #__flag_ImageLeft )
+   BUTTON_OK = Button( 266, 175, 119, 22, "Ок", #__FLAG_Left )
    Disable( BUTTON_OK, #True )
    
-   BUTTON_CANCEL = Button( 266, 203, 119, 22, "Отмена", #__flag_ImageLeft )
+   BUTTON_CANCEL = Button( 266, 203, 119, 22, "Отмена", #__FLAG_Left )
    
    Bind( #PB_All, @Events_EDITORIMAGES( ))
    ReDraw(EDITORIMAGES)
@@ -264,7 +264,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Define Root = Open( 0, 20, 20, 600, 600, "Загрузка изображения",  #PB_Window_SystemMenu | #PB_Window_ScreenCentered  )
    SetBackgroundColor( Widget( ), $54DE94 )
-   Button( 600-300-10, 600-30-10, 300, 30, ~"Открыть окно \"Редактор изображения\"", #__flag_ImageLeft )
+   Button( 600-300-10, 600-30-10, 300, 30, ~"Открыть окно \"Редактор изображения\"", #__FLAG_Left )
    Disable( Widget( ), #True )
    
    Bind( Widget( ), @BUTTON_left_click_event( ), #__event_LeftClick )
@@ -273,9 +273,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    End
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 178
-; FirstLine = 173
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 259
+; FirstLine = 248
 ; Folding = ------
 ; EnableXP
 ; DPIAware

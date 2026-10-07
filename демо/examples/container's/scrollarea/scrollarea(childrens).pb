@@ -16,9 +16,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Bind(*g, @events_widgets(), #__event_Resize )
     
     Button(10,  10, 230, 30,"Button 1")
-    Button(50,  50, 230, 30,"Button 2") ;: SetAlign(widget(), #__align_right)
+    Button(50,  50, 230, 30,"Button 2") ;: SetAlign(widget(), #__FLAG_right)
     Button(90,  90, 230, 30,"Button 3")
-    Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__flag_TextRight)
+    Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__FLAG_TextRight)
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
     
     *b = Button(Sw-130, Sh-30, 130, 30,"Button")
@@ -52,9 +52,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Until ev = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
+; IDE Options = PureBasic 6.40 (Windows - x64)
 ; CursorPosition = 20
-; FirstLine = 16
+; FirstLine = 14
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -32,9 +32,9 @@ CompilerIf #PB_Compiler_IsMainFile
     SetColor(*g, #PB_Gadget_BackColor, $00FFFF)
     
     Button(10,  10, 230, 30,"Button 1")
-    Define *b1=Button(50,  50, 230, 30,"align right") ;: SetAlign(widget(), #__align_right)
+    Define *b1=Button(50,  50, 230, 30,"align right") ;: SetAlign(widget(), #__FLAG_right)
     Button(90,  90, 230, 30,"Button 3")
-    Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__flag_TextRight)
+    Text(130, 130, 330, 20,"This is the content of a ScrollAreaWidget!", #__FLAG_TextRight)
     ; SetColor(widget(), #PB_Gadget_BackColor, -1)
     
     *b = Button(Sw-130, Sh-30, 130, 30,"Button")
@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;
     Splitter(10,10,590,480, Splitter(0,0,0,0, g,*g, #PB_Splitter_Vertical),0)
     
-    ;SetAlign(*b1, #__align_right)
+    ;SetAlign(*b1, #__FLAG_right)
     
     If count
       OpenGadgetList(g)
@@ -112,9 +112,9 @@ CompilerIf #PB_Compiler_IsMainFile
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 12
-; FirstLine = 8
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 45
+; FirstLine = 30
 ; Folding = --
 ; Optimizer
 ; EnableXP

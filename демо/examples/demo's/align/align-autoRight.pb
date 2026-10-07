@@ -21,25 +21,25 @@ CompilerIf #PB_Compiler_IsMainFile
          Protected Flag.q
 
 ;          ;\\
-;          If mode & #__align_auto = #__align_auto
+;          If mode & #__FLAG_auto = #__FLAG_auto
 ;             If left > 0 : left = 1 : EndIf
 ;             If top > 0 : top = 1 : EndIf
 ;             If right > 0 : right = 1 : EndIf
 ;             If bottom > 0 : bottom = 1 : EndIf
 ;             
-;             If left > 0 And top = 0 And right = 0 And bottom = 0 : left = #__align_auto : EndIf
-;             If top > 0 And left = 0 And right = 0 And bottom = 0 : top = #__align_auto : EndIf
-;             If right > 0 And top = 0 And left = 0 And bottom = 0 : right = #__align_auto : EndIf
-;             If bottom > 0 And top = 0 And right = 0 And left = 0 : bottom = #__align_auto : EndIf
+;             If left > 0 And top = 0 And right = 0 And bottom = 0 : left = #__FLAG_auto : EndIf
+;             If top > 0 And left = 0 And right = 0 And bottom = 0 : top = #__FLAG_auto : EndIf
+;             If right > 0 And top = 0 And left = 0 And bottom = 0 : right = #__FLAG_auto : EndIf
+;             If bottom > 0 And top = 0 And right = 0 And left = 0 : bottom = #__FLAG_auto : EndIf
 ;             
-;             right = #__align_auto 
+;             right = #__FLAG_auto 
 ;          EndIf
          
-         If mode & #__align_auto
-            If left : left = #__align_auto :EndIf
-            If top : top = #__align_auto :EndIf
-            If right : right = #__align_auto :EndIf
-            If bottom : bottom = #__align_auto :EndIf
+         If mode & #__FLAG_auto
+            If left : left = #__FLAG_auto :EndIf
+            If top : top = #__FLAG_auto :EndIf
+            If right : right = #__FLAG_auto :EndIf
+            If bottom : bottom = #__FLAG_auto :EndIf
          EndIf
          
           ;\\
@@ -68,8 +68,8 @@ CompilerIf #PB_Compiler_IsMainFile
             ;\\
             If *this\align
                ;\\ horizontal
-               If left Or ( Not right And constants::BinaryFlag( Flag, #__align_full ))
-                  If left = #__align_proportional 
+               If left Or ( Not right And constants::BinaryFlag( Flag, #__FLAG_full ))
+                  If left = #__FLAG_proportional 
                      *this\align\left = - 1
                   Else
                      *this\align\left = 1
@@ -77,8 +77,8 @@ CompilerIf #PB_Compiler_IsMainFile
                Else
                   *this\align\left = 0
                EndIf
-               If right Or ( Not left And constants::BinaryFlag( Flag, #__align_full ))
-                  If right = #__align_proportional
+               If right Or ( Not left And constants::BinaryFlag( Flag, #__FLAG_full ))
+                  If right = #__FLAG_proportional
                      *this\align\right = - 1
                   Else
                      *this\align\right = 1
@@ -88,8 +88,8 @@ CompilerIf #PB_Compiler_IsMainFile
                EndIf
                
                ;\\ vertical
-               If top Or ( Not bottom And constants::BinaryFlag( Flag, #__align_full )) 
-                  If top = #__align_proportional
+               If top Or ( Not bottom And constants::BinaryFlag( Flag, #__FLAG_full )) 
+                  If top = #__FLAG_proportional
                      *this\align\top = - 1
                   Else
                      *this\align\top = 1
@@ -97,8 +97,8 @@ CompilerIf #PB_Compiler_IsMainFile
                Else
                   *this\align\top = 0
                EndIf
-               If bottom Or ( Not top And constants::BinaryFlag( Flag, #__align_full ))
-                  If bottom = #__align_proportional
+               If bottom Or ( Not top And constants::BinaryFlag( Flag, #__FLAG_full ))
+                  If bottom = #__FLAG_proportional
                      *this\align\bottom = - 1
                   Else
                      *this\align\bottom = 1
@@ -140,8 +140,8 @@ CompilerIf #PB_Compiler_IsMainFile
                         *this\align\x = ( *this\parent\align\width - *this\frame_width( ) ) / 2
                      ElseIf *this\align\right And Not *this\align\left
                         ; right
-                        If ( mode & #__align_full = #__align_full ) Or
-                           ( mode & #__align_auto = #__align_auto )
+                        If ( mode & #__FLAG_full = #__FLAG_full ) Or
+                           ( mode & #__FLAG_auto = #__FLAG_auto )
                            *this\align\x = *this\parent\align\width - *this\frame_width( )
                            If *this\type = #__type_window
                               *this\align\x - *this\fs * 2
@@ -167,8 +167,8 @@ CompilerIf #PB_Compiler_IsMainFile
                         *this\align\y = ( *this\parent\align\height - *this\frame_height( ) ) / 2
                      ElseIf *this\align\bottom And Not *this\align\top
                         ; bottom
-                        If ( mode & #__align_full = #__align_full ) Or
-                           ( mode & #__align_auto = #__align_auto )
+                        If ( mode & #__FLAG_full = #__FLAG_full ) Or
+                           ( mode & #__FLAG_auto = #__FLAG_auto )
                            *this\align\y = *this\parent\align\height - *this\frame_height( )
                            If *this\type = #__type_window
                               *this\align\y - *this\fs * 2
@@ -180,22 +180,22 @@ CompilerIf #PB_Compiler_IsMainFile
                   ;
                   ;\\ auto stick change
                   If *this\parent\align
-                     If left = #__align_auto And *this\parent\align\autodock\x
+                     If left = #__FLAG_auto And *this\parent\align\autodock\x
                         left = - *this\parent\align\autodock\x
                      Else
                         left = DPIScaled(left)
                      EndIf
-                     If right = #__align_auto And *this\parent\align\autodock\width
+                     If right = #__FLAG_auto And *this\parent\align\autodock\width
                         right = - *this\parent\align\autodock\width
                      Else
                         right = DPIScaled(right)
                      EndIf
-                     If top = #__align_auto And *this\parent\align\autodock\y
+                     If top = #__FLAG_auto And *this\parent\align\autodock\y
                         top = - *this\parent\align\autodock\y
                      Else
                         top = DPIScaled(top)
                      EndIf
-                     If bottom = #__align_auto And *this\parent\align\autodock\height
+                     If bottom = #__FLAG_auto And *this\parent\align\autodock\height
                         bottom = - *this\parent\align\autodock\height
                      Else
                         bottom = DPIScaled(bottom)
@@ -239,7 +239,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      EndIf
                      
                      ;\\ dock auto stick position update
-                     If constants::BinaryFlag( Flag, #__align_full )
+                     If constants::BinaryFlag( Flag, #__FLAG_full )
                         If ( *this\parent\align\autodock\x Or
                              *this\parent\align\autodock\y Or
                              *this\parent\align\autodock\width Or
@@ -296,36 +296,37 @@ CompilerIf #PB_Compiler_IsMainFile
    wlist(Hex(44)) = Button(0, 0, 80, 40, "bottom2")   
    
    
-   SetAlign_(wlist(Hex(1)), #__align_auto, 1,0,0,0 ) 
-   SetAlign_(wlist(Hex(11)), #__align_auto, 1,0,0,0 ) 
+   SetAlign_(wlist(Hex(1)), #__FLAG_auto, 1,0,0,0 ) 
+   SetAlign_(wlist(Hex(11)), #__FLAG_auto, 1,0,0,0 ) 
    
-   SetAlign_(wlist(Hex(2)), #__align_auto, 0,1,0,0 ) 
-   SetAlign_(wlist(Hex(22)), #__align_auto, 0,1,0,0 ) 
+   SetAlign_(wlist(Hex(2)), #__FLAG_auto, 0,1,0,0 ) 
+   SetAlign_(wlist(Hex(22)), #__FLAG_auto, 0,1,0,0 ) 
    
-   SetAlign_(wlist(Hex(3)), #__align_auto, 0,1,1,0 )              
-   SetAlign_(wlist(Hex(33)), #__align_auto, 0,1,1,0 )              
+   SetAlign_(wlist(Hex(3)), #__FLAG_auto, 0,1,1,0 )              
+   SetAlign_(wlist(Hex(33)), #__FLAG_auto, 0,1,1,0 )              
    
-   SetAlign_(wlist(Hex(4)), #__align_auto, 0,0,0,1 )      
-   SetAlign_(wlist(Hex(44)), #__align_auto, 0,0,0,1 )      
+   SetAlign_(wlist(Hex(4)), #__FLAG_auto, 0,0,0,1 )      
+   SetAlign_(wlist(Hex(44)), #__FLAG_auto, 0,0,0,1 )      
    
 ;    Define ide_design_PANEL
 ;     ide_design_PANEL = Panel(200,100,200,200)
-;     AddButton( ide_design_PANEL, Button(0,0,0,0, "1"), #__flag_AutoSize|#__flag_Right )
-;    AddButton( ide_design_PANEL, Button(0,0,0,0, "2"), #__flag_AutoSize|#__flag_Right )
+;     AddButton( ide_design_PANEL, Button(0,0,0,0, "1"), #__FLAG_AutoSize|#__FLAG_Right )
+;    AddButton( ide_design_PANEL, Button(0,0,0,0, "2"), #__FLAG_AutoSize|#__FLAG_Right )
 ; ;   Define *b1 = Button(0,0,30,20, "1")
 ; ;    Define *b2 = Button(0,0,30,20, "2")
 ; ;    
-; ; ;        SetAlign(*b1, 0, 0,1,#__align_auto,0 )              
-; ; ;     SetAlign(*b2, 0, 0,1,#__align_auto,0 )              
+; ; ;        SetAlign(*b1, 0, 0,1,#__FLAG_auto,0 )              
+; ; ;     SetAlign(*b2, 0, 0,1,#__FLAG_auto,0 )              
 ; ; 
-; ;    AddButton( ide_design_PANEL, *b1, #__flag_Right )
-; ;    AddButton( ide_design_PANEL, *b2, #__flag_Right )
+; ;    AddButton( ide_design_PANEL, *b1, #__FLAG_Right )
+; ;    AddButton( ide_design_PANEL, *b2, #__FLAG_Right )
 ;    
    
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1
-; Folding = -----0----
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 321
+; FirstLine = 298
+; Folding = ----------
 ; EnableXP
 ; DPIAware

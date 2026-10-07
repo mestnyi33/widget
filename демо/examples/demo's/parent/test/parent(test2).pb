@@ -579,21 +579,6 @@ CompilerIf #PB_Compiler_IsMainFile
           *rows\hide = 1
         EndIf
         
-;         ; properties
-;         If *this\flag & #__flag_property
-;           If *parent_row And Not *parent_row\sublevel And Not *parent_row\text\fontID
-;             *parent_row\color\back = $FFF9F9F9
-;             *parent_row\color\back[1] = *parent_row\color\back
-;             *parent_row\color\back[2] = *parent_row\color\back
-;             *parent_row\color\frame = *parent_row\color\back
-;             *parent_row\color\frame[1] = *parent_row\color\back
-;             *parent_row\color\frame[2] = *parent_row\color\back
-;             *parent_row\color\front[1] = *parent_row\color\front
-;             *parent_row\color\front[2] = *parent_row\color\front
-;             *parent_row\text\fontID = FontID( LoadFont( #PB_Any, "Helvetica", 14, #PB_Font_Bold | #PB_Font_Italic ))
-;           EndIf
-;         EndIf
-;         
         ; add lines
         *rows\color = _get_colors_( )
         *rows\color\state = 0
@@ -785,8 +770,8 @@ CompilerIf #PB_Compiler_IsMainFile
     canvas_ide = Widget::GetCanvasGadget( Root )
     
     id_design_form = MDI( 10,10,410,510 ) : a_init( id_design_form )
-    id_elements_tree = Tree( 430,10,150,510, #__flag_NoButtons | #__flag_NoLines | #__flag_gridlines | #__flag_Borderless )
-    id_inspector_tree = Tree( 590,10,200,250, #__flag_gridlines )
+    id_elements_tree = Tree( 430,10,150,510, #__FLAG_NoButtons | #__FLAG_NoLines | #__FLAG_gridlines | #__FLAG_Borderless )
+    id_inspector_tree = Tree( 590,10,200,250, #__FLAG_gridlines )
     id_design_code = TreeGadget(#PB_Any, 590,270,200,250 )
     
     
@@ -843,9 +828,9 @@ CompilerIf #PB_Compiler_IsMainFile
   EndDataSection
   
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 391
-; FirstLine = 387
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 773
+; FirstLine = 750
 ; Folding = ------------
 ; EnableXP
 ; DPIAware

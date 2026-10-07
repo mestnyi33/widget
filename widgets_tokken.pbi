@@ -1,26 +1,41 @@
 ﻿EnableExplicit
 
+CompilerIf Not Defined( constants, #PB_Module )
+   XIncludeFile "constants.pbi"
+CompilerEndIf
+CompilerIf Not Defined( structures, #PB_Module )
+;   XIncludeFile "structures.pbi"
+CompilerEndIf
+
+Macro UseWidgets( )
+;    UseModule lng
+;    UseModule widgets
+    UseModule constants
+;    UseModule structures
+;    UseModule DD
+EndMacro : UseWidgets( )
+
 ; Прототип функции, которую ты будешь привязывать через Bind
 Prototype.i ProtoOnEvent(*this, Type.i)
-Enumeration 1
-  ;#__EVENT_Create
-  #__EVENT_Focus
-  #__EVENT_LostFocus
-  ;
-  #__EVENT_MouseEnter
-  #__EVENT_MouseMove
-  #__EVENT_MouseLeave
-  ;
-  #__EVENT_Down
-  #__EVENT_Up
-  #__EVENT_Click
-  
-  #__EVENT_DragStart
-  #__EVENT_Drop
-  #__EVENT_Change
-  ;
-  #__event
-EndEnumeration
+; Enumeration 1
+;   ;#__EVENT_Create
+;   #__EVENT_Focus
+;   #__EVENT_LostFocus
+;   ;
+;   #__EVENT_MouseEnter
+;   #__EVENT_MouseMove
+;   #__EVENT_MouseLeave
+;   ;
+;   #__EVENT_Down
+;   #__EVENT_Up
+;   #__EVENT_Click
+;   
+;   #__EVENT_DragStart
+;   #__EVENT_Drop
+;   #__EVENT_Change
+;   ;
+;   #__event
+; EndEnumeration
 
 ;
 ;-\\ create-type
@@ -85,7 +100,7 @@ EndEnumeration
 #__FLAG_Center          = 1<<60 
 #__FLAG_AutoSize        = 1<<61
 #__FLAG_integral        = 1 << 62
-#__FLAG_Vertical = 1<<63
+#__FLAG_Vertical = 1<<35
 ; ==============================================================================
 ; МАСКИ - Единые битовые константы (Quad)
 ; ==============================================================================
@@ -5954,6 +5969,7 @@ Procedure.i Open( window, X, Y, Width, Height, title.s="", flags.q = #PB_Window_
   ProcedureReturn *root
 EndProcedure
 
+
 ;-
 ; ==============================================================================
 ;- 1 ПРИМЕР ИНИЦИАЛИЗАЦИИ И ЗАПУСКА
@@ -6132,8 +6148,8 @@ CompilerIf #PB_Compiler_IsMainFile
   End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 4829
-; FirstLine = 4825
+; CursorPosition = 102
+; FirstLine = 89
 ; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

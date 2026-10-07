@@ -16,19 +16,19 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If *this\align
          If *this\align\left
-            result | #__align_Left
+            result | #__FLAG_Left
          EndIf
          If *this\align\top
-            result | #__align_Top
+            result | #__FLAG_Top
          EndIf
          If *this\align\right
-            result | #__align_Right
+            result | #__FLAG_Right
          EndIf
          If *this\align\bottom
-            result | #__align_Bottom
+            result | #__FLAG_Bottom
          EndIf
          If Not result
-            result = #__align_Center
+            result = #__FLAG_Center
          EndIf
       EndIf
       
@@ -40,19 +40,19 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If *this\align
          If *this\align\left
-            result + "#__align_Left|"
+            result + "#__FLAG_Left|"
          EndIf
          If *this\align\top
-            result + "#__align_Top|"
+            result + "#__FLAG_Top|"
          EndIf
          If *this\align\right
-            result + "#__align_Right|"
+            result + "#__FLAG_Right|"
          EndIf
          If *this\align\bottom
-            result + "#__align_Bottom|"
+            result + "#__FLAG_Bottom|"
          EndIf
          If result = ""
-            result = "#__align_Center"
+            result = "#__FLAG_Center"
          Else
             result = Trim( result, "|" )
          EndIf
@@ -63,12 +63,12 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Open(0, 0, 0, 600, 600, "Demo alignment widgets", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
    cont = Container(50, 50, 280, 200)
-   butt = Button(0, 0, 100, 100, "press", #__flag_TextMultiline)    
+   butt = Button(0, 0, 100, 100, "press", #__FLAG_TextMultiline)    
    CloseList()
    
-    SetAlign(butt, #__align_Full|#__align_Right)
-   ; SetAlign(butt, #__align_auto|#__align_Right) ; bug без флага #__align_Center выравнивает на середину по вертикали
-   ;SetAlign(butt, #__align_auto|#__align_Right|#__align_Top) 
+    SetAlign(butt, #__FLAG_Full|#__FLAG_Right)
+   ; SetAlign(butt, #__FLAG_auto|#__FLAG_Right) ; bug без флага #__FLAG_Center выравнивает на середину по вертикали
+   ;SetAlign(butt, #__FLAG_auto|#__FLAG_Right|#__FLAG_Top) 
    
    ;SetText(butt, Str(GetAlign(butt)))
    SetText(butt, ReplaceString(GetAlignString(butt), "|", #LF$))
@@ -115,6 +115,8 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 70
+; FirstLine = 47
 ; Folding = ----
 ; EnableXP

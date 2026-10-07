@@ -1,7 +1,7 @@
 ; 
 ; demo state
 
-IncludePath "../../../"
+IncludePath "../../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -80,7 +80,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             ;}
             
-            *this\__rows( ) = *row
+           ; *this\__rows( ) = *row
             
             
             If *this\row\new
@@ -174,21 +174,6 @@ CompilerIf #PB_Compiler_IsMainFile
                *row\RowParent( )\buttonbox\checked = 1
                *row\hide                      = 1
             EndIf
-            
-            ;                ; properties
-            ;                If *this\flag & #__flag_property
-            ;                   If *parent_row And Not *parent_row\sublevel And Not GetFontID( *parent_row )
-            ;                      *parent_row\color\back     = $FFF9F9F9
-            ;                      *parent_row\color\back[1]  = *parent_row\color\back
-            ;                      *parent_row\color\back[2]  = *parent_row\color\back
-            ;                      *parent_row\color\frame    = *parent_row\color\back
-            ;                      *parent_row\color\frame[1] = *parent_row\color\back
-            ;                      *parent_row\color\frame[2] = *parent_row\color\back
-            ;                      *parent_row\color\front[1] = *parent_row\color\front
-            ;                      *parent_row\color\front[2] = *parent_row\color\front
-            ;                      SetFontID( *parent_row, FontID( LoadFont( #PB_Any, "Helvetica", 14, #PB_Font_Bold | #PB_Font_Italic )))
-            ;                   EndIf
-            ;                EndIf
             
             ; add lines
             *row\color         = *this\color ; _get_colors_( )
@@ -294,8 +279,8 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug ""
       
       ; demo widget
-      ;*g = CreateBar(root(), #__flag_vertical ) 
-      *g = Tab(265, 10, 250, 450);, #__flag_vertical ) 
+      ;*g = CreateBar(root(), #__FLAG_vertical ) 
+      *g = Tab(265, 10, 250, 450);, #__FLAG_vertical ) 
       
       AddItem_(*g, 0, "    0_0", -1 )
       AddItem_(*g, 1, "    1_0_1", 0, 1) 
@@ -339,9 +324,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 31
-; FirstLine = 24
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 282
+; FirstLine = 259
 ; Folding = -------
 ; EnableXP
 ; DPIAware

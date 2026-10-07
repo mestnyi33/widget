@@ -76,7 +76,7 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
          *g = MDI(0,0,0,0, Flag)
          SetBackColor(*g, $D477DCE8)
          Define *g1=AddItem(*g, -1, Str(i)+"test item ", -1, #PB_Window_BorderLess)
-         Button(0,0,0,0,"button", #__flag_AutoSize)
+         Button(0,0,0,0,"button", #__FLAG_AutoSize)
          Resize(*g1, 160,50,80,30)
          Debug "---"
          Resize(*g, 0,0,180,130)
@@ -110,9 +110,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
       Resize(Widget(), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore) 
       
       ClearDebugOutput()
-      ;*g = Test( #__type_Tree, #__flag_Borderless )
-      ;*g = Test( #__type_ScrollArea, #__flag_Borderless )
-      *g = Test( #__type_MDI, #__flag_Borderless )
+      ;*g = Test( #__type_Tree, #__FLAG_Borderless )
+      ;*g = Test( #__type_ScrollArea, #__FLAG_Borderless )
+      *g = Test( #__type_MDI, #__FLAG_Borderless )
       
       
       CloseList()
@@ -122,8 +122,8 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
 ;       Debug *g\scroll\v\x
    
       ; v
-      ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__bar_invert)
-       v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__bar_invert)
+      ;v_bar=Splitter( w+10,10,20,h, -1, -1, #__FLAG_invert)
+       v_bar=Track( w+10,10,20,h, 0, h-10, #PB_TrackBar_Vertical|#__FLAG_invert)
       SetBackColor(v_bar, $FF80BE8E)
       SetState(v_bar, 120)
       Bind( v_bar, @track_v_events( ), #__event_change )
@@ -144,9 +144,9 @@ CompilerIf #PB_Compiler_IsMainFile ;= 99
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
+; IDE Options = PureBasic 6.40 (Windows - x64)
 ; CursorPosition = 125
-; FirstLine = 102
+; FirstLine = 101
 ; Folding = ---
 ; EnableXP
 ; DPIAware

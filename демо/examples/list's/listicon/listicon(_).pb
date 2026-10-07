@@ -143,7 +143,7 @@ CompilerIf #PB_Compiler_IsMainFile
                value = Width(*this)
             EndIf
             If SetAttribute( *this, attribute, value )
-               If Not *this\flagmask & #__flag_AutoSize
+               If Not *this\flagmask & #__FLAG_AutoSize
                   Resize(*this\firstWidget( ), #PB_Ignore, #PB_Ignore, value, #PB_Ignore)
                EndIf
             EndIf
@@ -154,7 +154,7 @@ CompilerIf #PB_Compiler_IsMainFile
                value = Height(*this)
             EndIf
             If SetAttribute( *this, attribute, value )
-               If Not *this\flagmask & #__flag_AutoSize
+               If Not *this\flagmask & #__FLAG_AutoSize
                   Resize(*this\firstWidget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, value)
                EndIf
             EndIf
@@ -163,21 +163,21 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   Procedure AddCaption( *this._s_PARENT, Width, Height, Text.s, Flag.q = #__align_auto ) 
+   Procedure AddCaption( *this._s_PARENT, Width, Height, Text.s, Flag.q = #__FLAG_auto ) 
       Protected *g._s_WIDGET
       *this\fs[2] = Height
       OpenList(*this, #PB_Ignore)
-      *g = Button( 0,0,Width,Height, Text.s, #__flag_Left )
+      *g = Button( 0,0,Width,Height, Text.s, #__FLAG_Left )
       CloseList( )
-      If Flag & #__align_auto
-         SetAlign( *g, 0, #__align_auto,1,#__align_auto,0, 0 )              
+      If Flag & #__FLAG_auto
+         SetAlign( *g, 0, #__FLAG_auto,1,#__FLAG_auto,0, 0 )              
       EndIf
       ProcedureReturn *g
    EndProcedure
    
    Procedure ListIcon_(X,Y,Width,Height,firstcolumntitle.s, firstcolumnwidth, flags.q=0 )
       Protected._s_WIDGET *parent = ScrollArea(X,Y,Width,Height, Width,Height, 1 )
-      Protected._s_WIDGET *g1 = Tree(0,0,0,0, #__flag_NoLines|flags);|#__flag_BorderLess);|#__flag_Borderflat);|#__flag_BorderLess)
+      Protected._s_WIDGET *g1 = Tree(0,0,0,0, #__FLAG_NoLines|flags);|#__FLAG_BorderLess);|#__FLAG_Borderflat);|#__FLAG_BorderLess)
       AddCaption( *g1, firstcolumnwidth, 30, firstcolumntitle.s ) 
       Bind(*g1, @listicon_tree_events())
       Hide(*g1\scroll\v, 1)
@@ -185,13 +185,13 @@ CompilerIf #PB_Compiler_IsMainFile
       SetData(*g1, 1)
       
       ;Protected *this._s_WIDGET = Splitter( 0,0,Width,Height, *g1,-1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
-      Protected *this._s_WIDGET = Splitter( 0,0,0,0, *g1,-1, #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed|#__flag_AutoSize|#__flag_BorderLess )
+      Protected *this._s_WIDGET = Splitter( 0,0,0,0, *g1,-1, #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed|#__FLAG_AutoSize|#__FLAG_BorderLess )
 ;       ;
 ;       *this\bar\button\size = DPIScaled(1)
 ;       *this\bar\button\size + Bool( *this\bar\button\size % 2 )
 ;       *this\bar\button\round = 0;  DPIScaled(1)
       
-      If flags & #__flag_CheckBoxes
+      If flags & #__FLAG_CheckBoxes
          firstcolumnwidth + 25
       EndIf
       SetState( *this, firstcolumnwidth)
@@ -218,7 +218,7 @@ CompilerIf #PB_Compiler_IsMainFile
          Define *Tree._s_WIDGET=GetAttribute(*this, #PB_Splitter_FirstGadget)
          *g2 = GetAttribute(parent, #PB_Splitter_SecondGadget)
          
-         *g1 = Tree(0,0,0,0, #__flag_NoLines|(*Tree\flagmask&~#__flag_CheckBoxes)) ; 
+         *g1 = Tree(0,0,0,0, #__FLAG_NoLines|(*Tree\flagmask&~#__FLAG_CheckBoxes)) ; 
          Bind(*g1, @listicon_tree_events())
          Hide(*g1\scroll\v, 1)
          Hide(*g1\scroll\h, 1)
@@ -234,7 +234,7 @@ CompilerIf #PB_Compiler_IsMainFile
          
          If *g2 > 0
           AddCaption( *g1, Width, 30, Text.s ) 
-           *g = Splitter( 0,0,0,0, *g2, *g1, #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed|#__flag_BorderLess )
+           *g = Splitter( 0,0,0,0, *g2, *g1, #PB_Splitter_Separator|#PB_Splitter_Vertical|#PB_Splitter_FirstFixed|#__FLAG_BorderLess )
 ;             ;
 ;             *g\bar\button\size = DPIScaled(1)
 ;             *g\bar\button\size + Bool( *g\bar\button\size % 2 )
@@ -342,7 +342,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAttribute_( *g, #PB_ScrollArea_InnerHeight, value )
       
       g = 12
-      *g = ListIcon_(180, 230, 165, 210, "Column_1",130);, #__flag_RowFullSelect) ;: *g = GetGadgetData(g)                                          
+      *g = ListIcon_(180, 230, 165, 210, "Column_1",130);, #__FLAG_RowFullSelect) ;: *g = GetGadgetData(g)                                          
       For i=1 To 2 : AddColumn_(*g, i,"Column_"+Str(i+1),90) : Next
       ; 1_example
       For i=0 To Count
@@ -354,7 +354,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAttribute_( *g, #PB_ScrollArea_InnerHeight, value )
       
       g = 13
-      *g = ListIcon_(350, 230, 430, 210, "Column_1",130, #__Flag_GridLines|#__Flag_CheckBoxes|#__flag_RowFullSelect);|: *g = GetGadgetData(g)                                          
+      *g = ListIcon_(350, 230, 430, 210, "Column_1",130, #__FLAG_GridLines|#__FLAG_CheckBoxes|#__FLAG_RowFullSelect);|: *g = GetGadgetData(g)                                          
       
       ;HideListIcon_(g,1)
       For i=1 To 3
@@ -418,9 +418,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 175
-; FirstLine = 163
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 356
+; FirstLine = 333
 ; Folding = ---------
 ; EnableXP
 ; DPIAware

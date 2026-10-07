@@ -5,30 +5,30 @@ CompilerIf #PB_Compiler_IsMainFile
    Global._s_WIDGET *g
    
    
-   Procedure AddCaption( *this._s_WIDGET, position, Height, Text.s, Flag.q = #__flag_Left ) 
+   Procedure AddCaption( *this._s_WIDGET, position, Height, Text.s, Flag.q = #__FLAG_Left ) 
       Protected *g._s_WIDGET
       ;Protected position = 4
       *this\fs[position] = Height
       
       If position = 1
-         *g = Button( 0,0,Height,0, Text.s, Flag|#__flag_Vertical )
+         *g = Button( 0,0,Height,0, Text.s, Flag|#__FLAG_Vertical )
          SetParent( *g, *this, #PB_Ignore )
-         SetAlign( *g, 0, 1,#__align_auto,0,#__align_auto, 0 )              
+         SetAlign( *g, 0, 1,#__FLAG_auto,0,#__FLAG_auto, 0 )              
       EndIf
       If position = 2
          *g = Button( 0,0,0,Height, Text.s, Flag )
          SetParent( *g, *this, #PB_Ignore )
-         SetAlign( *g, 0, #__align_auto,1,#__align_auto,0, 0 )              
+         SetAlign( *g, 0, #__FLAG_auto,1,#__FLAG_auto,0, 0 )              
       EndIf
       If position = 3
-         *g = Button( 0,0,Height,0, Text.s, Flag|#__flag_Vertical|#__flag_invert )
+         *g = Button( 0,0,Height,0, Text.s, Flag|#__FLAG_Vertical|#__FLAG_invert )
          SetParent( *g, *this, #PB_Ignore )
-         SetAlign( *g, 0, 0,#__align_auto,1,#__align_auto, 0 )              
+         SetAlign( *g, 0, 0,#__FLAG_auto,1,#__FLAG_auto, 0 )              
       EndIf
       If position = 4
          *g = Button( 0,80,100,Height, Text.s, Flag )
          SetParent( *g, *this, #PB_Ignore )
-         SetAlign( *g, 0, #__align_auto,0,#__align_auto,1, 0 )              
+         SetAlign( *g, 0, #__FLAG_auto,0,#__FLAG_auto,1, 0 )              
       EndIf
    EndProcedure
    
@@ -36,15 +36,15 @@ CompilerIf #PB_Compiler_IsMainFile
   
    
    Open(0, 0, 0, 400, 150, "ListIcon - Add Columns", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-   ;*g = Panel(0,0,0,0, #__flag_BorderLess) : CloseList(); 
-   ;*g = Container(0,0,0,0, #__flag_BorderLess) : CloseList(); 
+   ;*g = Panel(0,0,0,0, #__FLAG_BorderLess) : CloseList(); 
+   ;*g = Container(0,0,0,0, #__FLAG_BorderLess) : CloseList(); 
    *g = Container(0,0,0,0) 
-   Button(0,0,0,0, "inner1", #__flag_autosize)
+   Button(0,0,0,0, "inner1", #__FLAG_autosize)
    CloseList(); 
    AddCaption( *g, 1, 30, "column" ) 
    
    *g1 = Container(0,0,0,0) 
-   Button(0,0,0,0, "inner2", #__flag_autosize)
+   Button(0,0,0,0, "inner2", #__FLAG_autosize)
    CloseList(); 
    AddCaption( *g1, 3, 30, "column" ) 
     
@@ -53,9 +53,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 10
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 46
+; FirstLine = 23
 ; Folding = --
 ; EnableXP
 ; DPIAware

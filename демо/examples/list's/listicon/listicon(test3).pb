@@ -1,6 +1,8 @@
 ﻿
   
-XIncludeFile "../../../../widgets.pbi"
+;XIncludeFile "../../../../widgets.pbi"
+XIncludeFile "../../../../widgets_tokken.pbi"
+;XIncludeFile "../../../../include/tokken.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
@@ -52,8 +54,7 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 25
+; CursorPosition = 2
 ; Folding = -
 ; EnableXP
 ; DPIAware

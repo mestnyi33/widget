@@ -57,7 +57,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case *ComboBox
-            If SetAttribute( *Image, #__DisplayMode, GetState( *ComboBox ) )
+            If SetAttribute( *Image, #__MODE_Display, GetState( *ComboBox ) )
             EndIf 
             Repaint( )
             
@@ -108,9 +108,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 61
-; FirstLine = 42
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 59
+; FirstLine = 43
 ; Folding = ---
 ; EnableXP
 ; DPIAware

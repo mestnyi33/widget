@@ -46,30 +46,30 @@ CompilerIf #PB_Compiler_IsMainFile
       
       CloseList()
       
-      SetAlign(widget_id(Hex(8)), #__align_left   |#__align_center)
-      SetAlign(widget_id(Hex(2)), #__align_top    |#__align_center)
-      SetAlign(widget_id(Hex(4)), #__align_right  |#__align_center)
-      SetAlign(widget_id(Hex(6)), #__align_bottom |#__align_center)
+      SetAlign(widget_id(Hex(8)), #__FLAG_left   |#__FLAG_center)
+      SetAlign(widget_id(Hex(2)), #__FLAG_top    |#__FLAG_center)
+      SetAlign(widget_id(Hex(4)), #__FLAG_right  |#__FLAG_center)
+      SetAlign(widget_id(Hex(6)), #__FLAG_bottom |#__FLAG_center)
       
-      SetAlign(widget_id(Hex(1)), #__align_none)
-      SetAlign(widget_id(Hex(3)), #__align_right)
-      SetAlign(widget_id(Hex(7)), #__align_bottom)
-      SetAlign(widget_id(Hex(5)), #__align_right|#__align_bottom)
+      SetAlign(widget_id(Hex(1)), #__FLAG_none)
+      SetAlign(widget_id(Hex(3)), #__FLAG_right)
+      SetAlign(widget_id(Hex(7)), #__FLAG_bottom)
+      SetAlign(widget_id(Hex(5)), #__FLAG_right|#__FLAG_bottom)
 ;       
-      SetAlign(widget_id(Hex(9)), #__align_center)
+      SetAlign(widget_id(Hex(9)), #__FLAG_center)
       
       
-;       SetAlign( widget_id(Hex(8)), #__align_auto, 1,0,0,0 )
-;       SetAlign( widget_id(Hex(2)), #__align_auto, 0,1,0,0 )
-;       SetAlign( widget_id(Hex(4)), #__align_auto, 0,0,1,0 )
-;       SetAlign( widget_id(Hex(6)), #__align_auto, 0,0,0,1 )
+;       SetAlign( widget_id(Hex(8)), #__FLAG_auto, 1,0,0,0 )
+;       SetAlign( widget_id(Hex(2)), #__FLAG_auto, 0,1,0,0 )
+;       SetAlign( widget_id(Hex(4)), #__FLAG_auto, 0,0,1,0 )
+;       SetAlign( widget_id(Hex(6)), #__FLAG_auto, 0,0,0,1 )
 ;       
-;       SetAlign( widget_id(Hex(9)), #__align_center )
+;       SetAlign( widget_id(Hex(9)), #__FLAG_center )
 ;       
-;       SetAlign( widget_id(Hex(1)), #__align_auto, 1,1,0,0 )
-;       SetAlign( widget_id(Hex(3)), #__align_auto, 0,1,1,0 )
-;       SetAlign( widget_id(Hex(7)), #__align_auto, 1,0,0,1 )
-;       SetAlign( widget_id(Hex(5)), #__align_auto, 0,0,1,1 )
+;       SetAlign( widget_id(Hex(1)), #__FLAG_auto, 1,1,0,0 )
+;       SetAlign( widget_id(Hex(3)), #__FLAG_auto, 0,1,1,0 )
+;       SetAlign( widget_id(Hex(7)), #__FLAG_auto, 1,0,0,1 )
+;       SetAlign( widget_id(Hex(5)), #__FLAG_auto, 0,0,1,1 )
       
       
       
@@ -124,8 +124,8 @@ CompilerIf #PB_Compiler_IsMainFile
     
   Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 104
-; FirstLine = 92
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 71
+; FirstLine = 48
 ; Folding = --
 ; EnableXP

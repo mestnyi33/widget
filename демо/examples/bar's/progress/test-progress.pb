@@ -41,7 +41,7 @@ If vertical
    ;\\ vertical
    If Open(0, 0, 0, 210, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
-      *progress1 = Progress(20, 50, 50, 250,  0, 30, #PB_ProgressBar_Vertical|#__flag_Invert)
+      *progress1 = Progress(20, 50, 50, 250,  0, 30, #PB_ProgressBar_Vertical|#__FLAG_Invert)
       
       *g1=Button(90, 10, 30, 30, "") : SetRound( *g1, 15 ) : Bind( *g1, @button_events( ), event)
       *progress2 = Progress(80, 50, 50, 250,  min, max, #PB_ProgressBar_Vertical) : Bind( *progress2, @change_events( ), #__event_Change)
@@ -67,7 +67,7 @@ Else
       *progress2 = Progress(50, 80, 250, 50,  min, max) : Bind( *progress2, @change_events( ), #__event_Change)
       *g2=Button(310, 90, 30, 30, "") : SetRound( *g2, 15 ) : Bind( *g2, @button_events( ), event)
       
-      *progress3 = Progress(50, 140, 250, 50,  0, 30, #__flag_Invert)
+      *progress3 = Progress(50, 140, 250, 50,  0, 30, #__FLAG_Invert)
       
       Debug " -setstate-h "
       SetState(*progress1, 5)
@@ -77,8 +77,8 @@ Else
       WaitClose( )
    EndIf
 EndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 13
-; FirstLine = 4
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 69
+; FirstLine = 45
 ; Folding = --
 ; EnableXP

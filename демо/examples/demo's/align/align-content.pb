@@ -122,7 +122,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       If multiline
          txt$+#LF$+"line"
-         flags|#__flag_TextMultiLine
+         flags|#__FLAG_TextMultiLine
       EndIf
       
       ;txt$ = ""
@@ -130,41 +130,41 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;*g = CheckBox( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
       *g = Button( X,Y,Width,Height, txt$, flags) : SetImage( *g, img ) 
-      ;*g = Text( X,Y,Width,Height, txt$, #__flag_BorderFlat|flags) : SetImage( *g, img )
+      ;*g = Text( X,Y,Width,Height, txt$, #__FLAG_BorderFlat|flags) : SetImage( *g, img )
       
       ;*g = ButtonImage( X,Y,Width,Height, img, flags) : SetText( *g, txt$ )
-      ;*g = Image( X,Y,Width,Height, img, #__flag_BorderFlat|flags) : SetText( *g, txt$ )
-      ;*g = Editor( X,Y,Width,Height, #__flag_BorderFlat|flags) : SetText( *g, txt$ ) : SetImage( *g, img )
+      ;*g = Image( X,Y,Width,Height, img, #__FLAG_BorderFlat|flags) : SetText( *g, txt$ )
+      ;*g = Editor( X,Y,Width,Height, #__FLAG_BorderFlat|flags) : SetText( *g, txt$ ) : SetImage( *g, img )
       
-      Alignment( *g, #__align_left|#__align_right)
+      Alignment( *g, #__FLAG_left|#__FLAG_right)
       Bind(*g, @Test_Events( ), #__event_LeftClick)
       ProcedureReturn *g
    EndProcedure
    
    
    If Open(0, 0, 0, Width+20, 760, "test content alignment", #PB_Window_SizeGadget | #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      TestAlign(10,  10,       Width, h, #__flag_Left)
-      TestAlign(10,  10+65+10, Width, h, #__flag_Top)
-      TestAlign(10, 160,       Width, h, #__flag_Right)
-      TestAlign(10, 160+65+10, Width, h, #__flag_Bottom)
+      TestAlign(10,  10,       Width, h, #__FLAG_Left)
+      TestAlign(10,  10+65+10, Width, h, #__FLAG_Top)
+      TestAlign(10, 160,       Width, h, #__FLAG_Right)
+      TestAlign(10, 160+65+10, Width, h, #__FLAG_Bottom)
       
-      TestAlign(10, 310,       Width, h, #__flag_Center|#__flag_Left)
-      TestAlign(10, 310+65+10, Width, h, #__flag_Center|#__flag_Top)
-      TestAlign(10, 460,       Width, h, #__flag_Center|#__flag_Right)
-      TestAlign(10, 460+65+10, Width, h, #__flag_Center|#__flag_Bottom)
+      TestAlign(10, 310,       Width, h, #__FLAG_Center|#__FLAG_Left)
+      TestAlign(10, 310+65+10, Width, h, #__FLAG_Center|#__FLAG_Top)
+      TestAlign(10, 460,       Width, h, #__FLAG_Center|#__FLAG_Right)
+      TestAlign(10, 460+65+10, Width, h, #__FLAG_Center|#__FLAG_Bottom)
       
-      TestAlign(10, 610, Width, h, #__flag_Center)
+      TestAlign(10, 610, Width, h, #__FLAG_Center)
       ;  
       change_line = Editor(10, 685, Width, 40)
-      Alignment( change_line, #__align_left|#__align_right)
+      Alignment( change_line, #__FLAG_left|#__FLAG_right)
       Bind(change_line, @Change_Events( ), #__event_Change)
       
       change_txt = Button(10, 725, Width/2, 25, "change txt", #PB_Button_Toggle )
-      Alignment( change_txt, #__align_left|#__align_right)
+      Alignment( change_txt, #__FLAG_left|#__FLAG_right)
       Bind(change_txt, @Click_Events( ), #__event_LeftClick)
       
       change_img = Button(10+Width/2, 725, Width/2, 25, "change img", #PB_Button_Toggle )
-      Alignment( change_img, #__align_left|#__align_right)
+      Alignment( change_img, #__FLAG_left|#__FLAG_right)
       Bind(change_img, @Click_Events( ), #__event_LeftClick)
       
       Repeat
@@ -172,9 +172,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 25
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 166
+; FirstLine = 121
 ; Folding = 0---
 ; EnableXP
 ; DPIAware

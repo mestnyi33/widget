@@ -155,10 +155,10 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
                   ;
-                  Flag_(*this, #__flag_Left, GetState(button_left))
-                  Flag_(*this, #__flag_Top, GetState(button_top))
-                  Flag_(*this, #__flag_Right, GetState(button_right))
-                  Flag_(*this, #__flag_Bottom, GetState(button_bottom))
+                  Flag_(*this, #__FLAG_Left, GetState(button_left))
+                  Flag_(*this, #__FLAG_Top, GetState(button_top))
+                  Flag_(*this, #__FLAG_Right, GetState(button_right))
+                  Flag_(*this, #__FLAG_Bottom, GetState(button_bottom))
                   
                   ;
                   If (GetState(button_left)=0 And 
@@ -169,20 +169,20 @@ CompilerIf #PB_Compiler_IsMainFile
                      If GetState(button_center)=0
                         SetState(button_center,1) 
                      EndIf
-                     SetFlag(*this, #__flag_Center)
+                     SetFlag(*this, #__FLAG_Center)
                   EndIf
                   
                   
-               Case button_inline    : Flag = #__flag_TextInLine
-               Case Button_wordwrap  : Flag = #__flag_TextWordWrap
-               Case button_multiline : Flag = #__flag_TextMultiline
-               Case button_invert    : Flag = #__flag_Invert
-               Case button_vertical  : Flag = #__flag_Vertical
-               Case button_numeric   : Flag = #__flag_TextNumeric
-               Case button_upper     : Flag = #__flag_TextUpperCase
-               Case button_lower     : Flag = #__flag_TextLowerCase
-               Case button_pass      : Flag = #__flag_TextPassword
-               Case button_read      : Flag = #__flag_TextReadOnly
+               Case button_inline    : Flag = #__FLAG_TextInLine
+               Case Button_wordwrap  : Flag = #__FLAG_TextWordWrap
+               Case button_multiline : Flag = #__FLAG_TextMultiline
+               Case button_invert    : Flag = #__FLAG_Invert
+               Case button_vertical  : Flag = #__FLAG_Vertical
+               Case button_numeric   : Flag = #__FLAG_TextNumeric
+               Case button_upper     : Flag = #__FLAG_TextUpperCase
+               Case button_lower     : Flag = #__FLAG_TextLowerCase
+               Case button_pass      : Flag = #__FLAG_TextPassword
+               Case button_read      : Flag = #__FLAG_TextReadOnly
             EndSelect
             
             ;
@@ -192,29 +192,29 @@ CompilerIf #PB_Compiler_IsMainFile
          
             ; reset
             If GetState(button_lower)
-               If Flag( *this, #__flag_TextUpperCase )
+               If Flag( *this, #__FLAG_TextUpperCase )
                   SetState(button_lower,0) 
                EndIf
             EndIf
             If GetState(button_upper)
-               If Flag( *this, #__flag_TextLowerCase )
+               If Flag( *this, #__FLAG_TextLowerCase )
                   SetState(button_upper,0) 
                EndIf
             EndIf
             If GetState(button_multiline)
-               If Flag(*this, #__flag_TextInline) Or 
-                  Flag(*this, #__flag_TextWordWrap)
+               If Flag(*this, #__FLAG_TextInline) Or 
+                  Flag(*this, #__FLAG_TextWordWrap)
                   SetState(button_multiline,0) 
                EndIf
             EndIf
             If GetState(Button_wordwrap)
-               If Flag(*this, #__flag_TextInline) Or 
-                  Flag(*this, #__flag_TextMultiline)
+               If Flag(*this, #__FLAG_TextInline) Or 
+                  Flag(*this, #__FLAG_TextMultiline)
                   SetState(Button_wordwrap,0) 
                EndIf
             EndIf
-            If Flag(*this, #__flag_TextMultiline) Or 
-               Flag(*this, #__flag_TextWordWrap)
+            If Flag(*this, #__FLAG_TextMultiline) Or 
+               Flag(*this, #__FLAG_TextWordWrap)
                If GetState(button_inline)
                   SetState(button_inline,0) 
                EndIf
@@ -247,18 +247,18 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind( *b32, @change_image_events( ), #__event_LeftClick )
       
       
-      Define Container = Container( Width + 45, Y + bh * 1+10, 100, 100, #__flag_BorderLess | #__flag_Transparent) 
-      button_top       = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__flag_Invert,20)
-      button_left      = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__flag_Vertical|#__flag_Invert,20)
+      Define Container = Container( Width + 45, Y + bh * 1+10, 100, 100, #__FLAG_BorderLess | #__FLAG_Transparent) 
+      button_top       = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__FLAG_Invert,20)
+      button_left      = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__FLAG_Vertical|#__FLAG_Invert,20)
       button_center    = Widget::Button(0,0,bh,bh, "O", #PB_Button_Toggle,20)
-      button_right     = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__flag_Vertical,20)
+      button_right     = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__FLAG_Vertical,20)
       button_bottom    = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle,20)
       
-      SetAlign( button_left, #__align_auto, 1,0,0,0, 0)
-      SetAlign( button_top, #__align_auto, 0,1,0,0, 0)
-      SetAlign( button_right, #__align_auto, 0,0,1,0, 0)
-      SetAlign( button_bottom, #__align_auto, 0,0,0,1, 0)
-      SetAlign( button_center, #__align_center, 0,0,0,0, 0)
+      SetAlign( button_left, #__FLAG_auto, 1,0,0,0, 0)
+      SetAlign( button_top, #__FLAG_auto, 0,1,0,0, 0)
+      SetAlign( button_right, #__FLAG_auto, 0,0,1,0, 0)
+      SetAlign( button_bottom, #__FLAG_auto, 0,0,0,1, 0)
+      SetAlign( button_center, #__FLAG_center, 0,0,0,0, 0)
       
       Resize(Container, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
       CloseList( )
@@ -280,17 +280,17 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       ;\\ set button toggled state
-      SetState(button_inline, Flag(*this, #__flag_TextInLine ))
-      SetState(button_wordwrap, Flag(*this, #__flag_TextWordWrap ))
-      SetState(button_multiline, Flag(*this, #__flag_TextMultiLine ))
-      SetState(button_vertical, Flag(*this, #__flag_Vertical ))
-      SetState(button_invert, Flag(*this, #__flag_Invert ))
+      SetState(button_inline, Flag(*this, #__FLAG_TextInLine ))
+      SetState(button_wordwrap, Flag(*this, #__FLAG_TextWordWrap ))
+      SetState(button_multiline, Flag(*this, #__FLAG_TextMultiLine ))
+      SetState(button_vertical, Flag(*this, #__FLAG_Vertical ))
+      SetState(button_invert, Flag(*this, #__FLAG_Invert ))
       ;
-      SetState(button_left, Flag(*this, #__flag_Left ))
-      SetState(button_Top, Flag(*this, #__flag_Top ))
-      SetState(button_Right, Flag(*this, #__flag_Right ))
-      SetState(button_Bottom, Flag(*this, #__flag_Bottom ))
-      SetState(button_center, Flag(*this, #__flag_TextCenter))
+      SetState(button_left, Flag(*this, #__FLAG_Left ))
+      SetState(button_Top, Flag(*this, #__FLAG_Top ))
+      SetState(button_Right, Flag(*this, #__FLAG_Right ))
+      SetState(button_Bottom, Flag(*this, #__FLAG_Bottom ))
+      SetState(button_center, Flag(*this, #__FLAG_TextCenter))
       Hide(Button_type, 1)
       
       ;\\
@@ -306,9 +306,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 36
-; FirstLine = 12
-; Folding = -fDuq-
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 292
+; FirstLine = 241
+; Folding = -fD+--
 ; EnableXP
 ; DPIAware

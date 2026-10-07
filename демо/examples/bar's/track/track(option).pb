@@ -15,11 +15,11 @@ If vertical
    ;\\ vertical
    If Open(0, 0, 0, 230, 350, "vertical", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
-      *g = Track(45, 50, 20, 250,  0, 30, #PB_TrackBar_Vertical | #__flag_Invert | #PB_TrackBar_Ticks)
+      *g = Track(45, 50, 20, 250,  0, 30, #PB_TrackBar_Vertical | #__FLAG_Invert | #PB_TrackBar_Ticks)
       SetBackColor(*g, $FFB3FDFF)
       SetState(*g, 5)
       
-      *g = Track(85, 50, 20, 250,  min, 30, #PB_TrackBar_Vertical | #__flag_Invert)
+      *g = Track(85, 50, 20, 250,  min, 30, #PB_TrackBar_Vertical | #__FLAG_Invert)
       SetBackColor(*g, $FFB3FDFF)
       SetState(*g, 29)
       
@@ -39,11 +39,11 @@ Else
    ;\\ horizontal
    If Open(0, 0, 0, 350, 230, "horizontal", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       
-      *g = Track(50, 45, 250, 20,  0, 30, #__flag_Invert | #PB_TrackBar_Ticks)
+      *g = Track(50, 45, 250, 20,  0, 30, #__FLAG_Invert | #PB_TrackBar_Ticks)
       SetBackColor(*g, $FFB3FDFF)
       SetState(*g, 5)
       
-      *g = Track(50, 85, 250, 20,  min, 30, #__flag_Invert)
+      *g = Track(50, 85, 250, 20,  min, 30, #__FLAG_Invert)
       SetBackColor(*g, $FFB3FDFF)
       SetState(*g, 29)
       
@@ -60,9 +60,9 @@ Else
       WaitClose( )
    EndIf
 EndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 5
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 45
+; FirstLine = 21
 ; Folding = -
 ; EnableXP
 ; DPIAware

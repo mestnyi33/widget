@@ -20,16 +20,17 @@ CompilerIf #PB_Compiler_IsMainFile
       SetBackColor( Widget( ), $fff000f0)
       
       Button(0,0,50,50,"auto-resize-root-size" ) : Widget( )\bindresize = 1
-      ;SetAlign( widget( ), #__align_Right ) ; BUG
-      SetAlign( Widget( ), #__align_Auto|#__align_Right )
-      ;SetAlign( widget( ), #__align_Center|#__align_Right )
+      ;SetAlign( widget( ), #__FLAG_Right ) ; BUG
+      SetAlign( Widget( ), #__FLAG_Auto|#__FLAG_Right )
+      ;SetAlign( widget( ), #__FLAG_Center|#__FLAG_Right )
       ; Bind( widget( ), @resize_events( ), #__event_resize )
       
       Bind( #PB_All, @resize_events( ));, #__event_resize )
       WaitClose( ) ; @resize_events( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 24
+; FirstLine = 6
 ; Folding = -
 ; EnableXP

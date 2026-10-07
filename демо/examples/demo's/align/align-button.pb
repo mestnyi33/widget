@@ -84,7 +84,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Protected._s_WIDGET *g
       If multiline
          txt$+#LF$+"line"
-         flag|#__flag_TextMultiLine
+         flag|#__FLAG_TextMultiLine
       EndIf
       
       *g = Button(X,Y,Width,Height,txt$, Flag)
@@ -105,25 +105,25 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If Open( 0, 0, 0, Width, 500, "Buttons on the canvas", #PB_Window_SystemMenu | #PB_Window_ScreenCentered )
       
-      *g1 = Test( 10+size, 10, size2, size, "center text right", #__flag_Center)
-      *g2 = Test( 10, 10+size, size, size2, "center text top", #__flag_Center|#__flag_Vertical)
-      *g3 = Test( size2+10+size, 10+size, size, size2, "center text bottom", #__flag_Center|#__flag_Vertical|#__flag_Invert)
-      *g4 = Test( 10+size, size2+10+size, size2, size, "center text left", #__flag_Center|#__flag_Invert)
+      *g1 = Test( 10+size, 10, size2, size, "center text right", #__FLAG_Center)
+      *g2 = Test( 10, 10+size, size, size2, "center text top", #__FLAG_Center|#__FLAG_Vertical)
+      *g3 = Test( size2+10+size, 10+size, size, size2, "center text bottom", #__FLAG_Center|#__FLAG_Vertical|#__FLAG_Invert)
+      *g4 = Test( 10+size, size2+10+size, size2, size, "center text left", #__FLAG_Center|#__FLAG_Invert)
       
-      *g5 = Test( 10+size*2, 10+size, size2-size*2, size, "left text", #__flag_left )
-      *g6 = Test( 10+size, 10+size*2, size, size2-size*2, "bottom text", #__flag_Bottom|#__flag_Vertical)
-      *g7 = Test( size2-size+10+size, 10+size*2, size, size2-size*2, "top text", #__flag_Top|#__flag_Vertical|#__flag_Invert)
-      *g8 = Test( 10+size*2, size2-size+10+size, size2-size*2, size, "right text", #__flag_Right|#__flag_Invert)
+      *g5 = Test( 10+size*2, 10+size, size2-size*2, size, "left text", #__FLAG_left )
+      *g6 = Test( 10+size, 10+size*2, size, size2-size*2, "bottom text", #__FLAG_Bottom|#__FLAG_Vertical)
+      *g7 = Test( size2-size+10+size, 10+size*2, size, size2-size*2, "top text", #__FLAG_Top|#__FLAG_Vertical|#__FLAG_Invert)
+      *g8 = Test( 10+size*2, size2-size+10+size, size2-size*2, size, "right text", #__FLAG_Right|#__FLAG_Invert)
       
-      *g9 = Test( 10+size*3, 10+size*2, size2-size*4, size, "text right", #__flag_Right )
-      *g10 = Test( 10+size*2, 10+size*3, size, size2-size*4, "text top", #__flag_Top|#__flag_Vertical)
-      *g11 = Test( size2-size*2+10+size, 10+size*3, size, size2-size*4, "text bottom", #__flag_Bottom|#__flag_Vertical|#__flag_Invert)
-      *g12 = Test( 10+size*3, size2-size*2+10+size, size2-size*4, size, "text left", #__flag_Left|#__flag_Invert)
+      *g9 = Test( 10+size*3, 10+size*2, size2-size*4, size, "text right", #__FLAG_Right )
+      *g10 = Test( 10+size*2, 10+size*3, size, size2-size*4, "text top", #__FLAG_Top|#__FLAG_Vertical)
+      *g11 = Test( size2-size*2+10+size, 10+size*3, size, size2-size*4, "text bottom", #__FLAG_Bottom|#__FLAG_Vertical|#__FLAG_Invert)
+      *g12 = Test( 10+size*3, size2-size*2+10+size, size2-size*4, size, "text left", #__FLAG_Left|#__FLAG_Invert)
       
       *g13 = Test( 10+size*4, 10+size*3, size2-size*6, size, "default h")
-      *g14 = Test( 10+size*3, 10+size*4, size, size2-size*6, "default v", #__flag_Vertical)
-      *g15 = Test( size2-size*3+10+size, 10+size*4, size, size2-size*6, "default v invert", #__flag_Vertical|#__flag_Invert)
-      *g16 = Test( 10+size*4, size2-size*3+10+size, size2-size*6, size, "default h invert", #__flag_Invert)
+      *g14 = Test( 10+size*3, 10+size*4, size, size2-size*6, "default v", #__FLAG_Vertical)
+      *g15 = Test( size2-size*3+10+size, 10+size*4, size, size2-size*6, "default v invert", #__FLAG_Vertical|#__FLAG_Invert)
+      *g16 = Test( 10+size*4, size2-size*3+10+size, size2-size*6, size, "default h invert", #__FLAG_Invert)
       
       ;
       *b0 = Button( Width-40, 10, 30,30, "0")
@@ -136,9 +136,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 86
-; FirstLine = 24
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 125
+; FirstLine = 49
 ; Folding = 4-
 ; EnableXP
 ; DPIAware

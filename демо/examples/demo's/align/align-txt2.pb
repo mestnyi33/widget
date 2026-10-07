@@ -15,17 +15,17 @@ CompilerIf #PB_Compiler_IsMainFile
   
    Procedure  GadgeCreate(_id_, _x_,_y_,_width_,_height_,_text_.s,_flag_)
       
-      ;_flag_|#__flag_vertical
+      ;_flag_|#__FLAG_vertical
       
       ;Protected *g=ComboBox(_x_,_y_,_width_,_height_,_flag_) : AddItem(*g, -1,"combo") : SetState(*g, 0)
-      Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
-      ;Protected *g=ButtonImage(_x_,_y_,_width_,_height_,-1,_flag_|#__flag_Textmultiline) : SetText( *g, _text_)
+      Button(_x_,_y_,_width_,_height_,_text_,_flag_|#__FLAG_Textmultiline)
+      ;Protected *g=ButtonImage(_x_,_y_,_width_,_height_,-1,_flag_|#__FLAG_Textmultiline) : SetText( *g, _text_)
       ;
-      ;Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
-      ;CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__flag_Textmultiline)
+      ;Option(_x_,_y_,_width_,_height_,_text_,_flag_|#__FLAG_Textmultiline)
+      ;CheckBox(_x_,_y_,_width_,_height_,_text_,_flag_|#__FLAG_Textmultiline)
       ;
       ;Text(_x_,_y_,_width_,_height_,_text_,_flag_)
-      ;Editor(_x_,_y_,_width_,_height_, _flag_|#__flag_Textmultiline) : SetText(widget(), _text_)
+      ;Editor(_x_,_y_,_width_,_height_, _flag_|#__FLAG_Textmultiline) : SetText(widget(), _text_)
       ;String(_x_,_y_,_width_,_height_,_text_,_flag_)
    EndProcedure
    
@@ -42,40 +42,40 @@ CompilerIf #PB_Compiler_IsMainFile
       a_init( Widget() )
       
       ; horizontal
-      GadgeCreate(0, 10, 10,                      Width, Height, text_h,                  #__flag_Left|#__flag_Top)
-      GadgeCreate(1, 10, 10+(Height+space)*1, Width, Height, text_h,                      #__flag_Left)
-      GadgeCreate(2, 10, 10+(Height+space)*2, Width, Height, text_h,                      #__flag_Left|#__flag_Bottom) 
+      GadgeCreate(0, 10, 10,                      Width, Height, text_h,                  #__FLAG_Left|#__FLAG_Top)
+      GadgeCreate(1, 10, 10+(Height+space)*1, Width, Height, text_h,                      #__FLAG_Left)
+      GadgeCreate(2, 10, 10+(Height+space)*2, Width, Height, text_h,                      #__FLAG_Left|#__FLAG_Bottom) 
       
-      GadgeCreate(3, 10+(Width+space), 10,                      Width, Height, text_h,    #__flag_Top);
-      GadgeCreate(4, 10+(Width+space), 10+(Height+space)*1, Width, Height, text_h,        #__flag_Center)                
-      GadgeCreate(5, 10+(Width+space), 10+(Height+space)*2, Width, Height, text_h,        #__flag_Bottom) 
+      GadgeCreate(3, 10+(Width+space), 10,                      Width, Height, text_h,    #__FLAG_Top);
+      GadgeCreate(4, 10+(Width+space), 10+(Height+space)*1, Width, Height, text_h,        #__FLAG_Center)                
+      GadgeCreate(5, 10+(Width+space), 10+(Height+space)*2, Width, Height, text_h,        #__FLAG_Bottom) 
       
-      GadgeCreate(6, 10+(Width+space)*2, 10,                      Width, Height, text_h,  #__flag_Right|#__flag_Top)
-      GadgeCreate(7, 10+(Width+space)*2, 10+(Height+space)*1, Width, Height, text_h,      #__flag_Right) 
-      GadgeCreate(10, 10+(Width+space)*2, 10+(Height+space)*2, Width, Height, text_h,     #__flag_Right|#__flag_Bottom)
+      GadgeCreate(6, 10+(Width+space)*2, 10,                      Width, Height, text_h,  #__FLAG_Right|#__FLAG_Top)
+      GadgeCreate(7, 10+(Width+space)*2, 10+(Height+space)*1, Width, Height, text_h,      #__FLAG_Right) 
+      GadgeCreate(10, 10+(Width+space)*2, 10+(Height+space)*2, Width, Height, text_h,     #__FLAG_Right|#__FLAG_Bottom)
       
       
       ; horizontal invert
-      GadgeCreate(20, X+10, Y+10,                      Width, Height, text_h,                  #__flag_Invert|#__flag_Left|#__flag_Top)
-      GadgeCreate(21, X+10, Y+10+(Height+space)*1, Width, Height, text_h,                      #__flag_Invert|#__flag_Left) 
-      GadgeCreate(22, X+10, Y+10+(Height+space)*2, Width, Height, text_h,                      #__flag_Invert|#__flag_Left|#__flag_Bottom) 
+      GadgeCreate(20, X+10, Y+10,                      Width, Height, text_h,                  #__FLAG_Invert|#__FLAG_Left|#__FLAG_Top)
+      GadgeCreate(21, X+10, Y+10+(Height+space)*1, Width, Height, text_h,                      #__FLAG_Invert|#__FLAG_Left) 
+      GadgeCreate(22, X+10, Y+10+(Height+space)*2, Width, Height, text_h,                      #__FLAG_Invert|#__FLAG_Left|#__FLAG_Bottom) 
       
-      GadgeCreate(23, X+10+Width+space, Y+10,                      Width, Height, text_h,      #__flag_Invert|#__flag_Top)
-      GadgeCreate(24, X+10+Width+space, Y+10+(Height+space)*1, Width, Height, text_h,          #__flag_Invert)                
-      GadgeCreate(25, X+10+Width+space, Y+10+(Height+space)*2, Width, Height, text_h,          #__flag_Invert|#__flag_Bottom) 
+      GadgeCreate(23, X+10+Width+space, Y+10,                      Width, Height, text_h,      #__FLAG_Invert|#__FLAG_Top)
+      GadgeCreate(24, X+10+Width+space, Y+10+(Height+space)*1, Width, Height, text_h,          #__FLAG_Invert)                
+      GadgeCreate(25, X+10+Width+space, Y+10+(Height+space)*2, Width, Height, text_h,          #__FLAG_Invert|#__FLAG_Bottom) 
       
-      GadgeCreate(26, X+10+(Width+space)*2, Y+10,                      Width, Height, text_h,  #__flag_Invert|#__flag_Right|#__flag_Top)
-      GadgeCreate(27, X+10+(Width+space)*2, Y+10+(Height+space)*1, Width, Height, text_h,      #__flag_Invert|#__flag_Right) 
-      GadgeCreate(210, X+10+(Width+space)*2, Y+10+(Height+space)*2, Width, Height, text_h,     #__flag_Invert|#__flag_Right|#__flag_Bottom)
+      GadgeCreate(26, X+10+(Width+space)*2, Y+10,                      Width, Height, text_h,  #__FLAG_Invert|#__FLAG_Right|#__FLAG_Top)
+      GadgeCreate(27, X+10+(Width+space)*2, Y+10+(Height+space)*1, Width, Height, text_h,      #__FLAG_Invert|#__FLAG_Right) 
+      GadgeCreate(210, X+10+(Width+space)*2, Y+10+(Height+space)*2, Width, Height, text_h,     #__FLAG_Invert|#__FLAG_Right|#__FLAG_Bottom)
       
    EndIf
    
    Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 59
-; FirstLine = 46
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 68
+; FirstLine = 44
 ; Folding = -
 ; EnableXP
 ; DPIAware

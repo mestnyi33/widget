@@ -118,7 +118,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;ResizeImage(img, DpiScaled(width), DPIScaled(height) )
       
-      *this = AddItem( *mdi, -1, "", img, #__flag_BorderLess|#__flag_Transparent )
+      *this = AddItem( *mdi, -1, "", img, #__FLAG_BorderLess|#__FLAG_Transparent )
       *this\class = "image-"+Str(img)
       *this\cursor = #PB_Cursor_Hand
       *this\round = DPIScaled(round)
@@ -148,19 +148,19 @@ CompilerIf #PB_Compiler_IsMainFile
          Case 2
             If GetGadgetState(2)
                   SetGadgetText(2, "vertical bar")
-              SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__flag_Invert))
+              SetGadgetState(3, GetAttribute(*mdi\scroll\v, #__FLAG_Invert))
             Else
                 SetGadgetText(2, "horizontal bar")
-                SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__flag_Invert))
+                SetGadgetState(3, GetAttribute(*mdi\scroll\h, #__FLAG_Invert))
             EndIf
                Repaint( )
          
          Case 3
             If GetGadgetState(2)
-               SetAttribute(*mdi\scroll\v, #__flag_Invert, Bool(GetGadgetState(3)))
+               SetAttribute(*mdi\scroll\v, #__FLAG_Invert, Bool(GetGadgetState(3)))
                SetWindowTitle(0, Str(GetState(*mdi\scroll\v)))
             Else
-               SetAttribute(*mdi\scroll\h, #__flag_Invert, Bool(GetGadgetState(3)))
+               SetAttribute(*mdi\scroll\h, #__FLAG_Invert, Bool(GetGadgetState(3)))
                SetWindowTitle(0, Str(GetState(*mdi\scroll\h)))
             EndIf
               Repaint( )
@@ -255,7 +255,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;BindGadgetEvent(MyCanvas, @Canvas_resize(), #PB_EventType_Resize )
    ;   ;BindEvent(#PB_Event_SizeWindow, @Canvas_resize());, GetCanvasWindow(Root()), MyCanvas, #PB_EventType_Resize )
    
-   *mdi = MDI(X,Y,Width,Height);, #__flag_autosize)
+   *mdi = MDI(X,Y,Width,Height);, #__FLAG_autosize)
                                ;a_init( *mdi )
    SetColor(*mdi, #PB_Gadget_BackColor, $ffffffff)
    ;SetColor(*mdi, #__FrameColor, $ffffffff)
@@ -287,9 +287,9 @@ CompilerIf #PB_Compiler_IsMainFile
    BindEvent( #PB_Event_Gadget, @Gadgets_Events() )
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 155
-; FirstLine = 127
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 257
+; FirstLine = 233
 ; Folding = ------
 ; EnableXP
 ; DPIAware

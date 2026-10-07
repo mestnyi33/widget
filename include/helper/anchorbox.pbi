@@ -276,15 +276,15 @@ Module AnchorBox
       
       Define pos = - radius
       ;
-      widgets::SetAlign( LBUTTON, constants::#__align_auto, pos,0,0,0)
-      widgets::SetAlign( TBUTTON, constants::#__align_auto, 0,pos,0,0)
-      widgets::SetAlign( RBUTTON, constants::#__align_auto, 0,0,pos,0)
-      widgets::SetAlign( BBUTTON, constants::#__align_auto, 0,0,0,pos)
-      widgets::SetAlign( CENTER, constants::#__align_center, 0,0,0,0)
-      widgets::SetAlign( LTBUTTON, constants::#__align_auto, pos,pos,0,0)
-      widgets::SetAlign( RTBUTTON, constants::#__align_auto, 0,pos,pos,0)
-      widgets::SetAlign( RBBUTTON, constants::#__align_auto, 0,0,pos,pos)
-      widgets::SetAlign( LBBUTTON, constants::#__align_auto, pos,0,0,pos)
+      widgets::SetAlign( LBUTTON, constants::#__FLAG_AutoSize, pos,0,0,0)
+      widgets::SetAlign( TBUTTON, constants::#__FLAG_AutoSize, 0,pos,0,0)
+      widgets::SetAlign( RBUTTON, constants::#__FLAG_AutoSize, 0,0,pos,0)
+      widgets::SetAlign( BBUTTON, constants::#__FLAG_AutoSize, 0,0,0,pos)
+      widgets::SetAlign( CENTER, constants::#__FLAG_center, 0,0,0,0)
+      widgets::SetAlign( LTBUTTON, constants::#__FLAG_AutoSize, pos,pos,0,0)
+      widgets::SetAlign( RTBUTTON, constants::#__FLAG_AutoSize, 0,pos,pos,0)
+      widgets::SetAlign( RBBUTTON, constants::#__FLAG_AutoSize, 0,0,pos,pos)
+      widgets::SetAlign( LBBUTTON, constants::#__FLAG_AutoSize, pos,0,0,pos)
       
       ;widgets::SetState( TBUTTON,1 )
       widgets::SetState( LTBUTTON,1 )
@@ -358,9 +358,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    widgets::WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 358
-; FirstLine = 342
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 282
+; FirstLine = 278
 ; Folding = --------
 ; EnableXP
 ; DPIAware

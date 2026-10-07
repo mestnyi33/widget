@@ -1,7 +1,7 @@
 ; 
 ; demo state
 
-IncludePath "../../../"
+IncludePath "../../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -153,21 +153,6 @@ CompilerIf #PB_Compiler_IsMainFile
                      *rowParent\buttonbox\checked = 1
                      *row\hide                    = 1
                   EndIf
-               EndIf
-            EndIf
-            
-            ; properties
-            If *this\flag & #__flag_property
-               If *rowParent And Not *rowParent\sublevel And Not GetFontID( *rowParent )
-                  *rowParent\color\back     = $FFF9F9F9
-                  *rowParent\color\back[1]  = *rowParent\color\back
-                  *rowParent\color\back[2]  = *rowParent\color\back
-                  *rowParent\color\frame    = *rowParent\color\back
-                  *rowParent\color\frame[1] = *rowParent\color\back
-                  *rowParent\color\frame[2] = *rowParent\color\back
-                  *rowParent\color\front[1] = *rowParent\color\front
-                  *rowParent\color\front[2] = *rowParent\color\front
-                  SetFontID( *rowParent, FontID( LoadFont( #PB_Any, "Helvetica", 14, #PB_Font_Bold | #PB_Font_Italic )))
                EndIf
             EndIf
             
@@ -345,9 +330,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 28
-; FirstLine = 24
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 158
+; FirstLine = 150
 ; Folding = -------
 ; EnableXP
 ; DPIAware
