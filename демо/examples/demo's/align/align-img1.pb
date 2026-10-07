@@ -102,10 +102,10 @@ CompilerIf #PB_Compiler_IsMainFile
       TestAlign(10, 160+65+10, Width/2-5, 65, "  top  "                , Image, #__FLAG_Top,                  #__FLAG_proportional|#__FLAG_left )
       TestAlign(10+Width/2+5, 160+65+10, Width/2-5, 65, "bottom"       , Image, #__FLAG_Bottom,               #__FLAG_proportional|#__FLAG_right )
       
-      TestAlign(10, 310, Width, 65, "left&center"                      , Image, #__FLAG_TextLeft,             #__FLAG_left|#__FLAG_right )
-      TestAlign(10, 310+65+10, Width, 65, "right&center"               , Image, #__FLAG_TextRight,            #__FLAG_left|#__FLAG_right )
-      TestAlign(10, 460, Width, 65, "top&center"                       , Image, #__FLAG_TextTop,              #__FLAG_left|#__FLAG_right )
-      TestAlign(10, 460+65+10, Width, 65, "bottom&center"              , Image, #__FLAG_TextBottom,           #__FLAG_left|#__FLAG_right )
+      TestAlign(10, 310, Width, 65, "left&center"                      , Image, #__FLAG_Left,             #__FLAG_left|#__FLAG_right )
+      TestAlign(10, 310+65+10, Width, 65, "right&center"               , Image, #__FLAG_Right,            #__FLAG_left|#__FLAG_right )
+      TestAlign(10, 460, Width, 65, "top&center"                       , Image, #__FLAG_Top,              #__FLAG_left|#__FLAG_right )
+      TestAlign(10, 460+65+10, Width, 65, "bottom&center"              , Image, #__FLAG_Bottom,           #__FLAG_left|#__FLAG_right )
       
       TestAlign(10, 610, Width, 65, "default"                         , Image,0,                             #__FLAG_left|#__FLAG_right)
       
@@ -134,8 +134,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 30
+; CursorPosition = 84
+; FirstLine = 81
 ; Folding = ---
 ; EnableXP
 ; DPIAware

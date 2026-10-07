@@ -1209,6 +1209,12 @@ Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, Flag|#__FLAG_Transparent|#PB_Splitter_Vertical|#PB_Splitter_Separator )
    SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
    SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
+   Protected font = LoadFont( #PB_Any, "Helvetica", 9, #PB_Font_Bold | #PB_Font_Italic )
+   If font
+      ;SetFont(*splitter, font)
+      SetFont(*first, font)
+      SetFont(*second, font)
+   EndIf
    ;
    *splitter\bar\button\size = DPIScaled(1)
    *splitter\bar\button\size + Bool( *splitter\bar\button\size % 2 )
@@ -3410,8 +3416,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 3133
-; FirstLine = 3110
+; CursorPosition = 1213
+; FirstLine = 1206
 ; Folding = ----------------------------------------------------------------
 ; EnableXP
 ; DPIAware

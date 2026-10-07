@@ -38,9 +38,9 @@ Procedure Open_EDITORFONTS( )
 ;       CHECKBOX_0 = Button( 231, 147, 148, 22, "Зачеркнутый",#PB_Button_Toggle,10 )
 ;       CHECKBOX_1 = Button( 231, 175, 148, 22, "Подчеркнутый",#PB_Button_Toggle,10 )
       ;
-      CHECKBOX_0 = Text( 231, 147, 148, 22, "Зачеркнутый", #__flag_Textcenter ) : SetRound( CHECKBOX_0, 10 )
+      CHECKBOX_0 = Text( 231, 147, 148, 22, "Зачеркнутый", #__FLAG_center ) : SetRound( CHECKBOX_0, 10 )
       CHECKBOX_0 = CheckBox( 231+4, 147, 148-8, 22, " ", #__flag_Borderless|#__flag_Transparent )
-      CHECKBOX_1 = Text( 231, 175, 148, 22, "Подчеркнутый", #__flag_Textcenter ) : SetRound( CHECKBOX_1, 10 )
+      CHECKBOX_1 = Text( 231, 175, 148, 22, "Подчеркнутый", #__FLAG_center ) : SetRound( CHECKBOX_1, 10 )
       CHECKBOX_1 = CheckBox( 231+4, 175, 148-8, 22, " ", #__flag_Borderless|#__flag_Transparent )
       ;
 ;       CHECKBOX_0 = CheckBox( 231, 147, 148, 22, "Зачеркнутый", #__flag_Borderless|#__flag_Transparent )
@@ -56,8 +56,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    End
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 42
 ; Folding = -
 ; EnableXP
 ; DPIAware

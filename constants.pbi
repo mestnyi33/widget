@@ -546,14 +546,6 @@
       #__FLAG_none           = 0
       
       ;
-      #__FLAG_Left           = #__FLAG_Left
-      #__FLAG_Top            = #__FLAG_Top 
-      #__FLAG_Right          = #__FLAG_Right 
-      #__FLAG_Bottom         = #__FLAG_Bottom 
-      #__FLAG_Center         = #__FLAG_Center
-      #__FLAG_Auto           = #__FLAG_AutoSize
-      
-      ;
       ;-\\ Window
       #__window_FrameSize      = 4
       #__window_CaptionHeight  = 24
@@ -562,18 +554,13 @@
       #__FLAG_TextInvert       = #__FLAG_Invert
       #__FLAG_TextVertical     = #__FLAG_Vertical
       
-      #__FLAG_TextLeft         = #__FLAG_Left
+      #__FLAG_TextLeft           = #__FLAG_Left
       #__FLAG_TextTop          = #__FLAG_Top
       #__FLAG_TextRight        = #__FLAG_Right
       #__FLAG_TextBottom       = #__FLAG_Bottom
       #__FLAG_TextCenter       = #__FLAG_Center
       
-      ;-\\ Image
-      #__image_BackGround      = 1
-      #__image_Pressed             = 2
-      #__image_Released           = 3
-     
-      ;-\\ Bar
+       ;-\\ Bar
       ; attribute
       #__BAR_Minimum           = 1
       #__BAR_Maximum           = 2
@@ -593,6 +580,11 @@
       #__FLAG_BarText       = #PB_ToolBar_Text
       #__FLAG_BarButtons    = #PB_ToolBar_Buttons
       
+     ;-\\ Image
+      #__IMAGE_BackGround      = 1
+      #__IMAGE_Pressed             = 2
+      #__IMAGE_Released           = 3
+     
       ;-\\ Pamel
       #__PANEL_Left            = #__FLAG_Left;1<<9
       #__PANEL_Top             = #__FLAG_Top ;1<<10
@@ -740,8 +732,8 @@
       EndDeclareModule : Module Constants : EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 554
-; FirstLine = 542
+; CursorPosition = 585
+; FirstLine = 561
 ; Folding = ----
 ; Optimizer
 ; EnableXP

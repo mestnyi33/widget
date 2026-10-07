@@ -260,13 +260,13 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open( 0, 0, 0, Width+205, Height+30, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-      *g_TYPE = Widget::ListView(Width, 10, 195, 250) 
+      *g_TYPE = ListView(Width, 10, 195, 250) 
       For i=0 To 33
          AddItem(*g_TYPE, -1, ClassFromType(i))
       Next
       SetState(*g_TYPE, 1)
       
-      *g_FLAG = Widget::Tree(Width, 270, 195, 150, #__flag_optionboxes|#__flag_nobuttons|#__flag_nolines) 
+      *g_FLAG = Tree(Width, 270, 195, 150, #__flag_optionboxes|#__flag_nobuttons|#__flag_nolines) 
       AddItem(*g_FLAG, -1, "FLAG")
       AddItem(*g_FLAG, -1, "#__flag_Borderless", -1,1)
       AddItem(*g_FLAG, -1, "#__flag_BorderFlat", -1,1)
@@ -277,9 +277,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @events_widgets( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 233
-; FirstLine = 207
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 268
+; FirstLine = 256
 ; Folding = ------
 ; EnableXP
 ; DPIAware

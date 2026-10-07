@@ -88,7 +88,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Button_3 = String(160,140,110,80, "framestring") : SetClass( Widget(), GetText(Widget())) 
       SetFrame( Button_3, 20)
       Button_4 = String(230,140,110,80, "drop1") : SetClass( Widget(), GetText(Widget())) 
-      Button_5 = Button(300,140,110,80, "drop2", #__flag_TextRight) : SetClass( Widget(), GetText(Widget())) 
+      Button_5 = Button(300,140,110,80, "drop2", #__flag_Right) : SetClass( Widget(), GetText(Widget())) 
       
       Disable( Button_1, 1 )
       
@@ -114,9 +114,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 107
-; FirstLine = 82
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 90
 ; Folding = -1
 ; EnableXP
 ; DPIAware

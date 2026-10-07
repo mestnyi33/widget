@@ -32,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  Procedure Events()
+  Procedure all_events()
     Protected String.s
     
     Select EventType()
@@ -156,7 +156,7 @@ CompilerIf #PB_Compiler_IsMainFile
     
     ;     Define i
     ;     For i=0 To 7
-    ;       BindGadgetEvent(i, @Events())
+    ;       BindGadgetEvent(i, @all_events())
     ;     Next
     
     SetTextAlignment()
@@ -213,7 +213,7 @@ CompilerIf #PB_Compiler_IsMainFile
     ;SetGadgetState(25, 126)
     ;BindGadgetEvent(25, @resize_splitter())
     
-    ;     BindEvent(#PB_Event_Widget, @Events())
+    ;     BindEvent(#PB_Event_Widget, @all_events())
     ;     PostEvent(#PB_Event_Gadget, 0,10, #__Event_Resize)
     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
   EndIf
@@ -249,7 +249,7 @@ CompilerEndIf
 ;     End
 ;   EndIf
 ;   
-;   Procedure _Events()
+;   Procedure _all_events()
 ;     Protected String.s
 ;     
 ;     Select EventType()
@@ -374,14 +374,14 @@ CompilerEndIf
 ;     ;SetState(*s_3, 126)
 ;     Bind(*s_3, @resize_splitter())
 ;     
-;     ;     BindEvent(#PB_Event_Widget, @Events())
+;     ;     BindEvent(#PB_Event_Widget, @all_events())
 ;     ;     PostEvent(#PB_Event_Gadget, 0,10, #__Event_Resize)
 ;     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ;   EndIf
 ; CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 122
-; FirstLine = 119
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 34
+; FirstLine = 10
 ; Folding = ---
 ; EnableXP
 ; DPIAware

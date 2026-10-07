@@ -17,50 +17,55 @@ CompilerIf Not Defined(Splitter, #PB_Module)
    EndDeclareModule
    
    Module Splitter
-      ;widget::test_draw_repaint = 1
+      ;widgets::test_draw_repaint = 1
       
       ;- PUBLIC
       Procedure GetState(Gadget.i)
-         If IsGadget(gadget) And widget::ChangeCurrentCanvas( GadgetID(gadget) )
-            ProcedureReturn widget::GetState( widget::root( ) )
+         If IsGadget(gadget) 
+             Protected *r.structures::_s_ROOT = key::GetData( GadgetID(gadget) )
+             ProcedureReturn widgets::GetState( *r )
          EndIf
-      EndProcedure
+     EndProcedure
       
       Procedure GetAttribute(Gadget.i, Attribute.i)
-         If IsGadget(gadget) And widget::ChangeCurrentCanvas( GadgetID(gadget) )
-            ProcedureReturn widget::GetAttribute( widget::root( ), Attribute )
+         If IsGadget(gadget)
+            Protected *r.structures::_s_ROOT = key::GetData( GadgetID(gadget) )
+             ProcedureReturn widgets::GetAttribute( *r, Attribute )
          EndIf
       EndProcedure
       
       Procedure SetState(Gadget.i, State.i)
-         If IsGadget(gadget) And widget::ChangeCurrentCanvas( GadgetID(gadget) )
-            If widget::SetState( widget::root( ), State) 
-               widget::PostEventRepaint( widget::root( ) )
+         If IsGadget(gadget)
+            Protected *r.structures::_s_ROOT = key::GetData( GadgetID(gadget) )
+            If widgets::SetState( *r, State) 
+               widgets::PostRepaint( *r )
             EndIf
          EndIf
       EndProcedure
       
       Procedure SetAttribute(Gadget.i, Attribute.i, Value.i)
-         If IsGadget(gadget) And widget::ChangeCurrentCanvas( GadgetID(gadget) )
-            If widget::SetAttribute( widget::root( ), Attribute, Value)
-               widget::PostEventRepaint( widget::root( ) )
+         If IsGadget(gadget)
+             Protected *r.structures::_s_ROOT = key::GetData( GadgetID(gadget) )
+             If widgets::SetAttribute( *r, Attribute, Value)
+               widgets::PostRepaint( *r )
             EndIf
          EndIf
       EndProcedure
       
       Procedure Bind(Gadget.i, *callBack, eventtype.i)
-         If IsGadget(gadget) And widget::ChangeCurrentCanvas( GadgetID(gadget) )
+         If IsGadget(gadget)
+            Protected *r.structures::_s_ROOT = key::GetData( GadgetID(gadget) )
             If eventtype = #PB_EventType_Resize
                eventtype = constants::#__event_Resize
             EndIf
-            If widget::Bind( widget::root( ), *callBack, eventtype)
-               widget::PostEventRepaint( widget::root( ) )
+            If widgets::Bind( *r, *callBack, eventtype)
+               widgets::PostRepaint( *r )
             EndIf
          EndIf
       EndProcedure
       
       Procedure Gadget(Gadget.i, X.i, Y.i, Width.i, Height.i, First.i, Second.i, Flag.q=0)
-         ProcedureReturn widget::Gadget(#PB_GadgetType_Splitter, Gadget, X, Y, Width, Height, "", First, Second, #Null, Flag)
+         ProcedureReturn widgets::Gadget(#PB_GadgetType_Splitter, Gadget, X, Y, Width, Height, "", First, Second, #Null, Flag)
       EndProcedure
    EndModule
 CompilerEndIf
@@ -132,7 +137,7 @@ CompilerEndIf
 CompilerIf #PB_Compiler_IsMainFile = 99 
    UseWidgets( )
    EnableExplicit
-   #__flag_TextBorder = #PB_Text_Border
+   #__FLAG_Border = #PB_Text_Border
    
    Macro SetGadgetAttribute(_gadget_, _attribute_, _value_)
       Splitter::SetAttribute(_gadget_, _attribute_, _value_)
@@ -162,16 +167,16 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
    Define flag = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget  
    OpenWindow(#PB_Any, 100,100,800,600, "ide", flag)
-   ;   widget::Open()
-   ;   window_ide = widget::GetCanvasWindow(root())
-   ;   canvas_ide = widget::GetCanvasGadget(root())
+   ;   widgets::Open()
+   ;   window_ide = widgets::GetCanvasWindow(root())
+   ;   canvas_ide = widgets::GetCanvasGadget(root())
    
-   s_tbar = TextGadget(#PB_Any, 0,0,0,0,"", #__flag_TextBorder)
-   s_desi = TextGadget(#PB_Any, 0,0,0,0,"", #__flag_TextBorder)
-   s_view = TextGadget(#PB_Any, 0,0,0,0,"", #__flag_TextBorder)
-   s_list = TextGadget(#PB_Any, 0,0,0,0,"", #__flag_TextBorder)
-   s_insp = TextGadget(#PB_Any, 0,0,0,0,"", #__flag_TextBorder)
-   s_help  = TextGadget(#PB_Any, 0,0,0,0,"", #__flag_TextBorder)
+   s_tbar = TextGadget(#PB_Any, 0,0,0,0,"", #__FLAG_Border)
+   s_desi = TextGadget(#PB_Any, 0,0,0,0,"", #__FLAG_Border)
+   s_view = TextGadget(#PB_Any, 0,0,0,0,"", #__FLAG_Border)
+   s_list = TextGadget(#PB_Any, 0,0,0,0,"", #__FLAG_Border)
+   s_insp = TextGadget(#PB_Any, 0,0,0,0,"", #__FLAG_Border)
+   s_help  = TextGadget(#PB_Any, 0,0,0,0,"", #__FLAG_Border)
    
    Global Button_0, Button_1, Button_2, Button_3, Button_4, Button_5, Splitter_0, Splitter_1, Splitter_2, Splitter_3, Splitter_4, Splitter_5
    Button_0 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 0") ; as they will be sized automatically
@@ -182,7 +187,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    Button_4 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 4") ; No need to specify size or coordinates
    Button_5 = ButtonGadget(#PB_Any, 0, 0, 0, 0, "Button 5") ; as they will be sized automatically
    
-   ;Splitter_0 = widget::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
+   ;Splitter_0 = widgets::Splitter(0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
    Splitter_0 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_0, Button_1, #PB_Splitter_Vertical|#PB_Splitter_FirstFixed)
    Splitter_1 = SplitterGadget(#PB_Any, 0, 0, 0, 0, Button_3, Button_4, #PB_Splitter_Vertical|#PB_Splitter_SecondFixed)
    SetGadgetAttribute(Splitter_1, #PB_Splitter_FirstMinimumSize, 40)
@@ -193,7 +198,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    Splitter_5 = SplitterGadget(#PB_Any, 0, 0, 0, 0, s_desi, Splitter_4, #PB_Splitter_Vertical)
    
    Splitter_design = SplitterGadget(#PB_Any, 0,0,0,0, s_tbar,Splitter_5, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
-   ;Splitter_inspector = widget::Splitter(0,0,0,0, s_list,s_insp, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
+   ;Splitter_inspector = widgets::Splitter(0,0,0,0, s_list,s_insp, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
    Splitter_inspector = SplitterGadget(#PB_Any, 0,0,0,0, s_list,s_insp, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_FirstFixed))
    splitter_debug = SplitterGadget(#PB_Any, 0,0,0,0, Splitter_design,s_view, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
    splitter_help = SplitterGadget(#PB_Any, 0,0,0,0, Splitter_inspector,s_help, #PB_Splitter_Separator|(Bool(fixed)*#PB_Splitter_SecondFixed))
@@ -201,32 +206,32 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    
    If minsize
       ;         ; set splitter default minimum size
-      ;     widget::SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 20)
-      ;     widget::SetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 10)
-      ;     widget::SetAttribute(splitter_help, #PB_Splitter_FirstMinimumSize, 20)
-      ;     widget::SetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 10)
-      ;     widget::SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 20)
-      ;     widget::SetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 10)
-      ;     widget::SetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 20)
-      ;     widget::SetAttribute(Splitter_inspector, #PB_Splitter_SecondMinimumSize, 10)
-      ;     widget::SetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
-      ;     widget::SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 10)
+      ;     widgets::SetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 20)
+      ;     widgets::SetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 10)
+      ;     widgets::SetAttribute(splitter_help, #PB_Splitter_FirstMinimumSize, 20)
+      ;     widgets::SetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 10)
+      ;     widgets::SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 20)
+      ;     widgets::SetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 10)
+      ;     widgets::SetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 20)
+      ;     widgets::SetAttribute(Splitter_inspector, #PB_Splitter_SecondMinimumSize, 10)
+      ;     widgets::SetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
+      ;     widgets::SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 10)
       
       ;   ; set splitter default minimum size
       SetGadgetAttribute(Splitter_ide, #PB_Splitter_FirstMinimumSize, 500)
       SetGadgetAttribute(Splitter_ide, #PB_Splitter_SecondMinimumSize, 120)
       SetGadgetAttribute(splitter_help, #PB_Splitter_SecondMinimumSize, 30)
-      ; widget::SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 300)
+      ; widgets::SetAttribute(splitter_debug, #PB_Splitter_FirstMinimumSize, 300)
       SetGadgetAttribute(splitter_debug, #PB_Splitter_SecondMinimumSize, 100)
       SetGadgetAttribute(Splitter_inspector, #PB_Splitter_FirstMinimumSize, 100)
       SetGadgetAttribute(Splitter_design, #PB_Splitter_FirstMinimumSize, 20)
       SetGadgetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, 200)
-      ;widget::SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, $ffffff)
+      ;widgets::SetAttribute(Splitter_design, #PB_Splitter_SecondMinimumSize, $ffffff)
    EndIf
    
    If state
       ; set splitters dafault positions
-      ;widget::SetState(Splitter_ide, -130)
+      ;widgets::SetState(Splitter_ide, -130)
       SetGadgetState(Splitter_ide, GadgetWidth(Splitter_ide)-220)
       SetGadgetState(splitter_help, GadgetHeight(splitter_help)-80)
       SetGadgetState(splitter_debug, GadgetHeight(splitter_debug)-150)
@@ -237,7 +242,7 @@ CompilerIf #PB_Compiler_IsMainFile = 99
       SetGadgetState(Splitter_1, 20)
    EndIf
    
-   ;widget::Resize(Splitter_ide, 0,0,820,620)
+   ;widgets::Resize(Splitter_ide, 0,0,820,620)
    
    SetGadgetText(s_tbar, "size: ("+Str(GadgetWidth(s_tbar))+"x"+Str(GadgetHeight(s_tbar))+")")
    SetGadgetText(s_desi, "size: ("+Str(GadgetWidth(s_desi))+"x"+Str(GadgetHeight(s_desi))+")")
@@ -249,9 +254,9 @@ CompilerIf #PB_Compiler_IsMainFile = 99
    Repeat 
    Until WaitWindowEvent() = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 68
-; Folding = ---4-
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 61
+; FirstLine = 60
+; Folding = -----
 ; EnableXP
 ; DPIAware

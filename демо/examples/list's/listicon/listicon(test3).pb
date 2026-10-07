@@ -1,11 +1,11 @@
 ﻿
   
-;XIncludeFile "../../../../widgets.pbi"
+;XIncludeFile "../../../../widgets.pbi" :UseWidgets( )
 XIncludeFile "../../../../widgets_tokken.pbi"
 ;XIncludeFile "../../../../include/tokken.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
-   UseWidgets( )
+   
    Global Steps = 0
 
    Define i

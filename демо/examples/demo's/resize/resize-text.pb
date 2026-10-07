@@ -1,4 +1,4 @@
-IncludePath "../../../"
+IncludePath "../../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -90,9 +90,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Until Event = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 82
-; FirstLine = 33
+; IDE Options = PureBasic 6.40 (Windows - x64)
 ; Folding = --
 ; EnableXP
 ; DPIAware

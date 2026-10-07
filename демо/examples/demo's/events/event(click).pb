@@ -34,32 +34,32 @@ CompilerIf #PB_Compiler_IsMainFile
      EndSelect
      
      If result
-        SetState(w_flag, countitems(w_flag) - 1)
+        SetState(w_flag, CountItems(w_flag) - 1)
      EndIf
   EndProcedure
   
   If Open(1, 0, 0, 170, 300, "flag", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    w_flag = widget::Tree(10, 10, 150, 200, #__flag_nobuttons | #__flag_nolines) 
-    w_this = widget::Button(10, 220, 150, 70, "Click me", #__flag_Textmultiline );| #PB_Button_Toggle) 
+    w_flag = Tree(10, 10, 150, 200, #__flag_nobuttons | #__flag_nolines) 
+    w_this = Button(10, 220, 150, 70, "Click me", #__flag_Textmultiline );| #PB_Button_Toggle) 
     
-    ; widget::Bind(w_this, @events_widgets( ), #PB_All )
-    ; widget::Bind(w_this, @events_widgets( ), #__Event_Draw)
-    widget::Bind(w_this, @events_widgets( ), #__Event_DragStart)
-    widget::Bind(w_this, @events_widgets( ), #__Event_Drop)
-    ; widget::Bind(w_this, @events_widgets( ), #__Event_Down)
-    ; widget::Bind(w_this, @events_widgets( ), #__Event_Up)
-    widget::Bind(w_this, @events_widgets( ), #__event_LeftDown)
-    widget::Bind(w_this, @events_widgets( ), #__event_LeftUp)
-    widget::Bind(w_this, @events_widgets( ), #__Event_LeftClick)
-    widget::Bind(w_this, @events_widgets( ), #__Event_Left2Click)
-    widget::Bind(w_this, @events_widgets( ), #__Event_Left3Click)
+    ; Bind(w_this, @events_widgets( ), #PB_All )
+    ; Bind(w_this, @events_widgets( ), #__Event_Draw)
+    Bind(w_this, @events_widgets( ), #__Event_DragStart)
+    Bind(w_this, @events_widgets( ), #__Event_Drop)
+    ; Bind(w_this, @events_widgets( ), #__Event_Down)
+    ; Bind(w_this, @events_widgets( ), #__Event_Up)
+    Bind(w_this, @events_widgets( ), #__event_LeftDown)
+    Bind(w_this, @events_widgets( ), #__event_LeftUp)
+    Bind(w_this, @events_widgets( ), #__Event_LeftClick)
+    Bind(w_this, @events_widgets( ), #__Event_Left2Click)
+    Bind(w_this, @events_widgets( ), #__Event_Left3Click)
     
-    widget::WaitClose()
+    WaitClose()
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 27
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 56
+; FirstLine = 34
 ; Folding = -
 ; EnableXP
 ; DPIAware

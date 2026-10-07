@@ -199,7 +199,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      RemoveFlag(*this, #__FLAG_Vertical)
                   EndIf
                   
-               Case button_mirror    ;: flag = #__FLAG_TextMirror
+               Case button_mirror    ;: flag = #__FLAG_Mirror
                   Debug "≈Ÿ≈ Õ≈ –≈¿À»«Œ¬¿ÕŒ"
             EndSelect
             
@@ -211,7 +211,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;-
    If Open(0, 0, 0, Width + 180, Height + 20, "change button flags", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
       ; gadget = ButtonGadget(#PB_Any, 100, 100, 250, 200, Text, #PB_Button_MultiLine) : HideGadget(gadget, 1)
-      *this  = Widget::CheckBox(100, 100, 250, 200, Text, #__FLAG_Textmultiline);|)
+      *this  = CheckBox(100, 100, 250, 200, Text, #__FLAG_Textmultiline);|)
     
       Define Y  = 10
       Define bh = 24
@@ -226,27 +226,27 @@ CompilerIf #PB_Compiler_IsMainFile
       
       
       Define Container = Container( Width + 45, Y + bh * 1+10, 100, 100, #__FLAG_BorderLess | #__FLAG_Transparent) 
-      button_top       = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__FLAG_Invert,20)
-      button_left      = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__FLAG_Vertical|#__FLAG_Invert,20)
-      button_center    = Widget::Button(0,0,bh,bh, "O", #PB_Button_Toggle,20)
-      button_right     = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__FLAG_Vertical,20)
-      button_bottom    = Widget::Button(0,0,bh,bh, "v", #PB_Button_Toggle,20)
+      button_top       = Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__FLAG_Invert,20)
+      button_left      = Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__FLAG_Vertical|#__FLAG_Invert,20)
+      button_center    = Button(0,0,bh,bh, "O", #PB_Button_Toggle,20)
+      button_right     = Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__FLAG_Vertical,20)
+      button_bottom    = Button(0,0,bh,bh, "v", #PB_Button_Toggle,20)
       
-      SetAlign( button_left, #__FLAG_auto, 1,0,0,0, 0)
-      SetAlign( button_top, #__FLAG_auto, 0,1,0,0, 0)
-      SetAlign( button_right, #__FLAG_auto, 0,0,1,0, 0)
-      SetAlign( button_bottom, #__FLAG_auto, 0,0,0,1, 0)
-      SetAlign( button_center, #__FLAG_center, 0,0,0,0, 0)
+      SetAlign( button_left, #__FLAG_AutoSize, 1,0,0,0, 0)
+      SetAlign( button_top, #__FLAG_AutoSize, 0,1,0,0, 0)
+      SetAlign( button_right, #__FLAG_AutoSize, 0,0,1,0, 0)
+      SetAlign( button_bottom, #__FLAG_AutoSize, 0,0,0,1, 0)
+      SetAlign( button_center, #__FLAG_Center, 0,0,0,0, 0)
       
       Resize(Container, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
       CloseList( )
       
       
-      Button_type      = Widget::Button(Width + 45, Y, 100, p, "gadget", #PB_Button_Toggle)
-      Button_wordwrap  = Widget::Button(Width + 45, Y + p * 5, 100, bh, "wordwrap", #PB_Button_Toggle)
-      button_multiline = Widget::Button(Width + 45, Y + p * 6, 100, bh, "multiline", #PB_Button_Toggle)
-      button_vertical  = Widget::Button(Width + 45, Y + p * 7, 100, bh, "vertical", #PB_Button_Toggle)
-      button_invert    = Widget::Button(Width + 45, Y + p * 8, 100, bh, "invert", #PB_Button_Toggle)
+      Button_type      = Button(Width + 45, Y, 100, p, "gadget", #PB_Button_Toggle)
+      Button_wordwrap  = Button(Width + 45, Y + p * 5, 100, bh, "wordwrap", #PB_Button_Toggle)
+      button_multiline = Button(Width + 45, Y + p * 6, 100, bh, "multiline", #PB_Button_Toggle)
+      button_vertical  = Button(Width + 45, Y + p * 7, 100, bh, "vertical", #PB_Button_Toggle)
+      button_invert    = Button(Width + 45, Y + p * 8, 100, bh, "invert", #PB_Button_Toggle)
       
       Bind(#PB_All, @all_events())
       
@@ -260,14 +260,14 @@ CompilerIf #PB_Compiler_IsMainFile
       SetState(button_Top, Flag(*this, #__FLAG_Top ))
       SetState(button_Right, Flag(*this, #__FLAG_Right ))
       SetState(button_Bottom, Flag(*this, #__FLAG_Bottom ))
-      SetState(button_center, Flag(*this, #__FLAG_TextCenter))
+      SetState(button_center, Flag(*this, #__FLAG_Center))
       Hide(Button_type, 1)
       
       ;\\
-      Splitter_0 = Widget::Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
-      Splitter_1 = Widget::Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical)
-      Splitter_2 = Widget::Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
-      Splitter_3 = Widget::Splitter(10, 10, Width, Height, Splitter_2, #Null, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
+      Splitter_0 = Splitter(0, 0, 0, 0, #Null, *this, #PB_Splitter_FirstFixed)
+      Splitter_1 = Splitter(0, 0, 0, 0, #Null, Splitter_0, #PB_Splitter_FirstFixed | #PB_Splitter_Vertical)
+      Splitter_2 = Splitter(0, 0, 0, 0, Splitter_1, #Null, #PB_Splitter_SecondFixed)
+      Splitter_3 = Splitter(10, 10, Width, Height, Splitter_2, #Null, #PB_Splitter_Vertical | #PB_Splitter_SecondFixed)
       
       
       SetState(Splitter_3, 350 )
@@ -277,8 +277,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 262
-; FirstLine = 239
+; CursorPosition = 238
+; FirstLine = 230
 ; Folding = -----
 ; EnableXP
 ; DPIAware

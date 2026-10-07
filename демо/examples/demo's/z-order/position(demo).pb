@@ -32,17 +32,17 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList()       
       CloseList()     
       ;}          
-      Button(55, 86, 170, 25, "2",#__flag_TextRight) 
+      Button(55, 86, 170, 25, "2",#__flag_Right) 
       SetClass(Widget(), GetText(Widget()))  
       ;Gadget(8, 
-      Button(55, 82, 150, 25, "3",#__flag_TextRight) 
+      Button(55, 82, 150, 25, "3",#__flag_Right) 
       SetClass(Widget(), GetText(Widget())) 
       ; Gadget(7,     
-      Button(55, 78, 130, 25, "4",#__flag_TextRight) 
+      Button(55, 78, 130, 25, "4",#__flag_Right) 
       
       SetClass(Widget(), GetText(Widget()))  
       ; Gadget(6,             
-      *current = Button(55, 74, 110, 25, "5",#__flag_TextRight) 
+      *current = Button(55, 74, 110, 25, "5",#__flag_Right) 
       
       SetClass(Widget(), GetText(Widget()))  
       ; Gadget(5,             
@@ -58,13 +58,13 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseList()         
       CloseList()      
       ;}          
-      Button(55, 70, 90, 25, "6",#__flag_TextRight) 
+      Button(55, 70, 90, 25, "6",#__flag_Right) 
       SetClass(Widget(), GetText(Widget()))  
       ; Gadget(4,      
-      Button(55, 66, 70, 25, "7",#__flag_TextRight) 
+      Button(55, 66, 70, 25, "7",#__flag_Right) 
       SetClass(Widget(), GetText(Widget())) 
       ; Gadget(3,    
-      Button(55, 62, 50, 25, "8",#__flag_TextRight) 
+      Button(55, 62, 50, 25, "8",#__flag_Right) 
       SetClass(Widget(), GetText(Widget()))  
       ; Gadget(2,             
       ;{ last container   
@@ -81,7 +81,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetColor(Widget(), #PB_Gadget_BackColor, $ff00ff)      
       SetClass(Widget(), "last_2")      
       CloseList()     
-      Button(3, -3, 17, 25+6, "9", #__flag_Textleft) 
+      Button(3, -3, 17, 25+6, "9", #__flag_left) 
       SetClass(Widget(), GetText(Widget()))   
       CloseList()     
       CloseList()      
@@ -179,9 +179,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect        
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 145
-; FirstLine = 153
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 83
+; FirstLine = 157
 ; Folding = ---
 ; EnableXP
 ; DPIAware

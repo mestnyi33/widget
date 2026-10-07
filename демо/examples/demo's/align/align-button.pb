@@ -1,4 +1,4 @@
-IncludePath "../../../"
+IncludePath "../../../../"
 XIncludeFile "widgets.pbi"
 ;XIncludeFile "test.pbi"
 
@@ -137,8 +137,6 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 125
-; FirstLine = 49
 ; Folding = 4-
 ; EnableXP
 ; DPIAware

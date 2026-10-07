@@ -1,4 +1,4 @@
-XIncludeFile "../../../../widgets.pbi" 
+XIncludeFile "../../../widgets.pbi" 
 
 CompilerIf #PB_Compiler_IsMainFile
    
@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
       #window
    EndEnumeration
    
-   Global i = 5,*g._S_WIDGET
+   Global i = DesktopScaledX(5),*g._S_WIDGET
    
    OpenWindow(#window, 0, 0, 300, 300, "string", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    
@@ -32,8 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.12 LTS (Windows - x64)
-; CursorPosition = 18
-; FirstLine = 10
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 11
 ; Folding = -
 ; EnableXP

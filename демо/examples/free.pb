@@ -10,7 +10,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global cr.s = #LF$, Text.s = "Vertical & Horizontal" + cr + "   Centered   Text in   " + cr + "Multiline StringGadget"
    
    Procedure widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l, Height.l )
-      Protected *new._s_widget, Flag.q ;= #__flag_Textmultiline
+      Protected *new._s_widget, Flag.q 
       
       Protected newtype$
       Protected AddItem
@@ -108,7 +108,7 @@ CompilerIf #PB_Compiler_IsMainFile
                If *g_OBJECT
                   Free( @*g_OBJECT )
                EndIf
-               *g_OBJECT = widget_create(Root(), GetItemText( *g_TYPE, GetState( *g_TYPE)), 100, 100, 250, 200);, Text, 0,0,0, #PB_Button_Toggle|#__flag_Textmultiline) 
+               *g_OBJECT = widget_create(Root(), GetItemText( *g_TYPE, GetState( *g_TYPE)), 100, 100, 250, 200);, Text, 0,0,0, #PB_Button_Toggle) 
                If *g_OBJECT
                   PostRepaint(*g_OBJECT\root)
                EndIf
@@ -145,9 +145,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @all_events( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 129
-; FirstLine = 117
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 110
+; FirstLine = 107
 ; Folding = ---
 ; EnableXP
 ; DPIAware

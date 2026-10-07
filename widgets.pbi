@@ -686,7 +686,7 @@ Module widgets
          EndIf
          
          ; no auto size scroll inner size
-         If *this\type = #__type_ScrollArea
+         If *this\type = #__TYPE_ScrollArea
             If \v\bar\page\len > \v\bar\max
                \v\bar\page\len = \v\bar\max
             EndIf
@@ -2022,7 +2022,7 @@ Module widgets
                         mw      = 0
                      EndIf
                      If *this\fs
-                        If *this\type <> #__type_window
+                        If *this\type <> #__TYPE_window
                            mw + *this\fs * 2 + *this\fs[1] + *this\fs[3] ; ( *this\frame_width( ) - *this\inner_width( ) )
                         EndIf
                      EndIf
@@ -2040,7 +2040,7 @@ Module widgets
                         mh      = 0
                      EndIf
                      If *this\fs
-                        If *this\type <> #__type_window
+                        If *this\type <> #__TYPE_window
                            mh + *this\fs * 2 + *this\fs[2] + *this\fs[4] ; ( *this\frame_height( ) - *this\inner_height( ) )
                         EndIf
                      EndIf
@@ -2200,7 +2200,7 @@ Module widgets
             separator_step = 0
             pos = DPIScaled(1) 
          EndIf
-         If *this\parent And *this\parent\type = #__type_Panel
+         If *this\parent And *this\parent\type = #__TYPE_Panel
             pos = bar_toggle_size
          EndIf
          ;
@@ -2216,7 +2216,7 @@ Module widgets
                
                ;
                If *bar\vertical
-                  If *this\type = #__type_popupbar Or *bar\vertical < 0
+                  If *this\type = #__TYPE_popupbar Or *bar\vertical < 0
                      If  *bar\vertical < 0
                         ; qqq = DPIScaled(10);*this\parent\padding\x
                      EndIf
@@ -2271,7 +2271,7 @@ Module widgets
                   
                   ; init items position
                   If *bar\vertical 
-                     If *this\type = #__type_TabBar
+                     If *this\type = #__TYPE_TabBar
                         If *this\parent\fs[1]
                            *tab\x     = bar_toggle_size
                         Else
@@ -2366,7 +2366,7 @@ Module widgets
                      EndIf
                      
                   Else
-                     If *this\type = #__type_TabBar
+                     If *this\type = #__TYPE_TabBar
                         If *this\parent\fs[2]
                            *tab\y     = bar_toggle_size
                         Else
@@ -2396,7 +2396,7 @@ Module widgets
                         EndIf
                      EndIf
                      
-                     If *this\type = #__type_TabBar
+                     If *this\type = #__TYPE_TabBar
                         *bar\max + *tab\width + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
                      Else
                         *bar\max + *tab\width + pos
@@ -2625,7 +2625,7 @@ Module widgets
                EndIf
                color2 = $ff0000ff & $FFFFFF | *tab\AlphaState24( )
                
-               If *this\type = #__type_TabBar 
+               If *this\type = #__TYPE_TabBar 
                   If *activeTAB 
                      ;                            If *this\parent\fs
                      ;                               If *bar\vertical
@@ -2703,7 +2703,7 @@ Module widgets
                EndIf
             EndIf
             
-            If *this\type = #__type_TabBar
+            If *this\type = #__TYPE_TabBar
                
                ; TODO Navigation
                Protected pf
@@ -2722,7 +2722,7 @@ Module widgets
                      backcolor = *BB2\color\back[\ColorState( )]
                   EndIf
                Else
-                  If *this\parent\type = #__type_Splitter
+                  If *this\parent\type = #__TYPE_Splitter
                      backcolor = *this\root\color\back[\parent\ColorState( )]
                   Else
                      backcolor = *this\parent\color\back[\parent\ColorState( )]
@@ -2749,7 +2749,7 @@ Module widgets
             draw_mode_alpha_( #PB_2DDrawing_Outlined )
             
             ; draw lines
-            If *this\type = #__type_TabBar
+            If *this\type = #__TYPE_TabBar
                Protected fabe_pos, round = 0, button_size = 20, fabe_len = 40+pf, fabe_out = fabe_len - button_size
                ;;backcolor = RGBA(64, 128, 192, 64)
                ;backcolor = backcolor & $FFFFFF | 160 << 24 ;$ff00ff00
@@ -3274,8 +3274,8 @@ Module widgets
    Macro bar_area_create( _parent_, _scroll_step_, _area_width_, _area_height_, _width_, _height_, _scrollbar_size_, _mode_ = #True )
       If Not _parent_\scroll\bars
          _parent_\scroll\bars = 1
-         _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\createindex + "]", #__type_Scroll, 0, 0, DPIScaled( _scrollbar_size_), _height_, #Null$, #__FLAG_child | #__FLAG_Vertical, 0, _area_height_, _height_, ( _scrollbar_size_), _scrollbar_size_/2, _scroll_step_ )
-         _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\createindex + "]", #__type_Scroll, 0, 0, _width_, DPIScaled( _scrollbar_size_), #Null$, #__FLAG_child, 0, _area_width_, _width_, Bool( _mode_ ) * ( _scrollbar_size_),  _scrollbar_size_/2, _scroll_step_ )
+         _parent_\scroll\v    = Create( _parent_, "[" + _parent_\class + "" + _parent_\createindex + "]", #__TYPE_Scroll, 0, 0, DPIScaled( _scrollbar_size_), _height_, #Null$, #__FLAG_child | #__FLAG_Vertical, 0, _area_height_, _height_, ( _scrollbar_size_), _scrollbar_size_/2, _scroll_step_ )
+         _parent_\scroll\h    = Create( _parent_, "[" + _parent_\class + "" + _parent_\createindex + "]", #__TYPE_Scroll, 0, 0, _width_, DPIScaled( _scrollbar_size_), #Null$, #__FLAG_child, 0, _area_width_, _width_, Bool( _mode_ ) * ( _scrollbar_size_),  _scrollbar_size_/2, _scroll_step_ )
       EndIf
    EndMacro
    
@@ -3485,7 +3485,7 @@ Module widgets
       
       ;             
       ;\\ update bar coordinates
-      If *this\type = #__type_Scroll
+      If *this\type = #__TYPE_Scroll
          ;
          ;\\ button-thumb
          If *bar\vertical
@@ -3569,9 +3569,9 @@ Module widgets
                   If *this\parent\scroll\v = *this
                      If Not *this\parent\text\mode & #__text_editable
                         ; *this\parent\WidgetChange( ) = - 1
-                        If *this\parent\type = #__type_Tree Or 
-                           *this\parent\type = #__type_ListIcon Or 
-                           *this\parent\type = #__type_ListView
+                        If *this\parent\type = #__TYPE_Tree Or 
+                           *this\parent\type = #__TYPE_ListIcon Or 
+                           *this\parent\type = #__TYPE_ListView
                            *this\parent\TextChange( ) = - 1
                         EndIf
                      EndIf
@@ -3581,7 +3581,7 @@ Module widgets
                      EndIf
                      
                      ;\\ Area children's x&y auto move
-                     If *this\parent\type = #__type_ScrollArea And IsGadget(*this\parent\scroll\gadget[2])
+                     If *this\parent\type = #__TYPE_ScrollArea And IsGadget(*this\parent\scroll\gadget[2])
                         ResizeGadget(*this\parent\scroll\gadget[2], #PB_Ignore, DPIUnscaledY(*this\parent\scroll_y( )), #PB_Ignore, #PB_Ignore)
                         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                            UpdateWindow_(GadgetID(*this\parent\scroll\gadget[2]))
@@ -3607,9 +3607,9 @@ Module widgets
                   If *this\parent\scroll\h = *this
                      If Not *this\parent\text\mode & #__text_editable
                         ; *this\parent\WidgetChange( ) = - 2
-                        If *this\parent\type = #__type_Tree Or 
-                           *this\parent\type = #__type_ListIcon Or 
-                           *this\parent\type = #__type_ListView
+                        If *this\parent\type = #__TYPE_Tree Or 
+                           *this\parent\type = #__TYPE_ListIcon Or 
+                           *this\parent\type = #__TYPE_ListView
                            *this\parent\TextChange( ) = - 2
                         EndIf
                      EndIf
@@ -3619,7 +3619,7 @@ Module widgets
                      EndIf
                      ;
                      ;\\ Area children's x&y auto move
-                     If *this\parent\type = #__type_ScrollArea And IsGadget(*this\parent\scroll\gadget[2])
+                     If *this\parent\type = #__TYPE_ScrollArea And IsGadget(*this\parent\scroll\gadget[2])
                         ResizeGadget(*this\parent\scroll\gadget[2], DPIUnscaledX(*this\parent\scroll_x( )), #PB_Ignore, #PB_Ignore, #PB_Ignore)
                         CompilerIf #PB_Compiler_OS = #PB_OS_Windows
                            UpdateWindow_(GadgetID(*this\parent\scroll\gadget[2]))
@@ -3646,10 +3646,10 @@ Module widgets
             
             ; Debug "scroll CHANGE "+*this\class
             If is_scrollbars_( *this )
-               If *this\type = #__type_Scroll
-                  ;                      If *this\parent\type = #__type_Tree Or 
-                  ;                         *this\parent\type = #__type_ListIcon Or 
-                  ;                         *this\parent\type = #__type_ListView
+               If *this\type = #__TYPE_Scroll
+                  ;                      If *this\parent\type = #__TYPE_Tree Or 
+                  ;                         *this\parent\type = #__TYPE_ListIcon Or 
+                  ;                         *this\parent\type = #__TYPE_ListView
                   ;                         ; *this\parent\WidgetChange( ) = 1
                   ;                         ; *this\parent\TextChange( ) = - 3
                   ;                      EndIf
@@ -3804,7 +3804,7 @@ Module widgets
       
       ;
       ;\\ update splitter-bar coordinates
-      If *this\type = #__type_Splitter
+      If *this\type = #__TYPE_Splitter
          ;
          ;\\ disable/enable
          ;\\ buttons(left&top)-tab(right&bottom)
@@ -3928,7 +3928,7 @@ Module widgets
             CompilerEndIf
          Else
             If *split_1 > 0 And *split_1 <> *this
-               If *split_1\type = #__type_window
+               If *split_1\type = #__TYPE_window
                   Resize( *split_1, *BB1\x - frame_x, *BB1\y - frame_y,
                           *BB1\width - *split_1\fs * 2 - *split_1\fs[1] - *split_1\fs[3],
                           *BB1\height - *split_1\fs * 2 - *split_1\fs[2] - *split_1\fs[4], 0 )
@@ -3948,7 +3948,7 @@ Module widgets
             CompilerEndIf
          Else
             If *split_2 > 0 And *split_2 <> *this
-               If *split_2\type = #__type_window
+               If *split_2\type = #__TYPE_window
                   Resize( *split_2, *BB2\x - frame_x, *BB2\y - frame_y,
                           *BB2\width - *split_2\fs * 2 - *split_2\fs[1] - *split_2\fs[3],
                           *BB2\height - *split_2\fs * 2 - *split_2\fs[2] - *split_2\fs[4], 0 )
@@ -4046,7 +4046,7 @@ Module widgets
       EndIf
       
       ;\\
-      If *this\type = #__type_Progress
+      If *this\type = #__TYPE_Progress
          If *bar\PageChange( )
             If *this\text\Str(0) <> "%" + Str( *bar\page\pos )
                *this\text\Str(0) = "%" + Str( *bar\page\pos )
@@ -4172,7 +4172,7 @@ Module widgets
       EndIf
       
       ; update track-bar draw coordinate
-      If *this\type = #__type_Track
+      If *this\type = #__TYPE_Track
          If *bar\vertical
             If *bar\thumb\len
                *SB\y      = *this\frame_y( ) + *bar\thumb\pos
@@ -4291,7 +4291,7 @@ Module widgets
       EndIf
       ;
       ;\\ update spin-bar coordinates
-      If *this\type = #__type_Spin
+      If *this\type = #__TYPE_Spin
          ;\\
          *SB\x      = *this\inner_x( )
          *SB\y      = *this\inner_y( )
@@ -4388,20 +4388,20 @@ Module widgets
          ProcedureReturn 0
       EndIf
       ;
-      If *this\type = #__type_Scroll
+      If *this\type = #__TYPE_Scroll
          ;Debug mode
          ProcedureReturn bar_update_scroll( *this, *bar, *SB, *BB1, *BB2 )
       EndIf
-      If *this\type = #__type_Splitter
+      If *this\type = #__TYPE_Splitter
          ProcedureReturn bar_update_splitter( *this, *bar, *SB, *BB1, *BB2 )
       EndIf
-      If *this\type = #__type_Progress
+      If *this\type = #__TYPE_Progress
          ProcedureReturn bar_update_progress( *this, *bar, *SB, *BB1, *BB2 )
       EndIf
-      If *this\type = #__type_Track
+      If *this\type = #__TYPE_Track
          ProcedureReturn bar_update_track( *this, *bar, *SB, *BB1, *BB2 )
       EndIf
-      If *this\type = #__type_Spin
+      If *this\type = #__TYPE_Spin
          ProcedureReturn bar_update_spin( *this, *bar, *SB, *BB1, *BB2 )
       EndIf
       ;
@@ -4549,10 +4549,10 @@ Module widgets
       EndIf
       ;
       ;\\ update bar coordinates
-      If *this\type = #__type_MenuBar Or
-         *this\type = #__type_PopupBar Or
-         *this\type = #__type_ToolBar Or
-         *this\type = #__type_TabBar
+      If *this\type = #__TYPE_MenuBar Or
+         *this\type = #__TYPE_PopupBar Or
+         *this\type = #__TYPE_ToolBar Or
+         *this\type = #__TYPE_TabBar
          
          ;\\ disable/enable buttons(left&top)-tab(right&bottom)
          If bar_in_start_( *bar )
@@ -4667,7 +4667,7 @@ Module widgets
       If *bar\area\len
          If Not *bar\max
             ; example ide.pb
-            If *this\type = #__type_Splitter
+            If *this\type = #__TYPE_Splitter
                If *bar\page\end
                   *bar\page\end = *bar\area\len - *bar\thumb\len
                EndIf
@@ -4718,8 +4718,8 @@ Module widgets
          
          If result
             If bar_update( *this, mode )
-               If *this\type = #__type_Scroll Or
-                  *this\type = #__type_Spin
+               If *this\type = #__TYPE_Scroll Or
+                  *this\type = #__TYPE_Spin
                   ; Debug "bar_PageChange spin "+*this\class
                Else
                   DoEvents( *this, #__EVENT_Change, *this\Stringbar, result )
@@ -4759,23 +4759,23 @@ Module widgets
    ;-
    ;- BARMENU
    ;-
-   Procedure   CreateBar( *parent._s_WIDGET, Flag.q = #Null, Type.w = #__type_MenuBar )
+   Procedure   CreateBar( *parent._s_WIDGET, Flag.q = #Null, Type.w = #__TYPE_MenuBar )
       Static count
       Protected *menu, *this._s_WIDGET
       
-      If Type = #__type_MenuBar
+      If Type = #__TYPE_MenuBar
          If Flag
-            Type = #__type_ToolBar
+            Type = #__TYPE_ToolBar
          EndIf
       EndIf
       
-      If Type = #__type_PopupBar
+      If Type = #__TYPE_PopupBar
          If is_bar_( *parent )
             *menu = *parent
             *parent = *parent\parent
          EndIf
          
-         *this = Create( *parent, "PopupMenu_"+count, #__type_PopupBar,
+         *this = Create( *parent, "PopupMenu_"+count, #__TYPE_PopupBar,
                          0,0,0,0, #Null$, Flag|#__FLAG_vertical | #__FLAG_child, 0, 0, 0, 0, 0, 30 ) ; 
          
          count + 1
@@ -4797,7 +4797,7 @@ Module widgets
          *this = Create( *parent, "["+*parent\class +"]-"+ ClassFromType( Type ), Type,
                          0, 0, 0, 0, #Null$, Flag | #__FLAG_child, 0, 0, 0, 0, 0, 30 )
          
-         If *parent\type = #__type_Panel Or Type = #__type_ToolBar
+         If *parent\type = #__TYPE_Panel Or Type = #__TYPE_ToolBar
             *parent\tabbar = *this  
             If *parent\MenuBarHeight
                Debug "--- "+*parent\MenuBarHeight;*parent\class
@@ -4826,7 +4826,7 @@ Module widgets
    Procedure   BarPosition( *this._s_widget, position.i, size.i = #PB_Default )
       Protected fs = 0, *box._s_WIDGET
       
-      If *this\type = #__type_Panel
+      If *this\type = #__TYPE_Panel
          *box = *this\tabbar  
       Else
          *box = *this
@@ -4845,7 +4845,7 @@ Module widgets
          ;
          If size = #PB_Default
             If constants::BinaryFlag( *box\flagmask, #__FLAG_BarSmall )
-               If *box\type = #__type_TabBar
+               If *box\type = #__TYPE_TabBar
                   size = #__tab_size + bar_toggle_size*2 
                Else
                   size = 24
@@ -4853,7 +4853,7 @@ Module widgets
             ElseIf constants::BinaryFlag( *box\flagmask, #__FLAG_BarLarge )
                size = 40
             Else ; If constants::BinaryFlag( *this\flagmask, #__FLAG_BarNormal )
-               If *box\type = #__type_MenuBar
+               If *box\type = #__TYPE_MenuBar
                   size = 20
                Else
                   size = 32
@@ -4875,8 +4875,8 @@ Module widgets
          size = DPIScaled( size )
          ;
          If *this  
-            If *this\type = #__type_Panel Or 
-               *box\Type = #__type_ToolBar
+            If *this\type = #__TYPE_Panel Or 
+               *box\Type = #__TYPE_ToolBar
                ;
                *this\ToolBarHeight = size
             Else
@@ -4994,7 +4994,7 @@ Module widgets
       
       If *menu
          AddBarItem( *menu, #PB_Any, Text.s, img )
-         *this = CreateBar( *menu, #Null, #__type_PopupBar ) 
+         *this = CreateBar( *menu, #Null, #__TYPE_PopupBar ) 
          SetClass( *this, Text )
          
          ; Debug ""+*menu\__tabs( )\tindex +" "+  ListIndex(*menu\__tabs( )) +" "+ *menu\class
@@ -5024,7 +5024,7 @@ Module widgets
       Protected._s_TAB *Tab
       
       PushListPosition( *this\__tabs( ) )
-      If *this\type = #__type_toolbar
+      If *this\type = #__TYPE_toolbar
          ForEach *this\__tabs( ) : *tab = *this\__tabs( )
             If *tab\tindex = _baritem_
                If _state_
@@ -5040,7 +5040,7 @@ Module widgets
             EndIf
          Next
       EndIf
-      If *this\type = #__type_popupbar Or *this\type = #__type_menubar
+      If *this\type = #__TYPE_popupbar Or *this\type = #__TYPE_menubar
          ForEach *this\__tabs( ) : *tab = *this\__tabs( )
             Protected._s_WIDGET *pw = *tab\popupbar
             
@@ -5133,7 +5133,7 @@ Module widgets
    EndProcedure
    
    Procedure   SetBarItemText( *this._s_WIDGET, _baritem_, _text_.s )
-      If *this\type = #__type_toolbar
+      If *this\type = #__TYPE_toolbar
          ForEach *this\__tabs( )
             If *this\__tabs( )\tindex = _baritem_
                ; SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
@@ -5147,7 +5147,7 @@ Module widgets
             EndIf
          Next
       EndIf
-      If *this\type = #__type_popupbar Or *this\type = #__type_menubar
+      If *this\type = #__TYPE_popupbar Or *this\type = #__TYPE_menubar
          ForEach *this\__tabs( )
             ; Debug ""+*this\__tabs( )\text\str(0) +" "+ *this\__tabs( )\tindex +" "+ *this\__tabs( )\popupbar
             If *this\__tabs( )\popupbar
@@ -5201,15 +5201,15 @@ Module widgets
    EndProcedure
    
    Procedure   CreatePopupBar( _flags_ = 0 )
-      ProcedureReturn CreateBar( Root( ), _flags_, #__type_PopupBar )
+      ProcedureReturn CreateBar( Root( ), _flags_, #__TYPE_PopupBar )
    EndProcedure
    
    Procedure   HidePopupBar( *this._s_WIDGET )
       Protected *activedTAB._s_TAB = *this\parentTabSelected( )
       
-      If *this\type = #__type_MenuBar Or
-         *this\type = #__type_PopupBar Or
-         *this\type = #__type_ToolBar 
+      If *this\type = #__TYPE_MenuBar Or
+         *this\type = #__TYPE_PopupBar Or
+         *this\type = #__TYPE_ToolBar 
          ;
          While *this\menu\display
             If *this\menu\display
@@ -5283,7 +5283,7 @@ Module widgets
          EndIf
          
          ;\\ ComboBox
-         If *display\type = #__type_ComboBox
+         If *display\type = #__TYPE_ComboBox
             If *display\Combo( )
                If *this\mask & #__mask_hidden
                   *display\Combo( )\arrow\direction = #__bottom
@@ -5401,10 +5401,10 @@ Module widgets
                ;\\ init drawing font
                draw_font( *this, GetFontID( *this\root ), *this\TextChange( ), 1 )
                ;
-               If *this\type = #__type_MenuBar Or
-                  *this\type = #__type_PopupBar Or
-                  *this\type = #__type_ToolBar Or
-                  *this\type = #__type_TabBar
+               If *this\type = #__TYPE_MenuBar Or
+                  *this\type = #__TYPE_PopupBar Or
+                  *this\type = #__TYPE_ToolBar Or
+                  *this\type = #__TYPE_TabBar
                   ;
                   If ListSize( *this\__tabs( ))
                      Width = 0
@@ -5448,7 +5448,7 @@ Module widgets
             Width + *this\scroll_width( )
             
             ;\\
-            If *display\type = #__type_ComboBox
+            If *display\type = #__TYPE_ComboBox
                If Width < *display\width 
                   Width = *display\width 
                EndIf
@@ -5482,7 +5482,7 @@ Module widgets
                   If *display\bar And *display\bar\vertical
                      X = ( *display\screen_width( ) ) - DPIScaled(5)
                   Else
-                     If *display\type = #__type_ComboBox
+                     If *display\type = #__TYPE_ComboBox
                         X = *display\screen_x( )
                      ElseIf *display\bar And *enteredTAB
                         X = *display\screen_x( ) + *enteredTAB\x
@@ -5503,7 +5503,7 @@ Module widgets
                EndIf
                ;
                If Y = #PB_Ignore
-                  If *display\type = #__type_ComboBox
+                  If *display\type = #__TYPE_ComboBox
                      Y = *display\screen_y( ) + *display\screen_height( )
                      
                   ElseIf *display\bar And *enteredTAB
@@ -6086,7 +6086,7 @@ Module widgets
                EndSelect
                
                If Input
-                  If *this\type = #__type_IPAddress
+                  If *this\type = #__TYPE_IPAddress
                      left.s = Left( *this\text\Str(0), *this\caret\start )
                      Select CountString( left.s, "." )
                         Case 0 : left.s = StringField( left.s, 1, "." )
@@ -6110,7 +6110,7 @@ Module widgets
                      Continue
                   EndIf
                   
-                  If Not ( *this\parent And *this\parent\type = #__type_Spin )
+                  If Not ( *this\parent And *this\parent\type = #__TYPE_Spin )
                      If Not Minus And Input = '-' And Mid( *this\text\Str(0), *this\caret\start + 1, 1 ) <> "-"
                         Minus = 1
                      ElseIf Input <> '-'
@@ -6798,7 +6798,7 @@ Module widgets
    Macro HideState( _this_, _parent_ )
       ; 1. Расчет финального скрытия с учетом родителя и вкладок (Tabbar) в одно выражение
       If Bool( ( _this_\mask & #__mask_hide ) Or 
-               ( _parent_ And (( _parent_\mask & #__mask_hidden ) Or ( _this_\tabindex <> #PB_Ignore And _parent_\tabbar And _parent_\tabbar\type = #__type_TabBar And _parent_\tabbar\TabState( ) <> _this_\tabindex ) ) ) )
+               ( _parent_ And (( _parent_\mask & #__mask_hidden ) Or ( _this_\tabindex <> #PB_Ignore And _parent_\tabbar And _parent_\tabbar\type = #__TYPE_TabBar And _parent_\tabbar\TabState( ) <> _this_\tabindex ) ) ) )
          _this_\mask | #__mask_hidden
       Else
          _this_\mask & ~#__mask_hidden
@@ -6938,9 +6938,9 @@ Module widgets
    
    ;-
    Procedure.b HideItem( *this._s_widget, item.l, state.b )
-      If *this\type = #__type_MenuBar Or
-         *this\type = #__type_PopupBar Or
-         *this\type = #__type_ToolBar
+      If *this\type = #__TYPE_MenuBar Or
+         *this\type = #__TYPE_PopupBar Or
+         *this\type = #__TYPE_ToolBar
          ;
          If *this\__tabs( )
             PushListPosition(*this\__tabs( ))
@@ -7015,7 +7015,7 @@ Module widgets
    EndProcedure
    
    Procedure.b DisableItem( *this._s_widget, item.l, state.b )
-      If *this\type = #__type_panel
+      If *this\type = #__TYPE_panel
          If *this\tabbar
             ForEach *this\tabbar\__tabs( )
                If *this\tabbar\__tabs( )\tindex = item
@@ -7031,9 +7031,9 @@ Module widgets
             Next
          EndIf
       EndIf
-      If *this\type = #__type_MenuBar Or
-         *this\type = #__type_PopupBar Or
-         *this\type = #__type_ToolBar
+      If *this\type = #__TYPE_MenuBar Or
+         *this\type = #__TYPE_PopupBar Or
+         *this\type = #__TYPE_ToolBar
          ;
          If *this\__tabs( )
             PushListPosition(*this\__tabs( ))
@@ -7370,10 +7370,10 @@ Module widgets
       *this\padding\x = 0
       *this\padding\y = 0
       ;
-      If *this\type = #__type_MenuBar Or
-         *this\type = #__type_PopupBar Or
-         *this\type = #__type_ToolBar Or
-         *this\type = #__type_TabBar 
+      If *this\type = #__TYPE_MenuBar Or
+         *this\type = #__TYPE_PopupBar Or
+         *this\type = #__TYPE_ToolBar Or
+         *this\type = #__TYPE_TabBar 
          ;
          ;If vertical
          *this\padding\y = padding
@@ -7381,11 +7381,11 @@ Module widgets
          *this\padding\x = padding
          ;EndIf
       EndIf
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListView Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ExplorerList Or
-         *this\type = #__type_Button
+      If *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListView Or
+         *this\type = #__TYPE_ListIcon Or
+         *this\type = #__TYPE_ExplorerList Or
+         *this\type = #__TYPE_Button
          ;
          If vertical
             *this\padding\y = padding
@@ -7393,7 +7393,7 @@ Module widgets
             *this\padding\x = padding
          EndIf
       EndIf
-      If *this\type = #__type_ComboBox
+      If *this\type = #__TYPE_ComboBox
          If *this\Stringbar
             If vertical
                *this\Stringbar\padding\y = padding
@@ -7408,21 +7408,21 @@ Module widgets
             EndIf
          EndIf
       EndIf
-      If *this\type = #__type_String
+      If *this\type = #__TYPE_String
          If vertical
             *this\padding\y = DPIScaled(3)
          Else
             *this\padding\x = DPIScaled(3)
          EndIf
       EndIf
-      If *this\type = #__type_Editor
+      If *this\type = #__TYPE_Editor
          If vertical
             *this\padding\y = DPIScaled(3)
          Else
             *this\padding\x = DPIScaled(3)
          EndIf
       EndIf
-      If *this\type = #__type_Text
+      If *this\type = #__TYPE_Text
          If vertical
             *this\padding\y = DPIScaled(2)
          Else
@@ -7515,8 +7515,8 @@ Module widgets
       
       If Bool( is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ) And
                is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_inner] ) And
-               Not ( *this\type = #__type_Splitter And is_hover( *this\bar\button, CanvasMouseX( ), CanvasMouseY( ) ) = 0 ) And
-               Not ( *this\type = #__type_HyperLink And is_hover( *this, CanvasMouseX( ) - *this\frame_x( ), CanvasMouseY( ) - *this\frame_y( ), [#__c_Required] ) = 0 ))
+               Not ( *this\type = #__TYPE_Splitter And is_hover( *this\bar\button, CanvasMouseX( ), CanvasMouseY( ) ) = 0 ) And
+               Not ( *this\type = #__TYPE_HyperLink And is_hover( *this, CanvasMouseX( ) - *this\frame_x( ), CanvasMouseY( ) - *this\frame_y( ), [#__c_Required] ) = 0 ))
          
          *this\mask | #__mask_hover_in
          
@@ -7698,7 +7698,7 @@ Module widgets
       Protected result, *color._s_color
       
       Select *this\type
-         Case #__type_Editor, #__type_Tree, #__type_ListIcon
+         Case #__TYPE_Editor, #__TYPE_Tree, #__TYPE_ListIcon
             If SelectItem( *this, Item )
                *color = *this\__rows( )\color
             EndIf
@@ -7749,12 +7749,12 @@ Module widgets
       EndIf
       
       Protected *tabBox._s_WIDGET
-      If *this\type = #__type_Panel
+      If *this\type = #__TYPE_Panel
          *tabBox = *this\tabbar
-      ElseIf *this\type = #__type_MenuBar Or
-             *this\type = #__type_PopupBar Or
-             *this\type = #__type_ToolBar Or
-             *this\type = #__type_TabBar
+      ElseIf *this\type = #__TYPE_MenuBar Or
+             *this\type = #__TYPE_PopupBar Or
+             *this\type = #__TYPE_ToolBar Or
+             *this\type = #__TYPE_TabBar
          *tabBox = *this
       EndIf
       
@@ -7846,8 +7846,8 @@ Module widgets
          *this\picture\image = img
          SetImage( *this, - 1 )
       EndIf
-      If *this\picture[#__image_BackGround]\imageID And 
-         *this\picture[#__image_BackGround]\image = img
+      If *this\picture[#__IMAGE_BackGround]\imageID And 
+         *this\picture[#__IMAGE_BackGround]\image = img
          SetBackgroundImage( *this, - 1 )
       EndIf
       
@@ -7883,11 +7883,11 @@ Module widgets
    Procedure.i GetItemImage( *this._s_WIDGET, Item.l )
       Protected result
       
-      If *this\type = #__type_Editor Or
-         *this\type = #__type_Properties Or
-         *this\type = #__type_Tree Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ListView
+      If *this\type = #__TYPE_Editor Or
+         *this\type = #__TYPE_Properties Or
+         *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListIcon Or
+         *this\type = #__TYPE_ListView
          
          If is_no_select_item_( *this\__rows( ), Item )
             ProcedureReturn #PB_Default
@@ -7902,9 +7902,9 @@ Module widgets
    Procedure.i SetItemImage( *this._s_WIDGET, Item.l, img )
       Protected result
       
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ListView
+      If *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListIcon Or
+         *this\type = #__TYPE_ListView
          
          If SelectItem( *this, Item )
             If *this\__rows( )\picture\image <> img
@@ -7919,8 +7919,8 @@ Module widgets
    EndProcedure
    
    Procedure   SetBackgroundImage( *this._s_WIDGET, *img )
-      add_image( *this\picture[#__image_BackGround], *img )
-      ProcedureReturn *this\picture[#__image_BackGround]\imageID
+      add_image( *this\picture[#__IMAGE_BackGround], *img )
+      ProcedureReturn *this\picture[#__IMAGE_BackGround]\imageID
    EndProcedure
    
    ;-
@@ -7942,7 +7942,7 @@ Module widgets
       EndIf
       
       If *this\countitems
-         If *this\type = #__type_Editor
+         If *this\type = #__TYPE_Editor
             If is_no_select_item_( *this\__lines( ), item )
                ProcedureReturn #False
             EndIf
@@ -7967,7 +7967,7 @@ Module widgets
       EndIf
       
       If *this\countitems
-         If *this\type = #__type_Editor
+         If *this\type = #__TYPE_Editor
             If is_no_select_item_( *this\__lines( ), item )
                ProcedureReturn #False
             EndIf
@@ -8054,7 +8054,7 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__type_Window
+      If *this\type = #__TYPE_Window
          If *this\mask & #__mask_minimize
             ProcedureReturn #PB_Window_Minimize
          EndIf
@@ -8065,16 +8065,16 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__type_ComboBox
+      If *this\type = #__TYPE_ComboBox
          If *this\ComboBar( )
             ProcedureReturn GetState( *this\ComboBar( ) )
          EndIf
       EndIf
       
       ;
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ListView
+      If *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListIcon Or
+         *this\type = #__TYPE_ListView
          
          If *this\RowPressed( )
             ProcedureReturn *this\RowPressed( )\rindex
@@ -8091,14 +8091,14 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__type_Editor
+      If *this\type = #__TYPE_Editor
          ProcedureReturn *this\LineState( )
       EndIf
       
       ;
-      If *this\type = #__type_CheckBox Or
-         *this\type = #__type_Option Or
-         *this\type = #__type_Button Or *this\type = #__type_ButtonImage
+      If *this\type = #__TYPE_CheckBox Or
+         *this\type = #__TYPE_Option Or
+         *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage
          
          If *this\Toggle( )
             ProcedureReturn *this\Toggle( )\checked
@@ -8107,12 +8107,12 @@ Module widgets
       
       ;
       Protected *tabBox._s_WIDGET
-      If *this\type = #__type_Panel
+      If *this\type = #__TYPE_Panel
          *tabBox = *this\tabbar
-      ElseIf *this\type = #__type_MenuBar Or
-             *this\type = #__type_PopupBar Or
-             *this\type = #__type_ToolBar Or
-             *this\type = #__type_TabBar
+      ElseIf *this\type = #__TYPE_MenuBar Or
+             *this\type = #__TYPE_PopupBar Or
+             *this\type = #__TYPE_ToolBar Or
+             *this\type = #__TYPE_TabBar
          *tabBox = *this
       EndIf
       
@@ -8121,7 +8121,7 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__type_Splitter
+      If *this\type = #__TYPE_Splitter
          ProcedureReturn DPIUnScaled( *this\bar\thumb\pos )
       ElseIf *this\bar
          ProcedureReturn *this\bar\page\pos
@@ -8187,7 +8187,7 @@ Module widgets
          If *this\Toggle( )\checked <> state
             *this\Toggle( )\checked = state
             
-            If *this\type = #__type_Button Or *this\type = #__type_ButtonImage
+            If *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage
                If state
                   *this\ColorState( ) = #__s_2
                Else
@@ -8200,8 +8200,8 @@ Module widgets
             EndIf
             
             ;
-            If *this\type = #__type_Option Or
-               *this\type = #__type_CheckBox
+            If *this\type = #__TYPE_Option Or
+               *this\type = #__TYPE_CheckBox
                
                If *this\groupbar And
                   *this\groupbar\groupbar <> *this
@@ -8222,24 +8222,24 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__type_image
+      If *this\type = #__TYPE_image
          ProcedureReturn SetImage( *this, state )
       EndIf
       
       ;\\ - editor set state
-      If *this\type = #__type_Editor
+      If *this\type = #__TYPE_Editor
          ProcedureReturn edit_SetState( *this, state )
       EndIf
       
       ;\\
-      If *this\type = #__type_ComboBox
+      If *this\type = #__TYPE_ComboBox
          If *this\ComboBar( )
             ProcedureReturn SetState( *this\ComboBar( ), state )
          EndIf
       EndIf
       
       ;\\ - IPaddress set state
-      If *this\class = "IPAddress" ; type = #__type_IPAddress
+      If *this\class = "IPAddress" ; type = #__TYPE_IPAddress
          If *this\LineState( ) <> State
             *this\LineState( ) = State
             SetText( *this, Str( IPAddressField( State, 0 )) + "." +
@@ -8250,7 +8250,7 @@ Module widgets
       EndIf
       
       ;\\ - window set state
-      If *this\type = #__type_Window
+      If *this\type = #__TYPE_Window
          ; restore state
          If state = #PB_Window_Normal
             If *this\mask & #__mask_minimize Or *this\mask & #__mask_maximize
@@ -8357,9 +8357,9 @@ Module widgets
       EndIf
       
       ;\\ - tree set state
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ListView
+      If *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListIcon Or
+         *this\type = #__TYPE_ListView
          
          If *this\countitems
             ;\\ min\max state
@@ -8456,13 +8456,13 @@ Module widgets
                      ;
                      If is_integral_( *this ) 
                         If is_root_( *this\parent )
-                           If *this\parent\parent\type = #__type_ComboBox
+                           If *this\parent\parent\type = #__TYPE_ComboBox
                               SetText( *this\parent\parent, *row\text\Str(0) )
                               SetImage( *this\parent\parent, *row\picture\image )
                            EndIf 
                            DoEvents( *this\parent\parent, #__EVENT_Change, *row\rindex, *row)
                         Else
-                           If *this\parent\type = #__type_ComboBox
+                           If *this\parent\type = #__TYPE_ComboBox
                               SetText( *this\parent, *row\text\Str(0) )
                               SetImage( *this\parent, *row\picture\image )
                            EndIf 
@@ -8489,12 +8489,12 @@ Module widgets
       
       ;
       Protected *tabBox._s_WIDGET
-      If *this\type = #__type_Panel
+      If *this\type = #__TYPE_Panel
          *tabBox = *this\tabbar
-      ElseIf *this\type = #__type_MenuBar Or
-             *this\type = #__type_PopupBar Or
-             *this\type = #__type_ToolBar Or
-             *this\type = #__type_TabBar
+      ElseIf *this\type = #__TYPE_MenuBar Or
+             *this\type = #__TYPE_PopupBar Or
+             *this\type = #__TYPE_ToolBar Or
+             *this\type = #__TYPE_TabBar
          *tabBox = *this
       EndIf
       
@@ -8549,14 +8549,14 @@ Module widgets
       EndIf
       
       ;\\
-      If *this\type = #__type_Progress Or 
-         *this\type = #__type_Scroll Or 
-         *this\type = #__type_Track Or
-         *this\type = #__type_Spin
+      If *this\type = #__TYPE_Progress Or 
+         *this\type = #__TYPE_Scroll Or 
+         *this\type = #__TYPE_Track Or
+         *this\type = #__TYPE_Spin
          result = bar_PageChange( *this, state, 2 )
       EndIf
       ;
-      If *this\type = #__type_Splitter
+      If *this\type = #__TYPE_Splitter
          If *this\bar\vertical
             state = DPIScaledX( state )
          Else
@@ -8573,7 +8573,7 @@ Module widgets
       Protected result
       
       ;
-      If *this\type = #__type_Editor
+      If *this\type = #__TYPE_Editor
          If item = - 1
             ProcedureReturn *this\caret\stop
          Else
@@ -8582,9 +8582,9 @@ Module widgets
          
       EndIf
       ;
-      If *this\type = #__type_Tree Or 
-         *this\type = #__type_ListView Or
-         *this\type = #__type_ListIcon
+      If *this\type = #__TYPE_Tree Or 
+         *this\type = #__TYPE_ListView Or
+         *this\type = #__TYPE_ListIcon
          
          If SelectItem( *this, Item )
             *row = @*this\__rows( )
@@ -8611,10 +8611,10 @@ Module widgets
          EndIf
       EndIf
       ;
-      If *this\type = #__type_ToolBar Or
-         *this\type = #__type_MenuBar Or
-         *this\type = #__type_PopupBar Or
-         *this\type = #__type_TabBar
+      If *this\type = #__TYPE_ToolBar Or
+         *this\type = #__TYPE_MenuBar Or
+         *this\type = #__TYPE_PopupBar Or
+         *this\type = #__TYPE_TabBar
          
          ProcedureReturn *this\bar\page\pos
       EndIf
@@ -8629,14 +8629,14 @@ Module widgets
       Protected._s_ROW *row_sel, *row
       Protected result
       
-      If *this\type = #__type_Editor
+      If *this\type = #__TYPE_Editor
          result = edit_SetItemState( *this, Item, state )
       EndIf
       
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListView Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_Properties
+      If *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListView Or
+         *this\type = #__TYPE_ListIcon Or
+         *this\type = #__TYPE_Properties
          
          If *this\countitems
             If is_no_select_item_( *this\__rows( ), Item )
@@ -8698,10 +8698,10 @@ Module widgets
          
       EndIf
       
-      If *this\type = #__type_ToolBar Or
-         *this\type = #__type_MenuBar Or
-         *this\type = #__type_PopupBar Or
-         *this\type = #__type_TabBar
+      If *this\type = #__TYPE_ToolBar Or
+         *this\type = #__TYPE_MenuBar Or
+         *this\type = #__TYPE_PopupBar Or
+         *this\type = #__TYPE_TabBar
          ;
          If State & #PB_Tree_Selected = #PB_Tree_Selected
             If SetState( *this, Item )
@@ -8783,13 +8783,13 @@ Module widgets
    EndProcedure
    
    Procedure.s GetText( *this._s_WIDGET );, column.l = 0 )
-      If *this\type = #__type_Tree
+      If *this\type = #__TYPE_Tree
          If *this\RowFocused( )
             ProcedureReturn *this\RowFocused( )\text\Str(0)
          EndIf
       EndIf
       
-      If *this\type = #__type_Window
+      If *this\type = #__TYPE_Window
          ProcedureReturn *this\TitleText( )\Str(0)
       EndIf
       
@@ -8803,21 +8803,21 @@ Module widgets
    Procedure.i SetText( *this._s_WIDGET, Text.s )
       Protected result.i, i.i
       
-      If *this\type = #__type_Window
+      If *this\type = #__TYPE_Window
          *this\TitleText( )\Str(0) = Text
       EndIf
       
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ListView Or
-         *this\type = #__type_ExplorerTree ;*this\type = #__type_ExplorerListIcon Or *this\type = #__type_ExplorerListView
+      If *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListIcon Or
+         *this\type = #__TYPE_ListView Or
+         *this\type = #__TYPE_ExplorerTree ;*this\type = #__TYPE_ExplorerListIcon Or *this\type = #__TYPE_ExplorerListView
          
          If *this\RowFocused( )
             *this\RowFocused( )\text\Str(0) = Text
          EndIf
       EndIf
       
-      If *this\type = #__type_Spin
+      If *this\type = #__TYPE_Spin
          ;             If *this\Stringbar
          ;                ; Debug " update spin-change " + *this\bar\PageChange( ) + " " + Str( *this\bar\thumb\pos - *this\bar\area\pos )
          ;                ;Protected i ; *bar\page\pos
@@ -8831,21 +8831,21 @@ Module widgets
          ;             EndIf
       EndIf
       
-      If *this\type = #__type_ComboBox
+      If *this\type = #__TYPE_ComboBox
          If *this\Stringbar
             ProcedureReturn SetText( *this\Stringbar, Text )
          EndIf
       EndIf
       
-      If *this\type = #__type_Editor Or
-         *this\type = #__type_String Or
-         *this\type = #__type_Text Or
-         *this\type = #__type_Frame Or
-         *this\type = #__type_Option Or 
-         *this\type = #__type_CheckBox Or 
-         *this\type = #__type_ComboBox Or
-         *this\type = #__type_Hyperlink Or 
-         *this\type = #__type_Button Or *this\type = #__type_ButtonImage
+      If *this\type = #__TYPE_Editor Or
+         *this\type = #__TYPE_String Or
+         *this\type = #__TYPE_Text Or
+         *this\type = #__TYPE_Frame Or
+         *this\type = #__TYPE_Option Or 
+         *this\type = #__TYPE_CheckBox Or 
+         *this\type = #__TYPE_ComboBox Or
+         *this\type = #__TYPE_Hyperlink Or 
+         *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage
          ;
          If CountString( Text.s, #LFCR$ )
             Text.s = ReplaceString( Text.s, #LFCR$, #LF$ )
@@ -8888,7 +8888,7 @@ Module widgets
             ;                ;\\
             ;                If *this\row\active[0]
             ;                   If is_integral_( *this )
-            ;                      If *this\parent\type = #__type_Spin
+            ;                      If *this\parent\type = #__TYPE_Spin
             ;                         If *this\mask & #__mask_active
             ;                            *this\caret\stop = 0
             ;                         Else
@@ -8912,8 +8912,8 @@ Module widgets
       Protected result.s
       
       ;
-      If *this\type = #__type_Editor Or
-         *this\type = #__type_String
+      If *this\type = #__TYPE_Editor Or
+         *this\type = #__TYPE_String
          
          If is_no_select_item_( *this\__lines( ), Item )
             ProcedureReturn ""
@@ -8923,9 +8923,9 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ListView
+      If *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListIcon Or
+         *this\type = #__TYPE_ListView
          
          If is_no_select_item_( *this\__rows( ), item )
             ProcedureReturn ""
@@ -8935,10 +8935,10 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__type_MenuBar Or
-         *this\type = #__type_PopupBar Or
-         *this\type = #__type_ToolBar Or
-         *this\type = #__type_TabBar
+      If *this\type = #__TYPE_MenuBar Or
+         *this\type = #__TYPE_PopupBar Or
+         *this\type = #__TYPE_ToolBar Or
+         *this\type = #__TYPE_TabBar
          
          If is_no_select_item_( *this\__tabs( ), Item )
             ProcedureReturn ""
@@ -8948,13 +8948,13 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__type_Panel
+      If *this\type = #__TYPE_Panel
          If *this\tabbar
             result = GetItemText( *this\tabbar, Item, Column )
          EndIf
       EndIf
       ;
-      If *this\type = #__type_combobox
+      If *this\type = #__TYPE_combobox
          If *this\ComboBar( )
             result = GetItemText( *this\ComboBar( ), Item, Column )
          EndIf
@@ -8967,8 +8967,8 @@ Module widgets
       Protected result
       
       ;
-      If *this\type = #__type_Editor Or
-         *this\type = #__type_String
+      If *this\type = #__TYPE_Editor Or
+         *this\type = #__TYPE_String
          
          If is_no_select_item_( *this\__lines( ), item )
             ProcedureReturn #False
@@ -8982,9 +8982,9 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ListView
+      If *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListIcon Or
+         *this\type = #__TYPE_ListView
          
          If is_no_select_item_( *this\__rows( ), item )
             ProcedureReturn #False
@@ -8998,10 +8998,10 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__type_MenuBar Or
-         *this\type = #__type_PopupBar Or
-         *this\type = #__type_ToolBar Or
-         *this\type = #__type_TabBar
+      If *this\type = #__TYPE_MenuBar Or
+         *this\type = #__TYPE_PopupBar Or
+         *this\type = #__TYPE_ToolBar Or
+         *this\type = #__TYPE_TabBar
          
          If is_no_select_item_( *this\__tabs( ), item )
             ProcedureReturn #False
@@ -9017,7 +9017,7 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__type_Panel
+      If *this\type = #__TYPE_Panel
          If *this\tabbar
             ProcedureReturn SetItemText( *this\tabbar, Item, Text, Column )
          EndIf
@@ -9057,11 +9057,11 @@ Module widgets
    Procedure.i GetItemFont( *this._s_WIDGET, Item.l )
       Protected result
       
-      If *this\type = #__type_Editor Or
-         *this\type = #__type_Properties Or
-         *this\type = #__type_Tree Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ListView
+      If *this\type = #__TYPE_Editor Or
+         *this\type = #__TYPE_Properties Or
+         *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListIcon Or
+         *this\type = #__TYPE_ListView
          
          If is_no_select_item_( *this\__rows( ), Item )
             ProcedureReturn #False
@@ -9080,9 +9080,9 @@ Module widgets
          FontID = FontID( Font )
          
          Protected *tabBox._s_WIDGET
-         If *this\type = #__type_Panel
+         If *this\type = #__TYPE_Panel
             *tabBox = *this\tabbar
-         ElseIf *this\type = #__type_TabBar
+         ElseIf *this\type = #__TYPE_TabBar
             *tabBox = *this
          EndIf
          
@@ -9119,7 +9119,7 @@ Module widgets
          ProcedureReturn 
       EndIf
       
-      If *this\type = #__type_Editor 
+      If *this\type = #__TYPE_Editor 
          If Attribute = #PB_Editor_WordWrap
             If *this\text\multiline = 1
                ProcedureReturn #True
@@ -9127,7 +9127,7 @@ Module widgets
          EndIf
       EndIf
       
-      If *this\type = #__type_Panel
+      If *this\type = #__TYPE_Panel
          Select Attribute
             Case #PB_Panel_ItemWidth : result = DPIUnscaledX(*this\inner_width( ))                           
             Case #PB_Panel_ItemHeight : result = DPIUnscaledY(*this\inner_height( ))                        
@@ -9136,8 +9136,8 @@ Module widgets
       EndIf
       
       ; is_scrollbars_( *this )
-      If *this\type = #__type_ScrollArea Or
-         *this\type = #__type_MDI
+      If *this\type = #__TYPE_ScrollArea Or
+         *this\type = #__TYPE_MDI
          ;
          Select Attribute
             Case #PB_ScrollArea_X : result = DPIUnscaledX(*this\scroll\h\bar\page\pos)
@@ -9148,7 +9148,7 @@ Module widgets
          EndSelect
       EndIf
       
-      If *this\type = #__type_Splitter
+      If *this\type = #__TYPE_Splitter
          Select Attribute
             Case #PB_Splitter_FirstGadget : result = *this\split_1( )
             Case #PB_Splitter_SecondGadget : result = *this\split_2( )
@@ -9158,14 +9158,14 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__type_MenuBar Or
-         *this\type = #__type_PopupBar Or
-         *this\type = #__type_ToolBar Or
-         *this\type = #__type_TabBar Or
-         *this\type = #__type_Progress Or 
-         *this\type = #__type_Scroll Or
-         *this\type = #__type_Track Or
-         *this\type = #__type_Spin
+      If *this\type = #__TYPE_MenuBar Or
+         *this\type = #__TYPE_PopupBar Or
+         *this\type = #__TYPE_ToolBar Or
+         *this\type = #__TYPE_TabBar Or
+         *this\type = #__TYPE_Progress Or 
+         *this\type = #__TYPE_Scroll Or
+         *this\type = #__TYPE_Track Or
+         *this\type = #__TYPE_Spin
          
          Select Attribute
             Case #__bar_minimum : result = *this\bar\min          
@@ -9186,7 +9186,7 @@ Module widgets
    Procedure.i SetAttribute( *this._s_WIDGET, Attribute.l, value )
       Protected result.i
       
-      If *this\type = #__type_Editor 
+      If *this\type = #__TYPE_Editor 
          If Attribute = #PB_Editor_WordWrap
             If value > 0
                If *this\text\multiline <> 1
@@ -9206,21 +9206,21 @@ Module widgets
          EndIf
       EndIf
       
-      If *this\type = #__type_Button Or *this\type = #__type_ButtonImage 
+      If *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage 
          ;
          Select Attribute
             Case #PB_Button_Image
                ; add_image( *this\picture, value )
                SetImage( *this, value )
-               add_image( *this\picture[#__image_Released], value )
+               add_image( *this\picture[#__IMAGE_Released], value )
                
             Case #PB_Button_PressedImage
-               add_image( *this\picture[#__image_Pressed], value )
+               add_image( *this\picture[#__IMAGE_Pressed], value )
                
          EndSelect
       EndIf
       
-      If *this\type = #__type_image
+      If *this\type = #__TYPE_image
          Select Attribute
             Case #__MODE_Display
                Static Width, Height
@@ -9271,8 +9271,8 @@ Module widgets
       EndIf
       
       ;  is_scrollbars_( *this )
-      If *this\type = #__type_ScrollArea Or
-         *this\type = #__type_MDI
+      If *this\type = #__TYPE_ScrollArea Or
+         *this\type = #__TYPE_MDI
          
          Select Attribute
             Case #PB_ScrollArea_X
@@ -9316,15 +9316,15 @@ Module widgets
          EndSelect
       EndIf
       
-      If *this\type = #__type_ToolBar Or
-         *this\type = #__type_PopupBar Or
-         *this\type = #__type_MenuBar Or
-         *this\type = #__type_TabBar Or
-         *this\type = #__type_Splitter Or
-         *this\type = #__type_Progress Or
-         *this\type = #__type_Scroll Or
-         *this\type = #__type_Track Or
-         *this\type = #__type_Spin
+      If *this\type = #__TYPE_ToolBar Or
+         *this\type = #__TYPE_PopupBar Or
+         *this\type = #__TYPE_MenuBar Or
+         *this\type = #__TYPE_TabBar Or
+         *this\type = #__TYPE_Splitter Or
+         *this\type = #__TYPE_Progress Or
+         *this\type = #__TYPE_Scroll Or
+         *this\type = #__TYPE_Track Or
+         *this\type = #__TYPE_Spin
          ;
          ; Protected result.l
          Protected *bar._s_BAR = *this\bar
@@ -9351,7 +9351,7 @@ Module widgets
          EndIf
          
          ;\\
-         If *this\type = #__type_Splitter
+         If *this\type = #__TYPE_Splitter
             Select Attribute
                Case #PB_Splitter_FirstMinimumSize
                   *bar\min[1] = DPIScaled(value)
@@ -9406,14 +9406,14 @@ Module widgets
          EndIf
          
          ;\\
-         If *this\type = #__type_MenuBar Or
-            *this\type = #__type_PopupBar Or
-            *this\type = #__type_ToolBar Or
-            *this\type = #__type_TabBar Or
-            *this\type = #__type_Progress Or
-            *this\type = #__type_Scroll Or
-            *this\type = #__type_Track Or
-            *this\type = #__type_Spin
+         If *this\type = #__TYPE_MenuBar Or
+            *this\type = #__TYPE_PopupBar Or
+            *this\type = #__TYPE_ToolBar Or
+            *this\type = #__TYPE_TabBar Or
+            *this\type = #__TYPE_Progress Or
+            *this\type = #__TYPE_Scroll Or
+            *this\type = #__TYPE_Track Or
+            *this\type = #__TYPE_Spin
             
             Select Attribute
                Case #__bar_minimum
@@ -9466,7 +9466,7 @@ Module widgets
                      *SB\size = value
                      
                      ; - SPIN BUTTON POSITION
-                     If *this\type = #__type_Spin
+                     If *this\type = #__TYPE_Spin
                         If *this\flagmask & #__spin_plus
                            ; set real spin-buttons width
                            *BB1\size = value
@@ -9498,11 +9498,11 @@ Module widgets
                         
                      Else
                         ; to reset the button size to default
-                        If *this\type = #__type_MenuBar Or
-                           *this\type = #__type_PopupBar Or
-                           *this\type = #__type_ToolBar Or
-                           *this\type = #__type_TabBar Or
-                           *this\type = #__type_Scroll
+                        If *this\type = #__TYPE_MenuBar Or
+                           *this\type = #__TYPE_PopupBar Or
+                           *this\type = #__TYPE_ToolBar Or
+                           *this\type = #__TYPE_TabBar Or
+                           *this\type = #__TYPE_Scroll
                            ;
                            If value
                               *BB1\size = - 1
@@ -9548,7 +9548,7 @@ Module widgets
             EndIf
             
             ; after update and resize bar
-            If *this\type = #__type_Scroll 
+            If *this\type = #__TYPE_Scroll 
                If Attribute = #__bar_buttonsize
                   *BB1\size = - 1
                   *BB2\size = - 1
@@ -9563,13 +9563,13 @@ Module widgets
    Procedure.i GetItemAttribute( *this._s_WIDGET, Item.l, Attribute.l, Column.l = 0 )
       Protected result
       
-      If *this\type = #__type_Tree Or *this\type = #__type_ListIcon
+      If *this\type = #__TYPE_Tree Or *this\type = #__TYPE_ListIcon
          
          If is_no_select_item_( *this\__rows( ), Item )
             ProcedureReturn #False
          EndIf
          
-         If *this\type = #__type_Tree
+         If *this\type = #__TYPE_Tree
             If Attribute = #PB_Tree_SubLevel
                result = *this\__rows( )\sublevel
             EndIf
@@ -9582,9 +9582,9 @@ Module widgets
    Procedure.i SetItemAttribute( *this._s_WIDGET, Item.l, Attribute.l, value, Column.l = 0 )
       Protected result
       
-      If *this\type = #__type_Window
+      If *this\type = #__TYPE_Window
          
-      ElseIf *this\type = #__type_Tree Or *this\type = #__type_ListIcon
+      ElseIf *this\type = #__TYPE_Tree Or *this\type = #__TYPE_ListIcon
          
          Select Attribute
             Case #__FLAG_optionboxes
@@ -9602,9 +9602,9 @@ Module widgets
                
          EndSelect
          
-      ElseIf *this\type = #__type_Editor
+      ElseIf *this\type = #__TYPE_Editor
          
-      ElseIf *this\type = #__type_Panel
+      ElseIf *this\type = #__TYPE_Panel
          
       Else
       EndIf
@@ -9728,7 +9728,7 @@ Module widgets
       ;
       If *this
          If is_integral_( *this )
-            If *this\type = #__type_String
+            If *this\type = #__TYPE_String
                *active = *this
             Else
                *active = *this\parent
@@ -9747,7 +9747,7 @@ Module widgets
             
             If *active
                If *active\parent And 
-                  *active\parent\type = #__type_Splitter
+                  *active\parent\type = #__TYPE_Splitter
                   ;
                   Protected *parent._s_WIDGET = *active\parent
                   While *parent And Not *parent\anchors
@@ -10280,7 +10280,7 @@ Module widgets
          EndIf
          ;
          If tabindex = #PB_Default
-            If *parent\tabbar And *parent\tabbar\type = #__type_TabBar
+            If *parent\tabbar And *parent\tabbar\type = #__TYPE_TabBar
                tabindex = *parent\openeditem
             ElseIf *parent\openeditem = #PB_Ignore
                tabindex = *parent\openeditem
@@ -10405,7 +10405,7 @@ Module widgets
          EndIf
          
          ;
-         If *parent\type = #__type_Splitter
+         If *parent\type = #__TYPE_Splitter
             If tabindex > 0
                If tabindex % 2
                   ;*parent\FirstWidget( ) = *this
@@ -10511,7 +10511,7 @@ Module widgets
          ;
          ;\\ a_new( )
          If a_anchors( ) And a_main( ) And IsChild( *this, a_main( ))
-            If *this\parent\type = #__type_Splitter
+            If *this\parent\type = #__TYPE_Splitter
                ; Debug ""+*this\class +" "+ *this\parent\class
                a_free( *this )
             Else
@@ -10620,7 +10620,7 @@ Module widgets
          *this\align\x = *this\container_x( )
          *this\align\y = *this\container_y( )
          ;\\
-         If *this\type = #__type_window
+         If *this\type = #__TYPE_window
             *this\align\width  = *this\inner_width( )
             *this\align\height = *this\inner_height( )
          Else
@@ -10923,7 +10923,7 @@ Module widgets
                *this\align\x = *this\container_x( )
                *this\align\y = *this\container_y( )
                ;\\
-               If *this\type = #__type_window
+               If *this\type = #__TYPE_window
                   *this\align\width  = *this\inner_width( )
                   *this\align\height = *this\inner_height( )
                Else
@@ -10936,7 +10936,7 @@ Module widgets
                If *this\align\right And *this\align\left
                   *this\align\x     = 0
                   *this\align\width = (*this\parent\align\width)
-                  If *this\type = #__type_window
+                  If *this\type = #__TYPE_window
                      *this\align\width - *this\fs * 2
                   EndIf
                Else
@@ -10952,7 +10952,7 @@ Module widgets
                      If ( mode & #__FLAG_full = #__FLAG_full ) Or
                         ( mode & #__FLAG_AutoSize = #__FLAG_AutoSize )
                         *this\align\x = *this\parent\align\width - *this\align\width
-                        If *this\type = #__type_window
+                        If *this\type = #__TYPE_window
                            *this\align\x - *this\fs * 2
                         EndIf
                      EndIf
@@ -10963,7 +10963,7 @@ Module widgets
                If *this\align\bottom And *this\align\top
                   *this\align\y      = 0
                   *this\align\height = *this\parent\align\height
-                  If *this\type = #__type_window
+                  If *this\type = #__TYPE_window
                      *this\align\height - *this\fs * 2
                   EndIf
                Else
@@ -10979,7 +10979,7 @@ Module widgets
                      If ( mode & #__FLAG_full = #__FLAG_full ) Or
                         ( mode & #__FLAG_AutoSize = #__FLAG_AutoSize )
                         *this\align\y = *this\parent\align\height - *this\align\height
-                        If *this\type = #__type_window
+                        If *this\type = #__TYPE_window
                            *this\align\y - *this\fs * 2
                         EndIf
                      EndIf
@@ -11030,13 +11030,13 @@ Module widgets
                   ;\\ dock auto stick position
                   If *this\align\left And Not *this\align\right 
                      *this\parent\align\autodock\x = *this\align\x + *this\align\width
-                     If *this\type = #__type_window
+                     If *this\type = #__TYPE_window
                         *this\parent\align\autodock\x + *this\fs * 2
                      EndIf
                   EndIf
                   If *this\align\top And Not *this\align\bottom
                      *this\parent\align\autodock\y = *this\align\y + *this\align\height
-                     If *this\type = #__type_window
+                     If *this\type = #__TYPE_window
                         *this\parent\align\autodock\y + *this\fs * 2
                      EndIf
                   EndIf
@@ -11066,12 +11066,12 @@ Module widgets
                                     *e\align\x     = *e\parent\align\autodock\x
                                     *e\align\width = (*e\parent\inner_width( )) - ( *e\parent\align\autodock\x + *e\parent\align\autodock\width )
                                     
-                                    If *e\type = #__type_window
+                                    If *e\type = #__TYPE_window
                                        *e\align\width - *e\fs * 2
                                     EndIf
                                  EndIf
                                  
-                                 If *e\type = #__type_window
+                                 If *e\type = #__TYPE_window
                                     *e\align\height - *e\fs * 2
                                  EndIf
                               EndIf
@@ -11389,7 +11389,7 @@ Module widgets
       *columns\title = Text.s
       *columns\width = DPIScaled( Width )
       ;\\
-      If *this\type = #__type_listicon
+      If *this\type = #__TYPE_listicon
          ;*columns\height = *this\columnsHeight
       EndIf
       
@@ -11488,7 +11488,7 @@ Module widgets
                         ;                     *row\before = *rowLast\parent
                         ;                     *rowLast\parent\after = *row
                         
-                        If *this\type = #__type_Editor
+                        If *this\type = #__TYPE_Editor
                            *rowParent       = *rowLast\parent
                            *rowParent\_last = *row
                            *this\row\new    = *rowParent
@@ -11612,7 +11612,7 @@ Module widgets
       EndIf
       ;          ;CompilerEndIf
       
-      If *this\type = #__type_MDI
+      If *this\type = #__TYPE_MDI
          Protected *window._S_WIDGET
          ;
          Flag | #PB_Window_SystemMenu | #PB_Window_MaximizeGadget | #PB_Window_MinimizeGadget
@@ -11634,23 +11634,23 @@ Module widgets
          ProcedureReturn *window
       EndIf
       
-      If *this\type = #__type_Editor
+      If *this\type = #__TYPE_Editor
          ProcedureReturn edit_AddItem( *this, item, @text, Len(Text) )
       EndIf
       
-      If *this\type = #__type_ListIcon
+      If *this\type = #__TYPE_ListIcon
          Column_AddItem( *this, item, Text )
       EndIf
       
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListView Or *this\type = #__type_Properties
+      If *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListView Or *this\type = #__TYPE_Properties
          
          ProcedureReturn AddItems( *this, *this\__rows( ), Item, Text, img, Flag )
       EndIf
       
-      If *this\type = #__type_combobox
+      If *this\type = #__TYPE_combobox
          If Not *this\ComboBar( )
-            *this\ComboBar( ) = Create( *this, "ComboListView", #__type_tree, 0,0,0,0,"",
+            *this\ComboBar( ) = Create( *this, "ComboListView", #__TYPE_tree, 0,0,0,0,"",
                                         #__FLAG_child | #__FLAG_nobuttons | #__FLAG_nolines|*this\flagmask ) 
             
             *this\ComboBar( )\fs = 2
@@ -11667,20 +11667,20 @@ Module widgets
       EndIf
       
       Protected *tabBox._s_WIDGET
-      If *this\type = #__type_Panel
+      If *this\type = #__TYPE_Panel
          *tabBox = *this\tabbar
-      ElseIf *this\type = #__type_MenuBar Or
-             *this\type = #__type_PopupBar Or
-             *this\type = #__type_ToolBar Or
-             *this\type = #__type_TabBar
+      ElseIf *this\type = #__TYPE_MenuBar Or
+             *this\type = #__TYPE_PopupBar Or
+             *this\type = #__TYPE_ToolBar Or
+             *this\type = #__TYPE_TabBar
          *tabBox = *this
       EndIf
       
       If *tabBox
          ; add tabs
-         If *tabBox\type = #__type_MenuBar Or 
-            *tabBox\type = #__type_PopupBar Or
-            *tabBox\type = #__type_ToolBar
+         If *tabBox\type = #__TYPE_MenuBar Or 
+            *tabBox\type = #__TYPE_PopupBar Or
+            *tabBox\type = #__TYPE_ToolBar
             
             LastElement( *tabBox\__tabs( ))
             AddElement( *tabBox\__tabs( ))
@@ -11688,7 +11688,7 @@ Module widgets
             ;*tabBox\__tabs.allocate( ITEMS, ( ))
             *tabBox\__tabs( )\tindex = Item
             
-         ElseIf *tabBox\type = #__type_TabBar
+         ElseIf *tabBox\type = #__TYPE_TabBar
             If Item < 0 Or
                Item > *tabBox\countitems - 1
                LastElement( *tabBox\__tabs( ))
@@ -11735,7 +11735,7 @@ Module widgets
             If Not *tabBox\parentTabSelected( )
                *tabBox\TabState( )         = 0
                ;
-               If *tabBox\type = #__type_TabBar
+               If *tabBox\type = #__TYPE_TabBar
                   *tabBox\parentTabSelected( )       = *tabBox\__tabs( )
                   *tabBox\parentTabSelected( )\ScrollToActive( - 1 ) ; scroll to active tab
                EndIf
@@ -11756,7 +11756,7 @@ Module widgets
    EndProcedure
    
    Procedure   AddButtons( *this._s_WIDGET, *g._s_WIDGET, Flag.q = 0 )
-      ;If *this\type = #__type_Panel
+      ;If *this\type = #__TYPE_Panel
       If Flag & #__FLAG_AutoSize
          If *this\fs[1] Or *this\fs[3]
             Resize( *g, #PB_Ignore, #PB_Ignore, *this\fs[1]+*this\fs[3], *this\fs[1]+*this\fs[3], 0 )
@@ -11840,7 +11840,7 @@ Module widgets
    Procedure   RemoveItem( *this._s_WIDGET, Item.l )
       Protected result
       
-      If *this\type = #__type_Editor
+      If *this\type = #__TYPE_Editor
          If IsItem( *this, item )
             Protected String.s = StringField( *this\text\Str(0), 1 + item, #LF$ )
             If String
@@ -11857,9 +11857,9 @@ Module widgets
       EndIf
       
       ; - widgets::tree_remove_item( )
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ListView
+      If *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListIcon Or
+         *this\type = #__TYPE_ListView
          
          
          If is_no_select_item_( *this\__rows( ), Item )
@@ -12017,12 +12017,12 @@ Module widgets
       
       ;
       Protected *tabBox._s_WIDGET
-      If *this\type = #__type_Panel
+      If *this\type = #__TYPE_Panel
          *tabBox = *this\tabbar
-      ElseIf *this\type = #__type_MenuBar Or
-             *this\type = #__type_PopupBar Or
-             *this\type = #__type_ToolBar Or
-             *this\type = #__type_TabBar
+      ElseIf *this\type = #__TYPE_MenuBar Or
+             *this\type = #__TYPE_PopupBar Or
+             *this\type = #__TYPE_ToolBar Or
+             *this\type = #__TYPE_TabBar
          *tabBox = *this
       EndIf
       
@@ -12043,7 +12043,7 @@ Module widgets
       Protected result
       
       ;
-      If *this\type = #__type_Editor
+      If *this\type = #__TYPE_Editor
          If *this\countitems    <> 0
             *this\TextChange( ) = - 1
             *this\text\Str(0)   = ""
@@ -12058,9 +12058,9 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ListView
+      If *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListIcon Or
+         *this\type = #__TYPE_ListView
          
          If *this\countitems <> 0
             *this\TextChange( ) = - 1
@@ -12078,7 +12078,7 @@ Module widgets
       EndIf
       
       ; - widgets::tree_clear_items( )
-      If *this\type = #__type_ComboBox
+      If *this\type = #__TYPE_ComboBox
          
          If *this\ComboBar( )
             If *this\Stringbar
@@ -12102,12 +12102,12 @@ Module widgets
       
       ; - Panel_ClearItems( )
       Protected *tabBox._s_WIDGET
-      If *this\type = #__type_Panel
+      If *this\type = #__TYPE_Panel
          *tabBox = *this\tabbar
-      ElseIf *this\type = #__type_MenuBar Or
-             *this\type = #__type_PopupBar Or
-             *this\type = #__type_ToolBar Or
-             *this\type = #__type_TabBar
+      ElseIf *this\type = #__TYPE_MenuBar Or
+             *this\type = #__TYPE_PopupBar Or
+             *this\type = #__TYPE_ToolBar Or
+             *this\type = #__TYPE_TabBar
          *tabBox = *this
       EndIf
       
@@ -12189,7 +12189,7 @@ Module widgets
       Protected result$
       
       Select Type
-         Case #__Type_Window        
+         Case #__TYPE_Window        
             result$ = "#PB_Window_NoGadgets|"+
                       "#PB_Window_NoActivate|"+
                       "#PB_Window_ScreenCentered|"+
@@ -12206,10 +12206,10 @@ Module widgets
                       "#PB_Window_Maximize|"+
                       "#PB_Window_Invisible"
             
-         Case #__Type_ButtonImage    
+         Case #__TYPE_ButtonImage    
             result$ = "#PB_Button_Toggle"
             
-         Case #__Type_Button         
+         Case #__TYPE_Button         
             result$ = "#PB_Button_Default|"+
                       "#PB_Button_Toggle|"+
                       "#PB_Button_MultiLine|"+
@@ -12217,7 +12217,7 @@ Module widgets
                       "#PB_Button_Center|"+
                       "#PB_Button_Right"
             
-         Case #__type_String         
+         Case #__TYPE_String         
             result$ = "#PB_String_BorderLess|"+
                       "#PB_String_Numeric|"+
                       "#PB_String_Password|"+
@@ -12225,52 +12225,52 @@ Module widgets
                       "#PB_String_LowerCase|"+
                       "#PB_String_UpperCase"
             
-         Case #__Type_Text           
+         Case #__TYPE_Text           
             result$ = "#PB_Text_Border|"+
                       "#PB_Text_Left|"+
                       "#PB_Text_Center|"+
                       "#PB_Text_Right"
             
-         Case #__Type_CheckBox       
+         Case #__TYPE_CheckBox       
             result$ = "#PB_CheckBox_ThreeState|"+
                       "#PB_CheckBox_Center|"+
                       "#PB_CheckBox_Right"
             
-         Case #__Type_Option         
+         Case #__TYPE_Option         
             result$ = ""
             
-         Case #__Type_ListView       
+         Case #__TYPE_ListView       
             result$ = "#PB_ListView_Multiselect|"+
                       "#PB_ListView_ClickSelect"
             
             
-         Case #__Type_Frame          
+         Case #__TYPE_Frame          
             result$ = "#PB_Frame_Single|"+
                       "#PB_Frame_Double|"+
                       "#PB_Frame_Flat"
             
             
-         Case #__Type_ComboBox       
+         Case #__TYPE_ComboBox       
             result$ = "#PB_ComboBox_Editable|"+
                       "#PB_ComboBox_LowerCase|"+
                       "#PB_ComboBox_UpperCase|"+
                       "#PB_ComboBox_Image"
             
-         Case #__type_image          
+         Case #__TYPE_image          
             result$ = "#PB_image_Border|"+
                       "#PB_image_Raised"
             
-         Case #__Type_HyperLink      
+         Case #__TYPE_HyperLink      
             result$ = "#PB_Hyperlink_Underline"
             
-         Case #__Type_Container      
+         Case #__TYPE_Container      
             result$ = "#PB_Container_BorderLess|"+
                       "#PB_Container_Flat|"+
                       "#PB_Container_Raised|"+
                       "#PB_Container_Single|"+
                       "#PB_Container_Double"
             
-         Case #__Type_ListIcon       
+         Case #__TYPE_ListIcon       
             result$ = "#PB_ListIcon_CheckBoxes|"+
                       "#PB_ListIcon_ThreeState|"+
                       "#PB_ListIcon_MultiSelect|"+
@@ -12279,41 +12279,41 @@ Module widgets
                       "#PB_ListIcon_HeaderDragDrop|"+
                       "#PB_ListIcon_AlwaysShowSelection"
             
-         Case #__Type_IPAddress      
+         Case #__TYPE_IPAddress      
             result$ = ""
             
-         Case #__type_Progress    
+         Case #__TYPE_Progress    
             result$ = "#PB_ProgressBar_Smooth|"+
                       "#PB_ProgressBar_Vertical"
             
-         Case #__type_Scroll      
+         Case #__TYPE_Scroll      
             result$ = "#PB_ScrollBar_Vertical"
             
-         Case #__type_ScrollArea     
+         Case #__TYPE_ScrollArea     
             result$ = "#PB_ScrollArea_Flat|"+
                       "#PB_ScrollArea_Raised|"+
                       "#PB_ScrollArea_Single|"+
                       "#PB_ScrollArea_BorderLess|"+
                       "#PB_ScrollArea_Center"
             
-         Case #__type_Track       
+         Case #__TYPE_Track       
             result$ = "#PB_TrackBar_Ticks|"+
                       "#PB_TrackBar_Vertical"
             
-         Case #__Type_Web            
+         Case #__TYPE_Web            
             result$ = ""
             
-         Case #__Type_Calendar       
+         Case #__TYPE_Calendar       
             result$ = "#PB_Calendar_Borderless"
             
-         Case #__Type_Date           
+         Case #__TYPE_Date           
             result$ = "#PB_Date_UpDown"
             
-         Case #__Type_Editor         
+         Case #__TYPE_Editor         
             result$ = "#PB_Editor_ReadOnly|"+
                       "#PB_Editor_WordWrap"
             
-         Case #__Type_ExplorerList   
+         Case #__TYPE_ExplorerList   
             result$ = "#PB_Explorer_BorderLess|"+          ; Создать Гаджет без границ.
                       "#PB_Explorer_AlwaysShowSelection|"+ ; Выделение отображается даже если Гаджет не активирован.
                       "#PB_Explorer_MultiSelect|"+         ; Разрешить множественное выделение элементов в Гаджете.
@@ -12330,7 +12330,7 @@ Module widgets
                       "#PB_Explorer_AutoSort|"+            ; Содержимое автоматически упорядочивается по имени.
                       "#PB_Explorer_HiddenFiles"           ; Будет отображать скрытые файлы (поддерживается только в Linux и OS X).
             
-         Case #__Type_ExplorerTree   
+         Case #__TYPE_ExplorerTree   
             result$ = "#PB_Explorer_BorderLess|"+          ; Создать Гаджет без границ.
                       "#PB_Explorer_AlwaysShowSelection|"+ ; Выделение отображается даже если Гаджет не активирован.
                       "#PB_Explorer_NoLines|"+             ; Скрыть линии, соединяющие узлы дерева.
@@ -12340,40 +12340,40 @@ Module widgets
                       "#PB_Explorer_NoMyDocuments|"+       ; Не показывать каталог 'Мои документы' в виде отдельного элемента.
                       "#PB_Explorer_AutoSort"              ; Содержимое автоматически упорядочивается по имени.
             
-         Case #__Type_ExplorerCombo  
+         Case #__TYPE_ExplorerCombo  
             result$ = "#PB_Explorer_DrivesOnly|"+          ; Гаджет будет отображать только диски, которые вы можете выбрать.
                       "#PB_Explorer_Editable|"+            ; Гаджет будет доступен для редактирования с функцией автозаполнения.                   С этим флагом он действует точно так же, как тот что в Windows Explorer.
                       "#PB_Explorer_NoMyDocuments"         ; Папка "Мои документы" не будет отображаться как отдельный элемент.
             
-         Case #__type_Spin           
+         Case #__TYPE_Spin           
             result$ = ""
             
-         Case #__Type_Tree           
+         Case #__TYPE_Tree           
             result$ = "#PB_Tree_AlwaysShowSelection|"+
                       "#PB_Tree_NoLines|"+
                       "#PB_Tree_NoButtons|"+
                       "#PB_Tree_CheckBoxes|"+
                       "#PB_Tree_ThreeState"
             
-         Case #__Type_Panel          
+         Case #__TYPE_Panel          
             result$ = ""
             
-         Case #__type_Splitter       
+         Case #__TYPE_Splitter       
             result$ = "#PB_Splitter_Vertical|"+
                       "#PB_Splitter_Separator|"+
                       "#PB_Splitter_FirstFixed|"+
                       "#PB_Splitter_SecondFixed" 
             
-         Case #__Type_MDI      
+         Case #__TYPE_MDI      
             result$ = ""
             
-         Case #__type_Scintilla      
+         Case #__TYPE_Scintilla      
             result$ = ""
             
-            ;       Case #__type_Shortcut       
+            ;       Case #__TYPE_Shortcut       
             ;         result$ = ""
             ;         
-            ;       Case #__Type_Canvas 
+            ;       Case #__TYPE_Canvas 
             ;         
             ;         result$ = "#PB_Canvas_Border|"+
             ;                   "#PB_Canvas_Container|"+
@@ -12528,50 +12528,50 @@ Module widgets
       Protected result.i
       
       Select Trim( LCase( class.s ))
-         Case "status"        : result = #__type_StatusBar
-         Case "popupmenu"     : result = #__type_PopupBar
-         Case "tool"          : result = #__type_ToolBar
-         Case "tab"           : result = #__type_TabBar
-         Case "menu"          : result = #__type_MenuBar
-         Case "window"        : result = #__type_window
+         Case "status"        : result = #__TYPE_StatusBar
+         Case "popupmenu"     : result = #__TYPE_PopupBar
+         Case "tool"          : result = #__TYPE_ToolBar
+         Case "tab"           : result = #__TYPE_TabBar
+         Case "menu"          : result = #__TYPE_MenuBar
+         Case "window"        : result = #__TYPE_window
             
-         Case "unknown"       : result = #__type_Unknown
+         Case "unknown"       : result = #__TYPE_Unknown
             
-         Case "button"        : result = #__type_Button
-         Case "buttonimage"   : result = #__Type_ButtonImage
-         Case "calendar"      : result = #__type_Calendar
-         Case "checkbox"      : result = #__type_CheckBox
-         Case "combobox"      : result = #__type_ComboBox
-         Case "container"     : result = #__type_Container
-         Case "date"          : result = #__type_Date
-         Case "editor"        : result = #__type_Editor
-         Case "explorercombo" : result = #__type_ExplorerCombo
-         Case "explorerlist"  : result = #__type_ExplorerList
-         Case "explorertree"  : result = #__type_ExplorerTree
-         Case "frame"         : result = #__type_Frame
-         Case "hyperlink"     : result = #__type_HyperLink
-         Case "image"         : result = #__type_image
-         Case "ipaddress"     : result = #__type_IPAddress
-         Case "listicon"      : result = #__type_ListIcon
-         Case "listview"      : result = #__type_ListView
-         Case "mdi"           : result = #__type_MDI
-         Case "option"        : result = #__type_Option
-         Case "panel"         : result = #__type_Panel
-         Case "progress"      : result = #__type_Progress
-         Case "scintilla"     : result = #__type_Scintilla
-         Case "scrollarea"    : result = #__type_ScrollArea
-         Case "scroll"        : result = #__type_Scroll
-         Case "spin"          : result = #__type_Spin
-         Case "splitter"      : result = #__type_Splitter
-         Case "string"        : result = #__type_String
-         Case "text"          : result = #__type_Text
-         Case "track"         : result = #__type_Track
-         Case "tree"          : result = #__type_Tree
-         Case "web"           : result = #__type_Web
-            ;case "property"       : result = #__type_Properties
-            ;Case "canvas" : result = #__type_Canvas
-            ;Case "opengl"    : result = #__type_OpenGL
-            ;Case "shortcut" : result = #__type_Shortcut
+         Case "button"        : result = #__TYPE_Button
+         Case "buttonimage"   : result = #__TYPE_ButtonImage
+         Case "calendar"      : result = #__TYPE_Calendar
+         Case "checkbox"      : result = #__TYPE_CheckBox
+         Case "combobox"      : result = #__TYPE_ComboBox
+         Case "container"     : result = #__TYPE_Container
+         Case "date"          : result = #__TYPE_Date
+         Case "editor"        : result = #__TYPE_Editor
+         Case "explorercombo" : result = #__TYPE_ExplorerCombo
+         Case "explorerlist"  : result = #__TYPE_ExplorerList
+         Case "explorertree"  : result = #__TYPE_ExplorerTree
+         Case "frame"         : result = #__TYPE_Frame
+         Case "hyperlink"     : result = #__TYPE_HyperLink
+         Case "image"         : result = #__TYPE_image
+         Case "ipaddress"     : result = #__TYPE_IPAddress
+         Case "listicon"      : result = #__TYPE_ListIcon
+         Case "listview"      : result = #__TYPE_ListView
+         Case "mdi"           : result = #__TYPE_MDI
+         Case "option"        : result = #__TYPE_Option
+         Case "panel"         : result = #__TYPE_Panel
+         Case "progress"      : result = #__TYPE_Progress
+         Case "scintilla"     : result = #__TYPE_Scintilla
+         Case "scrollarea"    : result = #__TYPE_ScrollArea
+         Case "scroll"        : result = #__TYPE_Scroll
+         Case "spin"          : result = #__TYPE_Spin
+         Case "splitter"      : result = #__TYPE_Splitter
+         Case "string"        : result = #__TYPE_String
+         Case "text"          : result = #__TYPE_Text
+         Case "track"         : result = #__TYPE_Track
+         Case "tree"          : result = #__TYPE_Tree
+         Case "web"           : result = #__TYPE_Web
+            ;case "property"       : result = #__TYPE_Properties
+            ;Case "canvas" : result = #__TYPE_Canvas
+            ;Case "opengl"    : result = #__TYPE_OpenGL
+            ;Case "shortcut" : result = #__TYPE_Shortcut
       EndSelect
       
       ProcedureReturn result
@@ -12581,46 +12581,46 @@ Module widgets
       Protected result$
       
       Select Type
-         Case #__type_StatusBar     : result$ = "Status"
-         Case #__type_PopupBar      : result$ = "PopupMenu"
-         Case #__type_ToolBar       : result$ = "ToolBar"
-         Case #__type_TabBar        : result$ = "Tab"
-         Case #__type_MenuBar       : result$ = "Menu"
-         Case #__type_Window        : result$ = "Window"
+         Case #__TYPE_StatusBar     : result$ = "Status"
+         Case #__TYPE_PopupBar      : result$ = "PopupMenu"
+         Case #__TYPE_ToolBar       : result$ = "ToolBar"
+         Case #__TYPE_TabBar        : result$ = "Tab"
+         Case #__TYPE_MenuBar       : result$ = "Menu"
+         Case #__TYPE_Window        : result$ = "Window"
             
-         Case #__type_Unknown       : result$ = "Create"
+         Case #__TYPE_Unknown       : result$ = "Create"
             
-         Case #__type_Button        : result$ = "Button"
-         Case #__Type_ButtonImage   : result$ = "ButtonImage"
-         Case #__type_String        : result$ = "String"
-         Case #__type_Text          : result$ = "Text"
-         Case #__type_CheckBox      : result$ = "CheckBox"
-         Case #__type_Option        : result$ = "Option"
-         Case #__type_ListView      : result$ = "ListView"
-         Case #__type_Frame         : result$ = "Frame"
-         Case #__type_ComboBox      : result$ = "ComboBox"
-         Case #__type_Image         : result$ = "Image"
-         Case #__type_HyperLink     : result$ = "HyperLink"
-         Case #__type_Container     : result$ = "Container"
-         Case #__type_ListIcon      : result$ = "ListIcon"
-         Case #__type_IPAddress     : result$ = "IPAddress"
-         Case #__type_Progress      : result$ = "Progress"
-         Case #__type_Scroll        : result$ = "Scroll"
-         Case #__type_ScrollArea    : result$ = "ScrollArea"
-         Case #__type_Track         : result$ = "Track"
-         Case #__type_Web           : result$ = "Web"
-         Case #__type_Calendar      : result$ = "Calendar"
-         Case #__type_Date          : result$ = "Date"
-         Case #__type_Editor        : result$ = "Editor"
-         Case #__type_ExplorerList  : result$ = "ExplorerList"
-         Case #__type_ExplorerTree  : result$ = "ExplorerTree"
-         Case #__type_ExplorerCombo : result$ = "ExplorerCombo"
-         Case #__type_Spin          : result$ = "Spin"
-         Case #__type_Tree          : result$ = "Tree"
-         Case #__type_Panel         : result$ = "Panel"
-         Case #__type_Splitter      : result$ = "Splitter"
-         Case #__type_MDI           : result$ = "Mdi"
-         Case #__type_Scintilla     : result$ = "Scintilla"
+         Case #__TYPE_Button        : result$ = "Button"
+         Case #__TYPE_ButtonImage   : result$ = "ButtonImage"
+         Case #__TYPE_String        : result$ = "String"
+         Case #__TYPE_Text          : result$ = "Text"
+         Case #__TYPE_CheckBox      : result$ = "CheckBox"
+         Case #__TYPE_Option        : result$ = "Option"
+         Case #__TYPE_ListView      : result$ = "ListView"
+         Case #__TYPE_Frame         : result$ = "Frame"
+         Case #__TYPE_ComboBox      : result$ = "ComboBox"
+         Case #__TYPE_Image         : result$ = "Image"
+         Case #__TYPE_HyperLink     : result$ = "HyperLink"
+         Case #__TYPE_Container     : result$ = "Container"
+         Case #__TYPE_ListIcon      : result$ = "ListIcon"
+         Case #__TYPE_IPAddress     : result$ = "IPAddress"
+         Case #__TYPE_Progress      : result$ = "Progress"
+         Case #__TYPE_Scroll        : result$ = "Scroll"
+         Case #__TYPE_ScrollArea    : result$ = "ScrollArea"
+         Case #__TYPE_Track         : result$ = "Track"
+         Case #__TYPE_Web           : result$ = "Web"
+         Case #__TYPE_Calendar      : result$ = "Calendar"
+         Case #__TYPE_Date          : result$ = "Date"
+         Case #__TYPE_Editor        : result$ = "Editor"
+         Case #__TYPE_ExplorerList  : result$ = "ExplorerList"
+         Case #__TYPE_ExplorerTree  : result$ = "ExplorerTree"
+         Case #__TYPE_ExplorerCombo : result$ = "ExplorerCombo"
+         Case #__TYPE_Spin          : result$ = "Spin"
+         Case #__TYPE_Tree          : result$ = "Tree"
+         Case #__TYPE_Panel         : result$ = "Panel"
+         Case #__TYPE_Splitter      : result$ = "Splitter"
+         Case #__TYPE_MDI           : result$ = "Mdi"
+         Case #__TYPE_Scintilla     : result$ = "Scintilla"
       EndSelect
       
       ProcedureReturn result$
@@ -13270,10 +13270,10 @@ Module widgets
       Protected result.q ;= Flag
       
       Select Type
-         Case #__type_Window
+         Case #__TYPE_Window
             result = Flag
             
-         Case #__type_Container
+         Case #__TYPE_Container
             If ( Flag & #__FLAG_BorderLess )
                result | #PB_Container_BorderLess
             EndIf
@@ -13290,7 +13290,7 @@ Module widgets
                result | #PB_Container_Double
             EndIf
             
-         Case #__type_ScrollArea
+         Case #__TYPE_ScrollArea
             If ( Flag & #__FLAG_BorderLess )
                result | #PB_ScrollArea_BorderLess
             EndIf
@@ -13305,7 +13305,7 @@ Module widgets
             EndIf
             
             
-         Case #__type_Button
+         Case #__TYPE_Button
             If ( Flag & #__FLAG_TextMultiLine ) 
                result | #PB_Button_MultiLine
             EndIf
@@ -13316,7 +13316,7 @@ Module widgets
                result | #PB_Button_Right
             EndIf
             
-         Case #__type_Text
+         Case #__TYPE_Text
             If ( Flag & #__FLAG_BorderFlat ) 
                result | #PB_Text_Border
             EndIf
@@ -13338,13 +13338,13 @@ Module widgets
       Protected flags.q = Flag
       
       Select Type
-         Case #__type_window
+         Case #__TYPE_window
             If constants::BinaryFlag( Flag, #PB_Window_BorderLess )
                flags & ~ #PB_Window_BorderLess
                flags | #__FLAG_BorderLess
             EndIf
             ;
-         Case #__type_Container
+         Case #__TYPE_Container
             ;                If constants::BinaryFlag( Flag, #PB_Container_BorderLess ) ; BUG ;#PB_Container_BorderLess = 0
             ;                   flags & ~ #PB_Container_BorderLess
             ;                   flags = #__FLAG_BorderLess
@@ -13366,7 +13366,7 @@ Module widgets
                flags | #__FLAG_BorderDouble
             EndIf
             ;
-         Case #__type_ScrollArea
+         Case #__TYPE_ScrollArea
             If constants::BinaryFlag( Flag, #PB_ScrollArea_BorderLess ) 
                flags & ~ #PB_ScrollArea_BorderLess
                flags = #__FLAG_BorderLess
@@ -13384,7 +13384,7 @@ Module widgets
                flags | #__FLAG_BorderRaised
             EndIf
             ;
-         Case #__type_Frame
+         Case #__TYPE_Frame
             ;                If constants::BinaryFlag( Flag, #PB_Frame_BorderLess ) 
             ;                   flags & ~ #PB_Frame_BorderLess
             ;                   flags | #__FLAG_BorderLess
@@ -13406,7 +13406,7 @@ Module widgets
                flags | #__FLAG_BorderDouble
             EndIf
             ;
-         Case #__type_MDI
+         Case #__TYPE_MDI
             If constants::BinaryFlag( Flag, #PB_MDI_AutoSize ) 
                flags & ~ #PB_MDI_AutoSize
                flags | #__FLAG_AutoSize
@@ -13416,7 +13416,7 @@ Module widgets
                flags | #__FLAG_BorderLess
             EndIf
             ;
-         Case #__type_CheckBox
+         Case #__TYPE_CheckBox
             If constants::BinaryFlag( Flag, #PB_CheckBox_Right )
                flags & ~ #PB_CheckBox_Right
                flags | #__FLAG_Right
@@ -13426,7 +13426,7 @@ Module widgets
                flags | #__FLAG_Center
             EndIf
             ;
-         Case #__type_Text
+         Case #__TYPE_Text
             If constants::BinaryFlag( Flag, #PB_Text_Border ) 
                flags & ~ #PB_Text_Border
                flags | #__FLAG_BorderFlat
@@ -13441,7 +13441,7 @@ Module widgets
                flags | #__FLAG_Right
             EndIf
             ;
-         Case #__type_Button ; ok
+         Case #__TYPE_Button ; ok
             If constants::BinaryFlag( Flag, #PB_Button_MultiLine ) 
                flags & ~ #PB_Button_MultiLine
                flags | #__FLAG_TextWordWrap
@@ -13459,7 +13459,7 @@ Module widgets
             ;                   flags | #__FLAG_Center
             ;                EndIf
             ;
-         Case #__type_ComboBox ; ok
+         Case #__TYPE_ComboBox ; ok
             If constants::BinaryFlag( Flag, #PB_ComboBox_Editable )
                flags & ~ #PB_ComboBox_Editable
                flags & ~ #__FLAG_Textreadonly
@@ -13475,7 +13475,7 @@ Module widgets
                flags | #__FLAG_Textuppercase
             EndIf
             ;
-         Case #__type_String ; ok
+         Case #__TYPE_String ; ok
             If constants::BinaryFlag( Flag, #PB_String_Password ) 
                flags & ~ #PB_String_Password
                flags | #__FLAG_Textpassword
@@ -13501,7 +13501,7 @@ Module widgets
                flags | #__FLAG_Textreadonly
             EndIf
             ;
-         Case #__type_Editor
+         Case #__TYPE_Editor
             If constants::BinaryFlag( Flag, #PB_Editor_ReadOnly ) 
                flags & ~ #PB_Editor_ReadOnly
                flags | #__FLAG_Textreadonly
@@ -13511,7 +13511,7 @@ Module widgets
                flags | #__FLAG_Textwordwrap
             EndIf
             ;
-         Case #__type_Tree
+         Case #__TYPE_Tree
             If constants::BinaryFlag( Flag, #PB_Tree_AlwaysShowSelection ) 
                flags & ~ #PB_Tree_AlwaysShowSelection
             EndIf
@@ -13532,7 +13532,7 @@ Module widgets
                flags | #__FLAG_nolines
             EndIf
             ;   
-         Case #__type_ListView ; Ok
+         Case #__TYPE_ListView ; Ok
             If constants::BinaryFlag( Flag, #PB_ListView_ClickSelect ) 
                flags & ~ #PB_ListView_ClickSelect
                flags | #__FLAG_RowClickSelect
@@ -13542,7 +13542,7 @@ Module widgets
                flags | #__FLAG_RowMultiSelect
             EndIf
             ;  
-         Case #__type_listicon
+         Case #__TYPE_listicon
             If constants::BinaryFlag( Flag, #PB_ListIcon_AlwaysShowSelection ) 
                flags & ~ #PB_ListIcon_AlwaysShowSelection
             EndIf
@@ -13651,8 +13651,8 @@ Module widgets
          SetPadding( *this )
          
          ;
-         If *this\type = #__type_Button Or 
-            *this\type = #__type_ButtonImage
+         If *this\type = #__TYPE_Button Or 
+            *this\type = #__TYPE_ButtonImage
             ;
             If constants::BinaryFlag( Flag, #PB_Button_Toggle )
                If *this\Toggle( )
@@ -13733,22 +13733,22 @@ Module widgets
       EndIf
       
       ;                ;ClearDebugOutput()
-      ;                If *this\Type = #__type_Image
+      ;                If *this\Type = #__TYPE_Image
       ;                   Debug ""+*this\area_align\left +" "+ *this\area_align\top +" "+ *this\area_align\right +" "+ *this\area_align\bottom
       ;                EndIf
       
       
       ; установить флаги текста 
-      If *this\type = #__type_ComboBox Or 
-         *this\type = #__type_Progress Or
-         *this\type = #__type_Text Or
-         *this\type = #__type_Editor Or
-         *this\type = #__type_String Or
-         *this\type = #__type_Button Or *this\type = #__type_ButtonImage Or 
-         *this\type = #__type_Option Or
-         *this\type = #__type_CheckBox Or
-         *this\type = #__type_HyperLink Or 
-         *this\type = #__type_Frame
+      If *this\type = #__TYPE_ComboBox Or 
+         *this\type = #__TYPE_Progress Or
+         *this\type = #__TYPE_Text Or
+         *this\type = #__TYPE_Editor Or
+         *this\type = #__TYPE_String Or
+         *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage Or 
+         *this\type = #__TYPE_Option Or
+         *this\type = #__TYPE_CheckBox Or
+         *this\type = #__TYPE_HyperLink Or 
+         *this\type = #__TYPE_Frame
          
          If *this\text
             If Bool( Not constants::BinaryFlag( *this\flagmask, #__FLAG_TextReadOnly ))
@@ -13851,14 +13851,14 @@ Module widgets
       ;
       SetPadding( *this )
       
-      If *this\type = #__type_CheckBox
+      If *this\type = #__TYPE_CheckBox
          If constants::BinaryFlag( *this\flagmask, #PB_CheckBox_ThreeState )
             *this\flagmask | #__FLAG_threestate 
          Else
             *this\flagmask &~ #__FLAG_threestate 
          EndIf
       EndIf
-      If *this\type = #__type_HyperLink
+      If *this\type = #__TYPE_HyperLink
          If constants::BinaryFlag( *this\flagmask, #PB_HyperLink_Underline )
             *this\flagmask | #__FLAG_nolines 
          Else
@@ -13867,8 +13867,8 @@ Module widgets
       EndIf
       
       ; 
-      If *this\type = #__type_Button Or 
-         *this\type = #__type_ButtonImage
+      If *this\type = #__TYPE_Button Or 
+         *this\type = #__TYPE_ButtonImage
          ;
          If constants::BinaryFlag( *this\flagmask, #PB_Button_Toggle )
             ;Debug *this\flagmask
@@ -13927,16 +13927,16 @@ Module widgets
       Protected result.q
       ;
       ;
-      Protected list_bar = Bool( *this\type = #__type_Tree Or
-                                 *this\type = #__type_ListIcon Or
-                                 *this\type = #__type_ListView Or
-                                 *this\type = #__type_Properties )
+      Protected list_bar = Bool( *this\type = #__TYPE_Tree Or
+                                 *this\type = #__TYPE_ListIcon Or
+                                 *this\type = #__TYPE_ListView Or
+                                 *this\type = #__TYPE_Properties )
       
-      Protected Container = Bool( *this\type = #__type_Container Or
-                                  *this\type = #__type_Panel Or
-                                  *this\type = #__type_ScrollArea Or
-                                  *this\type = #__type_Frame )
-      Container = Bool(*this\type = #__type_Container)
+      Protected Container = Bool( *this\type = #__TYPE_Container Or
+                                  *this\type = #__TYPE_Panel Or
+                                  *this\type = #__TYPE_ScrollArea Or
+                                  *this\type = #__TYPE_Frame )
+      Container = Bool(*this\type = #__TYPE_Container)
       
       ;
       ;\\ get widget flags
@@ -14272,7 +14272,7 @@ Module widgets
                Protected._s_BUTTONS *EnteredButton, *BB1, *BB2, *BB0
                
                ;\\
-               If *this\type = #__type_window
+               If *this\type = #__TYPE_window
                   *BB0 = *this\CloseButton( )
                   *BB1 = *this\MaximizeButton( )
                   *BB2 = *this\MinimizeButton( )
@@ -14291,7 +14291,7 @@ Module widgets
                   
                   If *this\bar
                      *BB0 = *this\bar\button
-                     If *this\type <> #__type_Splitter
+                     If *this\type <> #__TYPE_Splitter
                         *BB1 = *this\bar\button[1]
                         *BB2 = *this\bar\button[2]
                      EndIf
@@ -14384,7 +14384,7 @@ Module widgets
                   If Not a_index( )
                      If Not Leaved( )\anchors
                         If Leaved( )\parent And 
-                           Leaved( )\parent\type = #__type_Splitter
+                           Leaved( )\parent\type = #__TYPE_Splitter
                            ;
                            *parent = Leaved( )\parent
                            While *parent And Not *parent\anchors
@@ -14455,7 +14455,7 @@ Module widgets
                         a_enter( *this, 1)
                      Else
                         If *this\parent And 
-                           *this\parent\type = #__type_Splitter
+                           *this\parent\type = #__TYPE_Splitter
                            ;
                            *parent = *this\parent
                            While *parent And Not *parent\anchors
@@ -15473,7 +15473,7 @@ Module widgets
       Protected._s_ROW *row_pressed = *this\RowPressed( )
       Protected._s_ROW *row_actived = *this\RowFocused( )
       
-      If *this\type = #__type_ListIcon
+      If *this\type = #__TYPE_ListIcon
          mouse_x - *this\inner_x( ) - *this\scroll_x( )
       Else
          mouse_x - *this\inner_x( ) 
@@ -15903,9 +15903,9 @@ Module widgets
             event = #__EVENT_KeyUp
             
             If *this\row
-               If *this\type = #__type_listview Or
-                  *this\type = #__type_Tree Or
-                  *this\type = #__type_ListIcon
+               If *this\type = #__TYPE_listview Or
+                  *this\type = #__TYPE_Tree Or
+                  *this\type = #__TYPE_ListIcon
                   ;
                   DoEvent_KeyRows( *this, event )
                EndIf
@@ -15930,10 +15930,10 @@ Module widgets
          If Not increment
             increment = *this\scroll\increment
          EndIf
-         If *this\type = #__type_ToolBar Or
-            *this\type = #__type_PopupBar Or
-            *this\type = #__type_MenuBar Or
-            *this\type = #__type_TabBar
+         If *this\type = #__TYPE_ToolBar Or
+            *this\type = #__TYPE_PopupBar Or
+            *this\type = #__TYPE_MenuBar Or
+            *this\type = #__TYPE_TabBar
             ;
             If PressedButton( ) = *SB
                If MouseDrag( )
@@ -15943,7 +15943,7 @@ Module widgets
                increment = *this\scroll\increment
             EndIf
             
-         ElseIf *this\type = #__type_Spin
+         ElseIf *this\type = #__TYPE_Spin
             increment = *this\scroll\increment
          EndIf
          
@@ -15958,8 +15958,8 @@ Module widgets
                   *button\mask | #__mask_press 
                   PressedButton( ) = *button
                   ;
-                  If Not ( *this\type = #__type_Track Or
-                           ( *this\type = #__type_Splitter And *button <> *SB ))
+                  If Not ( *this\type = #__TYPE_Track Or
+                           ( *this\type = #__TYPE_Splitter And *button <> *SB ))
                      *button\ColorState( ) = #__s_2
                   EndIf
                   ; Debug "[scroll increment] "+*this\scroll\increment
@@ -15967,7 +15967,7 @@ Module widgets
                   If ( *BB2\mask & #__mask_press And *bar\invert ) Or
                      ( *BB1\mask & #__mask_press And Not *bar\invert )
                      
-                     If *this\type = #__type_Spin 
+                     If *this\type = #__TYPE_Spin 
                         If bar_PageChange( *this, *bar\page\pos - increment )
                            result = #True
                         EndIf
@@ -15981,7 +15981,7 @@ Module widgets
                   ElseIf ( *BB1\mask & #__mask_press And *bar\invert ) Or
                          ( *BB2\mask & #__mask_press And Not *bar\invert )
                      
-                     If *this\type = #__type_Spin 
+                     If *this\type = #__TYPE_Spin 
                         If bar_PageChange( *this, *bar\page\pos + increment )
                            result = #True
                         EndIf
@@ -16006,8 +16006,8 @@ Module widgets
                      
                      ; change color state
                      If PressedButton( )\ColorState( ) = #__s_2 And
-                        Not ( *this\type = #__type_Track Or
-                              ( *this\type = #__type_Splitter And PressedButton( ) <> *SB ))
+                        Not ( *this\type = #__TYPE_Track Or
+                              ( *this\type = #__TYPE_Splitter And PressedButton( ) <> *SB ))
                         
                         If PressedButton( )\mask & #__mask_hover
                            PressedButton( )\ColorState( ) = #__s_1
@@ -16101,7 +16101,7 @@ Module widgets
                         *EnteredTAB\ColorState( ) = #__s_0
                      EndIf
                      ;
-                     If *this\type = #__type_PopupBar 
+                     If *this\type = #__TYPE_PopupBar 
                         If *EnteredTAB\checked
                            *EnteredTAB\checked = 0
                         EndIf
@@ -16134,7 +16134,7 @@ Module widgets
                         If is_bar_( *this ) 
                            ;\\ change focused Tab
                            If *activeTAB <> *tab
-                              If *this\type = #__type_MenuBar ;Or Not ToolBar
+                              If *this\type = #__TYPE_MenuBar ;Or Not ToolBar
                                  If *activeTAB
                                     *activeTAB\mask &~ #__mask_active
                                     *activeTAB = *tab
@@ -16158,7 +16158,7 @@ Module widgets
                                     *activeTAB\checked = 1
                                  EndIf
                               EndIf
-                              If *this\type = #__type_PopupBar 
+                              If *this\type = #__TYPE_PopupBar 
                                  If *activeTAB
                                     ; *activeTAB\mask &~ #__mask_active
                                     *activeTAB\checked = 0
@@ -16170,7 +16170,7 @@ Module widgets
                                  *activeTAB\checked = 1
                               EndIf
                            Else
-                              If *this\type = #__type_PopupBar 
+                              If *this\type = #__TYPE_PopupBar 
                                  If *activeTAB\checked = 0
                                     *activeTAB\checked = 1
                                     ; Debug "----- popup enter "
@@ -16187,7 +16187,7 @@ Module widgets
                      ;\\ при наведении на таб панелья 
                      ; удобно когда нужно показать подсказку
                      If is_integral_( *this )
-                        If *this\parent\type = #__type_panel
+                        If *this\parent\type = #__TYPE_panel
                            Post( *this, #__EVENT_StatusChange, *tab\index, *tab )
                         EndIf
                      EndIf
@@ -16197,7 +16197,7 @@ Module widgets
                   ; 
                   If ToolBar And PopupBar() And *activeTAB And *activeTAB\childrens
                      ; Проверяем, что попап не принадлежит ComboBox
-                     If Not (PopupBar()\parent\parent And PopupBar()\parent\parent\type = #__type_ComboBox)
+                     If Not (PopupBar()\parent\parent And PopupBar()\parent\parent\type = #__TYPE_ComboBox)
                         
                         ; Вычисляем экранные координаты только тогда, когда попап реально открыт
                         Protected GadgetY = DPIScaledY(GadgetY(*this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate))
@@ -16240,7 +16240,7 @@ Module widgets
                   If ToolBar
                      Protected GadgetY1 = DPIScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
                      Protected GadgetX1 = DPIScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
-                     If PopupBar( ) And Not ( PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__type_ComboBox )
+                     If PopupBar( ) And Not ( PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__TYPE_ComboBox )
                         If is_inside_( GadgetY1 +*this\y, *this\height + PopupBar()\height , DesktopMouseY( ) ) And
                            is_inside_( GadgetX1 +*this\x, *activeTAB\x+*activeTAB\width, DesktopMouseX( ) )
                         Else
@@ -16269,7 +16269,7 @@ Module widgets
       ;
       If event = #__EVENT_Down
          If MouseButtons( ) & #PB_Canvas_LeftButton
-            If *this\type = #__type_ToolBar
+            If *this\type = #__TYPE_ToolBar
                If *EnteredTAB And *EnteredTAB\childrens  
                   ToolBar ! 1
                   If ToolBar
@@ -16297,7 +16297,7 @@ Module widgets
             EndIf
             
             ;If *this\tab
-            If PopupBar( ) And Not ( PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__type_ComboBox )
+            If PopupBar( ) And Not ( PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__TYPE_ComboBox )
                If PopupBar( )\menu\display And Not ( ToolBar And *EnteredTAB And *EnteredTAB\childrens)
                   If test_display
                      Debug "6?   " + HidePopupBar( PopupBar( ) )
@@ -16309,7 +16309,7 @@ Module widgets
                EndIf
             EndIf
             
-            If *this\type = #__type_MenuBar
+            If *this\type = #__TYPE_MenuBar
                If *EnteredTAB And Not *EnteredTAB\mask & #__mask_disabled 
                   If Not *activeTAB
                      If *activeTAB <> *EnteredTAB
@@ -16373,7 +16373,7 @@ Module widgets
                EndIf
                
                ;\\
-               If *this\type = #__type_TabBar  
+               If *this\type = #__TYPE_TabBar  
                   If Not MouseDrag( )
                      If Not *EnteredTAB\mask & #__mask_disabled
                         If GetState( *this ) <> *EnteredTAB\index 
@@ -16529,8 +16529,8 @@ Module widgets
       
       ;\\ TEMP [before post-widget-events drop]
       If *this\row
-         If *this\type = #__type_Tree Or
-            *this\type = #__type_ListView
+         If *this\type = #__TYPE_Tree Or
+            *this\type = #__TYPE_ListView
             If *this\RowEntered( ) And
                *this\RowEntered( )\mask & #__mask_hover
                ;
@@ -16601,8 +16601,8 @@ Module widgets
          EndSelect
          
          ;\\ items events
-         If *this\type = #__type_Editor Or
-            *this\type = #__type_String
+         If *this\type = #__TYPE_Editor Or
+            *this\type = #__TYPE_String
             
             DoEvent_Lines( *this, event, CanvasMouseX( ), CanvasMouseY( ) )
             
@@ -16626,7 +16626,7 @@ Module widgets
          
          ;\\ do widgets events
          Select *this\type
-            Case #__type_Window
+            Case #__TYPE_Window
                If event = #__EVENT_Focus
                   *this\ColorState( ) = #__s_2
                EndIf
@@ -16681,7 +16681,7 @@ Module widgets
                   EndIf
                EndIf
                
-            Case #__type_Button, #__type_ButtonImage
+            Case #__TYPE_Button, #__TYPE_ButtonImage
                If Not ( *this\Toggle( ) And *this\Toggle( )\checked)
                   Select event
                      Case #__EVENT_MouseEnter
@@ -16704,8 +16704,8 @@ Module widgets
                               *this\ColorState( ) = #__s_2
                            EndIf
                            
-                           If *this\picture[#__image_Pressed]\imageID
-                              *this\picture = *this\picture[#__image_Pressed]
+                           If *this\picture[#__IMAGE_Pressed]\imageID
+                              *this\picture = *this\picture[#__IMAGE_Pressed]
                            EndIf
                         EndIf
                         
@@ -16718,8 +16718,8 @@ Module widgets
                            EndIf
                         EndIf
                         
-                        If *this\picture[#__image_Released]\imageID
-                           *this\picture = *this\picture[#__image_Released]
+                        If *this\picture[#__IMAGE_Released]\imageID
+                           *this\picture = *this\picture[#__IMAGE_Released]
                         EndIf
                         
                   EndSelect
@@ -16735,7 +16735,7 @@ Module widgets
                   EndIf
                EndIf
                
-            Case #__type_Option
+            Case #__TYPE_Option
                If event = #__EVENT_LeftClick Or
                   event = #__EVENT_left2Click Or
                   event = #__EVENT_left3Click
@@ -16745,7 +16745,7 @@ Module widgets
                   EndIf
                EndIf
                
-            Case #__type_CheckBox
+            Case #__TYPE_CheckBox
                If event = #__EVENT_LeftClick Or
                   event = #__EVENT_left2Click Or
                   event = #__EVENT_left3Click
@@ -16755,7 +16755,7 @@ Module widgets
                   EndIf
                EndIf
                
-            Case #__type_HyperLink
+            Case #__TYPE_HyperLink
                If event = #__EVENT_Down
                   If *this\cursor[2]
                      If MouseEnter( *this, 2 )
@@ -16780,7 +16780,7 @@ Module widgets
                   EndIf
                EndIf
                
-            Case #__type_String
+            Case #__TYPE_String
                If is_integral_( *this )
                   If event = #__EVENT_Change
                      If keyboard( )\input
@@ -16795,7 +16795,7 @@ Module widgets
                   EndIf
                EndIf
                
-            Case #__type_Tree, #__type_ListView, #__type_ListIcon
+            Case #__TYPE_Tree, #__TYPE_ListView, #__TYPE_ListIcon
                If event = #__EVENT_Change
                   If *this\RowFocused( )
                      If *this\RowFocused( )\mask & #__mask_active
@@ -16867,7 +16867,7 @@ Module widgets
             If PopupBar( )
                If PopupBar( )\root\parent <> *this And
                   PopupBar( )\root\parent <> *this\root\parent And 
-                  PopupBar( )\root\parent\type = #__type_ComboBox
+                  PopupBar( )\root\parent\type = #__TYPE_ComboBox
                   ;
                   If DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent ) < 0
                      PopupBar( ) = 0
@@ -16876,7 +16876,7 @@ Module widgets
             EndIf
             ;
             ; показываем/скрываем всплывающее меню комбобокса
-            If *this\type = #__type_ComboBox
+            If *this\type = #__TYPE_ComboBox
                If *this\ComboBar( )
                   If MouseButtons( ) & #PB_Canvas_LeftButton
                      If DisplayPopupBar( *this\ComboBar( ), *this ) < 0
@@ -16893,7 +16893,7 @@ Module widgets
             If PopupBar( )
                If PopupBar( )\root\parent <> *this And
                   PopupBar( )\root\parent = *this\root\parent And 
-                  PopupBar( )\root\parent\type = #__type_ComboBox
+                  PopupBar( )\root\parent\type = #__TYPE_ComboBox
                   ;
                   If MouseEnter( PopupBar( ), 2)
                      If DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent ) < 0
@@ -16925,7 +16925,7 @@ Module widgets
          ElseIf event = #__EVENT_LostFocus
             AddEvents( *this, event, *button, *data )
          Else
-            If *this\child And *this\parent And *this\parent\tabbar And *this\parent\tabbar\type = #__type_tabbar
+            If *this\child And *this\parent And *this\parent\tabbar And *this\parent\tabbar\type = #__TYPE_tabbar
                Post( *this\parent, event, *button, *data )
             Else
                Post( *this, event, *button, *data )
@@ -17459,7 +17459,7 @@ Module widgets
                            EndIf
                            
                         Case #PB_Shortcut_Right
-                           If *keywidget\type = #__type_panel
+                           If *keywidget\type = #__TYPE_panel
                               Protected *first._s_WIDGET = GetPosition( *keywidget, #PB_List_First, GetState( *keywidget ))
                               If *first
                                  a_set( *first )  
@@ -17504,10 +17504,10 @@ Module widgets
             event = #__EVENT_RightDown
             
             If Entered( ) And Not Entered( )\anchors
-               If Entered( )\picture[#__image_BackGround]\imageID And
-                  ImageDepth( Entered( )\picture[#__image_BackGround]\image, #PB_Image_OriginalDepth ) > 31  
+               If Entered( )\picture[#__IMAGE_BackGround]\imageID And
+                  ImageDepth( Entered( )\picture[#__IMAGE_BackGround]\image, #PB_Image_OriginalDepth ) > 31  
                   
-                  If StartDrawing( ImageOutput(  Entered( )\picture[#__image_BackGround]\image ) )
+                  If StartDrawing( ImageOutput(  Entered( )\picture[#__IMAGE_BackGround]\image ) )
                      DrawingMode( #PB_2DDrawing_AlphaChannel )
                      
                      If Not Alpha( Point( CanvasMouseX( ) - Entered( )\inner_x( ), CanvasMouseY( ) - Entered( )\inner_y( ) ) )
@@ -17604,7 +17604,7 @@ Module widgets
                         MousePressX( ) - Entered( )\bar\thumb\pos
                         MousePressY( ) - Entered( )\bar\thumb\pos
                         ;                            ;
-                        ;                            If Entered( )\type = #__type_Splitter
+                        ;                            If Entered( )\type = #__TYPE_Splitter
                         ;                               If Entered( )\bar\vertical
                         ;                                  MousePressY( ) - Entered( )\bar\min[1]
                         ;                               Else
@@ -17681,7 +17681,7 @@ Module widgets
                      EndSelect
                      
                      ;\\
-                     If Entered( )\type = #__type_window
+                     If Entered( )\type = #__TYPE_window
                         Select a_index( )
                            Case #__a_right, #__a_right_top
                               MousePressX( ) + Entered( )\fs * 2 + Entered( )\fs[1] + Entered( )\fs[3]
@@ -18561,9 +18561,9 @@ Module widgets
    EndProcedure
    
    Procedure   UpdateDraw_Content( *this._s_WIDGET )
-      Protected indent = DPIScaled(10)
+      Protected indent = DPIScaled(6)
       ;
-      If *this\text\multiLine Or ( *this\type = #__type_Editor Or *this\type = #__type_String )
+      If *this\text\multiLine Or ( *this\type = #__TYPE_Editor Or *this\type = #__TYPE_String )
          If *this\row
             UpdateDraw_MultiLineText( *this, indent )
          EndIf
@@ -18621,7 +18621,7 @@ Module widgets
                      *row\height = *row\text\height + 3
                   CompilerEndIf
                CompilerCase #PB_OS_Windows
-                  If *this\type = #__type_ListView
+                  If *this\type = #__TYPE_ListView
                      *row\height = *row\text\height
                   Else
                      *row\height = *row\text\height + 2
@@ -18725,7 +18725,7 @@ Module widgets
             *this\scroll_height( ) + *row\height + Bool(*row\rindex <> *this\countitems - 1) * Bool(*this\flagmask & #__FLAG_gridLines)
             
             ;\\ horizontal scroll max value
-            If *this\type = #__type_ListIcon
+            If *this\type = #__TYPE_ListIcon
                *row\picture\x - DPIScaled(8)
                If *row\checkbox
                   *row\checkbox\x - box_size
@@ -18977,7 +18977,7 @@ Module widgets
    
    Procedure   Draw_BackGround( *this._s_WIDGET, state )
       If *this\color\back <> - 1
-         If *this\type = #__type_Window
+         If *this\type = #__TYPE_Window
             draw_mode_alpha_( #PB_2DDrawing_Default )
             If *this\color\back[state * *this\ColorState( )]
                If *this\fs > *this\round / 3 And *this\round
@@ -19003,15 +19003,15 @@ Module widgets
       EndIf
       
       ;\\ draw background
-      If *this\picture[#__image_BackGround]\imageID
+      If *this\picture[#__IMAGE_BackGround]\imageID
          Clip( *this, [#__c_idraw] )
-         draw_image_( *this, *this\inner_x( ), *this\Inner_y( ), [#__image_BackGround] )
+         draw_image_( *this, *this\inner_x( ), *this\Inner_y( ), [#__IMAGE_BackGround] )
          Clip( *this, [#__c_draw] )
       EndIf
    EndProcedure
    
    Procedure   Draw_Frames( *this._s_WIDGET, state )
-      If *this\type = #__type_Window
+      If *this\type = #__TYPE_Window
          ; чтобы закруглять только у окна с титлебаром
          Protected gradient = 1
          Protected r = DPIScaled(13)
@@ -19220,11 +19220,11 @@ Module widgets
                If constants::BinaryFlag( *this\flagmask, #__FLAG_BorderFlat )
                   ;                   If *this\inner_width( ) And 
                   ;                      *this\inner_height( ) 
-                  ;                      ;If *this\type <> #__type_Panel
+                  ;                      ;If *this\type <> #__TYPE_Panel
                   ;                         draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, $fff00fff);*this\color\frame )
                   ;                      ;EndIf
                   ;                   EndIf
-                  ;                   If *this\type = #__type_Container
+                  ;                   If *this\type = #__TYPE_Container
                   If Not ( *this\fs[1] Or *this\fs[2] Or *this\fs[3] Or *this\fs[4] )
                      draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[state] )
                   EndIf
@@ -19322,10 +19322,10 @@ Module widgets
       ;\\ check&option box draw
       If *this\Toggle( )
          Protected _box_type_, _box_x_, _box_y_
-         If #__type_Option = *this\type
+         If #__TYPE_Option = *this\type
             _box_type_ = 1
          EndIf
-         If #__type_CheckBox = *this\type
+         If #__TYPE_CheckBox = *this\type
             _box_type_ = 3
          EndIf
          If _box_type_
@@ -19380,7 +19380,7 @@ Module widgets
                draw_roundbox_(*this\frame_x( )-1+*this\frame_width( )-*this\round*2, *this\frame_y( )-1+*this\frame_height( )-*this\round*2, *this\round*2, *this\round*2, *this\round, *this\round, $FFFFFFFF )
             EndIf
             
-            ;                If *this\type <> #__type_panel And *this\type <> #__type_Frame
+            ;                If *this\type <> #__TYPE_panel And *this\type <> #__TYPE_Frame
             ;                   draw_mode_alpha_( #PB_2DDrawing_Outlined )
             ;                   For i = 0 To *this\fs - 1
             ;                      draw_roundbox_( *this\frame_x( ) + i, *this\frame_y( ) + i, *this\frame_width( ) - i * 2, *this\frame_height( ) - i * 2, *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
@@ -19405,15 +19405,15 @@ Module widgets
          
          ;
          If *this\picture\imageID Or
-            *this\picture[#__image_BackGround]\imageID
+            *this\picture[#__IMAGE_BackGround]\imageID
             
             draw_mode_alpha_( #PB_2DDrawing_Default )
          EndIf
          
          ;Clip( *this, [#__c_idraw] )
          ; background img draw
-         If *this\picture[#__image_BackGround]\imageID
-            draw_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__image_BackGround] )
+         If *this\picture[#__IMAGE_BackGround]\imageID
+            draw_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__IMAGE_BackGround] )
          EndIf
          
          ; scroll img draw
@@ -19450,11 +19450,11 @@ Module widgets
             If constants::BinaryFlag( *this\flagmask, #__FLAG_BorderFlat )
                ;                   If *this\inner_width( ) And 
                ;                      *this\inner_height( ) 
-               ;                      ;If *this\type <> #__type_Panel
+               ;                      ;If *this\type <> #__TYPE_Panel
                ;                         draw_roundbox_( *this\frame_x( )+*this\fs[1], *this\frame_y( )+*this\fs[2], *this\frame_width( )-*this\fs[1]-*this\fs[3], *this\frame_height( )-*this\fs[2]-*this\fs[4], *this\round, *this\round, $fff00fff);*this\color\frame )
                ;                      ;EndIf
                ;                   EndIf
-               ;                   If *this\type = #__type_Container
+               ;                   If *this\type = #__TYPE_Container
                If Not ( *this\fs[1] Or *this\fs[2] Or *this\fs[3] Or *this\fs[4] )
                   draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame )
                EndIf
@@ -19512,14 +19512,14 @@ Module widgets
       X = *this\inner_x( ) + *this\scroll_x( )
       Y = *this\inner_y( ) + *this\scroll_y( )
       
-      If *this\type = #__type_Button Or *this\type = #__type_ButtonImage
+      If *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage
          If *this\Toggle( ) And *this\Toggle( )\checked
             state = #__s_2
          EndIf
          
          ;\\ draw background
-         If *this\picture[#__image_BackGround]\imageID
-            draw_image_( *this, X, Y, [#__image_BackGround] )
+         If *this\picture[#__IMAGE_BackGround]\imageID
+            draw_image_( *this, X, Y, [#__IMAGE_BackGround] )
          Else
             If *this\color\back <> - 1
                If *this\color\fore <> - 1
@@ -19533,7 +19533,7 @@ Module widgets
          EndIf
       EndIf
       
-      If *this\type = #__type_ComboBox 
+      If *this\type = #__TYPE_ComboBox 
          If state = #__s_3
             state = 0
          EndIf
@@ -19557,7 +19557,7 @@ Module widgets
       ;          EndIf
       
       ;\\ draw frame defaul focus widget
-      If *this\type = #__type_Button Or *this\type = #__type_ButtonImage
+      If *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage
          If *this\deffocus 
             Protected z = DPIScaled(3)
             Protected c.l
@@ -19657,7 +19657,7 @@ Module widgets
          ;\\ Draw selector back
          If *i\color\back[state] <> - 1
             draw_mode_alpha_( #PB_2DDrawing_Default )
-            If *this\type = #__type_ListIcon
+            If *this\type = #__TYPE_ListIcon
                draw_roundbox_( X - _scroll_x_, Y, *i\width, *i\height, *i\round, *i\round, *i\color\back[state] )
             Else
                draw_roundbox_( X, Y, *i\width, *i\height, *i\round, *i\round, *i\color\back[state] )
@@ -19681,7 +19681,7 @@ Module widgets
          ;\\ Horizontal line
          If gridlines
             draw_mode_alpha_( #PB_2DDrawing_Default )
-            If *this\type = #__type_ListIcon
+            If *this\type = #__TYPE_ListIcon
                draw_box_( X - _scroll_x_, Y + *i\height, *i\width, gridlines, *this\LineColor )
             Else
                draw_box_( X, Y + *i\height, *i\width, gridlines, *this\LineColor )
@@ -19691,7 +19691,7 @@ Module widgets
          ;\\ Draw selector frame
          If *i\color\frame[state]
             __draw_mode( #PB_2DDrawing_Outlined )
-            If *this\type = #__type_ListIcon
+            If *this\type = #__TYPE_ListIcon
                draw_roundbox_( X - _scroll_x_, Y, *i\width, *i\height, *i\round, *i\round, *i\color\frame[state] )
             Else
                draw_roundbox_( X, Y, *i\width, *i\height, *i\round, *i\round, *i\color\frame[state] )
@@ -20285,15 +20285,15 @@ Module widgets
             *this\ResizeChange( ) Or 
             *this\picture\change
             
-            If *this\type = #__type_Editor Or
-               *this\type = #__type_String Or 
-               *this\type = #__type_Text Or
-               *this\type = #__type_Button Or *this\type = #__type_ButtonImage Or *this\type = #__type_Image Or
-               *this\type = #__type_Option Or
-               *this\type = #__type_Progress Or
-               *this\type = #__type_CheckBox Or
-               *this\type = #__type_HyperLink Or
-               *this\type = #__type_ComboBox 
+            If *this\type = #__TYPE_Editor Or
+               *this\type = #__TYPE_String Or 
+               *this\type = #__TYPE_Text Or
+               *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage Or *this\type = #__TYPE_Image Or
+               *this\type = #__TYPE_Option Or
+               *this\type = #__TYPE_Progress Or
+               *this\type = #__TYPE_CheckBox Or
+               *this\type = #__TYPE_HyperLink Or
+               *this\type = #__TYPE_ComboBox 
                
                ;
                UpdateDraw_Content( *this )
@@ -20324,52 +20324,52 @@ Module widgets
                   ;
                   ;\\ draw widgets
                   Select *this\type
-                     Case #__type_Root       : Draw_Container( *this )
-                     Case #__type_MDI        : Draw_Container( *this )
-                     Case #__type_Container  : Draw_Container( *this )
-                     Case #__type_ScrollArea : Draw_Container( *this )
-                     Case #__type_Panel      : Draw_Container( *this )
-                     Case #__type_image      : Draw_Container( *this )
+                     Case #__TYPE_Root       : Draw_Container( *this )
+                     Case #__TYPE_MDI        : Draw_Container( *this )
+                     Case #__TYPE_Container  : Draw_Container( *this )
+                     Case #__TYPE_ScrollArea : Draw_Container( *this )
+                     Case #__TYPE_Panel      : Draw_Container( *this )
+                     Case #__TYPE_image      : Draw_Container( *this )
                         
-                     Case #__type_Window     
+                     Case #__TYPE_Window     
                         Draw_BackGround( *this, 0 )
                         ; Draw_Content( *this, *this\ColorState( ))
                         Draw_Frames( *this, *this\ColorState( ) )
                         
-                     Case #__type_Tree       : Draw_Tree( *this )
-                     Case #__type_Properties : Draw_Tree( *this )
-                     Case #__type_ListView   : Draw_Tree( *this )
-                     Case #__type_ListIcon   : Draw_ListIcon( *this )
+                     Case #__TYPE_Tree       : Draw_Tree( *this )
+                     Case #__TYPE_Properties : Draw_Tree( *this )
+                     Case #__TYPE_ListView   : Draw_Tree( *this )
+                     Case #__TYPE_ListIcon   : Draw_ListIcon( *this )
                         
-                     Case #__type_Editor     : Draw_Editor( *this )
-                     Case #__type_String     
+                     Case #__TYPE_Editor     : Draw_Editor( *this )
+                     Case #__TYPE_String     
                         ;                            If *this\text\multiline
                         Draw_Editor( *this )
                         ;                            Else
                         ;                               Draw_Button( *this )
                         ;                            EndIf
                         
-                     Case #__type_Text       : Draw_Button( *this )
-                     Case #__type_ButtonImage: Draw_Button( *this )
-                     Case #__type_Button     : Draw_Button( *this )
-                     Case #__type_Option     : Draw_Button( *this )
-                     Case #__type_CheckBox   : Draw_Button( *this )
-                     Case #__type_HyperLink  : Draw_Button( *this )
-                     Case #__type_ComboBox   : Draw_Button( *this )
+                     Case #__TYPE_Text       : Draw_Button( *this )
+                     Case #__TYPE_ButtonImage: Draw_Button( *this )
+                     Case #__TYPE_Button     : Draw_Button( *this )
+                     Case #__TYPE_Option     : Draw_Button( *this )
+                     Case #__TYPE_CheckBox   : Draw_Button( *this )
+                     Case #__TYPE_HyperLink  : Draw_Button( *this )
+                     Case #__TYPE_ComboBox   : Draw_Button( *this )
                         
-                     Case #__type_Scroll     : bar_draw_scroll( *this )
-                     Case #__type_Track      : bar_draw_track( *this )
-                     Case #__type_Splitter   : bar_draw_splitter( *this )
-                     Case #__type_Progress   : bar_draw_progress( *this )
-                     Case #__type_Spin       : bar_draw_spin( *this )
+                     Case #__TYPE_Scroll     : bar_draw_scroll( *this )
+                     Case #__TYPE_Track      : bar_draw_track( *this )
+                     Case #__TYPE_Splitter   : bar_draw_splitter( *this )
+                     Case #__TYPE_Progress   : bar_draw_progress( *this )
+                     Case #__TYPE_Spin       : bar_draw_spin( *this )
                         
-                     Case #__type_MenuBar,
-                          #__type_PopupBar,
-                          #__type_ToolBar,
-                          #__type_TabBar     : bar_draw_tab( *this )
+                     Case #__TYPE_MenuBar,
+                          #__TYPE_PopupBar,
+                          #__TYPE_ToolBar,
+                          #__TYPE_TabBar     : bar_draw_tab( *this )
                         
                         ; Draw frames
-                     Case #__type_Frame
+                     Case #__TYPE_Frame
                         ;                         If *this\fs
                         ;                            
                         ;                            draw_mode_alpha_( #PB_2DDrawing_Outlined )
@@ -20937,11 +20937,11 @@ Module widgets
       Protected.b flag_AutoSize = constants::BinaryFlag( Flag, #__FLAG_autosize )
       
       ;
-      ;          If Type = #__type_Container Or
-      ;             Type = #__type_ScrollArea Or
-      ;             Type = #__type_Panel Or
-      ;             Type = #__type_MDI Or
-      ;             Type = #__type_Frame
+      ;          If Type = #__TYPE_Container Or
+      ;             Type = #__TYPE_ScrollArea Or
+      ;             Type = #__TYPE_Panel Or
+      ;             Type = #__TYPE_MDI Or
+      ;             Type = #__TYPE_Frame
       ;             Protected *this._s_PARENT
       ;             If *root And flag_autosize And
       ;                Not ListSize( widgets( ) )
@@ -20971,15 +20971,15 @@ Module widgets
       ;          EndIf
       
       
-      If Type = #__type_MenuBar Or
-         Type = #__type_PopupBar Or
-         Type = #__type_ToolBar Or
-         Type = #__type_TabBar Or
-         Type = #__type_Scroll Or
-         Type = #__type_Progress Or
-         Type = #__type_Track Or
-         Type = #__type_Splitter Or
-         Type = #__type_Spin
+      If Type = #__TYPE_MenuBar Or
+         Type = #__TYPE_PopupBar Or
+         Type = #__TYPE_ToolBar Or
+         Type = #__TYPE_TabBar Or
+         Type = #__TYPE_Scroll Or
+         Type = #__TYPE_Progress Or
+         Type = #__TYPE_Track Or
+         Type = #__TYPE_Splitter Or
+         Type = #__TYPE_Spin
          
          *this\bar.allocate( BAR )
       EndIf
@@ -20989,19 +20989,19 @@ Module widgets
       
       ;
       If Not *this\Toggle( )
-         If Type = #__type_Button Or 
-            Type = #__type_ButtonImage
+         If Type = #__TYPE_Button Or 
+            Type = #__TYPE_ButtonImage
             ;
             If constants::BinaryFlag( Flag, #PB_Button_Toggle )
                *this\Toggle( ).allocate( BOX )
             EndIf
          EndIf
-         If Type = #__type_CheckBox Or Type = #__type_Option
+         If Type = #__TYPE_CheckBox Or Type = #__TYPE_Option
             *this\Toggle( ).allocate( BOX )
-            If Type = #__type_CheckBox 
+            If Type = #__TYPE_CheckBox 
                *this\Toggle( )\round  = dpi_scale_two
             EndIf
-            If Type = #__type_Option
+            If Type = #__TYPE_Option
                *this\Toggle( )\round  = size/2
             EndIf
             *this\Toggle( )\width = size
@@ -21011,23 +21011,23 @@ Module widgets
       EndIf
       
       ;
-      If Type = #__type_Splitter
+      If Type = #__TYPE_Splitter
          *this\bar\vertical = Bool( Not constants::BinaryFlag( Flag, #__FLAG_Vertical ) And 
                                     Not constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
          *this\bar\invert   = constants::BinaryFlag( Flag, #__FLAG_Invert )
       EndIf
-      If Type = #__type_Progress
+      If Type = #__TYPE_Progress
          *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__FLAG_Vertical ) Or
                                     constants::BinaryFlag( Flag, #PB_ProgressBar_Vertical ))
          *this\bar\invert = constants::BinaryFlag( Flag, #__FLAG_Invert )
          
       EndIf
-      If Type = #__type_Scroll
+      If Type = #__TYPE_Scroll
          *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__FLAG_Vertical ) Or 
                                     constants::BinaryFlag( Flag, #PB_ScrollBar_Vertical ))
          *this\bar\invert   = constants::BinaryFlag( Flag, #__FLAG_Invert )
       EndIf
-      If Type = #__type_Track
+      If Type = #__TYPE_Track
          *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__FLAG_Vertical ) Or
                                     constants::BinaryFlag( Flag, #PB_TrackBar_Vertical ))
          
@@ -21037,7 +21037,7 @@ Module widgets
             *this\bar\invert = constants::BinaryFlag( Flag, #__FLAG_Invert )
          EndIf
       EndIf
-      If Type = #__type_Spin
+      If Type = #__TYPE_Spin
          If Flag & #__spin_Plus
             *this\bar\vertical = constants::BinaryFlag( Flag, #__FLAG_Vertical )
          Else
@@ -21047,10 +21047,10 @@ Module widgets
          *this\bar\invert = constants::BinaryFlag( Flag, #__FLAG_Invert )
          *this\bar\mirror = constants::BinaryFlag( Flag, #__spin_mirror )
       EndIf
-      If Type = #__type_MenuBar Or
-         Type = #__type_PopupBar Or
-         Type = #__type_ToolBar Or
-         Type = #__type_TabBar 
+      If Type = #__TYPE_MenuBar Or
+         Type = #__TYPE_PopupBar Or
+         Type = #__TYPE_ToolBar Or
+         Type = #__TYPE_TabBar 
          ;
          *this\bar\vertical = constants::BinaryFlag( Flag, #__FLAG_Vertical )
          *this\bar\invert   = constants::BinaryFlag( Flag, #__FLAG_Invert )
@@ -21067,30 +21067,30 @@ Module widgets
                  Flag & #__FLAG_Top Or
                  Flag & #__FLAG_Bottom)
             
-            If Type = #__type_Spin 
+            If Type = #__TYPE_Spin 
                If Flag & #__spin_Plus
                   Flag | #__FLAG_Center
                Else
                   Flag | #__FLAG_Left
                EndIf
                
-            ElseIf Type = #__type_Text Or
-                   Type = #__type_Image Or
-                   Type = #__type_Editor
+            ElseIf Type = #__TYPE_Text Or
+                   Type = #__TYPE_Image Or
+                   Type = #__TYPE_Editor
                
                Flag | #__FLAG_Left | #__FLAG_Top
                
-            ElseIf Type = #__type_Button Or 
-                   Type = #__type_ButtonImage Or 
-                   Type = #__type_Progress Or
-                   Type = #__type_HyperLink
+            ElseIf Type = #__TYPE_Button Or 
+                   Type = #__TYPE_ButtonImage Or 
+                   Type = #__TYPE_Progress Or
+                   Type = #__TYPE_HyperLink
                
                Flag | #__FLAG_Center
                
-            ElseIf Type = #__type_ComboBox Or 
-                   Type = #__type_String Or
-                   Type = #__type_Option Or
-                   Type = #__type_CheckBox
+            ElseIf Type = #__TYPE_ComboBox Or 
+                   Type = #__TYPE_String Or
+                   Type = #__TYPE_Option Or
+                   Type = #__TYPE_CheckBox
                
                Flag | #__FLAG_Left
             EndIf
@@ -21102,17 +21102,17 @@ Module widgets
                Flag & #__FLAG_TextMultiLine Or 
                Flag & #__FLAG_TextWordWrap )
          ;
-         If Type = #__type_Text
+         If Type = #__TYPE_Text
             Flag | #__FLAG_TextWordWrap
-         ElseIf Type = #__type_Editor
+         ElseIf Type = #__TYPE_Editor
             Flag | #__FLAG_TextMultiLine
          EndIf
          
          ; set dafault multiline text
          If Text
-            If Type = #__type_Option Or
-               Type = #__type_CheckBox Or
-               Type = #__type_HyperLink
+            If Type = #__TYPE_Option Or
+               Type = #__TYPE_CheckBox Or
+               Type = #__TYPE_HyperLink
                
                If CountString( Text, #LF$ )
                   Flag | #__FLAG_TextMultiLine
@@ -21123,11 +21123,11 @@ Module widgets
       
       
       ; set default lines & buttons show
-      If Type = #__type_Tree Or
-         Type = #__type_ListView Or
-         Type = #__type_ListIcon Or
-         Type = #__type_ExplorerList Or
-         Type = #__type_Properties
+      If Type = #__TYPE_Tree Or
+         Type = #__TYPE_ListView Or
+         Type = #__TYPE_ListIcon Or
+         Type = #__TYPE_ExplorerList Or
+         Type = #__TYPE_Properties
          ;
          If constants::BinaryFlag( Flag, #__FLAG_nolines )
             Flag &~ #__FLAG_nolines
@@ -21144,7 +21144,7 @@ Module widgets
       
       ;\\ set default border & frame size
       If is_integral_( *this )
-         If Type = #__type_Scroll
+         If Type = #__TYPE_Scroll
             *this\fs = 0
          Else
             *this\fs = 0
@@ -21160,21 +21160,21 @@ Module widgets
             *this\fs = 0
          Else
             ; default border
-            If Type = #__type_Panel Or
-               Type = #__type_Editor Or
-               Type = #__type_String Or
-               Type = #__type_ScrollArea Or
-               Type = #__type_ListView Or
-               Type = #__type_ListIcon Or
-               Type = #__type_Tree 
+            If Type = #__TYPE_Panel Or
+               Type = #__TYPE_Editor Or
+               Type = #__TYPE_String Or
+               Type = #__TYPE_ScrollArea Or
+               Type = #__TYPE_ListView Or
+               Type = #__TYPE_ListIcon Or
+               Type = #__TYPE_Tree 
                
                *this\fs = 2
             EndIf
-            If Type = #__type_Container Or
-               Type = #__type_Spin Or
-               Type = #__type_Button Or Type = #__type_ButtonImage Or
-               Type = #__type_ComboBox Or
-               Type = #__type_ExplorerList 
+            If Type = #__TYPE_Container Or
+               Type = #__TYPE_Spin Or
+               Type = #__TYPE_Button Or Type = #__TYPE_ButtonImage Or
+               Type = #__TYPE_ComboBox Or
+               Type = #__TYPE_ExplorerList 
                
                *this\fs = 1
             EndIf
@@ -21196,7 +21196,7 @@ Module widgets
          ;\\
          If flag_autosize
             If *parent <> *this
-               If *parent\type <> #__type_Splitter
+               If *parent\type <> #__TYPE_Splitter
                   *this\autosize = 1
                   ; set transparent parent
                   *parent\color\back   = - 1
@@ -21221,13 +21221,13 @@ Module widgets
       CountType( *this, 1 )
       
       ;\\ - Create Texts
-      If *this\type = #__type_Text Or
-         *this\type = #__type_Editor Or
-         *this\type = #__type_String Or
-         *this\type = #__type_Button Or *this\type = #__type_ButtonImage Or
-         *this\type = #__type_Option Or
-         *this\type = #__type_CheckBox Or
-         *this\type = #__type_HyperLink
+      If *this\type = #__TYPE_Text Or
+         *this\type = #__TYPE_Editor Or
+         *this\type = #__TYPE_String Or
+         *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage Or
+         *this\type = #__TYPE_Option Or
+         *this\type = #__TYPE_CheckBox Or
+         *this\type = #__TYPE_HyperLink
          
          *this\row.allocate( ROWS )
          
@@ -21237,18 +21237,18 @@ Module widgets
          
          *this\lineColor = $FFC0C0C0
          
-         If Type = #__type_Editor
+         If Type = #__TYPE_Editor
             *this\row\sellastsize = constants::BinaryFlag( Flag, #__FLAG_RowFullSelect, #False ) * DPIScaled(7)
          EndIf
-         If *this\type = #__type_Text
+         If *this\type = #__TYPE_Text
             *this\color\fore  = - 1
             *this\color\back  = _get_colors_( )\fore
             *this\color\front = _get_colors_( )\front
             *this\color\frame = _get_colors_( )\frame
          EndIf
-         If *this\type = #__type_Option Or
-            *this\type = #__type_CheckBox Or
-            *this\type = #__type_HyperLink
+         If *this\type = #__TYPE_Option Or
+            *this\type = #__TYPE_CheckBox Or
+            *this\type = #__TYPE_HyperLink
             ;
             *this\color\fore  = - 1
             *this\color\back  = _get_colors_( )\fore
@@ -21256,9 +21256,9 @@ Module widgets
          EndIf
          
          
-         If *this\type = #__type_Option
+         If *this\type = #__TYPE_Option
             If *this\prev[2]
-               If *this\prev[2]\type = #__type_Option
+               If *this\prev[2]\type = #__TYPE_Option
                   *this\groupbar = *this\prev[2]\groupbar
                Else
                   *this\groupbar = *this\prev[2]
@@ -21268,7 +21268,7 @@ Module widgets
             EndIf
          EndIf
          
-         If *this\type = #__type_HyperLink
+         If *this\type = #__TYPE_HyperLink
             Color = *param_1
             If Color
                If Not Alpha( Color )
@@ -21281,10 +21281,10 @@ Module widgets
       EndIf
       
       ;\\ - Create Lists
-      If *this\type = #__type_Tree Or
-         *this\type = #__type_ListView Or
-         *this\type = #__type_ListIcon Or
-         *this\type = #__type_ExplorerList
+      If *this\type = #__TYPE_Tree Or
+         *this\type = #__TYPE_ListView Or
+         *this\type = #__TYPE_ListIcon Or
+         *this\type = #__TYPE_ExplorerList
          ;
          *this\row.allocate( ROWS )
          ;
@@ -21293,7 +21293,7 @@ Module widgets
          ; *this\WidgetChange( ) = 1
          *this\TextChange( ) = 1
          
-         If *this\type = #__type_ListIcon
+         If *this\type = #__TYPE_ListIcon
             *this\ColumnsHeight  = DPIScaled( 24 )
          EndIf
          
@@ -21306,17 +21306,17 @@ Module widgets
       EndIf
       
       ;\\ - Create Containers
-      If *this\type = #__type_Container Or
-         *this\type = #__type_ScrollArea Or
-         *this\type = #__type_Panel Or
-         *this\type = #__type_MDI Or
-         *this\type = #__type_Frame
+      If *this\type = #__TYPE_Container Or
+         *this\type = #__TYPE_ScrollArea Or
+         *this\type = #__TYPE_Panel Or
+         *this\type = #__TYPE_MDI Or
+         *this\type = #__TYPE_Frame
          
-         If *this\type = #__type_Frame
+         If *this\type = #__TYPE_Frame
             *this\container = - 1
-         ElseIf *this\type = #__type_Panel
+         ElseIf *this\type = #__TYPE_Panel
             *this\container = 3
-         ElseIf *this\type = #__type_MDI
+         ElseIf *this\type = #__TYPE_MDI
             *this\container = 4
          Else
             *this\container = 5
@@ -21325,7 +21325,7 @@ Module widgets
          
          ;
          ;\\
-         If *this\type = #__type_Frame
+         If *this\type = #__TYPE_Frame
             *this\color\back = $96D8D8D8
             
             If Text
@@ -21336,8 +21336,8 @@ Module widgets
          EndIf
          
          ;\\
-         If *this\type = #__type_Panel
-            *this\tabbar = CreateBar( *this, #__FLAG_BarSmall, #__type_TabBar ) 
+         If *this\type = #__TYPE_Panel
+            *this\tabbar = CreateBar( *this, #__FLAG_BarSmall, #__TYPE_TabBar ) 
             *this\tabbar\bar\vertical = constants::BinaryFlag( *this\flagmask, #__FLAG_Vertical )
             
             If*this\flagmask & #__Panel_Left And
@@ -21372,7 +21372,7 @@ Module widgets
       EndIf
       
       ;\\ - Create ComboBox
-      If *this\type = #__type_ComboBox
+      If *this\type = #__TYPE_ComboBox
          *this\Combo( ).allocate( BUTTONS )
          *this\Combo( )\color           = _get_colors_( )
          *this\Combo( )\arrow\type      = #__arrow_type
@@ -21395,11 +21395,11 @@ Module widgets
          *BB1 = *this\bar\button[1]
          *BB2 = *this\bar\button[2]
          
-         If *this\type = #__type_Splitter Or
-            *this\type = #__type_Scroll Or
-            *this\type = #__type_Progress Or
-            *this\type = #__type_Track Or
-            *this\type = #__type_Spin
+         If *this\type = #__TYPE_Splitter Or
+            *this\type = #__TYPE_Scroll Or
+            *this\type = #__TYPE_Progress Or
+            *this\type = #__TYPE_Track Or
+            *this\type = #__TYPE_Spin
             ;
             If Not is_integral_( *this )
                *this\bar\PageChange( ) = 1 ; для MDI мешает
@@ -21407,7 +21407,7 @@ Module widgets
          EndIf
          
          ; - Create Scroll
-         If *this\type = #__type_Scroll
+         If *this\type = #__TYPE_Scroll
             *this\color\back  = $FFF9F9F9 ; - 1
             *this\color\front = $FFFFFFFF
             
@@ -21443,7 +21443,7 @@ Module widgets
          EndIf
          
          ; Create Spin
-         If *this\type = #__type_Spin
+         If *this\type = #__TYPE_Spin
             *this\color\back   = - 1
             *this\color\_alpha = 255
             *this\color\back   = $FFFFFFFF
@@ -21461,7 +21461,7 @@ Module widgets
          EndIf
          
          ; - Create Track
-         If *this\type = #__type_Track
+         If *this\type = #__TYPE_Track
             *this\color\back = - 1
             *BB1\color       = _get_colors_( )
             *BB2\color       = *BB1\color
@@ -21494,10 +21494,10 @@ Module widgets
          EndIf
          
          ; - Create Tab
-         If *this\type = #__type_MenuBar Or
-            *this\type = #__type_PopupBar Or
-            *this\type = #__type_ToolBar Or
-            *this\type = #__type_TabBar 
+         If *this\type = #__TYPE_MenuBar Or
+            *this\type = #__TYPE_PopupBar Or
+            *this\type = #__TYPE_ToolBar Or
+            *this\type = #__TYPE_TabBar 
             ;
             ;;*this\TextChange( ) = 1
             *this\color\back = - 1
@@ -21525,7 +21525,7 @@ Module widgets
          EndIf
          
          ; - Create Progress
-         If *this\type = #__type_Progress
+         If *this\type = #__TYPE_Progress
             *this\color         = _get_colors_( )
             *this\TextChange( ) = #True
             If *this\bar\invert
@@ -21537,7 +21537,7 @@ Module widgets
          EndIf
          
          ; - Create Splitter
-         If *this\type = #__type_Splitter
+         If *this\type = #__TYPE_Splitter
             *this\container  = - 1
             *this\color\back = - 1
             ;
@@ -21588,7 +21588,7 @@ Module widgets
       EndIf
       
       ;\\ CURSOR init
-      If *this\type = #__type_Splitter
+      If *this\type = #__TYPE_Splitter
          If *this\bar\vertical
             *this\cursor[1] = cursor::#__cursor_SplitUpDown
             *this\cursor[2] = cursor::#__cursor_SplitUp
@@ -21598,26 +21598,26 @@ Module widgets
             *this\cursor[2] = cursor::#__cursor_SplitLeft
             *this\cursor[3] = cursor::#__cursor_SplitRight
          EndIf
-      ElseIf *this\type = #__type_HyperLink
+      ElseIf *this\type = #__TYPE_HyperLink
          *this\cursor[1] = cursor::#__cursor_Hand
          *this\cursor[2] = cursor::#__cursor_IBeam
-      ElseIf *this\type = #__type_Editor Or
-             *this\type = #__type_String
+      ElseIf *this\type = #__TYPE_Editor Or
+             *this\type = #__TYPE_String
          *this\cursor[1] = cursor::#__cursor_IBeam
       EndIf
       
       ; create integrall childrens   
-      If *this\type = #__type_ComboBox
+      If *this\type = #__TYPE_ComboBox
          ; If constants::BinaryFlag( *this\flagmask, #PB_ComboBox_Editable )
          If constants::BinaryFlag( *this\flagmask, #__FLAG_Textreadonly, 0 )
-            *this\Stringbar = Create( *this, "ComboString", #__type_String,
+            *this\Stringbar = Create( *this, "ComboString", #__TYPE_String,
                                       0, 0, 0, 0, #Null$, #__FLAG_child | #__FLAG_Borderless )
          EndIf
       EndIf
-      If *this\type = #__type_Spin
+      If *this\type = #__TYPE_Spin
          SetAttribute( *this, #__bar_buttonsize, Size + 5 )
          *this\Stringbar = Create( *this, *this\class + "_STRING",
-                                   #__type_String, 0, 0, 0, 0, "", ;Str(*param_1),
+                                   #__TYPE_String, 0, 0, 0, 0, "", ;Str(*param_1),
                                    #__FLAG_child | #__FLAG_Textnumeric | #__FLAG_Borderless | *this\flagmask&~(#__FLAG_invert|#__FLAG_vertical) )
       EndIf
       
@@ -21628,21 +21628,21 @@ Module widgets
       EndIf
       
       ; set ATTRIBUTE
-      If *this\type = #__type_MenuBar Or
-         *this\type = #__type_PopupBar Or
-         *this\type = #__type_ToolBar Or
-         *this\type = #__type_TabBar Or
-         *this\type = #__type_Progress Or
-         *this\type = #__type_Scroll Or
-         *this\type = #__type_Track Or
-         *this\type = #__type_Spin
+      If *this\type = #__TYPE_MenuBar Or
+         *this\type = #__TYPE_PopupBar Or
+         *this\type = #__TYPE_ToolBar Or
+         *this\type = #__TYPE_TabBar Or
+         *this\type = #__TYPE_Progress Or
+         *this\type = #__TYPE_Scroll Or
+         *this\type = #__TYPE_Track Or
+         *this\type = #__TYPE_Spin
          ;
          If *param_1 ; > 0 ; в окнах работает так
                      ; track;progress
-            If *this\type = #__type_Progress Or
-               *this\type = #__type_Scroll Or
-               *this\type = #__type_Track Or 
-               *this\type = #__type_Spin
+            If *this\type = #__TYPE_Progress Or
+               *this\type = #__TYPE_Scroll Or
+               *this\type = #__TYPE_Track Or 
+               *this\type = #__TYPE_Spin
                ;
                *this\bar\page\pos = *param_1
             EndIf
@@ -21655,33 +21655,33 @@ Module widgets
             SetAttribute( *this, #__bar_pageLength, *param_3 )
          EndIf
       EndIf
-      If *this\type = #__type_Button Or *this\type = #__type_ButtonImage
+      If *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage
          SetAttribute( *this, #PB_Button_Image, *param_1 )
       EndIf
-      If *this\type = #__type_image
+      If *this\type = #__TYPE_image
          SetState( *this, *param_1 )
       EndIf
       
       ; COLUMN
       If *this\row
          *this\column.allocate(COLUMNs)
-         ;  If *this\type = #__type_ListIcon
+         ;  If *this\type = #__TYPE_ListIcon
          AddColumn( *this, 0, Text, *param_1 )
          ; EndIf
       EndIf
       
       ; RESIZE
       If is_integral_( *this )
-         If *this\type = #__type_Scroll
+         If *this\type = #__TYPE_Scroll
             If *this\parent
                If *this\bar\vertical
                   *this\parent\scroll\v = *this
-                  If *this\parent\type <> #__type_String
+                  If *this\parent\type <> #__TYPE_String
                      Resize( *this, *this\parent\container_width( ) - Width, Y, Width, *this\parent\container_height( ) - Width + Bool(*this\Round) * (Width / 4) )
                   EndIf
                Else
                   *this\parent\scroll\h = *this
-                  If *this\parent\type <> #__type_String
+                  If *this\parent\type <> #__TYPE_String
                      Resize( *this, X, *this\parent\container_height( ) - Height, *this\parent\container_width( ) - Height + Bool(*this\Round) * (Height / 4), Height )
                   EndIf
                EndIf
@@ -21706,7 +21706,7 @@ Module widgets
             If Not ( *this\autosize And is_root_( *this ))
                Resize( *this, X, Y, Width, Height )
             Else
-               If *this\type = #__type_Splitter
+               If *this\type = #__TYPE_Splitter
                   bar_update( *this, 1 )
                EndIf
             EndIf
@@ -21716,16 +21716,16 @@ Module widgets
       
       ;
       ; set text flag
-      If *this\type = #__type_ComboBox Or 
-         *this\type = #__type_Progress Or
-         *this\type = #__type_Text Or
-         *this\type = #__type_Editor Or
-         *this\type = #__type_String Or
-         *this\type = #__type_Button Or 
-         *this\type = #__type_Option Or
-         *this\type = #__type_CheckBox Or
-         *this\type = #__type_HyperLink Or 
-         *this\type = #__type_Frame
+      If *this\type = #__TYPE_ComboBox Or 
+         *this\type = #__TYPE_Progress Or
+         *this\type = #__TYPE_Text Or
+         *this\type = #__TYPE_Editor Or
+         *this\type = #__TYPE_String Or
+         *this\type = #__TYPE_Button Or 
+         *this\type = #__TYPE_Option Or
+         *this\type = #__TYPE_CheckBox Or
+         *this\type = #__TYPE_HyperLink Or 
+         *this\type = #__TYPE_Frame
          
          If *this\text
             If *this\row
@@ -21739,8 +21739,8 @@ Module widgets
             EndIf
             
             ;\\
-            If *this\type = #__type_Editor Or
-               *this\type = #__type_String
+            If *this\type = #__TYPE_Editor Or
+               *this\type = #__TYPE_String
                *this\color\fore = 0
                
                If *this\text\mode & #__text_editable
@@ -21753,7 +21753,7 @@ Module widgets
             EndIf
             
             ;\\
-            If *this\type = #__type_Frame
+            If *this\type = #__TYPE_Frame
                If *this\text
                   *this\text\x = 12
                   *this\text\y = - *this\fs[2] - 1
@@ -21768,13 +21768,13 @@ Module widgets
       EndIf
       
       
-      If *this\type = #__type_ButtonImage
+      If *this\type = #__TYPE_ButtonImage
          ; Debug ""+*this\text\vertical +" "+ *this\text\invert +" "+ *this\area_align\left +" "+ *this\area_align\top +" "+ *this\area_align\right +" "+ *this\area_align\bottom
       EndIf
       
       ;\\ Scroll bars
       ;If constants::BinaryFlag( *this\flagmask, #__FLAG_NoScrollBars, #False )
-      If *this\type = #__type_String
+      If *this\type = #__TYPE_String
          
          bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__bar_button_size, 0)
          
@@ -21783,19 +21783,19 @@ Module widgets
          *this\scroll\v\width = 0
          *this\scroll\h\height = 0
          
-      ElseIf *this\type = #__type_Editor Or
-             *this\type = #__type_Tree Or
-             *this\type = #__type_ListView Or
-             *this\type = #__type_ListIcon Or
-             *this\type = #__type_ExplorerList Or
-             *this\type = #__type_Properties
+      ElseIf *this\type = #__TYPE_Editor Or
+             *this\type = #__TYPE_Tree Or
+             *this\type = #__TYPE_ListView Or
+             *this\type = #__TYPE_ListIcon Or
+             *this\type = #__TYPE_ExplorerList Or
+             *this\type = #__TYPE_Properties
          
          bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
-      ElseIf *this\type = #__type_MDI Or
-             *this\type = #__type_ScrollArea
+      ElseIf *this\type = #__TYPE_MDI Or
+             *this\type = #__TYPE_ScrollArea
          
          bar_area_create( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
-      ElseIf *this\type = #__type_image
+      ElseIf *this\type = #__TYPE_image
          
          bar_area_create( *this, 1, *this\picture\width, *this\picture\height, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
       EndIf
@@ -21803,7 +21803,7 @@ Module widgets
       
       ;          *this\text\multiLine = 1
       ;          Debug *this\text\multiLine
-      If *this\type = #__type_ScrollArea
+      If *this\type = #__TYPE_ScrollArea
          SetAttribute( *this, #PB_ScrollArea_ScrollStep, *param_3 )
       EndIf
       
@@ -21840,7 +21840,7 @@ Module widgets
       ;          
       
       
-      If Type = #__type_Splitter 
+      If Type = #__TYPE_Splitter 
          *this\bar.allocate( BAR )
       EndIf
       
@@ -21848,7 +21848,7 @@ Module widgets
       *this\child  = constants::BinaryFlag( Flag, #__FLAG_child )
       
       ;
-      If Type = #__type_Splitter
+      If Type = #__TYPE_Splitter
          *this\bar\vertical = Bool( Not constants::BinaryFlag( Flag, #__FLAG_Vertical ) And 
                                     Not constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
          *this\bar\invert   = constants::BinaryFlag( Flag, #__FLAG_Invert )
@@ -21865,30 +21865,30 @@ Module widgets
                  Flag & #__FLAG_Top Or
                  Flag & #__FLAG_Bottom)
             
-            If Type = #__type_Spin 
+            If Type = #__TYPE_Spin 
                If Flag & #__spin_Plus
                   Flag | #__FLAG_Center
                Else
                   Flag | #__FLAG_Left
                EndIf
                
-            ElseIf Type = #__type_Text Or
-                   Type = #__type_Image Or
-                   Type = #__type_Editor
+            ElseIf Type = #__TYPE_Text Or
+                   Type = #__TYPE_Image Or
+                   Type = #__TYPE_Editor
                
                Flag | #__FLAG_Left | #__FLAG_Top
                
-            ElseIf Type = #__type_Button Or 
-                   Type = #__type_ButtonImage Or 
-                   Type = #__type_Progress Or
-                   Type = #__type_HyperLink
+            ElseIf Type = #__TYPE_Button Or 
+                   Type = #__TYPE_ButtonImage Or 
+                   Type = #__TYPE_Progress Or
+                   Type = #__TYPE_HyperLink
                
                Flag | #__FLAG_Center
                
-            ElseIf Type = #__type_ComboBox Or 
-                   Type = #__type_String Or
-                   Type = #__type_Option Or
-                   Type = #__type_CheckBox
+            ElseIf Type = #__TYPE_ComboBox Or 
+                   Type = #__TYPE_String Or
+                   Type = #__TYPE_Option Or
+                   Type = #__TYPE_CheckBox
                
                Flag | #__FLAG_Left
             EndIf
@@ -21900,17 +21900,17 @@ Module widgets
                Flag & #__FLAG_TextMultiLine Or 
                Flag & #__FLAG_TextWordWrap )
          ;
-         If Type = #__type_Text
+         If Type = #__TYPE_Text
             Flag | #__FLAG_TextWordWrap
-         ElseIf Type = #__type_Editor
+         ElseIf Type = #__TYPE_Editor
             Flag | #__FLAG_TextMultiLine
          EndIf
          
          ; set dafault multiline text
          If Text
-            If Type = #__type_Option Or
-               Type = #__type_CheckBox Or
-               Type = #__type_HyperLink
+            If Type = #__TYPE_Option Or
+               Type = #__TYPE_CheckBox Or
+               Type = #__TYPE_HyperLink
                
                If CountString( Text, #LF$ )
                   Flag | #__FLAG_TextMultiLine
@@ -21922,7 +21922,7 @@ Module widgets
       
       ;\\ set default border & frame size
       If is_integral_( *this )
-         If Type = #__type_Scroll
+         If Type = #__TYPE_Scroll
             *this\fs = 0
          Else
             *this\fs = 0
@@ -21938,12 +21938,12 @@ Module widgets
             *this\fs = 0
          Else
             ; default border
-            If Type = #__type_Panel Or
-               Type = #__type_ScrollArea 
+            If Type = #__TYPE_Panel Or
+               Type = #__TYPE_ScrollArea 
                
                *this\fs = 2
             EndIf
-            If Type = #__type_Container 
+            If Type = #__TYPE_Container 
                *this\fs = 1
             EndIf
          EndIf
@@ -21964,7 +21964,7 @@ Module widgets
          ;\\
          If flag_autosize
             If *parent <> *this
-               If *parent\type <> #__type_Splitter
+               If *parent\type <> #__TYPE_Splitter
                   *this\autosize = 1
                   ; set transparent parent
                   *parent\color\back   = - 1
@@ -21989,17 +21989,17 @@ Module widgets
       CountType( *this, 1 )
       
       ;\\ - Create Containers
-      If *this\type = #__type_Container Or
-         *this\type = #__type_ScrollArea Or
-         *this\type = #__type_Panel Or
-         *this\type = #__type_MDI Or
-         *this\type = #__type_Frame
+      If *this\type = #__TYPE_Container Or
+         *this\type = #__TYPE_ScrollArea Or
+         *this\type = #__TYPE_Panel Or
+         *this\type = #__TYPE_MDI Or
+         *this\type = #__TYPE_Frame
          
-         If *this\type = #__type_Frame
+         If *this\type = #__TYPE_Frame
             *this\container = - 1
-         ElseIf *this\type = #__type_Panel
+         ElseIf *this\type = #__TYPE_Panel
             *this\container = 3
-         ElseIf *this\type = #__type_MDI
+         ElseIf *this\type = #__TYPE_MDI
             *this\container = 4
          Else
             *this\container = 5
@@ -22008,7 +22008,7 @@ Module widgets
          
          ;
          ;\\
-         If *this\type = #__type_Frame
+         If *this\type = #__TYPE_Frame
             *this\color\back = $96D8D8D8
             
             If Text
@@ -22019,8 +22019,8 @@ Module widgets
          EndIf
          
          ;\\
-         If *this\type = #__type_Panel
-            *this\tabbar = CreateBar( *this, #__FLAG_BarSmall, #__type_TabBar ) 
+         If *this\type = #__TYPE_Panel
+            *this\tabbar = CreateBar( *this, #__FLAG_BarSmall, #__TYPE_TabBar ) 
             *this\tabbar\bar\vertical = constants::BinaryFlag( *this\flagmask, #__FLAG_Vertical )
             
             If*this\flagmask & #__Panel_Left And
@@ -22066,7 +22066,7 @@ Module widgets
          *BB1 = *this\bar\button[1]
          *BB2 = *this\bar\button[2]
          
-         If *this\type = #__type_Splitter 
+         If *this\type = #__TYPE_Splitter 
             If Not is_integral_( *this )
                *this\bar\PageChange( ) = 1 ; для MDI мешает
             EndIf
@@ -22121,7 +22121,7 @@ Module widgets
       EndIf
       
       ;\\ CURSOR init
-      If *this\type = #__type_Splitter
+      If *this\type = #__TYPE_Splitter
          If *this\bar\vertical
             *this\cursor[1] = cursor::#__cursor_SplitUpDown
             *this\cursor[2] = cursor::#__cursor_SplitUp
@@ -22160,7 +22160,7 @@ Module widgets
             If Not ( *this\autosize And is_root_( *this ))
                Resize( *this, X, Y, Width, Height )
             Else
-               If *this\type = #__type_Splitter
+               If *this\type = #__TYPE_Splitter
                   bar_update( *this, 1 )
                EndIf
             EndIf
@@ -22170,7 +22170,7 @@ Module widgets
       
       ;
       ; set text flag
-      If *this\type = #__type_Frame
+      If *this\type = #__TYPE_Frame
          
          If *this\text
             If *this\row
@@ -22184,8 +22184,8 @@ Module widgets
             EndIf
             
             ;\\
-            If *this\type = #__type_Editor Or
-               *this\type = #__type_String
+            If *this\type = #__TYPE_Editor Or
+               *this\type = #__TYPE_String
                *this\color\fore = 0
                
                If *this\text\mode & #__text_editable
@@ -22198,7 +22198,7 @@ Module widgets
             EndIf
             
             ;\\
-            If *this\type = #__type_Frame
+            If *this\type = #__TYPE_Frame
                If *this\text
                   *this\text\x = 12
                   *this\text\y = - *this\fs[2] - 1
@@ -22214,13 +22214,13 @@ Module widgets
       
       
       ;\\ Scroll bars
-      If *this\type = #__type_MDI Or
-         *this\type = #__type_ScrollArea
+      If *this\type = #__TYPE_MDI Or
+         *this\type = #__TYPE_ScrollArea
          
          bar_area_create( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
       EndIf
       
-      If *this\type = #__type_ScrollArea
+      If *this\type = #__TYPE_ScrollArea
          SetAttribute( *this, #PB_ScrollArea_ScrollStep, *param_3 )
       EndIf
       
@@ -22229,31 +22229,31 @@ Module widgets
    EndProcedure
    
    Procedure.i Scroll( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, PageLength.l, Flag.q = 0, round.l = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Scroll, X, Y, Width, Height, #Null$, Flag, min, max, pagelength, #__bar_button_size, round, 1 )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_Scroll, X, Y, Width, Height, #Null$, Flag, min, max, pagelength, #__bar_button_size, round, 1 )
    EndProcedure
    
    Procedure.i Track( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, Flag.q = 0, scrollstep.d = 1.0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Track, X, Y, Width, Height, #Null$, Flag, min, max, 0, #__bar_button_size, #__ButtonRound, scrollstep )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_Track, X, Y, Width, Height, #Null$, Flag, min, max, 0, #__bar_button_size, #__ButtonRound, scrollstep )
    EndProcedure
    
    Procedure.i Progress( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, Flag.q = 0, round.l = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Progress, X, Y, Width, Height, #Null$, Flag, min, max, 0, 0, round, 1 )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_Progress, X, Y, Width, Height, #Null$, Flag, min, max, 0, 0, round, 1 )
    EndProcedure
    
    Procedure.i Spin( X.l, Y.l, Width.l, Height.l, Min.l, Max.l, Flag.q = 0, round.l = 0, Increment.d = 1.0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Spin, X, Y, Width, Height, #Null$, Flag, min, max, 0, #__bar_button_size, round, Increment )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_Spin, X, Y, Width, Height, #Null$, Flag, min, max, 0, #__bar_button_size, round, Increment )
    EndProcedure
    
    Procedure.i Tab( X.l, Y.l, Width.l, Height.l, Flag.q = 0, round.l = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_TabBar, X, Y, Width, Height, #Null$, Flag, 0, 0, 0, 40, round, 40 )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_TabBar, X, Y, Width, Height, #Null$, Flag, 0, 0, 0, 40, round, 40 )
    EndProcedure
    
    Procedure.i Tree( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Tree, X, Y, Width, Height, "", Flag )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_Tree, X, Y, Width, Height, "", Flag )
    EndProcedure
    
    Procedure.i ListView( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ListView, X, Y, Width, Height, "", Flag | #__FLAG_nobuttons | #__FLAG_nolines )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_ListView, X, Y, Width, Height, "", Flag | #__FLAG_nobuttons | #__FLAG_nolines )
    EndProcedure
    
    Procedure.i ListIcon( X.l, Y.l, Width.l, Height.l, ColumnTitle.s, ColumnWidth.i, Flag.q = 0 )
@@ -22266,13 +22266,13 @@ Module widgets
       ; #PB_ListIcon_AlwaysShowSelection ; The selection Is still visible, even when the gadget Is Not activated (Windows only).
       ; #PB_ListIcon_NoHeaders           ; Hide the columns titles.
       ;
-      ; ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_tree, x, y, width, height, "", Flag ); #__type_ListIcon
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ListIcon, X, Y, Width, Height, ColumnTitle, Flag, ColumnWidth ); #__type_ListIcon
+      ; ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_tree, x, y, width, height, "", Flag ); #__TYPE_ListIcon
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_ListIcon, X, Y, Width, Height, ColumnTitle, Flag, ColumnWidth ); #__TYPE_ListIcon
    EndProcedure
    
    Procedure.i ExplorerList( X.l, Y.l, Width.l, Height.l, Directory.s, Flag.q = 0 )
-      ;Protected *this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, #__type_ExplorerList, x, y, width, height, "", Flag | #__FLAG_nobuttons | #__FLAG_nolines )
-      Protected *this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, #__type_ListIcon, X, Y, Width, Height, "", Flag | #__FLAG_nobuttons | #__FLAG_nolines )
+      ;Protected *this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_ExplorerList, x, y, width, height, "", Flag | #__FLAG_nobuttons | #__FLAG_nolines )
+      Protected *this._s_WIDGET = Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_ListIcon, X, Y, Width, Height, "", Flag | #__FLAG_nobuttons | #__FLAG_nolines )
       
       ;\\
       AddColumn(*this, 0, "Name", 200)
@@ -22315,71 +22315,71 @@ Module widgets
    EndProcedure
    
    Procedure.i Properties( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Properties, X, Y, Width, Height, "", Flag )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_Properties, X, Y, Width, Height, "", Flag )
    EndProcedure
    
    Procedure.i Editor( X.l, Y.l, Width.l, Height.l, Flag.q = 0, round.i = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Editor, X, Y, Width, Height, "", Flag, 0, 0, 0, 0, round, 0 )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_Editor, X, Y, Width, Height, "", Flag, 0, 0, 0, 0, round, 0 )
    EndProcedure
    
    Procedure.i String( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, round.l = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_String, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, round, 0 )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_String, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, round, 0 )
    EndProcedure
    
    Procedure.i Text( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, round.l = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Text, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, round, 0 )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_Text, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, round, 0 )
    EndProcedure
    
    Procedure.i Button( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, round.l = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Button, X, Y, Width, Height, Text, Flag, (-1), 0, 0, 0, round )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_Button, X, Y, Width, Height, Text, Flag, (-1), 0, 0, 0, round )
    EndProcedure
    
    Procedure.i ButtonImage( X.l, Y.l, Width.l, Height.l, img.i = -1 , Flag.q = 0, round.l = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ButtonImage, X, Y, Width, Height, "", Flag, (img), 0, 0, 0, round )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_ButtonImage, X, Y, Width, Height, "", Flag, (img), 0, 0, 0, round )
    EndProcedure
    
    Procedure.i HyperLink( X.l, Y.l, Width.l, Height.l, Text.s, Color.i, Flag.q = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_HyperLink, X, Y, Width, Height, Text, Flag, Color, 0, 0, 0, 0, 0 )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_HyperLink, X, Y, Width, Height, Text, Flag, Color, 0, 0, 0, 0, 0 )
    EndProcedure
    
    Procedure.i Option( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_Option, X, Y, Width, Height, Text, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_Option, X, Y, Width, Height, Text, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
    EndProcedure
    
    Procedure.i CheckBox( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_CheckBox, X, Y, Width, Height, Text, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_CheckBox, X, Y, Width, Height, Text, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
    EndProcedure
    
    Procedure.i ComboBox( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_ComboBox, X, Y, Width, Height, "", Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_ComboBox, X, Y, Width, Height, "", Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
    EndProcedure
    
    Procedure.i Image( X.l, Y.l, Width.l, Height.l, img.i, Flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__type_image, X, Y, Width, Height, #Null$, Flag, img, 0, 0, #__bar_button_size, 0, 1 )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_image, X, Y, Width, Height, #Null$, Flag, img, 0, 0, #__bar_button_size, 0, 1 )
    EndProcedure
    
    Procedure.i Splitter( X.l, Y.l, Width.l, Height.l, First.i, Second.i, Flag.q = 0 )
-      ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__type_Splitter, X, Y, Width, Height, #Null$, Flag, First, Second, 0, 0, 0, 1 )
+      ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__TYPE_Splitter, X, Y, Width, Height, #Null$, Flag, First, Second, 0, 0, 0, 1 )
    EndProcedure
    
    Procedure.i MDI( X.l, Y.l, Width.l, Height.l, Flag.q = 0 ) ; , Menu.i, SubMenu.l, FirstMenuItem.l )
-      ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__type_MDI, X, Y, Width, Height, #Null$, Flag | #__FLAG_nogadgets, 0, 0, 0, #__bar_button_size, 0, 1 )
+      ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__TYPE_MDI, X, Y, Width, Height, #Null$, Flag | #__FLAG_nogadgets, 0, 0, 0, #__bar_button_size, 0, 1 )
    EndProcedure
    
    Procedure.i Panel( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
-      ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__type_Panel, X, Y, Width, Height, #Null$, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
+      ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__TYPE_Panel, X, Y, Width, Height, #Null$, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
    EndProcedure
    
    Procedure.i Container( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
-      ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__type_Container, X, Y, Width, Height, #Null$, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
+      ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__TYPE_Container, X, Y, Width, Height, #Null$, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
    EndProcedure
    
    Procedure.i ScrollArea( X.l, Y.l, Width.l, Height.l, ScrollAreaWidth.l, ScrollAreaHeight.l, ScrollStep.l = 1, Flag.q = 0 )
-      ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__type_ScrollArea, X, Y, Width, Height, #Null$, Flag, ScrollAreaWidth, ScrollAreaHeight, ScrollStep, #__bar_button_size, 0, ScrollStep )
+      ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__TYPE_ScrollArea, X, Y, Width, Height, #Null$, Flag, ScrollAreaWidth, ScrollAreaHeight, ScrollStep, #__bar_button_size, 0, ScrollStep )
    EndProcedure
    
    Procedure.i Frame( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = #__FLAG_nogadgets )
-      ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__type_Frame, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, 7 )
+      ProcedureReturn CreateContainer( Opened( ), #PB_Compiler_Procedure, #__TYPE_Frame, X, Y, Width, Height, Text, Flag, 0, 0, 0, 0, 7 )
    EndProcedure
    
    
@@ -22529,7 +22529,7 @@ Module widgets
          Root() = *root
          
          ;
-         *root\type      = #__type_Root
+         *root\type      = #__TYPE_Root
          *root\container = 1
          *root\class     = "root"
          ;
@@ -22665,7 +22665,7 @@ Module widgets
       
       ;\\
       ;\\
-      *this\type            = #__type_window
+      *this\type            = #__TYPE_window
       *this\class           = #PB_Compiler_Procedure ;+""+ count : count + 1
       *this\container       = 2
       *this\picture\image   = - 1 ; Background img
@@ -22763,7 +22763,7 @@ Module widgets
       
       ;\\
       If constants::BinaryFlag( Flag, #__FLAG_child )
-         If *parent And *parent\type = #__type_MDI
+         If *parent And *parent\type = #__TYPE_MDI
             *this\child =- 1
          Else
             *this\child = 1
@@ -22785,7 +22785,7 @@ Module widgets
             Y = *parent\inner_y( ) + ( *parent\inner_height( ) - Height - *this\fs * 2 - *this\fs[2] - *this\fs[4] ) / 2
          EndIf
          
-         If is_integral_( *this ) Or *parent\type <> #__type_window
+         If is_integral_( *this ) Or *parent\type <> #__TYPE_window
             SetParent( *this, *parent, #PB_Default )
          Else
             
@@ -22832,34 +22832,25 @@ Module widgets
    EndProcedure
    
    Procedure.i Gadget( Type.w, Gadget.i, X.l, Y.l, Width.l, Height.l, Text.s = "", *param1 = #Null, *param2 = #Null, *param3 = #Null, Flag.q = #Null )
-      Protected *this, g
+      Protected *this._s_WIDGET, g = Gadget
       Protected Window = ID::Window( UseGadgetList(0))
-      Open( Window, X, Y, Width, Height, "", #PB_Canvas_Container|#PB_Window_BorderLess, #Null, Gadget )
+      Gadget = GetCanvasGadget( Open( Window, X, Y, Width, Height, "", #PB_Canvas_Container|#PB_Window_BorderLess, #Null, Gadget ))
       ;
       Flag = FromPBFlag( Type, Flag ) | #__FLAG_autosize
       Select Type
-         Case #__type_Tree      : *this = Tree( 0, 0, Width, Height, Flag )
-         Case #__type_Text      : *this = Text( 0, 0, Width, Height, Text, Flag )
-         Case #__type_Button    : *this = Button( 0, 0, Width, Height, Text, Flag )
-         Case #__type_Option    : *this = Option( 0, 0, Width, Height, Text, Flag )
-         Case #__type_CheckBox  : *this = CheckBox( 0, 0, Width, Height, Text, Flag )
-         Case #__type_HyperLink : *this = HyperLink( 0, 0, Width, Height, Text, *param1, Flag )
-         Case #__type_Splitter  : *this = Splitter( 0, 0, Width, Height, *param1, *param2, Flag )
+         Case #__TYPE_Tree      : *this = Tree( 0, 0, Width, Height, Flag )
+         Case #__TYPE_Text      : *this = Text( 0, 0, Width, Height, Text, Flag )
+         Case #__TYPE_Button    : *this = Button( 0, 0, Width, Height, Text, Flag )
+         Case #__TYPE_Option    : *this = Option( 0, 0, Width, Height, Text, Flag )
+         Case #__TYPE_CheckBox  : *this = CheckBox( 0, 0, Width, Height, Text, Flag )
+         Case #__TYPE_HyperLink : *this = HyperLink( 0, 0, Width, Height, Text, *param1, Flag )
+         Case #__TYPE_Splitter  : *this = Splitter( 0, 0, Width, Height, *param1, *param2, Flag )
       EndSelect
       ;
+      If g = Gadget : g  = GadgetID( Gadget ) : Else : g = Gadget : EndIf
       CloseGadgetList( )
-      ;
-      If Gadget = - 1
-         Gadget = GetCanvasGadget( Root( ))
-         g      = Gadget
-      Else
-         g      = GadgetID( Gadget )
-      EndIf
       
-      ; SetGadgetData( Gadget, *this )
-      widgets::gadgets(Str(Gadget)) = *this
-      
-      ProcedureReturn g
+       ProcedureReturn g
    EndProcedure
    
    ;-
@@ -22985,7 +22976,7 @@ Module widgets
             Else
                ;
                ; for the splitter children's
-               If *parent\type = #__type_Splitter
+               If *parent\type = #__TYPE_Splitter
                   If *parent\split_1( ) = *this
                      p_x1 = *parent\bar\button[1]\x
                      p_y1 = *parent\bar\button[1]\y
@@ -23002,7 +22993,7 @@ Module widgets
                   p_x1 = *parent\inner_x( )
                   p_y1 = *parent\inner_y( )
                   ;
-                  If *this\type = #__type_Scroll
+                  If *this\type = #__TYPE_Scroll
                      p_x2 = p_x1 + *parent\container_width( )
                      p_y2 = p_y1 + *parent\container_height( )
                   Else
@@ -23078,7 +23069,7 @@ Module widgets
       ;\\
       If *this\autosize 
          If *this\parent 
-            If *this\parent\type = #__type_Splitter
+            If *this\parent\type = #__TYPE_Splitter
                ;                      If *parent\split_1( ) = *this
                ;                         p_x1 = *parent\bar\button[1]\x
                ;                         p_y1 = *parent\bar\button[1]\y
@@ -23156,13 +23147,13 @@ Module widgets
          ;
          ;CompilerIf #PB_Compiler_DPIAware
          If scale = 1
-            If ( *this\parent And *this\parent\type = #__type_Splitter )
+            If ( *this\parent And *this\parent\type = #__TYPE_Splitter )
                Debug "resize no scale "+*this\class
             EndIf
          EndIf
          If scale = 1 
             If Not is_integral_( *this )
-               If Not( *this\parent And *this\parent\type = #__type_Splitter ) 
+               If Not( *this\parent And *this\parent\type = #__TYPE_Splitter ) 
                   If X And X <> #PB_Ignore
                      X = DPIScaledX( X ); + Bool( Not *this\parent\scroll_width( ) % 2 )-1
                   EndIf
@@ -23248,7 +23239,7 @@ Module widgets
          
          ;\\ size boundaries
          If *this\bounds\size
-            If *this\type = #__type_window
+            If *this\type = #__TYPE_window
                Protected h_frame = *this\fs * 2 + *this\fs[1] + *this\fs[3]
                Protected v_frame = *this\fs * 2 + *this\fs[2] + *this\fs[4]
             EndIf
@@ -23464,7 +23455,7 @@ Module widgets
          *this\parent\scroll\h
          ;
          If ( Change_x Or Change_y Or Change_width Or Change_height ) 
-            If *this\parent\type = #__type_MDI
+            If *this\parent\type = #__TYPE_MDI
                If *this\parent\scroll\v\bar\PageChange( ) = 0 And
                   *this\parent\scroll\h\bar\PageChange( ) = 0
                   
@@ -23513,7 +23504,7 @@ Module widgets
          ;
          ;\\ if the integral scroll bars
          If *this\scroll And *this\scroll\v And *this\scroll\h
-            If *this\type = #__type_MDI
+            If *this\type = #__TYPE_MDI
                make_area_size( *this, 0, 0, *this\container_width( ), *this\container_height( ))
             Else
                make_scrollbar_area( *this )
@@ -23610,10 +23601,10 @@ Module widgets
          
          ;\\ after resize update 
          If *this\bar    
-            If *this\type = #__type_ToolBar Or
-               *this\type = #__type_PopupBar Or
-               *this\type = #__type_MenuBar Or
-               *this\type = #__type_TabBar
+            If *this\type = #__TYPE_ToolBar Or
+               *this\type = #__TYPE_PopupBar Or
+               *this\type = #__TYPE_MenuBar Or
+               *this\type = #__TYPE_TabBar
                ;
                If *this\bar\max
                   bar_update( *this, 2 )
@@ -23642,7 +23633,7 @@ Module widgets
          
          ;
          ;\\
-         If *this\type = #__type_ComboBox
+         If *this\type = #__TYPE_ComboBox
             If *this\Stringbar
                *this\Combo( )\width = *this\fs[3]
                *this\Combo( )\x     = ( *this\screen_x( )+ *this\screen_width( ) ) - *this\fs[3]
@@ -23656,7 +23647,7 @@ Module widgets
          EndIf
          
          ;\\
-         If *this\type = #__type_Window
+         If *this\type = #__TYPE_Window
             ; чтобы закруглять только у окна с титлебаром
             If *this\fs[2]
                If *this\round
@@ -23728,7 +23719,7 @@ Module widgets
          EndIf
          
          ;\\
-         If *this\type = #__type_ScrollArea
+         If *this\type = #__TYPE_ScrollArea
             If IsGadget( *this\scroll\gadget[1] )
                ResizeGadget( *this\scroll\gadget[1], DPIUnscaledX(*this\inner_x( )), DPIUnscaledY(*this\inner_y( )), DPIUnscaledX(*this\inner_width( )), DPIUnscaledY(*this\inner_height( )))
                CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -23748,7 +23739,7 @@ Module widgets
       
       ;\\ then move and size parent
       ;\\ resize all children's
-      If *this\type <> #__type_Splitter
+      If *this\type <> #__TYPE_Splitter
          If *this\haschildren 
             ;Debug *this\class
             Protected pw, ph
@@ -24037,7 +24028,7 @@ Module widgets
             Protected *EnteredTab._s_TAB = parentTabEntered( *this )
          EndIf
          ;             If Not __GUI\event\queuesmask
-         ;                ; If *this\type <> #__type_Scroll
+         ;                ; If *this\type <> #__TYPE_Scroll
          ;                ;    Debug " post add events"+ *this\class +" "+ EventString(event) +" "+ *button +" "+ *data
          ;                ; EndIf
          ;                If AddEvents( *this, event, *button, *data )
@@ -24795,7 +24786,7 @@ Module widgets
       EndSelect
       
       If *message
-         If #__type_Button = Type( EventWidget( ))
+         If #__TYPE_Button = Type( EventWidget( ))
             ;                Select GetText( EventWidget( ))
             ;                   Case lng("No")     : SetData( *message, #__message_No )     ; no
             ;                   Case lng("Yes")    : SetData( *message, #__message_Yes )    ; yes
@@ -25977,8 +25968,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 25542
-; FirstLine = 25519
+; CursorPosition = 18563
+; FirstLine = 18562
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

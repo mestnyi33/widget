@@ -19,22 +19,22 @@ CompilerIf #PB_Compiler_IsMainFile
       Define *spin1 = Spin(50, 20, 250, 50, 0, 3)
       SetState(*spin1, 0)
       
-      Define *spin2 = Spin(50, 80, 250, 25, min, 3, #__flag_TextCenter|#__flag_vertical);|#__flag_Invert)
+      Define *spin2 = Spin(50, 80, 250, 25, min, 3, #__FLAG_Center|#__flag_vertical);|#__flag_Invert)
       ;Define *spin2 = Spin(50, 80, 250, 25, min, 3, #__spin_Plus)
       SetState(*spin2, 2)
-      Define *spin2 = Spin(50, 80+25, 250, 25, min, 0, #__flag_vertical|#__flag_TextCenter);|#__flag_Invert)
+      Define *spin2 = Spin(50, 80+25, 250, 25, min, 0, #__flag_vertical|#__FLAG_Center);|#__flag_Invert)
       SetState(*spin2, 2)
       
-      Define *spin3 = Spin(50, 140, 250, 50, 0, 3, #__flag_TextRight|#__flag_Invert)
+      Define *spin3 = Spin(50, 140, 250, 50, 0, 3, #__FLAG_Right|#__flag_Invert)
       SetState(*spin3, 3)
       
       Bind( #PB_All, @spin_events(), #__event_Change )
       WaitClose( )
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.40 (Windows - x64)
 ; CursorPosition = 25
-; FirstLine = 6
+; FirstLine = 11
 ; Folding = -
 ; EnableXP
 ; DPIAware

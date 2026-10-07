@@ -247,11 +247,11 @@ CompilerIf #PB_Compiler_IsMainFile
       button_right     = Button(0,0,bh,bh, "v", #PB_Button_Toggle|#__FLAG_Vertical,20)
       button_bottom    = Button(0,0,bh,bh, "v", #PB_Button_Toggle,20)
       
-      SetAlign( button_left, #__FLAG_auto, 1,0,0,0, 0)
-      SetAlign( button_top, #__FLAG_auto, 0,1,0,0, 0)
-      SetAlign( button_right, #__FLAG_auto, 0,0,1,0, 0)
-      SetAlign( button_bottom, #__FLAG_auto, 0,0,0,1, 0)
-      SetAlign( button_center, #__FLAG_center, 0,0,0,0, 0)
+      SetAlign( button_left, #__FLAG_AutoSize, 1,0,0,0, 0)
+      SetAlign( button_top, #__FLAG_AutoSize, 0,1,0,0, 0)
+      SetAlign( button_right, #__FLAG_AutoSize, 0,0,1,0, 0)
+      SetAlign( button_bottom, #__FLAG_AutoSize, 0,0,0,1, 0)
+      SetAlign( button_center, #__FLAG_Center, 0,0,0,0, 0)
       
       Resize(Container, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore)
       CloseList( )
@@ -277,7 +277,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetState(button_Top, Flag(*this, #__FLAG_Top ))
       SetState(button_Right, Flag(*this, #__FLAG_Right ))
       SetState(button_Bottom, Flag(*this, #__FLAG_Bottom ))
-      SetState(button_center, Flag(*this, #__FLAG_TextCenter))
+      SetState(button_center, Flag(*this, #__FLAG_Center))
       Hide(Button_type, 1)
       
       
@@ -296,8 +296,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 279
-; FirstLine = 256
+; CursorPosition = 253
+; FirstLine = 245
 ; Folding = -----
 ; EnableXP
 ; DPIAware

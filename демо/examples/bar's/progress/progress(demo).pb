@@ -119,9 +119,9 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
   Track    (301+330,10, 20,  140, 0, 300, #PB_TrackBar_Vertical)
   SetState(Widget( ), 100)   ; set 3rd progressbar (ID = 2) to 100 of 300
   
-  Text    (10+330, 10, 250,  20, "ProgressBar Standard  (50/100)", #__flag_TextCenter)
-  Text    (10+330, 90, 250,  20, "ProgressBar Smooth  (50/200)", #__flag_TextCenter)
-  Text    (100+330,155, 200,  20, "ProgressBar Vertical  (100/300)", #__flag_TextRight)
+  Text    (10+330, 10, 250,  20, "ProgressBar Standard  (50/100)", #__FLAG_Center)
+  Text    (10+330, 90, 250,  20, "ProgressBar Smooth  (50/200)", #__FLAG_Center)
+  Text    (100+330,155, 200,  20, "ProgressBar Vertical  (100/300)", #__FLAG_Right)
   
   ;Bind(#PB_All, @events_widgets())
   
@@ -145,9 +145,9 @@ If Open(0, 0, 0, 330+330, 180, "Progress", #PB_Window_SystemMenu | #PB_Window_Sc
    ; WaitClose( )
 EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 50
-; FirstLine = 34
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 123
+; FirstLine = 120
 ; Folding = ---
 ; EnableXP
 ; DPIAware

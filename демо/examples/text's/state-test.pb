@@ -248,9 +248,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*this, @widget_events());, #__event_Change)
       
       OpenList( *this )
-      ; *test = String( 0, 0, 0, 0, "test") ; #__flag_TextCenter| bug
-      ;*test = String( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__flag_TextCenter| bug
-      *test = Button( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__flag_TextCenter| bug
+      ; *test = String( 0, 0, 0, 0, "test") ; #__FLAG_Center| bug
+      ;*test = String( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__FLAG_Center| bug
+      *test = Button( 0, 0, 0, 0, "test", #__flag_NoFocus) ; #__FLAG_Center| bug
       
       Bind( *test, @Properties_ButtonEvents( ))                       ;, #__event_Change)
       CloseList( )
@@ -308,9 +308,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 79
-; FirstLine = 75
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 252
+; FirstLine = 249
 ; Folding = --------
 ; EnableXP
 ; DPIAware

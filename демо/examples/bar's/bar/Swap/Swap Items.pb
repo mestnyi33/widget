@@ -463,7 +463,7 @@ If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Прим�
       Define Event = WaitWindowEvent()
       
       If Event = #PB_Event_Gadget And EventGadget() = #Canvas
-         If EventType() = #PB_EventType_LeftDoubleClick
+         If EventType() = #PB_EventType_RightClick
             HideWindow(#Win, 1)
             MyThis\tab\vertical ! 1
             ClearList(MyThis\Tab\_s())
@@ -499,9 +499,9 @@ If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Прим�
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 248
-; FirstLine = 224
-; Folding = --0----------
+; CursorPosition = 465
+; FirstLine = 365
+; Folding = --0-----vf4--
 ; EnableXP
 ; EnableOnError
 ; EnableUnicode

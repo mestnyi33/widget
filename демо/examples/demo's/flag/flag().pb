@@ -87,22 +87,22 @@ EndIf
 ; EndProcedure
 ; 
 ; 
-; Define Flag.q = #__flag_Textleft|#__flag_TextTop|#__flag_TextRight;|#__flag_TextBottom
+; Define Flag.q = #__FLAG_left|#__FLAG_Top|#__FLAG_Right;|#__FLAG_Bottom
 ; 
-; Define flags.q = #__flag_TextBottom | Flag
+; Define flags.q = #__FLAG_Bottom | Flag
 ; 
 ; ;RemoveFlag( )
-; RemoveFlag( flags, #__flag_TextTop|#__flag_TextRight )
+; RemoveFlag( flags, #__FLAG_Top|#__FLAG_Right )
 ; 
-; Debug constants::BinaryFlag( Flag, #__flag_Textleft )
-; Debug constants::BinaryFlag( Flag, #__flag_TextTop )
-; Debug constants::BinaryFlag( Flag, #__flag_TextRight )
-; Debug constants::BinaryFlag( Flag, #__flag_TextBottom )
+; Debug constants::BinaryFlag( Flag, #__FLAG_left )
+; Debug constants::BinaryFlag( Flag, #__FLAG_Top )
+; Debug constants::BinaryFlag( Flag, #__FLAG_Right )
+; Debug constants::BinaryFlag( Flag, #__FLAG_Bottom )
 ; Debug ""
-; Debug constants::BinaryFlag( flags, #__flag_Textleft )
-; Debug constants::BinaryFlag( flags, #__flag_TextTop )
-; Debug constants::BinaryFlag( flags, #__flag_TextRight )
-; Debug constants::BinaryFlag( flags, #__flag_TextBottom )
+; Debug constants::BinaryFlag( flags, #__FLAG_left )
+; Debug constants::BinaryFlag( flags, #__FLAG_Top )
+; Debug constants::BinaryFlag( flags, #__FLAG_Right )
+; Debug constants::BinaryFlag( flags, #__FLAG_Bottom )
 ; 
 ; 
 ; 
@@ -115,11 +115,11 @@ EndIf
 ;   ;   
 ;   
 ;   If *this\type = #__type_Text
-;     If constants::BinaryFlag( Flag, #__flag_TextInvert )
+;     If constants::BinaryFlag( Flag, #__FLAG_Invert )
 ;       *this\text\invert = #True
 ;     EndIf
 ;     
-;     If constants::BinaryFlag( Flag, #__flag_TextVertical )
+;     If constants::BinaryFlag( Flag, #__FLAG_Vertical )
 ;       *this\text\vertical = #True
 ;     EndIf
 ;     
@@ -131,26 +131,26 @@ EndIf
 ;       *this\mode\multiSelect = #True
 ;     EndIf
 ;     
-;     If constants::BinaryFlag( Flag, #__flag_TextCenter )
+;     If constants::BinaryFlag( Flag, #__FLAG_Center )
 ;       *this\text\align\left = #False
 ;       *this\text\align\top = #False
 ;       *this\text\align\right = #False
 ;       *this\text\align\bottom = #False
 ;     EndIf
 ;     
-;     If constants::BinaryFlag( Flag, #__flag_Textleft )
+;     If constants::BinaryFlag( Flag, #__FLAG_left )
 ;       *this\text\align\left = #True
 ;     EndIf
 ;     
-;     If constants::BinaryFlag( Flag, #__flag_TextTop )
+;     If constants::BinaryFlag( Flag, #__FLAG_Top )
 ;       *this\text\align\top = #True
 ;     EndIf
 ;     
-;     If constants::BinaryFlag( Flag, #__flag_TextRight )
+;     If constants::BinaryFlag( Flag, #__FLAG_Right )
 ;       *this\text\align\right = #True
 ;     EndIf
 ;     
-;     If constants::BinaryFlag( Flag, #__flag_TextBottom )
+;     If constants::BinaryFlag( Flag, #__FLAG_Bottom )
 ;       *this\text\align\bottom = #True
 ;     EndIf
 ;   EndIf
@@ -193,17 +193,18 @@ EndIf
 ;       *this\text\align\right = #True
 ;     EndIf
 ;     
-;     If constants::BinaryFlag( Flag, #__flag_TextTop )
+;     If constants::BinaryFlag( Flag, #__FLAG_Top )
 ;       *this\text\align\top = #True
 ;     EndIf
 ;     
-;     If constants::BinaryFlag( Flag, #__flag_TextBottom )
+;     If constants::BinaryFlag( Flag, #__FLAG_Bottom )
 ;       *this\text\align\bottom = #True
 ;     EndIf
 ;   EndIf
 ; EndProcedure
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 109
+; FirstLine = 106
 ; Folding = --
 ; EnableXP
 ; DPIAware

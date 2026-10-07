@@ -299,7 +299,6 @@ CompilerIf Not Defined( widgets, #PB_Module )
       Global window_pos_x.l, window_pos_y.l
       
       Global __GUI._s_GUI
-      Global NewMap gadgets.i( )
       Global NewMap fonts._s_FONTS( )
       Global NewList images._s_images( )
       
@@ -706,8 +705,8 @@ CompilerIf Not Defined( widgets, #PB_Module )
       ReDraw( _address_ )
    EndMacro
    Macro PostRepaint( _root_ )
-      If __GUI\event\loop
-         ReDraw( _root_ )
+      If widgets::__GUI\event\loop
+         widgets::ReDraw( _root_ )
       Else
          If _root_\canvas\repaint = 0
             _root_\canvas\repaint = 1
@@ -916,9 +915,9 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Macro CanvasMouseX( ): widgets::mouse( )\x: EndMacro                                  ; Returns mouse x
    Macro CanvasMouseY( ): widgets::mouse( )\y: EndMacro                                  ; Returns mouse y
                                                                                 ;-
-                                                                                ;       Macro IsCanvas(_gadget_)
-                                                                                ;          FindMapElement( widgets::gadgets( ), Str(_gadget_))
-                                                                                ;       EndMacro
+   Macro IsCanvas(_gadget_)
+      key::GetData( GadgetID(_gadget_))
+   EndMacro
    Macro ChangeCurrentCanvas( _canvasID_ )
       If key::GetData(_canvasID_)
          widgets::Root( ) = key::GetData(_canvasID_)
@@ -1937,9 +1936,9 @@ CompilerEndIf
 CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 729
-; FirstLine = 537
-; Folding = 9AcgA-PBu----------PcZ9------DA5--PAQAAAw-
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 707
+; FirstLine = 532
+; Folding = 9AcgA-PBu----------PcZ9------DA5--fAgAAAg-
 ; EnableXP
 ; DPIAware

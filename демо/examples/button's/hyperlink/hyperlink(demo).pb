@@ -43,8 +43,8 @@ EndIf
 
 ;-
 If Open(0, 270,0,270,100)
-   HyperLink(10, 10, 250,20,"Red HyperLink", RGB(255,0,0), #PB_HyperLink_Underline|#__flag_TextLeft)
-   HyperLink(10, 40, 250,40,"Text = Arial Underlined"+#LF$+"Green HyperLink", RGB(0,255,0), #PB_HyperLink_Underline|#__flag_TextLeft)
+   HyperLink(10, 10, 250,20,"Red HyperLink", RGB(255,0,0), #PB_HyperLink_Underline|#__FLAG_Left)
+   HyperLink(10, 40, 250,40,"Text = Arial Underlined"+#LF$+"Green HyperLink", RGB(0,255,0), #PB_HyperLink_Underline|#__FLAG_Left)
    SetFont(ID(1), (5))
    SetColor(ID(1), #PB_Gadget_FrontColor, $ffff0000)
    SetColor(ID(1), #PB_Gadget_BackColor, $ff0000ff)
@@ -58,9 +58,9 @@ EndIf
 
 ;\\
 WaitClose( )
-; IDE Options = PureBasic 6.00 LTS (MacOS X - x64)
-; CursorPosition = 47
-; FirstLine = 32
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 46
+; FirstLine = 37
 ; Folding = --
 ; EnableXP
 ; DPIAware

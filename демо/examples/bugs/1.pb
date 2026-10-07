@@ -32,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
       End
    EndIf
    
-   Procedure Events()
+   Procedure all_events()
       Protected String.s
       
       Select EventType()
@@ -126,7 +126,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndMacro
    
    Macro Test( X,Y,Width,Height, txt, Flag=0)
-      Text( X,Y,Width,Height, txt, Flag)
+      Text( X,Y,Width,Height, txt, Flag|#__FLAG_BorderFlat)
       ; String( X,Y,Width,Height, txt, Flag)
       ; Editor( X,Y,Width,Height, Flag) : SetText( Widget(), txt)
       SetColor(Widget(), #PB_Gadget_BackColor, #Yellow)
@@ -160,7 +160,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;     Define i
       ;     For i=0 To 7
-      ;       BindGadgetEvent(i, @Events())
+      ;       BindGadgetEvent(i, @all_events())
       ;     Next
       
       SetTextAlignment()
@@ -217,7 +217,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;SetGadgetState(25, 126)
       ;BindGadgetEvent(25, @resize_splitter())
       
-      ;     BindEvent(#PB_Event_Widget, @Events())
+      ;     BindEvent(#PB_Event_Widget, @all_events())
       ;     PostEvent(#PB_Event_Gadget, 0,10, #__Event_Resize)
       Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
    EndIf
@@ -253,7 +253,7 @@ CompilerEndIf
 ;     End
 ;   EndIf
 ;   
-;   Procedure _Events()
+;   Procedure _all_events()
 ;     Protected String.s
 ;     
 ;     Select EventType()
@@ -378,13 +378,13 @@ CompilerEndIf
 ;     ;SetState(*s_3, 126)
 ;     Bind(*s_3, @resize_splitter())
 ;     
-;     ;     BindEvent(#PB_Event_Widget, @Events())
+;     ;     BindEvent(#PB_Event_Widget, @all_events())
 ;     ;     PostEvent(#PB_Event_Gadget, 0,10, #__Event_Resize)
 ;     Repeat : Until WaitWindowEvent() = #PB_Event_CloseWindow
 ;   EndIf
 ; CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 123
-; FirstLine = 109
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 122
+; FirstLine = 112
 ; Folding = ---
 ; EnableXP
