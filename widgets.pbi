@@ -2233,7 +2233,7 @@ Module widgets
                         If *this\scroll_width( ) < qqq + *tab\text\width
                            *this\scroll_width( ) = qqq + *tab\text\width
                            
-                           If constants::BinaryFlag( *this\flagmask, #__FLAG_BarInlineText )
+                           If constants::BinaryFlag( *this\flagmask, #__FLAG_TextInLine )
                               *this\scroll_width( ) + *tab\picture\width 
                            EndIf
                         EndIf
@@ -2327,7 +2327,7 @@ Module widgets
                               *tab\height = *tab\picture\height
                            EndIf
                            If *tab\text\height
-                              If constants::BinaryFlag( *this\flagmask, #__FLAG_BarInlineText )
+                              If constants::BinaryFlag( *this\flagmask, #__FLAG_TextInLine )
                                  If Not *tab\picture\height 
                                     *tab\height = *tab\text\height
                                  EndIf
@@ -2339,7 +2339,7 @@ Module widgets
                            ;
                            *tab\height + (6)
                            ;
-                           If constants::BinaryFlag( *this\flagmask, #__FLAG_BarInlineText )
+                           If constants::BinaryFlag( *this\flagmask, #__FLAG_TextInLine )
                               *tab\picture\x = align_x
                               *tab\text\x  = *tab\picture\x + *tab\picture\width + align_x + (5)
                               
@@ -2532,7 +2532,7 @@ Module widgets
                draw_roundbox_( X + *tab\x, Y + *tab\y, *tab\width, *tab\height, 0, 0, *tab\color\frame[0] & $FFFFFF | *tab\AlphaState24( ) )
             Else
                If is_menu_( *this )
-                  If constants::BinaryFlag( *this\flagmask, #__FLAG_BarInlineText )
+                  If constants::BinaryFlag( *this\flagmask, #__FLAG_TextInLine )
                      If *tab\picture\imageID
                         If *this\bar\vertical
                            draw_mode_alpha_( #PB_2DDrawing_Default )
@@ -2560,7 +2560,7 @@ Module widgets
                      ;                         
                      ;                         If (( *BB2\x + *BB2\width < x + *tab\x ) Or ( *BB2\mask & #__mask_hidden And *BB2\x + *BB2\width > x + *tab\x )) Or
                      ;                            (( *BB1\x > x + *tab\x + *tab\width ) Or ( *BB1\mask & #__mask_hidden And *BB1\x < x + *tab\x + *tab\width )) 
-                     bar_draw_item_( *this\bar\vertical, *tab, X, Y, 0, round, Bool( Not( is_bar_( *this ) And Not constants::BinaryFlag( *this\flagmask, #__FLAG_BarButtons ))) )
+                     bar_draw_item_( *this\bar\vertical, *tab, X, Y, 0, round, Bool( Not( is_bar_( *this ) And Not constants::BinaryFlag( *this\flagmask, #__BAR_Buttons ))) )
                      ;                         EndIf
                   EndIf
                EndIf
@@ -3101,7 +3101,7 @@ Module widgets
       
       ;\\
       __draw_mode( #PB_2DDrawing_Outlined )
-      If *this\flagmask & #__spin_Plus 
+      If *this\flagmask & #__SPIN_Plus 
          ; -/+
          __draw_plus( *BB1, Bool( *bar\invert ) )
          __draw_plus( *BB2, Bool( Not *bar\invert ) )
@@ -4298,7 +4298,7 @@ Module widgets
          *SB\width  = *this\inner_width( )
          *SB\height = *this\inner_height( )
          
-         If *this\flagmask & #__spin_Plus
+         If *this\flagmask & #__SPIN_Plus
             ; spin buttons numeric plus -/+
             If *bar\vertical
                If *BB1\size
@@ -4844,15 +4844,15 @@ Module widgets
          *box\TabChange( ) = 1
          ;
          If size = #PB_Default
-            If constants::BinaryFlag( *box\flagmask, #__FLAG_BarSmall )
+            If constants::BinaryFlag( *box\flagmask, #__BAR_Small )
                If *box\type = #__TYPE_TabBar
                   size = #__tab_size + bar_toggle_size*2 
                Else
                   size = 24
                EndIf
-            ElseIf constants::BinaryFlag( *box\flagmask, #__FLAG_BarLarge )
+            ElseIf constants::BinaryFlag( *box\flagmask, #__BAR_Large )
                size = 40
-            Else ; If constants::BinaryFlag( *this\flagmask, #__FLAG_BarNormal )
+            Else ; If constants::BinaryFlag( *this\flagmask, #__BAR_Normal )
                If *box\type = #__TYPE_MenuBar
                   size = 20
                Else
@@ -4862,7 +4862,7 @@ Module widgets
             
             If position = 1 Or position = 3
                If Not *box\bar\vertical
-                  If constants::BinaryFlag( *box\flagmask, #__FLAG_BarInlineText )
+                  If constants::BinaryFlag( *box\flagmask, #__FLAG_TextInLine )
                      size = 80
                   Else
                      size = 94; - (1 + fs)
@@ -9467,7 +9467,7 @@ Module widgets
                      
                      ; - SPIN BUTTON POSITION
                      If *this\type = #__TYPE_Spin
-                        If *this\flagmask & #__spin_plus
+                        If *this\flagmask & #__SPIN_plus
                            ; set real spin-buttons width
                            *BB1\size = value
                            *BB2\size = value
@@ -13627,8 +13627,8 @@ Module widgets
          EndIf
          
          If Flag & #__FLAG_Textreadonly : *this\text\mode | #__text_editable : EndIf
-         If Flag & #__FLAG_TextInvert   : *this\text\invert = 0 : EndIf
-         If Flag & #__FLAG_TextVertical : *this\text\vertical = 0 : EndIf
+         If Flag & #__FLAG_Invert   : *this\text\invert = 0 : EndIf
+         If Flag & #__FLAG_Vertical : *this\text\vertical = 0 : EndIf
          If Flag & #__FLAG_TextWordWrap 
             If *this\text\multiLine = 1
                If Not *this\flagmask & #__FLAG_TextMultiLine 
@@ -13766,8 +13766,8 @@ Module widgets
             If constants::BinaryFlag( *this\flagmask, #__FLAG_TextPassword )
                *this\text\mode | #__text_pass 
             EndIf
-            *this\text\invert   = constants::BinaryFlag( *this\flagmask, #__FLAG_TextInvert )
-            *this\text\vertical = constants::BinaryFlag( *this\flagmask, #__FLAG_TextVertical )
+            *this\text\invert   = constants::BinaryFlag( *this\flagmask, #__FLAG_Invert )
+            *this\text\vertical = constants::BinaryFlag( *this\flagmask, #__FLAG_Vertical )
             *this\text\rotate   = Bool( *this\text\invert ) * 180 + 
                                   Bool( *this\text\vertical ) * 90
             
@@ -21038,14 +21038,14 @@ Module widgets
          EndIf
       EndIf
       If Type = #__TYPE_Spin
-         If Flag & #__spin_Plus
+         If Flag & #__SPIN_Plus
             *this\bar\vertical = constants::BinaryFlag( Flag, #__FLAG_Vertical )
          Else
             *this\bar\vertical = constants::BinaryFlag( Flag, #__FLAG_Vertical, #False )
          EndIf
          
          *this\bar\invert = constants::BinaryFlag( Flag, #__FLAG_Invert )
-         *this\bar\mirror = constants::BinaryFlag( Flag, #__spin_mirror )
+         *this\bar\mirror = constants::BinaryFlag( Flag, #__SPIN_mirror )
       EndIf
       If Type = #__TYPE_MenuBar Or
          Type = #__TYPE_PopupBar Or
@@ -21068,7 +21068,7 @@ Module widgets
                  Flag & #__FLAG_Bottom)
             
             If Type = #__TYPE_Spin 
-               If Flag & #__spin_Plus
+               If Flag & #__SPIN_Plus
                   Flag | #__FLAG_Center
                Else
                   Flag | #__FLAG_Left
@@ -21337,7 +21337,7 @@ Module widgets
          
          ;\\
          If *this\type = #__TYPE_Panel
-            *this\tabbar = CreateBar( *this, #__FLAG_BarSmall, #__TYPE_TabBar ) 
+            *this\tabbar = CreateBar( *this, #__BAR_Small, #__TYPE_TabBar ) 
             *this\tabbar\bar\vertical = constants::BinaryFlag( *this\flagmask, #__FLAG_Vertical )
             
             If*this\flagmask & #__Panel_Left And
@@ -21451,7 +21451,7 @@ Module widgets
             *BB1\color = _get_colors_( )
             *BB2\color = _get_colors_( )
             
-            If Not *this\flagmask & #__spin_Plus
+            If Not *this\flagmask & #__SPIN_Plus
                *BB1\arrow\size = DPIScaled( #__arrow_size )
                *BB2\arrow\size = DPIScaled( #__arrow_size )
                
@@ -21529,10 +21529,10 @@ Module widgets
             *this\color         = _get_colors_( )
             *this\TextChange( ) = #True
             If *this\bar\invert
-               *this\flagmask | #__FLAG_TextInvert 
+               *this\flagmask | #__FLAG_Invert 
             EndIf
             If *this\bar\vertical
-               *this\flagmask | #__FLAG_TextVertical 
+               *this\flagmask | #__FLAG_Vertical 
             EndIf
          EndIf
          
@@ -21866,7 +21866,7 @@ Module widgets
                  Flag & #__FLAG_Bottom)
             
             If Type = #__TYPE_Spin 
-               If Flag & #__spin_Plus
+               If Flag & #__SPIN_Plus
                   Flag | #__FLAG_Center
                Else
                   Flag | #__FLAG_Left
@@ -22020,7 +22020,7 @@ Module widgets
          
          ;\\
          If *this\type = #__TYPE_Panel
-            *this\tabbar = CreateBar( *this, #__FLAG_BarSmall, #__TYPE_TabBar ) 
+            *this\tabbar = CreateBar( *this, #__BAR_Small, #__TYPE_TabBar ) 
             *this\tabbar\bar\vertical = constants::BinaryFlag( *this\flagmask, #__FLAG_Vertical )
             
             If*this\flagmask & #__Panel_Left And
@@ -25004,9 +25004,9 @@ Module widgets
       If IsImage( img )
          Image( f2, f2, iw, iw, img, #__FLAG_Center | #__FLAG_Borderflat | #__FLAG_transparent )
          SetClass( Widget( ), "message_IMAGE" )
-         Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__FLAG_TextCenter | #__FLAG_TextLeft | #__FLAG_transparent );| #__FLAG_Borderless )
+         Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__FLAG_Center | #__FLAG_Left | #__FLAG_transparent );| #__FLAG_Borderless )
       Else
-         Text( f2, f2, Width - f2 * 2, iw, Text, #__FLAG_TextCenter | #__FLAG_TextLeft | #__FLAG_transparent );| #__FLAG_Borderless )
+         Text( f2, f2, Width - f2 * 2, iw, Text, #__FLAG_Center | #__FLAG_Left | #__FLAG_transparent );| #__FLAG_Borderless )
       EndIf
       SetClass( Widget( ), "message_INFO" )
       CloseList( )
@@ -25185,8 +25185,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    If *toolbar
       BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-      BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #__FLAG_BarNormal, "open")
-      BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #__FLAG_BarNormal, "save")
+      BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #__BAR_Normal, "open")
+      BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #__BAR_Normal, "save")
       
       BarSeparator( )
       
@@ -25213,7 +25213,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Debug WidgetEventItem( )
    EndProcedure
    
-   Define._s_WIDGET *toolbar = CreateBar( view, #__FLAG_BarSmall|#__FLAG_BarInlineText )
+   Define._s_WIDGET *toolbar = CreateBar( view, #__BAR_Small|#__FLAG_TextInLine )
    
    If *toolbar
       OpenSubBar("Menu")
@@ -25241,9 +25241,9 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseSubBar( )
       
       BarSeparator( )
-      ;BarButton(10, Loadimage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #__FLAG_BarNormal, "New") ;: Debug widget( )\class
-      BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #__FLAG_BarNormal, "Open")
-      ;BarButton(2, Loadimage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #__FLAG_BarNormal, "Save")
+      ;BarButton(10, Loadimage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"), #__BAR_Normal, "New") ;: Debug widget( )\class
+      BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #__BAR_Normal, "Open")
+      ;BarButton(2, Loadimage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"), #__BAR_Normal, "Save")
       BarSeparator( )
       
       BarButton(5, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png"))
@@ -25369,13 +25369,13 @@ CompilerIf #PB_Compiler_IsMainFile
       Bind(*menu, @QuitHandler(), -1, 8)
    EndIf
    
-   *toolbar = CreateBar( *root0, #__FLAG_BarSmall|#__FLAG_BarText |#__FLAG_BarInlineText)
+   *toolbar = CreateBar( *root0, #__BAR_Small|#__BAR_Text |#__FLAG_TextInLine)
    If *toolbar
       SetBackgroundColor( *toolbar, $FFC8ECF0 )
       
       BarButton(0, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/New.png"))
-      BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #__FLAG_BarNormal, "open")
-      BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #__FLAG_BarNormal, "save")
+      BarButton(1, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Open.png"), #__BAR_Normal, "open")
+      BarButton(2, LoadImage(#PB_Any, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Save.png"));, #__BAR_Normal, "save")
       
       BarSeparator( )
       
@@ -25494,7 +25494,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(*btn_panel, 2)
    CloseList( ) ; close panel lists
    
-   *g = String(10, 200, 200, 50, "string gadget text text 1234567890 text text long long very long", #__FLAG_Textpassword | #__FLAG_TextRight)
+   *g = String(10, 200, 200, 50, "string gadget text text 1234567890 text text long long very long", #__FLAG_Textpassword | #__FLAG_Right)
    
    ;\\
    Global *btn_item1, *btn_item2, *btn_menu
@@ -25549,7 +25549,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;-\\ ROOT1
    Define *root1._s_WIDGET = Open(#window_1, 300, 10, 300 - 20, 300 - 20): *root1\class = "root1": SetText(*root1, "root1")
    ;BindWidgetEvent( *root1, @HandlerEvents( ) )
-   Define._s_WIDGET *ToolBar = CreateBar( *root1, #__FLAG_BarSmall )
+   Define._s_WIDGET *ToolBar = CreateBar( *root1, #__BAR_Small )
    If *toolbar
       OpenSubBar("Title-1")
       BarItem(1, "title-1-item-1")
@@ -25881,17 +25881,17 @@ CompilerIf #PB_Compiler_IsMainFile
    SetState(Splitter_3, 40)
    SetState(Splitter_1, 50)
    
-   Spin(10, 195, 80, 25, -2147483648, 2147483647, #__FLAG_TextLeft )
-   Spin(10, 225, 80, 25, 5, 30, #__FLAG_TextCenter|#__spin_mirror)
-   Spin(10, 255, 80, 25, 5, 30, #__FLAG_TextRight|#__FLAG_invert)
+   Spin(10, 195, 80, 25, -2147483648, 2147483647 )
+   Spin(10, 225, 80, 25, 5, 30, #__SPIN_Mirror)
+   Spin(10, 255, 80, 25, 5, 30, #__FLAG_Invert)
    
-   Spin(95, 195, 80, 25, 5, 30, #__FLAG_TextLeft|#__spin_Plus )
-   Spin(95, 225, 80, 25, 5, 30, #__FLAG_TextCenter|#__spin_Plus|#__spin_mirror)
-   Spin(95, 255, 80, 25, 5, 30, #__FLAG_TextRight|#__spin_Plus|#__FLAG_invert)
+   Spin(95, 195, 80, 25, 5, 30, #__FLAG_Left|#__SPIN_Plus )
+   Spin(95, 225, 80, 25, 5, 30, #__FLAG_Center|#__SPIN_Plus|#__SPIN_Mirror)
+   Spin(95, 255, 80, 25, 5, 30, #__FLAG_Right|#__SPIN_Plus|#__FLAG_Invert)
    
-   Spin(180, 195, 80, 25, 5, 30, #__spin_vertical|#__FLAG_TextRight )
-   Spin(180, 225, 80, 25, 5, 30, #__spin_vertical|#__FLAG_TextCenter|#__spin_mirror)
-   Spin(180, 255, 80, 25, 5, 30, #__spin_vertical|#__FLAG_TextRight|#__FLAG_invert)
+   Spin(180, 195, 80, 25, 5, 30, #__SPIN_Vertical )
+   Spin(180, 225, 80, 25, 5, 30, #__SPIN_Vertical|#__SPIN_Mirror)
+   Spin(180, 255, 80, 25, 5, 30, #__SPIN_Vertical|#__FLAG_Invert)
    
    ;-\\ OPENROOT3
    OpenList( *root3 )
@@ -25967,9 +25967,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 18563
-; FirstLine = 18562
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 21534
+; FirstLine = 21531
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

@@ -530,8 +530,8 @@
       ; #__FLAG_AllEvents     = 1<<51
       ; #__FLAG_              = 1<<52
       ; #__FLAG_              = 1<<53
-      ; #__FLAG_           = 1<<54
-      ; #__FLAG_          = 1<<55
+      ; #__FLAG_              = 1<<54
+      ; #__FLAG_              = 1<<55
       
       ;- \\ align-flag
       #__FLAG_Left            = 1<<56
@@ -541,26 +541,16 @@
       #__FLAG_Center          = 1<<60 
       #__FLAG_AutoSize        = 1<<61
       ;
-      #__FLAG_Proportional   = 1<<62
-      #__FLAG_Full           = 1<<63
-      #__FLAG_none           = 0
+      #__FLAG_Proportional    = 1<<62
+      #__FLAG_Full            = 1<<63
+      #__FLAG_none            = 0
       
       ;
       ;-\\ Window
       #__window_FrameSize      = 4
       #__window_CaptionHeight  = 24
       
-      ;-\\ Text
-      #__FLAG_TextInvert       = #__FLAG_Invert
-      #__FLAG_TextVertical     = #__FLAG_Vertical
-      
-      #__FLAG_TextLeft           = #__FLAG_Left
-      #__FLAG_TextTop          = #__FLAG_Top
-      #__FLAG_TextRight        = #__FLAG_Right
-      #__FLAG_TextBottom       = #__FLAG_Bottom
-      #__FLAG_TextCenter       = #__FLAG_Center
-      
-       ;-\\ Bar
+      ;-\\ Bar
       ; attribute
       #__BAR_Minimum           = 1
       #__BAR_Maximum           = 2
@@ -569,21 +559,19 @@
       #__BAR_ButtonSize        = 6
       #__BAR_Direction         = 7
       ; 
-      #__BAR_Left       = #PB_ToolBar_Left
-      #__BAR_Right      = #PB_ToolBar_Right
-      #__BAR_Bottom     = #PB_ToolBar_Bottom
-      ;
-      #__FLAG_BarNormal     = #PB_ToolBar_Normal
-      #__FLAG_BarSmall      = #PB_ToolBar_Small
-      #__FLAG_BarLarge      = #PB_ToolBar_Large
-      #__FLAG_BarInLineText = #PB_ToolBar_InlineText
-      #__FLAG_BarText       = #PB_ToolBar_Text
-      #__FLAG_BarButtons    = #PB_ToolBar_Buttons
+      #__BAR_Left              = #PB_ToolBar_Left
+      #__BAR_Right             = #PB_ToolBar_Right
+      #__BAR_Bottom            = #PB_ToolBar_Bottom
+      #__BAR_Normal            = #PB_ToolBar_Normal
+      #__BAR_Small             = #PB_ToolBar_Small
+      #__BAR_Large             = #PB_ToolBar_Large
+      #__BAR_Text              = #PB_ToolBar_Text
+      #__BAR_Buttons           = #PB_ToolBar_Buttons
       
      ;-\\ Image
       #__IMAGE_BackGround      = 1
-      #__IMAGE_Pressed             = 2
-      #__IMAGE_Released           = 3
+      #__IMAGE_Pressed         = 2
+      #__IMAGE_Released        = 3
      
       ;-\\ Pamel
       #__PANEL_Left            = #__FLAG_Left;1<<9
@@ -731,9 +719,9 @@
       
       EndDeclareModule : Module Constants : EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 585
-; FirstLine = 561
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 552
+; FirstLine = 549
 ; Folding = ----
 ; Optimizer
 ; EnableXP

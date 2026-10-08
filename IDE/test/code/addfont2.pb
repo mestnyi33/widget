@@ -25,14 +25,14 @@ Global FONT_CONSOLAS_16_BOLD_ITALIC  = LoadFont( #PB_Any, "Consolas", 16, #PB_Fo
 Procedure Open_WINDOW_1( )
    WINDOW_1 = Open( #PB_Any, 21, 21, 323, 253, "window_1", #PB_Window_SystemMenu | #PB_Window_SizeGadget  )
      ; WINDOW_2 = Window( 10, 10, 320, 253, "window_1", #PB_Window_SystemMenu ) 
-      BUTTON_8 = Button( 21, 14, 260, 64, "button_8", #__flag_TextLeft  )
+      BUTTON_8 = Button( 21, 14, 260, 64, "button_8", #__flag_Left  )
          SetColor( BUTTON_8, #PB_Gadget_BackColor, $0 )
          SetFont( BUTTON_8, FONT_ARIAL_19 )
       
-      BUTTON_9 = Button( 21, 91, 260, 29, "button_9", #__flag_TextRight  )
+      BUTTON_9 = Button( 21, 91, 260, 29, "button_9", #__flag_Right  )
          SetFont( BUTTON_9, FONT_CONSOLAS_16_BOLD_ITALIC  )
       
-      BUTTON_19 = Button( 21, 126, 260, 29, "button_19", #__flag_TextRight  )
+      BUTTON_19 = Button( 21, 126, 260, 29, "button_19", #__flag_Right  )
       BUTTON_10 = Button( 21, 175, 260, 64, "button_10" )
          SetFont( BUTTON_10, FONT_CONSOLAS_25_BOLD  )
 EndProcedure
@@ -43,8 +43,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    End
 CompilerEndIf
-; IDE Options = PureBasic 6.21 - C Backend (MacOS X - x64)
-; CursorPosition = 4
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 27
+; FirstLine = 6
 ; Folding = -
 ; EnableXP
 ; DPIAware

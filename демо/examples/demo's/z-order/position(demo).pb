@@ -27,7 +27,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetClass(Widget(), "first_2")      
       
       CloseList()    
-      Button(3, 4, 17, 25+6, "1", #__flag_Textleft) 
+      Button(3, 4, 17, 25+6, "1", #__flag_left) 
       SetClass(Widget(), GetText(Widget()))    
       CloseList()       
       CloseList()     
@@ -53,7 +53,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetClass(Widget(), "this_container")          
       Container(10, 4, 60, 74-4)       
       SetColor(Widget(), #PB_Gadget_BackColor, $ffff00)    
-      Button(10, 4, 60, 68-8, "5", #__flag_Textleft) 
+      Button(10, 4, 60, 68-8, "5", #__flag_left) 
       SetClass(Widget(), GetText(Widget()))    
       CloseList()         
       CloseList()      
@@ -179,9 +179,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect        
    Until gQuit
 CompilerEndIf
-; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 157
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 55
+; FirstLine = 51
 ; Folding = ---
 ; EnableXP
 ; DPIAware
