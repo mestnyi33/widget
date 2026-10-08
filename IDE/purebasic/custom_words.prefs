@@ -6,6 +6,7 @@
 ;Width
 ;Height
 ;Flag
+Gadget
 
 Clip
 ReClip
@@ -50,16 +51,6 @@ DPIResolution
 DPIResolutionX
 DPIResolutionY
 
-IsCanvas
-OpenCanvas
-CloseCanvas
-CanvasMouseX
-CanvasMouseY
-GetCanvasWindow
-GetCanvasGadget
-CanvasMouseButton
-ChangeCurrentCanvas
-
 MouseEnter
 MouseClick
 MousePress
@@ -86,6 +77,21 @@ GadgetMouseY
 GetMouseX
 GetMouseY
 
+IsCanvas
+OpenCanvas
+CloseCanvas
+CanvasMouseX
+CanvasMouseY
+GetCanvasWindow
+GetCanvasGadget
+GetWindow
+
+Root
+GetRoot
+NextRoot
+PrevRoot
+ChangeCurrentRoot
+
 PressedButton
 EnteredButton
 
@@ -93,10 +99,6 @@ Leaved
 Pressed
 Entered
 Opened
-
-Root
-NextRoot
-PrevRoot
 
 Widget
 mouse
@@ -117,10 +119,10 @@ WidgetEventData
 WidgetEventItem
 
 GetEvent 
-GetEventWidget
-GetEventType
-GetEventData
-GetEventItem
+GetWidget
+GetType
+GetData
+GetItem
 
 Events
 AddEvents
@@ -128,10 +130,6 @@ ResetEvents
 RemoveEvents
 DoEvents
         
-GetWindow
-GetGadget
-GetRoot
-
 Draw
 ReDraw
 Drawing
@@ -369,14 +367,13 @@ ChangeItemState
 ChangeStatus
 GetStatus
 
+Canvas
 Button
 ButtonImage
 Calendar
-Canvas
 CheckBox
 HyperLink
 IPAddress
-Image
 ListIcon
 ListView
 ComboBox
@@ -397,6 +394,7 @@ Scroll
 Shortcut
 Spin
 Splitter
+;Image
 ;String
 ;Text
 Track

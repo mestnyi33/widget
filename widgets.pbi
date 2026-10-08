@@ -5388,7 +5388,7 @@ Module widgets
                SetParent( *this, *displayroot )
             EndIf
             
-            ChangeCurrentCanvas( GadgetID( *display\root\canvas\gadget ))
+            ChangeCurrentRoot( GadgetID( *display\root\canvas\gadget ))
             *this\autosize = 1
          EndIf
          
@@ -17067,7 +17067,7 @@ Module widgets
             Debug " " + PBEventString(eventtype) +" "+ eventgadget
          EndIf
          If IsGadget(eventgadget)
-            ChangeCurrentCanvas( GadgetID( eventgadget ))
+            ChangeCurrentRoot( GadgetID( eventgadget ))
             ;
             Root( )\canvas\enter = 1
             ;
@@ -17084,7 +17084,7 @@ Module widgets
          
          If Pressed( ) And
             Pressed( )\root <> Root( )
-            ChangeCurrentCanvas( GadgetID( Pressed( )\root\canvas\gadget ))
+            ChangeCurrentRoot( GadgetID( Pressed( )\root\canvas\gadget ))
          EndIf
          ;
          Root( )\canvas\enter = 0
@@ -22877,7 +22877,7 @@ Module widgets
                ; Указываем PureBasic, в каком окне теперь создавать гаджеты
                UseGadgetList( WindowID( *parent\root\canvas\window ))
                ; Обновляем глобальный указатель на текущий активный холст
-               ChangeCurrentCanvas( GadgetID( *parent\root\canvas\gadget ))
+               ChangeCurrentRoot( GadgetID( *parent\root\canvas\gadget ))
             EndIf
          EndIf
          
@@ -22911,7 +22911,7 @@ Module widgets
                   ; Указываем PureBasic, в каком окне теперь создавать гаджеты
                   UseGadgetList( WindowID( *prevRoot\canvas\window ))
                   ; Обновляем глобальный указатель на текущий активный холст
-                  ChangeCurrentCanvas( GadgetID( *prevRoot\canvas\gadget ))
+                  ChangeCurrentRoot( GadgetID( *prevRoot\canvas\gadget ))
                EndIf
             EndIf
             
@@ -25057,7 +25057,7 @@ Module widgets
       ;SetActiveGadget( *root\canvas\gadget ) 
       ;          ;\\
       ;     SetActive( *root )  
-      ;          ChangeCurrentCanvas( *root\canvas\gadgetID )
+      ;          ChangeCurrentRoot( *root\canvas\gadgetID )
       ;          CanvasMouseX( ) = mouse::GadgetMouseX( *root\canvas\gadget )
       ;          CanvasMouseY( ) = mouse::GadgetMouseY( *root\canvas\gadget )
       ;          GetAtPoint( *root, CanvasMouseX( ), CanvasMouseY( ), widgets( ))
@@ -25967,9 +25967,9 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 21534
-; FirstLine = 21531
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 25059
+; FirstLine = 25034
 ; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware

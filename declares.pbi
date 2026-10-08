@@ -918,7 +918,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Macro IsCanvas(_gadget_)
       key::GetData( GadgetID(_gadget_))
    EndMacro
-   Macro ChangeCurrentCanvas( _canvasID_ )
+   Macro ChangeCurrentRoot( _canvasID_ )
       If key::GetData(_canvasID_)
          widgets::Root( ) = key::GetData(_canvasID_)
       EndIf
@@ -1936,9 +1936,9 @@ CompilerEndIf
 CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
-; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 707
-; FirstLine = 532
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 920
+; FirstLine = 690
 ; Folding = 9AcgA-PBu----------PcZ9------DA5--fAgAAAg-
 ; EnableXP
 ; DPIAware
