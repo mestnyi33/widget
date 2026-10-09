@@ -28,8 +28,10 @@ EndStructure
 
 Global tabbar.multirowtabcontrol
 Global slant = 20 
-Global bottom_size = 0
-
+Global TopSpacing = 6
+Global RowSpacing = 2
+Global BottonSpacing = RowSpacing
+   
 ; добавление вкладки и автоматическое создание её контейнера под холстом
 Procedure addcustomtab(*control.multirowtabcontrol, title$, windowid, canvasheight, imageid.i = 0, tabcolor.l=0)
    AddElement(*control\tabs())
@@ -114,7 +116,7 @@ Procedure drawoldchrometab(x, y, w, h, isactive, activecolor.l, nonactivecolor.l
    LineXY(x + localslant, y, x + w - localslant, y)         
    LineXY(x + w - localslant, y, x + w, y + h - 1)     
    
-   If isactive
+   If isactive > 0
       ; внутренний светлый блик (только для активной)
       FrontColor(innerhighlightcolor)
       LineXY(x + 2, y + h - 1, x + localslant + 1, y + 1)
@@ -129,7 +131,7 @@ EndProcedure
 Procedure.i RecalculateTabs(*control.multirowtabcontrol)
    Protected canvasw = GadgetWidth(*control\canvasid)
    Protected currentx = 4
-   Protected currenty = 6
+   Protected currenty = TopSpacing
    Protected currentrow = 0
    Protected maxheight = 0
    Protected maxwidth = canvasw - 4
@@ -137,11 +139,11 @@ Procedure.i RecalculateTabs(*control.multirowtabcontrol)
    Protected totalrowwidth.i, extraspace.i, addpixels.i, remainder.i
    Protected tabcount = ListSize(*control\tabs())
    
-   If tabcount = 0 : ProcedureReturn *control\tabheight + bottom_size : EndIf
+   If tabcount = 0 : ProcedureReturn *control\tabheight + BottonSpacing : EndIf
    
    If StartDrawing(CanvasOutput(*control\canvasid))
       DrawingFont(*control\fontid)
-      ; 1. заполняем массив указателей и вычисляем начальную базовую ширину табов по тексту
+      
       Dim *rowtabs.customtab(tabcount - 1)
       i = 0
       ForEach *control\tabs()
@@ -152,7 +154,7 @@ Procedure.i RecalculateTabs(*control.multirowtabcontrol)
          If *rowtabs(i)\imageid <> 0
             basewidth + 20
          EndIf
-         basewidth + 16 ; <--- добавляем место под крестик закрытия
+         basewidth + 16 
          *rowtabs(i)\width = basewidth
          i + 1
       Next
@@ -160,25 +162,20 @@ Procedure.i RecalculateTabs(*control.multirowtabcontrol)
       startidx = 0
       currentx = 4
       
-      ; 2. цикл распределения по координатам и точечного растяжения
       For i = 0 To tabcount - 1
          Protected tabw = *rowtabs(i)\width
          
-         ; условие переноса: текущий таб не влезает в границы холста
          If currentx + tabw > maxwidth And i > startidx
-            endidx = i - 1 ; ряд формируют табы от startidx до предыдущего (влезшего)
+            endidx = i - 1 
             
-            ; считаем, какую ширину этот ряд сейчас занимает
             totalrowwidth = 4
             For k = startidx To endidx
                totalrowwidth + *rowtabs(k)\width
                If k < endidx : totalrowwidth - (slant * 4 / 3) : EndIf
             Next
             
-            ; вычисляем дыру справа
             extraspace = (maxwidth) - totalrowwidth
             
-            ; растягиваем только этот ряд (так как из него улетел элемент i)
             Protected tabsinrow = (endidx - startidx) + 1
             If extraspace > 0 And tabsinrow > 0
                addpixels = extraspace / tabsinrow
@@ -193,60 +190,69 @@ Procedure.i RecalculateTabs(*control.multirowtabcontrol)
                Next
             EndIf
             
-            ; записываем финальные координаты для растянутого ряда
             Protected tempx = 4
             For k = startidx To endidx
                *rowtabs(k)\x = tempx
+               ; Временно пишем дефолтный Y, в конце мы его перевернем
                *rowtabs(k)\y = currenty
                *rowtabs(k)\row = currentrow
                
-               If currenty + *rowtabs(k)\height > maxheight
-                  maxheight = currenty + *rowtabs(k)\height
-               EndIf
                tempx + *rowtabs(k)\width - (slant * 4 / 3)
             Next
             
-            ; переходим на следующую строку для оставшихся табов
             currentrow + 1
-            currenty + *control\tabheight + 2
+            currenty + (*control\tabheight + RowSpacing-1)
             currentx = 4
-            startidx = i ; новый ряд начнется с невлезшего таба
+            startidx = i 
          EndIf
          
-         ; шагаем по оси x для следующей проверки
          currentx + *rowtabs(i)\width - (slant * 4 / 3)
       Next
       
-      ; 3. обработка последнего ряда (в котором переноса не было)
-      ; он просто выстраивается слева по своей базовой ширине текста, без какого-либо растягивания!
+      ; Последний ряд (в который упал неполный хвост)
       currentx = 4
       For k = startidx To tabcount - 1
          *rowtabs(k)\x = currentx
          *rowtabs(k)\y = currenty
          *rowtabs(k)\row = currentrow
-         
-         If currenty + *rowtabs(k)\height > maxheight
-            maxheight = currenty + *rowtabs(k)\height
-         EndIf
          currentx + *rowtabs(k)\width - (slant * 4 / 3)
       Next
       
-      ; --- ВОТ СЮДА ПЕРЕНОСИМ КОРРЕКТИРОВКУ ПЛЮСА ---
-      ; Теперь currenty гарантированно равен высоте самого НИЖНЕГО ряда!
-      *control\PlusTab\width = (slant * 2) ; + TextWidth(*control\PlusTab\title$) + (*control\paddingx * 2) 
-      *control\PlusTab\height = *control\tabheight
-      *control\PlusTab\y = currenty
-      *control\PlusTab\x = canvasw - *control\PlusTab\width - 4
-      *control\PlusTab\row = currentrow
+      ; --- ИДЕАЛЬНОЕ И ПРОСТОЕ ИСПРАВЛЕНИЕ: ПЕРЕВОРАЧИВАЕМ ЭТАЖИ ---
+      ; Общее количество созданных рядов равно currentrow
+      Protected TotalRows = currentrow
       
-      ; Проверяем, что общая высота холста учитывает и этот нижний ряд с кнопкой Плюс
-      If *control\PlusTab\y + *control\PlusTab\height > maxheight
+      ; Проходим по всем рассчитанным табам и инвертируем их координаты Y
+      For k = 0 To tabcount - 1
+         ; Финальный номер строки (теперь ряд 0 станет верхним, а последний - нижним)
+         Protected InvertedRow = TotalRows - *rowtabs(k)\row
+         
+         ; Вычисляем чистый Y на основе инвертированного ряда
+         *rowtabs(k)\y = TopSpacing + InvertedRow * (*control\tabheight + RowSpacing-1)
+         *rowtabs(k)\row = InvertedRow
+         
+         ; Считаем maxheight на основе новых, правильных координат Y
+         If maxheight < *rowtabs(k)\y + *rowtabs(k)\height  
+            maxheight = *rowtabs(k)\y + *rowtabs(k)\height
+         EndIf
+      Next
+      
+      ; --- КОРРЕКТИРОВКА ПЛЮСА ---
+      ; Кнопка Плюс теперь гарантированно получает координаты самого НИЖНЕГО этажа (TotalRows)
+      *control\PlusTab\width = (slant * 2) 
+      *control\PlusTab\height = *control\tabheight
+      *control\PlusTab\y = TopSpacing + TotalRows * (*control\tabheight + RowSpacing-1)
+      *control\PlusTab\x = canvasw - *control\PlusTab\width - 4
+      *control\PlusTab\row = TotalRows
+      
+      If maxheight < *control\PlusTab\y + *control\PlusTab\height
          maxheight = *control\PlusTab\y + *control\PlusTab\height
       EndIf
+      
       StopDrawing()
    EndIf
    
-   ProcedureReturn maxheight + bottom_size
+   ProcedureReturn maxheight + BottonSpacing
 EndProcedure
 
 Procedure draw_closeButton(*tab.customtab )
@@ -290,12 +296,16 @@ Procedure draw_plusButton(*control.multirowtabcontrol, bgcolor.l)
    DrawText(plus_x, *control\PlusTab\y + 6, "+", textcolor, textBgcolor)
 EndProcedure
 
-Procedure draw_tab(isactive, *tab.customtab, bgcolor.l)
+Procedure draw_tab(isactive, *tab.customtab, bgcolor.l, max_row_index.i = -1)
    Protected.l textcolor, nonactivecolor, textBgcolor
    If isactive
       textcolor = RGB(0, 0, 0)
       textBgcolor = bgcolor
-      drawoldchrometab(*tab\x, *tab\y, *tab\width, *tab\height + bottom_size, 1, bgcolor)
+      If *tab\row = max_row_index
+         drawoldchrometab(*tab\x, *tab\y, *tab\width, *tab\height + BottonSpacing, 1, bgcolor)
+      Else
+         drawoldchrometab(*tab\x, *tab\y, *tab\width, *tab\height, -1, bgcolor)
+      EndIf
    Else
       Protected.l nabaser = Red(bgcolor) + 25
       Protected.l nabaseg = Green(bgcolor) + 20
@@ -358,7 +368,7 @@ Procedure redrawtabs(*control.multirowtabcontrol)
       ; 1. отрисовка неактивных вкладок
       ForEach *control\tabs()
          If @*control\tabs() <> *control\active
-             draw_tab(#False, @*control\tabs(), canvasbgcolor )
+             draw_tab(#False, @*control\tabs(), canvasbgcolor, *control\PlusTab\row )
          EndIf
       Next
       
@@ -370,7 +380,7 @@ Procedure redrawtabs(*control.multirowtabcontrol)
          tabcolor = GetGadgetColor(*control\active\containerid, #PB_Gadget_BackColor)
          If tabcolor = -1 : tabcolor = RGB(255, 255, 255) : EndIf
          
-         draw_tab(#True,*control\active, tabcolor )
+         draw_tab(#True,*control\active, tabcolor, *control\PlusTab\row )
       EndIf
       
       StopDrawing()
@@ -665,8 +675,8 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    ForEver
 EndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 128
-; FirstLine = 128
-; Folding = -----0---------
+; CursorPosition = 32
+; FirstLine = 21
+; Folding = ---------------
 ; EnableXP
 ; DPIAware
