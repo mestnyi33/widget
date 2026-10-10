@@ -27,9 +27,9 @@ Structure multirowtabcontrol
 EndStructure
 
 Global tabbar.multirowtabcontrol
-Global slant = 20 
-Global TopSpacing = 6
-Global RowSpacing = 2
+Global slant = DesktopScaledX(20)
+Global TopSpacing = DesktopScaledX(6)
+Global RowSpacing = DesktopScaledX(2)
 Global BottonSpacing = RowSpacing
    
 ; добавление вкладки и автоматическое создание её контейнера под холстом
@@ -61,7 +61,7 @@ EndProcedure
 
 ; полностью адаптивная процедура рендеринга ретро-трапеции
 Procedure drawoldchrometab(x, y, w, h, isactive, activecolor.l, nonactivecolor.l = -1, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
-   Protected i, dy
+   Protected i, dy, dh = (h); - 1)
    Protected localslant = slant
    
    If localslant > h: localslant = h: EndIf
@@ -89,7 +89,7 @@ Procedure drawoldchrometab(x, y, w, h, isactive, activecolor.l, nonactivecolor.l
    ; 3. заливка тела вкладки
    If isactive
       FrontColor(activecolor)
-      For dy = 0 To h - 1
+      For dy = 0 To dh
          Protected currentslant = localslant * (1.0 - (dy / h))
          LineXY(x + currentslant, y + dy, x + w - currentslant, y + dy)
       Next
@@ -98,8 +98,8 @@ Procedure drawoldchrometab(x, y, w, h, isactive, activecolor.l, nonactivecolor.l
       Protected baseg = Green(nonactivecolor)
       Protected baseb = Blue(nonactivecolor)
       
-      For dy = 0 To h - 1
-         Protected factor.f = dy / (h - 1)
+      For dy = 0 To dh
+         Protected factor.f = dy / dh
          r = baser + ((baser - 25) - baser) * factor
          g = baseg + ((baseg - 20) - baseg) * factor
          b = baseb + ((baseb - 20) - baseb) * factor
@@ -112,34 +112,34 @@ Procedure drawoldchrometab(x, y, w, h, isactive, activecolor.l, nonactivecolor.l
    ; 4. отрисовка контуров
    ; внешняя рамка
    FrontColor(outerbordercolor)
-   LineXY(x, y + h - 1, x + localslant, y)             
-   LineXY(x + localslant, y, x + w - localslant, y)         
-   LineXY(x + w - localslant, y, x + w, y + h - 1)     
+   LineXY(x, y-1 + h, x + localslant, y)             
+   LineXY(x + localslant, y-1, x + w - localslant, y-1)         
+   LineXY(x + w - localslant, y, x + w, y-1 + h)     
    
    If isactive > 0
       ; внутренний светлый блик (только для активной)
       FrontColor(innerhighlightcolor)
-      LineXY(x + 2, y + h - 1, x + localslant + 1, y + 1)
+      LineXY(x + 2, y + dh, x + localslant + 1, y + 1)
       LineXY(x + localslant + 1, y + 1, x + w - localslant - 1, y + 1)
-      LineXY(x + w - localslant - 1, y + 1, x + w - 2, y + h - 1)
+      LineXY(x + w - localslant - 1, y + 1, x + w - 2, y + dh)
    Else
       ; нижняя замыкающая линия для неактивных
-      LineXY(x, y + h - 1, x + w, y + h - 1);, outerbordercolor)
+      LineXY(x, y + h-1, x + w, y + h-1);, outerbordercolor)
    EndIf
 EndProcedure
 
 Procedure.i RecalculateTabs(*control.multirowtabcontrol)
-   Protected canvasw = GadgetWidth(*control\canvasid)
-   Protected currentx = 4
+   Protected canvasw = DesktopScaledX(GadgetWidth(*control\canvasid))
+   Protected currentx = DesktopScaledX(4)
    Protected currenty = TopSpacing
    Protected currentrow = 0
    Protected maxheight = 0
-   Protected maxwidth = canvasw - 4
+   Protected maxwidth = canvasw - DesktopScaledX(4)
    Protected i.i, k.i, startidx.i, endidx.i
    Protected totalrowwidth.i, extraspace.i, addpixels.i, remainder.i
    Protected tabcount = ListSize(*control\tabs())
    
-   If tabcount = 0 : ProcedureReturn *control\tabheight + BottonSpacing : EndIf
+   If tabcount = 0 : ProcedureReturn DesktopUnscaledY(*control\tabheight + BottonSpacing) : EndIf
    
    If StartDrawing(CanvasOutput(*control\canvasid))
       DrawingFont(*control\fontid)
@@ -152,15 +152,15 @@ Procedure.i RecalculateTabs(*control.multirowtabcontrol)
          
          Protected basewidth = TextWidth(*rowtabs(i)\title$) + (*control\paddingx * 2) + (slant * 2)
          If *rowtabs(i)\imageid <> 0
-            basewidth + 20
+            basewidth + DesktopScaledX(20)
          EndIf
-         basewidth + 16 
+         basewidth + DesktopScaledX(16) 
          *rowtabs(i)\width = basewidth
          i + 1
       Next
       
       startidx = 0
-      currentx = 4
+      currentx = DesktopScaledX(4)
       
       For i = 0 To tabcount - 1
          Protected tabw = *rowtabs(i)\width
@@ -168,7 +168,7 @@ Procedure.i RecalculateTabs(*control.multirowtabcontrol)
          If currentx + tabw > maxwidth And i > startidx
             endidx = i - 1 
             
-            totalrowwidth = 4
+            totalrowwidth = DesktopScaledX(4)
             For k = startidx To endidx
                totalrowwidth + *rowtabs(k)\width
                If k < endidx : totalrowwidth - (slant * 4 / 3) : EndIf
@@ -184,13 +184,13 @@ Procedure.i RecalculateTabs(*control.multirowtabcontrol)
                For k = startidx To endidx
                   *rowtabs(k)\width + addpixels
                   If remainder > 0
-                     *rowtabs(k)\width + 1
+                     *rowtabs(k)\width + DesktopScaledX(1)
                      remainder - 1
                   EndIf
                Next
             EndIf
             
-            Protected tempx = 4
+            Protected tempx = DesktopScaledX(4)
             For k = startidx To endidx
                *rowtabs(k)\x = tempx
                ; Временно пишем дефолтный Y, в конце мы его перевернем
@@ -201,8 +201,8 @@ Procedure.i RecalculateTabs(*control.multirowtabcontrol)
             Next
             
             currentrow + 1
-            currenty + (*control\tabheight + RowSpacing-1)
-            currentx = 4
+            currenty + (*control\tabheight + RowSpacing);-DesktopScaledX(1))
+            currentx = DesktopScaledX(4)
             startidx = i 
          EndIf
          
@@ -210,7 +210,7 @@ Procedure.i RecalculateTabs(*control.multirowtabcontrol)
       Next
       
       ; Последний ряд (в который упал неполный хвост)
-      currentx = 4
+      currentx = DesktopScaledX(4)
       For k = startidx To tabcount - 1
          *rowtabs(k)\x = currentx
          *rowtabs(k)\y = currenty
@@ -228,7 +228,7 @@ Procedure.i RecalculateTabs(*control.multirowtabcontrol)
          Protected InvertedRow = TotalRows - *rowtabs(k)\row
          
          ; Вычисляем чистый Y на основе инвертированного ряда
-         *rowtabs(k)\y = TopSpacing + InvertedRow * (*control\tabheight + RowSpacing-1)
+         *rowtabs(k)\y = TopSpacing + InvertedRow * (*control\tabheight + RowSpacing);-DesktopScaledX(1))
          *rowtabs(k)\row = InvertedRow
          
          ; Считаем maxheight на основе новых, правильных координат Y
@@ -241,8 +241,8 @@ Procedure.i RecalculateTabs(*control.multirowtabcontrol)
       ; Кнопка Плюс теперь гарантированно получает координаты самого НИЖНЕГО этажа (TotalRows)
       *control\PlusTab\width = (slant * 2) 
       *control\PlusTab\height = *control\tabheight
-      *control\PlusTab\y = TopSpacing + TotalRows * (*control\tabheight + RowSpacing-1)
-      *control\PlusTab\x = canvasw - *control\PlusTab\width - 4
+      *control\PlusTab\y = TopSpacing + TotalRows * (*control\tabheight + RowSpacing);-DesktopScaledX(1))
+      *control\PlusTab\x = canvasw - *control\PlusTab\width - DesktopScaledX(4)
       *control\PlusTab\row = TotalRows
       
       If maxheight < *control\PlusTab\y + *control\PlusTab\height
@@ -252,20 +252,21 @@ Procedure.i RecalculateTabs(*control.multirowtabcontrol)
       StopDrawing()
    EndIf
    
-   ProcedureReturn maxheight + BottonSpacing
+   ProcedureReturn DesktopUnscaledY(maxheight + BottonSpacing)
 EndProcedure
 
 Procedure draw_closeButton(*tab.customtab )
+   Protected h_8 = DesktopScaledX(8)
    ; --- рисуем крестик для активной вкладки (справа) ---
-   Protected closex = *tab\x + *tab\width - slant - 14
-   Protected closey = *tab\y + (*tab\height - 8) / 2
+   Protected closex = *tab\x + *tab\width - slant - DesktopScaledX(14)
+   Protected closey = *tab\y + (*tab\height - h_8) / 2
    If *tab\close_ishovered 
-      Circle(closex + 4, closey + 4, 7, RGB(240, 70, 70)) 
-      LineXY(closex, closey, closex + 8, closey + 8, RGB(255, 255, 255)) 
-      LineXY(closex + 8, closey, closex, closey + 8, RGB(255, 255, 255)) 
+      Circle(closex + h_8/2, closey + h_8/2, DesktopScaledX(7), RGB(240, 70, 70)) 
+      LineXY(closex, closey, closex + h_8, closey + h_8, RGB(255, 255, 255)) 
+      LineXY(closex + h_8, closey, closex, closey + h_8, RGB(255, 255, 255)) 
    Else 
-      LineXY(closex, closey, closex + 8, closey + 8, RGB(160, 50, 50)) 
-      LineXY(closex + 8, closey, closex, closey + 8, RGB(160, 50, 50)) 
+      LineXY(closex, closey, closex + h_8, closey + h_8, RGB(160, 50, 50)) 
+      LineXY(closex + h_8, closey, closex, closey + h_8, RGB(160, 50, 50)) 
    EndIf
 EndProcedure
 
@@ -345,8 +346,8 @@ Procedure draw_tab(isactive, *tab.customtab, bgcolor.l, max_row_index.i = -1)
 EndProcedure
 
 Procedure redrawtabs(*control.multirowtabcontrol)
-   Protected canvasw = GadgetWidth(*control\canvasid)
-   Protected canvash = GadgetHeight(*control\canvasid)
+   Protected canvasw = DesktopScaledX(GadgetWidth(*control\canvasid))
+   Protected canvash = DesktopScaledY(GadgetHeight(*control\canvasid))
    Protected tabcolor.l 
    Protected canvasbgcolor.l
    Protected nonactivecolor.l
@@ -364,7 +365,7 @@ Procedure redrawtabs(*control.multirowtabcontrol)
       ; линия пола
       Protected floorcolor = RGB(Red(canvasbgcolor) * 0.7, Green(canvasbgcolor) * 0.7, Blue(canvasbgcolor) * 0.7)
       LineXY(0, canvash - 1, canvasw, canvash - 1, floorcolor)
-      
+     
       ; 1. отрисовка неактивных вкладок
       ForEach *control\tabs()
          If @*control\tabs() <> *control\active
@@ -495,10 +496,12 @@ Procedure DoTabEvents(*control.multirowtabcontrol)
       
       ; 3. Вычисляем флаг наведения на крестик закрытия (только для обычных вкладок)
       Protected ShouldCloseHover.a = 0
+      Protected h_12 = DesktopScaledX(12)
+      Protected h_2 = DesktopScaledX(2)
       If *hoveredtab <> 0 And *hoveredtab <> *control\PlusTab
-         Protected closex = *hoveredtab\x + *hoveredtab\width - localslant - 14 
-         If mx >= closex - 2 And mx <= closex + 10 
-            If my >= *hoveredtab\y + (*hoveredtab\height - 12)/2 And my <= *hoveredtab\y + (*hoveredtab\height + 12)/2 
+         Protected closex = *hoveredtab\x + *hoveredtab\width - localslant - DesktopScaledX(14)
+         If mx >= closex - h_2 And mx <= closex + h_12 - h_2
+            If my >= *hoveredtab\y + (*hoveredtab\height - h_12)/2 And my <= *hoveredtab\y + (*hoveredtab\height + h_12)/2 
                ShouldCloseHover = 1
             EndIf 
          EndIf 
@@ -617,8 +620,8 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    With tabbar
       \canvasid  = CanvasGadget(#PB_Any, 0, 0, windoww, 40)
       \fontid    = LoadFont(0, "tahoma", 12)
-      \tabheight = 29
-      \paddingx  = 6
+      \tabheight = DesktopScaledY(29)
+      \paddingx  = DesktopScaledX(6)
       ;\bgcolor     = rgb(random(255), random(255), random(255)) ; твой любимый цвет. сделай его зеленым или серым — и весь интерфейс сам перестроится!
       \PlusTab\title$ = "+"
    EndWith
@@ -674,9 +677,9 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
       EndSelect
    ForEver
 EndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 32
-; FirstLine = 21
-; Folding = ---------------
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 258
+; FirstLine = 227
+; Folding = 8--------------
 ; EnableXP
 ; DPIAware
