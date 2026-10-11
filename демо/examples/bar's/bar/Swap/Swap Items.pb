@@ -33,7 +33,7 @@ Structure _s_IMG Extends _s_COORDINATE
    change.b
 EndStructure
 
-Structure _s_TAB
+Structure _s_TAB Extends _s_COORDINATE
    ID.i             ; Номер элемента в списке данных строки (0, 1, 2...) 
    txt._s_TXT       ; Имя поля заголовка
    img._s_IMG
@@ -42,7 +42,7 @@ Structure _s_TAB
    pos.l
    size.l
    align.a          ; Выравнивание
-   ; mask.q           ; Маска конкретной вкладки
+                    ; mask.q           ; Маска конкретной вкладки
    
    ; Поля для идеальной математики плавного сдвига
    offset.l        ; Динамический визуальный сдвиг
@@ -65,15 +65,15 @@ Structure _s_TABS
 EndStructure
 
 Structure _s_WIDGET
-;    padding.a
-;    spacing.a             
+   ;    padding.a
+   ;    spacing.a             
    Tab._s_TABS
    dragOffSet.i     ; Точка захвата мыши
    
-      canvasid     .i  
+   canvasid     .i  
    fontid       .i  
    bgcolor      .l ; <--- добавь это поле для управления общим фоном холста
-
+   
 EndStructure
 
 ; =====================================================================
@@ -99,8 +99,17 @@ Procedure TotalSize(*this._s_WIDGET)
    If *this\tab\press = #Null
       ForEach *this\tab\_s()
          *tab = @*this\tab\_s()
-         *tab\pos = position : position + *tab\size + *this\tab\spacing
-         *tab\offset = 0
+         *tab\pos = position
+         ;*tab\offset = 0
+         
+         ; ИСПРАВЛЕНИЕ: Принудительно обновляем x/y для новой отрисовки
+         If *this\tab\vertical
+            *tab\y = *tab\pos
+         Else
+            *tab\x = *tab\pos
+         EndIf
+         
+         position + *tab\size + *this\tab\spacing
       Next
       *this\tab\TotalSize = position - *this\tab\spacing
    EndIf
@@ -124,158 +133,131 @@ Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, align.a = #__flag_Left, 
    EndIf
 EndProcedure
 
-; Будущая рабочая процедура (когда все метрики уже посчитаны при создании)
-Procedure DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, isDragged.b, isResize.b=0)
-   Protected contentX.i, contentY.i, contentW.i, contentH.i
-   Protected txt_X.i, txt_Y.i, txt_W.i, txt_H.i
-   Protected img_X.i, img_Y.i, img_W.i, img_H.i
-   Protected rx.i, rw.i 
-   Protected ry.i, rh.i
-   Protected txt_change = *tab\txt\change 
-   Protected img_change = *tab\img\change
+Procedure UpdateTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b=0)
+   Protected contentX.i, contentY.i, rx.i, rw.i , ry.i, rh.i
+   Protected txt_X.i, txt_Y.i, img_X.i, img_Y.i
+   
+   ; Считываем размеры сразу на старте — теперь это работает идеально!
+   Protected txt_w = *tab\txt\width  
+   Protected txt_h = *tab\txt\height
+   Protected img_w = *tab\img\width  
+   Protected img_h = *tab\img\height 
    
    ; UPDATE ROW
-   If txt_change Or img_change Or isResize
-      Protected padding.i = DesktopScaledX(8)
-      Protected iconSpacing.i = 0
-      
-      ; 1. Замеры метрик
-      If txt_change
-         If *tab\txt\Text <> ""
-            txt_w = TextWidth(*tab\txt\Text)
-            txt_h = TextHeight(*tab\txt\Text)
-         Else
-            txt_w = 0 : txt_h = 0
-         EndIf
-      EndIf
-      
-      If img_change
-         If IsImage(*tab\img\Image)
-            img_w = ImageWidth(*tab\img\Image)
-            img_h = ImageHeight(*tab\img\Image)
-         Else
-            img_w = 0 : img_h = 0
-         EndIf
-      EndIf
-      
-      ; Расчет отступа, если присутствуют оба элемента
-      If (img_w Or img_h) And 
-         (txt_w Or txt_h)
-         iconSpacing = DesktopScaledX(6)
-      EndIf
-      
-      ; 2. ВНЕШНЕЕ ПОЗИЦИОНИРОВАНИЕ ВСЕГО БЛОКА
-      If vertical
-         ; Вертикальный режим: складываем высоты, по ширине берем максимум
-         contentH = img_h + txt_h + iconSpacing
-         If img_w > txt_w
-            contentW = img_w
-         Else
-            contentW = txt_w
-         EndIf
-         contentY = GetAlignPosition(*tab\align, *tab\size, contentH, padding)
+   Protected padding.i = DesktopScaledX(8)
+   
+   ; Общие размеры самой вкладки
+   If vertical
+     ; *tab\x = 0
+     ; *tab\y = *tab\pos + *tab\offset
+      *tab\width = gWidth
+      *tab\height = *tab\size
+   Else
+    ;  *tab\x = *tab\pos + *tab\offset
+     ; *tab\y = 0
+      *tab\width = *tab\size
+      *tab\height = gHeight
+   EndIf 
+
+   ; 1. Замеры метрик (Пересчитываем только то, что реально изменилось)
+   If *tab\txt\change 
+      *tab\txt\change = #False
+      If *tab\txt\Text <> ""
+         txt_w = TextWidth(*tab\txt\Text)
+         txt_h = TextHeight(*tab\txt\Text)
       Else
-         ; Горизонтальный режим: складываем ширину, по высоте берем максимум
-         contentW = img_w + txt_w + iconSpacing
-         If img_h > txt_h
-            contentH = img_h
-         Else
-            contentH = txt_h
-         EndIf
-         contentX = GetAlignPosition(*tab\align, *tab\size, contentW, padding)
+         txt_w = 0 : txt_h = 0
       EndIf
-      
-      ; 3. ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ
-       If txt_change Or isResize
-         If vertical
-            txt_x = (gWidth - txt_w) >> 1
-            txt_y = contentY
-            If Not *tab\align & #__flag_Bottom
-               If img_h : txt_y + img_h + iconSpacing : EndIf
-            EndIf
-         Else
-            txt_y = (gHeight - txt_h) >> 1
-            txt_x = contentX
-            If Not *tab\align & #__flag_Right
-               If img_w : txt_x + img_w + iconSpacing : EndIf
-            EndIf
-         EndIf
-      EndIf
-      
-      If img_change Or isResize
-         If vertical
-            img_x = (gWidth - img_w) >> 1
-            img_y = contentY
-            If *tab\align & #__flag_Bottom
-               If txt_h : img_y + txt_h + iconSpacing : EndIf
-            EndIf
-         Else
-            img_y = (gHeight - img_h) >> 1
-            img_x = contentX
-            If *tab\align & #__flag_Right
-               If txt_w : img_x + txt_w + iconSpacing : EndIf
-            EndIf
-         EndIf
-      EndIf
-      
-     
-      
-      If img_change
-         *tab\img\x = img_x
-         *tab\img\y = img_y
-         *tab\img\width = img_w
-         *tab\img\height = img_h
-         *tab\img\change = #False
-      EndIf
-      
-      If txt_change
-         *tab\txt\x = txt_x
-         *tab\txt\y = txt_y
-         *tab\txt\width = txt_w
-         *tab\txt\height = txt_h
-         *tab\txt\change = #False
-      EndIf
-    Else
-      img_x = *tab\img\x 
-      img_y = *tab\img\y
-      img_w = *tab\img\width
-      img_h = *tab\img\height
-      
-      txt_x = *tab\txt\x 
-      txt_y = *tab\txt\y
-      txt_w = *tab\txt\width
-      txt_h = *tab\txt\height
    EndIf
    
-   ;
+   If *tab\img\change
+      *tab\img\change = #False
+      If IsImage(*tab\img\Image)
+         img_w = ImageWidth(*tab\img\Image)
+         img_h = ImageHeight(*tab\img\Image)
+      Else
+         img_w = 0 : img_h = 0
+      EndIf
+   EndIf
+   
+   ; 2. Расчет отступа, если присутствуют оба элемента
+   If img_w > 0 And txt_w > 0
+      Protected iconSpacing = DesktopScaledX(6)
+   EndIf
+   
+      
+   ; 3. ЕДИНОВРЕМЕННОЕ ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ
    If vertical
-      rx = 0
-      ry = *tab\pos + *tab\offset
-      rw = gWidth
-      rh = *tab\size
+      ; Центрируем по горизонтали
+      txt_x = (*tab\width - txt_w) >> 1
+      img_x = (*tab\width - img_w) >> 1
+      
+      ; Вертикальный режим: складываем высоты, по ширине берем максимум
+      contentY = GetAlignPosition(*tab\align, *tab\size, img_h + txt_h + iconSpacing, padding)
+      
+      ; Базовое распределение по вертикали
+      txt_y = contentY
+      img_y = contentY
+      
+      If Not (*tab\align & #__flag_Bottom)
+         ; Если картинка сверху, текст снизу: сдвигаем текст вниз
+         If img_h > 0 : txt_y + img_h + iconSpacing : EndIf
+      Else
+         ; Если текст сверху, картинка снизу: сдвигаем картинку вниз
+         If txt_h > 0 : img_y + txt_h + iconSpacing : EndIf
+      EndIf
    Else
-      rx = *tab\pos + *tab\offset
-      ry = 0
-      rw = *tab\size
-      rh = gHeight
+      ; Центрируем по вертикали
+      txt_y = (*tab\height - txt_h) >> 1
+      img_y = (*tab\height - img_h) >> 1
+      
+      ; Горизонтальный режим: складываем ширину, по высоте берем максимум
+      contentX = GetAlignPosition(*tab\align, *tab\size,  img_w + txt_w + iconSpacing, padding)
+      
+      ; Базовое распределение по горизонтали
+      txt_x = contentX
+      img_x = contentX
+      
+      If Not (*tab\align & #__flag_Right)
+         ; Если картинка слева, текст справа: сдвигаем текст вправо
+         If img_w > 0 : txt_x + img_w + iconSpacing : EndIf
+      Else
+         ; Если текст слева, картинка справа: сдвигаем картинку вправо
+         If txt_w > 0 : img_x + txt_w + iconSpacing : EndIf
+      EndIf
+   EndIf
+   
+   ; 4. ЗАПИСЬ ВСЕХ ОБНОВЛЕННЫХ ДАННЫХ В СТРУКТУРУ 
+   *tab\img\x = img_x
+   *tab\img\y = img_y
+   *tab\img\width = img_w
+   *tab\img\height = img_h
+   
+   *tab\txt\x = txt_x
+   *tab\txt\y = txt_y
+   *tab\txt\width = txt_w
+   *tab\txt\height = txt_h
+EndProcedure
+
+Procedure DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, bgColor.l=$FF808080, isResize.b=0)
+   Protected txt_change = *tab\txt\change 
+   Protected img_change = *tab\img\change
+   If txt_change Or img_change Or isResize
+      UpdateTab(*tab._s_TAB, gWidth, gHeight, vertical)
    EndIf
    
    ; DRAW ROW
    ; 1. ОТРИСОВКА ФОНА
-   If isDragged
-      Box(rx, ry, rw, rh, $A00000FF)
-   Else
-      Box(rx, ry, rw, rh, $FF808080)
-   EndIf
+   Box(*tab\x, *tab\y, *tab\Width, *tab\Height, bgColor)
    
    ; 2. ОТРИСОВКА ИКОНКИ
-   If img_w Or img_h
-      DrawAlphaImage(ImageID(*tab\img\Image), rx + img_x, ry + img_y)
+   If *tab\img\Width Or *tab\img\Height
+      DrawAlphaImage(ImageID(*tab\img\Image), *tab\x + *tab\img\x, *tab\y + *tab\img\y)
    EndIf
    
    ; 3. ОТРИСОВКА ТЕКСТА
-   If *tab\txt\Text <> ""
-      DrawText(rx + txt_x, ry + txt_y, *tab\txt\Text, $FFFFFFFF)
+   If *tab\txt\Width Or *tab\txt\Height
+      DrawText(*tab\x + *tab\txt\x, *tab\y + *tab\txt\y, *tab\txt\Text, $FFFFFFFF)
    EndIf
 EndProcedure
 
@@ -288,13 +270,13 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB, gWidth, gHeight)
    ForEach *this\tab\_s()
       *tab = @*this\tab\_s()
       If *tab <> *current_tab
-         DrawTab(*tab, gWidth, gHeight, vertical, #False)
+         DrawTab(*tab, gWidth, gHeight, vertical)
       EndIf
    Next
    
    ; Слой 2: Летящая поверх
    If *current_tab
-      DrawTab(*current_tab, gWidth, gHeight, vertical, #True)
+      DrawTab(*current_tab, gWidth, gHeight, vertical, $A00000FF)
    EndIf
 EndProcedure
 
@@ -402,6 +384,13 @@ Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
                
                If *tab\offset < *tab\minOffset : *tab\offset = *tab\minOffset : EndIf
                If *tab\offset > *tab\maxOffset : *tab\offset = *tab\maxOffset : EndIf
+               
+               ; 
+               If *this\tab\vertical
+                  *tab\y = *tab\pos + *tab\offset
+               Else
+                  *tab\x = *tab\pos + *tab\offset
+               EndIf
             Next
             ProcedureReturn #True
          EndIf
@@ -454,15 +443,15 @@ Else
    Define h = 40
    Define w = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
 EndIf
- 
+
 #Win = 0
 #Canvas = 0
 
 If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Пример", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    CanvasGadget(#Canvas, 10, 10, w, h)
-    MyThis\canvasid  = #Canvas
-    MyThis\fontid    = LoadFont(0, "tahoma", 12)
-     
+   CanvasGadget(#Canvas, 10, 10, w, h)
+   MyThis\canvasid  = #Canvas
+   MyThis\fontid    = LoadFont(0, "tahoma", 12)
+   
    ReDrawTabs(@MyThis)
    
    Repeat
@@ -505,9 +494,9 @@ If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Прим�
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 220
-; FirstLine = 147
-; Folding = --0q----f-u--
+; CursorPosition = 161
+; FirstLine = 123
+; Folding = --8--------
 ; EnableXP
 ; EnableOnError
 ; EnableUnicode

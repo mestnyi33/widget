@@ -81,7 +81,7 @@ Structure _s_WIDGET
    bgcolor      .l ; <--- добавь это поле для управления общим фоном холста
 EndStructure
 
-Global tabbar._s_WIDGET
+Global MyThis._s_WIDGET
 Global slant = DesktopScaledX(20)
 Global TopSpacing = DesktopScaledX(6)
 Global RowSpacing = DesktopScaledX(2)
@@ -97,8 +97,114 @@ Procedure.i GetAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i
    EndIf
 EndProcedure
 
+Procedure UpdateTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b=0)
+   Protected contentX.i, contentY.i, rx.i, rw.i , ry.i, rh.i
+   Protected txt_X.i, txt_Y.i, img_X.i, img_Y.i
+   
+   ; Считываем размеры сразу на старте — теперь это работает идеально!
+   Protected txt_w = *tab\txt\width  
+   Protected txt_h = *tab\txt\height
+   Protected img_w = *tab\img\width  
+   Protected img_h = *tab\img\height 
+   
+   ; UPDATE ROW
+   Protected padding.i = DesktopScaledX(8)
+   
+   ; 1. Замеры метрик (Пересчитываем только то, что реально изменилось)
+   If *tab\txt\change 
+      *tab\txt\change = #False
+      If *tab\txt\Text <> ""
+         txt_w = TextWidth(*tab\txt\Text)
+         txt_h = TextHeight(*tab\txt\Text)
+      Else
+         txt_w = 0 : txt_h = 0
+      EndIf
+   EndIf
+   
+   If *tab\img\change
+      *tab\img\change = #False
+      If IsImage(*tab\img\Image)
+         img_w = ImageWidth(*tab\img\Image)
+         img_h = ImageHeight(*tab\img\Image)
+      Else
+         img_w = 0 : img_h = 0
+      EndIf
+   EndIf
+   
+   ; 2. Расчет отступа, если присутствуют оба элемента
+   If img_w > 0 And txt_w > 0
+      Protected iconSpacing = DesktopScaledX(6)
+   EndIf
+   
+   ; 3. ЕДИНОВРЕМЕННОЕ ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ
+   If vertical
+      ; Центрируем по горизонтали
+      txt_x = (gWidth - txt_w) >> 1
+      img_x = (gWidth - img_w) >> 1
+      
+      ; Вертикальный режим: складываем высоты, по ширине берем максимум
+      contentY = GetAlignPosition(*tab\align, *tab\height, img_h + txt_h + iconSpacing, padding)
+      
+      ; Базовое распределение по вертикали
+      txt_y = contentY
+      img_y = contentY
+      
+      If Not (*tab\align & #__flag_Bottom)
+         ; Если картинка сверху, текст снизу: сдвигаем текст вниз
+         If img_h > 0 : txt_y + img_h + iconSpacing : EndIf
+      Else
+         ; Если текст сверху, картинка снизу: сдвигаем картинку вниз
+         If txt_h > 0 : img_y + txt_h + iconSpacing : EndIf
+      EndIf
+   Else
+      ; Центрируем по вертикали
+      txt_y = (gHeight - txt_h) >> 1
+      img_y = (gHeight - img_h) >> 1
+      
+      ; Горизонтальный режим: складываем ширину, по высоте берем максимум
+      contentX = GetAlignPosition(*tab\align, *tab\width,  img_w + txt_w + iconSpacing, padding)
+      
+      ; Базовое распределение по горизонтали
+      txt_x = contentX
+      img_x = contentX
+      
+      If Not (*tab\align & #__flag_Right)
+         ; Если картинка слева, текст справа: сдвигаем текст вправо
+         If img_w > 0 : txt_x + img_w + iconSpacing : EndIf
+      Else
+         ; Если текст слева, картинка справа: сдвигаем картинку вправо
+         If txt_w > 0 : img_x + txt_w + iconSpacing : EndIf
+      EndIf
+   EndIf
+   
+   ; 4. ЗАПИСЬ ВСЕХ ОБНОВЛЕННЫХ ДАННЫХ В СТРУКТУРУ 
+   *tab\img\x = img_x
+   *tab\img\y = img_y
+   *tab\img\width = img_w
+   *tab\img\height = img_h
+   
+   *tab\txt\x = txt_x
+   *tab\txt\y = txt_y
+   *tab\txt\width = txt_w
+   *tab\txt\height = txt_h
+   
+   ; Общие размеры самой вкладки
+   If vertical
+      *tab\x = 0
+      *tab\y = *tab\pos + *tab\offset
+      *tab\width = gWidth
+      *tab\height = *tab\size
+   Else
+      *tab\x = *tab\pos + *tab\offset
+      *tab\y = 0
+      *tab\width = *tab\size
+      *tab\height = gHeight
+   EndIf 
+EndProcedure
+
+
 ; добавление вкладки и автоматическое создание её контейнера под холстом
-Procedure addcustomtab(*this._s_WIDGET, title$, windowid, canvasheight, imageid.i = 0, tabcolor.l=0)
+Procedure AddTab(*this._s_WIDGET, title$, windowid, canvasheight, imageid.i = 0, tabcolor.l=0)
    AddElement(*this\tab\_s())
    *this\tab\_s()\txt\text = title$
    *this\tab\_s()\img\image = imageid ; записываем id картинки
@@ -125,7 +231,7 @@ Procedure addcustomtab(*this._s_WIDGET, title$, windowid, canvasheight, imageid.
 EndProcedure
 
 ; полностью адаптивная процедура рендеринга ретро-трапеции
-Procedure drawoldchrometab(x, y, w, h, isactive, activecolor.l, nonactivecolor.l = -1, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
+Procedure DrawTabChrome(x, y, w, h, isactive, activecolor.l, nonactivecolor.l = -1, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
    Protected i, dy, dh = (h); - 1)
    Protected localslant = slant
    
@@ -223,7 +329,7 @@ Procedure.i RecalculateTabs(*control._s_WIDGET)
         basewidth + DesktopScaledX(20)
       EndIf
       basewidth + DesktopScaledX(16)
-      *rowtabs(i)\size = basewidth
+      *rowtabs(i)\width = basewidth
       i + 1
     Next
     
@@ -234,7 +340,7 @@ Procedure.i RecalculateTabs(*control._s_WIDGET)
     For i = 0 To tabcount
       Protected tabw = 0
       If i < tabcount
-        tabw = *rowtabs(i)\size
+        tabw = *rowtabs(i)\width
       EndIf
       
       ; Условие срабатывает, если вкладка не влезает ИЛИ если это самый конец списка (i = tabcount)
@@ -245,7 +351,7 @@ Procedure.i RecalculateTabs(*control._s_WIDGET)
         If i < tabcount
           totalrowwidth = indent + (slant * 2)
           For k = startidx To endidx
-            totalrowwidth + *rowtabs(k)\size
+            totalrowwidth + *rowtabs(k)\width
             If k < endidx : totalrowwidth - SlantOffset : EndIf
           Next
           
@@ -255,9 +361,9 @@ Procedure.i RecalculateTabs(*control._s_WIDGET)
             addpixels = extraspace / tabsinrow
             remainder = extraspace % tabsinrow
             For k = startidx To endidx
-              *rowtabs(k)\size + addpixels
+              *rowtabs(k)\width + addpixels
               If remainder > 0
-                *rowtabs(k)\size + 1
+                *rowtabs(k)\width + 1
                 remainder - 1
               EndIf
             Next
@@ -267,9 +373,9 @@ Procedure.i RecalculateTabs(*control._s_WIDGET)
         ; ЕДИНЫЙ ЦИКЛ ЗАПИСИ КООРДИНАТ (Работает и для обычных рядов, и для хвоста)
         Protected tempx = indent
         For k = startidx To endidx
-          *rowtabs(k)\pos = tempx
+          *rowtabs(k)\x = tempx
           *rowtabs(k)\ID = currentrow
-          tempx + *rowtabs(k)\size - SlantOffset
+          tempx + *rowtabs(k)\width - SlantOffset
        Next
         
         ; Подготовка к следующему ряду (если мы еще не дошли до финала)
@@ -281,7 +387,7 @@ Procedure.i RecalculateTabs(*control._s_WIDGET)
       
       ; Накапливаем ширину, пока не вышли за границы списка
       If i < tabcount
-        currentx + *rowtabs(i)\size - SlantOffset
+        currentx + *rowtabs(i)\width - SlantOffset
       EndIf
     Next
     
@@ -294,9 +400,9 @@ Procedure.i RecalculateTabs(*control._s_WIDGET)
     Next
     
     ; --- КОРРЕКТИРОВКА ПЛЮСА И ФИНАЛЬНЫЙ РАСЧЕТ ВЫСОТЫ ---
-    *control\tab\plus\size = (slant * 2)
+    *control\tab\plus\width = (slant * 2)
    *control\tab\plus\y = TopSpacing + TotalRows * RowStep
-    *control\tab\plus\pos = canvasw - *control\tab\plus\size - indent
+    *control\tab\plus\x = canvasw - *control\tab\plus\width - indent
     
     maxheight = *control\tab\plus\y + *control\tab\size
     
@@ -306,128 +412,11 @@ Procedure.i RecalculateTabs(*control._s_WIDGET)
   ProcedureReturn DesktopUnscaledY(maxheight + BottonSpacing)
 EndProcedure
 
-Procedure UpdateTab(*tab._s_TAB, gWidth.i, gHeight.i, isResize.b=0, vertical.b=0)
-   Protected contentX.i, contentY.i
-   Protected txt_X.i, txt_Y.i
-   Protected img_X.i, img_Y.i
-   Protected rx.i, rw.i 
-   Protected ry.i, rh.i
-   Protected txt_change = *tab\txt\change 
-   Protected img_change = *tab\img\change
-   Protected txt_w = *tab\txt\width  
-   Protected txt_h = *tab\txt\height
-   Protected img_w = *tab\img\width  
-   Protected img_h = *tab\img\height 
-      
-   ; UPDATE ROW
-   If txt_change Or img_change Or isResize
-      Protected padding.i = DesktopScaledX(8)
-      
-      ; 1. Замеры метрик
-      ; 2. Пересчитываем только то, что реально изменилось
-      If txt_change
-         If *tab\txt\Text <> ""
-            txt_w = TextWidth(*tab\txt\Text)
-            txt_h = TextHeight(*tab\txt\Text)
-         Else
-            txt_w = 0 : txt_h = 0
-         EndIf
-      EndIf
-      
-      If img_change
-         If IsImage(*tab\img\Image)
-            img_w = ImageWidth(*tab\img\Image)
-            img_h = ImageHeight(*tab\img\Image)
-         Else
-            img_w = 0 : img_h = 0
-         EndIf
-      EndIf
-
-      
-      ; Расчет отступа, если присутствуют оба элемента
-      If (img_w Or img_h) And 
-         (txt_w Or txt_h)
-        Protected iconSpacing = DesktopScaledX(6)
-      EndIf
-      
-       ; 2. ВНЕШНЕЕ ПОЗИЦИОНИРОВАНИЕ ВСЕГО БЛОКА
-      If vertical
-         ; Вертикальный режим: складываем высоты, по ширине берем максимум
-         contentY = GetAlignPosition(*tab\align, *tab\size, img_h + txt_h + iconSpacing, padding)
-      Else
-         ; Горизонтальный режим: складываем ширину, по высоте берем максимум
-         contentX = GetAlignPosition(*tab\align, *tab\size,  img_w + txt_w + iconSpacing, padding)
-      EndIf
-      
-      ; 3. ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ
-      If txt_change Or isResize
-         If vertical
-            txt_x = (gWidth - txt_w) >> 1
-            txt_y = contentY
-            If Not (*tab\align & #__flag_Bottom) And img_h > 0
-               txt_y + img_h + iconSpacing 
-            EndIf
-         Else
-            txt_y = (gHeight - txt_h) >> 1
-            txt_x = contentX
-            If Not (*tab\align & #__flag_Right) And img_w > 0
-               txt_x + img_w + iconSpacing 
-            EndIf
-         EndIf
-      EndIf
-      
-      If img_change Or isResize
-         If vertical
-            img_x = (gWidth - img_w) >> 1
-            img_y = contentY
-            If (*tab\align & #__flag_Bottom) And txt_h > 0
-               img_y + txt_h + iconSpacing
-            EndIf
-         Else
-            img_y = (gHeight - img_h) >> 1
-            img_x = contentX
-            If (*tab\align & #__flag_Right) And txt_w > 0
-               img_x + txt_w + iconSpacing
-            EndIf
-         EndIf
-      EndIf
-       
-      If img_change
-         *tab\img\x = img_x
-         *tab\img\y = img_y
-         *tab\img\width = img_w
-         *tab\img\height = img_h
-         *tab\img\change = #False
-      EndIf
-      
-      If txt_change
-         *tab\txt\x = txt_x
-         *tab\txt\y = txt_y
-         *tab\txt\width = txt_w
-         *tab\txt\height = txt_h
-         *tab\txt\change = #False
-      EndIf
-      
-      ;
-      If vertical
-         *tab\x = 0
-         *tab\y = *tab\pos + *tab\offset
-         *tab\width = gWidth
-         *tab\height = *tab\size
-      Else
-         *tab\x = *tab\pos + *tab\offset
-         *tab\y = 0
-         *tab\width = *tab\size
-         *tab\height = gHeight
-      EndIf
-   EndIf
-   
-EndProcedure
-
+;-
 Procedure draw_closeButton(*tab._s_TAB , h)
    Protected h_8 = DesktopScaledX(8)
    ; --- рисуем крестик для активной вкладки (справа) ---
-   Protected closex = *tab\pos + *tab\size - slant - DesktopScaledX(14)
+   Protected closex = *tab\x + *tab\width - slant - DesktopScaledX(14)
    Protected closey = *tab\y + (h - h_8) / 2
    If *tab\close_ishovered 
       Circle(closex + h_8/2, closey + h_8/2, DesktopScaledX(7), RGB(240, 70, 70)) 
@@ -455,15 +444,38 @@ Procedure draw_plusButton(*this._s_WIDGET, bgcolor.l)
    
    ; Трюк со Slant: подменяем его локально только на время отрисовки этой кнопки
    Protected OldSlant = Slant : Slant = 8
-   drawoldchrometab(*this\tab\plus\pos, *this\tab\plus\y, *this\tab\plus\size, *this\tab\size, 0, 0, pluscolor)
+   DrawTabChrome(*this\tab\plus\x, *this\tab\plus\y, *this\tab\plus\width, *this\tab\size, 0, 0, pluscolor)
    Slant = OldSlant ; Сразу возвращаем обратно
    
    ; Выводим символ "+" ровно по центру
    Protected textcolor = RGB(Red(bgcolor) * 0.3, Green(bgcolor) * 0.3, Blue(bgcolor) * 0.3)
    Protected textBgcolor = RGB(nabaser - 5, nabaseg - 4, nabaseb - 4)
-   Protected plus_x = *this\tab\plus\pos + (*this\tab\plus\size - TextWidth("+")) / 2
+   Protected plus_x = *this\tab\plus\x + (*this\tab\plus\width - TextWidth("+")) / 2
    
    DrawText(plus_x, *this\tab\plus\y + 6, "+", textcolor, textBgcolor)
+EndProcedure
+
+Procedure DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, bgColor.l=$FF808080, isResize.b=0)
+   Protected txt_change = *tab\txt\change 
+   Protected img_change = *tab\img\change
+   If txt_change Or img_change Or isResize
+      UpdateTab(*tab._s_TAB, gWidth, gHeight, vertical)
+   EndIf
+
+  
+   ; DRAW ROW
+   ; 1. ОТРИСОВКА ФОНА
+   Box(*tab\x, *tab\y, *tab\Width, *tab\Height, bgColor)
+   
+   ; 2. ОТРИСОВКА ИКОНКИ
+   If *tab\img\Width Or *tab\img\Height
+      DrawAlphaImage(ImageID(*tab\img\Image), *tab\x + *tab\img\x, *tab\y + *tab\img\y)
+   EndIf
+   
+   ; 3. ОТРИСОВКА ТЕКСТА
+   If *tab\txt\Width Or *tab\txt\Height
+      DrawText(*tab\x + *tab\txt\x, *tab\y + *tab\txt\y, *tab\txt\Text, $FFFFFFFF)
+   EndIf
 EndProcedure
 
 Procedure draw_tab(isactive, *tab._s_TAB, h, bgcolor.l, max_row_index.i = -1)
@@ -472,9 +484,9 @@ Procedure draw_tab(isactive, *tab._s_TAB, h, bgcolor.l, max_row_index.i = -1)
       textcolor = RGB(0, 0, 0)
       textBgcolor = bgcolor
       If *tab\ID = max_row_index
-         drawoldchrometab(*tab\pos, *tab\y, *tab\size, h + BottonSpacing, 1, bgcolor)
+         DrawTabChrome(*tab\x, *tab\y, *tab\width, h + BottonSpacing, 1, bgcolor)
       Else
-         drawoldchrometab(*tab\pos, *tab\y, *tab\size, h,  -1, bgcolor)
+         DrawTabChrome(*tab\x, *tab\y, *tab\width, h,  -1, bgcolor)
       EndIf
    Else
       Protected.l nabaser = Red(bgcolor) + 25
@@ -490,18 +502,19 @@ Procedure draw_tab(isactive, *tab._s_TAB, h, bgcolor.l, max_row_index.i = -1)
       If nabaseb > 255 : nabaseb = 255 : EndIf
       nonactivecolor = RGB(nabaser, nabaseg, nabaseb)
       
-      drawoldchrometab(*tab\pos, *tab\y, *tab\size, h, 0, 0, nonactivecolor)
+      DrawTabChrome(*tab\x, *tab\y, *tab\width, h, 0, 0, nonactivecolor)
       
       textcolor = RGB(Red(bgcolor) * 0.3, Green(bgcolor) * 0.3, Blue(bgcolor) * 0.3)
       
       textBgcolor = RGB(nabaser - (25 * 0.2), nabaseg - (20 * 0.2), nabaseb - (20 * 0.2))
    EndIf
    
+   
    Protected txtw = TextWidth(*tab\txt\text)
    Protected contentw = txtw + 16
    If *tab\img\image <> 0 : contentw + 20 : EndIf
    
-   Protected startx = *tab\pos + (*tab\size - contentw) / 2
+   Protected startx = *tab\x + (*tab\width - contentw) / 2
    
    If *tab\img\image <> 0
       Protected icony = *tab\y + (h - 16) / 2
@@ -512,46 +525,6 @@ Procedure draw_tab(isactive, *tab._s_TAB, h, bgcolor.l, max_row_index.i = -1)
    DrawText(startx, *tab\y + 6, *tab\txt\text, textcolor, textBgcolor)
    
    draw_closeButton( *tab, h )
-EndProcedure
-
-Procedure DrawTab(*tab._s_TAB, bgColor.l)
-   Protected contentX.i, contentY.i, contentW.i, contentH.i
-   Protected txt_X.i, txt_Y.i, txt_W.i, txt_H.i
-   Protected img_X.i, img_Y.i, img_W.i, img_H.i
-   Protected rx.i, rw.i 
-   Protected ry.i, rh.i
-   
-   ; UPDATE ROW
-     img_x = *tab\img\x 
-      img_y = *tab\img\y
-      img_w = *tab\img\width
-      img_h = *tab\img\height
-      
-      txt_x = *tab\txt\x 
-      txt_y = *tab\txt\y
-      txt_w = *tab\txt\width
-      txt_h = *tab\txt\height
-   
-   ;
-      rx = *tab\x
-      ry = *tab\y
-      rw = *tab\width
-      rh = *tab\height
-   
-   
-   ; DRAW ROW
-   ; 1. ОТРИСОВКА ФОНА
-  Box(rx, ry, rw, rh, bgColor)
-  
-   ; 2. ОТРИСОВКА ИКОНКИ
-   If img_w Or img_h
-      DrawAlphaImage(ImageID(*tab\img\Image), rx + img_x, ry + img_y)
-   EndIf
-   
-   ; 3. ОТРИСОВКА ТЕКСТА
-   If *tab\txt\Text <> ""
-      DrawText(rx + txt_x, ry + txt_y, *tab\txt\Text, $FFFFFFFF)
-   EndIf
 EndProcedure
 
 Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB, gWidth, gHeight, bgColor.l )
@@ -568,7 +541,7 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB, gWidth, gHeight, bgColo
       *tab = @*this\tab\_s()
       If *tab <> *current_tab
          draw_tab(#False, *tab,*this\tab\size, bgColor, *this\tab\plus\ID )
-         ; DrawTab(*tab, $FF808080)
+         ; DrawTab(*tab, gWidth, gHeight, $FF808080)
       EndIf
    Next
    
@@ -578,14 +551,14 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB, gWidth, gHeight, bgColo
       If tabcolor = -1 : tabcolor = RGB(255, 255, 255) : EndIf
       
       draw_tab(#True,*current_tab, *this\tab\size, tabcolor, *this\tab\plus\ID )
-      ; DrawTab(*current_tab, $A00000FF)
+      ; DrawTab(*current_tab, gWidth, gHeight, $A00000FF)
    EndIf
    
    ; 2. Отрисовка кнопки ПЛЮС (вызываем её личную изолированную процедуру)
    draw_plusButton(*this, bgColor)
 EndProcedure
 
-Procedure redrawtabs(*this._s_WIDGET)
+Procedure ReDrawTabs(*this._s_WIDGET)
    Protected gWidth = DesktopScaledX(GadgetWidth(*this\canvasid))
    Protected gHeight = DesktopScaledY(GadgetHeight(*this\canvasid))
    Protected tabcolor.l 
@@ -646,7 +619,7 @@ Procedure CloseTab(*this._s_WIDGET, *tabtoclose._s_TAB, windowid.i)
    Next
    
    ; Перерисовываем очищенный холст
-   redrawtabs(*this)
+   ReDrawTabs(*this)
 EndProcedure
 
 Procedure ActivateTab(*this._s_WIDGET, *Newactive._s_TAB)
@@ -663,7 +636,7 @@ Procedure ActivateTab(*this._s_WIDGET, *Newactive._s_TAB)
       HideGadget(*this\tab\active\ContainerID, #False)
       
       ; Перерисовываем холст — ховеры автоматически окажутся на своих местах!
-      redrawtabs(*this)
+      ReDrawTabs(*this)
    EndIf
 EndProcedure
 
@@ -681,7 +654,7 @@ Procedure DoTabEvents(*this._s_WIDGET)
       
       ; 1. ТЕСТ КНОПКИ ПЛЮС (+): Так как она закреплена справа над контейнером, проверяем её первой
       If my >= *this\tab\plus\y And my <= *this\tab\plus\y + *this\tab\size
-         If mx >= *this\tab\plus\pos And mx <= *this\tab\plus\pos + *this\tab\plus\size
+         If mx >= *this\tab\plus\x And mx <= *this\tab\plus\x + *this\tab\plus\width
             *hoveredtab = @*this\tab\plus
          EndIf
       EndIf
@@ -692,15 +665,15 @@ Procedure DoTabEvents(*this._s_WIDGET)
          Repeat
             insidetab = #False
             If my >= *this\tab\_s()\y And my <= *this\tab\_s()\y + *this\tab\size
-               If mx >= *this\tab\_s()\pos And mx <= *this\tab\_s()\pos + *this\tab\_s()\size
-                  relx = mx - *this\tab\_s()\pos
+               If mx >= *this\tab\_s()\x And mx <= *this\tab\_s()\x + *this\tab\_s()\width
+                  relx = mx - *this\tab\_s()\x
                   rely = my - *this\tab\_s()\y
                   If localslant > *this\tab\size: localslant = *this\tab\size: EndIf
                   
                   If relx < localslant
                      If relx >= localslant * (1.0 - (rely / *this\tab\size)) : insidetab = #True : EndIf
-                  ElseIf relx > *this\tab\_s()\size - localslant
-                     If relx <= *this\tab\_s()\size - (localslant * (1.0 - (rely / *this\tab\size))) : insidetab = #True : EndIf
+                  ElseIf relx > *this\tab\_s()\width - localslant
+                     If relx <= *this\tab\_s()\width - (localslant * (1.0 - (rely / *this\tab\size))) : insidetab = #True : EndIf
                   Else
                      insidetab = #True
                   EndIf
@@ -719,7 +692,7 @@ Procedure DoTabEvents(*this._s_WIDGET)
       Protected h_12 = DesktopScaledX(12)
       Protected h_2 = DesktopScaledX(2)
       If *hoveredtab <> 0 And *hoveredtab <> *this\tab\plus
-         Protected closex = *hoveredtab\pos + *hoveredtab\size - localslant - DesktopScaledX(14)
+         Protected closex = *hoveredtab\x + *hoveredtab\width - localslant - DesktopScaledX(14)
          If mx >= closex - h_2 And mx <= closex + h_12 - h_2
             If my >= *hoveredtab\y + (*this\tab\size - h_12)/2 And my <= *hoveredtab\y + (*this\tab\size + h_12)/2 
                ShouldCloseHover = 1
@@ -732,7 +705,7 @@ Procedure DoTabEvents(*this._s_WIDGET)
          If *hoveredtab = *this\tab\plus
             ; КЛИК ПО ПЛЮСУ: Добавляем новую вкладку
             Protected NewIdx = ListSize(*this\tab\_s()) + 1
-            AddCustomTab(*this, "Вкладка " + Str(NewIdx), WindowID, GadgetHeight(*this\canvasid))
+            AddTab(*this, "Вкладка " + Str(NewIdx), WindowID, GadgetHeight(*this\canvasid))
             
             ; Полный адаптивный пересчет геометрии окна под новые размеры холста
             ResizeGadget(*this\canvasid, 0, 0, WindowWidth(WindowID), #PB_Ignore)
@@ -795,7 +768,7 @@ Procedure DoTabEvents(*this._s_WIDGET)
       EndIf
       
       If needredraw
-         redrawtabs(*this)
+         ReDrawTabs(*this)
       EndIf
       
       ; --- 6. КУРСОР УШЕЛ С ХОЛСТА (Тотальный сброс подсветки) ---
@@ -812,13 +785,13 @@ Procedure DoTabEvents(*this._s_WIDGET)
          EndIf
       Next
       If needredraw
-         redrawtabs(*this)
+         ReDrawTabs(*this)
       EndIf
    EndIf
 EndProcedure
 
 ; обновление размеров холста и всех контейнеров под размеры окна
-Procedure resizetabcontrol(*this._s_WIDGET, windowid)
+Procedure DoTabResize(*this._s_WIDGET, windowid)
    ResizeGadget(*this\canvasid, 0, 0, WindowWidth(windowid), #PB_Ignore)
    Protected newheight = RecalculateTabs(*this)
    ResizeGadget(*this\canvasid, #PB_Ignore, #PB_Ignore, #PB_Ignore, newheight)
@@ -828,7 +801,7 @@ Procedure resizetabcontrol(*this._s_WIDGET, windowid)
       ResizeGadget(*this\tab\_s()\containerid, 0, newheight, WindowWidth(windowid), WindowHeight(windowid) - newheight)
    Next
    
-   redrawtabs(*this)
+   ReDrawTabs(*this)
 EndProcedure
 
 
@@ -837,7 +810,7 @@ Define event, windoww = 900, windowh = 350
 
 If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
    
-   With tabbar
+   With MyThis
       \canvasid  = CanvasGadget(#PB_Any, 0, 0, windoww, 40)
       \fontid    = LoadFont(0, "tahoma", 12)
       \tab\size = DesktopScaledY(29)
@@ -854,29 +827,29 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    If StartDrawing(ImageOutput(2)) : Box(0,0,16,16, RGB(50, 150, 255)) : StopDrawing() : EndIf ; синий квадрат
    
    ; добавляем вкладки (последним параметром передаем id созданных картинок)
-   addcustomtab(tabbar, "google (с иконкой)", 0, 40, 1, RGB(255, 255, 255))
-   addcustomtab(tabbar, "код проекта (с иконкой)", 0, 40, 2, RGB(210, 245, 225))
-   addcustomtab(tabbar, "без иконки", 0, 40, 0, RGB(255, 220, 230))
+   AddTab(@MyThis, "google (с иконкой)", 0, 40, 1, RGB(255, 255, 255))
+   AddTab(@MyThis, "код проекта (с иконкой)", 0, 40, 2, RGB(210, 245, 225))
+   AddTab(@MyThis, "без иконки", 0, 40, 0, RGB(255, 220, 230))
    ; добавляем вкладки, передавая id окна и начальную высоту холста
-   addcustomtab(tabbar, "вкладка 1", 0, 40)
-   ;addcustomtab(tabbar, "вкладка с длинным текстом 2", 0, 40)
-   addcustomtab(tabbar, "опции 3", 0, 40)
-   addcustomtab(tabbar, "система 4", 0, 40)
-   addcustomtab(tabbar, "логи работы 5", 0, 40)
+   AddTab(@MyThis, "вкладка 1", 0, 40)
+   ;AddTab(@MyThis, "вкладка с длинным текстом 2", 0, 40)
+   AddTab(@MyThis, "опции 3", 0, 40)
+   AddTab(@MyThis, "система 4", 0, 40)
+   AddTab(@MyThis, "логи работы 5", 0, 40)
    ;   
    ; настраиваем начальные размеры всего интерфейса
-   resizetabcontrol(tabbar, 0)
+   DoTabResize(@MyThis, 0)
    
    ; наполним первый и второй контейнер чем-нибудь для теста
    ; для этого временно переключаемся на нужный контейнер через opengadgetlist
-   SelectElement(tabbar\tab\_s(), 0)
-   OpenGadgetList(tabbar\tab\_s()\containerid)
+   SelectElement(MyThis\tab\_s(), 0)
+   OpenGadgetList(MyThis\tab\_s()\containerid)
    ButtonGadget(#PB_Any, 20, 20, 150, 30, "кнопка на вкладке 1")
    StringGadget(#PB_Any, 20, 60, 200, 25, "текст на вкладке 1")
    CloseGadgetList()
    
-   SelectElement(tabbar\tab\_s(), 1)
-   OpenGadgetList(tabbar\tab\_s()\containerid)
+   SelectElement(MyThis\tab\_s(), 1)
+   OpenGadgetList(MyThis\tab\_s()\containerid)
    CheckBoxGadget(#PB_Any, 20, 20, 200, 20, "галочка на второй вкладке")
    CloseGadgetList()
    
@@ -884,13 +857,13 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
       event = WaitWindowEvent()
       Select event
          Case #PB_Event_Gadget
-            If EventGadget() = tabbar\canvasid
-               DoTabEvents(tabbar)
+            If EventGadget() = MyThis\canvasid
+               DoTabEvents(@MyThis)
             EndIf
             
          Case #PB_Event_SizeWindow
             ; вызываем единую процедуру ресайза для холста и дочерних контейнеров
-            resizetabcontrol(tabbar, 0)
+            DoTabResize(@MyThis, 0)
             
          Case #PB_Event_CloseWindow
             End
@@ -898,8 +871,8 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    ForEver
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 319
-; FirstLine = 198
-; Folding = ---8--0f-4----------
+; CursorPosition = 145
+; FirstLine = 150
+; Folding = --------v---e-------
 ; EnableXP
 ; DPIAware
