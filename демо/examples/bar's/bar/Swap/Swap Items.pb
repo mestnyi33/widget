@@ -69,6 +69,11 @@ Structure _s_WIDGET
 ;    spacing.a             
    Tab._s_TABS
    dragOffSet.i     ; Точка захвата мыши
+   
+      canvasid     .i  
+   fontid       .i  
+   bgcolor      .l ; <--- добавь это поле для управления общим фоном холста
+
 EndStructure
 
 ; =====================================================================
@@ -181,22 +186,18 @@ Procedure DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, isDragged.b, isR
       EndIf
       
       ; 3. ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ
-      If txt_change Or isResize
+       If txt_change Or isResize
          If vertical
             txt_x = (gWidth - txt_w) >> 1
-            If *tab\align & #__flag_Bottom
-               txt_y = contentY
-            Else
-               txt_y = contentY + img_h
-               If img_h : txt_y + iconSpacing : EndIf
+            txt_y = contentY
+            If Not *tab\align & #__flag_Bottom
+               If img_h : txt_y + img_h + iconSpacing : EndIf
             EndIf
          Else
             txt_y = (gHeight - txt_h) >> 1
-            If *tab\align & #__flag_Right
-               txt_x = contentX
-            Else
-               txt_x = contentX + img_w
-               If img_w : txt_x + iconSpacing : EndIf
+            txt_x = contentX
+            If Not *tab\align & #__flag_Right
+               If img_w : txt_x + img_w + iconSpacing : EndIf
             EndIf
          EndIf
       EndIf
@@ -204,22 +205,20 @@ Procedure DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, isDragged.b, isR
       If img_change Or isResize
          If vertical
             img_x = (gWidth - img_w) >> 1
+            img_y = contentY
             If *tab\align & #__flag_Bottom
-               img_y = contentY + txt_h
-               If txt_h : img_y + iconSpacing : EndIf
-            Else
-               img_y = contentY
+               If txt_h : img_y + txt_h + iconSpacing : EndIf
             EndIf
          Else
             img_y = (gHeight - img_h) >> 1
+            img_x = contentX
             If *tab\align & #__flag_Right
-               img_x = contentX + txt_w
-               If txt_w : img_x + iconSpacing : EndIf
-            Else
-               img_x = contentX
+               If txt_w : img_x + txt_w + iconSpacing : EndIf
             EndIf
          EndIf
       EndIf
+      
+     
       
       If img_change
          *tab\img\x = img_x
@@ -300,12 +299,17 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB, gWidth, gHeight)
 EndProcedure
 
 ; Главная циклическая процедура отрисовки Canvas панели
-Procedure ReDrawTabs(gadget.i, *this._s_WIDGET)
-   Protected gWidth.i = DesktopScaledX(GadgetWidth(gadget))
-   Protected gHeight.i = DesktopScaledY(GadgetHeight(gadget))
+Procedure ReDrawTabs(*this._s_WIDGET)
+   Protected Gadget.i = *this\canvasid
+   Protected gWidth.i = DesktopScaledX(GadgetWidth(Gadget))
+   Protected gHeight.i = DesktopScaledY(GadgetHeight(Gadget))
    
-   If Not StartDrawing(CanvasOutput(gadget))
+   If Not StartDrawing(CanvasOutput(Gadget))
       ProcedureReturn
+   EndIf
+   
+   If *this\fontid
+      DrawingFont(*this\fontid)
    EndIf
    
    DrawingMode(#PB_2DDrawing_AlphaBlend)
@@ -455,9 +459,11 @@ EndIf
 #Canvas = 0
 
 If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Пример", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-   CanvasGadget(#Canvas, 10, 10, w, h)
-   
-   ReDrawTabs(#Canvas, @MyThis)
+    CanvasGadget(#Canvas, 10, 10, w, h)
+    MyThis\canvasid  = #Canvas
+    MyThis\fontid    = LoadFont(0, "tahoma", 12)
+     
+   ReDrawTabs(@MyThis)
    
    Repeat
       Define Event = WaitWindowEvent()
@@ -481,17 +487,17 @@ If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Прим�
             EndIf
             ResizeWindow(#Win, #PB_Ignore, #PB_Ignore, w + 20, h + 20)
             ResizeGadget(#Canvas, #PB_Ignore, #PB_Ignore, w, h)
-            ReDrawTabs(#Canvas, @MyThis)
+            ReDrawTabs( @MyThis)
             HideWindow(#Win, 0, #PB_Window_ScreenCentered)
          EndIf
          
          If MyThis\tab\vertical
             If DoTabEvents( @MyThis, EventType(), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseY))
-               ReDrawTabs(#Canvas, @MyThis)
+               ReDrawTabs(@MyThis)
             EndIf
          Else
             If DoTabEvents( @MyThis, EventType(), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseX))
-               ReDrawTabs(#Canvas, @MyThis)
+               ReDrawTabs( @MyThis)
             EndIf
          EndIf
       EndIf
@@ -499,9 +505,9 @@ If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Прим�
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 465
-; FirstLine = 365
-; Folding = --0-----vf4--
+; CursorPosition = 220
+; FirstLine = 147
+; Folding = --0q----f-u--
 ; EnableXP
 ; EnableOnError
 ; EnableUnicode

@@ -166,7 +166,7 @@ Procedure drawoldchrometab(x, y, w, h, isactive, activecolor.l, nonactivecolor.l
    EndIf
 EndProcedure
 
-Procedure.i RecalculateTabs(*control._s_WIDGET)
+Procedure.i _RecalculateTabs(*control._s_WIDGET)
    Protected canvasw = DesktopScaledX(GadgetWidth(*control\canvasid))
    Protected currentx = DesktopScaledX(4)
    Protected currenty = TopSpacing
@@ -292,6 +292,120 @@ Procedure.i RecalculateTabs(*control._s_WIDGET)
    
    ProcedureReturn DesktopUnscaledY(maxheight + BottonSpacing)
 EndProcedure
+Procedure.i RecalculateTabs(*control._s_WIDGET)
+  Protected indent = DesktopScaledX(4)
+  Protected canvasw = DesktopScaledX(GadgetWidth(*control\canvasid))
+  Protected currentx = indent
+  Protected currenty = TopSpacing
+  Protected currentrow = 0
+  Protected maxheight = 0
+  Protected maxwidth = canvasw - indent
+  Protected i.i, k.i, startidx.i, endidx.i
+  Protected totalrowwidth.i, extraspace.i, addpixels.i, remainder.i
+  Protected tabcount = ListSize(*control\tab\_s())
+  
+  ; Предварительный расчет шагов
+  Protected RowStep = *control\tab\size + RowSpacing
+  Protected SlantOffset = slant * 4 / 3
+  
+  If tabcount = 0 : ProcedureReturn DesktopUnscaledY(*control\tab\size + BottonSpacing) : EndIf
+  
+  If StartDrawing(CanvasOutput(*control\canvasid))
+    DrawingFont(*control\fontid)
+    
+    Dim *rowtabs._s_TAB(tabcount - 1)
+    i = 0
+    ForEach *control\tab\_s()
+      *rowtabs(i) = @*control\tab\_s()
+      *rowtabs(i)\height = *control\tab\size
+      Protected basewidth = TextWidth(*rowtabs(i)\txt\text) + (*control\padding * 2) + (slant * 2)
+      If *rowtabs(i)\img\image <> 0
+        basewidth + DesktopScaledX(20)
+      EndIf
+      basewidth + DesktopScaledX(16)
+      *rowtabs(i)\width = basewidth
+      i + 1
+    Next
+    
+    startidx = 0
+    currentx = indent
+    
+    ; --- ОБЪЕДИНЕННЫЙ ЦИКЛ (Идем до tabcount включительно, чтобы обработать хвост) ---
+    For i = 0 To tabcount
+      Protected tabw = 0
+      If i < tabcount
+        tabw = *rowtabs(i)\width
+      EndIf
+      
+      ; Условие срабатывает, если вкладка не влезает ИЛИ если это самый конец списка (i = tabcount)
+      If (i = tabcount) Or (currentx + tabw > maxwidth And i > startidx)
+        endidx = i - 1
+        
+        ; Растягиваем по ширине (Justify) ТОЛЬКО полные ряды. Последний «хвост» не трогаем!
+        If i < tabcount
+          totalrowwidth = indent
+          For k = startidx To endidx
+            totalrowwidth + *rowtabs(k)\width
+            If k < endidx : totalrowwidth - SlantOffset : EndIf
+          Next
+          
+          extraspace = maxwidth - totalrowwidth
+          Protected tabsinrow = (endidx - startidx) + 1
+          If extraspace > 0 And tabsinrow > 0
+            addpixels = extraspace / tabsinrow
+            remainder = extraspace % tabsinrow
+            For k = startidx To endidx
+              *rowtabs(k)\width + addpixels
+              If remainder > 0
+                *rowtabs(k)\width + 1
+                remainder - 1
+              EndIf
+            Next
+          EndIf
+        EndIf
+        
+        ; ЕДИНЫЙ ЦИКЛ ЗАПИСИ КООРДИНАТ (Работает и для обычных рядов, и для хвоста)
+        Protected tempx = indent
+        For k = startidx To endidx
+          *rowtabs(k)\x = tempx
+          *rowtabs(k)\ID = currentrow
+          tempx + *rowtabs(k)\width - SlantOffset
+        Next
+        
+        ; Подготовка к следующему ряду (если мы еще не дошли до финала)
+        currentrow + 1
+        currenty + RowStep
+        currentx = indent
+        startidx = i
+      EndIf
+      
+      ; Накапливаем ширину, пока не вышли за границы списка
+      If i < tabcount
+        currentx + *rowtabs(i)\width - SlantOffset
+      EndIf
+    Next
+    
+    Protected TotalRows = currentrow - 1
+    
+    ; --- ИНВЕРСИЯ РЯДОВ ---
+    For k = 0 To tabcount - 1
+      Protected InvertedRow = TotalRows - *rowtabs(k)\ID
+      *rowtabs(k)\y = TopSpacing + InvertedRow * RowStep
+    Next
+    
+    ; --- КОРРЕКТИРОВКА ПЛЮСА И ФИНАЛЬНЫЙ РАСЧЕТ ВЫСОТЫ ---
+    *control\tab\plus\width = (slant * 2)
+    *control\tab\plus\height = *control\tab\size
+    *control\tab\plus\y = TopSpacing + TotalRows * RowStep
+    *control\tab\plus\x = canvasw - *control\tab\plus\width - indent
+    
+    maxheight = *control\tab\plus\y + *control\tab\plus\height
+    
+    StopDrawing()
+  EndIf
+  
+  ProcedureReturn DesktopUnscaledY(maxheight + BottonSpacing)
+EndProcedure
 
 Procedure draw_closeButton(*tab._s_TAB )
    Protected h_8 = DesktopScaledX(8)
@@ -411,9 +525,6 @@ Procedure redrawtabs(*control._s_WIDGET)
          EndIf
       Next
       
-      ; 2. Отрисовка кнопки ПЛЮС (вызываем её личную изолированную процедуру)
-      draw_plusButton(*control, canvasbgcolor)
-      
       ; 2. отрисовка активной вкладки
       If *control\tab\active <> 0
          tabcolor = GetGadgetColor(*control\tab\active\containerid, #PB_Gadget_BackColor)
@@ -421,6 +532,9 @@ Procedure redrawtabs(*control._s_WIDGET)
          
          draw_tab(#True,*control\tab\active, tabcolor, *control\tab\plus\ID )
       EndIf
+      
+      ; 2. Отрисовка кнопки ПЛЮС (вызываем её личную изолированную процедуру)
+      draw_plusButton(*control, canvasbgcolor)
       
       StopDrawing()
    EndIf
@@ -716,8 +830,8 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    ForEver
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 19
-; FirstLine = 7
-; Folding = ----------------
+; CursorPosition = 414
+; FirstLine = 181
+; Folding = ---+--------------
 ; EnableXP
 ; DPIAware
