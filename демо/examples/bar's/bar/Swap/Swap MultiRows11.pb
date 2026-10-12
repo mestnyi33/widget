@@ -298,6 +298,126 @@ Procedure DrawTabChrome(x, y, w, h, isactive, activecolor.l, nonactivecolor.l = 
       LineXY(x, y + h-1, x + w, y + h-1);, outerbordercolor)
    EndIf
 EndProcedure
+Procedure DrawTabChrome(vertical.b, x, y, w, h, isactive, activecolor.l, nonactivecolor.l = -1, outerbordercolor.l = -1, innerhighlightcolor.l = -1, localslant.l=-1)
+  ; ProcedureReturn _DrawTabChrome(vertical, x, y, w, h, isactive, activecolor, nonactivecolor, outerbordercolor, innerhighlightcolor, localslant, 0)
+   ProcedureReturn _DrawTabChrome(x, y, w, h, isactive, activecolor, nonactivecolor, outerbordercolor, innerhighlightcolor, localslant, vertical, 1)
+   If Not w And h
+    ;  ProcedureReturn
+   EndIf
+   
+   ; Выбираем базовый лимит для скоса в зависимости от ориентации
+   Protected base_dim = h
+   If vertical : base_dim = w : EndIf
+   
+   Protected i, dy, dx, dh = h, dw = w
+   If localslant = -1
+      localslant = slant
+   EndIf
+   
+   If localslant > base_dim: localslant = base_dim: EndIf
+   
+   ; 1. выбор базового цвета для тела
+   Protected currentcolor.i
+   If isactive
+      currentcolor = activecolor
+   Else
+      If nonactivecolor = -1 : nonactivecolor = RGBA(215, 225, 240, 255) : EndIf
+      currentcolor = nonactivecolor
+   EndIf
+   
+   Protected.a currentalpha = Alpha(currentcolor)
+   
+   ; 2. расчет или назначение цвета рамок
+   If outerbordercolor = -1
+      outerbordercolor = RGBA(Red(currentcolor) * 0.6, Green(currentcolor) * 0.6, Blue(currentcolor) * 0.6, currentalpha)
+   EndIf
+   
+   If innerhighlightcolor = -1
+      Protected.a r = Red(currentcolor), g = Green(currentcolor), b = Blue(currentcolor)
+      innerhighlightcolor = RGBA(r + (255 - r) * 0.3, g + (255 - g) * 0.3, b + (255 - b) * 0.3, currentalpha)
+   EndIf
+   
+   ; 3. заливка тела вкладки
+   If isactive
+      If vertical
+         ; Вертикальная активная вкладка
+         For dx = 0 To dw
+            Protected currentslant = localslant * (1.0 - (dx / w))
+            LineXY(x + dx, y + currentslant, x + dx, y + h - currentslant, activecolor)
+         Next
+      Else
+         ; Горизонтальная активная вкладка
+         For dy = 0 To dh
+            currentslant = localslant * (1.0 - (dy / h))
+            LineXY(x + currentslant, y + dy, x + w - currentslant, y + dy, activecolor)
+         Next
+      EndIf
+   Else
+      Protected baser = Red(nonactivecolor)
+      Protected baseg = Green(nonactivecolor)
+      Protected baseb = Blue(nonactivecolor)
+      
+      If vertical
+         ; Вертикальная неактивная вкладка (градиент слева направо)
+         For dx = 0 To dw
+            Protected factor.f = dx / dw
+            r = baser + ((baser - 25) - baser) * factor
+            g = baseg + ((baseg - 20) - baseg) * factor
+            b = baseb + ((baseb - 20) - baseb) * factor
+            
+            currentslant = localslant * (1.0 - (dx / w))
+            LineXY(x + dx, y + currentslant, x + dx, y + h - currentslant, RGBA(r, g, b, currentalpha))
+         Next
+      Else
+         ; Горизонтальная неактивная вкладка (градиент сверху вниз)
+         For dy = 0 To dh
+            factor.f = dy / dh
+            r = baser + ((baser - 25) - baser) * factor
+            g = baseg + ((baseg - 20) - baseg) * factor
+            b = baseb + ((baseb - 20) - baseb) * factor
+            
+            currentslant = localslant * (1.0 - (dy / h))
+            LineXY(x + currentslant, y + dy, x + w - currentslant, y + dy, RGBA(r, g, b, currentalpha))
+         Next
+      EndIf
+   EndIf
+   
+   ; 4. отрисовка контуров
+   If vertical
+      ; --- ВЕРТИКАЛЬНЫЕ КОНТУРЫ ---
+      ; внешняя рамка (трапеция повернута набок, основание у оси Y)
+      LineXY(x + w, y, x, y + localslant, outerbordercolor)             
+      LineXY(x, y + localslant, x, y + h - localslant, outerbordercolor)         
+      LineXY(x, y + h - localslant, x + w, y + h, outerbordercolor)     
+      
+      If isactive > 0
+         ; внутренний светлый блик (только для активной)
+         LineXY(x + dw - 1, y + 2, x + 1, y + localslant + 1, innerhighlightcolor)
+         LineXY(x + 1, y + localslant + 1, x + 1, y + h - localslant - 1, innerhighlightcolor)
+         LineXY(x + 1, y + h - localslant - 1, x + dw - 1, y + h - 2, innerhighlightcolor)
+      Else
+         ; правая замыкающая линия основания для неактивных
+         LineXY(x + w - 1, y, x + w - 1, y + h, outerbordercolor)
+      EndIf
+   Else
+      ; --- ГОРИЗОНТАЛЬНЫЕ КОНТУРЫ ---
+      ; внешняя рамка
+      LineXY(x, y + h, x + localslant, y, outerbordercolor)             
+      LineXY(x + localslant, y, x + w - localslant, y, outerbordercolor)         
+      LineXY(x + w - localslant, y, x + w, y + h, outerbordercolor)     
+      
+      If isactive > 0
+         ; внутренний светлый блик (только для активной)
+         LineXY(x + 2, y + dh - 1, x + localslant + 1, y + 1, innerhighlightcolor)
+         LineXY(x + localslant + 1, y + 1, x + w - localslant - 1, y + 1, innerhighlightcolor)
+         LineXY(x + w - localslant - 1, y + 1, x + w - 2, y + dh - 1, innerhighlightcolor)
+      Else
+         ; нижняя замыкающая линия для неактивных
+         LineXY(x, y + h - 1, x + w, y + h - 1, outerbordercolor)
+      EndIf
+   EndIf
+EndProcedure
+
 
 Procedure.i RecalculateTabs(*control._s_WIDGET)
   Protected indent = DesktopScaledX(4)
@@ -871,8 +991,8 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    ForEver
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 533
-; FirstLine = 441
-; Folding = ----8---v---e-------
+; CursorPosition = 420
+; FirstLine = 328
+; Folding = ----8------0--48------
 ; EnableXP
 ; DPIAware
