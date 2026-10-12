@@ -79,7 +79,9 @@ EndStructure
 ; =====================================================================
 ; 3. ЛОГИКА АЛГОРИТМА И ОТРИСОВКИ
 ; =====================================================================
-
+ Global slant.i = DesktopScaledX(20)
+   
+ 
 Procedure.i GetAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i = 10)
    If alignFlags & #__flag_Center
       ProcedureReturn (contentSize - objectSize) / 2
@@ -92,7 +94,7 @@ EndProcedure
 
 
 ; Функция линейного расчета базовых координат X
-Procedure TotalSize(*this._s_WIDGET)
+Procedure _TotalSize(*this._s_WIDGET)
    Protected position.i = *this\tab\indent
    Protected *tab._s_TAB
    
@@ -109,10 +111,35 @@ Procedure TotalSize(*this._s_WIDGET)
             *tab\x = *tab\pos
          EndIf
          
-         position + *tab\size + *this\tab\spacing
+         ;position + *tab\size + *this\tab\spacing
+         position + (*tab\size - slant) + *this\tab\spacing
       Next
-      *this\tab\TotalSize = position - *this\tab\spacing
+      *this\tab\TotalSize = position - *this\tab\spacing + slant
    EndIf
+EndProcedure
+Procedure TotalSize(*this._s_WIDGET)
+  Protected position.i = 0 ; Стартуем с 0, чтобы получить ЧИСТУЮ длину блока табов
+  Protected *tab._s_TAB
+  
+  If *this\tab\press = #Null
+    ForEach *this\tab\_s()
+      *tab = @*this\tab\_s()
+      
+      ; Записываем локальную позицию вкладки относительно НАЧАЛА блока табов
+      *tab\pos = position 
+      
+      If *this\tab\vertical
+        *tab\y = *this\tab\indent  + *tab\pos
+      Else
+        *tab\x = *this\tab\indent  + *tab\pos
+      EndIf
+      
+      position + (*tab\size - slant) + *this\tab\spacing
+    Next
+    
+    ; Чистый размер блока вкладок с учетом финального скоса
+    *this\tab\TotalSize = position - *this\tab\spacing + slant
+  EndIf
 EndProcedure
 
 ; Процедура добавления вкладки
@@ -142,11 +169,9 @@ Procedure UpdateTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b=0)
    Protected txt_h = *tab\txt\height
    Protected img_w = *tab\img\width  
    Protected img_h = *tab\img\height 
-   
+   Protected padding.i = slant
    ; UPDATE ROW
-   Protected padding.i = DesktopScaledX(8)
-   
-   ; Общие размеры самой вкладки
+    ; Общие размеры самой вкладки
    If vertical
      ; *tab\x = 0
      ; *tab\y = *tab\pos + *tab\offset
@@ -239,6 +264,76 @@ Procedure UpdateTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b=0)
    *tab\txt\height = txt_h
 EndProcedure
 
+Procedure DrawTabChrome(x, y, w, h, isactive, activecolor.l, nonactivecolor.l = -1, outerbordercolor.l = -1, innerhighlightcolor.l = -1, localslant=-1)
+   Protected i, dy, dh = (h); - 1)
+   If localslant =-1
+      localslant = slant
+   EndIf
+   
+   If localslant > h: localslant = h: EndIf
+   
+   ; 1. выбор базового цвета для тела
+   Protected currentcolor.i
+   If isactive
+      currentcolor = activecolor
+   Else
+      If nonactivecolor = -1 : nonactivecolor = RGB(215, 225, 240) : EndIf
+      currentcolor = nonactivecolor
+   EndIf
+   
+   ; 2. расчет или назначение цвета рамок
+   ; если параметры переданы (не равны -1), берем их. иначе — считаем автоматом.
+   If outerbordercolor = -1
+      outerbordercolor = RGB(Red(currentcolor) * 0.6, Green(currentcolor) * 0.6, Blue(currentcolor) * 0.6)
+   EndIf
+   
+   If innerhighlightcolor = -1
+      Protected.a r = Red(currentcolor), g = Green(currentcolor), b = Blue(currentcolor)
+      innerhighlightcolor = RGB(r + (255 - r) * 0.3, g + (255 - g) * 0.3, b + (255 - b) * 0.3)
+   EndIf
+   
+   ; 3. заливка тела вкладки
+   If isactive
+      FrontColor(activecolor)
+      For dy = 0 To dh
+         Protected currentslant = localslant * (1.0 - (dy / h))
+         LineXY(x + currentslant, y + dy, x + w - currentslant, y + dy)
+      Next
+   Else
+      Protected baser = Red(nonactivecolor)
+      Protected baseg = Green(nonactivecolor)
+      Protected baseb = Blue(nonactivecolor)
+      
+      For dy = 0 To dh
+         Protected factor.f = dy / dh
+         r = baser + ((baser - 25) - baser) * factor
+         g = baseg + ((baseg - 20) - baseg) * factor
+         b = baseb + ((baseb - 20) - baseb) * factor
+         
+         currentslant = localslant * (1.0 - (dy / h))
+         LineXY(x + currentslant, y + dy, x + w - currentslant, y + dy, RGB(r, g, b))
+      Next
+   EndIf
+   
+   ; 4. отрисовка контуров
+   ; внешняя рамка
+   FrontColor(outerbordercolor)
+   LineXY(x, y-1 + h, x + localslant, y)             
+   LineXY(x + localslant, y-1, x + w - localslant, y-1)         
+   LineXY(x + w - localslant, y, x + w, y-1 + h)     
+   
+   If isactive > 0
+      ; внутренний светлый блик (только для активной)
+      FrontColor(innerhighlightcolor)
+      LineXY(x + 2, y + dh, x + localslant + 1, y + 1)
+      LineXY(x + localslant + 1, y + 1, x + w - localslant - 1, y + 1)
+      LineXY(x + w - localslant - 1, y + 1, x + w - 2, y + dh)
+   Else
+      ; нижняя замыкающая линия для неактивных
+      LineXY(x, y + h-1, x + w, y + h-1);, outerbordercolor)
+   EndIf
+EndProcedure
+
 Procedure DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, bgColor.l=$FF808080, isResize.b=0)
    Protected txt_change = *tab\txt\change 
    Protected img_change = *tab\img\change
@@ -248,7 +343,11 @@ Procedure DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, bgColor.l=$FF808
    
    ; DRAW ROW
    ; 1. ОТРИСОВКА ФОНА
-   Box(*tab\x, *tab\y, *tab\Width, *tab\Height, bgColor)
+   ;Box(*tab\x, *tab\y, *tab\Width, *tab\Height, bgColor)
+   ;If bgColor.l=$FF808080
+      DrawingMode(#PB_2DDrawing_Transparent)
+      DrawTabChrome(*tab\x, *tab\y, *tab\width, *tab\Height, 0, 0, bgColor)
+   ;EndIf   
    
    ; 2. ОТРИСОВКА ИКОНКИ
    If *tab\img\Width Or *tab\img\Height
@@ -257,7 +356,8 @@ Procedure DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, bgColor.l=$FF808
    
    ; 3. ОТРИСОВКА ТЕКСТА
    If *tab\txt\Width Or *tab\txt\Height
-      DrawText(*tab\x + *tab\txt\x, *tab\y + *tab\txt\y, *tab\txt\Text, $FFFFFFFF)
+      ; DrawingMode(#PB_2DDrawing_Transparent)
+     DrawText(*tab\x + *tab\txt\x, *tab\y + *tab\txt\y, *tab\txt\Text, $FFFFFFFF)
    EndIf
 EndProcedure
 
@@ -305,19 +405,20 @@ EndProcedure
 Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
    Protected *current_tab._s_TAB
    Protected *tab._s_TAB
-   Protected accumulatedSize.i = *this\tab\indent 
+   Protected accumulatedSize.i = 0
    Protected isBeforeDragged.b = #True 
    Protected stepSize.i
+   mousePos - *this\tab\indent 
    
    Select event
-         
       Case #PB_EventType_LeftButtonDown
+         
          *this\dragOffSet = mousePos
          
-         ; ЦИКЛ 1: Находим вкладку, на которую кликнули
+         ; ЦИКЛ 1: Находим вкладку, на которую кликнули (с учетом наложения скосов)
          ForEach *this\tab\_s()
             *tab = @*this\tab\_s()
-            If mousePos >= *tab\pos And mousePos < *tab\pos + *tab\size
+            If mousePos >= *tab\pos And mousePos < *tab\pos + (*tab\size - slant)
                *current_tab = *tab
                Break
             EndIf
@@ -327,7 +428,8 @@ Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
          
          ; ЦИКЛ 2: Выполняем раздвижку, лимиты и расчет стартового offset за один проход
          If *current_tab
-            stepSize = *current_tab\size + *this\tab\spacing
+            ; Шаг сдвига уменьшен на величину наложения скоса (slant)
+            stepSize = (*current_tab\size - slant) + *this\tab\spacing
             
             ForEach *this\tab\_s()
                *tab = @*this\tab\_s()
@@ -346,12 +448,12 @@ Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
                ; 2. Расчет лимитов хода (использует уже обновленный *tab\pos)
                *tab\minOffset = accumulatedSize - *tab\pos
                *tab\maxOffset = accumulatedSize - *tab\pos + stepSize
-               accumulatedSize + *tab\size + *this\tab\spacing
+               accumulatedSize + (*tab\size - slant) + *this\tab\spacing
                
-               ; 3. Ваша оригинальная пропорция инициализации offset (использует обновленный *tab\pos)
+               ; 3. Пропорция инициализации offset (модифицирована под размер с учетом наложения)
                *tab\offset = *tab\pos - *current_tab\pos - *current_tab\offset
                *tab\offset - stepSize
-               *tab\offset * stepSize / (*tab\size + *this\tab\spacing)
+               *tab\offset * stepSize / ((*tab\size - slant) + *this\tab\spacing)
                
                ; Ограничители хода
                If *tab\offset < *tab\minOffset : *tab\offset = *tab\minOffset : EndIf
@@ -359,8 +461,8 @@ Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
             Next
             
             ; Финальная запись лимитов и проверка границ для самой перетаскиваемой вкладки
-            *current_tab\minOffset = *this\tab\indent - *current_tab\pos
-            *current_tab\maxOffset = -*current_tab\pos + accumulatedSize
+            *current_tab\minOffset = -*current_tab\pos 
+            *current_tab\maxOffset = -*current_tab\pos + accumulatedSize 
             
             If *current_tab\offset < *current_tab\minOffset : *current_tab\offset = *current_tab\minOffset : EndIf
             If *current_tab\offset > *current_tab\maxOffset : *current_tab\offset = *current_tab\maxOffset : EndIf
@@ -371,6 +473,7 @@ Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
       Case #PB_EventType_MouseMove
          *current_tab = *this\tab\press
          If *current_tab
+            stepSize = (*current_tab\size - slant) + *this\tab\spacing
             ForEach *this\tab\_s()
                *tab = @*this\tab\_s()
                
@@ -378,18 +481,18 @@ Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
                   *tab\offset = mousePos - *this\dragOffSet
                Else
                   *tab\offset = *tab\pos - *current_tab\pos - *current_tab\offset
-                  *tab\offset - (*current_tab\size + *this\tab\spacing)
-                  *tab\offset * (*current_tab\size + *this\tab\spacing) / (*tab\size + *this\tab\spacing)
+                  *tab\offset - stepSize
+                  *tab\offset * stepSize / ((*tab\size - slant) + *this\tab\spacing)
                EndIf
                
                If *tab\offset < *tab\minOffset : *tab\offset = *tab\minOffset : EndIf
                If *tab\offset > *tab\maxOffset : *tab\offset = *tab\maxOffset : EndIf
                
-               ; 
+               ; Применяем координаты визуального отображения
                If *this\tab\vertical
-                  *tab\y = *tab\pos + *tab\offset
+                  *tab\y = *this\tab\indent  + *tab\pos + *tab\offset
                Else
-                  *tab\x = *tab\pos + *tab\offset
+                  *tab\x = *this\tab\indent  + *tab\pos + *tab\offset
                EndIf
             Next
             ProcedureReturn #True
@@ -411,7 +514,7 @@ Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
             ; Сбрасываем указатель перетаскивания
             *this\tab\press = #Null
             
-            ; Вызываем ваши внутренние процедуры обновления состояния и перерисовки
+            ; Вызываем внутренние процедуры обновления состояния и перерисовки
             TotalSize(*this)
             ProcedureReturn #True
          EndIf
@@ -437,11 +540,11 @@ AddTab(@MyThis, 3, "3 - 90", 90,0, 1)
 TotalSize(@MyThis)
 
 If MyThis\tab\vertical
-   Define h = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
+   Define h = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent*2)
    Define w = 240
 Else
    Define h = 40
-   Define w = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
+   Define w = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent*2)
 EndIf
 
 #Win = 0
@@ -468,11 +571,11 @@ If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Прим�
             AddTab(@MyThis, 3, "3 - 90", 90,0, 1)
             TotalSize(@MyThis)
             If MyThis\tab\vertical
-               Define h = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
+               Define h = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent*2)
                Define w = 240
             Else
                Define h = 40
-               Define w = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent)
+               Define w = DesktopUnscaledX(MyThis\tab\TotalSize + MyThis\tab\indent*2)
             EndIf
             ResizeWindow(#Win, #PB_Ignore, #PB_Ignore, w + 20, h + 20)
             ResizeGadget(#Canvas, #PB_Ignore, #PB_Ignore, w, h)
@@ -494,9 +597,9 @@ If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Наглядный Демо-Прим�
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 123
-; Folding = --8--------
+; CursorPosition = 464
+; FirstLine = 432
+; Folding = --f----------
 ; EnableXP
 ; EnableOnError
 ; EnableUnicode

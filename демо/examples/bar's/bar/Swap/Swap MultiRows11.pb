@@ -531,7 +531,7 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB, gWidth, gHeight, bgColo
    Protected *tab._s_TAB
    Protected vertical.b = *this\tab\vertical
    
-   ; DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent)
+   ;DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent)
    ; линия пола
    Protected floorcolor = RGB(Red(bgColor) * 0.7, Green(bgColor) * 0.7, Blue(bgColor) * 0.7)
    LineXY(0, gHeight - 1, gWidth, gHeight - 1, floorcolor)
@@ -871,8 +871,8 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    ForEver
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 145
-; FirstLine = 150
-; Folding = --------v---e-------
+; CursorPosition = 533
+; FirstLine = 441
+; Folding = ----8---v---e-------
 ; EnableXP
 ; DPIAware
