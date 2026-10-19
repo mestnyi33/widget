@@ -358,10 +358,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          EndStructureUnion
          
          *_groupbar._s_ROW ; option group row
+         
+         *skip_prev._s_ROW         ; <-- Сюда запишем адрес строки, на которую прыгнуть назад
+   *skip_next._s_ROW         ; <-- Сюда запишем адрес строки, на которую прыгнуть вперед
+   
       EndStructure
       Structure _s_VISIBLE_ROW
-         *first._s_ROW           ; first draw-elemnt in the list
-         *last._s_ROW            ; last draw-elemnt in the list
+;          *first._s_ROW           ; first draw-elemnt in the list
+;          *last._s_ROW            ; last draw-elemnt in the list
          List *__s._s_ROW( )     ; Развернутый рулон (указатели)
       EndStructure
       Structure _s_ROWS
@@ -385,6 +389,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *tt._s_tt
          ;
+         *_v_first._s_ROW          ; Указатель на первую видимую строку
+         *_v_last._s_ROW           ; Указатель на последнюю видимую строку
          List __s._s_ROW( )
       EndStructure
       
@@ -419,7 +425,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     SCROLL
       Structure _s_SCROLL Extends _s_COORDINATE
-         gadget.i[3]
+         Gadget.i[3]
          bars.b
          increment.d      ; scrollarea
          *v._s_WIDGET     ; vertical scrollbar
@@ -435,7 +441,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     tt
       Structure _s_tt Extends _s_coordinate
          window.i
-         gadget.i
+         Gadget.i
          
          visible.b
          
@@ -601,29 +607,26 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *groupbar._s_WIDGET      ; = Option( ) group widget
          *stringbar._s_WIDGET     ; = Spin( ) string box widget
          
-         ; это в лист будем переносить так как он нужен только для родителя
-         *first._s_PARENT ; Первый ребенок в списке
-         *last._s_PARENT  ; Последний ребенок
-         ;
-         *next._s_PARENT[3]
-         *prev._s_PARENT[3]
-         
-         ; НОВЫЕ ПОЛИМОРФНЫЕ УКАЗАТЕЛИ
-         ;next[0]  ; все Цепочка отрисовки (шаг вперед по Z-Order)
-         ;prev[0]  ; все Цепочка мыши (шаг назад по Z-Order для Hit-Test)
-         
-         ;next[1]  ; выдимие Цепочка отрисовки (шаг вперед по Z-Order)
-         ;prev[1]  ; выдимие Цепочка мыши (шаг назад по Z-Order для Hit-Test)
-         
-         ;next[2]  ; Цепочка братьев
-         ;prev[2]  ; Цепочка братьев
-         
          *window._s_PARENT
          *parent._s_PARENT;[2]   ; [1] - это в лист будем переносить так как он нужен только для родителя  
          ; parent[0] - Родитель ; Иерархия - физический (где лежит) 
          ; parent[1] - Владелец ; Иерархия - логический (кто открыл)
          
+          ; это в лист будем переносить так как он нужен только для родителя
+         *first._s_PARENT ; Первый ребенок в списке
+         *last._s_PARENT  ; Последний ребенок
          ;
+         ; НОВЫЕ ПОЛИМОРФНЫЕ УКАЗАТЕЛИ
+         *next._s_PARENT[3]
+         *prev._s_PARENT[3]
+         ;next[0]  ; все Цепочка отрисовки (шаг вперед по Z-Order)
+         ;prev[0]  ; все Цепочка мыши (шаг назад по Z-Order для Hit-Test)
+         ;next[1]  ; выдимие Цепочка отрисовки (шаг вперед по Z-Order)
+         ;prev[1]  ; выдимие Цепочка мыши (шаг назад по Z-Order для Hit-Test)
+         ;next[2]  ; Цепочка братьев
+         ;prev[2]  ; Цепочка братьев
+         
+          ;
          *gadget._s_WIDGET[3]
          ; \root\gadget[0] - active gadget
          ; \gadget[0]     ; window active child gadget
@@ -730,9 +733,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
    EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 129
-; FirstLine = 125
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 363
+; FirstLine = 332
 ; Folding = ----8-p----
 ; Optimizer
 ; EnableXP

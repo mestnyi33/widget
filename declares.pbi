@@ -496,8 +496,6 @@ CompilerIf Not Defined( widgets, #PB_Module )
       Macro RowPressed( ): row\active[1]: EndMacro       ; Returns mouse press item address
       Macro RowFocused( ): row\active[0]: EndMacro       ; Returns key focus item address
                                                          ;
-      Macro RowFirstVisible( ): row\visible\first: EndMacro
-      Macro RowLastVisible( ): row\visible\last: EndMacro
       ;
       Macro RowToolTip( ): row\tt: EndMacro
       
@@ -514,8 +512,8 @@ CompilerIf Not Defined( widgets, #PB_Module )
       Macro Combo( ): combobutton: EndMacro
       
       ;-
-      Macro split_1( ) : gadget[1] : EndMacro ; temp
-      Macro split_2( ) : gadget[2] : EndMacro ; temp
+      Macro split_1( ) : Gadget[1] : EndMacro ; temp
+      Macro split_2( ) : Gadget[2] : EndMacro ; temp
       
       ;-
       Macro Root( ): widgets::__GUI\root: EndMacro
@@ -798,9 +796,6 @@ CompilerIf Not Defined( widgets, #PB_Module )
    ;- TEMP
    Macro scroll_inner_width( ): Width[#__c_inner]: EndMacro
    Macro scroll_inner_height( ): Height[#__c_inner]: EndMacro
-   
-   ;-
-   Macro _get_colors_( ) : colors::*this\blue : EndMacro
    
    ;-
    Macro is_menu_( _this_ ) : Bool( _this_\type = constants::#__type_MenuBar Or _this_\type = constants::#__type_PopupBar ) : EndMacro
@@ -1936,9 +1931,9 @@ CompilerEndIf
 CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 920
-; FirstLine = 690
-; Folding = 9AcgA-PBu----------PcZ9------DA5--fAgAAAg-
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 498
+; FirstLine = 394
+; Folding = 9AcgA-PBu----------DXG------fAA---DAEAAA9
 ; EnableXP
 ; DPIAware

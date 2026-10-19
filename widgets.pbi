@@ -52,7 +52,7 @@ Module widgets
    Declare.b bar_draw_tab( *this )
    Declare   make_scrollbar_area( *this )
    
-   Declare.l UpdateDraw_VisibleRows( *this, visible_height.l = 0 )
+   Declare.l UpdateDraw_VisibleRows( *this )
    Declare   Draw_TreeRows( *this, _i_=0 )
    Declare   UpdateDraw_Content( *this )
    Declare   Draw_Content( *this._s_WIDGET, state )
@@ -923,32 +923,7 @@ Module widgets
          EndIf
       EndProcedure
    CompilerEndIf
-   
-   ;     CompilerSelect #PB_Compiler_OS ;{ Color
-   ;       CompilerCase #PB_OS_Windows
-   ;         _get_colors_( )\Front         = GetSysColor_(#COLOR_WINDOWTEXT)
-   ;         _get_colors_( )\Back          = GetSysColor_(#COLOR_WINDOW)
-   ;         _get_colors_( )\Focus         = GetSysColor_(#COLOR_HIGHLIGHT)
-   ;         _get_colors_( )\Gadget        = GetSysColor_(#COLOR_mENU)
-   ;         _get_colors_( )\Button        = GetSysColor_(#COLOR_3DLIGHT)
-   ;         _get_colors_( )\Border        = GetSysColor_(#COLOR_WINDOWFRAME)
-   ;         _get_colors_( )\WordColor     = GetSysColor_(#COLOR_HOTLIGHT)
-   ;         _get_colors_( )\Highlight     = GetSysColor_(#COLOR_HIGHLIGHT)
-   ;         _get_colors_( )\HighlightText = GetSysColor_(#COLOR_HIGHLIGHTTEXT)
-   ;
-   ;       CompilerCase #PB_OS_MacOS
-   ;         _get_colors_( )\Front         = OSX_NSColorToRGBa(CocoaMessage(0, 0, "NSColor textColor"))
-   ;         ;_get_colors_( )\Back          = BlendColor_(OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor textBackgroundColor")), $FFFFFF, 80)
-   ;         ;_get_colors_( )\back[2]      = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor keyboardFocusIndicatorColor"))
-   ;         ;_get_colors_( )\Back         = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor windowBackgroundColor"))
-   ;         _get_colors_( )\Back         = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor controlBackgroundColor"))
-   ;         _get_colors_( )\frame         = OSX_NSColorToRGBa(CocoaMessage(0, 0, "NSColor grayColor"))
-   ;         ;_get_colors_( )\back[2]       = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor selectedTextBackgroundColor"))
-   ;         ;_get_colors_( )\front[2]      = OSX_NSColorToRGB(CocoaMessage(0, 0, "NSColor selectedTextColor"))
-   ;       CompilerCase #PB_OS_Linux
-   ;
-   ;     CompilerEndSelect ;}
-   
+
    Procedure CreateIcon( img.l, Type.l )
       Protected X, Y, Pixel, size = 8, Index.i
       
@@ -2466,7 +2441,6 @@ Module widgets
       ; Draw items text
       If _address_\text\Str(0)
          draw_mode_alpha_( #PB_2DDrawing_Transparent )
-         ;DrawText( _x_ + _address_\text\x, _y_ + _address_\text\y, _address_\text\str(0), _address_\color\front[_state_] & $FFFFFF | _address_\AlphaState24( ) )
          DrawRotatedText( _x_ + _address_\x + _address_\text\x, _y_ + _address_\y + _address_\text\y, _address_\text\Str(0), *this\text\rotate, _address_\color\front[_state_] & $FFFFFF | _address_\AlphaState24( ) )
       EndIf
       
@@ -2486,7 +2460,7 @@ Module widgets
       If _address_\mask & #__mask_disabled
          ; Debug "disable item"
          draw_mode_alpha_( #PB_2DDrawing_Default )
-         draw_box_(  _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, $AAE4E4E4 )
+         draw_box_(  _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _address_\color\back);$AAE4E4E4 )
       EndIf
    EndMacro
    
@@ -2903,7 +2877,7 @@ Module widgets
       Protected _reverse_ = *bar\invert
       Protected _round_ = *this\round
       Protected alpha = 230
-      Protected _frame_color_ = $FF000000 ; *this\color\frame
+      Protected _frame_color_ = *this\color\frame
       Protected _fore_color1_
       Protected _back_color1_
       Protected _fore_color2_
@@ -4781,7 +4755,7 @@ Module widgets
          count + 1
          *this\menu\parent = *menu
          ;
-         SetBackgroundColor( *this, $FFF2F2F2)
+         SetBackgroundColor( *this, *this\color\back)
          Hide( *this, #True ) 
       Else
          If Not *parent
@@ -6328,7 +6302,7 @@ Module widgets
       If wheel = - 1 ; page-up
          If index_select_row
             If index_select_row > 0
-               select_index = *this\RowFirstVisible( )\rindex
+               select_index = *this\row\_v_first\rindex
             Else
                select_index = first_index
             EndIf
@@ -6354,7 +6328,7 @@ Module widgets
       ElseIf wheel = 1 ; page-down
          If index_select_row
             If index_select_row > 0
-               select_index = *this\RowLastVisible( )\rindex
+               select_index = *this\row\_v_last\rindex
             Else
                select_index = last_index
             EndIf
@@ -6496,7 +6470,7 @@ Module widgets
       *lines( )\height = *lines( )\text\height
       *lines( )\width  = *this\inner_width( )
       
-      *lines( )\color  = _get_colors_( )
+      *lines( )\color  = colors::_get_colors_( )
       
       If add_index >= 0
          *lines( )\text\pos = add_pos
@@ -11552,7 +11526,7 @@ Module widgets
             EndIf
          EndIf
          
-         *row\color         = _get_colors_( )
+         *row\color         = colors::_get_colors_( )
          *row\ColorState( ) = 0
          *row\color\back    = 0
          *row\color\frame   = 0
@@ -11677,22 +11651,21 @@ Module widgets
       EndIf
       
       If *tabBox
+         Protected *tab._s_TAB
          ; add tabs
          If *tabBox\type = #__TYPE_MenuBar Or 
             *tabBox\type = #__TYPE_PopupBar Or
             *tabBox\type = #__TYPE_ToolBar
             
             LastElement( *tabBox\__tabs( ))
-            AddElement( *tabBox\__tabs( ))
+            *tab = AddElement( *tabBox\__tabs( ))
             
-            ;*tabBox\__tabs.allocate( ITEMS, ( ))
-            *tabBox\__tabs( )\tindex = Item
+            *tab\tindex = Item
             
          ElseIf *tabBox\type = #__TYPE_TabBar
-            If Item < 0 Or
-               Item > *tabBox\countitems - 1
+            If Item < 0 Or Item > *tabBox\countitems - 1
                LastElement( *tabBox\__tabs( ))
-               AddElement( *tabBox\__tabs( ))
+               *tab = AddElement( *tabBox\__tabs( ))
                item = ListIndex( *tabBox\__tabs( ))
             Else
                If SelectElement( *tabBox\__tabs( ), Item )
@@ -11700,7 +11673,7 @@ Module widgets
                      *tabBox\TabState( ) + 1
                   EndIf
                   
-                  InsertElement( *tabBox\__tabs( ))
+                 *tab =  InsertElement( *tabBox\__tabs( ))
                   
                   ; перемещаем индекс детей на один вперед
                   ; (начиная с выбранного индекса)
@@ -11717,8 +11690,6 @@ Module widgets
                   EndIf
                EndIf
             EndIf
-            
-            ;*tabBox\__tabs.allocate( ITEMS, ( ))
          EndIf
          
          ;\\ TabBar last opened item
@@ -11726,9 +11697,9 @@ Module widgets
          *tabBox\countitems + 1
          
          ;\\
-         *tabBox\__tabs( )\tindex     = item
-         *tabBox\__tabs( )\color       = _get_colors_( )
-         *tabBox\__tabs( )\text\Str(0) = Text.s
+         *tab\tindex     = item
+         *tab\color       = colors::_get_colors_( )
+         *tab\text\Str(0) = Text.s
          
          ;\\ set default selected tab
          If item = 0 
@@ -11736,21 +11707,21 @@ Module widgets
                *tabBox\TabState( )         = 0
                ;
                If *tabBox\type = #__TYPE_TabBar
-                  *tabBox\parentTabSelected( )       = *tabBox\__tabs( )
+                  *tabBox\parentTabSelected( )       = *tab
                   *tabBox\parentTabSelected( )\ScrollToActive( - 1 ) ; scroll to active tab
                EndIf
             EndIf
          EndIf
          
          ;
-         add_image( *tabBox\__tabs( )\picture, img, *tabBox\picturesize )
+         add_image( *tab\picture, img, *tabBox\picturesize )
          
          ;         
          If is_integral_( *tabBox )
             OpenList( *tabBox\parent, Item )
          EndIf
          
-         ProcedureReturn *tabBox\__tabs( ) 
+         ProcedureReturn *tab 
       EndIf
       
    EndProcedure
@@ -13626,7 +13597,7 @@ Module widgets
             EndIf
          EndIf
          
-         If Flag & #__FLAG_Textreadonly : *this\text\mode | #__text_editable : EndIf
+         If Flag & #__FLAG_TextReadOnly : *this\text\mode | #__text_editable : EndIf
          If Flag & #__FLAG_Invert   : *this\text\invert = 0 : EndIf
          If Flag & #__FLAG_Vertical : *this\text\vertical = 0 : EndIf
          If Flag & #__FLAG_TextWordWrap 
@@ -14535,14 +14506,14 @@ Module widgets
       If dragged
          If Not *rowLine 
             If CanvasMouseY( ) < MousePressY( ) + *this\inner_y( ) And CanvasMouseY( ) <= *this\inner_y( )
-               If *this\RowFirstVisible( ) And Not bar_in_start_( *this\scroll\v\bar )
-                  ChangeCurrentElement( *this\__lines( ), *this\RowFirstVisible( ))
+               If *this\row\_v_first And Not bar_in_start_( *this\scroll\v\bar )
+                  ChangeCurrentElement( *this\__lines( ), *this\row\_v_first)
                   *rowLine = PreviousElement( *this\__lines( ) )
                   If *rowLine : row_scroll_y_( *this, *rowLine ) : EndIf
                EndIf
             ElseIf CanvasMouseY( ) > MousePressY( ) + *this\inner_y( ) And CanvasMouseY( ) > *this\inner_y( ) + *this\inner_height( )
-               If *this\RowLastVisible( ) And Not bar_in_stop_( *this\scroll\v\bar )
-                  ChangeCurrentElement( *this\__lines( ), *this\RowLastVisible( ))
+               If *this\row\_v_last And Not bar_in_stop_( *this\scroll\v\bar )
+                  ChangeCurrentElement( *this\__lines( ), *this\row\_v_last)
                   *rowLine = NextElement( *this\__lines( ) )
                   If *rowLine : row_scroll_y_( *this, *rowLine ) : EndIf
                EndIf
@@ -14739,7 +14710,7 @@ Module widgets
                   scroll_y = CanvasMouseY( ) - ( *this\inner_y( ) )
                   bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos + scroll_y )
                   UpdateDraw_Content( *this )
-                  Debug "timer scroll v top " + scroll_y + " " + *this\RowFirstVisible( )\rindex
+                  Debug "timer scroll v top " + scroll_y + " " + *this\row\_v_first\rindex
                   
                Else
                   ; Debug "scroll v stop top"
@@ -14750,26 +14721,26 @@ Module widgets
                                 ;bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos + scroll_y )
                                 ;UpdateDraw_Content( *this, *this\TextChange( ) )
                   
-                  Debug "timer scroll v bottom " + scroll_y + " " + *this\RowLastVisible( )\rindex
+                  Debug "timer scroll v bottom " + scroll_y + " " + *this\row\_v_last\rindex
                   
-                  ;               If *this\RowFocused( ) <> *this\RowLastVisible( )
+                  ;               If *this\RowFocused( ) <> *this\row\_v_last
                   ;                 ;                 If *this\RowEntered( )
                   ;                 ;                   *this\RowEntered( )\mask &~ #__mask_hover
                   ;                 ;                   *this\RowEntered( )\ColorState( ) = 0
                   ;                 ;                 EndIf
-                  ;                 ;                 *this\RowEntered( ) = *this\RowLastVisible( )
+                  ;                 ;                 *this\RowEntered( ) = *this\row\_v_last
                   ;                 ;                 *this\RowEntered( )\mask | #__mask_hover
                   ;                 ;                 *this\RowEntered( )\ColorState( ) = 1
                   ;
                   ;                 If *this\RowFocused( )
-                  ;                   ; Debug "scroll v bottom "+ scroll_y +" "+ *this\RowLastVisible( )\rindex +" "+ *this\RowFocused( )\rindex
+                  ;                   ; Debug "scroll v bottom "+ scroll_y +" "+ *this\row\_v_last\rindex +" "+ *this\RowFocused( )\rindex
                   ;                   *this\RowFocused( )\mask &~ #__mask_active
                   ;                   *this\RowFocused( )\ColorState( ) = 0
                   ;                 EndIf
                   ;
-                  ;                 ; edit_sel__( *this, *this\RowLastVisible( ), *this\row\active[1], *this\RowFocused( ), 0, *this\RowFocused( )\text\len )
-                  ;                 *this\RowFocused( ) = *this\RowLastVisible( )
-                  ;                 ;*this\RowFocused( ) = SelectElement( *this\__rows( ), *this\RowLastVisible( )\rindex )
+                  ;                 ; edit_sel__( *this, *this\row\_v_last, *this\row\active[1], *this\RowFocused( ), 0, *this\RowFocused( )\text\len )
+                  ;                 *this\RowFocused( ) = *this\row\_v_last
+                  ;                 ;*this\RowFocused( ) = SelectElement( *this\__rows( ), *this\row\_v_last\rindex )
                   ;                 *this\RowFocused( )\mask | #__mask_active
                   ;                 *this\RowFocused( )\ColorState( ) = 1
                   ;                 repaint_set( *this\RowFocused( ) )
@@ -15012,7 +14983,7 @@ Module widgets
                      EndIf
                      
                   Case #PB_Shortcut_PageUp 
-                     Protected first_index = *this\RowFirstVisible( )\rindex
+                     Protected first_index = *this\row\_v_first\rindex
                      If *row\lindex <> first_index
                         edit_select_line_( *this, *this\__lines( ), *row, first_index )
                         
@@ -15030,7 +15001,7 @@ Module widgets
                      
                      
                   Case #PB_Shortcut_PageDown 
-                     Protected last_index = *this\RowLastVisible( )\rindex
+                     Protected last_index = *this\row\_v_last\rindex
                      If *this\row\active[0]\lindex <> last_index
                         edit_select_line_( *this, *this\__lines( ), *row, last_index )
                         
@@ -15496,21 +15467,21 @@ Module widgets
                   ;                            If is_inside_( *this\screen_x( ), *this\screen_width( ), CanvasMouseX( ) )
                   ;                               If CanvasMouseY( ) <= mouse( )\delta\y + *this\inner_y( ) And CanvasMouseY( ) <= *this\inner_y( )
                   ;                                  ;
-                  ;                                  If *this\RowFirstVisible( ) And Not bar_in_start_( *this\scroll\v\bar )
-                  ;                                     ChangeCurrentElement( *this\__rows( ), *this\RowFirstVisible( ))
+                  ;                                  If *this\row\_v_first And Not bar_in_start_( *this\scroll\v\bar )
+                  ;                                     ChangeCurrentElement( *this\__rows( ), *this\row\_v_first)
                   ;                                     *row_howered = PreviousElement( *this\__rows( ) )
                   ;                                     
                   ;                                     If *row_howered
                   ;                                        row_scroll_y_( *this, *row_howered )
                   ;                                     EndIf
                   ;                                  Else
-                  ;                                     *row_howered = *this\RowFirstVisible( )
+                  ;                                     *row_howered = *this\row\_v_first
                   ;                                  EndIf
                   ;                               ElseIf CanvasMouseY( ) >= mouse( )\delta\y + *this\inner_y( ) And
                   ;                                      CanvasMouseY( ) >= *this\inner_y( ) + *this\inner_height( )
                   ;                                  ;
-                  ;                                  If *this\RowLastVisible( ) And Not bar_in_stop_( *this\scroll\v\bar )
-                  ;                                     ChangeCurrentElement( *this\__rows( ), *this\RowLastVisible( ))
+                  ;                                  If *this\row\_v_last And Not bar_in_stop_( *this\scroll\v\bar )
+                  ;                                     ChangeCurrentElement( *this\__rows( ), *this\row\_v_last)
                   ;                                     NextElement( *this\__rows( ) )
                   ;                                     ;*row_howered = *this\__rows( )
                   ;                                     If *row_howered And *this\scroll\v
@@ -15518,7 +15489,7 @@ Module widgets
                   ; ;                                      row_scroll_y_( *this, *row_howered )
                   ;                                     EndIf
                   ;                                  Else
-                  ;                                     *row_howered = *this\RowLastVisible( )
+                  ;                                     *row_howered = *this\row\_v_last
                   ;                                  EndIf
                   ;                               EndIf
                   ;                            EndIf
@@ -18372,7 +18343,7 @@ Module widgets
                
                *line\height = *line\text\height
                *line\width  = *this\inner_width( )
-               *line\color  = _get_colors_( )
+               *line\color  = colors::_get_colors_( )
                ;
                If *line\lindex <> *this\countitems - 1 
                   gridlines = Bool(*this\flagmask & #__FLAG_gridLines)
@@ -18579,9 +18550,6 @@ Module widgets
       Protected *row._s_ROW
       
       If Not *this\mask & #__mask_hidden
-         ;\\ update coordinate
-         ; Debug "   " + #PB_Compiler_Procedure + "( )"
-         
          ;\\ if the item list has changed
          If ListSize( *this\__columns( ) )
             *this\scroll_height( ) = *this\ColumnsHeight
@@ -18590,7 +18558,6 @@ Module widgets
             *this\scroll_height( ) = 0
          EndIf
          
-         ;*this\padding\x = 0
          Protected padding_size = *this\padding\x
          Protected button_size = DPIScaled(9)
          Protected box_size = DPIScaled(13)
@@ -18743,93 +18710,62 @@ Module widgets
       
    EndProcedure
    
-   Procedure.l UpdateDraw_VisibleRows( *this._s_WIDGET, visible_height.l = 0 )
-      Protected result, scroll_y = *this\scroll\v\bar\page\pos
-      Protected visible_y.l = 0
-      Protected *row._s_ROW
-      
-      PushListPosition( *this\__rows( ))
-      
-      If Not visible_y
-         visible_y = 0;*this\inner_y( ) ; *this\clip_y( ) ;
-      EndIf
-      If Not visible_height
-         If *this\clip_height( ) > *this\inner_height( )
-            visible_height = *this\inner_height( ) ;
-         Else
-            visible_height = *this\clip_height( )
-         EndIf
-      EndIf
-      
+   Procedure.l UpdateDraw_VisibleRows( *this._s_WIDGET )
       Protected i
+      Protected result
+      Protected *row._s_ROW
+      Protected visible_height.l 
+      Protected visible_y.l = *this\scroll\v\bar\page\pos
+      ;
+      If *this\clip_height( ) > *this\inner_height( )
+         visible_height = *this\inner_height( ) 
+      Else
+         visible_height = *this\clip_height( )
+      EndIf
+      ;
+      PushListPosition( *this\__rows( ))
       ForEach *this\__rows( ) : *row = @*this\__rows( )
+         ; make visible row mask
          *row\mask = ( *row\mask & ~#__mask_visible ) | 
                      ( Bool( Not ( *row\mask & #__mask_hidden ) And
-                             (( *row\y - scroll_y ) < visible_y + visible_height ) And 
-                             ( *row\y + *row\height - scroll_y ) > visible_y ) * #__mask_visible )
+                             (*row\y < ( visible_y + visible_height )) And 
+                             ( *row\y + *row\height) > visible_y ) * #__mask_visible )
          
-         ;;Debug ""+*this\class +" "+ visible_height  +" "+ rows( )\height
-         
-         
-         If *row\color\back = $FFF8F8F8
-            *row\color\back = 0
-         EndIf
-         If Not *row\mask & #__mask_hidden
-            If *row\color\back = 0
-               If *row\mask & #__mask_visible
+         ;
+         If *row\mask & #__mask_visible 
+            If Not *row\mask & #__mask_hidden
+               If *row\color\back <> $FFFFFFFF ; *this\color\fore
                   If i%2 = 0
-                     *row\color\back = $FFF8F8F8
+                     ; Debug i
+                     *row\color\back = $FFFFFFFF ; *this\color\fore ; $FFF8F8F8
                   EndIf
+                  
+                  i+1
                EndIf
-               
-               i+1
             EndIf
-         EndIf
-         
-         ;                If *row\childrens 
-         ;                If *row\mask & #__mask_visible
-         ;                   If *row\parent
-         ;                      *row\color\back = $FFF4F4F4
-         ;                   Else
-         ;                      *row\color\back = $FFF0F0F0
-         ;                   EndIf
-         ;                EndIf
-         ; ;             Else
-         ; ;                *row\color\back = 0 
-         ;             EndIf
-         
-         ;             EndIf
-         
-         ;\\ add new draw list
-         If *row\mask & #__mask_visible And
-            AddElement( *this\__items( ))
-            *this\__items( ) = *row
             
-            
-            ;\\
-            If *row\columnindex = 0
-               If ListSize( *this\__columns( ) ) = 1
-                  *this\__columns( )\width = *this\inner_width( ) - *this\__columns( )\x
-                  *row\width  = *this\__columns( )\width
-               Else
-                  *row\width = *this\__columns( )\width + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
+            ;\\ add new draw list
+            If AddElement( *this\__items( )) : *this\__items( ) = *row
+               If Not *this\row\_v_first
+                  *this\row\_v_first = *row
                EndIf
-            Else
+               *this\row\_v_last = *row
+               
                ;\\
-               If *row\width <> *this\__columns( )\width
+               If *row\columnindex = 0
+                  If ListSize( *this\__columns( ) ) = 1
+                     *this\__columns( )\width = *this\inner_width( ) - *this\__columns( )\x
+                     *row\width  = *this\__columns( )\width
+                  Else
+                     *row\width = *this\__columns( )\width + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
+                  EndIf
+                  
+               ElseIf *row\width <> *this\__columns( )\width
                   *row\width = *this\__columns( )\width
                EndIf
+               
+              result = #True
             EndIf
-            
-            ;\\
-            If Not *this\RowFirstVisible( )
-               *this\RowFirstVisible( ) = *row
-               ; Debug ""+*this\RowFirstVisible( )\x+" "+*this\RowFirstVisible( )\y
-            EndIf
-            *this\RowLastVisible( ) = *row
-            
-            ; Debug ""+*this\RowLastVisible( )\rindex +" "+ *this\RowLastVisible( )\y
-            result = 1
          EndIf
       Next
       PopListPosition( *this\__rows( ))
@@ -19636,15 +19572,20 @@ Module widgets
       Protected *row._s_ROW
       Protected *i._s_ROW
       
-      ;
-      PushListPosition( *this\__items( ))
-      ForEach *this\__items( ) : *i = *this\__items( )
-         If *i\columnindex <> ListIndex( *this\__columns( ))
-            Continue
-         EndIf
-         If Not *i\mask & #__mask_visible
-            Continue
-         EndIf
+       ; Встаем строго на первую видимую строку, которую определил update_rows
+      ChangeCurrentElement(*this\row\__s(), *this\row\_v_first)
+   
+   Repeat 
+      *i = @*this\row\__s()
+;   ;
+;  PushListPosition( *this\__items( ))
+;          ForEach *this\__items( ) : *i = *this\__items( )
+;          If *i\columnindex <> ListIndex( *this\__columns( ))
+;             Continue
+;          EndIf
+;          If Not *i\mask & #__mask_visible
+;             Continue
+;          EndIf
          
          ;\\ init real drawing font
          draw_font( *i, 0, *i\TextChange( ))
@@ -19697,8 +19638,24 @@ Module widgets
                draw_roundbox_( X, Y, *i\width, *i\height, *i\round, *i\round, *i\color\frame[state] )
             EndIf
          EndIf
-      Next
-      
+;       Next
+         
+      ; Проверяем, дошли ли мы до последней видимой строки.
+      ; Важно: проверка стоит ДО прыжка, чтобы корректно выйти, если последняя строка — это свернутый узел.
+         If *i = *this\row\_v_last 
+            Break 
+         Else
+           If *i\skip_next And 
+               (*i\mask & #__maskrow_node) And (*i\mask & #__maskrow_collapsed)
+               ; --- УМНЫЙ ПЕРЕХОД К СЛЕДУЮЩЕМУ ЭЛЕМЕНТУ ---
+               ; Мгновенно перелетаем скрытую ветку
+               ChangeCurrentElement(*this\row\__s(), *i\skip_next)
+            Else
+               ; Иначе просто шагаем на один элемент вперед. Если список кончился — выходим.
+               If Not NextElement(*this\row\__s()) : Break : EndIf
+            EndIf
+         EndIf
+      ForEver
       ;
       If ListIndex( *this\__columns( )) = 0
          Protected *buttonBox._s_buttons
@@ -19818,7 +19775,7 @@ Module widgets
          EndIf
       EndIf
       ;
-      PopListPosition( *this\__items( )) 
+;       PopListPosition( *this\__items( )) 
       ;
       ;
       Clip( *this, [#__c_draw] )
@@ -19844,8 +19801,8 @@ Module widgets
                      
                      ; reset draw list
                      ClearList( *this\__items( ))
-                     *this\RowFirstVisible( ) = 0
-                     *this\RowLastVisible( )  = 0
+                     *this\row\_v_first = 0
+                     *this\row\_v_last  = 0
                      
                      UpdateDraw_VisibleRows( *this )
                   EndIf
@@ -19861,8 +19818,8 @@ Module widgets
             
             ; reset draw list
             ClearList( *this\__items( ))
-            *this\RowFirstVisible( ) = 0
-            *this\RowLastVisible( )  = 0
+            *this\row\_v_first = 0
+            *this\row\_v_last  = 0
             
             UpdateDraw_VisibleRows( *this )
          EndIf
@@ -19927,10 +19884,10 @@ Module widgets
          
          ; Draw selections
          If *row_line\mask & #__mask_visible
-            If Not *this\RowFirstVisible( )
-               *this\RowFirstVisible( ) = *row_line
+            If Not *this\row\_v_first
+               *this\row\_v_first = *row_line
             EndIf
-            *this\RowLastVisible( ) = *row_line
+            *this\row\_v_last = *row_line
             
             
             Y      = row_y_( *this, *row_line ) + *this\scroll_y( )
@@ -20136,8 +20093,8 @@ Module widgets
          ; Draw Lines text
          ;                If *this\text\multiLine
          If *this\countitems
-            *this\RowFirstVisible( ) = 0
-            *this\RowLastVisible( )  = 0
+            *this\row\_v_first = 0
+            *this\row\_v_last  = 0
             
             ;\\
             Draw_EditorLines( *this, c_state )
@@ -20197,8 +20154,8 @@ Module widgets
             
             ;\\ reset draw list
             ClearList( *this\__items( ))
-            *this\RowFirstVisible( ) = 0
-            *this\RowLastVisible( )  = 0
+            *this\row\_v_first = 0
+            *this\row\_v_last  = 0
             
             ForEach *this\__columns( )
                UpdateDraw_VisibleRows( *this )
@@ -20924,38 +20881,15 @@ Module widgets
    ;-
    ;-  CREATEs
    ;-
-   Procedure.i Create( *parent._s_PARENT, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
+   
+ Procedure.i Create( *parent._s_PARENT, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
+      Protected color, img, flag_AutoSize.b = constants::BinaryFlag( Flag, #__FLAG_AutoSize )
+      Protected colors.Structures::_s_COLOR = colors::_get_colors_( )
+      Protected *this._s_WIDGET
       Protected *root._s_ROOT
       If *parent
          *root = *parent\root
       EndIf
-      ;
-      size = DPIScaled( size )
-      
-      ;
-      Protected color, img                 ;, *this.allocate( Widget )
-      Protected.b flag_AutoSize = constants::BinaryFlag( Flag, #__FLAG_autosize )
-      
-      ;
-      ;          If Type = #__TYPE_Container Or
-      ;             Type = #__TYPE_ScrollArea Or
-      ;             Type = #__TYPE_Panel Or
-      ;             Type = #__TYPE_MDI Or
-      ;             Type = #__TYPE_Frame
-      ;             Protected *this._s_PARENT
-      ;             If *root And flag_autosize And
-      ;                Not ListSize( widgets( ) )
-      ;                X              = 0
-      ;                Y              = 0
-      ;                Width          = *root\width
-      ;                Height         = *root\height
-      ;                *root\autosize = #True
-      ;                *this          = *root
-      ;             Else
-      ;                *this.allocate( Container )
-      ;             EndIf
-      ;          Else
-      Protected *this._s_WIDGET
       If *root And flag_autosize And
          Not ListSize( widgets( ) )
          X              = 0
@@ -20967,100 +20901,37 @@ Module widgets
       Else
          *this.allocate( Widget )
       EndIf
-      
-      ;          EndIf
-      
-      
-      If Type = #__TYPE_MenuBar Or
-         Type = #__TYPE_PopupBar Or
-         Type = #__TYPE_ToolBar Or
-         Type = #__TYPE_TabBar Or
-         Type = #__TYPE_Scroll Or
-         Type = #__TYPE_Progress Or
-         Type = #__TYPE_Track Or
-         Type = #__TYPE_Splitter Or
-         Type = #__TYPE_Spin
-         
-         *this\bar.allocate( BAR )
-      EndIf
-      
+       
       ;
-      *this\child  = constants::BinaryFlag( Flag, #__FLAG_child )
+      size = DPIScaled( size )
+      round = DPIScaled( round )
       
-      ;
-      If Not *this\Toggle( )
-         If Type = #__TYPE_Button Or 
-            Type = #__TYPE_ButtonImage
-            ;
-            If constants::BinaryFlag( Flag, #PB_Button_Toggle )
-               *this\Toggle( ).allocate( BOX )
-            EndIf
-         EndIf
-         If Type = #__TYPE_CheckBox Or Type = #__TYPE_Option
-            *this\Toggle( ).allocate( BOX )
-            If Type = #__TYPE_CheckBox 
-               *this\Toggle( )\round  = dpi_scale_two
-            EndIf
-            If Type = #__TYPE_Option
-               *this\Toggle( )\round  = size/2
-            EndIf
-            *this\Toggle( )\width = size
-            *this\Toggle( )\width  - Bool( Not *this\Toggle( )\width % 2)
-            *this\Toggle( )\height = *this\Toggle( )\width
-         EndIf
-      EndIf
-      
-      ;
-      If Type = #__TYPE_Splitter
-         *this\bar\vertical = Bool( Not constants::BinaryFlag( Flag, #__FLAG_Vertical ) And 
-                                    Not constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
-         *this\bar\invert   = constants::BinaryFlag( Flag, #__FLAG_Invert )
-      EndIf
-      If Type = #__TYPE_Progress
-         *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__FLAG_Vertical ) Or
-                                    constants::BinaryFlag( Flag, #PB_ProgressBar_Vertical ))
-         *this\bar\invert = constants::BinaryFlag( Flag, #__FLAG_Invert )
-         
-      EndIf
-      If Type = #__TYPE_Scroll
-         *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__FLAG_Vertical ) Or 
-                                    constants::BinaryFlag( Flag, #PB_ScrollBar_Vertical ))
-         *this\bar\invert   = constants::BinaryFlag( Flag, #__FLAG_Invert )
-      EndIf
-      If Type = #__TYPE_Track
-         *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__FLAG_Vertical ) Or
-                                    constants::BinaryFlag( Flag, #PB_TrackBar_Vertical ))
-         
-         If *this\bar\vertical
-            *this\bar\invert = constants::BinaryFlag( Flag, #__FLAG_Invert, #False )
-         Else
-            *this\bar\invert = constants::BinaryFlag( Flag, #__FLAG_Invert )
-         EndIf
-      EndIf
-      If Type = #__TYPE_Spin
-         If Flag & #__SPIN_Plus
-            *this\bar\vertical = constants::BinaryFlag( Flag, #__FLAG_Vertical )
-         Else
-            *this\bar\vertical = constants::BinaryFlag( Flag, #__FLAG_Vertical, #False )
-         EndIf
-         
-         *this\bar\invert = constants::BinaryFlag( Flag, #__FLAG_Invert )
-         *this\bar\mirror = constants::BinaryFlag( Flag, #__SPIN_mirror )
-      EndIf
-      If Type = #__TYPE_MenuBar Or
-         Type = #__TYPE_PopupBar Or
-         Type = #__TYPE_ToolBar Or
-         Type = #__TYPE_TabBar 
-         ;
-         *this\bar\vertical = constants::BinaryFlag( Flag, #__FLAG_Vertical )
-         *this\bar\invert   = constants::BinaryFlag( Flag, #__FLAG_Invert )
-      EndIf
-      
-      ;
       ; replace pb flag to widget flag
       Flag = FromPBFlag( Type, Flag )
-      ;
-      ; set default text align flags
+      ; flag change default text line
+      If Not ( Flag & #__FLAG_TextInLine Or
+               Flag & #__FLAG_TextMultiLine Or 
+               Flag & #__FLAG_TextWordWrap )
+         ;
+         If Type = #__TYPE_Text
+            Flag | #__FLAG_TextWordWrap
+         ElseIf Type = #__TYPE_Editor
+            Flag | #__FLAG_TextMultiLine
+         EndIf
+         
+         ; set dafault multiline text
+         If Text
+            If Type = #__TYPE_Option Or
+               Type = #__TYPE_CheckBox Or
+               Type = #__TYPE_HyperLink
+               
+               If CountString( Text, #LF$ )
+                  Flag | #__FLAG_TextMultiLine
+               EndIf
+            EndIf
+         EndIf
+      EndIf
+       ; flag change default text align flags
       If Not Flag & #__FLAG_Center
          If Not (Flag & #__FLAG_Left Or
                  Flag & #__FLAG_Right Or
@@ -21096,33 +20967,7 @@ Module widgets
             EndIf
          EndIf
       EndIf
-      
-      ; set default text line
-      If Not ( Flag & #__FLAG_TextInLine Or
-               Flag & #__FLAG_TextMultiLine Or 
-               Flag & #__FLAG_TextWordWrap )
-         ;
-         If Type = #__TYPE_Text
-            Flag | #__FLAG_TextWordWrap
-         ElseIf Type = #__TYPE_Editor
-            Flag | #__FLAG_TextMultiLine
-         EndIf
-         
-         ; set dafault multiline text
-         If Text
-            If Type = #__TYPE_Option Or
-               Type = #__TYPE_CheckBox Or
-               Type = #__TYPE_HyperLink
-               
-               If CountString( Text, #LF$ )
-                  Flag | #__FLAG_TextMultiLine
-               EndIf
-            EndIf
-         EndIf
-      EndIf
-      
-      
-      ; set default lines & buttons show
+       ; flag change default lines & buttons show
       If Type = #__TYPE_Tree Or
          Type = #__TYPE_ListView Or
          Type = #__TYPE_ListIcon Or
@@ -21139,6 +20984,94 @@ Module widgets
             Flag &~ #__FLAG_NoButtons
          Else
             Flag | #__FLAG_NoButtons
+         EndIf
+      EndIf
+      
+       ;\\
+      *this\font  = - 1
+      *this\type  = Type
+      *this\flagmask  = Flag   
+      *this\class  = class
+      *this\round  = round
+      *this\child  = constants::BinaryFlag( Flag, #__FLAG_Child )
+       ;
+      If Not *this\Toggle( )
+         If Type = #__TYPE_Button Or Type = #__TYPE_ButtonImage
+            If constants::BinaryFlag( Flag, #PB_Button_Toggle )
+               *this\Toggle( ).allocate( BOX )
+            EndIf
+         EndIf
+         If Type = #__TYPE_CheckBox Or Type = #__TYPE_Option
+            *this\Toggle( ).allocate( BOX )
+            If Type = #__TYPE_CheckBox 
+               *this\Toggle( )\round  = dpi_scale_two
+            EndIf
+            If Type = #__TYPE_Option
+               *this\Toggle( )\round  = size/2
+            EndIf
+            *this\Toggle( )\width = size
+            *this\Toggle( )\width  -  Bool( Not *this\Toggle( )\width % 2)
+            *this\Toggle( )\height = *this\Toggle( )\width
+         EndIf
+      EndIf
+      
+      ; BAR
+      If Type = #__TYPE_MenuBar Or
+         Type = #__TYPE_PopupBar Or
+         Type = #__TYPE_ToolBar Or
+         Type = #__TYPE_TabBar Or
+         Type = #__TYPE_Splitter Or
+         Type = #__TYPE_Progress Or
+         Type = #__TYPE_Scroll Or
+         Type = #__TYPE_Track Or
+         Type = #__TYPE_Spin
+         
+         *this\bar.allocate( BAR )
+         
+         If *this\bar
+            If Type = #__TYPE_MenuBar Or
+               Type = #__TYPE_PopupBar Or
+               Type = #__TYPE_ToolBar Or
+               Type = #__TYPE_TabBar 
+               ;
+               *this\bar\vertical = constants::BinaryFlag( Flag, #__FLAG_Vertical )
+               *this\bar\invert   = constants::BinaryFlag( Flag, #__FLAG_Invert )
+            EndIf
+            If Type = #__TYPE_Splitter
+               *this\bar\vertical = Bool( Not constants::BinaryFlag( Flag, #__FLAG_Vertical ) And 
+                                          Not constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
+               *this\bar\invert   = constants::BinaryFlag( Flag, #__FLAG_Invert )
+            EndIf
+            If Type = #__TYPE_Progress
+               *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__FLAG_Vertical ) Or
+                                          constants::BinaryFlag( Flag, #PB_ProgressBar_Vertical ))
+               *this\bar\invert = constants::BinaryFlag( Flag, #__FLAG_Invert )
+            EndIf
+            If Type = #__TYPE_Scroll
+               *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__FLAG_Vertical ) Or 
+                                          constants::BinaryFlag( Flag, #PB_ScrollBar_Vertical ))
+               *this\bar\invert   = constants::BinaryFlag( Flag, #__FLAG_Invert )
+            EndIf
+            If Type = #__TYPE_Track
+               *this\bar\vertical = Bool( constants::BinaryFlag( Flag, #__FLAG_Vertical ) Or
+                                          constants::BinaryFlag( Flag, #PB_TrackBar_Vertical ))
+               
+               If *this\bar\vertical
+                  *this\bar\invert = constants::BinaryFlag( Flag, #__FLAG_Invert, #False )
+               Else
+                  *this\bar\invert = constants::BinaryFlag( Flag, #__FLAG_Invert )
+               EndIf
+            EndIf
+            If Type = #__TYPE_Spin
+               If Flag & #__SPIN_Plus
+                  *this\bar\vertical = constants::BinaryFlag( Flag, #__FLAG_Vertical )
+               Else
+                  *this\bar\vertical = constants::BinaryFlag( Flag, #__FLAG_Vertical, #False )
+               EndIf
+               
+               *this\bar\invert = constants::BinaryFlag( Flag, #__FLAG_Invert )
+               *this\bar\mirror = constants::BinaryFlag( Flag, #__SPIN_mirror )
+            EndIf
          EndIf
       EndIf
       
@@ -21182,14 +21115,75 @@ Module widgets
       EndIf
       *this\bs = *this\fs
       
-      ;
-      ;\\
-      *this\font   = - 1
-      *this\color  = _get_colors_( )
-      *this\type   = Type
-      *this\flagmask   = Flag   
-      *this\class  = class
-      *this\round  = DPIScaled( round )
+       ; COLOR
+      *this\color  = colors
+      If constants::BinaryFlag( Flag, #__FLAG_Transparent )
+         *this\color\back =- 1
+      Else
+         If *this\type = #__TYPE_Text Or
+            *this\type = #__TYPE_Editor Or
+            *this\type = #__TYPE_String Or
+            *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage Or
+            *this\type = #__TYPE_Option Or
+            *this\type = #__TYPE_CheckBox Or
+            *this\type = #__TYPE_HyperLink
+            
+            *this\lineColor = $FFC0C0C0
+               If *this\type = #__TYPE_HyperLink
+               Color = *param_1
+               If Color
+                  If Not Alpha( Color )
+                     Color = Color & $FFFFFF | 255 << 24
+                  EndIf
+                  *this\color\front[#__s_1] = Color
+               EndIf
+            EndIf
+          
+            If *this\type = #__TYPE_Editor Or  *this\type = #__TYPE_String
+               If Bool( Not constants::BinaryFlag( Flag, #__FLAG_TextReadOnly ))
+                  *this\color\back = colors::Extract(*this\color\fore, 0.25, #True );*this\color\fore
+               Else
+                  *this\color\back = *this\color\fore
+               EndIf
+            EndIf
+         EndIf    
+         If *this\type = #__TYPE_Scroll
+             *this\color\back = colors::Extract(*this\color\fore, 0.15, #True );*this\color\fore
+         EndIf
+         If *this\type = #__TYPE_Tree Or
+            *this\type = #__TYPE_ListView Or
+            *this\type = #__TYPE_ListIcon Or
+            *this\type = #__TYPE_ExplorerList
+            
+            *this\lineColor = $FFC0C0C0
+             *this\color\back = *this\color\fore
+         EndIf
+         If *this\type = #__TYPE_Container Or
+            *this\type = #__TYPE_ScrollArea Or
+            *this\type = #__TYPE_Panel Or
+            *this\type = #__TYPE_MDI Or
+            *this\type = #__TYPE_Frame
+            
+            If *this\type = #__TYPE_Frame
+               *this\color\back = *this\color\fore ; $96D8D8D8
+            Else
+               *this\color\back = colors::Extract(*this\color\fore, 0.15, #True );*this\color\fore ; $FFF9F9F9
+            EndIf
+         EndIf
+         If *this\type = #__TYPE_Text Or
+            *this\type = #__TYPE_Option Or
+            *this\type = #__TYPE_CheckBox Or
+            *this\type = #__TYPE_HyperLink Or
+            *this\type = #__TYPE_MenuBar Or
+            *this\type = #__TYPE_Track Or 
+            *this\type = #__TYPE_Splitter Or 
+            *this\type = #__TYPE_PopupBar Or
+            *this\type = #__TYPE_ToolBar Or
+            *this\type = #__TYPE_TabBar 
+            ;
+            *this\color\back = - 1
+         EndIf
+      EndIf
       
       ;\\
       If *parent
@@ -21211,7 +21205,6 @@ Module widgets
             *this\address = *parent\address
             ReParent( *this, *parent )
          Else
-            ;*this\text\str(0) = Text
             SetParent( *this, *parent, #PB_Default )
          EndIf
       EndIf
@@ -21235,27 +21228,11 @@ Module widgets
          *this\caret\stop = - 1
          *this\LineState( ) = - 1
          
-         *this\lineColor = $FFC0C0C0
          
          If Type = #__TYPE_Editor
             *this\row\sellastsize = constants::BinaryFlag( Flag, #__FLAG_RowFullSelect, #False ) * DPIScaled(7)
          EndIf
-         If *this\type = #__TYPE_Text
-            *this\color\fore  = - 1
-            *this\color\back  = _get_colors_( )\fore
-            *this\color\front = _get_colors_( )\front
-            *this\color\frame = _get_colors_( )\frame
-         EndIf
-         If *this\type = #__TYPE_Option Or
-            *this\type = #__TYPE_CheckBox Or
-            *this\type = #__TYPE_HyperLink
-            ;
-            *this\color\fore  = - 1
-            *this\color\back  = _get_colors_( )\fore
-            *this\color\front = _get_colors_( )\front
-         EndIf
-         
-         
+          
          If *this\type = #__TYPE_Option
             If *this\prev[2]
                If *this\prev[2]\type = #__TYPE_Option
@@ -21267,18 +21244,7 @@ Module widgets
                *this\groupbar = *parent
             EndIf
          EndIf
-         
-         If *this\type = #__TYPE_HyperLink
-            Color = *param_1
-            If Color
-               If Not Alpha( Color )
-                  Color = Color & $FFFFFF | 255 << 24
-               EndIf
-               *this\color\front[#__s_1] = Color
-            EndIf
-         EndIf
-         
-      EndIf
+     EndIf
       
       ;\\ - Create Lists
       If *this\type = #__TYPE_Tree Or
@@ -21296,14 +21262,7 @@ Module widgets
          If *this\type = #__TYPE_ListIcon
             *this\ColumnsHeight  = DPIScaled( 24 )
          EndIf
-         
-         *this\lineColor = $FFC0C0C0
-         *this\color\_alpha = 255
-         *this\color\fore[#__s_0] = - 1
-         *this\color\back[#__s_0] = $ffffffff ; _get_colors_( )\fore
-         *this\color\front[#__s_0] = _get_colors_( )\front
-         *this\color\frame[#__s_0] = _get_colors_( )\frame
-      EndIf
+     EndIf
       
       ;\\ - Create Containers
       If *this\type = #__TYPE_Container Or
@@ -21326,13 +21285,9 @@ Module widgets
          ;
          ;\\
          If *this\type = #__TYPE_Frame
-            *this\color\back = $96D8D8D8
-            
             If Text
                *this\fs[2] = 8
             EndIf
-         Else
-            *this\color\back = $FFF9F9F9
          EndIf
          
          ;\\
@@ -21374,7 +21329,7 @@ Module widgets
       ;\\ - Create ComboBox
       If *this\type = #__TYPE_ComboBox
          *this\Combo( ).allocate( BUTTONS )
-         *this\Combo( )\color           = _get_colors_( )
+         *this\Combo( )\color           = colors
          *this\Combo( )\arrow\type      = #__arrow_type
          *this\Combo( )\arrow\size      = DPIScaled( #__arrow_size )
          *this\Combo( )\arrow\direction = #__right
@@ -21408,8 +21363,8 @@ Module widgets
          
          ; - Create Scroll
          If *this\type = #__TYPE_Scroll
-            *this\color\back  = $FFF9F9F9 ; - 1
-            *this\color\front = $FFFFFFFF
+;             *this\color\back  = $FFF9F9F9 ; - 1
+;             *this\color\front = $FFFFFFFF
             
             If is_integral_( *this )
                If *this\bar\vertical
@@ -21419,9 +21374,9 @@ Module widgets
                EndIf
             EndIf
             
-            *BB1\color = _get_colors_( )
-            *BB2\color = _get_colors_( )
-            *SB\color  = _get_colors_( )
+            *BB1\color = colors
+            *BB2\color = colors
+            *SB\color  = colors
             
             ;
             If Not constants::BinaryFlag( *this\flagmask, #__FLAG_nobuttons ) 
@@ -21444,12 +21399,8 @@ Module widgets
          
          ; Create Spin
          If *this\type = #__TYPE_Spin
-            *this\color\back   = - 1
-            *this\color\_alpha = 255
-            *this\color\back   = $FFFFFFFF
-            
-            *BB1\color = _get_colors_( )
-            *BB2\color = _get_colors_( )
+            *BB1\color = colors
+            *BB2\color = colors
             
             If Not *this\flagmask & #__SPIN_Plus
                *BB1\arrow\size = DPIScaled( #__arrow_size )
@@ -21462,8 +21413,7 @@ Module widgets
          
          ; - Create Track
          If *this\type = #__TYPE_Track
-            *this\color\back = - 1
-            *BB1\color       = _get_colors_( )
+            *BB1\color       = colors
             *BB2\color       = *BB1\color
             *SB\color        = *BB1\color
             
@@ -21499,11 +21449,8 @@ Module widgets
             *this\type = #__TYPE_ToolBar Or
             *this\type = #__TYPE_TabBar 
             ;
-            ;;*this\TextChange( ) = 1
-            *this\color\back = - 1
-            *BB1\color       = _get_colors_( )
-            *BB2\color       = _get_colors_( )
-            ;*SB\color = _get_colors_( )
+            *BB1\color       = colors
+            *BB2\color       = colors
             
             If constants::BinaryFlag( *this\flagmask, #__bar_buttonsize, #False )
                *SB\size  = size
@@ -21526,7 +21473,6 @@ Module widgets
          
          ; - Create Progress
          If *this\type = #__TYPE_Progress
-            *this\color         = _get_colors_( )
             *this\TextChange( ) = #True
             If *this\bar\invert
                *this\flagmask | #__FLAG_Invert 
@@ -21539,7 +21485,6 @@ Module widgets
          ; - Create Splitter
          If *this\type = #__TYPE_Splitter
             *this\container  = - 1
-            *this\color\back = - 1
             ;
             *SB\round = dpi_scale_two
             *SB\size = bar_splitter_size 
@@ -21581,12 +21526,6 @@ Module widgets
          ;
       EndIf
       
-      
-      ; COLOR
-      If constants::BinaryFlag( *this\flagmask, #__FLAG_Transparent )
-         *this\color\back =- 1
-      EndIf
-      
       ;\\ CURSOR init
       If *this\type = #__TYPE_Splitter
          If *this\bar\vertical
@@ -21620,7 +21559,6 @@ Module widgets
                                    #__TYPE_String, 0, 0, 0, 0, "", ;Str(*param_1),
                                    #__FLAG_child | #__FLAG_Textnumeric | #__FLAG_Borderless | *this\flagmask&~(#__FLAG_invert|#__FLAG_vertical) )
       EndIf
-      
       
       ;\\
       If *this\flagmask
@@ -21739,16 +21677,11 @@ Module widgets
             EndIf
             
             ;\\
-            If *this\type = #__TYPE_Editor Or
-               *this\type = #__TYPE_String
-               *this\color\fore = 0
-               
+            If *this\type = #__TYPE_Editor Or *this\type = #__TYPE_String
                If *this\text\mode & #__text_editable
                   *this\caret\width = DPIScaled(1)
-                  *this\color\back[0] = $FFFFFFFF
                Else
                   *this\caret\width = 0
-                  *this\color\back[0] = $FFF0F0F0
                EndIf
             EndIf
             
@@ -21811,21 +21744,15 @@ Module widgets
       ProcedureReturn *this
    EndProcedure
    
-   Procedure.i CreateContainer( *parent._s_PARENT, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
-      Protected *root._s_ROOT
+  Procedure.i CreateContainer( *parent._s_PARENT, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
+   ;  ProcedureReturn Create( *parent, class, Type, X, Y, Width, Height, Text, Flag, *param_1, *param_2, *param_3, size, round, ScrollStep)
+     Protected color, img, flag_AutoSize.b = constants::BinaryFlag( Flag, #__FLAG_autosize )
+     Protected *this._s_PARENT
+      Protected *Root._s_ROOT
       If *parent
          *root = *parent\root
       EndIf
       If Not *root : ProcedureReturn 0 : EndIf
-      ;
-      size = DPIScaled( size )
-      
-      ;
-      Protected color, img                 ;, *this.allocate( Widget )
-      Protected.b flag_AutoSize = constants::BinaryFlag( Flag, #__FLAG_autosize )
-      
-      ;
-      Protected *this._s_PARENT
       If flag_autosize And
          Not ListSize( widgets( ) )
          X              = 0
@@ -21837,88 +21764,20 @@ Module widgets
       Else
          *this.allocate( PARENT )
       EndIf
-      ;          
-      
-      
-      If Type = #__TYPE_Splitter 
-         *this\bar.allocate( BAR )
-      EndIf
       
       ;
+      size = DPIScaled( size )
+      ; replace pb flag to widget flag
+      Flag = FromPBFlag( Type, Flag )
+       
       *this\child  = constants::BinaryFlag( Flag, #__FLAG_child )
-      
       ;
       If Type = #__TYPE_Splitter
+         *this\bar.allocate( BAR )
          *this\bar\vertical = Bool( Not constants::BinaryFlag( Flag, #__FLAG_Vertical ) And 
                                     Not constants::BinaryFlag( Flag, #PB_Splitter_Vertical ))
          *this\bar\invert   = constants::BinaryFlag( Flag, #__FLAG_Invert )
       EndIf
-      
-      ;
-      ; replace pb flag to widget flag
-      Flag = FromPBFlag( Type, Flag )
-      ;
-      ; set default text align flags
-      If Not Flag & #__FLAG_Center
-         If Not (Flag & #__FLAG_Left Or
-                 Flag & #__FLAG_Right Or
-                 Flag & #__FLAG_Top Or
-                 Flag & #__FLAG_Bottom)
-            
-            If Type = #__TYPE_Spin 
-               If Flag & #__SPIN_Plus
-                  Flag | #__FLAG_Center
-               Else
-                  Flag | #__FLAG_Left
-               EndIf
-               
-            ElseIf Type = #__TYPE_Text Or
-                   Type = #__TYPE_Image Or
-                   Type = #__TYPE_Editor
-               
-               Flag | #__FLAG_Left | #__FLAG_Top
-               
-            ElseIf Type = #__TYPE_Button Or 
-                   Type = #__TYPE_ButtonImage Or 
-                   Type = #__TYPE_Progress Or
-                   Type = #__TYPE_HyperLink
-               
-               Flag | #__FLAG_Center
-               
-            ElseIf Type = #__TYPE_ComboBox Or 
-                   Type = #__TYPE_String Or
-                   Type = #__TYPE_Option Or
-                   Type = #__TYPE_CheckBox
-               
-               Flag | #__FLAG_Left
-            EndIf
-         EndIf
-      EndIf
-      
-      ; set default text line
-      If Not ( Flag & #__FLAG_TextInLine Or
-               Flag & #__FLAG_TextMultiLine Or 
-               Flag & #__FLAG_TextWordWrap )
-         ;
-         If Type = #__TYPE_Text
-            Flag | #__FLAG_TextWordWrap
-         ElseIf Type = #__TYPE_Editor
-            Flag | #__FLAG_TextMultiLine
-         EndIf
-         
-         ; set dafault multiline text
-         If Text
-            If Type = #__TYPE_Option Or
-               Type = #__TYPE_CheckBox Or
-               Type = #__TYPE_HyperLink
-               
-               If CountString( Text, #LF$ )
-                  Flag | #__FLAG_TextMultiLine
-               EndIf
-            EndIf
-         EndIf
-      EndIf
-      
       
       ;\\ set default border & frame size
       If is_integral_( *this )
@@ -21953,7 +21812,7 @@ Module widgets
       ;
       ;\\
       *this\font   = - 1
-      *this\color  = _get_colors_( )
+      *this\color  = colors::_get_colors_( )
       *this\type   = Type
       *this\flagmask   = Flag   
       *this\class  = class
@@ -22009,13 +21868,13 @@ Module widgets
          ;
          ;\\
          If *this\type = #__TYPE_Frame
-            *this\color\back = $96D8D8D8
+            *this\color\back = colors::Extract(*this\color\fore, 0.35, #True ); $96D8D8D8
             
             If Text
                *this\fs[2] = 8
             EndIf
          Else
-            *this\color\back = $FFF9F9F9
+            *this\color\back = colors::Extract(*this\color\fore, 0.15, #True ); *this\color\fore ; $FFF9F9F9
          EndIf
          
          ;\\
@@ -22184,18 +22043,6 @@ Module widgets
             EndIf
             
             ;\\
-            If *this\type = #__TYPE_Editor Or
-               *this\type = #__TYPE_String
-               *this\color\fore = 0
-               
-               If *this\text\mode & #__text_editable
-                  *this\caret\width = DPIScaled(1)
-                  *this\color\back[0] = $FFFFFFFF
-               Else
-                  *this\caret\width = 0
-                  *this\color\back[0] = $FFF0F0F0
-               EndIf
-            EndIf
             
             ;\\
             If *this\type = #__TYPE_Frame
@@ -22542,7 +22389,7 @@ Module widgets
          *root\canvas\gadget   = Canvas
          
          ;
-         *root\color       = _get_colors_( )
+         *root\color       = colors::_get_colors_( )
          If constants::BinaryFlag( Flag, #__FLAG_Transparent )
             *root\color\back  = - 1
          EndIf
@@ -22684,12 +22531,12 @@ Module widgets
       ;
       ;       *this\round = round
       ;
-      *this\color      = _get_colors_( )
+      *this\color      = colors::_get_colors_( )
       
       If constants::BinaryFlag( Flag, #__FLAG_Transparent ) 
          *this\color\back = - 1
       Else
-         *this\color\back = $FFF9F9F9
+         *this\color\back = colors::Extract(*this\color\fore, 0.30, #True ); $FFF9F9F9
       EndIf
       
       ; border frame size
@@ -22697,7 +22544,7 @@ Module widgets
       *this\bs = *this\fs
       
       ;
-      *this\caption\color    = _get_colors_( )
+      *this\caption\color    = colors::_get_colors_( )
       *this\caption\_padding = DPIScaled(4)
       
       If constants::BinaryFlag( *this\flagmask, #PB_Window_SystemMenu, #False )
@@ -22740,9 +22587,9 @@ Module widgets
          *this\TitleText( )\Str(0)    = Text
       EndIf
       
-      *this\CloseButton( )\color    = colors::*this\red
-      *this\MaximizeButton( )\color = colors::*this\blue
-      *this\MinimizeButton( )\color = colors::*this\green
+      *this\CloseButton( )\color    = colors::PALETTE\red
+      *this\MaximizeButton( )\color = colors::PALETTE\blue
+      *this\MinimizeButton( )\color = colors::PALETTE\green
       
       *this\CloseButton( )\width    = DPIScaled( #__bar_button_size - 2 )
       *this\CloseButton( )\height   = *this\CloseButton( )\width
@@ -25750,8 +25597,8 @@ CompilerIf #PB_Compiler_IsMainFile
    AddItem( *panel, -1, "(enter&leave)-test" ) : SetItemFont(*panel, 2, 6)
    Procedure enter_leave_containers_events( )
       Protected.b Repaint
-      Protected.l colorback = colors::*this\blue\fore,
-               colorframe = colors::*this\blue\frame,
+      Protected.l colorback = colors::PALETTE\blue\fore,
+               colorframe = colors::PALETTE\blue\frame,
                colorback1 = $ff00ff00,
                colorframe1 = $ff0000ff
       
@@ -25967,10 +25814,10 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
    
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 25059
-; FirstLine = 25034
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 19649
+; FirstLine = 3242
+; Folding = CAAAAAAAAvHAAAAAAAAAAAAAgA+FARoFBAkBAAAAAAAAAAAwGAAAAAgPAAAAAAAAAAAAM+6-ASODEgDAAAAAAA9GYAAAADACgHABAAAYAAAAAAAAADAAMAAAwAAAAAAAgBAAAAAgJBAAAAAAAAAAAAYAAA5EAAAAAGAIAAAAAAwGUuBA3wjBAAGAAAAitBAAAABAAAAAAAAAAAAAAAAAwBA-AAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAB+BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAQA-GAAAAAAAA+Hw-AAAAAAAAAAAAAAAAAAAATAAAAAACQDAAAAAfAAAAAAAAADAAAAg-----P+--------------fAAAAAAAAAAAAAgBAOAAQ5-DAAAAAAAAAAAAAAAAAAAAAAAAAE9HQAAA8hRAAAAAAAHAAAAAAAGAAA7BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAAAAAAAAAAAAQEgCA9eAAAAQAAA5-0AAAA+8zAAAAAPHAX+3wBgV5FE+wv-H----CA74-E-R+4Hwfw4f6-5-HmB+vbfBF9--BwAmouEwAAA9D9BvCwAD5Bf1DA-SgADgUAECAAQVAAAw---PAAAAAAAAAAAAAA9PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+3-DMAAAIHgAAAAAg-Bw
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

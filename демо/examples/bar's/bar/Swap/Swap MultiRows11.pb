@@ -231,7 +231,7 @@ Procedure AddTab(*this._s_WIDGET, title$, windowid, canvasheight, imageid.i = 0,
 EndProcedure
 
 ; полностью адаптивная процедура рендеринга ретро-трапеции
-Procedure DrawTabChrome(x, y, w, h, isactive, activecolor.l, nonactivecolor.l = -1, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
+Procedure _DrawTabChrome(vertical.b,x, y, w, h, isactive, activecolor.l, nonactivecolor.l = -1, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
    Protected i, dy, dh = (h); - 1)
    Protected localslant = slant
    
@@ -299,8 +299,8 @@ Procedure DrawTabChrome(x, y, w, h, isactive, activecolor.l, nonactivecolor.l = 
    EndIf
 EndProcedure
 Procedure DrawTabChrome(vertical.b, x, y, w, h, isactive, activecolor.l, nonactivecolor.l = -1, outerbordercolor.l = -1, innerhighlightcolor.l = -1, localslant.l=-1)
-  ; ProcedureReturn _DrawTabChrome(vertical, x, y, w, h, isactive, activecolor, nonactivecolor, outerbordercolor, innerhighlightcolor, localslant, 0)
-   ProcedureReturn _DrawTabChrome(x, y, w, h, isactive, activecolor, nonactivecolor, outerbordercolor, innerhighlightcolor, localslant, vertical, 1)
+   ProcedureReturn _DrawTabChrome(vertical, x, y, w, h, isactive, activecolor, nonactivecolor, outerbordercolor, innerhighlightcolor)
+  ; ProcedureReturn _DrawTabChrome(x, y, w, h, isactive, activecolor, nonactivecolor, outerbordercolor, innerhighlightcolor, localslant, vertical, 1)
    If Not w And h
     ;  ProcedureReturn
    EndIf
@@ -604,9 +604,9 @@ Procedure draw_tab(isactive, *tab._s_TAB, h, bgcolor.l, max_row_index.i = -1)
       textcolor = RGB(0, 0, 0)
       textBgcolor = bgcolor
       If *tab\ID = max_row_index
-         DrawTabChrome(*tab\x, *tab\y, *tab\width, h + BottonSpacing, 1, bgcolor)
+         DrawTabChrome(0,*tab\x, *tab\y, *tab\width, h + BottonSpacing, 1, bgcolor)
       Else
-         DrawTabChrome(*tab\x, *tab\y, *tab\width, h,  -1, bgcolor)
+         DrawTabChrome(0,*tab\x, *tab\y, *tab\width, h,  -1, bgcolor)
       EndIf
    Else
       Protected.l nabaser = Red(bgcolor) + 25
@@ -651,7 +651,7 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB, gWidth, gHeight, bgColo
    Protected *tab._s_TAB
    Protected vertical.b = *this\tab\vertical
    
-   ;DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent)
+   ;DrawingMode(#PB_2DDrawing_Gradient); | #PB_2DDrawing_Transparent)
    ; линия пола
    Protected floorcolor = RGB(Red(bgColor) * 0.7, Green(bgColor) * 0.7, Blue(bgColor) * 0.7)
    LineXY(0, gHeight - 1, gWidth, gHeight - 1, floorcolor)
@@ -991,8 +991,8 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    ForEver
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 420
-; FirstLine = 328
-; Folding = ----8------0--48------
+; CursorPosition = 653
+; FirstLine = 517
+; Folding = ----8---------48------
 ; EnableXP
 ; DPIAware

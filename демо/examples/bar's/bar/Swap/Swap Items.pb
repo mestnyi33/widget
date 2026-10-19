@@ -18,6 +18,41 @@ EndIf
 #__flag_Bottom  = 3
 #__flag_Center = 4
 
+; ==============================================================================
+; МАСКИ - Единые битовые константы (Quad)
+; ==============================================================================
+#__MASK_none      = 0
+#__MASK_update    = 1 << 0         ; Флаг: Требуется пересчет геометрии (для всех) (TextWidth и т.д.) нужно пересчитать координаты X для каретки/выделения.
+
+#__MASK_left      = 1 << 1   ; 2   move to left
+#__MASK_top       = 1 << 2   ; 4   move to top
+#__MASK_right     = 1 << 3   ; 8   move to right
+#__MASK_bottom    = 1 << 4   ; 16  move to bottom
+#__MASK_center    = 1 << 5
+
+#__MASK_hover     = 1 << 6
+#__MASK_press     = 1 << 7         ; 64  button press
+#__MASK_release   = 1 << 8         ; 128 button release
+#__MASK_dragstart = 1 << 9         ; 256
+#__MASK_drag      = 1 << 10        ; Состояние перетаскивания Объект в процессе перетаскивания
+#__MASK_active    = 1 << 11        ; Виджет в фокусе / Строка выбрана / Окно активно
+#__MASK_redraw    = 1 << 12        ; Флаг: Требуется перерисовка
+
+#__MASK_hidden    = 1 << 16        ; Объект полностью скрыт
+#__MASK_disabled   = 1 << 17       ; Объект заблокирован
+#__MASK_cursor    = 1 << 21
+#__MASK_resize    = 1 << 22
+;
+#__maskflag_wordwrap  = 1 << 25
+#__maskflag_tokken    = 1 << 18
+;
+#__maskrow_change    = 1 << 20        ; текст изменился, надо перепарсить токены.
+#__maskrow_edit      = 1 << 19        ; Выделение (Строка)
+#__maskrow_node      = 1 << 23        ; Является узлом (Строка) / Деревом (Виджет)
+#__maskrow_collapsed = 1 << 24        ; Свернуто (Узел/Ветка)
+
+#__MASK_change    = #__maskrow_change
+
 ; =====================================================================
 ; 2. СТРУКТУРЫ ДАННЫХ
 ; =====================================================================
@@ -82,6 +117,45 @@ EndStructure
 ; =====================================================================
 Global slant.i = DesktopScaledX(20)
 Global bottomSpaking.i = DesktopScaledX(8) 
+
+Procedure.l MakeColor( bgColor.l , isHover=0, isActive=0, isPress=0)
+  Protected.l nabaser = Red(bgColor) + 25
+  Protected.l nabaseg = Green(bgColor) + 20
+  Protected.l nabaseb = Blue(bgColor) + 20
+  Protected.l nabasea = Alpha(bgColor) ; Извлекаем альфа-канал
+  
+  If isHover
+    nabaser + 30
+    nabaseg + 30
+    nabaseb + 30
+  EndIf
+  
+  If isActive
+    nabaser + 10
+    nabaseg + 10
+    nabaseb + 10
+  EndIf
+  
+  If isPress
+    nabaser - 30
+    nabaseg - 30
+    nabaseb - 30
+  EndIf
+  
+  ; Ограничение сверху (чтобы не превысить 255)
+  If nabaser > 255 : nabaser = 255 : EndIf
+  If nabaseg > 255 : nabaseg = 255 : EndIf
+  If nabaseb > 255 : nabaseb = 255 : EndIf
+  
+  ; Дополнительное ограничение снизу (защита от отрицательных значений при исPress)
+  If nabaser < 0 : nabaser = 0 : EndIf
+  If nabaseg < 0 : nabaseg = 0 : EndIf
+  If nabaseb < 0 : nabaseb = 0 : EndIf
+  
+  ; Возвращаем цвет с сохранением альфа-канала
+  ProcedureReturn RGBA(nabaser, nabaseg, nabaseb, nabasea)
+EndProcedure
+
 
 Procedure.i GetAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i = 10)
    If alignFlags & #__flag_Center
@@ -348,15 +422,15 @@ Procedure DrawTab(*tab._s_TAB, bgColor.l=$FF808080, vertical.b=0, isActive.b=0)
    Protected txColor 
    
    ; Включаем альфа-смешивание для отрисовки тела вкладки Chrome
-   DrawingMode(#PB_2DDrawing_AlphaBlend) 
+    DrawingMode(#PB_2DDrawing_AlphaBlend) 
    
-   If isActive
+   If isActive ; *tab\mask & #__MASK_active
       txColor = $FF000000
       ; Передаем bgColor, который теперь должен содержать альфа-канал
       DrawTabChrome(vertical, *tab\x, *tab\y, *tab\width, *tab\Height+bottomSpaking, 1, bgColor)
    Else
       txColor = $FFFFFFFF
-      DrawTabChrome(vertical, *tab\x, *tab\y, *tab\width, *tab\Height, 0, 0, bgColor)
+      DrawTabChrome(vertical, *tab\x, *tab\y, *tab\width, *tab\Height, 0, 0, MakeColor(bgColor,1,0,0))
    EndIf
    
    ; 2. ОТРИСОВКА ИКОНКИ
@@ -655,9 +729,9 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 240
-; FirstLine = 211
-; Folding = ----4-----------
+; CursorPosition = 432
+; FirstLine = 394
+; Folding = ------0----------
 ; EnableXP
 ; EnableOnError
 ; EnableUnicode

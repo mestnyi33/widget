@@ -306,49 +306,49 @@
          ;
          #__EVENT_Close
          #__EVENT_Free
-         #__event
+         #__EVENT
       EndEnumeration
       
-      ;     #__eventmask_Create       = 1<<#__EVENT_Create
-      ;     #__eventmask_enter        = 1<<#__EVENT_MouseEnter
-      ;     #__eventmask_Focus        = 1<<#__EVENT_Focus
-      ;     #__eventmask_Down         = 1<<#__EVENT_Down
-      ;     #__eventmask_MiddleDown   = 1<<#__EVENT_MiddleDown
-      ;     #__eventmask_LeftDown     = 1<<#__EVENT_LeftDown
-      ;     #__eventmask_RightDown    = 1<<#__EVENT_RightDown
-      ;     #__eventmask_Dragstart    = 1<<#__EVENT_Dragstart
-      ;     #__eventmask_Mousemove    = 1<<#__EVENT_MouseMove
-      ;     #__eventmask_wheel        = 1<<#__EVENT_MouseWheel
-      ;     #__eventmask_Leave        = 1<<#__EVENT_MouseLeave
-      ;     #__eventmask_Drop         = 1<<#__EVENT_Drop
-      ;     #__eventmask_Up           = 1<<#__EVENT_Up
-      ;     #__eventmask_MiddleUp     = 1<<#__EVENT_MiddleUp
-      ;     #__eventmask_LeftUp       = 1<<#__EVENT_LeftUp
-      ;     #__eventmask_RightUp      = 1<<#__EVENT_RightUp
-      ;     #__eventmask_LeftClick    = 1<<#__EVENT_LeftClick
-      ;     #__eventmask_RightClick   = 1<<#__EVENT_RightClick
-      ;     #__eventmask_Left2Click   = 1<<#__EVENT_Left2Click
-      ;     #__eventmask_Right2Click  = 1<<#__EVENT_Right2Click
-      ;     #__eventmask_Left3Click   = 1<<#__EVENT_Left3Click
-      ;     #__eventmask_Right3Click  = 1<<#__EVENT_Right3Click
-      ;     #__eventmask_Lostfocus    = 1<<#__EVENT_LostFocus
-      ;     #__eventmask_Change       = 1<<#__EVENT_Change
-      #__eventmask_Cursor       = 1<<#__EVENT_CursorChange
-      ;     #__eventmask_StatusChange = 1<<#__EVENT_StatusChange
-      ;     #__eventmask_ScrollChange = 1<<#__EVENT_ScrollChange
-      ;     #__eventmask_KeyDown      = 1<<#__EVENT_KeyDown
-      ;     #__eventmask_Input        = 1<<#__EVENT_Input
-      ;     #__eventmask_Return       = 1<<#__EVENT_Return
-      ;     #__eventmask_KeyUp        = 1<<#__EVENT_KeyUp
-      #__eventmask_Draw         = 1<<#__EVENT_Draw
-      ;     #__eventmask_Maximize     = 1<<#__EVENT_Maximize
-      ;     #__eventmask_Minimize     = 1<<#__EVENT_Minimize
-      ;     #__eventmask_Restore      = 1<<#__EVENT_Restore
-      ;     #__eventmask_Resizebegin  = 1<<#__EVENT_ResizeBegin
-      #__eventmask_Resize       = 1<<#__EVENT_Resize
-      ;     #__eventmask_Resizeend    = 1<<#__EVENT_ResizeEnd
-      ;     #__eventmask_Close        = 1<<#__EVENT_Close
-      ;     #__eventmask_Free         = 1<<#__EVENT_Free  ; Destroy
+      ;     #__EVENTMASK_Create       = 1<<#__EVENT_Create
+      ;     #__EVENTMASK_enter        = 1<<#__EVENT_MouseEnter
+      ;     #__EVENTMASK_Focus        = 1<<#__EVENT_Focus
+      ;     #__EVENTMASK_Down         = 1<<#__EVENT_Down
+      ;     #__EVENTMASK_MiddleDown   = 1<<#__EVENT_MiddleDown
+      ;     #__EVENTMASK_LeftDown     = 1<<#__EVENT_LeftDown
+      ;     #__EVENTMASK_RightDown    = 1<<#__EVENT_RightDown
+      ;     #__EVENTMASK_Dragstart    = 1<<#__EVENT_Dragstart
+      ;     #__EVENTMASK_Mousemove    = 1<<#__EVENT_MouseMove
+      ;     #__EVENTMASK_wheel        = 1<<#__EVENT_MouseWheel
+      ;     #__EVENTMASK_Leave        = 1<<#__EVENT_MouseLeave
+      ;     #__EVENTMASK_Drop         = 1<<#__EVENT_Drop
+      ;     #__EVENTMASK_Up           = 1<<#__EVENT_Up
+      ;     #__EVENTMASK_MiddleUp     = 1<<#__EVENT_MiddleUp
+      ;     #__EVENTMASK_LeftUp       = 1<<#__EVENT_LeftUp
+      ;     #__EVENTMASK_RightUp      = 1<<#__EVENT_RightUp
+      ;     #__EVENTMASK_LeftClick    = 1<<#__EVENT_LeftClick
+      ;     #__EVENTMASK_RightClick   = 1<<#__EVENT_RightClick
+      ;     #__EVENTMASK_Left2Click   = 1<<#__EVENT_Left2Click
+      ;     #__EVENTMASK_Right2Click  = 1<<#__EVENT_Right2Click
+      ;     #__EVENTMASK_Left3Click   = 1<<#__EVENT_Left3Click
+      ;     #__EVENTMASK_Right3Click  = 1<<#__EVENT_Right3Click
+      ;     #__EVENTMASK_Lostfocus    = 1<<#__EVENT_LostFocus
+      ;     #__EVENTMASK_Change       = 1<<#__EVENT_Change
+      #__EVENTMASK_Cursor       = 1<<#__EVENT_CursorChange
+      ;     #__EVENTMASK_StatusChange = 1<<#__EVENT_StatusChange
+      ;     #__EVENTMASK_ScrollChange = 1<<#__EVENT_ScrollChange
+      ;     #__EVENTMASK_KeyDown      = 1<<#__EVENT_KeyDown
+      ;     #__EVENTMASK_Input        = 1<<#__EVENT_Input
+      ;     #__EVENTMASK_Return       = 1<<#__EVENT_Return
+      ;     #__EVENTMASK_KeyUp        = 1<<#__EVENT_KeyUp
+      #__EVENTMASK_Draw         = 1<<#__EVENT_Draw
+      ;     #__EVENTMASK_Maximize     = 1<<#__EVENT_Maximize
+      ;     #__EVENTMASK_Minimize     = 1<<#__EVENT_Minimize
+      ;     #__EVENTMASK_Restore      = 1<<#__EVENT_Restore
+      ;     #__EVENTMASK_Resizebegin  = 1<<#__EVENT_ResizeBegin
+      #__EVENTMASK_Resize       = 1<<#__EVENT_Resize
+      ;     #__EVENTMASK_Resizeend    = 1<<#__EVENT_ResizeEnd
+      ;     #__EVENTMASK_Close        = 1<<#__EVENT_Close
+      ;     #__EVENTMASK_Free         = 1<<#__EVENT_Free  ; Destroy
       
       
       ; Если флагов станет больше 8, смените тип state.a на state.w (до 16 флагов) или state.l (до 32 флагов).
@@ -719,9 +719,9 @@
       
       EndDeclareModule : Module Constants : EndModule
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 552
-; FirstLine = 549
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 450
+; FirstLine = 446
 ; Folding = ----
 ; Optimizer
 ; EnableXP
