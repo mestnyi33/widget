@@ -376,21 +376,21 @@ Procedure draw_closeButton(*tab._s_TAB , h)
    EndIf
 EndProcedure
 
-Procedure draw_plusButton(*this._s_WIDGET, bgcolor.l)
+Procedure draw_Button(*tab._s_TAB, bgcolor.l)
    ; Высчитываем цвет точно так же, как для неактивного таба
-   Protected.l pluscolor = MakeColor(bgcolor, 10 + *this\tab\plus\ishovered *30) ; RGB(nabaser, nabaseg, nabaseb)
+   Protected.l pluscolor = MakeColor(bgcolor, 10 + *tab\ishovered *30) ; RGB(nabaser, nabaseg, nabaseb)
    
    ; Трюк со Slant: подменяем его локально только на время отрисовки этой кнопки
    Protected OldSlant = Slant : Slant = 8
-   DrawTabChrome(0, *this\tab\plus\x, *this\tab\plus\y, *this\tab\plus\width, *this\tab\TotalSize, 0, pluscolor)
+   DrawTabChrome(0, *tab\x, *tab\y, *tab\width, *tab\Height, 0, pluscolor)
    Slant = OldSlant ; Сразу возвращаем обратно
    
    ; Выводим символ "+" ровно по центру
-   Protected textcolor = RGB(Red(bgcolor) * 0.3, Green(bgcolor) * 0.3, Blue(bgcolor) * 0.3)
+   Protected textcolor = RGBA(Red(bgcolor) * 0.3, Green(bgcolor) * 0.3, Blue(bgcolor) * 0.3, 255)
    Protected textBgcolor = MakeColor( pluscolor, -8)
-   Protected plus_x = *this\tab\plus\x + (*this\tab\plus\width - TextWidth("+")) / 2
+   Protected plus_x = *tab\x + (*tab\width - TextWidth("+")) / 2
    
-   DrawText(plus_x, *this\tab\plus\y + 6, "+", textcolor, textBgcolor)
+   DrawText(plus_x, *tab\y + 6, *tab\txt\Text, textcolor, textBgcolor)
 EndProcedure
 
 ;-
@@ -472,7 +472,7 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB, gWidth, gHeight, bgColo
    EndIf
    
    ; 2. Отрисовка кнопки ПЛЮС (вызываем её личную изолированную процедуру)
-   draw_plusButton(*this, bgColor)
+   draw_Button(*this\tab\plus, bgColor)
 EndProcedure
 
 Procedure ReDrawTabs(*this._s_WIDGET)
@@ -769,8 +769,8 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    ForEver
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 236
-; FirstLine = 224
+; CursorPosition = 474
+; FirstLine = 465
 ; Folding = -----------------
 ; EnableXP
 ; DPIAware

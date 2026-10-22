@@ -69,22 +69,25 @@ Structure _s_IMG Extends _s_COORDINATE
 EndStructure
 
 Structure _s_TAB Extends _s_COORDINATE
-   ID.i             ; Номер элемента в списке данных строки (0, 1, 2...) 
-   txt._s_TXT       ; Имя поля заголовка
-   img._s_IMG
-   
-   ;
+    ID.l             ; Номер элемента в списке данных строки (0, 1, 2...) 
    pos.l
    size.l
-   align.a       ; Выравнивание
-                    ; mask.q           ; Маска конкретной вкладки
    
    ; Поля для идеальной математики плавного сдвига
-   offset.l        ; Динамический визуальный сдвиг
+   offset.l           ; Динамический визуальный сдвиг
    minOffset.l     ; Левый ограничитель хода
    maxOffset.l     ; Правый ограничитель хода
    
-   *data
+   align.a             ; Выравнивание
+   ; mask.q           ; Маска конкретной вкладки
+   
+   txt._s_TXT       ; Имя поля заголовка
+   img._s_IMG
+   
+   StructureUnion
+      *data 
+      ContainerID.i  ; id контейнера, привязанного к этой вкладке
+   EndStructureUnion
 EndStructure
 
 Structure _s_TABS
@@ -92,12 +95,11 @@ Structure _s_TABS
    *press._s_TAB  ; Указатель на перетаскиваемую вкладку
     plus._s_TAB ; <--- Одиночная структура кнопки ПЛЮС
 
-   vertical.b
-   
    align.a               
    indent.a 
    spacing.a             
    
+   vertical.b
    TotalSize.l          
    List _s._s_TAB()  ; Заголовки вкладок
 EndStructure
@@ -460,7 +462,7 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB)
 EndProcedure
 
 ; Главная циклическая процедура отрисовки Canvas панели
-Procedure ReDrawTabs(*this._s_WIDGET)
+Procedure ReDraw(*this._s_WIDGET)
    Protected Gadget.i = *this\canvasid
    Protected gWidth.i = *this\Width ; DesktopScaledX(GadgetWidth(Gadget))
    Protected gHeight.i = *this\Height ; DesktopScaledY(GadgetHeight(Gadget))
@@ -656,7 +658,7 @@ Procedure Resize_(*this._s_WIDGET)
    ResizeWindow(#Win, #PB_Ignore, #PB_Ignore, w + 40, h + 40)
    ResizeGadget(#Canvas, #PB_Ignore, #PB_Ignore, w + 20, h + 20)
    HideWindow(#Win, 0, #PB_Window_ScreenCentered)
-   ReDrawTabs( *this)
+   ReDraw( *this)
 EndProcedure
 
 If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
@@ -669,7 +671,7 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
    AddTab(*this, 2, "2 - 150", 150, #__flag_Right, 1)
    AddTab(*this, 3, "3 - 90", 90,0, 1)
    ;
-   ReDrawTabs(*this)
+   ReDraw(*this)
    Resize_(*this)
    
    Repeat
@@ -685,17 +687,17 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
             AddTab(*this, 2, "2 - 150", 150, #__flag_Right, 1)
             AddTab(*this, 3, "3 - 90", 90,0, 1)
             ;
-            ReDrawTabs(*this)
+            ReDraw(*this)
             Resize_( *this )
          EndIf
          
          If *this\tab\vertical
             If DoTabEvents( *this, EventType(), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseY))
-               ReDrawTabs(*this)
+               ReDraw(*this)
             EndIf
          Else
             If DoTabEvents( *this, EventType(), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseX))
-               ReDrawTabs( *this)
+               ReDraw( *this)
             EndIf
          EndIf
       EndIf
@@ -703,9 +705,9 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 621
-; FirstLine = 617
-; Folding = ----------------
+; CursorPosition = 464
+; FirstLine = 458
+; Folding = P---------------
 ; EnableXP
 ; EnableOnError
 ; EnableUnicode

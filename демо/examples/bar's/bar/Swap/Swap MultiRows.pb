@@ -1,75 +1,103 @@
-﻿    EnableExplicit
-
-;-
-UsePNGImageDecoder()
-If Not LoadImage(1, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png")
-   End
-EndIf
-If DesktopResolutionX() > 1
-   ResizeImage(1, DesktopScaledX(ImageWidth(1)),DesktopScaledY(ImageHeight(1)))
-EndIf
+﻿EnableExplicit
 
 ; =====================================================================
 ; 1. КОНСТАНТЫ И ФЛАГИ
 ; =====================================================================
 #__flag_Left   = 0
-#__flag_Top    = 1
+#__flag_Top  = 1
 #__flag_Right  = 2
-#__flag_Bottom = 3
+#__flag_Bottom  = 3
 #__flag_Center = 4
+
+#__MASK_Hover     = 1 << 6
 
 ; =====================================================================
 ; 2. СТРУКТУРЫ ДАННЫХ
 ; =====================================================================
 Structure _s_POINT : X.l : Y.l : EndStructure
 Structure _s_COORDINATE Extends _s_POINT : Width.l : Height.l : EndStructure
-Structure _s_TXT Extends _s_COORDINATE
-   Text.s
-   change.b
-EndStructure
-
 Structure _s_IMG Extends _s_COORDINATE
-   Image.i
    change.b
+   Image.i
+EndStructure
+Structure _s_TXT Extends _s_COORDINATE
+   change.b
+   Text.s
 EndStructure
 
-Structure _s_TAB Extends _s_COORDINATE
-   ID.i             ; Номер элемента в списке данных строки (0, 1, 2...) 
-   txt._s_TXT       ; Имя поля заголовка
+Structure _s_TAB  Extends _s_COORDINATE
+   ID.i          ; Номер элемента в списке данных строки (0, 1, 2...) 
+   txt._s_TXT    ; Имя поля заголовка
    img._s_IMG
-   align.a          ; Выравнивание
-   row.l            ; Номер ряда, в котором сейчас находится вкладка (0, 1, 2...)
    
-   ; Поля для идеальной математики плавного двумерного сдвига
-   offsetX.i        ; Динамический визуальный сдвиг по оси X
-   offsetY.i        ; Динамический визуальный сдвиг по оси Y
+   pos.l
+   size.l
+   
+   ;
+   align.a          ; Выравнивание
+   mask.q           ; Маска конкретной вкладки
+   close_ishovered.a
+   
+   ; Поля для идеальной математики плавного сдвига
+   offset.l        ; Динамический визуальный сдвиг
+   minOffset.l     ; Левый ограничитель хода
+   maxOffset.l     ; Правый ограничитель хода
+   
+   StructureUnion
+      *data 
+      containerID  .i ; ID контейнера, привязанного к этой вкладке
+   EndStructureUnion
 EndStructure
 
 Structure _s_TABS
    *active._s_TAB   
-   *press._s_TAB    ; Указатель на перетаскиваемую вкладку
-   
-   vertical.b       ; Будет использоваться для переключения глобальных режимов
+   *press._s_TAB  ; Указатель на перетаскиваемую вкладку
+   plus._s_TAB    ; <--- Одиночная структура кнопки ПЛЮС
    
    align.a               
    indent.a 
    spacing.a             
    
-   TotalSize.i          
-   List _s._s_TAB() ; Заголовки вкладок
+   vertical.b
+   TotalSize.l          
+   List _s._s_TAB()  ; Заголовки вкладок
 EndStructure
 
-Structure _s_WIDGET
-   Tab._s_TABS
-   dragOffSet.i     ; Точка захвата мыши по оси X
-   dragOffSetY.i    ; Точка захвата мыши по оси Y
+Structure _s_WIDGET Extends _s_COORDINATE
+   change.b
+   padding.a
+   ;    spacing.a             
+   tab._s_TABS
+   dragOffSet.i     ; Точка захвата мыши
+   
+   canvasID     .i  
+   fontID       .i  
+   bgcolor      .l ; <--- добавь это поле для управления общим фоном холста
 EndStructure
 
-; =====================================================================
-; 3. ЛОГИКА АЛГОРИТМА И ОТРИСОВКИ
-; =====================================================================
+Global MyThis._s_WIDGET
+Global slant = DesktopScaledX(20)
+Global TopSpacing = DesktopScaledX(6)
+Global RowSpacing = DesktopScaledX(2)
+Global BottonSpacing = RowSpacing
 
-Procedure.i GetAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i = 10)
+Procedure.l MakeColor(bgColor.l, value.l = 0)
+   ; Извлекаем каналы с помощью побитового "И" (&) и сдвигов (>>)
+   Protected.l r = (bgColor & $FF) +  value 
+   Protected.l g = ((bgColor >> 8) & $FF) + value
+   Protected.l b = ((bgColor >> 16) & $FF) + value
+   Protected.l a = (bgColor >> 24) & $FF ; Альфа-канал просто двигаем
+   
+   ; Быстрое ограничение (Clamp) от 0 до 255
+   If r > 255 : r = 255 : ElseIf r < 0 : r = 0 : EndIf
+   If g > 255 : g = 255 : ElseIf g < 0 : g = 0 : EndIf
+   If b > 255 : b = 255 : ElseIf b < 0 : b = 0 : EndIf
+   
+   ; Собираем цвет обратно в один Long
+   ProcedureReturn r | (g << 8) | (b << 16) | (a << 24)
+EndProcedure
+
+Procedure.i MakeAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i = 10)
    If alignFlags & #__flag_Center
       ProcedureReturn (contentSize - objectSize) / 2
    ElseIf alignFlags & #__flag_Right
@@ -79,399 +107,687 @@ Procedure.i GetAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i
    EndIf
 EndProcedure
 
-; Функция автоматического распределения вкладок по рядам (Multi-row)
-Procedure UpdateTabs(*this._s_WIDGET, MaxWidth.i, RowHeight.i = 30, spacingY.i = 4)
-   Protected curX.i = *this\tab\indent
-   Protected curY.i = DesktopScaledY(10) ; Стартовый отступ сверху холста
-   Protected current_row.l = 0
-   Protected *tab._s_TAB
+Procedure.i RecalculateTabs(*this._s_WIDGET, gWidth)
+   gWidth = DesktopScaledX(gWidth)
+   Protected indent = DesktopScaledX(4)
+   Protected currentx = indent
+   Protected currenty = TopSpacing
+   Protected currentrow = 0
+   Protected maxheight = 0
+   Protected maxWidth = gWidth - indent
+   Protected i.i, k.i, startIDx.i, endIDx.i
+   Protected totalrowWidth.i, extraspace.i, addpixels.i, remainder.i
+   Protected tabcount = ListSize(*this\tab\_s())
    
-   If *this\tab\press = #Null
+   ; Предварительный расчет шагов
+   Protected RowStep = *this\tab\TotalSize + RowSpacing
+   Protected SlantOffset = slant * 4 / 3
+   
+   If tabcount = 0 : ProcedureReturn DesktopUnscaledY(*this\tab\TotalSize + BottonSpacing) : EndIf
+   
+   If StartDrawing(CanvasOutput(*this\canvasID))
+      DrawingFont(*this\fontID)
+      
+      Dim *rowtabs._s_TAB(tabcount - 1)
+      i = 0
       ForEach *this\tab\_s()
-         *tab = @*this\tab\_s()
-         
-         ; Если вкладка не помещается в текущем ряду по ширине, переносим на следующий
-         If curX + *tab\Width > MaxWidth And curX > *this\tab\indent
-            curX = *this\tab\indent
-            curY + RowHeight + spacingY
-            current_row + 1
+         *rowtabs(i) = @*this\tab\_s()
+         Protected baseWidth = TextWidth(*rowtabs(i)\txt\text) + (*this\padding * 2) + (slant * 2)
+         If *rowtabs(i)\img\image <> 0
+            baseWidth + DesktopScaledX(20)
+         EndIf
+         baseWidth + DesktopScaledX(16)
+         *rowtabs(i)\Height = *this\tab\TotalSize 
+         *rowtabs(i)\Width = baseWidth
+         i + 1
+      Next
+      
+      startIDx = 0
+      currentx = indent
+      
+      ; --- ОБЪЕДИНЕННЫЙ ЦИКЛ (Идем до tabcount включительно, чтобы обработать хвост) ---
+      For i = 0 To tabcount
+         Protected tabw = 0
+         If i < tabcount
+            tabw = *rowtabs(i)\Width
          EndIf
          
-         *tab\X = curX
-         *tab\Y = curY
-         *tab\Height = RowHeight
-         *tab\row = current_row
-         *tab\offsetX = 0
-         *tab\offsetY = 0
-         
-         curX + *tab\Width + *this\tab\spacing
-      Next
-      ; Запоминаем общую высоту, занятую всеми рядами вкладок
-      *this\tab\TotalSize = curY + RowHeight
-   EndIf
-EndProcedure
-
-; Обновленная процедура с умным заполнением рядов без ложных переносов
-Procedure _UpdateTabs(*this._s_WIDGET, MaxWidth.i, RowHeight.i = 30, spacingY.i = 4)
-   Protected *tab._s_TAB
-   Protected i.l, row.l, fitFound.b
-   
-   ; Создаем массив для отслеживания текущего заполнения X в каждом возможном ряду
-   ; Поддерживаем до 20 рядов вкладок (этого более чем достаточно)
-   Dim rowX.i(20)
-   
-   ; Инициализируем начальную координату X для всех рядов
-   For i = 0 To 20
-      rowX(i) = *this\tab\indent
-   Next i
-   
-   If *this\tab\press = #Null
-      ForEach *this\tab\_s()
-         *tab = @*this\tab\_s()
-         
-         row = 0
-         fitFound = #False
-         
-         ; Ищем САМЫЙ ПЕРВЫЙ ряд, начиная с нулевого, куда физически поместится текущая вкладка
-         While row < 20
-            If rowX(row) + *tab\Width <= MaxWidth
-               fitFound = #True
-               Break
-            EndIf
-            row + 1
-         Wend
-         
-         ; Если в существующих рядах места нет, принудительно уходим на новый ряд
-         If Not fitFound
-            row = 0
-            While row < 20
-               If rowX(row) = *this\tab\indent
-                  Break
+         ; Условие срабатывает, если вкладка не влезает ИЛИ если это самый конец списка (i = tabcount)
+         If (i = tabcount) Or (currentx + tabw > maxWidth And i > startIDx)
+            endIDx = i - 1
+            
+            ; Растягиваем по ширине (Justify) ТОЛЬКО полные ряды. Последний «хвост» не трогаем!
+            If i < tabcount
+               totalrowWidth = indent + (slant * 2)
+               For k = startIDx To endIDx
+                  totalrowWidth + *rowtabs(k)\Width
+                  If k < endIDx : totalrowWidth - SlantOffset : EndIf
+               Next
+               
+               extraspace = maxWidth - totalrowWidth
+               Protected tabsinrow = (endIDx - startIDx) + 1
+               If extraspace > 0 And tabsinrow > 0
+                  addpixels = extraspace / tabsinrow
+                  remainder = extraspace % tabsinrow
+                  For k = startIDx To endIDx
+                     *rowtabs(k)\Width + addpixels
+                     If remainder > 0
+                        *rowtabs(k)\Width + 1
+                        remainder - 1
+                     EndIf
+                  Next
                EndIf
-               row + 1
-            Wend
+            EndIf
+            
+            ; ЕДИНЫЙ ЦИКЛ ЗАПИСИ КООРДИНАТ (Работает и для обычных рядов, и для хвоста)
+            Protected tempx = indent
+            For k = startIDx To endIDx
+               *rowtabs(k)\x = tempx
+               *rowtabs(k)\ID = currentrow
+               tempx + *rowtabs(k)\Width - SlantOffset
+            Next
+            
+            ; Подготовка к следующему ряду (если мы еще не дошли до финала)
+            currentrow + 1
+            currenty + RowStep
+            currentx = indent
+            startIDx = i
          EndIf
          
-         ; Рассчитываем точные координаты на основе найденного ряда
-         *tab\X = rowX(row)
-         *tab\Y = 10 + row * (RowHeight + spacingY)
-         *tab\Height = RowHeight
-         *tab\row = row
-         *tab\offsetX = 0
-         *tab\offsetY = 0
-         
-         ; Сдвигаем координату X для этого конкретного ряда под следующую вкладку
-         rowX(row) + *tab\Width + *this\tab\spacing
-      Next
-      
-      ; Вычисляем общую высоту холста на основе самого нижнего занятого ряда
-      Protected maxRow.l = 0
-      ForEach *this\tab\_s()
-         *tab = @*this\tab\_s()
-         If *tab\row > maxRow
-            maxRow = *tab\row
+         ; Накапливаем ширину, пока не вышли за границы списка
+         If i < tabcount
+            currentx + *rowtabs(i)\Width - SlantOffset
          EndIf
       Next
       
-      *this\tab\TotalSize = 10 + (maxRow + 1) * (RowHeight + spacingY) - spacingY
+      Protected TotalRows = currentrow - 1
+      
+      ; --- ИНВЕРСИЯ РЯДОВ ---
+      For k = 0 To tabcount - 1
+         Protected InvertedRow = TotalRows - *rowtabs(k)\ID
+         *rowtabs(k)\y = TopSpacing + InvertedRow * RowStep
+      Next
+      
+      ; --- КОРРЕКТИРОВКА ПЛЮСА И ФИНАЛЬНЫЙ РАСЧЕТ ВЫСОТЫ ---
+      *this\tab\plus\Width = (slant * 2)
+      *this\tab\plus\Height = *this\tab\TotalSize 
+      *this\tab\plus\y = TopSpacing + TotalRows * RowStep
+      *this\tab\plus\x = gWidth - *this\tab\plus\Width - indent
+      
+      maxheight = *this\tab\plus\y + *this\tab\TotalSize
+      
+      StopDrawing()
    EndIf
+   
+   *this\Width = gWidth
+   *this\Height = maxheight + BottonSpacing
+   
+   ProcedureReturn DesktopUnscaledY(maxheight + BottonSpacing)
 EndProcedure
 
-; Процедура добавления новой вкладки
-Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, align.a = #__flag_Left, Image.i = 0)
-   Protected *tab._s_TAB = AddElement(*this\tab\_s())
-   
-   *tab\ID        = ID
-   *tab\align     = align
-   *tab\Width     = DesktopScaledX(size) ; В горизонтальном многорядном режиме size — это всегда ширина
-   
-   If Text
-      *tab\txt\text  = Text
-      *tab\txt\change = 1
-   EndIf
-   If IsImage(Image)
-      *tab\img\image = Image 
-      *tab\img\change = 1
-   EndIf
-EndProcedure
 
-; Будущая рабочая процедура отрисовки отдельной вкладки
-Procedure DrawTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b, isDragged.b, isResize.b=0)
-   Protected contentX.i, contentY.i, contentW.i, contentH.i
-   
-   ; Учитываем динамические смещения мыши при перетаскивании во все стороны
-   Protected rx.i = *tab\x + *tab\offsetX
-   Protected ry.i = *tab\y + *tab\offsetY
-   
-   ; UPDATE ROW
-   If *tab\txt\change Or *tab\img\change Or isResize
-      Protected padding.i = DesktopScaledX(8)
-      Protected iconSpacing.i = 0
-      
-      ; 1. Замеры метрик
-      If *tab\txt\change
-         If *tab\txt\Text <> ""
-            *tab\txt\Width = TextWidth(*tab\txt\Text)
-            *tab\txt\height = TextHeight(*tab\txt\Text)
-         Else
-            *tab\txt\Width = 0 : *tab\txt\height = 0
-         EndIf
-      EndIf
-      
-      If *tab\img\change
-         If IsImage(*tab\img\Image)
-            *tab\img\width = ImageWidth(*tab\img\Image)
-            *tab\img\height = ImageHeight(*tab\img\Image)
-         Else
-            *tab\img\width = 0 : *tab\img\height = 0
-         EndIf
-      EndIf
-      
-      ; Расчет отступа, если присутствуют оба элемента
-      If (*tab\img\width Or *tab\img\height) And 
-         (*tab\txt\Width Or *tab\txt\height)
-         iconSpacing = DesktopScaledX(6)
-      EndIf
-      
-      ; 2. ВНЕШНЕЕ ПОЗИЦИОНИРОВАНИЕ ВСЕГО БЛОКА ВНУТРИ ВКЛАДКИ
-      ; Горизонтальный многорядный режим: складываем ширину, по высоте берем максимум
-      contentW = *tab\img\width + *tab\txt\width + iconSpacing
-      If *tab\img\height > *tab\txt\height
-         contentH = *tab\img\height
-      Else
-         contentH = *tab\txt\height
-      EndIf
-      contentX = GetAlignPosition(*tab\align, *tab\Width, contentW, padding)
-      contentY = GetAlignPosition(*tab\align, *tab\Height, contentH, padding)
-      
-      ; 3. ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ
-      If *tab\txt\change Or isResize
-         *tab\txt\y = (*tab\Height - *tab\txt\height) >> 1
-         If *tab\align & #__flag_Right
-            *tab\txt\x = contentX
-         Else
-            *tab\txt\x = contentX + *tab\img\width
-            If *tab\img\width : *tab\txt\x + iconSpacing : EndIf
-         EndIf
-         *tab\txt\change = 0
-      EndIf
-      If *tab\img\change Or isResize
-         *tab\img\y = (*tab\Height - *tab\img\height) >> 1
-         If *tab\align & #__flag_Right
-            *tab\img\x = contentX + *tab\txt\width
-            If *tab\txt\width : *tab\img\x + iconSpacing : EndIf
-         Else
-            *tab\img\x = contentX
-         EndIf
-         *tab\img\change = 0
-      EndIf
+;-
+; добавление вкладки и автоматическое создание её контейнера под холстом
+Procedure AddTab(*this._s_WIDGET, title$, windowID, canvasheight, imageID.i = 0, tabcolor.l=0)
+   Protected._s_TAB *tab = AddElement(*this\tab\_s())
+   *tab\txt\text = title$
+   *tab\img\image = imageID ; записываем ID картинки
+   If Not tabcolor
+      tabcolor = RGB(Random(50)+200, Random(50)+200, Random(50)+200)
    EndIf
+   tabcolor & $FFFFFF | 238 << 24
+   ; создаем скрытый контейнер под размеры окна (ниже холста)
+   ; внутри него ты сможешь создавать любые кнопки, строки ввода и т.д.
+   *tab\containerID = ContainerGadget(#PB_Any, 0, canvasheight, WindowWidth(windowID), WindowHeight(windowID) - canvasheight, #PB_Container_BorderLess)
+   ; для наглядности покрасим фоны контейнеров в разные случайные цвета
+   SetGadgetColor(*tab\containerID, #PB_Gadget_BackColor, tabcolor)
+   CloseGadgetList()
    
-   ; DRAW ROW
-   ; 1. ОТРИСОВКА ФОНА
-   If isDragged
-      Box(rx, ry, *tab\Width, *tab\Height, $A00000FF) ; Синий цвет для летящей вкладки
+   
+   ; самая первая вкладка становится активной
+   If *this\tab\active = 0
+      *this\tab\active = *tab
+      HideGadget(*tab\containerID, #False) ; показываем первый контейнер
    Else
-      Box(rx, ry, *tab\Width, *tab\Height, $FF808080) ; Серый для статичных
-   EndIf
-   
-   ; 2. ОТРИСОВКА ИКОНКИ
-   If *tab\img\width Or *tab\img\height
-      DrawAlphaImage(ImageID(*tab\img\Image), rx + *tab\img\X, ry + *tab\img\Y)
-   EndIf
-   
-   ; 3. ОТРИСОВКА ТЕКСТА
-   If *tab\txt\Text <> ""
-      DrawText(rx + *tab\txt\X, ry + *tab\txt\Y, *tab\txt\Text, $FFFFFFFF)
+      ; по умолчанию скрываем все контейнеры
+      HideGadget(*tab\containerID, #True)
    EndIf
 EndProcedure
 
-Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB, gWidth, gHeight)
-   Protected *tab._s_TAB
-   Protected vertical.b = *this\tab\vertical
-   DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent)
+; полностью адаптивная процедура рендеринга ретро-трапеции
+Procedure DrawTabChrome(vertical.b, x, y, w, h, isactive, currentcolor.l, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
+  Protected dy, dh = h - 1, dw = w - 1
+   Protected localslant = slant
+  ; dh = h
+   If h <= 0 Or w <= 0 : ProcedureReturn : EndIf 
    
-   ; Слой 1: Статичные
-   ForEach *this\tab\_s()
-      *tab = @*this\tab\_s()
-      If *tab <> *current_tab
-         DrawTab(*tab, gWidth, gHeight, vertical, #False)
+   ; Корректируем скос в зависимости от режима
+   If vertical
+      If localslant > w : localslant = w : EndIf
+   Else
+      If localslant > h : localslant = h : EndIf
+   EndIf
+   
+   ; 1. Выбор базового цвета
+   Protected.a currentalpha = Alpha(currentcolor)
+   
+   ; 2. Расчет цветов рамок
+   If outerbordercolor = -1
+      outerbordercolor = RGBA(Red(currentcolor) * 0.6, Green(currentcolor) * 0.6, Blue(currentcolor) * 0.6, currentalpha)
+   EndIf
+   If innerhighlightcolor = -1
+      Protected.a r = Red(currentcolor), g = Green(currentcolor), b = Blue(currentcolor)
+      innerhighlightcolor = RGBA(r + (255 - r) * 0.3, g + (255 - g) * 0.3, b + (255 - b) * 0.3, currentalpha)
+   EndIf
+   
+   ; 3. Заливка тела вкладки
+   Protected GradientDepth = 0
+   If Not isactive : GradientDepth = 25 : EndIf
+   Protected baser = Red(currentcolor), baseg = Green(currentcolor), bgb = Blue(currentcolor)
+   
+   ; Защита цвета от Underflow
+   Protected MaxDrop = baser
+   If baseg < MaxDrop : MaxDrop = baseg : EndIf
+   If bgb < MaxDrop : MaxDrop = bgb : EndIf
+   If GradientDepth > MaxDrop : GradientDepth = MaxDrop : EndIf 
+   
+   ; Настройка шагов для циклов fixed-point (в зависимости от ориентации)
+   Protected Steps = dh
+   If vertical : Steps = dw : EndIf
+   
+   Protected ColorStepFixed = (GradientDepth << 16) / Steps
+   Protected SlantStepFixed = (localslant << 16) / Steps
+   
+   Protected ColorAccum = 0
+   Protected SlantAccum = localslant << 16
+   
+   Protected stepVar
+   For stepVar = 0 To Steps
+      Protected currentSlantVal = (SlantAccum + $8000) >> 16
+      
+      ; Вычисляем динамический размер линии (для горизонтальной — это длина, для вертикальной — высота)
+      Protected currentLength = w - (currentSlantVal << 1)
+      If vertical : currentLength = h - (currentSlantVal << 1) : EndIf
+      
+      If currentLength <= 0 : Break : EndIf 
+      
+      Protected currentColorStep = ColorAccum >> 16
+      Protected color = RGBA(baser - currentColorStep, baseg - currentColorStep, bgb - currentColorStep, currentalpha)
+      
+      ; Отрисовка линии в зависимости от направления
+      If vertical
+         ; Рисуем вертикальные полоски слева направо
+         Line(x + stepVar, y + currentSlantVal, 1, currentLength, color)
+      Else
+         ; Рисуем горизонтальные полоски сверху вниз
+         Line(x + currentSlantVal, y + stepVar, currentLength, 1, color)
       EndIf
+      
+      ColorAccum + ColorStepFixed
+      SlantAccum - SlantStepFixed
    Next
    
-   ; Слой 2: Летящая поверх остальных
-   If *current_tab
-      DrawTab(*current_tab, gWidth, gHeight, vertical, #True)
-   EndIf
-EndProcedure
-
-; Главная циклическая процедура отрисовки Canvas панели
-Procedure ReDrawTabs(Gadget.i, *this._s_WIDGET)
-   Protected gWidth.i = DesktopScaledX(GadgetWidth(Gadget))
-   Protected gHeight.i = DesktopScaledY(GadgetHeight(Gadget))
-   
-   If Not StartDrawing(CanvasOutput(Gadget))
-      ProcedureReturn
-   EndIf
-   
-   DrawingMode(#PB_2DDrawing_AlphaBlend)
-   Box(0, 0, gWidth, gHeight, RGBA(255, 255, 255, 255)) 
-   
-   DrawTabs(*this, *this\tab\press, gWidth, gHeight)
-   
-   StopDrawing()
-EndProcedure
-
-; Вспомогательный алгоритм геометрического расстояния между центрами двух вкладок
-Procedure.f GetTabDistance(x1.i, y1.i, w1.i, h1.i, x2.i, y2.i, w2.i, h2.i)
-   Protected cx1.f = x1 + w1 / 2
-   Protected cy1.f = y1 + h1 / 2
-   Protected cx2.f = x2 + w2 / 2
-   Protected cy2.f = y2 + h2 / 2
-   
-   Protected dx.f = cx1 - cx2
-   Protected dy.f = cy1 - cy2
-   
-   ProcedureReturn Sqr(dx * dx + dy * dy)
-EndProcedure
-
-
-Procedure DoTabEvents(*this._s_WIDGET, event.i, mx.i, my.i, MaxWidth.i = 400)
-   Protected *current_tab._s_TAB = *this\tab\press
-   Protected *tab._s_TAB
-   Protected minDistance.f = 999999.0
-   Protected targetIndex.i = -1
-   Protected currentIndex.i = 0
-   
-   Select event
-         
-      Case #PB_EventType_LeftButtonDown
-         ; ЦИКЛ 1: Находим вкладку по двумерной сетке, на которую кликнули
-         ForEach *this\tab\_s()
-            *tab = @*this\tab\_s()
-            If mx >= *tab\X And mx < *tab\X + *tab\Width And my >= *tab\Y And my < *tab\Y + *tab\Height
-               *current_tab = *tab
-               Break
-            EndIf
-         Next
-         
-         *this\tab\press = *current_tab
-         
-         ; Инициализируем двумерные точки захвата мыши внутри выбранного прямоугольника
-         If *current_tab
-            *this\dragOffSet  = mx - *current_tab\X
-            *this\dragOffSetY = my - *current_tab\Y
-            
-            ; Обнуляем визуальные смещения для всех вкладок, подготавливая к движению
-            ForEach *this\tab\_s()
-               *tab = @*this\tab\_s()
-               If *tab <> *current_tab
-                  *tab\offsetX = 0
-                  *tab\offsetY = 0
-               EndIf
-            Next
-            ProcedureReturn #True
-         EndIf
-      Case #PB_EventType_MouseMove
-         If *current_tab
-            ; Свободно перемещаем вкладку вслед за курсором мыши по двум осям
-            *current_tab\offsetX = mx - *current_tab\X - *this\dragOffSet
-            *current_tab\offsetY = my - *current_tab\Y - *this\dragOffSetY
-            ProcedureReturn #True
-         EndIf
-         
-      Case #PB_EventType_LeftButtonUp
-         If *current_tab
-            ; Вычисляем, где физически на экране находится центр брошенной вкладки
-            Protected DropX.i = *current_tab\X + *current_tab\offsetX
-            Protected DropY.i = *current_tab\Y + *current_tab\offsetY
-            
-            currentIndex = 0
-            targetIndex = -1
-            
-            ; Ищем геометрически ближайшего соседа по двум осям
-            ForEach *this\tab\_s()
-               *tab = @*this\tab\_s()
-               If *tab <> *current_tab
-                  Protected dist.f = GetTabDistance(DropX, DropY, *current_tab\Width, *current_tab\Height, *tab\X, *tab\Y, *tab\Width, *tab\Height)
-                  If dist < minDistance
-                     minDistance = dist
-                     targetIndex = currentIndex
-                  EndIf
-               EndIf
-               currentIndex + 1
-            Next
-            
-            ; Переставляем элемент в связанном списке на позицию перед найденным соседом
-            If targetIndex <> -1
-               SelectElement(*this\tab\_s(), targetIndex)
-               MoveElement(*this\tab\_s(), #PB_List_Before, *current_tab)
-            EndIf
-            
-            ; Сбрасываем флаг удержания и пересчитываем сетку рядов заново
-            *this\tab\press = #Null
-            UpdateTabs(*this, MaxWidth, DesktopScaledX(30), DesktopScaledX(4))
-            ProcedureReturn #True
-         EndIf
-         
-   EndSelect
-   ProcedureReturn #False
-EndProcedure
-
-; =====================================================================
-; 4. ДЕМОНСТРАЦИОННЫЙ ЗАПУСК
-; =====================================================================
-
-Define MyThis._s_WIDGET
-MyThis\tab\vertical = 0
-MyThis\tab\indent = DesktopScaledX(10)  ; Отступ панели слева
-MyThis\tab\spacing = DesktopScaledX(4) ; Расстояние между вкладками
-
-; Наполняем тестовым набором вкладок
-AddTab(@MyThis, 0, "0 - 100", 100)
-AddTab(@MyThis, 1, "1 - 160", 160, #__flag_Center, 1)
-AddTab(@MyThis, 2, "2 - 150", 150, #__flag_Right, 1)
-AddTab(@MyThis, 3, "3 - 120", 120, 0, 1)
-
-; Задаем фиксированную тестовую ширину Canvas, чтобы вкладки гарантированно разбились на 2 ряда
-Define w = 350 
-
-; Первичный расчет многорядной сетки
-UpdateTabs(@MyThis, DesktopScaledX(w), DesktopScaledY(30), DesktopScaledX(4))
-
-; Высота Canvas подстраивается автоматически под количество получившихся рядов
-Define h = MyThis\tab\TotalSize + 20
- 
-#Win = 0
-#Canvas = 0
-
-If OpenWindow(#Win, 0, 0, w + 20, h + 20, "Многорядный Демо-Пример", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-   CanvasGadget(#Canvas, 10, 10, w, h)
-   
-   ReDrawTabs(#Canvas, @MyThis)
-   
-   Repeat
-      Define Event = WaitWindowEvent()
+   ; 4. Отрисовка контуров
+   If vertical
+      ; === ВЕРТИКАЛЬНЫЙ РЕЖИМ (Вкладка «смотрит» вверх, основание справа) ===
+      LineXY(x + dw, y, x, y + localslant, outerbordercolor)             
+      LineXY(x, y + localslant, x, y + h - 1 - localslant, outerbordercolor)         
+      LineXY(x, y + h - 1 - localslant, x + dw, y + h - 1, outerbordercolor)     
       
-      If Event = #PB_Event_Gadget And EventGadget() = #Canvas
-         
-         ; Передаем текущую доступную ширину w в обработчик событий для правильного расчета
-         If DoTabEvents(@MyThis, EventType(), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseX), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseY), DesktopScaledX(w))
-            ; Если высота рядов изменилась в процессе (например, изменился порядок), адаптируем размер Canvas
-            If GadgetHeight(#Canvas) <> MyThis\tab\TotalSize + DesktopScaledY(20)
-               ResizeGadget(#Canvas, #PB_Ignore, #PB_Ignore, #PB_Ignore, MyThis\tab\TotalSize + DesktopScaledY(20))
-            EndIf
-            ReDrawTabs(#Canvas, @MyThis)
-         EndIf
-         
+      If isactive
+         LineXY(x + dw, y + 1, x + 1, y + localslant + 1, innerhighlightcolor)
+         LineXY(x + 1, y + localslant + 1, x + 1, y + h - 1 - localslant - 1, innerhighlightcolor)
+         LineXY(x + 1, y + h - 1 - localslant - 1, x + dw, y + h - 2, innerhighlightcolor)
+      Else
+         ; Замыкающая линия справа (стык с панелью)
+         LineXY(x + dw, y, x + dw, y + h - 1, outerbordercolor)
+      EndIf
+   Else
+      ; === ГОРИЗОНТАЛЬНЫЙ РЕЖИМ (Классический Chrome) ===
+      LineXY(x, y + dh, x + localslant, y, outerbordercolor)             
+      LineXY(x + localslant, y, x + w - 1 - localslant, y, outerbordercolor)         
+      LineXY(x + w - 1 - localslant, y, x + w - 1, y + dh, outerbordercolor)     
+      
+      If isactive
+         LineXY(x + 1, y + dh, x + localslant + 1, y + 1, innerhighlightcolor)
+         LineXY(x + localslant + 1, y + 1, x + w - 1 - localslant - 1, y + 1, innerhighlightcolor)
+         LineXY(x + w - 1 - localslant - 1, y + 1, x + w - 2, y + dh, innerhighlightcolor)
+      Else
+         ; Замыкающая линия снизу
+         LineXY(x, y + dh, x + w - 1, y + dh, outerbordercolor)
+      EndIf
+   EndIf
+EndProcedure
+
+;-
+Procedure draw_closeButton(*tab._s_TAB, bgColor.l)
+   Protected h = *tab\Height
+   Protected close_size = DesktopScaledX(5)
+   Protected radius = DesktopScaledX(7)
+   
+   ; --- Координаты центра и самого крестика ---
+   Protected closex = *tab\x + *tab\Width - slant - DesktopScaledX(14)
+   Protected closey = *tab\y + (h - close_size) / 2
+   Protected centerx = closex + close_size / 2
+   Protected centery = closey + close_size / 2
+   
+   ; --- Цвета элементов ---
+   Protected.l crossColor
+   Protected.l frameColor = RGBA(160, 50, 50, 255) ; Цвет рамки совпадает с дефолтным крестиком
+   
+   If *tab\close_ishovered 
+      ; При наведении: сплошной заполненный круг фоновым цветом
+      Circle(centerx, centery, radius, bgColor | $FF000000) 
+      crossColor = RGBA(255, 255, 255, 255) ; Белый крестик
+   Else 
+      ; В обычном состоянии: включаем прозрачность для рисования ПУСТОГО круга (рамки)
+      DrawingMode(#PB_2DDrawing_AlphaBlend|#PB_2DDrawing_Outlined)
+      Circle(centerx, centery, radius, frameColor)
+      
+      ; Возвращаем стандартный режим смешивания для самого крестика
+      DrawingMode(#PB_2DDrawing_AlphaBlend|#PB_2DDrawing_Transparent)
+      crossColor = frameColor ; Красноватый крестик
+   EndIf
+   
+   ; --- Рисуем ЖИРНЫЙ крестик через смещение (2D Drawing) ---
+   LineXY(closex,     closey, closex + close_size,     closey + close_size, crossColor)
+   LineXY(closex + 1, closey, closex + close_size + 1, closey + close_size, crossColor)
+   
+   LineXY(closex + close_size,     closey, closex,     closey + close_size, crossColor)
+   LineXY(closex + close_size - 1, closey, closex - 1, closey + close_size, crossColor)
+EndProcedure
+
+
+Procedure draw_TabButton(*tab._s_TAB, bgcolor.l)
+   ; Высчитываем цвет точно так же, как для неактивного таба
+   Protected.l pluscolor = MakeColor(bgcolor, 10 + (*tab\mask & #__MASK_Hover)  *30) ; RGB(nabaser, nabaseg, nabaseb)
+   
+   ; Трюк со Slant: подменяем его локально только на время отрисовки этой кнопки
+   Protected OldSlant = Slant : Slant = 8
+   DrawTabChrome(0, *tab\x, *tab\y, *tab\Width, *tab\Height, 0, pluscolor)
+   Slant = OldSlant ; Сразу возвращаем обратно
+   
+   ; Выводим символ "+" ровно по центру
+   Protected textcolor = RGBA(Red(bgcolor) * 0.3, Green(bgcolor) * 0.3, Blue(bgcolor) * 0.3, 255)
+   Protected textBgcolor = MakeColor( pluscolor, -8)
+   Protected plus_x = *tab\x + (*tab\Width - TextWidth("+")) / 2
+   
+   DrawText(plus_x, *tab\y + 6, *tab\txt\Text, textcolor, textBgcolor)
+EndProcedure
+;-
+Procedure draw_tab(isactive, *tab._s_TAB, bgcolor.l, max_row_index.i = -1)
+   Protected.l textcolor, nonactivecolor, textBgcolor
+   Protected h = *tab\Height
+   
+   If isactive
+      textcolor = RGBA(0, 0, 0, 255)
+      textBgcolor = bgcolor
+       If *tab\ID = max_row_index
+         DrawTabChrome(0,*tab\x, *tab\y, *tab\Width, h + BottonSpacing, 1, bgcolor)
+      Else
+         DrawTabChrome(0,*tab\x, *tab\y, *tab\Width, h,  -1, bgcolor)
+      EndIf
+   Else
+      textcolor = RGBA(Red(bgcolor) * 0.3, Green(bgcolor) * 0.3, Blue(bgcolor) * 0.3, 255)
+      bgcolor = MakeColor(bgcolor,- 30+(*tab\mask & #__MASK_Hover)*30)
+      textBgcolor = MakeColor(bgcolor,  -8)
+      DrawTabChrome(0, *tab\x, *tab\y, *tab\Width, h, 0, bgcolor)
+   EndIf
+   
+   Protected txtw = TextWidth(*tab\txt\text)
+   Protected contentw = txtw + 16
+   If *tab\img\image <> 0 : contentw + 20 : EndIf
+   
+   Protected startx = *tab\x + (*tab\Width - contentw) / 2
+   
+   If *tab\img\image <> 0
+      Protected icony = *tab\y + (h - 16) / 2
+      DrawImage(ImageID(*tab\img\image), startx, icony, 16, 16)
+      startx + 20
+   EndIf
+   
+   ; DrawingMode(#PB_2DDrawing_Transparent)
+   DrawText(startx, *tab\y + 6, *tab\txt\text, textcolor, textBgcolor)
+   
+   draw_closeButton( *tab, RGBA(240, 70, 70, 255) )
+EndProcedure
+
+Procedure DrawTabs(*this._s_WIDGET, *currentTAB._s_TAB, gWidth, gHeight, bgColor.l )
+   Protected position.l
+   Protected *tab._s_TAB
+   Protected vertical.b = *this\tab\vertical
+   
+   DrawingMode(#PB_2DDrawing_AlphaBlend|#PB_2DDrawing_Transparent)
+   ; линия пола
+   Protected floorcolor = RGB(Red(bgColor) * 0.7, Green(bgColor) * 0.7, Blue(bgColor) * 0.7)
+   LineXY(0, gHeight - 1, gWidth, gHeight - 1, floorcolor)
+   
+   ; 1. отрисовка неактивных вкладок
+   ForEach *this\tab\_s() : *tab = @*this\tab\_s()
+      ;
+      ;       If *tab\txt\change  Or *tab\img\change  Or *this\change
+      ;          
+      ;          UpdateTab(*tab, *this\Width, *this\Height, vertical)
+      ;          *tab\pos = position 
+      ;          
+      ;          If *this\tab\vertical
+      ;             ;*tab\x = *this\x
+      ;             *tab\y =  *this\y + *this\tab\indent  + *tab\pos ;  
+      ;          Else
+      ;             ;*tab\y = *this\y
+      ;             *tab\x =  *this\x + *this\tab\indent  + *tab\pos ; 
+      ;          EndIf
+      ;          
+      ;          position + (*tab\size - slant) + *this\tab\spacing
+      ;       EndIf
+      
+      If *tab <> *currentTAB
+         draw_tab(#False, *tab, bgColor, *this\tab\plus\ID )
+      EndIf
+   Next
+   *this\change = 0
+   ; 2. отрисовка активной вкладки
+   If *currentTAB <> 0
+      Protected tabcolor = GetGadgetColor(*currentTAB\containerID, #PB_Gadget_BackColor)
+      draw_tab(#True,*currentTAB, tabcolor, *this\tab\plus\ID )
+   EndIf
+   
+   ; 2. Отрисовка кнопки ПЛЮС (вызываем её личную изолированную процедуру)
+   draw_TabButton(*this\tab\plus, bgColor)
+     ; draw_tab(#False, *this\tab\plus, bgColor);, *this\tab\plus\ID )
+      
+EndProcedure
+
+Procedure ReDraw(*this._s_WIDGET)
+   Protected gWidth = DesktopScaledX(GadgetWidth(*this\canvasID))
+   Protected gHeight = DesktopScaledY(GadgetHeight(*this\canvasID))
+   
+    If StartDrawing(CanvasOutput(*this\canvasID))
+      DrawingFont(*this\fontID)
+      
+      Box(0, 0, gWidth, gHeight, *this\bgcolor)
+      
+      DrawTabs(*this, *this\tab\active, gWidth, gHeight, *this\bgcolor)
+      
+      StopDrawing()
+   EndIf
+EndProcedure
+
+;-
+Procedure DoTabResize(*this._s_WIDGET, windowID)
+   Protected._s_TAB *tab
+   Protected gWidth = WindowWidth(windowID)
+   Protected gHeight = WindowHeight(windowID) 
+   Protected newheight = RecalculateTabs(*this, gWidth)
+   ResizeGadget(*this\canvasID, #PB_Ignore, #PB_Ignore, gWidth, newheight)
+   
+   ; корректируем размеры всех контейнеров в зависимости от новой высоты холста
+   ForEach *this\tab\_s() : *tab = @*this\tab\_s()
+      ResizeGadget(*tab\containerID, 0, newheight, gWidth, gHeight- newheight)
+   Next
+   
+   ReDraw(*this)
+EndProcedure
+
+Procedure CloseTab(*this._s_WIDGET, *tabtoclose._s_TAB, windowID.i)
+   ; 1. Переводим список на удаляемую вкладку
+   ChangeCurrentElement(*this\tab\_s(), *tabtoclose)
+   
+   ; 2. Уничтожаем привязанный containergadget
+   If IsGadget(*tabtoclose\containerID)
+      FreeGadget(*tabtoclose\containerID)
+   EndIf
+   
+   ; 3. УДАЛЕНИЕ И АВТОМАТИЧЕСКИЙ ПОИСК ЗАМЕНЫ
+   If *this\tab\active = *tabtoclose
+      ; Флаг 1 заставляет PureBasic перешагнуть на следующую вкладку (или на предыдущую, если этой не стало)
+      If DeleteElement(*this\tab\_s(), 1)
+         *this\tab\active = @*this\tab\_s() ; Новая вкладка успешно подхвачена!
+      Else
+         *this\tab\active = 0 ; Вкладок больше вообще не осталось
+      EndIf
+   Else
+      ; Если закрыли неактивную вкладку, просто удаляем её без смены активности
+      DeleteElement(*this\tab\_s())
+   EndIf
+   
+   ; 4. Если нашли новый активный таб — показываем его контейнер
+   If *this\tab\active <> 0
+      HideGadget(*this\tab\active\containerID, #False)
+   EndIf
+   
+   DoTabResize( *this, windowID)
+EndProcedure
+
+Procedure ActivateTab(*this._s_WIDGET, *Newactive._s_TAB)
+   If *this\tab\active <> *Newactive
+      ; Прячем старый контейнер
+      If *this\tab\active
+         HideGadget(*this\tab\active\ContainerID, #True)
       EndIf
       
-   Until Event = #PB_Event_CloseWindow
-EndIf
+      ; Переключаем простой указатель
+      *this\tab\active = *Newactive
+      
+      ; Показываем новый контейнер
+      HideGadget(*this\tab\active\ContainerID, #False)
+      
+      ; Перерисовываем холст — ховеры автоматически окажутся на своих местах!
+      ReDraw(*this)
+   EndIf
+EndProcedure
 
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 77
-; Folding = -----------
+Procedure DoTabEvents(*this._s_WIDGET)
+   Protected mx = GetGadgetAttribute(*this\canvasID, #PB_Canvas_MouseX)
+   Protected my = GetGadgetAttribute(*this\canvasID, #PB_Canvas_MouseY)
+   Protected localslant = slant
+   Protected insIDetab.i, relx.i, rely.i
+   Protected._s_TAB *tab, *hoverTAB = 0
+   Protected needredraw.i = #False
+   Protected etype = EventType()
+   Protected WindowID = EventWindow()
+   
+   If etype = #PB_EventType_MouseMove Or etype = #PB_EventType_LeftButtonDown
+      
+      ; 1. ТЕСТ КНОПКИ ПЛЮС (+): Так как она закреплена справа над контейнером, проверяем её первой
+      If my >= *this\tab\plus\y And my <= *this\tab\plus\y + *this\tab\TotalSize
+         If mx >= *this\tab\plus\x And mx <= *this\tab\plus\x + *this\tab\plus\Width
+            *hoverTAB = @*this\tab\plus
+         EndIf
+      EndIf
+      
+      ; 2. ТЕСТ ОБЫЧНЫХ ВКЛАДОК: Если мышь не над плюсом — делаем точный хит-тест трапеций
+      If *hoverTAB = 0 And ListSize(*this\tab\_s()) > 0
+         LastElement(*this\tab\_s())
+         Repeat : *tab = @*this\tab\_s()
+            insIDetab = #False
+            If my >= *tab\y And my <= *tab\y + *this\tab\TotalSize
+               If mx >= *tab\x And mx <= *tab\x + *tab\Width
+                  relx = mx - *tab\x
+                  rely = my - *tab\y
+                  If localslant > *this\tab\TotalSize: localslant = *this\tab\TotalSize: EndIf
+                  
+                  If relx < localslant
+                     If relx >= localslant * (1.0 - (rely / *this\tab\TotalSize)) : insIDetab = #True : EndIf
+                  ElseIf relx > *tab\Width - localslant
+                     If relx <= *tab\Width - (localslant * (1.0 - (rely / *this\tab\TotalSize))) : insIDetab = #True : EndIf
+                  Else
+                     insIDetab = #True
+                  EndIf
+               EndIf
+            EndIf
+            
+            If insIDetab
+               *hoverTAB = *tab
+               Break 
+            EndIf
+         Until PreviousElement(*this\tab\_s()) = 0
+      EndIf
+      
+      ; 3. Вычисляем флаг наведения на крестик закрытия (только для обычных вкладок)
+      Protected ShouldCloseHover.a = 0
+      Protected h_12 = DesktopScaledX(12)
+      Protected h_2 = DesktopScaledX(2)
+      If *hoverTAB <> 0 And *hoverTAB <> *this\tab\plus
+         Protected closex = *hoverTAB\x + *hoverTAB\Width - localslant - DesktopScaledX(14)
+         If mx >= closex - h_2 And mx <= closex + h_12 - h_2
+            If my >= *hoverTAB\y + (*this\tab\TotalSize - h_12)/2 And my <= *hoverTAB\y + (*this\tab\TotalSize + h_12)/2 
+               ShouldCloseHover = 1
+            EndIf 
+         EndIf 
+      EndIf
+      
+      ; --- 4. ЛОГИКА КЛИКА МЫШИ ---
+      If etype = #PB_EventType_LeftButtonDown And *hoverTAB <> 0
+         If *hoverTAB = *this\tab\plus
+            ; КЛИК ПО ПЛЮСУ: Добавляем новую вкладку
+            Protected NewIDx = ListSize(*this\tab\_s()) + 1
+            AddTab(*this, "Вкладка " + Str(NewIDx), WindowID, GadgetHeight(*this\canvasID))
+            
+            DoTabResize( *this, windowID)
+            needredraw = #False
+         Else
+            ; КЛИК ПО ОБЫЧНОМУ ТАБУ: Проверяем крестик или переключаем активность
+            If *hoverTAB\close_ishovered
+               CloseTab(*this, *hoverTAB, WindowID)
+            Else
+               ActivateTab(*this, *hoverTAB)
+            EndIf
+         EndIf
+         
+         ; --- 5. ЛОГИКА ДВИЖЕНИЯ МЫШИ (Ховеры) ---
+      ElseIf etype = #PB_EventType_MouseMove
+         ; Защищенный ховер кнопки ПЛЮС
+         *tab = @*this\tab\plus
+         ; 2. Проверяем, отличается ли текущее состояние маски от реального положения дел
+         If Bool(*tab\mask & #__MASK_Hover) <> Bool(*hoverTAB = *tab)
+             ; 3. Если отличается — инвертируем бит ховера и взводим флаг перерисовки
+            *tab\mask ! #__MASK_Hover
+            needredraw = #True
+         EndIf
+
+         
+         ; Синхронный ховер всех обычных вкладок и их крестиков
+         ForEach *this\tab\_s() : *tab = @*this\tab\_s()
+            
+            ; 1. Проверяем, находится ли мышь конкретно над этим табом
+            Protected isTabHovered = Bool(*tab = *hoverTAB)
+            
+            ; 2. Ховер самого таба (активируется только для НЕАКТИВНЫХ вкладок)
+            Protected shouldHover = Bool(isTabHovered And *tab <> *this\tab\active)
+            
+            If Bool(*tab\mask & #__MASK_Hover) <> shouldHover
+               *tab\mask ! #__MASK_Hover
+               needredraw = #True
+            EndIf
+            
+            ; 3. Ховер крестика закрытия (активируется, если мышь на табе И взведен ShouldCloseHover)
+            Protected CloseHover = Bool(isTabHovered And ShouldCloseHover)
+            
+            If *tab\close_ishovered <> CloseHover
+               *tab\close_ishovered = CloseHover
+               needredraw = #True
+            EndIf
+            
+         Next
+      EndIf
+      
+      If needredraw
+         ReDraw(*this)
+      EndIf
+      
+      ; --- 6. КУРСОР УШЕЛ С ХОЛСТА (Тотальный сброс подсветки) ---
+   ElseIf etype = #PB_EventType_MouseLeave
+      *this\tab\plus\mask &~ #__MASK_Hover
+      
+      ForEach *this\tab\_s() : *tab = @*this\tab\_s()
+         If *tab\mask & #__MASK_Hover
+            *tab\mask &~ #__MASK_Hover
+            needredraw = #True
+         EndIf
+         If *tab\close_ishovered <> 0
+            *tab\close_ishovered = 0
+            needredraw = #True
+         EndIf
+      Next
+      If needredraw
+         ReDraw(*this)
+      EndIf
+   EndIf
+EndProcedure
+
+; обновление размеров холста и всех контейнеров под размеры окна
+
+
+;- --- демо запуск ---
+Define event, windoww = 900, windowh = 350
+
+If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+   
+   With MyThis
+      \canvasID  = CanvasGadget(#PB_Any, 0, 0, windoww, 40)
+      \fontID    = LoadFont(0, "tahoma", 12)
+      \tab\TotalSize = DesktopScaledY(29)
+      \padding  = DesktopScaledX(6)
+      \change = 1
+      \bgcolor     = RGBA(180, 195, 215, 160) ; RGB(Random(255), Random(255), Random(255)) ; твой любимый цвет. сделай его зеленым или серым — и весь интерфейс сам перестроится!
+      \tab\plus\txt\text = "+"
+   EndWith
+   
+   ; создаем две тестовые цветные иконки 16x16
+   CreateImage(1, 16, 16)
+   If StartDrawing(ImageOutput(1)) : Box(0,0,16,16, RGB(255, 50, 50)) : StopDrawing() : EndIf ; красный квадрат
+   
+   CreateImage(2, 16, 16)
+   If StartDrawing(ImageOutput(2)) : Box(0,0,16,16, RGB(50, 150, 255)) : StopDrawing() : EndIf ; синий квадрат
+   
+   ; добавляем вкладки (последним параметром передаем ID созданных картинок)
+   AddTab(@MyThis, "google (с иконкой)", 0, 40, 1, RGB(255, 255, 255))
+   AddTab(@MyThis, "код проекта (с иконкой)", 0, 40, 2, RGB(210, 245, 225))
+   AddTab(@MyThis, "без иконки", 0, 40, 0, RGB(255, 220, 230))
+   ; добавляем вкладки, передавая ID окна и начальную высоту холста
+   AddTab(@MyThis, "вкладка 1", 0, 40)
+   ;AddTab(@MyThis, "вкладка с длинным текстом 2", 0, 40)
+   AddTab(@MyThis, "опции 3", 0, 40)
+   AddTab(@MyThis, "система 4", 0, 40)
+   AddTab(@MyThis, "логи работы 5", 0, 40)
+   ;   
+   ; настраиваем начальные размеры всего интерфейса
+   DoTabResize(@MyThis, 0)
+   
+   ; наполним первый и второй контейнер чем-нибудь для теста
+   ; для этого временно переключаемся на нужный контейнер через opengadgetlist
+   SelectElement(MyThis\tab\_s(), 0)
+   OpenGadgetList(MyThis\tab\_s()\containerID)
+   ButtonGadget(#PB_Any, 20, 20, 150, 30, "кнопка на вкладке 1")
+   StringGadget(#PB_Any, 20, 60, 200, 25, "текст на вкладке 1")
+   CloseGadgetList()
+   
+   SelectElement(MyThis\tab\_s(), 1)
+   OpenGadgetList(MyThis\tab\_s()\containerID)
+   CheckBoxGadget(#PB_Any, 20, 20, 200, 20, "галочка на второй вкладке")
+   CloseGadgetList()
+   
+   Repeat
+      event = WaitWindowEvent()
+      Select event
+         Case #PB_Event_Gadget
+            If EventGadget() = MyThis\canvasID
+               DoTabEvents(@MyThis)
+            EndIf
+            
+         Case #PB_Event_SizeWindow
+            ; вызываем единую процедуру ресайза для холста и дочерних контейнеров
+            DoTabResize(@MyThis, 0)
+            
+         Case #PB_Event_CloseWindow
+            End
+      EndSelect
+   ForEver
+EndIf
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 713
+; FirstLine = 691
+; Folding = -----------------
 ; EnableXP
 ; DPIAware

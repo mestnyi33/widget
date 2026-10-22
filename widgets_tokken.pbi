@@ -201,9 +201,6 @@ Structure _s_COL ; ЗАГОЛОВОК
    pos.l         ; Относительный X вкладки в шапке
    size.l        ; Ширина вкладки
    
-   txt._s_TXT
-   img._s_IMG
-   
    align.a          ; Выравнивание (0-лево, 1-центр, 2-право)
    mask.q           ; Маска конкретной вкладки
    
@@ -211,6 +208,10 @@ Structure _s_COL ; ЗАГОЛОВОК
    offset.l        ; Динамический визуальный сдвиг
    minOffset.l     ; Левый ограничитель хода
    maxOffset.l     ; Правый ограничитель хода
+   
+   txt._s_TXT
+   img._s_IMG
+   
 EndStructure
 Structure _s_COLS
    *active._s_COL 
@@ -6251,8 +6252,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose( )
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 741
-; FirstLine = 654
-; Folding = -d98------v+-q+v-------------------------------------------------------------------------------------------f----------------------------------------------------
+; CursorPosition = 204
+; FirstLine = 204
+; Folding = -f98------v+-q+v-------------------------------------------------------------------------------------------f----------------------------------------------------
 ; EnableXP
 ; DPIAware
