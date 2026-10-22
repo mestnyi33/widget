@@ -309,7 +309,9 @@ CompilerIf Not Defined( widgets, #PB_Module )
       Macro allocate( _struct_name_, _struct_type_ = )
          _s_#_struct_name_#_struct_type_ = AllocateStructure( _s_#_struct_name_ )
       EndMacro
-      
+      Macro Min(a, b) : (Bool((a) <= (b)) * (a) + Bool((b) < (a)) * (b)) : EndMacro
+      Macro Max(a, b) : (Bool((a) >= (b)) * (a) + Bool((b) > (a)) * (b)) : EndMacro
+
       Global _macro_call_count_
       Macro Debug_out( _text_ = "" )
          CompilerIf #PB_Compiler_Debugger  ; Only enable assert in debug mode
@@ -452,7 +454,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       ;-
       Macro PageChange( ): change: EndMacro          ; temp
       Macro TabChange( ): change: EndMacro           ; temp
-      Macro TextChange( ): Text\change: EndMacro     ; temp
+      Macro TextChange( ): txt(0)\change: EndMacro     ; temp
       Macro ResizeChange( )
          mask & #__mask_resize ; Resize\change
       EndMacro                 ; temp
@@ -475,9 +477,9 @@ CompilerIf Not Defined( widgets, #PB_Module )
       ;-
       ;
       ;-\\
-      Macro edit_text_1( ): Text\edit[0]: EndMacro
-      Macro edit_text_2( ): Text\edit[1]: EndMacro
-      Macro edit_text_3( ): Text\edit[2]: EndMacro
+      Macro edit_text_1( ): edit[0]: EndMacro
+      Macro edit_text_2( ): edit[1]: EndMacro
+      Macro edit_text_3( ): edit[2]: EndMacro
       
       ;-
       Macro __columns( ): column\__s( ) : EndMacro    ; row\items( )
@@ -561,6 +563,60 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Macro ActiveBar( ): ActiveWindow( )\gadget\bar\gadget: EndMacro ; Returns activeed gadget
    
    ;-
+   Macro StartPrevRow(_ptr_, _object_ )
+      Bool(_object_\_v_last)
+      ; Фиксируем позицию основного списка строк
+      PushListPosition(_object_\__s())
+      ; Встаем строго на первый видимый элемент в основном списке
+      ChangeCurrentElement(_object_\__s(), _object_\_v_last)
+      
+      Repeat
+         _ptr_ = @_object_\__s()
+          If Not (_ptr_\mask & #__mask_visible And Not _ptr_\mask & #__mask_hidden) : Continue : EndIf
+      EndMacro
+      
+      Macro StopPrevRow(_ptr_, _object_ )
+         ; Условие выхода — дошли до последней видимой на экране строки
+         If _ptr_ = _object_\_v_last : Break : EndIf
+         
+         ; --- НАШ УМНЫЙ ПРЫЖОК ---
+         If _ptr_\skip_prev
+            ChangeCurrentElement(_object_\__s(), _ptr_\skip_prev)
+         Else
+            If Not PreviousElement(_object_\__s()) : Break : EndIf
+         EndIf
+      ForEver
+      
+      PopListPosition(_object_\__s())
+   EndMacro
+   ;
+   Macro StartNextRow(_ptr_, _object_ )
+      Bool(_object_\_v_first)
+      ; Фиксируем позицию основного списка строк
+      PushListPosition(_object_\__s())
+      ; Встаем строго на первый видимый элемент в основном списке
+      ChangeCurrentElement(_object_\__s(), _object_\_v_first)
+      
+      Repeat
+         _ptr_ = @_object_\__s()
+          If Not (_ptr_\mask & #__mask_visible And Not _ptr_\mask & #__mask_hidden) : Continue : EndIf
+      EndMacro
+      
+      Macro StopNextRow(_ptr_, _object_ )
+         ; Условие выхода — дошли до последней видимой на экране строки
+         If _ptr_ = _object_\_v_last : Break : EndIf
+         
+         ; --- НАШ УМНЫЙ ПРЫЖОК ---
+         If _ptr_\skip_next
+            ChangeCurrentElement(_object_\__s(), _ptr_\skip_next)
+         Else
+            If Not NextElement(_object_\__s()) : Break : EndIf
+         EndIf
+      ForEver
+      
+      PopListPosition(_object_\__s())
+   EndMacro
+   ;
    Macro StartNext(_ptr_, _parent_)
       Bool(_parent_\first)
       _ptr_ = _parent_\first
@@ -745,7 +801,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    
    
    ;-
-   Macro TitleText( ): Text: EndMacro
+   Macro TitleText( ): text: EndMacro
    Macro GetTitle( window ): widgets::GetText( window ): EndMacro
    Macro CloseButton( ): caption\button[#__wb_close]: EndMacro
    Macro MaximizeButton( ): caption\button[#__wb_maxi]: EndMacro
@@ -1294,13 +1350,13 @@ CompilerIf Not Defined( widgets, #PB_Module )
       DrawAlphaImage( _this_\picture#_mode_\imageID, _x_ + _this_\picture#_mode_\x + _this_\scroll_x( ), _y_ + _this_\picture#_mode_\y + _this_\scroll_y( ), _this_\color\ialpha )
    EndMacro
    
-   Macro draw_font( _address_, _font_id_ = 0, _update_ = 0, draw_font=0 )
+   Macro draw_font( _address_, _text_ptr_, _font_id_ = 0, _update_ = 0, draw_font=0 )
       If _font_id_
          If Not GetFontID( _address_ )
             SetFontID( _address_, _font_id_ )
             
-            _address_\text\width = 0
-            _address_\text\height = 0
+            _text_ptr_\width = 0
+            _text_ptr_\height = 0
          EndIf
       EndIf
       ;
@@ -1319,23 +1375,23 @@ CompilerIf Not Defined( widgets, #PB_Module )
          
          DrawingFont( CurrentFontID( ))
          
-         _address_\text\width = 0
-         _address_\text\height = 0
+         _text_ptr_\width = 0
+         _text_ptr_\height = 0
       EndIf
       ;
-      If Not ( _address_\text\width And _address_\text\height ) Or _update_
-         If _address_\text\Str(0)
+      If Not ( _text_ptr_\width And _text_ptr_\height ) Or _update_
+         If _text_ptr_\string
             ;                CompilerIf #PB_Compiler_OS = #PB_OS_Windows ; BUG
-            ;                   _address_\text\width = TextWidth( RemoveString( _address_\text\str(0), #LF$ ))
+            ;                   _text_ptr_\width = TextWidth( RemoveString( _text_ptr_\string, #LF$ ))
             ;                CompilerElse
-            _address_\text\width = TextWidth( _address_\text\Str(0) )
+            _text_ptr_\width = TextWidth( _text_ptr_\string )
             ;                CompilerEndIf
          EndIf
          
-         _address_\text\height = TextHeight( "A" ) - Bool(#PB_Compiler_OS=#PB_OS_MacOS)
-         ;;Debug ""+*this\class +" "+ _address_\index +" "+ _address_\text\height
+         _text_ptr_\height = TextHeight( "A" ) - Bool(#PB_Compiler_OS=#PB_OS_MacOS)
+         ;;Debug ""+*this\class +" "+ _address_\index +" "+ _text_ptr_\height
          ; set rotate text value
-         ; _address_\text\rotate = Bool( _address_\text\invert ) * 180 + Bool( _address_\text\vertical ) * 90
+         ; _text_ptr_\rotate = Bool( _text_ptr_\invert ) * 180 + Bool( _text_ptr_\vertical ) * 90
          
       EndIf
    EndMacro
@@ -1494,16 +1550,13 @@ CompilerIf Not Defined( widgets, #PB_Module )
    
    
    ;-
-   Macro __draw_rotatedtext( _address_, _x_,_y_, _rotate_, _color_, _under_line_size_ = 0, _i_=0 )
+   Macro __draw_rotatedtext( _address_, _x_,_y_, _rotate_, _color_, _under_line_size_ = 0, )
       ; under line
       If _under_line_size_
-         Box( _x_ + _address_\text\x, 
-              _y_ + _address_\text\y + _address_\text\height - _under_line_size_ - 1, _address_\text\width, _under_line_size_, _color_ )
+         Box( _x_ + _address_\x,  _y_ + _address_\y + _address_\height - _under_line_size_ - 1, _address_\width, _under_line_size_, _color_ )
       EndIf
       
-      DrawRotatedText( _x_ + _address_\text\x, 
-                       _y_ + _address_\text\y, _address_\text\Str(_i_), _rotate_, _color_ ) 
-      
+      DrawRotatedText( _x_ + _address_\x,  _y_ + _address_\y, _address_\string,  _rotate_, _color_ ) 
    EndMacro
    
    Macro __draw_box( _address_, _color_type_, _mode_ = )
@@ -1932,8 +1985,8 @@ CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 498
-; FirstLine = 394
-; Folding = 9AcgA-PBu----------DXG------fAA---DAEAAA9
+; CursorPosition = 803
+; FirstLine = 601
+; Folding = 9AcMC9-E5+---------fNXG------fAA---DAECQA9
 ; EnableXP
 ; DPIAware

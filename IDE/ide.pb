@@ -1016,7 +1016,7 @@ Procedure   Properties_Change( *splitter._s_WIDGET )
    *this = GetData( *second )
    If *this
       If *second\RowFocused( )
-         text$ = *second\RowFocused( )\text\Str(0)
+         text$ = *second\RowFocused( )\txt(0)\string
          ;
          Select Type( *this )
             Case #__type_Spin     
@@ -1478,13 +1478,13 @@ Procedure   Properties_Updates( *object._s_WIDGET, type$ )
                   If count
                      If  keyboard( )\key
                         If keyboard( )\key = #PB_Shortcut_Back
-                           If *this\text\edit[2]\len
-                              SetCaret( *this, caret2 - count - (*this\text\edit[2]\len*(count))+2 )
+                           If *this\edit[2]\len
+                              SetCaret( *this, caret2 - count - (*this\edit[2]\len*(count))+2 )
                            Else
                               SetCaret( *this, caret2 - count )
                            EndIf
                         Else
-                           SetCaret( *this, caret2 + count - (*this\text\edit[2]\len*count) )
+                           SetCaret( *this, caret2 + count - (*this\edit[2]\len*count) )
                         EndIf
                      EndIf
                   EndIf
@@ -2795,20 +2795,23 @@ Procedure   ide_events( )
    If *g = ide_design_CODE                      Or *g = ide_debug_VIEW ; TEMP
       Static argument, object  
       Protected name$, text$, len, caret
+      Protected *txt._s_TXT
+      Protected *text._s_TXT
       Protected *line._s_ROW
-      
-      ;
+       ;
       If __event = #__EVENT_Down
          If __data
+            *text = *g\text
             *line._s_ROW  = __data
-            text$ = *line\text\Str(0)
-            len = *line\text\len
-            caret = *g\caret\start - *line\text\pos
+             *txt = *line\txt(0)
+            text$ = *txt\string
+            len = *txt\len
+            caret = *g\caret\start - *txt\pos
             
             ;
             If text$
-               *g\text\mode &~ #__text_numeric
-               *g\text\mode &~ #__text_editable
+               *text\mode &~ #__text_numeric
+               *text\mode &~ #__text_editable
                
                ;name$ = *g\edit_caret( )\word ; GetWord( text$, len, caret ) 
                name$ = GetWord( text$, len, caret ) 
@@ -2854,21 +2857,21 @@ Procedure   ide_events( )
                   
                   If argument > 1
                      If argument < 6 ; coordinate
-                        *g\text\mode | #__text_numeric 
+                        *text\mode | #__text_numeric 
                      EndIf
-                     *g\text\mode | #__text_editable 
+                     *text\mode | #__text_editable 
                   EndIf
                   
                   ;If GetClass( object ) = *g\edit_caret( )\word ; GetWord( text$, len, caret )
                   If GetClass( object ) = GetWord( text$, len, caret )
-                     *g\text\mode | #__text_editable
-                     *g\text\mode | #__text_upper
+                     *text\mode | #__text_editable
+                     *text\mode | #__text_upper
                   Else
-                     *g\text\mode &~ #__text_upper
+                     *text\mode &~ #__text_upper
                   EndIf
                EndIf
                
-               If *g\text\mode & #__text_editable
+               If *text\mode & #__text_editable
                   *line\color\back[1] = *g\color\back[1]
                Else
                   *line\color\back[1] = $CD9CC3EE
@@ -2881,7 +2884,7 @@ Procedure   ide_events( )
       If __event = #__EVENT_Change
          If object
             ; ReplaceArg( object, argument, *g\edit_caret( )\word ) 
-            ReplaceArg( object, argument, GetWord( *line\text\Str(0), *line\text\len, *g\caret\start - *line\text\pos )  )
+            ReplaceArg( object, argument, GetWord( *txt\string, *txt\len, *g\caret\start - *txt\pos )  )
          EndIf
       EndIf
    EndIf
@@ -3416,8 +3419,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 1213
-; FirstLine = 1206
+; CursorPosition = 2804
+; FirstLine = 2794
 ; Folding = ----------------------------------------------------------------
 ; EnableXP
 ; DPIAware

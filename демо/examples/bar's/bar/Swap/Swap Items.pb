@@ -76,19 +76,22 @@ Structure _s_TAB Extends _s_COORDINATE
    ;
    pos.l
    size.l
-   align.a          ; Выравнивание
+   align.a       ; Выравнивание
                     ; mask.q           ; Маска конкретной вкладки
    
    ; Поля для идеальной математики плавного сдвига
    offset.l        ; Динамический визуальный сдвиг
    minOffset.l     ; Левый ограничитель хода
    maxOffset.l     ; Правый ограничитель хода
+   
+   *data
 EndStructure
 
 Structure _s_TABS
    *active._s_TAB   
    *press._s_TAB  ; Указатель на перетаскиваемую вкладку
-   
+    plus._s_TAB ; <--- Одиночная структура кнопки ПЛЮС
+
    vertical.b
    
    align.a               
@@ -116,48 +119,25 @@ EndStructure
 ; 3. ЛОГИКА АЛГОРИТМА И ОТРИСОВКИ
 ; =====================================================================
 Global slant.i = DesktopScaledX(20)
-Global bottomSpaking.i = DesktopScaledX(8) 
+Global BottonSpacing.i = DesktopScaledX(4) 
 
-Procedure.l MakeColor( bgColor.l , isHover=0, isActive=0, isPress=0)
-  Protected.l nabaser = Red(bgColor) + 25
-  Protected.l nabaseg = Green(bgColor) + 20
-  Protected.l nabaseb = Blue(bgColor) + 20
-  Protected.l nabasea = Alpha(bgColor) ; Извлекаем альфа-канал
-  
-  If isHover
-    nabaser + 30
-    nabaseg + 30
-    nabaseb + 30
-  EndIf
-  
-  If isActive
-    nabaser + 10
-    nabaseg + 10
-    nabaseb + 10
-  EndIf
-  
-  If isPress
-    nabaser - 30
-    nabaseg - 30
-    nabaseb - 30
-  EndIf
-  
-  ; Ограничение сверху (чтобы не превысить 255)
-  If nabaser > 255 : nabaser = 255 : EndIf
-  If nabaseg > 255 : nabaseg = 255 : EndIf
-  If nabaseb > 255 : nabaseb = 255 : EndIf
-  
-  ; Дополнительное ограничение снизу (защита от отрицательных значений при исPress)
-  If nabaser < 0 : nabaser = 0 : EndIf
-  If nabaseg < 0 : nabaseg = 0 : EndIf
-  If nabaseb < 0 : nabaseb = 0 : EndIf
-  
-  ; Возвращаем цвет с сохранением альфа-канала
-  ProcedureReturn RGBA(nabaser, nabaseg, nabaseb, nabasea)
+Procedure.l MakeColor(bgColor.l, value.l = 0)
+   ; Извлекаем каналы с помощью побитового "И" (&) и сдвигов (>>)
+   Protected.l r = (bgColor & $FF) +  value 
+   Protected.l g = ((bgColor >> 8) & $FF) + value
+   Protected.l b = ((bgColor >> 16) & $FF) + value
+   Protected.l a = (bgColor >> 24) & $FF ; Альфа-канал просто двигаем
+   
+   ; Быстрое ограничение (Clamp) от 0 до 255
+   If r > 255 : r = 255 : ElseIf r < 0 : r = 0 : EndIf
+   If g > 255 : g = 255 : ElseIf g < 0 : g = 0 : EndIf
+   If b > 255 : b = 255 : ElseIf b < 0 : b = 0 : EndIf
+   
+   ; Собираем цвет обратно в один Long
+   ProcedureReturn r | (g << 8) | (b << 16) | (a << 24)
 EndProcedure
 
-
-Procedure.i GetAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i = 10)
+Procedure.i MakeAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i = 10)
    If alignFlags & #__flag_Center
       ProcedureReturn (contentSize - objectSize) / 2
    ElseIf alignFlags & #__flag_Right
@@ -167,7 +147,7 @@ Procedure.i GetAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i
    EndIf
 EndProcedure
 
-Procedure UpdateTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b=0)
+Procedure RecalculateTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b=0)
    Protected contentX.i, contentY.i, rx.i, rw.i , ry.i, rh.i
    Protected txt_X.i, txt_Y.i, img_X.i, img_Y.i
    
@@ -204,26 +184,26 @@ Procedure UpdateTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b=0)
       Protected iconSpacing = DesktopScaledX(6)
    EndIf
    
-   If Not *tab\size 
-      If vertical
-         *tab\size = img_H + txt_H
-      Else
-         *tab\size = img_W + txt_W
-      EndIf
-      *tab\size + iconSpacing + slant * 2
+   Protected tab_size
+   If vertical
+      tab_size = img_H + txt_H
+   Else
+      tab_size = img_W + txt_W
    EndIf
+   tab_size + iconSpacing + slant * 2
+   If *tab\size < tab_size : *tab\size = tab_size : EndIf
    
    ; Общие размеры самой вкладки
    If vertical
       ; *tab\x = 0
       ; *tab\y = *tab\pos + *tab\offset
-      *tab\width = gWidth-bottomSpaking
+      *tab\width = gWidth-BottonSpacing
       *tab\height = *tab\size
    Else
       ;  *tab\x = *tab\pos + *tab\offset
       ; *tab\y = 0
       *tab\width = *tab\size
-      *tab\height = gHeight-bottomSpaking
+      *tab\height = gHeight-BottonSpacing
    EndIf 
    
    
@@ -234,7 +214,7 @@ Procedure UpdateTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b=0)
       img_x = (*tab\width - img_w) >> 1
       
       ; Вертикальный режим: складываем высоты, по ширине берем максимум
-      contentY = GetAlignPosition(*tab\align, *tab\size, img_h + txt_h + iconSpacing, padding)
+      contentY = MakeAlignPosition(*tab\align, *tab\size, img_h + txt_h + iconSpacing, padding)
       
       ; Базовое распределение по вертикали
       txt_y = contentY
@@ -253,7 +233,7 @@ Procedure UpdateTab(*tab._s_TAB, gWidth.i, gHeight.i, vertical.b=0)
       img_y = (*tab\height - img_h) >> 1
       
       ; Горизонтальный режим: складываем ширину, по высоте берем максимум
-      contentX = GetAlignPosition(*tab\align, *tab\size,  img_w + txt_w + iconSpacing, padding)
+      contentX = MakeAlignPosition(*tab\align, *tab\size,  img_w + txt_w + iconSpacing, padding)
       
       ; Базовое распределение по горизонтали
       txt_x = contentX
@@ -309,33 +289,23 @@ Procedure TotalSize(*this._s_WIDGET)
    EndIf
 EndProcedure
 
-; Процедура добавления вкладки
-; Обновленная процедура добавления вкладки с поддержкой иконок и выравнивания
-
-Procedure DrawTabChrome(vertical.b, x, y, w, h, isactive, activecolor.l, nonactivecolor.l = -1, outerbordercolor.l = -1, innerhighlightcolor.l = -1, localslant.l=-1, invert.b = 0)
-   If Not w And h
-    ;  ProcedureReturn
-   EndIf
+;-
+Procedure DrawTabChrome(vertical.b, x, y, w, h, isactive, currentcolor.l, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
+  Protected dy, dh = h - 1, dw = w - 1
+   Protected localslant = slant
+   If h <= 0 Or w <= 0 : ProcedureReturn : EndIf 
    
-   Protected base_dim = h
-   If vertical : base_dim = w : EndIf
-   
-   If localslant = -1
-      localslant = slant
-   EndIf
-   If localslant > base_dim: localslant = base_dim: EndIf
-   
-   ; 1. выбор базового цвета для тела
-   Protected currentcolor.l
-   If isactive
-      currentcolor = activecolor
+   ; Корректируем скос в зависимости от режима
+   If vertical
+      If localslant > w : localslant = w : EndIf
    Else
-      If nonactivecolor = -1 : nonactivecolor =  RGBA(215, 225, 240, 255) : EndIf
-      currentcolor = nonactivecolor
+      If localslant > h : localslant = h : EndIf
    EndIf
+   
+   ; 1. Выбор базового цвета
    Protected.a currentalpha = Alpha(currentcolor)
    
-   ; 2. расчет цвета рамок
+   ; 2. Расчет цветов рамок
    If outerbordercolor = -1
       outerbordercolor = RGBA(Red(currentcolor) * 0.6, Green(currentcolor) * 0.6, Blue(currentcolor) * 0.6, currentalpha)
    EndIf
@@ -344,93 +314,94 @@ Procedure DrawTabChrome(vertical.b, x, y, w, h, isactive, activecolor.l, nonacti
       innerhighlightcolor = RGBA(r + (255 - r) * 0.3, g + (255 - g) * 0.3, b + (255 - b) * 0.3, currentalpha)
    EndIf
    
-   ; 3. Заливка тела и отрисовка контуров через единый цикл
-   Protected step_max = h - 1
-   If vertical : step_max = w - 1 : EndIf
+   ; 3. Заливка тела вкладки
+   Protected GradientDepth = 0
+   If Not isactive : GradientDepth = 65 : EndIf
+   Protected baser = Red(currentcolor), baseg = Green(currentcolor), bgb = Blue(currentcolor)
    
-   Protected i, slant_cur, x1, y1, x2, y2
-   Protected.f factor
+   ; Защита цвета от Underflow
+   Protected MaxDrop = baser
+   If baseg < MaxDrop : MaxDrop = baseg : EndIf
+   If bgb < MaxDrop : MaxDrop = bgb : EndIf
+   If GradientDepth > MaxDrop : GradientDepth = MaxDrop : EndIf 
    
-   For i = 0 To step_max
-      ; Вычисляем коэффициент прогресса (от 0.0 до 1.0)
-      If invert
-         factor = i / step_max
-      Else
-         factor = 1.0 - (i / step_max)
-      EndIf
+   ; Настройка шагов для циклов fixed-point (в зависимости от ориентации)
+   Protected Steps = dh
+   If vertical : Steps = dw : EndIf
+   
+   Protected ColorStepFixed = (GradientDepth << 16) / Steps
+   Protected SlantStepFixed = (localslant << 16) / Steps
+   
+   Protected ColorAccum = 0
+   Protected SlantAccum = localslant << 16
+   
+   Protected stepVar
+   For stepVar = 0 To Steps
+      Protected currentSlantVal = (SlantAccum + $8000) >> 16
       
-      ; Текущий сдвиг (скос) для этой линии
-      slant_cur = localslant * factor
+      ; Вычисляем динамический размер линии (для горизонтальной — это длина, для вертикальной — высота)
+      Protected currentLength = w - (currentSlantVal << 1)
+      If vertical : currentLength = h - (currentSlantVal << 1) : EndIf
       
-      ; Определяем координаты линии закраски в зависимости от ориентации
+      If currentLength <= 0 : Break : EndIf 
+      
+      Protected currentColorStep = ColorAccum >> 16
+      Protected color = RGBA(baser - currentColorStep, baseg - currentColorStep, bgb - currentColorStep, currentalpha)
+      
+      ; Отрисовка линии в зависимости от направления
       If vertical
-         x1 = x + i
-         y1 = y + slant_cur
-         x2 = x + i
-         y2 = y + h - slant_cur
+         ; Рисуем вертикальные полоски слева направо
+         Line(x + stepVar, y + currentSlantVal, 1, currentLength, color)
       Else
-         x1 = x + slant_cur
-         y1 = y + i
-         x2 = x + w - slant_cur
-         y2 = y + i
+         ; Рисуем горизонтальные полоски сверху вниз
+         Line(x + currentSlantVal, y + stepVar, currentLength, 1, color)
       EndIf
       
-      ; Рисуем тело вкладки
+      ColorAccum + ColorStepFixed
+      SlantAccum - SlantStepFixed
+   Next
+   
+   ; 4. Отрисовка контуров
+   If vertical
+      ; === ВЕРТИКАЛЬНЫЙ РЕЖИМ (Вкладка «смотрит» вверх, основание справа) ===
+      LineXY(x + dw, y, x, y + localslant, outerbordercolor)             
+      LineXY(x, y + localslant, x, y + h - 1 - localslant, outerbordercolor)         
+      LineXY(x, y + h - 1 - localslant, x + dw, y + h - 1, outerbordercolor)     
+      
       If isactive
-         LineXY(x1, y1, x2, y2, activecolor)
+         LineXY(x + dw, y + 1, x + 1, y + localslant + 1, innerhighlightcolor)
+         LineXY(x + 1, y + localslant + 1, x + 1, y + h - 1 - localslant - 1, innerhighlightcolor)
+         LineXY(x + 1, y + h - 1 - localslant - 1, x + dw, y + h - 2, innerhighlightcolor)
       Else
-         Protected baser = Red(nonactivecolor)
-         Protected baseg = Green(nonactivecolor)
-         Protected baseb = Blue(nonactivecolor)
-         Protected.f grad_factor = i / step_max
-         r = baser + ((baser - 25) - baser) * grad_factor
-         g = baseg + ((baseg - 20) - baseg) * grad_factor
-         b = baseb + ((baseb - 20) - baseb) * grad_factor
-         LineXY(x1, y1, x2, y2, RGBA(r, g, b, currentalpha))
+         ; Замыкающая линия справа (стык с панелью)
+         LineXY(x + dw, y, x + dw, y + h - 1, outerbordercolor)
       EndIf
+   Else
+      ; === ГОРИЗОНТАЛЬНЫЙ РЕЖИМ (Классический Chrome) ===
+      LineXY(x, y + dh, x + localslant, y, outerbordercolor)             
+      LineXY(x + localslant, y, x + w - 1 - localslant, y, outerbordercolor)         
+      LineXY(x + w - 1 - localslant, y, x + w - 1, y + dh, outerbordercolor)     
       
-      ; Отрисовка внешнего контура (границ) по краям линий закраски
-      If i = 0
-         ; Задняя (широкая/узкая) крышка основания
-         If Not isactive
-            LineXY(x1, y1, x2, y2, outerbordercolor)
-         EndIf
-      ElseIf i = step_max
-         ; Передняя крышка вкладки
-         LineXY(x1, y1, x2, y2, outerbordercolor)
-         ; Блик на передней крышке активной вкладки
-         If isactive
-            If vertical
-               If invert : LineXY(x1 - 1, y1 + 1, x2 - 1, y2 - 1, innerhighlightcolor)
-               Else : LineXY(x1 + 1, y1 + 1, x2 + 1, y2 - 1, innerhighlightcolor) : EndIf
-            Else
-               If invert : LineXY(x1 + 1, y1 - 1, x2 - 1, y2 - 1, innerhighlightcolor)
-               Else : LineXY(x1 + 1, y1 + 1, x2 - 1, y2 + 1, innerhighlightcolor) : EndIf
-            EndIf
-         EndIf
+      If isactive
+         LineXY(x + 1, y + dh, x + localslant + 1, y + 1, innerhighlightcolor)
+         LineXY(x + localslant + 1, y + 1, x + w - 1 - localslant - 1, y + 1, innerhighlightcolor)
+         LineXY(x + w - 1 - localslant - 1, y + 1, x + w - 2, y + dh, innerhighlightcolor)
+      Else
+         ; Замыкающая линия снизу
+         LineXY(x, y + dh, x + w - 1, y + dh, outerbordercolor)
       EndIf
-      
-      ; Отрисовываем боковые наклонные ребра (левое и правое)
-      If i > 0
-         LineXY(x1, y1, x1, y1, outerbordercolor)
-         LineXY(x2, y2, x2, y2, outerbordercolor)
-      EndIf
-   Next i
+   EndIf
 EndProcedure
 
 Procedure DrawTab(*tab._s_TAB, bgColor.l=$FF808080, vertical.b=0, isActive.b=0)
    Protected txColor 
    
-   ; Включаем альфа-смешивание для отрисовки тела вкладки Chrome
-    DrawingMode(#PB_2DDrawing_AlphaBlend) 
-   
-   If isActive ; *tab\mask & #__MASK_active
+    If isActive ; *tab\mask & #__MASK_active
       txColor = $FF000000
-      ; Передаем bgColor, который теперь должен содержать альфа-канал
-      DrawTabChrome(vertical, *tab\x, *tab\y, *tab\width, *tab\Height+bottomSpaking, 1, bgColor)
+      DrawTabChrome(vertical, *tab\x, *tab\y, *tab\width, *tab\Height+BottonSpacing, 1, bgColor)
    Else
       txColor = $FFFFFFFF
-      DrawTabChrome(vertical, *tab\x, *tab\y, *tab\width, *tab\Height, 0, 0, MakeColor(bgColor,1,0,0))
+      DrawTabChrome(vertical, *tab\x, *tab\y, *tab\width, *tab\Height, 0, bgColor)
    EndIf
    
    ; 2. ОТРИСОВКА ИКОНКИ
@@ -440,9 +411,7 @@ Procedure DrawTab(*tab._s_TAB, bgColor.l=$FF808080, vertical.b=0, isActive.b=0)
    
    ; 3. ОТРИСОВКА ТЕКСТА
    If *tab\txt\Width Or *tab\txt\Height
-      ; Для текста совмещаем прозрачность фона текста и альфа-канал самого текста
-      DrawingMode(#PB_2DDrawing_Transparent | #PB_2DDrawing_AlphaBlend)
-      DrawText(*tab\x + *tab\txt\x, *tab\y + *tab\txt\y, *tab\txt\Text, txColor)
+       DrawText(*tab\x + *tab\txt\x, *tab\y + *tab\txt\y, *tab\txt\Text, txColor,  bgColor)
    EndIf
 EndProcedure
 
@@ -452,16 +421,15 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB)
    Protected vertical.b = *this\tab\vertical
    Protected bgColor.l = *this\bgcolor
    ; линия пола
-   Protected floorcolor = RGB(Red(bgColor) * 0.7, Green(bgColor) * 0.7, Blue(bgColor) * 0.7)
+   Protected floorcolor =  MakeColor( bgColor, -30)
    
-   DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent)
-   LineXY(*this\x, *this\y+*this\Height - 1, *this\x+*this\Width, *this\y+*this\Height - 1, $ff000000);floorcolor)
+   ;LineXY(*this\x, *this\y+*this\Height - 1, *this\x+*this\Width, *this\y+*this\Height - 1, $ff000000);floorcolor)
    
    ForEach *this\tab\_s()
       *tab = @*this\tab\_s()
       ;
       If *tab\txt\change  Or *tab\img\change Or *this\change
-         UpdateTab(*tab._s_TAB, *this\Width, *this\Height, vertical)
+         RecalculateTab(*tab._s_TAB, *this\Width, *this\Height, vertical)
          *tab\pos = position 
          
          If *this\tab\vertical
@@ -484,7 +452,10 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB)
    
    ; Слой 2: Летящая поверх
    If *current_tab
-      DrawTab(*current_tab, RGBA(255, 255, 255, 160), vertical, 1)
+       ;DrawTab(*current_tab, RGBA(255, 255, 255, 160), vertical, 1)
+     DrawTab(*current_tab, *current_tab\data, vertical, 1)
+      Line(*this\x, *current_tab\y+*current_tab\Height+BottonSpacing, *current_tab\x-*this\x, 1, floorcolor)
+      Line((*current_tab\x+*current_tab\Width), *current_tab\y+*current_tab\Height+BottonSpacing, (*this\x+*this\Width)-(*current_tab\x+*current_tab\Width), 1, floorcolor)
    EndIf
 EndProcedure
 
@@ -497,7 +468,7 @@ Procedure ReDrawTabs(*this._s_WIDGET)
    If StartDrawing(CanvasOutput(Gadget))
       If *this\fontid : DrawingFont(*this\fontid) :  EndIf
       
-      DrawingMode(#PB_2DDrawing_AlphaBlend)
+      DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent)
       Box(0, 0, OutputWidth(), OutputHeight(), $ffffffff) 
       Box(*this\x, *this\y, gWidth, gHeight, *this\bgcolor) 
       
@@ -506,6 +477,7 @@ Procedure ReDrawTabs(*this._s_WIDGET)
    EndIf
 EndProcedure
 
+;-
 Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
    Protected *current_tab._s_TAB
    Protected *tab._s_TAB
@@ -522,7 +494,7 @@ Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
          ; ЦИКЛ 1: Находим вкладку, на которую кликнули (с учетом наложения скосов)
          ForEach *this\tab\_s()
             *tab = @*this\tab\_s()
-            If mousePos >= *tab\pos And mousePos < *tab\pos + (*tab\size - slant)
+            If mousePos >= *tab\pos And mousePos < *tab\pos + *tab\size
                *current_tab = *tab
                Break
             EndIf
@@ -646,6 +618,8 @@ Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, align.a = #__flag_Left, 
    If ListSize(*this\Tab\_s()) = 1
       *this\tab\active = *tab
    EndIf
+   
+   *tab\data =RGBA(Random(50)+200, Random(50)+200, Random(50)+200, 255)
    ProcedureReturn *tab
 EndProcedure
 
@@ -729,9 +703,9 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 432
-; FirstLine = 394
-; Folding = ------0----------
+; CursorPosition = 621
+; FirstLine = 617
+; Folding = ----------------
 ; EnableXP
 ; EnableOnError
 ; EnableUnicode

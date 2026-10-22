@@ -1318,7 +1318,7 @@ Procedure$  Generate_CodeObject( *mdi, *g._s_WIDGET, space$ )
          ; Case "MDI" : param1$ = *g\SubMenu
          ; Case "Date" : param1$ = *g\Date
          ; Case "Calendar" : param1$ = *g\Date
-      Case "ListIcon" : param1$ = Str(*g\__columns( )\width)
+      Case "ListIcon" : param1$ = Str(*g\__columns( )\size)
          ; Case "Scintilla" : param1$ = *g\CallBack
          ; Case "Shortcut" : param1$ = *g\Shortcut
       Case "Spin",
@@ -2046,9 +2046,9 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 1807
-; FirstLine = 1669
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 1320
+; FirstLine = 1282
 ; Folding = -f-----f-------------------9--------r+f------8fAw--8--
 ; EnableXP
 ; DPIAware

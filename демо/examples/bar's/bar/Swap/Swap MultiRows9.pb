@@ -165,6 +165,253 @@ Procedure drawoldchrometab(x, y, w, h, isactive, activecolor.l, nonactivecolor.l
       LineXY(x, y + h-1, x + w, y + h-1);, outerbordercolor)
    EndIf
 EndProcedure
+Procedure _DrawTabChrome(vertical.b, x, y, w, h, isactive, activecolor.l, nonactivecolor.l = -1, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
+   Protected i, dy, dh = (h); - 1)
+   Protected localslant = slant
+   ;Debug " "+x+" "+y+" "+w+" "+h 
+   
+   If localslant > h: localslant = h: EndIf
+   
+   ; 1. выбор базового цвета для тела
+   Protected currentcolor.i
+   If isactive
+      currentcolor = activecolor
+   Else
+      If nonactivecolor = -1 : nonactivecolor = RGB(215, 225, 240) : EndIf
+      currentcolor = nonactivecolor
+   EndIf
+   
+   ; 2. расчет или назначение цвета рамок
+   ; если параметры переданы (не равны -1), берем их. иначе — считаем автоматом.
+   If outerbordercolor = -1
+      outerbordercolor = RGB(Red(currentcolor) * 0.6, Green(currentcolor) * 0.6, Blue(currentcolor) * 0.6)
+   EndIf
+   
+   If innerhighlightcolor = -1
+      Protected.a r = Red(currentcolor), g = Green(currentcolor), b = Blue(currentcolor)
+      innerhighlightcolor = RGB(r + (255 - r) * 0.3, g + (255 - g) * 0.3, b + (255 - b) * 0.3)
+   EndIf
+   
+   ; 3. заливка тела вкладки
+   If isactive
+      FrontColor(activecolor)
+      For dy = 0 To dh
+         Protected currentslant = localslant * (1.0 - (dy / h))
+         LineXY(x + currentslant, y + dy, x + w - currentslant, y + dy)
+      Next
+   Else
+      
+      Protected GradientDepth = 30
+      Protected baser = Red(nonactivecolor)
+      Protected baseg = Green(nonactivecolor)
+      Protected baseb = Blue(nonactivecolor)
+      
+      ; --- ЗАЩИТА 1: Защита от деления на ноль ---
+      ; Если высота h равна 0, рисовать нечего. Просто выходим из процедуры.
+      If h <= 0 : ProcedureReturn : EndIf 
+      
+      ; --- ЗАЩИТА 2: Защита цвета (Underflow) ---
+      Protected MaxDrop = baser
+      If baseg < MaxDrop : MaxDrop = baseg : EndIf
+      If baseb < MaxDrop : MaxDrop = baseb : EndIf
+      If GradientDepth > MaxDrop : GradientDepth = MaxDrop : EndIf 
+      
+      ; Теперь вычисления абсолютно безопасны
+      Protected ColorStepFixed = (GradientDepth << 16) / h
+      Protected SlantStepFixed = (localslant << 16) / h
+      
+      Protected ColorAccum = 0
+      Protected SlantAccum = localslant << 16
+      
+;       For dy = 0 To h
+;          ; Точное округление наклона (+ $8000)
+;          Protected currentSlantVal = (SlantAccum + $8000) >> 16
+;          
+;          Protected x1 = x + currentSlantVal
+;          Protected x2 = x + w - currentSlantVal
+;          
+;          ; --- ЗАЩИТА 3: Контроль схлопывания геометрии ---
+;          ; Если левая стена догнала или обогнала правую, трапеция закончилась.
+;          ; Прерываем цикл, чтобы не рисовать "песочные часы".
+;          If x1 >= x2 : Break : EndIf 
+;          
+;          ; Расчет цвета (гарантированно в пределах [0; 255])
+;          Protected currentColorStep = ColorAccum >> 16
+;          r = baser - currentColorStep
+;          g = baseg - currentColorStep
+;          b = baseb - currentColorStep
+;          
+;          Protected color = r | (g << 8) | (b << 16) 
+;          
+;          ; Отрисовка чистой горизонтальной линии
+;          LineXY(x1, y + dy, x2, y + dy, color)
+;          
+;          ; Шаг для следующей итерации
+;          ColorAccum + ColorStepFixed
+;          SlantAccum - SlantStepFixed
+;       Next
+For dy = 0 To h
+  Protected currentSlantVal = (SlantAccum + $8000) >> 16
+  
+  ; Вычисляем длину горизонтальной линии
+  Protected currentLength = w - (currentSlantVal << 1) 
+  
+  ; Если фигура сузилась в ноль или ушла в минус — останавливаемся
+  If currentLength <= 0 : Break : EndIf 
+  
+  ; Вычисляем цвет
+  Protected currentColorStep = ColorAccum >> 16
+  r = baser - currentColorStep
+  g = baseg - currentColorStep
+  b = baseb - currentColorStep
+  Protected color = r | (g << 8) | (b << 16) 
+  
+  ; Рисуем с помощью Line(). Ширина = currentLength, Высота = 1
+  Line(x + currentSlantVal, y + dy, currentLength, 1, color)
+  
+  ColorAccum + ColorStepFixed
+  SlantAccum - SlantStepFixed
+Next
+
+;       ;       Protected baser = Red(nonactivecolor)
+;       ;       Protected baseg = Green(nonactivecolor)
+;       ;       Protected baseb = Blue(nonactivecolor)
+;       ;       
+;       ;       For dy = 0 To dh
+;       ;          Protected factor.f = dy / dh
+;       ;          r = baser + ((baser - 25) - baser) * factor
+;       ;          g = baseg + ((baseg - 20) - baseg) * factor
+;       ;          b = baseb + ((baseb - 20) - baseb) * factor
+;       ;          
+;       ;          currentslant = localslant * (1.0 - (dy / h))
+;       ;          LineXY(x + currentslant, y + dy, x + w - currentslant, y + dy, RGB(r, g, b))
+;       ;       Next
+;       ;       ; 1. Подготавливаем базовые цвета
+;       ; Protected baser = Red(nonactivecolor)
+;       ; Protected baseg = Green(nonactivecolor)
+;       ; Protected baseb = Blue(nonactivecolor)
+;       ; 
+;       ; ; 2. Выносим деление из цикла для оптимизации скорости
+;       ; ; Вместо dy / dh на каждом шаге, мы будем умножать на заранее вычисленный шаг (step)
+;       ; Protected.f factor_step = 1.0 / dh
+;       ; Protected.f slant_step  = 1.0 / h
+;       ; 
+;       ; Protected.f factor = 0.0
+;       ; ;Protected.l r, g, b, currentslant
+;       ; 
+;       ; ; 3. Основной цикл отрисовки
+;       ; For dy = 0 To dh
+;       ;   ; Быстрая линейная интерполяция цвета (без лишних раскрытий скобок)
+;       ;   r = baser - Round(25 * factor, #PB_Round_Nearest)
+;       ;   g = baseg - Round(20 * factor, #PB_Round_Nearest)
+;       ;   b = baseb - Round(20 * factor, #PB_Round_Nearest)
+;       ;   
+;       ;   ; Рассчитываем текущий скос/наклон
+;       ;   currentslant = localslant * (1.0 - (dy * slant_step))
+;       ;   
+;       ;   ; Рисуем готовую горизонтальную линию градиента
+;       ;   LineXY(x + currentslant, y + dy, x + w - currentslant, y + dy, RGB(r, g, b))
+;       ;   
+;       ;   ; Плавно увеличиваем фактор для следующей строчки
+;       ;   factor + factor_step
+;       ; Next
+;       ; 1. Подготавливаем базовые цвета
+;       Protected baser = Red(nonactivecolor)
+;       Protected baseg = Green(nonactivecolor)
+;       Protected baseb = Blue(nonactivecolor)
+;       
+;       ; 2. Вычисляем один общий шаг для цвета и наклона
+;       Protected.f factor_step = 1.0 / h
+;       
+;       Protected.f factor = 0.0
+;       ;Protected.l r, g, b, currentslant
+;       
+;       ; ; 3. Оптимизированный цикл отрисовки
+;       ; For dy = 0 To h
+;       ;   ; Вычисляем цвет
+;       ;   r = baser - Round(25 * factor, #PB_Round_Nearest)
+;       ;   g = baseg - Round(20 * factor, #PB_Round_Nearest)
+;       ;   b = baseb - Round(20 * factor, #PB_Round_Nearest)
+;       ;   
+;       ;   ; Вычисляем наклон, используя тот же самый factor
+;       ;   currentslant = localslant * (1.0 - factor)
+;       ;   
+;       ;   ; Рисуем линию
+;       ;   LineXY(x + currentslant, y + dy, x + w - currentslant, y + dy, RGB(r, g, b))
+;       ;   
+;       ;   ; Шагаем вперёд
+;       ;   factor + factor_step
+;       ; Next
+; ;       Protected GradientDepth  = 25
+; ;       For dy = 0 To h
+;            ; 1. Считаем фиксированный шаг изменения цвета
+; ;          Protected colorStep = (GradientDepth * dy / h)
+; ;          ; Чистая целочисленная математика. Быстрее физически быть не может.
+; ;          r = baser - colorStep ;  (GradientDepth * dy / h)
+; ;          g = baseg - colorStep ; (GradientDepth * dy / h)
+; ;          b = baseb - colorStep ; (GradientDepth * dy / h)
+; ;          
+; ;          currentslant = localslant * (h - dy) / h
+; ;          
+; ;          LineXY(x + currentslant, y + dy, x + w - currentslant, y + dy, RGB(r, g, b)) ; r | (g << 8) | (b << 16))
+; ;       Next
+;       
+; ;       Protected baser = Red(nonactivecolor)
+; ; Protected baseg = Green(nonactivecolor)
+; ; Protected baseb = Blue(nonactivecolor)
+;       
+;       Protected gradientDepth = 20 
+;       Protected divH = h : If divH = 0 : divH = 1 : EndIf
+;       
+;       ; 1. Считаем фиксированный шаг изменения цвета за ОДИН проход (масштабируем на 256)
+;       Protected colorStep = (gradientDepth << 8) / divH
+;       
+;       ; 2. Переводим стартовые цвета в масштаб 256
+;       Protected rFixed = baser << 8
+;       Protected gFixed = baseg << 8
+;       Protected bFixed = baseb << 8
+;       
+;       ; То же самое делаем для скоса (slant)
+;       Protected slantStep = (localslant << 8) / divH
+;       Protected slantFixed = localslant << 8
+;       
+;       For dy = 0 To h
+;          ; 3. Просто извлекаем текущий цвет из накопленного значения (сдвиг обратно)
+;          r = rFixed >> 8
+;          g = gFixed >> 8
+;          b = bFixed >> 8
+;          
+;          currentslant = slantFixed >> 8
+;          
+;          LineXY(x + currentslant, y + dy, x + w - currentslant, y + dy, r | (g << 8) | (b << 16))
+;          
+;          ; 4. Тот самый "один вычитаемый шаг" — просто уменьшаем значения на каждой итерации
+;          rFixed - colorStep
+;          gFixed - colorStep
+;          bFixed - colorStep
+;          slantFixed - slantStep
+;       Next
+      
+   EndIf
+   
+   ; 4. отрисовка контуров
+   ; внешняя рамка
+   FrontColor(outerbordercolor)
+   LineXY(x, y-1 + h, x + localslant, y)             
+   LineXY(x + localslant, y-1, x + w - localslant, y-1)         
+   LineXY(x + w - localslant, y, x + w, y-1 + h)     
+   
+   If isactive > 0
+      ; внутренний светлый блик (только для активной)
+      FrontColor(innerhighlightcolor)
+      LineXY(x + 2, y + dh, x + localslant + 1, y + 1)
+      LineXY(x + localslant + 1, y + 1, x + w - localslant - 1, y + 1)
+      LineXY(x + w - localslant - 1, y + 1, x + w - 2, y + dh)
+   Else
+      ; нижняя замыкающая линия для неактивных
+      LineXY(x, y + h-1, x + w, y + h-1);, outerbordercolor)
+   EndIf
+EndProcedure
 
 Procedure.i _RecalculateTabs(*control._s_WIDGET)
    Protected canvasw = DesktopScaledX(GadgetWidth(*control\canvasid))
@@ -831,7 +1078,7 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
 ; CursorPosition = 414
-; FirstLine = 181
-; Folding = ---+--------------
+; FirstLine = 323
+; Folding = -v---0--------------
 ; EnableXP
 ; DPIAware

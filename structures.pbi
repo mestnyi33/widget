@@ -128,17 +128,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_SEL Extends _s_CARET 
       EndStructure
       ;--     TEXT
-      Structure _s_TEXTINFO Extends _s_COORDINATE
-         pos.i
+      Structure _s_TXT Extends _s_COORDINATE
+        pos.i
          len.i
-         Array str.s(0) 
-      EndStructure
-      Structure _s_TEXTITEM Extends _s_TEXTINFO
-         edit._s_TEXTINFO[3]
-         change.b
-      EndStructure
-      ;
-      Structure _s_TEXT Extends _s_TEXTITEM
+          change.b
+         StructureUnion 
+            string.s
+            text.s
+            title.s
+         EndStructureUnion
+         
          mode.a    
          
          multiline.b
@@ -150,6 +149,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          datastr.s 
          multistr.s
+      EndStructure
+      
+      Structure _s_IMG Extends _s_COORDINATE
+         change.b
+         Image.i
+      EndStructure
+      Structure _s_TEXTINFO Extends _s_COORDINATE
+         pos.i
+         len.i
+         string.s
       EndStructure
       ;--     FONTS
       Structure _s_FONTS
@@ -201,7 +210,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     TRANSFORM
       Structure _s_TRANSFORM 
          Index.a                             ; a_index( )
-         cursor.a[constants::#__a_count] ;
+         cursor.a[constants::#__a_count]     ;
          grid_type.l
          backcolor.i[3]
          framecolor.i[3]
@@ -217,7 +226,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          steps.a
          click.a                 ; mouse clicked count
          buttons.a               ; canvas mouse clicked button
-         ; direction.b
+                                 ; direction.b
          
          press._s_POINT
          anchors._s_TRANSFORM    ; a_anchors( )
@@ -225,7 +234,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *cursor                 ; current visible cursor
          
          *drag._s_DROPMOUSE           ;
-         *selector._s_SELECTOR   ; mouse select frame
+         *selector._s_SELECTOR        ; mouse select frame
          
          *item._s_ITEMS[3]
          *button._s_BUTTONS[3]  
@@ -241,18 +250,44 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Hide.b
       EndStructure
       
-      ;--     COLUMN
-      Structure _s_COLUMN 
-         ID.i
-         X.l 
-         Width.l 
-         title.s
+      ;--     CAPTION
+      Structure _s_caption Extends _s_COORDINATE
+         Button._s_buttons[5]
+         color._s_color
+         
+         interact.b
+         Hide.b
+         round.b
+         _padding.b
          mask.q
       EndStructure
-      Structure _s_COLUMNS
-         *active._s_COLUMN 
-         List __s._s_COLUMN( )
+      
+      ;--     COLUMN
+      Structure _s_COL ; ЗАГОЛОВОК
+         ID.l          ; <--- Номер элемента в списке данных строки (0, 1, 2...) 
+         pos.l         ; Относительный X вкладки в шапке
+         size.l        ; Ширина вкладки
+         
+         txt._s_TXT
+         img._s_IMG
+         
+         align.a          ; Выравнивание (0-лево, 1-центр, 2-право)
+         mask.q           ; Маска конкретной вкладки
+         
+         ; Поля для идеальной математики плавного сдвига
+         offset.l        ; Динамический визуальный сдвиг
+         minOffset.l     ; Левый ограничитель хода
+         maxOffset.l     ; Правый ограничитель хода
       EndStructure
+      Structure _s_COLS
+         *active._s_COL
+         List __s._s_COL( )
+      EndStructure
+      Structure _s_COLUMN Extends _s_COL
+      EndStructure
+      Structure _s_COLUMNS Extends _s_COLS
+      EndStructure
+      
       
       ;--     ITEMS
       Structure _s_ITEMS Extends _s_BOX
@@ -276,7 +311,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          childrens.w ; Row( )\ ; rows( )\ ; row\
          sublevel.w
          
-         Text._s_TEXTITEM
+         Array txt._s_TXT(0)       ; Динамический массив ячеек данных
          picture._s_PICTURE
          color._s_color
          
@@ -287,14 +322,17 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       Structure _s_TAB Extends _s_COLUMN 
-         tx.l 
-         
+         X.l
+         Y.l
+         Width.l
+         Height.l
+        
          font.i
          fontID.i
          
-          press.b
-          visible.b
-          checked.b
+         press.b
+         visible.b
+         checked.b
          
          StructureUnion
             _enter.b 
@@ -309,8 +347,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Disable.b
          round.a
          
-         Y.l
-         Height.l
          
          childrens.w ; Row( )\ ; rows( )\ ; row\
          
@@ -319,7 +355,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
             tindex.i ; tab
          EndStructureUnion
          
-         Text._s_TEXTITEM
          picture._s_PICTURE
          color._s_color
          *popupbar._s_WIDGET
@@ -342,9 +377,48 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     ROW
+      
+      Structure _s_STR Extends _s_COORDINATE
+         pos.l    ; Позиция начала в строке (от 1)
+         len.l    ; Длина куска
+         word.s
+      EndStructure
+      
+      ; Структура визуального фрагмента (Команда для отрисовки)
+      Structure _s_TOKEN Extends _s_STR
+         color.l  ; Цвет ($BBGGRR)
+         font.i   ; Сюда пишем FontID(Ваш_Шрифт)
+      EndStructure
+      
+      Structure _s_WRAP Extends _s_STR
+         sel._s_SEL
+      EndStructure
+      Structure _s_WRAPS
+         hover.l               ; Индекс текущей подстроки под мышкой (1, 2, 3...)
+         List __s._s_WRAP()    ; Результат нарезки
+      EndStructure
+      ; ; Описание одной ячейки данных
+      ; Structure _s_ROW Extends _s_COORDINATE
+      ;    is_hidden.b
+      ;    mask.q                   ; Состояние строки (#__MASK_active, #__maskrow_node...)
+      ;    sublevel.l               ; Уровень вложенности для дерева
+      ;    sel._s_SEL
+      ;    wrap._s_WRAPS
+      ;    wrap_height.l
+      ;    
+      ;    *skip_prev._s_ROW         ; <-- Сюда запишем адрес строки, на которую прыгнуть назад
+      ;    *skip_next._s_ROW         ; <-- Сюда запишем адрес строки, на которую прыгнуть вперед
+      ;    
+      ;    Array txt._s_TXT(0)       ; Динамический массив ячеек данных
+      ;    List tokens._s_TOKEN()    ; Список раскрашенных сегментов
+      ; EndStructure
       Structure _s_ROW Extends _s_ITEMS
          ;mask.q
          ;sel._s_SEL
+         wrap._s_WRAPS
+         List tokens._s_TOKEN()    ; Список раскрашенных сегментов
+      edit._s_TEXTINFO[3]
+         
          
          *checkBox._s_BOX  ;  checkbox\
          *buttonBox._s_BOX ;  buttonbox\
@@ -360,12 +434,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *_groupbar._s_ROW ; option group row
          
          *skip_prev._s_ROW         ; <-- Сюда запишем адрес строки, на которую прыгнуть назад
-   *skip_next._s_ROW         ; <-- Сюда запишем адрес строки, на которую прыгнуть вперед
-   
+         *skip_next._s_ROW         ; <-- Сюда запишем адрес строки, на которую прыгнуть вперед
+         
       EndStructure
       Structure _s_VISIBLE_ROW
-;          *first._s_ROW           ; first draw-elemnt in the list
-;          *last._s_ROW            ; last draw-elemnt in the list
+         ;          *first._s_ROW           ; first draw-elemnt in the list
+         ;          *last._s_ROW            ; last draw-elemnt in the list
          List *__s._s_ROW( )     ; Развернутый рулон (указатели)
       EndStructure
       Structure _s_ROWS
@@ -423,6 +497,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *button._s_buttons[3]
       EndStructure
+      Structure _s_BAR_WIDGET Extends _s_COORDINATE
+         mask.q
+         bar._s_BAR
+      EndStructure
+      
       ;--     SCROLL
       Structure _s_SCROLL Extends _s_COORDINATE
          Gadget.i[3]
@@ -445,7 +524,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          visible.b
          
-         Text._s_TEXT
+         txt._s_TXT
          picture._s_PICTURE
          color._s_color
       EndStructure
@@ -454,18 +533,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_POPUP
          display.b
          *parent._s_WIDGET
-      EndStructure
-      
-     ;--     CAPTION
-      Structure _s_caption Extends _s_COORDINATE
-         Button._s_buttons[5]
-         color._s_color
-         
-         interact.b
-         Hide.b
-         round.b
-         _padding.b
-         mask.q
       EndStructure
       
       ;--     BOUNDS
@@ -566,14 +633,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
          flagmask.q
          eventmask.q
          
-            
+         
          caret._s_CARET
          tt._s_tt                 ; notification = уведомление
          menu._s_POPUP
          bounds._s_BOUNDS
          area_align._s_align
-         Text._s_TEXT
-         Scroll._s_SCROLL            ; vertical & horizontal scrollbars
+        Scroll._s_SCROLL            ; vertical & horizontal scrollbars
+        
+         edit._s_TEXTINFO[3]
+         text._s_TXT
          
          color._s_COLOR
          padding._s_POINT
@@ -586,13 +655,16 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          ;                        ;
          *root._s_ROOT
-         *column._s_COLUMNS             ; multi-text; buttons; lists; - gadgets
+         StructureUnion
+            *column._s_COLUMNS             ; multi-text; buttons; lists; - gadgets
+            *col._s_COLUMNS                ; multi-text; buttons; lists; - gadgets
+         EndStructureUnion
          *row._s_ROWS              ; multi-text; buttons; lists; - gadgets
          Tab._s_TABS
          tabindex.l;[2]          ; [1] - это в лист будем переносить так как он нужен только для родителя
-         tabpage.l  ; Активная страница (используется если у родителя есть таб бар)
+         tabpage.l ; Активная страница (используется если у родителя есть таб бар)
          List *__tabs._s_ITEMS()  ; Заголовки вкладок
-      
+         
          *bar._s_BAR
          *drop._s_DROP
          *align._s_ALIGN
@@ -609,14 +681,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          *window._s_PARENT
          *parent._s_PARENT;[2]   ; [1] - это в лист будем переносить так как он нужен только для родителя  
-         ; parent[0] - Родитель ; Иерархия - физический (где лежит) 
-         ; parent[1] - Владелец ; Иерархия - логический (кто открыл)
+                          ; parent[0] - Родитель ; Иерархия - физический (где лежит) 
+                          ; parent[1] - Владелец ; Иерархия - логический (кто открыл)
          
-          ; это в лист будем переносить так как он нужен только для родителя
+         ; это в лист будем переносить так как он нужен только для родителя
          *first._s_PARENT ; Первый ребенок в списке
          *last._s_PARENT  ; Последний ребенок
-         ;
-         ; НОВЫЕ ПОЛИМОРФНЫЕ УКАЗАТЕЛИ
+                          ;
+                          ; НОВЫЕ ПОЛИМОРФНЫЕ УКАЗАТЕЛИ
          *next._s_PARENT[3]
          *prev._s_PARENT[3]
          ;next[0]  ; все Цепочка отрисовки (шаг вперед по Z-Order)
@@ -626,7 +698,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          ;next[2]  ; Цепочка братьев
          ;prev[2]  ; Цепочка братьев
          
-          ;
+         ;
          *gadget._s_WIDGET[3]
          ; \root\gadget[0] - active gadget
          ; \gadget[0]     ; window active child gadget
@@ -644,11 +716,11 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ; Промежуточный тип для тех, кто имеет детей (Панель, Группа, Сплиттер)
       Structure _s_PARENT Extends _s_WIDGET
-;          *first._s_PARENT ; Первый ребенок в списке
-;          *last._s_PARENT  ; Последний ребенок
+         ;          *first._s_PARENT ; Первый ребенок в списке
+         ;          *last._s_PARENT  ; Последний ребенок
          *opened._s_PARENT
          openeditem.l
-       EndStructure
+      EndStructure
       
       ; Промежуточный тип для тех, кто имеет детей (Панель, Группа, Сплиттер)
       Structure _s_WINDOW Extends _s_PARENT
@@ -664,7 +736,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          enter.b
          
          window.i                 ; canvas window
-         gadget.i                 ; canvas gadget
+         Gadget.i                 ; canvas gadget
          *gadgetID                ; canvas handle
          
          *next._s_ROOT
@@ -710,7 +782,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     GUI
       Structure _s_GUI
          fontID.i                       ; current drawing fontID
-         ;
+                                        ;
          *drawingroot._s_ROOT
          *root._s_ROOT                 ; enumerate root
          *widget._s_WIDGET             ; enumerate widget
@@ -734,8 +806,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 363
-; FirstLine = 332
-; Folding = ----8-p----
+; CursorPosition = 265
+; FirstLine = 249
+; Folding = ------+-----
 ; Optimizer
 ; EnableXP

@@ -256,9 +256,9 @@ RemoveSysTrayIcon(#TrayIcon)
 If hHook : UnhookWindowsHookEx_(hHook) : EndIf
 End
 
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 257
-; FirstLine = 219
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 134
+; FirstLine = 129
 ; Folding = ------
 ; EnableXP
 ; DPIAware
