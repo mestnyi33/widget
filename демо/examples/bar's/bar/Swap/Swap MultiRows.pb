@@ -54,10 +54,11 @@ Structure _s_TABS
    *press._s_TAB  ; Указатель на перетаскиваемую вкладку
    plus._s_TAB    ; <--- Одиночная структура кнопки ПЛЮС
    
+   slant.a
    align.a               
    indent.a 
    spacing.a             
-   
+    
    vertical.b
    TotalSize.l          
    List _s._s_TAB()  ; Заголовки вкладок
@@ -76,10 +77,10 @@ Structure _s_WIDGET Extends _s_COORDINATE
 EndStructure
 
 Global MyThis._s_WIDGET
-Global slant = DesktopScaledX(20)
 Global TopSpacing = DesktopScaledX(6)
 Global RowSpacing = DesktopScaledX(2)
 Global BottonSpacing = RowSpacing
+LoadFont(0, "tahoma", 12)
 
 Procedure.l MakeColor(bgColor.l, value.l = 0)
    ; Извлекаем каналы с помощью побитового "И" (&) и сдвигов (>>)
@@ -107,7 +108,8 @@ Procedure.i MakeAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.
    EndIf
 EndProcedure
 
-Procedure.i RecalculateTabs(*this._s_WIDGET, gWidth)
+;-
+Procedure.i TotalSize(*this._s_WIDGET, gWidth)
    gWidth = DesktopScaledX(gWidth)
    Protected indent = DesktopScaledX(4)
    Protected currentx = indent
@@ -121,7 +123,7 @@ Procedure.i RecalculateTabs(*this._s_WIDGET, gWidth)
    
    ; Предварительный расчет шагов
    Protected RowStep = *this\tab\TotalSize + RowSpacing
-   Protected SlantOffset = slant * 4 / 3
+   Protected SlantOffset = *this\tab\slant * 4 / 3
    
    If tabcount = 0 : ProcedureReturn DesktopUnscaledY(*this\tab\TotalSize + BottonSpacing) : EndIf
    
@@ -132,7 +134,7 @@ Procedure.i RecalculateTabs(*this._s_WIDGET, gWidth)
       i = 0
       ForEach *this\tab\_s()
          *rowtabs(i) = @*this\tab\_s()
-         Protected baseWidth = TextWidth(*rowtabs(i)\txt\text) + (*this\padding * 2) + (slant * 2)
+         Protected baseWidth = TextWidth(*rowtabs(i)\txt\text) + (*this\padding * 2) + (*this\tab\slant * 2)
          If *rowtabs(i)\img\image <> 0
             baseWidth + DesktopScaledX(20)
          EndIf
@@ -158,7 +160,7 @@ Procedure.i RecalculateTabs(*this._s_WIDGET, gWidth)
             
             ; Растягиваем по ширине (Justify) ТОЛЬКО полные ряды. Последний «хвост» не трогаем!
             If i < tabcount
-               totalrowWidth = indent + (slant * 2)
+               totalrowWidth = indent + (*this\tab\slant * 2)
                For k = startIDx To endIDx
                   totalrowWidth + *rowtabs(k)\Width
                   If k < endIDx : totalrowWidth - SlantOffset : EndIf
@@ -209,7 +211,7 @@ Procedure.i RecalculateTabs(*this._s_WIDGET, gWidth)
       Next
       
       ; --- КОРРЕКТИРОВКА ПЛЮСА И ФИНАЛЬНЫЙ РАСЧЕТ ВЫСОТЫ ---
-      *this\tab\plus\Width = (slant * 2)
+      *this\tab\plus\Width = (*this\tab\slant * 2)
       *this\tab\plus\Height = *this\tab\TotalSize 
       *this\tab\plus\y = TopSpacing + TotalRows * RowStep
       *this\tab\plus\x = gWidth - *this\tab\plus\Width - indent
@@ -226,38 +228,81 @@ Procedure.i RecalculateTabs(*this._s_WIDGET, gWidth)
 EndProcedure
 
 
-;-
 ; добавление вкладки и автоматическое создание её контейнера под холстом
-Procedure AddTab(*this._s_WIDGET, title$, windowID, canvasheight, imageID.i = 0, tabcolor.l=0)
+Procedure AddTab(*this._s_WIDGET, title$,  image.i = 0, tabcolor.l=0);$ffffffff)
    Protected._s_TAB *tab = AddElement(*this\tab\_s())
    *tab\txt\text = title$
-   *tab\img\image = imageID ; записываем ID картинки
+   *tab\img\image = image ; записываем ID картинки
+   
    If Not tabcolor
       tabcolor = RGB(Random(50)+200, Random(50)+200, Random(50)+200)
    EndIf
    tabcolor & $FFFFFF | 238 << 24
    ; создаем скрытый контейнер под размеры окна (ниже холста)
    ; внутри него ты сможешь создавать любые кнопки, строки ввода и т.д.
-   *tab\containerID = ContainerGadget(#PB_Any, 0, canvasheight, WindowWidth(windowID), WindowHeight(windowID) - canvasheight, #PB_Container_BorderLess)
+   *tab\containerID = ContainerGadget(#PB_Any, 0, 0, 0, 0, #PB_Container_BorderLess)
    ; для наглядности покрасим фоны контейнеров в разные случайные цвета
    SetGadgetColor(*tab\containerID, #PB_Gadget_BackColor, tabcolor)
    CloseGadgetList()
    
-   
    ; самая первая вкладка становится активной
    If *this\tab\active = 0
       *this\tab\active = *tab
-      HideGadget(*tab\containerID, #False) ; показываем первый контейнер
    Else
       ; по умолчанию скрываем все контейнеры
       HideGadget(*tab\containerID, #True)
    EndIf
 EndProcedure
 
+Procedure CloseTab(*this._s_WIDGET, *tabtoclose._s_TAB)
+   ; 1. Переводим список на удаляемую вкладку
+   ChangeCurrentElement(*this\tab\_s(), *tabtoclose)
+   
+   ; 2. Уничтожаем привязанный containergadget
+   If IsGadget(*tabtoclose\containerID)
+      FreeGadget(*tabtoclose\containerID)
+   EndIf
+   
+   ; 3. УДАЛЕНИЕ И АВТОМАТИЧЕСКИЙ ПОИСК ЗАМЕНЫ
+   If *this\tab\active = *tabtoclose
+      ; Флаг 1 заставляет PureBasic перешагнуть на следующую вкладку (или на предыдущую, если этой не стало)
+      If DeleteElement(*this\tab\_s(), 1)
+         *this\tab\active = @*this\tab\_s() ; Новая вкладка успешно подхвачена!
+      Else
+         *this\tab\active = 0 ; Вкладок больше вообще не осталось
+      EndIf
+   Else
+      ; Если закрыли неактивную вкладку, просто удаляем её без смены активности
+      DeleteElement(*this\tab\_s())
+   EndIf
+   
+   ; 4. Если нашли новый активный таб — показываем его контейнер
+   If *this\tab\active <> 0
+      HideGadget(*this\tab\active\containerID, #False)
+   EndIf
+EndProcedure
+
+Procedure ActivateTab(*this._s_WIDGET, *Newactive._s_TAB)
+   If *this\tab\active <> *Newactive
+      ; Прячем старый контейнер
+      If *this\tab\active
+         HideGadget(*this\tab\active\ContainerID, #True)
+      EndIf
+      
+      ; Переключаем простой указатель
+      *this\tab\active = *Newactive
+      
+      ; Показываем новый контейнер
+      HideGadget(*this\tab\active\ContainerID, #False)
+      ProcedureReturn #True
+   EndIf
+EndProcedure
+
+;-
 ; полностью адаптивная процедура рендеринга ретро-трапеции
-Procedure DrawTabChrome(vertical.b, x, y, w, h, isactive, currentcolor.l, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
+Procedure ChromeBox(vertical.b, x, y, w, h, isactive, currentcolor.l, localslant.a, GradientDepth = 25, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
   Protected dy, dh = h - 1, dw = w - 1
-   Protected localslant = slant
+   
   ; dh = h
    If h <= 0 Or w <= 0 : ProcedureReturn : EndIf 
    
@@ -281,8 +326,7 @@ Procedure DrawTabChrome(vertical.b, x, y, w, h, isactive, currentcolor.l, outerb
    EndIf
    
    ; 3. Заливка тела вкладки
-   Protected GradientDepth = 0
-   If Not isactive : GradientDepth = 25 : EndIf
+   If isactive : GradientDepth = 0 : EndIf
    Protected baser = Red(currentcolor), baseg = Green(currentcolor), bgb = Blue(currentcolor)
    
    ; Защита цвета от Underflow
@@ -359,8 +403,7 @@ Procedure DrawTabChrome(vertical.b, x, y, w, h, isactive, currentcolor.l, outerb
    EndIf
 EndProcedure
 
-;-
-Procedure draw_closeButton(*tab._s_TAB, bgColor.l)
+Procedure draw_closeButton(*tab._s_TAB, bgColor.l, slant)
    Protected h = *tab\Height
    Protected close_size = DesktopScaledX(5)
    Protected radius = DesktopScaledX(7)
@@ -403,10 +446,8 @@ Procedure draw_TabButton(*tab._s_TAB, bgcolor.l)
    Protected.l pluscolor = MakeColor(bgcolor, 10 + (*tab\mask & #__MASK_Hover)  *30) ; RGB(nabaser, nabaseg, nabaseb)
    
    ; Трюк со Slant: подменяем его локально только на время отрисовки этой кнопки
-   Protected OldSlant = Slant : Slant = 8
-   DrawTabChrome(0, *tab\x, *tab\y, *tab\Width, *tab\Height, 0, pluscolor)
-   Slant = OldSlant ; Сразу возвращаем обратно
-   
+   ChromeBox(0, *tab\x, *tab\y, *tab\Width, *tab\Height, 0, pluscolor, 8)
+  
    ; Выводим символ "+" ровно по центру
    Protected textcolor = RGBA(Red(bgcolor) * 0.3, Green(bgcolor) * 0.3, Blue(bgcolor) * 0.3, 255)
    Protected textBgcolor = MakeColor( pluscolor, -8)
@@ -414,8 +455,7 @@ Procedure draw_TabButton(*tab._s_TAB, bgcolor.l)
    
    DrawText(plus_x, *tab\y + 6, *tab\txt\Text, textcolor, textBgcolor)
 EndProcedure
-;-
-Procedure draw_tab(isactive, *tab._s_TAB, bgcolor.l, max_row_index.i = -1)
+Procedure draw_tab(isactive, *tab._s_TAB, bgcolor.l, max_row_index.i, slant)
    Protected.l textcolor, nonactivecolor, textBgcolor
    Protected h = *tab\Height
    
@@ -423,15 +463,15 @@ Procedure draw_tab(isactive, *tab._s_TAB, bgcolor.l, max_row_index.i = -1)
       textcolor = RGBA(0, 0, 0, 255)
       textBgcolor = bgcolor
        If *tab\ID = max_row_index
-         DrawTabChrome(0,*tab\x, *tab\y, *tab\Width, h + BottonSpacing, 1, bgcolor)
+         ChromeBox(0,*tab\x, *tab\y, *tab\Width, h + BottonSpacing, 1, bgcolor, slant)
       Else
-         DrawTabChrome(0,*tab\x, *tab\y, *tab\Width, h,  -1, bgcolor)
+         ChromeBox(0,*tab\x, *tab\y, *tab\Width, h,  -1, bgcolor, slant)
       EndIf
    Else
       textcolor = RGBA(Red(bgcolor) * 0.3, Green(bgcolor) * 0.3, Blue(bgcolor) * 0.3, 255)
       bgcolor = MakeColor(bgcolor,- 30+(*tab\mask & #__MASK_Hover)*30)
       textBgcolor = MakeColor(bgcolor,  -8)
-      DrawTabChrome(0, *tab\x, *tab\y, *tab\Width, h, 0, bgcolor)
+      ChromeBox(0, *tab\x, *tab\y, *tab\Width, h, 0, bgcolor, slant)
    EndIf
    
    Protected txtw = TextWidth(*tab\txt\text)
@@ -449,7 +489,7 @@ Procedure draw_tab(isactive, *tab._s_TAB, bgcolor.l, max_row_index.i = -1)
    ; DrawingMode(#PB_2DDrawing_Transparent)
    DrawText(startx, *tab\y + 6, *tab\txt\text, textcolor, textBgcolor)
    
-   draw_closeButton( *tab, RGBA(240, 70, 70, 255) )
+   draw_closeButton( *tab, RGBA(240, 70, 70, 255), slant )
 EndProcedure
 
 Procedure DrawTabs(*this._s_WIDGET, *currentTAB._s_TAB, gWidth, gHeight, bgColor.l )
@@ -478,18 +518,18 @@ Procedure DrawTabs(*this._s_WIDGET, *currentTAB._s_TAB, gWidth, gHeight, bgColor
       ;             *tab\x =  *this\x + *this\tab\indent  + *tab\pos ; 
       ;          EndIf
       ;          
-      ;          position + (*tab\size - slant) + *this\tab\spacing
+      ;          position + (*tab\size - *this\tab\slant) + *this\tab\spacing
       ;       EndIf
       
       If *tab <> *currentTAB
-         draw_tab(#False, *tab, bgColor, *this\tab\plus\ID )
+         draw_tab(#False, *tab, bgColor, *this\tab\plus\ID, *this\tab\slant )
       EndIf
    Next
    *this\change = 0
    ; 2. отрисовка активной вкладки
    If *currentTAB <> 0
       Protected tabcolor = GetGadgetColor(*currentTAB\containerID, #PB_Gadget_BackColor)
-      draw_tab(#True,*currentTAB, tabcolor, *this\tab\plus\ID )
+      draw_tab(#True,*currentTAB, tabcolor, *this\tab\plus\ID, *this\tab\slant )
    EndIf
    
    ; 2. Отрисовка кнопки ПЛЮС (вызываем её личную изолированную процедуру)
@@ -498,6 +538,7 @@ Procedure DrawTabs(*this._s_WIDGET, *currentTAB._s_TAB, gWidth, gHeight, bgColor
       
 EndProcedure
 
+;-
 Procedure ReDraw(*this._s_WIDGET)
    Protected gWidth = DesktopScaledX(GadgetWidth(*this\canvasID))
    Protected gHeight = DesktopScaledY(GadgetHeight(*this\canvasID))
@@ -513,12 +554,11 @@ Procedure ReDraw(*this._s_WIDGET)
    EndIf
 EndProcedure
 
-;-
-Procedure DoTabResize(*this._s_WIDGET, windowID)
+Procedure DoResize(*this._s_WIDGET, windowID)
    Protected._s_TAB *tab
    Protected gWidth = WindowWidth(windowID)
    Protected gHeight = WindowHeight(windowID) 
-   Protected newheight = RecalculateTabs(*this, gWidth)
+   Protected newheight = TotalSize(*this, gWidth)
    ResizeGadget(*this\canvasID, #PB_Ignore, #PB_Ignore, gWidth, newheight)
    
    ; корректируем размеры всех контейнеров в зависимости от новой высоты холста
@@ -529,65 +569,14 @@ Procedure DoTabResize(*this._s_WIDGET, windowID)
    ReDraw(*this)
 EndProcedure
 
-Procedure CloseTab(*this._s_WIDGET, *tabtoclose._s_TAB, windowID.i)
-   ; 1. Переводим список на удаляемую вкладку
-   ChangeCurrentElement(*this\tab\_s(), *tabtoclose)
-   
-   ; 2. Уничтожаем привязанный containergadget
-   If IsGadget(*tabtoclose\containerID)
-      FreeGadget(*tabtoclose\containerID)
-   EndIf
-   
-   ; 3. УДАЛЕНИЕ И АВТОМАТИЧЕСКИЙ ПОИСК ЗАМЕНЫ
-   If *this\tab\active = *tabtoclose
-      ; Флаг 1 заставляет PureBasic перешагнуть на следующую вкладку (или на предыдущую, если этой не стало)
-      If DeleteElement(*this\tab\_s(), 1)
-         *this\tab\active = @*this\tab\_s() ; Новая вкладка успешно подхвачена!
-      Else
-         *this\tab\active = 0 ; Вкладок больше вообще не осталось
-      EndIf
-   Else
-      ; Если закрыли неактивную вкладку, просто удаляем её без смены активности
-      DeleteElement(*this\tab\_s())
-   EndIf
-   
-   ; 4. Если нашли новый активный таб — показываем его контейнер
-   If *this\tab\active <> 0
-      HideGadget(*this\tab\active\containerID, #False)
-   EndIf
-   
-   DoTabResize( *this, windowID)
-EndProcedure
-
-Procedure ActivateTab(*this._s_WIDGET, *Newactive._s_TAB)
-   If *this\tab\active <> *Newactive
-      ; Прячем старый контейнер
-      If *this\tab\active
-         HideGadget(*this\tab\active\ContainerID, #True)
-      EndIf
-      
-      ; Переключаем простой указатель
-      *this\tab\active = *Newactive
-      
-      ; Показываем новый контейнер
-      HideGadget(*this\tab\active\ContainerID, #False)
-      
-      ; Перерисовываем холст — ховеры автоматически окажутся на своих местах!
-      ReDraw(*this)
-   EndIf
-EndProcedure
-
-Procedure DoTabEvents(*this._s_WIDGET)
-   Protected mx = GetGadgetAttribute(*this\canvasID, #PB_Canvas_MouseX)
-   Protected my = GetGadgetAttribute(*this\canvasID, #PB_Canvas_MouseY)
-   Protected localslant = slant
+Procedure DoEvent(*this._s_WIDGET, event, mx.l,my.l)
+   Protected localslant = *this\tab\slant
    Protected insIDetab.i, relx.i, rely.i
    Protected._s_TAB *tab, *hoverTAB = 0
    Protected needredraw.i = #False
-   Protected etype = EventType()
    Protected WindowID = EventWindow()
    
-   If etype = #PB_EventType_MouseMove Or etype = #PB_EventType_LeftButtonDown
+   If event = #PB_EventType_MouseMove Or event = #PB_EventType_LeftButtonDown
       
       ; 1. ТЕСТ КНОПКИ ПЛЮС (+): Так как она закреплена справа над контейнером, проверяем её первой
       If my >= *this\tab\plus\y And my <= *this\tab\plus\y + *this\tab\TotalSize
@@ -638,25 +627,28 @@ Procedure DoTabEvents(*this._s_WIDGET)
       EndIf
       
       ; --- 4. ЛОГИКА КЛИКА МЫШИ ---
-      If etype = #PB_EventType_LeftButtonDown And *hoverTAB <> 0
+      If event = #PB_EventType_LeftButtonDown And *hoverTAB <> 0
          If *hoverTAB = *this\tab\plus
             ; КЛИК ПО ПЛЮСУ: Добавляем новую вкладку
             Protected NewIDx = ListSize(*this\tab\_s()) + 1
-            AddTab(*this, "Вкладка " + Str(NewIDx), WindowID, GadgetHeight(*this\canvasID))
+            AddTab(*this, "Вкладка " + Str(NewIDx))
             
-            DoTabResize( *this, windowID)
+            DoResize( *this, windowID)
             needredraw = #False
          Else
             ; КЛИК ПО ОБЫЧНОМУ ТАБУ: Проверяем крестик или переключаем активность
             If *hoverTAB\close_ishovered
-               CloseTab(*this, *hoverTAB, WindowID)
+               CloseTab(*this, *hoverTAB)
+               DoResize( *this, windowID)
             Else
-               ActivateTab(*this, *hoverTAB)
+               If  ActivateTab(*this, *hoverTAB)
+                  needredraw = #True
+               EndIf
             EndIf
          EndIf
          
          ; --- 5. ЛОГИКА ДВИЖЕНИЯ МЫШИ (Ховеры) ---
-      ElseIf etype = #PB_EventType_MouseMove
+      ElseIf event = #PB_EventType_MouseMove
          ; Защищенный ховер кнопки ПЛЮС
          *tab = @*this\tab\plus
          ; 2. Проверяем, отличается ли текущее состояние маски от реального положения дел
@@ -697,7 +689,7 @@ Procedure DoTabEvents(*this._s_WIDGET)
       EndIf
       
       ; --- 6. КУРСОР УШЕЛ С ХОЛСТА (Тотальный сброс подсветки) ---
-   ElseIf etype = #PB_EventType_MouseLeave
+   ElseIf event = #PB_EventType_MouseLeave
       *this\tab\plus\mask &~ #__MASK_Hover
       
       ForEach *this\tab\_s() : *tab = @*this\tab\_s()
@@ -716,44 +708,53 @@ Procedure DoTabEvents(*this._s_WIDGET)
    EndIf
 EndProcedure
 
-; обновление размеров холста и всех контейнеров под размеры окна
-
-
-;- --- демо запуск ---
-Define event, windoww = 900, windowh = 350
-
-If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
-   
-   With MyThis
-      \canvasID  = CanvasGadget(#PB_Any, 0, 0, windoww, 40)
-      \fontID    = LoadFont(0, "tahoma", 12)
+Procedure Create( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, text.s, flags.l = 0, image.i = 0)
+   With *this
+      \fontID = FontID(0)
+      \X = DesktopScaledX(X)
+      \Y = DesktopScaledY(Y)
+      \Width = DesktopScaledX(Width)
+      \Height = DesktopScaledY(Height)
+      \canvasID  = CanvasGadget(#PB_Any, X, Y, Width, Height)
       \tab\TotalSize = DesktopScaledY(29)
+      \tab\slant = DesktopScaledX(20)
+
       \padding  = DesktopScaledX(6)
       \change = 1
       \bgcolor     = RGBA(180, 195, 215, 160) ; RGB(Random(255), Random(255), Random(255)) ; твой любимый цвет. сделай его зеленым или серым — и весь интерфейс сам перестроится!
       \tab\plus\txt\text = "+"
    EndWith
-   
-   ; создаем две тестовые цветные иконки 16x16
-   CreateImage(1, 16, 16)
-   If StartDrawing(ImageOutput(1)) : Box(0,0,16,16, RGB(255, 50, 50)) : StopDrawing() : EndIf ; красный квадрат
-   
-   CreateImage(2, 16, 16)
-   If StartDrawing(ImageOutput(2)) : Box(0,0,16,16, RGB(50, 150, 255)) : StopDrawing() : EndIf ; синий квадрат
+EndProcedure
+
+
+; обновление размеров холста и всех контейнеров под размеры окна
+
+
+;- --- демо запуск ---
+Define windoww = 900, windowh = 350
+; создаем две тестовые цветные иконки 16x16
+CreateImage(1, 16, 16)
+If StartDrawing(ImageOutput(1)) : Box(0,0,16,16, RGB(255, 50, 50)) : StopDrawing() : EndIf ; красный квадрат
+
+CreateImage(2, 16, 16)
+If StartDrawing(ImageOutput(2)) : Box(0,0,16,16, RGB(50, 150, 255)) : StopDrawing() : EndIf ; синий квадрат
+
+If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
+   Create(@MyThis, 0, 0, windoww, 40,"")
    
    ; добавляем вкладки (последним параметром передаем ID созданных картинок)
-   AddTab(@MyThis, "google (с иконкой)", 0, 40, 1, RGB(255, 255, 255))
-   AddTab(@MyThis, "код проекта (с иконкой)", 0, 40, 2, RGB(210, 245, 225))
-   AddTab(@MyThis, "без иконки", 0, 40, 0, RGB(255, 220, 230))
+   AddTab(@MyThis, "google (с иконкой)", 1, RGB(255, 255, 255))
+   AddTab(@MyThis, "код проекта (с иконкой)", 2, RGB(210, 245, 225))
+   AddTab(@MyThis, "без иконки", 0, RGB(255, 220, 230))
    ; добавляем вкладки, передавая ID окна и начальную высоту холста
-   AddTab(@MyThis, "вкладка 1", 0, 40)
-   ;AddTab(@MyThis, "вкладка с длинным текстом 2", 0, 40)
-   AddTab(@MyThis, "опции 3", 0, 40)
-   AddTab(@MyThis, "система 4", 0, 40)
-   AddTab(@MyThis, "логи работы 5", 0, 40)
+   AddTab(@MyThis, "вкладка 1")
+   ;AddTab(@MyThis, "вкладка с длинным текстом 2")
+   AddTab(@MyThis, "опции 3")
+   AddTab(@MyThis, "система 4")
+   AddTab(@MyThis, "логи работы 5")
    ;   
    ; настраиваем начальные размеры всего интерфейса
-   DoTabResize(@MyThis, 0)
+   DoResize(@MyThis, 0)
    
    ; наполним первый и второй контейнер чем-нибудь для теста
    ; для этого временно переключаемся на нужный контейнер через opengadgetlist
@@ -768,17 +769,20 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    CheckBoxGadget(#PB_Any, 20, 20, 200, 20, "галочка на второй вкладке")
    CloseGadgetList()
    
+   Define event.i, mx.i, my.i, needRedraw.b
    Repeat
       event = WaitWindowEvent()
       Select event
          Case #PB_Event_Gadget
             If EventGadget() = MyThis\canvasID
-               DoTabEvents(@MyThis)
+               mx = GetGadgetAttribute(MyThis\canvasID, #PB_Canvas_MouseX)
+               my = GetGadgetAttribute(MyThis\canvasID, #PB_Canvas_MouseY)
+               DoEvent(@MyThis, EventType(), mx,my)
             EndIf
             
          Case #PB_Event_SizeWindow
             ; вызываем единую процедуру ресайза для холста и дочерних контейнеров
-            DoTabResize(@MyThis, 0)
+            DoResize(@MyThis, 0)
             
          Case #PB_Event_CloseWindow
             End
@@ -786,8 +790,8 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    ForEver
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 713
-; FirstLine = 691
+; CursorPosition = 473
+; FirstLine = 452
 ; Folding = -----------------
 ; EnableXP
 ; DPIAware
