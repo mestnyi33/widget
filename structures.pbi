@@ -34,7 +34,19 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Enter.i
          Leave.i
       EndStructure
-      ;--     D&D
+      ;--     COLOR
+      Structure _s_COLOR
+         front.l[4]
+         fore.l[4]
+         back.l[4]
+         Frame.l[4]
+         state.b ; default=0; entered=1; selected=2; disabled=3;
+         StructureUnion
+            ialpha.a
+            _alpha.a
+         EndStructureUnion
+      EndStructure
+        ;--     D&D
       Structure _s_DROP
          enter.b
          finish.b
@@ -69,6 +81,25 @@ CompilerIf Not Defined(Structures, #PB_Module)
          X.l
          Y.l
       EndStructure
+      ;--     ARROW
+      Structure _s_ARROW
+         size.a
+         type.b
+         direction.b
+      EndStructure
+      ;--     BOX
+      Structure _s_BOX Extends _s_COORDINATE
+         round.a
+         size.w ; ----
+         mask.q
+         checked.b
+      EndStructure
+      ;--     BUTTONS
+      Structure _s_BTN Extends _s_BOX
+         color._s_color
+         arrow._s_arrow
+         type.l       
+      EndStructure
       ;--     KEYBOARD
       Structure _s_KEYBOARD  ; Ok
          *window._S_WIDGET   ; active window element ; FocusedWindow( )\
@@ -81,18 +112,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          input.c
          key.l[2]
       EndStructure
-      ;--     COLOR
-      Structure _s_COLOR
-         front.l[4]
-         fore.l[4]
-         back.l[4]
-         Frame.l[4]
-         state.b ; default=0; entered=1; selected=2; disabled=3;
-         StructureUnion
-            ialpha.a
-            _alpha.a
-         EndStructureUnion
-      EndStructure
       ;--     ALIGN
       Structure _s_ALIGN Extends _s_COORDINATE
          autodock._s_COORDINATE
@@ -101,24 +120,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          top.b
          right.b
          bottom.b
-      EndStructure
-      ;--     BOX
-      Structure _s_BOX Extends _s_COORDINATE
-         mask.q
-         checked.b
-         round.a
-      EndStructure
-      ;--     ARROW
-      Structure _s_ARROW
-         size.a
-         Type.b
-         direction.b
-      EndStructure
-      ;--     BUTTONS
-      Structure _s_BUTTONS Extends _s_BOX
-         color._s_color
-         arrow._s_arrow
-         size.w
       EndStructure
       ;--     CARET
       Structure _s_CARET Extends _s_COORDINATE
@@ -155,6 +156,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          change.b
          Image.i
       EndStructure
+      
       Structure _s_TEXTINFO Extends _s_COORDINATE
          pos.i
          len.i
@@ -237,7 +239,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *selector._s_SELECTOR        ; mouse select frame
          
          *item._s_ITEMS[3]
-         *button._s_BUTTONS[3]  
+         *btn._s_BTN[2]  
          *widget._s_WIDGET[3]    
          ; widget[0] = Leaved( ) - Returns mouse leaved widget
          ; widget[1] = Entered( ) - Returns mouse entered widget
@@ -250,16 +252,21 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Hide.b
       EndStructure
       
-      ;--     CAPTION
-      Structure _s_caption Extends _s_COORDINATE
-         Button._s_buttons[5]
-         color._s_color
+      ;--     TITLE
+      Structure _s_TITLEBAR
+         indent.a
+         spacing.a 
+         btn._s_BTN[3]
+         ;List btn._s_BTN()
+      EndStructure
+      Structure _s_TITLE Extends _s_BOX
+         indent.a
+         spacing.a 
+         slant.a
          
-         interact.b
-         Hide.b
-         round.b
-         _padding.b
-         mask.q
+         txt._s_TXT
+         img._s_IMG
+         bar._s_TITLEBAR
       EndStructure
       
       ;--     COLUMN
@@ -495,7 +502,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          area._s_page
          thumb._s_page
          
-         *button._s_buttons[3]
+         *button._s_BTN[3]
       EndStructure
       Structure _s_BAR_WIDGET Extends _s_COORDINATE
          mask.q
@@ -646,7 +653,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
          color._s_COLOR
          padding._s_POINT
-         caption._s_caption
+         title._s_TITLE
          picture._s_PICTURE[4]
          ; \image[0] - draw image
          ; \image[1] - released image
@@ -670,7 +677,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *align._s_ALIGN
          *anchors._s_ANCHORS
          *togglebox._s_BOX        ; checkbox; optionbox, ToggleButton
-         *combobutton._s_BUTTONS  ; combobox button
+         *combobutton._s_BTN  ; combobox button
          
          
          *tabbar._s_WIDGET
@@ -806,8 +813,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 265
-; FirstLine = 249
-; Folding = ------+-----
+; CursorPosition = 92
+; FirstLine = 89
+; Folding = --ZAy-0-----
 ; Optimizer
 ; EnableXP

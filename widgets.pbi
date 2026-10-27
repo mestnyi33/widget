@@ -103,7 +103,7 @@ Module widgets
       Else ; horizontal center
          _this_\scroll_x( ) = ( _this_\inner_width( ) - _size_ ) / 2
       EndIf
-      If _this_\scroll And _this_\scroll\h And Not _this_\scroll\h\mask & #__mask_hidden
+      If _this_\scroll And _this_\scroll\h And Not _this_\scroll\h\mask & #__MASK_Hidden
          If _this_\scroll\h\bar\page\pos <> - _this_\scroll_x( )
             bar_PageChange( _this_\scroll\h, - _this_\scroll_x( ))
          EndIf
@@ -123,7 +123,7 @@ Module widgets
       Else ; vertical center
          _this_\scroll_y( ) = ( _this_\inner_height( ) - _size_ ) / 2
       EndIf
-      If _this_\scroll And _this_\scroll\v And Not _this_\scroll\v\mask & #__mask_hidden
+      If _this_\scroll And _this_\scroll\v And Not _this_\scroll\v\mask & #__MASK_Hidden
          If _this_\scroll\v\bar\page\pos <> - _this_\scroll_y( )
             bar_PageChange( _this_\scroll\v, - _this_\scroll_y( ))
          EndIf
@@ -640,8 +640,8 @@ Module widgets
          
          If *this\screen_width( ) = 0 And 
             *this\screen_height( ) = 0
-            \v\mask | #__mask_hidden 
-            \h\mask | #__mask_hidden 
+            \v\mask | #__MASK_Hidden 
+            \h\mask | #__MASK_Hidden 
             ProcedureReturn 0
          EndIf
          
@@ -655,7 +655,7 @@ Module widgets
          \v\bar\page\len = Height - ( Bool( w Or \h\bar\max > \h\bar\page\len ) * \h\frame_height( ))
          \h\bar\page\len = Width - ( Bool( h Or \v\bar\max > \v\bar\page\len ) * \v\frame_width( ))
          
-         iheight = Height - ( Bool( Not \h\mask & #__mask_hide And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( )) 
+         iheight = Height - ( Bool( Not \h\mask & #__MASK_Hide And (w Or \h\bar\max > \h\bar\page\len) ) * \h\frame_height( )) 
          If \v\bar\page\len <> iheight
             \v\bar\page\len = iheight
             If Not \v\bar\max
@@ -670,7 +670,7 @@ Module widgets
             ;                EndIf
          EndIf
          
-         iwidth = Width - ( Bool( Not \v\mask & #__mask_hide And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( )) 
+         iwidth = Width - ( Bool( Not \v\mask & #__MASK_Hide And (h Or \v\bar\max > \v\bar\page\len) ) * \v\frame_width( )) 
          If \h\bar\page\len <> iwidth
             \h\bar\page\len = iwidth
             If Not \h\bar\max
@@ -697,11 +697,11 @@ Module widgets
          EndIf
          
          ;             
-         If Not \v\mask & #__mask_hide
+         If Not \v\mask & #__MASK_Hide
             If \v\bar\max > \v\bar\page\len
-               Height = ( \v\bar\page\len + Bool( Not \h\mask & #__mask_hide And \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
+               Height = ( \v\bar\page\len + Bool( Not \h\mask & #__MASK_Hide And \h\bar\max > \h\bar\page\len And \v\round And \h\round ) * ( \h\height / 4 ) )
                If \v\frame_height( ) <> Height
-                  ;\v\mask & #__mask_hidden = \v\mask & #__mask_hide
+                  ;\v\mask & #__MASK_Hidden = \v\mask & #__MASK_Hide
                   resize_v = 1
                EndIf
                
@@ -716,7 +716,7 @@ Module widgets
                   EndIf
                EndIf
                
-               If resize_v ; And Not \v\mask & #__mask_hidden
+               If resize_v ; And Not \v\mask & #__MASK_Hidden
                   If test_resize_area
                      Debug "         v "+\v\frame_x( ) +" "+ x1 ; \v\frame_y( ) +" "+ Str(*this\frame_y( ) + Y)
                   EndIf
@@ -726,8 +726,8 @@ Module widgets
                EndIf
                
             Else
-               If Not \v\mask & #__mask_hidden
-                  \v\mask | #__mask_hidden
+               If Not \v\mask & #__MASK_Hidden
+                  \v\mask | #__MASK_Hidden
                   ;// reset page pos then hide scrollbar
                   If \v\bar\page\pos > \v\bar\min
                      bar_PageChange( \v, \v\bar\min, #False )
@@ -735,7 +735,7 @@ Module widgets
                EndIf
             EndIf
             ;             Else
-            ;                If \v\mask & #__mask_hidden
+            ;                If \v\mask & #__MASK_Hidden
             ;                   If \v\frame_height( ) <> *this\container_height( )
             ;                      Resize( \v, #PB_Ignore, #PB_Ignore, #PB_Ignore, *this\container_height( ))
             ;                   EndIf
@@ -743,11 +743,11 @@ Module widgets
          EndIf
          
          ;
-         If Not \h\mask & #__mask_hide
+         If Not \h\mask & #__MASK_Hide
             If \h\bar\max > \h\bar\page\len
-               Width = ( \h\bar\page\len + Bool( Not \v\mask & #__mask_hide And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\frame_width( ) / 4 ))
+               Width = ( \h\bar\page\len + Bool( Not \v\mask & #__MASK_Hide And \v\bar\max > \v\bar\page\len And \v\round And \h\round ) * ( \v\frame_width( ) / 4 ))
                If \h\frame_width( ) <> Width
-                  ;\h\mask & #__mask_hidden = \h\mask & #__mask_hide
+                  ;\h\mask & #__MASK_Hidden = \h\mask & #__MASK_Hide
                   resize_h    = 1
                EndIf
                
@@ -761,7 +761,7 @@ Module widgets
                   EndIf
                EndIf
                
-               If resize_h ;And Not \h\mask & #__mask_hidden
+               If resize_h ;And Not \h\mask & #__MASK_Hidden
                   If test_resize_area
                      Debug "         h "+\h\frame_y( ) +" "+ y1
                   EndIf
@@ -770,8 +770,8 @@ Module widgets
                   bar_update( \h, 100 )
                EndIf
             Else
-               If Not \h\mask & #__mask_hidden
-                  \h\mask | #__mask_hidden
+               If Not \h\mask & #__MASK_Hidden
+                  \h\mask | #__MASK_Hidden
                   ;// reset page pos then hide scrollbar
                   If \h\bar\page\pos > \h\bar\min
                      bar_PageChange( \h, \h\bar\min, #False )
@@ -779,7 +779,7 @@ Module widgets
                EndIf
             EndIf
             ;             Else
-            ;                If \h\mask & #__mask_hidden
+            ;                If \h\mask & #__MASK_Hidden
             ;                   If \h\frame_width( ) <> *this\container_width( )
             ;                      Resize( \h, #PB_Ignore, #PB_Ignore, *this\container_width( ), #PB_Ignore)
             ;                   EndIf
@@ -830,33 +830,33 @@ Module widgets
    Macro set_state_list_( _address_, _state_ )
       If _state_ > 0
          If *this\flagmask & #__FLAG_RowClickSelect
-            If Not _address_\mask & #__mask_hover
-               _address_\mask | #__mask_hover
+            If Not _address_\mask & #__MASK_Hover
+               _address_\mask | #__MASK_Hover
             EndIf
          Else
-            If _address_\mask & #__mask_press = #False
-               _address_\mask | #__mask_press
+            If _address_\mask & #__MASK_Press = #False
+               _address_\mask | #__MASK_Press
             EndIf
          EndIf
          
-         If _address_\mask & #__mask_press 
+         If _address_\mask & #__MASK_Press 
             _address_\ColorState( ) = #__s_2
-         ElseIf _address_\mask & #__mask_hover
+         ElseIf _address_\mask & #__MASK_Hover
             _address_\ColorState( ) = #__s_1
          EndIf
          
       ElseIf _address_
          If Not *this\flagmask & #__FLAG_RowClickSelect
-            If _address_\mask & #__mask_press
-               _address_\mask &~ #__mask_press
+            If _address_\mask & #__MASK_Press
+               _address_\mask &~ #__MASK_Press
             EndIf
          EndIf
          
-         If _address_\mask & #__mask_hover
-            _address_\mask &~ #__mask_hover
+         If _address_\mask & #__MASK_Hover
+            _address_\mask &~ #__MASK_Hover
          EndIf
          
-         If _address_\mask & #__mask_press = #False
+         If _address_\mask & #__MASK_Press = #False
             _address_\ColorState( ) = #__s_0
          EndIf
       EndIf
@@ -1371,7 +1371,7 @@ Module widgets
    Procedure a_enter( *this._s_WIDGET, *data )
       Protected i, a_index
       
-      If Not (*this And *this\parent And Not *this\parent\mask & #__mask_hidden);
+      If Not (*this And *this\parent And Not *this\parent\mask & #__MASK_Hidden);
          ProcedureReturn 0
       EndIf
       
@@ -1418,14 +1418,14 @@ Module widgets
             ;
             a_index( ) = 0
             ;
-            If *this\mask & #__mask_hover_a
+            If *this\mask & #__MASK_Hover_a
                If ( is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_frame] ) And
                     is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ))
                   
-                  *this\mask | #__mask_hover
+                  *this\mask | #__MASK_Hover
                   DoEvents( *this, #__EVENT_MouseEnter, #PB_All, @"[?+a_enter]" )
                Else
-                  *this\mask &~ #__mask_hover
+                  *this\mask &~ #__MASK_Hover
                EndIf   
             EndIf
          EndIf
@@ -1440,8 +1440,8 @@ Module widgets
                repaint_set( a_entered( ) )
             EndIf
             
-            If a_entered( )\mask & #__mask_hover_a
-               a_entered( )\mask &~ #__mask_hover
+            If a_entered( )\mask & #__MASK_Hover_a
+               a_entered( )\mask &~ #__MASK_Hover
             EndIf
             
             If a_entered( )\anchors\group\show
@@ -1484,14 +1484,14 @@ Module widgets
             If a_index( ) <> a_index
                a_index( ) = a_index
                ;
-               If *this\mask & #__mask_hover
+               If *this\mask & #__MASK_Hover
                   If *this = Entered( )
                      DoEvents( *this, #__EVENT_MouseLeave, #PB_All, @"[?-a_leave]"  )
                   EndIf
                EndIf   
                ;
                ChangeCursor( *this, a_anchors( )\cursor[a_index] )
-               *this\mask | #__mask_hover_a
+               *this\mask | #__MASK_Hover_a
                repaint_set( *this )
             EndIf
          EndIf
@@ -1621,8 +1621,8 @@ Module widgets
                   a_focused( ) = *this
                   ;
                   If *deactive
-                     If *deactive\mask & #__mask_active
-                        *deactive\mask &~ #__mask_active
+                     If *deactive\mask & #__MASK_Active
+                        *deactive\mask &~ #__MASK_Active
                         If *deactive\anchors\group\show
                            a_group_show( *deactive, #__EVENT_LostFocus )
                         EndIf
@@ -1630,8 +1630,8 @@ Module widgets
                      EndIf
                   EndIf
                   ;
-                  If *this\mask & #__mask_active = 0
-                     *this\mask | #__mask_active
+                  If *this\mask & #__MASK_Active = 0
+                     *this\mask | #__MASK_Active
                      If *this\anchors\group\show
                         a_group_show( *this, #__EVENT_Focus )
                      EndIf
@@ -1654,8 +1654,8 @@ Module widgets
                a_focused( ) = #Null
                a_entered( ) = #Null
                ;
-               If *this\mask & #__mask_active 
-                  *this\mask &~ #__mask_active
+               If *this\mask & #__MASK_Active 
+                  *this\mask &~ #__MASK_Active
                   If *this\anchors\group\show
                      a_group_show( *this, #__EVENT_LostFocus )
                   EndIf
@@ -1867,7 +1867,7 @@ Module widgets
                If Not a_anchors( )\group\show
                   If mouse( )\selector
                      If StartNext( *e, *this )
-                        If *e\anchors And Not *e\mask & #__mask_hidden 
+                        If *e\anchors And Not *e\mask & #__MASK_Hidden 
                            If *e\anchors\group\show = #False
                               If *e\level = *this\level + 1
                                  If is_intersect_( *e, mouse( )\selector, [#__c_frame] )
@@ -1973,7 +1973,7 @@ Module widgets
       ;
       If event = #__EVENT_MouseMove
          If a_index( ) And 
-            *this\mask & #__mask_press And 
+            *this\mask & #__MASK_Press And 
             *this\anchors\id[a_index( )] And 
             *this\anchors\state = #__s_2
             ;
@@ -2165,7 +2165,7 @@ Module widgets
          Protected indent = *this\padding\x
          Protected separator_step 
          Protected._s_BAR *bar = *this\bar
-         Protected._s_BUTTONS *BB1, *BB2, *SB
+         Protected._s_BTN *BB1, *BB2, *SB
          Protected._s_TAB *tab
          ;
          *SB  = *bar\button
@@ -2183,7 +2183,7 @@ Module widgets
          Protected layout = pos * 2
          Protected childrens.b, qqq = DPIScaled(40)
          ;
-         If Not *this\mask & #__mask_hidden 
+         If Not *this\mask & #__MASK_Hidden 
             If (*this\ResizeChange( ) Or *this\TabChange( ))
                *bar\max = 0
                *this\scroll_width( ) = 0
@@ -2199,7 +2199,7 @@ Module widgets
                      
                      ForEach *this\__tabs( ) : *tab = @*this\__tabs( )
                         
-                        If *tab\mask & #__mask_hidden
+                        If *tab\mask & #__MASK_Hidden
                            Continue
                         Else
                            draw_font( *tab, *tab\txt, GetFontID( *this ), *tab\txt\change)
@@ -2237,7 +2237,7 @@ Module widgets
                ;
                ForEach *this\__tabs( ) : *tab = @*this\__tabs( )
                   
-                  If *tab\mask & #__mask_hidden
+                  If *tab\mask & #__MASK_Hidden
                      Continue
                   Else
                      draw_font( *tab, *tab\txt, GetFontID( *this ), *tab\txt\change)
@@ -2407,7 +2407,7 @@ Module widgets
                ;                         EndIf
                
                *this\TabChange( ) = #False
-               *this\mask &~ #__mask_resize
+               *this\mask &~ #__MASK_Resize
             EndIf
             
             ;
@@ -2458,7 +2458,7 @@ Module widgets
       EndIf
       
       ;\\ draw disable state
-      If _address_\mask & #__mask_disabled
+      If _address_\mask & #__MASK_Disabled
          ; Debug "disable item"
          draw_mode_alpha_( #PB_2DDrawing_Default )
          draw_box_(  _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _address_\color\back);$AAE4E4E4 )
@@ -2467,7 +2467,7 @@ Module widgets
    
    Procedure bar_draw_tabitems( *this._s_WIDGET, vertical, X,Y, round )
       Protected._s_BAR *bar = *this\bar
-      Protected._s_BUTTONS *BB1, *BB2, *SB
+      Protected._s_BTN *BB1, *BB2, *SB
       Protected._s_TAB *tab, *activeTAB, *enteredTAB
       
       *SB  = *bar\button
@@ -2486,8 +2486,8 @@ Module widgets
       ForEach *this\__tabs( ) : *tab = @*this\__tabs( )
          Protected tab_index = ListIndex( *this\__tabs( ) )
          
-         If *tab\mask & #__mask_hidden 
-            *tab\mask &~ #__mask_visible
+         If *tab\mask & #__MASK_Hidden 
+            *tab\mask &~ #__MASK_Visible
             Continue
          EndIf
          ;
@@ -2495,14 +2495,14 @@ Module widgets
          
          ; real visible items
          If vertical
-            *tab\mask = ( *tab\mask & ~#__mask_visible ) | ( Bool( ( Y + *tab\y + *tab\height ) > *this\inner_y( ) And ( Y + *tab\y ) < ( *this\inner_y( ) + *this\inner_height( ) ) ) * #__mask_visible )
+            *tab\mask = ( *tab\mask & ~#__MASK_Visible ) | ( Bool( ( Y + *tab\y + *tab\height ) > *this\inner_y( ) And ( Y + *tab\y ) < ( *this\inner_y( ) + *this\inner_height( ) ) ) * #__MASK_Visible )
          Else
-            *tab\mask = ( *tab\mask & ~#__mask_visible ) | ( Bool( ( X + *tab\x + *tab\width ) > *this\inner_x( ) And ( X + *tab\x ) < ( *this\inner_x( ) + *this\inner_width( ) ) ) * #__mask_visible )
+            *tab\mask = ( *tab\mask & ~#__MASK_Visible ) | ( Bool( ( X + *tab\x + *tab\width ) > *this\inner_x( ) And ( X + *tab\x ) < ( *this\inner_x( ) + *this\inner_width( ) ) ) * #__MASK_Visible )
          EndIf
          ;
          ; Draw separator
          ;no &~ entered &~ focused
-         If *tab\mask & #__mask_visible 
+         If *tab\mask & #__MASK_Visible 
             If *tab\tindex = #PB_Ignore
                draw_roundbox_( X + *tab\x, Y + *tab\y, *tab\width, *tab\height, 0, 0, *tab\color\frame[0] & $FFFFFF | *tab\AlphaState24( ) )
             Else
@@ -2526,15 +2526,15 @@ Module widgets
                   bar_draw_item_( *this\bar\vertical, *tab, *tab\txt, X, Y, 2, round )
                Else
                   If *tab <> *EnteredTAB
-                     ; And Not (*tab <> *this\TabSelected( ) And *tab\mask & #__mask_active) 
+                     ; And Not (*tab <> *this\TabSelected( ) And *tab\mask & #__MASK_Active) 
                      
                      ; Debug *this\parent\class
                      ;                     ;
-                     ;Debug ""+*BB1\mask & #__mask_hidden +" "+ Str( *BB1\x ) +" "+ Str( x + *tab\x ) +" - "+ *SB\width
-                     ;Debug ""+*BB2\mask & #__mask_hidden +" "+ Str( *BB2\x ) +" "+ Str( x + *tab\x )
+                     ;Debug ""+*BB1\mask & #__MASK_Hidden +" "+ Str( *BB1\x ) +" "+ Str( x + *tab\x ) +" - "+ *SB\width
+                     ;Debug ""+*BB2\mask & #__MASK_Hidden +" "+ Str( *BB2\x ) +" "+ Str( x + *tab\x )
                      ;                         
-                     ;                         If (( *BB2\x + *BB2\width < x + *tab\x ) Or ( *BB2\mask & #__mask_hidden And *BB2\x + *BB2\width > x + *tab\x )) Or
-                     ;                            (( *BB1\x > x + *tab\x + *tab\width ) Or ( *BB1\mask & #__mask_hidden And *BB1\x < x + *tab\x + *tab\width )) 
+                     ;                         If (( *BB2\x + *BB2\width < x + *tab\x ) Or ( *BB2\mask & #__MASK_Hidden And *BB2\x + *BB2\width > x + *tab\x )) Or
+                     ;                            (( *BB1\x > x + *tab\x + *tab\width ) Or ( *BB1\mask & #__MASK_Hidden And *BB1\x < x + *tab\x + *tab\width )) 
                      bar_draw_item_( *this\bar\vertical, *tab, *tab\txt, X, Y, 0, round, Bool( Not( is_bar_( *this ) And Not constants::BinaryFlag( *this\flagmask, #__BAR_Buttons ))) )
                      ;                         EndIf
                   EndIf
@@ -2548,9 +2548,9 @@ Module widgets
       ;
       ; draw mouse-enter visible item
       If *EnteredTAB
-         If *EnteredTAB\mask & #__mask_active = 0 And
+         If *EnteredTAB\mask & #__MASK_Active = 0 And
             *EnteredTAB\checked = 0 And
-            *EnteredTAB\mask & #__mask_visible 
+            *EnteredTAB\mask & #__MASK_Visible 
             ;
             If *EnteredTAB\tindex <> #PB_Ignore
                draw_font( *EnteredTAB, *enteredtab\txt, GetFontID( *this ), *Enteredtab\txt\change)
@@ -2562,15 +2562,15 @@ Module widgets
       ;
       ; draw key-focus visible item
       If *activeTAB And
-         *activeTAB\mask & #__mask_active And 
-         *activeTAB\mask & #__mask_visible
+         *activeTAB\mask & #__MASK_Active And 
+         *activeTAB\mask & #__MASK_Visible
          ;   
          If *activeTAB\tindex <> #PB_Ignore
             draw_font( *activeTAB, *activetab\txt, GetFontID( *this ), *activetab\txt\change)
             ;
             If is_integral_( *this )
                ;                   If *this\parent
-               ;                      If Not *activeTAB\mask & #__mask_press
+               ;                      If Not *activeTAB\mask & #__MASK_Press
                ;                         draw_mode_alpha_( #PB_2DDrawing_Default )
                ;                         draw_roundbox_( X + *activeTAB\x,
                ;                                         Y + *activeTAB\y,
@@ -2595,7 +2595,7 @@ Module widgets
             If *this\parent
                Protected color = *this\parent\color\frame
                Protected color2 = *this\parent\color\frame
-               If *this\parent\mask & #__mask_active 
+               If *this\parent\mask & #__MASK_Active 
                   color2 = *this\parent\color\frame[2] 
                EndIf
                color2 = $ff0000ff & $FFFFFF | *tab\AlphaState24( )
@@ -2657,7 +2657,7 @@ Module widgets
       With *this
          Protected._s_TAB *activeTAB = *this\parentTabSelected( )
          Protected._s_BAR *bar = *this\bar
-         Protected._s_BUTTONS *BB1, *BB2, *SB
+         Protected._s_BTN *BB1, *BB2, *SB
          If Not *bar
             ProcedureReturn 0
          EndIf
@@ -2672,7 +2672,7 @@ Module widgets
          EndIf               
          
          ;\\
-         If Not *this\mask & #__mask_hidden And *this\AlphaState( )
+         If Not *this\mask & #__MASK_Hidden And *this\AlphaState( )
             If is_integral_( *this )
                If ChangeFontID( *this, CurrentFontID( ))
                EndIf
@@ -2739,28 +2739,28 @@ Module widgets
                ;
                If *bar\vertical
                   ; to top
-                  If Not *BB2\mask & #__mask_hidden
+                  If Not *BB2\mask & #__MASK_Hidden
                      fabe_pos = *this\frame_y( ) + ( fabe_len ) - pf
                      LinearGradient( *this\frame_x( ) - pf, fabe_pos, *this\frame_x( ) - pf, fabe_pos - fabe_out )
                      draw_roundbox_( *this\frame_x( ) - pf, fabe_pos, size2, - fabe_len, round, round )
                   EndIf
                   
                   ; to bottom
-                  If Not *BB1\mask & #__mask_hidden
+                  If Not *BB1\mask & #__MASK_Hidden
                      fabe_pos = *this\frame_y( ) + *this\frame_height( ) - ( fabe_len ) + pf
                      LinearGradient( *this\frame_x( ) - pf, fabe_pos, *this\frame_x( ) - pf, fabe_pos + fabe_out )
                      draw_roundbox_( *this\frame_x( ) - pf, fabe_pos, size2, fabe_len, round, round )
                   EndIf
                Else
                   ; to left
-                  If Not *BB2\mask & #__mask_hidden
+                  If Not *BB2\mask & #__MASK_Hidden
                      fabe_pos = *this\frame_x( ) + ( fabe_len ) - pf
                      LinearGradient( fabe_pos, *this\frame_y( ) - pf, fabe_pos - fabe_out, *this\frame_y( ) - pf )
                      draw_roundbox_( fabe_pos, *this\frame_y( ) - pf, - fabe_len, size2, round, round )
                   EndIf
                   
                   ; to right
-                  If Not *BB1\mask & #__mask_hidden
+                  If Not *BB1\mask & #__MASK_Hidden
                      fabe_pos = *this\frame_x( ) + *this\frame_width( ) - ( fabe_len ) + pf
                      LinearGradient( fabe_pos, *this\frame_y( ) - pf, fabe_pos + fabe_out, *this\frame_y( ) - pf )
                      draw_roundbox_( fabe_pos, *this\frame_y( ) - pf, fabe_len, size2, round, round )
@@ -2785,7 +2785,7 @@ Module widgets
    
    Procedure.b bar_draw_scroll( *this._s_WIDGET )
       Protected *bar._s_BAR = *this\bar
-      Protected._s_BUTTONS *BB1, *BB2, *SB
+      Protected._s_BTN *BB1, *BB2, *SB
       *SB  = *bar\button
       *BB1 = *bar\button[1]
       *BB2 = *bar\button[2]
@@ -3065,7 +3065,7 @@ Module widgets
    Procedure.i bar_draw_spin( *this._s_WIDGET )
       Protected state = *this\ColorState( )
       Protected *bar._s_BAR = *this\bar
-      Protected._s_BUTTONS *BB1, *BB2
+      Protected._s_BTN *BB1, *BB2
       *BB1 = *bar\button[1]
       *BB2 = *bar\button[2]
       
@@ -3122,7 +3122,7 @@ Module widgets
    Procedure.b bar_draw_track( *this._s_WIDGET )
       Protected i, X, Y, size = DPIScaled(7)
       Protected *bar._s_BAR = *this\bar
-      Protected._s_BUTTONS *BB1, *BB2, *SB
+      Protected._s_BTN *BB1, *BB2, *SB
       *SB  = *bar\button
       *BB1 = *bar\button[1]
       *BB2 = *bar\button[2]
@@ -3189,7 +3189,7 @@ Module widgets
       Protected min_circle = DPIScaled(20)
       Protected max_circle = DPIScaled(35)
       Protected._s_BAR *bar = *this\bar
-      Protected._s_BUTTONS *SB1, *SB2, *SB
+      Protected._s_BTN *SB1, *SB2, *SB
       
       *SB  = *bar\button
       *SB1 = *bar\button[1]
@@ -3202,16 +3202,16 @@ Module widgets
          draw_box_( *SB\x, *SB\y, *SB\width, *SB\height, *this\color\back[*SB\ColorState( )] & $ffffff | 210 << 24 )
          
          ; draw the first\second background
-         If Not *SB1\mask & #__mask_hidden : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
-         If Not *SB2\mask & #__mask_hidden : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
+         If Not *SB1\mask & #__MASK_Hidden : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
+         If Not *SB2\mask & #__MASK_Hidden : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
       EndIf
       
       __draw_mode( #PB_2DDrawing_Outlined )
       
       If Not *this\flagmask & #__FLAG_Transparent
          ; draw the frame
-         If Not *SB1\mask & #__mask_hidden : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
-         If Not *SB2\mask & #__mask_hidden : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
+         If Not *SB1\mask & #__MASK_Hidden : draw_box_( *SB1\x, *SB1\y, *SB1\width, *SB1\height, *this\color\frame[*SB1\ColorState( )] ) : EndIf
+         If Not *SB2\mask & #__MASK_Hidden : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
       EndIf
       
       ;
@@ -3255,7 +3255,7 @@ Module widgets
    EndMacro
    
    ;-
-   Procedure.b bar_update_scroll( *this._s_WIDGET, *bar._s_BAR, *SB._s_BUTTONS, *BB1._s_BUTTONS, *BB2._s_BUTTONS )
+   Procedure.b bar_update_scroll( *this._s_WIDGET, *bar._s_BAR, *SB._s_BTN, *BB1._s_BTN, *BB2._s_BTN )
       Protected ThumbPos.i
       ;          
       If is_integral_( *this ) And (Not *bar\max )
@@ -3331,16 +3331,16 @@ Module widgets
          
          ;
          If *bar\page\len
-            If Not *this\mask & #__mask_hide ; And is_integral_( *this )
-               If Bool(*this\mask & #__mask_hidden) <> Bool( *bar\page\len >= *bar\max  )
+            If Not *this\mask & #__MASK_Hide ; And is_integral_( *this )
+               If Bool(*this\mask & #__MASK_Hidden) <> Bool( *bar\page\len >= *bar\max  )
                   ; Применяем новое состояние к маске
                   If Bool( *bar\page\len >= *bar\max )
-                     *this\mask | #__mask_hidden
+                     *this\mask | #__MASK_Hidden
                   Else
-                     *this\mask & ~#__mask_hidden
+                     *this\mask & ~#__MASK_Hidden
                   EndIf
                   ;
-                  If *this\mask & #__mask_hidden
+                  If *this\mask & #__MASK_Hidden
                      If *bar\page\pos <> *bar\min
                         Debug " ["+ *this\class +"] scroll-hide "+ *bar\page\pos
                         *bar\page\pos = *bar\min
@@ -3353,12 +3353,12 @@ Module widgets
          ; hide state
          If is_integral_( *this )
             If *bar\max > *bar\page\len
-               If Not *this\mask & #__mask_hide
-                  *this\mask &~ #__mask_hidden 
+               If Not *this\mask & #__MASK_Hide
+                  *this\mask &~ #__MASK_Hidden 
                EndIf
             Else
-               If Not *this\mask & #__mask_hidden
-                  *this\mask | #__mask_hidden
+               If Not *this\mask & #__MASK_Hidden
+                  *this\mask | #__MASK_Hidden
                   ; 
                   *bar\page\pos = 0
                EndIf
@@ -3392,7 +3392,7 @@ Module widgets
       EndIf
       
       
-      ;          If *this\mask & #__mask_hidden
+      ;          If *this\mask & #__MASK_Hidden
       ;             Debug "["+ *this\class +"] "+;mode +" >< "+;*bar\PageChange( ) +" >< "+
       ;                   *bar\percent +" >< "+
       ;                   *bar\min +" "+
@@ -3411,14 +3411,14 @@ Module widgets
       ;
       ;\\ disable/enable buttons(left&top)-tab(right&bottom)
       If bar_in_start_( *bar )
-         If *BB1\mask & #__mask_disabled = #False
-            *BB1\mask | #__mask_disabled
+         If *BB1\mask & #__MASK_Disabled = #False
+            *BB1\mask | #__MASK_Disabled
             ;
             *BB1\ColorState( ) = #__s_3
          EndIf
       Else
-         If *BB1\mask & #__mask_disabled
-            *BB1\mask &~ #__mask_disabled
+         If *BB1\mask & #__MASK_Disabled
+            *BB1\mask &~ #__MASK_Disabled
             ;
             *BB1\ColorState( ) = #__s_0
          EndIf
@@ -3426,14 +3426,14 @@ Module widgets
       ;
       ;\\ disable/enable buttons(right&bottom)-tab(left&top)
       If bar_in_stop_( *bar )
-         If *BB2\mask & #__mask_disabled = #False
-            *BB2\mask | #__mask_disabled
+         If *BB2\mask & #__MASK_Disabled = #False
+            *BB2\mask | #__MASK_Disabled
             ;
             *BB2\ColorState( ) = #__s_3
          EndIf
       Else
-         If *BB2\mask & #__mask_disabled
-            *BB2\mask &~ #__mask_disabled
+         If *BB2\mask & #__MASK_Disabled
+            *BB2\mask &~ #__MASK_Disabled
             ;
             *BB2\ColorState( ) = #__s_0
          EndIf
@@ -3444,14 +3444,14 @@ Module widgets
          If *BB1\ColorState( ) = #__s_3 And
             *BB2\ColorState( ) = #__s_3
             
-            If *SB\mask & #__mask_disabled = #False
-               *SB\mask | #__mask_disabled
+            If *SB\mask & #__MASK_Disabled = #False
+               *SB\mask | #__MASK_Disabled
                
                *SB\ColorState( ) = #__s_3
             EndIf
          Else
-            If *SB\mask & #__mask_disabled
-               *SB\mask &~ #__mask_disabled
+            If *SB\mask & #__MASK_Disabled
+               *SB\mask &~ #__MASK_Disabled
                
                *SB\ColorState( ) = #__s_0
             EndIf
@@ -3642,7 +3642,7 @@ Module widgets
       EndIf
    EndProcedure
    
-   Procedure.b bar_update_splitter( *this._s_WIDGET, *bar._s_BAR, *SB._s_BUTTONS, *BB1._s_BUTTONS, *BB2._s_BUTTONS )
+   Procedure.b bar_update_splitter( *this._s_WIDGET, *bar._s_BAR, *SB._s_BTN, *BB1._s_BTN, *BB2._s_BTN )
       Protected fixed.l, ThumbPos.i
       ;
       ;\\
@@ -3705,7 +3705,7 @@ Module widgets
          EndIf
          
          ;\\ 
-         If Not *this\mask & #__mask_press 
+         If Not *this\mask & #__MASK_Press 
             ThumbPos = bar_thumb_pos_( *bar, *bar\page\pos ) 
             ;
             If *bar\invert
@@ -3784,12 +3784,12 @@ Module widgets
          ;\\ disable/enable
          ;\\ buttons(left&top)-tab(right&bottom)
          If bar_in_start_( *bar )
-            If *BB1\mask & #__mask_disabled = #False
-               *BB1\mask | #__mask_disabled
+            If *BB1\mask & #__MASK_Disabled = #False
+               *BB1\mask | #__MASK_Disabled
                
                ;\\
                If *this\cursor[3]
-                  If *this\mask & #__mask_press 
+                  If *this\mask & #__MASK_Press 
                      If GetCursor( ) <> *this\cursor[3] ; SetCursor( *this, *this\cursor[3] )
                         ChangeCursor( *this, *this\cursor[3] )
                      EndIf
@@ -3797,12 +3797,12 @@ Module widgets
                EndIf
             EndIf
          Else
-            If *BB1\mask & #__mask_disabled
-               *BB1\mask &~ #__mask_disabled
+            If *BB1\mask & #__MASK_Disabled
+               *BB1\mask &~ #__MASK_Disabled
                
                ;\\
                If *this\cursor[1]
-                  If *this\mask & #__mask_press 
+                  If *this\mask & #__MASK_Press 
                      If GetCursor( ) <> *this\cursor[1] ; SetCursor( *this, *this\cursor[1] )
                         ChangeCursor( *this, *this\cursor[1] )
                      EndIf
@@ -3813,11 +3813,11 @@ Module widgets
          
          ;\\ buttons(right&bottom)-tab(left&top)
          If bar_in_stop_( *bar )
-            If *BB2\mask & #__mask_disabled = #False
-               *BB2\mask | #__mask_disabled
+            If *BB2\mask & #__MASK_Disabled = #False
+               *BB2\mask | #__MASK_Disabled
                ;
                If *this\cursor[2]
-                  If *this\mask & #__mask_press 
+                  If *this\mask & #__MASK_Press 
                      If GetCursor( ) <> *this\cursor[2] ; SetCursor( *this, *this\cursor[2] )
                         ChangeCursor( *this, *this\cursor[2] )
                      EndIf
@@ -3825,11 +3825,11 @@ Module widgets
                EndIf
             EndIf
          Else
-            If *BB2\mask & #__mask_disabled
-               *BB2\mask &~ #__mask_disabled
+            If *BB2\mask & #__MASK_Disabled
+               *BB2\mask &~ #__MASK_Disabled
                ;
                If *this\cursor[1]
-                  If *this\mask & #__mask_press 
+                  If *this\mask & #__MASK_Press 
                      If GetCursor( ) <> *this\cursor[1] ; SetCursor( *this, *this\cursor[1] )
                         ChangeCursor( *this, *this\cursor[1] )
                      EndIf
@@ -3941,7 +3941,7 @@ Module widgets
       EndIf
    EndProcedure
    
-   Procedure.b bar_update_progress( *this._s_WIDGET, *bar._s_BAR, *SB._s_BUTTONS, *BB1._s_BUTTONS, *BB2._s_BUTTONS )
+   Procedure.b bar_update_progress( *this._s_WIDGET, *bar._s_BAR, *SB._s_BTN, *BB1._s_BTN, *BB2._s_BTN )
       Protected ThumbPos.i
       ;
       ;\\ progress-bar
@@ -4000,23 +4000,23 @@ Module widgets
       
       ;\\ disable/enable buttons(left&top)-tab(right&bottom)
       If bar_in_start_( *bar )
-         If *BB1\mask & #__mask_disabled = #False
-            *BB1\mask | #__mask_disabled
+         If *BB1\mask & #__MASK_Disabled = #False
+            *BB1\mask | #__MASK_Disabled
          EndIf
       Else
-         If *BB1\mask & #__mask_disabled
-            *BB1\mask &~ #__mask_disabled
+         If *BB1\mask & #__MASK_Disabled
+            *BB1\mask &~ #__MASK_Disabled
          EndIf
       EndIf
       
       ;\\ disable/enable buttons(right&bottom)-tab(left&top)
       If bar_in_stop_( *bar )
-         If *BB2\mask & #__mask_disabled = #False
-            *BB2\mask | #__mask_disabled
+         If *BB2\mask & #__MASK_Disabled = #False
+            *BB2\mask | #__MASK_Disabled
          EndIf
       Else
-         If *BB2\mask & #__mask_disabled
-            *BB2\mask &~ #__mask_disabled
+         If *BB2\mask & #__MASK_Disabled
+            *BB2\mask &~ #__MASK_Disabled
          EndIf
       EndIf
       
@@ -4035,7 +4035,7 @@ Module widgets
       EndIf
    EndProcedure
    
-   Procedure.b bar_update_track( *this._s_WIDGET, *bar._s_BAR, *SB._s_BUTTONS, *BB1._s_BUTTONS, *BB2._s_BUTTONS )
+   Procedure.b bar_update_track( *this._s_WIDGET, *bar._s_BAR, *SB._s_BTN, *BB1._s_BTN, *BB2._s_BTN )
       Protected ThumbPos.i
       ;
       ;\\ track-bar
@@ -4090,28 +4090,28 @@ Module widgets
       
       ;\\ disable/enable buttons(left&top)-tab(right&bottom)
       If bar_in_start_( *bar )
-         If *BB1\mask & #__mask_disabled = #False
-            *BB1\mask | #__mask_disabled
+         If *BB1\mask & #__MASK_Disabled = #False
+            *BB1\mask | #__MASK_Disabled
          EndIf
       Else
-         If *BB1\mask & #__mask_disabled
-            *BB1\mask &~ #__mask_disabled
+         If *BB1\mask & #__MASK_Disabled
+            *BB1\mask &~ #__MASK_Disabled
          EndIf
       EndIf
       
       ;\\ disable/enable buttons(right&bottom)-tab(left&top)
       If bar_in_stop_( *bar )
-         If *BB2\mask & #__mask_disabled = #False
-            *BB2\mask | #__mask_disabled
+         If *BB2\mask & #__MASK_Disabled = #False
+            *BB2\mask | #__MASK_Disabled
          EndIf
       Else
-         If *BB2\mask & #__mask_disabled
-            *BB2\mask &~ #__mask_disabled
+         If *BB2\mask & #__MASK_Disabled
+            *BB2\mask &~ #__MASK_Disabled
          EndIf
       EndIf
       
       ;\\
-      If *BB1\mask & #__mask_disabled Or *BB2\mask & #__mask_disabled Or 
+      If *BB1\mask & #__MASK_Disabled Or *BB2\mask & #__MASK_Disabled Or 
          constants::BinaryFlag( *this\flagmask, #PB_TrackBar_Ticks )
          If *bar\vertical 
             If *bar\invert
@@ -4206,7 +4206,7 @@ Module widgets
       EndIf
    EndProcedure
    
-   Procedure.b bar_update_spin( *this._s_WIDGET, *bar._s_BAR, *SB._s_BUTTONS, *BB1._s_BUTTONS, *BB2._s_BUTTONS ) 
+   Procedure.b bar_update_spin( *this._s_WIDGET, *bar._s_BAR, *SB._s_BTN, *BB1._s_BTN, *BB2._s_BTN ) 
       Protected ThumbPos.i
       ;
       ;\\
@@ -4237,14 +4237,14 @@ Module widgets
       ;
       ;\\ disable/enable (buttons(left&top)-tab(right&bottom))
       If bar_in_start_( *bar )
-         If *BB1\mask & #__mask_disabled = #False
-            *BB1\mask | #__mask_disabled
+         If *BB1\mask & #__MASK_Disabled = #False
+            *BB1\mask | #__MASK_Disabled
             
             *BB1\ColorState( ) = #__s_3
          EndIf
       Else
-         If *BB1\mask & #__mask_disabled
-            *BB1\mask &~ #__mask_disabled
+         If *BB1\mask & #__MASK_Disabled
+            *BB1\mask &~ #__MASK_Disabled
             
             *BB1\ColorState( ) = #__s_0
          EndIf
@@ -4252,14 +4252,14 @@ Module widgets
       ;
       ;\\ disable/enable (buttons(right&bottom)-tab(left&top))
       If bar_in_stop_( *bar )
-         If *BB2\mask & #__mask_disabled = #False
-            *BB2\mask | #__mask_disabled
+         If *BB2\mask & #__MASK_Disabled = #False
+            *BB2\mask | #__MASK_Disabled
             ;
             *BB2\ColorState( ) = #__s_3
          EndIf
       Else
-         If *BB2\mask & #__mask_disabled
-            *BB2\mask &~ #__mask_disabled
+         If *BB2\mask & #__MASK_Disabled
+            *BB2\mask &~ #__MASK_Disabled
             ;
             *BB2\ColorState( ) = #__s_0
          EndIf
@@ -4353,7 +4353,7 @@ Module widgets
    
    Procedure.b bar_update( *this._s_WIDGET, mode.b = 1 )
       Protected *bar._s_BAR = *this\bar
-      Protected._s_BUTTONS *BB1, *BB2, *SB
+      Protected._s_BTN *BB1, *BB2, *SB
       ;
       *SB  = *bar\button
       *BB1 = *bar\button[1]
@@ -4486,7 +4486,7 @@ Module widgets
             
             Protected *activedTAB._s_TAB = *this\parentTabSelected( )
             If *activedTAB
-               If Not *activedTAB\mask & #__mask_hover
+               If Not *activedTAB\mask & #__MASK_Hover
                   If *activedTAB\ScrollToActive( - 1 )
                      *activedTAB\ScrollToActive( 1 )
                      ;Debug " tab max - " + *bar\max + " " + " " + *bar\page\pos + " " + *bar\page\end
@@ -4531,34 +4531,34 @@ Module widgets
          
          ;\\ disable/enable buttons(left&top)-tab(right&bottom)
          If bar_in_start_( *bar )
-            If Not *BB1\mask & #__mask_disabled 
-               *BB1\mask | #__mask_disabled
+            If Not *BB1\mask & #__MASK_Disabled 
+               *BB1\mask | #__MASK_Disabled
                ;
-               *BB1\mask | #__mask_hidden
+               *BB1\mask | #__MASK_Hidden
                *BB1\ColorState( ) = #__s_3
             EndIf
          Else
-            If *BB1\mask & #__mask_disabled
-               *BB1\mask &~ #__mask_disabled
+            If *BB1\mask & #__MASK_Disabled
+               *BB1\mask &~ #__MASK_Disabled
                ;
-               *BB1\mask &~ #__mask_hidden
+               *BB1\mask &~ #__MASK_Hidden
                *BB1\ColorState( ) = #__s_0
             EndIf
          EndIf
          
          ;\\ disable/enable buttons(right&bottom)-tab(left&top)
          If bar_in_stop_( *bar )
-            If Not *BB2\mask & #__mask_disabled 
-               *BB2\mask | #__mask_disabled
+            If Not *BB2\mask & #__MASK_Disabled 
+               *BB2\mask | #__MASK_Disabled
                ;
-               *BB2\mask | #__mask_hidden 
+               *BB2\mask | #__MASK_Hidden 
                *BB2\ColorState( ) = #__s_3
             EndIf
          Else
-            If *BB2\mask & #__mask_disabled
-               *BB2\mask &~ #__mask_disabled
+            If *BB2\mask & #__MASK_Disabled
+               *BB2\mask &~ #__MASK_Disabled
                ;
-               *BB2\mask &~ #__mask_hidden 
+               *BB2\mask &~ #__MASK_Hidden 
                *BB2\ColorState( ) = #__s_0
             EndIf
          EndIf
@@ -4567,17 +4567,17 @@ Module widgets
          If *bar\vertical
             *this\inner_x( )      = *this\frame_x( )
             *this\inner_width( )  = *this\frame_width( ) - 1
-            *this\inner_y( )      = *this\frame_y( ) + Bool( *BB2\mask & #__mask_hidden = #False ) * ( *BB2\size + *this\fs )
-            *this\inner_height( ) = *this\frame_y( ) + *this\frame_height( ) - *this\inner_y( ) - Bool( *BB1\mask & #__mask_hidden = #False ) * ( *BB1\size + *this\fs )
+            *this\inner_y( )      = *this\frame_y( ) + Bool( *BB2\mask & #__MASK_Hidden = #False ) * ( *BB2\size + *this\fs )
+            *this\inner_height( ) = *this\frame_y( ) + *this\frame_height( ) - *this\inner_y( ) - Bool( *BB1\mask & #__MASK_Hidden = #False ) * ( *BB1\size + *this\fs )
          Else
             *this\inner_y( )      = *this\frame_y( )
             *this\inner_height( ) = *this\frame_height( ) - 1
-            *this\inner_x( )      = *this\frame_x( ) + Bool( *BB2\mask & #__mask_hidden = #False ) * ( *BB2\size + *this\fs )
-            *this\inner_width( )  = *this\frame_x( ) + *this\frame_width( ) - *this\inner_x( ) - Bool( *BB1\mask & #__mask_hidden = #False ) * ( *BB1\size + *this\fs )
+            *this\inner_x( )      = *this\frame_x( ) + Bool( *BB2\mask & #__MASK_Hidden = #False ) * ( *BB2\size + *this\fs )
+            *this\inner_width( )  = *this\frame_x( ) + *this\frame_width( ) - *this\inner_x( ) - Bool( *BB1\mask & #__MASK_Hidden = #False ) * ( *BB1\size + *this\fs )
          EndIf
          
          ;
-         If *BB2\size And Not *BB2\mask & #__mask_hidden
+         If *BB2\size And Not *BB2\mask & #__MASK_Hidden
             If *bar\vertical
                ; Top button coordinate on vertical scroll bar
                ;  *BB2\x = *this\frame_x( ) + ( *this\frame_width( ) - *BB2\size )/2
@@ -4595,7 +4595,7 @@ Module widgets
             EndIf
          EndIf
          
-         If *BB1\size And Not *BB1\mask & #__mask_hidden
+         If *BB1\size And Not *BB1\mask & #__MASK_Hidden
             If *bar\vertical
                ; Botom button coordinate on vertical scroll bar
                ;  *BB1\x = *this\frame_x( ) + ( *this\frame_width( ) - *BB1\size )/2
@@ -4661,7 +4661,7 @@ Module widgets
          EndIf
       EndIf
       
-      If Not *bar\button\mask & #__mask_disabled 
+      If Not *bar\button\mask & #__MASK_Disabled 
          If ScrollPos < *bar\min
             If *bar\max > *bar\page\len
                ScrollPos = *bar\min
@@ -4862,9 +4862,9 @@ Module widgets
          size = *this\TitleBarHeight + *this\MenuBarHeight + *this\ToolBarHeight
          ;
          If position = 0
-            *box\mask | #__mask_hidden 
+            *box\mask | #__MASK_Hidden 
          Else
-            *box\mask &~ #__mask_hidden
+            *box\mask &~ #__MASK_Hidden
          EndIf
          ;
          *box\text\invert = 0
@@ -5003,9 +5003,9 @@ Module widgets
          ForEach *this\__tabs( ) : *tab = *this\__tabs( )
             If *tab\tindex = _baritem_
                If _state_
-                  *Tab\mask | #__mask_disabled 
+                  *Tab\mask | #__MASK_Disabled 
                Else
-                  *Tab\mask &~ #__mask_disabled 
+                  *Tab\mask &~ #__MASK_Disabled 
                EndIf
                
                ; *this\WidgetChange( )       = #True
@@ -5023,9 +5023,9 @@ Module widgets
                ForEach *pw\__tabs( )
                   If *pw\__tabs( )\tindex = _baritem_
                      If _state_
-                        *pw\__tabs( )\mask | #__mask_disabled 
+                        *pw\__tabs( )\mask | #__MASK_Disabled 
                      Else
-                        *pw\__tabs( )\mask &~ #__mask_disabled 
+                        *pw\__tabs( )\mask &~ #__MASK_Disabled 
                      EndIf
                      
                      ; *pw\WidgetChange( )       = #True
@@ -5037,9 +5037,9 @@ Module widgets
             Else
                If *tab\tindex = _baritem_
                   If _state_
-                     *Tab\mask | #__mask_disabled 
+                     *Tab\mask | #__MASK_Disabled 
                   Else
-                     *Tab\mask &~ #__mask_disabled 
+                     *Tab\mask &~ #__MASK_Disabled 
                   EndIf
                   
                   ; *this\WidgetChange( )       = #True
@@ -5194,7 +5194,7 @@ Module widgets
                ; the last selected item highlighted
                ;
                ; If *activedTAB 
-               ;    *activedTAB\mask &~ #__mask_active
+               ;    *activedTAB\mask &~ #__MASK_Active
                ;    *activedTAB\checked = 0
                ;    *activedTAB = 0
                ; EndIf
@@ -5213,13 +5213,13 @@ Module widgets
             Else
                Break
             EndIf 
-            If *this\mask & #__mask_hover
+            If *this\mask & #__MASK_Hover
                ; Debug "e - "+*this\class
                Break
             Else
                ; Debug *this\class
                If *activedTAB 
-                  *activedTAB\mask &~ #__mask_active
+                  *activedTAB\mask &~ #__MASK_Active
                   *activedTAB\checked = 0
                   *activedTAB = 0
                EndIf
@@ -5260,7 +5260,7 @@ Module widgets
          ;\\ ComboBox
          If *display\type = #__TYPE_ComboBox
             If *display\Combo( )
-               If *this\mask & #__mask_hidden
+               If *this\mask & #__MASK_Hidden
                   *display\Combo( )\arrow\direction = #__bottom
                   *display\Combo( )\ColorState( ) = 2
                   *display\ColorState( ) = 2
@@ -5268,7 +5268,7 @@ Module widgets
                   *display\Combo( )\arrow\direction = #__right
                   If *display\ColorState( ) = 2
                      *display\Combo( )\ColorState( ) = 0
-                     If *display\Combo( )\mask & #__mask_hover
+                     If *display\Combo( )\mask & #__MASK_Hover
                         *display\ColorState( ) = 1
                      Else
                         *display\ColorState( ) = 0
@@ -5278,11 +5278,11 @@ Module widgets
             EndIf
             
             ;\\ hide current popup bar
-            Hide( *this, *this\mask & #__mask_hidden ! 1 )
+            Hide( *this, *this\mask & #__MASK_Hidden ! 1 )
             
-            If *this\mask & #__mask_hidden
+            If *this\mask & #__MASK_Hidden
                If test_display
-                  Debug "comboBar - hide "+*this\class +" "+ Bool(*this\mask & #__mask_hidden)
+                  Debug "comboBar - hide "+*this\class +" "+ Bool(*this\mask & #__MASK_Hidden)
                EndIf
                ;
                
@@ -5306,7 +5306,7 @@ Module widgets
                PostEventsRepaint( *this\root )
             EndIf
          Else
-            If *this\mask & #__mask_hidden
+            If *this\mask & #__MASK_Hidden
                If test_display
                   Debug "menuBar - show "+*this\class
                EndIf
@@ -5368,7 +5368,7 @@ Module widgets
          EndIf
          
          ;\\
-         If Not *this\mask & #__mask_hidden 
+         If Not *this\mask & #__MASK_Hidden 
             PopupBar( ) = *this
             
             ;\\ 
@@ -5446,10 +5446,10 @@ Module widgets
             If mode ; linux type
                X = CanvasMouseX( ) - Width / 2
                
-               If ListSize( *this\row\__s( ) ) And *this\RowFocused( )\mask & #__mask_active
+               If ListSize( *this\row\__s( ) ) And *this\RowFocused( )\mask & #__MASK_Active
                   Y = CanvasMouseY( ) - row_y_( *this, *this\RowFocused( ) ) - *this\RowFocused( )\height / 2
                EndIf
-               If ListSize( *this\__tabs( ) ) And *activedTAB\mask & #__mask_active
+               If ListSize( *this\__tabs( ) ) And *activedTAB\mask & #__MASK_Active
                   Y = CanvasMouseY( ) - row_y_( *this, *activedTAB ) - *activedTAB\height / 2
                EndIf
             Else
@@ -5531,7 +5531,7 @@ Module widgets
                HidePopupBar( PopupBar( ) )
             EndIf
             
-         ElseIf *tab\childrens And ( *tab\mask & #__mask_active Or *tab\checked )
+         ElseIf *tab\childrens And ( *tab\mask & #__MASK_Active Or *tab\checked )
             If test_display
                Debug "2?   "+HidePopupBar( PopupBar( ) )
             Else
@@ -5542,11 +5542,11 @@ Module widgets
       EndIf
       ;
       ; show popup bar
-      If *pw And *pw\mask & #__mask_hidden
+      If *pw And *pw\mask & #__MASK_Hidden
          If *this\bar\vertical
             ; Debug "  show POPUPMENUBARS "+EventString(event)
             DisplayPopupBar( *pw, *this )
-         ElseIf ( *tab\mask & #__mask_active Or *tab\checked )
+         ElseIf ( *tab\mask & #__MASK_Active Or *tab\checked )
             ; Debug "  show TOOLBAR "+EventString(event)
             DisplayPopupBar( *pw, *this )
          EndIf
@@ -5680,14 +5680,14 @@ Module widgets
    
    ;-
    Macro edit_select_line_( _this_, _lines_, _address_, _index_ )
-      _address_\mask &~ #__mask_active
+      _address_\mask &~ #__MASK_Active
       _address_\ColorState( ) = 0
       
       _address_ = SelectElement( _lines_, _index_ )
       
       If _address_
          _address_\ColorState( ) = 1
-         _address_\mask | #__mask_active
+         _address_\mask | #__MASK_Active
       EndIf
    EndMacro
    
@@ -5787,7 +5787,7 @@ Module widgets
       
       repaint_set( *this )
       ;\\ *rowLine\ColorState( ) = #__s_2
-      *rowLine\mask | #__mask_active
+      *rowLine\mask | #__MASK_Active
       *rowLine\selector = 0
       
       If mode = #__sel_to_remove
@@ -5795,7 +5795,7 @@ Module widgets
          CaretLeftPos         = 0
          CaretRightPos        = 0
          *rowLine\ColorState( ) = #__s_0
-         *rowLine\mask &~ #__mask_active
+         *rowLine\mask &~ #__MASK_Active
          
       ElseIf mode = #__sel_to_set
          
@@ -6581,8 +6581,8 @@ Module widgets
          
          If *this\row\active[0] <> *this\__lines( )
             If *this\row\active[0]
-               If *this\row\active[0]\mask & #__mask_active
-                  *this\row\active[0]\mask &~ #__mask_active
+               If *this\row\active[0]\mask & #__MASK_Active
+                  *this\row\active[0]\mask &~ #__MASK_Active
                EndIf
                
                ;*this\row\active[0]\ColorState( ) = #__s_0
@@ -6590,8 +6590,8 @@ Module widgets
             
             *this\row\active[0] = *this\__lines( )
             
-            If *this\row\active[0]\mask & #__mask_active = 0
-               *this\row\active[0]\mask | #__mask_active
+            If *this\row\active[0]\mask & #__MASK_Active = 0
+               *this\row\active[0]\mask | #__MASK_Active
             EndIf
             
             ;
@@ -6628,8 +6628,8 @@ Module widgets
                
                If *this\row\active[0] <> *this\__lines( )
                   If *this\row\active[0]
-                     If *this\row\active[0]\mask & #__mask_active
-                        *this\row\active[0]\mask &~ #__mask_active
+                     If *this\row\active[0]\mask & #__MASK_Active
+                        *this\row\active[0]\mask &~ #__MASK_Active
                      EndIf
                      
                      *this\row\active[0]\ColorState( ) = #__s_0
@@ -6638,8 +6638,8 @@ Module widgets
                   *this\row\active[0]      = *this\__lines( )
                   *this\LineState( ) = *this\__lines( )\lindex
                   
-                  If *this\row\active[0]\mask & #__mask_active = 0
-                     *this\row\active[0]\mask | #__mask_active
+                  If *this\row\active[0]\mask & #__MASK_Active = 0
+                     *this\row\active[0]\mask | #__MASK_Active
                   EndIf
                   
                   *this\row\active[0]\ColorState( ) = #__s_2
@@ -6682,7 +6682,7 @@ Module widgets
       ; =========================================================================
       *current = *parent\first
       While *current
-         If *current <> *this And Not (*current\mask & #__mask_hide)
+         If *current <> *this And Not (*current\mask & #__MASK_Hide)
             
             x2 = *current\x
             y2 = *current\y
@@ -6738,18 +6738,18 @@ Module widgets
       ; 1. ОБЩИЙ ПОИСК: Находим реальных видимых соседей слева и справа по Z-порядку [0]
       *v = *this\prev[0]
       While *v
-         If Not (*v\mask & #__mask_hidden) : *v_prev = *v : Break : EndIf
+         If Not (*v\mask & #__MASK_Hidden) : *v_prev = *v : Break : EndIf
          *v = *v\prev[0]
       Wend
       
       *v = *this\next[0]
       While *v
-         If Not (*v\mask & #__mask_hidden) : *v_next = *v : Break : EndIf
+         If Not (*v\mask & #__MASK_Hidden) : *v_next = *v : Break : EndIf
          *v = *v\next[0]
       Wend
       
       ; 2. РАСПРЕДЕЛЕНИЕ ЛОГИКИ: Скрытие или Показ
-      If *this\mask & #__mask_hidden
+      If *this\mask & #__MASK_Hidden
          ; --- ВЕТКА СКРЫТИЯ ---
          ; Связываем внешнее живое окружение напрямую в обход нас
          If *v_prev : *v_prev\next[1] = *v_next : EndIf
@@ -6772,35 +6772,35 @@ Module widgets
    
    Macro HideState( _this_, _parent_ )
       ; 1. Расчет финального скрытия с учетом родителя и вкладок (Tabbar) в одно выражение
-      If Bool( ( _this_\mask & #__mask_hide ) Or 
-               ( _parent_ And (( _parent_\mask & #__mask_hidden ) Or ( _this_\tabindex <> #PB_Ignore And _parent_\tabbar And _parent_\tabbar\type = #__TYPE_TabBar And _parent_\tabbar\TabState( ) <> _this_\tabindex ) ) ) )
-         _this_\mask | #__mask_hidden
+      If Bool( ( _this_\mask & #__MASK_Hide ) Or 
+               ( _parent_ And (( _parent_\mask & #__MASK_Hidden ) Or ( _this_\tabindex <> #PB_Ignore And _parent_\tabbar And _parent_\tabbar\type = #__TYPE_TabBar And _parent_\tabbar\TabState( ) <> _this_\tabindex ) ) ) )
+         _this_\mask | #__MASK_Hidden
       Else
-         _this_\mask & ~#__mask_hidden
+         _this_\mask & ~#__MASK_Hidden
       EndIf
       
       ; 2. Обновление дочернего элемента Tabbar
       If _this_\tabbar
-         If _this_\mask & #__mask_hidden
-            _this_\tabbar\mask | #__mask_hidden
+         If _this_\mask & #__MASK_Hidden
+            _this_\tabbar\mask | #__MASK_Hidden
          Else
-            If _this_\tabbar\mask & #__mask_hide
-               _this_\tabbar\mask | #__mask_hidden
+            If _this_\tabbar\mask & #__MASK_Hide
+               _this_\tabbar\mask | #__MASK_Hidden
             Else
-               _this_\tabbar\mask & ~#__mask_hidden
+               _this_\tabbar\mask & ~#__MASK_Hidden
             EndIf
          EndIf
       EndIf
       
       ; 3. Обновление дочернего элемента Stringbar
       If _this_\Stringbar
-         If _this_\mask & #__mask_hidden
-            _this_\Stringbar\mask | #__mask_hidden
+         If _this_\mask & #__MASK_Hidden
+            _this_\Stringbar\mask | #__MASK_Hidden
          Else
-            If _this_\Stringbar\mask & #__mask_hide
-               _this_\Stringbar\mask | #__mask_hidden
+            If _this_\Stringbar\mask & #__MASK_Hide
+               _this_\Stringbar\mask | #__MASK_Hidden
             Else
-               _this_\Stringbar\mask & ~#__mask_hidden
+               _this_\Stringbar\mask & ~#__MASK_Hidden
             EndIf
          EndIf
       EndIf
@@ -6808,25 +6808,25 @@ Module widgets
       ; 4. Обновление дочерних скроллбаров (v и h)
       If _this_\scroll
          If _this_\scroll\v
-            If Bool( ( _this_\mask & #__mask_hidden ) Or _this_\scroll\v\bar\max <= _this_\scroll\v\bar\page\len )
-               _this_\scroll\v\mask | #__mask_hidden
+            If Bool( ( _this_\mask & #__MASK_Hidden ) Or _this_\scroll\v\bar\max <= _this_\scroll\v\bar\page\len )
+               _this_\scroll\v\mask | #__MASK_Hidden
             Else
-               If _this_\scroll\v\mask & #__mask_hide
-                  _this_\scroll\v\mask | #__mask_hidden
+               If _this_\scroll\v\mask & #__MASK_Hide
+                  _this_\scroll\v\mask | #__MASK_Hidden
                Else
-                  _this_\scroll\v\mask & ~#__mask_hidden
+                  _this_\scroll\v\mask & ~#__MASK_Hidden
                EndIf
             EndIf
          EndIf
          
          If _this_\scroll\h
-            If Bool( ( _this_\mask & #__mask_hidden ) Or _this_\scroll\h\bar\max <= _this_\scroll\h\bar\page\len )
-               _this_\scroll\h\mask | #__mask_hidden
+            If Bool( ( _this_\mask & #__MASK_Hidden ) Or _this_\scroll\h\bar\max <= _this_\scroll\h\bar\page\len )
+               _this_\scroll\h\mask | #__MASK_Hidden
             Else
-               If _this_\scroll\h\mask & #__mask_hide
-                  _this_\scroll\h\mask | #__mask_hidden
+               If _this_\scroll\h\mask & #__MASK_Hide
+                  _this_\scroll\h\mask | #__MASK_Hidden
                Else
-                  _this_\scroll\h\mask & ~#__mask_hidden
+                  _this_\scroll\h\mask & ~#__MASK_Hidden
                EndIf
             EndIf
          EndIf
@@ -6838,15 +6838,15 @@ Module widgets
    
    Macro DisableState( _this_, _parent_ )
       ; 1. Расчет финального состояния на основе базовой маски и маски родителя
-      If Bool( ( _this_\mask & #__mask_disable ) Or ( _parent_ And ( _parent_\mask & #__mask_disabled ) ) )
-         _this_\mask | #__mask_disabled
+      If Bool( ( _this_\mask & #__MASK_Disable ) Or ( _parent_ And ( _parent_\mask & #__MASK_Disabled ) ) )
+         _this_\mask | #__MASK_Disabled
       Else
-         _this_\mask & ~#__mask_disabled
+         _this_\mask & ~#__MASK_Disabled
       EndIf
       
       ; reset color state
-      If _this_\mask & #__mask_hover
-         If _this_\mask & #__mask_disabled
+      If _this_\mask & #__MASK_Hover
+         If _this_\mask & #__MASK_Disabled
             If _this_\ColorState( ) <> #__s_0
                _this_\ColorState( ) = #__s_0
             EndIf
@@ -6859,27 +6859,27 @@ Module widgets
       
       ; 2. Обновление дочернего элемента Tabbar
       If _this_\tabbar
-         If _this_\mask & #__mask_disabled
-            _this_\tabbar\mask | #__mask_disabled
+         If _this_\mask & #__MASK_Disabled
+            _this_\tabbar\mask | #__MASK_Disabled
          Else
             ; Если родитель активен, состояние зависит от личной маски таббара
-            If _this_\tabbar\mask & #__mask_disable
-               _this_\tabbar\mask | #__mask_disabled
+            If _this_\tabbar\mask & #__MASK_Disable
+               _this_\tabbar\mask | #__MASK_Disabled
             Else
-               _this_\tabbar\mask & ~#__mask_disabled
+               _this_\tabbar\mask & ~#__MASK_Disabled
             EndIf
          EndIf
       EndIf
       
       ; 3. Обновление дочернего элемента Stringbar
       If _this_\Stringbar
-         If _this_\mask & #__mask_disabled
-            _this_\Stringbar\mask | #__mask_disabled
+         If _this_\mask & #__MASK_Disabled
+            _this_\Stringbar\mask | #__MASK_Disabled
          Else
-            If _this_\Stringbar\mask & #__mask_disable
-               _this_\Stringbar\mask | #__mask_disabled
+            If _this_\Stringbar\mask & #__MASK_Disable
+               _this_\Stringbar\mask | #__MASK_Disabled
             Else
-               _this_\Stringbar\mask & ~#__mask_disabled
+               _this_\Stringbar\mask & ~#__MASK_Disabled
             EndIf
          EndIf
       EndIf
@@ -6887,24 +6887,24 @@ Module widgets
       ; 4. Обновление дочерних скроллбаров (v и h)
       If _this_\scroll
          If _this_\scroll\v
-            If _this_\mask & #__mask_disabled
-               _this_\scroll\v\mask | #__mask_disabled
+            If _this_\mask & #__MASK_Disabled
+               _this_\scroll\v\mask | #__MASK_Disabled
             Else
-               If _this_\scroll\v\mask & #__mask_disable
-                  _this_\scroll\v\mask | #__mask_disabled
+               If _this_\scroll\v\mask & #__MASK_Disable
+                  _this_\scroll\v\mask | #__MASK_Disabled
                Else
-                  _this_\scroll\v\mask & ~#__mask_disabled
+                  _this_\scroll\v\mask & ~#__MASK_Disabled
                EndIf
             EndIf
          EndIf
          If _this_\scroll\h
-            If _this_\mask & #__mask_disabled
-               _this_\scroll\h\mask | #__mask_disabled
+            If _this_\mask & #__MASK_Disabled
+               _this_\scroll\h\mask | #__MASK_Disabled
             Else
-               If _this_\scroll\h\mask & #__mask_disable
-                  _this_\scroll\h\mask | #__mask_disabled
+               If _this_\scroll\h\mask & #__MASK_Disable
+                  _this_\scroll\h\mask | #__MASK_Disabled
                Else
-                  _this_\scroll\h\mask & ~#__mask_disabled
+                  _this_\scroll\h\mask & ~#__MASK_Disabled
                EndIf
             EndIf
          EndIf
@@ -6923,9 +6923,9 @@ Module widgets
                If *this\__tabs( )\tindex = item
                   ; Установка базового флага скрытия для вкладки панели
                   If state
-                     *this\__tabs( )\mask | #__mask_hide
+                     *this\__tabs( )\mask | #__MASK_Hide
                   Else
-                     *this\__tabs( )\mask & ~#__mask_hide
+                     *this\__tabs( )\mask & ~#__MASK_Hide
                   EndIf
                   *this\TabChange( ) = #True
                   Break
@@ -6941,9 +6941,9 @@ Module widgets
             If *this\tabbar\__tabs( )\tindex = item
                ; Установка базового флага скрытия для вкладки таббара
                If state
-                  *this\tabbar\__tabs( )\mask | #__mask_hide
+                  *this\tabbar\__tabs( )\mask | #__MASK_Hide
                Else
-                  *this\tabbar\__tabs( )\mask & ~#__mask_hide
+                  *this\tabbar\__tabs( )\mask & ~#__MASK_Hide
                EndIf
                *this\tabbar\TabChange( ) = #True
                Break
@@ -6957,9 +6957,9 @@ Module widgets
          
          ; Установка базового флага скрытия для выбранной строки
          If state
-            *row_sel\mask | #__mask_hide
+            *row_sel\mask | #__MASK_Hide
          Else
-            *row_sel\mask & ~#__mask_hide
+            *row_sel\mask & ~#__MASK_Hide
          EndIf
          
          ; Если у строки есть дочерние элементы — каскадно обновляем их
@@ -6973,11 +6973,11 @@ Module widgets
                EndIf
                If *row\parent
                   ; Проверяем, скрыт ли родитель или раскрыта ли кнопка дерева (чекбокс)
-                  ; Для дочерних строк вычисляем финальное состояние #__mask_hidden
-                  If Bool( *row\parent\buttonbox\checked Or ( *row\parent\mask & #__mask_hidden ) )
-                     *row\mask | #__mask_hidden
+                  ; Для дочерних строк вычисляем финальное состояние #__MASK_Hidden
+                  If Bool( *row\parent\buttonbox\checked Or ( *row\parent\mask & #__MASK_Hidden ) )
+                     *row\mask | #__MASK_Hidden
                   Else
-                     *row\mask & ~#__mask_hidden
+                     *row\mask & ~#__MASK_Hidden
                   EndIf
                EndIf
             Wend
@@ -6996,9 +6996,9 @@ Module widgets
                If *this\tabbar\__tabs( )\tindex = item
                   ; SelectElement( *this\tabbar\__tabs( ), item )
                   If state
-                     *this\tabbar\__tabs( )\mask | #__mask_disabled 
+                     *this\tabbar\__tabs( )\mask | #__MASK_Disabled 
                   Else
-                     *this\tabbar\__tabs( )\mask &~ #__mask_disabled 
+                     *this\tabbar\__tabs( )\mask &~ #__MASK_Disabled 
                   EndIf
                   *this\tabbar\TabChange( ) = #True
                   Break
@@ -7016,9 +7016,9 @@ Module widgets
                If *this\__tabs( )\tindex = item
                   ;SelectElement( *this\__tabs( ), item )
                   If state
-                     *this\__tabs( )\mask | #__mask_disabled 
+                     *this\__tabs( )\mask | #__MASK_Disabled 
                   Else
-                     *this\__tabs( )\mask &~ #__mask_disabled 
+                     *this\__tabs( )\mask &~ #__MASK_Disabled 
                   EndIf
                   *this\TabChange( ) = #True
                   Break
@@ -7033,7 +7033,7 @@ Module widgets
       Protected._s_WIDGET *e
       ; 1. Если состояние не передано — возвращаем 1 или 0 (был ли скрыт изначально)
       If state = #PB_Default 
-         If *this\mask & #__mask_hide
+         If *this\mask & #__MASK_Hide
             ProcedureReturn 1
          Else
             ProcedureReturn 0
@@ -7041,9 +7041,9 @@ Module widgets
       EndIf
       
       ; 2. Получаем текущее базовое состояние для проверки изменений
-      If state <> Bool(*this\mask & #__mask_hide)
+      If state <> Bool(*this\mask & #__MASK_Hide)
          ; Изменяем базовый флаг скрытия в маске
-         If state : *this\mask | #__mask_hide : Else : *this\mask & ~#__mask_hide : EndIf
+         If state : *this\mask | #__MASK_Hide : Else : *this\mask & ~#__MASK_Hide : EndIf
          
          ; Пересчитываем фактическую видимость текущего элемента
          HideState( *this, *this\parent )
@@ -7065,7 +7065,7 @@ Module widgets
       Protected._s_WIDGET *e
       ; Если состояние не передано — возвращаем истину, если установлена базовая маска блокировки
       If State = #PB_Default 
-         If *this\mask & #__mask_disable
+         If *this\mask & #__MASK_Disable
             ProcedureReturn 1
          Else
             ProcedureReturn 0
@@ -7073,12 +7073,12 @@ Module widgets
       EndIf
       
       ; Получаем текущее базовое состояние (0 или 1) для проверки на изменение
-      If State <> Bool(*this\mask & #__mask_disable)
+      If State <> Bool(*this\mask & #__MASK_Disable)
          ; Переключаем бит базовой блокировки в зависимости от значения State
          If State
-            *this\mask | #__mask_disable
+            *this\mask | #__MASK_Disable
          Else
-            *this\mask & ~#__mask_disable
+            *this\mask & ~#__MASK_Disable
          EndIf
          
          ; Пересчитываем финальное состояние для текущего элемента
@@ -7161,8 +7161,8 @@ Module widgets
          EndIf
       EndIf
       If mode = #__c_Required
-         If *this\mask & #__mask_redraw
-            *this\mask &~ #__mask_redraw
+         If *this\mask & #__MASK_Redraw
+            *this\mask &~ #__MASK_Redraw
             Repaint( *this )
          EndIf
          ProcedureReturn DPIUnscaledY( *this\width[mode] + *this\fs * 2 )
@@ -7180,8 +7180,8 @@ Module widgets
          EndIf
       EndIf
       If mode = #__c_Required
-         If *this\mask & #__mask_redraw
-            *this\mask &~ #__mask_redraw
+         If *this\mask & #__MASK_Redraw
+            *this\mask &~ #__MASK_Redraw
             Repaint( *this )
          EndIf
          ProcedureReturn DPIUnscaledY( *this\height[mode] + *this\fs * 2 )
@@ -7493,14 +7493,14 @@ Module widgets
                Not ( *this\type = #__TYPE_Splitter And is_hover( *this\bar\button, CanvasMouseX( ), CanvasMouseY( ) ) = 0 ) And
                Not ( *this\type = #__TYPE_HyperLink And is_hover( *this, CanvasMouseX( ) - *this\frame_x( ), CanvasMouseY( ) - *this\frame_y( ), [#__c_Required] ) = 0 ))
          
-         *this\mask | #__mask_hover_in
+         *this\mask | #__MASK_Hover_in
          
-         If *this\bar And *this\bar\button[1] And *this\bar\button[1]\mask & #__mask_disabled
+         If *this\bar And *this\bar\button[1] And *this\bar\button[1]\mask & #__MASK_Disabled
             If GetCursor( ) <> *this\cursor[3]
                result = ChangeCursor( *this, *this\cursor[3] )
             EndIf
             
-         ElseIf *this\bar And *this\bar\button[2] And *this\bar\button[2]\mask & #__mask_disabled
+         ElseIf *this\bar And *this\bar\button[2] And *this\bar\button[2]\mask & #__MASK_Disabled
             If GetCursor( ) <> *this\cursor[2]
                result = ChangeCursor( *this, *this\cursor[2] )
             EndIf
@@ -7517,7 +7517,7 @@ Module widgets
          EndIf   
          
       Else
-         *this\mask &~ #__mask_hover_in
+         *this\mask &~ #__MASK_Hover_in
          
          If GetCursor( ) <> 0 Or *this\cursor 
             If GetCursor( ) <> *this\cursor
@@ -7527,7 +7527,7 @@ Module widgets
       EndIf
       
       If result 
-         MouseMask( ) | (#__mask_update)
+         MouseMask( ) | (#__MASK_Update)
          ProcedureReturn 1
       EndIf
    EndProcedure
@@ -7977,7 +7977,7 @@ Module widgets
             *row_sel\mask = *row\mask
             ;             *row_sel\mask = *row\mask
             ;             *row_sel\_press = *row\_press
-            If *row\mask & #__mask_active
+            If *row\mask & #__MASK_Active
                *this\RowFocused( ) = *row_sel
             EndIf
          EndIf
@@ -8030,10 +8030,10 @@ Module widgets
       
       ;
       If *this\type = #__TYPE_Window
-         If *this\mask & #__mask_minimize
+         If *this\mask & #__MASK_Minimize
             ProcedureReturn #PB_Window_Minimize
          EndIf
-         If *this\mask & #__mask_maximize
+         If *this\mask & #__MASK_Maximize
             ProcedureReturn #PB_Window_Maximize
          EndIf
          ProcedureReturn #PB_Window_Normal
@@ -8166,7 +8166,7 @@ Module widgets
                If state
                   *this\ColorState( ) = #__s_2
                Else
-                  If *this\mask & #__mask_hover
+                  If *this\mask & #__MASK_Hover
                      *this\ColorState( ) = #__s_1
                   Else
                      *this\ColorState( ) = #__s_0
@@ -8228,10 +8228,12 @@ Module widgets
       If *this\type = #__TYPE_Window
          ; restore state
          If state = #PB_Window_Normal
-            If *this\mask & #__mask_minimize Or *this\mask & #__mask_maximize
+            If *this\mask & #__MASK_Minimize Or 
+               *this\mask & #__MASK_Maximize
+               ;
                If Post( *this, #__EVENT_restore )
-                  *this\mask &~ #__mask_minimize
-                  *this\mask &~ #__mask_maximize
+                  *this\mask &~ #__MASK_Minimize
+                  *this\mask &~ #__MASK_Maximize
                   ;
                   If is_root_( *this )
                      SetWindowState( *this\root\canvas\window, #PB_Window_Normal )
@@ -8255,11 +8257,11 @@ Module widgets
          
          ; maximize state
          If state = #PB_Window_Maximize
-            If Not *this\mask & #__mask_maximize
+            If Not *this\mask & #__MASK_Maximize
                If Post( *this, #__EVENT_maximize )
-                  *this\mask | #__mask_maximize
+                  *this\mask | #__MASK_Maximize
                   ;
-                  If Not *this\mask & #__mask_minimize
+                  If Not *this\mask & #__MASK_Minimize
                      If *this\parent
                         *this\x[#__c_restore]      = *this\container_x( )
                         *this\y[#__c_restore]      = *this\container_y( )
@@ -8297,11 +8299,11 @@ Module widgets
          
          ; minimize state
          If state = #PB_Window_Minimize
-            If Not *this\mask & #__mask_minimize
+            If Not *this\mask & #__MASK_Minimize
                If Post( *this, #__EVENT_Minimize )
-                  *this\mask | #__mask_minimize
+                  *this\mask | #__MASK_Minimize
                   ;
-                  If Not *this\mask & #__mask_maximize
+                  If Not *this\mask & #__MASK_Maximize
                      If *this\parent
                         *this\x[#__c_restore]      = *this\container_x( )
                         *this\y[#__c_restore]      = *this\container_y( )
@@ -8349,8 +8351,8 @@ Module widgets
             If state = - 1
                ;\\ reset all selected items
                If *this\RowFocused( ) And 
-                  *this\RowFocused( )\mask & #__mask_active
-                  *this\RowFocused( )\mask &~ #__mask_active
+                  *this\RowFocused( )\mask & #__MASK_Active
+                  *this\RowFocused( )\mask &~ #__MASK_Active
                   *this\RowFocused( )\ColorState( ) = #__s_0
                   DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                   *this\RowFocused( ) = #Null
@@ -8410,8 +8412,8 @@ Module widgets
                   If *this\RowFocused( ) <> *row
                      ;\\ reset selected items
                      If *this\RowFocused( ) And 
-                        *this\RowFocused( )\mask & #__mask_active
-                        *this\RowFocused( )\mask &~ #__mask_active
+                        *this\RowFocused( )\mask & #__MASK_Active
+                        *this\RowFocused( )\mask &~ #__MASK_Active
                         *this\RowFocused( )\ColorState( ) = #__s_0
                         DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                      EndIf
@@ -8421,9 +8423,9 @@ Module widgets
                      
                      ;                         ; click select mode
                      ;                         If *this\flagmask & #__FLAG_RowClickSelect  
-                     ;                            *row\mask & #__mask_active ! 1
+                     ;                            *row\mask & #__MASK_Active ! 1
                      ;                         Else
-                     *row\mask | #__mask_active
+                     *row\mask | #__MASK_Active
                      ;                         EndIf
                      
                      DoEvents( *this, #__EVENT_Change, *row\rindex, *row)
@@ -8490,7 +8492,7 @@ Module widgets
             *this\TabChange( ) = #True
             
             If *this\parentTabSelected( )
-               *this\parentTabSelected( )\mask &~ #__mask_active
+               *this\parentTabSelected( )\mask &~ #__MASK_Active
                *this\parentTabSelected( )       = #Null
             EndIf
             
@@ -8563,7 +8565,7 @@ Module widgets
          
          If SelectItem( *this, Item )
             *row = @*this\row\__s( )
-            If *row\mask & #__mask_active ; ColorState( )
+            If *row\mask & #__MASK_Active ; ColorState( )
                result | #PB_Tree_Selected
             EndIf
             ;
@@ -8621,17 +8623,17 @@ Module widgets
             *row_sel = @*this\row\__s( )
             ;
             If State & #PB_Tree_Selected
-               If *row_sel\mask & #__mask_active = 0
-                  *row_sel\mask | #__mask_active
-                  If *this\mask & #__mask_active
+               If *row_sel\mask & #__MASK_Active = 0
+                  *row_sel\mask | #__MASK_Active
+                  If *this\mask & #__MASK_Active
                      *row_sel\ColorState( ) = #__s_2
                   Else
                      *row_sel\ColorState( ) = #__s_3
                   EndIf
                EndIf
             Else
-               If *row_sel\mask & #__mask_active
-                  *row_sel\mask &~ #__mask_active
+               If *row_sel\mask & #__MASK_Active
+                  *row_sel\mask &~ #__MASK_Active
                   *row_sel\ColorState( ) = #__s_0
                EndIf
             EndIf
@@ -8657,10 +8659,10 @@ Module widgets
                         Break
                      EndIf
                      If *row\parent
-                        If Bool( *row\parent\buttonbox\checked | *row\parent\mask & #__mask_hidden )
-                           *row\mask | #__mask_hidden 
+                        If Bool( *row\parent\buttonbox\checked | *row\parent\mask & #__MASK_Hidden )
+                           *row\mask | #__MASK_Hidden 
                         Else
-                           *row\mask &~ #__mask_hidden 
+                           *row\mask &~ #__MASK_Hidden 
                         EndIf
                      EndIf
                   Wend
@@ -8706,14 +8708,14 @@ Module widgets
                EndIf
                ;
                ; Проверяем, отличается ли текущий статус активности от нового состояния
-               If Bool(*row_sel\mask & #__mask_active) <> state
+               If Bool(*row_sel\mask & #__MASK_Active) <> state
                   
                   ; Записываем новое состояние в маску активности
                   If state
-                     *row_sel\mask | #__mask_active
+                     *row_sel\mask | #__MASK_Active
                      *this\RowFocused( ) = *row_sel ; Если строка стала активной, запоминаем её в фокус
                   Else
-                     *row_sel\mask & ~#__mask_active
+                     *row_sel\mask & ~#__MASK_Active
                   EndIf
                   
                   result = 1
@@ -8845,7 +8847,7 @@ Module widgets
       If *this\text\string <> Text.s
          *this\text\string = Text.s
          *this\text\change = 1
-         *this\mask | #__mask_update
+         *this\mask | #__MASK_Update
          ;
          If *this\row
             ;                ;\\ editor example set and add
@@ -8864,7 +8866,7 @@ Module widgets
             ;                If *this\row\active[0]
             ;                   If is_integral_( *this )
             ;                      If *this\parent\type = #__TYPE_Spin
-            ;                         If *this\mask & #__mask_active
+            ;                         If *this\mask & #__MASK_Active
             ;                            *this\caret\stop = 0
             ;                         Else
             ;                            *this\caret\stop = *this\text\len
@@ -9021,7 +9023,7 @@ Module widgets
          If ChangeFontID( *this, FontID )
             *this\font = Font
             ;*this\text\change = 1
-            *this\mask | #__mask_redraw
+            *this\mask | #__MASK_Redraw
             result = #True
          EndIf
       EndIf
@@ -9303,7 +9305,7 @@ Module widgets
          ;
          ; Protected result.l
          Protected *bar._s_BAR = *this\bar
-         Protected._s_BUTTONS *BB1, *BB2, *SB
+         Protected._s_BTN *BB1, *BB2, *SB
          
          *SB  = *bar\button
          *BB1 = *bar\button[1]
@@ -9340,9 +9342,9 @@ Module widgets
                Case #PB_Splitter_FirstGadget
                   *this\split_1( )         = value
                   If Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
-                     *this\bar\button[1]\mask | #__mask_hidden
+                     *this\bar\button[1]\mask | #__MASK_Hidden
                   Else
-                     *this\bar\button[1]\mask &~ #__mask_hidden 
+                     *this\bar\button[1]\mask &~ #__MASK_Hidden 
                   EndIf
                   
                   If IsGadget( *this\split_1( ) )
@@ -9360,9 +9362,9 @@ Module widgets
                Case #PB_Splitter_SecondGadget
                   *this\split_2( )         = value
                   If Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
-                     *this\bar\button[2]\mask | #__mask_hidden
+                     *this\bar\button[2]\mask | #__MASK_Hidden
                   Else
-                     *this\bar\button[2]\mask &~ #__mask_hidden 
+                     *this\bar\button[2]\mask &~ #__MASK_Hidden 
                   EndIf
                   
                   If IsGadget( *this\split_2( ) )
@@ -9482,13 +9484,13 @@ Module widgets
                            If value
                               *BB1\size = - 1
                               *BB2\size = - 1
-                              *BB1\mask &~ #__mask_hidden 
-                              *BB2\mask &~ #__mask_hidden 
+                              *BB1\mask &~ #__MASK_Hidden 
+                              *BB2\mask &~ #__MASK_Hidden 
                            Else
                               *BB1\size = 0
                               *BB2\size = 0
-                              *BB1\mask | #__mask_hidden 
-                              *BB2\mask | #__mask_hidden 
+                              *BB1\mask | #__MASK_Hidden 
+                              *BB2\mask | #__MASK_Hidden 
                            EndIf
                         EndIf
                         
@@ -9610,26 +9612,26 @@ Module widgets
    Procedure.i SetActive( *this._s_WIDGET )
       Macro DoActivate( _this_ )
          ; Проверяем, свободен ли еще бит фокуса (чтобы не активировать повторно)
-         If Not ( _this_\mask & #__mask_active )
+         If Not ( _this_\mask & #__MASK_Active )
             If test_focus_set
-               Debug "   ["+ Bool(_this_\mask & #__mask_active) +"] DoActivate "+_this_\class
+               Debug "   ["+ Bool(_this_\mask & #__MASK_Active) +"] DoActivate "+_this_\class
             EndIf
             
             ; Включаем (взводим) бит активности у текущего виджета
-            _this_\mask | #__mask_active
+            _this_\mask | #__MASK_Active
             
             ; Передаем фокус дочернему Stringbar
             If _this_\Stringbar
                ; Принудительно включаем бит активности у Stringbar
-               _this_\Stringbar\mask | #__mask_active
+               _this_\Stringbar\mask | #__MASK_Active
                DoEvents( _this_\Stringbar, #__EVENT_Focus )
             EndIf
             
             ; Проверяем интеграцию с родителем
             If is_integral_( _this_ )
                ; Если у родителя бит активности еще не включен — включаем его
-               If Not ( _this_\parent\mask & #__mask_active )
-                  _this_\parent\mask | #__mask_active
+               If Not ( _this_\parent\mask & #__MASK_Active )
+                  _this_\parent\mask | #__MASK_Active
                   DoEvents( _this_\parent, #__EVENT_Focus )
                EndIf
             EndIf
@@ -9640,27 +9642,27 @@ Module widgets
       EndMacro
       Macro DoDeactivate( _this_ )
          ; Проверяем, активен ли сейчас бит фокуса у виджета
-         If _this_\mask & #__mask_active
+         If _this_\mask & #__MASK_Active
             If test_focus_set
                ; Выведет 1, если бит установлен
-               Debug "   ["+ Bool(_this_\mask & #__mask_active) +"] DoDeactivate "+_this_\class
+               Debug "   ["+ Bool(_this_\mask & #__MASK_Active) +"] DoDeactivate "+_this_\class
             EndIf
             
             ; Сбрасываем (выключаем) бит активности у текущего виджета
-            _this_\mask & ~#__mask_active
+            _this_\mask & ~#__MASK_Active
             
             ; Отправляем событие дочернему Stringbar
             If _this_\Stringbar
                ; Гарантированно выключаем бит активности у Stringbar, так как родитель деактивирован
-               _this_\Stringbar\mask & ~#__mask_active
+               _this_\Stringbar\mask & ~#__MASK_Active
                DoEvents( _this_\Stringbar, #__EVENT_LostFocus )
             EndIf
             
             ; Проверяем интеграцию с родителем
             If is_integral_( _this_ )
                ; Если у родителя бит активности все еще включен — выключаем его
-               If _this_\parent\mask & #__mask_active
-                  _this_\parent\mask & ~#__mask_active
+               If _this_\parent\mask & #__MASK_Active
+                  _this_\parent\mask & ~#__MASK_Active
                   DoEvents( _this_\parent, #__EVENT_LostFocus )
                EndIf
             EndIf
@@ -9735,9 +9737,9 @@ Module widgets
                EndIf
                ;
                If Not *active\anchors
-                  If *active\mask & #__mask_disabled 
+                  If *active\mask & #__MASK_Disabled 
                      If *active\window And 
-                        *active\window\mask & #__mask_disabled 
+                        *active\window\mask & #__MASK_Disabled 
                         ProcedureReturn 0
                      Else
                         ; 
@@ -10447,7 +10449,7 @@ Module widgets
                      EndIf
                      
                      HideState( *D( ), *D( )\parent )
-                     ;Debug *D( )\mask & #__mask_hide
+                     ;Debug *D( )\mask & #__MASK_Hide
                      
                   Wend
                   PopListPosition( widgets( ) )
@@ -11261,7 +11263,7 @@ Module widgets
    Procedure Column_Sync(*this._s_WIDGET)
 ;       ClearList(*this\__items( ))
 ;       ForEach *this\row\__s( )
-;          If Not *this\row\__s( )\mask & #__mask_hidden
+;          If Not *this\row\__s( )\mask & #__MASK_Hidden
 ;             *this\__items( ) = AddElement(*this\__items( ))
 ;          EndIf
 ;       Next
@@ -11285,7 +11287,7 @@ Module widgets
    Procedure Column_UpdateLayout(*this._s_WIDGET)
       Protected cur_x = 0
       ForEach *this\__Columns()
-         If Not *this\__Columns()\mask & #__mask_hidden
+         If Not *this\__Columns()\mask & #__MASK_Hidden
             *this\__Columns()\pos = cur_x
             cur_x + *this\__Columns()\size
          EndIf
@@ -11503,7 +11505,7 @@ Module widgets
                EndIf
                If *this\flagmask & #__FLAG_collapsed  
                   *rowParent\buttonbox\checked = 1
-                  *row\mask | #__mask_hidden
+                  *row\mask | #__MASK_Hidden
                EndIf
             EndIf
          EndIf
@@ -11552,12 +11554,12 @@ Module widgets
             add_image( *row\picture, img, *this\picturesize )
             
             If *this\RowFocused( )
-               ;                      *this\RowFocused( )\mask &~ #__mask_active
+               ;                      *this\RowFocused( )\mask &~ #__MASK_Active
                ;                      *this\RowFocused( )\ColorState( ) = #__s_0
                ;                      
                ;                      *this\RowFocused( )             = *row
-               ;                      *this\RowFocused( )\mask | #__mask_active
-               ;                      *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\mask & #__mask_active = 0 )
+               ;                      *this\RowFocused( )\mask | #__MASK_Active
+               ;                      *this\RowFocused( )\ColorState( ) = #__s_2 + Bool( *this\mask & #__MASK_Active = 0 )
                SetState( *this, position )
             EndIf
             
@@ -11936,7 +11938,7 @@ Module widgets
          
          ;
          If *this\RowFocused( ) = *row 
-            *this\RowFocused( )\mask &~ #__mask_active 
+            *this\RowFocused( )\mask &~ #__MASK_Active 
             *this\RowFocused( )\ColorState( ) = 0
             
             PushListPosition( *this\row\__s( ))
@@ -11970,7 +11972,7 @@ Module widgets
                   ;
                   *this\RowFocused( ) = *rowFocused
                   *rowFocused\mask = *this\mask
-                  If *this\mask & #__mask_active
+                  If *this\mask & #__MASK_Active
                      *rowFocused\ColorState( ) = #__s_2
                   EndIf
                   ;
@@ -14046,9 +14048,9 @@ Module widgets
                         If *row\parent
                            *row\parent\buttonbox\checked = state
                            If state
-                              *row\mask | #__mask_hidden
+                              *row\mask | #__MASK_Hidden
                            Else
-                              *row\mask &~ #__mask_hidden
+                              *row\mask &~ #__MASK_Hidden
                            EndIf
                         EndIf
                      Next
@@ -14091,7 +14093,7 @@ Module widgets
                ;
                Repeat
                   If *list( )\address And
-                     *list( )\mask & #__mask_hidden = 0 And
+                     *list( )\mask & #__MASK_Hidden = 0 And
                      *list( )\root = *root And 
                      is_hover( *list( ), mouse_x, mouse_y, [#__c_frame] ) And
                      is_hover( *list( ), mouse_x, mouse_y, [#__c_draw] )
@@ -14126,31 +14128,31 @@ Module widgets
       ;\\ is integral
       If *this
          ;\\ is integral string bar
-         If *this\Stringbar And Not *this\Stringbar\mask & #__mask_hidden And
+         If *this\Stringbar And Not *this\Stringbar\mask & #__MASK_Hidden And
             is_hover( *this\Stringbar, mouse_x, mouse_y, [#__c_frame] ) And
             is_hover( *this\Stringbar, mouse_x, mouse_y, [#__c_draw] )
             *this = *this\Stringbar
          EndIf
          ;\\ is integral tab bar
-         If *this\tabbar And Not *this\tabbar\mask & #__mask_hidden And
+         If *this\tabbar And Not *this\tabbar\mask & #__MASK_Hidden And
             is_hover( *this\tabbar, mouse_x, mouse_y, [#__c_frame] ) And
             is_hover( *this\tabbar, mouse_x, mouse_y, [#__c_draw] )
             *this = *this\tabbar
          EndIf
          ;\\ is integral tab bar
-         If *this\menubar And Not *this\menubar\mask & #__mask_hidden And
+         If *this\menubar And Not *this\menubar\mask & #__MASK_Hidden And
             is_hover( *this\menubar, mouse_x, mouse_y, [#__c_frame] ) And
             is_hover( *this\menubar, mouse_x, mouse_y, [#__c_draw] )
             *this = *this\menubar
          EndIf
          ;\\ is integral scroll bar's
          If *this\scroll
-            If *this\scroll\v And Not *this\scroll\v\mask & #__mask_hidden And
+            If *this\scroll\v And Not *this\scroll\v\mask & #__MASK_Hidden And
                is_hover( *this\scroll\v, mouse_x, mouse_y, [#__c_frame] ) And
                is_hover( *this\scroll\v, mouse_x, mouse_y, [#__c_draw] )
                *this = *this\scroll\v
             EndIf
-            If *this\scroll\h And Not *this\scroll\h\mask & #__mask_hidden And
+            If *this\scroll\h And Not *this\scroll\h\mask & #__MASK_Hidden And
                is_hover( *this\scroll\h, mouse_x, mouse_y, [#__c_frame] ) And
                is_hover( *this\scroll\h, mouse_x, mouse_y, [#__c_draw] )
                *this = *this\scroll\h
@@ -14198,14 +14200,14 @@ Module widgets
                         *this = a_entered( )
                      EndIf
                      
-                     ;Debug "a "+a_index( ) +" "+ bool(*this\mask & #__mask_hover)
+                     ;Debug "a "+a_index( ) +" "+ bool(*this\mask & #__MASK_Hover)
                   EndIf
                Else
                   If a_index( )
-                     ; Debug "a out to parent border "+a_entered( )\mask & #__mask_hover 
+                     ; Debug "a out to parent border "+a_entered( )\mask & #__MASK_Hover 
                      
-                     If a_entered( )\mask & #__mask_hover_a
-                        a_entered( )\mask &~ #__mask_hover
+                     If a_entered( )\mask & #__MASK_Hover_a
+                        a_entered( )\mask &~ #__MASK_Hover
                      EndIf
                      a_index( ) = 0
                   EndIf
@@ -14220,8 +14222,8 @@ Module widgets
          If a_index( ) Or ( Entered( ) And
                             Entered( ) <> *this )
             ;
-            If EnteredButton( )\mask & #__mask_hover
-               EnteredButton( )\mask &~ #__mask_hover
+            If EnteredButton( )\mask & #__MASK_Hover
+               EnteredButton( )\mask &~ #__MASK_Hover
                
                If EnteredButton( )\ColorState( ) = #__s_1
                   EnteredButton( )\ColorState( ) = #__s_0
@@ -14241,7 +14243,7 @@ Module widgets
       If *this
          If Not a_index( )
             If Not MousePress( )
-               Protected._s_BUTTONS *EnteredButton, *BB1, *BB2, *BB0
+               Protected._s_BTN *EnteredButton, *BB1, *BB2, *BB0
                
                ;\\
                If *this\type = #__TYPE_window
@@ -14282,8 +14284,8 @@ Module widgets
                ;\\ do buttons events entered & leaved
                If EnteredButton( ) <> *EnteredButton
                   If EnteredButton( ) 
-                     If EnteredButton( )\mask & #__mask_hover
-                        EnteredButton( )\mask &~ #__mask_hover
+                     If EnteredButton( )\mask & #__MASK_Hover
+                        EnteredButton( )\mask &~ #__MASK_Hover
                         ;
                         If EnteredButton( )\ColorState( ) = #__s_1
                            EnteredButton( )\ColorState( ) = #__s_0
@@ -14296,12 +14298,12 @@ Module widgets
                   EnteredButton( ) = *EnteredButton
                   ;
                   If EnteredButton( ) And 
-                     EnteredButton( )\mask & #__mask_disabled = 0 And
-                     EnteredButton( )\mask & #__mask_hover = 0
-                     EnteredButton( )\mask | #__mask_hover
+                     EnteredButton( )\mask & #__MASK_Disabled = 0 And
+                     EnteredButton( )\mask & #__MASK_Hover = 0
+                     EnteredButton( )\mask | #__MASK_Hover
                      ;                      ;
                      ;                      If EnteredButton( ) = *BB0
-                     ;                         EnteredButton( )\mask | #__mask_hover_a
+                     ;                         EnteredButton( )\mask | #__MASK_Hover_a
                      ;                      EndIf
                      ;
                      If EnteredButton( )\ColorState( ) = #__s_0
@@ -14314,9 +14316,11 @@ Module widgets
                
                ;\\
                If Not EnteredButton( )
-                  If *this\caption
-                     *this\caption\interact = is_hover( *this\caption, CanvasMouseX( ), CanvasMouseY( ) )
-                  EndIf
+                  If *this\title
+                    If  Bool(*this\title\mask & #__MASK_Hover) <> is_hover( *this\title, CanvasMouseX( ), CanvasMouseY( ) )
+                       *this\title\mask ! #__MASK_Hover
+                    EndIf
+                 EndIf
                EndIf
             EndIf
          EndIf
@@ -14333,23 +14337,23 @@ Module widgets
          ;
          ;
          If Leaved( ) And Not ( *this And *this\parent = Leaved( ) And is_integral_( *this ) )
-            If Leaved( )\mask & #__mask_hover > 0
-               Leaved( )\mask &~ #__mask_hover
+            If Leaved( )\mask & #__MASK_Hover > 0
+               Leaved( )\mask &~ #__MASK_Hover
                ;
                If is_integral_( Leaved( ))
                   If Leaved( )\parent And
-                     Leaved( )\parent\mask & #__mask_hover
+                     Leaved( )\parent\mask & #__MASK_Hover
                      
                      If Leaved( )\parent = *this
                         If is_hover( Leaved( )\parent, mouse_x, mouse_y, [#__c_inner] ) And
                            is_hover( Leaved( )\parent, mouse_x, mouse_y, [#__c_draw] )
-                           Leaved( )\parent\mask | #__mask_hover_in
+                           Leaved( )\parent\mask | #__MASK_Hover_in
                         Else
-                           Leaved( )\parent\mask | #__mask_hover
-                           Leaved( )\parent\mask &~ #__mask_hover_in
+                           Leaved( )\parent\mask | #__MASK_Hover
+                           Leaved( )\parent\mask &~ #__MASK_Hover_in
                         EndIf
                      Else
-                        Leaved( )\parent\mask &~ #__mask_hover
+                        Leaved( )\parent\mask &~ #__MASK_Hover
                      EndIf
                   EndIf
                Else
@@ -14365,8 +14369,8 @@ Module widgets
                            ;
                            If *parent 
                               If *parent\anchors And 
-                                 *parent\mask & #__mask_hover_a
-                                 *parent\mask &~ #__mask_hover
+                                 *parent\mask & #__MASK_Hover_a
+                                 *parent\mask &~ #__MASK_Hover
                               EndIf
                            EndIf
                         EndIf
@@ -14378,11 +14382,11 @@ Module widgets
                ;
                If is_integral_( Leaved( ) ) 
                   If Leaved( )\parent
-                     If Not Leaved( )\parent\mask & #__mask_hover
+                     If Not Leaved( )\parent\mask & #__MASK_Hover
                         DoEvents( Leaved( )\parent, #__EVENT_MouseLeave, -1, @"[?-leave]" )
                      Else
                         If a_index( )
-                           Leaved( )\parent\mask | #__mask_hover_a
+                           Leaved( )\parent\mask | #__MASK_Hover_a
                            DoEvents( Leaved( )\parent, #__EVENT_MouseLeave, -1, @"[?-a-leave]" )
                         EndIf
                      EndIf
@@ -14393,20 +14397,20 @@ Module widgets
          EndIf
          ;
          ;
-         If *this And Not *this\mask & #__mask_hover 
+         If *this And Not *this\mask & #__MASK_Hover 
             ;
             If is_integral_( *this ) 
                
                If *this\parent  
-                  If Not *this\parent\mask & #__mask_hover
-                     *this\parent\mask | #__mask_hover
+                  If Not *this\parent\mask & #__MASK_Hover
+                     *this\parent\mask | #__MASK_Hover
                      ;
                      If Not MousePress( )
                         If *this\parent\anchors
                            a_enter( *this\parent, 1 ) 
                            
                            If a_index( )
-                              *this\parent\mask | #__mask_hover_a
+                              *this\parent\mask | #__MASK_Hover_a
                            EndIf
                         EndIf
                      EndIf
@@ -14416,7 +14420,7 @@ Module widgets
                      EndIf
                      ;
                   ElseIf MouseEnter( *this\parent, 2 )
-                     *this\parent\mask | #__mask_hover
+                     *this\parent\mask | #__MASK_Hover
                   EndIf
                EndIf
                
@@ -14436,7 +14440,7 @@ Module widgets
                            ;
                            If *parent
                               If *parent\anchors
-                                 *parent\mask | #__mask_hover_a
+                                 *parent\mask | #__MASK_Hover_a
                                  a_enter( *parent, - 1 ) 
                               EndIf
                            EndIf
@@ -14447,7 +14451,7 @@ Module widgets
             EndIf
             ;
             If Not a_index( )
-               *this\mask | #__mask_hover
+               *this\mask | #__MASK_Hover
                DoEvents( *this, #__EVENT_MouseEnter, -1, @"[?+enter]" )
             EndIf
          EndIf
@@ -14463,8 +14467,8 @@ Module widgets
       
       If ListSize( *this\__lines( ) )
          If *hover_line And
-            *hover_line\mask & #__mask_visible And
-            (( *this\mask & #__mask_hover And is_hover( *hover_line, mouse_x, mouse_y )) Or
+            *hover_line\mask & #__MASK_Visible And
+            (( *this\mask & #__MASK_Hover And is_hover( *hover_line, mouse_x, mouse_y )) Or
              ( dragged And is_inside_( *hover_line\y, *hover_line\height, mouse_y )) )
             ;
             *rowLine = *hover_line
@@ -14473,8 +14477,8 @@ Module widgets
             LastElement( *this\__lines( ))
             Repeat
                *__line = @*this\__lines( )
-               If *__line\mask & #__mask_visible And
-                  (( *this\mask & #__mask_hover And is_hover( *__line, mouse_x, mouse_y )) Or
+               If *__line\mask & #__MASK_Visible And
+                  (( *this\mask & #__MASK_Hover And is_hover( *__line, mouse_x, mouse_y )) Or
                    ( dragged And is_inside_( *__line\y, *__line\height, mouse_y )) )
                   ;
                   *rowLine = *__line
@@ -14511,14 +14515,14 @@ Module widgets
       Protected._s_ROW *row_visibled, *row
 ;       If ListSize( *this\__items( ) )
 ;          If *row_howered And
-;             *row_howered\mask & #__mask_visible And
+;             *row_howered\mask & #__MASK_Visible And
 ;             is_hover( *row_howered, mouse_x, mouse_y )
 ;             result = *row_howered
 ;          Else
 ;             LastElement( *this\__items( ))
 ;             Repeat
 ;                *row_visibled = *this\__items( )
-;                If *row_visibled\mask & #__mask_visible And
+;                If *row_visibled\mask & #__MASK_Visible And
 ;                   is_hover( *row_visibled, mouse_x, mouse_y )
 ;                   result = *row_visibled
 ;                   Break
@@ -14535,7 +14539,7 @@ Module widgets
 ;                LastElement( *this\row\__s( ))
 ;                Repeat
 ;                   *row = @*this\row\__s( )
-;                   If *row\mask & #__mask_visible And
+;                   If *row\mask & #__MASK_Visible And
 ;                      is_hover( *row, mouse_x, mouse_y )
 ;                      result = *row
 ;                      Break
@@ -14544,7 +14548,7 @@ Module widgets
 ;             EndIf
             
             If StartNextRow(*row, *this\row)
-               If *row\mask & #__mask_visible And is_hover( *row, mouse_x, mouse_y )
+               If *row\mask & #__MASK_Visible And is_hover( *row, mouse_x, mouse_y )
                   result = *row
                   Break
                EndIf
@@ -14593,7 +14597,7 @@ Module widgets
             
             *current = *this
             While *current
-               If *current <> *this And Not (*current\mask & #__mask_hide)
+               If *current <> *this And Not (*current\mask & #__MASK_Hide)
                   
                   x2 = *current\x
                   y2 = *current\y
@@ -14715,23 +14719,23 @@ Module widgets
                   
                   ;               If *this\RowFocused( ) <> *this\row\_v_last
                   ;                 ;                 If *this\RowEntered( )
-                  ;                 ;                   *this\RowEntered( )\mask &~ #__mask_hover
+                  ;                 ;                   *this\RowEntered( )\mask &~ #__MASK_Hover
                   ;                 ;                   *this\RowEntered( )\ColorState( ) = 0
                   ;                 ;                 EndIf
                   ;                 ;                 *this\RowEntered( ) = *this\row\_v_last
-                  ;                 ;                 *this\RowEntered( )\mask | #__mask_hover
+                  ;                 ;                 *this\RowEntered( )\mask | #__MASK_Hover
                   ;                 ;                 *this\RowEntered( )\ColorState( ) = 1
                   ;
                   ;                 If *this\RowFocused( )
                   ;                   ; Debug "scroll v bottom "+ scroll_y +" "+ *this\row\_v_last\rindex +" "+ *this\RowFocused( )\rindex
-                  ;                   *this\RowFocused( )\mask &~ #__mask_active
+                  ;                   *this\RowFocused( )\mask &~ #__MASK_Active
                   ;                   *this\RowFocused( )\ColorState( ) = 0
                   ;                 EndIf
                   ;
                   ;                 ; edit_sel__( *this, *this\row\_v_last, *this\row\active[1], *this\RowFocused( ), 0, *this\RowFocused( )\txt(0)\len )
                   ;                 *this\RowFocused( ) = *this\row\_v_last
                   ;                 ;*this\RowFocused( ) = SelectElement( *this\row\__s( ), *this\row\_v_last\rindex )
-                  ;                 *this\RowFocused( )\mask | #__mask_active
+                  ;                 *this\RowFocused( )\mask | #__MASK_Active
                   ;                 *this\RowFocused( )\ColorState( ) = 1
                   ;                 repaint_set( *this\RowFocused( ) )
                   ;
@@ -14825,17 +14829,17 @@ Module widgets
                            
                            If *this\row\active[1] <> *row
                               If *this\row\active[1] And
-                                 *this\row\active[1]\mask & #__mask_press
-                                 *this\row\active[1]\mask &~ #__mask_press
+                                 *this\row\active[1]\mask & #__MASK_Press
+                                 *this\row\active[1]\mask &~ #__MASK_Press
                               EndIf
                               *this\row\active[1]       = *row
-                              *this\row\active[1]\mask | #__mask_press
+                              *this\row\active[1]\mask | #__MASK_Press
                            EndIf
                            
                            *this\caret\stop = *this\caret\start
                         EndIf
                         
-                        *row\mask | (#__mask_update)
+                        *row\mask | (#__MASK_Update)
                      EndIf
                      
                   Case #PB_Shortcut_Down     ; Ok
@@ -14860,17 +14864,17 @@ Module widgets
                            
                            If *this\row\active[1] <> *row
                               If *this\row\active[1] And
-                                 *this\row\active[1]\mask & #__mask_press
-                                 *this\row\active[1]\mask &~ #__mask_press
+                                 *this\row\active[1]\mask & #__MASK_Press
+                                 *this\row\active[1]\mask &~ #__MASK_Press
                               EndIf
                               *this\row\active[1]      = *row
-                              *this\row\active[1]\mask | #__mask_press
+                              *this\row\active[1]\mask | #__MASK_Press
                            EndIf
                            
                            *this\caret\stop = *this\caret\start
                         EndIf
                         
-                        *row\mask | (#__mask_update)
+                        *row\mask | (#__MASK_Update)
                      EndIf
                      
                   Case #PB_Shortcut_Left     ; Ok
@@ -14881,9 +14885,9 @@ Module widgets
                         
                         If *this\caret\start = *row\txt(0)\pos
                            If *row\lindex > 0
-                              *row\mask &~ #__mask_active
+                              *row\mask &~ #__MASK_Active
                               *row      = SelectElement( *this\__lines( ), *row\lindex - 1 )
-                              *row\mask | #__mask_active
+                              *row\mask | #__MASK_Active
                               *this\row\active[0] = *row
                            EndIf
                         EndIf
@@ -14901,7 +14905,7 @@ Module widgets
                            *this\row\active[1] = *row
                         EndIf
                         
-                        *row\mask | (#__mask_update)
+                        *row\mask | (#__MASK_Update)
                      EndIf
                      
                   Case #PB_Shortcut_Right    ; Ok
@@ -14917,9 +14921,9 @@ Module widgets
                                  edit_sel_update_( *this, *this\row\active[0], #__sel_to_last )
                               EndIf
                               
-                              *row\mask &~ #__mask_active
+                              *row\mask &~ #__MASK_Active
                               *row      = SelectElement( *this\__lines( ), *row\lindex + 1 )
-                              *row\mask | #__mask_active
+                              *row\mask | #__MASK_Active
                               *this\row\active[0] = *row
                            EndIf
                         EndIf
@@ -14937,13 +14941,13 @@ Module widgets
                            *this\row\active[1] = *row
                         EndIf
                         
-                        *row\mask | (#__mask_update)
+                        *row\mask | (#__MASK_Update)
                      EndIf
                      
                   Case #PB_Shortcut_Home
                      If *row
-                        If *row\mask & (#__mask_update) = 0
-                           *row\mask | (#__mask_update)
+                        If *row\mask & (#__MASK_Update) = 0
+                           *row\mask | (#__MASK_Update)
                            ;
                            *this\caret\start = 0
                            *this\caret\stop  = *this\caret\start
@@ -14958,8 +14962,8 @@ Module widgets
                      
                   Case #PB_Shortcut_End
                      If *row
-                        If *row\mask & (#__mask_update) = 0
-                           *row\mask | (#__mask_update)
+                        If *row\mask & (#__MASK_Update) = 0
+                           *row\mask | (#__MASK_Update)
                            ;
                            *this\caret\start = *row\txt(0)\len
                            *this\caret\stop = *this\caret\start
@@ -15067,8 +15071,8 @@ Module widgets
       
       
       If *this\row\active[0] And *this\row\active[1] 
-         If *this\row\active[0]\mask & (#__mask_update)
-            *this\row\active[0]\mask &~ (#__mask_update)
+         If *this\row\active[0]\mask & (#__MASK_Update)
+            *this\row\active[0]\mask &~ (#__MASK_Update)
             edit_sel_( *this, *this\row\active[0] )
          EndIf
       EndIf
@@ -15077,7 +15081,7 @@ Module widgets
    
    
    Procedure   DoEvent_Lines( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-      Protected Repaint, dragged = Bool( MouseDrag( ) And *this\mask & #__mask_press ) 
+      Protected Repaint, dragged = Bool( MouseDrag( ) And *this\mask & #__MASK_Press ) 
       Protected._s_ROW *line, *row_line, *visible_line, *hover_line = *this\LineEntered( )
       
       mouse_x - *this\inner_x( )
@@ -15092,8 +15096,8 @@ Module widgets
          If *hover_line <> *line 
             ; leave state
             If *hover_line
-               If *hover_line\mask & #__mask_hover
-                  *hover_line\mask &~ #__mask_hover
+               If *hover_line\mask & #__MASK_Hover
+                  *hover_line\mask &~ #__MASK_Hover
                   
                   If *hover_line\ColorState( ) = #__s_1
                      *hover_line\ColorState( ) = #__s_0
@@ -15122,10 +15126,10 @@ Module widgets
             *this\LineEntered( ) = *line
             
             ; enter state
-            If *this\mask & #__mask_hover And Not a_index( )
+            If *this\mask & #__MASK_Hover And Not a_index( )
                If *line And 
-                  *line\mask & #__mask_hover = 0
-                  *line\mask | #__mask_hover
+                  *line\mask & #__MASK_Hover = 0
+                  *line\mask | #__MASK_Hover
                   
                   If dragged
                      *this\row\active[0] = *line
@@ -15153,7 +15157,7 @@ Module widgets
                         ForEach *this\__lines( ) 
                            *row_line = @*this\__lines( )
                            ;
-                           ;If *row_line\mask & #__mask_visible
+                           ;If *row_line\mask & #__MASK_Visible
                            If Bool(( *this\row\active[1]\lindex <= *row_line\lindex And *this\row\active[0]\lindex >= *row_line\lindex ) Or ; верх
                                    ( *this\row\active[1]\lindex >= *row_line\lindex And *this\row\active[0]\lindex <= *row_line\lindex ))   ; вниз
                               
@@ -15173,7 +15177,7 @@ Module widgets
                               
                            Else
                               
-                              ;If Not *row_line\mask & #__mask_press
+                              ;If Not *row_line\mask & #__MASK_Press
                               If *row_line\edit_text_2( )\width <> 0
                                  edit_sel_string_( *this, *row_line, #__sel_to_remove )
                               EndIf
@@ -15205,15 +15209,15 @@ Module widgets
                If *hover_line
                   *this\row\active[1] = *hover_line
                   
-                  If *hover_line\mask & #__mask_press = #False
-                     *hover_line\mask | #__mask_press
+                  If *hover_line\mask & #__MASK_Press = #False
+                     *hover_line\mask | #__MASK_Press
                   EndIf
                   
                   If *this\row\active[0] <> *hover_line
                      PushListPosition( *this\__lines( ) )
                      ForEach *this\__lines( )
                         *row_line = @*this\__lines( )
-                        *row_line\mask &~ #__mask_active
+                        *row_line\mask &~ #__MASK_Active
                         
                         If *row_line\ColorState( ) <> #__s_0
                            *row_line\ColorState( ) = #__s_0
@@ -15223,8 +15227,8 @@ Module widgets
                      
                      *this\LineState( ) = *hover_line\lindex
                      
-                     If *hover_line\mask & #__mask_active = 0
-                        *hover_line\mask | #__mask_active
+                     If *hover_line\mask & #__MASK_Active = 0
+                        *hover_line\mask | #__MASK_Active
                      EndIf
                      *hover_line\ColorState( ) = #__s_2
                      *this\row\active[0] = *hover_line
@@ -15278,11 +15282,11 @@ Module widgets
          If event = #__EVENT_Up
             If MouseButtons( ) & #PB_Canvas_LeftButton
                If *this\row\active[1]
-                  If *this\row\active[1]\mask & #__mask_press
-                     *this\row\active[1]\mask &~ #__mask_press
+                  If *this\row\active[1]\mask & #__MASK_Press
+                     *this\row\active[1]\mask &~ #__MASK_Press
                      ;
-                     If Not *this\row\active[1]\mask & #__mask_active
-                        If *this\row\active[1]\mask & #__mask_hover
+                     If Not *this\row\active[1]\mask & #__MASK_Active
+                        If *this\row\active[1]\mask & #__MASK_Hover
                            *this\row\active[1]\ColorState( ) = #__s_1
                         Else
                            *this\row\active[1]\ColorState( ) = #__s_0
@@ -15344,9 +15348,9 @@ Module widgets
                                  ; select prev rows
                                  *row_sel = SelectElement( *this\row\__s( ), *this\RowFocused( )\rindex - 1 )
                                  If *row_sel
-                                    If *row_sel\mask & #__mask_hidden
+                                    If *row_sel\mask & #__MASK_Hidden
                                        While PreviousElement( *this\row\__s( ) )
-                                          If Not *this\row\__s( )\mask & #__mask_hidden
+                                          If Not *this\row\__s( )\mask & #__MASK_Hidden
                                              Break
                                           EndIf
                                        Wend
@@ -15379,9 +15383,9 @@ Module widgets
                                  ; select next rows
                                  *row_sel = SelectElement( *this\row\__s( ), *this\RowFocused( )\rindex + 1 )
                                  If *row_sel
-                                    If *row_sel\mask & #__mask_hidden
+                                    If *row_sel\mask & #__MASK_Hidden
                                        While NextElement( *this\row\__s( ) )
-                                          If Not *this\row\__s( )\mask & #__mask_hidden
+                                          If Not *this\row\__s( )\mask & #__MASK_Hidden
                                              Break
                                           EndIf
                                        Wend
@@ -15426,7 +15430,7 @@ Module widgets
    
    
    Procedure   DoEvent_Rows( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
-      Protected Repaint, dragged = Bool( MouseDrag( ) And *this\mask & #__mask_press ) ; 
+      Protected Repaint, dragged = Bool( MouseDrag( ) And *this\mask & #__MASK_Press ) ; 
       Protected._s_ROW *row
       Protected._s_ROW *row_howered
       Protected._s_ROW *row_visibled
@@ -15509,12 +15513,12 @@ Module widgets
             ; not mouse button up event
             If Not MouseRelease( )
                If *row_leaved And 
-                  *row_leaved\mask & #__mask_hover
-                  *row_leaved\mask &~ #__mask_hover
+                  *row_leaved\mask & #__MASK_Hover
+                  *row_leaved\mask &~ #__MASK_Hover
                   
                   
                   If Not EnteredButton( ) And 
-                     ( *this\mask & #__mask_press And Not Drag( ) ) And 
+                     ( *this\mask & #__MASK_Press And Not Drag( ) ) And 
                      *this\flagmask & #__FLAG_RowMultiSelect = 0 And 
                      *this\flagmask & #__FLAG_RowClickSelect = 0
                      ;
@@ -15530,7 +15534,7 @@ Module widgets
                         *row_leaved\ColorState( ) = #__s_0
                      EndIf
                      ; 
-                     If *row_leaved\mask & #__mask_active
+                     If *row_leaved\mask & #__MASK_Active
                         If *row_leaved\ColorState( ) <> #__s_2
                            *row_leaved\ColorState( ) = #__s_3
                            repaint_set( *this )
@@ -15547,11 +15551,11 @@ Module widgets
             ;\\ enter state
             If *row_howered
                If *this\flagmask & #__FLAG_RowMultiSelect
-                  If *row_pressed And *row_pressed\mask & #__mask_press
+                  If *row_pressed And *row_pressed\mask & #__MASK_Press
                      ; multi select rows
                      PushListPosition( *this\row\__s( ))
                      ForEach *this\row\__s( ) : *row = @*this\row\__s( )
-                        If *row\mask & #__mask_visible
+                        If *row\mask & #__MASK_Visible
                            If Bool(( *row_pressed\rindex >= *row\rindex And *row_howered\rindex <= *row\rindex ) Or ; верх
                                    ( *row_pressed\rindex <= *row\rindex And *row_howered\rindex >= *row\rindex ))   ; вниз
                               
@@ -15562,7 +15566,7 @@ Module widgets
                               
                            Else
                               
-                              If Not *row\mask & #__mask_press
+                              If Not *row\mask & #__MASK_Press
                                  If *row\ColorState( ) <> #__s_0
                                     *row\ColorState( ) = #__s_0
                                     repaint_set( *this )
@@ -15577,11 +15581,11 @@ Module widgets
                EndIf
                
                ;\\
-               If *row_howered\mask & #__mask_hover = 0
-                  *row_howered\mask | #__mask_hover
+               If *row_howered\mask & #__MASK_Hover = 0
+                  *row_howered\mask | #__MASK_Hover
                   
                   If Not EnteredButton( ) And 
-                     ( *this\mask & #__mask_press And Not Drag( ) ) And 
+                     ( *this\mask & #__MASK_Press And Not Drag( ) ) And 
                      ( *this\flagmask & #__FLAG_RowClickSelect = 0 Or ( *this\flagmask & #__FLAG_RowClickSelect And *this\flagmask & #__FLAG_RowMultiSelect ))
                      
                      If *row_howered\ColorState( ) <> #__s_2
@@ -15593,14 +15597,14 @@ Module widgets
                         *row_howered\ColorState( ) = #__s_1
                      EndIf
                      ;
-                     If *row_howered\mask & #__mask_active
+                     If *row_howered\mask & #__MASK_Active
                         If *row_howered\ColorState( ) <> #__s_2
                            *row_howered\ColorState( ) = #__s_1
                         EndIf
                      EndIf
                   EndIf
                   
-                  ; Debug "status-enter-item"  ;;; Not ( Not *this\mask & #__mask_press And *row_howered = *this\RowFocused( ) )
+                  ; Debug "status-enter-item"  ;;; Not ( Not *this\mask & #__MASK_Press And *row_howered = *this\RowFocused( ) )
                   DoEvents( *this, #__EVENT_StatusChange, *row_howered\rindex, *row_howered )
                EndIf
             Else
@@ -15617,17 +15621,17 @@ Module widgets
          If *this\drop
             If Drag( )
                If *this\RowEntered( ) And
-                  *this\RowEntered( )\mask & #__mask_hover
+                  *this\RowEntered( )\mask & #__MASK_Hover
                   
                   If ( mouse_y - *this\RowEntered( )\y ) > *this\RowEntered( )\height / 2
-                     If Not *this\RowEntered( )\mask & #__mask_hover 
-                        *this\RowEntered( )\mask | #__mask_hover
+                     If Not *this\RowEntered( )\mask & #__MASK_Hover 
+                        *this\RowEntered( )\mask | #__MASK_Hover
                         ; Debug "-1 (+1)"
                         repaint_set( *this )
                      EndIf
                   Else
-                     If Not *this\RowEntered( )\mask & #__mask_hover
-                        *this\RowEntered( )\mask | #__mask_hover
+                     If Not *this\RowEntered( )\mask & #__MASK_Hover
+                        *this\RowEntered( )\mask | #__MASK_Hover
                         ; Debug "+1 (-1)"
                         repaint_set( *this )
                      EndIf
@@ -15655,7 +15659,7 @@ Module widgets
             
             ;\\
             If *this\RowFocused( ) And 
-               *this\RowFocused( )\mask & #__mask_active  And
+               *this\RowFocused( )\mask & #__MASK_Active  And
                *this\RowFocused( )\ColorState( ) = #__s_3
                *this\RowFocused( )\ColorState( ) = #__s_2
                ;
@@ -15666,7 +15670,7 @@ Module widgets
          
          ;\\ ok
          If event = #__EVENT_LostFocus
-            ;If Not *this\mask & #__mask_press
+            ;If Not *this\mask & #__MASK_Press
             If *this\flagmask & #__FLAG_RowMultiSelect Or *this\flagmask & #__FLAG_RowClickSelect
                PushListPosition( *this\row\__s( ) )
                ForEach *this\row\__s( )
@@ -15703,7 +15707,7 @@ Module widgets
                      ; change collapsed/expanded button state
                      If *this\flagmask & #__FLAG_nobuttons
                         If *row_howered\buttonbox
-                           If *row_howered\buttonbox\mask & #__mask_hover
+                           If *row_howered\buttonbox\mask & #__MASK_Hover
                               If *row_howered\buttonbox\checked
                                  ; развернул список
                                  If SetItemState( *this, *row_howered\rindex, (GetItemState(*this, *row_howered\rindex) &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded )
@@ -15721,7 +15725,7 @@ Module widgets
                      
                      ; change box ( option&check )
                      If *row_howered\checkbox
-                        If *row_howered\checkbox\mask & #__mask_hover
+                        If *row_howered\checkbox\mask & #__MASK_Hover
                            ;
                            ; change option box state
                            If *this\flagmask & #__FLAG_optionboxes
@@ -15750,10 +15754,10 @@ Module widgets
                      ;
                      If *this\flagmask & #__FLAG_RowClickSelect
                         ; Инвертируем (переключаем) состояние бита: если был 0 -> станет 1, если был 1 -> станет 0
-                        *row_howered\mask ! #__mask_press
+                        *row_howered\mask ! #__MASK_Press
                      Else
                         ; Принудительно включаем бит нажатия
-                        *row_howered\mask | #__mask_press
+                        *row_howered\mask | #__MASK_Press
                         
                         If *this\flagmask & #__FLAG_RowMultiSelect
                            PushListPosition( *this\row\__s( ) )
@@ -15762,9 +15766,9 @@ Module widgets
                               If *row\ColorState( ) <> #__s_0
                                  *row\ColorState( ) = #__s_0
                                  
-                                 If Not *row\mask & #__mask_hover
-                                    If *row\mask & #__mask_active
-                                       *row\mask &~ #__mask_active
+                                 If Not *row\mask & #__MASK_Hover
+                                    If *row\mask & #__MASK_Active
+                                       *row\mask &~ #__MASK_Active
                                     EndIf
                                  EndIf
                               EndIf
@@ -15776,7 +15780,7 @@ Module widgets
                      *row_pressed = *row_howered
                      *this\RowPressed( ) = *row_howered
                      ;
-                     If *row_howered\mask & #__mask_press
+                     If *row_howered\mask & #__MASK_Press
                         If *row_howered\ColorState( ) <> #__s_2
                            *row_howered\ColorState( ) = #__s_2
                            
@@ -15823,13 +15827,13 @@ Module widgets
          ;\\
          If event = #__EVENT_Drop ; Ok
                                   ;           If *this\RowEntered( )
-                                  ;             Debug "drop e - "+*this\RowEntered( ) +" "+ *this\RowEntered( )\txt(0)\string +" "+ *this\RowEntered( )\mask & #__mask_press +" "+ *this\RowEntered( )\mask & #__mask_hover +" "+ *this\RowEntered( )\mask & #__mask_active
+                                  ;             Debug "drop e - "+*this\RowEntered( ) +" "+ *this\RowEntered( )\txt(0)\string +" "+ *this\RowEntered( )\mask & #__MASK_Press +" "+ *this\RowEntered( )\mask & #__MASK_Hover +" "+ *this\RowEntered( )\mask & #__MASK_Active
                                   ;           endif
                                   ;           If *row_pressed
-                                  ;             Debug "drop p - "+*row_pressed +" "+ *row_pressed\txt(0)\string +" "+ *row_pressed\mask & #__mask_press +" "+ *row_pressed\mask & #__mask_hover +" "+ *row_pressed\mask & #__mask_active
+                                  ;             Debug "drop p - "+*row_pressed +" "+ *row_pressed\txt(0)\string +" "+ *row_pressed\mask & #__MASK_Press +" "+ *row_pressed\mask & #__MASK_Hover +" "+ *row_pressed\mask & #__MASK_Active
                                   ;           endif 
                                   ;           If *this\RowFocused( )
-                                  ;             Debug "drop f - "+*this\RowFocused( ) +" "+ *this\RowFocused( )\txt(0)\string +" "+ *this\RowFocused( )\mask & #__mask_press +" "+ *this\RowFocused( )\mask & #__mask_hover +" "+ *this\RowFocused( )\mask & #__mask_active
+                                  ;             Debug "drop f - "+*this\RowFocused( ) +" "+ *this\RowFocused( )\txt(0)\string +" "+ *this\RowFocused( )\mask & #__MASK_Press +" "+ *this\RowFocused( )\mask & #__MASK_Hover +" "+ *this\RowFocused( )\mask & #__MASK_Active
                                   ;           EndIf
          EndIf
          
@@ -15852,7 +15856,7 @@ Module widgets
                         EndIf
                      EndIf
                      ;
-                     *row_pressed\mask &~ #__mask_press
+                     *row_pressed\mask &~ #__MASK_Press
                   EndIf
                EndIf
             EndIf
@@ -15876,10 +15880,10 @@ Module widgets
       
    EndProcedure
    
-   Procedure   DoEvent_Buttons( *this._s_WIDGET, event.l, *button._s_BUTTONS )
+   Procedure   DoEvent_Buttons( *this._s_WIDGET, event.l, *button._s_BTN )
       Protected result.b
       Protected *bar._s_BAR = *this\bar
-      Protected._s_BUTTONS *BB1, *BB2, *SB
+      Protected._s_BTN *BB1, *BB2, *SB
       
       ;\\ bar button event
       If *bar
@@ -15912,11 +15916,11 @@ Module widgets
          If event = #__EVENT_Down
             If MouseButtons( ) & #PB_Canvas_LeftButton
                If *button And
-                  *button\mask & #__mask_press = #False And
-                  *button\mask & #__mask_disabled = #False And
+                  *button\mask & #__MASK_Press = #False And
+                  *button\mask & #__MASK_Disabled = #False And
                   *button\ColorState( ) <> #__s_3 ; change the color state of non-disabled buttons
                                                   ;
-                  *button\mask | #__mask_press 
+                  *button\mask | #__MASK_Press 
                   PressedButton( ) = *button
                   ;
                   If Not ( *this\type = #__TYPE_Track Or
@@ -15925,8 +15929,8 @@ Module widgets
                   EndIf
                   ; Debug "[scroll increment] "+*this\scroll\increment
                   ; left&top button
-                  If ( *BB2\mask & #__mask_press And *bar\invert ) Or
-                     ( *BB1\mask & #__mask_press And Not *bar\invert )
+                  If ( *BB2\mask & #__MASK_Press And *bar\invert ) Or
+                     ( *BB1\mask & #__MASK_Press And Not *bar\invert )
                      
                      If *this\type = #__TYPE_Spin 
                         If bar_PageChange( *this, *bar\page\pos - increment )
@@ -15939,8 +15943,8 @@ Module widgets
                      EndIf
                      
                      ; right&bottom button
-                  ElseIf ( *BB1\mask & #__mask_press And *bar\invert ) Or
-                         ( *BB2\mask & #__mask_press And Not *bar\invert )
+                  ElseIf ( *BB1\mask & #__MASK_Press And *bar\invert ) Or
+                         ( *BB2\mask & #__MASK_Press And Not *bar\invert )
                      
                      If *this\type = #__TYPE_Spin 
                         If bar_PageChange( *this, *bar\page\pos + increment )
@@ -15959,10 +15963,10 @@ Module widgets
          If event = #__EVENT_Up
             If MouseButtons( ) & #PB_Canvas_LeftButton
                If PressedButton( ) And
-                  PressedButton( )\mask & #__mask_press
-                  PressedButton( )\mask &~ #__mask_press
+                  PressedButton( )\mask & #__MASK_Press
+                  PressedButton( )\mask &~ #__MASK_Press
                   
-                  If PressedButton( )\mask & #__mask_disabled = #False And
+                  If PressedButton( )\mask & #__MASK_Disabled = #False And
                      PressedButton( )\ColorState( ) <> #__s_3
                      
                      ; change color state
@@ -15970,7 +15974,7 @@ Module widgets
                         Not ( *this\type = #__TYPE_Track Or
                               ( *this\type = #__TYPE_Splitter And PressedButton( ) <> *SB ))
                         
-                        If PressedButton( )\mask & #__mask_hover
+                        If PressedButton( )\mask & #__MASK_Hover
                            PressedButton( )\ColorState( ) = #__s_1
                         Else
                            PressedButton( )\ColorState( ) = #__s_0
@@ -15986,7 +15990,7 @@ Module widgets
          EndIf
          ;
          If event = #__EVENT_MouseMove
-            If *SB\mask & #__mask_press
+            If *SB\mask & #__MASK_Press
                If *bar\vertical
                   If bar_ThumbChange( *this, ( CanvasMouseY( ) - MousePressY( )), increment )
                      result = #True
@@ -16003,10 +16007,10 @@ Module widgets
       ProcedureReturn result
    EndProcedure
    
-   Procedure   DoEvent_Bar( *this._s_WIDGET, event.l, *button._s_BUTTONS )
+   Procedure   DoEvent_Bar( *this._s_WIDGET, event.l, *button._s_BTN )
       Protected result.b, mode_type = 0
       Protected._s_BAR *bar = *this\bar
-      Protected._s_BUTTONS *BB1, *BB2, *SB
+      Protected._s_BTN *BB1, *BB2, *SB
       Protected._s_TAB *tab, *activeTAB
       Static._s_TAB *PressedTAB, *enteredTAB
       Static ToolBar
@@ -16034,14 +16038,14 @@ Module widgets
                
                If ListSize( *this\__tabs( ) )
                   If *EnteredTAB And
-                     *EnteredTAB\mask & #__mask_visible And
+                     *EnteredTAB\mask & #__MASK_Visible And
                      is_hover( *EnteredTAB, mouse_bar_x, mouse_bar_y )
                      *tab = *EnteredTAB
                   Else
                      ; search entered item
                      LastElement( *this\__tabs( ))
                      Repeat
-                        If *this\__tabs( )\mask & #__mask_visible And
+                        If *this\__tabs( )\mask & #__MASK_Visible And
                            is_hover( *this\__tabs( ), mouse_bar_x, mouse_bar_y )
                            *tab = @*this\__tabs( )
                            Break
@@ -16055,8 +16059,8 @@ Module widgets
             If *EnteredTAB <> *tab 
                ;\\ leaved tabs
                If *EnteredTAB 
-                  If *EnteredTAB\mask & #__mask_hover
-                     *EnteredTAB\mask &~ #__mask_hover
+                  If *EnteredTAB\mask & #__MASK_Hover
+                     *EnteredTAB\mask &~ #__MASK_Hover
                      
                      If *EnteredTAB\ColorState( ) = #__s_1
                         *EnteredTAB\ColorState( ) = #__s_0
@@ -16072,7 +16076,7 @@ Module widgets
                   EndIf
                EndIf
                ;
-               If *tab And *tab\mask & #__mask_disabled
+               If *tab And *tab\mask & #__MASK_Disabled
                   *tab = 0    
                EndIf  
                
@@ -16080,10 +16084,10 @@ Module widgets
                parentTabEntered( *this ) = *tab
                ;
                If *tab
-                  If *this\mask & #__mask_hover 
+                  If *this\mask & #__MASK_Hover 
                      ;\\ entered tabs
-                     If Not *tab\mask & #__mask_hover And Not *tab\mask & #__mask_disabled
-                        *tab\mask | #__mask_hover
+                     If Not *tab\mask & #__MASK_Hover And Not *tab\mask & #__MASK_Disabled
+                        *tab\mask | #__MASK_Hover
                         
                         If *tab\ColorState( ) = #__s_0
                            *tab\ColorState( ) = #__s_1
@@ -16097,23 +16101,23 @@ Module widgets
                            If *activeTAB <> *tab
                               If *this\type = #__TYPE_MenuBar ;Or Not ToolBar
                                  If *activeTAB
-                                    *activeTAB\mask &~ #__mask_active
+                                    *activeTAB\mask &~ #__MASK_Active
                                     *activeTAB = *tab
                                     *this\parentTabSelected( ) = *tab
                                     ; Debug " menubar focus change "
-                                    *activeTAB\mask | #__mask_active
+                                    *activeTAB\mask | #__MASK_Active
                                  EndIf
                               EndIf
                               If ToolBar > 0
                                  If *activeTAB
-                                    ; *activeTAB\mask &~ #__mask_active
+                                    ; *activeTAB\mask &~ #__MASK_Active
                                     *activeTAB\checked = 0
                                     *activeTAB = *tab
                                     *this\parentTabSelected( ) = *tab
                                  EndIf
                                  If *tab\childrens  
                                     ; Debug " toolbar focus change "
-                                    ; *tab\mask | #__mask_active
+                                    ; *tab\mask | #__MASK_Active
                                     *activeTAB = *tab
                                     *this\parentTabSelected( ) = *tab
                                     *activeTAB\checked = 1
@@ -16121,13 +16125,13 @@ Module widgets
                               EndIf
                               If *this\type = #__TYPE_PopupBar 
                                  If *activeTAB
-                                    ; *activeTAB\mask &~ #__mask_active
+                                    ; *activeTAB\mask &~ #__MASK_Active
                                     *activeTAB\checked = 0
                                  EndIf
                                  ; Debug " popupbar focus change "
                                  *activeTAB = *tab
                                  *this\parentTabSelected( ) = *tab
-                                 ; *activeTAB\mask | #__mask_active
+                                 ; *activeTAB\mask | #__MASK_Active
                                  *activeTAB\checked = 1
                               EndIf
                            Else
@@ -16169,7 +16173,7 @@ Module widgets
                                 is_inside_(GadgetX + *this\x, *activeTAB\x + *activeTAB\width, DesktopMouseX()))
                            
                            ; Сбрасываем состояния и закрываем бары
-                           *activeTAB\mask &~ #__mask_active
+                           *activeTAB\mask &~ #__MASK_Active
                            *activeTAB\checked = 0
                            *activeTAB = 0
                            *this\parentTabSelected() = 0
@@ -16205,7 +16209,7 @@ Module widgets
                         If is_inside_( GadgetY1 +*this\y, *this\height + PopupBar()\height , DesktopMouseY( ) ) And
                            is_inside_( GadgetX1 +*this\x, *activeTAB\x+*activeTAB\width, DesktopMouseX( ) )
                         Else
-                           *activeTAB\mask &~ #__mask_active
+                           *activeTAB\mask &~ #__MASK_Active
                            *activeTAB\checked = 0
                            *activeTAB = 0
                            If test_display
@@ -16219,7 +16223,7 @@ Module widgets
                   EndIf
                Else
                   If *this\menu\display
-                     *activeTAB\mask &~ #__mask_active
+                     *activeTAB\mask &~ #__MASK_Active
                      *activeTAB\checked = 0
                      *activeTAB = 0
                   EndIf
@@ -16235,7 +16239,7 @@ Module widgets
                   ToolBar ! 1
                   If ToolBar
                      ; Debug " toolbar focus change "
-                     ; *EnteredTAB\mask | #__mask_active
+                     ; *EnteredTAB\mask | #__MASK_Active
                      *activeTAB = *EnteredTAB
                      *activeTAB\checked = 1
                      
@@ -16271,21 +16275,21 @@ Module widgets
             EndIf
             
             If *this\type = #__TYPE_MenuBar
-               If *EnteredTAB And Not *EnteredTAB\mask & #__mask_disabled 
+               If *EnteredTAB And Not *EnteredTAB\mask & #__MASK_Disabled 
                   If Not *activeTAB
                      If *activeTAB <> *EnteredTAB
                         If *activeTAB
-                           *activeTAB\mask &~ #__mask_active
+                           *activeTAB\mask &~ #__MASK_Active
                            ; *activeTAB\checked = 0
                            *activeTAB = 0 
                         EndIf
                         ;
                         *activeTAB = *EnteredTAB
-                        *activeTAB\mask & #__mask_active ! 1
+                        *activeTAB\mask & #__MASK_Active ! 1
                         ; *activeTAB\checked ! 1
                      Else
                         ; *activeTAB\checked = 0
-                        *activeTAB\mask &~ #__mask_active 
+                        *activeTAB\mask &~ #__MASK_Active 
                         *activeTAB = 0
                      EndIf
                      ;
@@ -16296,18 +16300,18 @@ Module widgets
                EndIf
             EndIf
             
-            If Not ( *EnteredTAB And *EnteredTAB\mask & #__mask_disabled And *EnteredTAB\childrens )
+            If Not ( *EnteredTAB And *EnteredTAB\mask & #__MASK_Disabled And *EnteredTAB\childrens )
                *PressedTAB = *EnteredTAB
                
                ;                                              ;
                If Not ( *button And 
-                        *button\mask & #__mask_press And 
+                        *button\mask & #__MASK_Press And 
                         ( *button = *this\bar\button[1] Or 
                           *button = *this\bar\button[2] ) )
                   ;
                   If *EnteredTAB And
-                     *EnteredTAB\mask & #__mask_press = #False
-                     *EnteredTAB\mask | #__mask_press
+                     *EnteredTAB\mask & #__MASK_Press = #False
+                     *EnteredTAB\mask | #__MASK_Press
                      
                      *EnteredTAB\ColorState( ) = #__s_2
                      repaint_set( *this )
@@ -16327,7 +16331,7 @@ Module widgets
                If *EnteredTAB\childrens 
                   If Not PopupBar( )
                      If *activeTAB
-                        *activeTAB\mask &~ #__mask_active
+                        *activeTAB\mask &~ #__MASK_Active
                         *activeTAB = 0
                      EndIf
                   EndIf
@@ -16336,7 +16340,7 @@ Module widgets
                ;\\
                If *this\type = #__TYPE_TabBar  
                   If Not MouseDrag( )
-                     If Not *EnteredTAB\mask & #__mask_disabled
+                     If Not *EnteredTAB\mask & #__MASK_Disabled
                         If GetState( *this ) <> *EnteredTAB\index 
                            If SetState( *this, *EnteredTAB\index ) 
                               result = #True
@@ -16348,10 +16352,10 @@ Module widgets
             EndIf
             
             If *PressedTAB
-               If *PressedTAB\mask & #__mask_press
-                  *PressedTAB\mask &~ #__mask_press 
+               If *PressedTAB\mask & #__MASK_Press
+                  *PressedTAB\mask &~ #__MASK_Press 
                   
-                  If *PressedTAB\mask & #__mask_hover
+                  If *PressedTAB\mask & #__MASK_Hover
                      *PressedTAB\ColorState( ) = #__s_1
                   Else
                      *PressedTAB\ColorState( ) = #__s_0
@@ -16419,8 +16423,8 @@ Module widgets
          If *this\parent
             If *this\parent\Stringbar
                If *this\parent\Combo( )
-                  If *this\parent\Combo( )\mask & #__mask_hover
-                     *this\parent\Combo( )\mask &~ #__mask_hover
+                  If *this\parent\Combo( )\mask & #__MASK_Hover
+                     *this\parent\Combo( )\mask &~ #__MASK_Hover
                      If *this\ColorState( ) = 1
                         *this\ColorState( ) = 0
                      EndIf
@@ -16432,16 +16436,16 @@ Module widgets
       EndIf
       If *this\Combo( )
          If is_hover( *this\Combo( ), CanvasMouseX( ), CanvasMouseY( ) )
-            If *this\Combo( )\mask & #__mask_hover = 0
-               *this\Combo( )\mask | #__mask_hover
+            If *this\Combo( )\mask & #__MASK_Hover = 0
+               *this\Combo( )\mask | #__MASK_Hover
                If *this\ColorState( ) = 0
                   *this\ColorState( ) = 1
                EndIf
                repaint_set( *this )
             EndIf
          Else
-            If *this\Combo( )\mask & #__mask_hover
-               *this\Combo( )\mask &~ #__mask_hover
+            If *this\Combo( )\mask & #__MASK_Hover
+               *this\Combo( )\mask &~ #__MASK_Hover
                If *this\ColorState( ) = 1
                   *this\ColorState( ) = 0
                EndIf
@@ -16464,11 +16468,11 @@ Module widgets
             EndIf
          EndIf
       Else
-         If *this\mask & #__mask_hover
+         If *this\mask & #__MASK_Hover
             If MousePress( )
                DoDrag( *this )        
             Else
-               If *this\mask & #__mask_hover_a
+               If *this\mask & #__MASK_Hover_a
                   If Not a_index( )
                      DoCursor( *this )
                   EndIf   
@@ -16485,7 +16489,7 @@ Module widgets
       
       ;          ; TEMP
       ;          If event = #__EVENT_leftup
-      ;              Debug " "+ Bool(*this = a_entered( )) +" "+ EventString(event) +" "+ *this\class +" "+ a_index( ) +" "+ bool(*this\mask & #__mask_press)
+      ;              Debug " "+ Bool(*this = a_entered( )) +" "+ EventString(event) +" "+ *this\class +" "+ a_index( ) +" "+ bool(*this\mask & #__MASK_Press)
       ;          EndIf
       
       ;\\ TEMP [before post-widget-events drop]
@@ -16493,10 +16497,10 @@ Module widgets
          If *this\type = #__TYPE_Tree Or
             *this\type = #__TYPE_ListView
             If *this\RowEntered( ) And
-               *this\RowEntered( )\mask & #__mask_hover
+               *this\RowEntered( )\mask & #__MASK_Hover
                ;
                If event = #__EVENT_Drop
-                  If *this\RowEntered( )\mask & #__mask_hover < 0
+                  If *this\RowEntered( )\mask & #__MASK_Hover < 0
                      *button = *this\RowEntered( )\rindex
                      *data   = CanvasMouseX( ) | CanvasMouseY( ) << 16
                   Else
@@ -16512,7 +16516,7 @@ Module widgets
                      *Button = *this\RowEntered( )\rindex
                      
                      If *this\RowEntered( )\buttonbox And 
-                        *this\RowEntered( )\buttonbox\mask & #__mask_hover
+                        *this\RowEntered( )\buttonbox\mask & #__MASK_Hover
                         *Data   = *this\RowEntered( )\buttonbox\checked
                      Else
                         *Data   = *this\RowEntered( )
@@ -16526,7 +16530,7 @@ Module widgets
       
       ;
       ;\\
-      If Not (*this\mask & #__mask_disabled And Not *this\anchors)  
+      If Not (*this\mask & #__MASK_Disabled And Not *this\anchors)  
          
          ;\\ repaint state
          Select event
@@ -16599,7 +16603,7 @@ Module widgets
                EndIf
                
                If event = #__EVENT_MouseMove
-                  If *this\caption\interact And *this\mask & #__mask_press And Not *this\anchors
+                  If *this\title\mask & #__MASK_Hover And *this\mask & #__MASK_Press And Not *this\anchors
                      Resize( *this, CanvasMouseX( ) - MousePressX( ), CanvasMouseY( ) - MousePressY( ), #PB_Ignore, #PB_Ignore, 0 )
                   EndIf
                EndIf
@@ -16616,28 +16620,28 @@ Module widgets
                         
                         ; maximize button
                      Case *this\MaximizeButton( )
-                        If Not *this\mask & #__mask_maximize
-                           ProcedureReturn SetState( *this, #PB_Window_Maximize )
-                        Else
+                        If *this\mask & #__MASK_Maximize
                            ProcedureReturn SetState( *this, #PB_Window_Normal )
+                        Else
+                           ProcedureReturn SetState( *this, #PB_Window_Maximize )
                         EndIf
                         
                         ; minimize button
                      Case *this\MinimizeButton( )
-                        If Not *this\mask & #__mask_minimize
-                           ProcedureReturn SetState( *this, #PB_Window_Minimize )
-                        Else
+                        If *this\mask & #__MASK_Minimize
                            ProcedureReturn SetState( *this, #PB_Window_Normal )
+                        Else
+                           ProcedureReturn SetState( *this, #PB_Window_Minimize )
                         EndIf
                   EndSelect
                EndIf
                
                If event = #__EVENT_Left2Click
-                  If *this\caption\interact
-                     If Not *this\mask & #__mask_maximize
-                        ProcedureReturn SetState( *this, #PB_Window_Maximize )
-                     Else
+                  If *this\title\mask & #__MASK_Hover
+                     If *this\mask & #__MASK_Maximize
                         ProcedureReturn SetState( *this, #PB_Window_Normal )
+                     Else
+                        ProcedureReturn SetState( *this, #PB_Window_Maximize )
                      EndIf
                   EndIf
                EndIf
@@ -16646,8 +16650,8 @@ Module widgets
                If Not ( *this\Toggle( ) And *this\Toggle( )\checked)
                   Select event
                      Case #__EVENT_MouseEnter
-                        If *this\mask & #__mask_hover 
-                           If *this\mask & #__mask_press
+                        If *this\mask & #__MASK_Hover 
+                           If *this\mask & #__MASK_Press
                               *this\ColorState( ) = #__s_2
                            Else
                               *this\ColorState( ) = #__s_1
@@ -16655,12 +16659,12 @@ Module widgets
                         EndIf
                         
                      Case #__EVENT_MouseLeave
-                        ; If Not *this\mask & #__mask_press
+                        ; If Not *this\mask & #__MASK_Press
                         *this\ColorState( ) = #__s_0
                         ; EndIf
                         
                      Case #__EVENT_Down
-                        If *this\mask & #__mask_hover 
+                        If *this\mask & #__MASK_Hover 
                            If MouseButtons( ) & #PB_Canvas_LeftButton
                               *this\ColorState( ) = #__s_2
                            EndIf
@@ -16672,7 +16676,7 @@ Module widgets
                         
                      Case #__EVENT_Up
                         If MouseButtons( ) & #PB_Canvas_LeftButton
-                           If *this\mask & #__mask_hover
+                           If *this\mask & #__MASK_Hover
                               *this\ColorState( ) = #__s_1
                            Else
                               *this\ColorState( ) = #__s_0
@@ -16688,7 +16692,7 @@ Module widgets
                ;
                If event = #__EVENT_Up
                   If MouseButtons( ) & #PB_Canvas_LeftButton
-                     If *this\mask & #__mask_hover 
+                     If *this\mask & #__MASK_Hover 
                         If *this\Toggle( )
                            SetState( *this, Bool( *this\Toggle( )\checked ! 1 ))
                         EndIf
@@ -16759,7 +16763,7 @@ Module widgets
             Case #__TYPE_Tree, #__TYPE_ListView, #__TYPE_ListIcon
                If event = #__EVENT_Change
                   If *this\RowFocused( )
-                     If *this\RowFocused( )\mask & #__mask_active
+                     If *this\RowFocused( )\mask & #__MASK_Active
                         If *this = GetActive( )
                            If *this\RowFocused( )\ColorState( ) <> #__s_2
                               *this\RowFocused( )\ColorState( ) = #__s_2
@@ -16788,7 +16792,7 @@ Module widgets
             ;\\ mouse wheel verticl
             If MouseDirection( ) > 0
                ; Debug "wheelY " + *data
-               If Not *this\mask & #__mask_hidden
+               If Not *this\mask & #__MASK_Hidden
                   If *this\scroll And *this\scroll\v  
                      If *this\scroll\v\bar\page\end
                         If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
@@ -16804,7 +16808,7 @@ Module widgets
                ;\\ mouse wheel horizontal
             Else
                ; Debug "wheelX " + *data
-               If Not *this\mask & #__mask_hidden
+               If Not *this\mask & #__MASK_Hidden
                   If *this\scroll And *this\scroll\h 
                      ;Debug *this\scroll\h\bar\page\end
                      If *this\scroll\h\bar\page\end
@@ -16867,7 +16871,7 @@ Module widgets
          
       EndIf
       
-      If Not (*this\mask & #__mask_disabled And Not *this\anchors)  
+      If Not (*this\mask & #__MASK_Disabled And Not *this\anchors)  
          ;\\ send-widget-events
          If event = #__EVENT_left2Click Or
             event = #__EVENT_left3Click
@@ -16894,12 +16898,12 @@ Module widgets
          EndIf
          ;             EndIf
          ;\\ post repaint canvas
-         If *this\mask & #__mask_redraw 
+         If *this\mask & #__MASK_Redraw 
             If test_snap
                Update_Snap( *this )
             EndIf
             PostRepaint( *this\root )
-            *this\mask &~ #__mask_redraw
+            *this\mask &~ #__MASK_Redraw
          EndIf
       EndIf
       
@@ -16923,8 +16927,8 @@ Module widgets
          If test_canvas_events
             Debug " " + PBEventString(eventtype) +" "+ eventgadget
          EndIf
-         If GetActive( ) And GetActive( )\mask & #__mask_active = 0
-            If Entered( ) And Entered( )\mask & #__mask_press
+         If GetActive( ) And GetActive( )\mask & #__MASK_Active = 0
+            If Entered( ) And Entered( )\mask & #__MASK_Press
                If Entered( )\root\canvas\gadget = eventgadget
                   If test_focus_set
                      Debug "CANVAS - UpdateFocus " + Entered( )\root\canvas\gadget + " " + eventgadget
@@ -16960,7 +16964,7 @@ Module widgets
             ; в макос при потере фокуса окна не теряется фокус гаджета по этому нужен deactive app
             If PopupBar( )
                ; скрываем при потере фокуса 
-               If Not PopupBar( )\mask & #__mask_hover
+               If Not PopupBar( )\mask & #__MASK_Hover
                   ; только если не в окне выбора итема всплывающего меню
                   If DisplayPopupBar( PopupBar( ), PopupBar( )\root\parent ) < 0
                      PopupBar( ) = 0
@@ -16991,9 +16995,9 @@ Module widgets
          EndIf
          If Entered( )
             If eventdata < 0
-               MouseMask( ) | (#__mask_update|#__mask_left)
+               MouseMask( ) | (#__MASK_Update|#__MASK_left)
             ElseIf eventdata > 0
-               MouseMask( ) | (#__mask_update|#__mask_right)
+               MouseMask( ) | (#__MASK_Update|#__MASK_Right)
             EndIf
             If is_scrollbars_( Entered( ) )
                DoEvents( Entered( )\parent, #__EVENT_MouseWheel, #PB_All, eventdata )
@@ -17010,9 +17014,9 @@ Module widgets
          EndIf
          If Entered( )
             If eventdata < 0
-               MouseMask( ) | (#__mask_update|#__mask_top)
+               MouseMask( ) | (#__MASK_Update|#__MASK_top)
             ElseIf eventdata > 0
-               MouseMask( ) | (#__mask_update|#__mask_bottom)
+               MouseMask( ) | (#__MASK_Update|#__MASK_bottom)
             EndIf
             If is_scrollbars_( Entered( ) )
                DoEvents( Entered( )\parent, #__EVENT_MouseWheel, #PB_All, eventdata )
@@ -17032,7 +17036,7 @@ Module widgets
             ;
             Root( )\canvas\enter = 1
             ;
-            MouseMask( ) | (#__mask_update|#__mask_hover)
+            MouseMask( ) | (#__MASK_Update|#__MASK_Hover)
             CanvasMouseX( ) = mouse::GadgetMouseX( eventgadget )
             CanvasMouseY( ) = mouse::GadgetMouseY( eventgadget )
          EndIf
@@ -17050,8 +17054,8 @@ Module widgets
          ;
          Root( )\canvas\enter = 0
          ;
-         MouseMask( ) | (#__mask_update)
-         MouseMask( ) &~ #__mask_hover
+         MouseMask( ) | (#__MASK_Update)
+         MouseMask( ) &~ #__MASK_Hover
          CanvasMouseX( ) = - 1
          CanvasMouseY( ) = - 1
       EndIf
@@ -17063,7 +17067,7 @@ Module widgets
             Debug " " + PBEventString(eventtype) +" "+ eventgadget
          EndIf
          ;
-         MouseMask( ) | (#__mask_update|#__mask_press)
+         MouseMask( ) | (#__MASK_Update|#__MASK_Press)
          ;
          If eventtype = #PB_EventType_LeftButtonDown 
             event           = #__EVENT_LeftDown
@@ -17109,19 +17113,19 @@ Module widgets
             ;
             If CanvasMouseX( ) <> mouse_x : event = #__EVENT_MouseMove
                If CanvasMouseX( ) > mouse_x
-                  If MouseMask( ) & #__mask_left = 0
-                     MouseMask( ) &~ #__mask_right
-                     MouseMask( ) | (#__mask_update|#__mask_left)
+                  If MouseMask( ) & #__MASK_left = 0
+                     MouseMask( ) &~ #__MASK_Right
+                     MouseMask( ) | (#__MASK_Update|#__MASK_left)
                   EndIf
                Else
-                  If MouseMask( ) & #__mask_right = 0
-                     MouseMask( ) &~ #__mask_left
-                     MouseMask( ) | (#__mask_update|#__mask_right)
+                  If MouseMask( ) & #__MASK_Right = 0
+                     MouseMask( ) &~ #__MASK_left
+                     MouseMask( ) | (#__MASK_Update|#__MASK_Right)
                   EndIf
                EndIf
                ;
                If Pressed( ) And mouse( )\selector 
-                  If MouseMask( ) & #__mask_left
+                  If MouseMask( ) & #__MASK_left
                      ; to left
                      mouse( )\selector\x    = mouse_x
                      If mouse( )\steps > 0
@@ -17147,19 +17151,19 @@ Module widgets
             ;
             If CanvasMouseY( ) <> mouse_y : event = #__EVENT_MouseMove
                If CanvasMouseY( ) > mouse_y
-                  If MouseMask( ) & #__mask_top = 0
-                     MouseMask( ) &~ #__mask_bottom
-                     MouseMask( ) | (#__mask_update|#__mask_top)
+                  If MouseMask( ) & #__MASK_top = 0
+                     MouseMask( ) &~ #__MASK_bottom
+                     MouseMask( ) | (#__MASK_Update|#__MASK_top)
                   EndIf
                Else
-                  If MouseMask( ) & #__mask_bottom = 0
-                     MouseMask( ) &~ #__mask_top
-                     MouseMask( ) | (#__mask_update|#__mask_bottom)
+                  If MouseMask( ) & #__MASK_bottom = 0
+                     MouseMask( ) &~ #__MASK_top
+                     MouseMask( ) | (#__MASK_Update|#__MASK_bottom)
                   EndIf
                EndIf
                ;
                If Pressed( ) And mouse( )\selector 
-                  If MouseMask( ) & #__mask_top
+                  If MouseMask( ) & #__MASK_top
                      ; to top
                      mouse( )\selector\y    = mouse_y 
                      If mouse( )\steps > 0
@@ -17203,8 +17207,8 @@ Module widgets
             CanvasMouseY( )       = mouse::GadgetMouseY( eventgadget )
          EndIf
          ;
-         MouseMask( ) | (#__mask_update|#__mask_release)
-         MouseMask( ) &~ #__mask_press
+         MouseMask( ) | (#__MASK_Update|#__MASK_Release)
+         MouseMask( ) &~ #__MASK_Press
       EndIf
       
       If eventtype = #PB_EventType_KeyDown Or
@@ -17485,7 +17489,7 @@ Module widgets
       ; mouse move event start
       If event = #__EVENT_MouseMove
          If Pressed( ) 
-            If Pressed( )\mask & #__mask_press 
+            If Pressed( )\mask & #__MASK_Press 
                ;\\ mouse pressed-move event
                If MouseDrag( ) 
                   If Pressed( ) <> Entered( )
@@ -17503,7 +17507,7 @@ Module widgets
                   EndIf
                Else
                   ; mouse drag event start
-                  MouseMask( ) | (#__mask_update|#__mask_drag)
+                  MouseMask( ) | (#__MASK_Update|#__MASK_Drag)
                   DoEvents( Pressed( ), #__EVENT_DragStart )
                EndIf
             EndIf
@@ -17511,7 +17515,7 @@ Module widgets
          
          ;\\ mouse-entered-widget move event
          If Entered( ) And
-            Entered( )\mask & #__mask_hover
+            Entered( )\mask & #__MASK_Hover
             DoEvents( Entered( ), event )
          EndIf
       EndIf
@@ -17527,15 +17531,15 @@ Module widgets
          ; 
          If Entered( )
             Pressed( )       = Entered( )
-            Pressed( )\mask | #__mask_press 
+            Pressed( )\mask | #__MASK_Press 
             ;
             If event = #__EVENT_LeftDown
                If Entered( )\anchors
                   ; Чтобы можно было переместить например шелкнув 
                   If Not a_index( ) 
                      If Entered( )\container
-                        If Entered( )\caption And 
-                           Entered( )\caption\interact
+                        If Entered( )\title And 
+                           Entered( )\title\mask & #__MASK_Hover
                            ; на загаловке
                            a_index( )  = #__a_moved
                         EndIf
@@ -17674,7 +17678,7 @@ Module widgets
                ;  
                ; Это должно сработат только внутри настоящего контейнера
                ; например (Window;Container;Panel;ScrollArea) а не (Splitter;Frame)
-               If Entered( )\container > 0 And Not a_index( ) And Entered( )\mask & #__mask_hover = 2
+               If Entered( )\container > 0 And Not a_index( ) And Entered( )\mask & #__MASK_Hover = 2
                   mouse( )\selector.allocate( SELECTOR )
                   mouse( )\selector\x = MousePressX( ) 
                   mouse( )\selector\y = MousePressY( )
@@ -17725,7 +17729,7 @@ Module widgets
          ;\\
          If Pressed( )
             ;\\ do up&click events
-            If Pressed( )\mask & #__mask_press
+            If Pressed( )\mask & #__MASK_Press
                ;\\ do drop events
                If Drag( )
                   If DoDrop( Pressed( ))
@@ -17742,7 +17746,7 @@ Module widgets
                EndIf
                
                ;
-               Pressed( )\mask &~ #__mask_press
+               Pressed( )\mask &~ #__MASK_Press
                
                ;\\
                DoEvents( Pressed( ), #__EVENT_UP )
@@ -17820,12 +17824,12 @@ Module widgets
       ;       ;
       ;       ;\\ do reset data
       ;       ;
-      ;       MouseMask( ) &~ (#__mask_update) 
+      ;       MouseMask( ) &~ (#__MASK_Update) 
       ;       If Not MouseButtons( )
       ;          If MouseRelease()
       ;             Debug "MouseRelease"
       ;          EndIf
-      ;          MouseMask( ) &~ (#__mask_release|#__mask_drag) 
+      ;          MouseMask( ) &~ (#__MASK_Release|#__MASK_Drag) 
       ;       EndIf
       ;       
       ProcedureReturn #PB_Event_Gadget
@@ -17934,10 +17938,10 @@ Module widgets
             *r\canvas\repaint = 0
             
             ;                ;If test_draw_repaint
-            ;                If *r\mask & #__mask_active
-            ;                   Debug " [+]  REPAINT " + *r\class ;+" "+ Bool(*r\mask & #__mask_hidden)
+            ;                If *r\mask & #__MASK_Active
+            ;                   Debug " [+]  REPAINT " + *r\class ;+" "+ Bool(*r\mask & #__MASK_Hidden)
             ;                Else
-            ;                   Debug " [-]  REPAINT " + *r\class ;+" "+ Bool(*r\mask & #__mask_hidden)
+            ;                   Debug " [-]  REPAINT " + *r\class ;+" "+ Bool(*r\mask & #__MASK_Hidden)
             ;                EndIf
             ;                ;EndIf
             
@@ -18539,7 +18543,7 @@ Module widgets
       Protected state.b, X.l, Y.l
       Protected *row._s_ROW
       
-      If Not *this\mask & #__mask_hidden
+      If Not *this\mask & #__MASK_Hidden
          ;\\ if the item list has changed
          If ListSize( *this\__columns( ) )
             *this\scroll_height( ) = *this\ColumnsHeight
@@ -18560,8 +18564,8 @@ Module widgets
          ForEach *this\row\__s( ) : *row = @*this\row\__s( )
             ;*row\rindex = ListIndex( *this\row\__s( ))
             
-            If *row\mask & #__mask_hidden
-               *row\mask &~ #__mask_visible
+            If *row\mask & #__MASK_Hidden
+               *row\mask &~ #__MASK_Visible
                Continue
             EndIf
             ;\\ init drawing item font
@@ -18716,14 +18720,14 @@ Module widgets
       PushListPosition( *this\row\__s( ))
       ForEach *this\row\__s( ) : *row = @*this\row\__s( )
          ; make visible row mask
-         *row\mask = ( *row\mask & ~#__mask_visible ) | 
-                     ( Bool( Not ( *row\mask & #__mask_hidden ) And
+         *row\mask = ( *row\mask & ~#__MASK_Visible ) | 
+                     ( Bool( Not ( *row\mask & #__MASK_Hidden ) And
                              (*row\y < ( visible_y + visible_height )) And 
-                             ( *row\y + *row\height) > visible_y ) * #__mask_visible )
+                             ( *row\y + *row\height) > visible_y ) * #__MASK_Visible )
          
          ;
-         If *row\mask & #__mask_visible 
-            If Not *row\mask & #__mask_hidden
+         If *row\mask & #__MASK_Visible 
+            If Not *row\mask & #__MASK_Hidden
                If *row\color\back <> $FFFFFFFF ; *this\color\fore
                   If i%2 = 0
                      ; Debug i
@@ -18949,7 +18953,7 @@ Module widgets
                FrontColor( *this\color\frame[state] & $FFFFFF | 255 << 24 )
             EndIf
             
-            ; Draw caption frame
+            ; Draw title frame
             If *this\fs[2]
                Protected ch = *this\fs[2]
                If Not *this\round
@@ -19069,11 +19073,11 @@ Module widgets
          Else
             If *this\round
                draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\caption\color\back[state] )
+               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back[state] )
             EndIf
          EndIf
          
-         ; then caption
+         ; then title
          If *this\fs[2]
             PB(ClipOutput)( *this\clip_x( ) + *this\fs, *this\clip_y( ) + *this\fs, *this\clip_width( ) - *this\fs*2, *this\clip_height( ) - *this\fs*2 )
             
@@ -19082,14 +19086,12 @@ Module widgets
             __draw_box( *this\CloseButton( ), color\back )
             __draw_box( *this\MaximizeButton( ), color\back )
             __draw_box( *this\MinimizeButton( ), color\back )
-            __draw_box( *this\HelpButton( ), color\back )
             
             ; buttons img
             draw_mode_alpha_( #PB_2DDrawing_Outlined )
             __draw_close_button( *this\CloseButton( ), DPIScaled(6) )
             __draw_maximize_button( *this\MaximizeButton( ), DPIScaled(4) )
             __draw_minimize_button( *this\MinimizeButton( ), DPIScaled(4) )
-            __draw_help_button( *this\HelpButton( ), DPIScaled(4) )
             
             ; Draw img
             If *this\picture\imageID
@@ -19099,24 +19101,24 @@ Module widgets
             
             If *this\TitleText( )\string
                If *this\inner_height( )
-                  PB(ClipOutput)( *this\clip_x( ) + *this\fs, *this\clip_y( ) + *this\fs, *this\caption\width, *this\clip_height( ) - *this\fs*2 )
+                  PB(ClipOutput)( *this\clip_x( ) + *this\fs, *this\clip_y( ) + *this\fs, *this\title\width, *this\clip_height( ) - *this\fs*2 )
                EndIf
                
                ; Draw string
                If *this\ResizeChange( )
                   If *this\picture\imageID
-                     *this\TitleText( )\x = *this\caption\x + *this\padding\x + *this\picture\width + 10
+                     *this\TitleText( )\x = *this\title\x + *this\padding\x + *this\picture\width + 10
                   Else
-                     *this\TitleText( )\x = *this\caption\x + *this\padding\x
+                     *this\TitleText( )\x = *this\title\x + *this\padding\x
                   EndIf
-                  *this\TitleText( )\y = *this\caption\y + ( *this\caption\height - *this\fs * 2 - TextHeight( "A" )) / 2
+                  *this\TitleText( )\y = *this\title\y + ( *this\title\height - *this\fs * 2 - TextHeight( "A" )) / 2
                EndIf
                
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
                DrawText( *this\TitleText( )\x, *this\TitleText( )\y, *this\TitleText( )\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
                
                ;                               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               ;                               draw_roundbox_( *this\caption\x, *this\caption\y, *this\caption\width, *this\caption\height - *this\fs * 2, *this\round, *this\round, $FF000000 )
+               ;                               draw_roundbox_( *this\title\x, *this\title\y, *this\title\width, *this\title\height - *this\fs * 2, *this\round, *this\round, $FF000000 )
                If *this\inner_height( )
                   Clip( *this, [#__c_draw] )
                EndIf
@@ -19619,7 +19621,7 @@ Module widgets
    
       ;
       If ListIndex( *this\__columns( )) = 0
-         Protected *buttonBox._s_buttons
+         Protected *buttonBox._s_BTN
          
          ; - Draw plots line
          If *this\flagmask & #__FLAG_nolines
@@ -19647,7 +19649,7 @@ Module widgets
                EndIf
                
                ; for the tree vertical line
-               If *row\_last And Not *row\_last\mask & #__mask_hidden And *row\_last\sublevel
+               If *row\_last And Not *row\_last\mask & #__MASK_Hidden And *row\_last\sublevel
                   Define iy = (Y + *row\height / 2 )
                   Define iheight = (*row\_last\y - *row\y) 
                   ;
@@ -19672,7 +19674,7 @@ Module widgets
                EndIf
                
                ; for the tree horizontal line
-               If *row\mask & #__mask_visible And Not *row\mask & #__mask_hidden And Not ( *row\childrens And Not *row\sublevel)
+               If *row\mask & #__MASK_Visible And Not *row\mask & #__MASK_Hidden And Not ( *row\childrens And Not *row\sublevel)
                   Line((X + *row\buttonbox\x + *row\buttonbox\width / 2), (Y + *row\height / 2), *this\row\sublevelsize/2-DPIScaled(2), 1, $FF000000 ) ;*this\LineColor )
                EndIf
             Next
@@ -19748,7 +19750,7 @@ Module widgets
    Procedure   Draw_Tree( *this._s_WIDGET )
       Protected state.b, X.l, Y.l, scroll_x, scroll_y
       
-      If Not *this\mask & #__mask_hidden
+      If Not *this\mask & #__MASK_Hidden
          If *this\text\change
             ;Debug ""+ *this\class +" "+ *this\text\change
          EndIf
@@ -19839,14 +19841,14 @@ Module widgets
       ForEach *this\__lines( )
          *row_line = @*this\__lines( )
          ; update visible lines 
-         *row_line\mask = ( *row_line\mask & ~#__mask_visible ) |
-                          ( Bool( Not ( *row_line\mask & #__mask_hidden ) And
+         *row_line\mask = ( *row_line\mask & ~#__MASK_Visible ) |
+                          ( Bool( Not ( *row_line\mask & #__MASK_Hidden ) And
                                   (( *row_line\y + *this\scroll_y() ) < visible_y + visible_height ) And 
-                                  ( *row_line\y + *row_line\height + *this\scroll_y() ) > visible_y ) * #__mask_visible )
+                                  ( *row_line\y + *row_line\height + *this\scroll_y() ) > visible_y ) * #__MASK_Visible )
          
          
          ; Draw selections
-         If *row_line\mask & #__mask_visible
+         If *row_line\mask & #__MASK_Visible
             If Not *this\row\_v_first
                *this\row\_v_first = *row_line
             EndIf
@@ -19908,7 +19910,7 @@ Module widgets
                If *row_line\color\front[2] <> *this\color\front
                   draw_box_( sel_text_x2, Y, text_sel_width, *row_line\height, *row_line\color\back[c_state] )
                   
-                  If *this\mask & #__mask_press And #PB_Compiler_OS = #PB_OS_MacOS
+                  If *this\mask & #__MASK_Press And #PB_Compiler_OS = #PB_OS_MacOS
                      
                      ; to right select
                      If ( ( *hover_line And *this\row\active[1] And *hover_line\lindex > *this\row\active[1]\lindex ) Or
@@ -19924,7 +19926,7 @@ Module widgets
                            DrawRotatedText( Text_x, Text_Y, *row_line\edit_text_1( )\string + *row_line\edit_text_2( )\string, *this\text\rotate, *row_line\color\front[c_state] )
                         EndIf
                         
-                        If *row_line\mask & #__mask_hover
+                        If *row_line\mask & #__MASK_Hover
                            If *row_line\edit_text_1( )\width
                               draw_box_( Text_x, Text_Y+2, *row_line\edit_text_1( )\width, *row_line\txt(0)\height-2, *row_line\color\back[1] )
                            EndIf
@@ -19969,7 +19971,7 @@ Module widgets
       Protected update = Bool(*this\text\change Or *this\ResizeChange( ))
       Protected UnderLineSize, state
       
-      If Not *this\mask & #__mask_hidden
+      If Not *this\mask & #__MASK_Hidden
          If is_integral_( *this )
             Clip( *this, [#__c_draw] )
          EndIf               
@@ -19995,7 +19997,7 @@ Module widgets
                EndIf
                
                ;
-               If *this\scroll\v And Not *this\scroll\v\mask & #__mask_hidden
+               If *this\scroll\v And Not *this\scroll\v\mask & #__MASK_Hidden
                   If *this\scroll_y( ) + *this\caret\y < 0 Or
                      *this\scroll_y( ) + *this\caret\y + *this\caret\height > *this\inner_height( )
                      
@@ -20012,7 +20014,7 @@ Module widgets
                EndIf
                
                ;
-               If *this\scroll\h And Not *this\scroll\h\mask & #__mask_hidden
+               If *this\scroll\h And Not *this\scroll\h\mask & #__MASK_Hidden
                   If *this\scroll_x( ) + *this\caret\x < 0 Or
                      *this\scroll_x( ) + *this\caret\x + *this\caret\width  > *this\inner_width( )
                      
@@ -20106,7 +20108,7 @@ Module widgets
       Protected *column._s_COLUMN
       Protected column_index.i, state.b, X.l, Y.l, scroll_x, scroll_y
       
-      If Not *this\mask & #__mask_hidden
+      If Not *this\mask & #__MASK_Hidden
          If *this\ResizeChange( ) Or *this\text\change
             ForEach *this\__columns( )
                UpdateDraw_Rows( *this)
@@ -20221,7 +20223,7 @@ Module widgets
          EndIf
          
          ;\\ draw belowe drawing
-         If Not *this\mask & #__mask_hidden
+         If Not *this\mask & #__MASK_Hidden
             ;\\ draw clip out transform widgets frame
             If *this\root\drawmode & 1<<2
                If ( *this\anchors And Not *this\anchors\mode & #__a_zoom ) Or test_clip
@@ -20349,17 +20351,17 @@ Module widgets
                   EndIf
                   If *this\scroll 
                      ;\\ draw area scrollbars
-                     If *this\scroll\v And Not *this\scroll\v\mask & #__mask_hidden And 
+                     If *this\scroll\v And Not *this\scroll\v\mask & #__MASK_Hidden And 
                         ( *this\scroll\v\clip_width( ) > 0 And *this\scroll\v\clip_height( ) > 0 )
                         bar_draw_scroll( *this\scroll\v )
                      EndIf
-                     If *this\scroll\h And Not *this\scroll\h\mask & #__mask_hidden And
+                     If *this\scroll\h And Not *this\scroll\h\mask & #__MASK_Hidden And
                         ( *this\scroll\h\clip_width( ) > 0 And *this\scroll\h\clip_height( ) > 0 )
                         bar_draw_scroll( *this\scroll\h )
                      EndIf
                      
                      ;\\
-                     If test_draw_area = 1 And Not *this\mask & #__mask_hidden
+                     If test_draw_area = 1 And Not *this\mask & #__MASK_Hidden
                         ;If Not *this\haschildren
                         draw_mode_alpha_( #PB_2DDrawing_Outlined )
                         
@@ -20384,14 +20386,14 @@ Module widgets
                   EndIf
                   
                   ;\\ draw disable state
-                  If *this\mask & #__mask_disabled
+                  If *this\mask & #__MASK_Disabled
                      draw_mode_alpha_( #PB_2DDrawing_Default )
                      draw_box_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), $AAE4E4E4 )
                   EndIf
                   
                   ;\\ draw focus state TEMP
                   If test_focus_draw = 2
-                     If *this\mask & #__mask_active And Not (is_window_(*this) And Not *this\parent )
+                     If *this\mask & #__MASK_Active And Not (is_window_(*this) And Not *this\parent )
                         UnclipOutput( )
                         draw_mode_alpha_( #PB_2DDrawing_Outlined )
                         draw_box_( *this\frame_x( )+1, *this\frame_y( )+1, *this\frame_width( )-2, *this\frame_height( )-2, $fffff0000 )
@@ -20429,7 +20431,7 @@ Module widgets
                If *this\root\drawmode & 1<<2
                   ;\\
                   If test_focus_draw = 1 Or test_focus_draw = 3
-                     If *this\mask & #__mask_active
+                     If *this\mask & #__MASK_Active
                         __draw_mode(#PB_2DDrawing_Outlined)
                         If Not *this\haschildren 
                            If *this = GetActive( )
@@ -20438,7 +20440,7 @@ Module widgets
                               draw_focus_frame( *this, $ff00ff00)
                            EndIf
                         EndIf
-                     ElseIf *this\mask & #__mask_active = 3 And test_focus_draw <> 3
+                     ElseIf *this\mask & #__MASK_Active = 3 And test_focus_draw <> 3
                         __draw_mode(#PB_2DDrawing_Outlined)
                         draw_focus_frame( *this, $FFBFBFC3)
                      EndIf
@@ -20451,7 +20453,7 @@ Module widgets
                   EndIf  
                   
                   ;\\
-                  If *this\mask & #__mask_hover
+                  If *this\mask & #__MASK_Hover
                      ;\\ draw entered anchors
                      If Not *this\haschildren 
                         If *this\anchors And *this\anchors\mode
@@ -20460,7 +20462,7 @@ Module widgets
                      EndIf
                      
                      ;\\ draw drag & drop
-                     If Not *this\mask & #__mask_disabled
+                     If Not *this\mask & #__MASK_Disabled
                         If Not mouse( )\selector  
                            DropDraw( *this )
                         EndIf
@@ -20506,7 +20508,7 @@ Module widgets
          
          ;\\ reset values
          If *this\WidgetChange( ) <> 0
-            If Not *this\mask & #__mask_hidden
+            If Not *this\mask & #__MASK_Hidden
                *this\WidgetChange( ) = 0
             EndIf
          EndIf
@@ -20519,7 +20521,7 @@ Module widgets
          EndIf
          
          If *this\ResizeChange( ) <> 0
-            *this\mask &~ #__mask_resize
+            *this\mask &~ #__MASK_Resize
          EndIf
       EndWith
       
@@ -20601,7 +20603,7 @@ Module widgets
                   ;If Start( *e, *Root ) 
                   If 0=1 And StartEnum( *Root ) : *e = Widget()
                      If *e\parent And 
-                        *e\parent\mask & #__mask_hidden 
+                        *e\parent\mask & #__MASK_Hidden 
                         Continue
                      EndIf
                      If *e\parent\tabbar And 
@@ -20613,7 +20615,7 @@ Module widgets
                      If test_focus_draw = 1
                         ;\\ draw active containers frame
                         If GetActive( )
-                           If GetActive( )\mask & #__mask_active And 
+                           If GetActive( )\mask & #__MASK_Active And 
                               GetActive( )\haschildren 
                               ;
                               If GetActive( )\next[2] = *e  
@@ -20625,7 +20627,7 @@ Module widgets
                            ;
                            ;\\ draw active parent frame
                            If ActiveWindow( )  
-                              If ActiveWindow( )\mask & #__mask_active And 
+                              If ActiveWindow( )\mask & #__MASK_Active And 
                                  ActiveWindow( )\haschildren And  
                                  ActiveWindow( ) <> GetActive( )
                                  ;
@@ -20638,7 +20640,7 @@ Module widgets
                               ;
                               ;\\ draw active child frame
                               If ActiveGadget( ) And
-                                 ActiveGadget( )\mask & #__mask_active And 
+                                 ActiveGadget( )\mask & #__MASK_Active And 
                                  ActiveGadget( )\haschildren And  
                                  ActiveGadget( ) <> GetActive( ) 
                                  
@@ -20656,7 +20658,7 @@ Module widgets
                      ;\\ draw entered widget anchors   *e\parent\tabbar And 
                      If Not MousePress( )
                         If a_entered( ) And
-                           a_entered( )\mask & #__mask_hover And 
+                           a_entered( )\mask & #__MASK_Hover And 
                            a_entered( )\haschildren And
                            a_entered( ) <> a_focused( ) ; Not ( a_anchors( ) And a_focused( ) = a_entered( ) )
                                                         ;
@@ -20674,7 +20676,7 @@ Module widgets
                      If test_focus_draw = 1
                         ;\\ draw active containers frame
                         If GetActive( ) 
-                           If GetActive( )\mask & #__mask_active And 
+                           If GetActive( )\mask & #__MASK_Active And 
                               GetActive( )\haschildren 
                               ;
                               If Not GetActive( )\next[2] 
@@ -20688,7 +20690,7 @@ Module widgets
                            ;
                            ;\\ draw active parent frame
                            If ActiveWindow( )  
-                              If ActiveWindow( )\mask & #__mask_active And 
+                              If ActiveWindow( )\mask & #__MASK_Active And 
                                  ActiveWindow( )\haschildren And  
                                  ActiveWindow( ) <> GetActive( ) 
                                  ;
@@ -20703,7 +20705,7 @@ Module widgets
                               ; 
                               ;\\ draw active child frame
                               If ActiveGadget( ) And
-                                 ActiveGadget( )\mask & #__mask_active And 
+                                 ActiveGadget( )\mask & #__MASK_Active And 
                                  ActiveGadget( )\haschildren And  
                                  ActiveGadget( ) <> GetActive( ) 
                                  
@@ -20723,7 +20725,7 @@ Module widgets
                      ;\\ draw entered parent anchors
                      If Not MousePress( )
                         If a_entered( ) And 
-                           a_entered( )\mask & #__mask_hover And 
+                           a_entered( )\mask & #__MASK_Hover And 
                            a_entered( )\haschildren And
                            a_entered( ) <> a_focused( ) ; Not ( a_anchors( ) And a_focused( ) = a_entered( ) )
                            
@@ -20754,7 +20756,7 @@ Module widgets
                   If *root\drawmode & 1<<2
                      ;\\
                      If a_focused( ) And
-                        a_focused( )\mask & #__mask_hidden = 0 And
+                        a_focused( )\mask & #__MASK_Hidden = 0 And
                         a_focused( )\anchors And
                         a_focused( )\anchors\mode And
                         a_focused( )\root = *root
@@ -21291,7 +21293,7 @@ Module widgets
       
       ;\\ - Create ComboBox
       If *this\type = #__TYPE_ComboBox
-         *this\Combo( ).allocate( BUTTONS )
+         *this\Combo( ).allocate( BTN )
          *this\Combo( )\color           = colors
          *this\Combo( )\arrow\type      = #__arrow_type
          *this\Combo( )\arrow\size      = DPIScaled( #__arrow_size )
@@ -21303,12 +21305,12 @@ Module widgets
       
       ;\\ - Create Bars
       If *this\bar
-         *this\bar\button.allocate( BUTTONS )
-         *this\bar\button.allocate( BUTTONS, [1] )
-         *this\bar\button.allocate( BUTTONS, [2] )
+         *this\bar\button.allocate( BTN )
+         *this\bar\button.allocate( BTN, [1] )
+         *this\bar\button.allocate( BTN, [2] )
          
          *this\scroll\increment  = ScrollStep
-         Protected._s_BUTTONS *BB1, *BB2, *SB
+         Protected._s_BTN *BB1, *BB2, *SB
          *SB  = *this\bar\button
          *BB1 = *this\bar\button[1]
          *BB2 = *this\bar\button[2]
@@ -21462,14 +21464,14 @@ Module widgets
             *this\split_2( ) = *param_2
             ;
             If Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
-               *this\bar\button[1]\mask | #__mask_hidden 
+               *this\bar\button[1]\mask | #__MASK_Hidden 
             Else
-               *this\bar\button[1]\mask &~ #__mask_hidden 
+               *this\bar\button[1]\mask &~ #__MASK_Hidden 
             EndIf
             If Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
-               *this\bar\button[2]\mask | #__mask_hidden 
+               *this\bar\button[2]\mask | #__MASK_Hidden 
             Else
-               *this\bar\button[2]\mask &~ #__mask_hidden 
+               *this\bar\button[2]\mask &~ #__MASK_Hidden 
             EndIf
             ;
             If IsGadget( *this\split_1( ) )
@@ -21674,8 +21676,8 @@ Module widgets
          
          bar_area_create( *this, 1, 0, 0, *this\inner_width( ), *this\inner_height( ), #__bar_button_size, 0)
          
-         *this\scroll\v\mask | #__mask_hidden 
-         *this\scroll\h\mask | #__mask_hidden 
+         *this\scroll\v\mask | #__MASK_Hidden 
+         *this\scroll\h\mask | #__MASK_Hidden 
          *this\scroll\v\width = 0
          *this\scroll\h\height = 0
          
@@ -21878,12 +21880,12 @@ Module widgets
       
       ;\\ - Create Bars
       If *this\bar
-         *this\bar\button.allocate( BUTTONS )
-         *this\bar\button.allocate( BUTTONS, [1] )
-         *this\bar\button.allocate( BUTTONS, [2] )
+         *this\bar\button.allocate( BTN )
+         *this\bar\button.allocate( BTN, [1] )
+         *this\bar\button.allocate( BTN, [2] )
          
          *this\scroll\increment  = ScrollStep
-         Protected._s_BUTTONS *BB1, *BB2, *SB
+         Protected._s_BTN *BB1, *BB2, *SB
          *SB  = *this\bar\button
          *BB1 = *this\bar\button[1]
          *BB2 = *this\bar\button[2]
@@ -21909,14 +21911,14 @@ Module widgets
             *this\split_2( ) = *param_2
             ;
             If Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
-               *this\bar\button[1]\mask | #__mask_hidden 
+               *this\bar\button[1]\mask | #__MASK_Hidden 
             Else
-               *this\bar\button[1]\mask &~ #__mask_hidden 
+               *this\bar\button[1]\mask &~ #__MASK_Hidden 
             EndIf
             If Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
-               *this\bar\button[2]\mask | #__mask_hidden 
+               *this\bar\button[2]\mask | #__MASK_Hidden 
             Else
-               *this\bar\button[2]\mask &~ #__mask_hidden 
+               *this\bar\button[2]\mask &~ #__MASK_Hidden 
             EndIf
             ;
             If IsGadget( *this\split_1( ) )
@@ -22229,7 +22231,7 @@ Module widgets
             If Height = #PB_Ignore
             Else
                ; пример align(autosize).pb
-               ;Height + #__window_FrameSize*2 + #__window_CaptionHeight
+               ;Height + #__window_FrameSize*2 + #__window_titleHeight
                IsWindow = 1
             EndIf
          EndIf
@@ -22507,39 +22509,37 @@ Module widgets
       *this\bs = *this\fs
       
       ;
-      *this\caption\color    = colors::_get_colors_( )
-      *this\caption\_padding = DPIScaled(4)
+     *this\title\spacing = DPIScaled(4)
       
       If constants::BinaryFlag( *this\flagmask, #PB_Window_SystemMenu, #False )
-         *this\CloseButton( )\mask | #__mask_hidden    
+         *this\CloseButton( )\mask | #__MASK_Hidden    
       Else
-         *this\CloseButton( )\mask &~ #__mask_hidden    
+         *this\CloseButton( )\mask &~ #__MASK_Hidden    
       EndIf
       If constants::BinaryFlag( *this\flagmask, #PB_Window_MaximizeGadget, #False )
-         *this\MaximizeButton( )\mask | #__mask_hidden    
+         *this\MaximizeButton( )\mask | #__MASK_Hidden    
       Else
-         *this\MaximizeButton( )\mask &~ #__mask_hidden    
+         *this\MaximizeButton( )\mask &~ #__MASK_Hidden    
       EndIf
       If constants::BinaryFlag( *this\flagmask, #PB_Window_MinimizeGadget, #False )
-         *this\MinimizeButton( )\mask | #__mask_hidden    
+         *this\MinimizeButton( )\mask | #__MASK_Hidden    
       Else
-         *this\MinimizeButton( )\mask &~ #__mask_hidden    
+         *this\MinimizeButton( )\mask &~ #__MASK_Hidden    
       EndIf
-      *this\HelpButton( )\mask | #__mask_hidden
       
-      If *this\MaximizeButton( )\mask & #__mask_hidden = 0 Or
-         *this\MinimizeButton( )\mask & #__mask_hidden = 0 Or
-         *this\CloseButton( )\mask & #__mask_hidden = 0
-         *this\caption\mask &~ #__mask_hidden
+      If *this\MaximizeButton( )\mask & #__MASK_Hidden = 0 Or
+         *this\MinimizeButton( )\mask & #__MASK_Hidden = 0 Or
+         *this\CloseButton( )\mask & #__MASK_Hidden = 0
+         *this\title\mask &~ #__MASK_Hidden
       Else
          If constants::BinaryFlag( *this\flagmask, #PB_Window_TitleBar, #False )
-            *this\caption\mask | #__mask_hidden
+            *this\title\mask | #__MASK_Hidden
          Else
-            *this\caption\mask &~ #__mask_hidden 
+            *this\title\mask &~ #__MASK_Hidden 
          EndIf
       EndIf
       
-      If *this\caption\mask & #__mask_hidden
+      If *this\title\mask & #__MASK_Hidden
          *this\TitleBarHeight = 0
          *this\fs[2] = 0
       Else
@@ -22565,10 +22565,6 @@ Module widgets
       *this\MinimizeButton( )\width  = *this\CloseButton( )\width
       *this\MinimizeButton( )\height = *this\CloseButton( )\height
       *this\MinimizeButton( )\round = *this\CloseButton( )\round
-      
-      *this\HelpButton( )\width  = *this\CloseButton( )\width * 2
-      *this\HelpButton( )\height = *this\CloseButton( )\height
-      *this\HelpButton( )\round     = *this\CloseButton( )\round
       
       
       ;\\
@@ -23259,7 +23255,7 @@ Module widgets
       
       
       ;\\ resize parent vertical&horizontal scrollbars
-      If *this\parent And            ;   Not *this\parent\mask & #__mask_hidden And Not *this\mask & #__mask_hidden And ;???
+      If *this\parent And            ;   Not *this\parent\mask & #__MASK_Hidden And Not *this\mask & #__MASK_Hidden And ;???
          *this\parent\scroll And
          *this\parent\scroll\v And
          *this\parent\scroll\h
@@ -23308,7 +23304,7 @@ Module widgets
       
       ;\\
       If ( Change_x Or Change_y Or Change_width Or Change_height ) 
-         *this\mask | #__mask_resize
+         *this\mask | #__MASK_Resize
          repaint_set( *this )
          
          ;
@@ -23461,69 +23457,55 @@ Module widgets
             ; чтобы закруглять только у окна с титлебаром
             If *this\fs[2]
                If *this\round
-                  *this\caption\round = *this\round
+                 ; *this\title\round = *this\round
                   *this\round         = 0
                EndIf
             EndIf
             
             ; caption title bar
-            If Not *this\caption\mask & #__mask_hidden
-               *this\caption\x      = *this\frame_x( ) + *this\fs
-               *this\caption\y      = *this\frame_y( ) + *this\fs
-               *this\caption\width  = *this\frame_width( ) - *this\fs * 2
+            If Not *this\title\mask & #__MASK_Hidden
+               *this\title\x      = *this\frame_x( ) + *this\fs
+               *this\title\y      = *this\frame_y( ) + *this\fs
+               *this\title\width  = *this\frame_width( ) - *this\fs * 2
                
-               *this\caption\height = *this\TitleBarHeight + *this\fs - 1
-               If *this\caption\height > *this\frame_height( ) - *this\fs 
-                  *this\caption\height = *this\frame_height( ) - *this\fs 
+               *this\title\height = *this\TitleBarHeight + *this\fs - 1
+               If *this\title\height > *this\frame_height( ) - *this\fs 
+                  *this\title\height = *this\frame_height( ) - *this\fs 
                EndIf
                
                ; caption close button
-               If Not *this\CloseButton( )\mask & #__mask_hidden
-                  *this\CloseButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\CloseButton( )\width + *this\caption\_padding )
-                  *this\CloseButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\CloseButton( )\height ) / 2
+               If Not *this\CloseButton( )\mask & #__MASK_Hidden
+                  *this\CloseButton( )\x = ( *this\title\x + *this\title\width ) - ( *this\CloseButton( )\width + *this\title\spacing )
+                  *this\CloseButton( )\y = *this\frame_y( ) + ( *this\title\height - *this\CloseButton( )\height ) / 2
                EndIf
                
                ; caption maximize button
-               If Not *this\MaximizeButton( )\mask & #__mask_hidden
-                  If *this\CloseButton( )\mask & #__mask_hidden
-                     *this\MaximizeButton( )\x = ( *this\caption\x + *this\caption\width ) - ( *this\MaximizeButton( )\width + *this\caption\_padding )
+               If Not *this\MaximizeButton( )\mask & #__MASK_Hidden
+                  If *this\CloseButton( )\mask & #__MASK_Hidden
+                     *this\MaximizeButton( )\x = ( *this\title\x + *this\title\width ) - ( *this\MaximizeButton( )\width + *this\title\spacing )
                   Else
-                     *this\MaximizeButton( )\x = *this\CloseButton( )\x - ( *this\MaximizeButton( )\width + *this\caption\_padding )
+                     *this\MaximizeButton( )\x = *this\CloseButton( )\x - ( *this\MaximizeButton( )\width + *this\title\spacing )
                   EndIf
-                  *this\MaximizeButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\MaximizeButton( )\height ) / 2
+                  *this\MaximizeButton( )\y = *this\frame_y( ) + ( *this\title\height - *this\MaximizeButton( )\height ) / 2
                EndIf
                
                ; caption minimize button
-               If Not *this\MinimizeButton( )\mask & #__mask_hidden
-                  If *this\MaximizeButton( )\mask & #__mask_hidden
-                     *this\MinimizeButton( )\x = *this\CloseButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
+               If Not *this\MinimizeButton( )\mask & #__MASK_Hidden
+                  If *this\MaximizeButton( )\mask & #__MASK_Hidden
+                     *this\MinimizeButton( )\x = *this\CloseButton( )\x - ( *this\MinimizeButton( )\width + *this\title\spacing )
                   Else
-                     *this\MinimizeButton( )\x = *this\MaximizeButton( )\x - ( *this\MinimizeButton( )\width + *this\caption\_padding )
+                     *this\MinimizeButton( )\x = *this\MaximizeButton( )\x - ( *this\MinimizeButton( )\width + *this\title\spacing )
                   EndIf
-                  *this\MinimizeButton( )\y = *this\frame_y( ) + ( *this\caption\height - *this\MinimizeButton( )\height ) / 2
-               EndIf
-               
-               ; caption help button
-               If Not *this\HelpButton( )\mask & #__mask_hidden
-                  If Not *this\MinimizeButton( )\mask & #__mask_hidden
-                     *this\HelpButton( )\x = *this\MinimizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
-                  ElseIf Not *this\MaximizeButton( )\mask & #__mask_hidden
-                     *this\HelpButton( )\x = *this\MaximizeButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
-                  Else
-                     *this\HelpButton( )\x = *this\CloseButton( )\x - ( *this\HelpButton( )\width + *this\caption\_padding )
-                  EndIf
-                  *this\HelpButton( )\y = *this\CloseButton( )\y
+                  *this\MinimizeButton( )\y = *this\frame_y( ) + ( *this\title\height - *this\MinimizeButton( )\height ) / 2
                EndIf
                
                ; title bar width
-               If Not *this\HelpButton( )\mask & #__mask_hidden
-                  *this\caption\width = *this\HelpButton( )\x - *this\caption\x - *this\caption\_padding
-               ElseIf Not *this\MinimizeButton( )\mask & #__mask_hidden
-                  *this\caption\width = *this\MinimizeButton( )\x - *this\caption\x - *this\caption\_padding
-               ElseIf Not *this\MaximizeButton( )\mask & #__mask_hidden
-                  *this\caption\width = *this\MaximizeButton( )\x - *this\caption\x - *this\caption\_padding
-               ElseIf Not *this\CloseButton( )\mask & #__mask_hidden
-                  *this\caption\width = *this\CloseButton( )\x - *this\caption\x - *this\caption\_padding
+               If Not *this\MinimizeButton( )\mask & #__MASK_Hidden
+                  *this\title\width = *this\MinimizeButton( )\x - *this\title\x - *this\title\spacing
+               ElseIf Not *this\MaximizeButton( )\mask & #__MASK_Hidden
+                  *this\title\width = *this\MaximizeButton( )\x - *this\title\x - *this\title\spacing
+               ElseIf Not *this\CloseButton( )\mask & #__MASK_Hidden
+                  *this\title\width = *this\CloseButton( )\x - *this\title\x - *this\title\spacing
                EndIf
             EndIf
          EndIf
@@ -23776,12 +23758,12 @@ Module widgets
       ;
       ;\\ do reset data
       ;
-      MouseMask( ) &~ (#__mask_update) 
+      MouseMask( ) &~ (#__MASK_Update) 
       If Not MouseButtons( )
          If MouseRelease()
             Debug "last MouseRelease"
          EndIf
-         MouseMask( ) &~ (#__mask_release|#__mask_drag) 
+         MouseMask( ) &~ (#__MASK_Release|#__MASK_Drag) 
       EndIf
       ProcedureReturn result
    EndProcedure
@@ -24625,7 +24607,7 @@ Module widgets
       
       ;          ; Так как мы отрезали событие
       ;          If GetActive( )
-      ;             If Not GetActive( )\mask & #__mask_active
+      ;             If Not GetActive( )\mask & #__MASK_Active
       ;                SetActive( GetActive( ))
       ;             EndIf
       ;          EndIf
@@ -25573,7 +25555,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ;          Case #__EVENT_StatusChange
             ;                Debug 77
             If EventWidget( ) <> Root( )
-               If EventWidget( )\mask & #__mask_hover
+               If EventWidget( )\mask & #__MASK_Hover
                   If EventWidget( )\color\frame <> colorframe1
                      Repaint                    = 1
                      EventWidget( )\color\frame = colorframe1
@@ -25778,9 +25760,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 20183
-; FirstLine = 6956
-; Folding = CA+vLg-Bi-HAAAAAAAAAAAAAgA+FARoFBAkBAAAAAAAAAAAwGAAAAAgPAAAAAg9G-rPmM+--ASODEgDAAAQAAA9GYAAAADACgfAHwAAYAAAAAAAIAD5AMAAAwAAAAAAAgBAAAAAgJBKA9wQAAAA-BAYAAA5MwAAAAGwttcnvnz33-uh037-vpX--P9BjtJgCAABAAAAAAQAAAAAAAAAAwBc-AAA+nkJPAAABAAAAAT-vHAAyA7AD5wP+P+fHsvo-y8A9HAAAAAAAAA+XAAAAAAAAAAAkAAAAAAAQA-GAAAAAAAA+Hw-AAAAAAAAAAAAAAAAAAAw-xAAAAABuFAAAA--4-OA+WGAgBAAAAw-----H---------------PAAAAAAAAAAAAAww--H9L9-fAA-BAOBAwAKAAAAAAAAAAAAAAs-vAAA3DjNNnHxY9ODA+2HmB9sfP1HAcAAgxzDAwAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAAAAAAAAAAAAAAAAAAAAAAAAAAgZAf---BxBB8cAwz-8BAAA94nBAAKAee+v9tj85--------x---vHg-0f4fk-0B9n90X+P+--Zg-83XQB--fQMgJqLBMAAA-LfwvAMwA+xH0AwvEIwAIFAhgAAUFAAA9---DAAAAAAAAAAAAAA-DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgv0-ADAAAyBIAAAAA5fA9
+; CursorPosition = 23765
+; FirstLine = 12705
+; Folding = Cg-vLg-Bi-HAAAAAAAAFwpOFgA+FARoFBAkHsXgNAYIgXBAwGAA5PAgvBAAAAg9G-rPms---ASO-FgDAAAwAwH9HYEAfP8-DgfAHwBEaAA9dvDAIA8-Bs-bAy+BAIAAUj0fEEQAgJBKA+wQg-HA-BHb+DB5MwBAnBGwvtcnvnz33-uh037-vpX----f4v--8--6DAA6MAQAAAAAAAAcgwBc-AAA+nkJvzBA6DAvHPz--HyAyB7Pb50P+P+fHsvo-y8A9HAAACXDwYA+XwJlDAAAAAAAkAAAAAAA5A-GAAHAAAAA+Hw-AAAAAAAAAAAAAAAAAAAw-xAAAWYBuFAAAA--4-+I+WGAgBAAAAw-----H---------------PAAAAAAAAAAAAAww--H9L9-fAA-BAOBAwA79yfBvPPw2----+---bAAsHG88ffux50-w9r-O-8Z-eoPO7rJ-zn-YgfA+ADXg-R+Pe-Hu-+B++-6ivr5+Hg50-sDAAOcEAAClGqhWrJY9zPdAAAAA5x-AAAEOAAAAAA5AAAAAAAzA++--DiDC30Agn-4DAAB5vPDAE3D999f6bH4x--------j---ffE-8-u-5-8T7-08v0-0--4A-4tvgC+--gYATcXaYAAA+4+gfBYmB9jv8BgfJVjBQKAC-BAoKAAA5---PAAAAAAAAAAAAAA+HgAQwpTAg-PAAAAAAAKAAAAAAAAAAAAAAAw4+fgBAAA6AEAAAAA9PA+
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

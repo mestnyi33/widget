@@ -2,9 +2,7 @@
 ; 1. КОНСТАНТЫ, ПЕРЕЧИСЛЕНИЯ И СТРУКТУРЫ
 ; =========================================================================
 EnableExplicit
-Enumeration
-   #_BTN_Title    ; Сам заголовок (Иконка + Текст). Занимает всё свободное место!
-                  ; --- Кнопки управления (выстраиваются справа) ---
+Enumeration 1
    #_BTN_Close
    #_BTN_Maximize
    #_BTN_Minimize
@@ -22,40 +20,53 @@ EndEnumeration
 #_STYLE_Menu     = 1 << 5
 #_STYLE_Default  = #_STYLE_Minimize | #_STYLE_Maximize|#_STYLE_Close ; Стандартная тройка кнопок
 
-#__flag_Left   = 1<<0
-#__flag_Top  = 1<<1
-#__flag_Right  = 1<<2
-#__flag_Bottom  = 1<<3
-#__flag_Center = 1<<4
-
+#__MASK_Update    = 1 << 0
+#__MASK_Left      = 1 << 1;#__left   ; 2   move to left
+#__MASK_Top       = 1 << 2;#__top    ; 4   move to top
+#__MASK_Right     = 1 << 3;#__right  ; 8   move to right
+#__MASK_Bottom    = 1 << 4;#__bottom ; 16  move to bottom
+#__MASK_Center    = 1 << 5
 #__MASK_Hover     = 1 << 6
-; Маски состояний виджетов
-#_MASK_Hover    = 1 << 0
-#_MASK_Pressed  = 1 << 1
+#__MASK_Press  = 1 << 7
 
 Structure _s_POINT     : X.l : Y.l : EndStructure
 Structure _s_COORDINATE Extends _s_POINT : Width.l : Height.l : EndStructure
 Structure _s_IMG        Extends _s_COORDINATE : change.b : Image.i : EndStructure
 Structure _s_TXT        Extends _s_COORDINATE : change.b : Text.s : EndStructure
 
-
-Structure _s_TITLE_BUTTON Extends _s_COORDINATE
-   txt._s_TXT
-   img._s_IMG
-   type.l       
-   mask.q   
-   align.q
-   size.l
+Structure _s_ARROW
+   direction.b
+   type.b
+   size.a
 EndStructure
 
-Structure _s_TITLE
-   indent.a
+Structure _s_BOX Extends _s_COORDINATE
+   round.a
+   size.w
+   mask.q
+   ; checked.b
+EndStructure
+
+Structure _s_BTN Extends _s_BOX
+   ; color._s_color
+   arrow._s_arrow
+   type.l       
+EndStructure
+
+Structure _s_TITLEBAR
    spacing.a 
+   indent.a
+   List btn._s_BTN()
+EndStructure
+
+Structure _s_TITLE  Extends _s_BOX
+   spacing.a 
+   indent.a
    slant.a
    
-   bar._s_TITLE_BUTTON
-   List btn._s_TITLE_BUTTON()
-   *data
+   txt._s_TXT
+   img._s_IMG
+   bar._s_TITLEBAR
 EndStructure
 
 Structure _s_WIDGET Extends _s_COORDINATE
@@ -66,7 +77,7 @@ Structure _s_WIDGET Extends _s_COORDINATE
    
    ; --- ИНТЕГРАЦИЯ ЗАГОЛОВКА ---
    *title._s_TITLE ; Заголовок теперь является частью виджета!
-                      ; ----------------------------
+                   ; ----------------------------
    
    dragOffSet.i     ; Точка захвата мыши
    canvasID     .i  
@@ -80,11 +91,11 @@ LoadFont(0, "tahoma", 12)
 ; 2. ПРОЦЕДУРНЫЙ ДВИЖОК ЗАГОЛОВКА (СВЕТЛАЯ ПАЛИТРА)
 ; =========================================================================
 Procedure.i MakeAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i = 10)
-   If alignFlags & #__flag_Center
+   If alignFlags & #__MASK_Center
       ProcedureReturn (contentSize - objectSize) / 2
-   ElseIf alignFlags & #__flag_Right
+   ElseIf alignFlags & #__MASK_Right
       ProcedureReturn contentSize - objectSize - Offset
-   Else ; #__flag_Left
+   Else ; #__MASK_Left
       ProcedureReturn Offset
    EndIf
 EndProcedure
@@ -193,12 +204,56 @@ Procedure ChromeBox(vertical.b, x, y, w, h, isactive, currentcolor.l, localslant
 EndProcedure
 
 ;-
-Procedure UpdateContentSize(*btn._s_TITLE_BUTTON)
-   Protected._s_TXT *txt = *btn\txt
-   Protected._s_IMG *img = *btn\img
+
+
+; Расчет геометрии (расстановка элементов)
+Procedure UpdateTitleBar(*this._s_WIDGET)
+   Protected._s_BTN *btn
+   Protected._s_TITLE *t = *this\title
+   Protected Spacing = *t\bar\spacing
+   Protected Indent = *t\bar\indent
+   Protected right_x = *this\Width - *t\slant
+   
+   ; Этот цикл считает ТОЛЬКО кнопки управления. Никаких проверок типов!
+   If ListSize(*t\bar\btn())
+      right_x + Spacing - (Indent * 2)
+      ForEach *t\bar\btn()
+         *btn = @*t\bar\btn()
+         *btn\Width = *this\Height - Indent * 2
+         *btn\Height = *btn\Width
+         right_x - Spacing - *btn\Width
+         *btn\X = *this\X + right_x + Indent
+         *btn\Y = *this\Y + (*this\Height - *btn\Height) / 2
+         *btn\size = *btn\Height/4
+      Next
+   EndIf
+
+   ; Настраиваем изолированный заголовок напрямую
+   If *t
+      *t\Y = *this\Y
+      *t\X = *this\X + *t\slant 
+      *t\Width = right_x - *t\slant 
+      *t\Height = *this\Height
+   EndIf
+EndProcedure
+
+Procedure DrawTitleBar(*this._s_WIDGET, bgColor.l)
+   ; Настройки светлой палитры
+   Protected.l crossColor, symbolColor
+   Protected.l defaultColor = RGBA(80, 80, 80, 255)      ; Серые значки по умолчанию (хорошая читаемость)
+   Protected.l winSymbolColor = RGBA(50, 50, 50, 255)    ; Более темные значки при ховере
+   Protected.l textColor = RGBA(30, 30, 30, 255)         ; Почти черный текст заголовка
+   Protected size.l, paddingX.l, paddingY.l, vertical.b, round                                       ;= DesktopScaledX(20)
+   Protected contentX.l, contentY.l
+   Protected._s_TITLE *t = *this\title
+   Protected._s_TXT *txt = *t\txt
+   Protected._s_IMG *img = *t\img
+   Protected._s_BTN *btn
+   
+   Protected indent =  *t\indent ; (*this\Height - *t\img\Height)/2
    
    ; 1. Замеры метрик (Пишем сразу в структуру только при изменениях)
-   If *txt\change 
+   If *txt\change : *t\mask | #__MASK_Update
       *txt\change = #False
       If *txt\Text 
          *txt\width  = TextWidth(*txt\Text)
@@ -208,7 +263,7 @@ Procedure UpdateContentSize(*btn._s_TITLE_BUTTON)
       EndIf
    EndIf
    
-   If *img\change
+   If *img\change : *t\mask | #__MASK_Update
       *img\change = #False
       If IsImage(*img\Image)
          *img\width  = ImageWidth(*img\Image)
@@ -217,191 +272,55 @@ Procedure UpdateContentSize(*btn._s_TITLE_BUTTON)
          *img\width  = 0 : *img\height = 0
       EndIf
    EndIf
-EndProcedure
-
-Procedure UpdateContentPos(vertical.b, *btn._s_TITLE_BUTTON, indent.a, Spacing.a)
-   Protected contentX.l, contentY.l
-   Protected._s_TXT *txt = *btn\txt
-   Protected._s_IMG *img = *btn\img
    
-   If Not (*img\width And *txt\width) : Spacing  = 0 : EndIf
-     
-   ; 3. ЕДИНОВРЕМЕННОЕ ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ (Работаем напрямую со структурой)
-   If vertical
-      *txt\x = (*btn\width - *txt\width) >> 1
-      *img\x = (*btn\width - *img\width) >> 1
+   If *t\mask & #__MASK_Update
+      UpdateTitleBar(*this)
       
-      *txt\y = MakeAlignPosition(*btn\align, *btn\Height, *txt\height, indent)
-      *img\y = indent
-      
-      If Not (*btn\align & #__flag_Bottom)
-         If *img\height > 0 : *txt\y + *img\height + Spacing : EndIf
-      EndIf
-   Else
-      *txt\y = (*btn\height - *txt\height) >> 1
-      *img\y = (*btn\height - *img\height) >> 1
-      
-      *txt\x = MakeAlignPosition(*btn\align, *btn\Width,  *txt\width, indent)
-      *img\x = indent
-      
-      If Not (*btn\align & #__flag_Right)
-         If *img\width > 0 : *txt\x + *img\width + Spacing : EndIf
-      EndIf
-   EndIf
-EndProcedure
-
-; Расчет геометрии (расстановка элементов)
-Procedure UpdateTitleBar(*this._s_WIDGET)
-   Protected right_x = *this\Width
-   Protected._s_TITLE_BUTTON *btn
-   Protected._s_TITLE *t = *this\title
-   
-   If *t\slant
-     right_x  - *t\slant + *t\spacing
-   EndIf
-   
-   ; Этот цикл считает ТОЛЬКО кнопки управления. Никаких проверок типов!
-   ForEach *t\btn()
-      *btn = @*t\btn()
-      *btn\Width = *this\Height - *t\spacing*2
-      *btn\Height = *btn\Width
-      right_x - *btn\Width - *t\spacing
-      *btn\X = *this\X + right_x 
-      *btn\Y = *this\Y + (*this\Height - *btn\Height) / 2
-      *btn\size = *btn\Height/4
-   Next
-   
-   ; Настраиваем изолированный заголовок напрямую
-   If *t\bar
-      Protected *title._s_TITLE_BUTTON = *t\bar
-      If ListSize(*t\btn())
-         If *t\slant
-            *title\X = *this\X + *t\slant
-            *title\Y = *this\Y
-            *title\Width = right_x - *t\slant - *t\spacing
-            *title\Height = *this\Height
-         Else
-            *title\X = *this\X + *t\spacing
-            *title\Y = *this\Y
-            *title\Width = right_x - *t\spacing*2
-            *title\Height = *this\Height
+      If vertical
+         *txt\x = (*t\width - *txt\width) >> 1
+         *img\x = (*t\width - *img\width) >> 1
+         
+         *img\y = indent
+         *txt\y = MakeAlignPosition(*t\mask, *t\Height, *txt\height, indent)
+         
+         If Not (*t\mask & #__MASK_Bottom)
+            If *img\height > 0 : *txt\y + *img\height + *t\spacing : EndIf
          EndIf
       Else
-         If *t\slant
-            *title\X = *this\X + *t\slant
-            *title\Y = *this\Y
-            *title\Width = right_x - *t\slant - *t\spacing 
-            *title\Height = *this\Height
-         Else
-            *title\X = *this\X + *t\spacing 
-            *title\Y = *this\Y + *t\spacing 
-            *title\Width = right_x - *t\spacing * 2 
-            *title\Height = *this\Height - *t\spacing * 2
+         *txt\y = (*t\height - *txt\height) >> 1
+         *img\y = (*t\height - *img\height) >> 1
+         
+         *img\x = indent
+         *txt\x = MakeAlignPosition(*t\mask, *t\Width,  *txt\width, indent)
+         
+         If Not (*t\mask & #__MASK_Right)
+            If *img\width > 0 : *txt\x + *img\width + *t\spacing : EndIf
          EndIf
       EndIf
    EndIf
-EndProcedure
-
-; Внутренняя процедура добавления элемента значка/кнопки
-Procedure AddTitleBar(*t._s_TITLE, type.l, text.s = "", image.i = 0, align.a = #__flag_Left)
-   Protected._s_TITLE_BUTTON *btn
-   
-   If type = #_BTN_Title
-      *btn = @*t\bar
-   Else
-      *btn = AddElement(*t\btn())
-   EndIf
-   
-   *btn\type = type
-   
-   If text
-      *btn\txt\change = 1
-      *btn\txt\Text = text
-      *btn\txt\Width = DesktopScaledX(10)
-      *btn\txt\Height = DesktopScaledY(10)
-   EndIf
-   
-   If type = #_BTN_Title
-      *btn\size = DesktopScaledX(10) 
-      *btn\align = align
-      If IsImage(image)
-         *btn\img\change = 1
-      Else
-         *btn\img\Width = *btn\size*2
-         *btn\img\Height = *btn\size*2
-      EndIf
-   EndIf
-EndProcedure
-
-; Создание и инициализация заголовка окна
-Procedure CreateTitleBar(*t._s_TITLE, text.s, image.i = 0, flags.l = #_STYLE_Default)
-   *t\indent = DesktopScaledX(10)
-  ;*t\spacing = DesktopScaledX(10)
-  ;*t\slant = DesktopScaledX(20)
-  If *t\slant : *t\indent = 0 : EndIf
-  If *t\spacing : *t\indent = 0 : EndIf
-  
-   ; 1. В списке btn() теперь живут ТОЛЬКО кнопки управления справа
-   If flags & #_STYLE_Close :  AddTitleBar(*t, #_BTN_Close): EndIf
-   If flags & #_STYLE_Maximize : AddTitleBar(*t, #_BTN_Maximize) : EndIf
-   If flags & #_STYLE_Minimize : AddTitleBar(*t, #_BTN_Minimize) : EndIf
-   If flags & #_STYLE_Help     : AddTitleBar(*t, #_BTN_Help)     : EndIf
-   If flags & #_STYLE_Pin      : AddTitleBar(*t, #_BTN_Pin)      : EndIf
-   If flags & #_STYLE_Menu     : AddTitleBar(*t, #_BTN_Menu)     : EndIf
-   
-   Protected flag=#__flag_Left
-   Static i
-   If i = 1
-     flag = #__flag_Center
-  EndIf
-   If i = 2
-     flag = #__flag_Right
-  EndIf
-  AddTitleBar(*t, #_BTN_Title, text.s, image, flag)
-  i+1
- EndProcedure
-
-
-Procedure DrawTitleBar(*t._s_TITLE, bgColor.l, change.b = 0)
-   ; Настройки светлой палитры
-   Protected.l crossColor, symbolColor
-   Protected.l defaultColor = RGBA(80, 80, 80, 255)      ; Серые значки по умолчанию (хорошая читаемость)
-   Protected.l winSymbolColor = RGBA(50, 50, 50, 255)    ; Более темные значки при ховере
-   Protected.l textColor = RGBA(30, 30, 30, 255)         ; Почти черный текст заголовка
-   Protected round ;= DesktopScaledX(20)
-   
-   Protected *btn._s_TITLE_BUTTON = *t\bar
-   Protected size.l, paddingX.l, paddingY.l
    
    ; 1. Отрисовка заголовка
-   If *btn\type = #_BTN_Title
-      If *btn\txt\change Or *btn\img\change Or change
-         UpdateContentSize(*btn)
-         UpdateContentPos(0, *btn, *t\indent, DesktopScaledX(6))
-      EndIf
-      
-      size = *btn\size
-      Box(*btn\X, *btn\Y, *btn\Width, *btn\Height, RGBA(0, 0, 0, 20))    
-      Circle(*btn\X+*btn\img\X+size, *btn\Y+*btn\img\Y+size, size, RGBA(0, 120, 215, 255))
-      DrawText(*btn\X+*btn\txt\X, *btn\Y+*btn\txt\Y, *btn\txt\Text, textColor, 0)
-   EndIf
+   size = *t\size
+   Box(*t\X, *t\Y, *t\Width, *t\Height, RGBA(0, 0, 0, 20))    
+   Circle(*t\X+*t\img\X+size, *t\Y+*t\img\Y+size, size, RGBA(0, 120, 215, 255))
+   DrawText(*t\X+*t\txt\X, *t\Y+*t\txt\Y, *t\txt\Text, textColor, 0)
    
    ;
-   ForEach *t\btn()
-      *btn = @*t\btn()
+   ForEach *t\bar\btn()
+      *btn = @*t\bar\btn()
       
       size = *btn\size 
       round = *btn\Height
       
-      If Not *t\spacing
+      If Not *btn\round
          Box(*btn\X, *btn\Y, *btn\Width, *btn\Height, RGBA(0, 0, 0, 20))    
       EndIf
       
       ; 2. Обработка фона кнопок при наведении (Ховер в светлой теме)
-      If *btn\mask & #_MASK_Hover
+      If *btn\mask & #__MASK_Hover
          If *btn\type = #_BTN_Close
             ; Классический красный ховер закрытия (не меняется, но крестик становится белым)
-            If *t\spacing
+            If *btn\round
                size-DesktopScaledX(2)
                symbolColor = RGBA(232, 17, 35, 255)
                RoundBox(*btn\X, *btn\Y, *btn\Width, *btn\Height, round, round, RGBA(232, 17, 35, 255)) 
@@ -411,7 +330,7 @@ Procedure DrawTitleBar(*t._s_TITLE, bgColor.l, change.b = 0)
             crossColor = RGBA(255, 255, 255, 255) 
          Else
             ; Мягкий полупрозрачный серый ховер для остальных кнопок под светлую тему
-            If Not *t\spacing
+            If Not *btn\round
                Box(*btn\X, *btn\Y, *btn\Width, *btn\Height, RGBA(0, 0, 0, 20))    
             EndIf
             symbolColor = winSymbolColor
@@ -449,9 +368,9 @@ Procedure DrawTitleBar(*t._s_TITLE, bgColor.l, change.b = 0)
             DrawText(paddingX + DesktopScaledX(1), paddingY - DesktopScaledY(2), "?", symbolColor, 0)
       EndSelect
       
-      If *t\spacing
+      If *btn\round
          DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Outlined)
-         If *btn\mask & #_MASK_Hover
+         If *btn\mask & #__MASK_Hover
             RoundBox(*btn\X-1, *btn\Y-1, *btn\Width+2, *btn\Height+2,  round, round, symbolColor)    
          EndIf
          RoundBox(*btn\X, *btn\Y, *btn\Width, *btn\Height, round, round, symbolColor)    
@@ -460,48 +379,164 @@ Procedure DrawTitleBar(*t._s_TITLE, bgColor.l, change.b = 0)
       EndIf
       
    Next
+   
+   *t\mask &~ #__MASK_Update
 EndProcedure
 
-Procedure DoEventTitleBar( *btn._s_TITLE_BUTTON, event )
-   Protected windowID = EventWindow()
+; Создание и инициализация заголовка окна
+Procedure CreateTitleBar(text.s, image.i = 0, flags.l = #_STYLE_Default)
+   Protected *t._s_TITLE = AllocateStructure(_s_TITLE)
+   Protected._s_BTN *btn
+   Protected round
+  
+   *t\mask | #__MASK_Left : Static i : If i = 1 :   *t\mask | #__MASK_Center :  EndIf :  If i = 2 :  *t\mask | #__MASK_Right :  EndIf :  i+1
    
-   Select event
-      Case #PB_EventType_MouseEnter
-         If *btn\type <> #_BTN_Title
-            *btn\size = *btn\Height/2 
-         EndIf
-         
-      Case #PB_EventType_MouseLeave
-         If *btn\type <> #_BTN_Title
-            *btn\size = *btn\Height/4
-         EndIf
-      
-      Case #PB_EventType_LeftButtonDown
-         Select *btn\type
-            Case #_BTN_Close    
-               PostEvent(#PB_Event_CloseWindow, windowID, 0)
-            Case #_BTN_Maximize 
-               If GetWindowState(windowID) = #PB_Window_Maximize : SetWindowState(windowID, #PB_Window_Normal) : Else : SetWindowState(windowID, #PB_Window_Maximize) : EndIf
-            Case #_BTN_Minimize : SetWindowState(windowID, #PB_Window_Minimize)
-            Case #_BTN_Help     : MessageRequester("Инфо", "Нажата кнопка Справка")
-            Case #_BTN_Title     
-               CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-                  SendMessage_(WindowID(windowID), #WM_NCLBUTTONDOWN, #HTCAPTION, 0)
-               CompilerEndIf
-         EndSelect
-         
-      Case  #PB_EventType_LeftDoubleClick
-         If *btn\type = #_BTN_Title
-            If GetWindowState(windowID) = #PB_Window_Maximize
-               SetWindowState(windowID, #PB_Window_Normal)
-            Else
-               SetWindowState(windowID, #PB_Window_Maximize)
-            EndIf
-         EndIf
-   EndSelect
+   round = DesktopScaledX(20)
+   ;*t\slant = DesktopScaledX(20)
+   *t\bar\indent = DesktopScaledX(8)
+   *t\bar\spacing = DesktopScaledX(4)
+   
+   *t\indent  = DesktopScaledX(8)
+   *t\spacing  = DesktopScaledX(6)
+     
+   If *t\slant : *t\indent = 0 : EndIf
+   
+   *t\size = DesktopScaledX(10) 
+   
+   If text
+      *t\txt\Text = text
+      *t\txt\change = #True
+   EndIf
+   ;
+   If IsImage(image)
+      *t\img\image = Image 
+      *t\img\change = #True
+   Else
+      *t\img\Width = *t\size*2
+      *t\img\Height = *t\size*2
+   EndIf
+   
+   ; 1. В списке btn() теперь живут ТОЛЬКО кнопки управления справа
+   If flags & #_STYLE_Close :  *btn = AddElement(*t\bar\btn()) : *btn\type = #_BTN_Close : *btn\round = round : EndIf
+   If flags & #_STYLE_Maximize : *btn = AddElement(*t\bar\btn()) : *btn\type = #_BTN_Maximize : *btn\round = round : EndIf
+   If flags & #_STYLE_Minimize : *btn = AddElement(*t\bar\btn()) : *btn\type = #_BTN_Minimize : *btn\round = round : EndIf
+   If flags & #_STYLE_Help     : *btn = AddElement(*t\bar\btn()) : *btn\type = #_BTN_Help     : *btn\round = round : EndIf
+   If flags & #_STYLE_Pin      : *btn = AddElement(*t\bar\btn()) : *btn\type = #_BTN_Pin      : *btn\round = round : EndIf
+   If flags & #_STYLE_Menu     : *btn = AddElement(*t\bar\btn()) : *btn\type = #_BTN_Menu     : *btn\round = round : EndIf
+   ProcedureReturn *t
 EndProcedure
 
 ;-
+Procedure Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l)
+   If X <> #PB_Ignore
+      *this\X = DesktopScaledX(X)
+   EndIf
+   If Y <> #PB_Ignore
+      *this\Y = DesktopScaledY(Y)
+   EndIf
+   If Width <> #PB_Ignore
+      *this\Width = DesktopScaledX(Width)
+   EndIf
+   If Height <> #PB_Ignore
+      *this\Height = DesktopScaledY(Height)
+   EndIf
+   
+   *this\title\mask | #__MASK_Update
+EndProcedure
+
+Procedure Create( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, text.s, flags.l = #_STYLE_Default, image.i = 0)
+   *this\fontID = FontID(0)
+   *this\title = CreateTitleBar(text, image, flags)
+   Resize( *this, X, Y, Width, Height)
+EndProcedure
+
+Procedure SetStateTitleBar(*this._s_WIDGET, btn)
+   Protected windowID = EventWindow()
+   Select btn
+      Case #_BTN_Help : MessageRequester("Инфо", "Нажата кнопка Справка")
+      Case #_BTN_Close : PostEvent(#PB_Event_CloseWindow, windowID, 0)
+      Case #_BTN_Minimize : SetWindowState(windowID, #PB_Window_Minimize)
+      Case #_BTN_Maximize 
+         If GetWindowState(windowID) = #PB_Window_Maximize 
+            SetWindowState(windowID, #PB_Window_Normal) 
+         Else 
+            SetWindowState(windowID, #PB_Window_Maximize) 
+         EndIf
+         
+         ResizeGadget( *this\canvasID, #PB_Ignore, #PB_Ignore, WindowWidth(windowID), WindowHeight(windowID))
+         Resize( *this, #PB_Ignore, #PB_Ignore, WindowWidth(windowID)-20, #PB_Ignore)
+         ProcedureReturn #True
+   EndSelect        
+EndProcedure
+
+Procedure DoEvent( *this._s_WIDGET, event, mx, my)
+   Protected windowID = EventWindow()
+   Protected needRedraw = #False
+   Protected *t._s_TITLE = *this\title
+   Protected *btn._s_BTN
+   Protected shouldHover.b
+   Static._s_BTN *hoverBTN, *PressBTN
+   
+   If *hoverBTN And Not Bool( mx >= *hoverBTN\X And mx < *hoverBTN\X + *hoverBTN\Width And my >= *hoverBTN\Y And my < *hoverBTN\Y + *hoverBTN\Height )
+      *hoverBTN\mask &~ #__MASK_Hover
+      *hoverBTN\size = *hoverBTN\Height/4
+      *hoverBTN = 0
+   EndIf   
+   
+   If  Bool( mx >= *this\X And mx < *this\X + *this\Width And my >= *this\Y And my < *this\Y + *this\Height ) 
+      Select event
+         Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave, #PB_EventType_LeftButtonUp
+            If Bool(*t\mask & #__MASK_Hover) <> Bool( mx >= *t\X And mx < *t\X + *t\Width And my >= *t\Y And my < *t\Y + *t\Height )
+               *t\mask ! #__MASK_Hover ; Переключаем тумблер ховера (XOR)
+            EndIf
+            
+            If Not *t\mask & #__MASK_Hover
+               ; Всего ОДИН цикл для поиска и одновременного сброса/включения ховеров
+               ForEach *t\bar\btn()
+                  *btn = @*t\bar\btn()
+                  
+                  ; 2. Если текущее состояние маски кнопки не совпадает с реальностью
+                  If Bool(*btn\mask & #__MASK_Hover) <> Bool( mx >= *btn\X And mx < *btn\X + *btn\Width And my >= *btn\Y And my < *btn\Y + *btn\Height )
+                     *btn\mask ! #__MASK_Hover ; Переключаем тумблер ховера (XOR)
+                     
+                     ; Меням размеры геометрии значка
+                     If *btn\mask & #__MASK_Hover
+                        *btn\size = *btn\Height/2 
+                        *hoverBTN = *btn
+                     Else
+                        *btn\size = *btn\Height/4
+                     EndIf
+                     needredraw = #True
+                     Break
+                  EndIf
+               Next
+            EndIf
+            
+         Case #PB_EventType_LeftButtonDown
+            If *hoverBTN
+               *PressBTN = *hoverBTN
+               *PressBTN\mask | #__MASK_Press
+               
+               needRedraw = SetStateTitleBar( *this, *hoverBTN\type)
+            EndIf
+            
+         Case  #PB_EventType_LeftDoubleClick
+            If *PressBTN
+               *PressBTN\mask &~ #__MASK_Press
+               *PressBTN = 0
+            EndIf
+            
+            If *t\mask & #__MASK_Hover
+               needRedraw = SetStateTitleBar( *this, #_BTN_Maximize)
+            EndIf
+            
+      EndSelect
+   EndIf
+   
+   ProcedureReturn needRedraw
+EndProcedure
+
+
 Procedure RedrawCanvas(canvasID.i, List widgets._s_WIDGET())
    Protected gWidth = DesktopScaledX(GadgetWidth(canvasID))
    Protected gHeight = DesktopScaledY(GadgetHeight(canvasID))
@@ -522,107 +557,29 @@ Procedure RedrawCanvas(canvasID.i, List widgets._s_WIDGET())
             Box(*this\X, *this\Y, *this\Width, *this\Height, RGBA(230, 235, 240, 255))
          EndIf
          
-         DrawTitleBar(*this\title, RGBA(230, 235, 240, 255))
+         DrawTitleBar(*this, RGBA(230, 235, 240, 255))
+         
       Next
       
       StopDrawing()
    EndIf
 EndProcedure
 
-Procedure DoEvent( *this._s_WIDGET, event, mx, my)
-   Protected needRedraw = #False
-   Protected *btn._s_TITLE_BUTTON = *this\title\bar
-   Protected shouldHover.b
-   Static._s_TITLE_BUTTON *hoverBTN
-   
-   Select event
-      Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave, #PB_EventType_LeftButtonUp
-         If Bool(*btn\mask & #_MASK_Hover) <> Bool( mx >= *btn\X And mx < *btn\X + *btn\Width And my >= *btn\Y And my < *btn\Y + *btn\Height )
-            *btn\mask ! #_MASK_Hover ; Переключаем тумблер ховера (XOR)
-         EndIf
-         
-         ; Меням размеры геометрии значка
-         If *btn\mask & #_MASK_Hover
-            ; ТРЮК СБРОСА: Если мышь ушла с кнопок управления на главный заголовок,
-            ; принудительно гасим маску и размер у старой кнопки из списка
-            If *hoverBTN And *hoverBTN <> *btn
-               *hoverBTN\mask &~ #_MASK_Hover
-               DoEventTitleBar( *hoverBTN, #PB_EventType_MouseLeave )
-            EndIf
-            
-            *hoverBTN = *btn
-            needredraw = #True
-         Else
-            ; Всего ОДИН цикл для поиска и одновременного сброса/включения ховеров
-            ForEach *this\title\btn()
-               *btn = @*this\title\btn()
-               
-               ; 2. Если текущее состояние маски кнопки не совпадает с реальностью
-               If Bool(*btn\mask & #_MASK_Hover) <> Bool( mx >= *btn\X And mx < *btn\X + *btn\Width And my >= *btn\Y And my < *btn\Y + *btn\Height )
-                  *btn\mask ! #_MASK_Hover ; Переключаем тумблер ховера (XOR)
-                  
-                  ; Меням размеры геометрии значка
-                  If *btn\mask & #_MASK_Hover
-                     *hoverBTN = *btn
-                     DoEventTitleBar( *btn, #PB_EventType_MouseEnter )
-                  Else
-                     *hoverBTN = 0
-                     DoEventTitleBar( *btn, #PB_EventType_MouseLeave )
-                  EndIf
-                  needredraw = #True
-               EndIf
-            Next
-         EndIf
-         
-      Case #PB_EventType_LeftButtonDown
-         If *hoverBTN
-            DoEventTitleBar( *hoverBTN, event )
-            
-            ; Пересчитываем ширину, если окно развернули одинарным кликом:
-            If *hoverBTN\type = #_BTN_Maximize
-               UpdateTitleBar(*this)
-               needRedraw = #True
-            EndIf
-         EndIf
-         
-      Case  #PB_EventType_LeftDoubleClick
-         If *hoverBTN
-            If *hoverBTN\type = #_BTN_Title
-               DoEventTitleBar( *hoverBTN, event )
-               UpdateTitleBar(*this)
-               needRedraw = #True
-            EndIf
-         EndIf
-         
-   EndSelect
-   
-   ProcedureReturn needRedraw
-EndProcedure
-
-Procedure Create( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, text.s, flags.l = #_STYLE_Default, image.i = 0)
-   *this\fontID = FontID(0)
-   *this\X = DesktopScaledX(X)
-   *this\Y = DesktopScaledY(Y)
-   *this\Width = DesktopScaledX(Width)
-   *this\Height = DesktopScaledY(Height)
-   *this\title = AllocateStructure(_s_TITLE)
-   CreateTitleBar(*this\title, text, image, flags)
-   UpdateTitleBar(*this)
-EndProcedure
 
 ; =========================================================================
 ; 3. ОСНОВНОЙ ЦИКЛ ПРИЛОЖЕНИЯ И ИНИЦИАЛИЗАЦИЯ
 ; =========================================================================
 NewList Windows._s_WIDGET()
-; Создаем заголовки процедурно
-Create(AddElement(Windows()), 10, 20, 780, 40, "Главное окно программы (Window 1)", #_STYLE_Default, 101)
-Create(AddElement(Windows()), 10, 90, 780, 40, "Окно настроек системы (Window 2)", #_STYLE_Help|#_STYLE_Close, 102)
-Create(AddElement(Windows()), 10, 160, 780, 40, "Информационное сообщение (Window 3)", 0, 103)
-
-Define Event.i, mx.i, my.i, needRedraw.b
+Define Event.i, mx.i, my.i, needRedraw.b, *this._s_WIDGET
 If OpenWindow(0, 0, 0, 800, 230, "Light Titlebar Custom UI Demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    CanvasGadget(0, 0, 0, 800, 230)
+   
+   ; Создаем заголовки процедурно
+   Create(AddElement(Windows()), 10, 20, 780, 40, "Главное окно программы (Window 1)", #_STYLE_Default, 101)
+   Create(AddElement(Windows()), 10, 90, 780, 40, "Окно настроек системы (Window 2)", #_STYLE_Help|#_STYLE_Close, 102)
+   Create(AddElement(Windows()), 10, 160, 780, 40, "Информационное сообщение (Window 3)", 0, 103)
    RedrawCanvas(0, Windows())
+   
    Repeat
       Event = WaitWindowEvent()
       Select Event
@@ -631,8 +588,8 @@ If OpenWindow(0, 0, 0, 800, 230, "Light Titlebar Custom UI Demo", #PB_Window_Sys
                mx = GetGadgetAttribute(0, #PB_Canvas_MouseX)
                my = GetGadgetAttribute(0, #PB_Canvas_MouseY)
                
-               ForEach Windows()
-                  If DoEvent( @Windows(), EventType(), mx, my )
+               ForEach Windows() : *this = @Windows()
+                  If DoEvent( *this, EventType(), mx, my )
                      needRedraw = #True
                   EndIf
                Next
@@ -646,8 +603,8 @@ If OpenWindow(0, 0, 0, 800, 230, "Light Titlebar Custom UI Demo", #PB_Window_Sys
 EndIf
 
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 338
-; FirstLine = 235
-; Folding = -4--------fn+-----
+; CursorPosition = 44
+; FirstLine = 37
+; Folding = ----------------
 ; EnableXP
 ; DPIAware

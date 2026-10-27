@@ -537,10 +537,6 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Macro Sticked( ): widgets::__GUI\sticky\window: EndMacro
    
    ;-
-   Macro EnteredButton( ): mouse( )\button[1]: EndMacro
-   Macro PressedButton( ): mouse( )\button[2]: EndMacro
-   
-   ;-
    Macro Widget( ): widgets::__GUI\widget: EndMacro
    Macro EventWidget( ): widgets::Widget( ): EndMacro
    ;Macro EventWidget( ): widgets::__GUI\event\widget: EndMacro
@@ -561,6 +557,18 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Macro ActiveWindow( ): keyboard( )\window: EndMacro      ; Returns activeed window
    Macro ActiveGadget( ): ActiveWindow( )\gadget: EndMacro  ; Returns activeed gadget
    Macro ActiveBar( ): ActiveWindow( )\gadget\bar\gadget: EndMacro ; Returns activeed gadget
+   
+   ;-
+   Macro EnteredButton( ): mouse( )\btn[0]: EndMacro
+   Macro PressedButton( ): mouse( )\btn[1]: EndMacro
+   
+   ;-
+   Macro TitleText( ): text: EndMacro
+   Macro GetTitle( window ): widgets::GetText( window ): EndMacro
+   Macro CloseButton( ): title\bar\btn[#__wb_close]: EndMacro
+   Macro MaximizeButton( ): title\bar\btn[#__wb_maxi]: EndMacro
+   Macro MinimizeButton( ): title\bar\btn[#__wb_mini]: EndMacro
+   
    
    ;-
    Macro StartPrevRow(_ptr_, _object_ )
@@ -799,14 +807,6 @@ CompilerIf Not Defined( widgets, #PB_Module )
       InsertString( UCase( Left( String, 1 )), LCase( Right( String, Len( String ) - 1 )), 2 )
    EndMacro
    
-   
-   ;-
-   Macro TitleText( ): text: EndMacro
-   Macro GetTitle( window ): widgets::GetText( window ): EndMacro
-   Macro CloseButton( ): caption\button[#__wb_close]: EndMacro
-   Macro MaximizeButton( ): caption\button[#__wb_maxi]: EndMacro
-   Macro MinimizeButton( ): caption\button[#__wb_mini]: EndMacro
-   Macro HelpButton( ): caption\button[#__wb_help]: EndMacro
    
    ;-
    Macro clip_ix( ): X[#__c_idraw]: EndMacro
@@ -1985,8 +1985,8 @@ CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 803
-; FirstLine = 601
-; Folding = 9AcMC9-E5+---------fNXG------fAA---DAECQA9
+; CursorPosition = 569
+; FirstLine = 463
+; Folding = 9AcMC9-E5+----------vmLj-----PAg---BACBIA+
 ; EnableXP
 ; DPIAware

@@ -130,10 +130,9 @@
       #__arrow_type = -1 ; ;-1 ;0 ;1
       
       ; caption bar buttons
-      #__wb_Close = 1
-      #__wb_Maxi  = 2
-      #__wb_Mini  = 3
-      #__wb_help  = 4
+      #__wb_Close = 0
+      #__wb_Maxi  = 1
+      #__wb_Mini  = 2
       
       #__sOC = SizeOf(Character)
       
@@ -371,46 +370,42 @@
       ; ==============================================================================
       ;- МАСКИ - Единые битовые константы (Quad)
       ; ==============================================================================
-      #__MASK_none      = 0
-      #__MASK_update    = 1 << 0         ; Флаг: Требуется пересчет геометрии (для всех) (TextWidth и т.д.) нужно пересчитать координаты X для каретки/выделения.
+      #__MASK_None      = 0
+      #__MASK_Center    = 1 << 0
+      #__MASK_Left      = 1 << #__left   ; 2   move to left
+      #__MASK_Top       = 1 << #__top    ; 4   move to top
+      #__MASK_Right     = 1 << #__right  ; 8   move to right
+      #__MASK_Bottom    = 1 << #__bottom ; 16  move to bottom
       
-      #__MASK_left      = 1 << #__left   ; 2   move to left
-      #__MASK_top       = 1 << #__top    ; 4   move to top
-      #__MASK_right     = 1 << #__right  ; 8   move to right
-      #__MASK_bottom    = 1 << #__bottom ; 16  move to bottom
-      #__MASK_center    = 1 << 5
+      #__MASK_Update    = 1 << 5         ; Флаг: Требуется пересчет геометрии (для всех) (TextWidth и т.д.) нужно пересчитать координаты X для каретки/выделения.
+      #__MASK_Redraw    = 1 << 6        ; Флаг: Требуется перерисовка
       
-      #__MASK_hover     = 1 << 6
-      #__MASK_press     = 1 << 7         ; 64  button press
-      #__MASK_release   = 1 << 8         ; 128 button release
-      #__MASK_focus     = 1 << 9         ; Виджет в фокусе / Строка выбрана / Окно активно
-      #__MASK_active    = 1 << 10        ; Виджет в фокусе / Строка выбрана / Окно активно
-      #__MASK_drag      = 1 << 11        ; Состояние перетаскивания Объект в процессе перетаскивания
-      #__MASK_redraw    = 1 << 12        ; Флаг: Требуется перерисовка
+      #__MASK_Hover     = 1 << 7
+      #__MASK_Hover_a = 1 << 25
+      #__MASK_Hover_in = 1 << 26
+      #__MASK_Visible = 1 << 27
       
-      #__MASK_hide      = 1 << 14        ; Объект скрыт изначально (базовый флаг)
-      #__MASK_disable   = 1 << 15        ; Объект заблокирован изначально (базовый флаг)
-      #__MASK_hidden    = 1 << 16        ; Фактическое текущее состояние скрытия
-      #__MASK_disabled  = 1 << 17        ; Фактическое текущее состояние блокировки
-                                         ;#__MASK_cursor    = 1 << 18
-                                         ;
-      #__MASK_resize    = 1 << 19
-      #__MASK_minimize  = 1 << 30
-      #__MASK_maximize  = 1 << 31
+      #__MASK_Press     = 1 << 8         ; 64  button press
+      #__MASK_Active    = 1 << 9        ; Виджет в фокусе / Строка выбрана / Окно активно
+      #__MASK_Drag      = 1 << 10        ; Состояние перетаскивания Объект в процессе перетаскивания
+      #__MASK_Check     = 1 << 11
+      #__MASK_Release   = 1 << 12         ; 128 button release
       
-      #__maskrow_edit      = 1 << 21        ; Выделение (Строка)
-      #__maskrow_change    = 1 << 22        ; текст изменился, надо перепарсить токены.
-      #__maskrow_node      = 1 << 23        ; Является узлом (Строка) / Деревом (Виджет)
-      #__maskrow_collapsed = 1 << 24        ; Свернуто (Узел/Ветка)
+      #__MASK_Hide      = 1 << 14        ; Объект скрыт изначально (базовый флаг)
+      #__MASK_Disable   = 1 << 15        ; Объект заблокирован изначально (базовый флаг)
+      #__MASK_Hidden    = 1 << 16        ; Фактическое текущее состояние скрытия
+      #__MASK_Disabled  = 1 << 17        ; Фактическое текущее состояние блокировки
+                                        
+      #__MASK_Resize    = 1 << 18
+      #__MASK_Minimize  = 1 << 19
+      #__MASK_Maximize  = 1 << 20
       
-      #__MASK_hover_a = 1 << 25
-      #__MASK_hover_in = 1 << 26
-      #__MASK_visible = 1 << 27
-      ;#__MASK_checked = 1 << 28
-      
-      ;#__MASK_tokken    = 1 << 20
-      #__MASK_intersect    = 1 << 30
-      ;
+      ;#__maskrow_edit      = 1 << 21        ; Выделение (Строка)
+      ;#__maskrow_change    = 1 << 22        ; текст изменился, надо перепарсить токены.
+      ;#__maskrow_node      = 1 << 23        ; Является узлом (Строка) / Деревом (Виджет)
+      ;#__maskrow_collapsed = 1 << 24        ; Свернуто (Узел/Ветка)
+       
+       ;
       ;-\\ create-type
       #__TYPE_Root          = - 1
       #__TYPE_Window        = - 2
@@ -720,8 +715,8 @@
       EndDeclareModule : Module Constants : EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 450
-; FirstLine = 446
+; CursorPosition = 390
+; FirstLine = 381
 ; Folding = ----
 ; Optimizer
 ; EnableXP

@@ -12,6 +12,26 @@ EndIf
 ; =====================================================================
 ; 1. КОНСТАНТЫ И ФЛАГИ
 ; =====================================================================
+Enumeration
+   #_BTN_Title    ; Сам заголовок (Иконка + Текст). Занимает всё свободное место!
+                  ; --- Кнопки управления (выстраиваются справа) ---
+   #_BTN_Close
+   #_BTN_Maximize
+   #_BTN_Minimize
+   #_BTN_Help        
+   #_BTN_Pin         
+   #_BTN_Menu        
+EndEnumeration
+
+; Битовые флаги для процедурного создания заголовка
+#_STYLE_Close = 1 << 0
+#_STYLE_Minimize = 1 << 1
+#_STYLE_Maximize = 1 << 2
+#_STYLE_Help     = 1 << 3
+#_STYLE_Pin      = 1 << 4
+#_STYLE_Menu     = 1 << 5
+#_STYLE_Default  = #_STYLE_Minimize | #_STYLE_Maximize|#_STYLE_Close ; Стандартная тройка кнопок
+
 #__flag_Left   = 0
 #__flag_Top  = 1
 #__flag_Right  = 2
@@ -68,21 +88,22 @@ Structure _s_IMG Extends _s_COORDINATE
    change.b
 EndStructure
 
-Structure _s_TAB Extends _s_COORDINATE
-    ID.l             ; Номер элемента в списке данных строки (0, 1, 2...) 
+Structure _s_BTN Extends _s_COORDINATE
+   ID.l             ; Номер элемента в списке данных строки (0, 1, 2...) 
+   type.l       
    pos.l
    size.l
-   
+   mask.q   
+   align.q
+   txt._s_TXT
+   img._s_IMG
+EndStructure
+
+Structure _s_TAB Extends _s_BTN
    ; Поля для идеальной математики плавного сдвига
    offset.l           ; Динамический визуальный сдвиг
-   minOffset.l     ; Левый ограничитель хода
-   maxOffset.l     ; Правый ограничитель хода
-   
-   align.a             ; Выравнивание
-   ; mask.q           ; Маска конкретной вкладки
-   
-   txt._s_TXT       ; Имя поля заголовка
-   img._s_IMG
+   minOffset.l        ; Левый ограничитель хода
+   maxOffset.l        ; Правый ограничитель хода
    
    StructureUnion
       *data 
@@ -93,15 +114,17 @@ EndStructure
 Structure _s_TABS
    *active._s_TAB   
    *press._s_TAB  ; Указатель на перетаскиваемую вкладку
-    plus._s_TAB ; <--- Одиночная структура кнопки ПЛЮС
-
-    slant.a
-    align.a               
+   plus._s_TAB    ; <--- Одиночная структура кнопки ПЛЮС
+   
+   slant.a
+   align.a               
    indent.a 
    spacing.a             
    
    vertical.b
-   TotalSize.l          
+   TotalSize.l       
+   
+   List btn._s_BTN()
    List _s._s_TAB()  ; Заголовки вкладок
 EndStructure
 
@@ -151,7 +174,7 @@ Procedure.i MakeAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.
 EndProcedure
 
 Procedure ChromeBox(vertical.b, x, y, w, h, isactive, currentcolor.l, localslant.a, GradientDepth = 65, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
-  Protected dy, dh = h - 1, dw = w - 1
+   Protected dy, dh = h - 1, dw = w - 1
    If h <= 0 Or w <= 0 : ProcedureReturn : EndIf 
    
    ; Корректируем скос в зависимости от режима
@@ -330,7 +353,7 @@ Procedure UpdateTab(*this._s_WIDGET, *tab._s_TAB, position.l, change.b=0)
       ; 1. Замеры метрик (Пишем сразу в структуру только при изменениях)
       UpdateContentSize(*tab)
       
-     ; 2. Расчет отступа и размеров таба напрямую через структуру
+      ; 2. Расчет отступа и размеров таба напрямую через структуру
       If *img\width And *txt\width
          Protected Spacing.i  = DesktopScaledX(6)
       EndIf
@@ -356,7 +379,7 @@ Procedure UpdateTab(*this._s_WIDGET, *tab._s_TAB, position.l, change.b=0)
          *tab\height = gHeight - BottomSpacing
       EndIf 
       
-       ; 3. ЕДИНОВРЕМЕННОЕ ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ (Работаем напрямую со структурой)
+      ; 3. ЕДИНОВРЕМЕННОЕ ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ (Работаем напрямую со структурой)
       UpdateContentPos(*tab, indent, Spacing, vertical)
    EndIf
    
@@ -396,7 +419,7 @@ EndProcedure
 Procedure DrawTab(*tab._s_TAB, slant, bgColor.l=$FF808080, vertical.b=0, isActive.b=0)
    Protected txColor 
    
-    If isActive ; *tab\mask & #__MASK_active
+   If isActive Or *tab\mask & #__MASK_Hover  ; *tab\mask & #__MASK_active
       txColor = $FF000000
       ChromeBox(vertical, *tab\x, *tab\y, *tab\width, *tab\Height+bottomSpacing, 1, bgColor, slant)
    Else
@@ -411,7 +434,7 @@ Procedure DrawTab(*tab._s_TAB, slant, bgColor.l=$FF808080, vertical.b=0, isActiv
    
    ; 3. ОТРИСОВКА ТЕКСТА
    If *tab\txt\Width Or *tab\txt\Height
-       DrawText(*tab\x + *tab\txt\x, *tab\y + *tab\txt\y, *tab\txt\Text, txColor,  bgColor)
+      DrawText(*tab\x + *tab\txt\x, *tab\y + *tab\txt\y, *tab\txt\Text, txColor,  bgColor)
    EndIf
 EndProcedure
 
@@ -425,15 +448,15 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB)
    Protected floorcolor =  MakeColor( bgColor, -30)
    
    ;LineXY(*this\x, *this\y+*this\Height - 1, *this\x+*this\Width, *this\y+*this\Height - 1, $ff000000);floorcolor)
-    If *this\change 
-       change = *this\change
-       *this\change = 0
-    EndIf
-    
+   If *this\change 
+      change = *this\change
+      *this\change = 0
+   EndIf
+   
    ForEach *this\tab\_s()
       *tab = @*this\tab\_s()
       ;
-     position + UpdateTab(*this, *tab, position, change)
+      position + UpdateTab(*this, *tab, position, change)
       
       ; Слой 1: Статичные
       If *tab <> *current_tab
@@ -483,7 +506,22 @@ Procedure ReDraw(*this._s_WIDGET)
 EndProcedure
 
 ;-
-Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
+Procedure DoEventBTN( *btn._s_BTN, event )
+   Protected windowID = EventWindow()
+   
+   Select event
+      Case #PB_EventType_MouseEnter
+         
+      Case #PB_EventType_MouseLeave
+         
+      Case #PB_EventType_LeftButtonDown
+         
+      Case  #PB_EventType_LeftDoubleClick
+         
+   EndSelect
+EndProcedure
+
+Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
    Protected *current_tab._s_TAB
    Protected *tab._s_TAB
    Protected stepSize.i
@@ -493,67 +531,16 @@ Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
    mousePos - *this\tab\indent 
    
    Select event
-      Case #PB_EventType_LeftButtonDown
-         
-         *this\dragOffSet = mousePos
-         
-         ; ЦИКЛ 1: Находим вкладку, на которую кликнули (с учетом наложения скосов)
-         ForEach *this\tab\_s()
-            *tab = @*this\tab\_s()
-            If mousePos >= *tab\pos And mousePos < *tab\pos + *tab\size
-               *current_tab = *tab
-               Break
-            EndIf
-         Next
-         
-         *this\tab\active = *current_tab
-         *this\tab\press = *current_tab
-         
-         ; ЦИКЛ 2: Выполняем раздвижку, лимиты и расчет стартового offset за один проход
-         If *current_tab
-            ; Шаг сдвига уменьшен на величину наложения скоса (slant)
-            stepSize = (*current_tab\size - slant) + *this\tab\spacing
-            
-            ForEach *this\tab\_s()
-               *tab = @*this\tab\_s()
-               
-               If *tab = *current_tab
-                  isBeforeDragged = #False 
-                  *tab\offset = mousePos - *this\dragOffSet
-                  Continue ; Лимиты для dragged запишем сразу после цикла
-               EndIf
-               
-               ; 1. Сдвигаем базовый X только для вкладок левее нажатой
-               If isBeforeDragged
-                  *tab\pos + stepSize
-               EndIf
-               
-               ; 2. Расчет лимитов хода (использует уже обновленный *tab\pos)
-               *tab\minOffset = accumulatedSize - *tab\pos
-               *tab\maxOffset = accumulatedSize - *tab\pos + stepSize
-               accumulatedSize + (*tab\size - slant) + *this\tab\spacing
-               
-               ; 3. Пропорция инициализации offset (модифицирована под размер с учетом наложения)
-               *tab\offset = *tab\pos - *current_tab\pos - *current_tab\offset
-               *tab\offset - stepSize
-               *tab\offset * stepSize / ((*tab\size - slant) + *this\tab\spacing)
-               
-               ; Ограничители хода
-               If *tab\offset < *tab\minOffset : *tab\offset = *tab\minOffset : EndIf
-               If *tab\offset > *tab\maxOffset : *tab\offset = *tab\maxOffset : EndIf
-            Next
-            
-            ; Финальная запись лимитов и проверка границ для самой перетаскиваемой вкладки
-            *current_tab\minOffset = -*current_tab\pos 
-            *current_tab\maxOffset = -*current_tab\pos + accumulatedSize 
-            
-            If *current_tab\offset < *current_tab\minOffset : *current_tab\offset = *current_tab\minOffset : EndIf
-            If *current_tab\offset > *current_tab\maxOffset : *current_tab\offset = *current_tab\maxOffset : EndIf
-            
-            ProcedureReturn #True
-         EndIf
-         
       Case #PB_EventType_MouseMove
+         ;          ForEach *this\tab\_s()
+         ;             *tab = @*this\tab\_s()
+         ;             If mousePos >= *tab\pos And mousePos < *tab\pos + *tab\size
+         ;                ;Debug *tab\txt\Text
+         ;                Break
+         ;             EndIf
+         ;          Next
+         
+         
          *current_tab = *this\tab\press
          If *current_tab
             stepSize = (*current_tab\size - slant) + *this\tab\spacing
@@ -582,6 +569,67 @@ Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
             ProcedureReturn #True
          EndIf
          
+      Case #PB_EventType_LeftButtonDown
+         
+         *this\dragOffSet = mousePos
+         
+         ; ЦИКЛ 1: Находим вкладку, на которую кликнули (с учетом наложения скосов)
+         ; Debug " "+*hoverTAB
+         ForEach *this\tab\_s()
+            *tab = @*this\tab\_s()
+            If mousePos >= *tab\pos And mousePos < *tab\pos + *tab\size
+               *hoverTAB = *tab
+               Break
+            EndIf
+         Next
+         ;          Debug " - "+*hoverTAB
+         *this\tab\active = *hoverTAB
+         *this\tab\press = *hoverTAB
+         
+         ; ЦИКЛ 2: Выполняем раздвижку, лимиты и расчет стартового offset за один проход
+         If *hoverTAB
+            ; Шаг сдвига уменьшен на величину наложения скоса (slant)
+            stepSize = (*hoverTAB\size - slant) + *this\tab\spacing
+            
+            ForEach *this\tab\_s()
+               *tab = @*this\tab\_s()
+               
+               If *tab = *hoverTAB
+                  isBeforeDragged = #False 
+                  *tab\offset = mousePos - *this\dragOffSet
+                  Continue ; Лимиты для dragged запишем сразу после цикла
+               EndIf
+               
+               ; 1. Сдвигаем базовый X только для вкладок левее нажатой
+               If isBeforeDragged
+                  *tab\pos + stepSize
+               EndIf
+               
+               ; 2. Расчет лимитов хода (использует уже обновленный *tab\pos)
+               *tab\minOffset = accumulatedSize - *tab\pos
+               *tab\maxOffset = accumulatedSize - *tab\pos + stepSize
+               accumulatedSize + (*tab\size - slant) + *this\tab\spacing
+               
+               ; 3. Пропорция инициализации offset (модифицирована под размер с учетом наложения)
+               *tab\offset = *tab\pos - *hoverTAB\pos - *hoverTAB\offset
+               *tab\offset - stepSize
+               *tab\offset * stepSize / ((*tab\size - slant) + *this\tab\spacing)
+               
+               ; Ограничители хода
+               If *tab\offset < *tab\minOffset : *tab\offset = *tab\minOffset : EndIf
+               If *tab\offset > *tab\maxOffset : *tab\offset = *tab\maxOffset : EndIf
+            Next
+            
+            ; Финальная запись лимитов и проверка границ для самой перетаскиваемой вкладки
+            *hoverTAB\minOffset = -*hoverTAB\pos 
+            *hoverTAB\maxOffset = -*hoverTAB\pos + accumulatedSize 
+            
+            If *hoverTAB\offset < *hoverTAB\minOffset : *hoverTAB\offset = *hoverTAB\minOffset : EndIf
+            If *hoverTAB\offset > *hoverTAB\maxOffset : *hoverTAB\offset = *hoverTAB\maxOffset : EndIf
+            
+            ProcedureReturn #True
+         EndIf
+         
       Case #PB_EventType_LeftButtonUp
          *current_tab = *this\tab\press
          If *current_tab
@@ -606,12 +654,132 @@ Procedure DoTabEvents(*this._s_WIDGET, event.i, mousePos.i)
    EndSelect
 EndProcedure
 
+Procedure DoEvent( *this._s_WIDGET, event, mx, my)
+   Protected needRedraw = #False
+   Protected *btn._s_TAB; = *this\tab\bar
+   Protected shouldHover.b, mousePos
+   Static._s_TAB *hoverBTN
+   If *this\tab\vertical
+      mousePos = my - *this\tab\indent
+   Else
+      mousePos = mx - *this\tab\indent
+   EndIf
+   
+   Select event
+      Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave, #PB_EventType_LeftButtonUp
+         
+         Protected._s_TAB *tab
+         Static._s_TAB *hoverTAB
+         
+         Protected localslant = *this\Tab\slant
+         
+         ; ЦИКЛ 1: Находим вкладку под курсором и сбрасываем старые ховеры
+         ForEach *this\tab\_s() : *tab = @*this\tab\_s()
+            ; ВАЖНО: Сбрасываем флаг для текущей вкладки на каждой итерации
+            Protected atPoint = 0 
+            
+            ; 1. Проверяем, попадает ли мышь в границы по вертикали (Y) и общие границы по ширине (X)
+            If my >= *tab\Y And my < *tab\Y + *tab\Height And mx >= *tab\X And mx < *tab\X + *tab\Width
+               If localslant
+                  ; 2. Вычисляем точный отступ скоса для текущей строки `my`
+                  Protected dy = my - *tab\Y
+                  Protected currentSlant = ((*tab\Height - 1 - dy) * localslant) / *tab\Height
+                  
+                  ; 3. Проверяем, зашла ли мышь внутрь левого и правого наклонных треугольников
+                  If mx >= (*tab\X + currentSlant) And mx < (*tab\X + *tab\Width - currentSlant)
+                     atPoint = 1
+                  EndIf
+               EndIf
+            EndIf
+            
+            ; Если состояние маски не совпадает с реальным положением мыши
+            If Bool(*tab\mask & #__MASK_Hover) <> atPoint
+               *tab\mask ! #__MASK_Hover ; Переключаем тумблер (XOR)
+               needredraw = #True
+               
+               If *tab\mask & #__MASK_Hover
+                  ; --- МЫШКА ВОШЛА НА ВКЛАДКУ ---
+                  ; Если до этого горела кнопка на другой вкладке - гасим её
+                  If *hoverBTN And *hoverBTN\mask & #__MASK_Hover
+                     *hoverBTN\mask &~ #__MASK_Hover
+                     DoEventBTN( *hoverBTN, #PB_EventType_MouseLeave )
+                     *hoverBTN = 0
+                  EndIf
+                  
+                  ; Если была другая активная вкладка, сбрасываем её принудительно
+                  If *hoverTAB And *hoverTAB <> *tab And (*hoverTAB\mask & #__MASK_Hover)
+                     *hoverTAB\mask &~ #__MASK_Hover
+                     DoEventTAB( *this, *hoverTAB, #PB_EventType_MouseLeave, mousePos )
+                  EndIf
+                  
+                  *hoverTAB = *tab
+                  DoEventTAB( *this, *tab, #PB_EventType_MouseEnter, mousePos )
+               Else
+                  ; --- МЫШКА ВЫШЛА ИЗ ВКЛАДКИ ---
+                  DoEventTAB( *this, *tab, #PB_EventType_MouseLeave, mousePos )
+                  If *hoverTAB = *tab
+                     *hoverTAB = 0
+                  EndIf
+               EndIf
+               
+               ; ВАЖНО: Убран Break! Цикл должен проверить ВСЕ вкладки, 
+               ; чтобы одновременно включить одну и выключить другую.
+            EndIf
+         Next
+         
+         
+         
+         ; Всего ОДИН цикл для поиска и одновременного сброса/включения ховеров
+         If *hoverTAB And *hoverTAB\mask & #__MASK_Hover
+            ForEach *this\tab\btn()
+               *btn = @*this\tab\btn()
+               
+               ; 2. Если текущее состояние маски кнопки не совпадает с реальностью
+               If Bool(*btn\mask & #__MASK_Hover) <> Bool( mx >= *btn\X And mx < *btn\X + *btn\Width And my >= *btn\Y And my < *btn\Y + *btn\Height )
+                  *btn\mask ! #__MASK_Hover ; Переключаем тумблер ховера (XOR)
+                  needredraw = #True
+                  
+                  ; Меням размеры геометрии значка
+                  If *btn\mask & #__MASK_Hover
+                     *hoverBTN = *btn
+                     DoEventBTN( *btn, #PB_EventType_MouseEnter )
+                  Else
+                     *hoverBTN = 0
+                     DoEventBTN( *btn, #PB_EventType_MouseLeave )
+                  EndIf
+               EndIf
+            Next
+         EndIf
+         
+      Case #PB_EventType_LeftButtonDown
+         If *hoverBTN
+            DoEventBTN( *hoverBTN, event )
+         EndIf
+         
+   EndSelect
+   
+   If Not *hoverBTN
+      If *this\tab\vertical
+         If DoEventTAB( *this, *hoverTAB, event, my)
+            ProcedureReturn #True
+         EndIf
+      Else
+         If DoEventTAB( *this, *hoverTAB, event, mx)
+            ProcedureReturn #True
+         EndIf
+      EndIf
+   EndIf
+   
+   ProcedureReturn needRedraw
+EndProcedure
+
 Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, Image.i = 0, align.a = #__flag_Left)
    Protected *tab._s_TAB = AddElement(*this\tab\_s())
    
    *tab\ID        = ID
-   *tab\align     = align
+   *tab\align    = align
    *tab\size      = DesktopScaledY(size)
+   
    If Text
       *tab\txt\text  = Text
       *tab\txt\change = 1
@@ -646,12 +814,14 @@ Procedure CreateTab( Canvas, x.l,y.l,width.l,height.l )
    ProcedureReturn *this
 EndProcedure
 
+
 ; =====================================================================
 ; 4. ДЕМОНСТРАЦИОННЫЙ ЗАПУСК
 ; =====================================================================
 
 #Win = 0
 #Canvas = 0
+
 
 Procedure Resize_(*this._s_WIDGET)
    *this\change = 1
@@ -696,23 +866,19 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
             Resize_( *this )
          EndIf
          
-         If *this\tab\vertical
-            If DoTabEvents( *this, EventType(), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseY))
-               ReDraw(*this)
-            EndIf
-         Else
-            If DoTabEvents( *this, EventType(), GetGadgetAttribute(#Canvas, #PB_Canvas_MouseX))
-               ReDraw( *this)
-            EndIf
+         If DoEvent( *this, EventType(),
+                     GetGadgetAttribute(#Canvas, #PB_Canvas_MouseX), 
+                     GetGadgetAttribute(#Canvas, #PB_Canvas_MouseY))
+            ReDraw( *this)
          EndIf
       EndIf
       
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 321
-; FirstLine = 311
-; Folding = P----------------
+; CursorPosition = 876
+; FirstLine = 852
+; Folding = --------------------
 ; EnableXP
 ; EnableOnError
 ; EnableUnicode
