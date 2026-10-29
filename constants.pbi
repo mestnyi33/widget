@@ -358,14 +358,11 @@
       ; .i (Integer) — 32 или 64 бита (зависит от разрядности системы x86/x64)
       ; .q (Quad) — 64 бита (64 флага)
       
-      #__text_editable  = 1 << 0 ; Будет 1  (2^0)
-      #__text_pass      = 1 << 1 ; Будет 2  (2^1)
-      #__text_lower     = 1 << 2 ; Будет 4  (2^2)
-      #__text_upper     = 1 << 3 ; Будет 8  (2^3)
-      #__text_numeric   = 1 << 4 ; Будет 16 (2^4)
-      #__text_multiline = 1 << 5 ; Будет 32 (2^5)
-      #__text_invert    = 1 << 6 ; Будет 64 (2^6)
-      #__text_vertical  = 1 << 7 ; Будет 128(2^7)
+      #__TEXTMASK_Editable  = 1 << 0 ; Будет 1  (2^0)
+      #__TEXTMASK_Pass      = 1 << 1 ; Будет 2  (2^1)
+      #__TEXTMASK_Lower     = 1 << 2 ; Будет 4  (2^2)
+      #__TEXTMASK_Upper     = 1 << 3 ; Будет 8  (2^3)
+      #__TEXTMASK_Numeric   = 1 << 4 ; Будет 16 (2^4)
       
       ; ==============================================================================
       ;- МАСКИ - Единые битовые константы (Quad)
@@ -715,8 +712,8 @@
       EndDeclareModule : Module Constants : EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 390
-; FirstLine = 381
+; CursorPosition = 365
+; FirstLine = 351
 ; Folding = ----
 ; Optimizer
 ; EnableXP

@@ -558,6 +558,12 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Macro ActiveGadget( ): ActiveWindow( )\gadget: EndMacro  ; Returns activeed gadget
    Macro ActiveBar( ): ActiveWindow( )\gadget\bar\gadget: EndMacro ; Returns activeed gadget
    
+   Macro ScrollToActive( _state_ )
+            _focus =- _state_
+         EndMacro
+         
+         
+        
    ;-
    Macro EnteredButton( ): mouse( )\btn[0]: EndMacro
    Macro PressedButton( ): mouse( )\btn[1]: EndMacro
@@ -1347,7 +1353,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    
    Macro draw_image_( _this_, _x_, _y_, _mode_ = )
       ; draw_mode_alpha_( #PB_2DDrawing_Transparent )
-      DrawAlphaImage( _this_\picture#_mode_\imageID, _x_ + _this_\picture#_mode_\x + _this_\scroll_x( ), _y_ + _this_\picture#_mode_\y + _this_\scroll_y( ), _this_\color\ialpha )
+      DrawAlphaImage( _this_\img#_mode_\imageID, _x_ + _this_\img#_mode_\x + _this_\scroll_x( ), _y_ + _this_\img#_mode_\y + _this_\scroll_y( ), _this_\color\ialpha )
    EndMacro
    
    Macro draw_font( _address_, _text_ptr_, _font_id_ = 0, _update_ = 0, draw_font=0 )
@@ -1985,8 +1991,8 @@ CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 569
-; FirstLine = 463
-; Folding = 9AcMC9-E5+----------vmLj-----PAg---BACBIA+
+; CursorPosition = 1355
+; FirstLine = 809
+; Folding = 9AcMC9-E5+----------fNXG-----fAA---DAEDQA9
 ; EnableXP
 ; DPIAware

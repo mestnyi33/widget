@@ -1,14 +1,22 @@
 ﻿EnableExplicit
 
+Enumeration 1
+   #__BTN_Close
+   #__BTN_Maximize
+   #__BTN_Minimize
+   #__BTN_Help        
+   #__BTN_Pin         
+   #__BTN_Menu        
+EndEnumeration
+
 ; =====================================================================
 ; 1. КОНСТАНТЫ И ФЛАГИ
 ; =====================================================================
-#__flag_Left   = 0
-#__flag_Top  = 1
-#__flag_Right  = 2
-#__flag_Bottom  = 3
-#__flag_Center = 4
-
+#__MASK_Left   = 1 << 0
+#__MASK_Top  = 1 << 1
+#__MASK_Right  = 1 << 2
+#__MASK_Bottom  = 1 << 3
+#__MASK_Center = 1 << 4
 #__MASK_Hover     = 1 << 6
 
 ; =====================================================================
@@ -25,27 +33,36 @@ Structure _s_TXT Extends _s_COORDINATE
    Text.s
 EndStructure
 
-Structure _s_TAB  Extends _s_COORDINATE
-   ID.i          ; Номер элемента в списке данных строки (0, 1, 2...) 
-   txt._s_TXT    ; Имя поля заголовка
-   img._s_IMG
-   
-   pos.l
+Structure _s_BOX Extends _s_COORDINATE
    size.l
+   round.a
+   checked.b
+   mask.q
+EndStructure
+
+Structure _s_BTN Extends _s_BOX
+   ;color._s_color
+   ;arrow._s_arrow
+   type.l       
+EndStructure
+     
+Structure _s_TAB  Extends _s_BOX
+   ID.i          ; Номер элемента в списке данных строки (0, 1, 2...) 
+   pos.l
    
-   ;
-   align.a          ; Выравнивание
-   mask.q           ; Маска конкретной вкладки
-   close_ishovered.a
-   
-   ; Поля для идеальной математики плавного сдвига
+    ; Поля для идеальной математики плавного сдвига
    offset.l        ; Динамический визуальный сдвиг
    minOffset.l     ; Левый ограничитель хода
    maxOffset.l     ; Правый ограничитель хода
    
+   txt._s_TXT    ; Имя поля заголовка
+   img._s_IMG
+   
+   *btn._s_BTN
+   
    StructureUnion
-      *data 
       containerID  .i ; ID контейнера, привязанного к этой вкладке
+      *data 
    EndStructureUnion
 EndStructure
 
@@ -99,11 +116,11 @@ Procedure.l MakeColor(bgColor.l, value.l = 0)
 EndProcedure
 
 Procedure.i MakeAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i = 10)
-   If alignFlags & #__flag_Center
+   If alignFlags & #__MASK_Center
       ProcedureReturn (contentSize - objectSize) / 2
-   ElseIf alignFlags & #__flag_Right
+   ElseIf alignFlags & #__MASK_Right
       ProcedureReturn contentSize - objectSize - Offset
-   Else ; #__flag_Left
+   Else ; #__MASK_Left
       ProcedureReturn Offset
    EndIf
 EndProcedure
@@ -227,10 +244,19 @@ Procedure.i TotalSize(*this._s_WIDGET, gWidth)
    ProcedureReturn DesktopUnscaledY(maxheight + BottonSpacing)
 EndProcedure
 
+Procedure AddBTN( type.l, size.l)
+   Protected._s_BTN *btn = AllocateStructure(_s_BTN) 
+   *btn\type = type
+   *btn\size = size
+   ProcedureReturn *btn
+EndProcedure
 
 ; добавление вкладки и автоматическое создание её контейнера под холстом
 Procedure AddTab(*this._s_WIDGET, title$,  image.i = 0, tabcolor.l=0);$ffffffff)
    Protected._s_TAB *tab = AddElement(*this\tab\_s())
+   
+   *tab\btn = AddBTN( #__BTN_Close, DesktopScaledX(7))
+   
    *tab\txt\text = title$
    *tab\img\image = image ; записываем ID картинки
    
@@ -405,20 +431,20 @@ EndProcedure
 
 Procedure draw_closeButton(*tab._s_TAB, bgColor.l, slant)
    Protected h = *tab\Height
-   Protected close_size = DesktopScaledX(5)
-   Protected radius = DesktopScaledX(7)
+   Protected radius = *tab\btn\size
+   Protected close_size = radius - DesktopScaledX(2)
    
    ; --- Координаты центра и самого крестика ---
-   Protected closex = *tab\x + *tab\Width - slant - DesktopScaledX(14)
+   Protected closex = *tab\x + MakeAlignPosition(#__MASK_Right, *tab\Width, radius, slant+radius)
    Protected closey = *tab\y + (h - close_size) / 2
    Protected centerx = closex + close_size / 2
    Protected centery = closey + close_size / 2
-   
+     
    ; --- Цвета элементов ---
    Protected.l crossColor
    Protected.l frameColor = RGBA(160, 50, 50, 255) ; Цвет рамки совпадает с дефолтным крестиком
    
-   If *tab\close_ishovered 
+   If *tab\btn\mask & #__MASK_Hover 
       ; При наведении: сплошной заполненный круг фоновым цветом
       Circle(centerx, centery, radius, bgColor | $FF000000) 
       crossColor = RGBA(255, 255, 255, 255) ; Белый крестик
@@ -440,7 +466,7 @@ Procedure draw_closeButton(*tab._s_TAB, bgColor.l, slant)
    LineXY(closex + close_size - 1, closey, closex - 1, closey + close_size, crossColor)
 EndProcedure
 
-
+;-
 Procedure draw_TabButton(*tab._s_TAB, bgcolor.l)
    ; Высчитываем цвет точно так же, как для неактивного таба
    Protected.l pluscolor = MakeColor(bgcolor, 10 + (*tab\mask & #__MASK_Hover)  *30) ; RGB(nabaser, nabaseg, nabaseb)
@@ -455,6 +481,7 @@ Procedure draw_TabButton(*tab._s_TAB, bgcolor.l)
    
    DrawText(plus_x, *tab\y + 6, *tab\txt\Text, textcolor, textBgcolor)
 EndProcedure
+
 Procedure draw_tab(isactive, *tab._s_TAB, bgcolor.l, max_row_index.i, slant)
    Protected.l textcolor, nonactivecolor, textBgcolor
    Protected h = *tab\Height
@@ -489,7 +516,9 @@ Procedure draw_tab(isactive, *tab._s_TAB, bgcolor.l, max_row_index.i, slant)
    ; DrawingMode(#PB_2DDrawing_Transparent)
    DrawText(startx, *tab\y + 6, *tab\txt\text, textcolor, textBgcolor)
    
-   draw_closeButton( *tab, RGBA(240, 70, 70, 255), slant )
+   If *tab\btn
+      draw_closeButton( *tab, RGBA(240, 70, 70, 255), slant )
+   EndIf
 EndProcedure
 
 Procedure DrawTabs(*this._s_WIDGET, *currentTAB._s_TAB, gWidth, gHeight, bgColor.l )
@@ -533,8 +562,8 @@ Procedure DrawTabs(*this._s_WIDGET, *currentTAB._s_TAB, gWidth, gHeight, bgColor
    EndIf
    
    ; 2. Отрисовка кнопки ПЛЮС (вызываем её личную изолированную процедуру)
-   draw_TabButton(*this\tab\plus, bgColor)
-     ; draw_tab(#False, *this\tab\plus, bgColor);, *this\tab\plus\ID )
+    ; draw_TabButton(*this\tab\plus, bgColor)
+    draw_tab(#False, *this\tab\plus, bgColor, *this\tab\plus\ID, 8 )
       
 EndProcedure
 
@@ -637,7 +666,7 @@ Procedure DoEvent(*this._s_WIDGET, event, mx.l,my.l)
             needredraw = #False
          Else
             ; КЛИК ПО ОБЫЧНОМУ ТАБУ: Проверяем крестик или переключаем активность
-            If *hoverTAB\close_ishovered
+            If *hoverTAB\btn\mask & #__MASK_Hover
                CloseTab(*this, *hoverTAB)
                DoResize( *this, windowID)
             Else
@@ -676,8 +705,8 @@ Procedure DoEvent(*this._s_WIDGET, event, mx.l,my.l)
             ; 3. Ховер крестика закрытия (активируется, если мышь на табе И взведен ShouldCloseHover)
             Protected CloseHover = Bool(isTabHovered And ShouldCloseHover)
             
-            If *tab\close_ishovered <> CloseHover
-               *tab\close_ishovered = CloseHover
+            If Bool(*tab\btn\mask & #__MASK_Hover) <> CloseHover
+               *tab\btn\mask ! #__MASK_Hover
                needredraw = #True
             EndIf
             
@@ -697,8 +726,8 @@ Procedure DoEvent(*this._s_WIDGET, event, mx.l,my.l)
             *tab\mask &~ #__MASK_Hover
             needredraw = #True
          EndIf
-         If *tab\close_ishovered <> 0
-            *tab\close_ishovered = 0
+         If *tab\btn\mask & #__MASK_Hover 
+            *tab\btn\mask &~ #__MASK_Hover
             needredraw = #True
          EndIf
       Next
@@ -790,8 +819,8 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    ForEver
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 473
-; FirstLine = 452
-; Folding = -----------------
+; CursorPosition = 437
+; FirstLine = 326
+; Folding = ------8-----------
 ; EnableXP
 ; DPIAware

@@ -46,7 +46,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
             _alpha.a
          EndStructureUnion
       EndStructure
-        ;--     D&D
+      ;--     D&D
       Structure _s_DROP
          enter.b
          finish.b
@@ -89,10 +89,10 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     BOX
       Structure _s_BOX Extends _s_COORDINATE
+         size.l
          round.a
-         size.w ; ----
-         mask.q
          checked.b
+         mask.q
       EndStructure
       ;--     BUTTONS
       Structure _s_BTN Extends _s_BOX
@@ -129,39 +129,36 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_SEL Extends _s_CARET 
       EndStructure
       ;--     TEXT
-      Structure _s_TXT Extends _s_COORDINATE
-        pos.i
-         len.i
-          change.b
+      Structure _s_TEXTINFO Extends _s_COORDINATE
+         pos.l
+         len.l
          StructureUnion 
             string.s
             text.s
             title.s
          EndStructureUnion
+      EndStructure
+      Structure _s_TXT Extends _s_TEXTINFO
+         change.b
+         multiline.b
+         vertical.b
+         invert.b
          
          mode.a    
-         
-         multiline.b
-         invert.b
-         vertical.b
          rotate.d
-         
-         align._s_align
          
          datastr.s 
          multistr.s
       EndStructure
       
+      ;--     PICTURE
       Structure _s_IMG Extends _s_COORDINATE
          change.b
+         imageID.i
          Image.i
+         rotate.d
       EndStructure
       
-      Structure _s_TEXTINFO Extends _s_COORDINATE
-         pos.i
-         len.i
-         string.s
-      EndStructure
       ;--     FONTS
       Structure _s_FONTS
          key$
@@ -178,14 +175,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          file$
          *data
          *image
-      EndStructure
-      ;--     PICTURE
-      Structure _s_PICTURE Extends _s_COORDINATE
-         align._s_align
-         *image
-         *imageID
-         change.b 
-         rotate.d
       EndStructure
       ;--     SELECTOR
       Structure _s_SELECTOR Extends _s_COORDINATE
@@ -301,6 +290,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          font.i
          fontID.i
          visible.b
+         
          StructureUnion
             focus.b
             _focus.b
@@ -319,51 +309,25 @@ CompilerIf Not Defined(Structures, #PB_Module)
          sublevel.w
          
          Array txt._s_TXT(0)       ; Динамический массив ячеек данных
-         picture._s_PICTURE
+         img._s_IMG
          color._s_color
-         
-         *popupbar._s_WIDGET
          
          *parent._s_ROW
          *data  ; set/get item data
       EndStructure
       
-      Structure _s_TAB Extends _s_COLUMN 
-         X.l
-         Y.l
-         Width.l
-         Height.l
-        
+      Structure _s_TAB Extends _s_BOX
+         ID.i
+         
          font.i
          fontID.i
+         _focus.b  
+          childrens.w ; Row( )\ ; rows( )\ ; row\
          
-         press.b
-         visible.b
-         checked.b
-         
-         StructureUnion
-            _enter.b 
-            enter.b  
-         EndStructureUnion
-         StructureUnion
-            _focus.b  
-            focus.b
-         EndStructureUnion
-         
-         Hide.b
-         Disable.b
-         round.a
-         
-         
-         childrens.w ; Row( )\ ; rows( )\ ; row\
-         
-         StructureUnion
-            Index.i
-            tindex.i ; tab
-         EndStructureUnion
-         
-         picture._s_PICTURE
+         txt._s_TXT
+         img._s_IMG
          color._s_color
+         
          *popupbar._s_WIDGET
          *data  ; set/get item data
       EndStructure
@@ -384,19 +348,15 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       
       ;--     ROW
-      
       Structure _s_STR Extends _s_COORDINATE
          pos.l    ; Позиция начала в строке (от 1)
          len.l    ; Длина куска
          word.s
       EndStructure
-      
-      ; Структура визуального фрагмента (Команда для отрисовки)
       Structure _s_TOKEN Extends _s_STR
          color.l  ; Цвет ($BBGGRR)
          font.i   ; Сюда пишем FontID(Ваш_Шрифт)
       EndStructure
-      
       Structure _s_WRAP Extends _s_STR
          sel._s_SEL
       EndStructure
@@ -404,27 +364,12 @@ CompilerIf Not Defined(Structures, #PB_Module)
          hover.l               ; Индекс текущей подстроки под мышкой (1, 2, 3...)
          List __s._s_WRAP()    ; Результат нарезки
       EndStructure
+      
       ; ; Описание одной ячейки данных
-      ; Structure _s_ROW Extends _s_COORDINATE
-      ;    is_hidden.b
-      ;    mask.q                   ; Состояние строки (#__MASK_active, #__maskrow_node...)
-      ;    sublevel.l               ; Уровень вложенности для дерева
-      ;    sel._s_SEL
-      ;    wrap._s_WRAPS
-      ;    wrap_height.l
-      ;    
-      ;    *skip_prev._s_ROW         ; <-- Сюда запишем адрес строки, на которую прыгнуть назад
-      ;    *skip_next._s_ROW         ; <-- Сюда запишем адрес строки, на которую прыгнуть вперед
-      ;    
-      ;    Array txt._s_TXT(0)       ; Динамический массив ячеек данных
-      ;    List tokens._s_TOKEN()    ; Список раскрашенных сегментов
-      ; EndStructure
       Structure _s_ROW Extends _s_ITEMS
-         ;mask.q
-         ;sel._s_SEL
          wrap._s_WRAPS
          List tokens._s_TOKEN()    ; Список раскрашенных сегментов
-      edit._s_TEXTINFO[3]
+         edit._s_TEXTINFO[3]
          
          
          *checkBox._s_BOX  ;  checkbox\
@@ -445,8 +390,6 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
       EndStructure
       Structure _s_VISIBLE_ROW
-         ;          *first._s_ROW           ; first draw-elemnt in the list
-         ;          *last._s_ROW            ; last draw-elemnt in the list
          List *__s._s_ROW( )     ; Развернутый рулон (указатели)
       EndStructure
       Structure _s_ROWS
@@ -532,7 +475,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          visible.b
          
          txt._s_TXT
-         picture._s_PICTURE
+         img._s_IMG
          color._s_color
       EndStructure
       
@@ -646,21 +589,21 @@ CompilerIf Not Defined(Structures, #PB_Module)
          menu._s_POPUP
          bounds._s_BOUNDS
          area_align._s_align
-        Scroll._s_SCROLL            ; vertical & horizontal scrollbars
-        
+         Scroll._s_SCROLL            ; vertical & horizontal scrollbars
+         
          edit._s_TEXTINFO[3]
          text._s_TXT
          
          color._s_COLOR
          padding._s_POINT
-         title._s_TITLE
-         picture._s_PICTURE[4]
+         img._s_IMG[4]
          ; \image[0] - draw image
          ; \image[1] - released image
          ; \image[2] - pressed image
          ; \image[3] - background image
          
          ;                        ;
+         *title._s_TITLE
          *root._s_ROOT
          StructureUnion
             *column._s_COLUMNS             ; multi-text; buttons; lists; - gadgets
@@ -677,7 +620,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *align._s_ALIGN
          *anchors._s_ANCHORS
          *togglebox._s_BOX        ; checkbox; optionbox, ToggleButton
-         *combobutton._s_BTN  ; combobox button
+         *combobutton._s_BTN      ; combobox button
          
          
          *tabbar._s_WIDGET
@@ -813,8 +756,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 89
-; Folding = --ZAy-0-----
+; CursorPosition = 606
+; FirstLine = 573
+; Folding = --8---+-----
 ; Optimizer
 ; EnableXP

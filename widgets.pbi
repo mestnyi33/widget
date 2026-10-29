@@ -63,8 +63,8 @@ Module widgets
    Declare   edit_AddItem( *this, position, *text.Character, string_len )
    Declare.s edit_make_insert_text( *this, Text.s )
    
-   Declare   make_content_area( *this._s_WIDGET, *txt._s_TXT, *img._s_PICTURE, indent )
-   Declare   make_content_align( *this._s_WIDGET, *txt._s_TXT, *img._s_PICTURE, Width, Height, indent )
+   Declare   make_content_area( *this._s_WIDGET, *txt._s_TXT, *img._s_IMG, indent )
+   Declare   make_content_align( *this._s_WIDGET, *txt._s_TXT, *img._s_IMG, Width, Height, indent )
    
    ;
    ;-
@@ -130,7 +130,7 @@ Module widgets
       EndIf
    EndMacro
    
-   Procedure   make_content_area( *this._s_WIDGET, *txt._s_TXT, *img._s_PICTURE, indent )
+   Procedure   make_content_area( *this._s_WIDGET, *txt._s_TXT, *img._s_IMG, indent )
       Protected Width, Height
       
       ;     
@@ -277,7 +277,7 @@ Module widgets
       EndIf
    EndMacro
    
-   Procedure   make_content_align( *this._s_WIDGET, *txt._s_TXT, *img._s_PICTURE, Width, Height, indent )
+   Procedure   make_content_align( *this._s_WIDGET, *txt._s_TXT, *img._s_IMG, Width, Height, indent )
       Protected *text._s_TXT = *this\text
       ;
       If *txt\multiLine
@@ -287,20 +287,20 @@ Module widgets
             If Width
                If *text\vertical
                   make_content_align_x( *txt, Width, *txt\height, *text\rotate, *this\area_align, *this\padding\x )
-                  make_content_align_x( *img, Width, *img\height, *this\picture\rotate, *this\area_align, *this\padding\x )
+                  make_content_align_x( *img, Width, *img\height, *this\img\rotate, *this\area_align, *this\padding\x )
                Else
                   make_content_align_x( *txt, Width, *txt\width, *text\rotate, *this\area_align, *this\padding\x )
-                  make_content_align_x( *img, Width, *img\width, *this\picture\rotate, *this\area_align, *this\padding\x )
+                  make_content_align_x( *img, Width, *img\width, *this\img\rotate, *this\area_align, *this\padding\x )
                EndIf
             EndIf
             
             If Height
                If *text\vertical
                   make_content_align_y( *txt, Height, *txt\width, *text\rotate, *this\area_align, *this\padding\y )
-                  make_content_align_y( *img, Height, *img\width, *this\picture\rotate, *this\area_align, *this\padding\y )
+                  make_content_align_y( *img, Height, *img\width, *this\img\rotate, *this\area_align, *this\padding\y )
                Else
                   make_content_align_y( *txt, Height, *txt\height, *text\rotate, *this\area_align, *this\padding\y )
-                  make_content_align_y( *img, Height, *img\height, *this\picture\rotate, *this\area_align, *this\padding\y )
+                  make_content_align_y( *img, Height, *img\height, *this\img\rotate, *this\area_align, *this\padding\y )
                EndIf
             EndIf
             
@@ -2188,7 +2188,7 @@ Module widgets
                *bar\max = 0
                *this\scroll_width( ) = 0
                *this\scroll_height( ) = 0
-               *this\picture\x = ( DPIScaled(16) - pos - DPIScaled(1) ) / 2
+               *this\img\x = ( DPIScaled(16) - pos - DPIScaled(1) ) / 2
                
                ;
                If *bar\vertical
@@ -2210,7 +2210,7 @@ Module widgets
                            *this\scroll_width( ) = qqq + *tab\txt\width
                            
                            If constants::BinaryFlag( *this\flagmask, #__FLAG_TextInLine )
-                              *this\scroll_width( ) + *tab\picture\width 
+                              *this\scroll_width( ) + *tab\img\width 
                            EndIf
                         EndIf
                         If *tab\childrens 
@@ -2259,28 +2259,28 @@ Module widgets
                         ; vertical text
                         If *bar\vertical > 0
                            ;
-                           If *tab\tindex = #PB_Ignore
+                           If *tab\ID = #PB_Ignore
                               *tab\x      + separator_step
                               *tab\height  = 1
                               *bar\max + *tab\height + pos + (separator_step * 2)
                            Else
                               ;
-                              If *tab\txt\width And *tab\picture\width
-                                 *tab\height = *tab\txt\width + *tab\picture\width + ( *this\padding\y * 2 ) + indent
+                              If *tab\txt\width And *tab\img\width
+                                 *tab\height = *tab\txt\width + *tab\img\width + ( *this\padding\y * 2 ) + indent
                               Else
-                                 *tab\height = *tab\txt\width + *tab\picture\width + ( *this\padding\y * 2 )
+                                 *tab\height = *tab\txt\width + *tab\img\width + ( *this\padding\y * 2 )
                               EndIf
                               
                               *bar\max + *tab\height + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
                            EndIf
                         Else
-                           If *tab\tindex = #PB_Ignore
+                           If *tab\ID = #PB_Ignore
                               *tab\y      + separator_step
                               *tab\height = 1
                               *bar\max        + separator_step * 2
                            Else
-                              *tab\height = *tab\picture\height + *tab\txt\height + ( *this\padding\y * 2 )
-                              If *tab\picture\height   
+                              *tab\height = *tab\img\height + *tab\txt\height + ( *this\padding\y * 2 )
+                              If *tab\img\height   
                                  *tab\height + indent
                               EndIf
                            EndIf
@@ -2293,18 +2293,18 @@ Module widgets
                         *tab\width  = *this\scroll_width( ) - *tab\x * 2
                         *tab\height = 0
                         
-                        If *tab\tindex  = #PB_Ignore
+                        If *tab\ID  = #PB_Ignore
                            *tab\x      + 3
                            *tab\y      + separator_step
                            *tab\height = 1
                            *bar\max        + separator_step * 2
                         Else
-                           If *tab\picture\height
-                              *tab\height = *tab\picture\height
+                           If *tab\img\height
+                              *tab\height = *tab\img\height
                            EndIf
                            If *tab\txt\height
                               If constants::BinaryFlag( *this\flagmask, #__FLAG_TextInLine )
-                                 If Not *tab\picture\height 
+                                 If Not *tab\img\height 
                                     *tab\height = *tab\txt\height
                                  EndIf
                               Else
@@ -2316,23 +2316,23 @@ Module widgets
                            *tab\height + (6)
                            ;
                            If constants::BinaryFlag( *this\flagmask, #__FLAG_TextInLine )
-                              *tab\picture\x = align_x
-                              *tab\txt\x  = *tab\picture\x + *tab\picture\width + align_x + (5)
+                              *tab\img\x = align_x
+                              *tab\txt\x  = *tab\img\x + *tab\img\width + align_x + (5)
                               
                               ;
-                              *tab\picture\y = ( *tab\height - *tab\picture\height )/2
+                              *tab\img\y = ( *tab\height - *tab\img\height )/2
                               *tab\txt\y = ( *tab\height - *tab\txt\height )/2
                               ;                          
                            Else
                               If *tab\txt\width
-                                 *tab\picture\y = ( *tab\height - *tab\picture\height - *tab\txt\height ) / 2
+                                 *tab\img\y = ( *tab\height - *tab\img\height - *tab\txt\height ) / 2
                               Else
-                                 *tab\picture\y = ( *tab\height - *tab\picture\height ) / 2
+                                 *tab\img\y = ( *tab\height - *tab\img\height ) / 2
                               EndIf
                               ;
-                              *tab\txt\y  = *tab\picture\y + *tab\picture\height
+                              *tab\txt\y  = *tab\img\y + *tab\img\height
                               ;
-                              *tab\picture\x = ( *tab\width - *tab\picture\width )/2
+                              *tab\img\x = ( *tab\width - *tab\img\width )/2
                               *tab\txt\x = ( *tab\width - *tab\txt\width )/2
                            EndIf
                            
@@ -2351,7 +2351,7 @@ Module widgets
                         *tab\height   = *this\screen_height( ) - bar_toggle_size - bar_button_padding
                      Else
                         *tab\y           = pos
-                        If *tab\tindex   = #PB_Ignore
+                        If *tab\ID   = #PB_Ignore
                            *tab\y        + 3
                         EndIf
                         
@@ -2360,15 +2360,15 @@ Module widgets
                      ;
                      *tab\x = *bar\max + pos
                      ;
-                     If *tab\tindex = #PB_Ignore
+                     If *tab\ID = #PB_Ignore
                         *tab\x      + separator_step
                         *tab\width  = 1
                      Else
                         ;
-                        If *tab\txt\width And *tab\picture\width
-                           *tab\width = *tab\txt\width + *tab\picture\width + ( *this\padding\x * 2 ) + indent
+                        If *tab\txt\width And *tab\img\width
+                           *tab\width = *tab\txt\width + *tab\img\width + ( *this\padding\x * 2 ) + indent
                         Else
-                           *tab\width = *tab\txt\width + *tab\picture\width + ( *this\padding\x * 2 )
+                           *tab\width = *tab\txt\width + *tab\img\width + ( *this\padding\x * 2 )
                         EndIf
                      EndIf
                      
@@ -2376,7 +2376,7 @@ Module widgets
                         *bar\max + *tab\width + DPIScaled(Bool( Index <> *this\countitems - 1 )) + Bool( Index = *this\countitems - 1 ) * layout
                      Else
                         *bar\max + *tab\width + pos
-                        If *tab\tindex = #PB_Ignore
+                        If *tab\ID = #PB_Ignore
                            *bar\max + (separator_step * 2)
                         Else
                            *bar\max + Bool( Index = *this\countitems - 1 )
@@ -2385,8 +2385,8 @@ Module widgets
                   EndIf
                   
                   ; make alignment
-                  If *tab\tindex <> #PB_Ignore
-                     make_content_align( *this, *tab\txt, *tab\picture, *tab\width, *tab\height, indent )
+                  If *tab\ID <> #PB_Ignore
+                     make_content_align( *this, *tab\txt, *tab\img, *tab\width, *tab\height, indent )
                   EndIf
                Next
                
@@ -2434,9 +2434,9 @@ Module widgets
       EndIf
       ;
       ; Draw items img
-      If _address_\picture\imageID
+      If _address_\img\imageID
          draw_mode_alpha_( #PB_2DDrawing_Transparent )
-         DrawAlphaImage( _address_\picture\imageID, _x_ + _address_\x + _address_\picture\x, _y_ + _address_\y + _address_\picture\y, _address_\color\ialpha )
+         DrawAlphaImage( _address_\img\imageID, _x_ + _address_\x + _address_\img\x, _y_ + _address_\y + _address_\img\y, _address_\color\ialpha )
       EndIf
       ;
       ; Draw items text
@@ -2468,7 +2468,7 @@ Module widgets
    Procedure bar_draw_tabitems( *this._s_WIDGET, vertical, X,Y, round )
       Protected._s_BAR *bar = *this\bar
       Protected._s_BTN *BB1, *BB2, *SB
-      Protected._s_TAB *tab, *activeTAB, *enteredTAB
+      Protected._s_TAB *tab, *activeTAB, *hoverTAB
       
       *SB  = *bar\button
       *BB1 = *bar\button[1]
@@ -2476,7 +2476,7 @@ Module widgets
       ; Если мышь физически находится над этим конкретным виджетом (*this)
       If Entered() = *this 
          ; Только тогда мы разрешаем подсвечивать айтем из глобального стека
-         *EnteredTAB = parentTabEntered( *this )
+         *hoverTAB = parentTabEntered( *this )
       EndIf
       ;If GetActive() = *this 
       *activeTAB = *this\parentTabSelected( )
@@ -2503,17 +2503,17 @@ Module widgets
          ; Draw separator
          ;no &~ entered &~ focused
          If *tab\mask & #__MASK_Visible 
-            If *tab\tindex = #PB_Ignore
+            If *tab\ID = #PB_Ignore
                draw_roundbox_( X + *tab\x, Y + *tab\y, *tab\width, *tab\height, 0, 0, *tab\color\frame[0] & $FFFFFF | *tab\AlphaState24( ) )
             Else
                If is_menu_( *this )
                   If constants::BinaryFlag( *this\flagmask, #__FLAG_TextInLine )
-                     If *tab\picture\imageID
+                     If *tab\img\imageID
                         If *this\bar\vertical
                            draw_mode_alpha_( #PB_2DDrawing_Default )
                            draw_roundbox_(X + *tab\x,
                                           Y + *tab\y - Bool( tab_index)*3, 
-                                          *tab\picture\width + 10,
+                                          *tab\img\width + 10,
                                           *tab\height + Bool( tab_index)*3 + Bool( tab_index <> *this\countitems - 1 )*3, 
                                           *this\round, *this\round, $FFF0F0F0 )
                         EndIf
@@ -2525,7 +2525,7 @@ Module widgets
                If *tab\checked
                   bar_draw_item_( *this\bar\vertical, *tab, *tab\txt, X, Y, 2, round )
                Else
-                  If *tab <> *EnteredTAB
+                  If *tab <> *hoverTAB
                      ; And Not (*tab <> *this\TabSelected( ) And *tab\mask & #__MASK_Active) 
                      
                      ; Debug *this\parent\class
@@ -2547,14 +2547,14 @@ Module widgets
       ;          ProcedureReturn
       ;
       ; draw mouse-enter visible item
-      If *EnteredTAB
-         If *EnteredTAB\mask & #__MASK_Active = 0 And
-            *EnteredTAB\checked = 0 And
-            *EnteredTAB\mask & #__MASK_Visible 
+      If *hoverTAB
+         If *hoverTAB\mask & #__MASK_Active = 0 And
+            *hoverTAB\checked = 0 And
+            *hoverTAB\mask & #__MASK_Visible 
             ;
-            If *EnteredTAB\tindex <> #PB_Ignore
-               draw_font( *EnteredTAB, *enteredtab\txt, GetFontID( *this ), *Enteredtab\txt\change)
-               bar_draw_item_( *this\bar\vertical, *EnteredTAB, *enteredtab\txt, X, Y, *EnteredTAB\ColorState( ), round)
+            If *hoverTAB\ID <> #PB_Ignore
+               draw_font( *hoverTAB, *hoverTAB\txt, GetFontID( *this ), *hoverTAB\txt\change)
+               bar_draw_item_( *this\bar\vertical, *hoverTAB, *hoverTAB\txt, X, Y, *hoverTAB\ColorState( ), round)
             EndIf
          EndIf
       EndIf
@@ -2565,7 +2565,7 @@ Module widgets
          *activeTAB\mask & #__MASK_Active And 
          *activeTAB\mask & #__MASK_Visible
          ;   
-         If *activeTAB\tindex <> #PB_Ignore
+         If *activeTAB\ID <> #PB_Ignore
             draw_font( *activeTAB, *activetab\txt, GetFontID( *this ), *activetab\txt\change)
             ;
             If is_integral_( *this )
@@ -3105,14 +3105,15 @@ Module widgets
       EndIf
       
       ;\\ draw spin-buttons frame
-      If EnteredButton( ) <> *BB1
+     Protected._s_BTN *hoverBTN = EnteredButton( )
+       If *hoverBTN <> *BB1
          draw_box_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\color\frame[*BB1\ColorState( )] )
       EndIf
-      If EnteredButton( ) <> *BB2
+      If *hoverBTN <> *BB2
          draw_box_( *BB2\x, *BB2\y, *BB2\width, *BB2\height, *BB2\color\frame[*BB2\ColorState( )] )
       EndIf
-      If EnteredButton( )
-         draw_box_( EnteredButton( )\x, EnteredButton( )\y, EnteredButton( )\width, EnteredButton( )\height, EnteredButton( )\color\frame[EnteredButton( )\ColorState( )] )
+      If *hoverBTN
+         draw_box_( *hoverBTN\x, *hoverBTN\y, *hoverBTN\width, *hoverBTN\height, *hoverBTN\color\frame[*hoverBTN\ColorState( )] )
       EndIf
       
       ;\\ draw split-string frame
@@ -3542,7 +3543,7 @@ Module widgets
                ;
                If *bar\vertical
                   If *this\parent\scroll\v = *this
-                     If Not *this\parent\text\mode & #__text_editable
+                     If Not *this\parent\text\mode & #__TEXTMASK_editable
                         ; *this\parent\WidgetChange( ) = - 1
                         If *this\parent\type = #__TYPE_Tree Or 
                            *this\parent\type = #__TYPE_ListIcon Or 
@@ -3580,7 +3581,7 @@ Module widgets
                   EndIf
                Else
                   If *this\parent\scroll\h = *this
-                     If Not *this\parent\text\mode & #__text_editable
+                     If Not *this\parent\text\mode & #__TEXTMASK_editable
                         ; *this\parent\WidgetChange( ) = - 2
                         If *this\parent\type = #__TYPE_Tree Or 
                            *this\parent\type = #__TYPE_ListIcon Or 
@@ -3631,7 +3632,6 @@ Module widgets
                   Post( *this\parent, #__EVENT_ScrollChange, *this, *bar\page\pos ) 
                EndIf
             Else
-               ; Debug "bar update AddEvents" + EnteredButton( )
                DoEvents( *this, #__EVENT_Change, *this\Stringbar, *bar\PageChange( ) )
             EndIf  
             
@@ -4473,12 +4473,7 @@ Module widgets
       ;\\
       ;\\ get thumb pos
       If Not *bar\PageChange( ) 
-         Macro ScrollToActive( _state_ )
-            _focus =- _state_
-         EndMacro
-         
-         
-         ;\\ scroll to active tab
+          ;\\ scroll to active tab
          If *this\TabChange( )
             If Not *bar\thumb\pos
                *bar\page\pos = *bar\max
@@ -4972,8 +4967,8 @@ Module widgets
          *this = CreateBar( *menu, #Null, #__TYPE_PopupBar ) 
          SetClass( *this, Text )
          
-         ; Debug ""+*menu\__tabs( )\tindex +" "+  ListIndex(*menu\__tabs( )) +" "+ *menu\class
-         *menu\__tabs( )\tindex = ListIndex(*menu\__tabs( ))
+         ; Debug ""+*menu\__tabs( )\ID +" "+  ListIndex(*menu\__tabs( )) +" "+ *menu\class
+         *menu\__tabs( )\ID = ListIndex(*menu\__tabs( ))
          *menu\__tabs( )\popupbar = *this
          
          ProcedureReturn *this
@@ -5001,7 +4996,7 @@ Module widgets
       PushListPosition( *this\__tabs( ) )
       If *this\type = #__TYPE_toolbar
          ForEach *this\__tabs( ) : *tab = *this\__tabs( )
-            If *tab\tindex = _baritem_
+            If *tab\ID = _baritem_
                If _state_
                   *Tab\mask | #__MASK_Disabled 
                Else
@@ -5021,7 +5016,7 @@ Module widgets
             
             If *pw
                ForEach *pw\__tabs( )
-                  If *pw\__tabs( )\tindex = _baritem_
+                  If *pw\__tabs( )\ID = _baritem_
                      If _state_
                         *pw\__tabs( )\mask | #__MASK_Disabled 
                      Else
@@ -5035,7 +5030,7 @@ Module widgets
                   EndIf
                Next
             Else
-               If *tab\tindex = _baritem_
+               If *tab\ID = _baritem_
                   If _state_
                      *Tab\mask | #__MASK_Disabled 
                   Else
@@ -5089,7 +5084,7 @@ Module widgets
    
    Procedure   SetBarTitleText( *this._s_WIDGET, _titleindex_, _text_.s )
       ForEach *this\__tabs( )
-         If *this\__tabs( )\tindex = _titleindex_
+         If *this\__tabs( )\ID = _titleindex_
             SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
             Break
          EndIf
@@ -5101,7 +5096,7 @@ Module widgets
    
    Procedure.s GetBarItemText( *this._s_WIDGET, _baritem_ )
       ForEach *this\__tabs( )
-         If *this\__tabs( )\tindex = _baritem_
+         If *this\__tabs( )\ID = _baritem_
             ProcedureReturn GetItemText( *this, ListIndex(*this\__tabs( )) )
          EndIf
       Next
@@ -5110,7 +5105,7 @@ Module widgets
    Procedure   SetBarItemText( *this._s_WIDGET, _baritem_, _text_.s )
       If *this\type = #__TYPE_toolbar
          ForEach *this\__tabs( )
-            If *this\__tabs( )\tindex = _baritem_
+            If *this\__tabs( )\ID = _baritem_
                ; SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
                
                *this\__tabs( )\Txt\Change = #True
@@ -5124,11 +5119,11 @@ Module widgets
       EndIf
       If *this\type = #__TYPE_popupbar Or *this\type = #__TYPE_menubar
          ForEach *this\__tabs( )
-            ; Debug ""+*this\__tabs( )\txt(0)\string +" "+ *this\__tabs( )\tindex +" "+ *this\__tabs( )\popupbar
+            ; Debug ""+*this\__tabs( )\txt(0)\string +" "+ *this\__tabs( )\ID +" "+ *this\__tabs( )\popupbar
             If *this\__tabs( )\popupbar
                ForEach *this\__tabs( )\popupbar\__tabs( )
-                  If *this\__tabs( )\popupbar\__tabs( )\tindex = _baritem_
-                     ; Debug ""+*this\__tabs( )\popupbar\__tabs( )\txt(0)\string +" "+ *this\__tabs( )\popupbar\__tabs( )\tindex +" "+ *this\__tabs( )\popupbar\__tabs( )\popupbar
+                  If *this\__tabs( )\popupbar\__tabs( )\ID = _baritem_
+                     ; Debug ""+*this\__tabs( )\popupbar\__tabs( )\txt(0)\string +" "+ *this\__tabs( )\popupbar\__tabs( )\ID +" "+ *this\__tabs( )\popupbar\__tabs( )\popupbar
                      ; SetItemText( *this\__tabs( )\popupbar, ListIndex(*this\__tabs( )\popupbar\__tabs( )), _text_.s )
                      
                      *this\__tabs( )\popupbar\__tabs( )\Txt\Change = #True
@@ -5140,7 +5135,7 @@ Module widgets
                   EndIf
                Next
             Else
-               If *this\__tabs( )\tindex = _baritem_
+               If *this\__tabs( )\ID = _baritem_
                   ; SetItemText( *this, ListIndex(*this\__tabs( )), _text_.s )
                   
                   *this\__tabs( )\Txt\Change = #True
@@ -5161,7 +5156,7 @@ Module widgets
    
    Procedure   SetBarItemState( *this._s_WIDGET, _baritem_, _state_ )
       ForEach *this\__tabs( )
-         If *this\__tabs( )\tindex = _baritem_
+         If *this\__tabs( )\ID = _baritem_
             ProcedureReturn SetItemState( *this, ListIndex(*this\__tabs( )), _state_ )
          EndIf
       Next
@@ -5169,7 +5164,7 @@ Module widgets
    
    Procedure   GetBarItemState( *this._s_WIDGET, _baritem_ )
       ForEach *this\__tabs( )
-         If *this\__tabs( )\tindex = _baritem_
+         If *this\__tabs( )\ID = _baritem_
             ProcedureReturn GetItemState( *this, ListIndex(*this\__tabs( )) )
          EndIf
       Next
@@ -5204,7 +5199,7 @@ Module widgets
                HideWindow( *this\root\canvas\window, #True, #PB_Window_NoActivate )
                If MousePress( )
                   If *activedTAB
-                     Post( *this, #__EVENT_LeftClick, *activedTAB\tindex, *activedTAB )
+                     Post( *this, #__EVENT_LeftClick, *activedTAB\ID, *activedTAB )
                   EndIf
                EndIf
             EndIf
@@ -5240,7 +5235,7 @@ Module widgets
       Protected Index
       Protected mode = 0
       Protected._s_ROOT *displayroot
-      Protected._s_TAB *enteredTAB, *activedTAB
+      Protected._s_TAB *hoverTAB, *activedTAB
       
       ;\\
       If *this
@@ -5249,11 +5244,11 @@ Module widgets
          EndIf
          
          repaint_set( *display )
-         *enteredTAB = TabEntered( *display )
+         *hoverTAB = TabEntered( *display )
          *activedTAB = *this\parentTabSelected( )
          
          ;\\
-         If *enteredTAB
+         If *hoverTAB
             DoEvents( *display, #__EVENT_StatusChange )
          EndIf
          
@@ -5459,8 +5454,8 @@ Module widgets
                   Else
                      If *display\type = #__TYPE_ComboBox
                         X = *display\screen_x( )
-                     ElseIf *display\bar And *enteredTAB
-                        X = *display\screen_x( ) + *enteredTAB\x
+                     ElseIf *display\bar And *hoverTAB
+                        X = *display\screen_x( ) + *hoverTAB\x
                      Else
                         X = CanvasMouseX( )
                      EndIf
@@ -5481,12 +5476,12 @@ Module widgets
                   If *display\type = #__TYPE_ComboBox
                      Y = *display\screen_y( ) + *display\screen_height( )
                      
-                  ElseIf *display\bar And *enteredTAB
-                     Y = *display\screen_y( ) + (*enteredTAB\y + (*display\bar\thumb\pos - *display\bar\area\end))
-                     ;  Debug ""+*display\scroll_height( )+" "+*enteredTAB\y
+                  ElseIf *display\bar And *hoverTAB
+                     Y = *display\screen_y( ) + (*hoverTAB\y + (*display\bar\thumb\pos - *display\bar\area\end))
+                     ;  Debug ""+*display\scroll_height( )+" "+*hoverTAB\y
                      
                      If Not *display\bar\vertical
-                        Y + *enteredTAB\height
+                        Y + *hoverTAB\height
                      EndIf
                   Else
                      Y = CanvasMouseY( )
@@ -6043,7 +6038,7 @@ Module widgets
       Protected String.s, i.i, Len.i
       
       With *this
-         If *this\text\mode & #__text_numeric And Text.s <> #LF$
+         If *this\text\mode & #__TEXTMASK_numeric And Text.s <> #LF$
             Static Dot, Minus
             Protected Chr.s, Input.i, left.s, count.i
             
@@ -6100,7 +6095,7 @@ Module widgets
             Next
             
             
-         ElseIf *this\text\mode & #__text_pass
+         ElseIf *this\text\mode & #__TEXTMASK_pass
             Len = Len( Text.s )
             CompilerIf #PB_Compiler_Version =< 546
                For i = 1 To Len : String.s + "*" : Next
@@ -6125,8 +6120,8 @@ Module widgets
             
          Else
             Select #True
-               Case *this\text\mode & #__text_lower : String.s = LCase( Text.s )
-               Case *this\text\mode & #__text_upper : String.s = UCase( Text.s )
+               Case *this\text\mode & #__TEXTMASK_lower : String.s = LCase( Text.s )
+               Case *this\text\mode & #__TEXTMASK_upper : String.s = UCase( Text.s )
                Default
                   String.s = Text.s
             EndSelect
@@ -6140,7 +6135,7 @@ Module widgets
    Procedure   edit_key_change_text( *this._s_WIDGET, Chr.s = "" ) ; Ok
       Protected key = keyboard( )\key
       
-      If Not *this\text\mode & #__text_editable
+      If Not *this\text\mode & #__TEXTMASK_editable
          ProcedureReturn 0
       EndIf
       If Not *this\row\active[0]
@@ -6920,7 +6915,7 @@ Module widgets
          If *this\__tabs( )
             PushListPosition(*this\__tabs( ))
             ForEach *this\__tabs( )
-               If *this\__tabs( )\tindex = item
+               If *this\__tabs( )\ID = item
                   ; Установка базового флага скрытия для вкладки панели
                   If state
                      *this\__tabs( )\mask | #__MASK_Hide
@@ -6938,7 +6933,7 @@ Module widgets
       
       If *this\tabbar
          ForEach *this\tabbar\__tabs( )
-            If *this\tabbar\__tabs( )\tindex = item
+            If *this\tabbar\__tabs( )\ID = item
                ; Установка базового флага скрытия для вкладки таббара
                If state
                   *this\tabbar\__tabs( )\mask | #__MASK_Hide
@@ -6993,7 +6988,7 @@ Module widgets
       If *this\type = #__TYPE_panel
          If *this\tabbar
             ForEach *this\tabbar\__tabs( )
-               If *this\tabbar\__tabs( )\tindex = item
+               If *this\tabbar\__tabs( )\ID = item
                   ; SelectElement( *this\tabbar\__tabs( ), item )
                   If state
                      *this\tabbar\__tabs( )\mask | #__MASK_Disabled 
@@ -7013,7 +7008,7 @@ Module widgets
          If *this\__tabs( )
             PushListPosition(*this\__tabs( ))
             ForEach *this\__tabs( )
-               If *this\__tabs( )\tindex = item
+               If *this\__tabs( )\ID = item
                   ;SelectElement( *this\__tabs( ), item )
                   If state
                      *this\__tabs( )\mask | #__MASK_Disabled 
@@ -7802,7 +7797,7 @@ Module widgets
    EndMacro
    
    Procedure.i GetImage( *this._s_WIDGET )
-      ProcedureReturn *this\picture\image
+      ProcedureReturn *this\img\image
    EndProcedure
    
    Procedure   SetImage( *this._s_WIDGET, img );, mode.a = 0 )
@@ -7811,18 +7806,18 @@ Module widgets
       EndIf
       
       ;          
-      add_image( *this\picture, img )
+      add_image( *this\img, img )
       
-      ProcedureReturn *this\picture\imageID
+      ProcedureReturn *this\img\imageID
    EndProcedure
    
    Procedure   RemoveImage( *this._s_WIDGET, img )
-      If *this\picture\imageID And 
-         *this\picture\image = img
+      If *this\img\imageID And 
+         *this\img\image = img
          SetImage( *this, - 1 )
       EndIf
-      If *this\picture[#__IMAGE_BackGround]\imageID And 
-         *this\picture[#__IMAGE_BackGround]\image = img
+      If *this\img[#__IMAGE_BackGround]\imageID And 
+         *this\img[#__IMAGE_BackGround]\image = img
          SetBackgroundImage( *this, - 1 )
       EndIf
       
@@ -7834,7 +7829,7 @@ Module widgets
       
       ; 3. Рисуем все элементы по порядку (снизу вверх)
       While *root 
-         If *root\picture\image = img
+         If *root\img\image = img
             ProcedureReturn 0
          EndIf
          *Root = *root\NextRoot( ) 
@@ -7843,7 +7838,7 @@ Module widgets
       ;
       PushListPosition( widgets( ) )
       ForEach widgets( )
-         If widgets( )\picture\image = img
+         If widgets( )\img\image = img
             ProcedureReturn 0
          EndIf
       Next
@@ -7868,7 +7863,7 @@ Module widgets
             ProcedureReturn #PB_Default
          EndIf
          
-         result = *this\row\__s( )\picture\image
+         result = *this\row\__s( )\img\image
       EndIf
       
       ProcedureReturn result
@@ -7882,8 +7877,8 @@ Module widgets
          *this\type = #__TYPE_ListView
          
          If SelectItem( *this, Item )
-            If *this\row\__s( )\picture\image <> img
-               add_image( *this\row\__s( )\picture, img, *this\picturesize )
+            If *this\row\__s( )\img\image <> img
+               add_image( *this\row\__s( )\img, img, *this\picturesize )
                ; *this\WidgetChange( ) = 1
             EndIf
          EndIf
@@ -7894,8 +7889,8 @@ Module widgets
    EndProcedure
    
    Procedure   SetBackgroundImage( *this._s_WIDGET, *img )
-      add_image( *this\picture[#__IMAGE_BackGround], *img )
-      ProcedureReturn *this\picture[#__IMAGE_BackGround]\imageID
+      add_image( *this\img[#__IMAGE_BackGround], *img )
+      ProcedureReturn *this\img[#__IMAGE_BackGround]\imageID
    EndProcedure
    
    ;-
@@ -8435,13 +8430,13 @@ Module widgets
                         If is_root_( *this\parent )
                            If *this\parent\parent\type = #__TYPE_ComboBox
                               SetText( *this\parent\parent, *row\txt(0)\string )
-                              SetImage( *this\parent\parent, *row\picture\image )
+                              SetImage( *this\parent\parent, *row\img\image )
                            EndIf 
                            DoEvents( *this\parent\parent, #__EVENT_Change, *row\rindex, *row)
                         Else
                            If *this\parent\type = #__TYPE_ComboBox
                               SetText( *this\parent, *row\txt(0)\string )
-                              SetImage( *this\parent, *row\picture\image )
+                              SetImage( *this\parent, *row\img\image )
                            EndIf 
                            DoEvents( *this\parent, #__EVENT_Change, *row\rindex, *row)
                         EndIf 
@@ -8488,7 +8483,6 @@ Module widgets
          
          If *this\TabState( ) <> state
             *this\TabState( ) = state
-            
             *this\TabChange( ) = #True
             
             If *this\parentTabSelected( )
@@ -8499,11 +8493,9 @@ Module widgets
             If state >= 0
                ;PushListPosition( *this\__tabs( ) )
                SelectElement( *this\__tabs( ), state )
-               
                *this\parentTabSelected( )       = *this\__tabs( )
                *this\parentTabSelected( )\ScrollToActive( - 1 ) ; scroll to active tab
-               
-               ;PopListPosition( *this\__tabs( ) )
+                ;PopListPosition( *this\__tabs( ) )
             EndIf
             
             If is_integral_( *this )
@@ -8770,7 +8762,7 @@ Module widgets
          ProcedureReturn *this\TitleText( )\string
       EndIf
       
-      If *this\text\mode & #__text_pass
+      If *this\text\mode & #__TEXTMASK_pass
          ProcedureReturn *this\text\datastr
       Else
          ProcedureReturn *this\text\string
@@ -9187,12 +9179,12 @@ Module widgets
          ;
          Select Attribute
             Case #PB_Button_Image
-               ; add_image( *this\picture, value )
+               ; add_image( *this\img, value )
                SetImage( *this, value )
-               add_image( *this\picture[#__IMAGE_Released], value )
+               add_image( *this\img[#__IMAGE_Released], value )
                
             Case #PB_Button_PressedImage
-               add_image( *this\picture[#__IMAGE_Pressed], value )
+               add_image( *this\img[#__IMAGE_Pressed], value )
                
          EndSelect
       EndIf
@@ -9208,7 +9200,7 @@ Module widgets
                      SetFlag( *this, #__FLAG_Left|#__FLAG_Top)
                      ;
                      If (Width And Height)
-                        ResizeImage( *this\picture\image, Width, Height )
+                        ResizeImage( *this\img\image, Width, Height )
                         Width = 0
                         Height = 0
                      EndIf
@@ -9221,25 +9213,25 @@ Module widgets
                      
                   Case 3 ; Stretch
                      If Not (Width And Height)
-                        Width = *this\picture\width
-                        Height = *this\picture\height
+                        Width = *this\img\width
+                        Height = *this\img\height
                      EndIf
-                     If ResizeImage( *this\picture\image, Width*3, Height*3 )
+                     If ResizeImage( *this\img\image, Width*3, Height*3 )
                         result = #True
                      EndIf
                      
                   Case 4 ; Proportionally
                      If Not (Width And Height)
-                        Width = *this\picture\width
-                        Height = *this\picture\height
+                        Width = *this\img\width
+                        Height = *this\img\height
                      EndIf
-                     If ResizeImage( *this\picture\image, Width*2, Height*2 )
+                     If ResizeImage( *this\img\image, Width*2, Height*2 )
                         result = #True
                      EndIf
                      
                EndSelect
                ;
-               If SetImage( *this, *this\picture\image )
+               If SetImage( *this, *this\img\image )
                   result = #True
                EndIf
                ProcedureReturn result
@@ -11551,7 +11543,7 @@ Module widgets
          If *row\columnindex = 0
             *this\countitems + 1
             ; *this\WidgetChange( ) = 1
-            add_image( *row\picture, img, *this\picturesize )
+            add_image( *row\img, img, *this\picturesize )
             
             If *this\RowFocused( )
                ;                      *this\RowFocused( )\mask &~ #__MASK_Active
@@ -11604,7 +11596,7 @@ Module widgets
             If constants::BinaryFlag( Flag, #PB_Window_BorderLess ) 
                SetBackgroundImage( *window, img )
             Else
-               add_image( *window\picture, img )
+               add_image( *window\img, img )
             EndIf
          EndIf
          
@@ -11663,7 +11655,7 @@ Module widgets
             LastElement( *tabBox\__tabs( ))
             *tab = AddElement( *tabBox\__tabs( ))
             
-            *tab\tindex = Item
+            *tab\ID = Item
             
          ElseIf *tabBox\type = #__TYPE_TabBar
             If Item < 0 Or Item > *tabBox\countitems - 1
@@ -11700,7 +11692,7 @@ Module widgets
          *tabBox\countitems + 1
          
          ;\\
-         *tab\tindex     = item
+         *tab\ID     = item
          *tab\color       = colors::_get_colors_( )
          *tab\txt\string = Text.s
          
@@ -11717,7 +11709,7 @@ Module widgets
          EndIf
          
          ;
-         add_image( *tab\picture, img, *tabBox\picturesize )
+         add_image( *tab\img, img, *tabBox\picturesize )
          
          ;         
          If is_integral_( *tabBox )
@@ -13580,27 +13572,27 @@ Module widgets
          EndIf
          
          If Flag & #__FLAG_TextLowerCase 
-            If *this\text\mode & #__text_lower
-               *this\text\mode &~ #__text_lower
+            If *this\text\mode & #__TEXTMASK_lower
+               *this\text\mode &~ #__TEXTMASK_lower
             EndIf
          EndIf
          If Flag & #__FLAG_TextUpperCase 
-            If *this\text\mode & #__text_upper
-               *this\text\mode &~ #__text_upper
+            If *this\text\mode & #__TEXTMASK_upper
+               *this\text\mode &~ #__TEXTMASK_upper
             EndIf
          EndIf
          If Flag & #__FLAG_TextNumeric 
-            If *this\text\mode & #__text_numeric
-               *this\text\mode &~ #__text_numeric
+            If *this\text\mode & #__TEXTMASK_numeric
+               *this\text\mode &~ #__TEXTMASK_numeric
             EndIf
          EndIf
          If Flag & #__FLAG_TextPassWord 
-            If *this\text\mode & #__text_pass
-               *this\text\mode &~ #__text_pass
+            If *this\text\mode & #__TEXTMASK_pass
+               *this\text\mode &~ #__TEXTMASK_pass
             EndIf
          EndIf
          
-         If Flag & #__FLAG_TextReadOnly : *this\text\mode | #__text_editable : EndIf
+         If Flag & #__FLAG_TextReadOnly : *this\text\mode | #__TEXTMASK_editable : EndIf
          If Flag & #__FLAG_Invert   : *this\text\invert = 0 : EndIf
          If Flag & #__FLAG_Vertical : *this\text\vertical = 0 : EndIf
          If Flag & #__FLAG_TextWordWrap 
@@ -13726,19 +13718,19 @@ Module widgets
          
          If *this\text
             If Bool( Not constants::BinaryFlag( *this\flagmask, #__FLAG_TextReadOnly ))
-               *this\text\mode | #__text_editable 
+               *this\text\mode | #__TEXTMASK_editable 
             EndIf
             If constants::BinaryFlag( *this\flagmask, #__FLAG_TextNumeric )
-               *this\text\mode | #__text_numeric
+               *this\text\mode | #__TEXTMASK_numeric
             EndIf
             If constants::BinaryFlag( *this\flagmask, #__FLAG_TextLowerCase )
-               *this\text\mode | #__text_lower
+               *this\text\mode | #__TEXTMASK_lower
             EndIf
             If constants::BinaryFlag( *this\flagmask, #__FLAG_TextUpperCase )
-               *this\text\mode | #__text_upper
+               *this\text\mode | #__TEXTMASK_upper
             EndIf
             If constants::BinaryFlag( *this\flagmask, #__FLAG_TextPassword )
-               *this\text\mode | #__text_pass 
+               *this\text\mode | #__TEXTMASK_pass 
             EndIf
             *this\text\invert   = constants::BinaryFlag( *this\flagmask, #__FLAG_Invert )
             *this\text\vertical = constants::BinaryFlag( *this\flagmask, #__FLAG_Vertical )
@@ -13806,10 +13798,10 @@ Module widgets
             EndIf
             
             ;
-            If *this\text\mode & #__text_pass Or
-               *this\text\mode & #__text_upper Or 
-               *this\text\mode & #__text_lower Or
-               *this\text\mode & #__text_numeric
+            If *this\text\mode & #__TEXTMASK_pass Or
+               *this\text\mode & #__TEXTMASK_upper Or 
+               *this\text\mode & #__TEXTMASK_lower Or
+               *this\text\mode & #__TEXTMASK_numeric
                ;
                If *this\text\datastr = ""
                   *this\text\datastr = *this\text\string
@@ -14218,15 +14210,16 @@ Module widgets
       ;
       ; at point button
       ;\\ reset
-      If EnteredButton( )
+     Protected._s_BTN *hoverBTN = EnteredButton( )
+      If *hoverBTN
          If a_index( ) Or ( Entered( ) And
                             Entered( ) <> *this )
             ;
-            If EnteredButton( )\mask & #__MASK_Hover
-               EnteredButton( )\mask &~ #__MASK_Hover
+            If *hoverBTN\mask & #__MASK_Hover
+               *hoverBTN\mask &~ #__MASK_Hover
                
-               If EnteredButton( )\ColorState( ) = #__s_1
-                  EnteredButton( )\ColorState( ) = #__s_0
+               If *hoverBTN\ColorState( ) = #__s_1
+                  *hoverBTN\ColorState( ) = #__s_0
                EndIf
                
                If Entered( )
@@ -14234,7 +14227,8 @@ Module widgets
                Else
                   repaint_set( *this )
                EndIf
-               EnteredButton( ) = #Null
+               *hoverBTN = #Null
+               EnteredButton( ) = *hoverBTN
             EndIf
          EndIf
       EndIf
@@ -14282,32 +14276,33 @@ Module widgets
                EndIf
                
                ;\\ do buttons events entered & leaved
-               If EnteredButton( ) <> *EnteredButton
-                  If EnteredButton( ) 
-                     If EnteredButton( )\mask & #__MASK_Hover
-                        EnteredButton( )\mask &~ #__MASK_Hover
+               If *hoverBTN <> *EnteredButton
+                  If *hoverBTN 
+                     If *hoverBTN\mask & #__MASK_Hover
+                        *hoverBTN\mask &~ #__MASK_Hover
                         ;
-                        If EnteredButton( )\ColorState( ) = #__s_1
-                           EnteredButton( )\ColorState( ) = #__s_0
+                        If *hoverBTN\ColorState( ) = #__s_1
+                           *hoverBTN\ColorState( ) = #__s_0
                         EndIf
                         ;
                         repaint_set( *this )
                      EndIf
                   EndIf
                   ;
-                  EnteredButton( ) = *EnteredButton
+                  *hoverBTN = *EnteredButton
+                  EnteredButton( ) = *hoverBTN
                   ;
-                  If EnteredButton( ) And 
-                     EnteredButton( )\mask & #__MASK_Disabled = 0 And
-                     EnteredButton( )\mask & #__MASK_Hover = 0
-                     EnteredButton( )\mask | #__MASK_Hover
+                  If *hoverBTN And 
+                     *hoverBTN\mask & #__MASK_Disabled = 0 And
+                     *hoverBTN\mask & #__MASK_Hover = 0
+                     *hoverBTN\mask | #__MASK_Hover
                      ;                      ;
-                     ;                      If EnteredButton( ) = *BB0
-                     ;                         EnteredButton( )\mask | #__MASK_Hover_a
+                     ;                      If *hoverBTN = *BB0
+                     ;                         *hoverBTN\mask | #__MASK_Hover_a
                      ;                      EndIf
                      ;
-                     If EnteredButton( )\ColorState( ) = #__s_0
-                        EnteredButton( )\ColorState( ) = #__s_1
+                     If *hoverBTN\ColorState( ) = #__s_0
+                        *hoverBTN\ColorState( ) = #__s_1
                      EndIf
                      ;
                      repaint_set( *this )
@@ -14315,7 +14310,7 @@ Module widgets
                EndIf
                
                ;\\
-               If Not EnteredButton( )
+               If Not *hoverBTN
                   If *this\title
                     If  Bool(*this\title\mask & #__MASK_Hover) <> is_hover( *this\title, CanvasMouseX( ), CanvasMouseY( ) )
                        *this\title\mask ! #__MASK_Hover
@@ -15050,7 +15045,7 @@ Module widgets
                      EndIf
                      
                   Case #PB_Shortcut_V
-                     If *this\text\mode & #__text_editable
+                     If *this\text\mode & #__TEXTMASK_editable
                         If keyboard( )\key[1] & #PB_Canvas_Control
                            Protected Text.s = GetClipboardText( )
                            
@@ -15315,7 +15310,7 @@ Module widgets
       With *this
          Select event
             Case #__EVENT_KeyDown
-               If *this\text\mode & #__text_editable
+               If *this\text\mode & #__TEXTMASK_editable
                   Select keyboard( )\key
                      Case #PB_Shortcut_PageUp
                         If bar_PageChange( *this\scroll\v, 0 )
@@ -15517,7 +15512,8 @@ Module widgets
                   *row_leaved\mask &~ #__MASK_Hover
                   
                   
-                  If Not EnteredButton( ) And 
+                  Protected._s_BTN *hoverBTN = EnteredButton( )
+                  If Not *hoverBTN And 
                      ( *this\mask & #__MASK_Press And Not Drag( ) ) And 
                      *this\flagmask & #__FLAG_RowMultiSelect = 0 And 
                      *this\flagmask & #__FLAG_RowClickSelect = 0
@@ -15584,7 +15580,7 @@ Module widgets
                If *row_howered\mask & #__MASK_Hover = 0
                   *row_howered\mask | #__MASK_Hover
                   
-                  If Not EnteredButton( ) And 
+                  If Not *hoverBTN And 
                      ( *this\mask & #__MASK_Press And Not Drag( ) ) And 
                      ( *this\flagmask & #__FLAG_RowClickSelect = 0 Or ( *this\flagmask & #__FLAG_RowClickSelect And *this\flagmask & #__FLAG_RowMultiSelect ))
                      
@@ -15703,7 +15699,7 @@ Module widgets
          If event = #__EVENT_Down
             If MouseButtons( ) & #PB_Canvas_LeftButton
                If *row_howered 
-                  If EnteredButton( )
+                  If *hoverBTN
                      ; change collapsed/expanded button state
                      If *this\flagmask & #__FLAG_nobuttons
                         If *row_howered\buttonbox
@@ -15880,7 +15876,7 @@ Module widgets
       
    EndProcedure
    
-   Procedure   DoEvent_Buttons( *this._s_WIDGET, event.l, *button._s_BTN )
+   Procedure   DoEvent_Buttons( *this._s_WIDGET, event.l, *btn._s_BTN )
       Protected result.b
       Protected *bar._s_BAR = *this\bar
       Protected._s_BTN *BB1, *BB2, *SB
@@ -15915,17 +15911,17 @@ Module widgets
          ;
          If event = #__EVENT_Down
             If MouseButtons( ) & #PB_Canvas_LeftButton
-               If *button And
-                  *button\mask & #__MASK_Press = #False And
-                  *button\mask & #__MASK_Disabled = #False And
-                  *button\ColorState( ) <> #__s_3 ; change the color state of non-disabled buttons
+               If *btn And
+                  *btn\mask & #__MASK_Press = #False And
+                  *btn\mask & #__MASK_Disabled = #False And
+                  *btn\ColorState( ) <> #__s_3 ; change the color state of non-disabled buttons
                                                   ;
-                  *button\mask | #__MASK_Press 
-                  PressedButton( ) = *button
+                  *btn\mask | #__MASK_Press 
+                  PressedButton( ) = *btn
                   ;
                   If Not ( *this\type = #__TYPE_Track Or
-                           ( *this\type = #__TYPE_Splitter And *button <> *SB ))
-                     *button\ColorState( ) = #__s_2
+                           ( *this\type = #__TYPE_Splitter And *btn <> *SB ))
+                     *btn\ColorState( ) = #__s_2
                   EndIf
                   ; Debug "[scroll increment] "+*this\scroll\increment
                   ; left&top button
@@ -15962,29 +15958,31 @@ Module widgets
          ;
          If event = #__EVENT_Up
             If MouseButtons( ) & #PB_Canvas_LeftButton
-               If PressedButton( ) And
-                  PressedButton( )\mask & #__MASK_Press
-                  PressedButton( )\mask &~ #__MASK_Press
+               Protected._s_BTN *pressBTN = PressedButton( )
+               If *pressBTN And
+                  *pressBTN\mask & #__MASK_Press
+                  *pressBTN\mask &~ #__MASK_Press
                   
-                  If PressedButton( )\mask & #__MASK_Disabled = #False And
-                     PressedButton( )\ColorState( ) <> #__s_3
+                  If *pressBTN\mask & #__MASK_Disabled = #False And
+                     *pressBTN\ColorState( ) <> #__s_3
                      
                      ; change color state
-                     If PressedButton( )\ColorState( ) = #__s_2 And
+                     If *pressBTN\ColorState( ) = #__s_2 And
                         Not ( *this\type = #__TYPE_Track Or
-                              ( *this\type = #__TYPE_Splitter And PressedButton( ) <> *SB ))
+                              ( *this\type = #__TYPE_Splitter And *pressBTN <> *SB ))
                         
-                        If PressedButton( )\mask & #__MASK_Hover
-                           PressedButton( )\ColorState( ) = #__s_1
+                        If *pressBTN\mask & #__MASK_Hover
+                           *pressBTN\ColorState( ) = #__s_1
                         Else
-                           PressedButton( )\ColorState( ) = #__s_0
+                           *pressBTN\ColorState( ) = #__s_0
                         EndIf
                      EndIf
                      
                      result = #True
                   EndIf
                   
-                  PressedButton( ) = 0
+                  *pressBTN = #Null
+                  PressedButton( ) = *pressBTN
                EndIf
             EndIf
          EndIf
@@ -16007,12 +16005,12 @@ Module widgets
       ProcedureReturn result
    EndProcedure
    
-   Procedure   DoEvent_Bar( *this._s_WIDGET, event.l, *button._s_BTN )
+   Procedure   DoEvent_Bar( *this._s_WIDGET, event.l, *btn._s_BTN )
       Protected result.b, mode_type = 0
       Protected._s_BAR *bar = *this\bar
       Protected._s_BTN *BB1, *BB2, *SB
       Protected._s_TAB *tab, *activeTAB
-      Static._s_TAB *PressedTAB, *enteredTAB
+      Static._s_TAB *PressedTAB, *hoverTAB
       Static ToolBar
       
       If event = #__EVENT_Focus
@@ -16020,7 +16018,7 @@ Module widgets
       EndIf
       
       If *this\parent
-         *enteredTAB = parentTabEntered( *this )
+         *hoverTAB = parentTabEntered( *this )
          *activeTAB = *this\parentTabSelected( )
       EndIf
       
@@ -16037,10 +16035,10 @@ Module widgets
             If MouseEnter( *this, 2 )
                
                If ListSize( *this\__tabs( ) )
-                  If *EnteredTAB And
-                     *EnteredTAB\mask & #__MASK_Visible And
-                     is_hover( *EnteredTAB, mouse_bar_x, mouse_bar_y )
-                     *tab = *EnteredTAB
+                  If *hoverTAB And
+                     *hoverTAB\mask & #__MASK_Visible And
+                     is_hover( *hoverTAB, mouse_bar_x, mouse_bar_y )
+                     *tab = *hoverTAB
                   Else
                      ; search entered item
                      LastElement( *this\__tabs( ))
@@ -16056,19 +16054,19 @@ Module widgets
             EndIf
             
             ; change enter/leave state
-            If *EnteredTAB <> *tab 
+            If *hoverTAB <> *tab 
                ;\\ leaved tabs
-               If *EnteredTAB 
-                  If *EnteredTAB\mask & #__MASK_Hover
-                     *EnteredTAB\mask &~ #__MASK_Hover
+               If *hoverTAB 
+                  If *hoverTAB\mask & #__MASK_Hover
+                     *hoverTAB\mask &~ #__MASK_Hover
                      
-                     If *EnteredTAB\ColorState( ) = #__s_1
-                        *EnteredTAB\ColorState( ) = #__s_0
+                     If *hoverTAB\ColorState( ) = #__s_1
+                        *hoverTAB\ColorState( ) = #__s_0
                      EndIf
                      ;
                      If *this\type = #__TYPE_PopupBar 
-                        If *EnteredTAB\checked
-                           *EnteredTAB\checked = 0
+                        If *hoverTAB\checked
+                           *hoverTAB\checked = 0
                         EndIf
                      EndIf
                      ;
@@ -16080,7 +16078,7 @@ Module widgets
                   *tab = 0    
                EndIf  
                
-               *EnteredTAB = *tab
+               *hoverTAB = *tab
                parentTabEntered( *this ) = *tab
                ;
                If *tab
@@ -16153,7 +16151,7 @@ Module widgets
                      ; удобно когда нужно показать подсказку
                      If is_integral_( *this )
                         If *this\parent\type = #__TYPE_panel
-                           Post( *this, #__EVENT_StatusChange, *tab\index, *tab )
+                           Post( *this, #__EVENT_StatusChange, *tab\ID, *tab )
                         EndIf
                      EndIf
                   EndIf
@@ -16235,15 +16233,15 @@ Module widgets
       If event = #__EVENT_Down
          If MouseButtons( ) & #PB_Canvas_LeftButton
             If *this\type = #__TYPE_ToolBar
-               If *EnteredTAB And *EnteredTAB\childrens  
+               If *hoverTAB And *hoverTAB\childrens  
                   ToolBar ! 1
                   If ToolBar
                      ; Debug " toolbar focus change "
-                     ; *EnteredTAB\mask | #__MASK_Active
-                     *activeTAB = *EnteredTAB
+                     ; *hoverTAB\mask | #__MASK_Active
+                     *activeTAB = *hoverTAB
                      *activeTAB\checked = 1
                      
-                     ChangePopupBar( *this, *EnteredTAB )
+                     ChangePopupBar( *this, *hoverTAB )
                   Else
                      If *activeTAB
                         *activeTAB\checked = 0
@@ -16263,7 +16261,7 @@ Module widgets
             
             ;If *this\tab
             If PopupBar( ) And Not ( PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__TYPE_ComboBox )
-               If PopupBar( )\menu\display And Not ( ToolBar And *EnteredTAB And *EnteredTAB\childrens)
+               If PopupBar( )\menu\display And Not ( ToolBar And *hoverTAB And *hoverTAB\childrens)
                   If test_display
                      Debug "6?   " + HidePopupBar( PopupBar( ) )
                   Else
@@ -16275,16 +16273,16 @@ Module widgets
             EndIf
             
             If *this\type = #__TYPE_MenuBar
-               If *EnteredTAB And Not *EnteredTAB\mask & #__MASK_Disabled 
+               If *hoverTAB And Not *hoverTAB\mask & #__MASK_Disabled 
                   If Not *activeTAB
-                     If *activeTAB <> *EnteredTAB
+                     If *activeTAB <> *hoverTAB
                         If *activeTAB
                            *activeTAB\mask &~ #__MASK_Active
                            ; *activeTAB\checked = 0
                            *activeTAB = 0 
                         EndIf
                         ;
-                        *activeTAB = *EnteredTAB
+                        *activeTAB = *hoverTAB
                         *activeTAB\mask & #__MASK_Active ! 1
                         ; *activeTAB\checked ! 1
                      Else
@@ -16293,27 +16291,27 @@ Module widgets
                         *activeTAB = 0
                      EndIf
                      ;
-                     If *EnteredTAB\childrens 
-                        DisplayPopupBar( *EnteredTAB\popupbar, *this )
+                     If *hoverTAB\childrens 
+                        DisplayPopupBar( *hoverTAB\popupbar, *this )
                      EndIf
                   EndIf
                EndIf
             EndIf
             
-            If Not ( *EnteredTAB And *EnteredTAB\mask & #__MASK_Disabled And *EnteredTAB\childrens )
-               *PressedTAB = *EnteredTAB
+            If Not ( *hoverTAB And *hoverTAB\mask & #__MASK_Disabled And *hoverTAB\childrens )
+               *PressedTAB = *hoverTAB
                
                ;                                              ;
-               If Not ( *button And 
-                        *button\mask & #__MASK_Press And 
-                        ( *button = *this\bar\button[1] Or 
-                          *button = *this\bar\button[2] ) )
+               If Not ( *btn And 
+                        *btn\mask & #__MASK_Press And 
+                        ( *btn = *this\bar\button[1] Or 
+                          *btn = *this\bar\button[2] ) )
                   ;
-                  If *EnteredTAB And
-                     *EnteredTAB\mask & #__MASK_Press = #False
-                     *EnteredTAB\mask | #__MASK_Press
+                  If *hoverTAB And
+                     *hoverTAB\mask & #__MASK_Press = #False
+                     *hoverTAB\mask | #__MASK_Press
                      
-                     *EnteredTAB\ColorState( ) = #__s_2
+                     *hoverTAB\ColorState( ) = #__s_2
                      repaint_set( *this )
                   EndIf
                EndIf
@@ -16327,8 +16325,8 @@ Module widgets
       ;
       If event = #__EVENT_Up
          If MouseButtons( ) & #PB_Canvas_LeftButton
-            If *EnteredTAB
-               If *EnteredTAB\childrens 
+            If *hoverTAB
+               If *hoverTAB\childrens 
                   If Not PopupBar( )
                      If *activeTAB
                         *activeTAB\mask &~ #__MASK_Active
@@ -16340,9 +16338,9 @@ Module widgets
                ;\\
                If *this\type = #__TYPE_TabBar  
                   If Not MouseDrag( )
-                     If Not *EnteredTAB\mask & #__MASK_Disabled
-                        If GetState( *this ) <> *EnteredTAB\index 
-                           If SetState( *this, *EnteredTAB\index ) 
+                     If Not *hoverTAB\mask & #__MASK_Disabled
+                        If GetState( *this ) <> *hoverTAB\ID 
+                           If SetState( *this, *hoverTAB\ID ) 
                               result = #True
                            EndIf
                         EndIf
@@ -16367,7 +16365,7 @@ Module widgets
       EndIf
       
       ;\\
-      If DoEvent_Buttons( *this, event, *button )
+      If DoEvent_Buttons( *this, event, *btn )
          result = 1
       EndIf
       
@@ -16404,7 +16402,7 @@ Module widgets
    ;          Debug 88888
    ;       EndProcedure
    
-   Procedure   DoEvents( *this._s_WIDGET, event.l, *button = #PB_All, *data = #Null )
+   Procedure   DoEvents( *this._s_WIDGET, event.l, *btn = #PB_All, *data = #Null )
       If Not *this
          ProcedureReturn 0
       EndIf
@@ -16501,10 +16499,10 @@ Module widgets
                ;
                If event = #__EVENT_Drop
                   If *this\RowEntered( )\mask & #__MASK_Hover < 0
-                     *button = *this\RowEntered( )\rindex
+                     *btn = *this\RowEntered( )\rindex
                      *data   = CanvasMouseX( ) | CanvasMouseY( ) << 16
                   Else
-                     *button = *this\RowEntered( )\rindex + 1
+                     *btn = *this\RowEntered( )\rindex + 1
                      *data   = CanvasMouseX( ) | CanvasMouseY( ) << 16
                   EndIf
                   ;
@@ -16513,7 +16511,7 @@ Module widgets
                Else
                   ;
                   If *this\RowEntered( )
-                     *Button = *this\RowEntered( )\rindex
+                     *btn = *this\RowEntered( )\rindex
                      
                      If *this\RowEntered( )\buttonbox And 
                         *this\RowEntered( )\buttonbox\mask & #__MASK_Hover
@@ -16585,7 +16583,8 @@ Module widgets
          EndIf
          
          ;\\
-         If DoEvent_Bar( *this, event, EnteredButton( ))
+         Protected._s_BTN *hoverBTN = EnteredButton( )
+         If DoEvent_Bar( *this, event, *hoverBTN)
             repaint_set( *this )
          EndIf
          
@@ -16609,7 +16608,7 @@ Module widgets
                EndIf
                
                If event = #__EVENT_LeftClick
-                  Select EnteredButton( )
+                  Select *hoverBTN
                         ; close button
                      Case *this\CloseButton( )
                         If is_root_( *this )
@@ -16669,8 +16668,8 @@ Module widgets
                               *this\ColorState( ) = #__s_2
                            EndIf
                            
-                           If *this\picture[#__IMAGE_Pressed]\imageID
-                              *this\picture = *this\picture[#__IMAGE_Pressed]
+                           If *this\img[#__IMAGE_Pressed]\imageID
+                              *this\img = *this\img[#__IMAGE_Pressed]
                            EndIf
                         EndIf
                         
@@ -16683,8 +16682,8 @@ Module widgets
                            EndIf
                         EndIf
                         
-                        If *this\picture[#__IMAGE_Released]\imageID
-                           *this\picture = *this\picture[#__IMAGE_Released]
+                        If *this\img[#__IMAGE_Released]\imageID
+                           *this\img = *this\img[#__IMAGE_Released]
                         EndIf
                         
                   EndSelect
@@ -16877,23 +16876,23 @@ Module widgets
             event = #__EVENT_left3Click
             ;
             If MouseClick( ) > 1
-               Post( *this, #__EVENT_LeftClick, *button, *data )
+               Post( *this, #__EVENT_LeftClick, *btn, *data )
             EndIf
          EndIf
          ;             If __GUI\event\loop
-         ;                Post( *this, event, *button, *data )
+         ;                Post( *this, event, *btn, *data )
          ;             Else
          If event = #__EVENT_Change
-            AddEvents( *this, event, *button, *data )
+            AddEvents( *this, event, *btn, *data )
          ElseIf event = #__EVENT_Focus
-            AddEvents( *this, event, *button, *data )
+            AddEvents( *this, event, *btn, *data )
          ElseIf event = #__EVENT_LostFocus
-            AddEvents( *this, event, *button, *data )
+            AddEvents( *this, event, *btn, *data )
          Else
             If *this\child And *this\parent And *this\parent\tabbar And *this\parent\tabbar\type = #__TYPE_tabbar
-               Post( *this\parent, event, *button, *data )
+               Post( *this\parent, event, *btn, *data )
             Else
-               Post( *this, event, *button, *data )
+               Post( *this, event, *btn, *data )
             EndIf
          EndIf
          ;             EndIf
@@ -17469,10 +17468,10 @@ Module widgets
             event = #__EVENT_RightDown
             
             If Entered( ) And Not Entered( )\anchors
-               If Entered( )\picture[#__IMAGE_BackGround]\imageID And
-                  ImageDepth( Entered( )\picture[#__IMAGE_BackGround]\image, #PB_Image_OriginalDepth ) > 31  
+               If Entered( )\img[#__IMAGE_BackGround]\imageID And
+                  ImageDepth( Entered( )\img[#__IMAGE_BackGround]\image, #PB_Image_OriginalDepth ) > 31  
                   
-                  If StartDrawing( ImageOutput(  Entered( )\picture[#__IMAGE_BackGround]\image ) )
+                  If StartDrawing( ImageOutput(  Entered( )\img[#__IMAGE_BackGround]\image ) )
                      DrawingMode( #PB_2DDrawing_AlphaChannel )
                      
                      If Not Alpha( Point( CanvasMouseX( ) - Entered( )\inner_x( ), CanvasMouseY( ) - Entered( )\inner_y( ) ) )
@@ -17563,7 +17562,8 @@ Module widgets
                   EndIf
                EndIf
                ;
-               If EnteredButton( ) > 0
+               Protected._s_BTN *hoverBTN = EnteredButton( )
+               If *hoverBTN > 0
                   If Not Entered( )\anchors 
                      If Entered( )\bar 
                         MousePressX( ) - Entered( )\bar\thumb\pos
@@ -18291,8 +18291,8 @@ Module widgets
          *this\scroll_height( ) =  *this\padding\y * 2 
          
          ;
-         If Not *this\text\vertical And *this\picture\width And *this\text\string = ""
-            *this\scroll_width( )  = *this\picture\width + *this\padding\x * 2 
+         If Not *this\text\vertical And *this\img\width And *this\text\string = ""
+            *this\scroll_width( )  = *this\img\width + *this\padding\x * 2 
          EndIf
          
          ; Перед циклом создания линий
@@ -18427,27 +18427,27 @@ Module widgets
                *this\area_align\bottom 
                ;
                If *this\area_align
-                  If *this\picture\width
+                  If *this\img\width
                      If *this\area_align\left
-                        *txt\x + indent + *this\picture\width
+                        *txt\x + indent + *this\img\width
                      EndIf
                   EndIf
                   If *this\area_align\top
-                     If *this\picture\height
-                        *txt\y + indent + *this\picture\height
+                     If *this\img\height
+                        *txt\y + indent + *this\img\height
                      EndIf
                   EndIf
                EndIf
             Else
                ; center image and text
-               If *txt\string And *this\picture\width And *this\picture\height
+               If *txt\string And *this\img\width And *this\img\height
                   If *this\flagmask & #__FLAG_Vertical
                      If *this\flagmask & #__FLAG_Invert
-                        *txt\y  + *this\picture\height + indent 
+                        *txt\y  + *this\img\height + indent 
                      EndIf
                   Else
                      If Not *this\flagmask & #__FLAG_Invert
-                        *txt\x + *this\picture\width + indent 
+                        *txt\x + *this\img\width + indent 
                      EndIf
                   EndIf
                EndIf
@@ -18465,49 +18465,49 @@ Module widgets
          ; make area size
          If *this\area_align
             If *this\text\string
-               If *this\picture\width
+               If *this\img\width
                   If *this\area_align\left Or *this\area_align\right
-                     *this\scroll_width( ) + indent + *this\picture\width
+                     *this\scroll_width( ) + indent + *this\img\width
                   EndIf
                EndIf
-               If *this\picture\height
+               If *this\img\height
                   If *this\area_align\top Or *this\area_align\bottom 
-                     *this\scroll_height( ) + indent + *this\picture\height
+                     *this\scroll_height( ) + indent + *this\img\height
                   EndIf
                EndIf
             EndIf
          EndIf
          
          ; make img align
-         If *this\picture
-            make_content_align_x( *this\picture, *this\scroll_width( ), *this\picture\width, *this\picture\rotate, *this\area_align, *this\padding\x )
-            make_content_align_y( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\area_align, *this\padding\y )
+         If *this\img
+            make_content_align_x( *this\img, *this\scroll_width( ), *this\img\width, *this\img\rotate, *this\area_align, *this\padding\x )
+            make_content_align_y( *this\img, *this\scroll_height( ), *this\img\height, *this\img\rotate, *this\area_align, *this\padding\y )
          EndIf
       Else
          ;
-         If *this\text\string And *this\picture\height And *this\picture\width
+         If *this\text\string And *this\img\height And *this\img\width
             ; make area size
             If *this\flagmask & #__FLAG_Vertical
-               *this\scroll_height( ) + *this\picture\height + indent
+               *this\scroll_height( ) + *this\img\height + indent
             Else
-               *this\scroll_width( ) + *this\picture\width + indent
+               *this\scroll_width( ) + *this\img\width + indent
             EndIf
             
             ; make img align
-            If *this\picture
+            If *this\img
                If *this\flagmask & #__FLAG_Vertical
-                  make_content_align_x( *this\picture, *this\scroll_width( ), *this\picture\width, *this\picture\rotate, *this\area_align, *this\padding\x )
+                  make_content_align_x( *this\img, *this\scroll_width( ), *this\img\width, *this\img\rotate, *this\area_align, *this\padding\x )
                   If *this\flagmask & #__FLAG_Invert
-                     *this\picture\y = *this\padding\y 
+                     *this\img\y = *this\padding\y 
                   Else
-                     *this\picture\y + *this\scroll_height( ) - *this\picture\height - *this\padding\y 
+                     *this\img\y + *this\scroll_height( ) - *this\img\height - *this\padding\y 
                   EndIf
                Else
-                  make_content_align_y( *this\picture, *this\scroll_height( ), *this\picture\height, *this\picture\rotate, *this\area_align, *this\padding\y )
+                  make_content_align_y( *this\img, *this\scroll_height( ), *this\img\height, *this\img\rotate, *this\area_align, *this\padding\y )
                   If *this\flagmask & #__FLAG_Invert
-                     *this\picture\x + *this\scroll_width( ) - *this\picture\width - *this\padding\x
+                     *this\img\x + *this\scroll_width( ) - *this\img\width - *this\padding\x
                   Else
-                     *this\picture\x = *this\padding\x 
+                     *this\img\x = *this\padding\x 
                   EndIf
                EndIf
             EndIf
@@ -18533,8 +18533,8 @@ Module widgets
             UpdateDraw_MultiLineText( *this, indent )
          EndIf
       Else
-         If make_content_area( *this, *this\text, *this\picture, indent )
-            make_content_align( *this, *this\text, *this\picture, *this\scroll_width( ), *this\scroll_height( ), indent )
+         If make_content_area( *this, *this\text, *this\img, indent )
+            make_content_align( *this, *this\text, *this\img, *this\scroll_width( ), *this\scroll_height( ), indent )
          EndIf
       EndIf
    EndProcedure
@@ -18653,14 +18653,14 @@ Module widgets
                EndIf
                ;
                ;\\ img position
-               If *row\picture\imageID
+               If *row\img\imageID
                   If *this\flagmask & #__FLAG_checkboxes Or 
                      *this\flagmask & #__FLAG_optionboxes
                      *this\row\sublevelpos + padding_size
                   EndIf
                   ;
-                  *row\picture\x = *this\row\sublevelpos 
-                  *row\picture\y = ( *row\height - *row\picture\height ) / 2
+                  *row\img\x = *this\row\sublevelpos 
+                  *row\img\y = ( *row\height - *row\img\height ) / 2
                EndIf
                ;
                ;\\ 
@@ -18687,7 +18687,7 @@ Module widgets
             
             ;\\ horizontal scroll max value
             If *this\type = #__TYPE_ListIcon
-               *row\picture\x - DPIScaled(8)
+               *row\img\x - DPIScaled(8)
                If *row\checkbox
                   *row\checkbox\x - box_size
                EndIf
@@ -18933,7 +18933,7 @@ Module widgets
       EndIf
       
       ;\\ draw background
-      If *this\picture[#__IMAGE_BackGround]\imageID
+      If *this\img[#__IMAGE_BackGround]\imageID
          Clip( *this, [#__c_idraw] )
          draw_image_( *this, *this\inner_x( ), *this\Inner_y( ), [#__IMAGE_BackGround] )
          Clip( *this, [#__c_draw] )
@@ -19094,9 +19094,9 @@ Module widgets
             __draw_minimize_button( *this\MinimizeButton( ), DPIScaled(4) )
             
             ; Draw img
-            If *this\picture\imageID
+            If *this\img\imageID
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               draw_image_( *this, *this\inner_x( ), *this\inner_y( ) - (*this\picture\height+*this\fs[2])/2 )
+               draw_image_( *this, *this\inner_x( ), *this\inner_y( ) - (*this\img\height+*this\fs[2])/2 )
             EndIf
             
             If *this\TitleText( )\string
@@ -19106,8 +19106,8 @@ Module widgets
                
                ; Draw string
                If *this\ResizeChange( )
-                  If *this\picture\imageID
-                     *this\TitleText( )\x = *this\title\x + *this\padding\x + *this\picture\width + 10
+                  If *this\img\imageID
+                     *this\TitleText( )\x = *this\title\x + *this\padding\x + *this\img\width + 10
                   Else
                      *this\TitleText( )\x = *this\title\x + *this\padding\x
                   EndIf
@@ -19204,9 +19204,9 @@ Module widgets
       Y = *this\inner_y( ) + *this\scroll_y( )
       
       ;\\ draw picture
-      If *this\picture And *this\picture\imageID 
+      If *this\img And *this\img\imageID 
          draw_mode_alpha_( #PB_2DDrawing_Transparent )
-         DrawAlphaImage( *this\picture\imageID, X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
+         DrawAlphaImage( *this\img\imageID, X + *this\img\x, Y + *this\img\y, *this\color\ialpha )
       EndIf
       
       ;\\ draw text
@@ -19332,22 +19332,22 @@ Module widgets
          Y = *this\inner_y( ) + *this\scroll_y( )
          
          ;
-         If *this\picture\imageID Or
-            *this\picture[#__IMAGE_BackGround]\imageID
+         If *this\img\imageID Or
+            *this\img[#__IMAGE_BackGround]\imageID
             
             draw_mode_alpha_( #PB_2DDrawing_Default )
          EndIf
          
          ;Clip( *this, [#__c_idraw] )
          ; background img draw
-         If *this\picture[#__IMAGE_BackGround]\imageID
+         If *this\img[#__IMAGE_BackGround]\imageID
             draw_image_( *this, *this\inner_x( ), *this\inner_y( ), [#__IMAGE_BackGround] )
          EndIf
          
          ; scroll img draw
-         If *this\picture\imageID 
-            DrawAlphaImage( *this\picture\imageID, X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
-            ; DrawAlphaImage( ImageID(*this\picture\image), X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
+         If *this\img\imageID 
+            DrawAlphaImage( *this\img\imageID, X + *this\img\x, Y + *this\img\y, *this\color\ialpha )
+            ; DrawAlphaImage( ImageID(*this\img\image), X + *this\img\x, Y + *this\img\y, *this\color\ialpha )
          EndIf
          
          ;
@@ -19446,7 +19446,7 @@ Module widgets
          EndIf
          
          ;\\ draw background
-         If *this\picture[#__IMAGE_BackGround]\imageID
+         If *this\img[#__IMAGE_BackGround]\imageID
             draw_image_( *this, X, Y, [#__IMAGE_BackGround] )
          Else
             If *this\color\back <> - 1
@@ -19585,9 +19585,9 @@ Module widgets
          
          If ListIndex( *this\__columns( )) = 0
             ;\\ Draw items img
-            If *row\picture\imageID
+            If *row\img\imageID
                draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawAlphaImage( *row\picture\imageID, X + *row\picture\x - _scroll_x_, Y + *row\picture\y, *row\color\ialpha )
+               DrawAlphaImage( *row\img\imageID, X + *row\img\x - _scroll_x_, Y + *row\img\y, *row\color\ialpha )
             EndIf
          EndIf
          
@@ -19621,7 +19621,7 @@ Module widgets
    
       ;
       If ListIndex( *this\__columns( )) = 0
-         Protected *buttonBox._s_BTN
+         Protected *buttonBox._s_BOX
          
          ; - Draw plots line
          If *this\flagmask & #__FLAG_nolines
@@ -19796,9 +19796,9 @@ Module widgets
          EndIf
          
          ;\\ Draw background img
-         If *this\picture\imageID
+         If *this\img\imageID
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
-            DrawAlphaImage( *this\picture\imageID, *this\picture\x, *this\picture\y, *this\color\ialpha )
+            DrawAlphaImage( *this\img\imageID, *this\img\x, *this\img\y, *this\color\ialpha )
          EndIf
          
          ;\\
@@ -19987,7 +19987,7 @@ Module widgets
          
          ;
          ; then change text update cursor pos
-         If *this\text\mode & #__text_editable And *this\text\change =- 99 And *this\LineState( ) >= 0
+         If *this\text\mode & #__TEXTMASK_editable And *this\text\change =- 99 And *this\LineState( ) >= 0
             If *this\row\active[0]
                edit_sel_( *this, *this\row\active[0] )
                
@@ -20071,14 +20071,14 @@ Module widgets
          Y = *this\inner_y( ) + *this\scroll_y( )
          
          ;\\ draw picture
-         If *this\picture And *this\picture\imageID 
+         If *this\img And *this\img\imageID 
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
-            DrawAlphaImage( *this\picture\imageID, X + *this\picture\x, Y + *this\picture\y, *this\color\ialpha )
+            DrawAlphaImage( *this\img\imageID, X + *this\img\x, Y + *this\img\y, *this\color\ialpha )
          EndIf
          
          
          ; Draw caret
-         ;If *this\text\mode & #__text_editable 
+         ;If *this\text\mode & #__TEXTMASK_editable 
          If c_state = #__s_2
             __draw_mode( #PB_2DDrawing_XOr )
             draw_box_( X + *this\caret\x, Y + *this\caret\y, *this\caret\width, *this\caret\height, $FFFFFFFF )
@@ -20134,9 +20134,9 @@ Module widgets
          EndIf
          
          ;\\ Draw background img
-         If *this\picture\imageID
+         If *this\img\imageID
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
-            DrawAlphaImage( *this\picture\imageID, *this\picture\x, *this\picture\y, *this\color\ialpha )
+            DrawAlphaImage( *this\img\imageID, *this\img\x, *this\img\y, *this\color\ialpha )
          EndIf
          
          Protected gridlines = Bool(*this\flagmask & #__FLAG_gridLines)
@@ -20167,9 +20167,9 @@ Module widgets
             Draw_TreeRows( *this, column_index)
             
             ;                   ;\\ Draw columns img
-            ;                If *column\picture\imageID
+            ;                If *column\img\imageID
             ;                   draw_mode_alpha_( #PB_2DDrawing_Transparent )
-            ;                   DrawAlphaImage( *column\picture\imageID, X + *column\picture\x, Y + *column\picture\y, *this\color\ialpha )
+            ;                   DrawAlphaImage( *column\img\imageID, X + *column\img\x, Y + *column\img\y, *this\color\ialpha )
             ;                EndIf
             
             ;\\ Draw columns text
@@ -20205,7 +20205,7 @@ Module widgets
          ; and the contents of that area.
          If *this\text\change Or
             *this\ResizeChange( ) Or 
-            *this\picture\change
+            *this\img\change
             
             If *this\type = #__TYPE_Editor Or
                *this\type = #__TYPE_String Or 
@@ -20516,8 +20516,8 @@ Module widgets
             *this\text\change = 0
          EndIf
          
-         If *this\picture\change <> 0
-            *this\picture\change = 0
+         If *this\img\change <> 0
+            *this\img\change = 0
          EndIf
          
          If *this\ResizeChange( ) <> 0
@@ -21643,7 +21643,7 @@ Module widgets
             
             ;\\
             If *this\type = #__TYPE_Editor Or *this\type = #__TYPE_String
-               If *this\text\mode & #__text_editable
+               If *this\text\mode & #__TEXTMASK_editable
                   *this\caret\width = DPIScaled(1)
                Else
                   *this\caret\width = 0
@@ -21695,7 +21695,7 @@ Module widgets
          bar_area_create( *this, 1, DPIScaledX( *param_1 ), DPIScaledY( *param_2 ), *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
       ElseIf *this\type = #__TYPE_image
          
-         bar_area_create( *this, 1, *this\picture\width, *this\picture\height, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
+         bar_area_create( *this, 1, *this\img\width, *this\img\height, *this\inner_width( ), *this\inner_height( ), #__bar_button_size )
       EndIf
       ;EndIf
       
@@ -22359,7 +22359,7 @@ Module widgets
             *root\color\back  = - 1
          EndIf
          ;
-         *root\picture\image = - 1
+         *root\img\image = - 1
          *root\font          = - 1
          SetFont( *root, #PB_Default )
          ; Setimage( *root, #PB_Default )
@@ -22446,6 +22446,116 @@ Module widgets
       ProcedureReturn *root
    EndProcedure
    
+  ;-
+   Procedure UpdateTitleBar(*this._s_WIDGET, height.l)
+      Protected._s_TITLE *title = *this\title
+      Protected._s_BTN *closeBTN = *title\bar\btn[#__wb_close]
+      Protected._s_BTN *maxiBTN = *title\bar\btn[#__wb_maxi]
+      Protected._s_BTN *miniBTN = *title\bar\btn[#__wb_mini]
+      
+      If Not *title\mask & #__MASK_Hidden
+         *title\x      = *this\frame_x( ) + *this\fs
+         *title\y      = *this\frame_y( ) + *this\fs
+         *title\width  = *this\frame_width( ) - *this\fs * 2
+         
+         *title\height = height
+         If *title\height > *this\frame_height( ) - *this\fs 
+            *title\height = *this\frame_height( ) - *this\fs 
+         EndIf
+         
+         ; caption close button
+         If Not *closeBTN\mask & #__MASK_Hidden
+            *closeBTN\x = ( *title\x + *title\width ) - ( *closeBTN\width + *title\spacing )
+            *closeBTN\y = *this\frame_y( ) + ( *title\height - *closeBTN\height ) / 2
+         EndIf
+         
+         ; caption maximize button
+         If Not *maxiBTN\mask & #__MASK_Hidden
+            If *closeBTN\mask & #__MASK_Hidden
+               *maxiBTN\x = ( *title\x + *title\width ) - ( *maxiBTN\width + *title\spacing )
+            Else
+               *maxiBTN\x = *closeBTN\x - ( *maxiBTN\width + *title\spacing )
+            EndIf
+            *maxiBTN\y = *this\frame_y( ) + ( *title\height - *maxiBTN\height ) / 2
+         EndIf
+         
+         ; caption minimize button
+         If Not *miniBTN\mask & #__MASK_Hidden
+            If *maxiBTN\mask & #__MASK_Hidden
+               *miniBTN\x = *closeBTN\x - ( *miniBTN\width + *title\spacing )
+            Else
+               *miniBTN\x = *maxiBTN\x - ( *miniBTN\width + *title\spacing )
+            EndIf
+            *miniBTN\y = *this\frame_y( ) + ( *title\height - *miniBTN\height ) / 2
+         EndIf
+         
+         ; title bar width
+         If Not *miniBTN\mask & #__MASK_Hidden
+            *title\width = *miniBTN\x - *title\x - *title\spacing
+         ElseIf Not *maxiBTN\mask & #__MASK_Hidden
+            *title\width = *maxiBTN\x - *title\x - *title\spacing
+         ElseIf Not *closeBTN\mask & #__MASK_Hidden
+            *title\width = *closeBTN\x - *title\x - *title\spacing
+         EndIf
+      EndIf
+   EndProcedure
+   
+   Procedure CreateTitleBar(text.s, image.i, style.q)
+      Protected._s_TITLE *title = AllocateStructure(_s_TITLE)
+      Protected._s_BTN *closeBTN = *title\bar\btn[#__wb_close]
+      Protected._s_BTN *maxiBTN = *title\bar\btn[#__wb_maxi]
+      Protected._s_BTN *miniBTN = *title\bar\btn[#__wb_mini]
+      
+     *title\spacing = DPIScaled(4)
+      
+      If constants::BinaryFlag( style, #PB_Window_SystemMenu, #False )
+         *closeBTN\mask | #__MASK_Hidden    
+      Else
+         *closeBTN\mask &~ #__MASK_Hidden    
+      EndIf
+      If constants::BinaryFlag( style, #PB_Window_MaximizeGadget, #False )
+         *maxiBTN\mask | #__MASK_Hidden    
+      Else
+         *maxiBTN\mask &~ #__MASK_Hidden    
+      EndIf
+      If constants::BinaryFlag( style, #PB_Window_MinimizeGadget, #False )
+         *miniBTN\mask | #__MASK_Hidden    
+      Else
+         *miniBTN\mask &~ #__MASK_Hidden    
+      EndIf
+      
+      If *maxiBTN\mask & #__MASK_Hidden = 0 Or
+         *miniBTN\mask & #__MASK_Hidden = 0 Or
+         *closeBTN\mask & #__MASK_Hidden = 0
+         *title\mask &~ #__MASK_Hidden
+      Else
+         If constants::BinaryFlag( style, #PB_Window_TitleBar, #False )
+            *title\mask | #__MASK_Hidden
+         Else
+            *title\mask &~ #__MASK_Hidden 
+         EndIf
+      EndIf
+      
+      *closeBTN\color    = colors::PALETTE\red
+      *maxiBTN\color = colors::PALETTE\blue
+      *miniBTN\color = colors::PALETTE\green
+      
+      *closeBTN\width    = DPIScaled( #__bar_button_size - 2 )
+      *closeBTN\height   = *closeBTN\width
+      *closeBTN\round    = *closeBTN\width / 2
+      
+      *maxiBTN\width  = *closeBTN\width
+      *maxiBTN\height = *closeBTN\height
+      *maxiBTN\round = *closeBTN\round
+      
+      *miniBTN\width  = *closeBTN\width
+      *miniBTN\height = *closeBTN\height
+      *miniBTN\round = *closeBTN\round
+      
+      ProcedureReturn *title
+   EndProcedure
+   
+   
    Procedure.i Window( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, *parent._s_PARENT = 0 )
       Protected fs = DPIScaled(#__window_FrameSize)
       Protected barHeight = DPIScaled( #__window_CaptionHeight )
@@ -22480,7 +22590,7 @@ Module widgets
       *this\type            = #__TYPE_window
       *this\class           = #PB_Compiler_Procedure ;+""+ count : count + 1
       *this\container       = 2
-      *this\picture\image   = - 1 ; Background img
+      *this\img\image   = - 1 ; Background img
                                   ;          *this\frame_x( )      = #PB_Ignore
                                   ;          *this\frame_y( )      = #PB_Ignore
                                   ;          *this\frame_width( )  = #PB_Ignore
@@ -22509,36 +22619,7 @@ Module widgets
       *this\bs = *this\fs
       
       ;
-     *this\title\spacing = DPIScaled(4)
-      
-      If constants::BinaryFlag( *this\flagmask, #PB_Window_SystemMenu, #False )
-         *this\CloseButton( )\mask | #__MASK_Hidden    
-      Else
-         *this\CloseButton( )\mask &~ #__MASK_Hidden    
-      EndIf
-      If constants::BinaryFlag( *this\flagmask, #PB_Window_MaximizeGadget, #False )
-         *this\MaximizeButton( )\mask | #__MASK_Hidden    
-      Else
-         *this\MaximizeButton( )\mask &~ #__MASK_Hidden    
-      EndIf
-      If constants::BinaryFlag( *this\flagmask, #PB_Window_MinimizeGadget, #False )
-         *this\MinimizeButton( )\mask | #__MASK_Hidden    
-      Else
-         *this\MinimizeButton( )\mask &~ #__MASK_Hidden    
-      EndIf
-      
-      If *this\MaximizeButton( )\mask & #__MASK_Hidden = 0 Or
-         *this\MinimizeButton( )\mask & #__MASK_Hidden = 0 Or
-         *this\CloseButton( )\mask & #__MASK_Hidden = 0
-         *this\title\mask &~ #__MASK_Hidden
-      Else
-         If constants::BinaryFlag( *this\flagmask, #PB_Window_TitleBar, #False )
-            *this\title\mask | #__MASK_Hidden
-         Else
-            *this\title\mask &~ #__MASK_Hidden 
-         EndIf
-      EndIf
-      
+      *this\title = CreateTitleBar(text.s, 0, *this\flagmask)
       If *this\title\mask & #__MASK_Hidden
          *this\TitleBarHeight = 0
          *this\fs[2] = 0
@@ -22549,23 +22630,6 @@ Module widgets
          *this\padding\x = DPIScaled(5)
          *this\TitleText( )\string    = Text
       EndIf
-      
-      *this\CloseButton( )\color    = colors::PALETTE\red
-      *this\MaximizeButton( )\color = colors::PALETTE\blue
-      *this\MinimizeButton( )\color = colors::PALETTE\green
-      
-      *this\CloseButton( )\width    = DPIScaled( #__bar_button_size - 2 )
-      *this\CloseButton( )\height   = *this\CloseButton( )\width
-      *this\CloseButton( )\round    = *this\CloseButton( )\width / 2
-      
-      *this\MaximizeButton( )\width  = *this\CloseButton( )\width
-      *this\MaximizeButton( )\height = *this\CloseButton( )\height
-      *this\MaximizeButton( )\round = *this\CloseButton( )\round
-      
-      *this\MinimizeButton( )\width  = *this\CloseButton( )\width
-      *this\MinimizeButton( )\height = *this\CloseButton( )\height
-      *this\MinimizeButton( )\round = *this\CloseButton( )\round
-      
       
       ;\\
       If constants::BinaryFlag( Flag, #__FLAG_child )
@@ -23463,51 +23527,7 @@ Module widgets
             EndIf
             
             ; caption title bar
-            If Not *this\title\mask & #__MASK_Hidden
-               *this\title\x      = *this\frame_x( ) + *this\fs
-               *this\title\y      = *this\frame_y( ) + *this\fs
-               *this\title\width  = *this\frame_width( ) - *this\fs * 2
-               
-               *this\title\height = *this\TitleBarHeight + *this\fs - 1
-               If *this\title\height > *this\frame_height( ) - *this\fs 
-                  *this\title\height = *this\frame_height( ) - *this\fs 
-               EndIf
-               
-               ; caption close button
-               If Not *this\CloseButton( )\mask & #__MASK_Hidden
-                  *this\CloseButton( )\x = ( *this\title\x + *this\title\width ) - ( *this\CloseButton( )\width + *this\title\spacing )
-                  *this\CloseButton( )\y = *this\frame_y( ) + ( *this\title\height - *this\CloseButton( )\height ) / 2
-               EndIf
-               
-               ; caption maximize button
-               If Not *this\MaximizeButton( )\mask & #__MASK_Hidden
-                  If *this\CloseButton( )\mask & #__MASK_Hidden
-                     *this\MaximizeButton( )\x = ( *this\title\x + *this\title\width ) - ( *this\MaximizeButton( )\width + *this\title\spacing )
-                  Else
-                     *this\MaximizeButton( )\x = *this\CloseButton( )\x - ( *this\MaximizeButton( )\width + *this\title\spacing )
-                  EndIf
-                  *this\MaximizeButton( )\y = *this\frame_y( ) + ( *this\title\height - *this\MaximizeButton( )\height ) / 2
-               EndIf
-               
-               ; caption minimize button
-               If Not *this\MinimizeButton( )\mask & #__MASK_Hidden
-                  If *this\MaximizeButton( )\mask & #__MASK_Hidden
-                     *this\MinimizeButton( )\x = *this\CloseButton( )\x - ( *this\MinimizeButton( )\width + *this\title\spacing )
-                  Else
-                     *this\MinimizeButton( )\x = *this\MaximizeButton( )\x - ( *this\MinimizeButton( )\width + *this\title\spacing )
-                  EndIf
-                  *this\MinimizeButton( )\y = *this\frame_y( ) + ( *this\title\height - *this\MinimizeButton( )\height ) / 2
-               EndIf
-               
-               ; title bar width
-               If Not *this\MinimizeButton( )\mask & #__MASK_Hidden
-                  *this\title\width = *this\MinimizeButton( )\x - *this\title\x - *this\title\spacing
-               ElseIf Not *this\MaximizeButton( )\mask & #__MASK_Hidden
-                  *this\title\width = *this\MaximizeButton( )\x - *this\title\x - *this\title\spacing
-               ElseIf Not *this\CloseButton( )\mask & #__MASK_Hidden
-                  *this\title\width = *this\CloseButton( )\x - *this\title\x - *this\title\spacing
-               EndIf
-            EndIf
+            UpdateTitleBar(*this, *this\titleBarHeight + *this\fs - 1)
          EndIf
          
          ;\\
@@ -23768,7 +23788,7 @@ Module widgets
       ProcedureReturn result
    EndProcedure
    
-   Procedure   AddEvents( *this._s_ROOT, event.l, *button = #PB_All, *data = #Null )
+   Procedure   AddEvents( *this._s_ROOT, event.l, *btn = #PB_All, *data = #Null )
       If *this > 0
          If test_event_add
             Static test
@@ -23781,7 +23801,7 @@ Module widgets
          If ListSize(__GUI\event\queues( ))  
             If ListIndex( __GUI\event\queues( ) ) >= 0 
                If __GUI\event\queues( )\widget = *this
-                  If __GUI\event\queues( )\type = event And __GUI\event\queues( )\item = *button
+                  If __GUI\event\queues( )\type = event And __GUI\event\queues( )\item = *btn
                      ProcedureReturn __GUI\event\queues( )
                   EndIf
                EndIf
@@ -23794,7 +23814,7 @@ Module widgets
             __GUI\event\queues.allocate( EVENTDATA, ( ) )
             __GUI\event\queues( )\widget = *this
             __GUI\event\queues( )\type   = event
-            __GUI\event\queues( )\item   = *button
+            __GUI\event\queues( )\item   = *btn
             __GUI\event\queues( )\data   = *data
             
             ;                If event = #__EVENT_focus
@@ -23812,18 +23832,18 @@ Module widgets
       EndIf
    EndProcedure
    
-   Procedure.i Post( *this._s_ROOT, event.l, *button = #PB_All, *data = #Null )
+   Procedure.i Post( *this._s_ROOT, event.l, *btn = #PB_All, *data = #Null )
       Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
       
       If *this > 0 
          If *this\parent
-            Protected *EnteredTab._s_TAB = parentTabEntered( *this )
+            Protected *hoverTAB._s_TAB = parentTabEntered( *this )
          EndIf
          ;             If Not __GUI\event\queuesmask
          ;                ; If *this\type <> #__TYPE_Scroll
-         ;                ;    Debug " post add events"+ *this\class +" "+ EventString(event) +" "+ *button +" "+ *data
+         ;                ;    Debug " post add events"+ *this\class +" "+ EventString(event) +" "+ *btn +" "+ *data
          ;                ; EndIf
-         ;                If AddEvents( *this, event, *button, *data )
+         ;                If AddEvents( *this, event, *btn, *data )
          ;                  If event = #__EVENT_Free 
          ;                     ProcedureReturn #False
          ;                  EndIf
@@ -23837,12 +23857,12 @@ Module widgets
             ;
             If event = #__EVENT_LeftClick Or
                event = #__EVENT_Change
-               If *EnteredTab
-                  *button = *EnteredTab\tindex
+               If *hoverTAB
+                  *btn = *hoverTAB\ID
                EndIf
             EndIf
             ;
-            If *button < 0
+            If *btn < 0
                ProcedureReturn 0
             EndIf
          EndIf
@@ -23867,7 +23887,7 @@ Module widgets
          ;\\
          EventWidget( )     = *this
          WidgetEvent( )     = event
-         WidgetEventItem( ) = *button
+         WidgetEventItem( ) = *btn
          WidgetEventData( ) = *data
          
          ;\\ menu send bind event
@@ -23878,16 +23898,16 @@ Module widgets
                Wend
                EventWidget( )     = *this
             Else
-               If *EnteredTab And *EnteredTab\childrens
+               If *hoverTAB And *hoverTAB\childrens
                   ; Чтобы не отправлять события
                   ProcedureReturn 0
                EndIf
             EndIf
             
-            ; Debug ""+ *button +" "+ *this\class +" POSTMENU "
+            ; Debug ""+ *btn +" "+ *this\class +" POSTMENU "
          EndIf
          
-         ; Debug "send - "+*this\class +" "+ EventString(event) +" "+ *button +" "+ *data
+         ; Debug "send - "+*this\class +" "+ EventString(event) +" "+ *btn +" "+ *data
          If event = #__EVENT_Free 
             result = #False
          Else
@@ -23915,7 +23935,7 @@ Module widgets
                If __GUI\event\binds( )\widget = *this 
                   If __GUI\event\binds( )\type = event 
                      ; Debug ""+EventString(__GUI\event\binds( )\type)+" "+ListSize(__GUI\event\binds( ))
-                     If Not ( __GUI\event\binds( )\item >= 0 And __GUI\event\binds( )\item <> *button )
+                     If Not ( __GUI\event\binds( )\item >= 0 And __GUI\event\binds( )\item <> *btn )
                         If __GUI\event\binds( )\data
                            WidgetEventData( ) = __GUI\event\binds( )\data
                         EndIf
@@ -23937,7 +23957,7 @@ Module widgets
                      ForEach __GUI\event\binds( )
                         If __GUI\event\binds( )\widget = *this\window  
                            If __GUI\event\binds( )\type = event And
-                              Not ( __GUI\event\binds( )\item >= 0 And __GUI\event\binds( )\item <> *button )
+                              Not ( __GUI\event\binds( )\item >= 0 And __GUI\event\binds( )\item <> *btn )
                               result = __GUI\event\binds( )\function( )
                               If result = #PB_Ignore
                                  Break
@@ -23956,7 +23976,7 @@ Module widgets
                ForEach __GUI\event\binds( )
                   If __GUI\event\binds( )\widget = *this\root 
                      If __GUI\event\binds( )\type = event And
-                        Not ( __GUI\event\binds( )\item >= 0 And __GUI\event\binds( )\item <> *button )
+                        Not ( __GUI\event\binds( )\item >= 0 And __GUI\event\binds( )\item <> *btn )
                         result = __GUI\event\binds( )\function( )
                         If result = #PB_Ignore
                            Break
@@ -24378,8 +24398,8 @@ Module widgets
                   EndIf
                   
                   ;
-                  If *e\picture\imageID
-                     ;   RemoveImage( *e, *e\picture\image )
+                  If *e\img\imageID
+                     ;   RemoveImage( *e, *e\img\image )
                   EndIf
                   
                   ;\\ remove count types
@@ -25760,9 +25780,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 23765
-; FirstLine = 12705
-; Folding = Cg-vLg-Bi-HAAAAAAAAFwpOFgA+FARoFBAkHsXgNAYIgXBAwGAA5PAgvBAAAAg9G-rPms---ASO-FgDAAAwAwH9HYEAfP8-DgfAHwBEaAA9dvDAIA8-Bs-bAy+BAIAAUj0fEEQAgJBKA+wQg-HA-BHb+DB5MwBAnBGwvtcnvnz33-uh037-vpX----f4v--8--6DAA6MAQAAAAAAAAcgwBc-AAA+nkJvzBA6DAvHPz--HyAyB7Pb50P+P+fHsvo-y8A9HAAACXDwYA+XwJlDAAAAAAAkAAAAAAA5A-GAAHAAAAA+Hw-AAAAAAAAAAAAAAAAAAAw-xAAAWYBuFAAAA--4-+I+WGAgBAAAAw-----H---------------PAAAAAAAAAAAAAww--H9L9-fAA-BAOBAwA79yfBvPPw2----+---bAAsHG88ffux50-w9r-O-8Z-eoPO7rJ-zn-YgfA+ADXg-R+Pe-Hu-+B++-6ivr5+Hg50-sDAAOcEAAClGqhWrJY9zPdAAAAA5x-AAAEOAAAAAA5AAAAAAAzA++--DiDC30Agn-4DAAB5vPDAE3D999f6bH4x--------j---ffE-8-u-5-8T7-08v0-0--4A-4tvgC+--gYATcXaYAAA+4+gfBYmB9jv8BgfJVjBQKAC-BAoKAAA5---PAAAAAAAAAAAAAA+HgAQwpTAg-PAAAAAAAKAAAAAAAAAAAAAAAw4+fgBAAA6AEAAAAA9PA+
+; CursorPosition = 23529
+; FirstLine = 13324
+; Folding = Cg-vLg-Bi-HAAAAAAAAFwpOFgA+FARoFBAkHsXgNAYIgXBAwGAA5PAgvBAAAAg9O--f-9---DaO--2DAAAwH+H9PYHAfP8-LifAHwBEaAA9dvDAIA8-Bs-bBy+HAIQAsz+PCCIAwkANCfY5w-D+-vvt-hAcG5HnzAD54Wuz4zZb8f4web0-41r----v84--0--9BAgcGAIAAAAAAAAOQ5AufAYf-Tyk46Ag9Bg4jn6--D6A6A0nN9+H-H-vD3X1f0dA+--BAhrBYMA-L5kyBAAAAAAASAAAAAAAcgfDAgDAAAAA-D5fAAAAAAAAAAAAAAAAAAA5-YAAALsb4GwBAg--8ffEfLDAwAAAAA5-----j---------------HAAAAAAAAAAAAAY5--D+F+-PAg-AAnAAYAde6vg4vH5----f----NAA3Dj00vP4Y9+fY+2fn-0sfP1HH02k-6zfMwPAfg0Pw-o--v-z4f-Y----x4Vc-DY9+f-BAAHOCAA-SD2Qr2EE+6nOAAAA+05fCAACHAAAAAAcAAAAAAgZAf-------8eA1z-8BAgA9-nBAC-Dee+v-tj85--------x----Pi--f4---0J0--04+----fg-83XQB--fQMgJuLNMAAA-bfwvAMzA+x40AwvkqxAIFA------VBAAA----BAAAAAAAAAAAAAw-A9PCOdCAcAAAAAAAU8--568BAAAAAgDIg-0-QDAAAyBIAAAAA5fA9
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

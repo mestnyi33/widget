@@ -13,14 +13,14 @@ EndIf
 ; 1. КОНСТАНТЫ И ФЛАГИ
 ; =====================================================================
 Enumeration
-   #_BTN_Title    ; Сам заголовок (Иконка + Текст). Занимает всё свободное место!
+   #__BTN_Title    ; Сам заголовок (Иконка + Текст). Занимает всё свободное место!
                   ; --- Кнопки управления (выстраиваются справа) ---
-   #_BTN_Close
-   #_BTN_Maximize
-   #_BTN_Minimize
-   #_BTN_Help        
-   #_BTN_Pin         
-   #_BTN_Menu        
+   #__BTN_Close
+   #__BTN_Maximize
+   #__BTN_Minimize
+   #__BTN_Help        
+   #__BTN_Pin         
+   #__BTN_Menu        
 EndEnumeration
 
 ; Битовые флаги для процедурного создания заголовка
@@ -31,12 +31,6 @@ EndEnumeration
 #_STYLE_Pin      = 1 << 4
 #_STYLE_Menu     = 1 << 5
 #_STYLE_Default  = #_STYLE_Minimize | #_STYLE_Maximize|#_STYLE_Close ; Стандартная тройка кнопок
-
-#__flag_Left   = 0
-#__flag_Top  = 1
-#__flag_Right  = 2
-#__flag_Bottom  = 3
-#__flag_Center = 4
 
 ; ==============================================================================
 ; МАСКИ - Единые битовые константы (Quad)
@@ -88,23 +82,32 @@ Structure _s_IMG Extends _s_COORDINATE
    change.b
 EndStructure
 
-Structure _s_BTN Extends _s_COORDINATE
-   ID.l             ; Номер элемента в списке данных строки (0, 1, 2...) 
-   type.l       
-   pos.l
+Structure _s_BOX Extends _s_COORDINATE
    size.l
-   mask.q   
-   align.q
-   txt._s_TXT
-   img._s_IMG
+   round.a
+   checked.b
+   mask.q
 EndStructure
 
-Structure _s_TAB Extends _s_BTN
-   ; Поля для идеальной математики плавного сдвига
-   offset.l           ; Динамический визуальный сдвиг
-   minOffset.l        ; Левый ограничитель хода
-   maxOffset.l        ; Правый ограничитель хода
+Structure _s_BTN Extends _s_BOX
+   ;color._s_color
+   ;arrow._s_arrow
+   type.l       
+EndStructure
+     
+Structure _s_TAB  Extends _s_BOX
+   ID.i          ; Номер элемента в списке данных строки (0, 1, 2...) 
+   pos.l
    
+    ; Поля для идеальной математики плавного сдвига
+   offset.l        ; Динамический визуальный сдвиг
+   minOffset.l     ; Левый ограничитель хода
+   maxOffset.l     ; Правый ограничитель хода
+   
+   txt._s_TXT    ; Имя поля заголовка
+   img._s_IMG
+  ;  List btn._s_BTN()
+ 
    StructureUnion
       *data 
       ContainerID.i  ; id контейнера, привязанного к этой вкладке
@@ -124,7 +127,6 @@ Structure _s_TABS
    vertical.b
    TotalSize.l       
    
-   List btn._s_BTN()
    List _s._s_TAB()  ; Заголовки вкладок
 EndStructure
 
@@ -164,11 +166,11 @@ Procedure.l MakeColor(bgColor.l, value.l = 0)
 EndProcedure
 
 Procedure.i MakeAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.i = 10)
-   If alignFlags & #__flag_Center
+   If alignFlags & #__MASK_Center
       ProcedureReturn (contentSize - objectSize) / 2
-   ElseIf alignFlags & #__flag_Right
+   ElseIf alignFlags & #__MASK_Right
       ProcedureReturn contentSize - objectSize - Offset
-   Else ; #__flag_Left
+   Else ; #__MASK_Left
       ProcedureReturn Offset
    EndIf
 EndProcedure
@@ -312,11 +314,11 @@ Procedure UpdateContentPos(*tab._s_TAB, indent.a, Spacing.a, vertical.b)
       *txt\x = (*tab\width - *txt\width) >> 1
       *img\x = (*tab\width - *img\width) >> 1
       
-      contentY = MakeAlignPosition(*tab\align, *tab\Height, *img\height + *txt\height + Spacing, indent)
+      contentY = MakeAlignPosition(*tab\mask, *tab\Height, *img\height + *txt\height + Spacing, indent)
       *txt\y = contentY
       *img\y = contentY
       
-      If Not (*tab\align & #__flag_Bottom)
+      If Not (*tab\mask & #__MASK_Bottom)
          If *img\height > 0 : *txt\y + *img\height + Spacing : EndIf
       Else
          If *txt\height > 0 : *img\y + *txt\height + Spacing : EndIf
@@ -325,11 +327,11 @@ Procedure UpdateContentPos(*tab._s_TAB, indent.a, Spacing.a, vertical.b)
       *txt\y = (*tab\height - *txt\height) >> 1
       *img\y = (*tab\height - *img\height) >> 1
       
-      contentX = MakeAlignPosition(*tab\align, *tab\Width, *img\width + *txt\width + Spacing, indent)
+      contentX = MakeAlignPosition(*tab\mask, *tab\Width, *img\width + *txt\width + Spacing, indent)
       *txt\x = contentX
       *img\x = contentX
       
-      If Not (*tab\align & #__flag_Right)
+      If Not (*tab\mask & #__MASK_Right)
          If *img\width > 0 : *txt\x + *img\width + Spacing : EndIf
       Else
          If *txt\width > 0 : *img\x + *txt\width + Spacing : EndIf
@@ -731,24 +733,7 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
          
          ; Всего ОДИН цикл для поиска и одновременного сброса/включения ховеров
          If *hoverTAB And *hoverTAB\mask & #__MASK_Hover
-            ForEach *this\tab\btn()
-               *btn = @*this\tab\btn()
-               
-               ; 2. Если текущее состояние маски кнопки не совпадает с реальностью
-               If Bool(*btn\mask & #__MASK_Hover) <> Bool( mx >= *btn\X And mx < *btn\X + *btn\Width And my >= *btn\Y And my < *btn\Y + *btn\Height )
-                  *btn\mask ! #__MASK_Hover ; Переключаем тумблер ховера (XOR)
-                  needredraw = #True
-                  
-                  ; Меням размеры геометрии значка
-                  If *btn\mask & #__MASK_Hover
-                     *hoverBTN = *btn
-                     DoEventBTN( *btn, #PB_EventType_MouseEnter )
-                  Else
-                     *hoverBTN = 0
-                     DoEventBTN( *btn, #PB_EventType_MouseLeave )
-                  EndIf
-               EndIf
-            Next
+
          EndIf
          
       Case #PB_EventType_LeftButtonDown
@@ -773,11 +758,11 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
    ProcedureReturn needRedraw
 EndProcedure
 
-Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, Image.i = 0, align.a = #__flag_Left)
+Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, Image.i = 0, align.a = #__MASK_Left)
    Protected *tab._s_TAB = AddElement(*this\tab\_s())
    
    *tab\ID        = ID
-   *tab\align    = align
+   *tab\mask    = align
    *tab\size      = DesktopScaledY(size)
    
    If Text
@@ -842,8 +827,8 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
    Define *this._s_WIDGET = CreateTab(#Canvas, 10,10,240,40 )
    ; Наполняем вашим тестовым набором
    AddTab(*this, 0, "0 - 60", 0)
-   AddTab(*this, 1, "1 - 160", 160, (1), #__flag_Center)
-   AddTab(*this, 2, "2 - 150", 150, (1), #__flag_Right)
+   AddTab(*this, 1, "1 - 160", 160, (1), #__MASK_Center)
+   AddTab(*this, 2, "2 - 150", 150, (1), #__MASK_Right)
    AddTab(*this, 3, "3 - 90", 90, (1))
    ;
    ReDraw(*this)
@@ -858,8 +843,8 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
             *this\tab\vertical ! 1
             ClearList(*this\Tab\_s())
             AddTab(*this, 0, "0 - 60", 60)
-            AddTab(*this, 1, "1 - 160", 160, (1), #__flag_Center)
-            AddTab(*this, 2, "2 - 150", 150, (1), #__flag_Right)
+            AddTab(*this, 1, "1 - 160", 160, (1), #__MASK_Center)
+            AddTab(*this, 2, "2 - 150", 150, (1), #__MASK_Right)
             AddTab(*this, 3, "3 - 90", 90, (1))
             ;
             ReDraw(*this)
@@ -876,8 +861,8 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 876
-; FirstLine = 852
+; CursorPosition = 101
+; FirstLine = 90
 ; Folding = --------------------
 ; EnableXP
 ; EnableOnError

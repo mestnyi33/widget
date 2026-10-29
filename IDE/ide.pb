@@ -1024,9 +1024,9 @@ Procedure   Properties_Change( *splitter._s_WIDGET )
                
             Case #__type_String   
                If GetData( *this ) = #_pi_class
-                  *this\text\mode | #__text_upper
+                  *this\text\mode | #__TEXTMASK_upper
                Else
-                  *this\text\mode &~ #__text_upper
+                  *this\text\mode &~ #__TEXTMASK_upper
                EndIf
                SetText(*this, text$ )
                
@@ -2810,8 +2810,8 @@ Procedure   ide_events( )
             
             ;
             If text$
-               *text\mode &~ #__text_numeric
-               *text\mode &~ #__text_editable
+               *text\mode &~ #__TEXTMASK_numeric
+               *text\mode &~ #__TEXTMASK_editable
                
                ;name$ = *g\edit_caret( )\word ; GetWord( text$, len, caret ) 
                name$ = GetWord( text$, len, caret ) 
@@ -2857,21 +2857,21 @@ Procedure   ide_events( )
                   
                   If argument > 1
                      If argument < 6 ; coordinate
-                        *text\mode | #__text_numeric 
+                        *text\mode | #__TEXTMASK_numeric 
                      EndIf
-                     *text\mode | #__text_editable 
+                     *text\mode | #__TEXTMASK_editable 
                   EndIf
                   
                   ;If GetClass( object ) = *g\edit_caret( )\word ; GetWord( text$, len, caret )
                   If GetClass( object ) = GetWord( text$, len, caret )
-                     *text\mode | #__text_editable
-                     *text\mode | #__text_upper
+                     *text\mode | #__TEXTMASK_editable
+                     *text\mode | #__TEXTMASK_upper
                   Else
-                     *text\mode &~ #__text_upper
+                     *text\mode &~ #__TEXTMASK_upper
                   EndIf
                EndIf
                
-               If *text\mode & #__text_editable
+               If *text\mode & #__TEXTMASK_editable
                   *line\color\back[1] = *g\color\back[1]
                Else
                   *line\color\back[1] = $CD9CC3EE
@@ -3419,8 +3419,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 2804
-; FirstLine = 2794
+; CursorPosition = 2862
+; FirstLine = 2797
 ; Folding = ----------------------------------------------------------------
 ; EnableXP
 ; DPIAware
