@@ -225,6 +225,7 @@ Procedure UpdateTitleBar(*this._s_WIDGET)
          *btn\X = *this\X + right_x + Indent
          *btn\Y = *this\Y + (*this\Height - *btn\Height) / 2
          *btn\size = *btn\Height/4
+         *btn\size + Bool( *btn\size % 2 )
       Next
    EndIf
 
@@ -480,6 +481,7 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
    If *hoverBTN And Not Bool( mx >= *hoverBTN\X And mx < *hoverBTN\X + *hoverBTN\Width And my >= *hoverBTN\Y And my < *hoverBTN\Y + *hoverBTN\Height )
       *hoverBTN\mask &~ #__MASK_Hover
       *hoverBTN\size = *hoverBTN\Height/4
+      *hoverBTN\size + Bool( *hoverBTN\size % 2 )
       *hoverBTN = 0
    EndIf   
    
@@ -506,6 +508,7 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
                      Else
                         *btn\size = *btn\Height/4
                      EndIf
+                     *btn\size + Bool( *btn\size % 2 )
                      needredraw = #True
                      Break
                   EndIf
@@ -602,9 +605,9 @@ If OpenWindow(0, 0, 0, 800, 230, "Light Titlebar Custom UI Demo", #PB_Window_Sys
    Until Event = #PB_Event_CloseWindow
 EndIf
 
-; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 474
-; FirstLine = 369
+; IDE Options = PureBasic 6.30 (Windows - x64)
+; CursorPosition = 349
+; FirstLine = 235
 ; Folding = --+-------------
 ; EnableXP
 ; DPIAware
