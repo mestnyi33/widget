@@ -83,7 +83,7 @@ Module DD
             EndIf
             
             ;\\ second - draw frame color
-            __draw_mode( #PB_2DDrawing_Outlined )
+            draw_mode_( #PB_2DDrawing_Outlined )
             If *this\drop
                If Drag( )\enter
                   draw_box_( *this\inner_x( ), *this\inner_y( ), *this\inner_width( ), *this\inner_height( ), $ff00ff00 )
@@ -840,9 +840,9 @@ CompilerIf #PB_Compiler_IsMainFile
     EndIf
    End
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 712
-; FirstLine = 517
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 85
+; FirstLine = 81
 ; Folding = -------------G0+
 ; EnableXP
 ; DPIAware

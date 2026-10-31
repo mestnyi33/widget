@@ -9,10 +9,10 @@ DeclareModule colors
    ;    Светлая тема (Light) 
    ;    Тёмная тема (Dark).
    Structure _s_PALETTE 
-      Light.structures::_s_color
-      Dark.structures::_s_color
+      light.structures::_s_color
+      dark.structures::_s_color
       black.structures::_s_color
-      grey.structures::_s_color
+      gray.structures::_s_color
       blue.structures::_s_color
       green.structures::_s_color
       red.structures::_s_color
@@ -21,7 +21,7 @@ DeclareModule colors
    Global PALETTE._s_PALETTE
    
    Macro _get_colors_( ) 
-      colors::PALETTE\Light
+      colors::PALETTE\light
    EndMacro
    Declare  Init()
    Declare.l Extract(SourceColor.l, Factor.f, MakeLight.b = #True)
@@ -29,12 +29,13 @@ EndDeclareModule
 
 Module colors
    Procedure Init()
+      Protected i 
       With PALETTE                        
          \Light\_alpha = 255
-         \Dark\_alpha = 255
          \green\_alpha = 255
          \red\_alpha = 255
-         \grey\_alpha = 255
+         \blue\_alpha = 255
+         \gray\_alpha = 255
          \black\_alpha = 255
          
          ; Светлая тема (Light) 
@@ -63,131 +64,197 @@ Module colors
          \Light\back[3] = $FFE2E2E2
          \Light\frame[3] = $FFCECECE
          
-         ; Темная тема (Dark)
-         ; Цвета по умолчанию
-         \Dark\front[0] = $ffF8F8F8  ; Светлый текст
-         \Dark\fore[0]  = $ff2D2D2D  ; Темный передний план виджета
-         \Dark\back[0]  = $ff1E1E1E  ; Глубокий темный фон
-         \Dark\frame[0] = $DE404040  ; Темно-серая рамка
+         ;- Dark - (Правильная темная тема с оранжевым акцентом)
+         ; Цвета по умолчанию (Спокойный благородный темный стиль)
+         i=0
+         \Dark\front[i] = $FFF8F8F8   ; Белый текст
+         \Dark\fore[i]  = $FF2A2A2A   ; Темное тело виджета
+         \Dark\back[i]  = $FF1E1E1E   ; Глубокий фон
+         \Dark\frame[i] = $FF454545   ; Аккуратная рамка
          
-         ; Цвета если мышь на виджете
-         \Dark\front[1] = $ffFFFFFF  ; Яркий белый текст
-         \Dark\fore[1]  = $ff3D3D3D  ; Чуть более светлый фон при наведении
-         \Dark\back[1]  = $ff4A3B2C  ; Темно-оранжевый/коричневатый оттенок фона
-         \Dark\frame[1] = $ffD48A37  ; Приглушенная оранжевая рамка
+         ; Цвета если мышь на виджете (Появляется мягкий оранжевый акцент)
+         i=1
+         \Dark\front[i] = $FFFFFFFF   ; Текст горит белым
+         \Dark\fore[i]  = $FF353535   ; Тело виджета чуть светлеет
+         \Dark\back[i]  = $FF1E1E1E 
+         \Dark\frame[i] = $FF0070E5   ; НАСТОЯЩАЯ оранжевая рамка в PureBasic (BB=00, GG=70, RR=E5)
          
-         ; Цвета если нажали на виджет
-         \Dark\front[2] = $ff1E1E1E  ; Темный текст для контраста на ярком фоне
-         \Dark\fore[2]  = $ffE89C3D  ; Яркий оранжевый передний план
-         \Dark\back[2]  = $ffFFB354  ; Светло-оранжевый акцентный фон
-         \Dark\frame[2] = $ffE89C3D  ; Оранжевая рамка
+         ; Цвета если нажали на виджет (Интенсивный клик)
+         i=2
+         \Dark\front[i] = $FFFFFFFF 
+         \Dark\fore[i]  = $FF0050B5   ; Темно-оранжевое зажатое тело виджета
+         \Dark\back[i]  = $FF1E1E1E 
+         \Dark\frame[i] = $FF0080FF   ; Яркая оранжевая вспышка на рамке
          
          ; Цвета если отключили виджет
-         \Dark\front[3] = $ff5A5A5A  ; Заблокированный (серый) текст
-         \Dark\fore[3]  = $ff252525  ; Очень темный fore-план
-         \Dark\back[3]  = $ff1E1E1E  ; Стандартный темный фон
-         \Dark\frame[3] = $ff333333  ; Едва заметная серая рамка
-         
+         i=3
+         \Dark\front[i] = $FF5A5A5A   ; Выключенный текст
+         \Dark\fore[i]  = $FF222222 
+         \Dark\back[i]  = $FF1E1E1E 
+         \Dark\frame[i] = $FF333333   ; Оранжевый полностью пропадает, виджет «тухнет»
+
          ;- green - (зеленые цвета)
-         ; Цвета по умолчанию
-         \green\front[0] = $FF000000
-         \green\fore[0] = $FFFFFFFF
-         \green\back[0] = $FFDAFCE1  
-         \green\frame[0] = $FF6AFF70 
+         ; Цвета по умолчанию (Мягкий пастельно-зеленый фон, четкая рамка)
+         \green\front[0] = $FF000000  ; Черный текст (отлично читается на светлом фоне)
+         \green\fore[0]  = $FFFFFFFF  ; Белый внутренний элемент
+         \green\back[0]  = $FFB4E1B4  ; Светло-салатовый / пастельно-зеленый фон (GG = E1)
+         \green\frame[0] = $FF78E178  ; Чистый зеленый для рамки (темнее и строже фона)
          
-         ; Цвета если мышь на виджете
-         \green\front[1] = $FF000000
-         \green\fore[1] = $FFE7FFEC
-         \green\back[1] = $FFBCFFC5
-         \green\frame[1] = $FF46E064
+         ; Цвета если мышь на виджете (Цвета становятся сочнее и ярче)
+         \green\front[1] = $FF000000  ; Черный текст
+         \green\fore[1]  = $FFE7FFE7  ; Очень светлый, почти белый мятный оттенок
+         \green\back[1]  = $FF96E196  ; Насыщенный салатовый фон
+         \green\frame[1] = $FF46E146  ; Яркая, сочная зеленая рамка
          
-         ; Цвета если нажали на виджет
-         \green\front[2] = $FFFEFEFE
-         \green\fore[2] = $FFC3FDB7
-         \green\back[2] = $FF00B002
-         \green\frame[2] = $FF23BE03
+         ; Цвета если нажали на виджет (Инверсия: глубокий темно-зеленый фон, белый текст)
+         \green\front[2] = $FFFEFEFE  ; Белый текст (для контраста на темном)
+         \green\fore[2]  = $FFB7FDB7  ; Светло-зеленый элемент
+         \green\back[2]  = $FF5FE15F  ; Глубокий, плотный зеленый фон
+         \green\frame[2] = $FF33F033  ; Очень темная, изумрудно-зеленая рамка (GG = F0)
          
-         ; Цвета если отключили виджет
-         \green\front[3] = $FFBABABA
-         \green\fore[3] = $FFFFFFFF
-         \green\back[3] = $FFDAFCE1  
-         \green\frame[3] = $CA6AFF70 
-         
+         ; Цвета если отключили виджет (Полупрозрачный блекло-зеленый)
+         \green\front[3] = $FFBABABA  ; Серый неактивный текст
+         \green\fore[3]  = $FFFFFFFF  ; Белый элемент
+         \green\back[3]  = $FFDAFCDA  ; Выцветший, приглушенный серо-зеленый фон
+         \green\frame[3] = $CA6AF06A  ; Полупрозрачная ($CA) аккуратная зеленая рамка (GG = F0)
+
          ;- red - (красные цвета)
-         ; Цвета по умолчанию
-         \red\front[0] = $FF000000
-         \red\fore[0] = $FFFFFFFF
-         \red\back[0] = $FFB4B4E1  
-         \red\frame[0] = $FF7878E1 
+         ; Цвета по умолчанию (Мягкий красный фон, четкая рамка)
+         \red\front[0] = $FF000000  ; Черный текст (максимально читаемый)
+         \red\fore[0]  = $FFFFFFFF  ; Белый внутренний элемент
+         \red\back[0]  = $FFB4B4E1  ; Светло-розово-красный фон
+         \red\frame[0] = $FF7878E1  ; Приглушенный красный для рамки (темнее фона)
          
-         ; Цвета если мышь на виджете
-         \red\front[1] = $FF000000
-         \red\fore[1] = $FFE7FFEC
-         \red\back[1] = $FF9696E1
-         \red\frame[1] = $FF4646E1
+         ; Цвета если мышь на виджете (Цвета становятся ярче и сочнее)
+         \red\front[1] = $FF000000  ; Черный текст
+         \red\fore[1]  = $FFE7E7FF  ; Очень светлый розовый (вместо зеленоватого $FFE7FFEC)
+         \red\back[1]  = $FF9696E1  ; Насыщенный красный фон
+         \red\frame[1] = $FF4646E1  ; Яркая, глубокая красная рамка
          
-         ; Цвета если нажали на виджет
-         \red\front[2] = $FFFEFEFE
-         \red\fore[2] = $FFC3FDB7
-         \red\back[2] = $FF5F5EEE
-         \red\frame[2] = $FF3333F0
+         ; Цвета если нажали на виджет (Инверсия: темный фон, белый текст)
+         \red\front[2] = $FFFEFEFE  ; Белый текст (чтобы читался на темном)
+         \red\fore[2]  = $FFB7C3FD  ; Светло-багровый элемент (вместо зеленого $FFC3FDB7)
+         \red\back[2]  = $FF5E5FE1  ; Глубокий, плотный красный фон (исправили $FF5F5EEE, где доминировал синий)
+         \red\frame[2] = $FF3333F0  ; Очень темная, почти бордовая рамка ($F0 на конце — максимум красного!)
          
-         ; Цвета если отключили виджет
-         \red\front[3] = $FFBABABA
-         \red\fore[3] = $FFFFFFFF
-         \red\back[3] = $FFDAFCE1  
-         \red\frame[3] = $CA6AFF70 
+         ; Цвета если отключили виджет (Полупрозрачный блекло-красный)
+         \red\front[3] = $FFBABABA  ; Серый неактивный текст
+         \red\fore[3]  = $FFFFFFFF  ; Белый элемент
+         \red\back[3]  = $FFE1DAFC  ; Выцветший, пастельный красно-серый фон (исправили зеленый $FFDAFCE1)
+         \red\frame[3] = $CA706AF0  ; Полупрозрачная ($CA) аккуратная красная рамка ($F0 на конце вместо $70)
+
+        ;- blue - (синие цвета)
+         ; Цвета по умолчанию (Нежный пастельно-синий фон, четкая рамка)
+         i=0
+         \blue\front[i] = $FF000000  ; Черный текст (отлично читается на светлом фоне)
+         \blue\fore[i]  = $FFFFFFFF  ; Белый внутренний элемент
+         \blue\back[i]  = $FFE1B4B4  ; Светло-голубой / пастельно-синий фон (BB = E1)
+         \blue\frame[i] = $FFE17878  ; Спокойный синий для рамки (темнее и строже фона)
          
-         ;- blue - (синие цвета)
-         ;- grey - (серые цвета)
-         ; Цвета по умолчанию
-         \grey\front[0] = $ff000000
-         \grey\fore[0] = $FFF6F6F6
-         \grey\back[0] = $FFE8E8E8
-         \grey\frame[0] = $FFBABABA
+         ; Цвета если мышь на виджете (Цвета становятся глубже и сочнее)
+         i=1
+         \blue\front[i] = $FF000000  ; Черный текст
+         \blue\fore[i]  = $FFFFE7E7  ; Очень светлый, почти белый ледяной оттенок
+         \blue\back[i]  = $FFE19696  ; Насыщенный сине-голубой фон
+         \blue\frame[i] = $FFE14646  ; Яркая, выразительная синяя рамка
          
-         ; Цвета если курсор на виджете
-         \grey\front[1] = $ff000000
-         \grey\fore[1] = $FFF2F2F2 
-         \grey\back[1] = $FFDCDCDC 
-         \grey\frame[1] = $FFB0B0B0 
+         ; Цвета если нажали на виджет (Инверсия: глубокий темно-синий фон, белый текст)
+         i=2
+         \blue\front[i] = $FFFEFEFE  ; Белый текст (для контраста на темном фоне)
+         \blue\fore[i]  = $FFFDB7B7  ; Светло-синий элемент
+         \blue\back[i]  = $FFE15F5F  ; Глубокий, плотный синий фон
+         \blue\frame[i] = $FFF03333  ; Очень темная, ультрамариновая рамка (BB = F0)
          
-         ; Цвета если нажали на виджет
-         \grey\front[2] = $ff000000
-         \grey\fore[2] = $FFE2E2E2
-         \grey\back[2] = $FFB4B4B4
-         \grey\frame[2] = $FF6F6F6F
+         ; Цвета если отключили виджет (Полупрозрачный блекло-синий)
+         i=3
+         \blue\front[i] = $FFBABABA  ; Серый неактивный текст
+         \blue\fore[i]  = $FFFFFFFF  ; Белый элемент
+         \blue\back[i]  = $FFFCDADA  ; Выцветший, приглушенный серо-синий фон
+         \blue\frame[i] = $CAF06A6A  ; Полупрозрачная ($CA) аккуратная синяя рамка (BB = F0)
          
-         ; Цвета если отключили виджет
-         \grey\front[3] = $FFBABABA
-         \grey\fore[3] = $FFF6F6F6 
-         \grey\back[3] = $FFE2E2E2 
-         \grey\frame[3] = $FFCECECE
+         ;- gray - (серые цвета)
+         ; Цвета по умолчанию (Светло-серый офисный стиль)
+         i=0
+         \gray\front[i] = $FF000000  ; Черный текст (максимальный контраст)
+         \gray\fore[i]  = $FFFFFFFF  ; Белый внутренний элемент
+         \gray\back[i]  = $FFE0E0E0  ; Светло-серый фон кнопки
+         \gray\frame[i] = $FFA0A0A0  ; Умеренно-серый цвет для аккуратной рамки
          
-         ;- black - (настоящие черные/темные цвета)
-         ; Цвета по умолчанию (темная тема)
-         \black\front[0] = $FFDDDDDD   ; Светло-серый текст на темном фоне
-         \black\fore[0]  = $FF2D2D2D   ; Внутренние элементы
-         \black\back[0]  = $FF1E1E1E   ; Глубокий темно-серый/черный фон
-         \black\frame[0] = $FF3F3F3F   ; Темная рамка
+         ; Цвета если мышь на виджете (Кнопка слегка темнеет, показывая фокус)
+         i=1
+         \gray\front[i] = $FF000000  ; Черный текст
+         \gray\fore[i]  = $FFF5F5F5  ; Почти белый элемент
+         \gray\back[i]  = $FFCCCCCC  ; Более насыщенный серый фон
+         \gray\frame[i] = $FF888888  ; Четкая темно-серая рамка
          
-         ; Цвета если курсор на виджете (чуть светлее)
-         \black\front[1] = $FFFFFFFF   ; Белый текст
-         \black\fore[1]  = $FF3D3D3D 
-         \black\back[1]  = $FF2D2D2D   ; Фон подсвечивается
-         \black\frame[1] = $FF555555   ; Рамка светлеет
+         ; Цвета если нажали на виджет (Инверсия: темно-серый/графитовый виджет)
+         i=2
+         \gray\front[i] = $FFFEFEFE  ; Белый текст (чтобы отлично читался на темном)
+         \gray\fore[i]  = $FFE0E0E0  ; Светло-серый элемент внутри кнопки
+         \gray\back[i]  = $FF555555  ; Темно-серый (графитовый) фон
+         \gray\frame[i] = $FF333333  ; Очень темная, почти черная рамка
          
-         ; Цвета если нажали на виджет (акцентный серый)
-         \black\front[2] = $FFFFFFFF
-         \black\fore[2]  = $FF4A4A4A
-         \black\back[2]  = $FF3A3A3A
-         \black\frame[2] = $FF6E6E6E
+         ; Цвета если отключили виджет (Полупрозрачный размытый серый)
+         i=3
+         \gray\front = $FFBABABA  ; Серый неактивный текст
+         \gray\fore  = $FFFFFFFF  ; Белый элемент
+         \gray\back  = $FFF0F0F0  ; Очень блеклый, почти белый фон
+         \gray\frame = $CA888888  ; Полупрозрачная ($CA) аккуратная серая рамка
          
-         ; Цвета если отключили виджет (блеклый темный)
-         \black\front[3] = $FF666666   ; Заблокированный текст
-         \black\fore[3]  = $FF222222 
-         \black\back[3]  = $FF1A1A1A 
-         \black\frame[3] = $FF2A2A2A
+         ;- black - (Правильная строгая темная тема)
+         ; Цвета по умолчанию (Кнопка слегка выделяется на фоне окна)
+         i=2
+         \black\front[i] = $FFDDDDDD   ; Светло-серый читаемый текст
+         \black\fore[i]  = $FF252525   ; Тело виджета (чуть светлее фона окна)
+         \black\back[i]  = $FF1E1E1E   ; Общий фон подложки/окна
+         \black\frame[i] = $FF555555   ; Четкая, видимая серая рамка
+         
+         ; Цвета если курсор на виджете (Эффект подсветки)
+         i=0
+         \black\front[i] = $FFFFFFFF   ; Чистый белый текст
+         \black\fore[i]  = $FF353535   ; Тело виджета заметно светлеет
+         \black\back[i]  = $FF1E1E1E 
+         \black\frame[i] = $FF888888   ; Рамка ярко подсвечивается
+         
+         ; Цвета если нажали на виджет (Эффект ухода в тень / нажатия)
+         i=1
+         \black\front[i] = $FFAAAAAA   ; Текст чуть приглушается
+         \black\fore[i]  = $FF151515   ; Тело виджета становится очень темным (вдавилось)
+         \black\back[i]  = $FF1E1E1E 
+         \black\frame[i] = $FF3A3A3A   ; Рамка темнеет
+         
+         ; Цвета если отключили виджет (Блеклый, плоский вид)
+         i=3
+         \black\front[i] = $FF666666   ; Заблокированный серый текст
+         \black\fore[i]  = $FF1E1E1E   ; Сливается с фоном окна
+         \black\back[i]  = $FF1E1E1E 
+         \black\frame[i] = $FF2A2A2A   ; Едва заметный контур
+
+;          ;- black - (настоящие черные/темные цвета)
+;          ; Цвета по умолчанию (темная тема)
+;          i = 0
+;          \black\front[i] = $FFDDDDDD   ; Светло-серый текст на темном фоне
+;          \black\fore[i]  = $FF2D2D2D   ; Внутренние элементы
+;          \black\back[i]  = $FF1E1E1E   ; Глубокий темно-серый/черный фон
+;          \black\frame[i] = $FF3F3F3F   ; Темная рамка
+;          i=1
+;          ; Цвета если курсор на виджете (чуть светлее)
+;          \black\front[i] = $FFFFFFFF   ; Белый текст
+;          \black\fore[i]  = $FF3D3D3D 
+;          \black\back[i]  = $FF2D2D2D   ; Фон подсвечивается
+;          \black\frame[i] = $FF555555   ; Рамка светлеет
+;          i=2
+;          ; Цвета если нажали на виджет (акцентный серый)
+;          \black\front[i] = $FFFFFFFF
+;          \black\fore[i]  = $FF4A4A4A
+;          \black\back[i]  = $FF3A3A3A
+;          \black\frame[i] = $FF6E6E6E
+;          i=3
+;          ; Цвета если отключили виджет (блеклый темный)
+;          \black\front[i] = $FF666666   ; Заблокированный текст
+;          \black\fore[i]  = $FF222222 
+;          \black\back[i]  = $FF1A1A1A 
+;          \black\frame[i] = $FF2A2A2A
       EndWith
       
       
@@ -241,7 +308,7 @@ colors::Init()
 ;     CanvasEx()\Scrollbar\Color\Button = GetSysColor_(#COLOR_BTNFACE)
 ;     CanvasEx()\Scrollbar\Color\Focus  = GetSysColor_(#COLOR_MENUHILIGHT)
 ;     CanvasEx()\Scrollbar\Color\Hover  = GetSysColor_(#COLOR_ACTIVEBORDER)
-;     CanvasEx()\Scrollbar\Color\Arrow  = GetSysColor_(#COLOR_GRAYTEXT)
+;     CanvasEx()\Scrollbar\Color\Arrow  = GetSysColor_(#COLOR_grayTEXT)
 ;     CanvasEx()\Scrollbar\Color\Back   = GetSysColor_(#COLOR_MENU)
 ;     CanvasEx()\Color\Gadget           = GetSysColor_(#COLOR_MENU)
 ;   CompilerCase #PB_OS_MacOS
@@ -597,14 +664,14 @@ EndIf
    BaseColor = $ffE2E2E2 
    
    ; 1. Чтобы получить ТОЧНЫЙ темно-серый $ff404040 из $ffE2E2E2, фактор затемнения должен быть ~0.716
-   DarkGray = Colors::Extract(BaseColor, 0.716, #False)
-   Debug "Получили темно-серый: $" + Hex(DarkGray, #PB_Long) ; Выведет $FF404040
+   Darkgray = Colors::Extract(BaseColor, 0.716, #False)
+   Debug "Получили темно-серый: $" + Hex(Darkgray, #PB_Long) ; Выведет $FF404040
    
    ; 2. Чтобы получить ТОЧНЫЙ светло-серый $ffD3D3D3, мы можем взять стандартный серый ($ff808080)
    ; и применить фактор осветления ~0.65
-   StandardGray = $ff808080
-   LightGray = Colors::Extract(StandardGray, 0.65, #True)
-   Debug "Получили светло-серый: $" + Hex(LightGray, #PB_Long) ; Выведет $FFD3D3D3
+   Standardgray = $ff808080
+   Lightgray = Colors::Extract(Standardgray, 0.65, #True)
+   Debug "Получили светло-серый: $" + Hex(Lightgray, #PB_Long) ; Выведет $FFD3D3D3
    
    
    ;- --- РАБОТА С ДРУГИМИ ЦВЕТАМИ (Пример) ---
@@ -620,7 +687,7 @@ EndIf
    Debug "Темно-синий: R=" + Red(DarkBlue) + " G=" + Green(DarkBlue) + " B=" + Blue(DarkBlue)
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 523
-; FirstLine = 508
+; CursorPosition = 23
+; FirstLine = 15
 ; Folding = --------
 ; EnableXP

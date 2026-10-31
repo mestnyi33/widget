@@ -39,7 +39,7 @@ Enumeration Properties
    #_pi_COLORBLUE
    #_pi_COLORGREEN
    #_pi_COLORRED
-  EndEnumeration
+EndEnumeration
 
 ; events items
 Enumeration Properties
@@ -135,7 +135,7 @@ Global ide_design_PANEL,
        ide_design_MDI,
        ide_design_CODE, 
        ide_design_HIASM 
- 
+
 Global ide_help_SPLITTER, 
        ide_help_VIEW
 
@@ -144,7 +144,7 @@ Global ide_inspector_SPLITTER,
        ide_inspector_VIEW, 
        ide_inspector_PROPERTIES, 
        ide_inspector_EVENTS
-       
+
 
 Global ide_element_PANEL,
        ide_all_ELEMENTS
@@ -261,36 +261,6 @@ UsePNGImageDecoder( )
 
 Global PreviewRunning, PreviewProgramName$
 
-Procedure.i CatchImageDPI(ImageNumber, *MemoryAddress, MemorySize = #PB_Default)
-  Protected Image
-  Protected.d DPI = DesktopResolutionX()
-  
-  ; Корректный вызов CatchImage в зависимости от наличия размера
-  If MemorySize = #PB_Default
-    Image = CatchImage(ImageNumber, *MemoryAddress)
-  Else
-    Image = CatchImage(ImageNumber, *MemoryAddress, MemorySize)
-  EndIf
-  
-  ; Если изображение загружено и DPI экрана отличен от 100% (1.0)
-  If Image And DPI <> 1.0
-    Protected ImgID
-    
-    ; Если использовали #PB_Any, то возвращенное значение 'Image' — это и есть номер иконки в PB.
-    ; Если использовали конкретный номер (например 5), то 'Image' — это OS Handle, а номером является ImageNumber.
-    If ImageNumber = #PB_Any 
-      ImgID = Image 
-    Else 
-      ImgID = ImageNumber 
-    EndIf
-    
-    ; Ресайз без размытия (Nearest Neighbor / Raw)
-    ResizeImage(ImgID, ImageWidth(ImgID) * DPI, ImageHeight(ImgID) * DPI, #PB_Image_Raw)
-  EndIf
-  
-  ProcedureReturn Image
-EndProcedure
-
 Procedure RunPreview(SourceCode$)
    If SourceCode$ = "" : ProcedureReturn : EndIf
    Protected TempFileName$, hTempFile
@@ -326,14 +296,14 @@ Procedure RunPreview(SourceCode$)
                     "  CompilerEndIf" + #CRLF$ +
                     "" + SourceCode$ + #CRLF$ +
                     "" + #CRLF$ ;+
-;                     "; --- БЛОК АВТОМАТИЧЕСКОЙ САМООЧИСТКИ ПОСЛЕ ЦИКЛА ---" + #CRLF$ +
-;       "CompilerIf #PB_Compiler_OS = #PB_OS_Windows" + #CRLF$ +
-;                                                       "  ; Трюк для Windows: удаление через командную строку после закрытия .exe" + #CRLF$ +
-;       "  RunProgram(" + Chr(34) + "cmd.exe" + Chr(34) + ", " + Chr(34) + "/c ping 127.0.0.1 -n 2 > nul & del " + #DQUOTE$ + PreviewProgramName$ + #DQUOTE$ + Chr(34) + ", " + Chr(34) + Chr(34) + ", #PB_Program_Hide)" + #CRLF$ +
-;                         "CompilerElse" + #CRLF$ +
-;                         "  ; На Mac и Linux файл можно удалить напрямую" + #CRLF$ +
-;       "  DeleteFile(" + Chr(34) + PreviewProgramName$ + Chr(34) + ")" + #CRLF$ +
-;                         "CompilerEndIf"
+                                ;                     "; --- БЛОК АВТОМАТИЧЕСКОЙ САМООЧИСТКИ ПОСЛЕ ЦИКЛА ---" + #CRLF$ +
+                                ;       "CompilerIf #PB_Compiler_OS = #PB_OS_Windows" + #CRLF$ +
+                                ;                                                       "  ; Трюк для Windows: удаление через командную строку после закрытия .exe" + #CRLF$ +
+                                ;       "  RunProgram(" + Chr(34) + "cmd.exe" + Chr(34) + ", " + Chr(34) + "/c ping 127.0.0.1 -n 2 > nul & del " + #DQUOTE$ + PreviewProgramName$ + #DQUOTE$ + Chr(34) + ", " + Chr(34) + Chr(34) + ", #PB_Program_Hide)" + #CRLF$ +
+                                ;                         "CompilerElse" + #CRLF$ +
+                                ;                         "  ; На Mac и Linux файл можно удалить напрямую" + #CRLF$ +
+                                ;       "  DeleteFile(" + Chr(34) + PreviewProgramName$ + Chr(34) + ")" + #CRLF$ +
+                                ;                         "CompilerEndIf"
       
       WriteStringFormat(hTempFile, #PB_UTF8)
       WriteStringN(hTempFile, SourceCode$)
@@ -347,7 +317,7 @@ Procedure RunPreview(SourceCode$)
          ; Для macOS и Linux используется одинаковый синтаксис -o
          Flags$ = #DQUOTE$ + TempFileName$ + #DQUOTE$ + " -o " + #DQUOTE$ + PreviewProgramName$ + #DQUOTE$
       CompilerEndIf
-   
+      
       CompilPreview = RunProgram(CompilerPath$, Flags$, "", #PB_Program_Hide | #PB_Program_Open | #PB_Program_Read | #PB_Program_Error)
       
       If CompilPreview
@@ -509,39 +479,39 @@ Procedure   PropertiesButton_SetText( *this._s_WIDGET, Text$)
       Next
    EndIf
 EndProcedure
-  
+
 Procedure   PropertiesButton_AddItem( *this._s_WIDGET, item, Text.s )
    ;
-;    Static lasttext.s
-;    
-;    If lasttext <> Text
-;       lasttext = Text
-      
-      If *this
-         Select item
-            Case #_pi_flag 
-               ClearItems(*this)
+   ;    Static lasttext.s
+   ;    
+   ;    If lasttext <> Text
+   ;       lasttext = Text
+   
+   If *this
+      Select item
+         Case #_pi_flag 
+            ClearItems(*this)
+            
+            If Text
+               Protected i, sublevel, String.s, count = CountString(Text,"|")
                
-               If Text
-                  Protected i, sublevel, String.s, count = CountString(Text,"|")
+               For I = 0 To count
+                  String = Trim(StringField(Text,(I+1),"|"))
                   
-                  For I = 0 To count
-                     String = Trim(StringField(Text,(I+1),"|"))
-                     
-;                      Select String ; LCase(Trim(StringField(String,(3),"_")))
-;                         Case "Left" : sublevel = 1
-;                         Case "Right" : sublevel = 1
-;                         Case "Center" : sublevel = 1
-;                         Default
-;                            sublevel = 0
-;                      EndSelect
-;                      
-                     AddItem(*this, -1, String, -1, sublevel)
-                  Next
-               EndIf 
-               
-         EndSelect
-      EndIf 
+                  ;                      Select String ; LCase(Trim(StringField(String,(3),"_")))
+                  ;                         Case "Left" : sublevel = 1
+                  ;                         Case "Right" : sublevel = 1
+                  ;                         Case "Center" : sublevel = 1
+                  ;                         Default
+                  ;                            sublevel = 0
+                  ;                      EndSelect
+                  ;                      
+                  AddItem(*this, -1, String, -1, sublevel)
+               Next
+            EndIf 
+            
+      EndSelect
+   EndIf 
    ; EndIf
 EndProcedure
 
@@ -769,7 +739,7 @@ Procedure   PropertiesButton_Events( )
    Protected._s_WIDGET *splitter = *second\parent
    Protected._s_WIDGET *first = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
    Protected._s_WIDGET *object = a_focused( )
-                     
+   
    Select __event
       Case #__EVENT_LostFocus
          __item = GetData(*g) 
@@ -812,7 +782,7 @@ Procedure   PropertiesButton_Events( )
                Define FontSize  = GetFontSize( font ) ; установить начальный размер (также может быть 0)
                Define FontStyle = GetFontStyle( font )
                Define FontColor = GetFontColor( *object ) & $FFFFFF ;| *object\color\_alpha << 24
-               ;
+                                                                    ;
                Define Result = FontRequester( FontName$, FontSize, #PB_FontRequester_Effects, FontColor, FontStyle )
                If Result
                   Define Message$ = "Вы выбрали следующий шрифт:"  + #LF$
@@ -900,33 +870,33 @@ Procedure   PropertiesButton_Events( )
                      
                   Case #_pi_coloralpha
                      If SetBackColor( *object, RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
-                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
-                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
-                                                          (GetState(*g)) ))
+                                                     (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
+                                                     (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
+                                                     (GetState(*g)) ))
                         Properties_Updates( *object, "Color" )
                      EndIf
                      
                   Case #_pi_colorblue
                      If SetBackColor( *object, RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
-                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
-                                                          (GetState(*g)),
-                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
+                                                     (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
+                                                     (GetState(*g)),
+                                                     (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
                         Properties_Updates( *object, "Color" )
                      EndIf
                      
                   Case #_pi_colorgreen
                      If SetBackColor( *object, RGBA( (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorred))),
-                                                          (GetState(*g)),
-                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
-                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
+                                                     (GetState(*g)),
+                                                     (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
+                                                     (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
                         Properties_Updates( *object, "Color" )
                      EndIf
                      
                   Case #_pi_colorred
                      If SetBackColor( *object, RGBA( (GetState(*g)),
-                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
-                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
-                                                          (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
+                                                     (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorgreen))),
+                                                     (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_colorblue))),
+                                                     (Val(Properties_GetItemText(ide_inspector_PROPERTIES, #_pi_coloralpha))) ))
                         Properties_Updates( *object, "Color" )
                      EndIf
                      
@@ -939,9 +909,9 @@ Procedure   PropertiesButton_Events( )
                      Define Flag.q = MakeValue( flag$ )
                      SetFlag_( *object, Flag)
                      Define class$ = ClassFromType( *object\type ) 
-;                      Define flag$ = MakeString( Flag )
-;                      Define flag$ = RemoveString( flag$, "#__FLAG_Text") 
-;                      Define flag$ = RemoveString( flag$, "#__FLAG_") 
+                     ;                      Define flag$ = MakeString( Flag )
+                     ;                      Define flag$ = RemoveString( flag$, "#__FLAG_Text") 
+                     ;                      Define flag$ = RemoveString( flag$, "#__FLAG_") 
                      Debug "----"+flag$
                      Properties_SetItemText( ide_inspector_PROPERTIES, #_pi_FLAG, flag$)
                      Properties_Updates( *object, "Flag" ) 
@@ -1033,10 +1003,10 @@ Procedure   Properties_Change( *splitter._s_WIDGET )
             Case #__type_ComboBox 
                SetState(*this, StrToBool(text$) )
                
-;                Select LCase(text$)
-;                   Case "false" : SetState( *this, 0)
-;                   Case "true"  : SetState( *this, 1)
-;                EndSelect
+               ;                Select LCase(text$)
+               ;                   Case "false" : SetState( *this, 0)
+               ;                   Case "true"  : SetState( *this, 1)
+               ;                EndSelect
                
          EndSelect
       EndIf
@@ -1128,8 +1098,8 @@ Procedure   Properties_Display( *splitter._s_WIDGET, *this._s_WIDGET, item )
 EndProcedure
 
 Procedure   Properties_HideItem( *splitter._s_WIDGET, item, state )
-;    HideItem( GetAttribute( *splitter, #PB_Splitter_FirstGadget ), item, state )
-;    HideItem( GetAttribute( *splitter, #PB_Splitter_SecondGadget ), item, state )
+   ;    HideItem( GetAttribute( *splitter, #PB_Splitter_FirstGadget ), item, state )
+   ;    HideItem( GetAttribute( *splitter, #PB_Splitter_SecondGadget ), item, state )
    DisableItem( GetAttribute( *splitter, #PB_Splitter_FirstGadget ), item, state )
    DisableItem( GetAttribute( *splitter, #PB_Splitter_SecondGadget ), item, state )
 EndProcedure
@@ -1151,7 +1121,7 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=
    Protected first_text$ = StringField(Text.s, 1, Chr(10))
    Protected second_text$ = StringField(Text.s, 2, Chr(10))
    If Not mode
-     ; first_text$ = UCase(first_text$)
+      ; first_text$ = UCase(first_text$)
    EndIf  
    ;
    *row = AddItem( *first, item, first_text$, -1, mode )
@@ -1161,7 +1131,7 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=
          ;*row\parent\color\back = $FFF4F4F4 ; $D4C8C8C8
       Else
          If *row\parent\sublevel
-           ; *row\parent\color\back = $D4E4E4E4
+            ; *row\parent\color\back = $D4E4E4E4
          EndIf
       EndIf
    Else
@@ -1173,10 +1143,10 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=
    If *row\parent
       *row\color\back = - 1
       If *row\parent\data
-        ; *row\parent\color\back = $FFF4F4F4 ; $D4C8C8C8
+         ; *row\parent\color\back = $FFF4F4F4 ; $D4C8C8C8
       Else
          If *row\parent\sublevel
-           ; *row\parent\color\back = $D4E4E4E4
+            ; *row\parent\color\back = $D4E4E4E4
          EndIf
       EndIf
    Else
@@ -1245,8 +1215,8 @@ Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    
    ; draw и resize отдельно надо включать пока поэтому вот так
    Bind(*second, @Properties_Events( ), #__EVENT_Resize)
-;  Bind(*second, @Properties_Events( ), #__EVENT_Draw)
-         
+   ;  Bind(*second, @Properties_Events( ), #__EVENT_Draw)
+   
    ProcedureReturn *splitter
 EndProcedure
 
@@ -1283,7 +1253,7 @@ Procedure   Properties_Events( )
             *row = WidgetEventData( )
             If *row
                If Not *row\data
-                 If *row\focus
+                  If *row\focus
                      Properties_Status( GetParent(*g), *g, WidgetEventItem( ))
                   EndIf
                EndIf
@@ -1745,10 +1715,10 @@ Procedure new_widget_create( *parent._s_widget, type$, X.l,Y.l, Width.l=#PB_Igno
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_CreateCopy )
             ;           EnableDrop( *new, #PB_Drop_Private, #PB_Drag_Copy, #_DD_Group )
             If is_window_( *new )
-               Protected *imagelogo = CatchImageDPI( #PB_Any, ?imagelogo ); group_bottom )
-;                CompilerIf #PB_Compiler_DPIAware
-;                   ResizeImage(*imagelogo, DPIScaled(ImageWidth(*imagelogo)), DPIScaled(ImageHeight(*imagelogo)), #PB_Image_Raw)
-;                CompilerEndIf
+               Protected *imagelogo = CatchImage( #PB_Any, ?imagelogo ); group_bottom )
+                                                                       ;                CompilerIf #PB_Compiler_DPIAware
+                                                                       ;                   ResizeImage(*imagelogo, DPIScaled(ImageWidth(*imagelogo)), DPIScaled(ImageHeight(*imagelogo)), #PB_Image_Raw)
+                                                                       ;                CompilerEndIf
                
                ;                If AddImages( *imagelogo )
                ;                   ;images( )\file$ = ReplaceString( #PB_Compiler_Home, "\", "/" ) + "ide/include/images/group/group_bottom.png"
@@ -1992,11 +1962,11 @@ Procedure new_widget_events( )
                         EndIf
                      EndIf
                   Else
-;                      If GetCursor( ) < 255
-;                         Debug " mouse enter to change cursor " 
-;                         ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_all_ELEMENTS, GetState( ide_all_ELEMENTS ) ) ) ))
-;                         a_set(*g)
-;                      EndIf
+                     ;                      If GetCursor( ) < 255
+                     ;                         Debug " mouse enter to change cursor " 
+                     ;                         ChangeCursor( *g, Cursor::Create( ImageID( GetItemData( ide_all_ELEMENTS, GetState( ide_all_ELEMENTS ) ) ) ))
+                     ;                         a_set(*g)
+                     ;                      EndIf
                   EndIf
                EndIf
             EndIf
@@ -2007,10 +1977,10 @@ Procedure new_widget_events( )
          If GetState( ide_all_ELEMENTS ) > 0 
             If Not MousePress( )
                If IsContainer(*g) 
-                 If *g\anchors
-                    Debug "ë-cursor "+GetState( ide_all_ELEMENTS )
-                    SetCursor( *g, Cursor::Create( ImageID( GetItemData( ide_all_ELEMENTS, GetState( ide_all_ELEMENTS )))))
-                 EndIf
+                  If *g\anchors
+                     Debug "ë-cursor "+GetState( ide_all_ELEMENTS )
+                     SetCursor( *g, Cursor::Create( ImageID( GetItemData( ide_all_ELEMENTS, GetState( ide_all_ELEMENTS )))))
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -2023,8 +1993,8 @@ Procedure new_widget_events( )
                   ; Передаем ID Canvas-гаджета и текущий курсор виджета
                   ; Функция Free сама зачистит GetMemory у Канваса и удалит курсор из ОС
                   ;If Cursor::Free( *g\root\canvas\gadgetID, GetCursor(*g) )
-                     ; Сбрасываем курсоры в самой системе виджетов на дефолтные
-                     SetCursor( *g, *g\cursor[1] )
+                  ; Сбрасываем курсоры в самой системе виджетов на дефолтные
+                  SetCursor( *g, *g\cursor[1] )
                   ;   ChangeCursor( *g, 0 )
                   ;EndIf
                EndIf
@@ -2278,8 +2248,8 @@ Procedure   ide_file_save(Path$) ; Процедура сохранения фа�
       
       ;
       If #PB_MessageRequester_Yes = Message("Как вы хотите сохранить",
-         " Нажмите OK чтобы сохранить PUREBASIC код"+#LF$+
-         " Нажмите NO чтобы сохранить WIDGET коде", #PB_MessageRequester_YesNo)
+                                            " Нажмите OK чтобы сохранить PUREBASIC код"+#LF$+
+                                            " Нажмите NO чтобы сохранить WIDGET коде", #PB_MessageRequester_YesNo)
          Text$ = Generate_Code( ide_design_MDI )
       Else
          Text$ = GetText( ide_design_CODE )
@@ -2315,7 +2285,7 @@ Procedure.S ide_help_VIEW_elements(Class.s)
          
       Case #__type_Date
          Result.S = "Первая строка"+#CRLF$+
-         "Вторая строка"
+                    "Вторая строка"
          
       Case #__type_Window
          Result.S = "[" +Class+ "] - Это окно"
@@ -2391,7 +2361,6 @@ Procedure   ide_inspector_VIEW_ADD_ITEMS( *new._s_widget )
             Next 
          EndIf
          
-         
          ; get image associated with class
          Protected img =- 1
          count = CountItems( ide_all_ELEMENTS )
@@ -2423,10 +2392,11 @@ Procedure   ide_inspector_VIEW_ADD_ITEMS( *new._s_widget )
 EndProcedure
 
 Procedure.i ide_all_ELEMENTS_ADD_ITEMS( *id, Directory$, Type )
+   Protected position
    Protected ZipFile$ = Directory$ + "SilkTheme.zip"
    
    ClearItems( *id )
-         
+   
    If Type = 0 : Type = #PB_All : EndIf
    
    ; Проверка пути к файлу темы
@@ -2479,17 +2449,11 @@ Procedure.i ide_all_ELEMENTS_ADD_ITEMS( *id, Directory$, Type )
                            
                            ; Форматируем имя элемента (Первая буква заглавная)
                            name$ = UCase( Left( PackEntryName.s, 1 ) ) + Right( PackEntryName.s, Len( PackEntryName.s ) - 1 )
-                           
+                           position = -1
                            ; Обработка курсора (добавляется жестко на позицию 0)
                            If FindString( PackEntryName, "cursor" )
-                              Image = CatchImageDPI( #PB_Any, *memory, ImageSize )
-                              If Image
-                                 AddItem( *id, 0, name$, Image )
-                                 SetItemData( *id, 0, Image )
-                              EndIf
-                              name$ = "" ; Обнуляем, чтобы не сработал общий AddItem в конце
-                               
-                           ; Группировка и фильтрация по Type
+                              position = 0
+                              ; Группировка и фильтрация по Type
                            ElseIf FindString( PackEntryName, "window" ) Or FindString( PackEntryName, "panel" ) Or FindString( PackEntryName, "container" ) Or FindString( PackEntryName, "scrollarea" ) Or FindString( PackEntryName, "splitter" )
                               If Type = 1 Or Type = #PB_All 
                                  name$ = ReplaceString( name$, "area", "Area", #PB_String_NoCase )
@@ -2504,16 +2468,16 @@ Procedure.i ide_all_ELEMENTS_ADD_ITEMS( *id, Directory$, Type )
                               Else
                                  name$ = ""
                               EndIf
-                           
+                              
                            ElseIf FindString( PackEntryName, "image" )
                               If Type <> #PB_All : name$ = "" : EndIf
-                           
+                              
                            ElseIf FindString( PackEntryName, "string" ) Or FindString( PackEntryName, "text" )
                               If Type <> 3 And Type <> #PB_All : name$ = "" : EndIf
-                           
+                              
                            ElseIf FindString( PackEntryName, "progress" ) Or FindString( PackEntryName, "track" ) Or FindString( PackEntryName, "spin" )
                               If Type <> 4 And Type <> #PB_All : name$ = "" : EndIf
-                           
+                              
                            ElseIf FindString( PackEntryName, "tree" ) Or FindString( PackEntryName, "listview" )
                               If Type <> #PB_All : name$ = "" : EndIf
                               
@@ -2523,9 +2487,9 @@ Procedure.i ide_all_ELEMENTS_ADD_ITEMS( *id, Directory$, Type )
                            
                            ; Единая точка добавления для всех остальных элементов
                            If name$
-                              Image = CatchImageDPI( #PB_Any, *memory, ImageSize )
+                              Image = CatchImage( #PB_Any, *memory, ImageSize )
                               If Image
-                                 AddItem( *id, -1, name$, Image )
+                                 AddItem( *id, position, name$, Image )
                                  SetItemData( *id, CountItems( *id ) - 1, Image )
                               EndIf
                            EndIf
@@ -2798,12 +2762,12 @@ Procedure   ide_events( )
       Protected *txt._s_TXT
       Protected *text._s_TXT
       Protected *line._s_ROW
-       ;
+      ;
       If __event = #__EVENT_Down
          If __data
             *text = *g\text
             *line._s_ROW  = __data
-             *txt = *line\txt(0)
+            *txt = *line\txt(0)
             text$ = *txt\string
             len = *txt\len
             caret = *g\caret\start - *txt\pos
@@ -2921,29 +2885,29 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    BarSeparator( )
    
    ; Загрузка иконок с автоматическим DPI масштабированием
-   BarButton( #_tb_widget_copy,   CatchImageDPI( #PB_Any, ?image_new_widget_copy ) )
-   BarButton( #_tb_widget_cut,    CatchImageDPI( #PB_Any, ?image_new_widget_cut ) )
-   BarButton( #_tb_widget_paste,  CatchImageDPI( #PB_Any, ?image_new_widget_paste ) )
+   BarButton( #_tb_widget_copy,   CatchImage( #PB_Any, ?image_new_widget_copy ) )
+   BarButton( #_tb_widget_cut,    CatchImage( #PB_Any, ?image_new_widget_cut ) )
+   BarButton( #_tb_widget_paste,  CatchImage( #PB_Any, ?image_new_widget_paste ) )
    BarSeparator( )
-   BarButton( #_tb_widget_delete, CatchImageDPI( #PB_Any, ?image_new_widget_delete ) )
+   BarButton( #_tb_widget_delete, CatchImage( #PB_Any, ?image_new_widget_delete ) )
    
    BarSeparator( )
-   BarButton( #_tb_group_select,  CatchImageDPI( #PB_Any, ?image_group ), #PB_ToolBar_Toggle ) 
+   BarButton( #_tb_group_select,  CatchImage( #PB_Any, ?image_group ), #PB_ToolBar_Toggle ) 
    ;
-   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_Image, CatchImageDPI( #PB_Any, ?image_group_un ) )
-   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_PressedImage, CatchImageDPI( #PB_Any, ?image_group ) )
+   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_Image, CatchImage( #PB_Any, ?image_group_un ) )
+   ;    SetItemAttribute( widget( ), #_tb_group_select, #PB_Button_PressedImage, CatchImage( #PB_Any, ?image_group ) )
    ;
    BarSeparator( )
-   BarButton( #_tb_group_width,   CatchImageDPI( #PB_Any, ?image_group_width ) )
-   BarButton( #_tb_group_height,  CatchImageDPI( #PB_Any, ?image_group_height ) )
+   BarButton( #_tb_group_width,   CatchImage( #PB_Any, ?image_group_width ) )
+   BarButton( #_tb_group_height,  CatchImage( #PB_Any, ?image_group_height ) )
    BarSeparator( )
-   BarButton( #_tb_group_left,    CatchImageDPI( #PB_Any, ?image_group_left ) )
-   BarButton( #_tb_group_right,   CatchImageDPI( #PB_Any, ?image_group_right ) )
+   BarButton( #_tb_group_left,    CatchImage( #PB_Any, ?image_group_left ) )
+   BarButton( #_tb_group_right,   CatchImage( #PB_Any, ?image_group_right ) )
    BarSeparator( )
-   BarButton( #_tb_group_top,     CatchImageDPI( #PB_Any, ?image_group_top ) )
-   BarButton( #_tb_group_bottom,  CatchImageDPI( #PB_Any, ?image_group_bottom ) )
+   BarButton( #_tb_group_top,     CatchImage( #PB_Any, ?image_group_top ) )
+   BarButton( #_tb_group_bottom,  CatchImage( #PB_Any, ?image_group_bottom ) )
    BarSeparator( )
-
+   
    BarItem( #_tb_file_run, "[RUN]" )
    BarSeparator( )
    ide_menu_LENGUAGE = OpenSubBar("[LENGUAGE]")
@@ -3005,8 +2969,8 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    EndIf
    
    Define Transparent ;= #__FLAG_Transparent
-   ;\\\ open inspector gadgets 
-   ; ide_inspector_PANEL_open
+                      ;\\\ open inspector gadgets 
+                      ; ide_inspector_PANEL_open
    ide_inspector_PANEL = Panel( 0,0,0,0 ) : SetClass(ide_inspector_PANEL, "ide_inspector_PANEL" )
    
    ; ide_inspector_PANEL_item_1 
@@ -3048,7 +3012,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorblue,       "blue",    #__type_Spin, 1 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorgreen,      "green",   #__type_Spin, 1 )
       Properties_AddItem( ide_inspector_PROPERTIES, #_pi_colorred,        "red",     #__type_Spin, 1 )
-      EndIf
+   EndIf
    ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_VIEW, ide_inspector_PROPERTIES, #__FLAG_autosize) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
    ; ide_inspector_SPLITTER = Splitter( 0,0,0,0, ide_inspector_PROPERTIES, ide_inspector_VIEW, #__FLAG_autosize) : SetClass(ide_inspector_SPLITTER, "ide_inspector_SPLITTER" )
    
@@ -3091,12 +3055,12 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_free,  "Free", #__type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_drop,  "Drop", #__type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_dragStart,  "DragStart", #__type_ComboBox, 1 )
-     ;
+      ;
       Properties_AddItem( ide_inspector_EVENTS, -1,  "KEY" )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_keydown,  "Down", #__type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_keyup,  "Up", #__type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_keyinput,  "Input", #__type_ComboBox, 1 )
-       ;
+      ;
       Properties_AddItem( ide_inspector_EVENTS, -1,  "WINDOWS" )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_close,  "Close", #__type_ComboBox, 1 )
       Properties_AddItem( ide_inspector_EVENTS, #_ei_minimize,  "Maximize", #__type_ComboBox, 1 )
@@ -3109,13 +3073,13 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ;SetState( ide_inspector_PANEL, 1 )
    If ide_inspector_PANELBUTTON
       AddButtons( ide_design_PANEL, ide_inspector_PANELBUTTON, #__FLAG_AutoSize|#__FLAG_Right )
-;       AddButtons( ide_design_PANEL, String(0,0,80,0, "1"), #__FLAG_Right )
-;       Global ide_inspector_PANELCOMBO = ComboBox(0,0,0,0) 
-;       AddItem(ide_inspector_PANELCOMBO, -1, "1")
-;       AddItem(ide_inspector_PANELCOMBO, -1, "2")
-;       AddItem(ide_inspector_PANELCOMBO, -1, "3")
-;       SetState(ide_inspector_PANELCOMBO, 0)
-;       AddButtons( ide_design_PANEL, ide_inspector_PANELCOMBO, #__FLAG_AutoSize|#__FLAG_Right )
+      ;       AddButtons( ide_design_PANEL, String(0,0,80,0, "1"), #__FLAG_Right )
+      ;       Global ide_inspector_PANELCOMBO = ComboBox(0,0,0,0) 
+      ;       AddItem(ide_inspector_PANELCOMBO, -1, "1")
+      ;       AddItem(ide_inspector_PANELCOMBO, -1, "2")
+      ;       AddItem(ide_inspector_PANELCOMBO, -1, "3")
+      ;       SetState(ide_inspector_PANELCOMBO, 0)
+      ;       AddButtons( ide_design_PANEL, ide_inspector_PANELCOMBO, #__FLAG_AutoSize|#__FLAG_Right )
       
       UpdateButtons( ide_inspector_PANELBUTTON )
       Bind( ide_inspector_PANELBUTTON, @ide_events( ), #__EVENT_LeftClick )
@@ -3142,7 +3106,7 @@ Procedure   ide_open( X=50,Y=75,Width=1000,Height=700 )
    ide_SPLITTER = Splitter( 0,0,0,0, ide_designer_SPLITTER, ide_inspector_PANEL, #PB_Splitter_SecondFixed | #PB_Splitter_Vertical|Transparent ) : SetClass(ide_designer_SPLITTER, "ide_designer_SPLITTER" )
    ide_main_SPLITTER = Splitter( 0,0,0,0, ide_TOOLBAR_container, ide_SPLITTER,#__FLAG_autosize | #PB_Splitter_FirstFixed|Transparent ) : SetClass(ide_main_SPLITTER, "ide_main_SPLITTER" )
    
-    
+   
    ; set splitters default minimum size
    SetAttribute( ide_debug_SPLITTER, #PB_Splitter_FirstMinimumSize, 350 )
    SetAttribute( ide_debug_SPLITTER, #PB_Splitter_SecondMinimumSize, 80 )
@@ -3419,8 +3383,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 2862
-; FirstLine = 2797
+; CursorPosition = 3383
+; FirstLine = 3359
 ; Folding = ----------------------------------------------------------------
 ; EnableXP
 ; DPIAware

@@ -8,7 +8,8 @@ Enumeration 1
    #__BTN_Minimize
    #__BTN_Help        
    #__BTN_Pin         
-   #__BTN_Menu        
+   #__BTN_Menu     
+   #__BTN_Check
 EndEnumeration
 
 ; Битовые флаги для процедурного создания заголовка
@@ -28,7 +29,8 @@ EndEnumeration
 #__MASK_Center    = 1 << 5
 #__MASK_Hover     = 1 << 6
 #__MASK_Press  = 1 << 7
-
+#__MASK_Hide      = 1 << 14        ; Объект скрыт изначально (базовый флаг)
+      
 Structure _s_POINT     : X.l : Y.l : EndStructure
 Structure _s_COORDINATE Extends _s_POINT : Width.l : Height.l : EndStructure
 Structure _s_IMG        Extends _s_COORDINATE : change.b : Image.i : EndStructure
@@ -204,8 +206,6 @@ Procedure ChromeBox(vertical.b, x, y, w, h, isactive, currentcolor.l, localslant
 EndProcedure
 
 ;-
-
-
 ; Расчет геометрии (расстановка элементов)
 Procedure UpdateTitleBar(*this._s_WIDGET)
    Protected._s_BTN *btn
@@ -224,11 +224,11 @@ Procedure UpdateTitleBar(*this._s_WIDGET)
          right_x - Spacing - *btn\Width
          *btn\X = *this\X + right_x + Indent
          *btn\Y = *this\Y + (*this\Height - *btn\Height) / 2
-         *btn\size = *btn\Height/4
-         *btn\size + Bool( *btn\size % 2 )
+;          *btn\size = *btn\Height/4
+;          *btn\size + Bool( *btn\size % 2 )
       Next
    EndIf
-
+   
    ; Настраиваем изолированный заголовок напрямую
    If *title
       *title\Y = *this\Y
@@ -310,7 +310,8 @@ Procedure DrawTitleBar(*this._s_WIDGET, bgColor.l)
    ForEach *title\bar\btn()
       *btn = @*title\bar\btn()
       
-      size = *btn\size 
+      ;       size = *btn\size 
+      If *btn\mask & #__MASK_Hover : size = *btn\Height/2 : Else :  size = *btn\Height/4 : EndIf  : size + Bool( size % 2 )
       round = *btn\Height
       
       If Not *btn\round
@@ -322,15 +323,16 @@ Procedure DrawTitleBar(*this._s_WIDGET, bgColor.l)
          If *btn\type = #__BTN_Close
             ; Классический красный ховер закрытия (не меняется, но крестик становится белым)
             If *btn\round
-               size-DesktopScaledX(2)
-               symbolColor = RGBA(232, 17, 35, 255)
+                size-DesktopScaledX(1)
+           symbolColor = RGBA(232, 17, 35, 255)
                RoundBox(*btn\X, *btn\Y, *btn\Width, *btn\Height, round, round, RGBA(232, 17, 35, 255)) 
             Else
                Box(*btn\X, *btn\Y, *btn\Width, *btn\Height, RGBA(232, 17, 35, 255)) 
             EndIf
             crossColor = RGBA(255, 255, 255, 255) 
          Else
-            ; Мягкий полупрозрачный серый ховер для остальных кнопок под светлую тему
+             size+DesktopScaledX(1)
+           ; Мягкий полупрозрачный серый ховер для остальных кнопок под светлую тему
             If Not *btn\round
                Box(*btn\X, *btn\Y, *btn\Width, *btn\Height, RGBA(0, 0, 0, 20))    
             EndIf
@@ -347,35 +349,75 @@ Procedure DrawTitleBar(*this._s_WIDGET, bgColor.l)
       
       ; 3. Отрисовка значков
       Select *btn\type
-         Case #__BTN_Close ; Жирный крестик со смещением
-            LineXY(paddingX,        paddingY, paddingX + size,     paddingY + size, crossColor)
-            LineXY(paddingX + 1,    paddingY, paddingX + size + 1, paddingY + size, crossColor)
-            LineXY(paddingX + 2,    paddingY, paddingX + size + 2, paddingY + size, crossColor)
-            LineXY(paddingX + size,     paddingY, paddingX,        paddingY + size, crossColor)
-            LineXY(paddingX + size - 1, paddingY, paddingX - 1,    paddingY + size, crossColor)
-            LineXY(paddingX + size - 2, paddingY, paddingX - 2,    paddingY + size, crossColor)
+            ;  Крестик
+         Case #__BTN_Close 
+            ; Первая диагональ (сверху-слева -> снизу-справа)
+            LineXY(paddingX + 1, paddingY,     paddingX + size + 1, paddingY + size,     crossColor) ; Смещение вправо
+            LineXY(paddingX,     paddingY,     paddingX + size,     paddingY + size,     crossColor)
+            LineXY(paddingX,     paddingY + 1, paddingX + size,     paddingY + size + 1, crossColor) ; Смещение вниз
             
-         Case #__BTN_Maximize ; Квадрат
+            ; Вторая диагональ (сверху-справа -> снизу-слева)
+            LineXY(paddingX + size - 1, paddingY,     paddingX - 1, paddingY + size,     crossColor) ; Смещение влево
+            LineXY(paddingX + size,     paddingY,     paddingX,     paddingY + size,     crossColor)
+            LineXY(paddingX + size,     paddingY + 1, paddingX,     paddingY + size + 1, crossColor) ; Смещение вниз
+           
+            ; Квадрат
+         Case #__BTN_Maximize
             DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Outlined)
             Box(paddingX, paddingY, size, size, symbolColor)
             Box(paddingX + 1, paddingY + 1, size - 2, size - 2, symbolColor) 
             DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent) 
-            
-         Case #__BTN_Minimize ; Черточка
+         
+            ; Черточка   
+         Case #__BTN_Minimize
             LineXY(paddingX, paddingY + size/2 - 1, paddingX + size, paddingY + size/2 - 1, symbolColor)
             LineXY(paddingX, paddingY + size/2,     paddingX + size, paddingY + size/2,     symbolColor)
+          
+         Case #__BTN_Check ; Галочка: управление углом и точкой перелома
+            Protected.l chkX1, chkY1, chkX2, chkY2, chkX3, chkY3
+              ; Искусственное увеличение под вес крестика
+            size + DesktopScaledX(4)
+            paddingX = *btn\X + (*btn\Width - size) / 2
+            paddingY = *btn\Y + (*btn\Height - size) / 2
             
-         Case #__BTN_Help ; Знак вопроса
+            chkX2 = paddingX + (size * 0.30)
+            chkY2 = paddingY + (size * 0.80)
+            
+            chkX1 = chkX2 - (size * 0.25)
+            chkY1 = chkY2 - (size * 0.25)
+            
+            chkX3 = chkX2 + (size * 0.60)
+            chkY3 = chkY2 - (size * 0.60)
+            
+            ; --- Отрисовка левого плеча ---
+            ; Верхняя линия: длиннее с внутренней стороны (вычитаем 1 из X, вычитаем 1 из Y на конце)
+            LineXY(chkX1 - 1, chkY1 - 2, chkX2, chkY2 - 1, symbolColor) 
+            ; Центральная линия: базовая длина
+            LineXY(chkX1,     chkY1,     chkX2, chkY2,     symbolColor) 
+            ; Нижняя линия: короче с внешней стороны (прибавляем 1 к X, прибавляем 1 к Y на конце)
+            LineXY(chkX1 + 1, chkY1 + 2, chkX2, chkY2 + 1, symbolColor) 
+            
+            ; --- Отрисовка правого плеча ---
+            ; Верхняя линия: длиннее с внутренней стороны (прибавляем 1 к X, вычитаем 1 из Y на конце)
+            LineXY(chkX2, chkY2 - 1, chkX3 + 1, chkY3 - 2, symbolColor) 
+            ; Центральная линия: базовая длина
+            LineXY(chkX2, chkY2,     chkX3,     chkY3,     symbolColor) 
+            ; Нижняя линия: короче с внешней стороны (вычитаем 1 из X, прибавляем 1 к Y на конце)
+            LineXY(chkX2, chkY2 + 1, chkX3 - 1, chkY3 + 2, symbolColor)
+
+            ; Знак вопроса   
+         Case #__BTN_Help
             DrawText(paddingX + DesktopScaledX(1), paddingY - DesktopScaledY(2), "?", symbolColor, 0)
+            
       EndSelect
       
       If *btn\round
          DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Outlined)
-         If *btn\mask & #__MASK_Hover
+         ;If *btn\mask & #__MASK_Hover
             RoundBox(*btn\X-1, *btn\Y-1, *btn\Width+2, *btn\Height+2,  round, round, symbolColor)    
-         EndIf
+         ;EndIf
          RoundBox(*btn\X, *btn\Y, *btn\Width, *btn\Height, round, round, symbolColor)    
-         RoundBox(*btn\X+1, *btn\Y+1, *btn\Width-2, *btn\Height-2,  round, round, symbolColor)    
+         ;RoundBox(*btn\X+1, *btn\Y+1, *btn\Width-2, *btn\Height-2,  round, round, symbolColor)    
          DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent) 
       EndIf
       
@@ -389,7 +431,7 @@ Procedure CreateTitleBar(text.s, image.i = 0, flags.l = #_STYLE_Default)
    Protected._s_TITLE *title = AllocateStructure(_s_TITLE)
    Protected._s_BTN *btn
    Protected round
-  
+   
    *title\mask | #__MASK_Left : Static i : If i = 1 :   *title\mask | #__MASK_Center :  EndIf :  If i = 2 :  *title\mask | #__MASK_Right :  EndIf :  i+1
    
    round = DesktopScaledX(20)
@@ -399,7 +441,7 @@ Procedure CreateTitleBar(text.s, image.i = 0, flags.l = #_STYLE_Default)
    
    *title\indent  = DesktopScaledX(8)
    *title\spacing  = DesktopScaledX(6)
-     
+   
    If *title\slant : *title\indent = 0 : EndIf
    
    *title\size = DesktopScaledX(10) 
@@ -421,7 +463,8 @@ Procedure CreateTitleBar(text.s, image.i = 0, flags.l = #_STYLE_Default)
    If flags & #_STYLE_Close :  *btn = AddElement(*title\bar\btn()) : *btn\type = #__BTN_Close : *btn\round = round : EndIf
    If flags & #_STYLE_Maximize : *btn = AddElement(*title\bar\btn()) : *btn\type = #__BTN_Maximize : *btn\round = round : EndIf
    If flags & #_STYLE_Minimize : *btn = AddElement(*title\bar\btn()) : *btn\type = #__BTN_Minimize : *btn\round = round : EndIf
-   If flags & #_STYLE_Help     : *btn = AddElement(*title\bar\btn()) : *btn\type = #__BTN_Help     : *btn\round = round : EndIf
+   ;If flags & #_STYLE_Help     : *btn = AddElement(*title\bar\btn()) : *btn\type = #__BTN_Help     : *btn\round = round : EndIf
+   If flags & #_STYLE_Help     : *btn = AddElement(*title\bar\btn()) : *btn\type = #__BTN_Check     : *btn\round = round : EndIf
    If flags & #_STYLE_Pin      : *btn = AddElement(*title\bar\btn()) : *btn\type = #__BTN_Pin      : *btn\round = round : EndIf
    If flags & #_STYLE_Menu     : *btn = AddElement(*title\bar\btn()) : *btn\type = #__BTN_Menu     : *btn\round = round : EndIf
    ProcedureReturn *title
@@ -480,9 +523,10 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
    
    If *hoverBTN And Not Bool( mx >= *hoverBTN\X And mx < *hoverBTN\X + *hoverBTN\Width And my >= *hoverBTN\Y And my < *hoverBTN\Y + *hoverBTN\Height )
       *hoverBTN\mask &~ #__MASK_Hover
-      *hoverBTN\size = *hoverBTN\Height/4
-      *hoverBTN\size + Bool( *hoverBTN\size % 2 )
+;       *hoverBTN\size = *hoverBTN\Height/4
+;       *hoverBTN\size + Bool( *hoverBTN\size % 2 )
       *hoverBTN = 0
+      needredraw = #True
    EndIf   
    
    If  Bool( mx >= *this\X And mx < *this\X + *this\Width And my >= *this\Y And my < *this\Y + *this\Height ) 
@@ -503,12 +547,12 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
                      
                      ; Меням размеры геометрии значка
                      If *btn\mask & #__MASK_Hover
-                        *btn\size = *btn\Height/2 
+;                         *btn\size = *btn\Height/2 
                         *hoverBTN = *btn
                      Else
-                        *btn\size = *btn\Height/4
+;                         *btn\size = *btn\Height/4
                      EndIf
-                     *btn\size + Bool( *btn\size % 2 )
+;                      *btn\size + Bool( *btn\size % 2 )
                      needredraw = #True
                      Break
                   EndIf
@@ -587,6 +631,8 @@ If OpenWindow(0, 0, 0, 800, 230, "Light Titlebar Custom UI Demo", #PB_Window_Sys
       Event = WaitWindowEvent()
       Select Event
          Case #PB_Event_Gadget
+            needRedraw = #False
+            
             If EventGadget() = 0
                mx = GetGadgetAttribute(0, #PB_Canvas_MouseX)
                my = GetGadgetAttribute(0, #PB_Canvas_MouseY)
@@ -605,9 +651,9 @@ If OpenWindow(0, 0, 0, 800, 230, "Light Titlebar Custom UI Demo", #PB_Window_Sys
    Until Event = #PB_Event_CloseWindow
 EndIf
 
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 349
-; FirstLine = 235
-; Folding = --+-------------
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 307
+; FirstLine = 261
+; Folding = -----vm+8-------
 ; EnableXP
 ; DPIAware

@@ -74,8 +74,6 @@
       CompilerEndIf
       #PB_MessageRequester_WindowCentered = 1<<6
       #PB_MessageRequester_ScreenCentered = 1<<7
-      ;
-     
       
       ;-\\ Bounds
       #__bounds_Parentsize = 0
@@ -83,41 +81,12 @@
       #__bounds_move = 1<<1
       #__bounds_size = 1<<2
       
-      ;       Enumeration - 1
-      ;          #SelectionStyle_Default
-      ;          #SelectionStyle_none
-      ;          #SelectionStyle_Solid
-      ;          #SelectionStyle_Dotted
-      ;          #SelectionStyle_Dashed
-      ;       EndEnumeration
-      ;       #SelectionStyle_Mode       = $100
-      ;       #SelectionStyle_Completely = 0
-      ;       #SelectionStyle_partially  = $100
-      ;       #SelectionStyle_Ignore     = #PB_Ignore
-      ;       
-      ;       Enumeration 1
-      ;          #Boundary_MinX
-      ;          #Boundary_MinY
-      ;          #Boundary_MaxX
-      ;          #Boundary_MaxY
-      ;          #Boundary_MinWidth
-      ;          #Boundary_MinHeight
-      ;          #Boundary_MaxWidth
-      ;          #Boundary_MaxHeight
-      ;       EndEnumeration
-      ;       #Boundary_Ignore         = - $80000000    ; 0b10000000...
-      ;       #Boundary_Default        = - $7FFFFFFF    ; 0b01111111...
-      ;       #Boundary_none           = $3FFFFFFF      ; 0b00111111...
-      ;       #Boundary_parentSize     = $60000000      ; 0b01100000...
-      ;       #Boundary_parentSizeMask = $C0000000      ; 0b11000000...
-      ;       
-      ;
       ;\\ default values
       ;
       ;#__BAR_toggle_line_size = 0
       #__BAR_splitter_size = 9
       #__ButtonRound  = 7
-      #__BAR_button_size   = 16
+      #__BAR_button_size   = 18
       #__tab_size   = 25;18
       
       #__Draw_plus_Size = 5
@@ -128,11 +97,6 @@
       #__tracksize = 4
       #__arrow_Size = 4
       #__arrow_type = -1 ; ;-1 ;0 ;1
-      
-      ; caption bar buttons
-      #__wb_Close = 0
-      #__wb_Maxi  = 1
-      #__wb_Mini  = 2
       
       #__sOC = SizeOf(Character)
       
@@ -236,9 +200,15 @@
          #__s_3
       EndEnumeration
       
-      ;-\\ mouse-state
-      ; #__mouse_EnterChild = - 2
-      ; #__mouse_EnterInner = 2
+      ; caption bar buttons 
+      Enumeration 0
+         #__BTN_Close
+         #__BTN_Maximize
+         #__BTN_Minimize
+         #__BTN_Help        
+         #__BTN_Menu     
+         #__BTN_Check
+      EndEnumeration
       
       ;-
       ;-\\ event-type
@@ -375,7 +345,7 @@
       #__MASK_Bottom    = 1 << #__bottom ; 16  move to bottom
       
       #__MASK_Update    = 1 << 5         ; Флаг: Требуется пересчет геометрии (для всех) (TextWidth и т.д.) нужно пересчитать координаты X для каретки/выделения.
-      #__MASK_Redraw    = 1 << 6        ; Флаг: Требуется перерисовка
+      #__MASK_Redraw    = 1 << 6         ; Флаг: Требуется перерисовка
       
       #__MASK_Hover     = 1 << 7
       #__MASK_Hover_a = 1 << 25
@@ -383,7 +353,7 @@
       #__MASK_Visible = 1 << 27
       
       #__MASK_Press     = 1 << 8         ; 64  button press
-      #__MASK_Active    = 1 << 9        ; Виджет в фокусе / Строка выбрана / Окно активно
+      #__MASK_Active    = 1 << 9         ; Виджет в фокусе / Строка выбрана / Окно активно
       #__MASK_Drag      = 1 << 10        ; Состояние перетаскивания Объект в процессе перетаскивания
       #__MASK_Check     = 1 << 11
       #__MASK_Release   = 1 << 12         ; 128 button release
@@ -392,7 +362,7 @@
       #__MASK_Disable   = 1 << 15        ; Объект заблокирован изначально (базовый флаг)
       #__MASK_Hidden    = 1 << 16        ; Фактическое текущее состояние скрытия
       #__MASK_Disabled  = 1 << 17        ; Фактическое текущее состояние блокировки
-                                        
+      
       #__MASK_Resize    = 1 << 18
       #__MASK_Minimize  = 1 << 19
       #__MASK_Maximize  = 1 << 20
@@ -401,8 +371,8 @@
       ;#__maskrow_change    = 1 << 22        ; текст изменился, надо перепарсить токены.
       ;#__maskrow_node      = 1 << 23        ; Является узлом (Строка) / Деревом (Виджет)
       ;#__maskrow_collapsed = 1 << 24        ; Свернуто (Узел/Ветка)
-       
-       ;
+      
+      ;
       ;-\\ create-type
       #__TYPE_Root          = - 1
       #__TYPE_Window        = - 2
@@ -560,11 +530,11 @@
       #__BAR_Text              = #PB_ToolBar_Text
       #__BAR_Buttons           = #PB_ToolBar_Buttons
       
-     ;-\\ Image
+      ;-\\ Image
       #__IMAGE_BackGround      = 1
       #__IMAGE_Pressed         = 2
       #__IMAGE_Released        = 3
-     
+      
       ;-\\ Pamel
       #__PANEL_Left            = #__FLAG_Left;1<<9
       #__PANEL_Top             = #__FLAG_Top ;1<<10
@@ -712,8 +682,8 @@
       EndDeclareModule : Module Constants : EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 365
-; FirstLine = 351
+; CursorPosition = 88
+; FirstLine = 72
 ; Folding = ----
 ; Optimizer
 ; EnableXP

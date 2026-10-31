@@ -311,7 +311,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       EndMacro
       Macro Min(a, b) : (Bool((a) <= (b)) * (a) + Bool((b) < (a)) * (b)) : EndMacro
       Macro Max(a, b) : (Bool((a) >= (b)) * (a) + Bool((b) > (a)) * (b)) : EndMacro
-
+      
       Global _macro_call_count_
       Macro Debug_out( _text_ = "" )
          CompilerIf #PB_Compiler_Debugger  ; Only enable assert in debug mode
@@ -379,6 +379,8 @@ CompilerIf Not Defined( widgets, #PB_Module )
       CompilerEndIf
       
       ;
+      Declare.i LoadImageDPI(ImageNumber, FileName$, Flags = 0)
+      Declare.i CatchImageDPI(ImageNumber, *MemoryAddress, MemorySize = #PB_Default)
       Declare DPIScaled( _value_ )
       ;Macro DPIScaled( _value_ ): DesktopScaledX( _value_ ): EndMacro
       Macro DPIUnScaled( _value_ ): DesktopUnscaledX( _value_ ): EndMacro
@@ -390,15 +392,11 @@ CompilerIf Not Defined( widgets, #PB_Module )
       Macro DPIResolutionY( ): DesktopResolutionY( ): EndMacro
       Macro DPIResolution( ): DesktopResolutionX( ): EndMacro
       
+      Macro CatchImage(_ImageNumber_, _MemoryAddress_, _MemorySize_ = #PB_Default) : CatchImageDPI(_ImageNumber_, _MemoryAddress_, _MemorySize_) : EndMacro
+      Macro LoadImage(_ImageNumber_, _FileName_, _Flags_ = 0) : LoadImageDPI(_ImageNumber_, _FileName_, _Flags_) : EndMacro
       ;-
       ;===TEMP====
-      Macro AlphaState( ) 
-         color\_alpha
-      EndMacro
       
-      Macro AlphaState24( ) 
-         color\_alpha << 24
-      EndMacro
       
       
       Macro is_drag_move( )
@@ -454,7 +452,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       ;-
       Macro PageChange( ): change: EndMacro          ; temp
       Macro TabChange( ): change: EndMacro           ; temp
-      Macro TextChange( ): txt(0)\change: EndMacro     ; temp
+      Macro TextChange( ): txt(0)\change: EndMacro   ; temp
       Macro ResizeChange( )
          mask & #__mask_resize ; Resize\change
       EndMacro                 ; temp
@@ -498,7 +496,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       Macro RowPressed( ): row\active[1]: EndMacro       ; Returns mouse press item address
       Macro RowFocused( ): row\active[0]: EndMacro       ; Returns key focus item address
                                                          ;
-      ;
+                                                         ;
       Macro RowToolTip( ): row\tt: EndMacro
       
       ;-
@@ -559,11 +557,11 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Macro ActiveBar( ): ActiveWindow( )\gadget\bar\gadget: EndMacro ; Returns activeed gadget
    
    Macro ScrollToActive( _state_ )
-            _focus =- _state_
-         EndMacro
-         
-         
-        
+      _focus =- _state_
+   EndMacro
+   
+   
+   
    ;-
    Macro EnteredButton( ): mouse( )\btn[0]: EndMacro
    Macro PressedButton( ): mouse( )\btn[1]: EndMacro
@@ -571,9 +569,6 @@ CompilerIf Not Defined( widgets, #PB_Module )
    ;-
    Macro TitleText( ): text: EndMacro
    Macro GetTitle( window ): widgets::GetText( window ): EndMacro
-   Macro CloseButton( ): title\bar\btn[#__wb_close]: EndMacro
-   Macro MaximizeButton( ): title\bar\btn[#__wb_maxi]: EndMacro
-   Macro MinimizeButton( ): title\bar\btn[#__wb_mini]: EndMacro
    
    
    ;-
@@ -586,7 +581,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       
       Repeat
          _ptr_ = @_object_\__s()
-          If Not (_ptr_\mask & #__mask_visible And Not _ptr_\mask & #__mask_hidden) : Continue : EndIf
+         If Not (_ptr_\mask & #__mask_visible And Not _ptr_\mask & #__mask_hidden) : Continue : EndIf
       EndMacro
       
       Macro StopPrevRow(_ptr_, _object_ )
@@ -613,7 +608,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       
       Repeat
          _ptr_ = @_object_\__s()
-          If Not (_ptr_\mask & #__mask_visible And Not _ptr_\mask & #__mask_hidden) : Continue : EndIf
+         If Not (_ptr_\mask & #__mask_visible And Not _ptr_\mask & #__mask_hidden) : Continue : EndIf
       EndMacro
       
       Macro StopNextRow(_ptr_, _object_ )
@@ -971,7 +966,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    ;-
    Macro CanvasMouseX( ): widgets::mouse( )\x: EndMacro                                  ; Returns mouse x
    Macro CanvasMouseY( ): widgets::mouse( )\y: EndMacro                                  ; Returns mouse y
-                                                                                ;-
+                                                                                         ;-
    Macro IsCanvas(_gadget_)
       key::GetData( GadgetID(_gadget_))
    EndMacro
@@ -1325,6 +1320,10 @@ CompilerIf Not Defined( widgets, #PB_Module )
    EndMacro
    
    ;-
+   Macro AlphaState( _alpha_ ) 
+      $FFFFFF |  _alpha_ << 24
+   EndMacro
+   
    Macro Clip( _address_, _mode_ = [#__c_draw] )
       CompilerIf Not ( #PB_Compiler_OS = #PB_OS_MacOS And Not Defined( Draw, #PB_Module ))
          ClipOutput( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_ )
@@ -1332,10 +1331,10 @@ CompilerIf Not Defined( widgets, #PB_Module )
    EndMacro
    
    Macro draw_mode_alpha_( _mode_ )
-      widgets::__draw_mode( _mode_ | #PB_2DDrawing_AlphaBlend )
+      widgets::draw_mode_( #PB_2DDrawing_AlphaBlend | _mode_ )
    EndMacro
    
-   Macro __draw_mode( _mode_ )
+   Macro draw_mode_( _mode_ )
       DrawingMode( _mode_ )
    EndMacro
    
@@ -1456,13 +1455,13 @@ CompilerIf Not Defined( widgets, #PB_Module )
                   _address_\x + ( _address_\width - _address_\arrow\size ) / 2,
                   _address_\y + ( _address_\height - _address_\arrow\size ) / 2, 
                   _address_\arrow\size, _address_\arrow\type, 0,
-                  _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+                  _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
    EndMacro
    
    ;-
    Macro __draw_gradient( _vertical_, _address_, _x_,_y_, _state_, _round_ = 0, _alpha_ = 255, _mode_ = )
-      BackColor( _address_\color\fore[_state_] & $FFFFFF | _address_\AlphaState24( ) )
-      FrontColor( _address_\color\back[_state_] & $FFFFFF | _address_\AlphaState24( ) )
+      BackColor( _address_\color\fore[_state_] & AlphaState(_address_\color\_alpha ) )
+      FrontColor( _address_\color\back[_state_] & AlphaState(_address_\color\_alpha ) )
       
       If _vertical_  ; _address_\vertical
          LinearGradient( (_x_+_address_\x#_mode_), (_y_+_address_\y#_mode_), ( (_x_+_address_\x#_mode_) + _address_\width#_mode_ ), (_y_+_address_\y#_mode_) )
@@ -1567,28 +1566,28 @@ CompilerIf Not Defined( widgets, #PB_Module )
    
    Macro __draw_box( _address_, _color_type_, _mode_ = )
       draw_roundbox_( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_,
-                      _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+                      _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
    EndMacro
    
    Macro __draw_roundbox( _address_, _color_type_ )
       ;__draw_box( _address_, _color_type_)
       If Not _address_\mask & #__mask_hidden
-         draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-         draw_roundbox_( _address_\x, _address_\y + 1, _address_\width, _address_\height - 2, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-         draw_roundbox_( _address_\x + 1, _address_\y, _address_\width - 2, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+         draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+         draw_roundbox_( _address_\x, _address_\y + 1, _address_\width, _address_\height - 2, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+         draw_roundbox_( _address_\x + 1, _address_\y, _address_\width - 2, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
       EndIf
    EndMacro
    
    Macro __draw_close_button( _address_, _size_ )
       ; close button
       If Not _address_\mask & #__mask_hidden
-         If _address_\ColorState( )
-            Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-            Line( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-            
-            Line( _address_\x - 1 + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-            Line( _address_\x + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-         EndIf
+;          If _address_\ColorState( )
+;             Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+;             Line( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+;             
+;             Line( _address_\x - 1 + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+;             Line( _address_\x + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+;          EndIf
          
          __draw_roundbox( _address_, color\frame )
       EndIf
@@ -1596,13 +1595,13 @@ CompilerIf Not Defined( widgets, #PB_Module )
    
    Macro __draw_maximize_button( _address_, _size_ )
       If Not _address_\mask & #__mask_hidden
-         If _address_\ColorState( )
-            Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-            Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-            
-            Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-            Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-         EndIf
+;          If _address_\ColorState( )
+;             Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+;             Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+;             
+;             Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+;             Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+;          EndIf
          
          __draw_roundbox( _address_, color\frame )
       EndIf
@@ -1610,13 +1609,13 @@ CompilerIf Not Defined( widgets, #PB_Module )
    
    Macro __draw_minimize_button( _address_, _size_ )
       If Not _address_\mask & #__mask_hidden
-         If _address_\ColorState( )
-            Line( _address_\x + 1 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-            Line( _address_\x + 0 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-            
-            Line( _address_\x - 1 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-            Line( _address_\x - 2 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
-         EndIf
+;          If _address_\ColorState( )
+;             Line( _address_\x + 1 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+;             Line( _address_\x + 0 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+;             
+;             Line( _address_\x - 1 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+;             Line( _address_\x - 2 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+;          EndIf
          
          __draw_roundbox( _address_, color\frame )
       EndIf
@@ -1625,7 +1624,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Macro __draw_help_button( _address_, _size_ )
       If Not _address_\mask & #__mask_hidden
          draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height,
-                         _address_\round, _address_\round, _address_\color\frame[_address_\ColorState( )] & $FFFFFF | _address_\AlphaState24( ) )
+                         _address_\round, _address_\round, _address_\color\frame[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
       EndIf
    EndMacro
    
@@ -1683,15 +1682,15 @@ CompilerIf Not Defined( widgets, #PB_Module )
       If _this_\type = #__type_Scroll
          If _this_\bar\vertical
             If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\frame_width( ) / 4 )) = _this_\frame_height( )
-               Line(_this_\frame_x( ), _this_\frame_y( ), 1, _this_\bar\page\len + 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
+               Line(_this_\frame_x( ), _this_\frame_y( ), 1, _this_\bar\page\len + 1, _this_\color\front & AlphaState( _this_\color\_alpha ) ) ; $FF000000 ) ;
             Else
-               Line(_this_\frame_x( ), _this_\frame_y( ) + _this_\bar\button[1]\round, 1, _this_\frame_height( ) - _this_\bar\button[1]\round - _this_\bar\button[2]\round, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
+               Line(_this_\frame_x( ), _this_\frame_y( ) + _this_\bar\button[1]\round, 1, _this_\frame_height( ) - _this_\bar\button[1]\round - _this_\bar\button[2]\round, _this_\color\front & AlphaState( _this_\color\_alpha ) ) ; $FF000000 ) ;
             EndIf
          Else
             If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\frame_height( ) / 4 )) = _this_\frame_width( )
-               Line(_this_\frame_x( ), _this_\frame_y( ), _this_\bar\page\len + 1, 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF0000ff ) ;
+               Line(_this_\frame_x( ), _this_\frame_y( ), _this_\bar\page\len + 1, 1, _this_\color\front & AlphaState( _this_\color\_alpha ) ) ; $FF0000ff ) ;
             Else
-               Line(_this_\frame_x( ) + _this_\bar\button[1]\round, _this_\frame_y( ), _this_\frame_width( ) - _this_\bar\button[1]\round - _this_\bar\button[2]\round, 1, _this_\color\front & $FFFFFF | _this_\AlphaState24( ) ) ; $FF000000 ) ;
+               Line(_this_\frame_x( ) + _this_\bar\button[1]\round, _this_\frame_y( ), _this_\frame_width( ) - _this_\bar\button[1]\round - _this_\bar\button[2]\round, 1, _this_\color\front & AlphaState( _this_\color\_alpha ) ) ; $FF000000 ) ;
             EndIf
          EndIf
       EndIf
@@ -1991,8 +1990,8 @@ CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 1355
-; FirstLine = 809
-; Folding = 9AcMC9-E5+----------fNXG-----fAA---DAEDQA9
+; CursorPosition = 1589
+; FirstLine = 1577
+; Folding = ------------------------------------------
 ; EnableXP
 ; DPIAware

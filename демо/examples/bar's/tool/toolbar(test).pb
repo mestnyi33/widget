@@ -1,4 +1,4 @@
-;                                                       - PB
+﻿;                                                       - PB
 ;                               BarSeparator( [*address] ) - ToolBarBarSeparator( )
 ;                                                         ToolBarID( #ToolBar )
 ;                                                         IsToolBar( #ToolBar )
@@ -62,6 +62,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global ide_toolbar, 
           ide_popup_lenguage,
           ide_menu
+   
    
    Procedure ide_events( )
       Protected *e_widget._s_WIDGET = EventWidget( )
@@ -193,9 +194,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 73
-; FirstLine = 60
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 113
+; FirstLine = 89
 ; Folding = --
 ; EnableXP
 ; DPIAware

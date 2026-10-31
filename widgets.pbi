@@ -66,6 +66,66 @@ Module widgets
    Declare   make_content_area( *this._s_WIDGET, *txt._s_TXT, *img._s_IMG, indent )
    Declare   make_content_align( *this._s_WIDGET, *txt._s_TXT, *img._s_IMG, Width, Height, indent )
    
+   Procedure.i CatchImageDPI(ImageNumber, *MemoryAddress, MemorySize = #PB_Default)
+      Protected Image
+      Protected.d DPI = DesktopResolutionX()
+      
+      ; Корректный вызов CatchImage в зависимости от наличия размера
+      If MemorySize = #PB_Default
+         Image = PB(CatchImage)(ImageNumber, *MemoryAddress)
+      Else
+         Image = PB(CatchImage)(ImageNumber, *MemoryAddress, MemorySize)
+      EndIf
+      
+      ; Если изображение загружено и DPI экрана отличен от 100% (1.0)
+      If Image And DPI <> 1.0
+         Protected ImgID
+         
+         ; Если использовали #PB_Any, то возвращенное значение 'Image' — это и есть номер иконки в PB.
+         ; Если использовали конкретный номер (например 5), то 'Image' — это OS Handle, а номером является ImageNumber.
+         If ImageNumber = #PB_Any 
+            ImgID = Image 
+         Else 
+            ImgID = ImageNumber 
+         EndIf
+         
+         ; Ресайз без размытия (Nearest Neighbor / Raw)
+         PB(ResizeImage)(ImgID, PB(ImageWidth)(ImgID) * DPI, PB(ImageHeight)(ImgID) * DPI, #PB_Image_Raw)
+      EndIf
+      
+      ProcedureReturn  Image
+   EndProcedure
+   
+   Procedure.i LoadImageDPI(ImageNumber, FileName$, Flags = 0)
+      Protected Image
+      Protected.d DPI = DesktopResolutionX()
+      
+      ; Корректный вызов LoadImage в зависимости от наличия размера
+      If Flags = 0
+         Image = PB(LoadImage)(ImageNumber, FileName$)
+      Else
+         Image = PB(LoadImage)(ImageNumber, FileName$, Flags)
+      EndIf
+      
+      ; Если изображение загружено и DPI экрана отличен от 100% (1.0)
+      If Image And DPI <> 1.0
+         Protected ImgID
+         
+         ; Если использовали #PB_Any, то возвращенное значение 'Image' — это и есть номер иконки в PB.
+         ; Если использовали конкретный номер (например 5), то 'Image' — это OS Handle, а номером является ImageNumber.
+         If ImageNumber = #PB_Any 
+            ImgID = Image 
+         Else 
+            ImgID = ImageNumber 
+         EndIf
+         
+         ; Ресайз без размытия (Nearest Neighbor / Raw)
+         PB(ResizeImage)(ImgID, PB(ImageWidth)(ImgID) * DPI, PB(ImageHeight)(ImgID) * DPI, #PB_Image_Raw)
+      EndIf
+      
+      ProcedureReturn  Image
+   EndProcedure
+   
    ;
    ;-
    Macro row_x_( _this_, _address_ )
@@ -924,7 +984,7 @@ Module widgets
          EndIf
       EndProcedure
    CompilerEndIf
-
+   
    Procedure CreateIcon( img.l, Type.l )
       Protected X, Y, Pixel, size = 8, Index.i
       
@@ -1209,7 +1269,7 @@ Module widgets
       ;\\
       widgets::StopDraw( )
       If StartDrawing( ImageOutput( hDC ))
-         __draw_mode( #PB_2DDrawing_AllChannels )
+         draw_mode_( #PB_2DDrawing_AllChannels )
          If Color = 0 : Color = $ff808080 : EndIf
          ;
          For X = startx To Width - 1
@@ -2442,26 +2502,26 @@ Module widgets
       ; Draw items text
       If _text_ptr_\string
          draw_mode_alpha_( #PB_2DDrawing_Transparent )
-         DrawRotatedText( _x_ + _address_\x + _text_ptr_\x, _y_ + _address_\y + _text_ptr_\y, _text_ptr_\string, *this\text\rotate, _address_\color\front[_state_] & $FFFFFF | _address_\AlphaState24( ) )
+         DrawRotatedText( _x_ + _address_\x + _text_ptr_\x, _y_ + _address_\y + _text_ptr_\y, _text_ptr_\string, *this\text\rotate, _address_\color\front[_state_] & AlphaState(_address_\color\_alpha ) )
       EndIf
       
       If _vertical_ > 0
          If _address_\childrens
-            DrawText( _x_ + _address_\x + _address_\width - DPIScaled(15), _y_ + _address_\y + _text_ptr_\y, ">", _address_\color\front[_state_] & $FFFFFF | _address_\AlphaState24( ) )
+            DrawText( _x_ + _address_\x + _address_\width - DPIScaled(15), _y_ + _address_\y + _text_ptr_\y, ">", _address_\color\front[_state_] & AlphaState(_address_\color\_alpha ) )
          EndIf
       EndIf
       ;          
       ; Draw frame
       If _flag_ = 1
          draw_mode_alpha_( #PB_2DDrawing_Outlined )
-         draw_roundbox_( _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _round_, _round_, _address_\color\frame[_state_] & $FFFFFF | _address_\AlphaState24( ) )
+         draw_roundbox_( _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _round_, _round_, _address_\color\frame[_state_] & AlphaState(_address_\color\_alpha ) )
       EndIf
       
       ;\\ draw disable state
       If _address_\mask & #__MASK_Disabled
          ; Debug "disable item"
          draw_mode_alpha_( #PB_2DDrawing_Default )
-         draw_box_(  _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _address_\color\back);$AAE4E4E4 )
+         draw_box_(  _x_ + _address_\x, _y_ + _address_\y, _address_\width, _address_\height, _address_\color\back & AlphaState( 140 ))
       EndIf
    EndMacro
    
@@ -2504,7 +2564,7 @@ Module widgets
          ;no &~ entered &~ focused
          If *tab\mask & #__MASK_Visible 
             If *tab\ID = #PB_Ignore
-               draw_roundbox_( X + *tab\x, Y + *tab\y, *tab\width, *tab\height, 0, 0, *tab\color\frame[0] & $FFFFFF | *tab\AlphaState24( ) )
+               draw_roundbox_( X + *tab\x, Y + *tab\y, *tab\width, *tab\height, 0, 0, *tab\color\frame[0] & AlphaState( *tab\color\_alpha ) )
             Else
                If is_menu_( *this )
                   If constants::BinaryFlag( *this\flagmask, #__FLAG_TextInLine )
@@ -2542,7 +2602,7 @@ Module widgets
             EndIf
          EndIf
       Next
-      ;          __draw_mode(#PB_2DDrawing_Outlined)
+      ;          draw_mode_(#PB_2DDrawing_Outlined)
       ;          draw_box_( *this\x,*this\y,*this\width,*this\height,0)
       ;          ProcedureReturn
       ;
@@ -2598,7 +2658,7 @@ Module widgets
                If *this\parent\mask & #__MASK_Active 
                   color2 = *this\parent\color\frame[2] 
                EndIf
-               color2 = $ff0000ff & $FFFFFF | *tab\AlphaState24( )
+               color2 = $ff0000ff & AlphaState( *tab\color\_alpha )
                
                If *this\type = #__TYPE_TabBar 
                   If *activeTAB 
@@ -2665,14 +2725,13 @@ Module widgets
          *SB  = *bar\button
          *BB1 = *bar\button[1]
          *BB2 = *bar\button[2]
-         
          ;\\
          If is_integral_( *this )
-            ;   Clip( *this, [#__c_draw] )
+            ;  Clip( *this, [#__c_draw] )
          EndIf               
          
          ;\\
-         If Not *this\mask & #__MASK_Hidden And *this\AlphaState( )
+         If Not *this\mask & #__MASK_Hidden And *this\color\_alpha
             If is_integral_( *this )
                If ChangeFontID( *this, CurrentFontID( ))
                EndIf
@@ -2707,7 +2766,7 @@ Module widgets
             
             If *this\color\back <> - 1
                draw_mode_alpha_( #PB_2DDrawing_Default )
-               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back & $FFFFFF | *this\AlphaState24( ) )
+               draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back & AlphaState( *this\color\_alpha ) )
             EndIf
             
             ;\\
@@ -2792,7 +2851,7 @@ Module widgets
       ;
       Protected size1.l = DPIScaled(1)
       Protected size3.l = DPIScaled(3)
-      Protected color.l = *SB\color\front[*SB\ColorState( )] & $FFFFFF | *this\AlphaState24( )
+      Protected color.l = *SB\color\front[*SB\ColorState( )] & AlphaState( *this\color\_alpha )
       
       ;\\
       If is_integral_( *this )
@@ -2800,7 +2859,7 @@ Module widgets
       EndIf
       
       ;\\
-      If *this\AlphaState( )
+      If *this\color\_alpha
          ; Draw scroll bar background
          If *this\color\back <> - 1
             draw_mode_alpha_( #PB_2DDrawing_Default )
@@ -3075,7 +3134,7 @@ Module widgets
       __draw_gradient(*bar\vertical, *BB2, 0,0, *BB2\ColorState( ))
       
       ;\\
-      __draw_mode( #PB_2DDrawing_Outlined )
+      draw_mode_( #PB_2DDrawing_Outlined )
       If *this\flagmask & #__SPIN_Plus 
          ; -/+
          __draw_plus( *BB1, Bool( *bar\invert ) )
@@ -3105,8 +3164,8 @@ Module widgets
       EndIf
       
       ;\\ draw spin-buttons frame
-     Protected._s_BTN *hoverBTN = EnteredButton( )
-       If *hoverBTN <> *BB1
+      Protected._s_BTN *hoverBTN = EnteredButton( )
+      If *hoverBTN <> *BB1
          draw_box_( *BB1\x, *BB1\y, *BB1\width, *BB1\height, *BB1\color\frame[*BB1\ColorState( )] )
       EndIf
       If *hoverBTN <> *BB2
@@ -3128,7 +3187,7 @@ Module widgets
       *BB1 = *bar\button[1]
       *BB2 = *bar\button[2]
       
-      If *this\AlphaState( )
+      If *this\color\_alpha
          __draw_bar_buttons( *this )
          ;
          If *bar\thumb\len
@@ -3148,7 +3207,7 @@ Module widgets
             __draw_box(*SB, color\frame)
          EndIf
          
-         __draw_mode( #PB_2DDrawing_XOr )
+         draw_mode_( #PB_2DDrawing_XOr )
          
          If *bar\vertical
             X = *this\screen_x( )+ Bool( *bar\invert ) * ( *this\screen_width( ) - size )
@@ -3207,7 +3266,7 @@ Module widgets
          If Not *SB2\mask & #__MASK_Hidden : draw_box_( *SB2\x, *SB2\y, *SB2\width, *SB2\height, *this\color\frame[*SB2\ColorState( )] ) : EndIf
       EndIf
       
-      __draw_mode( #PB_2DDrawing_Outlined )
+      draw_mode_( #PB_2DDrawing_Outlined )
       
       If Not *this\flagmask & #__FLAG_Transparent
          ; draw the frame
@@ -4473,7 +4532,7 @@ Module widgets
       ;\\
       ;\\ get thumb pos
       If Not *bar\PageChange( ) 
-          ;\\ scroll to active tab
+         ;\\ scroll to active tab
          If *this\TabChange( )
             If Not *bar\thumb\pos
                *bar\page\pos = *bar\max
@@ -7863,7 +7922,7 @@ Module widgets
             ProcedureReturn #PB_Default
          EndIf
          
-         result = *this\row\__s( )\img\image
+         result = *this\row\__s( )\img\image 
       EndIf
       
       ProcedureReturn result
@@ -8495,7 +8554,7 @@ Module widgets
                SelectElement( *this\__tabs( ), state )
                *this\parentTabSelected( )       = *this\__tabs( )
                *this\parentTabSelected( )\ScrollToActive( - 1 ) ; scroll to active tab
-                ;PopListPosition( *this\__tabs( ) )
+                                                                ;PopListPosition( *this\__tabs( ) )
             EndIf
             
             If is_integral_( *this )
@@ -8644,7 +8703,7 @@ Module widgets
                If State & #PB_Tree_Expanded Or State & #PB_Tree_Collapsed 
                   *row_sel\buttonbox\checked = Bool( State & #PB_Tree_Collapsed )
                   *this\text\change = - 4 ; collapse & expanded
-                                            ;
+                                          ;
                   PushListPosition( *this\row\__s( ))
                   While NextElement( *this\row\__s( )) : *row = @*this\row\__s( )
                      If *row\sublevel =< *row_sel\sublevel
@@ -11253,12 +11312,12 @@ Module widgets
    
    ;-
    Procedure Column_Sync(*this._s_WIDGET)
-;       ClearList(*this\__items( ))
-;       ForEach *this\row\__s( )
-;          If Not *this\row\__s( )\mask & #__MASK_Hidden
-;             *this\__items( ) = AddElement(*this\__items( ))
-;          EndIf
-;       Next
+      ;       ClearList(*this\__items( ))
+      ;       ForEach *this\row\__s( )
+      ;          If Not *this\row\__s( )\mask & #__MASK_Hidden
+      ;             *this\__items( ) = AddElement(*this\__items( ))
+      ;          EndIf
+      ;       Next
    EndProcedure
    
    Procedure Column_DragItem(*this._s_WIDGET, List rows._s_ROW( ), *Source, *Target)
@@ -11502,7 +11561,7 @@ Module widgets
             EndIf
          EndIf
          
-        
+         
          ; add lines
          *row\rindex        = position 
          *row\columnindex   = ListIndex( *this\__columns( ))
@@ -11543,6 +11602,7 @@ Module widgets
          If *row\columnindex = 0
             *this\countitems + 1
             ; *this\WidgetChange( ) = 1
+            
             add_image( *row\img, img, *this\picturesize )
             
             If *this\RowFocused( )
@@ -11571,13 +11631,9 @@ Module widgets
       ;          ;          
       ;          ;CompilerIf #PB_Compiler_DPIAware
       If IsImage( img )
-         *this\picturesize = ImageWidth( img ) 
-;          If *this\picturesize < 14
-;             *this\picturesize = DPIScaled(16)
-;          EndIf   
-;          If *this\picturesize > 16
-;             *this\picturesize = DPIScaled(16)
-;          EndIf   
+         ;Debug ""+*this\class +" "+ *this\picturesize
+         
+         *this\picturesize = ImageWidth( img ) ;* DPIResolution()
       EndIf
       ;          ;CompilerEndIf
       
@@ -11668,7 +11724,7 @@ Module widgets
                      *tabBox\TabState( ) + 1
                   EndIf
                   
-                 *tab =  InsertElement( *tabBox\__tabs( ))
+                  *tab =  InsertElement( *tabBox\__tabs( ))
                   
                   ; перемещаем индекс детей на один вперед
                   ; (начиная с выбранного индекса)
@@ -11692,6 +11748,7 @@ Module widgets
          *tabBox\countitems + 1
          
          ;\\
+         ;Debug ""+*this\class +" "+ item
          *tab\ID     = item
          *tab\color       = colors::_get_colors_( )
          *tab\txt\string = Text.s
@@ -14210,7 +14267,7 @@ Module widgets
       ;
       ; at point button
       ;\\ reset
-     Protected._s_BTN *hoverBTN = EnteredButton( )
+      Protected._s_BTN *hoverBTN = EnteredButton( )
       If *hoverBTN
          If a_index( ) Or ( Entered( ) And
                             Entered( ) <> *this )
@@ -14241,9 +14298,9 @@ Module widgets
                
                ;\\
                If *this\type = #__TYPE_window
-                  *BB0 = *this\CloseButton( )
-                  *BB1 = *this\MaximizeButton( )
-                  *BB2 = *this\MinimizeButton( )
+                  *BB0 = *this\title\bar\btn[#__BTN_Close]
+                  *BB1 = *this\title\bar\btn[#__BTN_Maximize]
+                  *BB2 = *this\title\bar\btn[#__BTN_Minimize]
                Else
                   ; enter item buttons
                   If *this\row
@@ -14312,10 +14369,10 @@ Module widgets
                ;\\
                If Not *hoverBTN
                   If *this\title
-                    If  Bool(*this\title\mask & #__MASK_Hover) <> is_hover( *this\title, CanvasMouseX( ), CanvasMouseY( ) )
-                       *this\title\mask ! #__MASK_Hover
-                    EndIf
-                 EndIf
+                     If  Bool(*this\title\mask & #__MASK_Hover) <> is_hover( *this\title, CanvasMouseX( ), CanvasMouseY( ) )
+                        *this\title\mask ! #__MASK_Hover
+                     EndIf
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -14508,49 +14565,49 @@ Module widgets
       Protected result
       
       Protected._s_ROW *row_visibled, *row
-;       If ListSize( *this\__items( ) )
-;          If *row_howered And
-;             *row_howered\mask & #__MASK_Visible And
-;             is_hover( *row_howered, mouse_x, mouse_y )
-;             result = *row_howered
-;          Else
-;             LastElement( *this\__items( ))
-;             Repeat
-;                *row_visibled = *this\__items( )
-;                If *row_visibled\mask & #__MASK_Visible And
-;                   is_hover( *row_visibled, mouse_x, mouse_y )
-;                   result = *row_visibled
-;                   Break
-;                EndIf
-;             Until PreviousElement( *this\__items( )) = #False
-;          EndIf
-;          
-;    Else
+      ;       If ListSize( *this\__items( ) )
+      ;          If *row_howered And
+      ;             *row_howered\mask & #__MASK_Visible And
+      ;             is_hover( *row_howered, mouse_x, mouse_y )
+      ;             result = *row_howered
+      ;          Else
+      ;             LastElement( *this\__items( ))
+      ;             Repeat
+      ;                *row_visibled = *this\__items( )
+      ;                If *row_visibled\mask & #__MASK_Visible And
+      ;                   is_hover( *row_visibled, mouse_x, mouse_y )
+      ;                   result = *row_visibled
+      ;                   Break
+      ;                EndIf
+      ;             Until PreviousElement( *this\__items( )) = #False
+      ;          EndIf
+      ;          
+      ;    Else
       If *row_howered And
          is_hover( *row_howered, mouse_x, mouse_y )
-            result = *row_howered
-         Else
-;             If ListSize( *this\row\__s( ) )
-;                LastElement( *this\row\__s( ))
-;                Repeat
-;                   *row = @*this\row\__s( )
-;                   If *row\mask & #__MASK_Visible And
-;                      is_hover( *row, mouse_x, mouse_y )
-;                      result = *row
-;                      Break
-;                   EndIf
-;                Until PreviousElement( *this\row\__s( )) = #False
-;             EndIf
-            
-            If StartNextRow(*row, *this\row)
-               If *row\mask & #__MASK_Visible And is_hover( *row, mouse_x, mouse_y )
-                  result = *row
-                  Break
-               EndIf
-               StopNextRow(*row, *this\row)
+         result = *row_howered
+      Else
+         ;             If ListSize( *this\row\__s( ) )
+         ;                LastElement( *this\row\__s( ))
+         ;                Repeat
+         ;                   *row = @*this\row\__s( )
+         ;                   If *row\mask & #__MASK_Visible And
+         ;                      is_hover( *row, mouse_x, mouse_y )
+         ;                      result = *row
+         ;                      Break
+         ;                   EndIf
+         ;                Until PreviousElement( *this\row\__s( )) = #False
+         ;             EndIf
+         
+         If StartNextRow(*row, *this\row)
+            If *row\mask & #__MASK_Visible And is_hover( *row, mouse_x, mouse_y )
+               result = *row
+               Break
             EndIf
-            
+            StopNextRow(*row, *this\row)
          EndIf
+         
+      EndIf
       
       ProcedureReturn result
    EndProcedure
@@ -15915,7 +15972,7 @@ Module widgets
                   *btn\mask & #__MASK_Press = #False And
                   *btn\mask & #__MASK_Disabled = #False And
                   *btn\ColorState( ) <> #__s_3 ; change the color state of non-disabled buttons
-                                                  ;
+                                               ;
                   *btn\mask | #__MASK_Press 
                   PressedButton( ) = *btn
                   ;
@@ -16608,9 +16665,9 @@ Module widgets
                EndIf
                
                If event = #__EVENT_LeftClick
-                  Select *hoverBTN
+                  Select *hoverBTN\type
                         ; close button
-                     Case *this\CloseButton( )
+                     Case #__BTN_Close
                         If is_root_( *this )
                            PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, *this )
                         Else
@@ -16618,7 +16675,7 @@ Module widgets
                         EndIf
                         
                         ; maximize button
-                     Case *this\MaximizeButton( )
+                     Case #__BTN_Maximize
                         If *this\mask & #__MASK_Maximize
                            ProcedureReturn SetState( *this, #PB_Window_Normal )
                         Else
@@ -16626,7 +16683,7 @@ Module widgets
                         EndIf
                         
                         ; minimize button
-                     Case *this\MinimizeButton( )
+                     Case #__BTN_Minimize
                         If *this\mask & #__MASK_Minimize
                            ProcedureReturn SetState( *this, #PB_Window_Normal )
                         Else
@@ -18318,13 +18375,13 @@ Module widgets
                ; --- ВОТ ЭТО НУЖНО ДОБАВИТЬ ---
                *line\txt(0)\pos = CurrentTotalPos ; Устанавливаем начало строки
                CurrentTotalPos + *line\txt(0)\len + 1 ; Прибавляем длину строки и 1 (для #LF$)
-                                                    ; ------------------------------
-                                                    ;                                     ;
-                                                    ;                                     If *this\LineState( ) = *line\lindex
-                                                    ;                                        *this\row\active[0] = *line
-                                                    ;                                     EndIf
-                                                    ; Сделай так:
-                                                    ; Проверяем, попадает ли глобальная каретка в диапазон этой строки
+                                                      ; ------------------------------
+                                                      ;                                     ;
+                                                      ;                                     If *this\LineState( ) = *line\lindex
+                                                      ;                                        *this\row\active[0] = *line
+                                                      ;                                     EndIf
+                                                      ; Сделай так:
+                                                      ; Проверяем, попадает ли глобальная каретка в диапазон этой строки
                Protected current_pos = *this\caret\start
                If current_pos>= 0
                   
@@ -18758,7 +18815,7 @@ Module widgets
                   *row\width = *this\__columns( )\size
                EndIf
                
-              result = #True
+               result = #True
             EndIf
          EndIf
       Next
@@ -18766,6 +18823,286 @@ Module widgets
       
       ProcedureReturn result
    EndProcedure
+   
+   ;-
+   Procedure DrawBTN(*this._s_WIDGET, *btn._s_BTN)
+      Protected.l crossColor ;= *btn\color\frame[*btn\ColorState( )] & AlphaState( *btn\color\_alpha )
+      Protected symbolColor
+      Protected paddingX.l, paddingY.l, vertical.b, size.l, round 
+      
+      If *btn\mask & #__MASK_Hover
+         If *btn\type = #__BTN_Close
+            symbolColor = RGBA(232, 17, 35, 255)
+         Else
+            symbolColor = RGBA(17, 35, 232, 255)
+         EndIf
+         crossColor = symbolColor
+         size = *btn\Height/2-4 
+      Else
+         size = *btn\Height/2-2
+         symbolColor = RGBA(80, 80, 80, 255)
+         crossColor = symbolColor
+      EndIf
+      
+      If *this\mask & #__MASK_Active
+         crossColor = RGBA(255, 255, 255, 255)
+         If *btn\mask & #__MASK_Hover
+            symbolColor = crossColor
+         EndIf
+      EndIf
+      
+      round = *btn\Height
+      size + Bool( size % 2 ) 
+      paddingX = *btn\X + (*btn\Width - size) / 2
+      paddingY = *btn\Y + (*btn\Height - size) / 2
+      
+      ; 3. Отрисовка значков
+      Select *btn\type
+            ;  Крестик
+         Case #__BTN_Close 
+            ; Первая диагональ (сверху-слева -> снизу-справа)
+            LineXY(paddingX + 1, paddingY,     paddingX + size + 1, paddingY + size,     crossColor) ; Смещение вправо
+            LineXY(paddingX,     paddingY,     paddingX + size,     paddingY + size,     crossColor)
+            LineXY(paddingX,     paddingY + 1, paddingX + size,     paddingY + size + 1, crossColor) ; Смещение вниз
+            
+            ; Вторая диагональ (сверху-справа -> снизу-слева)
+            LineXY(paddingX + size - 1, paddingY,     paddingX - 1, paddingY + size,     crossColor) ; Смещение влево
+            LineXY(paddingX + size,     paddingY,     paddingX,     paddingY + size,     crossColor)
+            LineXY(paddingX + size,     paddingY + 1, paddingX,     paddingY + size + 1, crossColor) ; Смещение вниз
+            
+            ; Квадрат
+         Case #__BTN_Maximize
+            DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Outlined)
+            Box(paddingX, paddingY, size, size, crossColor)
+            Box(paddingX + 1, paddingY + 1, size - 2, size - 2, crossColor) 
+            DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent) 
+            
+            ; Черточка   
+         Case #__BTN_Minimize
+            LineXY(paddingX, paddingY + size/2 - 1, paddingX + size, paddingY + size/2 - 1, crossColor)
+            LineXY(paddingX, paddingY + size/2,     paddingX + size, paddingY + size/2,     crossColor)
+            
+         Case #__BTN_Check ; Галочка: управление углом и точкой перелома
+            Protected.l chkX1, chkY1, chkX2, chkY2, chkX3, chkY3
+            ; Искусственное увеличение под вес крестика
+            size + DesktopScaledX(4)
+            paddingX = *btn\X + (*btn\Width - size) / 2
+            paddingY = *btn\Y + (*btn\Height - size) / 2
+            
+            chkX2 = paddingX + (size * 0.30)
+            chkY2 = paddingY + (size * 0.80)
+            
+            chkX1 = chkX2 - (size * 0.25)
+            chkY1 = chkY2 - (size * 0.25)
+            
+            chkX3 = chkX2 + (size * 0.60)
+            chkY3 = chkY2 - (size * 0.60)
+            
+            ; --- Отрисовка левого плеча ---
+            ; Верхняя линия: длиннее с внутренней стороны (вычитаем 1 из X, вычитаем 1 из Y на конце)
+            LineXY(chkX1 - 1, chkY1 - 2, chkX2, chkY2 - 1, symbolColor) 
+            ; Центральная линия: базовая длина
+            LineXY(chkX1,     chkY1,     chkX2, chkY2,     symbolColor) 
+            ; Нижняя линия: короче с внешней стороны (прибавляем 1 к X, прибавляем 1 к Y на конце)
+            LineXY(chkX1 + 1, chkY1 + 2, chkX2, chkY2 + 1, symbolColor) 
+            
+            ; --- Отрисовка правого плеча ---
+            ; Верхняя линия: длиннее с внутренней стороны (прибавляем 1 к X, вычитаем 1 из Y на конце)
+            LineXY(chkX2, chkY2 - 1, chkX3 + 1, chkY3 - 2, symbolColor) 
+            ; Центральная линия: базовая длина
+            LineXY(chkX2, chkY2,     chkX3,     chkY3,     symbolColor) 
+            ; Нижняя линия: короче с внешней стороны (вычитаем 1 из X, прибавляем 1 к Y на конце)
+            LineXY(chkX2, chkY2 + 1, chkX3 - 1, chkY3 + 2, symbolColor)
+            
+            ; Знак вопроса   
+         Case #__BTN_Help
+            DrawText(paddingX + DesktopScaledX(1), paddingY - DesktopScaledY(2), "?", symbolColor, 0)
+            
+      EndSelect
+      
+      If *btn\round
+         If *btn\mask & #__MASK_Hover
+            DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Outlined)
+            RoundBox(*btn\X-1, *btn\Y-1, *btn\Width+2, *btn\Height+2,  round, round, symbolColor)    
+            RoundBox(*btn\X, *btn\Y, *btn\Width, *btn\Height, round, round, symbolColor)    
+            DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent) 
+         EndIf
+      EndIf
+   EndProcedure
+   
+   Procedure DrawTitleBar(*this._s_WIDGET, state)
+      Protected._s_TITLE *title = *this\title
+      Protected._s_BTN *closeBTN = *title\bar\btn[#__BTN_Close]
+      Protected._s_BTN *maxiBTN = *title\bar\btn[#__BTN_Maximize]
+      Protected._s_BTN *miniBTN = *title\bar\btn[#__BTN_Minimize]
+      
+      PB(ClipOutput)( *this\clip_x( ) + *this\fs, *this\clip_y( ) + *this\fs, *this\clip_width( ) - *this\fs*2, *this\clip_height( ) - *this\fs*2 )
+      
+      ;       ; buttins background
+      ;       draw_mode_alpha_( #PB_2DDrawing_Default )
+      ;       __draw_box( *closeBTN, color\back )
+      ;       __draw_box( *maxiBTN, color\back )
+      ;       __draw_box( *miniBTN, color\back )
+      ;       
+      ;       ; buttons img
+      ;       draw_mode_alpha_( #PB_2DDrawing_Outlined )
+      ;       __draw_close_button( *closeBTN, DPIScaled(6) )
+      ;       __draw_maximize_button( *maxiBTN, DPIScaled(4) )
+      ;       __draw_minimize_button( *miniBTN, DPIScaled(4) )
+      
+      Protected i
+      For i = 0 To 2
+         Protected._s_BTN *btn = *title\bar\btn[i]
+         If Not *btn\mask & #__MASK_Hidden
+            DrawBTN( *this, *btn)
+         EndIf
+      Next
+      
+      
+      ; Draw img
+      If *this\img\imageID
+         draw_mode_alpha_( #PB_2DDrawing_Transparent )
+         draw_image_( *this, *this\inner_x( ), *this\inner_y( ) - (*this\img\height+*this\fs[2])/2 )
+      EndIf
+      
+      If *this\TitleText( )\string
+         If *this\inner_height( )
+            PB(ClipOutput)( *this\clip_x( ) + *this\fs, *this\clip_y( ) + *this\fs, *this\title\width, *this\clip_height( ) - *this\fs*2 )
+         EndIf
+         
+         ; Draw string
+         If *this\ResizeChange( )
+            If *this\img\imageID
+               *this\TitleText( )\x = *this\title\x + *this\padding\x + *this\img\width + 10
+            Else
+               *this\TitleText( )\x = *this\title\x + *this\padding\x
+            EndIf
+            *this\TitleText( )\y = *this\title\y + ( *this\title\height - *this\fs * 2 - TextHeight( "A" )) / 2
+         EndIf
+         
+         draw_mode_alpha_( #PB_2DDrawing_Transparent )
+         DrawText( *this\TitleText( )\x, *this\TitleText( )\y, *this\TitleText( )\string, *this\color\front[state] & AlphaState( *this\color\_alpha ) )
+         
+         ;                               draw_mode_alpha_( #PB_2DDrawing_Outlined )
+         ;                               draw_roundbox_( *this\title\x, *this\title\y, *this\title\width, *this\title\height - *this\fs * 2, *this\round, *this\round, $FF000000 )
+         If *this\inner_height( )
+            Clip( *this, [#__c_draw] )
+         EndIf
+      EndIf
+      
+   EndProcedure
+   
+   Procedure UpdateTitleBar(*this._s_WIDGET, height.l)
+      Protected._s_TITLE *title = *this\title
+      Protected._s_BTN *closeBTN = *title\bar\btn[#__BTN_Close]
+      Protected._s_BTN *maxiBTN = *title\bar\btn[#__BTN_Maximize]
+      Protected._s_BTN *miniBTN = *title\bar\btn[#__BTN_Minimize]
+      If height > *this\frame_height( ) - *this\fs 
+         height = *this\frame_height( ) - *this\fs 
+      EndIf
+      
+      *title\x      = *this\frame_x( ) + *this\fs
+      *title\y      = *this\frame_y( ) + *this\fs
+      *title\width  = *this\frame_width( ) - *this\fs * 2
+      *title\height = height
+      
+      ; caption close button
+      If Not *closeBTN\mask & #__MASK_Hidden
+         *closeBTN\x = ( *title\x + *title\width ) - ( *closeBTN\width + *title\spacing )
+         *closeBTN\y = *this\frame_y( ) + ( *title\height - *closeBTN\height ) / 2
+      EndIf
+      
+      ; caption maximize button
+      If Not *maxiBTN\mask & #__MASK_Hidden
+         *maxiBTN\y = *this\frame_y( ) + ( *title\height - *maxiBTN\height ) / 2
+         If *closeBTN\mask & #__MASK_Hidden
+            *maxiBTN\x = ( *title\x + *title\width ) - ( *maxiBTN\width + *title\spacing )
+         Else
+            *maxiBTN\x = *closeBTN\x - ( *maxiBTN\width + *title\spacing )
+         EndIf
+      EndIf
+      
+      ; caption minimize button
+      If Not *miniBTN\mask & #__MASK_Hidden
+         *miniBTN\y = *this\frame_y( ) + ( *title\height - *miniBTN\height ) / 2
+         If *maxiBTN\mask & #__MASK_Hidden
+            *miniBTN\x = *closeBTN\x - ( *miniBTN\width + *title\spacing )
+         Else
+            *miniBTN\x = *maxiBTN\x - ( *miniBTN\width + *title\spacing )
+         EndIf
+      EndIf
+      
+      ; title bar width
+      If Not *miniBTN\mask & #__MASK_Hidden
+         *title\width = *miniBTN\x - *title\x - *title\spacing
+      ElseIf Not *maxiBTN\mask & #__MASK_Hidden
+         *title\width = *maxiBTN\x - *title\x - *title\spacing
+      ElseIf Not *closeBTN\mask & #__MASK_Hidden
+         *title\width = *closeBTN\x - *title\x - *title\spacing
+      EndIf
+   EndProcedure
+   
+   Procedure CreateTitleBar(text.s, image.i, style.q)
+      Protected._s_TITLE *title = AllocateStructure(_s_TITLE)
+      Protected._s_BTN *closeBTN = *title\bar\btn[#__BTN_Close]
+      Protected._s_BTN *maxiBTN = *title\bar\btn[#__BTN_Maximize]
+      Protected._s_BTN *miniBTN = *title\bar\btn[#__BTN_Minimize]
+      
+      *closeBTN\type = #__BTN_Close
+      If constants::BinaryFlag( style, #PB_Window_SystemMenu, #False )
+         *closeBTN\mask | #__MASK_Hidden    
+      Else
+         *closeBTN\mask &~ #__MASK_Hidden    
+      EndIf
+      
+      *maxiBTN\type = #__BTN_Maximize
+      If constants::BinaryFlag( style, #PB_Window_MaximizeGadget, #False )
+         *maxiBTN\mask | #__MASK_Hidden    
+      Else
+         *maxiBTN\mask &~ #__MASK_Hidden    
+      EndIf
+      
+      *miniBTN\type = #__BTN_Minimize
+      If constants::BinaryFlag( style, #PB_Window_MinimizeGadget, #False )
+         *miniBTN\mask | #__MASK_Hidden    
+      Else
+         *miniBTN\mask &~ #__MASK_Hidden    
+      EndIf
+      
+      If *maxiBTN\mask & #__MASK_Hidden = 0 Or
+         *miniBTN\mask & #__MASK_Hidden = 0 Or
+         *closeBTN\mask & #__MASK_Hidden = 0
+         *title\mask &~ #__MASK_Hidden
+      Else
+         If constants::BinaryFlag( style, #PB_Window_TitleBar, #False )
+            *title\mask | #__MASK_Hidden
+         Else
+            *title\mask &~ #__MASK_Hidden 
+         EndIf
+      EndIf
+      
+      *title\spacing = DPIScaled(4)
+      
+      *closeBTN\color = colors::PALETTE\red ; colors::_get_colors_( );
+      *maxiBTN\color = colors::PALETTE\blue ; colors::_get_colors_( ) ; 
+      *miniBTN\color = colors::PALETTE\green; colors::_get_colors_( ) ; 
+      
+      *closeBTN\width    = DPIScaled( #__bar_button_size )
+      *closeBTN\height   = *closeBTN\width
+      *closeBTN\round    = *closeBTN\width; / 2
+      
+      *maxiBTN\width  = *closeBTN\width
+      *maxiBTN\height = *closeBTN\height
+      *maxiBTN\round = *closeBTN\round
+      
+      *miniBTN\width  = *closeBTN\width
+      *miniBTN\height = *closeBTN\height
+      *miniBTN\round = *closeBTN\round
+      
+      ProcedureReturn *title
+   EndProcedure
+   
+   
    
    ;-
    ;-  DRAWINGs
@@ -19079,49 +19416,8 @@ Module widgets
          
          ; then title
          If *this\fs[2]
-            PB(ClipOutput)( *this\clip_x( ) + *this\fs, *this\clip_y( ) + *this\fs, *this\clip_width( ) - *this\fs*2, *this\clip_height( ) - *this\fs*2 )
-            
-            ; buttins background
-            draw_mode_alpha_( #PB_2DDrawing_Default )
-            __draw_box( *this\CloseButton( ), color\back )
-            __draw_box( *this\MaximizeButton( ), color\back )
-            __draw_box( *this\MinimizeButton( ), color\back )
-            
-            ; buttons img
-            draw_mode_alpha_( #PB_2DDrawing_Outlined )
-            __draw_close_button( *this\CloseButton( ), DPIScaled(6) )
-            __draw_maximize_button( *this\MaximizeButton( ), DPIScaled(4) )
-            __draw_minimize_button( *this\MinimizeButton( ), DPIScaled(4) )
-            
-            ; Draw img
-            If *this\img\imageID
-               draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               draw_image_( *this, *this\inner_x( ), *this\inner_y( ) - (*this\img\height+*this\fs[2])/2 )
-            EndIf
-            
-            If *this\TitleText( )\string
-               If *this\inner_height( )
-                  PB(ClipOutput)( *this\clip_x( ) + *this\fs, *this\clip_y( ) + *this\fs, *this\title\width, *this\clip_height( ) - *this\fs*2 )
-               EndIf
-               
-               ; Draw string
-               If *this\ResizeChange( )
-                  If *this\img\imageID
-                     *this\TitleText( )\x = *this\title\x + *this\padding\x + *this\img\width + 10
-                  Else
-                     *this\TitleText( )\x = *this\title\x + *this\padding\x
-                  EndIf
-                  *this\TitleText( )\y = *this\title\y + ( *this\title\height - *this\fs * 2 - TextHeight( "A" )) / 2
-               EndIf
-               
-               draw_mode_alpha_( #PB_2DDrawing_Transparent )
-               DrawText( *this\TitleText( )\x, *this\TitleText( )\y, *this\TitleText( )\string, *this\color\front[state] & $FFFFFF | *this\AlphaState24( ) )
-               
-               ;                               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-               ;                               draw_roundbox_( *this\title\x, *this\title\y, *this\title\width, *this\title\height - *this\fs * 2, *this\round, *this\round, $FF000000 )
-               If *this\inner_height( )
-                  Clip( *this, [#__c_draw] )
-               EndIf
+            If Not *this\title\mask & #__MASK_Hidden
+               DrawTitleBar( *this, state )
             EndIf
          EndIf
          
@@ -19226,7 +19522,7 @@ Module widgets
                ;\\ draw items text
                If *this\row
                   ForEach *this\__lines( )
-                      __draw_rotatedtext( *this\__lines( )\txt(0), X + *this\__lines( )\x, Y + *this\__lines( )\y, *this\text\rotate, *this\color\front[state], UnderLineSize )
+                     __draw_rotatedtext( *this\__lines( )\txt(0), X + *this\__lines( )\x, Y + *this\__lines( )\y, *this\text\rotate, *this\color\front[state], UnderLineSize )
                   Next
                EndIf
             Else
@@ -19244,7 +19540,7 @@ Module widgets
                      *this\Combo( )\y + ( *this\Combo( )\height - *this\Combo( )\arrow\size ) / 2,
                      *this\Combo( )\arrow\size, 
                      *this\Combo( )\arrow\type, 0,
-                     *this\Combo( )\color\front[state] & $FFFFFF | *this\Combo( )\AlphaState24( ))
+                     *this\Combo( )\color\front[state] & AlphaState( *this\Combo( )\color\_alpha ))
       EndIf
       
       ;\\ check&option box draw
@@ -19353,7 +19649,7 @@ Module widgets
          ;
          If *this\text\string
             draw_mode_alpha_( #PB_2DDrawing_Transparent )
-            DrawText( X + *this\text\x, Y + *this\text\y, *this\text\string, *this\color\front[*this\ColorState( )] & $FFFFFF | *this\AlphaState24( ) )
+            DrawText( X + *this\text\x, Y + *this\text\y, *this\text\string, *this\color\front[*this\ColorState( )] & AlphaState( *this\color\_alpha ) )
          EndIf
          
          ;Clip( *this, [#__c_draw] )
@@ -19479,9 +19775,9 @@ Module widgets
       
       ;\\ Draw frames
       ;          If *this\fs
-      ;             __draw_mode( #PB_2DDrawing_Outlined )
+      ;             draw_mode_( #PB_2DDrawing_Outlined )
       ;             draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ),
-      ;                             *this\round, *this\round, *this\color\frame[state] & $FFFFFF | *this\AlphaState24( ) )
+      ;                             *this\round, *this\round, *this\color\frame[state] & AlphaState( *this\color\_alpha ) )
       ;          EndIf
       
       ;\\ draw frame defaul focus widget
@@ -19492,10 +19788,10 @@ Module widgets
             If state = 2
                c = $ffffffff
             Else
-               c = *this\color\frame[1] & $FFFFFF | *this\AlphaState24( )
+               c = *this\color\frame[1] & AlphaState( *this\color\_alpha )
             EndIf
             
-            __draw_mode( #PB_2DDrawing_Outlined )
+            draw_mode_( #PB_2DDrawing_Outlined )
             draw_roundbox_( *this\inner_x( )+z, *this\inner_y( )+z, *this\inner_width( )-z*2, *this\inner_height( )-z*2, *this\round, *this\round, c )
             If *this\round
                draw_roundbox_( *this\inner_x( ) - 1+z, *this\inner_y( )+z, *this\inner_width( ) + 2-z*2, *this\inner_height( )-z*2, *this\round, *this\round, c )
@@ -19553,7 +19849,7 @@ Module widgets
       EndIf
    EndProcedure
    
-    Procedure   Draw_TreeRows( *this._s_WIDGET, _i_=0 )
+   Procedure   Draw_TreeRows( *this._s_WIDGET, _i_=0 )
       If Not *this\row : ProcedureReturn 0 : EndIf
       
       Protected state.b, X.l, Y.l, _box_x_.l, _box_y_.l, minus.l = 7
@@ -19562,8 +19858,8 @@ Module widgets
       Protected _scroll_y_ = *this\scroll\v\bar\page\pos
       Protected gridlines = Bool(*this\flagmask & #__FLAG_gridLines)
       Protected *row._s_ROW
-     
-         
+      
+      
       If StartNextRow(*row, *this\row)
          ;\\ init real drawing font
          draw_font( *row, *row\txt(0),  0, *row\TextChange( ))
@@ -19593,7 +19889,7 @@ Module widgets
          
          ;\\ Draw items text
          If *row\txt(_i_)\String
-            __draw_mode( #PB_2DDrawing_Transparent )
+            draw_mode_( #PB_2DDrawing_Transparent )
             __draw_rotatedtext( *row\txt(_i_), X - _scroll_x_, Y, *this\text\rotate, *row\color\front[state], 0 )
          EndIf
          
@@ -19609,16 +19905,16 @@ Module widgets
          
          ;\\ Draw selector frame
          If *row\color\frame[state]
-            __draw_mode( #PB_2DDrawing_Outlined )
+            draw_mode_( #PB_2DDrawing_Outlined )
             If *this\type = #__TYPE_ListIcon
                draw_roundbox_( X - _scroll_x_, Y, *row\width, *row\height, *row\round, *row\round, *row\color\frame[state] )
             Else
                draw_roundbox_( X, Y, *row\width, *row\height, *row\round, *row\round, *row\color\frame[state] )
             EndIf
          EndIf        
-        StopNextRow(*row, *this\row)
-   EndIf
-   
+         StopNextRow(*row, *this\row)
+      EndIf
+      
       ;
       If ListIndex( *this\__columns( )) = 0
          Protected *buttonBox._s_BOX
@@ -19626,7 +19922,7 @@ Module widgets
          ; - Draw plots line
          If *this\flagmask & #__FLAG_nolines
             draw_mode_alpha_( #PB_2DDrawing_Default )
-            ; __draw_mode( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
+            ; draw_mode_( #PB_2DDrawing_CustomFilter ) : CustomFilterCallback( @Draw_Plot( ))
             
             ForEach *this\row\__s( ) : *row = @*this\row\__s( )
                If Not *row\buttonbox
@@ -19710,37 +20006,37 @@ Module widgets
                
                StopNextRow(*row, *this\row)
             EndIf
-   
+            
             
             ;\\ Draw buttons ( expanded&collapsed )
             If StartNextRow(*row, *this\row)
                
                If *row\childrens And *this\flagmask & #__FLAG_nobuttons 
+                  
+                  X = row_x_( *this, *row ) - _scroll_x_
+                  Y = row_y_( *this, *row ) - _scroll_y_
+                  
+                  If *row\buttonbox
+                     X + *row\buttonbox\x
+                     Y + *row\buttonbox\y
                      
-                     X = row_x_( *this, *row ) - _scroll_x_
-                     Y = row_y_( *this, *row ) - _scroll_y_
-                     
-                     If *row\buttonbox
-                        X + *row\buttonbox\x
-                        Y + *row\buttonbox\y
-                        
-                        If *row\ColorState( ) = 1
-                           Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), X-DPIScaled(1), Y-Bool(*row\buttonbox\checked=0)*DPIScaled(2), DPIScaled(10), 1 )
-                        ElseIf *row\ColorState( ) = 2
-                           Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), X+Bool(*row\buttonbox\checked)*DPIScaled(2), Y+DPIScaled(Bool(*row\buttonbox\checked=0)), DPIScaled(8), 1, 2 )
-                        Else
-                           Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), X+DPIScaled(1), Y+DPIScaled(1), DPIScaled(6), 1)
-                        EndIf
+                     If *row\ColorState( ) = 1
+                        Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), X-DPIScaled(1), Y-Bool(*row\buttonbox\checked=0)*DPIScaled(2), DPIScaled(10), 1 )
+                     ElseIf *row\ColorState( ) = 2
+                        Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), X+Bool(*row\buttonbox\checked)*DPIScaled(2), Y+DPIScaled(Bool(*row\buttonbox\checked=0)), DPIScaled(8), 1, 2 )
+                     Else
+                        Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), X+DPIScaled(1), Y+DPIScaled(1), DPIScaled(6), 1)
                      EndIf
-                     
                   EndIf
+                  
+               EndIf
                
                StopNextRow(*row, *this\row)
             EndIf
          EndIf
       EndIf
       ;
-;       PopListPosition( *this\__items( )) 
+      ;       PopListPosition( *this\__items( )) 
       ;
       ;
       Clip( *this, [#__c_draw] )
@@ -19790,7 +20086,7 @@ Module widgets
          EndIf
          
          ;\\ Draw background
-         If *this\AlphaState( )
+         If *this\color\_alpha
             draw_mode_alpha_( #PB_2DDrawing_Default )
             draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\back )
          EndIf
@@ -19811,7 +20107,7 @@ Module widgets
          ;
          ;\\ draw frames
          If *this\fs
-            __draw_mode( #PB_2DDrawing_Outlined )
+            draw_mode_( #PB_2DDrawing_Outlined )
             draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[*this\ColorState( )] )
             If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[*this\ColorState( )] ) : EndIf  ; Сглаживание краев ) ))
          EndIf
@@ -19947,7 +20243,7 @@ Module widgets
             
             ; Draw margin text
             If *this\MarginLine( )\width > 0
-               __draw_mode( #PB_2DDrawing_Transparent )
+               draw_mode_( #PB_2DDrawing_Transparent )
                DrawRotatedText( *row_line\margin\x + Bool( *this\text\vertical ) * *this\scroll_x( ),
                                 *row_line\margin\y + Bool( Not *this\text\vertical ) * *this\scroll_y( ),
                                 *row_line\margin\string, *this\text\rotate, *this\MarginLine( )\color\front )
@@ -20080,18 +20376,18 @@ Module widgets
          ; Draw caret
          ;If *this\text\mode & #__TEXTMASK_editable 
          If c_state = #__s_2
-            __draw_mode( #PB_2DDrawing_XOr )
+            draw_mode_( #PB_2DDrawing_XOr )
             draw_box_( X + *this\caret\x, Y + *this\caret\y, *this\caret\width, *this\caret\height, $FFFFFFFF )
          EndIf
          ;EndIf
          
          ; Draw frames
          If *this\notify
-            __draw_mode( #PB_2DDrawing_Outlined )
+            draw_mode_( #PB_2DDrawing_Outlined )
             draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, $FF0000FF )
             If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, $FF0000FF ) : EndIf  ; Сглаживание краев ) ))
          ElseIf *this\fs
-            __draw_mode( #PB_2DDrawing_Outlined )
+            draw_mode_( #PB_2DDrawing_Outlined )
             draw_roundbox_( *this\frame_x( ), *this\frame_y( ), *this\frame_width( ), *this\frame_height( ), *this\round, *this\round, *this\color\frame[c_state] )
             If *this\round : draw_roundbox_( *this\frame_x( ), *this\frame_y( ) - 1, *this\frame_width( ), *this\frame_height( ) + 2, *this\round, *this\round, *this\color\front[c_state] ) : EndIf  ; Сглаживание краев ) ))
          EndIf
@@ -20174,7 +20470,7 @@ Module widgets
             
             ;\\ Draw columns text
             If *column\txt\title
-               __draw_mode( #PB_2DDrawing_Transparent )
+               draw_mode_( #PB_2DDrawing_Transparent )
                DrawRotatedText( X + *this\padding\x, Y + (*this\ColumnsHeight - *this\text\height) / 2, *column\txt\title, *this\text\rotate, *this\color\front ) 
             EndIf
             
@@ -20331,7 +20627,7 @@ Module widgets
                            draw_mode_alpha_( #PB_2DDrawing_Transparent )
                            DrawText( *this\inner_x( ) + *this\scroll_x( ) + *this\text\x,
                                      *this\inner_y( ) + *this\scroll_y( ) + *this\text\y,
-                                     *this\text\string, *this\color\front & $FFFFFF | *this\AlphaState24( ) )
+                                     *this\text\string, *this\color\front & AlphaState( *this\color\_alpha ) )
                         EndIf
                         
                   EndSelect
@@ -20432,7 +20728,7 @@ Module widgets
                   ;\\
                   If test_focus_draw = 1 Or test_focus_draw = 3
                      If *this\mask & #__MASK_Active
-                        __draw_mode(#PB_2DDrawing_Outlined)
+                        draw_mode_(#PB_2DDrawing_Outlined)
                         If Not *this\haschildren 
                            If *this = GetActive( )
                               draw_focus_frame( *this, $ff0000ff) ; $ffff0000
@@ -20441,7 +20737,7 @@ Module widgets
                            EndIf
                         EndIf
                      ElseIf *this\mask & #__MASK_Active = 3 And test_focus_draw <> 3
-                        __draw_mode(#PB_2DDrawing_Outlined)
+                        draw_mode_(#PB_2DDrawing_Outlined)
                         draw_focus_frame( *this, $FFBFBFC3)
                      EndIf
                   EndIf
@@ -20620,7 +20916,7 @@ Module widgets
                               ;
                               If GetActive( )\next[2] = *e  
                                  Clip( GetActive( ), [#__c_draw] )
-                                 __draw_mode(#PB_2DDrawing_Outlined)
+                                 draw_mode_(#PB_2DDrawing_Outlined)
                                  draw_focus_frame( GetActive( ), $ff0000ff) ; $ffff0000)
                               EndIf
                            EndIf
@@ -20633,7 +20929,7 @@ Module widgets
                                  ;
                                  If ActiveWindow( )\next[2] = *e  
                                     Clip( ActiveWindow( ), [#__c_draw] )
-                                    __draw_mode(#PB_2DDrawing_Outlined)
+                                    draw_mode_(#PB_2DDrawing_Outlined)
                                     draw_focus_frame( ActiveWindow( ), $ff00ff00)
                                  EndIf
                               EndIf
@@ -20646,7 +20942,7 @@ Module widgets
                                  
                                  If ActiveGadget( )\next[2] = *e  
                                     Clip( ActiveGadget( ), [#__c_draw] )
-                                    __draw_mode(#PB_2DDrawing_Outlined)
+                                    draw_mode_(#PB_2DDrawing_Outlined)
                                     draw_focus_frame( ActiveGadget( ), $ff00ff00)
                                  EndIf
                               EndIf
@@ -20682,7 +20978,7 @@ Module widgets
                               If Not GetActive( )\next[2] 
                                  If *e = GetLast( GetActive( ) )
                                     Clip( GetActive( ), [#__c_draw] )
-                                    __draw_mode(#PB_2DDrawing_Outlined)
+                                    draw_mode_(#PB_2DDrawing_Outlined)
                                     draw_focus_frame( GetActive( ), $ff0000ff) ; $ffff0000)
                                  EndIf
                               EndIf
@@ -20697,7 +20993,7 @@ Module widgets
                                  If Not ActiveWindow( )\next[2] 
                                     If *e = GetLast( ActiveWindow( ) )
                                        Clip( ActiveWindow( ), [#__c_draw] )
-                                       __draw_mode(#PB_2DDrawing_Outlined)
+                                       draw_mode_(#PB_2DDrawing_Outlined)
                                        draw_focus_frame( ActiveWindow( ), $ff00ff00)
                                     EndIf
                                  EndIf
@@ -20712,7 +21008,7 @@ Module widgets
                                  If Not ActiveGadget( )\next[2] 
                                     If *e = GetLast( ActiveGadget( ) )
                                        Clip( ActiveGadget( ), [#__c_draw] )
-                                       __draw_mode(#PB_2DDrawing_Outlined)
+                                       draw_mode_(#PB_2DDrawing_Outlined)
                                        draw_focus_frame( ActiveGadget( ), $ff00ff00)
                                     EndIf
                                  EndIf
@@ -20847,7 +21143,7 @@ Module widgets
    ;-  CREATEs
    ;-
    
- Procedure.i Create( *parent._s_PARENT, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
+   Procedure.i Create( *parent._s_PARENT, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
       Protected color, img, flag_AutoSize.b = constants::BinaryFlag( Flag, #__FLAG_AutoSize )
       Protected colors.Structures::_s_COLOR = colors::_get_colors_( )
       Protected *this._s_WIDGET
@@ -20866,7 +21162,7 @@ Module widgets
       Else
          *this.allocate( Widget )
       EndIf
-       
+      
       ;
       size = DPIScaled( size )
       round = DPIScaled( round )
@@ -20896,7 +21192,7 @@ Module widgets
             EndIf
          EndIf
       EndIf
-       ; flag change default text align flags
+      ; flag change default text align flags
       If Not Flag & #__FLAG_Center
          If Not (Flag & #__FLAG_Left Or
                  Flag & #__FLAG_Right Or
@@ -20932,7 +21228,7 @@ Module widgets
             EndIf
          EndIf
       EndIf
-       ; flag change default lines & buttons show
+      ; flag change default lines & buttons show
       If Type = #__TYPE_Tree Or
          Type = #__TYPE_ListView Or
          Type = #__TYPE_ListIcon Or
@@ -20952,14 +21248,14 @@ Module widgets
          EndIf
       EndIf
       
-       ;\\
+      ;\\
       *this\font  = - 1
       *this\type  = Type
       *this\flagmask  = Flag   
       *this\class  = class
       *this\round  = round
       *this\child  = constants::BinaryFlag( Flag, #__FLAG_Child )
-       ;
+      ;
       If Not *this\Toggle( )
          If Type = #__TYPE_Button Or Type = #__TYPE_ButtonImage
             If constants::BinaryFlag( Flag, #PB_Button_Toggle )
@@ -21080,7 +21376,7 @@ Module widgets
       EndIf
       *this\bs = *this\fs
       
-       ; COLOR
+      ; COLOR
       *this\color  = colors
       If constants::BinaryFlag( Flag, #__FLAG_Transparent )
          *this\color\back =- 1
@@ -21094,7 +21390,7 @@ Module widgets
             *this\type = #__TYPE_HyperLink
             
             *this\lineColor = $FFC0C0C0
-               If *this\type = #__TYPE_HyperLink
+            If *this\type = #__TYPE_HyperLink
                Color = *param_1
                If Color
                   If Not Alpha( Color )
@@ -21103,7 +21399,7 @@ Module widgets
                   *this\color\front[#__s_1] = Color
                EndIf
             EndIf
-          
+            
             If *this\type = #__TYPE_Editor Or  *this\type = #__TYPE_String
                If Bool( Not constants::BinaryFlag( Flag, #__FLAG_TextReadOnly ))
                   *this\color\back = colors::Extract(*this\color\fore, 0.25, #True );*this\color\fore
@@ -21113,7 +21409,7 @@ Module widgets
             EndIf
          EndIf    
          If *this\type = #__TYPE_Scroll
-             *this\color\back = colors::Extract(*this\color\fore, 0.15, #True );*this\color\fore
+            *this\color\back = colors::Extract(*this\color\fore, 0.15, #True );*this\color\fore
          EndIf
          If *this\type = #__TYPE_Tree Or
             *this\type = #__TYPE_ListView Or
@@ -21121,7 +21417,7 @@ Module widgets
             *this\type = #__TYPE_ExplorerList
             
             *this\lineColor = $FFC0C0C0
-             *this\color\back = *this\color\fore
+            *this\color\back = *this\color\fore
          EndIf
          If *this\type = #__TYPE_Container Or
             *this\type = #__TYPE_ScrollArea Or
@@ -21197,7 +21493,7 @@ Module widgets
          If Type = #__TYPE_Editor
             *this\row\sellastsize = constants::BinaryFlag( Flag, #__FLAG_RowFullSelect, #False ) * DPIScaled(7)
          EndIf
-          
+         
          If *this\type = #__TYPE_Option
             If *this\prev[2]
                If *this\prev[2]\type = #__TYPE_Option
@@ -21209,7 +21505,7 @@ Module widgets
                *this\groupbar = *parent
             EndIf
          EndIf
-     EndIf
+      EndIf
       
       ;\\ - Create Lists
       If *this\type = #__TYPE_Tree Or
@@ -21227,7 +21523,7 @@ Module widgets
          If *this\type = #__TYPE_ListIcon
             *this\ColumnsHeight  = DPIScaled( 24 )
          EndIf
-     EndIf
+      EndIf
       
       ;\\ - Create Containers
       If *this\type = #__TYPE_Container Or
@@ -21328,8 +21624,8 @@ Module widgets
          
          ; - Create Scroll
          If *this\type = #__TYPE_Scroll
-;             *this\color\back  = $FFF9F9F9 ; - 1
-;             *this\color\front = $FFFFFFFF
+            ;             *this\color\back  = $FFF9F9F9 ; - 1
+            ;             *this\color\front = $FFFFFFFF
             
             If is_integral_( *this )
                If *this\bar\vertical
@@ -21709,10 +22005,10 @@ Module widgets
       ProcedureReturn *this
    EndProcedure
    
-  Procedure.i CreateContainer( *parent._s_PARENT, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
-   ;  ProcedureReturn Create( *parent, class, Type, X, Y, Width, Height, Text, Flag, *param_1, *param_2, *param_3, size, round, ScrollStep)
-     Protected color, img, flag_AutoSize.b = constants::BinaryFlag( Flag, #__FLAG_autosize )
-     Protected *this._s_PARENT
+   Procedure.i CreateContainer( *parent._s_PARENT, class.s, Type.w, X.l, Y.l, Width.l, Height.l, Text.s = #Null$, Flag.q = #Null, *param_1 = #Null, *param_2 = #Null, *param_3 = #Null, size.l = 0, round.l = 0, ScrollStep.d = 1.0 )
+      ;  ProcedureReturn Create( *parent, class, Type, X, Y, Width, Height, Text, Flag, *param_1, *param_2, *param_3, size, round, ScrollStep)
+      Protected color, img, flag_AutoSize.b = constants::BinaryFlag( Flag, #__FLAG_autosize )
+      Protected *this._s_PARENT
       Protected *Root._s_ROOT
       If *parent
          *root = *parent\root
@@ -21734,7 +22030,7 @@ Module widgets
       size = DPIScaled( size )
       ; replace pb flag to widget flag
       Flag = FromPBFlag( Type, Flag )
-       
+      
       *this\child  = constants::BinaryFlag( Flag, #__FLAG_child )
       ;
       If Type = #__TYPE_Splitter
@@ -22446,116 +22742,7 @@ Module widgets
       ProcedureReturn *root
    EndProcedure
    
-  ;-
-   Procedure UpdateTitleBar(*this._s_WIDGET, height.l)
-      Protected._s_TITLE *title = *this\title
-      Protected._s_BTN *closeBTN = *title\bar\btn[#__wb_close]
-      Protected._s_BTN *maxiBTN = *title\bar\btn[#__wb_maxi]
-      Protected._s_BTN *miniBTN = *title\bar\btn[#__wb_mini]
-      
-      If Not *title\mask & #__MASK_Hidden
-         *title\x      = *this\frame_x( ) + *this\fs
-         *title\y      = *this\frame_y( ) + *this\fs
-         *title\width  = *this\frame_width( ) - *this\fs * 2
-         
-         *title\height = height
-         If *title\height > *this\frame_height( ) - *this\fs 
-            *title\height = *this\frame_height( ) - *this\fs 
-         EndIf
-         
-         ; caption close button
-         If Not *closeBTN\mask & #__MASK_Hidden
-            *closeBTN\x = ( *title\x + *title\width ) - ( *closeBTN\width + *title\spacing )
-            *closeBTN\y = *this\frame_y( ) + ( *title\height - *closeBTN\height ) / 2
-         EndIf
-         
-         ; caption maximize button
-         If Not *maxiBTN\mask & #__MASK_Hidden
-            If *closeBTN\mask & #__MASK_Hidden
-               *maxiBTN\x = ( *title\x + *title\width ) - ( *maxiBTN\width + *title\spacing )
-            Else
-               *maxiBTN\x = *closeBTN\x - ( *maxiBTN\width + *title\spacing )
-            EndIf
-            *maxiBTN\y = *this\frame_y( ) + ( *title\height - *maxiBTN\height ) / 2
-         EndIf
-         
-         ; caption minimize button
-         If Not *miniBTN\mask & #__MASK_Hidden
-            If *maxiBTN\mask & #__MASK_Hidden
-               *miniBTN\x = *closeBTN\x - ( *miniBTN\width + *title\spacing )
-            Else
-               *miniBTN\x = *maxiBTN\x - ( *miniBTN\width + *title\spacing )
-            EndIf
-            *miniBTN\y = *this\frame_y( ) + ( *title\height - *miniBTN\height ) / 2
-         EndIf
-         
-         ; title bar width
-         If Not *miniBTN\mask & #__MASK_Hidden
-            *title\width = *miniBTN\x - *title\x - *title\spacing
-         ElseIf Not *maxiBTN\mask & #__MASK_Hidden
-            *title\width = *maxiBTN\x - *title\x - *title\spacing
-         ElseIf Not *closeBTN\mask & #__MASK_Hidden
-            *title\width = *closeBTN\x - *title\x - *title\spacing
-         EndIf
-      EndIf
-   EndProcedure
-   
-   Procedure CreateTitleBar(text.s, image.i, style.q)
-      Protected._s_TITLE *title = AllocateStructure(_s_TITLE)
-      Protected._s_BTN *closeBTN = *title\bar\btn[#__wb_close]
-      Protected._s_BTN *maxiBTN = *title\bar\btn[#__wb_maxi]
-      Protected._s_BTN *miniBTN = *title\bar\btn[#__wb_mini]
-      
-     *title\spacing = DPIScaled(4)
-      
-      If constants::BinaryFlag( style, #PB_Window_SystemMenu, #False )
-         *closeBTN\mask | #__MASK_Hidden    
-      Else
-         *closeBTN\mask &~ #__MASK_Hidden    
-      EndIf
-      If constants::BinaryFlag( style, #PB_Window_MaximizeGadget, #False )
-         *maxiBTN\mask | #__MASK_Hidden    
-      Else
-         *maxiBTN\mask &~ #__MASK_Hidden    
-      EndIf
-      If constants::BinaryFlag( style, #PB_Window_MinimizeGadget, #False )
-         *miniBTN\mask | #__MASK_Hidden    
-      Else
-         *miniBTN\mask &~ #__MASK_Hidden    
-      EndIf
-      
-      If *maxiBTN\mask & #__MASK_Hidden = 0 Or
-         *miniBTN\mask & #__MASK_Hidden = 0 Or
-         *closeBTN\mask & #__MASK_Hidden = 0
-         *title\mask &~ #__MASK_Hidden
-      Else
-         If constants::BinaryFlag( style, #PB_Window_TitleBar, #False )
-            *title\mask | #__MASK_Hidden
-         Else
-            *title\mask &~ #__MASK_Hidden 
-         EndIf
-      EndIf
-      
-      *closeBTN\color    = colors::PALETTE\red
-      *maxiBTN\color = colors::PALETTE\blue
-      *miniBTN\color = colors::PALETTE\green
-      
-      *closeBTN\width    = DPIScaled( #__bar_button_size - 2 )
-      *closeBTN\height   = *closeBTN\width
-      *closeBTN\round    = *closeBTN\width / 2
-      
-      *maxiBTN\width  = *closeBTN\width
-      *maxiBTN\height = *closeBTN\height
-      *maxiBTN\round = *closeBTN\round
-      
-      *miniBTN\width  = *closeBTN\width
-      *miniBTN\height = *closeBTN\height
-      *miniBTN\round = *closeBTN\round
-      
-      ProcedureReturn *title
-   EndProcedure
-   
-   
+   ;-
    Procedure.i Window( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0, *parent._s_PARENT = 0 )
       Protected fs = DPIScaled(#__window_FrameSize)
       Protected barHeight = DPIScaled( #__window_CaptionHeight )
@@ -22591,10 +22778,10 @@ Module widgets
       *this\class           = #PB_Compiler_Procedure ;+""+ count : count + 1
       *this\container       = 2
       *this\img\image   = - 1 ; Background img
-                                  ;          *this\frame_x( )      = #PB_Ignore
-                                  ;          *this\frame_y( )      = #PB_Ignore
-                                  ;          *this\frame_width( )  = #PB_Ignore
-                                  ;          *this\frame_height( ) = #PB_Ignore
+                              ;          *this\frame_x( )      = #PB_Ignore
+                              ;          *this\frame_y( )      = #PB_Ignore
+                              ;          *this\frame_width( )  = #PB_Ignore
+                              ;          *this\frame_height( ) = #PB_Ignore
       
       ;\\ replace pb flag
       Flag = FromPBFlag( *this\type, Flag )
@@ -22720,7 +22907,7 @@ Module widgets
       If g = Gadget : g  = GadgetID( Gadget ) : Else : g = Gadget : EndIf
       CloseGadgetList( )
       
-       ProcedureReturn g
+      ProcedureReturn g
    EndProcedure
    
    ;-
@@ -23521,13 +23708,15 @@ Module widgets
             ; чтобы закруглять только у окна с титлебаром
             If *this\fs[2]
                If *this\round
-                 ; *this\title\round = *this\round
+                  ; *this\title\round = *this\round
                   *this\round         = 0
                EndIf
             EndIf
             
             ; caption title bar
-            UpdateTitleBar(*this, *this\titleBarHeight + *this\fs - 1)
+            If Not *this\title\mask & #__MASK_Hidden
+               UpdateTitleBar(*this, *this\titleBarHeight + *this\fs - 1)
+            EndIf
          EndIf
          
          ;\\
@@ -25780,9 +25969,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 23529
-; FirstLine = 13324
-; Folding = Cg-vLg-Bi-HAAAAAAAAFwpOFgA+FARoFBAkHsXgNAYIgXBAwGAA5PAgvBAAAAg9O--f-9---DaO--2DAAAwH+H9PYHAfP8-LifAHwBEaAA9dvDAIA8-Bs-bBy+HAIQAsz+PCCIAwkANCfY5w-D+-vvt-hAcG5HnzAD54Wuz4zZb8f4web0-41r----v84--0--9BAgcGAIAAAAAAAAOQ5AufAYf-Tyk46Ag9Bg4jn6--D6A6A0nN9+H-H-vD3X1f0dA+--BAhrBYMA-L5kyBAAAAAAASAAAAAAAcgfDAgDAAAAA-D5fAAAAAAAAAAAAAAAAAAA5-YAAALsb4GwBAg--8ffEfLDAwAAAAA5-----j---------------HAAAAAAAAAAAAAY5--D+F+-PAg-AAnAAYAde6vg4vH5----f----NAA3Dj00vP4Y9+fY+2fn-0sfP1HH02k-6zfMwPAfg0Pw-o--v-z4f-Y----x4Vc-DY9+f-BAAHOCAA-SD2Qr2EE+6nOAAAA+05fCAACHAAAAAAcAAAAAAgZAf-------8eA1z-8BAgA9-nBAC-Dee+v-tj85--------x----Pi--f4---0J0--04+----fg-83XQB--fQMgJuLNMAAA-bfwvAMzA+x40AwvkqxAIFA------VBAAA----BAAAAAAAAAAAAAw-A9PCOdCAcAAAAAAAU8--568BAAAAAgDIg-0-QDAAAyBIAAAAA5fA9
+; CursorPosition = 18848
+; FirstLine = 18829
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

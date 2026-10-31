@@ -322,7 +322,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          font.i
          fontID.i
          _focus.b  
-          childrens.w ; Row( )\ ; rows( )\ ; row\
+         childrens.w ; Row( )\ ; rows( )\ ; row\
          
          txt._s_TXT
          img._s_IMG
@@ -756,8 +756,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 606
-; FirstLine = 573
-; Folding = --8---+-----
+; CursorPosition = 756
+; FirstLine = 732
+; Folding = ------------
 ; Optimizer
 ; EnableXP
