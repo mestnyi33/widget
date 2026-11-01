@@ -195,8 +195,8 @@ EndStructure
 Structure _s_TXT Extends _s_COORDINATE
    change.b
    StructureUnion 
-      string.s
-      text.s
+      String.s
+      Text.s
       title.s
    EndStructureUnion
 EndStructure
@@ -228,8 +228,8 @@ EndStructure
 Structure _s_TAB Extends _s_COL
    X.l
    Y.l
-   width.l
-   height.l 
+   Width.l
+   Height.l 
 EndStructure
 Structure _s_TABS
    *active._s_TAB   
@@ -407,7 +407,7 @@ EndStructure
 Structure _s_CANVAS Extends _s_COORDINATE
    dpi.f
    Gadget.i              ; Системный номер CanvasGadget
-   window.i              ; Номер родительского окна
+   Window.i              ; Номер родительского окна
    
    *next._s_ROOT
    *prev._s_ROOT
@@ -727,48 +727,12 @@ Procedure.i GetOSData(handle.i)
 EndProcedure
 
 ; Объявляем структуру для безопасного побайтового доступа к цвету
-Structure PB_Pixel_RGBA
-  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-    ; На macOS часто используется инвертированный или отличный порядок,
-    ; но для абсолютной надёжности мы используем структуру, адаптированную под OS
-    a.b : b.b : g.b : r.b
-  CompilerElse
-    ; Для Windows и Linux стандартный порядок в памяти (обычно RGBA/BGRA)
-    r.b : g.b : b.b : a.b
-  CompilerEndIf
-EndStructure
-
-Procedure.l MakeColor(bgColor.l, value.l = 0)
-  Protected.PB_Pixel_RGBA *pixel = @bgColor
-  Protected.l r, g, b, a
-  
-  ; Извлекаем каналы, используя маску $FF, чтобы превратить знаковый Byte (.b) в беззнаковый Long
-  r = (*pixel\r & $FF) + value
-  g = (*pixel\g & $FF) + value
-  b = (*pixel\b & $FF) + value
-  a = *pixel\a & $FF
-  
-  ; Быстрое ограничение диапазона (Clamp)
-  If r > 255 : r = 255 : ElseIf r < 0 : r = 0 : EndIf
-  If g > 255 : g = 255 : ElseIf g < 0 : g = 0 : EndIf
-  If b > 255 : b = 255 : ElseIf b < 0 : b = 0 : EndIf
-  
-  ; Перезаписываем значения прямо в структуре
-  *pixel\r = r
-  *pixel\g = g
-  *pixel\b = b
-  *pixel\a = a
-  
-  ; Возвращаем изменённый Long
-  ProcedureReturn bgColor
-EndProcedure
-
-Procedure.l _MakeColor(bgColor.l, value.l = 0)
+Procedure.l MakeColor(Color.l, value.l = 0)
    ; Извлекаем каналы с помощью побитового "И" (&) и сдвигов (>>)
-   Protected.l r = (bgColor & $FF) +  value 
-   Protected.l g = ((bgColor >> 8) & $FF) + value
-   Protected.l b = ((bgColor >> 16) & $FF) + value
-   Protected.l a = (bgColor >> 24) & $FF ; Альфа-канал просто двигаем
+   Protected.l r = (Color & $FF) +  value 
+   Protected.l g = ((Color >> 8) & $FF) + value
+   Protected.l b = ((Color >> 16) & $FF) + value
+   Protected.l a = (Color >> 24) & $FF ; Альфа-канал просто двигаем
    
    ; Быстрое ограничение (Clamp) от 0 до 255
    If r > 255 : r = 255 : ElseIf r < 0 : r = 0 : EndIf
@@ -1669,10 +1633,10 @@ EndProcedure
 Procedure Resize(*this._s_WIDGET, X.l, Y.l, Width.l, Height.l)
    Protected *g._s_WIDGET ; Наш локальный указатель для рекурсии
    
-   If x <> #PB_Ignore
+   If X <> #PB_Ignore
       *this\X = DesktopScaledX(X)
    EndIf
-   If y <> #PB_Ignore
+   If Y <> #PB_Ignore
       *this\Y = DesktopScaledY(Y)
    EndIf
    If Width <> #PB_Ignore
@@ -4050,7 +4014,7 @@ Procedure draw_property_rows(*this._s_WIDGET, rx.l, ry.l)
    Protected *v._s_BAR_WIDGET = *this\scroll\v
    Protected *h._s_BAR_WIDGET = *this\scroll\h
    Protected RowHeight
-   Protected width = *this\width
+   Protected Width = *this\width
    Protected dy = 0
    Protected dx = rx - *h\bar\page\pos
    Protected visual_index = 0 ; Заменяет ListIndex(__items()) для расчёта цвета "зебры"
@@ -4081,7 +4045,7 @@ Procedure draw_property_rows(*this._s_WIDGET, rx.l, ry.l)
       visual_index + 1
       
       ; --- 1. ФОН СТРОКИ (Выделение/Hover) ---
-      Box(rx + 1, ry + *row\y, width - 2, RowHeight - 1, color)
+      Box(rx + 1, ry + *row\y, Width - 2, RowHeight - 1, color)
       
       ; --- 2. ЦИКЛ ПО КОЛОНКАМ (0 - Имя, 1 - Значение) ---
       PushListPosition(*this\col\__s( ))
@@ -4091,7 +4055,7 @@ Procedure draw_property_rows(*this._s_WIDGET, rx.l, ry.l)
          Protected ColumnWidth = *col\size
          Protected data_idx = *col\id
          
-         If col_x + ColumnWidth > rx And col_x < rx + width
+         If col_x + ColumnWidth > rx And col_x < rx + Width
             ; Клиппинг ячейки
             Protected clip_x = Max(col_x, *this\clip\x) 
             Protected clip_y = Max(dy, *this\clip\y)
@@ -4156,7 +4120,7 @@ Procedure draw_property_rows(*this._s_WIDGET, rx.l, ry.l)
       PopListPosition(*this\col\__s( ))
       
       ; Горизонтальная линия между строками
-      Line(rx, dy + RowHeight - 1, width, 1, #ROW_COLOR_LINE)
+      Line(rx, dy + RowHeight - 1, Width, 1, #ROW_COLOR_LINE)
       
       ; Проверяем, дошли ли мы до последней видимой строки. 
       ; Выход должен быть ДО прыжка, на случай если последняя строка — свернутый узел.
@@ -4315,22 +4279,27 @@ EndProcedure
 Procedure draw_row(*this._s_WIDGET, *row._s_ROW, rx, ry)
    Protected color = GetDrawColor(*this\Type, *row\mask, #PB_Gadget_BackColor, ListIndex(*this\row\__s()))
    Protected txtColor = GetDrawColor(*this\Type, *row\mask, #PB_Gadget_FrontColor, ListIndex(*this\row\__s()))
-   Protected width = *this\width
+   Protected Width = *this\width
    Protected RowHeight = *row\height
    Protected._s_COL *col
    Protected *h._s_BAR_WIDGET = *this\scroll\h
    Protected dx = rx - *h\bar\page\pos
    Protected dy = ry + *row\y
-   
+   Protected scale_1=DesktopScaledX(1)
+                        Protected scale_2=DesktopScaledX(2)
+                        Protected scale_5=DesktopScaledX(5)
+                        Protected scale_4=DesktopScaledX(4)
+                        Protected scale_15 = DesktopScaledX(15)
+                        
    ; --- 1. ФОН СТРОКИ ---
    If (*row\mask & #__MASK_Hover) And ListSize(*row\wrap\__s()) > 0
       ; Рисуем подсветку только для этажа под мышкой
       If *row\wrap\hover And SelectElement(*row\wrap\__s(), *row\wrap\hover - 1)
-         Box(rx + 1, ry + *row\y + *row\wrap\__s()\y, width - 2, *row\wrap\__s()\height - 1, color)
+         Box(rx + 1, ry + *row\y + *row\wrap\__s()\y, Width - 2, *row\wrap\__s()\height - 1, color)
       EndIf
    Else
       ; Обычная подсветка всей строки
-      Box(rx + 1, ry + *row\y, width - 2, RowHeight - 1, color)
+      Box(rx + 1, ry + *row\y, Width - 2, RowHeight - 1, color)
    EndIf
    
    ; --- 2. ЦИКЛ ПО КОЛОНКАМ ---
@@ -4341,7 +4310,7 @@ Procedure draw_row(*this._s_WIDGET, *row._s_ROW, rx, ry)
       Protected ColumnWidth = *col\size
       Protected data_idx = *col\id
       
-      If col_x + ColumnWidth > rx And col_x < rx + width
+      If col_x + ColumnWidth > rx And col_x < rx + Width
          ; Клиппинг
          Protected clip_x = Max(col_x, *this\clip\x) 
          Protected clip_y = Max(dy, *this\clip\y)
@@ -4364,11 +4333,6 @@ Procedure draw_row(*this._s_WIDGET, *row._s_ROW, rx, ry)
                         FrontColor($888888)
                         Protected tx = col_x + offset
                         Protected ty = dy + (RowHeight / 2) - 4
-                        Protected scale_1=DesktopScaledX(1)
-                        Protected scale_2=DesktopScaledX(2)
-                        Protected scale_5=DesktopScaledX(5)
-                        Protected scale_4=DesktopScaledX(4)
-                        Protected scale_15 = DesktopScaledX(15)
                         
                         If *row\mask & #__maskrow_collapsed
                            Line(tx, ty, scale_1,  (scale_5+scale_4)) : Line(tx, ty, scale_5, scale_4) : Line(tx, ty + (scale_4*2), scale_5, -scale_4)
@@ -6041,11 +6005,11 @@ Procedure   Close( *root._s_ROOT )
    EndIf
 EndProcedure
 
-Procedure.i Open( window, X, Y, Width, Height, title.s="", flags.q = #PB_Window_ScreenCentered)
+Procedure.i Open( Window, X, Y, Width, Height, title.s="", flags.q = #PB_Window_ScreenCentered)
    Protected *root._s_ROOT = AllocateStructure(_s_ROOT)
    
-   If IsWindow(window)
-      *root\Canvas\window = window
+   If IsWindow(Window)
+      *root\Canvas\window = Window
       *root\Canvas\gadget = CanvasGadget(#PB_Any, X, Y, Width, Height, #PB_Canvas_Keyboard|#PB_Canvas_Container)
    Else
       *root\Canvas\window = OpenWindow(#PB_Any, X, Y, Width, Height, title, #PB_Window_SystemMenu|flags)
@@ -6256,9 +6220,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 4854
-; FirstLine = 4743
-; Folding = -f98------v+-q+-------------------------------------------------------------------------------------------------------------------------------------------------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 4372
+; FirstLine = 4213
+; Folding = -f98------v+u+------------------------------------------------0---------------------------------------0-v-8----------------------------------------------------
 ; EnableXP
 ; DPIAware

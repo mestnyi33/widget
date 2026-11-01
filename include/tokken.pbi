@@ -370,8 +370,8 @@ EndStructure
 
 Structure _s_CANVAS Extends _s_COORDINATE
   dpi.f
-  gadget.i              ; Системный номер CanvasGadget
-  window.i              ; Номер родительского окна
+  Gadget.i              ; Системный номер CanvasGadget
+  Window.i              ; Номер родительского окна
   
   *next._s_ROOT
   *prev._s_ROOT
@@ -1499,10 +1499,10 @@ EndProcedure
 Procedure Resize(*this._s_WIDGET, X.l, Y.l, Width.l, Height.l)
   Protected *g._s_WIDGET ; Наш локальный указатель для рекурсии
   
-  If x <> #PB_Ignore
+  If X <> #PB_Ignore
     *this\X = DesktopScaledX(X)
   EndIf
-  If y <> #PB_Ignore
+  If Y <> #PB_Ignore
     *this\Y = DesktopScaledY(Y)
   EndIf
   If Width <> #PB_Ignore
@@ -1776,126 +1776,6 @@ Procedure update_caret(*this._s_WIDGET, caret_pos)
       scroll_state(*h, cx + scroll_margin - *h\bar\page\len)
     EndIf
   EndIf
-EndProcedure
-
-Procedure   _update_token(*this._s_WIDGET, *row._s_ROW)
-  If Not *row : ProcedureReturn : EndIf
-  
-  ClearList(*row\tokens())
-  Protected txt.s = *row\txt(0)\string
-  
-  ; 1. Базовые замеры шрифта
-  DrawingFont(Font_Editor_Normal)
-  Protected base_h = *this\text\fontHeight ; TextHeight("Ag")
-  Protected t_width
-  Protected t_height = base_h
-  
-  If ListSize(*row\__wraps()) > 0
-    ClearList(*row\__wraps())
-  EndIf
-  
-  ; Устанавливаем высоту строки (база + отступы)
-  *row\height = base_h + (*this\padding\y * 2)
-  If *row\height < 16 : *row\height = 16 : EndIf
-  *row\wrap_height = *row\height
-  
-  ; 2. Если текста нет ИЛИ токенизация (подсветка) выключена — ВЫХОДИМ
-  If txt = "" Or (*this\mask & #__maskflag_tokken) = 0
-    *row\width = TextWidth(txt)
-    ProcedureReturn ; Список tokens() остается ПУСТЫМ
-  EndIf
-  
-  ; 3. Если мы здесь — значит текст есть И токенизация ВКЛЮЧЕНА
-  Protected *c.Character = @txt
-  Protected pos.l = 1, start.l, cur_x.l = 0, last_font = -1
-  Protected word.s
-  
-  While *c\c
-    start = pos
-    Protected cur_font = Font_Editor_Normal 
-    Protected cur_color = Theme\Normal
-    Protected is_comment.b = #False
-    
-    ; --- ОПРЕДЕЛЯЕМ ТИП ТОКЕНА (Лайт-парсер) ---
-    If *c\c = ' ' Or *c\c = 9
-      While *c\c = ' ' Or *c\c = 9 : *c + SizeOf(Character) : pos + 1 : Wend
-    ElseIf *c\c = ';'
-      pos = Len(txt) + 1 : cur_color = Theme\Comment : is_comment = #True
-      *c = @txt + (pos - 1) * SizeOf(Character)
-    ElseIf *c\c = '"'
-      *c + SizeOf(Character) : pos + 1 
-      While *c\c And *c\c <> '"' : *c + SizeOf(Character) : pos + 1 : Wend
-      If *c\c = '"' : *c + SizeOf(Character) : pos + 1 : EndIf 
-      cur_color = Theme\String
-    ElseIf *c\c = '#'
-      *c + SizeOf(Character) : pos + 1
-      While (*c\c >= 'a' And *c\c <= 'z') Or (*c\c >= 'A' And *c\c <= 'Z') Or (*c\c >= '0' And *c\c <= '9') Or *c\c = '_'
-        *c + SizeOf(Character) : pos + 1
-      Wend
-      cur_color = Theme\Constant 
-    ElseIf *c\c >= '0' And *c\c <= '9'
-      While *c\c >= '0' And *c\c <= '9' : *c + SizeOf(Character) : pos + 1 : Wend
-      cur_color = Theme\Number
-    ElseIf (*c\c >= 'a' And *c\c <= 'z') Or (*c\c >= 'A' And *c\c <= 'Z') Or *c\c = '_'
-      While (*c\c >= 'a' And *c\c <= 'z') Or (*c\c >= 'A' And *c\c <= 'Z') Or (*c\c >= '0' And *c\c <= '9') Or *c\c = '_'
-        *c + SizeOf(Character) : pos + 1
-      Wend
-      word = Mid(txt, start, pos - start)
-      If FindMapElement(Theme\Keywords(), LCase(word))
-        cur_color = Theme\Keywords()\color
-        cur_font  = Theme\Keywords()\font
-        Protected correct.s = Theme\Keywords()\word
-        If word <> correct
-          ; Добавляем флаг #PB_String_NoZero, чтобы не портить остаток строки
-          ; 1. Правим в локальной переменной (для работы парсера)
-          PokeS(@txt + (start - 1) * SizeOf(Character), correct, Len(correct), #PB_String_NoZero)
-          
-          ; 2. Правим ПРЯМО В ПАМЯТИ структуры (для отрисовки и варпа)
-          ; Это заменяет буквы, не меняя адрес строки и не ломая врап
-          PokeS(@*row\txt(0)\string + (start - 1) * SizeOf(Character), correct, Len(correct), #PB_String_NoZero)
-          
-          word = correct
-        EndIf
-      EndIf
-    Else 
-      ; Ищем символ в карте операторов
-      If FindMapElement(Theme\Operators(), Mid(txt, pos, 1))
-        cur_color = Theme\Operators()
-      EndIf
-      *c + SizeOf(Character) : pos + 1
-    EndIf
-    
-    word = Mid(txt, start, pos - start)
-    
-    ; --- ГЕОМЕТРИЯ ТОКЕНА ---
-    If last_font <> cur_font
-      DrawingFont(cur_font) 
-      last_font = cur_font
-      t_height = TextHeight("Ag")
-      If *row\height < t_height + (*this\padding\y * 2)
-        *row\height = t_height + (*this\padding\y * 2)
-      EndIf
-    EndIf
-    t_width = TextWidth(word)
-    
-    ; ДОБАВЛЯЕМ ТОКЕН
-    AddElement(*row\tokens())
-    Protected *t._s_TOKEN = @*row\tokens()
-    *t\word   = word
-    *t\x      = cur_x
-    *t\width  = t_width 
-    *t\height = t_height
-    *t\pos    = start
-    *t\len    = pos - start
-    *t\color  = cur_color
-    *t\font   = cur_font
-    
-    cur_x + t_width
-    
-    If is_comment : Break : EndIf 
-  Wend
-  
-  *row\width = cur_x 
 EndProcedure
 
 Procedure update_token(*this._s_WIDGET, *row._s_ROW)
@@ -2558,100 +2438,80 @@ Procedure update_tab(*this._s_WIDGET)
   PopListPosition(*this\tab\_s( ))
 EndProcedure
 
-Procedure update_columns(*this._s_WIDGET)
-  Protected._s_COL *col
+Procedure update_columns(*this._s_WIDGET, u_scale.b = 0)
+  Protected._s_COL *col, *last_col = #Null
   Protected._s_BAR_WIDGET *v = *this\scroll\v
   Protected._s_BAR_WIDGET *h = *this\scroll\h
   Protected cur_x = 0
-  
-  ; Проходим по колонкам и, если нужно, считаем ширину по контенту
-  ForEach *this\col\_s( ) : *col = @*this\col\_s( )
-    If *col\text\change
-      *col\text\Width = TextWidth(*col\text\string)
-      *col\text\change = 0
-    EndIf
-    
-    ; --- 1. АВТОПОДБОР ШИРИНЫ (SCAN-PASS) ---
-    ; Условие: например, если ширина колонки = -1, считаем её автоматически
-    If *col\Width = -1
-      *col\Width = *col\text\Width + *this\padding\x * 2
-      If *col\Width < 10 : *col\Width = 10 : EndIf
-    EndIf
-    
-    ; --- 2. РАСЧЕТ ГЕОМЕТРИИ ---
-    *col\x = cur_x : cur_x + *col\Width
-  Next
-  
-  ; 3. cur_x теперь равен ОБЩЕЙ ширине всех колонок.
-  *h\bar\max = cur_x 
-  
-  If *col\Width = 0
-    ; --- 2. РАСЧЕТ ДОСТУПНОЙ ШИРИНЫ 
-    Protected v_bar_w = *this\fs[3]
-    Protected available_w = *this\width - v_bar_w
-    
-    ; --- 3. ДОТЯГИВАНИЕ ПОСЛЕДНЕЙ КОЛОНКИ ДО КРАЯ СУЩЕСТВУЮЩЕЙ ЗОНЫ ---
-    ; Растягиваем последнюю колонку строго до расчетной границы доступного места
-    If cur_x < available_w 
-      *col\Width + (available_w - cur_x)
-      *h\bar\max + (available_w - cur_x)
-    EndIf
-  EndIf
-  
-  ; Если контент уже виджета, сбрасываем макс в 0
-  If *h\bar\max < 0 : *h\bar\max = 0 : EndIf
-  
-  ; Если скролл уехал дальше нового максимума (например, при уменьшении ширины)
-  If *h\bar\page\pos > *h\bar\max : *h\bar\page\pos = *h\bar\max : EndIf
-EndProcedure
-
-Procedure _update_columns(*this._s_WIDGET) ; scale
-  Protected._s_COL *col
-  Protected._s_BAR_WIDGET *v = *this\scroll\v
-  Protected._s_BAR_WIDGET *h = *this\scroll\h
-  Protected cur_x = 0
+  Protected total_base_w = 0
   
   Protected v_bar_w = *this\fs[3]
   Protected available_w = *this\width - v_bar_w
   
-  ; Шаг A. Сначала быстро узнаем суммарную базовую ширину по тексту
-  Protected total_base_w = 0
-  ForEach *this\col\_s( ) : *col = @*this\col\_s( )
+  ; --- ШАГ 1. РАСЧЕТ БАЗОВОЙ ШИРИНЫ КОЛОНОК И ОБНОВЛЕНИЕ ТЕКСТА ---
+  ForEach *this\col\_s()
+    *col = @*this\col\_s()
+    *last_col = *col ; Надежно запоминаем последнюю колонку, пока мы внутри цикла
+    
     If *col\text\change
       *col\text\Width = TextWidth(*col\text\string)
       *col\text\change = 0
     EndIf
     
+    ; Автоподбор ширины по контенту
     If *col\Width = -1
       *col\Width = *col\text\Width + *this\padding\x * 2
       If *col\Width < 10 : *col\Width = 10 : EndIf
     EndIf
+    
     total_base_w + *col\Width
   Next
   
-  ; Шаг B. Вычисляем коэффициент пропорции
-  Protected.f scale = 1.0
-  If total_base_w > 0 And total_base_w < available_w
-    scale = available_w / total_base_w
-  EndIf
+  ; Если колонок вообще нет — выходим
+  If *last_col = #Null : ProcedureReturn : EndIf
   
-  ; Шаг C. ОДИН финальный проход: применяем коэффициент и фиксируем геометрию
-  ForEach *this\col\_s( ) : *col = @*this\col\_s( )
-    ; Увеличиваем пропорционально
-    If scale > 1.0
-      *col\Width = Round(*col\Width * scale, #PB_Round_Nearest)
+  ; --- ШАГ 2. ПРИМЕНЕНИЕ ЛОГИКИ РАСТЯГИВАНИЯ ---
+  If u_scale
+    ; --- ВАРИАНТ А: Пропорциональное масштабирование всех колонок ---
+    Protected.f scale = 1.0
+    If total_base_w > 0 And total_base_w < available_w
+      scale = available_w / total_base_w
     EndIf
     
-    *col\x = cur_x 
-    cur_x + *col\Width
-  Next
+    ForEach *this\col\_s()
+      *col = @*this\col\_s()
+      If scale > 1.0
+        *col\Width = Round(*col\Width * scale, #PB_Round_Nearest)
+      EndIf
+      
+      *col\x = cur_x 
+      cur_x + *col\Width
+    Next
+    
+  Else
+    ; --- ВАРИАНТ Б: Растягиваем только самую последнюю колонку ---
+    ; Сначала выставляем стандартные координаты для всех
+    ForEach *this\col\_s()
+      *col = @*this\col\_s()
+      *col\x = cur_x 
+      cur_x + *col\Width
+    Next
+    
+    ; Если общая ширина меньше доступной, отдаем остаток последней колонке
+    If cur_x < available_w
+      *last_col\Width + (available_w - cur_x)
+      cur_x = available_w
+    EndIf
+  EndIf
   
-  ; Шаг D. Коррекция пикселей округления для самой последней колонки
-  If cur_x < available_w And scale > 1.0
-    *col\Width + (available_w - cur_x)
+  ; --- ШАГ 3. ФИНАЛЬНАЯ КОРРЕКЦИЯ И СКРОЛЛБАРЫ ---
+  ; Коррекция пикселей округления (актуально для Варианта А, но не повредит и Б)
+  If cur_x < available_w
+    *last_col\Width + (available_w - cur_x)
     cur_x = available_w
   EndIf
   
+  ; Настройка горизонтального скролла
   *h\bar\max = cur_x 
   If *h\bar\max < 0 : *h\bar\max = 0 : EndIf
   If *h\bar\page\pos > *h\bar\max : *h\bar\page\pos = *h\bar\max : EndIf
@@ -3906,7 +3766,7 @@ Procedure draw_property_rows(*this._s_WIDGET, rx.l, ry.l)
   Protected *v._s_BAR_WIDGET = *this\scroll\v
   Protected *h._s_BAR_WIDGET = *this\scroll\h
   Protected RowHeight
-  Protected width = *this\width
+  Protected Width = *this\width
   Protected dy = 0
   Protected dx = rx - *h\bar\page\pos
   
@@ -3929,7 +3789,7 @@ Procedure draw_property_rows(*this._s_WIDGET, rx.l, ry.l)
     Protected txtColor = GetDrawColor(*this\Type, *row\mask, #PB_Gadget_FrontColor, ListIndex(*this\__items()))
     
     ; --- 1. ФОН СТРОКИ (Выделение/Hover) ---
-    Box(rx + 1, ry + *row\y, width - 2, RowHeight - 1, color)
+    Box(rx + 1, ry + *row\y, Width - 2, RowHeight - 1, color)
     
     ; --- 2. ЦИКЛ ПО КОЛОНКАМ (0 - Имя, 1 - Значение) ---
     PushListPosition(*this\col\_s( ))
@@ -3939,7 +3799,7 @@ Procedure draw_property_rows(*this._s_WIDGET, rx.l, ry.l)
       Protected ColumnWidth = *col\Width
       Protected data_idx = *col\id
       
-      If col_x + ColumnWidth > rx And col_x < rx + width
+      If col_x + ColumnWidth > rx And col_x < rx + Width
         ; Клиппинг ячейки
         Protected clip_x = Max(col_x, *this\clip\x) 
         Protected clip_y = Max(dy, *this\clip\y)
@@ -4013,7 +3873,7 @@ Procedure draw_property_rows(*this._s_WIDGET, rx.l, ry.l)
     PopListPosition(*this\col\_s( ))
     
     ; Горизонтальная линия между строками
-    Line(rx, dy + RowHeight - 1, width, 1, #ROW_COLOR_LINE)
+    Line(rx, dy + RowHeight - 1, Width, 1, #ROW_COLOR_LINE)
     
     If *row = *this\row\_v_last : Break : EndIf
   Until NextElement(*this\__items()) = 0 
@@ -4158,7 +4018,7 @@ EndProcedure
 Procedure draw_row(*this._s_WIDGET, *row._s_ROW, rx, ry)
   Protected color = GetDrawColor(*this\Type, *row\mask, #PB_Gadget_BackColor, ListIndex(*this\__items()))
   Protected txtColor = GetDrawColor(*this\Type, *row\mask, #PB_Gadget_FrontColor, ListIndex(*this\__items()))
-  Protected width = *this\width
+  Protected Width = *this\width
   Protected RowHeight = *row\height
   Protected._s_COL *col
   Protected *h._s_BAR_WIDGET = *this\scroll\h
@@ -4169,11 +4029,11 @@ Procedure draw_row(*this._s_WIDGET, *row._s_ROW, rx, ry)
   If (*row\mask & #__MASK_hover) And ListSize(*row\__wraps()) > 0
     ; Рисуем подсветку только для этажа под мышкой
     If *row\wrap\hover And SelectElement(*row\__wraps(), *row\wrap\hover - 1)
-      Box(rx + 1, ry + *row\y + *row\__wraps()\y, width - 2, *row\__wraps()\height - 1, color)
+      Box(rx + 1, ry + *row\y + *row\__wraps()\y, Width - 2, *row\__wraps()\height - 1, color)
     EndIf
   Else
     ; Обычная подсветка всей строки
-    Box(rx + 1, ry + *row\y, width - 2, RowHeight - 1, color)
+    Box(rx + 1, ry + *row\y, Width - 2, RowHeight - 1, color)
   EndIf
   
   ; --- 2. ЦИКЛ ПО КОЛОНКАМ ---
@@ -4184,7 +4044,7 @@ Procedure draw_row(*this._s_WIDGET, *row._s_ROW, rx, ry)
     Protected ColumnWidth = *col\Width
     Protected data_idx = *col\id
     
-    If col_x + ColumnWidth > rx And col_x < rx + width
+    If col_x + ColumnWidth > rx And col_x < rx + Width
       ; Клиппинг
       Protected clip_x = Max(col_x, *this\clip\x) 
       Protected clip_y = Max(dy, *this\clip\y)
@@ -5872,11 +5732,11 @@ Procedure   Close( *root._s_ROOT )
   EndIf
 EndProcedure
 
-Procedure.i Open( window, X, Y, Width, Height, title.s="", flags.q = #PB_Window_ScreenCentered)
+Procedure.i Open( Window, X, Y, Width, Height, title.s="", flags.q = #PB_Window_ScreenCentered)
   Protected *root._s_ROOT = AllocateStructure(_s_ROOT)
   
-  If IsWindow(window)
-    *root\Canvas\window = window
+  If IsWindow(Window)
+    *root\Canvas\window = Window
     *root\Canvas\gadget = CanvasGadget(#PB_Any, X, Y, Width, Height, #PB_Canvas_Keyboard)
   Else
     *root\Canvas\window = OpenWindow(#PB_Any, X, Y, Width, Height, title, #PB_Window_SystemMenu|flags)
@@ -5901,6 +5761,28 @@ Procedure.i Open( window, X, Y, Width, Height, title.s="", flags.q = #PB_Window_
   
   BindGadgetEvent(*root\Canvas\gadget, @do_events_canvas())
   ProcedureReturn *root
+EndProcedure
+
+Procedure WaitClose( )
+   ReDraw( )
+   Protected Event
+   ;-  2. ГЛАВНЫЙ ЦИКЛ СОБЫТИЙ
+   Repeat
+      Event = WaitWindowEvent( )
+      
+      If Event = #PB_Event_Gadget
+         
+         ; do_events_canvas( )
+         
+      ElseIf Event = #PB_Event_CloseWindow
+         Close(Root( ))
+         Break
+      EndIf
+   ForEver
+   
+   ; --- ВОТ ЗДЕСЬ ВЫЗЫВАЕМ CLOSE ---
+   Close( #PB_All ) 
+   End ; Завершение программы
 EndProcedure
 
 ;-
@@ -6081,9 +5963,9 @@ CompilerIf #PB_Compiler_IsMainFile
   End ; Завершение программы
 CompilerEndIf
 ; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 210
-; FirstLine = 201
-; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 5786
+; FirstLine = 5753
+; Folding = --------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; HideErrorLog

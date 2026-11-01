@@ -50,11 +50,9 @@ If Open(0, 100, 100, 640, 480, "PureBasic 2D Grid with Header", #PB_Window_Syste
    ;    MoveItem(*g, 1, 3)
    ; ResizeColumn(*g, 2, 240)
    
-   Repeat
-   Until WaitWindowEvent() = #PB_Event_CloseWindow
+   WaitClose()
 EndIf
-; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 11
-; FirstLine = 5
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 2
 ; Folding = -
 ; EnableXP

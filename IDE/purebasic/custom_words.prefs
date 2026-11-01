@@ -18,6 +18,7 @@ StopPrevRow
 StartNextRow
 StopNextRow
 GetTitle
+GetColumn
 
 SetTextXY
 GetCaret
