@@ -568,7 +568,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    
    ;-
    Macro TitleText( ): text: EndMacro
-   Macro GetTitle( window ): widgets::GetText( window ): EndMacro
+   Macro GetTitle( _window_ ): widgets::GetText( _window_ ): EndMacro
    
    
    ;-
@@ -1486,6 +1486,57 @@ CompilerIf Not Defined( widgets, #PB_Module )
       EndIf
    EndMacro
    
+   
+   
+   ;-
+   Macro __draw_rotatedtext( _address_, _x_,_y_, _rotate_, _color_, _under_line_size_ = 0, )
+      ; under line
+      If _under_line_size_
+         Box( _x_ + _address_\x,  _y_ + _address_\y + _address_\height - _under_line_size_ - 1, _address_\width, _under_line_size_, _color_ )
+      EndIf
+      
+      DrawRotatedText( _x_ + _address_\x,  _y_ + _address_\y, _address_\string,  _rotate_, _color_ ) 
+   EndMacro
+   
+   Macro __draw_box( _address_, _color_type_, _mode_ = )
+      draw_roundbox_( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_,
+                      _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+   EndMacro
+   
+   Macro __draw_roundbox( _address_, _color_type_ )
+      draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+      draw_roundbox_( _address_\x, _address_\y + 1, _address_\width, _address_\height - 2, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+      draw_roundbox_( _address_\x + 1, _address_\y, _address_\width - 2, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
+   EndMacro
+   
+
+   ;-
+   Macro __draw_option_BTN( _address_, _size_, _color_ )
+      If _address_\round > 2
+         If _address_\width % 2
+            draw_roundbox_( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_ + 1, _size_ + 1, _size_ + 1, _size_ + 1, _color_ )
+         Else
+            draw_roundbox_( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _size_, _size_, _color_ )
+         EndIf
+      Else
+         If _address_\width % 2
+            draw_roundbox_( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_ + 1, _size_ + 1, 1, 1, _color_ )
+         Else
+            draw_roundbox_( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_ + 1, _size_ + 1, 1, 1, _color_ )
+         EndIf
+      EndIf
+   EndMacro
+   
+   Macro __draw_check_BTN( _address_, _size_, _color_ )
+      ; --- ЛЕВАЯ ЛИНИЯ (Толщина 2 пикселя) ---
+      LineXY(( _address_\x + ( _address_\width - _size_ ) / 2 ), ( _address_\y + ( _size_ * 2 / 3 ) + ( _address_\height - _size_ ) / 2 ), ( _address_\x + ( _size_ / 3 ) + ( _address_\width - _size_ ) / 2 ), ( _address_\y + _size_ - 1 + ( _address_\height - _size_ ) / 2 ), _color_ )
+      LineXY(( _address_\x + ( _address_\width - _size_ ) / 2 ), ( _address_\y + ( _size_ * 2 / 3 ) + 1 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + ( _size_ / 3 ) + ( _address_\width - _size_ ) / 2 ), ( _address_\y + _size_ + ( _address_\height - _size_ ) / 2 ), _color_ )
+      
+      ; --- ПРАВАЯ ЛИНИЯ (Толщина 2 пикселя) ---
+      LineXY(( _address_\x + _size_ - 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ), ( _address_\x + ( _size_ / 3 ) + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + _size_ - 1 + ( _address_\height - _size_ ) / 2 ), _color_ )
+      LineXY(( _address_\x + _size_ + ( _address_\width - _size_ ) / 2 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ), ( _address_\x + ( _size_ / 3 ) + 2 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + _size_ - 1 + ( _address_\height - _size_ ) / 2 ), _color_ )
+   EndMacro
+
    Macro __draw_checkbox( _type_, _address_, _x_,_y_,_round_, _color_fore_ = $FFFFFFFF, _color_fore2_ = $FFE9BA81, _color_back_ = $80E2E2E2, _color_back2_ = $FFE89C3D, _color_frame_ = $80C8C8C8, _color_frame2_ = $FFDC9338, _alpha_ = 255, size=4 )
       draw_mode_alpha_( #PB_2DDrawing_Gradient )
       LinearGradient( (_x_+_address_\x), (_y_+_address_\y), (_x_+_address_\x), ( (_y_+_address_\y) + _address_\height ))
@@ -1504,11 +1555,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
          FrontColor( $ff000000 & $FFFFFF | _alpha_ << 24 )
          BackColor( $ff000000 & $FFFFFF | _alpha_ << 24 )
          
-         Line( (_x_+_address_\x) + 1 + ( _address_\width - 6 ) / 2, (_y_+_address_\y) + ( _address_\height - 6 ) / 2, 6, 6 )
-         Line( (_x_+_address_\x) + ( _address_\width - 6 ) / 2, (_y_+_address_\y) + ( _address_\height - 6 ) / 2, 6, 6 )
-         
-         Line( (_x_+_address_\x) - 1 + 6 + ( _address_\width - 6 ) / 2, (_y_+_address_\y) + ( _address_\height - 6 ) / 2, - 6, 6 )
-         Line( (_x_+_address_\x) + 6 + ( _address_\width - 6 ) / 2, (_y_+_address_\y) + ( _address_\height - 6 ) / 2, - 6, 6 )
+         __draw_check_BTN(_address_, _address_\width/2, 0)
       Else
          FrontColor( _color_fore_ & $FFFFFF | _alpha_ << 24 )
          BackColor( _color_fore_ & $FFFFFF | _alpha_ << 24 )
@@ -1528,14 +1575,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
                      draw_box_( (_x_+_address_\x) + ( _address_\width - DPIScaled(4) ) / 2, (_y_+_address_\y) + ( _address_\height - DPIScaled(4) ) / 2, DPIScaled(4), DPIScaled(4) )
                   EndIf
                Else
-                  _box_x_ = _address_\width / 2 - 4
-                  _box_y_ = _box_x_ + Bool( _address_\width % 2 )
-                  
-                  LineXY(( (_x_+_address_\x) + 1 + _box_x_ ), ( (_y_+_address_\y) + 4 + _box_y_ ), ( (_x_+_address_\x) + 2 + _box_x_ ), ( (_y_+_address_\y) + 5 + _box_y_ )) ; Левая линия
-                  LineXY(( (_x_+_address_\x) + 1 + _box_x_ ), ( (_y_+_address_\y) + 5 + _box_y_ ), ( (_x_+_address_\x) + 2 + _box_x_ ), ( (_y_+_address_\y) + 6 + _box_y_ )) ; Левая линия
-                  
-                  LineXY(( (_x_+_address_\x) + 6 + _box_x_ ), ( (_y_+_address_\y) + 0 + _box_y_ ), ( (_x_+_address_\x) + 3 + _box_x_ ), ( (_y_+_address_\y) + 6 + _box_y_ )) ; правая линия
-                  LineXY(( (_x_+_address_\x) + 7 + _box_x_ ), ( (_y_+_address_\y) + 0 + _box_y_ ), ( (_x_+_address_\x) + 4 + _box_x_ ), ( (_y_+_address_\y) + 6 + _box_y_ )) ; правая линия
+                  __draw_check_BTN(_address_, _address_\width/2, 0)
                EndIf
             EndIf
          EndIf
@@ -1553,126 +1593,26 @@ CompilerIf Not Defined( widgets, #PB_Module )
       draw_roundbox_( (_x_+_address_\x), (_y_+_address_\y), _address_\width, _address_\height, _round_, _round_, _color_frame_ & $FFFFFF | _alpha_ << 24 )
    EndMacro
    
-   
-   ;-
-   Macro __draw_rotatedtext( _address_, _x_,_y_, _rotate_, _color_, _under_line_size_ = 0, )
-      ; under line
-      If _under_line_size_
-         Box( _x_ + _address_\x,  _y_ + _address_\y + _address_\height - _under_line_size_ - 1, _address_\width, _under_line_size_, _color_ )
-      EndIf
-      
-      DrawRotatedText( _x_ + _address_\x,  _y_ + _address_\y, _address_\string,  _rotate_, _color_ ) 
-   EndMacro
-   
-   Macro __draw_box( _address_, _color_type_, _mode_ = )
-      draw_roundbox_( _address_\x#_mode_, _address_\y#_mode_, _address_\width#_mode_, _address_\height#_mode_,
-                      _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-   EndMacro
-   
-   Macro __draw_roundbox( _address_, _color_type_ )
-      ;__draw_box( _address_, _color_type_)
-      If Not _address_\mask & #__mask_hidden
-         draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-         draw_roundbox_( _address_\x, _address_\y + 1, _address_\width, _address_\height - 2, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-         draw_roundbox_( _address_\x + 1, _address_\y, _address_\width - 2, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-      EndIf
-   EndMacro
-   
-   Macro __draw_close_button( _address_, _size_ )
-      ; close button
-      If Not _address_\mask & #__mask_hidden
-;          If _address_\ColorState( )
-;             Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-;             Line( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-;             
-;             Line( _address_\x - 1 + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-;             Line( _address_\x + _size_ + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-;          EndIf
-         
-         __draw_roundbox( _address_, color\frame )
-      EndIf
-   EndMacro
-   
-   Macro __draw_maximize_button( _address_, _size_ )
-      If Not _address_\mask & #__mask_hidden
-;          If _address_\ColorState( )
-;             Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-;             Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-;             
-;             Line( _address_\x + 1 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-;             Line( _address_\x + 2 + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-;          EndIf
-         
-         __draw_roundbox( _address_, color\frame )
-      EndIf
-   EndMacro
-   
-   Macro __draw_minimize_button( _address_, _size_ )
-      If Not _address_\mask & #__mask_hidden
-;          If _address_\ColorState( )
-;             Line( _address_\x + 1 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-;             Line( _address_\x + 0 + ( _address_\width ) / 2 - _size_, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-;             
-;             Line( _address_\x - 1 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-;             Line( _address_\x - 2 + ( _address_\width ) / 2 + _size_, _address_\y + ( _address_\height - _size_ ) / 2, - _size_, _size_, _address_\color\front[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-;          EndIf
-         
-         __draw_roundbox( _address_, color\frame )
-      EndIf
-   EndMacro
-   
-   Macro __draw_help_button( _address_, _size_ )
-      If Not _address_\mask & #__mask_hidden
-         draw_roundbox_( _address_\x, _address_\y, _address_\width, _address_\height,
-                         _address_\round, _address_\round, _address_\color\frame[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
-      EndIf
-   EndMacro
-   
-   ;-
-   Macro __draw_option_button( _address_, _size_, _color_ )
-      If _address_\round > 2
-         If _address_\width % 2
-            draw_roundbox_( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_ + 1, _size_ + 1, _size_ + 1, _size_ + 1, _color_ )
-         Else
-            draw_roundbox_( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_, _size_, _size_, _size_, _color_ )
-         EndIf
-      Else
-         If _address_\width % 2
-            draw_roundbox_( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_ + 1, _size_ + 1, 1, 1, _color_ )
-         Else
-            draw_roundbox_( _address_\x + ( _address_\width - _size_ ) / 2, _address_\y + ( _address_\height - _size_ ) / 2, _size_ + 1, _size_ + 1, 1, 1, _color_ )
-         EndIf
-      EndIf
-   EndMacro
-   
-   Macro __draw_check_button( _address_, _size_, _color_ )
-      LineXY(( _address_\x + 0 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 4 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 5 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; Левая линия
-      LineXY(( _address_\x + 0 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 5 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; Левая линия
-      
-      LineXY(( _address_\x + 5 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 0 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 2 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; правая линия
-      LineXY(( _address_\x + 6 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 0 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 3 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; правая линия
-   EndMacro
-   
-   Macro __draw_bar_buttons( _this_ )
+   Macro __draw_bar_BTNs( _this_ )
       ; background buttons draw
-      If Not _this_\bar\button[1]\mask & #__mask_hidden
-         If _this_\bar\button[1]\color\fore <> - 1
+      If Not _this_\bar\BTN[1]\mask & #__mask_hidden
+         If _this_\bar\BTN[1]\color\fore <> - 1
             draw_mode_alpha_( #PB_2DDrawing_Gradient )
-            __draw_gradient(_this_\bar\vertical, _this_\bar\button[1], 0,0, _this_\bar\button[1]\ColorState( ))
+            __draw_gradient(_this_\bar\vertical, _this_\bar\BTN[1], 0,0, _this_\bar\BTN[1]\ColorState( ))
          Else
             draw_mode_alpha_( #PB_2DDrawing_Default )
-            __draw_box(_this_\bar\button[1], color\back)
-            ; draw_roundbox_( _this_\bar\button[1]\x, _this_\bar\button[1]\y, _this_\bar\button[1]\width, _this_\bar\button[1]\height, _this_\bar\button[1]\round, _this_\bar\button[1]\round, _this_\bar\button[1]\color\frame[_this_\bar\button[1]\ColorState( )] & $FFFFFF | _this_\bar\button[1]\AlphaState24( ) )
+            __draw_box(_this_\bar\BTN[1], color\back)
+            ; draw_roundbox_( _this_\bar\BTN[1]\x, _this_\bar\BTN[1]\y, _this_\bar\BTN[1]\width, _this_\bar\BTN[1]\height, _this_\bar\BTN[1]\round, _this_\bar\BTN[1]\round, _this_\bar\BTN[1]\color\frame[_this_\bar\BTN[1]\ColorState( )] & $FFFFFF | _this_\bar\BTN[1]\AlphaState24( ) )
          EndIf
       EndIf
-      If Not _this_\bar\button[2]\mask & #__mask_hidden
-         If _this_\bar\button[2]\color\fore <> - 1
+      If Not _this_\bar\BTN[2]\mask & #__mask_hidden
+         If _this_\bar\BTN[2]\color\fore <> - 1
             draw_mode_alpha_( #PB_2DDrawing_Gradient )
-            __draw_gradient(_this_\bar\vertical, _this_\bar\button[2], 0,0, _this_\bar\button[2]\ColorState( ))
+            __draw_gradient(_this_\bar\vertical, _this_\bar\BTN[2], 0,0, _this_\bar\BTN[2]\ColorState( ))
          Else
             draw_mode_alpha_( #PB_2DDrawing_Default )
-            __draw_box(_this_\bar\button[2], color\back)
-            ; draw_roundbox_( _this_\bar\button[2]\x, _this_\bar\button[2]\y, _this_\bar\button[2]\width, _this_\bar\button[2]\height, _this_\bar\button[2]\round, _this_\bar\button[2]\round, _this_\bar\button[2]\color\frame[_this_\bar\button[2]\ColorState( )] & $FFFFFF | _this_\bar\button[2]\AlphaState24( ) )
+            __draw_box(_this_\bar\BTN[2], color\back)
+            ; draw_roundbox_( _this_\bar\BTN[2]\x, _this_\bar\BTN[2]\y, _this_\bar\BTN[2]\width, _this_\bar\BTN[2]\height, _this_\bar\BTN[2]\round, _this_\bar\BTN[2]\round, _this_\bar\BTN[2]\color\frame[_this_\bar\BTN[2]\ColorState( )] & $FFFFFF | _this_\bar\BTN[2]\AlphaState24( ) )
          EndIf
       EndIf
       
@@ -1684,39 +1624,39 @@ CompilerIf Not Defined( widgets, #PB_Module )
             If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\frame_width( ) / 4 )) = _this_\frame_height( )
                Line(_this_\frame_x( ), _this_\frame_y( ), 1, _this_\bar\page\len + 1, _this_\color\front & AlphaState( _this_\color\_alpha ) ) ; $FF000000 ) ;
             Else
-               Line(_this_\frame_x( ), _this_\frame_y( ) + _this_\bar\button[1]\round, 1, _this_\frame_height( ) - _this_\bar\button[1]\round - _this_\bar\button[2]\round, _this_\color\front & AlphaState( _this_\color\_alpha ) ) ; $FF000000 ) ;
+               Line(_this_\frame_x( ), _this_\frame_y( ) + _this_\bar\BTN[1]\round, 1, _this_\frame_height( ) - _this_\bar\BTN[1]\round - _this_\bar\BTN[2]\round, _this_\color\front & AlphaState( _this_\color\_alpha ) ) ; $FF000000 ) ;
             EndIf
          Else
             If (_this_\bar\page\len + Bool(_this_\round ) * (_this_\frame_height( ) / 4 )) = _this_\frame_width( )
                Line(_this_\frame_x( ), _this_\frame_y( ), _this_\bar\page\len + 1, 1, _this_\color\front & AlphaState( _this_\color\_alpha ) ) ; $FF0000ff ) ;
             Else
-               Line(_this_\frame_x( ) + _this_\bar\button[1]\round, _this_\frame_y( ), _this_\frame_width( ) - _this_\bar\button[1]\round - _this_\bar\button[2]\round, 1, _this_\color\front & AlphaState( _this_\color\_alpha ) ) ; $FF000000 ) ;
+               Line(_this_\frame_x( ) + _this_\bar\BTN[1]\round, _this_\frame_y( ), _this_\frame_width( ) - _this_\bar\BTN[1]\round - _this_\bar\BTN[2]\round, 1, _this_\color\front & AlphaState( _this_\color\_alpha ) ) ; $FF000000 ) ;
             EndIf
          EndIf
       EndIf
       
       ; frame buttons draw
-      If Not _this_\bar\button[1]\mask & #__mask_hidden
-         If _this_\bar\button[1]\arrow\size
+      If Not _this_\bar\BTN[1]\mask & #__mask_hidden
+         If _this_\bar\BTN[1]\arrow\size
             If _this_\flagmask & #__spin_Plus 
-               __draw_plus( _this_\bar\button[1], Bool( _this_\bar\invert ) )
+               __draw_plus( _this_\bar\BTN[1], Bool( _this_\bar\invert ) )
             Else
-               __draw_arrows( _this_\bar\button[1], Bool(_this_\bar\vertical ) + (Bool(_this_\type <> #__type_Scroll)*2)+1)
+               __draw_arrows( _this_\bar\BTN[1], Bool(_this_\bar\vertical ) + (Bool(_this_\type <> #__type_Scroll)*2)+1)
             EndIf
          EndIf
-         __draw_box(_this_\bar\button[1], color\frame)
-         ; draw_roundbox_( _this_\bar\button[1]\x, _this_\bar\button[1]\y, _this_\bar\button[1]\width, _this_\bar\button[1]\height, _this_\bar\button[1]\round, _this_\bar\button[1]\round, _this_\bar\button[1]\color\frame[_this_\bar\button[1]\ColorState( )] & $FFFFFF | _this_\bar\button[1]\AlphaState24( ) )
+         __draw_box(_this_\bar\BTN[1], color\frame)
+         ; draw_roundbox_( _this_\bar\BTN[1]\x, _this_\bar\BTN[1]\y, _this_\bar\BTN[1]\width, _this_\bar\BTN[1]\height, _this_\bar\BTN[1]\round, _this_\bar\BTN[1]\round, _this_\bar\BTN[1]\color\frame[_this_\bar\BTN[1]\ColorState( )] & $FFFFFF | _this_\bar\BTN[1]\AlphaState24( ) )
       EndIf
-      If Not _this_\bar\button[2]\mask & #__mask_hidden
-         If _this_\bar\button[2]\arrow\size
+      If Not _this_\bar\BTN[2]\mask & #__mask_hidden
+         If _this_\bar\BTN[2]\arrow\size
             If _this_\flagmask & #__spin_Plus 
-               __draw_plus( _this_\bar\button[2], Bool( Not _this_\bar\invert ) )
+               __draw_plus( _this_\bar\BTN[2], Bool( Not _this_\bar\invert ) )
             Else
-               __draw_arrows( _this_\bar\button[2], Bool(_this_\bar\vertical ) + (Bool(_this_\type = #__type_Scroll)*2)+1 )
+               __draw_arrows( _this_\bar\BTN[2], Bool(_this_\bar\vertical ) + (Bool(_this_\type = #__type_Scroll)*2)+1 )
             EndIf
          EndIf
-         __draw_box(_this_\bar\button[2], color\frame)
-         ; draw_roundbox_( _this_\bar\button[2]\x, _this_\bar\button[2]\y, _this_\bar\button[2]\width, _this_\bar\button[2]\height, _this_\bar\button[2]\round, _this_\bar\button[2]\round, _this_\bar\button[2]\color\frame[_this_\bar\button[2]\ColorState( )] & $FFFFFF | _this_\bar\button[2]\AlphaState24( ) )
+         __draw_box(_this_\bar\BTN[2], color\frame)
+         ; draw_roundbox_( _this_\bar\BTN[2]\x, _this_\bar\BTN[2]\y, _this_\bar\BTN[2]\width, _this_\bar\BTN[2]\height, _this_\bar\BTN[2]\round, _this_\bar\BTN[2]\round, _this_\bar\BTN[2]\color\frame[_this_\bar\BTN[2]\ColorState( )] & $FFFFFF | _this_\bar\BTN[2]\AlphaState24( ) )
       EndIf
    EndMacro     
    
@@ -1990,8 +1930,8 @@ CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 1589
-; FirstLine = 1577
-; Folding = ------------------------------------------
+; CursorPosition = 570
+; FirstLine = 559
+; Folding = -----------------------------------------
 ; EnableXP
 ; DPIAware

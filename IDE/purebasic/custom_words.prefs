@@ -1,16 +1,23 @@
-;Type
-;Is
-;ID
-;X
-;Y
-;Width
-;Height
-;Flag
+﻿Type
+Is
+ID
+X
+Y
+Width
+Height
+Flag
 Gadget
+Window
 
 Clip
 ReClip
 UnClip
+
+StartPrevRow
+StopPrevRow
+StartNextRow
+StopNextRow
+GetTitle
 
 SetTextXY
 GetCaret
@@ -394,13 +401,13 @@ Scroll
 Shortcut
 Spin
 Splitter
-;Image
-;String
-;Text
+Tab
+Image
+String
+Text
 Track
 Tree
 Web
-;Tab
 
 
 

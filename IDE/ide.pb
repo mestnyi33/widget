@@ -1186,10 +1186,10 @@ Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
       SetFont(*second, font)
    EndIf
    ;
-   *splitter\bar\button\size = DPIScaled(1)
-   *splitter\bar\button\size + Bool( *splitter\bar\button\size % 2 )
-   *Splitter\bar\button\round = 0;  DPIScaled(1)
-                                 ;*splitter\bar\button\color\back = $D4C8C8C8
+   *splitter\bar\btn\size = DPIScaled(1)
+   *splitter\bar\btn\size + Bool( *splitter\bar\btn\size % 2 )
+   *Splitter\bar\btn\round = 0;  DPIScaled(1)
+                                 ;*splitter\bar\btn\color\back = $D4C8C8C8
    SetState(*splitter, DPIScaled(position) ) ; похоже ошибка DPI
    
    ;
@@ -3383,8 +3383,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 3383
-; FirstLine = 3359
+; CursorPosition = 1191
+; FirstLine = 1184
 ; Folding = ----------------------------------------------------------------
 ; EnableXP
 ; DPIAware

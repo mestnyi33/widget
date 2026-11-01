@@ -2228,9 +2228,9 @@ Module widgets
          Protected._s_BTN *BB1, *BB2, *SB
          Protected._s_TAB *tab
          ;
-         *SB  = *bar\button
-         *BB1 = *bar\button[1]
-         *BB2 = *bar\button[2]
+         *SB  = *bar\BTN
+         *BB1 = *bar\BTN[1]
+         *BB2 = *bar\BTN[2]
          ;
          If is_bar_( *this )
             separator_step = 0
@@ -2530,9 +2530,9 @@ Module widgets
       Protected._s_BTN *BB1, *BB2, *SB
       Protected._s_TAB *tab, *activeTAB, *hoverTAB
       
-      *SB  = *bar\button
-      *BB1 = *bar\button[1]
-      *BB2 = *bar\button[2]
+      *SB  = *bar\BTN
+      *BB1 = *bar\BTN[1]
+      *BB2 = *bar\BTN[2]
       ; Если мышь физически находится над этим конкретным виджетом (*this)
       If Entered() = *this 
          ; Только тогда мы разрешаем подсвечивать айтем из глобального стека
@@ -2722,9 +2722,9 @@ Module widgets
             ProcedureReturn 0
          EndIf
          
-         *SB  = *bar\button
-         *BB1 = *bar\button[1]
-         *BB2 = *bar\button[2]
+         *SB  = *bar\BTN
+         *BB1 = *bar\BTN[1]
+         *BB2 = *bar\BTN[2]
          ;\\
          If is_integral_( *this )
             ;  Clip( *this, [#__c_draw] )
@@ -2830,7 +2830,7 @@ Module widgets
             EndIf
             
             ;\\
-            __draw_bar_buttons( *this )
+            __draw_bar_BTNs( *this )
             
          EndIf
          
@@ -2845,9 +2845,9 @@ Module widgets
    Procedure.b bar_draw_scroll( *this._s_WIDGET )
       Protected *bar._s_BAR = *this\bar
       Protected._s_BTN *BB1, *BB2, *SB
-      *SB  = *bar\button
-      *BB1 = *bar\button[1]
-      *BB2 = *bar\button[2]
+      *SB  = *bar\BTN
+      *BB1 = *bar\BTN[1]
+      *BB2 = *bar\BTN[2]
       ;
       Protected size1.l = DPIScaled(1)
       Protected size3.l = DPIScaled(3)
@@ -2875,7 +2875,7 @@ Module widgets
          EndIf
          
          ;
-         __draw_bar_buttons( *this )
+         __draw_bar_BTNs( *this )
          
          If *bar\thumb\len
             ; Draw thumb
@@ -3125,8 +3125,8 @@ Module widgets
       Protected state = *this\ColorState( )
       Protected *bar._s_BAR = *this\bar
       Protected._s_BTN *BB1, *BB2
-      *BB1 = *bar\button[1]
-      *BB2 = *bar\button[2]
+      *BB1 = *bar\BTN[1]
+      *BB2 = *bar\BTN[2]
       
       ;\\ draw spin-buttons back
       draw_mode_alpha_( #PB_2DDrawing_Gradient )
@@ -3183,12 +3183,12 @@ Module widgets
       Protected i, X, Y, size = DPIScaled(7)
       Protected *bar._s_BAR = *this\bar
       Protected._s_BTN *BB1, *BB2, *SB
-      *SB  = *bar\button
-      *BB1 = *bar\button[1]
-      *BB2 = *bar\button[2]
+      *SB  = *bar\BTN
+      *BB1 = *bar\BTN[1]
+      *BB2 = *bar\BTN[2]
       
       If *this\color\_alpha
-         __draw_bar_buttons( *this )
+         __draw_bar_BTNs( *this )
          ;
          If *bar\thumb\len
             ; Draw thumb
@@ -3251,9 +3251,9 @@ Module widgets
       Protected._s_BAR *bar = *this\bar
       Protected._s_BTN *SB1, *SB2, *SB
       
-      *SB  = *bar\button
-      *SB1 = *bar\button[1]
-      *SB2 = *bar\button[2]
+      *SB  = *bar\BTN
+      *SB1 = *bar\BTN[1]
+      *SB2 = *bar\BTN[2]
       
       If Not ( *this\flagmask & #__FLAG_Transparent And Not *SB\ColorState( ))
          draw_mode_alpha_( #PB_2DDrawing_Default )
@@ -4414,9 +4414,9 @@ Module widgets
       Protected *bar._s_BAR = *this\bar
       Protected._s_BTN *BB1, *BB2, *SB
       ;
-      *SB  = *bar\button
-      *BB1 = *bar\button[1]
-      *BB2 = *bar\button[2]
+      *SB  = *bar\BTN
+      *BB1 = *bar\BTN[1]
+      *BB2 = *bar\BTN[2]
       ;
       If Not *bar
          ProcedureReturn 0
@@ -4715,7 +4715,7 @@ Module widgets
          EndIf
       EndIf
       
-      If Not *bar\button\mask & #__MASK_Disabled 
+      If Not *bar\BTN\mask & #__MASK_Disabled 
          If ScrollPos < *bar\min
             If *bar\max > *bar\page\len
                ScrollPos = *bar\min
@@ -7544,17 +7544,17 @@ Module widgets
       
       If Bool( is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_draw] ) And
                is_hover( *this, CanvasMouseX( ), CanvasMouseY( ), [#__c_inner] ) And
-               Not ( *this\type = #__TYPE_Splitter And is_hover( *this\bar\button, CanvasMouseX( ), CanvasMouseY( ) ) = 0 ) And
+               Not ( *this\type = #__TYPE_Splitter And is_hover( *this\bar\BTN, CanvasMouseX( ), CanvasMouseY( ) ) = 0 ) And
                Not ( *this\type = #__TYPE_HyperLink And is_hover( *this, CanvasMouseX( ) - *this\frame_x( ), CanvasMouseY( ) - *this\frame_y( ), [#__c_Required] ) = 0 ))
          
          *this\mask | #__MASK_Hover_in
          
-         If *this\bar And *this\bar\button[1] And *this\bar\button[1]\mask & #__MASK_Disabled
+         If *this\bar And *this\bar\BTN[1] And *this\bar\BTN[1]\mask & #__MASK_Disabled
             If GetCursor( ) <> *this\cursor[3]
                result = ChangeCursor( *this, *this\cursor[3] )
             EndIf
             
-         ElseIf *this\bar And *this\bar\button[2] And *this\bar\button[2]\mask & #__MASK_Disabled
+         ElseIf *this\bar And *this\bar\BTN[2] And *this\bar\BTN[2]\mask & #__MASK_Disabled
             If GetCursor( ) <> *this\cursor[2]
                result = ChangeCursor( *this, *this\cursor[2] )
             EndIf
@@ -7733,7 +7733,7 @@ Module widgets
             EndIf
             
          Default
-            *color = *this\bar\button[Item]\color
+            *color = *this\bar\BTN[Item]\color
       EndSelect
       
       Select ColorType
@@ -9201,7 +9201,7 @@ Module widgets
             Case #__bar_pagelength : result = *this\bar\page\len  
                
             Case #__bar_scrollstep : result = *this\scroll\increment 
-            Case #__bar_buttonsize : result = *this\bar\button[1]\size
+            Case #__bar_buttonsize : result = *this\bar\BTN[1]\size
                
             Case #__bar_direction : result = *this\bar\direction
             Case #__FLAG_Invert : result = *this\bar\invert
@@ -9358,9 +9358,9 @@ Module widgets
          Protected *bar._s_BAR = *this\bar
          Protected._s_BTN *BB1, *BB2, *SB
          
-         *SB  = *bar\button
-         *BB1 = *bar\button[1]
-         *BB2 = *bar\button[2]
+         *SB  = *bar\BTN
+         *BB1 = *bar\BTN[1]
+         *BB2 = *bar\BTN[2]
          
          ;\\
          If Attribute = #__FLAG_Invert
@@ -9393,9 +9393,9 @@ Module widgets
                Case #PB_Splitter_FirstGadget
                   *this\split_1( )         = value
                   If Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
-                     *this\bar\button[1]\mask | #__MASK_Hidden
+                     *this\bar\BTN[1]\mask | #__MASK_Hidden
                   Else
-                     *this\bar\button[1]\mask &~ #__MASK_Hidden 
+                     *this\bar\BTN[1]\mask &~ #__MASK_Hidden 
                   EndIf
                   
                   If IsGadget( *this\split_1( ) )
@@ -9413,9 +9413,9 @@ Module widgets
                Case #PB_Splitter_SecondGadget
                   *this\split_2( )         = value
                   If Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
-                     *this\bar\button[2]\mask | #__MASK_Hidden
+                     *this\bar\BTN[2]\mask | #__MASK_Hidden
                   Else
-                     *this\bar\button[2]\mask &~ #__MASK_Hidden 
+                     *this\bar\BTN[2]\mask &~ #__MASK_Hidden 
                   EndIf
                   
                   If IsGadget( *this\split_2( ) )
@@ -14315,10 +14315,10 @@ Module widgets
                   EndIf
                   
                   If *this\bar
-                     *BB0 = *this\bar\button
+                     *BB0 = *this\bar\BTN
                      If *this\type <> #__TYPE_Splitter
-                        *BB1 = *this\bar\button[1]
-                        *BB2 = *this\bar\button[2]
+                        *BB1 = *this\bar\BTN[1]
+                        *BB2 = *this\bar\BTN[2]
                      EndIf
                   EndIf
                EndIf
@@ -15940,9 +15940,9 @@ Module widgets
       
       ;\\ bar button event
       If *bar
-         *SB  = *bar\button
-         *BB1 = *bar\button[1]
-         *BB2 = *bar\button[2]
+         *SB  = *bar\BTN
+         *BB1 = *bar\BTN[1]
+         *BB2 = *bar\BTN[2]
          ;
          Protected increment = Round( *bar\percent, #PB_Round_Nearest )
          If Not increment
@@ -16080,13 +16080,13 @@ Module widgets
       EndIf
       
       If *bar
-         *SB  = *bar\button
-         *BB1 = *bar\button[1]
-         *BB2 = *bar\button[2]
+         *SB  = *bar\BTN
+         *BB1 = *bar\BTN[1]
+         *BB2 = *bar\BTN[2]
          
          If Not MousePress( )
-            Protected mouse_bar_x = CanvasMouseX( ) - *this\bar\button\x
-            Protected mouse_bar_y = CanvasMouseY( ) - *this\bar\button\y
+            Protected mouse_bar_x = CanvasMouseX( ) - *this\bar\BTN\x
+            Protected mouse_bar_y = CanvasMouseY( ) - *this\bar\BTN\y
             
             ;\\ get at point tab 
             If MouseEnter( *this, 2 )
@@ -16361,8 +16361,8 @@ Module widgets
                ;                                              ;
                If Not ( *btn And 
                         *btn\mask & #__MASK_Press And 
-                        ( *btn = *this\bar\button[1] Or 
-                          *btn = *this\bar\button[2] ) )
+                        ( *btn = *this\bar\BTN[1] Or 
+                          *btn = *this\bar\BTN[2] ) )
                   ;
                   If *hoverTAB And
                      *hoverTAB\mask & #__MASK_Press = #False
@@ -18828,15 +18828,19 @@ Module widgets
    Procedure DrawBTN(*this._s_WIDGET, *btn._s_BTN)
       Protected.l crossColor ;= *btn\color\frame[*btn\ColorState( )] & AlphaState( *btn\color\_alpha )
       Protected symbolColor
-      Protected paddingX.l, paddingY.l, vertical.b, size.l, round 
+      Protected paddingX.l, paddingY.l, vertical.b, size.l, round = *btn\Height/2
       
       If *btn\mask & #__MASK_Hover
          If *btn\type = #__BTN_Close
             symbolColor = RGBA(232, 17, 35, 255)
-         Else
+         ElseIf *btn\type = #__BTN_Maximize
             symbolColor = RGBA(17, 35, 232, 255)
+         ElseIf *btn\type = #__BTN_Minimize
+            symbolColor = RGBA(17, 232, 35, 255)
          EndIf
+         
          crossColor = symbolColor
+        ;RoundBox(*btn\X-1, *btn\Y-1, *btn\Width+2, *btn\Height+2, round, round, symbolColor) :  crossColor =RGBA(255, 255, 255, 255) : symbolColor = crossColor
          size = *btn\Height/2-4 
       Else
          size = *btn\Height/2-2
@@ -18850,7 +18854,7 @@ Module widgets
             symbolColor = crossColor
          EndIf
       EndIf
-      
+   
       round = *btn\Height
       size + Bool( size % 2 ) 
       paddingX = *btn\X + (*btn\Width - size) / 2
@@ -18872,11 +18876,19 @@ Module widgets
             
             ; Квадрат
          Case #__BTN_Maximize
-            DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Outlined)
-            Box(paddingX, paddingY, size, size, crossColor)
-            Box(paddingX + 1, paddingY + 1, size - 2, size - 2, crossColor) 
-            DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent) 
-            
+            ; Верхняя линия: от левого верхнего угла в правый верхний
+            LineXY(paddingX, paddingY, paddingX + size - 1, paddingY, crossColor)
+            LineXY(paddingX + 1, paddingY + 1, paddingX + size - 2, paddingY + 1, crossColor)
+            ; Нижняя линия: от левого нижнего угла в правый нижний
+            LineXY(paddingX, paddingY + size - 1, paddingX + size - 1, paddingY + size - 1, crossColor)
+            LineXY(paddingX + 1, paddingY + size - 2, paddingX + size - 2, paddingY + size - 2, crossColor) 
+            ; Левая линия: от левого верхнего угла в левый нижний
+            LineXY(paddingX, paddingY, paddingX, paddingY + size - 1, crossColor)
+            LineXY(paddingX + 1, paddingY + 1, paddingX + 1, paddingY + size - 2, crossColor)
+            ; Правая линия: от правого верхнего угла в правый нижний
+            LineXY(paddingX + size - 1, paddingY, paddingX + size - 1, paddingY + size - 1, crossColor)
+            LineXY(paddingX + size - 2, paddingY + 1, paddingX + size - 2, paddingY + size - 2, crossColor) 
+
             ; Черточка   
          Case #__BTN_Minimize
             LineXY(paddingX, paddingY + size/2 - 1, paddingX + size, paddingY + size/2 - 1, crossColor)
@@ -18923,6 +18935,7 @@ Module widgets
       If *btn\round
          If *btn\mask & #__MASK_Hover
             DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Outlined)
+           ; RoundBox(*btn\X-2, *btn\Y-2, *btn\Width+4, *btn\Height+4,  round, round, symbolColor)    
             RoundBox(*btn\X-1, *btn\Y-1, *btn\Width+2, *btn\Height+2,  round, round, symbolColor)    
             RoundBox(*btn\X, *btn\Y, *btn\Width, *btn\Height, round, round, symbolColor)    
             DrawingMode(#PB_2DDrawing_AlphaBlend | #PB_2DDrawing_Transparent) 
@@ -18938,22 +18951,11 @@ Module widgets
       
       PB(ClipOutput)( *this\clip_x( ) + *this\fs, *this\clip_y( ) + *this\fs, *this\clip_width( ) - *this\fs*2, *this\clip_height( ) - *this\fs*2 )
       
-      ;       ; buttins background
-      ;       draw_mode_alpha_( #PB_2DDrawing_Default )
-      ;       __draw_box( *closeBTN, color\back )
-      ;       __draw_box( *maxiBTN, color\back )
-      ;       __draw_box( *miniBTN, color\back )
-      ;       
-      ;       ; buttons img
-      ;       draw_mode_alpha_( #PB_2DDrawing_Outlined )
-      ;       __draw_close_button( *closeBTN, DPIScaled(6) )
-      ;       __draw_maximize_button( *maxiBTN, DPIScaled(4) )
-      ;       __draw_minimize_button( *miniBTN, DPIScaled(4) )
-      
-      Protected i
+         Protected i
       For i = 0 To 2
          Protected._s_BTN *btn = *title\bar\btn[i]
          If Not *btn\mask & #__MASK_Hidden
+            ;Debug ""+*btn\Height +" "+ *title\Height
             DrawBTN( *this, *btn)
          EndIf
       Next
@@ -18962,7 +18964,7 @@ Module widgets
       ; Draw img
       If *this\img\imageID
          draw_mode_alpha_( #PB_2DDrawing_Transparent )
-         draw_image_( *this, *this\inner_x( ), *this\inner_y( ) - (*this\img\height+*this\fs[2])/2 )
+         draw_image_( *this, *this\inner_x( )+ *this\fs, *this\inner_y( ) - (*this\img\height+*this\fs[2] + *this\fs)/2 )
       EndIf
       
       If *this\TitleText( )\string
@@ -18977,14 +18979,14 @@ Module widgets
             Else
                *this\TitleText( )\x = *this\title\x + *this\padding\x
             EndIf
-            *this\TitleText( )\y = *this\title\y + ( *this\title\height - *this\fs * 2 - TextHeight( "A" )) / 2
+            *this\TitleText( )\y = *this\title\y + ( *this\title\height - TextHeight( "A" )) / 2
          EndIf
          
          draw_mode_alpha_( #PB_2DDrawing_Transparent )
          DrawText( *this\TitleText( )\x, *this\TitleText( )\y, *this\TitleText( )\string, *this\color\front[state] & AlphaState( *this\color\_alpha ) )
-         
-         ;                               draw_mode_alpha_( #PB_2DDrawing_Outlined )
-         ;                               draw_roundbox_( *this\title\x, *this\title\y, *this\title\width, *this\title\height - *this\fs * 2, *this\round, *this\round, $FF000000 )
+        ; Debug Str(*this\title\y-*this\y)
+;                                        draw_mode_alpha_( #PB_2DDrawing_Outlined )
+;                                        draw_roundbox_( *this\title\x, *this\title\y, *this\title\width, *this\title\height, *this\round, *this\round, $FF000000 )
          If *this\inner_height( )
             Clip( *this, [#__c_draw] )
          EndIf
@@ -18997,24 +18999,24 @@ Module widgets
       Protected._s_BTN *closeBTN = *title\bar\btn[#__BTN_Close]
       Protected._s_BTN *maxiBTN = *title\bar\btn[#__BTN_Maximize]
       Protected._s_BTN *miniBTN = *title\bar\btn[#__BTN_Minimize]
-      If height > *this\frame_height( ) - *this\fs 
-         height = *this\frame_height( ) - *this\fs 
+      If height > *this\frame_height( ) ; - *this\fs 
+         height = *this\frame_height( ) ; - *this\fs 
       EndIf
       
-      *title\x      = *this\frame_x( ) + *this\fs
-      *title\y      = *this\frame_y( ) + *this\fs
+      *title\x         = *this\frame_x( ) + *this\fs
+      *title\y         = *this\frame_y( ) + *this\fs
       *title\width  = *this\frame_width( ) - *this\fs * 2
-      *title\height = height
+      *title\height = height - *this\fs * 2
       
       ; caption close button
       If Not *closeBTN\mask & #__MASK_Hidden
+         *closeBTN\y = *this\frame_y( ) + *this\fs + ( *title\height - *closeBTN\height ) / 2
          *closeBTN\x = ( *title\x + *title\width ) - ( *closeBTN\width + *title\spacing )
-         *closeBTN\y = *this\frame_y( ) + ( *title\height - *closeBTN\height ) / 2
       EndIf
       
       ; caption maximize button
       If Not *maxiBTN\mask & #__MASK_Hidden
-         *maxiBTN\y = *this\frame_y( ) + ( *title\height - *maxiBTN\height ) / 2
+         *maxiBTN\y = *this\frame_y( ) + *this\fs + ( *title\height - *maxiBTN\height ) / 2
          If *closeBTN\mask & #__MASK_Hidden
             *maxiBTN\x = ( *title\x + *title\width ) - ( *maxiBTN\width + *title\spacing )
          Else
@@ -19024,7 +19026,7 @@ Module widgets
       
       ; caption minimize button
       If Not *miniBTN\mask & #__MASK_Hidden
-         *miniBTN\y = *this\frame_y( ) + ( *title\height - *miniBTN\height ) / 2
+         *miniBTN\y = *this\frame_y( ) + *this\fs + ( *title\height - *miniBTN\height ) / 2
          If *maxiBTN\mask & #__MASK_Hidden
             *miniBTN\x = *closeBTN\x - ( *miniBTN\width + *title\spacing )
          Else
@@ -19575,9 +19577,6 @@ Module widgets
                EndIf
             EndIf
             
-            ; Debug ""+*this\Toggle( )\x +" "+ *this\Toggle( )\y
-            
-            ;   __draw_checkbox( _box_type_, *this\Toggle( ), *this\x,*this\y, *this\Toggle( )\round )
             __draw_checkbox( _box_type_, *this\Toggle( ), 0,0, *this\Toggle( )\round )
          EndIf
       EndIf
@@ -21601,15 +21600,15 @@ Module widgets
       
       ;\\ - Create Bars
       If *this\bar
-         *this\bar\button.allocate( BTN )
-         *this\bar\button.allocate( BTN, [1] )
-         *this\bar\button.allocate( BTN, [2] )
+         *this\bar\BTN.allocate( BTN )
+         *this\bar\BTN.allocate( BTN, [1] )
+         *this\bar\BTN.allocate( BTN, [2] )
          
          *this\scroll\increment  = ScrollStep
          Protected._s_BTN *BB1, *BB2, *SB
-         *SB  = *this\bar\button
-         *BB1 = *this\bar\button[1]
-         *BB2 = *this\bar\button[2]
+         *SB  = *this\bar\BTN
+         *BB1 = *this\bar\BTN[1]
+         *BB2 = *this\bar\BTN[2]
          
          If *this\type = #__TYPE_Splitter Or
             *this\type = #__TYPE_Scroll Or
@@ -21760,14 +21759,14 @@ Module widgets
             *this\split_2( ) = *param_2
             ;
             If Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
-               *this\bar\button[1]\mask | #__MASK_Hidden 
+               *this\bar\BTN[1]\mask | #__MASK_Hidden 
             Else
-               *this\bar\button[1]\mask &~ #__MASK_Hidden 
+               *this\bar\BTN[1]\mask &~ #__MASK_Hidden 
             EndIf
             If Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
-               *this\bar\button[2]\mask | #__MASK_Hidden 
+               *this\bar\BTN[2]\mask | #__MASK_Hidden 
             Else
-               *this\bar\button[2]\mask &~ #__MASK_Hidden 
+               *this\bar\BTN[2]\mask &~ #__MASK_Hidden 
             EndIf
             ;
             If IsGadget( *this\split_1( ) )
@@ -22176,15 +22175,15 @@ Module widgets
       
       ;\\ - Create Bars
       If *this\bar
-         *this\bar\button.allocate( BTN )
-         *this\bar\button.allocate( BTN, [1] )
-         *this\bar\button.allocate( BTN, [2] )
+         *this\bar\BTN.allocate( BTN )
+         *this\bar\BTN.allocate( BTN, [1] )
+         *this\bar\BTN.allocate( BTN, [2] )
          
          *this\scroll\increment  = ScrollStep
          Protected._s_BTN *BB1, *BB2, *SB
-         *SB  = *this\bar\button
-         *BB1 = *this\bar\button[1]
-         *BB2 = *this\bar\button[2]
+         *SB  = *this\bar\BTN
+         *BB1 = *this\bar\BTN[1]
+         *BB2 = *this\bar\BTN[2]
          
          If *this\type = #__TYPE_Splitter 
             If Not is_integral_( *this )
@@ -22207,14 +22206,14 @@ Module widgets
             *this\split_2( ) = *param_2
             ;
             If Bool( IsGadget( *this\split_1( ) ) Or *this\split_1( ) > 0 )
-               *this\bar\button[1]\mask | #__MASK_Hidden 
+               *this\bar\BTN[1]\mask | #__MASK_Hidden 
             Else
-               *this\bar\button[1]\mask &~ #__MASK_Hidden 
+               *this\bar\BTN[1]\mask &~ #__MASK_Hidden 
             EndIf
             If Bool( IsGadget( *this\split_2( ) ) Or *this\split_2( ) > 0 )
-               *this\bar\button[2]\mask | #__MASK_Hidden 
+               *this\bar\BTN[2]\mask | #__MASK_Hidden 
             Else
-               *this\bar\button[2]\mask &~ #__MASK_Hidden 
+               *this\bar\BTN[2]\mask &~ #__MASK_Hidden 
             EndIf
             ;
             If IsGadget( *this\split_1( ) )
@@ -23035,16 +23034,16 @@ Module widgets
                ; for the splitter children's
                If *parent\type = #__TYPE_Splitter
                   If *parent\split_1( ) = *this
-                     p_x1 = *parent\bar\button[1]\x
-                     p_y1 = *parent\bar\button[1]\y
-                     p_x2 = *parent\bar\button[1]\x + *parent\bar\button[1]\width
-                     p_y2 = *parent\bar\button[1]\y + *parent\bar\button[1]\height
+                     p_x1 = *parent\bar\BTN[1]\x
+                     p_y1 = *parent\bar\BTN[1]\y
+                     p_x2 = *parent\bar\BTN[1]\x + *parent\bar\BTN[1]\width
+                     p_y2 = *parent\bar\BTN[1]\y + *parent\bar\BTN[1]\height
                   EndIf
                   If *parent\split_2( ) = *this
-                     p_x1 = *parent\bar\button[2]\x
-                     p_y1 = *parent\bar\button[2]\y
-                     p_x2 = *parent\bar\button[2]\x + *parent\bar\button[2]\width
-                     p_y2 = *parent\bar\button[2]\y + *parent\bar\button[2]\height
+                     p_x1 = *parent\bar\BTN[2]\x
+                     p_y1 = *parent\bar\BTN[2]\y
+                     p_x2 = *parent\bar\BTN[2]\x + *parent\bar\BTN[2]\width
+                     p_y2 = *parent\bar\BTN[2]\y + *parent\bar\BTN[2]\height
                   EndIf
                Else
                   p_x1 = *parent\inner_x( )
@@ -23128,16 +23127,16 @@ Module widgets
          If *this\parent 
             If *this\parent\type = #__TYPE_Splitter
                ;                      If *parent\split_1( ) = *this
-               ;                         p_x1 = *parent\bar\button[1]\x
-               ;                         p_y1 = *parent\bar\button[1]\y
-               ;                         p_x2 = *parent\bar\button[1]\x + *parent\bar\button[1]\width
-               ;                         p_y2 = *parent\bar\button[1]\y + *parent\bar\button[1]\height
+               ;                         p_x1 = *parent\bar\BTN[1]\x
+               ;                         p_y1 = *parent\bar\BTN[1]\y
+               ;                         p_x2 = *parent\bar\BTN[1]\x + *parent\bar\BTN[1]\width
+               ;                         p_y2 = *parent\bar\BTN[1]\y + *parent\bar\BTN[1]\height
                ;                      EndIf
                ;                      If *parent\split_2( ) = *this
-               ;                         p_x1 = *parent\bar\button[2]\x
-               ;                         p_y1 = *parent\bar\button[2]\y
-               ;                         p_x2 = *parent\bar\button[2]\x + *parent\bar\button[2]\width
-               ;                         p_y2 = *parent\bar\button[2]\y + *parent\bar\button[2]\height
+               ;                         p_x1 = *parent\bar\BTN[2]\x
+               ;                         p_y1 = *parent\bar\BTN[2]\y
+               ;                         p_x2 = *parent\bar\BTN[2]\x + *parent\bar\BTN[2]\width
+               ;                         p_y2 = *parent\bar\BTN[2]\y + *parent\bar\BTN[2]\height
                ;                      EndIf
                
                *this\autosize = 0
@@ -24533,8 +24532,8 @@ Module widgets
                   If *e\bar
                      Protected i
                      For i = 0 To 2
-                        If EnteredButton( ) = *e\bar\button[i] : EnteredButton( ) = #Null : EndIf
-                        If *e\bar\button[i] : FreeStructure(*e\bar\button[i]) : EndIf
+                        If EnteredButton( ) = *e\bar\BTN[i] : EnteredButton( ) = #Null : EndIf
+                        If *e\bar\BTN[i] : FreeStructure(*e\bar\BTN[i]) : EndIf
                      Next
                      FreeStructure(*e\bar) : *e\bar = #Null
                   EndIf
@@ -25969,9 +25968,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 18848
-; FirstLine = 18829
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 20026
+; FirstLine = 19901
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------------------b4------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

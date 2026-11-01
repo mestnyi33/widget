@@ -89,6 +89,48 @@ EndStructure
 
 LoadFont(0, "tahoma", 12)
 
+; Macro __draw_check_button( _address_, _size_, _color_ )
+;       LineXY(( _address_\x + 0 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 4 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 5 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; Левая линия
+;       LineXY(( _address_\x + 0 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 5 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; Левая линия
+;       
+;       LineXY(( _address_\x + 5 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 0 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 2 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; правая линия
+;       LineXY(( _address_\x + 6 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 0 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + 3 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + 6 + ( _address_\height - _size_ ) / 2 ), _color_ ) ; правая линия
+;    EndMacro
+;    Macro __draw_check_button( _address_, _size_, _color_ )
+;   ; --- ЛЕВАЯ ЛИНИЯ (Толщина 2 пикселя) ---
+;   LineXY(( _address_\x + ( _address_\width - _size_ ) / 2 ), ( _address_\y + ( _size_ * 2 / 3 ) + ( _address_\height - _size_ ) / 2 ), ( _address_\x + ( _size_ / 3 ) + ( _address_\width - _size_ ) / 2 ), ( _address_\y + _size_ - 1 + ( _address_\height - _size_ ) / 2 ), _color_ )
+;   LineXY(( _address_\x + ( _address_\width - _size_ ) / 2 ), ( _address_\y + ( _size_ * 2 / 3 ) + 1 + ( _address_\height - _size_ ) / 2 ), ( _address_\x + ( _size_ / 3 ) + ( _address_\width - _size_ ) / 2 ), ( _address_\y + _size_ + ( _address_\height - _size_ ) / 2 ), _color_ )
+;   
+;   ; --- ПРАВАЯ ЛИНИЯ (Толщина 2 пикселя) ---
+;   LineXY(( _address_\x + _size_ - 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ), ( _address_\x + ( _size_ / 3 ) + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + _size_ - 1 + ( _address_\height - _size_ ) / 2 ), _color_ )
+;   LineXY(( _address_\x + _size_ + ( _address_\width - _size_ ) / 2 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ), ( _address_\x + ( _size_ / 3 ) + 2 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + _size_ - 1 + ( _address_\height - _size_ ) / 2 ), _color_ )
+; EndMacro
+
+Macro __draw_check_button( _address_, _size_, _color_ )
+  ; --- ЛЕВОЕ ПЛЕЧО (Толщина в 3 линии) ---
+  
+  ; Верхняя линия: длиннее с внутренней стороны
+  LineXY(( _address_\x + ( _address_\width - _size_ ) / 2 ) + ( _size_ * 30 / 100 ) - ( _size_ * 25 / 100 ) - 1, ( _address_\y + ( _address_\height - _size_ ) / 2 ) + ( _size_ * 80 / 100 ) - ( _size_ * 25 / 100 ) - 2, ( _address_\x + ( _address_\width - _size_ ) / 2 ) + ( _size_ * 30 / 100 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ) + ( _size_ * 80 / 100 ) - 1, _color_ ) 
+  
+  ; Центральная линия: базовая длина
+  LineXY(( _address_\x + ( _address_\width - _size_ ) / 2 ) + ( _size_ * 30 / 100 ) - ( _size_ * 25 / 100 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ) + ( _size_ * 80 / 100 ) - ( _size_ * 25 / 100 ), ( _address_\x + ( _address_\width - _size_ ) / 2 ) + ( _size_ * 30 / 100 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ) + ( _size_ * 80 / 100 ), _color_ ) 
+  
+  ; Нижняя линия: короче с внешней стороны
+  LineXY(( _address_\x + ( _address_\width - _size_ ) / 2 ) + ( _size_ * 30 / 100 ) - ( _size_ * 25 / 100 ) + 1, ( _address_\y + ( _address_\height - _size_ ) / 2 ) + ( _size_ * 80 / 100 ) - ( _size_ * 25 / 100 ) + 2, ( _address_\x + ( _address_\width - _size_ ) / 2 ) + ( _size_ * 30 / 100 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ) + ( _size_ * 80 / 100 ) + 1, _color_ ) 
+
+
+  ; --- ПРАВОЕ ПЛЕЧО (Толщина в 3 линии) ---
+  
+  ; Верхняя линия: длиннее с внутренней стороны
+  LineXY(( _address_\x + ( _address_\width - _size_ ) / 2 ) + ( _size_ * 30 / 100 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ) + ( _size_ * 80 / 100 ) - 1, ( _address_\x + ( _address_\width - _size_ ) / 2 ) + ( _size_ * 30 / 100 ) + ( _size_ * 60 / 100 ) + 1, ( _address_\y + ( _address_\height - _size_ ) / 2 ) + ( _size_ * 80 / 100 ) - ( _size_ * 60 / 100 ) - 2, _color_ ) 
+  
+  ; Центральная линия: базовая длина
+  LineXY(( _address_\x + ( _address_\width - _size_ ) / 2 ) + ( _size_ * 30 / 100 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ) + ( _size_ * 80 / 100 ), ( _address_\x + ( _address_\width - _size_ ) / 2 ) + ( _size_ * 30 / 100 ) + ( _size_ * 60 / 100 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ) + ( _size_ * 80 / 100 ) - ( _size_ * 60 / 100 ), _color_ ) 
+  
+  ; Нижняя линия: короче с внешней стороны
+  LineXY(( _address_\x + ( _address_\width - _size_ ) / 2 ) + ( _size_ * 30 / 100 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ) + ( _size_ * 80 / 100 ) + 1, ( _address_\x + ( _address_\width - _size_ ) / 2 ) + ( _size_ * 30 / 100 ) + ( _size_ * 60 / 100 ) - 1, ( _address_\y + ( _address_\height - _size_ ) / 2 ) + ( _size_ * 80 / 100 ) - ( _size_ * 60 / 100 ) + 2, _color_ )
+EndMacro
+
 ; =========================================================================
 ; 2. ПРОЦЕДУРНЫЙ ДВИЖОК ЗАГОЛОВКА (СВЕТЛАЯ ПАЛИТРА)
 ; =========================================================================
@@ -216,24 +258,23 @@ Procedure UpdateTitleBar(*this._s_WIDGET)
    
    ; Этот цикл считает ТОЛЬКО кнопки управления. Никаких проверок типов!
    If ListSize(*title\bar\btn())
-      right_x + Spacing - (Indent * 2)
+      right_x + Spacing - Indent
       ForEach *title\bar\btn()
          *btn = @*title\bar\btn()
          *btn\Width = *this\Height - Indent * 2
          *btn\Height = *btn\Width
-         right_x - Spacing - *btn\Width
-         *btn\X = *this\X + right_x + Indent
+         right_x - Spacing - *btn\Width 
+         *btn\X = *this\X + right_x
          *btn\Y = *this\Y + (*this\Height - *btn\Height) / 2
-;          *btn\size = *btn\Height/4
-;          *btn\size + Bool( *btn\size % 2 )
       Next
+      right_x - Indent 
    EndIf
    
    ; Настраиваем изолированный заголовок напрямую
    If *title
-      *title\Y = *this\Y
+      *title\Y = *this\Y 
       *title\X = *this\X + *title\slant 
-      *title\Width = right_x - *title\slant 
+      *title\Width = right_x - *title\slant
       *title\Height = *this\Height
    EndIf
 EndProcedure
@@ -313,7 +354,7 @@ Procedure DrawTitleBar(*this._s_WIDGET, bgColor.l)
       ;       size = *btn\size 
       If *btn\mask & #__MASK_Hover : size = *btn\Height/2 : Else :  size = *btn\Height/4 : EndIf  : size + Bool( size % 2 )
       round = *btn\Height
-      
+     ;Debug ""+*btn\Height +" "+ *title\Height
       If Not *btn\round
          Box(*btn\X, *btn\Y, *btn\Width, *btn\Height, RGBA(0, 0, 0, 20))    
       EndIf
@@ -374,6 +415,7 @@ Procedure DrawTitleBar(*this._s_WIDGET, bgColor.l)
             LineXY(paddingX, paddingY + size/2,     paddingX + size, paddingY + size/2,     symbolColor)
           
          Case #__BTN_Check ; Галочка: управление углом и точкой перелома
+            ; __draw_check_button( *btn, (size+8), symbolColor )
             Protected.l chkX1, chkY1, chkX2, chkY2, chkX3, chkY3
               ; Искусственное увеличение под вес крестика
             size + DesktopScaledX(4)
@@ -436,7 +478,7 @@ Procedure CreateTitleBar(text.s, image.i = 0, flags.l = #_STYLE_Default)
    
    round = DesktopScaledX(20)
    ;*title\slant = DesktopScaledX(20)
-   *title\bar\indent = DesktopScaledX(8)
+   *title\bar\indent = DesktopScaledX(4) ;+ DesktopScaledX(4)
    *title\bar\spacing = DesktopScaledX(4)
    
    *title\indent  = DesktopScaledX(8)
@@ -620,11 +662,11 @@ NewList Windows._s_WIDGET()
 Define Event.i, mx.i, my.i, needRedraw.b, *this._s_WIDGET
 If OpenWindow(0, 0, 0, 800, 230, "Light Titlebar Custom UI Demo", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    CanvasGadget(0, 0, 0, 800, 230)
-   
+   Define titleHeight = 20+8
    ; Создаем заголовки процедурно
-   Create(AddElement(Windows()), 10, 20, 780, 40, "Главное окно программы (Window 1)", #_STYLE_Default, 101)
-   Create(AddElement(Windows()), 10, 90, 780, 40, "Окно настроек системы (Window 2)", #_STYLE_Help|#_STYLE_Close, 102)
-   Create(AddElement(Windows()), 10, 160, 780, 40, "Информационное сообщение (Window 3)", 0, 103)
+   Create(AddElement(Windows()), 10, 20, 780, titleHeight, "Главное окно программы (Window 1)", #_STYLE_Default, 101)
+   Create(AddElement(Windows()), 10, 90, 780, titleHeight, "Окно настроек системы (Window 2)", #_STYLE_Help|#_STYLE_Close, 102)
+   Create(AddElement(Windows()), 10, 160, 780, titleHeight, "Информационное сообщение (Window 3)", 0, 103)
    RedrawCanvas(0, Windows())
    
    Repeat
@@ -652,8 +694,8 @@ If OpenWindow(0, 0, 0, 800, 230, "Light Titlebar Custom UI Demo", #PB_Window_Sys
 EndIf
 
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 307
-; FirstLine = 261
-; Folding = -----vm+8-------
+; CursorPosition = 268
+; FirstLine = 148
+; Folding = -f0--fN0--------
 ; EnableXP
 ; DPIAware

@@ -133,8 +133,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
          pos.l
          len.l
          StructureUnion 
-            string.s
-            text.s
+            String.s
+            Text.s
             title.s
          EndStructureUnion
       EndStructure
@@ -426,30 +426,23 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       ;--     BAR
       Structure _s_BAR
+         change.w
+         
          max.l
          min.l[3]   ; fixed min[1&2] bar size
          fixed.l[3] ; fixed bar[1&2] position (splitter)
          
-         change.w
-         
-         invert.b
-         vertical.b
          direction.b
-         
+         vertical.b
+         invert.b
          mirror.b 
-         ;;; orient.b ; Поддерживаемые ориентации
-         
          percent.f
          
          page._s_page
          area._s_page
          thumb._s_page
          
-         *button._s_BTN[3]
-      EndStructure
-      Structure _s_BAR_WIDGET Extends _s_COORDINATE
-         mask.q
-         bar._s_BAR
+         *btn._s_BTN[3]
       EndStructure
       
       ;--     SCROLL
@@ -592,7 +585,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Scroll._s_SCROLL            ; vertical & horizontal scrollbars
          
          edit._s_TEXTINFO[3]
-         text._s_TXT
+         Text._s_TXT
          
          color._s_COLOR
          padding._s_POINT
@@ -756,8 +749,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 756
-; FirstLine = 732
+; CursorPosition = 464
+; FirstLine = 447
 ; Folding = ------------
 ; Optimizer
 ; EnableXP
