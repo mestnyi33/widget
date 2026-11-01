@@ -446,7 +446,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       
       Macro IPAddress( X,Y,Width,Height, Flag=0 )
          String( X,Y,Width,Height, "", #__flag_Textnumeric|#__flag_Center|Flag )
-         Widget( )\class = "IPAddress"
+         widget( )\class = "IPAddress"
       EndMacro
       
       ;-
@@ -535,9 +535,8 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Macro Sticked( ): widgets::__GUI\sticky\window: EndMacro
    
    ;-
-   Macro Widget( ): widgets::__GUI\widget: EndMacro
-   Macro EventWidget( ): widgets::Widget( ): EndMacro
-   ;Macro EventWidget( ): widgets::__GUI\event\widget: EndMacro
+   Macro widget( ): widgets::__GUI\widget: EndMacro
+   Macro EventWidget( ): widgets::widget( ): EndMacro
    Macro WidgetEvent( ): widgets::__GUI\event\type: EndMacro
    Macro WidgetEventType( ): PBEventType( WidgetEvent( ) ): EndMacro
    Macro WidgetEventData( ): widgets::__GUI\event\data: EndMacro
@@ -567,9 +566,8 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Macro PressedButton( ): mouse( )\btn[1]: EndMacro
    
    ;-
-   Macro TitleText( ): text: EndMacro
+   Macro TitleText( ): Text: EndMacro
    Macro GetTitle( _window_ ): widgets::GetText( _window_ ): EndMacro
-   
    
    ;-
    Macro StartPrevRow(_ptr_, _object_ )
@@ -643,7 +641,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Global *before_start_enumerate_widget._s_WIDGET
    Macro StartEnum( _parent_, _item_ = #PB_All, _mode_ = 0 )
       Bool( _parent_\haschildren And _parent_\FirstWidget( ) )
-      *before_start_enumerate_widget = Widget( )
+      *before_start_enumerate_widget = widget( )
       PushListPosition( widgets( ))
       ;
       If _parent_\FirstWidget( )\address
@@ -701,7 +699,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
                Break
             EndIf
             ;
-            Widget( ) = widgets( )
+            widget( ) = widgets( )
          EndMacro
          ;             ;
          ;             Macro AbortEnum( )
@@ -712,7 +710,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
          Until Not NextElement( widgets( ))
       EndIf
       PopListPosition( widgets( ))
-      Widget( ) = *before_start_enumerate_widget
+      widget( ) = *before_start_enumerate_widget
    EndMacro
    
    ;-
@@ -1218,15 +1216,15 @@ CompilerIf Not Defined( widgets, #PB_Module )
          ;\\
          If StartEnum( _this_\parent )
             ;
-            If Widget()\anchors And Not Widget()\mask & #__mask_hidden And Widget() <> _this_ And Widget()\level = _this_\level
+            If widget()\anchors And Not widget()\mask & #__mask_hidden And widget() <> _this_ And widget()\level = _this_\level
                ;\\ left-line
-               If _this_\frame_x( ) = Widget()\frame_x( )
-                  If a_anchors( )\line[#__a_line_left]\y > Widget()\frame_y( )
-                     a_anchors( )\line[#__a_line_left]\y = Widget()\frame_y( )
+               If _this_\frame_x( ) = widget()\frame_x( )
+                  If a_anchors( )\line[#__a_line_left]\y > widget()\frame_y( )
+                     a_anchors( )\line[#__a_line_left]\y = widget()\frame_y( )
                   EndIf
-                  If _this_\frame_y( ) + _this_\frame_height( ) < Widget()\frame_y( ) + Widget()\frame_height( )
-                     If a_anchors( )\line[#__a_line_left]\height < Widget()\frame_y( ) + Widget()\frame_height( ) 
-                        a_anchors( )\line[#__a_line_left]\height = Widget()\frame_y( ) + Widget()\frame_height( )
+                  If _this_\frame_y( ) + _this_\frame_height( ) < widget()\frame_y( ) + widget()\frame_height( )
+                     If a_anchors( )\line[#__a_line_left]\height < widget()\frame_y( ) + widget()\frame_height( ) 
+                        a_anchors( )\line[#__a_line_left]\height = widget()\frame_y( ) + widget()\frame_height( )
                      EndIf
                   Else
                      If a_anchors( )\line[#__a_line_left]\height < _this_\frame_y( ) + _this_\frame_height( ) 
@@ -1236,13 +1234,13 @@ CompilerIf Not Defined( widgets, #PB_Module )
                EndIf
                ;
                ;\\ top-line
-               If _this_\frame_y( ) = Widget()\frame_y( )
-                  If a_anchors( )\line[#__a_line_top]\x > Widget()\frame_x( )
-                     a_anchors( )\line[#__a_line_top]\x = Widget()\frame_x( )
+               If _this_\frame_y( ) = widget()\frame_y( )
+                  If a_anchors( )\line[#__a_line_top]\x > widget()\frame_x( )
+                     a_anchors( )\line[#__a_line_top]\x = widget()\frame_x( )
                   EndIf
-                  If _this_\frame_x( ) + _this_\frame_width( ) <= Widget()\frame_x( ) + Widget()\frame_width( ) 
-                     If a_anchors( )\line[#__a_line_top]\width < Widget()\frame_x( ) + Widget()\frame_width( ) 
-                        a_anchors( )\line[#__a_line_top]\width = Widget()\frame_x( ) + Widget()\frame_width( )
+                  If _this_\frame_x( ) + _this_\frame_width( ) <= widget()\frame_x( ) + widget()\frame_width( ) 
+                     If a_anchors( )\line[#__a_line_top]\width < widget()\frame_x( ) + widget()\frame_width( ) 
+                        a_anchors( )\line[#__a_line_top]\width = widget()\frame_x( ) + widget()\frame_width( )
                      EndIf
                   Else
                      If a_anchors( )\line[#__a_line_top]\width < _this_\frame_x( ) + _this_\frame_width( ) 
@@ -1252,13 +1250,13 @@ CompilerIf Not Defined( widgets, #PB_Module )
                EndIf
                ;
                ;\\ right-line
-               If _this_\frame_x( ) + _this_\frame_width( ) = Widget()\frame_x( ) + Widget()\frame_width( )
-                  If a_anchors( )\line[#__a_line_right]\y > Widget()\frame_y( )
-                     a_anchors( )\line[#__a_line_right]\y = Widget()\frame_y( )
+               If _this_\frame_x( ) + _this_\frame_width( ) = widget()\frame_x( ) + widget()\frame_width( )
+                  If a_anchors( )\line[#__a_line_right]\y > widget()\frame_y( )
+                     a_anchors( )\line[#__a_line_right]\y = widget()\frame_y( )
                   EndIf
-                  If _this_\frame_y( ) + _this_\frame_height( ) < Widget()\frame_y( ) + Widget()\frame_height( )
-                     If a_anchors( )\line[#__a_line_right]\height < Widget()\frame_y( ) + Widget()\frame_height( ) 
-                        a_anchors( )\line[#__a_line_right]\height = Widget()\frame_y( ) + Widget()\frame_height( )
+                  If _this_\frame_y( ) + _this_\frame_height( ) < widget()\frame_y( ) + widget()\frame_height( )
+                     If a_anchors( )\line[#__a_line_right]\height < widget()\frame_y( ) + widget()\frame_height( ) 
+                        a_anchors( )\line[#__a_line_right]\height = widget()\frame_y( ) + widget()\frame_height( )
                      EndIf
                   Else
                      If a_anchors( )\line[#__a_line_right]\height < _this_\frame_y( ) + _this_\frame_height( ) 
@@ -1268,13 +1266,13 @@ CompilerIf Not Defined( widgets, #PB_Module )
                EndIf
                ;
                ;\\ bottom-line
-               If _this_\frame_y( ) + _this_\frame_height( ) = Widget()\frame_y( ) + Widget()\frame_height( )
-                  If a_anchors( )\line[#__a_line_bottom]\x > Widget()\frame_x( )
-                     a_anchors( )\line[#__a_line_bottom]\x = Widget()\frame_x( )
+               If _this_\frame_y( ) + _this_\frame_height( ) = widget()\frame_y( ) + widget()\frame_height( )
+                  If a_anchors( )\line[#__a_line_bottom]\x > widget()\frame_x( )
+                     a_anchors( )\line[#__a_line_bottom]\x = widget()\frame_x( )
                   EndIf
-                  If _this_\frame_x( ) + _this_\frame_width( ) < Widget()\frame_x( ) + Widget()\frame_width( )
-                     If a_anchors( )\line[#__a_line_bottom]\width < Widget()\frame_x( ) + Widget()\frame_width( ) 
-                        a_anchors( )\line[#__a_line_bottom]\width = Widget()\frame_x( ) + Widget()\frame_width( )
+                  If _this_\frame_x( ) + _this_\frame_width( ) < widget()\frame_x( ) + widget()\frame_width( )
+                     If a_anchors( )\line[#__a_line_bottom]\width < widget()\frame_x( ) + widget()\frame_width( ) 
+                        a_anchors( )\line[#__a_line_bottom]\width = widget()\frame_x( ) + widget()\frame_width( )
                      EndIf
                   Else
                      If a_anchors( )\line[#__a_line_bottom]\width < _this_\frame_x( ) + _this_\frame_width( ) 
@@ -1509,7 +1507,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       draw_roundbox_( _address_\x + 1, _address_\y, _address_\width - 2, _address_\height, _address_\round, _address_\round, _address_\_color_type_[_address_\ColorState( )] & AlphaState(_address_\color\_alpha ) )
    EndMacro
    
-
+   
    ;-
    Macro __draw_option_BTN( _address_, _size_, _color_ )
       If _address_\round > 2
@@ -1536,7 +1534,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       LineXY(( _address_\x + _size_ - 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ), ( _address_\x + ( _size_ / 3 ) + 1 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + _size_ - 1 + ( _address_\height - _size_ ) / 2 ), _color_ )
       LineXY(( _address_\x + _size_ + ( _address_\width - _size_ ) / 2 ), ( _address_\y + ( _address_\height - _size_ ) / 2 ), ( _address_\x + ( _size_ / 3 ) + 2 + ( _address_\width - _size_ ) / 2 ), ( _address_\y + _size_ - 1 + ( _address_\height - _size_ ) / 2 ), _color_ )
    EndMacro
-
+   
    Macro __draw_checkbox( _type_, _address_, _x_,_y_,_round_, _color_fore_ = $FFFFFFFF, _color_fore2_ = $FFE9BA81, _color_back_ = $80E2E2E2, _color_back2_ = $FFE89C3D, _color_frame_ = $80C8C8C8, _color_frame2_ = $FFDC9338, _alpha_ = 255, size=4 )
       draw_mode_alpha_( #PB_2DDrawing_Gradient )
       LinearGradient( (_x_+_address_\x), (_y_+_address_\y), (_x_+_address_\x), ( (_y_+_address_\y) + _address_\height ))
@@ -1930,8 +1928,8 @@ CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 570
-; FirstLine = 559
-; Folding = -----------------------------------------
+; CursorPosition = 626
+; FirstLine = 573
+; Folding = --------9-----------Bg-------------------
 ; EnableXP
 ; DPIAware

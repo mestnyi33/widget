@@ -1,4 +1,4 @@
-﻿CompilerIf Not Defined( Widget, #PB_Module )
+﻿CompilerIf Not Defined( widget, #PB_Module )
    XIncludeFile "Declares.pbi"
 CompilerEndIf
 
@@ -3622,7 +3622,7 @@ Module widgets
                            UpdateWindow_(GadgetID(*this\parent\scroll\gadget[2]))
                         CompilerEndIf
                      Else
-                        If StartEnum( *this\parent ) : *e = Widget()
+                        If StartEnum( *this\parent ) : *e = widget()
                            If *this\parent = *e\parent 
                               If *this\parent\scroll\v <> *e And
                                  *this\parent\scroll\h <> *e And Not *e\align
@@ -3660,7 +3660,7 @@ Module widgets
                            UpdateWindow_(GadgetID(*this\parent\scroll\gadget[2]))
                         CompilerEndIf
                      Else
-                        If StartEnum( *this\parent ) : *e = Widget()
+                        If StartEnum( *this\parent ) : *e = widget()
                            If *this\parent = *e\parent 
                               If *this\parent\scroll\v <> *e And
                                  *this\parent\scroll\h <> *e And Not *e\align
@@ -4848,7 +4848,7 @@ Module widgets
          EndIf
       EndIf
       
-      Widget( ) = *this ;?
+      widget( ) = *this ;?
       ProcedureReturn *this
    EndProcedure
    
@@ -5004,11 +5004,11 @@ Module widgets
    EndProcedure
    
    Procedure   BarItem( item, Text.s, img = - 1 )
-      ProcedureReturn AddBarItem( Widget( ), item, Text.s, img )
+      ProcedureReturn AddBarItem( widget( ), item, Text.s, img )
    EndProcedure
    
    Procedure   BarButton( Button.i, img.i, mode.i = 0, Text.s = #Null$ )
-      ProcedureReturn AddItem( Widget( ), Button, Text, img, mode )
+      ProcedureReturn AddItem( widget( ), Button, Text, img, mode )
    EndProcedure
    
    Procedure   BarSeparator( )
@@ -5018,7 +5018,7 @@ Module widgets
    EndProcedure
    
    Procedure   OpenSubBar( Text.s, img = - 1)
-      Protected *menu._s_WIDGET = Widget( )
+      Protected *menu._s_WIDGET = widget( )
       Protected *this._s_WIDGET
       
       If *menu
@@ -5035,8 +5035,8 @@ Module widgets
    EndProcedure
    
    Procedure   CloseSubBar( )
-      If Widget( )\menu\parent
-         Widget( ) = Widget( )\menu\parent
+      If widget( )\menu\parent
+         widget( ) = widget( )\menu\parent
       EndIf
    EndProcedure
    
@@ -5399,7 +5399,7 @@ Module widgets
                CocoaMessage(0, WindowID, "setLevel:", 3)
                ; Debug CocoaMessage(0, WindowID, "level")
             CompilerElse
-               StickyWindow( window, #True )
+               StickyWindow( Window, #True )
             CompilerEndIf
             
             CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -7104,7 +7104,7 @@ Module widgets
          
          ; 3. Если есть дочерние элементы — каскадно обновляем их видимость
          If *this\haschildren
-            If StartEnum( *this ) : *e = Widget()
+            If StartEnum( *this ) : *e = widget()
                HideState( *e, *e\parent )
                StopEnum( )
             EndIf
@@ -7140,7 +7140,7 @@ Module widgets
          
          ; Если есть дочерние элементы — каскадно обновляем их
          If *this\haschildren
-            If StartEnum( *this ) : *e = Widget()
+            If StartEnum( *this ) : *e = widget()
                DisableState( *e, *e\parent )
                StopEnum( )
             EndIf
@@ -8559,7 +8559,7 @@ Module widgets
             
             If is_integral_( *this )
                If *this\parent\haschildren
-                  If StartEnum( *this\parent ) : *e = Widget()
+                  If StartEnum( *this\parent ) : *e = widget()
                      ; hide all children's except those whose parent-item is selected
                      HideState( *e, *e\parent )
                      DisableState( *e, *e\parent )
@@ -10602,7 +10602,7 @@ Module widgets
          EndIf
       EndIf
       
-      Widget( ) = *this
+      widget( ) = *this
       ProcedureReturn *this
    EndProcedure
    
@@ -11680,7 +11680,7 @@ Module widgets
             
             *this\ComboBar( )\fs = 2
             Hide( *this\ComboBar( ), #True )
-            Widget( ) = *this
+            widget( ) = *this
          EndIf
          ;
          If *this\ComboBar( )
@@ -11730,7 +11730,7 @@ Module widgets
                   ; (начиная с выбранного индекса)
                   If is_integral_( *tabBox )
                      Protected._s_WIDGET *e
-                     If StartEnum( *tabBox\parent ) : *e = Widget()
+                     If StartEnum( *tabBox\parent ) : *e = widget()
                         If *e\parent = *tabBox\parent 
                            If *e\tabindex >= Item
                               *e\tabindex + 1
@@ -11816,7 +11816,7 @@ Module widgets
             
             *this\parent\align = 0 
             
-            If StartEnum( *this\parent ) : *e = Widget()
+            If StartEnum( *this\parent ) : *e = widget()
                If *e\tabindex = #PB_Ignore
                   SetAlign( *e, 0, 0,1,#__FLAG_AutoSize,0, 0 )          
                EndIf
@@ -15933,7 +15933,7 @@ Module widgets
       
    EndProcedure
    
-   Procedure   DoEvent_Buttons( *this._s_WIDGET, event.l, *btn._s_BTN )
+   Procedure   DoEvent_BTNs( *this._s_WIDGET, event.l, *btn._s_BTN )
       Protected result.b
       Protected *bar._s_BAR = *this\bar
       Protected._s_BTN *BB1, *BB2, *SB
@@ -16054,6 +16054,52 @@ Module widgets
                   If bar_ThumbChange( *this, ( CanvasMouseX( ) - MousePressX( )), increment )
                      result = #True
                   EndIf
+               EndIf
+            EndIf
+         EndIf
+      EndIf
+      
+      If *this\title
+         If event = #__EVENT_MouseMove
+            If *this\title\mask & #__MASK_Hover And  *this\mask & #__MASK_Press And Not *this\anchors
+               Resize( *this, CanvasMouseX( ) - MousePressX( ), CanvasMouseY( ) - MousePressY( ), #PB_Ignore, #PB_Ignore, 0 )
+            EndIf
+         EndIf
+         
+         If event = #__EVENT_LeftClick
+            Select *btn\type
+                  ; close button
+               Case #__BTN_Close
+                  If is_root_( *this )
+                     PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, *this )
+                  Else
+                     Post( *this, #__EVENT_close )
+                  EndIf
+                  
+                  ; maximize button
+               Case #__BTN_Maximize
+                  If *this\mask & #__MASK_Maximize
+                     ProcedureReturn SetState( *this, #PB_Window_Normal )
+                  Else
+                     ProcedureReturn SetState( *this, #PB_Window_Maximize )
+                  EndIf
+                  
+                  ; minimize button
+               Case #__BTN_Minimize
+                  If *this\mask & #__MASK_Minimize
+                     ProcedureReturn SetState( *this, #PB_Window_Normal )
+                  Else
+                     ProcedureReturn SetState( *this, #PB_Window_Minimize )
+                  EndIf
+            EndSelect
+         EndIf
+         
+         If event = #__EVENT_Left2Click
+            If *this\title\mask & #__MASK_Hover
+               If *this\mask & #__MASK_Maximize
+                  ProcedureReturn SetState( *this, #PB_Window_Normal )
+               Else
+                  ProcedureReturn SetState( *this, #PB_Window_Maximize )
                EndIf
             EndIf
          EndIf
@@ -16422,7 +16468,7 @@ Module widgets
       EndIf
       
       ;\\
-      If DoEvent_Buttons( *this, event, *btn )
+      If DoEvent_BTNs( *this, event, *btn )
          result = 1
       EndIf
       
@@ -16657,51 +16703,7 @@ Module widgets
                      *this\ColorState( ) = #__s_0
                   EndIf
                EndIf
-               
-               If event = #__EVENT_MouseMove
-                  If *this\title\mask & #__MASK_Hover And *this\mask & #__MASK_Press And Not *this\anchors
-                     Resize( *this, CanvasMouseX( ) - MousePressX( ), CanvasMouseY( ) - MousePressY( ), #PB_Ignore, #PB_Ignore, 0 )
-                  EndIf
-               EndIf
-               
-               If event = #__EVENT_LeftClick
-                  Select *hoverBTN\type
-                        ; close button
-                     Case #__BTN_Close
-                        If is_root_( *this )
-                           PostEvent( #PB_Event_CloseWindow, *this\root\canvas\window, *this )
-                        Else
-                           Post( *this, #__EVENT_close )
-                        EndIf
-                        
-                        ; maximize button
-                     Case #__BTN_Maximize
-                        If *this\mask & #__MASK_Maximize
-                           ProcedureReturn SetState( *this, #PB_Window_Normal )
-                        Else
-                           ProcedureReturn SetState( *this, #PB_Window_Maximize )
-                        EndIf
-                        
-                        ; minimize button
-                     Case #__BTN_Minimize
-                        If *this\mask & #__MASK_Minimize
-                           ProcedureReturn SetState( *this, #PB_Window_Normal )
-                        Else
-                           ProcedureReturn SetState( *this, #PB_Window_Minimize )
-                        EndIf
-                  EndSelect
-               EndIf
-               
-               If event = #__EVENT_Left2Click
-                  If *this\title\mask & #__MASK_Hover
-                     If *this\mask & #__MASK_Maximize
-                        ProcedureReturn SetState( *this, #PB_Window_Normal )
-                     Else
-                        ProcedureReturn SetState( *this, #PB_Window_Maximize )
-                     EndIf
-                  EndIf
-               EndIf
-               
+              
             Case #__TYPE_Button, #__TYPE_ButtonImage
                If Not ( *this\Toggle( ) And *this\Toggle( )\checked)
                   Select event
@@ -17894,9 +17896,9 @@ Module widgets
    EndProcedure
    
    Procedure   EventClose( )
-      Protected window = PB(EventWindow)( )
-      Protected Canvas = PB(GetWindowData)( window )
-      Debug "Close... " + window
+      Protected Window = PB(EventWindow)( )
+      Protected Canvas = PB(GetWindowData)( Window )
+      Debug "Close... " + Window
       
       If IsGadget(Canvas)
          Post( key::GetData(PB(GadgetID)(Canvas)), #__EVENT_Close )
@@ -17914,12 +17916,12 @@ Module widgets
    
    Procedure   EventActive( )
       If PopupBar( )
-         Protected window = PB(EventWindow)( )
-         Protected Canvas = PB(GetWindowData)( window )
+         Protected Window = PB(EventWindow)( )
+         Protected Canvas = PB(GetWindowData)( Window )
          ;
          If IsGadget( Canvas )
             If PopupBar( )\root\canvas\gadget = Canvas
-               Debug "Active... " + window
+               Debug "Active... " + Window
             EndIf
          EndIf
       EndIf
@@ -17927,17 +17929,17 @@ Module widgets
    
    Procedure   EventDeactive( )
       If PopupBar( )
-         Protected window = PB(EventWindow)( )
-         Protected Canvas = PB(GetWindowData)( window )
+         Protected Window = PB(EventWindow)( )
+         Protected Canvas = PB(GetWindowData)( Window )
          ;
          If IsGadget( Canvas )
             If PopupBar( )\root\canvas\gadget = Canvas
-               Debug "Deactive... " + window
+               Debug "Deactive... " + Window
             EndIf
          EndIf
          
          CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-            If gtk_window_is_active_( WindowID( window )) 
+            If gtk_window_is_active_( WindowID( Window )) 
                
             EndIf
          CompilerElse  
@@ -17952,9 +17954,9 @@ Module widgets
    EndProcedure
    
    Procedure   EventRestore( )
-      Protected window = PB(EventWindow)( )
-      Protected Canvas = PB(GetWindowData)( window )
-      Debug "Restore... " + window
+      Protected Window = PB(EventWindow)( )
+      Protected Canvas = PB(GetWindowData)( Window )
+      Debug "Restore... " + Window
       ;
       If IsGadget( Canvas )
          SetState( key::GetData(PB(GadgetID)(Canvas)), #PB_Window_Normal )
@@ -17962,9 +17964,9 @@ Module widgets
    EndProcedure
    
    Procedure   EventMaximize( )
-      Protected window = PB(EventWindow)( )
-      Protected Canvas = PB(GetWindowData)( window )
-      Debug "Maximize... " + window
+      Protected Window = PB(EventWindow)( )
+      Protected Canvas = PB(GetWindowData)( Window )
+      Debug "Maximize... " + Window
       ;
       If IsGadget( Canvas )
          SetState( key::GetData(PB(GadgetID)(Canvas)), #PB_Window_Maximize )
@@ -17972,9 +17974,9 @@ Module widgets
    EndProcedure
    
    Procedure   EventMinimize( )
-      Protected window = PB(EventWindow)( )
-      Protected Canvas = PB(GetWindowData)( window )
-      Debug "Minimize... " + window
+      Protected Window = PB(EventWindow)( )
+      Protected Canvas = PB(GetWindowData)( Window )
+      Debug "Minimize... " + Window
       ;
       If IsGadget( Canvas )
          SetState( key::GetData(PB(GadgetID)(Canvas)), #PB_Window_Minimize )
@@ -18994,19 +18996,19 @@ Module widgets
       
    EndProcedure
    
-   Procedure UpdateTitleBar(*this._s_WIDGET, height.l)
+   Procedure UpdateTitleBar(*this._s_WIDGET, Height.l)
       Protected._s_TITLE *title = *this\title
       Protected._s_BTN *closeBTN = *title\bar\btn[#__BTN_Close]
       Protected._s_BTN *maxiBTN = *title\bar\btn[#__BTN_Maximize]
       Protected._s_BTN *miniBTN = *title\bar\btn[#__BTN_Minimize]
-      If height > *this\frame_height( ) ; - *this\fs 
-         height = *this\frame_height( ) ; - *this\fs 
+      If Height > *this\frame_height( ) - *this\fs 
+         Height = *this\frame_height( ) - *this\fs 
       EndIf
       
       *title\x         = *this\frame_x( ) + *this\fs
       *title\y         = *this\frame_y( ) + *this\fs
       *title\width  = *this\frame_width( ) - *this\fs * 2
-      *title\height = height - *this\fs * 2
+      *title\height = Height - *this\fs * 2
       
       ; caption close button
       If Not *closeBTN\mask & #__MASK_Hidden
@@ -19044,7 +19046,7 @@ Module widgets
       EndIf
    EndProcedure
    
-   Procedure CreateTitleBar(text.s, image.i, style.q)
+   Procedure CreateTitleBar(Text.s, Image.i, style.q)
       Protected._s_TITLE *title = AllocateStructure(_s_TITLE)
       Protected._s_BTN *closeBTN = *title\bar\btn[#__BTN_Close]
       Protected._s_BTN *maxiBTN = *title\bar\btn[#__BTN_Maximize]
@@ -20896,7 +20898,7 @@ Module widgets
                   EndIf
                   
                   ;If Start( *e, *Root ) 
-                  If 0=1 And StartEnum( *Root ) : *e = Widget()
+                  If 0=1 And StartEnum( *Root ) : *e = widget()
                      If *e\parent And 
                         *e\parent\mask & #__MASK_Hidden 
                         Continue
@@ -21159,7 +21161,7 @@ Module widgets
          *root\autosize = #True
          *this          = *root
       Else
-         *this.allocate( Widget )
+         *this.allocate( widget )
       EndIf
       
       ;
@@ -22000,7 +22002,7 @@ Module widgets
          SetAttribute( *this, #PB_ScrollArea_ScrollStep, *param_3 )
       EndIf
       
-      Widget( ) = *this
+      widget( ) = *this
       ProcedureReturn *this
    EndProcedure
    
@@ -22331,7 +22333,7 @@ Module widgets
          SetAttribute( *this, #PB_ScrollArea_ScrollStep, *param_3 )
       EndIf
       
-      Widget( ) = *this
+      widget( ) = *this
       ProcedureReturn *this
    EndProcedure
    
@@ -22491,7 +22493,7 @@ Module widgets
    
    
    ;-
-   Procedure   Open( window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, Flag.q = #Null, *parentID = #Null, Canvas = #PB_Ignore )
+   Procedure   Open( Window, X.l = 0, Y.l = 0, Width.l = #PB_Ignore, Height.l = #PB_Ignore, title$ = #Null$, Flag.q = #Null, *parentID = #Null, Canvas = #PB_Ignore )
       Protected result, w, g, canvasflag = #PB_Canvas_Keyboard, UseGadgetList
       
       ; init
@@ -22552,7 +22554,7 @@ Module widgets
             X = 0
             Y = 0
          Else
-            window = ID::Window(UseGadgetList(0))
+            Window = ID::Window(UseGadgetList(0))
             w = WindowID( Window ) 
          EndIf
          ;
@@ -22731,12 +22733,12 @@ Module widgets
                SetActiveGadget( *root\canvas\gadget )
             EndIf
             ;
-            PostEvent( #PB_Event_SizeWindow, window, Canvas ) ; Bug PB
+            PostEvent( #PB_Event_SizeWindow, Window, Canvas ) ; Bug PB
             PostRepaint( *root )
          EndIf
       EndIf
       
-      Widget( ) = *root
+      widget( ) = *root
       
       ProcedureReturn *root
    EndProcedure
@@ -22754,7 +22756,7 @@ Module widgets
       
       
       If Root( )
-         *this.allocate( WINDOW )
+         *this.allocate( Window )
       Else
          *this = Open( #PB_Any, X, Y, Width + fs * 2, Height + fs * 2 + barHeight, Text,  #PB_Window_BorderLess, *parent )
          X     = 0
@@ -22805,7 +22807,7 @@ Module widgets
       *this\bs = *this\fs
       
       ;
-      *this\title = CreateTitleBar(text.s, 0, *this\flagmask)
+      *this\title = CreateTitleBar(Text.s, 0, *this\flagmask)
       If *this\title\mask & #__MASK_Hidden
          *this\TitleBarHeight = 0
          *this\fs[2] = 0
@@ -22883,7 +22885,7 @@ Module widgets
          Resize( *this, X, Y, Width, Height )
       EndIf
       
-      Widget( ) = *this
+      widget( ) = *this
       ProcedureReturn *this
    EndProcedure
    
@@ -23521,7 +23523,7 @@ Module widgets
                      If make_area_max( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
                         ;\\
                         If StartEnum( *this\parent )
-                           *e = Widget()
+                           *e = widget()
                            If *this\parent = *e\parent And *this <> *e
                               ; Reclip( *e )
                               Resize( *e, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
@@ -23746,131 +23748,131 @@ Module widgets
             Protected piw, pih
             
             If StartEnum( *this )
-               If Widget( )\parent <> *this
+               If widget( )\parent <> *this
                   Continue
                EndIf
                ;
-               If Not is_scrollbars_( Widget( ))
-                  If Widget( )\align
-                     piw = (Widget( )\parent\inner_width( ))
-                     pih = (Widget( )\parent\inner_height( ))
+               If Not is_scrollbars_( widget( ))
+                  If widget( )\align
+                     piw = (widget( )\parent\inner_width( ))
+                     pih = (widget( )\parent\inner_height( ))
                      
                      ;\\
-                     If Widget( )\parent\align
-                        pw = ( piw - Widget( )\parent\align\width )
-                        ph = ( pih - Widget( )\parent\align\height )
+                     If widget( )\parent\align
+                        pw = ( piw - widget( )\parent\align\width )
+                        ph = ( pih - widget( )\parent\align\height )
                      EndIf
                      
                      ;\\
                      ;\\ horizontal
                      ;\\
-                     If Widget( )\align\left > 0
-                        X = Widget( )\align\x
-                        If Widget( )\align\right < 0
-                           If Widget( )\align\left = 0
+                     If widget( )\align\left > 0
+                        X = widget( )\align\x
+                        If widget( )\align\right < 0
+                           If widget( )\align\left = 0
                               X + pw / 2
                            EndIf
-                           Width = (( Widget( )\align\x + Widget( )\align\width ) + pw / 2 ) - X
+                           Width = (( widget( )\align\x + widget( )\align\width ) + pw / 2 ) - X
                         EndIf
                      EndIf
-                     If Not Widget( )\align\right
-                        Width = Widget( )\align\width
+                     If Not widget( )\align\right
+                        Width = widget( )\align\width
                         
-                        If Not Widget( )\align\left
-                           X = Widget( )\align\x
-                           If Widget( )\align\left = 0
+                        If Not widget( )\align\left
+                           X = widget( )\align\x
+                           If widget( )\align\left = 0
                               X + pw / 2
                            EndIf
-                           Width = (( Widget( )\align\x + Widget( )\align\width ) + pw / 2 ) - X
+                           Width = (( widget( )\align\x + widget( )\align\width ) + pw / 2 ) - X
                         EndIf
                      EndIf
-                     If Widget( )\align\right > 0
-                        X = Widget( )\align\x
-                        If Widget( )\align\left < 0
+                     If widget( )\align\right > 0
+                        X = widget( )\align\x
+                        If widget( )\align\left < 0
                            ;\\ ( left = proportional & right = 1 )
-                           X     = Widget( )\align\x + pw / 2
-                           Width = (( Widget( )\align\x + Widget( )\align\width ) + pw ) - X
+                           X     = widget( )\align\x + pw / 2
+                           Width = (( widget( )\align\x + widget( )\align\width ) + pw ) - X
                         Else
-                           If Widget( )\align\left = 0
+                           If widget( )\align\left = 0
                               X + pw
                            EndIf
-                           Width = (( Widget( )\align\x + Widget( )\align\width ) + pw ) - X
+                           Width = (( widget( )\align\x + widget( )\align\width ) + pw ) - X
                         EndIf
                      EndIf
                      ;\\ horizontal proportional
-                     If ( Widget( )\align\left < 0 And Widget( )\align\right <= 0 ) Or
-                        ( Widget( )\align\right < 0 And Widget( )\align\left <= 0 )
-                        Protected ScaleX.d = piw / Widget( )\parent\align\width
-                        Width = ScaleX * Widget( )\align\width
+                     If ( widget( )\align\left < 0 And widget( )\align\right <= 0 ) Or
+                        ( widget( )\align\right < 0 And widget( )\align\left <= 0 )
+                        Protected ScaleX.d = piw / widget( )\parent\align\width
+                        Width = ScaleX * widget( )\align\width
                         ;\\ center proportional
-                        If Widget( )\align\left < 0 And Widget( )\align\right < 0
+                        If widget( )\align\left < 0 And widget( )\align\right < 0
                            X = ( piw - Width ) / 2
-                        ElseIf Widget( )\align\left < 0 And Widget( )\align\right = 0
+                        ElseIf widget( )\align\left < 0 And widget( )\align\right = 0
                            ;\\ right proportional
-                           X = piw - ( Widget( )\parent\align\width - Widget( )\align\x - Widget( )\align\width ) - Width
-                        ElseIf ( Widget( )\align\right < 0 And Widget( )\align\left = 0 )
+                           X = piw - ( widget( )\parent\align\width - widget( )\align\x - widget( )\align\width ) - Width
+                        ElseIf ( widget( )\align\right < 0 And widget( )\align\left = 0 )
                            ;\\ left proportional
-                           X = Widget( )\align\x
+                           X = widget( )\align\x
                         EndIf
                      EndIf
                      
                      ;\\
                      ;\\ vertical
                      ;\\
-                     If Widget( )\align\top > 0
-                        Y = Widget( )\align\y
-                        If Widget( )\align\bottom < 0
-                           If Widget( )\align\top = 0
+                     If widget( )\align\top > 0
+                        Y = widget( )\align\y
+                        If widget( )\align\bottom < 0
+                           If widget( )\align\top = 0
                               Y + ph / 2
                            EndIf
-                           Height = (( Widget( )\align\y + Widget( )\align\height ) + ph / 2 ) - Y
+                           Height = (( widget( )\align\y + widget( )\align\height ) + ph / 2 ) - Y
                         EndIf
                      EndIf
-                     If Not Widget( )\align\bottom
-                        Height = Widget( )\align\height
+                     If Not widget( )\align\bottom
+                        Height = widget( )\align\height
                         
-                        If Not Widget( )\align\top
-                           Y = Widget( )\align\y
-                           If Widget( )\align\top = 0
+                        If Not widget( )\align\top
+                           Y = widget( )\align\y
+                           If widget( )\align\top = 0
                               Y + ph / 2
                            EndIf
-                           Height = (( Widget( )\align\y + Widget( )\align\height ) + ph / 2 ) - Y
+                           Height = (( widget( )\align\y + widget( )\align\height ) + ph / 2 ) - Y
                         EndIf
                      EndIf
-                     If Widget( )\align\bottom > 0
-                        Y = Widget( )\align\y
-                        If Widget( )\align\top < 0
+                     If widget( )\align\bottom > 0
+                        Y = widget( )\align\y
+                        If widget( )\align\top < 0
                            ;\\ ( top = proportional & bottom = 1 )
-                           Y      = Widget( )\align\y + ph / 2
-                           Height = (( Widget( )\align\y + Widget( )\align\height ) + ph ) - Y
+                           Y      = widget( )\align\y + ph / 2
+                           Height = (( widget( )\align\y + widget( )\align\height ) + ph ) - Y
                         Else
-                           If Widget( )\align\top = 0
+                           If widget( )\align\top = 0
                               Y + ph
                            EndIf
-                           Height = (( Widget( )\align\y + Widget( )\align\height ) + ph ) - Y
+                           Height = (( widget( )\align\y + widget( )\align\height ) + ph ) - Y
                         EndIf
                      EndIf
                      ;\\ vertical proportional
-                     If ( Widget( )\align\top < 0 And Widget( )\align\bottom <= 0 ) Or
-                        ( Widget( )\align\bottom < 0 And Widget( )\align\top <= 0 )
-                        Protected ScaleY.d = pih / Widget( )\parent\align\height
-                        Height = ScaleY * Widget( )\align\height
+                     If ( widget( )\align\top < 0 And widget( )\align\bottom <= 0 ) Or
+                        ( widget( )\align\bottom < 0 And widget( )\align\top <= 0 )
+                        Protected ScaleY.d = pih / widget( )\parent\align\height
+                        Height = ScaleY * widget( )\align\height
                         ;\\ center proportional
-                        If Widget( )\align\top < 0 And Widget( )\align\bottom < 0
+                        If widget( )\align\top < 0 And widget( )\align\bottom < 0
                            Y = ( pih - Height ) / 2
-                        ElseIf Widget( )\align\top < 0 And Widget( )\align\bottom = 0
+                        ElseIf widget( )\align\top < 0 And widget( )\align\bottom = 0
                            ;\\ bottom proportional
-                           Y = pih - ( Widget( )\parent\align\height - Widget( )\align\y - Widget( )\align\height ) - Height
-                        ElseIf ( Widget( )\align\bottom < 0 And Widget( )\align\top = 0 )
+                           Y = pih - ( widget( )\parent\align\height - widget( )\align\y - widget( )\align\height ) - Height
+                        ElseIf ( widget( )\align\bottom < 0 And widget( )\align\top = 0 )
                            ;\\ top proportional
-                           Y = Widget( )\align\y
+                           Y = widget( )\align\y
                         EndIf
                      EndIf
                      
                      ;
-                     Resize( Widget( ), (X), (Y), (Width), (Height), 0 )
+                     Resize( widget( ), (X), (Y), (Width), (Height), 0 )
                   Else
-                     Resize( Widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+                     Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                   EndIf
                EndIf
                ;
@@ -24643,7 +24645,7 @@ Module widgets
    
    Procedure   Close( *root._s_ROOT )
       Protected result
-      Protected window =- 1
+      Protected Window =- 1
       Protected canvaswindow = Root( )\canvas\window
       Protected canvasgadget = Root( )\canvas\gadget
       ;
@@ -24656,18 +24658,18 @@ Module widgets
       ; 3. Рисуем все элементы по порядку (снизу вверх)
       *next_root = *r
       While *next_root 
-         window = *next_root\canvas\window
+         Window = *next_root\canvas\window
          If *root = #PB_All
             canvasgadget = *next_root\canvas\gadget
             Delete( *next_root )
             PostFree( *next_root )
             ;DeleteMapElement( *next_root )
-            If window <> canvaswindow
+            If Window <> canvaswindow
                FreeGadget( canvasgadget )
-               CloseWindow( window )
+               CloseWindow( Window )
             EndIf
          Else
-            If window = *root\canvas\window 
+            If Window = *root\canvas\window 
                Delete( *next_root )
                PostFree( *next_root )
                ;DeleteMapElement( *next_root )
@@ -24678,7 +24680,7 @@ Module widgets
       Wend
       ;
       If result
-         window =- 1
+         Window =- 1
          FreeGadget( canvasgadget )   
          Protected hParent = WindowID( canvaswindow )
          ;
@@ -24697,15 +24699,15 @@ Module widgets
             *next_root = *r
             While *next_root 
                If parent::IsChild( WindowID( *next_root\canvas\window ), hParent )
-                  window = *next_root\canvas\window
+                  Window = *next_root\canvas\window
                   Delete( *next_root)
                   PostFree( *next_root)
                   ; DeleteMapElement( *next_root )
                EndIf
                *next_root = *next_root\NextRoot( ) 
             Wend
-            If IsWindow( window )
-               CloseWindow( window ) 
+            If IsWindow( Window )
+               CloseWindow( Window ) 
             EndIf
             CloseWindow( canvaswindow ) 
          EndIf 
@@ -25000,15 +25002,15 @@ Module widgets
       ;
       ;\\
       Container( f1, f1, Width - f1 * 2, Height - bh - f1 - f2 * 2 - 1 )
-      SetClass( Widget( ), "message_CONT" )
+      SetClass( widget( ), "message_CONT" )
       If IsImage( img )
          Image( f2, f2, iw, iw, img, #__FLAG_Center | #__FLAG_Borderflat | #__FLAG_transparent )
-         SetClass( Widget( ), "message_IMAGE" )
+         SetClass( widget( ), "message_IMAGE" )
          Text( f2 + iw + f2, f2, Width - iw - f2 * 3, iw, Text, #__FLAG_Center | #__FLAG_Left | #__FLAG_transparent );| #__FLAG_Borderless )
       Else
          Text( f2, f2, Width - f2 * 2, iw, Text, #__FLAG_Center | #__FLAG_Left | #__FLAG_transparent );| #__FLAG_Borderless )
       EndIf
-      SetClass( Widget( ), "message_INFO" )
+      SetClass( widget( ), "message_INFO" )
       CloseList( )
       
       ;\\
@@ -25680,10 +25682,10 @@ CompilerIf #PB_Compiler_IsMainFile
                   ; перечисляем детей открытого итема
                   If StartEnum( *panel, GetState( *panel ))
                      ; исключаем суб детей
-                     If Widget( )\parent = *panel
-                        If Widget( ) <> *c
+                     If widget( )\parent = *panel
+                        If widget( ) <> *c
                            ; Debug widget( )\class
-                           Hide( Widget( ), GetState( *c ))
+                           Hide( widget( ), GetState( *c ))
                         EndIf
                      EndIf 
                      StopEnum( )
@@ -25744,7 +25746,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Bind(CheckBox( 5, 145, 150, 22, "hide_parent"), @hide_show_panel_events( ))
    Bind(Option( 5, 170, 150, 22, "hide_children"), @hide_show_panel_events( ))
    Bind(Option( 5, 195, 150, 22, "show_children" ), @hide_show_panel_events( ))
-   SetState( Widget( ), 1 )
+   SetState( widget( ), 1 )
    Bind(*c, @hide_show_panel_events( ))
    
    AddItem( *panel, -1, "(enter&leave)-test" ) : SetItemFont(*panel, 2, 6)
@@ -25829,9 +25831,9 @@ CompilerIf #PB_Compiler_IsMainFile
    If *panel\root
       If StartEnum( *panel, 2 )
          ;Bind(widget( ), @enter_leave_containers_events( ), #__EVENT_StatusChange)
-         Bind(Widget( ), @enter_leave_containers_events( ), #__EVENT_MouseEnter)
-         Bind(Widget( ), @enter_leave_containers_events( ), #__EVENT_MouseMove)
-         Bind(Widget( ), @enter_leave_containers_events( ), #__EVENT_MouseLeave)
+         Bind(widget( ), @enter_leave_containers_events( ), #__EVENT_MouseEnter)
+         Bind(widget( ), @enter_leave_containers_events( ), #__EVENT_MouseMove)
+         Bind(widget( ), @enter_leave_containers_events( ), #__EVENT_MouseLeave)
          StopEnum( )
       EndIf
    EndIf
@@ -25936,28 +25938,28 @@ CompilerIf #PB_Compiler_IsMainFile
       Window(5, Y, 150, 95 + 2, "Window_" + Trim(Str(i)), #PB_Window_SystemMenu | #PB_Window_MaximizeGadget)
       ;Container(5, y, 150, 95 + 2)
       If i = 2
-         Disable( Widget( ), 1)
+         Disable( widget( ), 1)
       EndIf
       Container(5, 5, 120 + 2, 85 + 2) ;, #PB_Container_Flat)
       If i = 3
          CheckBox(10, 10, 100, 30, "CheckBox_" + Trim(Str(i + 10)))
-         SetState( Widget( ), 1 )
+         SetState( widget( ), 1 )
       ElseIf i = 4
          Option(10, 10, 100, 30, "Option_" + Trim(Str(i + 10)))
       Else
          Button(10, 10, 100, 30, "Button_" + Trim(Str(i + 10)))
       EndIf
       If i = 3
-         Disable( Widget( ), 1)
+         Disable( widget( ), 1)
       EndIf
       If i = 4 Or i = 3
          Option(10, 45, 100, 30, "Option_" + Trim(Str(i + 20)))
-         SetState( Widget( ), 1 )
+         SetState( widget( ), 1 )
       Else
          Button(10, 45, 100, 30, "Button_" + Trim(Str(i + 20)))
       EndIf
       If i = 3
-         Disable( Widget( ), 1)
+         Disable( widget( ), 1)
       EndIf
       CloseList( )
       ;CloseList( )
@@ -25968,9 +25970,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 20026
-; FirstLine = 19901
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------4---------------------b4------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 15935
+; FirstLine = 15947
+; Folding = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v0-++700----f-f-0t---------------------------------------------------------------------------fv0--------------------4u------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

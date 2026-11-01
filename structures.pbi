@@ -462,7 +462,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     tt
       Structure _s_tt Extends _s_coordinate
-         window.i
+         Window.i
          Gadget.i
          
          visible.b
@@ -678,7 +678,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          Repaint.b
          enter.b
          
-         window.i                 ; canvas window
+         Window.i                 ; canvas window
          Gadget.i                 ; canvas gadget
          *gadgetID                ; canvas handle
          
@@ -749,8 +749,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 464
-; FirstLine = 447
+; CursorPosition = 245
+; FirstLine = 237
 ; Folding = ------------
 ; Optimizer
 ; EnableXP
