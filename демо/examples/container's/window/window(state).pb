@@ -49,9 +49,10 @@ CompilerIf #PB_Compiler_IsMainFile
                                                                                               #PB_Window_MaximizeGadget | 
                                                                                               #PB_Window_ScreenCentered )
       
-      a_init( root())
+      a_init( Root())
       
-      Window( 0, 0, 0, 0, "window_root", #__flag_autosize |
+      Define parentID
+      parentID = Window( 0, 0, 0, 0, "window_root", #__flag_autosize |
                                         #PB_Window_SystemMenu |
                                         #PB_Window_SizeGadget |
                                         #PB_Window_MinimizeGadget |
@@ -67,7 +68,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       Window( 250, 50, 250, 150, "window_0", #PB_Window_SystemMenu |
                                             #PB_Window_MinimizeGadget |
-                                            #PB_Window_MaximizeGadget )
+                                            #PB_Window_MaximizeGadget, parentID )
       
       SetClass(widget( ), "window_0" )
       Button(10,10,200,50,"window_0_maximize")
@@ -78,7 +79,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       Window( 350, 200, 250, 150, "window_1", #PB_Window_SystemMenu |
                                               #PB_Window_MinimizeGadget |
-                                              #PB_Window_MaximizeGadget )
+                                              #PB_Window_MaximizeGadget, parentID )
       
       SetClass(widget( ), "window_1" )
       Button(10,10,200,50,"window_1_maximize")
@@ -89,7 +90,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;\\
       Window( 450, 350, 250, 150, "window_2", #PB_Window_SystemMenu |
                                               #PB_Window_MinimizeGadget |
-                                              #PB_Window_MaximizeGadget )
+                                              #PB_Window_MaximizeGadget, parentID )
       
       SetClass(widget( ), "window_2" )
       Button(10,10,200,50,"window_2_maximize")
@@ -100,9 +101,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose( @CallBack( ))
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.21 (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 31
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 92
+; FirstLine = 73
 ; Folding = --
 ; EnableXP
 ; DPIAware

@@ -2503,40 +2503,38 @@ Procedure update_rows(*this._s_WIDGET)
    Protected h_bar_h = 0 
    Protected v_bar_w = 0 
    
-   Protected._s_ROW *collapsed_root = 0 ; Сюда запоминаем свернутый узел
+   Protected._s_ROW *skip, *collapsed_root = 0 ; Сюда запоминаем свернутый узел
    
    ForEach *this\row\__s( ) : *row = @*this\row\__s( )
-      *row\skip_next = 0 ; Сбрасываем старый прыжок вперед перед расчетом
-      *row\skip_prev = 0 ; Сбрасываем старый прыжок назад перед расчетом
+       ; Сбрасываем карту прыжков перед расчетом
+      *row\skip_next = #Null
+      *row\skip_prev = #Null ; Тоже сбрасываем для чистоты
       
-      ; --- 1. ЛОГИКА СХЛОПЫВАНИЯ (Связывание прыжков дерева) ---
-      If *this\row\indent
-         If skip_level <> -1
-            If *row\sublevel > skip_level 
-               *row\is_hidden = #True 
-               Continue ; Строка скрыта внутри свернутого узла, переходим к следующей
-            Else 
-               ; ВЕТКА ЗАКОНЧИЛАСЬ! Текущая строка — первая видимая после свернутого узла.
-               If *collapsed_root
-                  *collapsed_root\skip_next = *row ; Родителю говорим прыгать вперед на нас
-                  *row\skip_prev = *collapsed_root ; Нам говорим прыгать назад на родителя
-                  *collapsed_root = 0
-               EndIf
-               
-               skip_level = -1   
-               *row\is_hidden = #False
-            EndIf
+      ; Если элемент принудительно скрыт внешним флагом (не схлопыванием)
+      If *row\is_hidden
+         Continue
+      EndIf
+      
+      ; ====================================================================
+      ; ИДЕАЛЬНАЯ ОДНОПРОХОДНАЯ ЛОГИКА СХЛОПЫВАНИЯ
+      ; ====================================================================
+      If *skip
+         If *row\sublevel > *skip\sublevel
+            Continue
          Else
-            *row\is_hidden = #False
-         EndIf
-         
-         ; Если встретили открытый видимый узел, который при этом свернут
-         If *row\is_hidden = #False And (*row\mask & #__maskrow_node) And (*row\mask & #__maskrow_collapsed)
-            skip_level = *row\sublevel
-            *collapsed_root = *row ; Запомнили текущий свернутый корень
+            ; ВЕТКА ЗАКОНЧИЛАСЬ! Связываем края идеальным сквозным прыжком
+            *skip\skip_next = *row
+            *row\skip_prev = *skip
+            *skip = #Null ; Черная дыра закрылась, текущий элемент обрабатывается штатно
          EndIf
       EndIf
       
+      ; Если встретили свернутую папку — открываем под неё зону исключения ДЛЯ СЛЕДУЮЩИХ элементов
+      ; Предполагается, что checked = #True означает "свернуто"
+      If  (*row\mask & #__maskrow_node) And (*row\mask & #__maskrow_collapsed)
+         *skip = *row
+      EndIf
+
       ; --- 2. ОБНОВЛЕНИЕ ДАННЫХ (Ленивое) ---
       If *row\mask & #__maskrow_change 
          update_token(*this, *row)
@@ -6220,9 +6218,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
    WaitClose( )
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 4372
-; FirstLine = 4213
-; Folding = -f98------v+u+------------------------------------------------0---------------------------------------0-v-8----------------------------------------------------
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 2508
+; FirstLine = 2418
+; Folding = -f98------v+u+------------------------------------------------+---------------------------------------+-4-0---------------------------------------------------
 ; EnableXP
 ; DPIAware

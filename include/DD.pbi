@@ -32,10 +32,10 @@ DeclareModule DD
    Macro Drag( ):mouse( )\drag:EndMacro 
    
    ; Совместимость 
-   Macro DragText( _text_, _actions_ ): DragDropText( _text_, _actions_ ): EndMacro 
-   Macro DragImage( _img_, _actions_ ): DragDropImage( _img_, _actions_ ): EndMacro 
-   Macro DragFiles( Files, _actions_ ): DragDropFiles( Files, _actions_ ): EndMacro 
-   Macro DragPrivate( _type_, _actions_ ): DragDropPrivate( _type_, _actions_ ): EndMacro 
+   Macro DragText( _text_, _actions_ = #PB_Drag_Copy ): DragDropText( _text_, _actions_ ): EndMacro 
+   Macro DragImage( _img_, _actions_ = #PB_Drag_Copy ): DragDropImage( _img_, _actions_ ): EndMacro 
+   Macro DragFiles( Files, _actions_ = #PB_Drag_Copy ): DragDropFiles( Files, _actions_ ): EndMacro 
+   Macro DragPrivate( _type_, _actions_ = #PB_Drag_Copy ): DragDropPrivate( _type_, _actions_ ): EndMacro 
 EndDeclareModule
 
 ;- INCLUDEs2
@@ -751,7 +751,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ; ProcedureReturn ListIcon(X,Y,Width,Height, title.s, titleWidth)
       
       ;\\
-      Text(X,Y,Width,20,title, #__flag_Textinline) : SetColor( Widget( ), #PB_Gadget_BackColor, $FFC2C2C2)
+      Text(X,Y,Width,20,title, #__flag_Textinline) : SetColor( widget( ), #PB_Gadget_BackColor, $FFC2C2C2)
       
       ProcedureReturn Tree(X,Y+20,Width,Height-20)
    EndProcedure
@@ -841,8 +841,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 85
-; FirstLine = 81
+; CursorPosition = 223
+; FirstLine = 241
 ; Folding = -------------G0+
 ; EnableXP
 ; DPIAware

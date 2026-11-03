@@ -10,23 +10,23 @@ XIncludeFile "widgets.pbi"
 CompilerIf #PB_Compiler_IsMainFile
  UseWidgets( )
  
- Procedure TreeGadget_(gadget, X,Y,Width,Height,Flag=0)
-  Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,Flag)
-  If gadget =- 1 : gadget = g : EndIf
+ Procedure TreeGadget_(Gadget, X,Y,Width,Height,Flag=0)
+  Protected g = PB(TreeGadget)(Gadget, X,Y,Width,Height,Flag)
+  If Gadget =- 1 : Gadget = g : EndIf
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     Define RowHeight.CGFloat = 20
     ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
-    CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+    CocoaMessage(0, GadgetID(Gadget), "setRowHeight:@", @RowHeight)
     
     ;CocoaMessage(0, GadgetID(gadget), "sizeLastColumnToFit")
-   CocoaMessage(0, GadgetID(gadget), "sizeToFit")
+   CocoaMessage(0, GadgetID(Gadget), "sizeToFit")
       ;  CocoaMessage(0, GadgetID(gadget), "reloadData")
       
   CompilerElse
   CompilerEndIf
   
-  ProcedureReturn gadget
+  ProcedureReturn Gadget
 EndProcedure
 
 
@@ -108,7 +108,7 @@ EndProcedure
   LoadFont(5, "Arial", 16)
     LoadFont(6, "Arial", 25)
     
-  Procedure LoadControls(Widget, Directory$)
+  Procedure LoadControls(widget, Directory$)
     Protected ZipFile$ = Directory$ + "SilkTheme.zip"
     
     If FileSize(ZipFile$) < 1
@@ -164,39 +164,39 @@ EndProcedure
                       Protected Right.S = Right(PackEntryName.S,Len(PackEntryName.S)-1)
                       PackEntryName.S = " "+Left.S+Right.S
                       
-                      If IsGadget(Widget)
+                      If IsGadget(widget)
                         If FindString(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
-                          AddGadgetItem(Widget, 0, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 0, ImageID(Image))
+                          AddGadgetItem(widget, 0, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(widget, 0, ImageID(Image))
                           
                         ElseIf FindString(LCase(PackEntryName.S), "window")
                           
                           ;Debug "add gadget window"
-                          AddGadgetItem(Widget, 1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, 1, ImageID(Image))
+                          AddGadgetItem(widget, 1, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(widget, 1, ImageID(Image))
                           
                         Else
-                          AddGadgetItem(Widget, -1, PackEntryName.S, ImageID(Image))
-                          SetGadgetItemData(Widget, CountGadgetItems(Widget)-1, ImageID(Image))
+                          AddGadgetItem(widget, -1, PackEntryName.S, ImageID(Image))
+                          SetGadgetItemData(widget, CountGadgetItems(widget)-1, ImageID(Image))
                         EndIf
                         
                       Else
                         If FindString(LCase(PackEntryName.S), "cursor")
                           
                           ;Debug "add cursor"
-                          AddItem(Widget, 0, PackEntryName.S, Image)
+                          AddItem(widget, 0, PackEntryName.S, Image)
                           ;SetItemData(Widget, 0, Image)
                           
                         ElseIf FindString(LCase(PackEntryName.S), "window")
                           
                           Debug "add window"
-                          AddItem(Widget, 1, PackEntryName.S, Image)
+                          AddItem(widget, 1, PackEntryName.S, Image)
                           ;SetItemData(Widget, 1, Image)
                           
                         Else
-                          AddItem(Widget, -1, PackEntryName.S, Image)
+                          AddItem(widget, -1, PackEntryName.S, Image)
                           ;SetItemData(Widget, CountItems(Widget)-1, Image)
                         EndIf
                       EndIf
@@ -250,7 +250,7 @@ EndProcedure
       Case #__event_ScrollChange : Debug "widget scroll change data "+ EventData
       Case #__event_StatusChange : Debug "widget status change item = " + EventItem +" data "+ EventData
       Case #__event_DragStart : Debug "widget dragStart item = " + EventItem +" data "+ EventData
-        DragText(GetItemText(EventGadget, EventItem))
+        ;DragText(GetItemText(EventGadget, EventItem))
         
       Case #__event_Drop : Debug "widget drop item = " + EventItem +" data "+ EventData
         Debug EventDropText()
@@ -594,9 +594,9 @@ AddItem(*g, 2, "Файл2", -1, 2) ; Ошибка! Пропустили уровень 1.
     ForEver
   EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 298
-; FirstLine = 111
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 252
+; FirstLine = 91
 ; Folding = f-b------
 ; EnableXP
 ; DPIAware

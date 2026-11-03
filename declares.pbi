@@ -484,7 +484,6 @@ CompilerIf Not Defined( widgets, #PB_Module )
       Macro __tabs( ): Tab\__s( ) : EndMacro          ; row\items( )
       Macro __rows( ): row\__s( ) : EndMacro          ; row\items( )
       Macro __lines( ): row\__s( ) : EndMacro         ; row\items( )
-      Macro __items( ): row\visible\__s( ): EndMacro
       
       ;-
       Macro LineState( ): row\state: EndMacro     ; *this\ Returns key focused line index   ; 11 count
@@ -596,7 +595,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       
       PopListPosition(_object_\__s())
    EndMacro
-   ;
+   ;   ;
    Macro StartNextRow(_ptr_, _object_ )
       Bool(_object_\_v_first)
       ; Фиксируем позицию основного списка строк
@@ -606,7 +605,19 @@ CompilerIf Not Defined( widgets, #PB_Module )
       
       Repeat
          _ptr_ = @_object_\__s()
-         If Not (_ptr_\mask & #__mask_visible And Not _ptr_\mask & #__mask_hidden) : Continue : EndIf
+         
+         ; Если элемент скрыт — двигаем список ВПЕРЕД перед тем, как сделать Continue
+         If Not (_ptr_\mask & #__mask_visible And Not _ptr_\mask & #__mask_hidden)
+            ; Если дошли до конца видимой области, прерываем цикл
+            If _ptr_ = _object_\_v_last : Break : EndIf
+            
+            If _ptr_\skip_next
+               ChangeCurrentElement(_object_\__s(), _ptr_\skip_next)
+            Else
+               If Not NextElement(_object_\__s()) : Break : EndIf
+            EndIf
+            Continue
+         EndIf
       EndMacro
       
       Macro StopNextRow(_ptr_, _object_ )
@@ -623,7 +634,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       
       PopListPosition(_object_\__s())
    EndMacro
-   ;
+
    Macro StartNext(_ptr_, _parent_)
       Bool(_parent_\first)
       _ptr_ = _parent_\first
@@ -1928,8 +1939,8 @@ CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 626
-; FirstLine = 573
-; Folding = --------9-----------Bg-------------------
+; CursorPosition = 615
+; FirstLine = 571
+; Folding = --------9-----------Mw-------------------
 ; EnableXP
 ; DPIAware

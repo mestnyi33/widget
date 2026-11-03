@@ -243,15 +243,14 @@ CompilerIf Not Defined(Structures, #PB_Module)
       
       ;--     TITLE
       Structure _s_TITLEBAR
-         indent.a
          spacing.a 
+         ; indent.a
          btn._s_BTN[3]
-         ;List btn._s_BTN()
       EndStructure
       Structure _s_TITLE Extends _s_BOX
-         indent.a
-         spacing.a 
-         slant.a
+        ; spacing.a 
+        ; indent.a
+        ; slant.a
          
          txt._s_TXT
          img._s_IMG
@@ -390,7 +389,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
          
       EndStructure
       Structure _s_VISIBLE_ROW
-         List *__s._s_ROW( )     ; Развернутый рулон (указатели)
+       ;  List *__s._s_ROW( )     ; Развернутый рулон (указатели)
       EndStructure
       Structure _s_ROWS
          state.i
@@ -749,8 +748,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 245
-; FirstLine = 237
+; CursorPosition = 391
+; FirstLine = 372
 ; Folding = ------------
 ; Optimizer
 ; EnableXP

@@ -1517,7 +1517,7 @@ Procedure  new_widget_copy( )
    
    ;    If a_focused( )\anchors
    AddElement( *copy( ) ) 
-   *copy.allocate( Widget, ( ) )
+   *copy.allocate( widget, ( ) )
    *copy( ) = a_focused( )
    ;    Else
    ;       
@@ -2721,6 +2721,9 @@ Procedure   ide_events( )
          
       Case #__EVENT_StatusChange
          *row = __data
+         If *row < 10000
+            *row = 0
+         EndIf
          
          ; Debug ""+__item +" "+ __data
          If *g = ide_element_PANEL
@@ -2736,7 +2739,8 @@ Procedure   ide_events( )
          ;
          If __item = - 1
             SetText( ide_help_VIEW, "help for the inspector" )
-         ElseIf *row\mask & #__mask_hover Or 
+         Else
+            If *row\mask & #__mask_hover Or 
                 *row\mask & #__mask_active
             If *g = ide_all_ELEMENTS
                SetText( ide_help_VIEW, ide_help_VIEW_elements(GetItemText( *g, __item )) )
@@ -2750,6 +2754,7 @@ Procedure   ide_events( )
             If *g = ide_inspector_EVENTS
                SetText( ide_help_VIEW, GetItemText( *g, __item ) )
             EndIf
+         EndIf
          EndIf
          
    EndSelect
@@ -3383,8 +3388,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 1191
-; FirstLine = 1184
+; CursorPosition = 2726
+; FirstLine = 2718
 ; Folding = ----------------------------------------------------------------
 ; EnableXP
 ; DPIAware

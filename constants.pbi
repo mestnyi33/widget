@@ -86,7 +86,7 @@
       ;#__BAR_toggle_line_size = 0
       #__BAR_splitter_size = 9
       #__ButtonRound  = 7
-      #__BAR_button_size   = 20
+      #__BAR_button_size   = 18
       #__tab_size   = 25;18
       
       #__Draw_plus_Size = 5
