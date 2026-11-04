@@ -6,34 +6,32 @@ CompilerIf #PB_Compiler_IsMainFile
    UseWidgets( )
    
    Global a, CountItems = 20
-   Global._s_WIDGET *g, *first, *second
+   Global._s_WIDGET *g, *g1, *g2
    
    Procedure widget_events()
-      Protected scoll
       *g = EventWidget( )
       
       Select WidgetEvent( )
          Case #__event_ScrollChange
-            scoll = WidgetEventData( )
+            Protected  scoll = WidgetEventData( )
             
             Select *g
-               Case *first 
-                  If GetState( *second\scroll\v ) <> scoll
-                     SetState(*second\scroll\v, scoll)
+               Case *g1 
+                  If GetState( *g2\scroll\v ) <> scoll
+                     SetState(*g2\scroll\v, scoll)
                   EndIf
-               Case *second 
-                  If GetState( *first\scroll\v ) <> scoll
-                     SetState(*first\scroll\v, scoll)
+               Case *g2 
+                  If GetState( *g1\scroll\v ) <> scoll
+                     SetState(*g1\scroll\v, scoll)
                   EndIf
             EndSelect
             
          Case #__event_Change, #__event_StatusChange
-            Protected._s_ROWS *row = WidgetEventData( )
+            Protected._s_ROW *row = WidgetEventData( )
             
             If *row > 0
-               *row\_press = 0
-               *row\_focus = 0
-               *row\_enter = 0
+               ; *row\mask &~ #__MASK_Hover
+               ; *row\mask = 0
                *row\ColorState( ) = 0
             EndIf
             
@@ -42,31 +40,31 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    If Open(1, 100, 50, 330, 330, "demo items scrolls", #PB_Window_SystemMenu)
-      *first = Tree(10, 10, 150, 310, #__flag_nolines ) : SetClass(*first, "first")
-      *second = Tree(170, 10, 150, 310, #__flag_nolines ) : SetClass(*second, "second")
+      *g1 = Tree(10, 10, 150, 310, #__flag_nolines ) : SetClass(*g1, "g1")
+      *g2 = Tree(170, 10, 150, 310, #__flag_nolines ) : SetClass(*g2, "g2")
       
       For a = 0 To CountItems
-         AddItem(*first, -1, "item "+Str(a), -1, 0)
+         AddItem(*g1, -1, "item "+Str(a), -1, 0)
       Next
       For a = 0 To CountItems
-         AddItem(*second, -1, "item "+Str(a), -1, 0)
+         AddItem(*g2, -1, "item "+Str(a), -1, 0)
       Next
       
-      Bind(*first, @widget_events(), #__event_ScrollChange)
-      Bind(*second, @widget_events(), #__event_ScrollChange)
+      Bind(*g1, @widget_events(), #__event_ScrollChange)
+      Bind(*g2, @widget_events(), #__event_ScrollChange)
       
-      Bind(*first, @widget_events(), #__event_StatusChange)
-      Bind(*second, @widget_events(), #__event_StatusChange)
+      Bind(*g1, @widget_events(), #__event_StatusChange)
+      Bind(*g2, @widget_events(), #__event_StatusChange)
       
-      Bind(*first, @widget_events(), #__event_Change)
-      Bind(*second, @widget_events(), #__event_Change)
+      Bind(*g1, @widget_events(), #__event_Change)
+      Bind(*g2, @widget_events(), #__event_Change)
       
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 13
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 34
+; FirstLine = 28
 ; Folding = --
 ; EnableXP
 ; DPIAware

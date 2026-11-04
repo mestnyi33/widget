@@ -53,7 +53,7 @@ Module widgets
    Declare   make_scrollbar_area( *this )
    
    Declare.l UpdateDraw_VisibleRows( *this )
-   Declare   Draw_TreeRows( *this, _i_=0 )
+   Declare   Draw_TreeRows( *this, col_index=0 )
    Declare   UpdateDraw_Content( *this )
    Declare   Draw_Content( *this._s_WIDGET, state )
    Declare   ReParent( *this, *parent )
@@ -11564,6 +11564,7 @@ Module widgets
                EndIf
             EndIf
          EndIf
+         
 ;                   ; СТАЛО:
 ;          If *rowParent 
 ;             *rowParent\childrens + 1
@@ -12043,7 +12044,7 @@ Module widgets
                If *rowFocused = *row
                   *this\RowFocused( ) = 0
                   ;
-                  DoEvents( *this, #__EVENT_StatusChange, - 1, 0 )
+                  DoEvents( *this, #__EVENT_StatusChange, - 1, *rowFocused )
                Else
                   If *rowFocused\parent 
                      If *rowFocused\parent\buttonbox  
@@ -15768,12 +15769,12 @@ Module widgets
                               If *row_howered\buttonbox\checked
                                  ; развернул список
                                  If SetItemState( *this, *row_howered\rindex, (GetItemState(*this, *row_howered\rindex) &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded )
-                                    Post( *this, #__EVENT_StatusChange, *row_howered\rindex, #PB_Tree_Expanded )
+                                    Post( *this, #__EVENT_StatusChange, *row_howered\rindex, *row_howered )
                                  EndIf
                               Else
                                  ; свернул список
                                  If SetItemState( *this, *row_howered\rindex, (GetItemState(*this, *row_howered\rindex) &~ #PB_Tree_Expanded) | #PB_Tree_Collapsed )
-                                    Post( *this, #__EVENT_StatusChange, *row_howered\rindex, #PB_Tree_Collapsed )
+                                    Post( *this, #__EVENT_StatusChange, *row_howered\rindex, *row_howered )
                                  EndIf
                               EndIf
                            EndIf
@@ -18688,6 +18689,19 @@ Module widgets
             *row\y = *this\scroll_height( )
             
             ; [ ВЕСЬ ВАШ ГЕОМЕТРИЧЕСКИЙ РАСЧЕТ ИКОНОК, ЧЕКБОКСОВ И ТЕКСТА ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ ]
+             ; Расчет ширины *row\width пока оставляем здесь, чтобы ничего не сломать,
+            ; но перенесем в отрисовку на следующем шаге.
+            If *row\columnindex = 0
+               If ListSize( *this\__columns( ) ) = 1
+                  *this\__columns( )\size = *this\inner_width( ) - *this\__columns( )\pos
+                  *row\width  = *this\__columns( )\size
+               Else
+                  *row\width = *this\__columns( )\size + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
+               EndIf
+            ElseIf *row\width <> *this\__columns( )\size
+               *row\width = *this\__columns( )\size
+            EndIf
+            
             If *row\columnindex = 0
                If *this\row\sublevelsize
                   If *this\flagmask & #__FLAG_optionboxes
@@ -18833,22 +18847,9 @@ Module widgets
             ; Фиксируем первую и последнюю видимую строку для макросов
             If Not *this\row\_v_first
                *this\row\_v_first = *row
+             ;  Debug *row\txt(0)\text
             EndIf
             *this\row\_v_last = *row
-            
-            ; СПИСОК __items() УДАЛЕН.
-            ; Расчет ширины *row\width пока оставляем здесь, чтобы ничего не сломать,
-            ; но перенесем в отрисовку на следующем шаге.
-            If *row\columnindex = 0
-               If ListSize( *this\__columns( ) ) = 1
-                  *this\__columns( )\size = *this\inner_width( ) - *this\__columns( )\pos
-                  *row\width  = *this\__columns( )\size
-               Else
-                  *row\width = *this\__columns( )\size + (*this\picturesize+*this\row\sublevelpos+*this\MarginLine( )\width)
-               EndIf
-            ElseIf *row\width <> *this\__columns( )\size
-               *row\width = *this\__columns( )\size
-            EndIf
             
             result = #True
          EndIf
@@ -19882,398 +19883,7 @@ Module widgets
       EndIf
    EndProcedure
    
-   Procedure Draw_TreeRows(*this._s_WIDGET, _i_=0)
-      If Not *this\row : ProcedureReturn 0 : EndIf
-      
-      Protected state.b, X.l, Y.l, _box_x_.l, _box_y_.l, minus.l = 7
-      Protected bs = Bool(*this\fs)
-      Protected _scroll_x_ = *this\scroll\h\bar\page\pos
-      Protected _scroll_y_ = *this\scroll\v\bar\page\pos
-      Protected gridlines = Bool(*this\flagmask & #__FLAG_gridLines)
-      Protected *row._s_ROW
-      Protected *buttonBox._s_BOX
-      
-      ; ====================================================================
-      ; ЕДИНЫЙ ОДНОПРОХОДНЫЙ ЦИКЛ ОТРИСОВКИ ДЕРЕВА (ЭТАПЫ 1, 2, 3 и 4)
-      ; ====================================================================
-      draw_mode_alpha_(#PB_2DDrawing_Default)
-      PushListPosition(*this\row\__s())
-      Protected skip_next = 0
-      If StartNextRow(*row, *this\row)
-;          ; Сначала выполняем прыжок «из прошлого шага», если он был запланирован
-;          If skip_next
-;             ChangeCurrentElement(*this\row\__s(), skip_next)
-;             skip_next = 0
-;          EndIf
-;          
-;          ;*row = @*this\row\__s()
-;          
-;          ; Запоминаем прыжок на будущее, если текущий элемент — свернутая папка
-;          If *row\skip_next
-;             skip_next = *row\skip_next
-;          EndIf
-;          
-;          ; 1. Проверка на принудительное скрытие внешней логикой (например, поиском)
-;          If *row\mask & #__MASK_Hidden
-;             Continue
-;          EndIf
-         
-         ; Получаем базовые координаты (вычисляем один раз для всех слоев!)
-         X = row_x_(*this, *row)
-         Y = row_y_(*this, *row) - _scroll_x_ ; Внимание: проверьте scroll_y_ или scroll_x_ для Y в вашем оригинале, тут было _scroll_y_ в этапах 2-4
-         Define X_scrolled = X - _scroll_x_
-         
-         ; ====================================================================
-         ; ЭТАП 1: Отрисовка контента текущей строки (Фон, Иконка, Текст, Сетка)
-         ; ====================================================================
-         ;\\ init real drawing font
-         draw_font(*row, *row\txt(0), 0, *row\TextChange())
-         
-         state = *row\ColorState()
-         
-         ;\\ Draw selector back
-         If *row\color\back[state] <> - 1
-            draw_mode_alpha_(#PB_2DDrawing_Default)
-            If *this\type = #__TYPE_ListIcon
-               draw_roundbox_(X_scrolled, Y, *row\width, *row\height, *row\round, *row\round, *row\color\back[state])
-            Else
-               draw_roundbox_(X, Y, *row\width, *row\height, *row\round, *row\round, *row\color\back[state])
-            EndIf
-         EndIf
-         
-         If ListIndex(*this\__columns()) = 0
-            ;\\ Draw items img
-            If *row\img\imageID
-               draw_mode_alpha_(#PB_2DDrawing_Transparent)
-               DrawAlphaImage(*row\img\imageID, X + *row\img\x - _scroll_x_, Y + *row\img\y, *row\color\ialpha)
-            EndIf
-         EndIf
-         
-         ;\\ Draw items text
-         If *row\txt(_i_)\String
-            draw_mode_(#PB_2DDrawing_Transparent)
-            __draw_rotatedtext(*row\txt(_i_), X_scrolled, Y, *this\text\rotate, *row\color\front[state], 0)
-         EndIf
-         
-         ;\\ Horizontal line
-         If gridlines
-            draw_mode_alpha_(#PB_2DDrawing_Default)
-            If *this\type = #__TYPE_ListIcon
-               draw_box_(X_scrolled, Y + *row\height, *row\width, gridlines, *this\LineColor)
-            Else
-               draw_box_(X, Y + *row\height, *row\width, gridlines, *this\LineColor)
-            EndIf
-         EndIf
-         
-         ;\\ Draw selector frame
-         If *row\color\frame[state]
-            draw_mode_(#PB_2DDrawing_Outlined)
-            If *this\type = #__TYPE_ListIcon
-               draw_roundbox_(X_scrolled, Y, *row\width, *row\height, *row\round, *row\round, *row\color\frame[state])
-            Else
-               draw_roundbox_(X, Y, *row\width, *row\height, *row\round, *row\round, *row\color\frame[state])
-            EndIf
-         EndIf        
-         
-         ; ====================================================================
-         ; СЛОИ И СВЯЗИ ДЕРЕВА (Отрисовываются только для первой колонки)
-         ; ====================================================================
-         If ListIndex(*this\__columns()) = 0
-            
-            ; ====================================================================
-            ; ЭТАП 2: Отрисовка линий связей дерева
-            ; ====================================================================
-            If *this\flagmask & #__FLAG_nolines
-               draw_mode_alpha_(#PB_2DDrawing_Default)
-               
-               If *row\buttonbox
-                  
-                  If *row\_last
-                     *buttonBox = *row\_last\buttonbox
-                  EndIf
-                  
-                  ; Пересчитываем локальный X_lines для линий
-                  Define X_lines = X_scrolled
-                  If display_mode_linux
-                     If *row\sublevel Or *row\childrens
-                        X_lines - *this\row\sublevelsize
-                     EndIf
-                  EndIf
-                  
-                  ; Вертикальные линии дерева
-                  If *row\_last And Not *row\_last\mask & #__MASK_Hidden And *row\_last\sublevel
-                     Define iy = (Y + *row\height / 2)
-                     Define iheight = (*row\_last\y - *row\y) 
-                     
-                     If Not display_mode_linux
-                        iy + *row\_last\height / 2
-                        iheight - *row\_last\height / 2
-                     EndIf
-                     If iy < *this\inner_y()
-                        iheight + (iy - *this\inner_y())
-                        iy = *this\inner_y()
-                     EndIf
-                     If iheight > (*this\inner_y() + *this\inner_height()) - iy
-                        iheight = (*this\inner_y() + *this\inner_height()) - iy
-                     EndIf
-                     If iheight < 0 
-                        iheight = 0
-                     EndIf
-                     
-                     If *buttonBox
-                        Line((X_lines + *buttonBox\x + *buttonBox\width / 2), iy, 1, iheight, $FF000000)
-                     EndIf
-                  EndIf
-                  
-                  ; Горизонтальные линии дерева
-                  If *row\mask & #__MASK_Visible And Not (*row\childrens And Not *row\sublevel)
-                     Line((X_lines + *row\buttonbox\x + *row\buttonbox\width / 2), (Y + *row\height / 2), *this\row\sublevelsize/2-DPIScaled(2), 1, $FF000000)
-                  EndIf
-               EndIf
-            EndIf
-            
-            ; ====================================================================
-            ; ЭТАП 3: Отрисовка кнопок (Checkboxes / Optionboxes)
-            ; ====================================================================
-            If *this\flagmask & #__FLAG_nobuttons Or *this\flagmask & #__FLAG_checkboxes Or *this\flagmask & #__FLAG_optionboxes
-               If *row\checkbox
-                  If *row\parent And *this\flagmask & #__FLAG_optionboxes
-                     ; option box
-                     __draw_checkbox(1, *row\checkbox, X_scrolled, Y, *row\checkbox\width)
-                  Else
-                     ; check box
-                     __draw_checkbox(3, *row\checkbox, X_scrolled, Y, DPIScaled(2))
-                  EndIf
-               EndIf
-            EndIf
-            
-            ; ====================================================================
-            ; ЭТАП 4: Отрисовка стрелочек раскрытия/сворачивания папок (Buttons)
-            ; ====================================================================
-            If *row\childrens And *this\flagmask & #__FLAG_nobuttons 
-               If *row\buttonbox
-                  Define arrow_x = X_scrolled + *row\buttonbox\x
-                  Define arrow_y = Y + *row\buttonbox\y
-                  
-                  If *row\ColorState() = 1
-                     Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), arrow_x - DPIScaled(1), arrow_y - Bool(*row\buttonbox\checked = 0) * DPIScaled(2), DPIScaled(10), 1)
-                  ElseIf *row\ColorState() = 2
-                     Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), arrow_x + Bool(*row\buttonbox\checked) * DPIScaled(2), arrow_y + DPIScaled(Bool(*row\buttonbox\checked = 0)), DPIScaled(8), 1, 2)
-                  Else
-                     Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), arrow_x + DPIScaled(1), arrow_y + DPIScaled(1), DPIScaled(6), 1)
-                  EndIf
-               EndIf
-            EndIf
-            
-         EndIf
-      StopNextRow(*row, *this\row)
-   EndIf
-   
-      ; Первая вертикальная линия дерева (корневая, рисуется строго один раз после цикла)
-      If ListIndex(*this\__columns()) = 0 And Not display_mode_linux
-         If *this\row\first And *this\row\last And *this\row\first\buttonbox
-            Line((*this\inner_x() + *this\padding\x + *this\row\first\buttonbox\x) - _scroll_x_, (row_y_(*this, *this\row\first) + *this\row\first\height / 2) - _scroll_y_, 1, (*this\row\last\y - *this\row\first\y), $FF000000)
-         EndIf
-      EndIf
-      
-      PopListPosition(*this\row\__s())
-   EndProcedure
-   Procedure _2Draw_TreeRows(*this._s_WIDGET, _i_=0)
-      If Not *this\row : ProcedureReturn 0 : EndIf
-      
-      Protected state.b, X.l, Y.l, _box_x_.l, _box_y_.l, minus.l = 7
-      Protected bs = Bool(*this\fs)
-      Protected _scroll_x_ = *this\scroll\h\bar\page\pos
-      Protected _scroll_y_ = *this\scroll\v\bar\page\pos
-      Protected gridlines = Bool(*this\flagmask & #__FLAG_gridLines)
-      Protected *row._s_ROW
-      Protected *buttonBox._s_BOX
-      
-      ; ====================================================================
-      ; ЕДИНЫЙ ОДНОПРОХОДНЫЙ ЦИКЛ ОТРИСОВКИ ДЕРЕВА (ЭТАПЫ 1, 2, 3 и 4)
-      ; ====================================================================
-      draw_mode_alpha_(#PB_2DDrawing_Default)
-      PushListPosition(*this\row\__s())
-      Protected skip_next = 0
-      ForEach *this\row\__s()
-         ; Сначала выполняем прыжок «из прошлого шага», если он был запланирован
-         If skip_next
-            ChangeCurrentElement(*this\row\__s(), skip_next)
-            skip_next = 0
-         EndIf
-         
-         *row = @*this\row\__s()
-         
-         ; Запоминаем прыжок на будущее, если текущий элемент — свернутая папка
-         If *row\skip_next
-            skip_next = *row\skip_next
-         EndIf
-         
-         ; 1. Проверка на принудительное скрытие внешней логикой (например, поиском)
-         If *row\mask & #__MASK_Hidden
-            Continue
-         EndIf
-         
-         ; Получаем базовые координаты (вычисляем один раз для всех слоев!)
-         X = row_x_(*this, *row)
-         Y = row_y_(*this, *row) - _scroll_x_ ; Внимание: проверьте scroll_y_ или scroll_x_ для Y в вашем оригинале, тут было _scroll_y_ в этапах 2-4
-         Define X_scrolled = X - _scroll_x_
-         
-         ; ====================================================================
-         ; ЭТАП 1: Отрисовка контента текущей строки (Фон, Иконка, Текст, Сетка)
-         ; ====================================================================
-         ;\\ init real drawing font
-         draw_font(*row, *row\txt(0), 0, *row\TextChange())
-         
-         state = *row\ColorState()
-         
-         ;\\ Draw selector back
-         If *row\color\back[state] <> - 1
-            draw_mode_alpha_(#PB_2DDrawing_Default)
-            If *this\type = #__TYPE_ListIcon
-               draw_roundbox_(X_scrolled, Y, *row\width, *row\height, *row\round, *row\round, *row\color\back[state])
-            Else
-               draw_roundbox_(X, Y, *row\width, *row\height, *row\round, *row\round, *row\color\back[state])
-            EndIf
-         EndIf
-         
-         If ListIndex(*this\__columns()) = 0
-            ;\\ Draw items img
-            If *row\img\imageID
-               draw_mode_alpha_(#PB_2DDrawing_Transparent)
-               DrawAlphaImage(*row\img\imageID, X + *row\img\x - _scroll_x_, Y + *row\img\y, *row\color\ialpha)
-            EndIf
-         EndIf
-         
-         ;\\ Draw items text
-         If *row\txt(_i_)\String
-            draw_mode_(#PB_2DDrawing_Transparent)
-            __draw_rotatedtext(*row\txt(_i_), X_scrolled, Y, *this\text\rotate, *row\color\front[state], 0)
-         EndIf
-         
-         ;\\ Horizontal line
-         If gridlines
-            draw_mode_alpha_(#PB_2DDrawing_Default)
-            If *this\type = #__TYPE_ListIcon
-               draw_box_(X_scrolled, Y + *row\height, *row\width, gridlines, *this\LineColor)
-            Else
-               draw_box_(X, Y + *row\height, *row\width, gridlines, *this\LineColor)
-            EndIf
-         EndIf
-         
-         ;\\ Draw selector frame
-         If *row\color\frame[state]
-            draw_mode_(#PB_2DDrawing_Outlined)
-            If *this\type = #__TYPE_ListIcon
-               draw_roundbox_(X_scrolled, Y, *row\width, *row\height, *row\round, *row\round, *row\color\frame[state])
-            Else
-               draw_roundbox_(X, Y, *row\width, *row\height, *row\round, *row\round, *row\color\frame[state])
-            EndIf
-         EndIf        
-         
-         ; ====================================================================
-         ; СЛОИ И СВЯЗИ ДЕРЕВА (Отрисовываются только для первой колонки)
-         ; ====================================================================
-         If ListIndex(*this\__columns()) = 0
-            
-            ; ====================================================================
-            ; ЭТАП 2: Отрисовка линий связей дерева
-            ; ====================================================================
-            If *this\flagmask & #__FLAG_nolines
-               draw_mode_alpha_(#PB_2DDrawing_Default)
-               
-               If *row\buttonbox
-                  
-                  If *row\_last
-                     *buttonBox = *row\_last\buttonbox
-                  EndIf
-                  
-                  ; Пересчитываем локальный X_lines для линий
-                  Define X_lines = X_scrolled
-                  If display_mode_linux
-                     If *row\sublevel Or *row\childrens
-                        X_lines - *this\row\sublevelsize
-                     EndIf
-                  EndIf
-                  
-                  ; Вертикальные линии дерева
-                  If *row\_last And Not *row\_last\mask & #__MASK_Hidden And *row\_last\sublevel
-                     Define iy = (Y + *row\height / 2)
-                     Define iheight = (*row\_last\y - *row\y) 
-                     
-                     If Not display_mode_linux
-                        iy + *row\_last\height / 2
-                        iheight - *row\_last\height / 2
-                     EndIf
-                     If iy < *this\inner_y()
-                        iheight + (iy - *this\inner_y())
-                        iy = *this\inner_y()
-                     EndIf
-                     If iheight > (*this\inner_y() + *this\inner_height()) - iy
-                        iheight = (*this\inner_y() + *this\inner_height()) - iy
-                     EndIf
-                     If iheight < 0 
-                        iheight = 0
-                     EndIf
-                     
-                     If *buttonBox
-                        Line((X_lines + *buttonBox\x + *buttonBox\width / 2), iy, 1, iheight, $FF000000)
-                     EndIf
-                  EndIf
-                  
-                  ; Горизонтальные линии дерева
-                  If *row\mask & #__MASK_Visible And Not (*row\childrens And Not *row\sublevel)
-                     Line((X_lines + *row\buttonbox\x + *row\buttonbox\width / 2), (Y + *row\height / 2), *this\row\sublevelsize/2-DPIScaled(2), 1, $FF000000)
-                  EndIf
-               EndIf
-            EndIf
-            
-            ; ====================================================================
-            ; ЭТАП 3: Отрисовка кнопок (Checkboxes / Optionboxes)
-            ; ====================================================================
-            If *this\flagmask & #__FLAG_nobuttons Or *this\flagmask & #__FLAG_checkboxes Or *this\flagmask & #__FLAG_optionboxes
-               If *row\checkbox
-                  If *row\parent And *this\flagmask & #__FLAG_optionboxes
-                     ; option box
-                     __draw_checkbox(1, *row\checkbox, X_scrolled, Y, *row\checkbox\width)
-                  Else
-                     ; check box
-                     __draw_checkbox(3, *row\checkbox, X_scrolled, Y, DPIScaled(2))
-                  EndIf
-               EndIf
-            EndIf
-            
-            ; ====================================================================
-            ; ЭТАП 4: Отрисовка стрелочек раскрытия/сворачивания папок (Buttons)
-            ; ====================================================================
-            If *row\childrens And *this\flagmask & #__FLAG_nobuttons 
-               If *row\buttonbox
-                  Define arrow_x = X_scrolled + *row\buttonbox\x
-                  Define arrow_y = Y + *row\buttonbox\y
-                  
-                  If *row\ColorState() = 1
-                     Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), arrow_x - DPIScaled(1), arrow_y - Bool(*row\buttonbox\checked = 0) * DPIScaled(2), DPIScaled(10), 1)
-                  ElseIf *row\ColorState() = 2
-                     Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), arrow_x + Bool(*row\buttonbox\checked) * DPIScaled(2), arrow_y + DPIScaled(Bool(*row\buttonbox\checked = 0)), DPIScaled(8), 1, 2)
-                  Else
-                     Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), arrow_x + DPIScaled(1), arrow_y + DPIScaled(1), DPIScaled(6), 1)
-                  EndIf
-               EndIf
-            EndIf
-            
-         EndIf
-      Next
-      
-      ; Первая вертикальная линия дерева (корневая, рисуется строго один раз после цикла)
-      If ListIndex(*this\__columns()) = 0 And Not display_mode_linux
-         If *this\row\first And *this\row\last And *this\row\first\buttonbox
-            Line((*this\inner_x() + *this\padding\x + *this\row\first\buttonbox\x) - _scroll_x_, (row_y_(*this, *this\row\first) + *this\row\first\height / 2) - _scroll_y_, 1, (*this\row\last\y - *this\row\first\y), $FF000000)
-         EndIf
-      EndIf
-      
-      PopListPosition(*this\row\__s())
-   EndProcedure
-   Procedure _Draw_TreeRows(*this._s_WIDGET, _i_=0)
+   Procedure Draw_TreeRows(*this._s_WIDGET, col_index=0)
       If Not *this\row : ProcedureReturn 0 : EndIf
       
       Protected state.b, X.l, Y.l, _box_x_.l, _box_y_.l, minus.l = 7
@@ -20296,7 +19906,7 @@ Module widgets
          Y = row_y_(*this, *row) - _scroll_y_
          
          ;\\ Draw selector back
-         If *row\color\back[state] <> - 1
+         If *row\color\back[state] 
             draw_mode_alpha_(#PB_2DDrawing_Default)
             If *this\type = #__TYPE_ListIcon
                draw_roundbox_(X - _scroll_x_, Y, *row\width, *row\height, *row\round, *row\round, *row\color\back[state])
@@ -20305,18 +19915,18 @@ Module widgets
             EndIf
          EndIf
          
-         If ListIndex(*this\__columns()) = 0
-            ;\\ Draw items img
-            If *row\img\imageID
+         ;\\ Draw items img
+         If *row\img\imageID
+            If col_index = 0
                draw_mode_alpha_(#PB_2DDrawing_Transparent)
                DrawAlphaImage(*row\img\imageID, X + *row\img\x - _scroll_x_, Y + *row\img\y, *row\color\ialpha)
             EndIf
          EndIf
          
          ;\\ Draw items text
-         If *row\txt(_i_)\String
+         If *row\txt(col_index)\String
             draw_mode_(#PB_2DDrawing_Transparent)
-            __draw_rotatedtext(*row\txt(_i_), X - _scroll_x_, Y, *this\text\rotate, *row\color\front[state], 0)
+            __draw_rotatedtext(*row\txt(col_index), X - _scroll_x_, Y, *this\text\rotate, *row\color\front[state], 0)
          EndIf
          
          ;\\ Horizontal line
@@ -20338,36 +19948,37 @@ Module widgets
                draw_roundbox_(X, Y, *row\width, *row\height, *row\round, *row\round, *row\color\frame[state])
             EndIf
          EndIf        
+         
          StopNextRow(*row, *this\row)
       EndIf
       
-            ; ====================================================================
-      ; ЭТАП 2: Отрисовка линий связей дерева (Только для первой колонки)
-      ; ====================================================================
-      If ListIndex(*this\__columns()) = 0
-         
-         ; - Draw plots line
-         If *this\flagmask & #__FLAG_nolines
+      ; Только для первой колонки
+     If col_index = 0
+        
+        ; ====================================================================
+        ; ЭТАП 2: Отрисовка линий связей дерева 
+        ; ====================================================================
+        If *this\flagmask & #__FLAG_nolines
             draw_mode_alpha_(#PB_2DDrawing_Default)
             
             PushListPosition(*this\row\__s())
-            
+            Protected skip_next = 0
             ; Использованием быструю итерацию по элементам структуры с прыжками
             ForEach *this\row\__s()
-               *row = @*this\row\__s()
-               
                ; ИДЕАЛЬНЫЙ ПРЫЖОК: переставляем указатель списка на нужную позицию, минуя скрытые строки.
-               If *row\skip_next
-                  ChangeCurrentElement(*this\row\__s(), *row\skip_next)
-                  *row = *row\skip_next
+               If skip_next
+                  ChangeCurrentElement(*this\row\__s(), skip_next)
+                  skip_next = 0
                EndIf
+               *row = @*this\row\__s()
+               If *row\skip_next : skip_next = *row\skip_next : EndIf
                
                ; Дополнительная проверка на скрытие внешней логикой
                If *row\mask & #__MASK_Hidden
                   Continue
                EndIf
                
-               If Not *row\buttonbox Or *row\columnindex <> ListIndex(*this\__columns())
+               If Not *row\buttonbox Or *row\columnindex <> col_index
                   Continue
                EndIf
                
@@ -20428,11 +20039,9 @@ Module widgets
          ; ====================================================================
          ; ЭТАП 3: Отрисовка кнопок (Checkboxes / Optionboxes)
          ; ====================================================================
-         If *this\flagmask & #__FLAG_nobuttons Or *this\flagmask & #__FLAG_checkboxes Or *this\flagmask & #__FLAG_optionboxes
+         If *this\flagmask & #__FLAG_checkboxes Or *this\flagmask & #__FLAG_optionboxes
             If StartNextRow(*row, *this\row)
-               ; Отрисовываем чекбокс только если сама строка не скрыта
-               If Not *row\mask & #__MASK_Hidden
-                  If *row\checkbox And (*this\flagmask & #__FLAG_checkboxes Or *this\flagmask & #__FLAG_optionboxes)
+                  If *row\checkbox
                      X = row_x_(*this, *row) - _scroll_x_
                      Y = row_y_(*this, *row) - _scroll_y_
                      
@@ -20444,7 +20053,6 @@ Module widgets
                         __draw_checkbox(3, *row\checkbox, X, Y, DPIScaled(2))
                      EndIf
                   EndIf
-               EndIf
                StopNextRow(*row, *this\row)
             EndIf
          EndIf
@@ -20452,10 +20060,9 @@ Module widgets
          ; ====================================================================
          ; ЭТАП 4: Отрисовка стрелочек раскрытия/сворачивания папок (Buttons)
          ; ====================================================================
-         If StartNextRow(*row, *this\row)
-            ; Защита: не рисуем стрелочку, если строка находится внутри скрытой ветки
-            If Not *row\mask & #__MASK_Hidden
-               If *row\childrens And *this\flagmask & #__FLAG_nobuttons 
+         If *this\flagmask & #__FLAG_nobuttons 
+            If StartNextRow(*row, *this\row)
+               If *row\childrens
                   X = row_x_(*this, *row) - _scroll_x_
                   Y = row_y_(*this, *row) - _scroll_y_
                   
@@ -20473,8 +20080,8 @@ Module widgets
                      EndIf
                   EndIf
                EndIf
+               StopNextRow(*row, *this\row)
             EndIf
-            StopNextRow(*row, *this\row)
          EndIf
          
       EndIf
@@ -20828,21 +20435,16 @@ Module widgets
    
    Procedure   Draw_ListIcon( *this._s_WIDGET )
       Protected *column._s_COLUMN
-      Protected column_index.i, state.b, X.l, Y.l, scroll_x, scroll_y
+      Protected coll_index.i, state.b, X.l, Y.l, scroll_x, scroll_y
       
       If Not *this\mask & #__MASK_Hidden
          If *this\ResizeChange( ) Or *this\text\change
             ForEach *this\__columns( )
-               UpdateDraw_Rows( *this)
+               UpdateDraw_Rows( *this )
             Next
             
             ;\\
             make_scrollbar_max( *this )
-            
-            ;\\ reset draw list
-            ;  ClearList( *this\__items( ))
-            *this\row\_v_first = 0
-            *this\row\_v_last  = 0
             
             ForEach *this\__columns( )
                UpdateDraw_VisibleRows( *this )
@@ -20870,23 +20472,23 @@ Module widgets
          ;\\
          ForEach *this\__columns( )
             *column = @*this\__columns( )
-            column_index = ListIndex( *this\__columns( ))
+            coll_index = ListIndex( *this\__columns( ))
             Y                           = *this\frame_y( ) + *this\fs ;+ *column\y
             X                           = *this\frame_x( ) + *this\fs + *column\pos
             X                           + *this\scroll_x( ) + sublevelwidth
             ;
             
-            ;\\ Draw columns selector back
+           Draw_TreeRows( *this, coll_index)
+            
+             ;\\ Draw columns selector back
             If *this\color\back
                draw_mode_alpha_( #PB_2DDrawing_Default )
-               If column_index = 0
+               If coll_index = 0
                   draw_roundbox_( X - sublevelwidth, Y, *column\size + sublevelwidth, *this\ColumnsHeight, *this\round, *this\round, *this\color\frame )
                Else
                   draw_roundbox_( X, Y, *column\size, *this\ColumnsHeight, *this\round, *this\round, *this\color\frame )
                EndIf
             EndIf
-            
-            Draw_TreeRows( *this, column_index)
             
             ;                   ;\\ Draw columns img
             ;                If *column\img\imageID
@@ -20902,7 +20504,7 @@ Module widgets
             
             ;\\ draw vertical grid line
             If gridlines
-               If column_index = 0
+               If coll_index = 0
                   draw_box_( X, *this\inner_y( ), gridlines, *this\scroll_height( ), *this\LIneColor )
                EndIf
                draw_box_( X + *column\size - 1, *this\inner_y( ), gridlines, *this\scroll_height( ), *this\LIneColor )
@@ -26391,9 +25993,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 19918
-; FirstLine = 19902
-; Folding = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-----4-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 15771
+; FirstLine = 15673
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------------------------------------------------------------------------------------------------------------------------------------0+---------------------------------------------------------------------------------------------------------------------------------e--+-----------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

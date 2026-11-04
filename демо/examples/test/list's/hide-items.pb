@@ -1,7 +1,7 @@
 ; 
 ; demo state
 
-IncludePath "../../../"
+IncludePath "../../../../"
 XIncludeFile "widgets.pbi"
 Global state
 
@@ -11,18 +11,18 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Global a, *g1._s_WIDGET,*g2, g1,g2, CountItems=21; количесвто итемов 
    
-   Procedure TreeGadget_(gadget, X,Y,Width,Height,Flag=0)
-      Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,Flag)
-      If gadget =- 1 : gadget = g : EndIf
+   Procedure TreeGadget_(Gadget, X,Y,Width,Height,Flag=0)
+      Protected g = PB(TreeGadget)(Gadget, X,Y,Width,Height,Flag)
+      If Gadget =- 1 : Gadget = g : EndIf
       
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
          Define RowHeight.CGFloat = 20
          ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
-         CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+         CocoaMessage(0, GadgetID(Gadget), "setRowHeight:@", @RowHeight)
       CompilerElse
       CompilerEndIf
       
-      ProcedureReturn gadget
+      ProcedureReturn Gadget
    EndProcedure
    
    
@@ -185,9 +185,8 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 (Windows - x64)
-; CursorPosition = 94
-; FirstLine = 78
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 3
 ; Folding = ----
 ; EnableXP
 ; DPIAware

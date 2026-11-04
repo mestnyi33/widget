@@ -1281,9 +1281,7 @@ Procedure   Properties_Events( )
          
       Case #__EVENT_StatusChange
          If *first = *g
-            If WidgetEventData( ) = #PB_Tree_Expanded Or
-               WidgetEventData( ) = #PB_Tree_Collapsed
-               ;
+            If EnteredButton( ) ; Expanded/Collapsed
                If SetItemState( *second, WidgetEventItem( ), WidgetEventData( ))
                   PropertiesButton_Hide( *test )
                EndIf
@@ -2721,10 +2719,7 @@ Procedure   ide_events( )
          
       Case #__EVENT_StatusChange
          *row = __data
-         If *row < 10000
-            *row = 0
-         EndIf
-         
+        
          ; Debug ""+__item +" "+ __data
          If *g = ide_element_PANEL
             ; Debug "status change element tab "+ __item
@@ -3388,9 +3383,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 2726
-; FirstLine = 2718
-; Folding = ----------------------------------------------------------------
+; CursorPosition = 2737
+; FirstLine = 2692
+; Folding = ---------------------0-+0---------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\..\2_621.exe

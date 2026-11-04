@@ -256,7 +256,7 @@ CompilerIf #PB_Compiler_IsMainFile
             PropertiesItems_StatusChange( *second, item, #__s_2 )
             
             ;
-            SetText( EventWidget( ), *first\RowFocused( )\text\Str(0) )
+            SetText( EventWidget( ), *first\RowFocused( )\txt(0)\text )
             
          Case #__event_MouseWheel
             If MouseDirection( ) > 0
@@ -313,9 +313,7 @@ CompilerIf #PB_Compiler_IsMainFile
             SetActive( GetParent( *g))
             
          Case #__event_StatusChange
-            If WidgetEventData( ) = #PB_Tree_Expanded Or
-               WidgetEventData( ) = #PB_Tree_Collapsed
-               ;
+            If EnteredButton( ) ; Expanded/Collapsed
                Select *g
                   Case *first : SetItemState(*second, WidgetEventItem( ), WidgetEventData( ))
                   Case *second : SetItemState(*first, WidgetEventItem( ), WidgetEventData( ))
@@ -482,9 +480,9 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
       SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
       ;
-      *splitter\bar\button\round = 0
-      *splitter\bar\button\size = DPIScaled(5)
-      *splitter\bar\button\size + Bool( *splitter\bar\button\size % 2 )
+      *splitter\bar\btn\round = 0
+      *splitter\bar\btn\size = DPIScaled(5)
+      *splitter\bar\btn\size + Bool( *splitter\bar\btn\size % 2 )
       SetState(*splitter, (position) ) ; похоже ошибка DPI
       
       ;
@@ -657,9 +655,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 365
-; FirstLine = 362
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 315
+; FirstLine = 306
 ; Folding = ------------
 ; EnableXP
 ; DPIAware

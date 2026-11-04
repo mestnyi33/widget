@@ -1,7 +1,7 @@
 ; 
 ; demo state
 
-IncludePath "../../../"
+IncludePath "../../../../"
 XIncludeFile "widgets.pbi"
 
 CompilerIf #PB_Compiler_IsMainFile
@@ -28,7 +28,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   ProcedureReturn #False
                EndIf
                
-               Protected *row._s_ROWS
+               Protected *row._s_ROW
                *row = *this\__rows( )
                ;
                If State & #PB_Tree_Selected
@@ -58,9 +58,11 @@ CompilerIf #PB_Compiler_IsMainFile
                      
                      PushListPosition( *this\__rows( ))
                      While NextElement( *this\__rows( ))
-                        If *this\__rows( )\RowParent( )
-                           *this\__rows( )\hide = Bool( *this\__rows( )\RowParent( )\buttonbox\checked | *this\__rows( )\RowParent( )\hide )
-                        EndIf
+                        If *this\__rows( )\parent
+                          If Bool(*this\__rows( )\mask & #__MASK_Hidden) = Bool( *this\__rows( )\parent\buttonbox\checked | Bool(*this\__rows( )\parent\mask & #__MASK_Hidden) )
+                             *this\__rows( )\mask ! #__MASK_Hidden
+                          EndIf
+                       EndIf
                         
                         If *this\__rows( )\sublevel = *row\sublevel
                            Break
@@ -95,7 +97,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndProcedure
      
    ;\\
-   Procedure SetGadgetState_(gadget, state)
+   Procedure SetGadgetState_(Gadget, state)
 ;       CompilerSelect #PB_Compiler_OS
 ;          CompilerCase #PB_OS_MacOS
 ;             If state >= 0
@@ -103,16 +105,16 @@ CompilerIf #PB_Compiler_IsMainFile
 ;             EndIf
 ;       CompilerEndSelect 
       
-      SetGadgetState(gadget, state)
+      SetGadgetState(Gadget, state)
    EndProcedure
    
-   Procedure SetGadgetItemState_(gadget, item, state)
-      SetGadgetItemState(gadget, item, state)
+   Procedure SetGadgetItemState_(Gadget, item, state)
+      SetGadgetItemState(Gadget, item, state)
    EndProcedure
    
    ;\\
-   Procedure AddGadgetItem_(gadget, position, Text.s, imageID=0, flags=0)
-      AddGadgetItem(gadget, position, Text, imageID, flags)
+   Procedure AddGadgetItem_(Gadget, position, Text.s, imageID=0, flags=0)
+      AddGadgetItem(Gadget, position, Text, imageID, flags)
       
       ;     If GetGadgetState(gadget) >= 0
       ;       SetGadgetState_( gadget, CountGadgetItems(gadget) - 1 )
@@ -120,18 +122,18 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    ;\\
-   Procedure TreeGadget_(gadget, X,Y,Width,Height,flag=0)
-      Protected g = PB(TreeGadget)(gadget, X,Y,Width,Height,flag)
-      If gadget =- 1 : gadget = g : EndIf
+   Procedure TreeGadget_(Gadget, X,Y,Width,Height,Flag=0)
+      Protected g = PB(TreeGadget)(Gadget, X,Y,Width,Height,Flag)
+      If Gadget =- 1 : Gadget = g : EndIf
       
       CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
          Define RowHeight.CGFloat = 20
          ; CocoaMessage(@RowHeight, GadgetID(0), "rowHeight")
-         CocoaMessage(0, GadgetID(gadget), "setRowHeight:@", @RowHeight)
+         CocoaMessage(0, GadgetID(Gadget), "setRowHeight:@", @RowHeight)
       CompilerElse
       CompilerEndIf
       
-      ProcedureReturn gadget
+      ProcedureReturn Gadget
    EndProcedure
    
    Procedure widget_events()
@@ -594,9 +596,9 @@ CompilerEndIf
 ;       WaitClose()
 ;    EndIf
 ; CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 211
-; FirstLine = 152
-; Folding = --P9--0---
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 61
+; FirstLine = 57
+; Folding = --f5--8---
 ; EnableXP
 ; DPIAware

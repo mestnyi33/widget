@@ -4,7 +4,7 @@ UseWidgets( )
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
   
-  Define i, *g, g =- 1
+  Define i, *g, g =- 1, h=150
   
   UsePNGImageDecoder()
   
@@ -12,12 +12,12 @@ CompilerIf #PB_Compiler_IsMainFile
     End
   EndIf
   
-  If OpenWindow(0, 0, 0, 500, 500, "Тест скрытия глубокой вложенности", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-    g = TreeGadget(#PB_Any, 10, 10, 230, 480, #PB_Tree_AlwaysShowSelection | #PB_Tree_CheckBoxes)                                         
+  If OpenWindow(0, 0, 0, 500, h, "Тест скрытия глубокой вложенности", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+    g = TreeGadget(#PB_Any, 10, 10, 230, h-20, #PB_Tree_AlwaysShowSelection | #PB_Tree_CheckBoxes)                                         
   EndIf
   
-  If Open(0, 245, 0, #PB_Ignore, 500)
-    *g = Tree(10, 10, 230, 480, #__flag_CheckBoxes)                                         
+  If Open(0, 245, 0, #PB_Ignore, h)
+    *g = Tree(10, 10, 230, h-20, #__flag_CheckBoxes)                                         
   EndIf
   
   ; --- ЗАПОЛНЯЕМ ОБА ДЕРЕВА ОДИНАКОВОЙ ГЛУБОКОЙ СТРУКТУРОЙ ---
@@ -66,12 +66,15 @@ CompilerIf #PB_Compiler_IsMainFile
   For i=0 To CountGadgetItems(g) : SetGadgetItemState(g, i, #PB_Tree_Expanded) : Next
   For i=0 To CountItems(*g) : SetItemState(*g, i, #PB_Tree_Expanded) : Next
   
-  ; 2. КРИТИЧЕСКАЯ ТОЧКА ТЕСТА: Схлопываем "Папку 2" на первом уровне вложенности.
-  ; Индекс "Папки 2" в нашей структуре равен 2 (так как отсчет с 0).
-  SetGadgetItemState(g, 2, #PB_Tree_Collapsed)
-  SetItemState(*g, 2, #PB_Tree_Collapsed) ; Проверь, какой флаг у тебя отвечает за свернутость в SetItemState
-;   
+  SetGadgetState(g, CountGadgetItems(g)-1)
+  SetState(*g, CountItems(*g)-1)
   
+ ;   ; 2. КРИТИЧЕСКАЯ ТОЧКА ТЕСТА: Схлопываем "Папку 2" на первом уровне вложенности.
+;   ; Индекс "Папки 2" в нашей структуре равен 2 (так как отсчет с 0).
+;   SetGadgetItemState(g, 2, #PB_Tree_Collapsed)
+;   SetItemState(*g, 2, #PB_Tree_Collapsed) ; Проверь, какой флаг у тебя отвечает за свернутость в SetItemState
+;   
+  ClearDebugOutput()
   WaitClose( )
 CompilerEndIf
 
@@ -180,7 +183,7 @@ CompilerEndIf
 ; ;   ForEver
 ; ; CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 18
-; FirstLine = 7
+; CursorPosition = 76
+; FirstLine = 66
 ; Folding = -
 ; EnableXP

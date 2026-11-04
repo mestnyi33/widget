@@ -47,7 +47,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
       Protected._s_WIDGET *first = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
       Protected._s_WIDGET *second = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
-      Protected._s_ROWS *row
+      Protected._s_ROW *row
       Protected state
       
       ;
@@ -114,7 +114,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEvent( )
          Case #__event_StatusChange
-            Protected._s_ROWS *row
+            Protected._s_ROW *row
             
             If PushItem( *g )
                If SelectItem( *g, WidgetEventItem( ))
@@ -386,9 +386,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 79
-; Folding = --4------
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 116
+; FirstLine = 113
+; Folding = ---------
 ; EnableXP
 ; DPIAware

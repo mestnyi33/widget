@@ -48,7 +48,7 @@ CompilerIf #PB_Compiler_IsMainFile
       If *this
          *row = *this\parent\RowFocused( ) 
          If *row
-            Hide(*this, *row\hide)
+            Hide(*this, Bool(*row\mask & #__MASK_Hidden))
          EndIf
       EndIf
    EndProcedure
@@ -253,9 +253,7 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_StatusChange
             If *first = *g
-               If WidgetEventData( ) = #PB_Tree_Expanded Or
-                  WidgetEventData( ) = #PB_Tree_Collapsed
-                  ;
+               If EnteredButton( ) ; Expanded/Collapsed
                   If SetItemState(*second, WidgetEventItem( ), WidgetEventData( ))
                      PropertiesButton_Hide( *test )
                   EndIf
@@ -387,9 +385,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 178
-; FirstLine = 154
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 255
+; FirstLine = 248
 ; Folding = -----------
 ; EnableXP
 ; DPIAware

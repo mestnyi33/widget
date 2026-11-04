@@ -9,7 +9,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure MDI_AddItem( *this._s_WIDGET, item, Text.s, img = - 1 )
       Protected._s_WIDGET *menu
-      Protected._s_ROWS *item, *tab
+      Protected._s_ROW *item, *tab
       *menu = *this\root\menubar
       
       ForEach *menu\__tabs( )
@@ -32,7 +32,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       Protected._s_WIDGET *menu, *last, *child
-      Protected._s_ROWS *item, *tab
+      Protected._s_ROW *item, *tab
       *menu = *this\root\menubar
       *tab = *menu\__tabs( )
       *last = *this\LastWidget( )
@@ -81,9 +81,9 @@ CompilerIf #PB_Compiler_IsMainFile
       Repeat : Until WaitWindowEvent(1) = #PB_Event_CloseWindow
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.20 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 14
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 34
+; FirstLine = 31
 ; Folding = --
 ; EnableXP
 ; DPIAware

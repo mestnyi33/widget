@@ -407,8 +407,8 @@ EndStructure
 
 Structure _s_CANVAS Extends _s_COORDINATE
    dpi.f
-   gadget.i              ; Системный номер CanvasGadget
-   window.i              ; Номер родительского окна
+   Gadget.i              ; Системный номер CanvasGadget
+   Window.i              ; Номер родительского окна
    
    *next._s_ROOT
    *prev._s_ROOT
@@ -4915,9 +4915,7 @@ CompilerEndIf
 ; Folding = --v---------------------------------------f-----0--4u--44Pv83--+0-----------------0-------------4--------------+---------n-
 ; EnableXP
 ; DPIAware
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 3128
-; FirstLine = 3099
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; FirstLine = 3543
 ; Folding = -----------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
-; DPIAware
