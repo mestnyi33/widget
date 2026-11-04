@@ -120,7 +120,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   Continue
                EndIf
                If widgets()\type = #__type_Tree
-                  ChangeStatus( widgets(), *row )
+                  StatusChange( widgets(), *row )
                EndIf
                StopEnum()
             EndIf
@@ -419,8 +419,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 356
-; FirstLine = 333
+; CursorPosition = 122
+; FirstLine = 118
 ; Folding = ---------
 ; EnableXP
 ; DPIAware

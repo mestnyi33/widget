@@ -1,5 +1,5 @@
 ; 
-; second state
+; g2 state
 
 IncludePath "../../../../"
 XIncludeFile "widgets.pbi"
@@ -11,7 +11,7 @@ CompilerIf #PB_Compiler_IsMainFile
    ;test_focus_set = 1
    
    Global ide_inspector_PROPERTIES
-   Global a, *first._s_widget, *second._s_WIDGET, *display._s_WIDGET, *get, *remove, *focus, *reset, *item1, *item2, *item3, *item4, *g1, *g2, CountItems=20;99; количесвто итемов 
+   Global a, *g1._s_widget, *g2._s_WIDGET, *display._s_WIDGET, *get, *remove, *focus, *reset, *item1, *item2, *item3, *item4, *g1, *g2, CountItems=20;99; количесвто итемов 
    
    ;- DECLARE
    Declare PropertiesButton_Events( )
@@ -63,8 +63,8 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   Procedure   PropertiesButton_Resize( *second._s_WIDGET )
-      Protected._s_ROW *row = *second\RowFocused( )
+   Procedure   PropertiesButton_Resize( *g2._s_WIDGET )
+      Protected._s_ROW *row = *g2\RowFocused( )
       Protected._s_WIDGET *this
       Protected result
       
@@ -75,15 +75,15 @@ CompilerIf #PB_Compiler_IsMainFile
             Select *row\index
                Case #_pi_FONT, #_pi_COLOR, #_pi_IMAGE
                   result = Resize( *this,
-                                   ( *row\x + *second\inner_width( )) - *this\width, 
-                                   *row\y + *second\scroll_y( ),                                        
+                                   ( *row\x + *g2\inner_width( )) - *this\width, 
+                                   *row\y + *g2\scroll_y( ),                                        
                                    #PB_Ignore, 
                                    *row\height, 0 )
                Default
                   result = Resize( *this,
                                    *row\x,
-                                   *row\y + *second\scroll_y( ),
-                                   *second\inner_width( ),
+                                   *row\y + *g2\scroll_y( ),
+                                   *g2\inner_width( ),
                                    *row\height, 0 )
             EndSelect 
          EndIf
@@ -92,8 +92,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn result
    EndProcedure
    
-   Procedure   PropertiesButton_Display( *second._s_WIDGET )
-      Protected._s_ROW *row = *second\RowFocused( )
+   Procedure   PropertiesButton_Display( *g2._s_WIDGET )
+      Protected._s_ROW *row = *g2\RowFocused( )
       Protected._s_WIDGET *this
       
       If *row
@@ -111,7 +111,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   EndIf
                   
                   ;
-                  If PropertiesButton_Resize( *second )
+                  If PropertiesButton_Resize( *g2 )
                      ProcedureReturn *this
                   EndIf
                EndIf
@@ -120,8 +120,8 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   Procedure   PropertiesButton_Create( *second._s_WIDGET, item )
-      Protected Type = GetItemData( *second, item )
+   Procedure   PropertiesButton_Create( *g2._s_WIDGET, item )
+      Protected Type = GetItemData( *g2, item )
       Protected min, max, steps, Flag ;= #__flag_NoFocus ;| #__flag_Transparent ;| #__flag_child|#__flag_invert
       Protected *this._s_WIDGET
       
@@ -146,30 +146,30 @@ CompilerIf #PB_Compiler_IsMainFile
                   steps = 7 
             EndSelect
             
-            *this = Create( *second, "Spin", Type, 0, 0, 0, 0, "", Flag, min, max, 0, #__bar_button_size, 0, steps )
+            *this = Create( *g2, "Spin", Type, 0, 0, 0, 0, "", Flag, min, max, 0, #__bar_button_size, 0, steps )
             
          Case #__type_String
-            *this = Create( *second, "String", Type, 0, 0, 0, 0, "", Flag, 0, 0, 0, 0, 0, 0 )
+            *this = Create( *g2, "String", Type, 0, 0, 0, 0, "", Flag, 0, 0, 0, 0, 0, 0 )
             
          Case #__type_CheckBox
-            *this = Create( *second, "CheckBox", Type, 0, 0, 0, 0, "#PB_Any", Flag, 0, 0, 0, 0, 0, 0 )
+            *this = Create( *g2, "CheckBox", Type, 0, 0, 0, 0, "#PB_Any", Flag, 0, 0, 0, 0, 0, 0 )
             
          Case #__type_Button
             Select item
                Case #_pi_align
                   CompilerIf Defined( AnchorBox, #PB_Module )
-                     *this = AnchorBox::Create( *second, 0,0,0,20 )
+                     *this = AnchorBox::Create( *g2, 0,0,0,20 )
                   CompilerElse
-                     *this = Create( *second, "Button", Type, 0, 0, 0, 0, "", Flag, 0, 0, 0, 0, 0, 0 )
+                     *this = Create( *g2, "Button", Type, 0, 0, 0, 0, "", Flag, 0, 0, 0, 0, 0, 0 )
                   CompilerEndIf
                   
                Case #_pi_FONT, #_pi_COLOR, #_pi_IMAGE
-                  *this = Create( *second, "Button", Type, 0, 0, #__bar_button_size+1, 0, "...", Flag, 0, 0, 0, 0, 0, 0 )
+                  *this = Create( *g2, "Button", Type, 0, 0, #__bar_button_size+1, 0, "...", Flag, 0, 0, 0, 0, 0, 0 )
                   
             EndSelect
             
          Case #__type_ComboBox
-            *this = Create( *second, "ComboBox", Type, 0, 0, 0, 0, "", Flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
+            *this = Create( *g2, "ComboBox", Type, 0, 0, 0, 0, "", Flag|#PB_ComboBox_Editable, 0, 0, 0, #__bar_button_size, 0, 0 )
             ;
             Select item
                Case #_pi_flag
@@ -247,20 +247,20 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_LostFocus
             item = GetData( EventWidget( ))
-            PropertiesItems_StatusChange( *first, item, #__s_3 )
-            PropertiesItems_StatusChange( *second, item, #__s_3 )
+            PropertiesItems_StatusChange( *g1, item, #__s_3 )
+            PropertiesItems_StatusChange( *g2, item, #__s_3 )
             
          Case #__event_Focus
             item = GetData( EventWidget( ))
-            PropertiesItems_StatusChange( *first, item, #__s_2 )
-            PropertiesItems_StatusChange( *second, item, #__s_2 )
+            PropertiesItems_StatusChange( *g1, item, #__s_2 )
+            PropertiesItems_StatusChange( *g2, item, #__s_2 )
             
             ;
-            SetText( EventWidget( ), *first\RowFocused( )\txt(0)\text )
+            SetText( EventWidget( ), *g1\RowFocused( )\txt(0)\text )
             
          Case #__event_MouseWheel
             If MouseDirection( ) > 0
-               SetState(*first\scroll\v, GetState( *first\scroll\v ) - WidgetEventData( ) )
+               SetState(*g1\scroll\v, GetState( *g1\scroll\v ) - WidgetEventData( ) )
             EndIf
             
       EndSelect
@@ -286,8 +286,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure   PropertiesItems_Events( )
       Protected._s_WIDGET *g = EventWidget( )
       Protected._s_WIDGET *splitter = GetParent(*g)
-      Protected._s_WIDGET *first = GetAttribute( *splitter, #PB_Splitter_FirstGadget)
-      Protected._s_WIDGET *second = GetAttribute( *splitter, #PB_Splitter_SecondGadget)
+      Protected._s_WIDGET *g1 = GetAttribute( *splitter, #PB_Splitter_FirstGadget)
+      Protected._s_WIDGET *g2 = GetAttribute( *splitter, #PB_Splitter_SecondGadget)
       Protected._s_ROW *row
       Protected item, state
       
@@ -300,13 +300,13 @@ CompilerIf #PB_Compiler_IsMainFile
                   item = WidgetEventItem( )
                   ;
                   Select *g
-                     Case *first 
-                        SetState(*second, item)
-                        SetState(*first, item)
+                     Case *g1 
+                        SetState(*g2, item)
+                        SetState(*g1, item)
                         
-                     Case *second 
-                        SetState(*first, item)
-                        SetState(*second, item)
+                     Case *g2 
+                        SetState(*g1, item)
+                        SetState(*g2, item)
                   EndSelect
                EndIf
             EndIf
@@ -315,8 +315,8 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_StatusChange
             If EnteredButton( ) ; Expanded/Collapsed
                Select *g
-                  Case *first : SetItemState(*second, WidgetEventItem( ), WidgetEventData( ))
-                  Case *second : SetItemState(*first, WidgetEventItem( ), WidgetEventData( ))
+                  Case *g1 : SetItemState(*g2, WidgetEventItem( ), WidgetEventData( ))
+                  Case *g2 : SetItemState(*g1, WidgetEventItem( ), WidgetEventData( ))
                EndSelect
             Else
                Properties_StatusChange( GetParent(*g), *g )
@@ -324,33 +324,33 @@ CompilerIf #PB_Compiler_IsMainFile
             
          Case #__event_ScrollChange
             Select *g
-               Case *second 
-                  If GetState( *first\scroll\v ) <> WidgetEventData( )
-                     If SetState( *first\scroll\v, WidgetEventData( ))
-                        PropertiesButton_Resize( *second )
+               Case *g2 
+                  If GetState( *g1\scroll\v ) <> WidgetEventData( )
+                     If SetState( *g1\scroll\v, WidgetEventData( ))
+                        PropertiesButton_Resize( *g2 )
                      EndIf
                   EndIf
                   ;
-               Case *first 
-                  If GetState( *second\scroll\v ) <> WidgetEventData( )
-                     SetState( *second\scroll\v, WidgetEventData( ))
+               Case *g1 
+                  If GetState( *g2\scroll\v ) <> WidgetEventData( )
+                     SetState( *g2\scroll\v, WidgetEventData( ))
                   EndIf
             EndSelect
             
          Case #__event_Change
-            If *g = *second
+            If *g = *g2
                *row = WidgetEventData( )
                
                If Not *row\childrens
                   item = WidgetEventItem( )
-                  PropertiesButton_Create( *second, item )
-                  PropertiesButton_Display( *second )
+                  PropertiesButton_Create( *g2, item )
+                  PropertiesButton_Display( *g2 )
                EndIf
             EndIf
             
          Case #__event_Resize
-            If *g = *second
-               PropertiesButton_Resize( *second )
+            If *g = *g2
+               PropertiesButton_Resize( *g2 )
             EndIf
             
       EndSelect
@@ -359,8 +359,8 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;-
    Procedure   Properties_StatusChange( *splitter._s_WIDGET, *this._s_WIDGET )
-      Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-      Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+      Protected *g1._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+      Protected *g2._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
       Protected._s_ROW *row = ItemID( *this, WidgetEventItem( ))
       Protected item, state
       
@@ -368,17 +368,17 @@ CompilerIf #PB_Compiler_IsMainFile
       If *row\childrens
          *row\ColorState( ) = #__s_0
          ;
-         If *second = *this
-            If *first\RowFocused( )
-               item = *first\RowFocused( )\index 
-               state = *first\RowFocused( )\ColorState( )
+         If *g2 = *this
+            If *g1\RowFocused( )
+               item = *g1\RowFocused( )\index 
+               state = *g1\RowFocused( )\ColorState( )
             EndIf
          EndIf
          ;
-         If *first = *this
-            If *second\RowFocused( )
-               item = *second\RowFocused( )\index 
-               state = *second\RowFocused( )\ColorState( )
+         If *g1 = *this
+            If *g2\RowFocused( )
+               item = *g2\RowFocused( )\index 
+               state = *g2\RowFocused( )\ColorState( )
             EndIf
          EndIf
          ;
@@ -396,56 +396,56 @@ CompilerIf #PB_Compiler_IsMainFile
          ;
       Else
          Select *this
-            Case *first 
-               ChangeStatus( *second, *row )
-;                If GetState( *second ) <> *row\index
-;                   PropertiesItems_StatusChange( *second, *row\index, *row\ColorState( ) )
+            Case *g1 
+               StatusChange( *g2, *row )
+;                If GetState( *g2 ) <> *row\index
+;                   PropertiesItems_StatusChange( *g2, *row\index, *row\ColorState( ) )
 ;                EndIf
-            Case *second 
-               ChangeStatus( *first, *row )
-;                If GetState( *first ) <> *row\index
-;                   PropertiesItems_StatusChange( *first, *row\index, *row\ColorState( ) )
+            Case *g2 
+               StatusChange( *g1, *row )
+;                If GetState( *g1 ) <> *row\index
+;                   PropertiesItems_StatusChange( *g1, *row\index, *row\ColorState( ) )
 ;                EndIf   
          EndSelect
       EndIf
    EndProcedure
    
    Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 )
-      Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-      Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+      Protected *g1._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+      Protected *g2._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
       
       If mode
-         AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
-         AddItem( *second, item, Text.s, -1, mode )
-         ;     AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
+         AddItem( *g1, item, StringField(Text.s, 1, Chr(10)), -1, mode )
+         AddItem( *g2, item, Text.s, -1, mode )
+         ;     AddItem( *g2, item, StringField(Text.s, 2, Chr(10)), -1, mode )
       Else
-         AddItem( *first, item, UCase(StringField(Text.s, 1, Chr(10))), -1 )
-         AddItem( *second, item, "", -1, mode )
+         AddItem( *g1, item, UCase(StringField(Text.s, 1, Chr(10))), -1 )
+         AddItem( *g2, item, "", -1, mode )
       EndIf
       
-      item = CountItems( *first ) - 1
+      item = CountItems( *g1 ) - 1
       If mode = 0
          Define color_properties.q = $FFBF9CC3;$BE80817D
          Define fcolor_properties.q = $CA2E2E2E
          
          
-         ;                      SetItemFont( *first, item, font_properties)
-         ;                      SetItemFont( *second, item, font_properties)
+         ;                      SetItemFont( *g1, item, font_properties)
+         ;                      SetItemFont( *g2, item, font_properties)
          
-         SetItemColor( *first, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
-         SetItemColor( *second, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+         SetItemColor( *g1, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+         SetItemColor( *g2, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
          
-         SetItemColor( *first, item, #__FrameColor,  $FF00FFFF, 0, #PB_All)
-         SetItemColor( *second, item, #__FrameColor,  $FF00FFFF, 0, #PB_All)   
+         SetItemColor( *g1, item, #__FrameColor,  $FF00FFFF, 0, #PB_All)
+         SetItemColor( *g2, item, #__FrameColor,  $FF00FFFF, 0, #PB_All)   
          
-         SetItemColor( *first, item, #PB_Gadget_BackColor,  $FF00FFFF, 0, #PB_All)
-         SetItemColor( *second, item, #PB_Gadget_BackColor,  $FF00FFFF, 0, #PB_All)   
+         SetItemColor( *g1, item, #PB_Gadget_BackColor,  $FF00FFFF, 0, #PB_All)
+         SetItemColor( *g2, item, #PB_Gadget_BackColor,  $FF00FFFF, 0, #PB_All)   
       Else
-         SetItemColor( *first, item, #PB_Gadget_BackColor, $FFFEFEFE)
-         SetItemColor( *second, item, #PB_Gadget_BackColor, $FFFEFEFE )
+         SetItemColor( *g1, item, #PB_Gadget_BackColor, $FFFEFEFE)
+         SetItemColor( *g2, item, #PB_Gadget_BackColor, $FFFEFEFE )
       EndIf
       
-      SetItemData( *second, item, Type )
+      SetItemData( *g2, item, Type )
    EndProcedure
    
    Procedure   Properties_Events( )
@@ -461,22 +461,22 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
       Protected position = 80
       Protected tflag.q = #__flag_BorderLess|#PB_Tree_NoLines|#__flag_Transparent;|#__flag_gridlines
-      Protected *first._s_WIDGET = Tree(0,0,0,0, tflag)
-      Protected *second._s_WIDGET = Tree(0,0,0,0, tflag|#PB_Tree_NoButtons)
-      ;    *first\padding\x = 10
-      ;    *second\padding\x = 10
+      Protected *g1._s_WIDGET = Tree(0,0,0,0, tflag)
+      Protected *g2._s_WIDGET = Tree(0,0,0,0, tflag|#PB_Tree_NoButtons)
+      ;    *g1\padding\x = 10
+      ;    *g2\padding\x = 10
       Protected *g._s_WIDGET
-      *g = *first
+      *g = *g1
       ;*g\padding\x = DPIScaled(20)
       ;*g\fs[1] = DPIScaled(20)
       ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
       
-      *g = *second
+      *g = *g2
       ;*g\padding\x = DPIScaled(20)
       ;*g\fs[1] = DPIScaled(20)
       ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
       
-      Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, Flag|#__flag_Transparent|#PB_Splitter_Vertical );|#PB_Splitter_FirstFixed )
+      Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *g1,*g2, Flag|#__flag_Transparent|#PB_Splitter_Vertical );|#PB_Splitter_firstFixed )
       SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
       SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
       ;
@@ -486,32 +486,32 @@ CompilerIf #PB_Compiler_IsMainFile
       SetState(*splitter, (position) ) ; похоже ошибка DPI
       
       ;
-      SetClass(*first\scroll\v, "first_v")
-      SetClass(*first\scroll\h, "first_h")
-      SetClass(*second\scroll\v, "second_v")
-      SetClass(*second\scroll\h, "second_h")
+      SetClass(*g1\scroll\v, "first_v")
+      SetClass(*g1\scroll\h, "first_h")
+      SetClass(*g2\scroll\v, "second_v")
+      SetClass(*g2\scroll\h, "second_h")
       
       ;
-      Hide( *first\scroll\v, 1 )
-      Hide( *first\scroll\h, 1 )
-      Hide( *second\scroll\h, 1 )
+      Hide( *g1\scroll\v, 1 )
+      Hide( *g1\scroll\h, 1 )
+      Hide( *g2\scroll\h, 1 )
       
       ; CloseList( )
       
       SetColor( *splitter, #PB_Gadget_BackColor, -1, #PB_All )
-      SetColor( *first, #PB_Gadget_BackColor, $FF00FFFF)
-      SetColor( *second, #PB_Gadget_BackColor, $FF00FFFF)
-      SetColor( *first, #PB_Gadget_LineColor, $FFBF9CC3)
-      SetColor( *second, #PB_Gadget_LineColor, $FFBF9CC3)
+      SetColor( *g1, #PB_Gadget_BackColor, $FF00FFFF)
+      SetColor( *g2, #PB_Gadget_BackColor, $FF00FFFF)
+      SetColor( *g1, #PB_Gadget_LineColor, $FFBF9CC3)
+      SetColor( *g2, #PB_Gadget_LineColor, $FFBF9CC3)
       
       ;
       Bind(*splitter, @Properties_Events( ))
-      Bind(*first, @PropertiesItems_Events( ))
-      Bind(*second, @PropertiesItems_Events( ))
+      Bind(*g1, @PropertiesItems_Events( ))
+      Bind(*g2, @PropertiesItems_Events( ))
       
       ; draw и resize отдельно надо включать пока поэтому вот так
-      Bind(*second, @PropertiesItems_Events( ), #__event_Resize)
-      ;Bind(*second, @PropertiesItems_Events( ), #__event_Draw)
+      Bind(*g2, @PropertiesItems_Events( ), #__event_Resize)
+      ;Bind(*g2, @PropertiesItems_Events( ), #__event_Draw)
       ProcedureReturn *splitter
    EndProcedure
    
@@ -523,46 +523,46 @@ CompilerIf #PB_Compiler_IsMainFile
       Select WidgetEvent( )
          Case #__event_Up
             
-            ;             If *first\row
-            ;                If *first\EnteredRow( )
-            ;                   Debug "e - " + *first\EnteredRow( ) + " " + *first\EnteredRow( )\text\string + " " + *first\EnteredRow( )\press + " " + *first\EnteredRow( )\enter + " " + *first\EnteredRow( )\focus
+            ;             If *g1\row
+            ;                If *g1\EnteredRow( )
+            ;                   Debug "e - " + *g1\EnteredRow( ) + " " + *g1\EnteredRow( )\text\string + " " + *g1\EnteredRow( )\press + " " + *g1\EnteredRow( )\enter + " " + *g1\EnteredRow( )\focus
             ;                EndIf
-            ;                If *first\PressedRow( )
-            ;                   Debug "p - " + *first\PressedRow( ) + " " + *first\PressedRow( )\text\string + " " + *first\PressedRow( )\press + " " + *first\PressedRow( )\enter + " " + *first\PressedRow( )\focus
+            ;                If *g1\PressedRow( )
+            ;                   Debug "p - " + *g1\PressedRow( ) + " " + *g1\PressedRow( )\text\string + " " + *g1\PressedRow( )\press + " " + *g1\PressedRow( )\enter + " " + *g1\PressedRow( )\focus
             ;                EndIf
-            ;                If *first\RowFocused( )
-            ;                   Debug "f - " + *first\RowFocused( ) + " " + *first\RowFocused( )\text\string + " " + *first\RowFocused( )\press + " " + *first\RowFocused( )\enter + " " + *first\RowFocused( )\focus
+            ;                If *g1\RowFocused( )
+            ;                   Debug "f - " + *g1\RowFocused( ) + " " + *g1\RowFocused( )\text\string + " " + *g1\RowFocused( )\press + " " + *g1\RowFocused( )\enter + " " + *g1\RowFocused( )\focus
             ;                EndIf
             ;             EndIf
             
             Debug "-------set-start-------"
             Select EventWidget( )
-               Case *get : Debug GetState(*first)
-               Case *focus : SetActive(GetParent(*first))
+               Case *get : Debug GetState(*g1)
+               Case *focus : SetActive(GetParent(*g1))
                Case *remove 
-                  If *first\RowFocused( )
-                     Protected item = *first\RowFocused( )\index
-                     RemoveItem(*first, item)
-                     ; RemoveItem(*second, item)
+                  If *g1\RowFocused( )
+                     Protected item = *g1\RowFocused( )\index
+                     RemoveItem(*g1, item)
+                     ; RemoveItem(*g2, item)
                   EndIf
                   
-               Case *reset : SetState(*first, - 1)
-               Case *item1 : SetState(*first, Val(GetText(EventWidget( ))))
-               Case *item2 : SetState(*first, Val(GetText(EventWidget( ))))
-               Case *item3 : SetState(*first, Val(GetText(EventWidget( ))))
-               Case *item4 : SetState(*first, Val(GetText(EventWidget( ))))
+               Case *reset : SetState(*g1, - 1)
+               Case *item1 : SetState(*g1, Val(GetText(EventWidget( ))))
+               Case *item2 : SetState(*g1, Val(GetText(EventWidget( ))))
+               Case *item3 : SetState(*g1, Val(GetText(EventWidget( ))))
+               Case *item4 : SetState(*g1, Val(GetText(EventWidget( ))))
             EndSelect
             Debug "-------set-stop-------"
             
-            ;             If *first\row
-            ;                If *first\EnteredRow( )
-            ;                   Debug "e - " + *first\EnteredRow( ) + " " + *first\EnteredRow( )\text\string + " " + *first\EnteredRow( )\_press + " " + *first\EnteredRow( )\_enter + " " + *first\EnteredRow( )\_focus
+            ;             If *g1\row
+            ;                If *g1\EnteredRow( )
+            ;                   Debug "e - " + *g1\EnteredRow( ) + " " + *g1\EnteredRow( )\text\string + " " + *g1\EnteredRow( )\_press + " " + *g1\EnteredRow( )\_enter + " " + *g1\EnteredRow( )\_focus
             ;                EndIf
-            ;                If *first\PressedRow( )
-            ;                   Debug "p - " + *first\PressedRow( ) + " " + *first\PressedRow( )\text\string + " " + *first\PressedRow( )\_press + " " + *first\PressedRow( )\_enter + " " + *first\PressedRow( )\_focus
+            ;                If *g1\PressedRow( )
+            ;                   Debug "p - " + *g1\PressedRow( ) + " " + *g1\PressedRow( )\text\string + " " + *g1\PressedRow( )\_press + " " + *g1\PressedRow( )\_enter + " " + *g1\PressedRow( )\_focus
             ;                EndIf
-            ;                If *first\RowFocused( )
-            ;                   Debug "f - " + *first\RowFocused( ) + " " + *first\RowFocused( )\text\string + " " + *first\RowFocused( )\_press + " " + *first\RowFocused( )\_enter + " " + *first\RowFocused( )\_focus
+            ;                If *g1\RowFocused( )
+            ;                   Debug "f - " + *g1\RowFocused( ) + " " + *g1\RowFocused( )\text\string + " " + *g1\RowFocused( )\_press + " " + *g1\RowFocused( )\_enter + " " + *g1\RowFocused( )\_focus
             ;                EndIf
             ;             EndIf
             
@@ -573,26 +573,26 @@ CompilerIf #PB_Compiler_IsMainFile
    ;-
    If Open(1, 100, 50, 370, 330, "second ListView state", #PB_Window_SystemMenu)
       ;       ;       ;Container(0, 0, 240, 330)
-      ;       *second = Tree(10, 10, 220/2, 310) : SetClass(*second, "second")
-      ;       *first = Tree(110, 10, 220/2, 310, #__flag_nolines) : SetClass(*first, "first")
+      ;       *g2 = Tree(10, 10, 220/2, 310) : SetClass(*g2, "g2")
+      ;       *g1 = Tree(110, 10, 220/2, 310, #__flag_nolines) : SetClass(*g1, "g1")
       ;       
       ;       
-      ;       ;*first = ListView(10, 10, 220, 310)
-      ;       ;*first = Panel(10, 10, 230, 310) 
-      ;       ;Debug *second\scroll\v\hide 
-      ;       Splitter(10,10, 230, 310, *second, *first, #PB_Splitter_Vertical )
-      ;Debug *second\scroll\v\hide 
+      ;       ;*g1 = ListView(10, 10, 220, 310)
+      ;       ;*g1 = Panel(10, 10, 230, 310) 
+      ;       ;Debug *g2\scroll\v\hide 
+      ;       Splitter(10,10, 230, 310, *g2, *g1, #PB_Splitter_Vertical )
+      ;Debug *g2\scroll\v\hide 
       ;       ;
-      ;       ;Hide( *second\scroll\v, 1 )
-      ;       Hide( HBar(*second), #True )
-      ;       Hide( HBar(*first), #True )
+      ;       ;Hide( *g2\scroll\v, 1 )
+      ;       Hide( HBar(*g2), #True )
+      ;       Hide( HBar(*g1), #True )
       ;       Bind(Widget( ), @Properties_Events())
-      ;       Bind(*second, @PropertiesItems_Events());, #__event_Change)
-      ;       Bind(*first, @PropertiesItems_Events());, #__event_Change)
+      ;       Bind(*g2, @PropertiesItems_Events());, #__event_Change)
+      ;       Bind(*g1, @PropertiesItems_Events());, #__event_Change)
       
       ide_inspector_PROPERTIES = Properties_Create( 10,10, 230, 310 )
-      *first = GetAttribute( ide_inspector_PROPERTIES, #PB_Splitter_FirstGadget)
-      *second = GetAttribute( ide_inspector_PROPERTIES, #PB_Splitter_SecondGadget)
+      *g1 = GetAttribute( ide_inspector_PROPERTIES, #PB_Splitter_FirstGadget)
+      *g2 = GetAttribute( ide_inspector_PROPERTIES, #PB_Splitter_SecondGadget)
       
       If ide_inspector_PROPERTIES
          Properties_AddItem( ide_inspector_PROPERTIES, #_pi_group_COMMON, "COMMON" )
@@ -656,8 +656,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 315
-; FirstLine = 306
+; CursorPosition = 403
+; FirstLine = 368
 ; Folding = ------------
 ; EnableXP
 ; DPIAware

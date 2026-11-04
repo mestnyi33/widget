@@ -69,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   Procedure   _ChangeStatus( *this._s_WIDGET, *row._s_ROW )
+   Procedure   _StatusChange( *this._s_WIDGET, *row._s_ROW )
          Protected count = ListSize( *this\__rows( ))
          If count
             If *row\index < 0 Or
@@ -114,8 +114,8 @@ CompilerIf #PB_Compiler_IsMainFile
          Case #__event_StatusChange
             If *row > 0
                Select *g
-                  Case *first  : ChangeStatus( *second, *row )
-                  Case *second : ChangeStatus( *first, *row )
+                  Case *first  : StatusChange( *second, *row )
+                  Case *second : StatusChange( *first, *row )
                EndSelect
                
                ProcedureReturn 
@@ -164,9 +164,9 @@ CompilerIf #PB_Compiler_IsMainFile
       WaitClose()
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 155
-; FirstLine = 144
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 120
+; FirstLine = 113
 ; Folding = ----
 ; EnableXP
 ; DPIAware

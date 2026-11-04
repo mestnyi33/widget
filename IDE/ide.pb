@@ -2737,7 +2737,8 @@ Procedure   ide_events( )
          Else
             If *row\mask & #__mask_hover Or 
                 *row\mask & #__mask_active
-            If *g = ide_all_ELEMENTS
+               ;
+               If *g = ide_all_ELEMENTS
                SetText( ide_help_VIEW, ide_help_VIEW_elements(GetItemText( *g, __item )) )
             EndIf
             If *g = ide_inspector_VIEW
@@ -3383,8 +3384,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 2737
-; FirstLine = 2692
+; CursorPosition = 2720
+; FirstLine = 2686
 ; Folding = ---------------------0-+0---------------------------------------
 ; EnableXP
 ; DPIAware

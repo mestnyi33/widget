@@ -8014,7 +8014,7 @@ Module widgets
    EndProcedure
    
    ;-
-   Procedure   ChangeStatus( *this._s_WIDGET, *row._s_ROW )
+   Procedure   StatusChange( *this._s_WIDGET, *row._s_ROW )
       If Not *row : ProcedureReturn : EndIf
       Protected._s_ROW *row_sel
       Protected count = ListSize( *this\row\__s( ))
@@ -8408,6 +8408,7 @@ Module widgets
                   *this\RowFocused( )\mask & #__MASK_Active
                   *this\RowFocused( )\mask &~ #__MASK_Active
                   *this\RowFocused( )\ColorState( ) = #__s_0
+                  If test_StatusChange : Debug "status -(-1)" : EndIf
                   DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                   *this\RowFocused( ) = #Null
                   ProcedureReturn - 1
@@ -8469,6 +8470,7 @@ Module widgets
                         *this\RowFocused( )\mask & #__MASK_Active
                         *this\RowFocused( )\mask &~ #__MASK_Active
                         *this\RowFocused( )\ColorState( ) = #__s_0
+                        If test_StatusChange :  Debug"status-remove" :EndIf
                         DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                      EndIf
                      
@@ -12044,6 +12046,7 @@ Module widgets
                If *rowFocused = *row
                   *this\RowFocused( ) = 0
                   ;
+                  If test_StatusChange :  Debug "status-" :EndIf
                   DoEvents( *this, #__EVENT_StatusChange, - 1, *rowFocused )
                Else
                   If *rowFocused\parent 
@@ -12060,6 +12063,7 @@ Module widgets
                      *rowFocused\ColorState( ) = #__s_2
                   EndIf
                   ;
+                  If test_StatusChange :  Debug "status-2" :EndIf
                   DoEvents( *this, #__EVENT_StatusChange, *row\rindex, *row)
                   DoEvents( *this, #__EVENT_StatusChange, *rowFocused\rindex, *rowFocused)
                EndIf
@@ -15599,7 +15603,7 @@ Module widgets
                      EndIf
                   EndIf
                   
-                  ; Debug " leave-item status change"
+                  If test_StatusChange : Debug " leave-item status change": EndIf
                   DoEvents( *this, #__EVENT_StatusChange, *row_leaved\rindex, *row_leaved )
                EndIf
             EndIf
@@ -15661,12 +15665,12 @@ Module widgets
                      EndIf
                   EndIf
                   
-                  ; Debug "status-enter-item"  ;;; Not ( Not *this\mask & #__MASK_Press And *row_howered = *this\RowFocused( ) )
+                  If test_StatusChange :  Debug "status-enter-item" : EndIf ;;; Not ( Not *this\mask & #__MASK_Press And *row_howered = *this\RowFocused( ) )
                   DoEvents( *this, #__EVENT_StatusChange, *row_howered\rindex, *row_howered )
                EndIf
             Else
-               ; Debug "status-leave-items"
                If *this\RowFocused( ) And Not MousePress( ) 
+                  If test_StatusChange :  Debug "status-leave-items" : EndIf
                   DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                EndIf
             EndIf
@@ -15706,7 +15710,7 @@ Module widgets
                      If *row\ColorState( ) = #__s_3
                         *row\ColorState( ) = #__s_2
                         ;
-                        ; Debug "status-focus-others"
+                        If test_StatusChange :  Debug "status-focus-others" : EndIf
                         DoEvents( *this, #__EVENT_StatusChange, *row\rindex, *row)
                      EndIf
                   EndIf
@@ -15720,7 +15724,7 @@ Module widgets
                *this\RowFocused( )\ColorState( ) = #__s_3
                *this\RowFocused( )\ColorState( ) = #__s_2
                ;
-               ; Debug "status-focus-current"
+               If test_StatusChange :  Debug "status-focus-current" : EndIf
                DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
             EndIf
          EndIf
@@ -15735,7 +15739,7 @@ Module widgets
                      If *this\row\__s( )\ColorState( ) = #__s_2
                         *this\row\__s( )\ColorState( ) = #__s_3
                         ;
-                        ; Debug "status-lostfocus-others"
+                        If test_StatusChange :  Debug "status-lostfocus-others" : EndIf
                         DoEvents( *this, #__EVENT_StatusChange, *this\row\__s( )\rindex, *this\row\__s( ))
                      EndIf
                   EndIf
@@ -15748,7 +15752,7 @@ Module widgets
                If *this\RowFocused( )\ColorState( ) = #__s_2
                   *this\RowFocused( )\ColorState( ) = #__s_3
                   ;
-                  ; Debug "status-lostfocus-current"
+                  If test_StatusChange :  Debug "status-lostfocus-current" : EndIf
                   DoEvents(*this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                EndIf
             EndIf
@@ -15847,18 +15851,18 @@ Module widgets
                                  If *this\RowFocused( )\ColorState( ) = #__s_2
                                     *this\RowFocused( )\ColorState( ) = #__s_3
                                     ;
-                                    ; Debug "status-press-lostfocus"
+                                    If test_StatusChange :  Debug "status-press-lostfocus" : EndIf
                                     DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                                  EndIf
                               EndIf
                            EndIf
                            ;
-                           ; Debug "status-press-change"
+                           If test_StatusChange :  Debug "status-press-change" : EndIf
                            DoEvents(*this, #__EVENT_StatusChange, *row_howered\rindex, *row_howered )
                         EndIf
                      Else
                         *row_howered\ColorState( ) = #__s_1
-                        ; Debug "status-press-change"
+                        If test_StatusChange :  Debug "status-press-change" : EndIf
                         DoEvents(*this, #__EVENT_StatusChange, *row_howered\rindex, *row_howered )
                      EndIf
                   EndIf
@@ -15873,6 +15877,7 @@ Module widgets
             ; не уверен есть ли в этом польза))
             If *this\RowFocused( )
                If Not MousePress( ) 
+                  If test_StatusChange : Debug "lllll" : EndIf
                   DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                EndIf
             EndIf
@@ -15902,6 +15907,7 @@ Module widgets
                   If Not *this\flagmask & #__FLAG_RowClickSelect
                      If *this\RowEntered( )
                         If SetState( *this, *this\RowEntered( )\rindex ) 
+                           If test_StatusChange :  Debug "up setstate" : EndIf
                            DoEvents(*this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                         EndIf
                      Else
@@ -15909,7 +15915,7 @@ Module widgets
                            *this\RowFocused( )\ColorState( ) = #__s_3
                            *this\RowFocused( )\ColorState( ) = #__s_2
                            ;
-                           ; Debug "status-focus"
+                           If test_StatusChange :  Debug "status-focus" : EndIf
                            DoEvents(*this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
                         EndIf
                      EndIf
@@ -16261,7 +16267,8 @@ Module widgets
                      ; удобно когда нужно показать подсказку
                      If is_integral_( *this )
                         If *this\parent\type = #__TYPE_panel
-                           Post( *this, #__EVENT_StatusChange, *tab\ID, *tab )
+                           If test_StatusChange :  Debug "status-post": EndIf
+                            Post( *this, #__EVENT_StatusChange, *tab\ID, *tab )
                         EndIf
                      EndIf
                   EndIf
@@ -16949,6 +16956,8 @@ Module widgets
          ;                Post( *this, event, *btn, *data )
          ;             Else
          If event = #__EVENT_Change
+            AddEvents( *this, event, *btn, *data )
+         ElseIf event = #__EVENT_StatusChange
             AddEvents( *this, event, *btn, *data )
          ElseIf event = #__EVENT_Focus
             AddEvents( *this, event, *btn, *data )
@@ -23948,6 +23957,9 @@ Module widgets
                      EndIf
                   Else
                      PushListPosition(  __GUI\event\queues( ))
+                     If __event = #__EVENT_StatusChange
+                       If test_StatusChange : Debug "status-RemoveEvents" : EndIf
+                     EndIf
                      Post( __widget, __event, __item, __data )
                      PopListPosition(  __GUI\event\queues( ))
                   EndIf
@@ -23961,8 +23973,7 @@ Module widgets
             EndIf
          Next
          ;
-         ;Debug 555
-         ;PostRepaint( *this\root )
+         PostRepaint( *this\root )
          ProcedureReturn #True
       EndIf
    EndProcedure
@@ -25993,9 +26004,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 15771
-; FirstLine = 15673
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------8-------------------------------------------------------------------------------------------------------------------------------------0+---------------------------------------------------------------------------------------------------------------------------------e--+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 23960
+; FirstLine = 23188
+; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--------------------------------------------------------------------------------------------------------------------------------0-----44f-----e+4---------------------+++8v7+-----f-4f-------------------------------------------------------------------------------------e--+------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

@@ -262,6 +262,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       ;-  -----------------
       ;-   GLOBALS
       ;-  -----------------
+      Global test_StatusChange 
       Global display_mode_linux = 0
       Global test_align = 0
       Global test_atpoint
@@ -1750,7 +1751,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Declare   SetSizeBounds( *this, MinimumWidth.l = #PB_Ignore, MinimumHeight.l = #PB_Ignore, MaximumWidth.l = #PB_Ignore, MaximumHeight.l = #PB_Ignore )
    
    Declare   ChangeItemState( *this, Item.l, State.b )
-   Declare   ChangeStatus( *this, *row )
+   Declare   StatusChange( *this, *row )
    Declare.l CountItems( *this )
    Declare.l ClearItems( *this )
    Declare   PushItem( *this )
@@ -1939,8 +1940,8 @@ CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 615
-; FirstLine = 571
+; CursorPosition = 264
+; FirstLine = 257
 ; Folding = --------9-----------Mw-------------------
 ; EnableXP
 ; DPIAware
